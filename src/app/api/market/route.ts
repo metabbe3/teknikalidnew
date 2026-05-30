@@ -1,0 +1,14 @@
+import { NextResponse } from "next/server";
+import { stockMarketService } from "@/domains/stock/stock-market.service";
+import { handleApiError } from "@/lib/api-error";
+
+export const revalidate = 300;
+
+export async function GET() {
+  try {
+    const result = await stockMarketService.getMarketOverview();
+    return NextResponse.json(result);
+  } catch (error) {
+    return handleApiError(error, "fetch market overview");
+  }
+}

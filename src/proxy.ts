@@ -1,0 +1,138 @@
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { auth } from "@/lib/auth";
+
+const cspScriptSrc = process.env.NODE_ENV === "production"
+  ? "script-src 'self' 'unsafe-inline'"
+  : "script-src 'self' 'unsafe-inline' 'unsafe-eval'";
+
+const securityHeaders = {
+  "Content-Security-Policy": [
+    "default-src 'self'",
+    cspScriptSrc,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob:",
+    "font-src 'self'",
+    "connect-src 'self' ws: wss:",
+    "frame-ancestors 'none'",
+  ].join("; "),
+  "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
+  "X-Frame-Options": "DENY",
+  "X-Content-Type-Options": "nosniff",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+} as const;
+
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT = 120;
+const RATE_WINDOW = 60_000;
+const MAX_ENTRIES = 10_000;
+
+const authRateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const AUTH_RATE_LIMIT = 10;
+const AUTH_RATE_WINDOW = 60_000;
+
+const PROTECTED_PREFIXES = ["/dashboard", "/watchlist", "/profile"];
+const ADMIN_LOGIN_ROUTE = "/admin/login";
+
+function rateLimited(map: Map<string, { count: number; resetAt: number }>, ip: string, limit: number, window: number): boolean {
+  const now = Date.now();
+
+  if (map.size > MAX_ENTRIES) {
+    for (const [key, val] of map) {
+      if (now > val.resetAt) map.delete(key);
+    }
+  }
+
+  const entry = map.get(ip);
+
+  if (!entry || now > entry.resetAt) {
+    map.set(ip, { count: 1, resetAt: now + window });
+    return false;
+  }
+
+  entry.count++;
+  return entry.count > limit;
+}
+
+function isAuthRoute(pathname: string): boolean {
+  return pathname.startsWith("/api/auth/") && !pathname.includes("session");
+}
+
+export async function proxy(request: NextRequest) {
+  const response = NextResponse.next();
+
+  for (const [key, value] of Object.entries(securityHeaders)) {
+    response.headers.set(key, value);
+  }
+
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+    ?? request.headers.get("x-real-ip")
+    ?? "unknown";
+
+  if (isAuthRoute(request.nextUrl.pathname)) {
+    if (rateLimited(authRateLimitMap, ip, AUTH_RATE_LIMIT, AUTH_RATE_WINDOW)) {
+      return NextResponse.json({ error: "Too many attempts" }, { status: 429 });
+    }
+  }
+
+  if (request.nextUrl.pathname.startsWith("/api/") && !request.nextUrl.pathname.includes("/api/auth/session")) {
+    if (rateLimited(rateLimitMap, ip, RATE_LIMIT, RATE_WINDOW)) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+  }
+
+  // Protected user routes — redirect to login if no session
+  if (PROTECTED_PREFIXES.some(p => request.nextUrl.pathname.startsWith(p))) {
+    const sessionToken =
+      request.cookies.get("authjs.session-token") ??
+      request.cookies.get("__Secure-authjs.session-token");
+    if (!sessionToken) {
+      const signInUrl = new URL("/auth/signin", request.url);
+      signInUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
+      return NextResponse.redirect(signInUrl);
+    }
+  }
+
+  // Admin routes — check NextAuth session + ADMIN role
+  const isAdminRoute =
+    request.nextUrl.pathname.startsWith("/admin") &&
+    request.nextUrl.pathname !== ADMIN_LOGIN_ROUTE;
+
+  const isAdminApi =
+    request.nextUrl.pathname.startsWith("/api/admin");
+
+  if (isAdminRoute || isAdminApi) {
+    const session = await auth();
+
+    if (!session?.user || session.user.role !== "ADMIN") {
+      if (request.nextUrl.pathname.startsWith("/api/")) {
+        return NextResponse.json({ error: "Not found" }, { status: 404 });
+      }
+      if (session?.user && session.user.role !== "ADMIN") {
+        const denyUrl = new URL("/admin/login?error=access_denied", request.url);
+        return NextResponse.redirect(denyUrl);
+      }
+      return NextResponse.redirect(new URL("/admin/login", request.url));
+    }
+
+    // Enforce session timeout based on rememberMe choice
+    const loginAt = (session.user as any).loginAt as number | undefined;
+    const rememberMe = (session.user as any).rememberMe as boolean;
+    if (loginAt) {
+      const maxMs = rememberMe ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
+      if (Date.now() - loginAt > maxMs) {
+        if (request.nextUrl.pathname.startsWith("/api/")) {
+          return NextResponse.json({ error: "Not found" }, { status: 404 });
+        }
+        return NextResponse.redirect(new URL("/admin/login", request.url));
+      }
+    }
+  }
+
+  return response;
+}
+
+export const config = {
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+};

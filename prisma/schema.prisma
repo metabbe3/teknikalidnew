@@ -1,0 +1,421 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Stock {
+  id        Int       @id @default(autoincrement())
+  ticker    String    @unique @db.VarChar(20)
+  name      String    @db.VarChar(255)
+  sector    String    @db.VarChar(100)
+  listingBoard String? @db.VarChar(50)
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  prices     StockPrice[]
+  indicators StockIndicator[]
+  fundamentals StockFundamental[]
+  watchlist  Watchlist[]
+
+  @@index([sector])
+  @@index([isActive])
+  @@index([listingBoard])
+}
+
+model StockPrice {
+  id       Int      @id @default(autoincrement())
+  stockId  Int
+  date     DateTime @db.Date
+  open     Decimal  @db.Decimal(12, 2)
+  high     Decimal  @db.Decimal(12, 2)
+  low      Decimal  @db.Decimal(12, 2)
+  close    Decimal  @db.Decimal(12, 2)
+  volume   BigInt
+  adjClose Decimal? @db.Decimal(12, 2)
+
+  stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+
+  @@unique([stockId, date])
+  @@index([stockId, date(sort: Desc)])
+  @@index([date])
+}
+
+model StockIndicator {
+  id         Int      @id @default(autoincrement())
+  stockId    Int
+  date       DateTime @db.Date
+  interval   String   @db.VarChar(10)
+
+  sma20      Decimal? @db.Decimal(12, 2)
+  sma50      Decimal? @db.Decimal(12, 2)
+  sma200     Decimal? @db.Decimal(12, 2)
+  ema12      Decimal? @db.Decimal(12, 2)
+  ema26      Decimal? @db.Decimal(12, 2)
+
+  rsi14      Decimal? @db.Decimal(8, 2)
+  macdLine   Decimal? @db.Decimal(12, 4)
+  macdSignal Decimal? @db.Decimal(12, 4)
+  macdHist   Decimal? @db.Decimal(12, 4)
+
+  bbUpper    Decimal? @db.Decimal(12, 2)
+  bbMiddle   Decimal? @db.Decimal(12, 2)
+  bbLower    Decimal? @db.Decimal(12, 2)
+
+  stochK          Decimal?  @db.Decimal(8, 2)
+  stochD          Decimal?  @db.Decimal(8, 2)
+  adx             Decimal?  @db.Decimal(8, 2)
+  vwap            Decimal?  @db.Decimal(12, 2)
+  atr             Decimal?  @db.Decimal(12, 2)
+  obv             Decimal?  @db.Decimal(16, 2)
+  obvTrend        String?   @db.VarChar(15)
+  supertrend      Decimal?  @db.Decimal(12, 2)
+  smaCrossSignal  String?   @db.VarChar(20)
+  smaCrossDate    DateTime? @db.Date
+  emaCrossSignal  String?   @db.VarChar(20)
+  emaCrossDate    DateTime? @db.Date
+
+  stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+
+  @@unique([stockId, date, interval])
+  @@index([stockId, date(sort: Desc)])
+  @@index([stockId, interval, date(sort: Desc)])
+  @@index([interval, date])
+}
+
+model StockFundamental {
+  id            Int      @id @default(autoincrement())
+  stockId       Int
+  date          DateTime @db.Date
+  pe            Decimal? @db.Decimal(10, 2)
+  forwardPe     Decimal? @db.Decimal(10, 2)
+  pb            Decimal? @db.Decimal(10, 2)
+  eps           Decimal? @db.Decimal(12, 2)
+  dividendYield Decimal? @db.Decimal(6, 4)
+  marketCap     BigInt
+
+  stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+
+  @@unique([stockId, date])
+  @@index([date, pe])
+  @@index([date, dividendYield])
+  @@index([date, marketCap])
+}
+
+model CachedApiCall {
+  id        Int      @id @default(autoincrement())
+  cacheKey  String   @unique @db.VarChar(255)
+  data      Json
+  fetchedAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([expiresAt])
+}
+
+// ── Auth (NextAuth) ──────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  username      String    @unique
+  image         String?
+  bio           String?   @db.VarChar(200)
+  socialLinks   Json?
+  role          Role      @default(USER)
+  reputation   Int       @default(0)
+  bannedAt      DateTime?
+  sessionVersion Int      @default(0)
+  createdAt     DateTime  @default(now())
+
+  accounts           Account[]
+  sessions           Session[]
+  posts              Post[]
+  comments           Comment[]
+  watchlist          Watchlist[]
+  likes              Like[]
+  reports            Report[]
+  following          Follow[]          @relation("Following")
+  followers          Follow[]          @relation("Followers")
+  stockFollows       StockFollow[]
+  notifications      Notification[]    @relation("Notifications")
+  notificationActions Notification[]   @relation("NotificationActions")
+  bookmarks          Bookmark[]
+  articles           Article[]
+  auditLogs          AuditLog[]
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Account {
+  id                String   @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String @id @default(cuid())
+  sessionToken String @unique
+  userId       String
+  expires      DateTime
+  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ── Community ────────────────────────────────────────────
+
+model Post {
+  id            String   @id @default(cuid())
+  content       String   @db.VarChar(1000)
+  tickerTag     String?  @db.VarChar(20)
+  authorId      String
+  likesCount         Int      @default(0)
+  commentsCount      Int      @default(0)
+  predictionTarget    Decimal?  @db.Decimal(12, 2)
+  predictionDirection String?   @db.VarChar(10)
+  predictionOutcome   String?   @db.VarChar(10)
+  predictionResolvedAt DateTime?
+  createdAt           DateTime  @default(now())
+
+  author             User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments      Comment[]
+  likes         Like[]
+  bookmarks     Bookmark[]
+  notifications Notification[]
+
+  @@index([tickerTag])
+  @@index([createdAt(sort: Desc)])
+  @@index([authorId])
+  @@index([authorId, createdAt(sort: Desc)])
+}
+
+model Comment {
+  id          String    @id @default(cuid())
+  content     String    @db.VarChar(500)
+  authorId    String
+  postId      String?
+  stockTicker String?   @db.VarChar(20)
+  parentId    String?
+  createdAt   DateTime  @default(now())
+
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  post        Post?     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  parent      Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies     Comment[] @relation("CommentReplies")
+  notifications Notification[]
+
+  @@index([postId])
+  @@index([stockTicker])
+  @@index([parentId])
+  @@index([authorId])
+  @@index([createdAt(sort: Desc)])
+}
+
+model Watchlist {
+  id          String   @id @default(cuid())
+  userId      String
+  stockTicker String
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stock       Stock    @relation(fields: [stockTicker], references: [ticker], onDelete: Cascade)
+
+  @@unique([userId, stockTicker])
+}
+
+model Like {
+  id     String @id @default(cuid())
+  userId String
+  postId String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+}
+
+// ── Moderation ───────────────────────────────────────────
+
+model Report {
+  id         String       @id @default(cuid())
+  reporterId String
+  targetType ReportTarget
+  targetId   String
+  reason     ReportReason
+  status     ReportStatus @default(PENDING)
+  createdAt  DateTime     @default(now())
+
+  reporter   User         @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+}
+
+enum ReportTarget {
+  POST
+  COMMENT
+}
+
+enum ReportReason {
+  SPAM
+  ABUSE
+  MISINFORMATION
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  DISMISSED
+}
+
+// ── Social ──────────────────────────────────────────────
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@index([followingId])
+  @@index([followerId])
+}
+
+model StockFollow {
+  id        String   @id @default(cuid())
+  userId    String
+  ticker    String   @db.VarChar(20)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, ticker])
+  @@index([ticker])
+  @@index([userId])
+}
+
+enum NotificationType {
+  LIKE
+  COMMENT
+  MENTION
+  FOLLOW
+  STOCK_POST
+}
+
+model Notification {
+  id          String           @id @default(cuid())
+  type        NotificationType
+  recipientId String
+  actorId     String
+  postId      String?
+  commentId   String?
+  read        Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+
+  recipient User     @relation("Notifications", fields: [recipientId], references: [id], onDelete: Cascade)
+  actor     User     @relation("NotificationActions", fields: [actorId], references: [id], onDelete: Cascade)
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId, read, createdAt(sort: Desc)])
+  @@index([actorId])
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@index([userId])
+}
+
+enum ArticleStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum ArticleType {
+  STOCK_ANALYSIS
+  EDUCATIONAL
+  NEWS
+  GENERAL
+  DAILY_SNAPSHOT
+}
+
+model Article {
+  id             String        @id @default(cuid())
+  slug           String        @unique @db.VarChar(255)
+  title          String        @db.VarChar(255)
+  excerpt        String        @db.VarChar(500)
+  content        String        @db.Text
+  authorId       String
+  tags           String[]      @default([])
+  status         ArticleStatus @default(DRAFT)
+  articleType    ArticleType   @default(STOCK_ANALYSIS)
+  aiProvider     String?       @db.VarChar(20)
+  tickerTag      String?       @db.VarChar(20)
+  generationMeta Json?
+  version         Int           @default(1)
+  lastGeneratedAt DateTime      @default(now())
+  isListed        Boolean       @default(true)
+  publishedAt    DateTime      @default(now())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  author         User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([publishedAt])
+  @@index([status, articleType])
+  @@index([tickerTag])
+  @@index([articleType, tickerTag, lastGeneratedAt])
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  action    String   @db.VarChar(100)
+  details   Json?
+  ipAddress String?  @db.VarChar(45)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}
