@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Search } from "lucide-react";
-import { getMarketStatus } from "@/lib/market-hours";
+import { getMarketStatus } from "@/lib/market-hours.client";
 import { getUserInitials, getRoleLabel, normalizeTicker } from "@/lib/utils";
 
 export function DashboardHeader() {

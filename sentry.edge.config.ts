@@ -1,4 +1,6 @@
 import * as Sentry from "@sentry/nextjs";
 import { sharedSentryConfig } from "./sentry.config";
 
-Sentry.init(sharedSentryConfig);
+if (process.env.SENTRY_DSN) {
+  Sentry.init(sharedSentryConfig);
+}

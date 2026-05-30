@@ -1,13 +1,23 @@
 import type { NextConfig } from "next";
-import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   output: "standalone",
   transpilePackages: ["next-auth"],
+  serverExternalPackages: ["yahoo-finance2", "@deno/shim-deno"],
+  turbopack: {},
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        dns: false,
+        child_process: false,
+        net: false,
+        tls: false,
+      };
+    }
+    return config;
+  },
 };
 
-export default process.env.SENTRY_DSN
-  ? withSentryConfig(nextConfig, {
-      silent: true,
-    })
-  : nextConfig;
+export default nextConfig;

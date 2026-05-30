@@ -24,6 +24,7 @@ import { IDX_STOCKS } from "@/lib/idx-stocks";
 import { prisma } from "@/lib/prisma";
 
 export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 function Dot() {
   return <span className="text-gray-500" aria-hidden="true">·</span>;
@@ -37,10 +38,6 @@ function CrossBadge({ text, isBullish }: { text: string; isBullish: boolean }) {
       {isBullish ? "▲" : "▼"} {text}
     </span>
   );
-}
-
-export async function generateStaticParams() {
-  return IDX_STOCKS.map((stock) => ({ ticker: stock.ticker }));
 }
 
 export async function generateMetadata({
