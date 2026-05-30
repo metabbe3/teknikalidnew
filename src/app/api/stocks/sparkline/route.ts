@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { handleApiError } from "@/lib/api-error";
 
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {

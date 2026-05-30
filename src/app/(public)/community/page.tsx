@@ -4,6 +4,8 @@ import { auth } from "@/lib/auth";
 import { socialGraphService } from "@/domains/social/social-graph.service";
 
 
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { PostComposer } from "@/components/community/post-composer";
 import { CommunityFeed } from "@/components/community/community-feed";

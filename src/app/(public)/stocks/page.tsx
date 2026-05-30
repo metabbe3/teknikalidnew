@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale/id";
 import type { MarketStatusResult } from "@/lib/market-hours";
 
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Daftar Harga Saham IDX Hari Ini",

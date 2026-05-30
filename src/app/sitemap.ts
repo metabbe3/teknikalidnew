@@ -3,6 +3,8 @@ import { IDX_STOCKS, IDX40_TICKERS, SITE_URL } from "@/lib/constants";
 import { ArticleType } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = SITE_URL;
   const idx40Set = new Set(IDX40_TICKERS);

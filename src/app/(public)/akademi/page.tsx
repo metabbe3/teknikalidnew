@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/akademi" },
 };
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 const TAG_COLORS: Record<string, string> = {
   RSI: "#d97706",
