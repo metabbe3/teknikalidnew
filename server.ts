@@ -1,12 +1,11 @@
 import { createServer } from "http";
 import { readFileSync } from "fs";
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
+import { join } from "path";
 import NextServer from "next/dist/server/next-server.js";
 import { initIO } from "./src/lib/socket.js";
 
 const port = parseInt(process.env.PORT || "3000", 10);
-const dir = dirname(fileURLToPath(import.meta.url));
+const dir = process.cwd();
 
 const conf = JSON.parse(
   readFileSync(join(dir, ".next/required-server-files.json"), "utf-8")
