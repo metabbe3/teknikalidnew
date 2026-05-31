@@ -37,7 +37,11 @@ interface UserAnalyticsData {
 export default function UserAnalyticsPage() {
   const { data, isLoading } = useQuery<UserAnalyticsData>({
     queryKey: ["admin-user-analytics"],
-    queryFn: () => fetch("/api/admin/user-analytics").then((r) => r.json()),
+    queryFn: async () => {
+      const r = await fetch("/api/admin/user-analytics");
+      if (!r.ok) return undefined;
+      return r.json();
+    },
     refetchInterval: 60_000,
   });
 

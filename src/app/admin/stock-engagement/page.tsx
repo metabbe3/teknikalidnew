@@ -25,7 +25,11 @@ interface StockEngagementData {
 export default function StockEngagementPage() {
   const { data, isLoading } = useQuery<StockEngagementData>({
     queryKey: ["admin-stock-engagement"],
-    queryFn: () => fetch("/api/admin/stock-engagement").then((r) => r.json()),
+    queryFn: async () => {
+      const r = await fetch("/api/admin/stock-engagement");
+      if (!r.ok) return undefined;
+      return r.json();
+    },
     refetchInterval: 60_000,
   });
 

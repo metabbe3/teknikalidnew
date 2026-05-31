@@ -32,7 +32,11 @@ interface AuthHealthData {
 export default function AuthHealthPage() {
   const { data, isLoading } = useQuery<AuthHealthData>({
     queryKey: ["admin-auth-health"],
-    queryFn: () => fetch("/api/admin/auth-health").then((r) => r.json()),
+    queryFn: async () => {
+      const r = await fetch("/api/admin/auth-health");
+      if (!r.ok) return undefined;
+      return r.json();
+    },
     refetchInterval: 60_000,
   });
 

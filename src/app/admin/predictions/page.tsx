@@ -59,7 +59,11 @@ function directionBadge(direction: string | null) {
 export default function PredictionsPage() {
   const { data, isLoading } = useQuery<PredictionData>({
     queryKey: ["admin-prediction-stats"],
-    queryFn: () => fetch("/api/admin/prediction-stats").then((r) => r.json()),
+    queryFn: async () => {
+      const r = await fetch("/api/admin/prediction-stats");
+      if (!r.ok) return undefined;
+      return r.json();
+    },
     refetchInterval: 60_000,
   });
 

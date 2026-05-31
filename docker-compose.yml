@@ -24,6 +24,8 @@ services:
       - NEXT_PUBLIC_PLAUSIBLE_SRC=${NEXT_PUBLIC_PLAUSIBLE_SRC:-}
       - COMFYUI_URL=${COMFYUI_URL:-http://127.0.0.1:8188}
       - COMFYUI_OUTPUT_DIR=${COMFYUI_OUTPUT_DIR:-/opt/comfyui/output}
+    volumes:
+      - comfyui_images:/opt/comfyui/output
     depends_on:
       db:
         condition: service_healthy
@@ -117,6 +119,7 @@ networks:
 
 volumes:
   pgdata:
+  comfyui_images:
   plausible_db_data:
   plausible_event_data:
   plausible_event_logs:

@@ -26,7 +26,11 @@ interface StatusData {
 export default function AdminOverviewPage() {
   const { data, isLoading } = useQuery<StatusData>({
     queryKey: ["admin-status"],
-    queryFn: () => fetch("/api/admin/status").then((r) => r.json()),
+    queryFn: async () => {
+      const r = await fetch("/api/admin/status");
+      if (!r.ok) return undefined;
+      return r.json();
+    },
     refetchInterval: 30_000,
   });
 

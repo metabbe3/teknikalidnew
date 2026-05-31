@@ -39,8 +39,11 @@ export default function EodLogsPage() {
 
   const { data, isLoading } = useQuery<EodData>({
     queryKey: ["admin-eod-logs", from, to],
-    queryFn: () =>
-      fetch(`/api/admin/eod-logs?from=${from}&to=${to}`).then((r) => r.json()),
+    queryFn: async () => {
+      const r = await fetch(`/api/admin/eod-logs?from=${from}&to=${to}`);
+      if (!r.ok) return undefined;
+      return r.json();
+    },
     refetchInterval: 60_000,
   });
 

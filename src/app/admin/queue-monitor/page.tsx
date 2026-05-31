@@ -28,7 +28,11 @@ export default function QueueMonitorPage() {
 
   const { data, isLoading } = useQuery<QueueData>({
     queryKey: ["admin-queue-status"],
-    queryFn: () => fetch("/api/admin/queue/status").then((r) => r.json()),
+    queryFn: async () => {
+      const r = await fetch("/api/admin/queue/status");
+      if (!r.ok) return undefined;
+      return r.json();
+    },
     refetchInterval: 10_000,
   });
 

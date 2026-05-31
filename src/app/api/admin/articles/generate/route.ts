@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth-guard";
 import { handleApiError } from "@/lib/api-error";
 import { articleService } from "@/domains/article/article.service";
-import { imageGenService } from "@/domains/image-gen/image-gen.service";
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,8 +14,6 @@ export async function POST(request: NextRequest) {
     };
     const keywords = parseArray(body.keywords);
     const trendingAngles = parseArray(body.trendingAngles);
-    const generateImage = body.generateImage !== false;
-
     let result: { id: string; title: string; slug: string };
 
     if (body.type === "stock_analysis" && body.ticker) {
@@ -33,46 +30,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Provide type (stock_analysis/educational/news/general) with required params" }, { status: 400 });
     }
 
-    // Auto-generate cover image in the background
-    if (generateImage) {
-      const ticker = body.type === "stock_analysis" ? body.ticker : undefined;
-      imageGenService
-        .startGeneration(admin.id, {
-          source: "auto",
-          content: result.title,
-          tickerTag: ticker,
-        })
-        .then(({ jobId }) =>
-          waitForImageAndAttach(jobId, result.id, admin.id)
-        )
-        .catch(() => {
-          // Image generation failure is non-blocking
-        });
-    }
-
     return NextResponse.json({ data: result }, { status: 201 });
   } catch (error) {
     return handleApiError(error, "generate article");
-  }
-}
-
-async function waitForImageAndAttach(
-  jobId: string,
-  articleId: string,
-  userId: string
-) {
-  const maxAttempts = 30; // 60 seconds max
-  for (let i = 0; i < maxAttempts; i++) {
-    await new Promise((r) => setTimeout(r, 2000));
-    try {
-      const status = await imageGenService.getJobStatus(jobId, userId);
-      if (status.status === "completed" && status.imageUrl) {
-        await articleService.updateCoverImage(articleId, status.imageUrl);
-        return;
-      }
-      if (status.status === "failed") return;
-    } catch {
-      return;
-    }
   }
 }

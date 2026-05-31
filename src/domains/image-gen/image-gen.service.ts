@@ -149,7 +149,20 @@ async function buildAIPrompt(
     const provider = createAIProvider();
     const response = await provider.generateImagePrompt(
       `Article title: "${title}"${tickerTag ? ` | Stock: ${tickerTag}` : ""}`,
-      "Create a vivid, detailed Stable Diffusion XL image prompt for a professional financial article cover image. The prompt should describe a visually striking, abstract or semi-abstract illustration suitable for a stock market analysis article. No text, no words, no letters in the image. Respond with ONLY the image prompt, nothing else."
+      `You are a thumbnail psychologist. Generate a scroll-stopping image prompt for a financial article cover image.
+
+Use this exact formula: [Subject + Exaggerated Emotion] + [Setting/Context] + [Lighting & Colors] + [Composition / Negative Space]
+
+Rules:
+- HIGH CONTRAST: Use complementary color pairs (blue/orange, green/red, cyan/magenta) against dark backgrounds
+- EMOTION: The image must evoke urgency, tension, or excitement — never calm or boring
+- COMPOSITION: Leave large negative space on one side for text overlay, use cinematic angles (low angle, dutch angle)
+- LIGHTING: Dramatic volumetric lighting, rim lights, neon glow, chiaroscuro — never flat lighting
+- STYLE: Cinematic 4K, ultra detailed, dark moody atmosphere
+- NO TEXT: No text, no words, no letters, no writing, no numbers anywhere in the image
+- Detect sentiment from the title: bullish = green/gold surging energy, bearish = red/crimson collapsing, neutral = tense split-composition
+
+Respond with ONLY the image prompt, nothing else. Maximum 400 characters.`
     );
     const prompt = response.trim().slice(0, 500);
     if (prompt) return prompt;

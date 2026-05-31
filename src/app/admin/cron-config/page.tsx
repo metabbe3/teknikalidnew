@@ -28,7 +28,11 @@ const CRON_SCHEDULES = [
 export default function CronConfigPage() {
   const { data, isLoading } = useQuery<StatusData>({
     queryKey: ["admin-cron-status"],
-    queryFn: () => fetch("/api/admin/status").then((r) => r.json()),
+    queryFn: async () => {
+      const r = await fetch("/api/admin/status");
+      if (!r.ok) return undefined;
+      return r.json();
+    },
   });
 
   const cronActivity = (data?.recentActivity ?? []).filter(

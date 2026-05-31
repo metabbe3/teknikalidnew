@@ -5,7 +5,11 @@ import { useQuery } from "@tanstack/react-query";
 export function AdminStatusIndicator() {
   const { data } = useQuery<{ dbPool: { status: string } }>({
     queryKey: ["admin-status-dot"],
-    queryFn: () => fetch("/api/admin/status").then((r) => r.json()),
+    queryFn: async () => {
+      const r = await fetch("/api/admin/status");
+      if (!r.ok) return null;
+      return r.json();
+    },
     refetchInterval: 60_000,
   });
 

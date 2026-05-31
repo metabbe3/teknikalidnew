@@ -51,7 +51,11 @@ interface CommunityData {
 export default function CommunityPage() {
   const { data, isLoading } = useQuery<CommunityData>({
     queryKey: ["admin-community-stats"],
-    queryFn: () => fetch("/api/admin/community-stats").then((r) => r.json()),
+    queryFn: async () => {
+      const r = await fetch("/api/admin/community-stats");
+      if (!r.ok) return undefined;
+      return r.json();
+    },
     refetchInterval: 60_000,
   });
 

@@ -37,7 +37,11 @@ export default function ApiKeysPage() {
 
   const { data, isLoading } = useQuery<HealthData>({
     queryKey: ["admin-health-checks"],
-    queryFn: () => fetch("/api/admin/health-checks").then((r) => r.json()),
+    queryFn: async () => {
+      const r = await fetch("/api/admin/health-checks");
+      if (!r.ok) return undefined;
+      return r.json();
+    },
     refetchInterval: 60_000,
   });
 

@@ -45,16 +45,22 @@ export default function ArticlesAdminPage() {
 
   const { data: statsData } = useQuery<{ data: { total: number; published: number; drafts: number; stockAnalysis: number; educational: number } }>({
     queryKey: ["admin-article-stats"],
-    queryFn: () => fetch("/api/admin/articles/stats").then((r) => r.json()),
+    queryFn: async () => {
+      const r = await fetch("/api/admin/articles/stats");
+      if (!r.ok) return undefined;
+      return r.json();
+    },
   });
 
   const { data: articlesData, isLoading } = useQuery<{ data: Article[] }>({
     queryKey: ["admin-articles", statusFilter, typeFilter],
-    queryFn: () => {
+    queryFn: async () => {
       const params = new URLSearchParams();
       if (statusFilter !== "all") params.set("status", statusFilter);
       if (typeFilter !== "all") params.set("type", typeFilter);
-      return fetch(`/api/admin/articles?${params}`).then((r) => r.json());
+      const r = await fetch(`/api/admin/articles?${params}`);
+      if (!r.ok) return undefined;
+      return r.json();
     },
   });
 

@@ -29,7 +29,11 @@ export default function IndicatorsPage() {
 
   const { data, isLoading } = useQuery<IndicatorData>({
     queryKey: ["admin-indicators"],
-    queryFn: () => fetch("/api/admin/indicators").then((r) => r.json()),
+    queryFn: async () => {
+      const r = await fetch("/api/admin/indicators");
+      if (!r.ok) return undefined;
+      return r.json();
+    },
     refetchInterval: 60_000,
   });
 

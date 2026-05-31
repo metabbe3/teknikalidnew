@@ -35,7 +35,11 @@ function freshnessStatus(lastUpdate: string): { label: string; variant: "default
 export default function IntradayLogsPage() {
   const { data, isLoading } = useQuery<IntradayData>({
     queryKey: ["admin-intraday-logs"],
-    queryFn: () => fetch("/api/admin/intraday-logs").then((r) => r.json()),
+    queryFn: async () => {
+      const r = await fetch("/api/admin/intraday-logs");
+      if (!r.ok) return undefined;
+      return r.json();
+    },
     refetchInterval: 30_000,
   });
 

@@ -33,7 +33,11 @@ export default function TickerManagerPage() {
 
   const { data, isLoading } = useQuery<TickersData>({
     queryKey: ["admin-tickers"],
-    queryFn: () => fetch("/api/admin/tickers").then((r) => r.json()),
+    queryFn: async () => {
+      const r = await fetch("/api/admin/tickers");
+      if (!r.ok) return undefined;
+      return r.json();
+    },
     refetchInterval: 60_000,
   });
 
