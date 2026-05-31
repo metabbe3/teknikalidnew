@@ -927,7 +927,7 @@ export default function ScreenerPage() {
 
 function ScreenerPageSkeleton() {
   return (
-    <div className="fade-in animate-pulse">
+    <div className="fade-in animate-pulse min-h-[70vh]">
       <div className="border-b border-border">
         <div className="max-w-6xl mx-auto px-4 py-8 sm:py-10 space-y-5">
           <div className="h-8 w-64 bg-bg-hover rounded-lg" />
@@ -945,6 +945,7 @@ function ScreenerPageSkeleton() {
             <div key={i} className="h-24 bg-bg-hover rounded-xl" />
           ))}
         </div>
+        <div className="h-[50vh] bg-bg-hover rounded-xl" />
       </div>
     </div>
   );

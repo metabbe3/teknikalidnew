@@ -17,10 +17,30 @@ model Stock {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  prices     StockPrice[]
-  indicators StockIndicator[]
+  // Company profile (from IDX)
+  subSector    String?   @db.VarChar(100)
+  listingDate  DateTime? @db.Date
+  address      String?   @db.VarChar(500)
+  website      String?   @db.VarChar(255)
+  phone        String?   @db.VarChar(50)
+  email        String?   @db.VarChar(100)
+  logo         String?   @db.VarChar(500)
+
+  // Enhanced profile (from IDX detail API)
+  industry     String?   @db.VarChar(100)
+  subIndustry  String?   @db.VarChar(100)
+  fax          String?   @db.VarChar(50)
+  npwp         String?   @db.VarChar(50)
+
+  prices       StockPrice[]
+  indicators   StockIndicator[]
   fundamentals StockFundamental[]
-  watchlist  Watchlist[]
+  shareholders StockShareholder[]
+  directors    StockDirector[]
+  commissioners StockCommissioner[]
+  subsidiaries   StockSubsidiary[]
+  dividends      StockDividend[]
+  watchlist    Watchlist[]
 
   @@index([sector])
   @@index([isActive])
@@ -98,12 +118,94 @@ model StockFundamental {
   dividendYield Decimal? @db.Decimal(6, 4)
   marketCap     BigInt
 
+  // Extended fields (from Yahoo Finance)
+  sharesOutstanding        BigInt?
+  beta                     Decimal?  @db.Decimal(8, 4)
+  averageDailyVolume3Month BigInt?
+  bookValue                Decimal?  @db.Decimal(12, 2)
+
   stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
 
   @@unique([stockId, date])
   @@index([date, pe])
   @@index([date, dividendYield])
   @@index([date, marketCap])
+}
+
+model StockShareholder {
+  id        Int      @id @default(autoincrement())
+  stockId   Int
+  name      String   @db.VarChar(255)
+  type      String?  @db.VarChar(100)
+  shares    Decimal? @db.Decimal(20, 2)
+  percent   Decimal? @db.Decimal(6, 2)
+  updatedAt DateTime @updatedAt
+
+  stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+
+  @@index([stockId])
+}
+
+model StockDirector {
+  id          Int      @id @default(autoincrement())
+  stockId     Int
+  name        String   @db.VarChar(255)
+  position    String   @db.VarChar(100)
+  type        String   @db.VarChar(20)
+  independent Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+
+  stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+
+  @@index([stockId])
+}
+
+model StockCommissioner {
+  id          Int      @id @default(autoincrement())
+  stockId     Int
+  name        String   @db.VarChar(255)
+  position    String?  @db.VarChar(100)
+  independent Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+
+  stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+
+  @@index([stockId])
+}
+
+model StockSubsidiary {
+  id               Int      @id @default(autoincrement())
+  stockId          Int
+  name             String   @db.VarChar(255)
+  businessType     String?  @db.VarChar(255)
+  totalAssets      Decimal? @db.Decimal(20, 2)
+  ownershipPercent Decimal? @db.Decimal(6, 2)
+  updatedAt        DateTime @updatedAt
+
+  stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+
+  @@index([stockId])
+}
+
+model StockDividend {
+  id          Int       @id @default(autoincrement())
+  stockId     Int
+  year        Int
+  type        String    @db.VarChar(20)
+  currency    String?   @db.VarChar(10)
+  amount      Decimal?  @db.Decimal(12, 4)
+  totalAmount Decimal?  @db.Decimal(20, 2)
+  cumDate     DateTime? @db.Date
+  exDate      DateTime? @db.Date
+  recordDate  DateTime? @db.Date
+  paymentDate DateTime? @db.Date
+  updatedAt   DateTime  @updatedAt
+
+  stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+
+  @@unique([stockId, year, type])
+  @@index([stockId, year(sort: Desc)])
+  @@index([stockId, type])
 }
 
 model CachedApiCall {
@@ -121,6 +223,7 @@ model CachedApiCall {
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
+  emailVerified DateTime?
   name          String?
   username      String    @unique
   image         String?

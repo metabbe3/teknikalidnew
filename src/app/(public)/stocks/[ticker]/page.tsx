@@ -15,6 +15,7 @@ import { StockDiscussion } from "@/components/community/stock-discussion";
 import { StockActionBadge } from "@/components/stock/stock-action-badge";
 import { PresenceBadge } from "@/components/stock/presence-badge";
 import { StockAlertBanner } from "@/components/stock/stock-alert-banner";
+import { CompanyDataTabs } from "@/components/stock/company-data-tabs";
 import { technicalAnalysisService } from "@/domains/stock/technical-analysis.service";
 import { stockRepository } from "@/domains/stock/stock.repository";
 import { calculatePivotPoints } from "@/lib/indicators";
@@ -110,7 +111,7 @@ export default async function StockDetailPage({
     return "Neutral" as const;
   })();
 
-  const [socialData, { structure: marketStructure }, fundamentalRow] = await Promise.all([
+  const [socialData, { structure: marketStructure }, fundamentalRow, idxCommissioners, idxSubsidiaries, idxDividends] = await Promise.all([
     prisma.post.aggregate({
       where: { tickerTag: ticker, createdAt: { gte: subDays(new Date(), 7) } },
       _count: true,
@@ -118,6 +119,9 @@ export default async function StockDetailPage({
     }),
     technicalAnalysisService.getMarketStructure(ticker),
     stockRepository.findLatestFundamental(detail.stock.id),
+    stockRepository.findCommissioners(detail.stock.id),
+    stockRepository.findSubsidiaries(detail.stock.id),
+    stockRepository.findDividends(detail.stock.id),
   ]);
 
   const socialScore = (socialData._sum.likesCount ?? 0) * 0.5
@@ -178,6 +182,43 @@ export default async function StockDetailPage({
       })
     : null;
 
+  // Serialize IDX company data for client component
+  const idxProfile = (stock.industry || stock.subIndustry || stock.subSector || stock.address || stock.phone || stock.email || stock.website)
+    ? {
+        industry: stock.industry,
+        subIndustry: stock.subIndustry,
+        subSector: stock.subSector,
+        listingBoard: stock.listingBoard,
+        listingDate: stock.listingDate?.toISOString().split("T")[0] ?? null,
+        address: stock.address,
+        phone: stock.phone,
+        email: stock.email,
+        website: stock.website,
+      }
+    : null;
+
+  const idxCommissionersSerialized = idxCommissioners.map((c) => ({
+    name: c.name,
+    position: c.position,
+    independent: c.independent,
+  }));
+
+  const idxSubsidiariesSerialized = idxSubsidiaries.map((s) => ({
+    name: s.name,
+    businessType: s.businessType,
+    totalAssets: s.totalAssets !== null ? decimalToNumber(s.totalAssets) : null,
+    ownershipPercent: s.ownershipPercent !== null ? decimalToNumber(s.ownershipPercent) : null,
+  }));
+
+  const idxDividendsSerialized = idxDividends.map((d) => ({
+    year: d.year,
+    type: d.type,
+    amount: d.amount !== null ? decimalToNumber(d.amount) : null,
+    currency: d.currency,
+    exDate: d.exDate?.toISOString().split("T")[0] ?? null,
+    paymentDate: d.paymentDate?.toISOString().split("T")[0] ?? null,
+  }));
+
   return (
     <div className="fade-in">
       {/* Dark Terminal Header */}
@@ -203,6 +244,9 @@ export default async function StockDetailPage({
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
                 <div className="flex items-center gap-2.5">
+                  {stock.logo && (
+                    <img src={stock.logo} alt="" className="w-8 h-8 rounded-md object-contain bg-white/10" />
+                  )}
                   <h1 className="text-2xl font-bold tracking-tight text-white">{stripJk(ticker)}</h1>
                   <span className="text-gray-600" aria-hidden="true">·</span>
                   <span className="text-xs text-gray-500 uppercase tracking-wider font-medium">{stock.sector}</span>
@@ -372,6 +416,14 @@ export default async function StockDetailPage({
             {tradingPlan && <TradingPlanCard plan={tradingPlan} />}
           </div>
         </div>
+
+        {/* IDX Company Data Tabs */}
+        <CompanyDataTabs
+          profile={idxProfile}
+          commissioners={idxCommissionersSerialized}
+          subsidiaries={idxSubsidiariesSerialized}
+          dividends={idxDividendsSerialized}
+        />
 
         <StockDiscussion ticker={ticker} />
       </div>

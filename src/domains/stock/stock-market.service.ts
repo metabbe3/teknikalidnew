@@ -165,7 +165,13 @@ export const stockMarketService = {
     const base = await fetchStockBase(ticker, 21);
 
     return {
-      stock: { id: base.stock.id, ticker: base.stock.ticker, name: base.stock.name, sector: base.stock.sector },
+      stock: {
+        id: base.stock.id, ticker: base.stock.ticker, name: base.stock.name, sector: base.stock.sector,
+        logo: base.stock.logo, industry: base.stock.industry, subIndustry: base.stock.subIndustry,
+        subSector: base.stock.subSector, listingBoard: base.stock.listingBoard,
+        listingDate: base.stock.listingDate, address: base.stock.address,
+        phone: base.stock.phone, email: base.stock.email, website: base.stock.website,
+      },
       prices: base.prices,
       latest: base.latest,
       prevClose: base.prevClose,

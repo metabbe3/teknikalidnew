@@ -13,9 +13,14 @@ export const authConfig: NextAuthConfig = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async createUser(data: any) {
       const suffix = crypto.randomUUID().replace(/-/g, "").slice(0, 12);
-      const user = await authRepository.createUser({ ...data, username: `user_${suffix}` });
-      // AdapterUser requires emailVerified which our schema doesn't have
-      return { ...user, emailVerified: null } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      // OAuth providers (Google) verify emails — mark as verified immediately
+      const emailVerified = data.emailVerified ?? new Date();
+      const user = await authRepository.createUser({
+        ...data,
+        emailVerified,
+        username: `user_${suffix}`,
+      });
+      return { ...user, emailVerified } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
     },
   },
   session: { strategy: "jwt", maxAge: 7 * 24 * 60 * 60 },
@@ -57,10 +62,17 @@ export const authConfig: NextAuthConfig = {
     }),
   ],
   callbacks: {
-    async signIn({ user }) {
+    async signIn({ user, account }) {
       if (!user.email) return false;
       const dbUser = await authRepository.findUserByEmail(user.email);
       if (dbUser?.bannedAt) return false;
+      // OAuth login (Google) verifies email — update if not yet verified
+      if (account?.type === "oauth" && dbUser && !dbUser.emailVerified) {
+        await prisma.user.update({
+          where: { id: dbUser.id },
+          data: { emailVerified: new Date() },
+        });
+      }
       return true;
     },
     async jwt({ token, user, trigger }) {

@@ -22,7 +22,7 @@ export const authRepository = {
     });
   },
 
-  createUser(data: { email: string; username: string; name?: string; image?: string }) {
+  createUser(data: { email: string; username: string; name?: string; image?: string; emailVerified?: Date | null }) {
     return prisma.user.create({ data });
   },
 

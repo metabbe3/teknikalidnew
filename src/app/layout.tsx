@@ -98,7 +98,7 @@ export default function RootLayout({
           <Script
             defer
             data-domain={plausibleDomain}
-            src="https://plausible.io/js/script.js"
+            src={process.env.NEXT_PUBLIC_PLAUSIBLE_SRC || "https://plausible.io/js/script.js"}
           />
         )}
       </body>

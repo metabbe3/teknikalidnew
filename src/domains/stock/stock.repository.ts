@@ -47,6 +47,10 @@ export const stockRepository = {
     });
   },
 
+  findAllStocks() {
+    return prisma.stock.findMany({ orderBy: { ticker: "asc" } });
+  },
+
   findActiveStocksWithPrices(where?: { sector?: string }, includeIndicators = true) {
     return prisma.stock.findMany({
       where: { isActive: true, ...where },
@@ -323,6 +327,93 @@ export const stockRepository = {
     }
 
     return { prices: pWritten, indicators: iWritten };
+  },
+
+  // ── StockCommissioner writes ──
+
+  async replaceCommissioners(stockId: number, commissioners: { name: string; position: string | null; independent: boolean }[]) {
+    await prisma.stockCommissioner.deleteMany({ where: { stockId } });
+    if (commissioners.length === 0) return 0;
+    await prisma.stockCommissioner.createMany({
+      data: commissioners.map((c) => ({ stockId, ...c })),
+    });
+    return commissioners.length;
+  },
+
+  // ── StockSubsidiary writes ──
+
+  async replaceSubsidiaries(stockId: number, subsidiaries: { name: string; businessType: string | null; totalAssets: number | null; ownershipPercent: number | null }[]) {
+    await prisma.stockSubsidiary.deleteMany({ where: { stockId } });
+    if (subsidiaries.length === 0) return 0;
+    await prisma.stockSubsidiary.createMany({
+      data: subsidiaries.map((s) => ({
+        stockId,
+        name: s.name,
+        businessType: s.businessType,
+        totalAssets: s.totalAssets,
+        ownershipPercent: s.ownershipPercent,
+      })),
+    });
+    return subsidiaries.length;
+  },
+
+  // ── StockDividend writes ──
+
+  async upsertDividend(stockId: number, data: { year: number; type: string; currency: string | null; amount: number | null; totalAmount: number | null; cumDate: Date | null; exDate: Date | null; recordDate: Date | null; paymentDate: Date | null }) {
+    return prisma.stockDividend.upsert({
+      where: { stockId_year_type: { stockId, year: data.year, type: data.type } },
+      update: data,
+      create: { stockId, ...data },
+    });
+  },
+
+  async batchUpsertDividends(items: { stockId: number; year: number; type: string; currency: string | null; amount: number | null; totalAmount: number | null; cumDate: Date | null; exDate: Date | null; recordDate: Date | null; paymentDate: Date | null }[]) {
+    if (items.length === 0) return 0;
+    const BATCH_SIZE = 50;
+    let upserted = 0;
+    for (let i = 0; i < items.length; i += BATCH_SIZE) {
+      const batch = items.slice(i, i + BATCH_SIZE);
+      await prisma.$transaction(
+        batch.map((item) =>
+          prisma.stockDividend.upsert({
+            where: { stockId_year_type: { stockId: item.stockId, year: item.year, type: item.type } },
+            update: item,
+            create: item,
+          })
+        )
+      );
+      upserted += batch.length;
+    }
+    return upserted;
+  },
+
+  // ── Stock profile update ──
+
+  updateStockProfile(stockId: number, data: { industry?: string | null; subIndustry?: string | null; fax?: string | null; npwp?: string | null }) {
+    return prisma.stock.update({
+      where: { id: stockId },
+      data,
+    });
+  },
+
+  // ── IDX profile reads ──
+
+  findCommissioners(stockId: number) {
+    return prisma.stockCommissioner.findMany({ where: { stockId } });
+  },
+
+  findSubsidiaries(stockId: number) {
+    return prisma.stockSubsidiary.findMany({
+      where: { stockId },
+      orderBy: { ownershipPercent: "desc" },
+    });
+  },
+
+  findDividends(stockId: number) {
+    return prisma.stockDividend.findMany({
+      where: { stockId },
+      orderBy: { year: "desc" },
+    });
   },
 
   // ── Screener raw SQL ──
