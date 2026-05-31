@@ -55,3 +55,6 @@ next-env.d.ts
 
 # superpowers plugin cache
 /.superpowers/
+
+# comfyui image cache
+/comfyui-cache/

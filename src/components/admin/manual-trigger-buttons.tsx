@@ -10,19 +10,19 @@ const actions = [
     key: "sync-eod",
     label: "Force EOD Sync",
     icon: Zap,
-    className: "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-sm shadow-blue-500/20",
+    className: "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md shadow-blue-600/20",
   },
   {
     key: "sync-intraday",
     label: "Force Intraday Sync",
     icon: RefreshCw,
-    className: "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-sm shadow-emerald-500/20",
+    className: "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-md shadow-emerald-600/20",
   },
   {
     key: "clear-queue",
     label: "Clear Queue",
     icon: Trash2,
-    className: "border-amber-300 text-amber-700 hover:bg-amber-50 hover:text-amber-800",
+    className: "border-amber-400 text-amber-700 hover:bg-amber-50 hover:text-amber-800 shadow-sm",
   },
 ];
 

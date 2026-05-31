@@ -224,12 +224,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <SidebarProvider>
       <Sidebar className="admin-sidebar-light border-r border-sidebar-border">
-        <SidebarHeader className="border-b border-sidebar-border px-4 py-3">
-          <div className="flex items-center gap-2 font-bold text-sidebar-foreground">
-            <div className="p-1 rounded-md bg-blue-500/10">
-              <Radio className="h-4 w-4 text-blue-600" />
+        <SidebarHeader className="border-b border-sidebar-border px-4 py-3 bg-gradient-to-r from-blue-50/80 to-indigo-50/60">
+          <div className="flex items-center gap-2.5 font-bold text-sidebar-foreground">
+            <div className="p-1.5 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 shadow-sm shadow-blue-500/20">
+              <Radio className="h-3.5 w-3.5 text-white" />
             </div>
-            <span>TeknikalID Admin</span>
+            <span className="tracking-tight">TeknikalID</span>
             <AdminStatusIndicator />
           </div>
         </SidebarHeader>
@@ -240,22 +240,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           ))}
         </SidebarContent>
 
-        <SidebarFooter className="border-t border-sidebar-border p-3">
+        <SidebarFooter className="border-t border-sidebar-border p-3 bg-gradient-to-t from-blue-50/40 to-transparent">
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-2 w-full rounded-md px-2 py-1.5 text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-colors">
-              <Avatar className="h-7 w-7">
+            <DropdownMenuTrigger className="flex items-center gap-2.5 w-full rounded-lg px-2.5 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-all">
+              <Avatar className="h-8 w-8 ring-2 ring-blue-100">
                 {session?.user?.image && <AvatarImage src={session.user.image} alt="" />}
-                <AvatarFallback className="bg-blue-500 text-white text-xs">
+                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-xs font-bold">
                   {session?.user?.name?.charAt(0)?.toUpperCase() ?? "A"}
                 </AvatarFallback>
               </Avatar>
-              <span className="flex-1 text-left truncate">{session?.user?.name ?? "Admin"}</span>
+              <span className="flex-1 text-left truncate font-medium">{session?.user?.name ?? "Admin"}</span>
             </DropdownMenuTrigger>
             <DropdownMenuContent side="top" className="w-56" align="start">
               <div className="flex items-center gap-2 px-2 py-1.5">
                 <Avatar className="h-8 w-8">
                   {session?.user?.image && <AvatarImage src={session.user.image} alt="" />}
-                  <AvatarFallback className="bg-blue-500 text-white text-sm">
+                  <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-sm font-bold">
                     {session?.user?.name?.charAt(0)?.toUpperCase() ?? "A"}
                   </AvatarFallback>
                 </Avatar>
@@ -281,20 +281,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </Sidebar>
 
       <SidebarInset>
-        <header className="flex items-center h-12 px-4 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
+        <header className="flex items-center h-12 px-4 border-b border-gray-200/80 bg-white/70 backdrop-blur-md sticky top-0 z-10">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mx-2 h-4 bg-gray-200" />
-          <nav className="text-xs">
+          <nav className="text-xs flex items-center">
             <Link href="/admin" className="text-gray-400 hover:text-blue-600 transition-colors">Admin</Link>
             {pageName !== "Admin" && (
               <>
-                <span className="mx-1.5 text-gray-300">/</span>
-                <span className="text-gray-800 font-semibold">{pageName}</span>
+                <ChevronRight className="h-3 w-3 mx-1 text-gray-300" />
+                <span className="text-gray-800 font-bold">{pageName}</span>
               </>
             )}
           </nav>
         </header>
-        <div className="flex-1 p-4 md:p-6 bg-gradient-to-br from-slate-50 via-white to-blue-50/30 min-h-[calc(100vh-3rem)]">
+        <div className="flex-1 p-4 md:p-6 min-h-[calc(100vh-3rem)]" style={{ background: "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 30%, #eff6ff 70%, #f5f3ff 100%)" }}>
           {children}
         </div>
       </SidebarInset>

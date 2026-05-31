@@ -31,6 +31,12 @@ export interface EventMap {
     followerId: string;
     followingId: string;
   };
+  "image-gen:completed": {
+    jobId: string;
+    imageUrl: string;
+    postId: string | null;
+    requestedBy: string;
+  };
 }
 
 class TypedEventBus extends EventEmitter {

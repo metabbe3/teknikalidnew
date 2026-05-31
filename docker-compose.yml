@@ -22,6 +22,8 @@ services:
       - SENTRY_DSN=${SENTRY_DSN:-}
       - NEXT_PUBLIC_PLAUSIBLE_DOMAIN=${NEXT_PUBLIC_PLAUSIBLE_DOMAIN:-}
       - NEXT_PUBLIC_PLAUSIBLE_SRC=${NEXT_PUBLIC_PLAUSIBLE_SRC:-}
+      - COMFYUI_URL=${COMFYUI_URL:-http://127.0.0.1:8188}
+      - COMFYUI_OUTPUT_DIR=${COMFYUI_OUTPUT_DIR:-/opt/comfyui/output}
     depends_on:
       db:
         condition: service_healthy

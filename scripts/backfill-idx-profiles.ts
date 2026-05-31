@@ -2,40 +2,64 @@ import "dotenv/config";
 import { chromium, type Browser, type Page } from "playwright";
 import { prisma } from "../src/lib/prisma";
 import { stockSyncService } from "../src/domains/stock/stock-sync.service";
-import type { IDXProfileResponse } from "../src/lib/idx-api";
+import type { IDXProfileResponse, IDXTradingInfoResponse } from "../src/lib/idx-api";
 
-async function fetchProfileFromBrowser(
-  page: Page,
-  code: string
-): Promise<IDXProfileResponse | null> {
+// ── Backoff config ──
+const BASE_DELAY = 2000;
+const MAX_DELAY = 60_000;
+const MAX_RETRIES = 5;
+const BACKOFF_BASE = 2;
+
+function randomBetween(min: number, max: number) {
+  return min + Math.random() * (max - min);
+}
+
+function jitteredDelay(attempt: number): number {
+  const delay = Math.min(BASE_DELAY * Math.pow(BACKOFF_BASE, attempt), MAX_DELAY);
+  const jitter = delay * 0.3 * Math.random();
+  return Math.round(delay + jitter);
+}
+
+async function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// ── IDX fetch via browser ──
+
+async function fetchFromBrowser<T>(page: Page, url: string): Promise<T | null> {
   try {
-    const result = await page.evaluate(async (ticker: string) => {
+    const result = await page.evaluate(async (fetchUrl: string) => {
       try {
-        const res = await fetch(
-          `https://www.idx.co.id/primary/ListedCompany/GetCompanyProfilesDetail?KodeEmiten=${encodeURIComponent(ticker)}&language=id-id`
-        );
+        const res = await fetch(fetchUrl);
         if (!res.ok) return { error: `HTTP ${res.status}` };
         const data = await res.json();
         return data;
       } catch (e: unknown) {
         return { error: e instanceof Error ? e.message : String(e) };
       }
-    }, code);
+    }, url);
+
     if (!result) return null;
     if ("error" in result) {
-      console.log(`    API error for ${code}: ${result.error}`);
-      return null;
+      throw new Error(result.error);
     }
-    return result as IDXProfileResponse;
+    return result as T;
   } catch {
     return null;
   }
 }
 
-async function main() {
-  console.log("=== IDX Data Backfill (Playwright) ===\n");
+async function refreshCookies(page: Page): Promise<void> {
+  console.log("  → Re-navigating to refresh Cloudflare cookies...");
+  await page.goto("https://www.idx.co.id/", { waitUntil: "networkidle", timeout: 30000 });
+  await sleep(3000);
+}
 
-  // Get all active stocks
+// ── Main ──
+
+async function main() {
+  console.log("=== IDX Data Backfill (Playwright + Exponential Backoff) ===\n");
+
   const stocks = await prisma.stock.findMany({
     where: { isActive: true },
     select: { id: true, ticker: true },
@@ -44,7 +68,6 @@ async function main() {
 
   console.log(`Found ${stocks.length} active stocks\n`);
 
-  // Launch browser using system Chrome (not Chromium) to avoid Cloudflare bot detection
   console.log("Launching browser (system Chrome)...");
   const browser: Browser = await chromium.launch({
     headless: false,
@@ -53,82 +76,123 @@ async function main() {
   });
   const page: Page = await browser.newPage();
 
-  // Navigate to IDX to get past Cloudflare challenge and acquire cookies
   console.log("Navigating to idx.co.id to bypass Cloudflare...");
   await page.goto("https://www.idx.co.id/", { waitUntil: "networkidle", timeout: 30000 });
-  // Wait for Cloudflare challenge to resolve
-  await page.waitForTimeout(5000);
+  await sleep(5000);
 
-  // Verify we got past Cloudflare by checking page title
   const title = await page.title();
   console.log(`Page title: ${title}`);
   if (title.toLowerCase().includes("cloudflare") || title.toLowerCase().includes("attention")) {
     console.error("Still on Cloudflare challenge page. Waiting longer...");
-    await page.waitForTimeout(10000);
+    await sleep(10000);
     const title2 = await page.title();
     console.log(`Page title after wait: ${title2}`);
   }
   console.log("Cloudflare bypass complete.\n");
 
-  // Single pass: fetch profile + commissioners + subsidiaries + dividends per stock
-  console.log("--- Syncing all IDX profile data ---");
+  // ── Stats ──
   let profiledCount = 0;
+  let tradingInfoCount = 0;
   let totalCommissioners = 0;
+  let totalDirectors = 0;
+  let totalShareholders = 0;
   let totalSubsidiaries = 0;
   let totalDividends = 0;
-  let failedCount = 0;
+  let skippedCount = 0;
   const failedTickers: string[] = [];
+
+  console.log("--- Syncing all IDX data ---");
 
   for (let i = 0; i < stocks.length; i++) {
     const stock = stocks[i];
     const code = stock.ticker.replace(".JK", "");
+    let profiled = false;
 
-    try {
-      const detail = await fetchProfileFromBrowser(page, code);
-
-      if (!detail || !detail.Profiles || detail.Profiles.length === 0) {
-        console.log(`  [${i + 1}/${stocks.length}] ${stock.ticker}: No profile data from IDX`);
-        continue;
-      }
-
-      const result = await stockSyncService.processCompanyProfile(stock.ticker, detail);
-      if (result.profile) {
-        profiledCount++;
-        totalCommissioners += result.commissioners;
-        totalSubsidiaries += result.subsidiaries;
-        totalDividends += result.dividends;
-        console.log(
-          `  [${i + 1}/${stocks.length}] ${stock.ticker}: ${result.commissioners} commissioners, ${result.subsidiaries} subs, ${result.dividends} dividends`
+    // ── Fetch profile with retries ──
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        const detail = await fetchFromBrowser<IDXProfileResponse>(
+          page,
+          `https://www.idx.co.id/primary/ListedCompany/GetCompanyProfilesDetail?KodeEmiten=${encodeURIComponent(code)}&language=id-id`
         );
-      } else {
-        console.log(`  [${i + 1}/${stocks.length}] ${stock.ticker}: No profile data from IDX`);
-      }
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error);
-      console.error(`  [${i + 1}/${stocks.length}] ${stock.ticker}: ${msg}`);
-      failedCount++;
-      failedTickers.push(stock.ticker);
 
-      // If Cloudflare blocked us, re-navigate to refresh cookies
-      if (msg.includes("403") || msg.includes("401")) {
-        console.log("  → Re-navigating to refresh Cloudflare cookies...");
-        await page.goto("https://www.idx.co.id/", { waitUntil: "networkidle", timeout: 30000 });
-        await page.waitForTimeout(3000);
+        if (detail && detail.Profiles && detail.Profiles.length > 0) {
+          const result = await stockSyncService.processCompanyProfile(stock.ticker, detail);
+          if (result.profile) {
+            profiled = true;
+            profiledCount++;
+            totalCommissioners += result.commissioners;
+            totalDirectors += result.directors;
+            totalShareholders += result.shareholders;
+            totalSubsidiaries += result.subsidiaries;
+            totalDividends += result.dividends;
+            console.log(
+              `  [${i + 1}/${stocks.length}] ${stock.ticker}: ${result.commissioners} kom, ${result.directors} dir, ${result.shareholders} sh, ${result.subsidiaries} subs, ${result.dividends} div`
+            );
+          }
+        }
+
+        break; // success, no retry
+      } catch (error) {
+        const msg = error instanceof Error ? error.message : String(error);
+        const isBlocked = msg.includes("403") || msg.includes("401");
+
+        if (attempt < MAX_RETRIES && isBlocked) {
+          const delay = jitteredDelay(attempt);
+          console.log(`  [${i + 1}/${stocks.length}] ${stock.ticker}: ${msg} → retry ${attempt + 1}/${MAX_RETRIES} in ${Math.round(delay / 1000)}s`);
+          await refreshCookies(page);
+          await sleep(delay);
+        } else {
+          console.error(`  [${i + 1}/${stocks.length}] ${stock.ticker}: FAILED after ${attempt} retries — ${msg}`);
+          if (!failedTickers.includes(stock.ticker)) failedTickers.push(stock.ticker);
+          break;
+        }
       }
     }
 
-    // Rate limit: 300ms between requests
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    if (!profiled) {
+      skippedCount++;
+    }
+
+    // ── Fetch trading info (best-effort, no retries) ──
+    try {
+      let tradingData = await fetchFromBrowser<IDXTradingInfoResponse>(
+        page,
+        `https://www.idx.co.id/primary/ListedCompany/GetTradingInfo?KodeEmiten=${encodeURIComponent(code)}`
+      );
+
+      // Fallback endpoint
+      if (!tradingData) {
+        tradingData = await fetchFromBrowser<IDXTradingInfoResponse>(
+          page,
+          `https://www.idx.co.id/primary/ListedCompany/GetShareholderTotal?KodeEmiten=${encodeURIComponent(code)}`
+        );
+      }
+
+      if (tradingData) {
+        const saved = await stockSyncService.processTradingInfo(stock.ticker, tradingData);
+        if (saved) tradingInfoCount++;
+      }
+    } catch {
+      // Trading info is best-effort, don't fail the whole run
+    }
+
+    // ── Rate limit: random 1-3s between requests ──
+    await sleep(randomBetween(1000, 3000));
   }
 
   // ── Summary ──
   console.log("\n=== Backfill Complete ===");
-  console.log(`Stocks processed: ${stocks.length}`);
+  console.log(`Stocks processed:  ${stocks.length}`);
   console.log(`Profiles synced:   ${profiledCount}`);
-  console.log(`Failed:            ${failedCount}`);
+  console.log(`Trading info:      ${tradingInfoCount}`);
+  console.log(`Skipped:           ${skippedCount}`);
+  console.log(`Failed:            ${failedTickers.length}`);
   console.log(`Total commissioners: ${totalCommissioners}`);
-  console.log(`Total subsidiaries:   ${totalSubsidiaries}`);
-  console.log(`Total dividend records: ${totalDividends}`);
+  console.log(`Total directors:     ${totalDirectors}`);
+  console.log(`Total shareholders:  ${totalShareholders}`);
+  console.log(`Total subsidiaries:  ${totalSubsidiaries}`);
+  console.log(`Total dividends:     ${totalDividends}`);
   if (failedTickers.length > 0 && failedTickers.length <= 20) {
     console.log(`Failed tickers: ${failedTickers.join(", ")}`);
   } else if (failedTickers.length > 20) {

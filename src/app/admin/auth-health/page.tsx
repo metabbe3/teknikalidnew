@@ -47,19 +47,19 @@ export default function AuthHealthPage() {
     {
       header: "User",
       cell: (r: AuthHealthData["recentBans"][0]) => (
-        <span className="text-sm font-medium">@{r.username ?? "unknown"}</span>
+        <span className="text-sm font-bold text-gray-800">@{r.username ?? "unknown"}</span>
       ),
     },
     {
       header: "Email",
       cell: (r: AuthHealthData["recentBans"][0]) => (
-        <span className="text-sm text-gray-500">{r.email}</span>
+        <span className="text-sm text-gray-500 font-mono">{r.email}</span>
       ),
     },
     {
       header: "Banned",
       cell: (r: AuthHealthData["recentBans"][0]) => (
-        <span className="text-xs text-gray-400">{timeAgo(r.bannedAt)}</span>
+        <span className="text-xs text-gray-400 font-mono">{timeAgo(r.bannedAt)}</span>
       ),
     },
   ];
@@ -101,9 +101,9 @@ export default function AuthHealthPage() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Provider distribution */}
-        <Card className="border-gray-200 shadow-sm">
-          <CardHeader className="border-b border-gray-100">
-            <CardTitle className="text-sm font-semibold text-gray-700">Auth Provider Distribution</CardTitle>
+        <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+          <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+            <CardTitle className="text-sm font-bold text-gray-800">Auth Provider Distribution</CardTitle>
           </CardHeader>
           <CardContent className="pt-4">
             {isLoading ? (
@@ -135,9 +135,9 @@ export default function AuthHealthPage() {
         </Card>
 
         {/* Recent bans */}
-        <Card className="border-gray-200 shadow-sm">
-          <CardHeader className="border-b border-gray-100">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+        <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+          <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+            <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
               <UserX className="h-4 w-4 text-rose-500" />
               Recent Bans
             </CardTitle>
@@ -155,9 +155,9 @@ export default function AuthHealthPage() {
       </div>
 
       {/* API cache usage */}
-      <Card className="border-gray-200 shadow-sm">
-        <CardHeader className="border-b border-gray-100">
-          <CardTitle className="text-sm font-semibold text-gray-700">API Cache Usage</CardTitle>
+      <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+          <CardTitle className="text-sm font-bold text-gray-800">API Cache Usage</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <AdminDataTable

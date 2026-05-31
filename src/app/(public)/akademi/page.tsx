@@ -124,8 +124,17 @@ export default async function AkademiPage({
                 href={`/akademi/${featuredArticle.slug}`}
                 className="block mb-8"
               >
-                <div className="akademi-featured depth-shadow-strong p-6 sm:p-8 hover:scale-[1.005] transition-transform duration-300">
-                  <div className="relative z-10 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6">
+                <div className="akademi-featured depth-shadow-strong overflow-hidden hover:scale-[1.005] transition-transform duration-300">
+                  {featuredArticle.coverImageUrl && (
+                    <div className="aspect-[3/1] overflow-hidden">
+                      <img
+                        src={featuredArticle.coverImageUrl}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  <div className="relative z-10 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 p-6 sm:p-8">
                     <div>
                       <div className="flex items-center gap-2 mb-3">
                         <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-accent bg-accent/10 px-2 py-0.5 rounded">
@@ -201,7 +210,17 @@ export default async function AkademiPage({
                       { "--stagger-i": i, "--card-accent": getTagColor(article.tags[0] ?? "") } as React.CSSProperties
                     }
                   >
-                    <div className="akademi-card depth-shadow h-full overflow-hidden p-5">
+                    <div className="akademi-card depth-shadow h-full overflow-hidden">
+                      {article.coverImageUrl && (
+                        <div className="aspect-[2/1] overflow-hidden">
+                          <img
+                            src={article.coverImageUrl}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="p-5">
                       <div className="flex items-center justify-between mb-3">
                         <span className="text-[11px] text-text-tertiary font-mono">
                           {formatDate(article.publishedAt)}
@@ -233,6 +252,7 @@ export default async function AkademiPage({
                         <span className="text-xs text-text-tertiary">
                           {article.author.name ?? article.author.username}
                         </span>
+                      </div>
                       </div>
                     </div>
                   </Link>

@@ -53,6 +53,7 @@ export const communityService = {
         predictionTarget: post.predictionTarget
           ? String(post.predictionTarget)
           : null,
+        imageUrl: post.imageUrl ?? null,
         likesCount: post.likesCount,
         commentsCount: post.commentsCount,
         createdAt: post.createdAt.toISOString(),
@@ -72,6 +73,7 @@ export const communityService = {
       tickerTag?: string;
       predictionDirection?: string;
       predictionTarget?: number;
+      imageUrl?: string;
     }
   ) {
     if (!data.content || typeof data.content !== "string") {
@@ -103,6 +105,7 @@ export const communityService = {
       tickerTag: data.tickerTag || null,
       predictionDirection: data.predictionDirection || null,
       predictionTarget: data.predictionTarget || null,
+      imageUrl: data.imageUrl || null,
     });
 
     eventBus.emit("community:post-created", {
@@ -129,6 +132,7 @@ export const communityService = {
       tickerTag: post.tickerTag,
       predictionDirection: post.predictionDirection,
       predictionTarget: post.predictionTarget,
+      imageUrl: post.imageUrl ?? null,
       likesCount: post.likesCount,
       commentsCount: post.commentsCount,
       createdAt: post.createdAt,

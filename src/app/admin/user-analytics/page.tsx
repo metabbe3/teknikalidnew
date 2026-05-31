@@ -60,20 +60,20 @@ export default function UserAnalyticsPage() {
       header: "User",
       cell: (r: UserAnalyticsData["topReputation"][0]) => (
         <div className="flex items-center gap-2">
-          <Avatar className="h-6 w-6">
+          <Avatar className="h-6 w-6 ring-1 ring-blue-100">
             <AvatarImage src={r.image ?? undefined} />
-            <AvatarFallback className="bg-blue-500 text-white text-[10px]">
+            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-[10px] font-bold">
               {(r.username ?? r.name ?? "?")[0].toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <span className="text-sm font-medium">@{r.username ?? "unknown"}</span>
+          <span className="text-sm font-bold text-gray-800">@{r.username ?? "unknown"}</span>
         </div>
       ),
     },
     {
       header: "Reputation",
       cell: (r: UserAnalyticsData["topReputation"][0]) => (
-        <span className="text-sm font-bold text-amber-600 tabular-nums">{r.reputation}</span>
+        <span className="text-sm font-extrabold text-amber-600 tabular-nums">{r.reputation}</span>
       ),
     },
   ];
@@ -93,9 +93,9 @@ export default function UserAnalyticsPage() {
       </div>
 
       {/* Registration trend */}
-      <Card className="border-gray-200 shadow-sm">
-        <CardHeader className="border-b border-gray-100">
-          <CardTitle className="text-sm font-semibold text-gray-700">Registration Trend (14 Days)</CardTitle>
+      <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+          <CardTitle className="text-sm font-bold text-gray-800">Registration Trend (14 Days)</CardTitle>
         </CardHeader>
         <CardContent className="pt-4">
           {isLoading ? (
@@ -109,11 +109,11 @@ export default function UserAnalyticsPage() {
                 return (
                   <div key={day.date} className="flex-1 flex flex-col items-center gap-1">
                     <div
-                      className="w-full rounded-t-sm bg-gradient-to-t from-blue-500 to-blue-400 transition-all duration-300"
+                      className="w-full rounded-t bg-gradient-to-t from-blue-600 to-indigo-400 transition-all duration-300"
                       style={{ height: `${height}%` }}
                       title={`${day.date}: ${day.count} signups`}
                     />
-                    <span className="text-[9px] text-gray-400 tabular-nums">{day.date.slice(8)}</span>
+                    <span className="text-[9px] text-gray-400 tabular-nums font-medium">{day.date.slice(8)}</span>
                   </div>
                 );
               })}
@@ -124,9 +124,9 @@ export default function UserAnalyticsPage() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Retention cohorts */}
-        <Card className="border-gray-200 shadow-sm">
-          <CardHeader className="border-b border-gray-100">
-            <CardTitle className="text-sm font-semibold text-gray-700">Retention Cohorts</CardTitle>
+        <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+          <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+            <CardTitle className="text-sm font-bold text-gray-800">Retention Cohorts</CardTitle>
           </CardHeader>
           <CardContent className="pt-4">
             {isLoading ? (
@@ -135,10 +135,10 @@ export default function UserAnalyticsPage() {
               <div className="space-y-3">
                 {(data?.retentionCohorts ?? []).map((cohort) => (
                   <div key={cohort.label} className="flex items-center gap-3">
-                    <span className="text-xs text-gray-500 w-16 shrink-0">{cohort.label}</span>
+                    <span className="text-xs text-gray-500 w-16 shrink-0 font-medium">{cohort.label}</span>
                     <div className="flex-1 h-6 bg-gray-100 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                        className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-500"
                         style={{ width: `${cohort.pct}%` }}
                       />
                     </div>
@@ -152,9 +152,9 @@ export default function UserAnalyticsPage() {
         </Card>
 
         {/* OAuth distribution */}
-        <Card className="border-gray-200 shadow-sm">
-          <CardHeader className="border-b border-gray-100">
-            <CardTitle className="text-sm font-semibold text-gray-700">Auth Provider Distribution</CardTitle>
+        <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+          <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+            <CardTitle className="text-sm font-bold text-gray-800">Auth Provider Distribution</CardTitle>
           </CardHeader>
           <CardContent className="pt-4">
             {isLoading ? (
@@ -185,9 +185,9 @@ export default function UserAnalyticsPage() {
       </div>
 
       {/* Peak hours heatmap */}
-      <Card className="border-gray-200 shadow-sm">
-        <CardHeader className="border-b border-gray-100">
-          <CardTitle className="text-sm font-semibold text-gray-700">Peak Activity Hours (Last 7 Days)</CardTitle>
+      <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+          <CardTitle className="text-sm font-bold text-gray-800">Peak Activity Hours (Last 7 Days)</CardTitle>
         </CardHeader>
         <CardContent className="pt-4">
           {isLoading ? (
@@ -237,9 +237,9 @@ export default function UserAnalyticsPage() {
       </Card>
 
       {/* Top reputation users */}
-      <Card className="border-gray-200 shadow-sm">
-        <CardHeader className="border-b border-gray-100">
-          <CardTitle className="text-sm font-semibold text-gray-700">Top Users by Reputation</CardTitle>
+      <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+          <CardTitle className="text-sm font-bold text-gray-800">Top Users by Reputation</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <AdminDataTable

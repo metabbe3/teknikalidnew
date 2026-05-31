@@ -113,13 +113,13 @@ export default function ApiKeysPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="p-5 rounded-xl border border-gray-200 bg-white shadow-sm">
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">Service Tests</h3>
+        <div className="p-5 rounded-xl border border-gray-200/80 bg-white shadow-md shadow-gray-200/30">
+          <h3 className="text-sm font-bold text-gray-800 mb-3">Service Tests</h3>
           <div className="space-y-2">
-            <div className="flex items-center justify-between p-3 rounded-lg border border-gray-100 bg-gray-50/50">
+            <div className="flex items-center justify-between p-3.5 rounded-lg border border-gray-100 bg-gradient-to-r from-gray-50 to-white">
               <div>
-                <p className="text-sm font-medium text-gray-800">Yahoo Finance API</p>
-                <p className="text-xs text-gray-400">Test quote fetch for BBCA.JK</p>
+                <p className="text-sm font-bold text-gray-800">Yahoo Finance API</p>
+                <p className="text-xs text-gray-500 mt-0.5">Test quote fetch for BBCA.JK</p>
               </div>
               <Button
                 size="sm"
@@ -141,12 +141,12 @@ export default function ApiKeysPage() {
           </div>
         </div>
 
-        <div className="p-5 rounded-xl border border-gray-200 bg-white shadow-sm">
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">Environment Variables</h3>
+        <div className="p-5 rounded-xl border border-gray-200/80 bg-white shadow-md shadow-gray-200/30">
+          <h3 className="text-sm font-bold text-gray-800 mb-3">Environment Variables</h3>
           <div className="space-y-2">
             {envEntries.map(({ key, configured }) => (
-              <div key={key} className="flex items-center justify-between p-2.5 rounded-lg border border-gray-100 bg-gray-50/50">
-                <span className="text-sm font-mono text-gray-700">{key}</span>
+              <div key={key} className="flex items-center justify-between p-2.5 rounded-lg border border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+                <span className="text-sm font-mono font-medium text-gray-700">{key}</span>
                 <Badge className={configured ? "bg-emerald-500 hover:bg-emerald-600 text-white" : "bg-rose-500 hover:bg-rose-600 text-white"}>
                   {configured ? "Set" : "Missing"}
                 </Badge>

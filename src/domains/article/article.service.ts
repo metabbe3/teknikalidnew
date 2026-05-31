@@ -522,4 +522,8 @@ export const articleService = {
 
     return { generated, errors };
   },
+
+  async updateCoverImage(articleId: string, imageUrl: string) {
+    return articleRepository.update(articleId, { coverImageUrl: imageUrl } as Parameters<typeof articleRepository.update>[1]);
+  },
 };

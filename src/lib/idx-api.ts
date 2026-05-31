@@ -121,6 +121,17 @@ export interface IDXProfileResponse {
   }>;
 }
 
+// ── Trading Info ──
+
+export interface IDXTradingInfoResponse {
+  JumlahSahamTercatat?: number;
+  JumlahSahamBeredar?: number;
+  KodeISIN?: string;
+  PersentasePemilikAsing?: number;
+  SahamDiperdagangkan?: boolean;
+  [key: string]: unknown;
+}
+
 // ── API Functions ──
 
 export async function getCompanyProfileDetail(
@@ -128,4 +139,18 @@ export async function getCompanyProfileDetail(
 ): Promise<IDXProfileResponse | null> {
   const url = `${IDX_BASE}/primary/ListedCompany/GetCompanyProfilesDetail?KodeEmiten=${encodeURIComponent(ticker)}&language=id-id`;
   return idxFetch<IDXProfileResponse>(url);
+}
+
+export async function getTradingInfo(
+  ticker: string
+): Promise<IDXTradingInfoResponse | null> {
+  const url = `${IDX_BASE}/primary/ListedCompany/GetTradingInfo?KodeEmiten=${encodeURIComponent(ticker)}`;
+  return idxFetch<IDXTradingInfoResponse>(url);
+}
+
+export async function getShareholderTotal(
+  ticker: string
+): Promise<IDXTradingInfoResponse | null> {
+  const url = `${IDX_BASE}/primary/ListedCompany/GetShareholderTotal?KodeEmiten=${encodeURIComponent(ticker)}`;
+  return idxFetch<IDXTradingInfoResponse>(url);
 }

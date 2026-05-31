@@ -11,6 +11,7 @@ export interface ArticleItem {
   tickerTag: string | null;
   tags: string[];
   publishedAt: string;
+  coverImageUrl: string | null;
   author: { name: string | null; username: string };
 }
 

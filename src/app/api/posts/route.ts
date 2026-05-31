@@ -36,13 +36,14 @@ export async function POST(request: NextRequest) {
   try {
     const user = await authService.requireAuth();
     const body = await request.json();
-    const { content, tickerTag, predictionDirection, predictionTarget } = body;
+    const { content, tickerTag, predictionDirection, predictionTarget, imageUrl } = body;
 
     const post = await communityService.createPost(user.id, {
       content,
       tickerTag,
       predictionDirection,
       predictionTarget,
+      imageUrl,
     });
 
     return NextResponse.json({ data: post }, { status: 201 });

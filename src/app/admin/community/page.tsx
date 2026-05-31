@@ -72,31 +72,31 @@ export default function CommunityPage() {
     {
       header: "Content",
       cell: (r: CommunityData["topPosts"][0]) => (
-        <span className="text-sm text-gray-700 line-clamp-1 max-w-[300px] block">{r.content}</span>
+        <span className="text-sm text-gray-800 line-clamp-1 max-w-[300px] block font-medium">{r.content}</span>
       ),
     },
     {
       header: "Author",
       cell: (r: CommunityData["topPosts"][0]) => (
-        <span className="text-sm font-medium">@{r.author.username ?? "unknown"}</span>
+        <span className="text-sm font-bold text-blue-700">@{r.author.username ?? "unknown"}</span>
       ),
     },
     {
       header: "Likes",
       cell: (r: CommunityData["topPosts"][0]) => (
-        <span className="text-sm font-semibold text-rose-500 tabular-nums">{r.likesCount}</span>
+        <span className="text-sm font-bold text-rose-500 tabular-nums">{r.likesCount}</span>
       ),
     },
     {
       header: "Comments",
       cell: (r: CommunityData["topPosts"][0]) => (
-        <span className="text-sm tabular-nums text-gray-600">{r.commentsCount}</span>
+        <span className="text-sm font-semibold tabular-nums text-gray-600">{r.commentsCount}</span>
       ),
     },
     {
       header: "Stock",
       cell: (r: CommunityData["topPosts"][0]) => (
-        r.tickerTag ? <Badge variant="secondary" className="bg-violet-50 text-violet-700 border-violet-200">{r.tickerTag}</Badge> : <span className="text-xs text-gray-400">-</span>
+        r.tickerTag ? <Badge variant="secondary" className="bg-violet-50 text-violet-700 border-violet-200 font-semibold">{r.tickerTag}</Badge> : <span className="text-xs text-gray-400">-</span>
       ),
     },
   ];
@@ -106,32 +106,32 @@ export default function CommunityPage() {
       header: "User",
       cell: (r: CommunityData["topActiveUsers"][0]) => (
         <div className="flex items-center gap-2">
-          <Avatar className="h-6 w-6">
+          <Avatar className="h-6 w-6 ring-1 ring-blue-100">
             <AvatarImage src={r.image ?? undefined} />
-            <AvatarFallback className="bg-blue-500 text-white text-[10px]">
+            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-[10px] font-bold">
               {(r.username ?? r.name ?? "?")[0].toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <span className="text-sm font-medium">@{r.username ?? "unknown"}</span>
+          <span className="text-sm font-bold text-gray-800">@{r.username ?? "unknown"}</span>
         </div>
       ),
     },
     {
       header: "Posts",
       cell: (r: CommunityData["topActiveUsers"][0]) => (
-        <span className="text-sm font-semibold text-blue-600 tabular-nums">{r.posts}</span>
+        <span className="text-sm font-bold text-blue-600 tabular-nums">{r.posts}</span>
       ),
     },
     {
       header: "Comments",
       cell: (r: CommunityData["topActiveUsers"][0]) => (
-        <span className="text-sm tabular-nums text-gray-600">{r.comments}</span>
+        <span className="text-sm font-semibold tabular-nums text-gray-600">{r.comments}</span>
       ),
     },
     {
       header: "Rep",
       cell: (r: CommunityData["topActiveUsers"][0]) => (
-        <span className="text-sm tabular-nums text-amber-600">{r.reputation}</span>
+        <span className="text-sm font-bold tabular-nums text-amber-600">{r.reputation}</span>
       ),
     },
   ];
@@ -175,9 +175,9 @@ export default function CommunityPage() {
       </div>
 
       {/* 14-day activity chart */}
-      <Card className="border-gray-200 shadow-sm">
-        <CardHeader className="border-b border-gray-100">
-          <CardTitle className="text-sm font-semibold text-gray-700">Activity Trend (14 Days)</CardTitle>
+      <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+          <CardTitle className="text-sm font-bold text-gray-800">Activity Trend (14 Days)</CardTitle>
         </CardHeader>
         <CardContent className="pt-4">
           {isLoading ? (
@@ -192,11 +192,11 @@ export default function CommunityPage() {
                 return (
                   <div key={day.date} className="flex-1 flex flex-col items-center gap-1">
                     <div
-                      className="w-full rounded-t-sm bg-gradient-to-t from-blue-500 to-blue-400 transition-all duration-300"
+                      className="w-full rounded-t bg-gradient-to-t from-blue-600 to-indigo-400 transition-all duration-300"
                       style={{ height: `${height}%` }}
                       title={`${day.date}: ${day.posts} posts, ${day.comments} comments`}
                     />
-                    <span className="text-[9px] text-gray-400 tabular-nums">
+                    <span className="text-[9px] text-gray-400 tabular-nums font-medium">
                       {day.date.slice(8)}
                     </span>
                   </div>
@@ -205,22 +205,22 @@ export default function CommunityPage() {
             </div>
           )}
           <div className="flex items-center gap-4 mt-3 justify-center">
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded-full bg-blue-500" />
-              <span className="text-[10px] text-gray-400">Posts</span>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-sm bg-gradient-to-t from-blue-600 to-indigo-400" />
+              <span className="text-[10px] text-gray-500 font-medium">Posts</span>
             </div>
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded-full bg-emerald-500" />
-              <span className="text-[10px] text-gray-400">Comments</span>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-sm bg-gradient-to-t from-emerald-600 to-teal-400" />
+              <span className="text-[10px] text-gray-500 font-medium">Comments</span>
             </div>
           </div>
         </CardContent>
       </Card>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="border-gray-200 shadow-sm">
-          <CardHeader className="border-b border-gray-100">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+        <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+          <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+            <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
               <Users className="h-4 w-4 text-blue-500" />
               Most Active Users (This Week)
             </CardTitle>
@@ -236,9 +236,9 @@ export default function CommunityPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-gray-200 shadow-sm">
-          <CardHeader className="border-b border-gray-100">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+        <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+          <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+            <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
               <TrendingUp className="h-4 w-4 text-emerald-500" />
               Top Stocks
             </CardTitle>
@@ -255,9 +255,9 @@ export default function CommunityPage() {
         </Card>
       </div>
 
-      <Card className="border-gray-200 shadow-sm">
-        <CardHeader className="border-b border-gray-100">
-          <CardTitle className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+      <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+          <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
             <Heart className="h-4 w-4 text-rose-500" />
             Most Liked Posts
           </CardTitle>
@@ -273,26 +273,26 @@ export default function CommunityPage() {
         </CardContent>
       </Card>
 
-      <Card className="border-gray-200 shadow-sm">
-        <CardHeader className="border-b border-gray-100">
-          <CardTitle className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+      <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+          <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
             <Shield className="h-4 w-4 text-amber-500" />
             Moderation Summary
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex gap-4">
-            <div className="flex-1 p-4 rounded-xl bg-amber-50 border border-amber-200 text-center">
-              <p className="text-2xl font-bold text-amber-600">{data?.moderation.pending ?? 0}</p>
-              <p className="text-xs text-amber-500 mt-1">Pending</p>
+            <div className="flex-1 p-4 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/80 text-center shadow-sm">
+              <p className="text-2xl font-extrabold text-amber-600 tabular-nums">{data?.moderation.pending ?? 0}</p>
+              <p className="text-xs text-amber-500 mt-1 font-medium">Pending</p>
             </div>
-            <div className="flex-1 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-center">
-              <p className="text-2xl font-bold text-emerald-600">{data?.moderation.reviewed ?? 0}</p>
-              <p className="text-xs text-emerald-500 mt-1">Reviewed</p>
+            <div className="flex-1 p-4 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200/80 text-center shadow-sm">
+              <p className="text-2xl font-extrabold text-emerald-600 tabular-nums">{data?.moderation.reviewed ?? 0}</p>
+              <p className="text-xs text-emerald-500 mt-1 font-medium">Reviewed</p>
             </div>
-            <div className="flex-1 p-4 rounded-xl bg-gray-50 border border-gray-200 text-center">
-              <p className="text-2xl font-bold text-gray-600">{data?.moderation.dismissed ?? 0}</p>
-              <p className="text-xs text-gray-400 mt-1">Dismissed</p>
+            <div className="flex-1 p-4 rounded-xl bg-gradient-to-br from-gray-50 to-slate-50 border border-gray-200/80 text-center shadow-sm">
+              <p className="text-2xl font-extrabold text-gray-600 tabular-nums">{data?.moderation.dismissed ?? 0}</p>
+              <p className="text-xs text-gray-400 mt-1 font-medium">Dismissed</p>
             </div>
           </div>
         </CardContent>

@@ -20,7 +20,12 @@ function buildPriceItems(
   return quoteResults
     .filter((r): r is { ticker: string; quote: NonNullable<typeof r.quote> } => {
       if (!r.quote) return false;
-      return r.quote.regularMarketPrice !== null;
+      if (r.quote.regularMarketPrice === null) return false;
+      // Skip stale data on weekends/holidays — no real trading
+      if (!r.quote.regularMarketVolume || r.quote.regularMarketVolume < 100) return false;
+      // Skip when market is closed (weekends/holidays) — Yahoo returns last trading day's data
+      if ((r.quote as Record<string, unknown>).marketState === "CLOSED") return false;
+      return true;
     })
     .map((r) => {
       const stock = stockLookup.get(r.ticker);

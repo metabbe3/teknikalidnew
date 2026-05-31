@@ -31,6 +31,12 @@ model Stock {
   subIndustry  String?   @db.VarChar(100)
   fax          String?   @db.VarChar(50)
   npwp         String?   @db.VarChar(50)
+  businessActivity String? @db.VarChar(500)
+
+  // Trading info (from IDX trading API)
+  listedShares             BigInt?
+  foreignOwnershipPercent  Decimal? @db.Decimal(6, 2)
+  isinCode                 String?  @db.VarChar(20)
 
   prices       StockPrice[]
   indicators   StockIndicator[]
@@ -41,6 +47,8 @@ model Stock {
   subsidiaries   StockSubsidiary[]
   dividends      StockDividend[]
   watchlist    Watchlist[]
+
+  @@index([isinCode])
 
   @@index([sector])
   @@index([isActive])
@@ -250,6 +258,7 @@ model User {
   bookmarks          Bookmark[]
   articles           Article[]
   auditLogs          AuditLog[]
+  imageGenJobs       ImageGenerationJob[]
 }
 
 enum Role {
@@ -298,6 +307,7 @@ model Post {
   content       String   @db.VarChar(1000)
   tickerTag     String?  @db.VarChar(20)
   authorId      String
+  imageUrl      String?  @db.VarChar(1000)
   likesCount         Int      @default(0)
   commentsCount      Int      @default(0)
   predictionTarget    Decimal?  @db.Decimal(12, 2)
@@ -311,11 +321,34 @@ model Post {
   likes         Like[]
   bookmarks     Bookmark[]
   notifications Notification[]
+  imageGenJobs  ImageGenerationJob[]
 
   @@index([tickerTag])
   @@index([createdAt(sort: Desc)])
   @@index([authorId])
   @@index([authorId, createdAt(sort: Desc)])
+}
+
+model ImageGenerationJob {
+  id               String    @id @default(cuid())
+  prompt           String    @db.VarChar(2000)
+  source           String    @db.VarChar(20)
+  status           String    @default("pending")
+  comfyuiPromptId  String?
+  outputFilename   String?   @db.VarChar(500)
+  imageUrl         String?   @db.VarChar(1000)
+  error            String?   @db.VarChar(500)
+  requestedBy      String
+  postId           String?
+  createdAt        DateTime  @default(now())
+  completedAt      DateTime?
+
+  requester User?  @relation(fields: [requestedBy], references: [id], onDelete: Cascade)
+  post      Post?  @relation(fields: [postId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([requestedBy])
+  @@index([createdAt(sort: Desc)])
 }
 
 model Comment {
@@ -485,6 +518,7 @@ model Article {
   slug           String        @unique @db.VarChar(255)
   title          String        @db.VarChar(255)
   excerpt        String        @db.VarChar(500)
+  coverImageUrl  String?       @db.VarChar(1000)
   content        String        @db.Text
   authorId       String
   tags           String[]      @default([])

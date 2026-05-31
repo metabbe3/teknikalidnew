@@ -10,6 +10,20 @@ import { StockNotFoundError } from "./stock.errors";
 import { stockCache } from "@/lib/cache";
 import { getMarketStatusWithFallback, type MarketStatusResult } from "@/lib/market-hours";
 import pLimit from "p-limit";
+import type { Prisma } from "@/generated/prisma/client";
+
+type PriceRow = { close: Prisma.Decimal; volume: bigint };
+
+function dedupeStalePrices<T extends PriceRow>(prices: T[]): T[] {
+  if (prices.length <= 1) return prices;
+  const result = [prices[0]];
+  for (let i = 1; i < prices.length; i++) {
+    const prev = result[result.length - 1];
+    if (prices[i].close.equals(prev.close) && prices[i].volume === prev.volume) continue;
+    result.push(prices[i]);
+  }
+  return result;
+}
 
 export interface StockListRow {
   ticker: string;
@@ -33,12 +47,14 @@ async function fetchStockBase(ticker: string, priceTake: number) {
   const stock = await stockRepository.findStockByTicker(ticker);
   if (!stock) throw new StockNotFoundError(ticker);
 
-  const [prices, week52, indicator, prevIndicator] = await Promise.all([
-    stockRepository.findPrices(stock.id, { orderBy: "desc", take: priceTake }),
+  const [rawPrices, week52, indicator, prevIndicator] = await Promise.all([
+    stockRepository.findLatestTradingPrices(stock.id, priceTake),
     stockRepository.getWeek52HighLow(stock.id),
     stockRepository.findLatestIndicator(stock.id, INTERVAL.DAY),
     stockRepository.findPrevIndicator(stock.id, INTERVAL.DAY),
   ]);
+
+  const prices = dedupeStalePrices(rawPrices).slice(0, priceTake);
 
   const latest = prices[0];
   const prev = prices[1];
@@ -65,8 +81,9 @@ export const stockMarketService = {
     const week52Map = await stockRepository.batchGetWeek52HighLow(stocks.map((s) => s.id));
 
     const entries = stocks.map((s) => {
-      const latest = s.prices[0];
-      const prev = s.prices[1];
+      const prices = dedupeStalePrices(s.prices);
+      const latest = prices[0];
+      const prev = prices[1];
       const { close, change, changePercent } = computeChange(latest, prev);
       const w52 = week52Map.get(s.id);
 
@@ -90,8 +107,9 @@ export const stockMarketService = {
     const stocks = await stockRepository.findStocksByTickersWithIndicators(tickers);
 
     return stocks.map((s) => {
-      const latest = s.prices[0];
-      const prev = s.prices[1];
+      const prices = dedupeStalePrices(s.prices);
+      const latest = prices[0];
+      const prev = prices[1];
       const { close, change, changePercent } = computeChange(latest, prev);
       const indicator = s.indicators?.[0];
 
@@ -117,7 +135,8 @@ export const stockMarketService = {
     const stocks = await stockRepository.findActiveStocksWithPrices(sector ? { sector } : undefined);
 
     const result = stocks.map((stock) => {
-      const { close, change, changePercent } = computeChange(stock.prices[0], stock.prices[1]);
+      const prices = dedupeStalePrices(stock.prices);
+      const { close, change, changePercent } = computeChange(prices[0], prices[1]);
       const indicator = stock.indicators?.[0];
 
       return {
@@ -128,7 +147,7 @@ export const stockMarketService = {
         close,
         change,
         changePercent,
-        volume: stock.prices[0] ? bigIntToNumber(stock.prices[0].volume) : null,
+        volume: prices[0] ? bigIntToNumber(prices[0].volume) : null,
         rsi14: indicator ? decimalToNumber(indicator.rsi14) : null,
         sma20: indicator ? decimalToNumber(indicator.sma20) : null,
       };
@@ -171,6 +190,10 @@ export const stockMarketService = {
         subSector: base.stock.subSector, listingBoard: base.stock.listingBoard,
         listingDate: base.stock.listingDate, address: base.stock.address,
         phone: base.stock.phone, email: base.stock.email, website: base.stock.website,
+        businessActivity: base.stock.businessActivity,
+        listedShares: base.stock.listedShares,
+        foreignOwnershipPercent: base.stock.foreignOwnershipPercent,
+        isinCode: base.stock.isinCode,
       },
       prices: base.prices,
       latest: base.latest,
@@ -230,7 +253,8 @@ export const stockMarketService = {
 
     type StockChange = { ticker: string; name: string; sector: string; close: number | null; changePercent: number | null };
     const stockChanges: StockChange[] = stocks.map((stock) => {
-      const { close, changePercent } = computeChange(stock.prices[0], stock.prices[1]);
+      const prices = dedupeStalePrices(stock.prices);
+      const { close, changePercent } = computeChange(prices[0], prices[1]);
       return { ticker: stock.ticker, name: stock.name, sector: stock.sector, close, changePercent };
     });
 
@@ -381,8 +405,9 @@ export const stockMarketService = {
     );
 
     const results = stocks.map((s, idx) => {
-      const latest = s.prices[0];
-      const prev = s.prices[1];
+      const prices = dedupeStalePrices(s.prices);
+      const latest = prices[0];
+      const prev = prices[1];
       const { close, prevClose, change, changePercent } = computeChange(latest, prev);
       const w52 = week52Map.get(s.id);
       const perStock = perStockData[idx];

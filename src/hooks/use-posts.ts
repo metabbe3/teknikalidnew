@@ -21,6 +21,7 @@ export interface Post {
   tickerTag: string | null;
   predictionDirection: string | null;
   predictionTarget: string | null;
+  imageUrl: string | null;
   likesCount: number;
   commentsCount: number;
   createdAt: string;
@@ -68,6 +69,7 @@ export function useCreatePost() {
       tickerTag?: string | null;
       predictionDirection?: string | null;
       predictionTarget?: number | null;
+      imageUrl?: string | null;
     }) => {
       const res = await fetch("/api/posts", {
         method: "POST",
@@ -91,6 +93,7 @@ export function useCreatePost() {
         tickerTag: newPost.tickerTag ?? null,
         predictionDirection: newPost.predictionDirection ?? null,
         predictionTarget: newPost.predictionTarget ? String(newPost.predictionTarget) : null,
+        imageUrl: newPost.imageUrl ?? null,
         likesCount: 0,
         commentsCount: 0,
         createdAt: new Date().toISOString(),

@@ -34,29 +34,29 @@ export default function AdminOverviewPage() {
     {
       title: "Last EOD Sync",
       icon: Activity,
-      status: data?.lastEodSync.status ?? "unknown",
-      detail: timeAgo(data?.lastEodSync.timestamp ?? null),
+      status: data?.lastEodSync?.status ?? "unknown",
+      detail: timeAgo(data?.lastEodSync?.timestamp ?? null),
       gradient: "blue" as const,
     },
     {
       title: "Last Intraday Sync",
       icon: Radio,
-      status: data?.lastIntradaySync.status ?? "unknown",
-      detail: timeAgo(data?.lastIntradaySync.timestamp ?? null),
+      status: data?.lastIntradaySync?.status ?? "unknown",
+      detail: timeAgo(data?.lastIntradaySync?.timestamp ?? null),
       gradient: "emerald" as const,
     },
     {
       title: "Database",
       icon: Database,
-      status: data?.dbPool.status ?? "unknown",
-      detail: data?.dbPool.status === "connected" ? "Healthy" : "Error",
+      status: data?.dbPool?.status ?? "unknown",
+      detail: data?.dbPool?.status === "connected" ? "Healthy" : "Error",
       gradient: "amber" as const,
     },
     {
       title: "Yahoo Finance API",
       icon: Wifi,
-      status: data?.yahooApi.status ?? "unknown",
-      detail: data?.yahooApi.latency ? `${data.yahooApi.latency}ms` : undefined,
+      status: data?.yahooApi?.status ?? "unknown",
+      detail: data?.yahooApi?.latency ? `${data.yahooApi.latency}ms` : undefined,
       gradient: "rose" as const,
     },
   ];
@@ -71,9 +71,9 @@ export default function AdminOverviewPage() {
         </Badge>
       ),
     },
-    { header: "Action", cell: (e: StatusData["recentActivity"][0]) => <span className="text-sm font-medium text-gray-700">{e.action}</span> },
-    { header: "Duration", cell: (e: StatusData["recentActivity"][0]) => <span className="text-sm font-mono tabular-nums text-gray-600">{e.duration}s</span> },
-    { header: "Time", cell: (e: StatusData["recentActivity"][0]) => <span className="text-xs text-gray-400">{timeAgo(e.timestamp)}</span>, className: "text-right" },
+    { header: "Action", cell: (e: StatusData["recentActivity"][0]) => <span className="text-sm font-semibold text-gray-800">{e.action}</span> },
+    { header: "Duration", cell: (e: StatusData["recentActivity"][0]) => <span className="text-sm font-mono tabular-nums font-semibold text-blue-600">{e.duration}s</span> },
+    { header: "Time", cell: (e: StatusData["recentActivity"][0]) => <span className="text-xs text-gray-400 font-mono">{timeAgo(e.timestamp)}</span>, className: "text-right" },
   ];
 
   return (
@@ -100,9 +100,9 @@ export default function AdminOverviewPage() {
         ))}
       </div>
 
-      <Card className="border-gray-200 shadow-sm">
-        <CardHeader className="border-b border-gray-100">
-          <CardTitle className="text-sm font-semibold text-gray-700">Recent Activity</CardTitle>
+      <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+          <CardTitle className="text-sm font-bold text-gray-800">Recent Activity</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <AdminDataTable

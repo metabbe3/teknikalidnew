@@ -111,7 +111,7 @@ export default async function StockDetailPage({
     return "Neutral" as const;
   })();
 
-  const [socialData, { structure: marketStructure }, fundamentalRow, idxCommissioners, idxSubsidiaries, idxDividends] = await Promise.all([
+  const [socialData, { structure: marketStructure }, fundamentalRow, idxCommissioners, idxDirectors, idxShareholders, idxSubsidiaries, idxDividends] = await Promise.all([
     prisma.post.aggregate({
       where: { tickerTag: ticker, createdAt: { gte: subDays(new Date(), 7) } },
       _count: true,
@@ -120,6 +120,8 @@ export default async function StockDetailPage({
     technicalAnalysisService.getMarketStructure(ticker),
     stockRepository.findLatestFundamental(detail.stock.id),
     stockRepository.findCommissioners(detail.stock.id),
+    stockRepository.findDirectors(detail.stock.id),
+    stockRepository.findShareholders(detail.stock.id),
     stockRepository.findSubsidiaries(detail.stock.id),
     stockRepository.findDividends(detail.stock.id),
   ]);
@@ -183,7 +185,7 @@ export default async function StockDetailPage({
     : null;
 
   // Serialize IDX company data for client component
-  const idxProfile = (stock.industry || stock.subIndustry || stock.subSector || stock.address || stock.phone || stock.email || stock.website)
+  const idxProfile = (stock.industry || stock.subIndustry || stock.subSector || stock.address || stock.phone || stock.email || stock.website || stock.businessActivity || stock.listedShares || stock.foreignOwnershipPercent || stock.isinCode)
     ? {
         industry: stock.industry,
         subIndustry: stock.subIndustry,
@@ -194,6 +196,10 @@ export default async function StockDetailPage({
         phone: stock.phone,
         email: stock.email,
         website: stock.website,
+        businessActivity: stock.businessActivity,
+        listedShares: stock.listedShares ? bigIntToNumber(stock.listedShares) : null,
+        foreignOwnershipPercent: stock.foreignOwnershipPercent ? decimalToNumber(stock.foreignOwnershipPercent) : null,
+        isinCode: stock.isinCode,
       }
     : null;
 
@@ -201,6 +207,20 @@ export default async function StockDetailPage({
     name: c.name,
     position: c.position,
     independent: c.independent,
+  }));
+
+  const idxDirectorsSerialized = idxDirectors.map((d) => ({
+    name: d.name,
+    position: d.position,
+    type: d.type,
+    independent: d.independent,
+  }));
+
+  const idxShareholdersSerialized = idxShareholders.map((s) => ({
+    name: s.name,
+    type: s.type,
+    shares: s.shares !== null ? decimalToNumber(s.shares) : null,
+    percent: s.percent !== null ? decimalToNumber(s.percent) : null,
   }));
 
   const idxSubsidiariesSerialized = idxSubsidiaries.map((s) => ({
@@ -421,6 +441,8 @@ export default async function StockDetailPage({
         <CompanyDataTabs
           profile={idxProfile}
           commissioners={idxCommissionersSerialized}
+          directors={idxDirectorsSerialized}
+          shareholders={idxShareholdersSerialized}
           subsidiaries={idxSubsidiariesSerialized}
           dividends={idxDividendsSerialized}
         />

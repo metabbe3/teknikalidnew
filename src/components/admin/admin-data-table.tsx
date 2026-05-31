@@ -34,9 +34,9 @@ export function AdminDataTable<T>({
 }: AdminDataTableProps<T>) {
   if (loading) {
     return (
-      <div className="space-y-2">
+      <div className="space-y-1">
         {Array.from({ length: loadingRows }).map((_, i) => (
-          <Skeleton key={i} className="h-9 w-full" />
+          <Skeleton key={i} className="h-10 w-full rounded-md" />
         ))}
       </div>
     );
@@ -44,19 +44,19 @@ export function AdminDataTable<T>({
 
   if (!data || data.length === 0) {
     return (
-      <div className="py-12 text-center">
+      <div className="py-16 text-center">
         <p className="text-sm text-gray-400">{emptyMessage}</p>
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-gray-200 overflow-hidden">
+    <div className="rounded-xl border border-gray-200/80 overflow-hidden">
       <Table>
         <TableHeader>
-          <TableRow className="bg-gradient-to-r from-blue-50/80 to-indigo-50/60 hover:from-blue-50/80 hover:to-indigo-50/60">
+          <TableRow className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-600 hover:to-indigo-600 border-0">
             {columns.map((col) => (
-              <TableHead key={col.header} className={`text-xs font-semibold text-gray-600 uppercase tracking-wider ${col.className ?? ""}`}>
+              <TableHead key={col.header} className={`text-xs font-bold text-white/90 uppercase tracking-wider ${col.className ?? ""}`}>
                 {col.header}
               </TableHead>
             ))}
@@ -64,7 +64,7 @@ export function AdminDataTable<T>({
         </TableHeader>
         <TableBody>
           {data.map((row, i) => (
-            <TableRow key={keyFn(row, i)} className={`${i % 2 === 1 ? "bg-gray-50/50" : ""} hover:bg-blue-50/30 transition-colors`}>
+            <TableRow key={keyFn(row, i)} className={`${i % 2 === 1 ? "bg-gray-50/70" : ""} hover:bg-blue-50/40 transition-colors border-b border-gray-100/60`}>
               {columns.map((col) => (
                 <TableCell key={col.header} className={col.className}>
                   {col.cell(row, i)}

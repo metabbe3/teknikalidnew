@@ -108,7 +108,7 @@ export default function GenerateArticlePage() {
 
   return (
     <div className="space-y-6 max-w-2xl">
-      <AdminPageHeader title="Generate Article" description="AI-powered SEO content with keyword research" />
+      <AdminPageHeader title="Generate Article" description="AI-powered SEO content with keyword research" icon={PenTool} />
 
       <Link href="/admin/articles" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-blue-600">
         <ArrowLeft className="h-3 w-3" />
@@ -125,12 +125,12 @@ export default function GenerateArticlePage() {
               onClick={() => { setGenType(key); resetAll(); }}
               className={`p-3 rounded-xl border-2 text-left transition-all ${
                 genType === key
-                  ? `border-${color}-500 bg-${color}-50/50`
-                  : "border-gray-200 bg-white hover:border-gray-300"
+                  ? `border-blue-500 bg-blue-50/50 shadow-md shadow-blue-500/10`
+                  : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm"
               }`}
             >
-              <Icon className={`h-4 w-4 mb-1 ${genType === key ? `text-${color}-600` : "text-gray-400"}`} />
-              <p className="font-semibold text-xs text-gray-900">{label}</p>
+              <Icon className={`h-4 w-4 mb-1 ${genType === key ? "text-blue-600" : "text-gray-400"}`} />
+              <p className="font-bold text-xs text-gray-900">{label}</p>
               <p className="text-[10px] text-gray-500">{desc}</p>
             </button>
           ))}
@@ -325,7 +325,7 @@ export default function GenerateArticlePage() {
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Step 4: Generate</p>
           <Button
-            className="w-full gap-2"
+            className="w-full gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-600/20 transition-all"
             size="lg"
             disabled={generateMut.isPending}
             onClick={() => generateMut.mutate()}

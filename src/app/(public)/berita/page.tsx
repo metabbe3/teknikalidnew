@@ -105,8 +105,17 @@ export default async function BeritaPage({
             href={`/berita/${featuredArticle.slug}`}
             className="block mb-8"
           >
-            <div className="akademi-featured depth-shadow-strong p-6 sm:p-8 hover:scale-[1.005] transition-transform duration-300">
-              <div className="relative z-10 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6">
+            <div className="akademi-featured depth-shadow-strong overflow-hidden hover:scale-[1.005] transition-transform duration-300">
+              {featuredArticle.coverImageUrl && (
+                <div className="aspect-[3/1] overflow-hidden">
+                  <img
+                    src={featuredArticle.coverImageUrl}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+              <div className="relative z-10 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 p-6 sm:p-8">
                 <div>
                   <div className="flex items-center gap-2 mb-3">
                     <span className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded ${TYPE_LABELS[featuredArticle.articleType]?.color ?? "text-blue-500 bg-blue-500/10"}`}>
@@ -187,6 +196,7 @@ export default async function BeritaPage({
             tickerTag: a.tickerTag,
             tags: a.tags,
             publishedAt: a.publishedAt.toISOString(),
+            coverImageUrl: a.coverImageUrl ?? null,
             author: a.author,
           }))}
           initialCursor={nextCursor}

@@ -16,7 +16,7 @@ export const stockRepository = {
     return prisma.stock.findMany({
       where: { ticker: { in: tickers }, isActive: true },
       include: {
-        prices: { orderBy: { date: "desc" }, take: 2 },
+        prices: { orderBy: { date: "desc" }, take: 6 },
       },
     });
   },
@@ -26,7 +26,7 @@ export const stockRepository = {
     return prisma.stock.findMany({
       where: { ticker: { in: tickers }, isActive: true },
       include: {
-        prices: { orderBy: { date: "desc" }, take: 2 },
+        prices: { orderBy: { date: "desc" }, take: 6 },
         indicators: { orderBy: { date: "desc" }, take: 1, where: { interval: INTERVAL.DAY } },
       },
     });
@@ -56,7 +56,7 @@ export const stockRepository = {
       where: { isActive: true, ...where },
       orderBy: { ticker: "asc" },
       include: {
-        prices: { orderBy: { date: "desc" }, take: 2 },
+        prices: { where: { volume: { gt: 0 } }, orderBy: { date: "desc" }, take: 6 },
         ...(includeIndicators ? {
           indicators: { orderBy: { date: "desc" }, take: 1, where: { interval: INTERVAL.DAY } },
         } : {}),
@@ -80,7 +80,7 @@ export const stockRepository = {
       },
       orderBy: { ticker: "asc" },
       include: {
-        prices: { orderBy: { date: "desc" }, take: 2 },
+        prices: { orderBy: { date: "desc" }, take: 6 },
         indicators: { orderBy: { date: "desc" }, take: 1, where: { interval: INTERVAL.DAY } },
       },
     });
@@ -114,6 +114,14 @@ export const stockRepository = {
       where: { stockId },
       orderBy: { date: "desc" },
       take,
+    });
+  },
+
+  findLatestTradingPrices(stockId: number, take: number) {
+    return prisma.stockPrice.findMany({
+      where: { stockId, volume: { gt: 0 } },
+      orderBy: { date: "desc" },
+      take: take * 3,
     });
   },
 
@@ -340,6 +348,47 @@ export const stockRepository = {
     return commissioners.length;
   },
 
+  // ── StockDirector writes ──
+
+  async replaceDirectors(stockId: number, directors: { name: string; position: string; type: string; independent: boolean }[]) {
+    await prisma.stockDirector.deleteMany({ where: { stockId } });
+    if (directors.length === 0) return 0;
+    await prisma.stockDirector.createMany({
+      data: directors.map((d) => ({ stockId, ...d })),
+    });
+    return directors.length;
+  },
+
+  // ── StockShareholder writes ──
+
+  async replaceShareholders(stockId: number, shareholders: { name: string; type: string | null; shares: number | null; percent: number | null }[]) {
+    await prisma.stockShareholder.deleteMany({ where: { stockId } });
+    if (shareholders.length === 0) return 0;
+    await prisma.stockShareholder.createMany({
+      data: shareholders.map((s) => ({
+        stockId,
+        name: s.name,
+        type: s.type,
+        shares: s.shares,
+        percent: s.percent,
+      })),
+    });
+    return shareholders.length;
+  },
+
+  // ── Trading info writes ──
+
+  updateTradingInfo(stockId: number, data: { listedShares?: bigint | null; foreignOwnershipPercent?: number | null; isinCode?: string | null }) {
+    return prisma.stock.update({
+      where: { id: stockId },
+      data: {
+        ...(data.listedShares !== undefined && { listedShares: data.listedShares }),
+        ...(data.foreignOwnershipPercent !== undefined && { foreignOwnershipPercent: data.foreignOwnershipPercent }),
+        ...(data.isinCode !== undefined && { isinCode: data.isinCode }),
+      },
+    });
+  },
+
   // ── StockSubsidiary writes ──
 
   async replaceSubsidiaries(stockId: number, subsidiaries: { name: string; businessType: string | null; totalAssets: number | null; ownershipPercent: number | null }[]) {
@@ -400,6 +449,17 @@ export const stockRepository = {
 
   findCommissioners(stockId: number) {
     return prisma.stockCommissioner.findMany({ where: { stockId } });
+  },
+
+  findDirectors(stockId: number) {
+    return prisma.stockDirector.findMany({ where: { stockId } });
+  },
+
+  findShareholders(stockId: number) {
+    return prisma.stockShareholder.findMany({
+      where: { stockId },
+      orderBy: { percent: "desc" },
+    });
   },
 
   findSubsidiaries(stockId: number) {

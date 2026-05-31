@@ -49,9 +49,9 @@ export default function IntradayLogsPage() {
         </Badge>
       ),
     },
-    { header: "Action", cell: (r: ActivityEntry) => <span className="text-sm font-medium text-gray-700">{r.action}</span> },
-    { header: "Duration", cell: (r: ActivityEntry) => <span className="text-sm font-mono tabular-nums text-gray-600">{r.duration}s</span> },
-    { header: "Time", cell: (r: ActivityEntry) => <span className="text-xs text-gray-400">{timeAgo(r.timestamp)}</span>, className: "text-right" },
+    { header: "Action", cell: (r: ActivityEntry) => <span className="text-sm font-semibold text-gray-800">{r.action}</span> },
+    { header: "Duration", cell: (r: ActivityEntry) => <span className="text-sm font-mono tabular-nums font-semibold text-blue-600">{r.duration}s</span> },
+    { header: "Time", cell: (r: ActivityEntry) => <span className="text-xs text-gray-400 font-mono">{timeAgo(r.timestamp)}</span>, className: "text-right" },
   ];
 
   const freshnessColumns = [
@@ -74,9 +74,9 @@ export default function IntradayLogsPage() {
         icon={Activity}
       />
 
-      <Card className="border-gray-200 shadow-sm">
-        <CardHeader className="border-b border-gray-100">
-          <CardTitle className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+      <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+          <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
             <Radio className="h-4 w-4 text-emerald-500" />
             Recent Intraday Activity
           </CardTitle>
@@ -92,9 +92,9 @@ export default function IntradayLogsPage() {
         </CardContent>
       </Card>
 
-      <Card className="border-gray-200 shadow-sm">
-        <CardHeader className="border-b border-gray-100">
-          <CardTitle className="text-sm font-semibold text-gray-700">Ticker Freshness</CardTitle>
+      <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+          <CardTitle className="text-sm font-bold text-gray-800">Ticker Freshness</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <AdminDataTable

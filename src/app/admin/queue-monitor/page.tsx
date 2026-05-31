@@ -55,10 +55,10 @@ export default function QueueMonitorPage() {
   }
 
   const messageColumns = [
-    { header: "Message ID", cell: (r: QueueMessage) => <span className="font-mono text-xs text-gray-500">{r.messageId.slice(0, 12)}...</span> },
-    { header: "URL", cell: (r: QueueMessage) => <span className="text-xs truncate max-w-[200px] block text-gray-600">{r.url}</span> },
-    { header: "Body", cell: (r: QueueMessage) => <span className="text-xs text-gray-400 truncate max-w-[150px] block">{r.body}</span> },
-    { header: "Created", cell: (r: QueueMessage) => <span className="text-xs text-gray-400">{new Date(r.createdAt).toLocaleString()}</span> },
+    { header: "Message ID", cell: (r: QueueMessage) => <span className="font-mono text-xs font-semibold text-gray-600">{r.messageId.slice(0, 12)}...</span> },
+    { header: "URL", cell: (r: QueueMessage) => <span className="text-xs truncate max-w-[200px] block text-gray-700 font-medium">{r.url}</span> },
+    { header: "Body", cell: (r: QueueMessage) => <span className="text-xs text-gray-500 truncate max-w-[150px] block font-mono">{r.body}</span> },
+    { header: "Created", cell: (r: QueueMessage) => <span className="text-xs text-gray-400 font-mono">{new Date(r.createdAt).toLocaleString()}</span> },
   ];
 
   return (
@@ -117,7 +117,7 @@ export default function QueueMonitorPage() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <div>
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">Pending Messages</h3>
+          <h3 className="text-sm font-bold text-gray-800 mb-3">Pending Messages</h3>
           <AdminDataTable
             columns={messageColumns}
             data={data?.messages}
@@ -127,12 +127,12 @@ export default function QueueMonitorPage() {
           />
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">Actions</h3>
+          <h3 className="text-sm font-bold text-gray-800 mb-3">Actions</h3>
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 rounded-xl border border-gray-200 bg-white shadow-sm">
+            <div className="flex items-center justify-between p-4 rounded-xl border border-gray-200/80 bg-white shadow-md shadow-gray-200/30">
               <div>
-                <p className="text-sm font-medium text-gray-800">Purge All Messages</p>
-                <p className="text-xs text-gray-400">Remove all pending messages from the queue</p>
+                <p className="text-sm font-bold text-gray-800">Purge All Messages</p>
+                <p className="text-xs text-gray-500 mt-0.5">Remove all pending messages from the queue</p>
               </div>
               <Badge variant={data?.pending ? "secondary" : "outline"}
                 className={data?.pending ? "bg-amber-50 text-amber-700 border-amber-200" : ""}>

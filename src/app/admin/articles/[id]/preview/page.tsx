@@ -76,6 +76,15 @@ export default async function ArticlePreviewPage({
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-text-primary mb-5">
             {article.title}
           </h1>
+          {article.coverImageUrl && (
+            <div className="rounded-xl overflow-hidden mb-6">
+              <img
+                src={article.coverImageUrl}
+                alt=""
+                className="w-full object-cover max-h-[400px]"
+              />
+            </div>
+          )}
           <div className="flex flex-wrap items-center gap-4 text-sm text-text-tertiary">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-full bg-accent/10 text-accent text-xs font-semibold flex items-center justify-center">

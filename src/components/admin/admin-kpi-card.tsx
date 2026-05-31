@@ -30,7 +30,7 @@ export function AdminKpiCard({ title, icon: Icon, value, subtitle, status, loadi
   const accentClass = !gradient && status ? getAccentClass(status) : "";
 
   return (
-    <Card className={`${gradientClass} ${accentClass} transition-all hover:shadow-md`}>
+    <Card className={`${gradientClass} ${accentClass} transition-all hover:shadow-lg hover:-translate-y-0.5`}>
       <CardHeader className="pb-2">
         <CardTitle className={`flex items-center gap-2 text-sm font-medium ${gradient ? "text-white/80" : "text-gray-500"}`}>
           <div className={`p-1.5 rounded-lg ${gradient ? "bg-white/20" : "bg-blue-50"}`}>

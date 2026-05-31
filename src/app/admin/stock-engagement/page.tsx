@@ -40,19 +40,19 @@ export default function StockEngagementPage() {
     {
       header: "Ticker",
       cell: (r: { ticker: string }) => (
-        <span className="font-mono font-bold text-sm text-gray-900">{r.ticker.replace(".JK", "")}</span>
+        <span className="font-mono font-extrabold text-sm text-gray-900">{r.ticker.replace(".JK", "")}</span>
       ),
     },
     {
       header: "Followers",
       cell: (r: { followers: number }) => (
-        <span className="text-sm font-semibold text-blue-600 tabular-nums">{r.followers}</span>
+        <span className="text-sm font-bold text-blue-600 tabular-nums">{r.followers}</span>
       ),
     },
     {
       header: "+This Week",
       cell: (r: { newThisWeek: number }) => (
-        <span className={`text-sm tabular-nums ${r.newThisWeek > 0 ? "text-emerald-600 font-semibold" : "text-gray-400"}`}>
+        <span className={`text-sm tabular-nums ${r.newThisWeek > 0 ? "text-emerald-600 font-bold" : "text-gray-400"}`}>
           {r.newThisWeek > 0 ? `+${r.newThisWeek}` : "-"}
         </span>
       ),
@@ -63,13 +63,13 @@ export default function StockEngagementPage() {
     {
       header: "Ticker",
       cell: (r: { ticker: string }) => (
-        <span className="font-mono font-bold text-sm text-gray-900">{r.ticker.replace(".JK", "")}</span>
+        <span className="font-mono font-extrabold text-sm text-gray-900">{r.ticker.replace(".JK", "")}</span>
       ),
     },
     {
       header: "Posts",
       cell: (r: { posts: number }) => (
-        <span className="text-sm font-semibold text-violet-600 tabular-nums">{r.posts}</span>
+        <span className="text-sm font-bold text-violet-600 tabular-nums">{r.posts}</span>
       ),
     },
   ];
@@ -92,9 +92,9 @@ export default function StockEngagementPage() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Most Followed */}
-        <Card className="border-gray-200 shadow-sm">
-          <CardHeader className="border-b border-gray-100">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+        <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+          <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+            <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
               <Star className="h-4 w-4 text-blue-500" />
               Most Followed Stocks
             </CardTitle>
@@ -111,9 +111,9 @@ export default function StockEngagementPage() {
         </Card>
 
         {/* Most Discussed */}
-        <Card className="border-gray-200 shadow-sm">
-          <CardHeader className="border-b border-gray-100">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+        <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+          <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+            <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
               <MessageSquare className="h-4 w-4 text-violet-500" />
               Most Discussed (This Week)
             </CardTitle>
@@ -131,9 +131,9 @@ export default function StockEngagementPage() {
       </div>
 
       {/* Sector distribution */}
-      <Card className="border-gray-200 shadow-sm">
-        <CardHeader className="border-b border-gray-100">
-          <CardTitle className="text-sm font-semibold text-gray-700">Posts by Sector (This Week)</CardTitle>
+      <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+          <CardTitle className="text-sm font-bold text-gray-800">Posts by Sector (This Week)</CardTitle>
         </CardHeader>
         <CardContent className="pt-4">
           {isLoading ? (
@@ -146,10 +146,10 @@ export default function StockEngagementPage() {
                 const pct = Math.round((s.count / maxSector) * 100);
                 return (
                   <div key={s.sector} className="flex items-center gap-3">
-                    <span className="text-xs text-gray-600 w-40 shrink-0 truncate">{s.sector}</span>
+                    <span className="text-xs font-medium text-gray-700 w-40 shrink-0 truncate">{s.sector}</span>
                     <div className="flex-1 h-5 bg-gray-100 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-blue-500 to-violet-500 rounded-full transition-all duration-500"
+                        className="h-full bg-gradient-to-r from-blue-600 to-violet-500 rounded-full transition-all duration-500"
                         style={{ width: `${pct}%` }}
                       />
                     </div>
@@ -163,9 +163,9 @@ export default function StockEngagementPage() {
       </Card>
 
       {/* Trending stocks */}
-      <Card className="border-gray-200 shadow-sm">
-        <CardHeader className="border-b border-gray-100">
-          <CardTitle className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+      <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+          <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
             <TrendingUp className="h-4 w-4 text-emerald-500" />
             Trending — New Followers This Week
           </CardTitle>
@@ -178,8 +178,8 @@ export default function StockEngagementPage() {
           ) : (
             <div className="flex flex-wrap gap-3">
               {(data?.trending ?? []).map((t) => (
-                <div key={t.ticker} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-50 border border-emerald-200">
-                  <span className="font-mono font-bold text-sm text-gray-900">{t.ticker.replace(".JK", "")}</span>
+                <div key={t.ticker} className="flex items-center gap-2 px-3.5 py-2.5 rounded-lg bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/80 shadow-sm">
+                  <span className="font-mono font-extrabold text-sm text-gray-900">{t.ticker.replace(".JK", "")}</span>
                   <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white text-xs">+{t.newFollowers}</Badge>
                 </div>
               ))}

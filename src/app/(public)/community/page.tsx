@@ -68,6 +68,7 @@ export default async function CommunityPage({
     tickerTag: post.tickerTag,
     predictionDirection: post.predictionDirection ?? null,
     predictionTarget: post.predictionTarget ? String(post.predictionTarget) : null,
+    imageUrl: post.imageUrl ?? null,
     likesCount: post.likesCount,
     commentsCount: post.commentsCount,
     createdAt: post.createdAt.toISOString(),

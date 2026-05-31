@@ -85,48 +85,59 @@ export function ArticleFeed({ initialArticles, initialCursor, activeTag }: Artic
               { "--stagger-i": i, "--card-accent": getTagColor(article.tags[0] ?? "") } as React.CSSProperties
             }
           >
-            <div className="akademi-card depth-shadow h-full overflow-hidden p-5">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <span className={`text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded ${TYPE_LABELS[article.articleType]?.color ?? "text-blue-500 bg-blue-500/10"}`}>
-                    {TYPE_LABELS[article.articleType]?.label ?? "Artikel"}
-                  </span>
-                  <span className="text-[11px] text-text-tertiary font-mono">
-                    {formatDate(article.publishedAt)}
-                  </span>
-                  {article.tickerTag && (
-                    <span className="text-[10px] font-mono font-semibold text-accent">
-                      {article.tickerTag.replace(".JK", "")}
+            <div className="akademi-card depth-shadow h-full overflow-hidden">
+              {article.coverImageUrl && (
+                <div className="aspect-[2/1] overflow-hidden">
+                  <img
+                    src={article.coverImageUrl}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+              <div className="p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className={`text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded ${TYPE_LABELS[article.articleType]?.color ?? "text-blue-500 bg-blue-500/10"}`}>
+                      {TYPE_LABELS[article.articleType]?.label ?? "Artikel"}
+                    </span>
+                    <span className="text-[11px] text-text-tertiary font-mono">
+                      {formatDate(article.publishedAt)}
+                    </span>
+                    {article.tickerTag && (
+                      <span className="text-[10px] font-mono font-semibold text-accent">
+                        {article.tickerTag.replace(".JK", "")}
+                      </span>
+                    )}
+                  </div>
+                  {article.tags.length > 0 && (
+                    <span
+                      className="text-[10px] font-medium px-2 py-0.5 rounded-full"
+                      style={{
+                        background: `${getTagColor(article.tags[0])}12`,
+                        color: getTagColor(article.tags[0]),
+                      }}
+                    >
+                      {article.tags[0]}
                     </span>
                   )}
                 </div>
-                {article.tags.length > 0 && (
-                  <span
-                    className="text-[10px] font-medium px-2 py-0.5 rounded-full"
-                    style={{
-                      background: `${getTagColor(article.tags[0])}12`,
-                      color: getTagColor(article.tags[0]),
-                    }}
-                  >
-                    {article.tags[0]}
+                <h3 className="text-base font-semibold text-text-primary mb-2 leading-snug group-hover:text-accent transition-colors">
+                  {article.title}
+                </h3>
+                <p className="text-sm text-text-secondary line-clamp-2 mb-4">
+                  {article.excerpt}
+                </p>
+                <div className="flex items-center gap-2 mt-auto">
+                  {article.author.name && (
+                    <div className="w-5 h-5 rounded-full bg-accent/10 text-accent text-[9px] font-semibold flex items-center justify-center">
+                      {article.author.name[0].toUpperCase()}
+                    </div>
+                  )}
+                  <span className="text-xs text-text-tertiary">
+                    {article.author.name ?? article.author.username}
                   </span>
-                )}
-              </div>
-              <h3 className="text-base font-semibold text-text-primary mb-2 leading-snug group-hover:text-accent transition-colors">
-                {article.title}
-              </h3>
-              <p className="text-sm text-text-secondary line-clamp-2 mb-4">
-                {article.excerpt}
-              </p>
-              <div className="flex items-center gap-2 mt-auto">
-                {article.author.name && (
-                  <div className="w-5 h-5 rounded-full bg-accent/10 text-accent text-[9px] font-semibold flex items-center justify-center">
-                    {article.author.name[0].toUpperCase()}
-                  </div>
-                )}
-                <span className="text-xs text-text-tertiary">
-                  {article.author.name ?? article.author.username}
-                </span>
+                </div>
               </div>
             </div>
           </Link>

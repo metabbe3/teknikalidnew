@@ -128,6 +128,18 @@ export function PostCard({ post }: PostCardProps) {
             />
           )}
 
+          {/* AI generated image */}
+          {post.imageUrl && (
+            <div className="mt-3 rounded-xl overflow-hidden border border-border">
+              <img
+                src={post.imageUrl}
+                alt="AI generated illustration"
+                className="w-full h-auto max-h-80 object-cover"
+                loading="lazy"
+              />
+            </div>
+          )}
+
           {/* Actions */}
           <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border">
             <button

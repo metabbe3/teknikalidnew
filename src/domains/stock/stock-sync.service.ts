@@ -1,6 +1,6 @@
 import { stockRepository } from "./stock.repository";
 import { prisma } from "@/lib/prisma";
-import { getCompanyProfileDetail, type IDXProfileResponse } from "@/lib/idx-api";
+import { getCompanyProfileDetail, type IDXProfileResponse, type IDXTradingInfoResponse } from "@/lib/idx-api";
 
 export interface IDXStockEntry {
   code: string;
@@ -125,11 +125,13 @@ export const stockSyncService = {
   async processCompanyProfile(ticker: string, detail: IDXProfileResponse): Promise<{
     profile: boolean;
     commissioners: number;
+    directors: number;
+    shareholders: number;
     subsidiaries: number;
     dividends: number;
   }> {
     if (!detail.Profiles || detail.Profiles.length === 0) {
-      return { profile: false, commissioners: 0, subsidiaries: 0, dividends: 0 };
+      return { profile: false, commissioners: 0, directors: 0, shareholders: 0, subsidiaries: 0, dividends: 0 };
     }
 
     const stock = await stockRepository.findStockByTicker(ticker);
@@ -157,6 +159,7 @@ export const stockSyncService = {
         ...(profile.PapanPencatatan && { listingBoard: profile.PapanPencatatan }),
         ...(profile.TanggalPencatatan && { listingDate: parseIdxDate(profile.TanggalPencatatan) }),
         ...(profile.Logo && { logo: `https://www.idx.co.id${profile.Logo}` }),
+        ...(profile.KegiatanUsahaUtama && { businessActivity: profile.KegiatanUsahaUtama }),
       },
     });
 
@@ -167,6 +170,24 @@ export const stockSyncService = {
       independent: !!k.Independen,
     }));
     const commissionerCount = await stockRepository.replaceCommissioners(stock.id, commissioners);
+
+    // Replace directors
+    const directors = (detail.Direktur ?? []).map((d) => ({
+      name: d.Nama,
+      position: d.Jabatan || "Direktur",
+      type: "direktur" as const,
+      independent: !d.Afiliasi,
+    }));
+    const directorCount = await stockRepository.replaceDirectors(stock.id, directors);
+
+    // Replace shareholders
+    const shareholders = (detail.PemegangSaham ?? []).map((s) => ({
+      name: s.Nama,
+      type: s.Kategori || null,
+      shares: s.Jumlah ?? null,
+      percent: s.Persentase ?? null,
+    }));
+    const shareholderCount = await stockRepository.replaceShareholders(stock.id, shareholders);
 
     // Replace subsidiaries
     const subsidiaries = (detail.AnakPerusahaan ?? []).map((s) => ({
@@ -200,8 +221,35 @@ export const stockSyncService = {
     return {
       profile: true,
       commissioners: commissionerCount,
+      directors: directorCount,
+      shareholders: shareholderCount,
       subsidiaries: subsidiaryCount,
       dividends: dividendCount,
     };
+  },
+
+  // ── IDX Trading Info Sync ──
+
+  async processTradingInfo(ticker: string, data: IDXTradingInfoResponse): Promise<boolean> {
+    const stock = await stockRepository.findStockByTicker(ticker);
+    if (!stock) return false;
+
+    const updates: Parameters<typeof stockRepository.updateTradingInfo>[1] = {};
+
+    if (data.JumlahSahamTercatat != null) {
+      updates.listedShares = BigInt(Math.round(data.JumlahSahamTercatat));
+    }
+    if (data.PersentasePemilikAsing != null) {
+      updates.foreignOwnershipPercent = data.PersentasePemilikAsing;
+    }
+    if (data.KodeISIN != null) {
+      updates.isinCode = String(data.KodeISIN);
+    }
+
+    if (Object.keys(updates).length > 0) {
+      await stockRepository.updateTradingInfo(stock.id, updates);
+      return true;
+    }
+    return false;
   },
 };

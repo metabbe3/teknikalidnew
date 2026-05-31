@@ -25,6 +25,7 @@ export interface AIProvider {
   generateArticle(systemPrompt: string, userPrompt: string): Promise<ArticleGenerationResult>;
   researchKeywords(topic: string, context?: string): Promise<KeywordResearch>;
   discoverTrendingTopics(): Promise<TrendingTopic[]>;
+  generateImagePrompt(context: string, instruction: string): Promise<string>;
   readonly name: string;
 }
 
@@ -192,6 +193,20 @@ Hanya berikan topik yang BENAR-BENAR relevan dan bisa ditulis secara informatif.
     }
 
     return [];
+  }
+
+  async generateImagePrompt(context: string, instruction: string): Promise<string> {
+    const response = await this.client.messages.create({
+      model: this.model,
+      max_tokens: 500,
+      messages: [{ role: "user", content: `${instruction}\n\n${context}` }],
+    });
+
+    return response.content
+      .filter((block): block is Anthropic.TextBlock => block.type === "text")
+      .map((block) => block.text)
+      .join("\n")
+      .trim();
   }
 }
 

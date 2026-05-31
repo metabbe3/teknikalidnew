@@ -16,6 +16,7 @@ export const communityRepository = {
     tickerTag: string | null;
     predictionDirection: string | null;
     predictionTarget: number | null;
+    imageUrl: string | null;
   }) {
     return prisma.post.create({
       data: {
@@ -26,6 +27,7 @@ export const communityRepository = {
         predictionTarget: data.predictionTarget
           ? String(data.predictionTarget)
           : null,
+        imageUrl: data.imageUrl,
       },
       include: { author: { select: AUTHOR_SELECT } },
     });

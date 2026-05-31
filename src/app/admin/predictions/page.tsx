@@ -78,19 +78,19 @@ export default function PredictionsPage() {
     {
       header: "User",
       cell: (r: PredictionData["topPredictors"][0]) => (
-        <span className="text-sm font-medium">@{r.username ?? "unknown"}</span>
+        <span className="text-sm font-bold text-gray-800">@{r.username ?? "unknown"}</span>
       ),
     },
     {
       header: "Predictions",
       cell: (r: PredictionData["topPredictors"][0]) => (
-        <span className="text-sm font-semibold text-blue-600 tabular-nums">{r.total}</span>
+        <span className="text-sm font-bold text-blue-600 tabular-nums">{r.total}</span>
       ),
     },
     {
       header: "Correct",
       cell: (r: PredictionData["topPredictors"][0]) => (
-        <span className="text-sm tabular-nums text-emerald-600">{r.correct}</span>
+        <span className="text-sm font-semibold tabular-nums text-emerald-600">{r.correct}</span>
       ),
     },
     {
@@ -122,7 +122,7 @@ export default function PredictionsPage() {
     {
       header: "Ticker",
       cell: (r: PredictionData["recentPredictions"][0]) => (
-        <span className="font-mono text-sm font-medium">{r.tickerTag?.replace(".JK", "") ?? "-"}</span>
+        <span className="font-mono text-sm font-bold">{r.tickerTag?.replace(".JK", "") ?? "-"}</span>
       ),
     },
     {
@@ -168,9 +168,9 @@ export default function PredictionsPage() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Bull/Bear Distribution */}
-        <Card className="border-gray-200 shadow-sm">
-          <CardHeader className="border-b border-gray-100">
-            <CardTitle className="text-sm font-semibold text-gray-700">Bull vs Bear Distribution</CardTitle>
+        <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+          <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+            <CardTitle className="text-sm font-bold text-gray-800">Bull vs Bear Distribution</CardTitle>
           </CardHeader>
           <CardContent className="pt-4 space-y-3">
             <div className="flex items-center gap-3">
@@ -197,9 +197,9 @@ export default function PredictionsPage() {
         </Card>
 
         {/* Top Predicted Stocks */}
-        <Card className="border-gray-200 shadow-sm">
-          <CardHeader className="border-b border-gray-100">
-            <CardTitle className="text-sm font-semibold text-gray-700">Top Predicted Stocks</CardTitle>
+        <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+          <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+            <CardTitle className="text-sm font-bold text-gray-800">Top Predicted Stocks</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <AdminDataTable
@@ -214,9 +214,9 @@ export default function PredictionsPage() {
       </div>
 
       {/* Top Predictors */}
-      <Card className="border-gray-200 shadow-sm">
-        <CardHeader className="border-b border-gray-100">
-          <CardTitle className="text-sm font-semibold text-gray-700">Top Predictors (min 5 resolved)</CardTitle>
+      <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+          <CardTitle className="text-sm font-bold text-gray-800">Top Predictors (min 5 resolved)</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <AdminDataTable
@@ -230,9 +230,9 @@ export default function PredictionsPage() {
       </Card>
 
       {/* 14-day volume */}
-      <Card className="border-gray-200 shadow-sm">
-        <CardHeader className="border-b border-gray-100">
-          <CardTitle className="text-sm font-semibold text-gray-700">Prediction Volume (14 Days)</CardTitle>
+      <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+          <CardTitle className="text-sm font-bold text-gray-800">Prediction Volume (14 Days)</CardTitle>
         </CardHeader>
         <CardContent className="pt-4">
           {isLoading ? (
@@ -260,9 +260,9 @@ export default function PredictionsPage() {
       </Card>
 
       {/* Recent Predictions */}
-      <Card className="border-gray-200 shadow-sm">
-        <CardHeader className="border-b border-gray-100">
-          <CardTitle className="text-sm font-semibold text-gray-700">Recent Predictions</CardTitle>
+      <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+          <CardTitle className="text-sm font-bold text-gray-800">Recent Predictions</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <AdminDataTable

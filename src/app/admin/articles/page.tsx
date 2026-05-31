@@ -81,7 +81,7 @@ export default function ArticlesAdminPage() {
 
   return (
     <div className="space-y-6">
-      <AdminPageHeader title="Article Management" description="Manage AI-generated articles for SEO content" />
+      <AdminPageHeader title="Article Management" description="Manage AI-generated articles for SEO content" icon={FileText} />
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -94,7 +94,7 @@ export default function ArticlesAdminPage() {
       {/* Actions bar */}
       <div className="flex flex-wrap items-center gap-3">
         <Link href="/admin/articles/generate">
-          <Button className="gap-2">
+          <Button className="gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md shadow-blue-600/20 transition-all">
             <Plus className="h-4 w-4" />
             Generate New Article
           </Button>
@@ -146,7 +146,7 @@ export default function ArticlesAdminPage() {
       ) : (
         <div className="space-y-3">
           {articles.map((article) => (
-            <Card key={article.id} className="group">
+            <Card key={article.id} className="group border-gray-200/80 shadow-md shadow-gray-200/30 hover:shadow-lg hover:-translate-y-0.5 transition-all">
               <CardContent className="p-4">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
@@ -155,8 +155,8 @@ export default function ArticlesAdminPage() {
                         variant={article.status === "PUBLISHED" ? "default" : "secondary"}
                         className={
                           article.status === "PUBLISHED"
-                            ? "bg-emerald-100 text-emerald-700 text-[10px]"
-                            : "bg-amber-100 text-amber-700 text-[10px]"
+                            ? "bg-emerald-100 text-emerald-700 text-[10px] font-bold"
+                            : "bg-amber-100 text-amber-700 text-[10px] font-bold"
                         }
                       >
                         {article.status === "PUBLISHED" ? "Published" : "Draft"}
@@ -179,7 +179,7 @@ export default function ArticlesAdminPage() {
                         <Badge variant="outline" className="text-[10px] font-mono">{article.tickerTag}</Badge>
                       )}
                     </div>
-                    <h3 className="font-semibold text-sm text-gray-900 truncate">{article.title}</h3>
+                    <h3 className="font-bold text-sm text-gray-900 truncate">{article.title}</h3>
                     <p className="text-xs text-gray-500 line-clamp-1 mt-0.5">{article.excerpt}</p>
                     <div className="flex items-center gap-2 mt-2 text-[10px] text-gray-400">
                       <span>{new Date(article.createdAt).toLocaleDateString("id-ID")}</span>
