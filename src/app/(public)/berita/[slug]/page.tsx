@@ -50,7 +50,7 @@ export default async function BeritaArticlePage({
     },
   });
 
-  if (!article || article.status !== "PUBLISHED" || !BERITA_TYPES.includes(article.articleType)) notFound();
+  if (!article || article.status !== "PUBLISHED" || !article.isListed || !BERITA_TYPES.includes(article.articleType)) notFound();
 
   const headings = extractHeadings(article.content);
   const readingTime = estimateReadingTime(article.content);
