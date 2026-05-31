@@ -339,16 +339,19 @@ export function CandlestickChart({
     const s = stateRef.current;
     if (!s || data.length === 0) return;
 
+    const unique = data.filter((d, i) => i === 0 || d.date !== data[i - 1].date);
+    const dateToOrigIdx = new Map(data.map((d, i) => [d.date, i]));
+
     s.candleSeries.setData(
-      data.map((d) => ({ time: d.date as import("lightweight-charts").Time, open: d.open, high: d.high, low: d.low, close: d.close }))
+      unique.map((d) => ({ time: d.date as import("lightweight-charts").Time, open: d.open, high: d.high, low: d.low, close: d.close }))
     );
 
-    const closeData = data.map((d) => ({ time: d.date as import("lightweight-charts").Time, value: d.close }));
+    const closeData = unique.map((d) => ({ time: d.date as import("lightweight-charts").Time, value: d.close }));
     s.lineSeries.setData(closeData);
     s.areaSeries.setData(closeData);
 
     s.volumeSeries.setData(
-      data.map((d) => ({
+      unique.map((d) => ({
         time: d.date as import("lightweight-charts").Time,
         value: d.volume,
         color: d.close >= d.open ? "rgba(13,148,136,0.35)" : "rgba(220,38,38,0.35)",
@@ -357,7 +360,10 @@ export function CandlestickChart({
 
     const toLineData = (values: (number | null)[] | undefined) =>
       values
-        ? data.map((d, i) => ({ time: d.date as import("lightweight-charts").Time, value: values[i] })).filter((d): d is { time: import("lightweight-charts").Time; value: number } => d.value !== null && d.value !== undefined)
+        ? unique.map((d) => {
+            const origIdx = dateToOrigIdx.get(d.date)!;
+            return { time: d.date as import("lightweight-charts").Time, value: values[origIdx] };
+          }).filter((d): d is { time: import("lightweight-charts").Time; value: number } => d.value !== null && d.value !== undefined)
         : [];
 
     if (sma20) s.sma20Series.setData(toLineData(sma20));
