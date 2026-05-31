@@ -9,7 +9,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npx prisma generate
 RUN npm run build
-RUN npx esbuild server.ts --bundle --platform=node --format=cjs --outdir=./dist --external:next --external:socket.io
+RUN npx esbuild server.ts --bundle --platform=node --format=cjs --outdir=./dist --external:next --external:socket.io --external:next-auth
 
 FROM node:24-alpine AS runner
 WORKDIR /app

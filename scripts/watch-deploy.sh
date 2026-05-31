@@ -4,7 +4,7 @@
 # Run in background: ./scripts/watch-deploy.sh
 # Stop: kill $(cat .watch-deploy.pid)
 
-set -e
+set -eo pipefail
 
 DEPLOY_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$DEPLOY_DIR"
@@ -29,7 +29,7 @@ while true; do
 
   if [ "$LOCAL" != "$REMOTE" ]; then
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] New commits detected. Deploying..."
-    bash "$DEPLOY_DIR/scripts/deploy.sh"
+    bash "$DEPLOY_DIR/scripts/deploy.sh" || echo "[$(date '+%Y-%m-%d %H:%M:%S')] Deploy failed. Will retry on next poll."
   fi
 
   sleep "$POLL_INTERVAL"

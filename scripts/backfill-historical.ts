@@ -33,7 +33,10 @@ async function main() {
   }
 
   console.log(`\nBackfill complete: ${success} succeeded, ${failed} failed`);
-  if (failed > 0) console.log(`Resume with: npx tsx scripts/backfill-historical.ts ${start}`);
+  if (failed > 0) {
+    console.log(`Some stocks failed. Re-run to retry (upsert is idempotent):`);
+    console.log(`  npx tsx scripts/backfill-historical.ts ${start}`);
+  }
 }
 
 main()

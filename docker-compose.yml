@@ -6,6 +6,8 @@ services:
     environment:
       - DATABASE_URL=${DOCKER_DATABASE_URL:-postgresql://teknikalid:teknikalid_secret_2024@db:5432/teknikalid}
       - AUTH_SECRET=${AUTH_SECRET:-b/AZq+pIn04xhSsn07vBMc6wdnPMsgKY8qB4hU4UVe8=}
+      - AUTH_URL=${AUTH_URL:-https://teknikal.id}
+      - AUTH_TRUST_HOST=true
       - SENTRY_DSN=${SENTRY_DSN:-}
       - NEXT_PUBLIC_PLAUSIBLE_DOMAIN=${NEXT_PUBLIC_PLAUSIBLE_DOMAIN:-}
     depends_on:
@@ -25,6 +27,8 @@ services:
 
   db:
     image: postgres:16-alpine
+    ports:
+      - "5433:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-teknikalid}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-teknikalid_secret_2024}
