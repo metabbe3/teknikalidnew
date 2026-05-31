@@ -17,6 +17,36 @@ export const articleRepository = {
     });
   },
 
+  findPublishedPaginated(opts: { cursor?: string; limit: number; tag?: string }) {
+    return prisma.article.findMany({
+      where: {
+        status: ArticleStatus.PUBLISHED,
+        isListed: true,
+        articleType: { in: ["STOCK_ANALYSIS", "NEWS", "GENERAL"] },
+        ...(opts.tag ? { tags: { has: opts.tag } } : {}),
+        ...(opts.cursor ? { id: { lt: opts.cursor } } : {}),
+      },
+      orderBy: [{ publishedAt: "desc" }, { id: "desc" }],
+      take: opts.limit + 1,
+      include: {
+        author: { select: { name: true, username: true } },
+      },
+    });
+  },
+
+  findPublishedTags() {
+    return prisma.article
+      .findMany({
+        where: {
+          status: ArticleStatus.PUBLISHED,
+          isListed: true,
+          articleType: { in: ["STOCK_ANALYSIS", "NEWS", "GENERAL"] },
+        },
+        select: { tags: true },
+      })
+      .then((rows) => [...new Set(rows.flatMap((r) => r.tags))].sort());
+  },
+
   findBySlug(slug: string) {
     return prisma.article.findUnique({
       where: { slug },

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
+import { articleRepository } from "@/domains/article/article.repository";
 import { Badge } from "@/components/ui/badge";
-import { Newspaper, TrendingUp } from "lucide-react";
+import { Newspaper } from "lucide-react";
+import { ArticleFeed } from "@/components/article/article-feed";
 
 export const metadata: Metadata = {
   title: "Berita & Analisis Saham — TeknikalID",
@@ -13,32 +14,21 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-const TAG_COLORS: Record<string, string> = {
-  RSI: "#d97706",
-  MACD: "#8b5cf6",
-  "Bollinger Bands": "#ec4899",
-  Stochastic: "#06b6d4",
-  SMA: "#0d9488",
-  EMA: "#14b8a6",
-  Support: "#2563eb",
-  Resistance: "#dc2626",
-  "Pivot Point": "#6366f1",
-  Trading: "#f59e0b",
-  Saham: "#0d9488",
-  Bullish: "#16a34a",
-  Bearish: "#dc2626",
-  Sideways: "#8b5cf6",
-};
-
-function getTagColor(tag: string): string {
-  return TAG_COLORS[tag] ?? "#2563eb";
-}
+const PAGE_SIZE = 12;
 
 const TYPE_LABELS: Record<string, { label: string; color: string }> = {
   STOCK_ANALYSIS: { label: "Analisis Saham", color: "text-blue-500 bg-blue-500/10" },
   NEWS: { label: "Berita Pasar", color: "text-amber-500 bg-amber-500/10" },
   GENERAL: { label: "Opini & Insight", color: "text-purple-500 bg-purple-500/10" },
 };
+
+function formatDate(date: Date | string): string {
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(date));
+}
 
 export default async function BeritaPage({
   searchParams,
@@ -47,20 +37,22 @@ export default async function BeritaPage({
 }) {
   const { tag: activeTag } = await searchParams;
 
-  const allArticles = await prisma.article.findMany({
-    where: { status: "PUBLISHED", isListed: true, articleType: { in: ["STOCK_ANALYSIS", "NEWS", "GENERAL"] } },
-    orderBy: { publishedAt: "desc" },
-    include: {
-      author: { select: { name: true, username: true } },
-    },
-  });
+  const [allTags, rows] = await Promise.all([
+    articleRepository.findPublishedTags(),
+    articleRepository.findPublishedPaginated({
+      limit: PAGE_SIZE + 1, // 1 for featured + PAGE_SIZE for grid + 1 to detect hasMore
+      tag: activeTag,
+    }),
+  ]);
 
-  const allTags = [...new Set(allArticles.flatMap((a) => a.tags))].sort();
-  const articles = activeTag
-    ? allArticles.filter((a) => a.tags.includes(activeTag))
-    : allArticles;
-  const featuredArticle = articles[0];
-  const gridArticles = articles.slice(1);
+  const hasMoreThanFirstPage = rows.length > PAGE_SIZE + 1;
+  const pageRows = hasMoreThanFirstPage ? rows.slice(0, PAGE_SIZE + 1) : rows;
+
+  const featuredArticle = pageRows[0];
+  const gridArticles = pageRows.slice(1);
+  const nextCursor = hasMoreThanFirstPage && gridArticles.length > 0
+    ? gridArticles[gridArticles.length - 1].id
+    : null;
 
   return (
     <div className="min-h-screen bg-bg-primary">
@@ -107,172 +99,100 @@ export default async function BeritaPage({
           </div>
         )}
 
-        {articles.length === 0 ? (
-          <div className="text-center py-20">
-            <TrendingUp className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-400">
-              {activeTag
-                ? `Belum ada analisis untuk tag "${activeTag}".`
-                : "Belum ada analisis saham yang dipublikasikan."}
-            </p>
-            {activeTag && (
-              <Link
-                href="/berita"
-                className="inline-block mt-4 text-sm text-accent hover:underline"
-              >
-                Lihat semua analisis
-              </Link>
-            )}
-          </div>
-        ) : (
-          <>
-            {/* Featured article */}
-            {featuredArticle && (
-              <Link
-                href={`/berita/${featuredArticle.slug}`}
-                className="block mb-8"
-              >
-                <div className="akademi-featured depth-shadow-strong p-6 sm:p-8 hover:scale-[1.005] transition-transform duration-300">
-                  <div className="relative z-10 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6">
-                    <div>
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded ${TYPE_LABELS[featuredArticle.articleType]?.color ?? "text-blue-500 bg-blue-500/10"}`}>
-                          {TYPE_LABELS[featuredArticle.articleType]?.label ?? "Artikel"}
-                        </span>
-                        {featuredArticle.tickerTag && (
-                          <span className="text-[10px] font-mono font-semibold text-accent bg-accent/10 px-2 py-0.5 rounded">
-                            {featuredArticle.tickerTag.replace(".JK", "")}
-                          </span>
-                        )}
-                        <span className="text-xs text-text-tertiary font-mono">
-                          {formatDate(featuredArticle.publishedAt)}
+        {/* Featured article */}
+        {featuredArticle && (
+          <Link
+            href={`/berita/${featuredArticle.slug}`}
+            className="block mb-8"
+          >
+            <div className="akademi-featured depth-shadow-strong p-6 sm:p-8 hover:scale-[1.005] transition-transform duration-300">
+              <div className="relative z-10 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6">
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded ${TYPE_LABELS[featuredArticle.articleType]?.color ?? "text-blue-500 bg-blue-500/10"}`}>
+                      {TYPE_LABELS[featuredArticle.articleType]?.label ?? "Artikel"}
+                    </span>
+                    {featuredArticle.tickerTag && (
+                      <span className="text-[10px] font-mono font-semibold text-accent bg-accent/10 px-2 py-0.5 rounded">
+                        {featuredArticle.tickerTag.replace(".JK", "")}
+                      </span>
+                    )}
+                    <span className="text-xs text-text-tertiary font-mono">
+                      {formatDate(featuredArticle.publishedAt)}
+                    </span>
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-bold text-text-primary mb-3 leading-snug">
+                    {featuredArticle.title}
+                  </h2>
+                  <p className="text-sm text-text-secondary line-clamp-3 mb-4">
+                    {featuredArticle.excerpt}
+                  </p>
+                  <div className="flex items-center gap-3">
+                    {featuredArticle.author.name && (
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-accent/10 text-accent text-[10px] font-semibold flex items-center justify-center">
+                          {featuredArticle.author.name[0].toUpperCase()}
+                        </div>
+                        <span className="text-xs text-text-secondary">
+                          {featuredArticle.author.name}
                         </span>
                       </div>
-                      <h2 className="text-xl sm:text-2xl font-bold text-text-primary mb-3 leading-snug">
-                        {featuredArticle.title}
-                      </h2>
-                      <p className="text-sm text-text-secondary line-clamp-3 mb-4">
-                        {featuredArticle.excerpt}
-                      </p>
-                      <div className="flex items-center gap-3">
-                        {featuredArticle.author.name && (
-                          <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-accent/10 text-accent text-[10px] font-semibold flex items-center justify-center">
-                              {featuredArticle.author.name[0].toUpperCase()}
-                            </div>
-                            <span className="text-xs text-text-secondary">
-                              {featuredArticle.author.name}
-                            </span>
-                          </div>
-                        )}
-                        {featuredArticle.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1.5">
-                            {featuredArticle.tags.slice(0, 3).map((tag) => (
-                              <Badge
-                                key={tag}
-                                variant="secondary"
-                                className="text-[10px] bg-gray-100 text-text-secondary border-0"
-                              >
-                                {tag}
-                              </Badge>
-                            ))}
-                          </div>
-                        )}
+                    )}
+                    {featuredArticle.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {featuredArticle.tags.slice(0, 3).map((tag) => (
+                          <Badge
+                            key={tag}
+                            variant="secondary"
+                            className="text-[10px] bg-gray-100 text-text-secondary border-0"
+                          >
+                            {tag}
+                          </Badge>
+                        ))}
                       </div>
-                    </div>
-                    {/* Decorative chart stripes visible on md+ */}
-                    <div className="hidden md:flex items-end gap-[3px] h-24 opacity-30">
-                      {[40, 65, 50, 80, 55, 70, 45, 90, 60, 75, 55, 85, 50, 70, 60].map(
-                        (h, i) => (
-                          <div
-                            key={i}
-                            className={`w-[3px] rounded-full ${
-                              i % 3 === 0
-                                ? "bg-bearish/40"
-                                : i % 3 === 1
-                                ? "bg-bullish/40"
-                                : "bg-blue-400/30"
-                            }`}
-                            style={{ height: `${h}%` }}
-                          />
-                        )
-                      )}
-                    </div>
+                    )}
                   </div>
                 </div>
-              </Link>
-            )}
-
-            {/* Article grid */}
-            {gridArticles.length > 0 && (
-              <div className="grid gap-5 sm:grid-cols-2 stagger-grid">
-                {gridArticles.map((article, i) => (
-                  <Link
-                    key={article.id}
-                    href={`/berita/${article.slug}`}
-                    style={
-                      { "--stagger-i": i, "--card-accent": getTagColor(article.tags[0] ?? "") } as React.CSSProperties
-                    }
-                  >
-                    <div className="akademi-card depth-shadow h-full overflow-hidden p-5">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <span className={`text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded ${TYPE_LABELS[article.articleType]?.color ?? "text-blue-500 bg-blue-500/10"}`}>
-                            {TYPE_LABELS[article.articleType]?.label ?? "Artikel"}
-                          </span>
-                          <span className="text-[11px] text-text-tertiary font-mono">
-                            {formatDate(article.publishedAt)}
-                          </span>
-                          {article.tickerTag && (
-                            <span className="text-[10px] font-mono font-semibold text-accent">
-                              {article.tickerTag.replace(".JK", "")}
-                            </span>
-                          )}
-                        </div>
-                        {article.tags.length > 0 && (
-                          <span
-                            className="text-[10px] font-medium px-2 py-0.5 rounded-full"
-                            style={{
-                              background: `${getTagColor(article.tags[0])}12`,
-                              color: getTagColor(article.tags[0]),
-                            }}
-                          >
-                            {article.tags[0]}
-                          </span>
-                        )}
-                      </div>
-                      <h3 className="text-base font-semibold text-text-primary mb-2 leading-snug group-hover:text-accent transition-colors">
-                        {article.title}
-                      </h3>
-                      <p className="text-sm text-text-secondary line-clamp-2 mb-4">
-                        {article.excerpt}
-                      </p>
-                      <div className="flex items-center gap-2 mt-auto">
-                        {article.author.name && (
-                          <div className="w-5 h-5 rounded-full bg-accent/10 text-accent text-[9px] font-semibold flex items-center justify-center">
-                            {article.author.name[0].toUpperCase()}
-                          </div>
-                        )}
-                        <span className="text-xs text-text-tertiary">
-                          {article.author.name ?? article.author.username}
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
+                {/* Decorative chart stripes visible on md+ */}
+                <div className="hidden md:flex items-end gap-[3px] h-24 opacity-30">
+                  {[40, 65, 50, 80, 55, 70, 45, 90, 60, 75, 55, 85, 50, 70, 60].map(
+                    (h, i) => (
+                      <div
+                        key={i}
+                        className={`w-[3px] rounded-full ${
+                          i % 3 === 0
+                            ? "bg-bearish/40"
+                            : i % 3 === 1
+                            ? "bg-bullish/40"
+                            : "bg-blue-400/30"
+                        }`}
+                        style={{ height: `${h}%` }}
+                      />
+                    )
+                  )}
+                </div>
               </div>
-            )}
-          </>
+            </div>
+          </Link>
         )}
+
+        {/* Article grid with Load More */}
+        <ArticleFeed
+          initialArticles={gridArticles.map((a) => ({
+            id: a.id,
+            slug: a.slug,
+            title: a.title,
+            excerpt: a.excerpt,
+            articleType: a.articleType,
+            tickerTag: a.tickerTag,
+            tags: a.tags,
+            publishedAt: a.publishedAt.toISOString(),
+            author: a.author,
+          }))}
+          initialCursor={nextCursor}
+          activeTag={activeTag}
+        />
       </div>
     </div>
   );
-}
-
-function formatDate(date: Date): string {
-  return new Intl.DateTimeFormat("id-ID", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date(date));
 }
