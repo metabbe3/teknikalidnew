@@ -108,6 +108,23 @@ export const communityRepository = {
     });
   },
 
+  deletePost(id: string) {
+    return prisma.$transaction([
+      prisma.like.deleteMany({ where: { postId: id } }),
+      prisma.bookmark.deleteMany({ where: { postId: id } }),
+      prisma.comment.deleteMany({ where: { postId: id } }),
+      prisma.post.delete({ where: { id } }),
+    ]);
+  },
+
+  updatePost(id: string, data: { content: string }) {
+    return prisma.post.update({
+      where: { id },
+      data: { content: data.content },
+      include: { author: { select: AUTHOR_SELECT } },
+    });
+  },
+
   // Comments
 
   findCommentById(id: string) {

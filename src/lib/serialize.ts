@@ -125,6 +125,9 @@ export function serializeIndicator(
     smaCrossDate: Date | null;
     emaCrossSignal: string | null;
     emaCrossDate: Date | null;
+    signalScore: Decimal | null;
+    signalLabel: string | null;
+    isGorengan: boolean;
   }
 ) {
   return {
@@ -152,5 +155,8 @@ export function serializeIndicator(
     smaCrossDate: row.smaCrossDate ? row.smaCrossDate.toISOString() : null,
     emaCrossSignal: row.emaCrossSignal,
     emaCrossDate: row.emaCrossDate ? row.emaCrossDate.toISOString() : null,
+    signalScore: decimalToNumber(row.signalScore),
+    signalLabel: row.signalLabel,
+    isGorengan: row.isGorengan,
   };
 }

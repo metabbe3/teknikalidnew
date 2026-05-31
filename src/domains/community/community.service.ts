@@ -270,6 +270,41 @@ export const communityService = {
     return { deleted: true };
   },
 
+  async deletePost(
+    user: { id: string; role: string },
+    postId: string
+  ) {
+    const post = await communityRepository.findPostAuthorId(postId);
+    if (!post) throw new PostNotFoundError();
+    if (post.authorId !== user.id && user.role !== "ADMIN") {
+      throw new NotAuthorizedError();
+    }
+
+    await communityRepository.deletePost(postId);
+    return { deleted: true };
+  },
+
+  async updatePost(
+    user: { id: string; role: string },
+    postId: string,
+    content: string
+  ) {
+    if (!content || typeof content !== "string") {
+      throw new ContentRequiredError();
+    }
+    if (content.length > 1000) {
+      throw new ContentTooLongError(1000);
+    }
+
+    const post = await communityRepository.findPostAuthorId(postId);
+    if (!post) throw new PostNotFoundError();
+    if (post.authorId !== user.id && user.role !== "ADMIN") {
+      throw new NotAuthorizedError();
+    }
+
+    return communityRepository.updatePost(postId, { content });
+  },
+
   async getStockTickerComments(ticker: string, cursor?: string, limit: number = 20) {
     if (!(await stockRepository.findStockByTicker(ticker))) throw new InvalidTickerError();
 

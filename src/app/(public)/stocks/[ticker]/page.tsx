@@ -338,13 +338,22 @@ export default async function StockDetailPage({
                   </div>
 
                   <div className="flex items-center gap-2 flex-wrap justify-end">
-                    <span className={`text-xs font-bold font-mono px-3 py-1 rounded-md ${
-                      outlook === "Bullish" ? "bg-bullish/20 text-bullish"
-                      : outlook === "Bearish" ? "bg-bearish/20 text-bearish"
-                      : "bg-white/[0.08] text-gray-300"
-                    }`}>
-                      {outlook}
-                    </span>
+                    {indicators?.signalLabel && (
+                      <span className={`text-xs font-bold font-mono px-3 py-1 rounded-md ${
+                        indicators.signalLabel === "Strong Bullish" ? "bg-bullish/20 text-bullish"
+                        : indicators.signalLabel === "Bullish" ? "bg-bullish/15 text-bullish"
+                        : indicators.signalLabel === "Bearish" ? "bg-bearish/15 text-bearish"
+                        : indicators.signalLabel === "Strong Bearish" ? "bg-bearish/20 text-bearish"
+                        : "bg-white/[0.08] text-gray-300"
+                      }`}>
+                        {indicators.signalLabel === "Strong Bullish" ? "▲▲" : indicators.signalLabel === "Bullish" ? "▲" : indicators.signalLabel === "Strong Bearish" ? "▼▼" : indicators.signalLabel === "Bearish" ? "▼" : "◆"} {indicators.signalLabel}
+                      </span>
+                    )}
+                    {indicators?.isGorengan && (
+                      <span className="text-xs font-bold font-mono px-3 py-1 rounded-md bg-amber-500/20 text-amber-400">
+                        ⚠ Gorengan
+                      </span>
+                    )}
                     {smaCrossText && (
                       <CrossBadge text={smaCrossText} isBullish={indicators?.smaCrossSignal === "golden_cross"} />
                     )}
@@ -418,6 +427,9 @@ export default async function StockDetailPage({
                 No indicator data available
               </div>
             )}
+            <p className="text-[10px] text-text-tertiary text-center mt-2">
+              Sinyal teknikal berdasarkan indikator. Bukan rekomendasi investasi.
+            </p>
           </div>
           <div className="space-y-4">
             <KeyStatistics

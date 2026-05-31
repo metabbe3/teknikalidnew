@@ -21,6 +21,17 @@ import {
 } from "@/lib/indicators";
 import type { TradingPlan } from "@/lib/trading-plan";
 import type { SwingPoint, MarketStructure } from "@/lib/indicators";
+import {
+  translateRSI,
+  translateMACD,
+  translateStochastic,
+  translateSMA,
+  translateEMA,
+  translateADX,
+  translateSupertrend,
+  translateOBV,
+  translateVWAP,
+} from "@/lib/indicator-translations";
 import type { Prisma } from "@/generated/prisma/client";
 import { INTERVAL } from "@/lib/constants";
 import { stockRepository } from "./stock.repository";
@@ -273,7 +284,56 @@ export const technicalAnalysisService = {
     const result = await this.calculateIndicators(ticker);
     if (!result) return;
 
-    await stockRepository.upsertStockIndicator(result.stockId, result.date, result.interval, result.data);
+    const data = { ...result.data };
+
+    // Compute signal score
+    const signal = computeSignalScore({
+      price: data.sma20 as number | null ? (data.sma20 as number) : null,
+      sma20: data.sma20 as number | null,
+      sma50: data.sma50 as number | null,
+      sma200: data.sma200 as number | null,
+      ema12: data.ema12 as number | null,
+      ema26: data.ema26 as number | null,
+      rsi14: data.rsi14 as number | null,
+      macdHist: data.macdHist as number | null,
+      stochK: data.stochK as number | null,
+      stochD: data.stochD as number | null,
+      adx: data.adx as number | null,
+      supertrend: data.supertrend as number | null,
+      obvTrend: data.obvTrend as string | null,
+      vwap: data.vwap as number | null,
+    });
+    data.signalScore = signal.score;
+    data.signalLabel = signal.label;
+
+    await stockRepository.upsertStockIndicator(result.stockId, result.date, result.interval, data);
+
+    // Compute gorengan flag separately (needs price + volume data)
+    const latestPrice = await stockRepository.findLatestPrice(result.stockId);
+    if (latestPrice) {
+      const price = Number(latestPrice.close);
+      const high = Number(latestPrice.high);
+      const low = Number(latestPrice.low);
+      const volume = Number(latestPrice.volume);
+      const sma200 = data.sma200 as number | null;
+
+      const avgVolRows = await stockRepository.findAvgVolumeByStockIds([result.stockId]);
+      const avgVolume = avgVolRows.get(result.stockId) ?? null;
+
+      const fund = await stockRepository.findLatestMarketCap(result.stockId);
+      const marketCap = fund?.marketCap ? Number(fund.marketCap) : null;
+
+      const isGorengan = detectGorengan({
+        price, high, low, sma200, volume, avgVolume20d: avgVolume, marketCap,
+      });
+
+      await stockRepository.updateIndicatorGorengan(
+        result.stockId,
+        result.date,
+        result.interval,
+        isGorengan
+      );
+    }
   },
 
   async calculateAllIndicators(): Promise<void> {
@@ -912,6 +972,123 @@ export const technicalAnalysisService = {
     };
   },
 };
+
+type Sentiment = "positif" | "negatif" | "netral";
+
+interface SignalInput {
+  price: number | null;
+  sma20: number | null;
+  sma50: number | null;
+  sma200: number | null;
+  ema12: number | null;
+  ema26: number | null;
+  rsi14: number | null;
+  macdHist: number | null;
+  stochK: number | null;
+  stochD: number | null;
+  adx: number | null;
+  supertrend: number | null;
+  obvTrend: string | null;
+  vwap: number | null;
+}
+
+const SIGNAL_LABELS = [
+  { max: -0.6, label: "Strong Bearish" },
+  { max: -0.2, label: "Bearish" },
+  { max: 0.2, label: "Netral" },
+  { max: 0.6, label: "Bullish" },
+  { max: 1.01, label: "Strong Bullish" },
+] as const;
+
+function sentimentToValue(s: Sentiment): number {
+  return s === "positif" ? 1 : s === "negatif" ? -1 : 0;
+}
+
+export function computeSignalScore(input: SignalInput): {
+  score: number;
+  label: string;
+  breakdown: { name: string; sentiment: Sentiment; weight: number }[];
+} {
+  const breakdown: { name: string; sentiment: Sentiment; weight: number }[] = [];
+
+  // Trend indicators (40% total, ~10% each)
+  const sma = translateSMA(input.sma20, input.sma50, input.sma200, input.price);
+  breakdown.push({ name: "SMA", sentiment: sma.sentiment, weight: 0.10 });
+
+  const ema = translateEMA(input.ema12, input.ema26, input.price);
+  breakdown.push({ name: "EMA", sentiment: ema.sentiment, weight: 0.10 });
+
+  const st = translateSupertrend(input.price, input.supertrend);
+  breakdown.push({ name: "Supertrend", sentiment: st.sentiment, weight: 0.10 });
+
+  const adx = translateADX(input.adx);
+  breakdown.push({ name: "ADX", sentiment: adx.sentiment, weight: 0.10 });
+
+  // Momentum indicators (35% total, ~12% each)
+  const rsi = translateRSI(input.rsi14);
+  breakdown.push({ name: "RSI", sentiment: rsi.sentiment, weight: 0.12 });
+
+  const macd = translateMACD(input.macdHist);
+  breakdown.push({ name: "MACD", sentiment: macd.sentiment, weight: 0.12 });
+
+  const stoch = translateStochastic(input.stochK, input.stochD);
+  breakdown.push({ name: "Stochastic", sentiment: stoch.sentiment, weight: 0.11 });
+
+  // Volume indicators (25% total, ~12.5% each)
+  const obv = translateOBV(input.obvTrend);
+  breakdown.push({ name: "OBV", sentiment: obv.sentiment, weight: 0.125 });
+
+  const vwap = translateVWAP(input.price, input.vwap);
+  breakdown.push({ name: "VWAP", sentiment: vwap.sentiment, weight: 0.125 });
+
+  const rawScore = breakdown.reduce(
+    (sum, b) => sum + sentimentToValue(b.sentiment) * b.weight,
+    0
+  );
+
+  const score = Math.round(rawScore * 100) / 100;
+  const label = SIGNAL_LABELS.find((l) => score < l.max)?.label ?? "Strong Bullish";
+
+  return { score, label, breakdown };
+}
+
+export function detectGorengan(params: {
+  price: number;
+  high: number;
+  low: number;
+  sma200: number | null;
+  volume: number;
+  avgVolume20d: number | null;
+  marketCap: number | null;
+}): boolean {
+  let flags = 0;
+
+  // Volume > 5x 20-day average
+  if (params.avgVolume20d && params.avgVolume20d > 0 && params.volume > params.avgVolume20d * 5) {
+    flags++;
+  }
+
+  // Daily price swing > 15%
+  const swing = params.price > 0 ? (params.high - params.low) / params.price : 0;
+  if (swing > 0.15) {
+    flags++;
+  }
+
+  // Market cap < 1T IDR
+  if (params.marketCap !== null && params.marketCap < 1_000_000_000_000) {
+    flags++;
+  }
+
+  // Price deviates > 40% from SMA200
+  if (params.sma200 && params.sma200 > 0) {
+    const deviation = Math.abs(params.price - params.sma200) / params.sma200;
+    if (deviation > 0.4) {
+      flags++;
+    }
+  }
+
+  return flags >= 2;
+}
 
 function calcConfidence(rsi14: number | null, riskReward: number): "high" | "medium" | "low" {
   if (rsi14 !== null && rsi14 >= 30 && rsi14 <= 70 && riskReward >= 2) return "high";

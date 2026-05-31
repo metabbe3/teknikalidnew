@@ -266,6 +266,28 @@ export const stockRepository = {
     });
   },
 
+  updateIndicatorGorengan(stockId: number, date: Date, interval: string, isGorengan: boolean) {
+    return prisma.stockIndicator.update({
+      where: { stockId_date_interval: { stockId, date, interval } },
+      data: { isGorengan },
+    });
+  },
+
+  findLatestPrice(stockId: number) {
+    return prisma.stockPrice.findFirst({
+      where: { stockId },
+      orderBy: { date: "desc" },
+    });
+  },
+
+  findLatestMarketCap(stockId: number) {
+    return prisma.stockFundamental.findFirst({
+      where: { stockId },
+      orderBy: { date: "desc" },
+      select: { marketCap: true },
+    });
+  },
+
   async batchUpsertTodayPrices(items: { stockId: number; date: Date; open: number; high: number; low: number; close: number; volume: bigint }[]) {
     if (items.length === 0) return 0;
     await prisma.$transaction(

@@ -107,6 +107,10 @@ model StockIndicator {
   emaCrossSignal  String?   @db.VarChar(20)
   emaCrossDate    DateTime? @db.Date
 
+  signalScore     Decimal?  @db.Decimal(5, 2)
+  signalLabel     String?   @db.VarChar(20)
+  isGorengan      Boolean   @default(false)
+
   stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
 
   @@unique([stockId, date, interval])

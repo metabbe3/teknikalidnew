@@ -14,6 +14,138 @@ import { FollowButton } from "./follow-button";
 import { renderContent } from "./render-content";
 import type { Post } from "@/hooks/use-posts";
 
+function PostMenu({
+  postId,
+  postContent,
+  isAuthor,
+  isAdmin,
+}: {
+  postId: string;
+  postContent: string;
+  isAuthor: boolean;
+  isAdmin: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editContent, setEditContent] = useState(postContent);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const queryClient = useQueryClient();
+
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch(`/api/posts/${postId}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Gagal menghapus");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch(`/api/posts/${postId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: editContent }),
+      });
+      if (!res.ok) throw new Error("Gagal mengupdate");
+      return res.json();
+    },
+    onSuccess: () => {
+      setEditing(false);
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+  });
+
+  if (!isAuthor && !isAdmin) return null;
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="p-1.5 rounded-lg text-text-tertiary hover:text-text-secondary hover:bg-bg-hover transition-colors"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="12" cy="12" r="1" /><circle cx="12" cy="5" r="1" /><circle cx="12" cy="19" r="1" />
+        </svg>
+      </button>
+
+      {open && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => { setOpen(false); setConfirmDelete(false); }} />
+          <div className="absolute right-0 top-8 z-20 bg-bg-card rounded-lg depth-shadow border border-border py-1 min-w-[140px]">
+            {(isAuthor || isAdmin) && (
+              <button
+                onClick={() => { setEditing(true); setOpen(false); }}
+                className="w-full text-left px-3 py-2 text-sm text-text-primary hover:bg-bg-hover transition-colors"
+              >
+                Edit
+              </button>
+            )}
+            <button
+              onClick={() => setConfirmDelete(true)}
+              className="w-full text-left px-3 py-2 text-sm text-bearish hover:bg-bg-hover transition-colors"
+            >
+              Hapus
+            </button>
+            {confirmDelete && (
+              <div className="px-3 py-2 border-t border-border">
+                <p className="text-xs text-text-tertiary mb-2">Yakin ingin menghapus?</p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => deleteMutation.mutate()}
+                    disabled={deleteMutation.isPending}
+                    className="text-xs bg-bearish text-white px-3 py-1 rounded font-medium hover:opacity-90 disabled:opacity-50"
+                  >
+                    {deleteMutation.isPending ? "Menghapus..." : "Hapus"}
+                  </button>
+                  <button
+                    onClick={() => setConfirmDelete(false)}
+                    className="text-xs text-text-tertiary hover:text-text-secondary px-2 py-1"
+                  >
+                    Batal
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
+      {editing && (
+        <div className="fixed inset-0 z-30 bg-black/40 flex items-center justify-center p-4" onClick={() => setEditing(false)}>
+          <div className="bg-bg-card rounded-xl depth-shadow p-4 w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-sm font-semibold text-text-primary mb-3">Edit Post</h3>
+            <textarea
+              value={editContent}
+              onChange={(e) => setEditContent(e.target.value)}
+              maxLength={1000}
+              rows={4}
+              className="w-full rounded-lg border border-border bg-bg-primary text-text-primary text-sm p-3 resize-none focus:outline-none focus:ring-2 focus:ring-teal-500/30"
+            />
+            <div className="flex justify-end gap-2 mt-3">
+              <button
+                onClick={() => setEditing(false)}
+                className="text-sm text-text-tertiary hover:text-text-secondary px-3 py-1.5"
+              >
+                Batal
+              </button>
+              <button
+                onClick={() => updateMutation.mutate()}
+                disabled={updateMutation.isPending || !editContent.trim()}
+                className="text-sm bg-accent text-white px-4 py-1.5 rounded-lg font-medium hover:bg-accent/90 disabled:opacity-50"
+              >
+                {updateMutation.isPending ? "Menyimpan..." : "Simpan"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 interface PostCardProps {
   post: Post;
 }
@@ -99,6 +231,12 @@ export function PostCard({ post }: PostCardProps) {
           <FollowButton userId={post.author.id} size="sm" initialFollowing={post.followingAuthor} />
         </div>
         <div className="flex items-center gap-1 shrink-0">
+          <PostMenu
+            postId={post.id}
+            postContent={post.content}
+            isAuthor={session?.user?.id === post.author.id}
+            isAdmin={session?.user?.role === "ADMIN"}
+          />
           <BookmarkButton postId={post.id} initialBookmarked={post.bookmarkedByMe} />
           <ReportButton targetType="POST" targetId={post.id} />
         </div>
