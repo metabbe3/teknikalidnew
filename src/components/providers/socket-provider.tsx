@@ -8,7 +8,7 @@ import {
   useRef,
   type ReactNode,
 } from "react";
-import { io, type Socket } from "socket.io-client";
+import type { Socket } from "socket.io-client";
 import { useSession } from "next-auth/react";
 
 const SocketContext = createContext<Socket | null>(null);
@@ -30,16 +30,19 @@ export function SocketProvider({ children }: { children: ReactNode }) {
 
     if (socketRef.current) return;
 
-    const s = io({
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionAttempts: 20,
+    // Dynamic import — socket.io-client (~30KB gzipped) is only loaded when authenticated
+    import("socket.io-client").then(({ io }) => {
+      const s = io({
+        reconnection: true,
+        reconnectionDelay: 1000,
+        reconnectionAttempts: 20,
+      });
+      socketRef.current = s;
+      setSocket(s);
     });
-    socketRef.current = s;
-    setSocket(s);
 
     return () => {
-      s.disconnect();
+      socketRef.current?.disconnect();
       socketRef.current = null;
     };
   }, [status]);

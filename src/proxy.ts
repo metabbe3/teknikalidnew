@@ -66,6 +66,12 @@ export async function proxy(request: NextRequest) {
     response.headers.set(key, value);
   }
 
+  // Cache immutable static assets (fonts, images with hashes)
+  const pathname = request.nextUrl.pathname;
+  if (pathname.match(/\.\w{8,}\.(js|css|woff2?|ttf|ico|png|jpg|svg|webp)$/)) {
+    response.headers.set("Cache-Control", "public, max-age=31536000, immutable");
+  }
+
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
     ?? request.headers.get("x-real-ip")
     ?? "unknown";

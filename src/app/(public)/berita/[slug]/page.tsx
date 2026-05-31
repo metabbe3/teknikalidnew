@@ -178,6 +178,26 @@ export default async function BeritaArticlePage({
               {/* Article body */}
               <ArticleContent content={article.content} />
 
+              {/* Source attribution */}
+              {article.generationMeta &&
+                typeof article.generationMeta === "object" &&
+                "sourceUrl" in article.generationMeta && (
+                  <div className="mt-8 p-4 bg-bg-card rounded-xl depth-shadow border-l-4 border-accent/30">
+                    <p className="text-xs text-text-tertiary font-medium mb-1">Sumber Berita</p>
+                    <a
+                      href={String(article.generationMeta.sourceUrl)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-accent hover:underline"
+                    >
+                      {String(article.generationMeta.sourceName ?? "Sumber Eksternal")}
+                      {"originalTitle" in article.generationMeta && (
+                        <span className="text-text-secondary"> — &ldquo;{String(article.generationMeta.originalTitle)}&rdquo;</span>
+                      )}
+                    </a>
+                  </div>
+                )}
+
               {/* Bottom CTA banner */}
               <div className="akademi-cta-banner mt-12 p-8">
                 <div className="relative z-10 space-y-4">

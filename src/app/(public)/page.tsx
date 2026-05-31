@@ -1,11 +1,11 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { decimalToNumber } from "@/lib/serialize";
 import { SITE_URL, IDX_STOCKS, SECTORS } from "@/lib/constants";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { technicalAnalysisService } from "@/domains/stock/technical-analysis.service";
-import type { MarketStatusResult } from "@/lib/market-hours";
 import { FeaturedStockCard } from "@/components/home/featured-stock-card";
 import { SectorHeatmap } from "@/components/home/sector-heatmap";
 import { PlatformFeatures } from "@/components/home/platform-features";
@@ -22,47 +22,108 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
+// Force dynamic rendering — DB not available at build time in Docker
 export const dynamic = "force-dynamic";
 
-export default async function HomePage() {
-  const [overview, sparklineMap, sampleDetail, oversoldRaw, marketInfo] = await Promise.all([
-    stockMarketService.getMarketOverview(),
+// ── Skeleton fallbacks ──────────────────────────────────────────────
+
+function FeaturedSkeleton() {
+  return (
+    <section className="space-y-5">
+      <div className="flex items-center gap-3">
+        <div className="w-1 h-6 bg-accent rounded-full" />
+        <h2 className="text-lg font-semibold tracking-tight">Saham Paling Aktif</h2>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="h-[120px] bg-bg-card rounded-xl animate-pulse" />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function SectorSkeleton() {
+  return (
+    <section className="space-y-5">
+      <div className="flex items-center gap-3">
+        <div className="w-1 h-6 bg-accent rounded-full" />
+        <h2 className="text-lg font-semibold tracking-tight">Performa Sektor</h2>
+      </div>
+      <div className="flex flex-wrap gap-3">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="h-[80px] min-w-[140px] bg-bg-card rounded-xl animate-pulse" />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function PreviewSkeleton() {
+  return (
+    <section className="space-y-5">
+      <div className="flex items-center gap-3">
+        <div className="w-1 h-6 bg-accent rounded-full" />
+        <h2 className="text-lg font-semibold tracking-tight">Coba Langsung</h2>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="h-[200px] bg-bg-card rounded-xl animate-pulse" />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ── Async sub-components for Suspense ───────────────────────────────
+
+type OverviewStock = {
+  ticker: string;
+  name: string;
+  sector: string;
+  close: number | null;
+  changePercent: number;
+};
+
+type FeaturedItem = {
+  ticker: string;
+  name: string;
+  sector: string;
+  close: number | null;
+  change: number | null;
+  changePercent: number | null;
+  badge?: string;
+  badgeColor?: string;
+};
+
+async function FeaturedStocksSection({
+  gainers,
+  losers,
+}: {
+  gainers: OverviewStock[];
+  losers: OverviewStock[];
+}) {
+  const [sparklineMap, oversoldRaw] = await Promise.all([
     stockMarketService.getSparklines(),
-    stockMarketService.getStockDetailForPage("BBCA.JK").catch(() => null),
-    prisma.stockIndicator.findMany({
-      where: {
-        interval: "1d",
-        rsi14: { lt: 35 },
-        stock: { isActive: true },
-      },
-      include: {
-        stock: {
-          include: {
-            prices: { orderBy: { date: "desc" }, take: 2 },
+    prisma.stockIndicator
+      .findMany({
+        where: {
+          interval: "1d",
+          rsi14: { lt: 35 },
+          stock: { isActive: true },
+        },
+        include: {
+          stock: {
+            include: {
+              prices: { orderBy: { date: "desc" }, take: 2 },
+            },
           },
         },
-      },
-      orderBy: { rsi14: "asc" },
-      take: 6,
-    }).catch(() => []),
-    stockMarketService.getMarketStatusForPage(),
+        orderBy: { rsi14: "asc" },
+        take: 6,
+      })
+      .catch(() => []),
   ]);
-
-  const isClosed = !marketInfo.marketStatus.isOpen;
-
-  const { gainers, losers, sectors } = overview;
-
-  // Build curated featured stocks: 2 gainers + 2 losers + 2 oversold
-  type FeaturedItem = {
-    ticker: string;
-    name: string;
-    sector: string;
-    close: number | null;
-    change: number | null;
-    changePercent: number | null;
-    badge?: string;
-    badgeColor?: string;
-  };
 
   const featuredRaw: FeaturedItem[] = [
     ...gainers.slice(0, 2).map((s) => ({
@@ -102,7 +163,29 @@ export default async function HomePage() {
     return true;
   });
 
-  // Generate sample trading plan for BBCA
+  return (
+    <section className="space-y-5">
+      <div className="flex items-center gap-3">
+        <div className="w-1 h-6 bg-accent rounded-full" aria-hidden="true" />
+        <h2 className="text-lg font-semibold tracking-tight">Saham Paling Aktif</h2>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 stagger-grid">
+        {featured.map((s, i) => (
+          <div key={s.ticker} style={{ "--stagger-i": i } as React.CSSProperties}>
+            <FeaturedStockCard
+              {...s}
+              sparklineData={sparklineMap[s.ticker]}
+            />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+async function TradingPlanPreview() {
+  const sampleDetail = await stockMarketService.getStockDetailForPage("BBCA.JK").catch(() => null);
+
   let sampleTradingPlan = null;
   if (sampleDetail?.close && sampleDetail?.latest) {
     const ind = sampleDetail.indicator;
@@ -128,15 +211,68 @@ export default async function HomePage() {
     });
   }
 
-  const tickerItems = [...gainers, ...losers].map((s) => ({
-    ticker: s.ticker,
-    changePercent: s.changePercent as number | null,
-  }));
+  return (
+    <section className="space-y-5 content-auto">
+      <div className="flex items-center gap-3">
+        <div className="w-1 h-6 bg-accent rounded-full" aria-hidden="true" />
+        <h2 className="text-lg font-semibold tracking-tight">Coba Langsung</h2>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <MiniScreenerPreview />
+        <div className="space-y-4">
+          <div className="preview-panel depth-shadow" style={{ borderTop: "3px solid #0d9488" }}>
+            <div className="preview-panel-header">
+              <p className="text-xs font-semibold text-text-primary">Contoh Trading Plan</p>
+              <p className="text-[10px] text-text-tertiary mt-0.5">
+                BBCA — Otomatis dari Pivot Points & ATR
+              </p>
+            </div>
+            <div className="p-3">
+              {sampleTradingPlan ? (
+                <TradingPlanCard plan={sampleTradingPlan} />
+              ) : (
+                <p className="text-xs text-text-tertiary text-center py-6">
+                  Trading plan tidak tersedia saat ini
+                </p>
+              )}
+            </div>
+            <div className="px-4 pb-3">
+              <Link
+                href="/stocks/BBCA.JK"
+                className="block text-center text-xs text-accent hover:underline font-medium"
+              >
+                Lihat trading plan lengkap →
+              </Link>
+            </div>
+          </div>
+        </div>
+        <RadarPreview />
+      </div>
+    </section>
+  );
+}
+
+// ── Main Page ───────────────────────────────────────────────────────
+
+export default async function HomePage() {
+  // Fast cached calls only — hero renders immediately
+  const [overview, marketInfo] = await Promise.all([
+    stockMarketService.getMarketOverview(),
+    stockMarketService.getMarketStatusForPage(),
+  ]);
+
+  const isClosed = !marketInfo.marketStatus.isOpen;
+  const { gainers, losers, sectors } = overview;
 
   const topGainer = gainers[0];
   const topLoser = losers[0];
   const totalStocks = IDX_STOCKS.length;
   const totalSectors = SECTORS.length;
+
+  const tickerItems = [...gainers, ...losers].map((s) => ({
+    ticker: s.ticker,
+    changePercent: s.changePercent as number | null,
+  }));
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -240,65 +376,20 @@ export default async function HomePage() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-10 space-y-14">
-        {/* Section 3: Featured Stocks */}
-        <section className="space-y-5">
-          <div className="flex items-center gap-3">
-            <div className="w-1 h-6 bg-accent rounded-full" aria-hidden="true" />
-            <h2 className="text-lg font-semibold tracking-tight">Saham Paling Aktif</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 stagger-grid">
-            {featured.map((s, i) => (
-              <div key={s.ticker} style={{ "--stagger-i": i } as React.CSSProperties}>
-                <FeaturedStockCard
-                  {...s}
-                  sparklineData={sparklineMap[s.ticker]}
-                />
-              </div>
-            ))}
-          </div>
-        </section>
+        {/* Section 3: Featured Stocks — lazy-loaded with Suspense */}
+        <Suspense fallback={<FeaturedSkeleton />}>
+          <FeaturedStocksSection gainers={gainers} losers={losers} />
+        </Suspense>
 
         {/* Section 4: Sector Heatmap */}
-        <SectorHeatmap sectors={sectors} />
+        <Suspense fallback={<SectorSkeleton />}>
+          <SectorHeatmap sectors={sectors} />
+        </Suspense>
 
         {/* Section 5: "Coba Langsung" — Interactive Tool Previews */}
-        <section className="space-y-5 content-auto">
-          <div className="flex items-center gap-3">
-            <div className="w-1 h-6 bg-accent rounded-full" aria-hidden="true" />
-            <h2 className="text-lg font-semibold tracking-tight">Coba Langsung</h2>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <MiniScreenerPreview />
-            <div className="space-y-4">
-              <div className="preview-panel depth-shadow" style={{ borderTop: "3px solid #0d9488" }}>
-                <div className="preview-panel-header">
-                  <p className="text-xs font-semibold text-text-primary">Contoh Trading Plan</p>
-                  <p className="text-[10px] text-text-tertiary mt-0.5">
-                    BBCA — Otomatis dari Pivot Points & ATR
-                  </p>
-                </div>
-                <div className="p-3">
-                  {sampleTradingPlan ? (
-                    <TradingPlanCard plan={sampleTradingPlan} />
-                  ) : (
-                    <p className="text-xs text-text-tertiary text-center py-6">
-                      Trading plan tidak tersedia saat ini
-                    </p>
-                  )}
-                </div>
-                <div className="px-4 pb-3">
-                  <Link
-                    href="/stocks/BBCA.JK"
-                    className="block text-center text-xs text-accent hover:underline font-medium"
-                  >
-                    Lihat trading plan lengkap →
-                  </Link>
-                </div>
-              </div>
-            </div>
-            <RadarPreview />
-          </div>
-        </section>
+        <Suspense fallback={<PreviewSkeleton />}>
+          <TradingPlanPreview />
+        </Suspense>
 
         {/* Section 6: Platform Features */}
         <PlatformFeatures />

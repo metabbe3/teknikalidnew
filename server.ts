@@ -1,6 +1,7 @@
 import { createServer } from "http";
 import { readFileSync } from "fs";
 import { join } from "path";
+import compression from "compression";
 import { initIO } from "./src/lib/socket.js";
 
 const port = parseInt(process.env.PORT || "3000", 10);
@@ -28,7 +29,9 @@ async function start() {
   });
 
   const httpServer = createServer((req, res) => {
-    requestHandler(req, res);
+    (compression() as any)(req, res, () => {
+      requestHandler(req, res);
+    });
   });
 
   initIO(httpServer);

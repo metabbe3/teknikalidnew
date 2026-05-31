@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiError } from "@/lib/api-error";
 import { articleService } from "@/domains/article/article.service";
+import { newsSourceService } from "@/domains/article/news-source.service";
 
 export async function POST(request: NextRequest) {
   const auth = request.headers.get("authorization");
@@ -8,32 +9,30 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Skip weekends (IDX market closed)
   const now = new Date();
-  const day = now.getDay();
-  if (day === 0 || day === 6) {
-    return NextResponse.json({ data: { skipped: true, reason: "weekend" } });
-  }
+  const isWeekend = now.getDay() === 0 || now.getDay() === 6;
 
   try {
-    // 1. Daily snapshots for all 956 stocks (template, instant)
-    const snapshots = await articleService.runDailySnapshotGeneration();
+    const result: Record<string, unknown> = {};
 
-    // 2. AI trending news articles (5-10 per day)
-    const newsCount = Number(process.env.AI_DAILY_NEWS) || 10;
-    const news = await articleService.generateTrendingNews(newsCount);
+    // 1. Daily snapshots — weekdays only (needs fresh stock data)
+    if (!isWeekend) {
+      result.snapshots = await articleService.runDailySnapshotGeneration();
+    }
 
-    // 3. IDX40 evergreen analyses (2 per day, AI)
+    // 2. News from trusted sources (RSS → AI filter → article) — every day
+    const sourcedNews = await newsSourceService.generateArticlesFromSources(5);
+    result.sourcedNews = sourcedNews;
+
+    // 3. AI trending news — every day
+    const newsCount = Number(process.env.AI_DAILY_NEWS) || 5;
+    result.news = await articleService.generateTrendingNews(newsCount);
+
+    // 4. IDX40 evergreen analyses — every day
     const batchSize = Number(process.env.AI_DAILY_BATCH) || 2;
-    const evergreen = await articleService.runBatchGeneration(batchSize);
+    result.evergreen = await articleService.runBatchGeneration(batchSize);
 
-    return NextResponse.json({
-      data: {
-        snapshots,
-        news,
-        evergreen,
-      },
-    });
+    return NextResponse.json({ data: result });
   } catch (error) {
     return handleApiError(error, "daily article generation");
   }
