@@ -48,7 +48,7 @@ export default async function BeritaPage({
   const { tag: activeTag } = await searchParams;
 
   const allArticles = await prisma.article.findMany({
-    where: { status: "PUBLISHED", articleType: { in: ["STOCK_ANALYSIS", "NEWS", "GENERAL"] } },
+    where: { status: "PUBLISHED", isListed: true, articleType: { in: ["STOCK_ANALYSIS", "NEWS", "GENERAL"] } },
     orderBy: { publishedAt: "desc" },
     include: {
       author: { select: { name: true, username: true } },
