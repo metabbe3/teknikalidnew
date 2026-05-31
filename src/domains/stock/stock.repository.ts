@@ -21,6 +21,17 @@ export const stockRepository = {
     });
   },
 
+  findStocksByTickersWithIndicators(tickers: string[]) {
+    if (tickers.length === 0) return Promise.resolve([]);
+    return prisma.stock.findMany({
+      where: { ticker: { in: tickers }, isActive: true },
+      include: {
+        prices: { orderBy: { date: "desc" }, take: 2 },
+        indicators: { orderBy: { date: "desc" }, take: 1, where: { interval: INTERVAL.DAY } },
+      },
+    });
+  },
+
   findStockIdsByTickers(tickers: string[]) {
     if (tickers.length === 0) return Promise.resolve([]);
     return prisma.stock.findMany({

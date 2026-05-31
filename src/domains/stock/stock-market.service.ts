@@ -84,6 +84,31 @@ export const stockMarketService = {
     return Object.fromEntries(entries);
   },
 
+  async getStockBatchWithIndicators(tickers: string[]) {
+    if (tickers.length === 0) return [];
+
+    const stocks = await stockRepository.findStocksByTickersWithIndicators(tickers);
+
+    return stocks.map((s) => {
+      const latest = s.prices[0];
+      const prev = s.prices[1];
+      const { close, change, changePercent } = computeChange(latest, prev);
+      const indicator = s.indicators?.[0];
+
+      return {
+        ticker: s.ticker,
+        name: s.name,
+        sector: s.sector,
+        close,
+        change,
+        changePercent,
+        volume: latest ? bigIntToNumber(latest.volume) : null,
+        rsi14: indicator ? decimalToNumber(indicator.rsi14) : null,
+        sma20: indicator ? decimalToNumber(indicator.sma20) : null,
+      };
+    });
+  },
+
   async getStockList(sector?: string): Promise<StockListRow[]> {
     const cacheKey = `stock-list:${sector ?? "all"}`;
     const cached = stockCache.get(cacheKey);

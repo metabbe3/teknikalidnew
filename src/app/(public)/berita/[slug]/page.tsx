@@ -4,9 +4,11 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { SITE_URL } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
-import { ArticleContent, extractHeadings, estimateReadingTime } from "@/components/article/article-renderer";
+import { ArticleContent, extractHeadings, estimateReadingTime, extractTickers } from "@/components/article/article-renderer";
 import { ArrowLeft, TrendingUp, Clock, ChevronRight } from "lucide-react";
 import { ArticleType } from "@/generated/prisma/client";
+import { stockMarketService } from "@/domains/stock/stock-market.service";
+import { StockArticleCard } from "@/components/stock/stock-article-card";
 
 const BERITA_TYPES: ArticleType[] = [ArticleType.STOCK_ANALYSIS, ArticleType.NEWS, ArticleType.GENERAL, ArticleType.DAILY_SNAPSHOT];
 
@@ -52,8 +54,9 @@ export default async function BeritaArticlePage({
 
   const headings = extractHeadings(article.content);
   const readingTime = estimateReadingTime(article.content);
+  const mentionedTickers = extractTickers(article.content);
 
-  const [prevArticle, nextArticle] = await Promise.all([
+  const [prevArticle, nextArticle, stockCards] = await Promise.all([
     prisma.article.findFirst({
       where: { status: "PUBLISHED", articleType: { in: BERITA_TYPES }, publishedAt: { lt: article.publishedAt } },
       orderBy: { publishedAt: "desc" },
@@ -64,6 +67,9 @@ export default async function BeritaArticlePage({
       orderBy: { publishedAt: "asc" },
       select: { slug: true, title: true },
     }),
+    mentionedTickers.length > 0
+      ? stockMarketService.getStockBatchWithIndicators(mentionedTickers)
+      : Promise.resolve([]),
   ]);
 
   const jsonLd = {
@@ -177,6 +183,20 @@ export default async function BeritaArticlePage({
 
               {/* Article body */}
               <ArticleContent content={article.content} />
+
+              {/* Stock cards for mentioned tickers */}
+              {stockCards.length > 0 && (
+                <div className="mt-8 space-y-3">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
+                    Saham yang Disebut
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {stockCards.map((stock) => (
+                      <StockArticleCard key={stock.ticker} {...stock} />
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Source attribution */}
               {article.generationMeta &&

@@ -89,7 +89,7 @@ export default function RootLayout({
           <AuthProvider>
             <SocketProvider>
               <TooltipProvider>
-                <main id="main-content" className="flex-1">{children}</main>
+                <main id="main-content" className="flex-1 flex flex-col">{children}</main>
               </TooltipProvider>
             </SocketProvider>
           </AuthProvider>
