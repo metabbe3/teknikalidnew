@@ -57,7 +57,7 @@ export default async function BeritaPage({
   return (
     <div className="min-h-screen bg-bg-primary">
       {/* Dark terminal hero */}
-      <section className="akademi-hero">
+      <section className="akademi-hero" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}>
         <div className="relative z-[1] max-w-6xl mx-auto px-4 py-16 sm:py-20">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2.5 rounded-lg bg-blue-500/10 border border-blue-500/20">

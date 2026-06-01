@@ -7,9 +7,9 @@ export function renderContent(content: string) {
   const parts: (string | React.ReactElement)[] = [];
   let lastIndex = 0;
 
-  // Combine both patterns
+  // Combine all patterns: $TICKER.JK, @username, #hashtag
   const combined = new RegExp(
-    `(\\$[A-Z]{2,4}\\.JK)|(@[a-zA-Z0-9_]{3,20})`,
+    `(\\$[A-Z]{2,4}\\.JK)|(@[a-zA-Z0-9_]{3,20})|#[a-zA-Z0-9_]{2,30}`,
     "g"
   );
 
@@ -40,6 +40,18 @@ export function renderContent(content: string) {
           key={`m-${match.index}`}
           href={`/profile/${username}`}
           className="text-accent hover:underline font-medium"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {text}
+        </Link>
+      );
+    } else if (text.startsWith("#")) {
+      const tag = text.slice(1).toLowerCase();
+      parts.push(
+        <Link
+          key={`h-${match.index}`}
+          href={`/community?tag=${encodeURIComponent(tag)}`}
+          className="text-blue-500 hover:underline font-semibold"
           onClick={(e) => e.stopPropagation()}
         >
           {text}

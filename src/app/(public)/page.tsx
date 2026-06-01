@@ -295,7 +295,7 @@ export default async function HomePage() {
       />
 
       {/* Section 1: Terminal Hero */}
-      <section className="akademi-hero">
+      <section className="akademi-hero" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}>
         <div className="relative z-[1] max-w-7xl mx-auto px-4 py-14 sm:py-20">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-10 items-center">
             <div className="max-w-xl space-y-6">

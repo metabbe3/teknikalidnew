@@ -110,7 +110,7 @@ export default async function StocksPage() {
   return (
     <div className="fade-in">
       {/* Terminal Hero */}
-      <section className="stocks-hero">
+      <section className="stocks-hero" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}>
         <div className="relative z-[1] max-w-7xl mx-auto px-4 py-12 sm:py-16">
           <div className="max-w-3xl space-y-5">
             <MarketStatus marketStatus={marketInfo.marketStatus} latestPrice={latestPrice} />

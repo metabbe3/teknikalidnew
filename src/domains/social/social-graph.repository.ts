@@ -66,4 +66,26 @@ export const socialGraphRepository = {
   deleteStockFollow(id: string) {
     return prisma.stockFollow.delete({ where: { id } });
   },
+
+  findBlock(blockerId: string, blockedId: string) {
+    return prisma.block.findUnique({
+      where: { blockerId_blockedId: { blockerId, blockedId } },
+    });
+  },
+
+  createBlock(blockerId: string, blockedId: string) {
+    return prisma.block.create({ data: { blockerId, blockedId } });
+  },
+
+  deleteBlock(id: string) {
+    return prisma.block.delete({ where: { id } });
+  },
+
+  async getBlockedUserIds(blockerId: string): Promise<string[]> {
+    const blocks = await prisma.block.findMany({
+      where: { blockerId },
+      select: { blockedId: true },
+    });
+    return blocks.map((b) => b.blockedId);
+  },
 };

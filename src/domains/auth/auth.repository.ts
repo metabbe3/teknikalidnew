@@ -57,4 +57,17 @@ export const authRepository = {
       select: { id: true, username: true, name: true, image: true, bio: true, socialLinks: true, role: true },
     });
   },
+
+  searchUsers(query: string, limit: number) {
+    return prisma.user.findMany({
+      where: {
+        OR: [
+          { username: { startsWith: query, mode: "insensitive" } },
+          { name: { contains: query, mode: "insensitive" } },
+        ],
+      },
+      select: { id: true, username: true, name: true, image: true, reputation: true },
+      take: limit,
+    });
+  },
 };

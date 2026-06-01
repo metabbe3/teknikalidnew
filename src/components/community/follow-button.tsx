@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useFollowStatus, useToggleFollow, useStockFollowStatus, useToggleStockFollow } from "@/hooks/use-follow";
 
@@ -8,22 +7,17 @@ export function FollowButton({ userId, size = "sm", initialFollowing }: { userId
   const { data: session } = useSession();
   const isLoggedIn = !!session?.user;
   const isSelf = session?.user?.id === userId;
-  const [localFollowing, setLocalFollowing] = useState(initialFollowing ?? false);
-  const hasInitial = initialFollowing !== undefined;
-  const { data } = useFollowStatus(!hasInitial && isLoggedIn && !isSelf ? userId : undefined);
+  const { data } = useFollowStatus(isLoggedIn && !isSelf ? userId : undefined, true);
   const toggle = useToggleFollow();
 
   if (!isLoggedIn || isSelf) return null;
 
-  const following = hasInitial ? localFollowing : (data?.following ?? false);
+  const following = data?.following ?? initialFollowing ?? false;
   const sizeClass = size === "sm" ? "px-2.5 py-0.5 text-[10px]" : "px-4 py-1.5 text-sm";
 
   return (
     <button
-      onClick={() => {
-        if (hasInitial) setLocalFollowing(!localFollowing);
-        toggle.mutate(userId);
-      }}
+      onClick={() => toggle.mutate(userId)}
       disabled={toggle.isPending}
       className={`${sizeClass} rounded-full font-semibold transition-all duration-200 cursor-pointer ${
         following

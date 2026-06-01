@@ -811,7 +811,7 @@ function ScreenerPageContent() {
       {/* Hero Header — dark terminal style */}
       <section
         className="screener-hero"
-        style={{ "--screener-accent-rgb": styleDef.accentRgb, "--screener-accent": styleDef.accentHex } as React.CSSProperties}
+        style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)", "--screener-accent-rgb": styleDef.accentRgb, "--screener-accent": styleDef.accentHex } as React.CSSProperties}
       >
         <div className="relative z-[1] max-w-6xl mx-auto px-4 py-10 sm:py-14 space-y-5">
           <div className="space-y-4">

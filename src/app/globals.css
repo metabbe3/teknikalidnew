@@ -1150,3 +1150,207 @@ button:focus-visible,
   background: rgba(220, 38, 38, 0.05);
   border-left: 3px solid var(--color-bearish);
 }
+
+/* ─── Paper Trading: Simulation Hero ─── */
+.sim-hero {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  position: relative;
+  overflow: hidden;
+}
+.sim-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(13, 148, 136, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(13, 148, 136, 0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.sim-hero::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  top: -40%;
+  right: -15%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(13, 148, 136, 0.18) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+/* ─── Paper Trading: Trade Cards ─── */
+.trade-card {
+  background: var(--color-bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  position: relative;
+  overflow: hidden;
+  transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.trade-card:hover {
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.06),
+    0 12px 28px rgba(0, 0, 0, 0.04);
+  border-color: transparent;
+}
+
+.trade-card-bullish {
+  border-left: 3px solid var(--color-bullish);
+}
+.trade-card-bearish {
+  border-left: 3px solid var(--color-bearish);
+}
+.trade-card-pending {
+  border-left: 3px solid #f59e0b;
+  background: rgba(245, 158, 11, 0.02);
+}
+
+/* ─── Paper Trading: Toast Notifications ─── */
+.toast-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+.toast-enter {
+  animation: toastIn 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: auto;
+}
+.toast-exit {
+  animation: toastOut 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(100%) scale(0.95); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes toastOut {
+  from { opacity: 1; transform: translateX(0) scale(1); }
+  to { opacity: 0; transform: translateX(100%) scale(0.95); }
+}
+
+/* ─── Paper Trading: Skeleton Shimmer ─── */
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ─── Paper Trading: Live Pulse Dot ─── */
+.pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-bullish);
+  animation: pulseDot 2s ease-in-out infinite;
+}
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.4); }
+  50% { opacity: 0.7; box-shadow: 0 0 0 4px rgba(13, 148, 136, 0); }
+}
+
+/* ─── Paper Trading: Slide Down ─── */
+.slide-down-enter {
+  animation: slideDown 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes slideDown {
+  from { opacity: 0; max-height: 0; }
+  to { opacity: 1; max-height: 500px; }
+}
+
+/* ─── Paper Trading: Bottom Sheet ─── */
+.bottom-sheet-backdrop {
+  animation: fadeInBg 200ms ease forwards;
+}
+@keyframes fadeInBg {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.bottom-sheet-content {
+  animation: slideUp 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* ─── Portfolio: Summary Hero ─── */
+.portfolio-hero {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+}
+.portfolio-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(13, 148, 136, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(13, 148, 136, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.portfolio-hero::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  bottom: -30%;
+  left: -10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(13, 148, 136, 0.12) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+/* ─── Portfolio: Holding Card ─── */
+.holding-card {
+  background: var(--color-bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  position: relative;
+  overflow: hidden;
+  transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.holding-card:hover {
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.06),
+    0 12px 28px rgba(0, 0, 0, 0.04);
+  border-color: transparent;
+}
+.holding-card-bullish {
+  border-left: 3px solid var(--color-bullish);
+}
+.holding-card-bearish {
+  border-left: 3px solid var(--color-bearish);
+}
+
+/* ─── Portfolio: Health Card ─── */
+.health-card {
+  background: var(--color-bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+.health-card-signal {
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+}
+.health-card-signal-bullish {
+  background: rgba(13, 148, 136, 0.06);
+}
+.health-card-signal-bearish {
+  background: rgba(220, 38, 38, 0.06);
+}

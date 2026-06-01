@@ -47,7 +47,9 @@ model Stock {
   subsidiaries   StockSubsidiary[]
   dividends      StockDividend[]
   watchlist    Watchlist[]
-
+  paperPositions PaperPosition[]
+  paperOrders    PaperOrder[]
+  portfolioHoldings PortfolioHolding[]
   @@index([isinCode])
 
   @@index([sector])
@@ -243,8 +245,12 @@ model User {
   socialLinks   Json?
   role          Role      @default(USER)
   reputation   Int       @default(0)
+  lastDailyClaimAt DateTime?
+  dailyStreak      Int      @default(0)
+  customTitle   String?  @db.VarChar(30)
   bannedAt      DateTime?
   sessionVersion Int      @default(0)
+  portfolioPublic Boolean @default(false)
   createdAt     DateTime  @default(now())
 
   accounts           Account[]
@@ -256,13 +262,21 @@ model User {
   reports            Report[]
   following          Follow[]          @relation("Following")
   followers          Follow[]          @relation("Followers")
+  blocking           Block[]           @relation("Blocking")
+  blocked            Block[]           @relation("Blocked")
   stockFollows       StockFollow[]
   notifications      Notification[]    @relation("Notifications")
   notificationActions Notification[]   @relation("NotificationActions")
   bookmarks          Bookmark[]
+  reposts            Repost[]
+  reactions          Reaction[]
+  pollVotes          PollVote[]
   articles           Article[]
   auditLogs          AuditLog[]
   imageGenJobs       ImageGenerationJob[]
+  portfolioHoldings  PortfolioHolding[]
+  achievements       Achievement[]
+  paperAccount       PaperAccount?
 }
 
 enum Role {
@@ -314,11 +328,13 @@ model Post {
   imageUrl      String?  @db.VarChar(1000)
   likesCount         Int      @default(0)
   commentsCount      Int      @default(0)
+  repostsCount       Int      @default(0)
   predictionTarget    Decimal?  @db.Decimal(12, 2)
   predictionDirection String?   @db.VarChar(10)
   predictionOutcome   String?   @db.VarChar(10)
   predictionResolvedAt DateTime?
   createdAt           DateTime  @default(now())
+  pinned              Boolean   @default(false)
 
   author             User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   comments      Comment[]
@@ -326,11 +342,41 @@ model Post {
   bookmarks     Bookmark[]
   notifications Notification[]
   imageGenJobs  ImageGenerationJob[]
+  tags          PostTag[]
+  reposts       Repost[]
+  reactions     Reaction[]
+  poll         Poll?
 
   @@index([tickerTag])
   @@index([createdAt(sort: Desc)])
   @@index([authorId])
   @@index([authorId, createdAt(sort: Desc)])
+}
+
+model PostTag {
+  id     String @id @default(cuid())
+  postId String
+  tag    String @db.VarChar(50)
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, tag])
+  @@index([tag])
+  @@index([postId])
+}
+
+model Repost {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@index([userId])
+  @@index([postId])
+  @@index([createdAt(sort: Desc)])
 }
 
 model ImageGenerationJob {
@@ -389,6 +435,25 @@ model Watchlist {
   @@unique([userId, stockTicker])
 }
 
+model PortfolioHolding {
+  id          String   @id @default(cuid())
+  userId      String
+  stockTicker String
+  buyPrice    Decimal  @db.Decimal(12, 2)
+  quantity    Int
+  buyDate     DateTime @db.Date
+  notes       String?  @db.VarChar(200)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stock       Stock    @relation(fields: [stockTicker], references: [ticker], onDelete: Cascade)
+
+  @@unique([userId, stockTicker])
+  @@index([userId])
+  @@index([stockTicker])
+}
+
 model Like {
   id     String @id @default(cuid())
   userId String
@@ -398,6 +463,72 @@ model Like {
   post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId])
+}
+
+enum ReactionType {
+  LIKE
+  BULLISH
+  BEARISH
+  INSIGHTFUL
+  ROCKET
+  FIRE
+}
+
+model Reaction {
+  id        String       @id @default(cuid())
+  userId    String
+  postId    String
+  type      ReactionType
+  createdAt DateTime     @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@index([postId])
+  @@index([type])
+  @@index([createdAt(sort: Desc)])
+}
+
+model Poll {
+  id        String    @id @default(cuid())
+  postId    String    @unique
+  createdAt DateTime  @default(now())
+  closesAt  DateTime?
+
+  post    Post         @relation(fields: [postId], references: [id], onDelete: Cascade)
+  options PollOption[]
+  votes   PollVote[]
+
+  @@index([createdAt(sort: Desc)])
+}
+
+model PollOption {
+  id         String @id @default(cuid())
+  pollId     String
+  text       String @db.VarChar(100)
+  order      Int    @default(0)
+  votesCount Int    @default(0)
+
+  poll  Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  votes PollVote[]
+
+  @@index([pollId, order])
+}
+
+model PollVote {
+  id        String   @id @default(cuid())
+  optionId  String
+  pollId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  option PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  poll   Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, pollId])
+  @@index([optionId])
 }
 
 // ── Moderation ───────────────────────────────────────────
@@ -451,6 +582,20 @@ model Follow {
   @@index([followerId])
 }
 
+model Block {
+  id         String   @id @default(cuid())
+  blockerId  String
+  blockedId  String
+  createdAt  DateTime @default(now())
+
+  blocker User @relation("Blocking", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked User @relation("Blocked", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  @@unique([blockerId, blockedId])
+  @@index([blockedId])
+  @@index([blockerId])
+}
+
 model StockFollow {
   id        String   @id @default(cuid())
   userId    String
@@ -470,6 +615,7 @@ enum NotificationType {
   MENTION
   FOLLOW
   STOCK_POST
+  REACTION
 }
 
 model Notification {
@@ -559,4 +705,124 @@ model AuditLog {
   @@index([userId])
   @@index([action])
   @@index([createdAt])
+}
+
+model Achievement {
+  id         String   @id @default(cuid())
+  userId     String
+  type       String   @db.VarChar(50)
+  unlockedAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type])
+  @@index([userId])
+}
+
+// ── Paper Trading ─────────────────────────────────────────
+
+enum PaperTradeSide {
+  BUY
+  SELL
+}
+
+enum PaperPositionStatus {
+  OPEN
+  CLOSED
+}
+
+enum PaperOrderType {
+  MARKET
+  LIMIT
+  STOP
+}
+
+enum PaperOrderStatus {
+  PENDING
+  FILLED
+  CANCELLED
+}
+
+enum PaperMood {
+  CONFIDENT
+  UNCERTAIN
+  GREEDY
+  FEARFUL
+  NEUTRAL
+}
+
+model PaperAccount {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  balance         Decimal  @db.Decimal(16, 2)
+  initialBalance  Decimal  @db.Decimal(16, 2)
+  isPublic        Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  positions  PaperPosition[]
+  orders     PaperOrder[]
+
+  @@index([userId])
+}
+
+model PaperPosition {
+  id              String   @id @default(cuid())
+  accountId       String
+  stockTicker     String
+  side            PaperTradeSide   @default(BUY)
+  entryPrice      Decimal  @db.Decimal(12, 2)
+  quantity        Int
+  status          PaperPositionStatus @default(OPEN)
+
+  stopLossPrice   Decimal? @db.Decimal(12, 2)
+  takeProfitPrice Decimal? @db.Decimal(12, 2)
+
+  reason          String?  @db.VarChar(500)
+  strategyTags    Json?
+  mood            PaperMood?
+
+  closePrice      Decimal? @db.Decimal(12, 2)
+  realizedPnl     Decimal? @db.Decimal(16, 2)
+  realizedPnlPct  Decimal? @db.Decimal(8, 2)
+
+  openedAt        DateTime @default(now())
+  closedAt        DateTime?
+
+  account         PaperAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  stock           Stock        @relation(fields: [stockTicker], references: [ticker], onDelete: Cascade)
+
+  @@index([accountId])
+  @@index([stockTicker])
+  @@index([status])
+}
+
+model PaperOrder {
+  id           String          @id @default(cuid())
+  accountId    String
+  stockTicker  String
+  side         PaperTradeSide
+  orderType    PaperOrderType
+  quantity     Int
+  targetPrice  Decimal         @db.Decimal(12, 2)
+  status       PaperOrderStatus @default(PENDING)
+
+  positionId   String?
+
+  reason       String?         @db.VarChar(500)
+  strategyTags Json?
+  mood         PaperMood?
+
+  filledAt     DateTime?
+  filledPrice  Decimal?        @db.Decimal(12, 2)
+
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  account      PaperAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  stock        Stock        @relation(fields: [stockTicker], references: [ticker], onDelete: Cascade)
+
+  @@index([accountId])
+  @@index([status])
+  @@index([stockTicker, status])
 }

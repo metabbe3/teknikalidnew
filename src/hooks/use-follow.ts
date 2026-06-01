@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export function useFollowStatus(userId: string | undefined) {
+export function useFollowStatus(userId: string | undefined, placeholder?: boolean) {
   return useQuery({
     queryKey: ["follow-status", userId],
     queryFn: async () => {
@@ -11,6 +11,7 @@ export function useFollowStatus(userId: string | undefined) {
       return res.json() as Promise<{ following: boolean }>;
     },
     enabled: !!userId,
+    placeholderData: placeholder ? { following: false } : undefined,
   });
 }
 
@@ -26,8 +27,22 @@ export function useToggleFollow() {
       if (!res.ok) throw new Error("Failed");
       return res.json() as Promise<{ following: boolean }>;
     },
-    onSuccess: (_, userId) => {
-      queryClient.invalidateQueries({ queryKey: ["follow-status", userId] });
+    onMutate: async (userId) => {
+      await queryClient.cancelQueries({ queryKey: ["follow-status", userId] });
+      const previous = queryClient.getQueryData<{ following: boolean }>(["follow-status", userId]);
+      if (previous) {
+        queryClient.setQueryData(["follow-status", userId], { following: !previous.following });
+      }
+      return { previous, userId };
+    },
+    onError: (_err, userId, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(["follow-status", userId], context.previous);
+      }
+    },
+    onSuccess: (data, userId) => {
+      queryClient.setQueryData(["follow-status", userId], data);
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
       queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
   });

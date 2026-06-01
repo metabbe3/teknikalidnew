@@ -9,6 +9,7 @@ interface StockAttachmentCardProps {
   tickerTag: string;
   predictionDirection?: string | null;
   predictionTarget?: number | string | null;
+  predictionOutcome?: string | null;
 }
 
 interface StockData {
@@ -167,7 +168,7 @@ function RangeBar({ low, high, current }: { low: number | null; high: number | n
   );
 }
 
-export function StockAttachmentCard({ tickerTag, predictionDirection, predictionTarget }: StockAttachmentCardProps) {
+export function StockAttachmentCard({ tickerTag, predictionDirection, predictionTarget, predictionOutcome }: StockAttachmentCardProps) {
   const ticker = tickerTag.includes(".") ? tickerTag : `${tickerTag}.JK`;
   const dir = predictionDirection ? DIR_STYLES[predictionDirection] : null;
 
@@ -293,7 +294,16 @@ export function StockAttachmentCard({ tickerTag, predictionDirection, prediction
               <span aria-hidden="true">{dir.arrow}</span>
               {dir.label}
             </span>
-            {targetNum && targetNum > 0 && (
+            {predictionOutcome && (
+              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold ${
+                predictionOutcome === "correct"
+                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                  : "bg-red-50 text-red-700 border border-red-200"
+              }`}>
+                {predictionOutcome === "correct" ? "✓ Tepat" : "✗ Meleset"}
+              </span>
+            )}
+            {targetNum && targetNum > 0 && !predictionOutcome && (
               <div className="flex items-center gap-1.5">
                 <span className="text-text-tertiary text-[10px]">TARGET</span>
                 <span className="text-xs font-semibold tabular-nums">{formatPrice(targetNum)}</span>

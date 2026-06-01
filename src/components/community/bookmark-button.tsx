@@ -11,18 +11,18 @@ export function BookmarkButton({ postId, initialBookmarked }: { postId: string; 
   const { data } = useBookmarkStatus(!hasInitial && session?.user ? postId : undefined);
   const toggle = useToggleBookmark();
 
-  if (!session?.user) return null;
-
   const bookmarked = hasInitial ? localBookmarked : (data?.bookmarked ?? false);
+  const isLoggedIn = !!session?.user;
 
   return (
     <button
       onClick={() => {
+        if (!isLoggedIn) return;
         if (hasInitial) setLocalBookmarked(!localBookmarked);
         toggle.mutate(postId);
       }}
-      disabled={toggle.isPending}
-      className="p-2.5 text-text-tertiary hover:text-accent transition-colors rounded-md hover:bg-bg-hover shrink-0"
+      disabled={toggle.isPending || !isLoggedIn}
+      className={`p-2.5 text-text-tertiary hover:text-accent transition-colors rounded-md hover:bg-bg-hover shrink-0 ${!isLoggedIn ? "invisible" : ""}`}
       aria-label={bookmarked ? "Hapus bookmark" : "Simpan bookmark"}
     >
       <svg

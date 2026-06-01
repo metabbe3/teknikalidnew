@@ -14,17 +14,35 @@ export async function GET(request: NextRequest) {
     );
     const sort = searchParams.get("sort") as "trending" | null;
     const filter = searchParams.get("filter") as "following" | null;
+    const q = searchParams.get("q");
+    const ticker = searchParams.get("ticker");
+    const tag = searchParams.get("tag");
 
     const session = await auth();
     const userId = session?.user?.id;
 
-    const result = await communityService.getFeed({
-      userId,
-      cursor: cursor || undefined,
-      limit,
-      sort: sort || undefined,
-      filter: filter || undefined,
-    });
+    const result = q
+      ? await communityService.searchPosts({
+          userId,
+          query: q,
+          ticker: ticker || undefined,
+          cursor: cursor || undefined,
+          limit,
+        })
+      : tag
+      ? await communityService.getFeedByTag({
+          tag,
+          userId,
+          cursor: cursor || undefined,
+          limit,
+        })
+      : await communityService.getFeed({
+          userId,
+          cursor: cursor || undefined,
+          limit,
+          sort: sort || undefined,
+          filter: filter || undefined,
+        });
 
     return NextResponse.json(result);
   } catch (error) {
@@ -36,7 +54,7 @@ export async function POST(request: NextRequest) {
   try {
     const user = await authService.requireAuth();
     const body = await request.json();
-    const { content, tickerTag, predictionDirection, predictionTarget, imageUrl } = body;
+    const { content, tickerTag, predictionDirection, predictionTarget, imageUrl, pollOptions } = body;
 
     const post = await communityService.createPost(user.id, {
       content,
@@ -45,6 +63,10 @@ export async function POST(request: NextRequest) {
       predictionTarget,
       imageUrl,
     });
+
+    if (pollOptions && pollOptions.length >= 2) {
+      await communityService.createPoll(post.id, pollOptions);
+    }
 
     return NextResponse.json({ data: post }, { status: 201 });
   } catch (error) {

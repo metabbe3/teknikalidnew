@@ -128,6 +128,21 @@ export const notificationService = {
         console.error("Failed to create follow notification:", e);
       }
     });
+
+    eventBus.on("community:post-reacted", async (payload) => {
+      try {
+        if (payload.userId !== payload.authorId) {
+          await notificationRepository.create({
+            type: "REACTION",
+            recipientId: payload.authorId,
+            actorId: payload.userId,
+            postId: payload.postId,
+          });
+        }
+      } catch (e) {
+        console.error("Failed to create reaction notification:", e);
+      }
+    });
   },
 };
 

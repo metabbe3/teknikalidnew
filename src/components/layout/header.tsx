@@ -10,6 +10,7 @@ const navLinks = [
   { href: "/", label: "Beranda" },
   { href: "/stocks", label: "Saham" },
   { href: "/screener", label: "Screener" },
+  { href: "/paper-trading", label: "Simulasi" },
   { href: "/compare", label: "Bandingkan" },
   { href: "/community", label: "Komunitas" },
   { href: "/berita", label: "Berita" },
@@ -84,13 +85,7 @@ export function Header() {
                 aria-expanded={userMenuOpen}
                 aria-label="Menu pengguna"
               >
-                {session.user.image ? (
-                  <img src={session.user.image} alt="" className="w-7 h-7 rounded-full object-cover" />
-                ) : (
-                  <div className="w-7 h-7 rounded-full bg-accent/10 flex items-center justify-center text-xs font-semibold text-accent">
-                    {session.user.username?.[0]?.toUpperCase() || session.user.name?.[0]?.toUpperCase() || "U"}
-                  </div>
-                )}
+                <img src={session.user.image!} alt="" className="w-7 h-7 rounded-full object-cover" />
               </button>
               {userMenuOpen && (
                 <>
@@ -109,6 +104,20 @@ export function Header() {
                       className="block px-3 py-2 text-sm text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-colors"
                     >
                       Daftar Pantauan
+                    </Link>
+                    <Link
+                      href="/portfolio"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="block px-3 py-2 text-sm text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-colors"
+                    >
+                      Portofolio
+                    </Link>
+                    <Link
+                      href="/paper-trading"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="block px-3 py-2 text-sm text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-colors"
+                    >
+                      Simulasi Trading
                     </Link>
                     <Link
                       href="/profile/edit"
@@ -206,6 +215,13 @@ export function Header() {
                 className="block py-2.5 px-3 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
               >
                 Daftar Pantauan
+              </Link>
+              <Link
+                href="/portfolio"
+                onClick={() => setMenuOpen(false)}
+                className="block py-2.5 px-3 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
+              >
+                Portofolio
               </Link>
               <button
                 onClick={() => { setMenuOpen(false); signOut(); }}

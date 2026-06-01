@@ -5,6 +5,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { authRepository } from "@/domains/auth/auth.repository";
+import { getAvatarUrl } from "@/lib/avatar";
 import type { NextAuthConfig } from "next-auth";
 
 export const authConfig: NextAuthConfig = {
@@ -57,7 +58,7 @@ export const authConfig: NextAuthConfig = {
         );
         if (!isValid) return null;
 
-        return { id: user.id, email: user.email, name: user.name, image: user.image, rememberMe: credentials.rememberMe === "true" };
+        return { id: user.id, email: user.email, name: user.name, image: getAvatarUrl(user.image, user.email), rememberMe: credentials.rememberMe === "true" };
       },
     }),
   ],
@@ -82,6 +83,7 @@ export const authConfig: NextAuthConfig = {
           token.id = dbUser.id;
           token.username = dbUser.username;
           token.role = dbUser.role;
+          token.image = getAvatarUrl(dbUser.image, dbUser.email);
           token.rememberMe = (user as any).rememberMe ?? false;
           token.loginAt = Date.now();
         }
@@ -93,6 +95,7 @@ export const authConfig: NextAuthConfig = {
           return { ...token, id: undefined };
         }
         token.role = dbUser.role;
+        token.image = getAvatarUrl(dbUser.image, dbUser.email);
       }
       return token;
     },
@@ -101,6 +104,7 @@ export const authConfig: NextAuthConfig = {
         session.user.id = token.id as string;
         session.user.username = token.username as string;
         session.user.role = token.role as string;
+        session.user.image = (token.image as string) ?? null;
         (session.user as any).rememberMe = token.rememberMe as boolean;
         (session.user as any).loginAt = token.loginAt as number;
       }

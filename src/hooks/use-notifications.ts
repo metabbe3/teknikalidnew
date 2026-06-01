@@ -2,6 +2,14 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
+export const REACTION_EMOJI: Record<string, string> = {
+  BULLISH: "🐂",
+  BEARISH: "🐻",
+  INSIGHTFUL: "💡",
+  ROCKET: "🚀",
+  FIRE: "🔥",
+};
+
 interface NotificationActor {
   id: string;
   username: string;
@@ -11,7 +19,7 @@ interface NotificationActor {
 
 interface NotificationData {
   id: string;
-  type: "LIKE" | "COMMENT" | "MENTION" | "FOLLOW" | "STOCK_POST";
+  type: "LIKE" | "COMMENT" | "MENTION" | "FOLLOW" | "STOCK_POST" | "REACTION";
   read: boolean;
   createdAt: string;
   actor: NotificationActor;
@@ -62,6 +70,8 @@ export function notificationText(n: NotificationData): string {
       return `${name} mulai mengikuti Anda`;
     case "STOCK_POST":
       return `${name} membahas saham yang Anda ikuti`;
+    case "REACTION":
+      return `${name} memberikan reaksi di post Anda`;
     default:
       return `${name} berinteraksi dengan Anda`;
   }

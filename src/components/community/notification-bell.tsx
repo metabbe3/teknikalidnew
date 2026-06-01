@@ -47,7 +47,12 @@ export function NotificationBell() {
             <div className="px-3 py-2 border-b border-border flex items-center justify-between">
               <span className="text-sm font-semibold">Notifikasi</span>
               {unreadCount > 0 && (
-                <span className="text-[10px] text-text-tertiary">{unreadCount} baru</span>
+                <button
+                  onClick={(e) => { e.stopPropagation(); markRead.mutate({ markAll: true }); }}
+                  className="text-[10px] text-accent hover:underline"
+                >
+                  Tandai semua dibaca
+                </button>
               )}
             </div>
             {data?.data.length === 0 ? (

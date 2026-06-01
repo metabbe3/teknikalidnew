@@ -70,6 +70,7 @@ function CommentItem({
   userRole?: string;
 }) {
   const [showReplyForm, setShowReplyForm] = useState(false);
+  const [showAllReplies, setShowAllReplies] = useState(false);
   const deleteComment = useDeleteComment();
   const isOwner = currentUserId === comment.author.id;
   const isAdmin = userRole === "ADMIN";
@@ -79,6 +80,7 @@ function CommentItem({
   ).toUpperCase();
   const isRecent = Date.now() - new Date(comment.createdAt).getTime() < 5 * 60 * 1000;
   const isReply = !!comment.parentId;
+  const MAX_VISIBLE_REPLIES = 3;
 
   return (
     <div className={isReply ? "ml-8 border-l-2 border-border pl-4" : ""}>
@@ -152,6 +154,30 @@ function CommentItem({
                 inline
                 onCommentAdded={() => setShowReplyForm(false)}
               />
+            </div>
+          )}
+
+          {/* Replies */}
+          {comment.replies && comment.replies.length > 0 && (
+            <div className="mt-2 space-y-1">
+              {(showAllReplies ? comment.replies : comment.replies.slice(0, MAX_VISIBLE_REPLIES)).map((reply) => (
+                <CommentItem
+                  key={reply.id}
+                  comment={reply}
+                  postId={postId}
+                  stockTicker={stockTicker}
+                  currentUserId={currentUserId}
+                  userRole={userRole}
+                />
+              ))}
+              {comment.replies.length > MAX_VISIBLE_REPLIES && !showAllReplies && (
+                <button
+                  onClick={() => setShowAllReplies(true)}
+                  className="text-xs text-teal-600 hover:underline py-1 ml-8"
+                >
+                  Tampilkan {comment.replies.length - MAX_VISIBLE_REPLIES} balasan lainnya
+                </button>
+              )}
             </div>
           )}
         </div>

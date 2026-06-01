@@ -13,9 +13,11 @@ import { TradingPlanCard } from "@/components/stock/trading-plan-card";
 import { HypeWarningBadge } from "@/components/stock/hype-warning-badge";
 import { StockDiscussion } from "@/components/community/stock-discussion";
 import { StockActionBadge } from "@/components/stock/stock-action-badge";
+import { SentimentGauge } from "@/components/stock/sentiment-gauge";
 import { PresenceBadge } from "@/components/stock/presence-badge";
 import { StockAlertBanner } from "@/components/stock/stock-alert-banner";
 import { CompanyDataTabs } from "@/components/stock/company-data-tabs";
+import { StockPaperPosition } from "@/components/paper-trading/stock-paper-position";
 import { technicalAnalysisService } from "@/domains/stock/technical-analysis.service";
 import { stockRepository } from "@/domains/stock/stock.repository";
 import { calculatePivotPoints } from "@/lib/indicators";
@@ -242,7 +244,7 @@ export default async function StockDetailPage({
   return (
     <div className="fade-in">
       {/* Dark Terminal Header */}
-      <section className="stocks-hero">
+      <section className="stocks-hero" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}>
         <div className="relative z-[1] max-w-7xl mx-auto px-4 py-8 sm:py-10 space-y-5">
           {/* Breadcrumb */}
           <nav className="text-xs text-gray-500 flex items-center gap-1.5 font-mono" aria-label="Breadcrumb">
@@ -263,11 +265,27 @@ export default async function StockDetailPage({
 
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-2.5 flex-wrap">
                   {stock.logo && (
                     <img src={stock.logo} alt="" className="w-8 h-8 rounded-md object-contain bg-white/10" />
                   )}
                   <h1 className="text-2xl font-bold tracking-tight text-white">{stripJk(ticker)}</h1>
+                  {indicators?.signalLabel && (
+                    <span className={`text-sm font-bold px-3 py-1 rounded-lg ${
+                      indicators.signalLabel === "Strong Bullish" ? "bg-emerald-500/25 text-emerald-300 border border-emerald-500/30"
+                      : indicators.signalLabel === "Bullish" ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
+                      : indicators.signalLabel === "Bearish" ? "bg-red-500/15 text-red-400 border border-red-500/20"
+                      : indicators.signalLabel === "Strong Bearish" ? "bg-red-500/25 text-red-300 border border-red-500/30"
+                      : "bg-white/10 text-gray-300 border border-white/10"
+                    }`}>
+                      {indicators.signalLabel === "Strong Bullish" ? "▲▲" : indicators.signalLabel === "Bullish" ? "▲" : indicators.signalLabel === "Strong Bearish" ? "▼▼" : indicators.signalLabel === "Bearish" ? "▼" : "◆"} {indicators.signalLabel}
+                    </span>
+                  )}
+                  {indicators?.isGorengan && (
+                    <span className="text-sm font-bold px-3 py-1 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                      ⚠ Gorengan
+                    </span>
+                  )}
                   <span className="text-gray-600" aria-hidden="true">·</span>
                   <span className="text-xs text-gray-500 uppercase tracking-wider font-medium">{stock.sector}</span>
                 </div>
@@ -307,6 +325,9 @@ export default async function StockDetailPage({
               {close === null && <StockActionBadge ticker={ticker} />}
             </div>
 
+            {/* Paper trading position card */}
+            {close !== null && <StockPaperPosition ticker={ticker} />}
+
             {/* Indicator strip */}
             {indicators && close !== null && (
               <div className="border-t border-white/[0.08] mt-5 pt-4">
@@ -338,22 +359,6 @@ export default async function StockDetailPage({
                   </div>
 
                   <div className="flex items-center gap-2 flex-wrap justify-end">
-                    {indicators?.signalLabel && (
-                      <span className={`text-xs font-bold font-mono px-3 py-1 rounded-md ${
-                        indicators.signalLabel === "Strong Bullish" ? "bg-bullish/20 text-bullish"
-                        : indicators.signalLabel === "Bullish" ? "bg-bullish/15 text-bullish"
-                        : indicators.signalLabel === "Bearish" ? "bg-bearish/15 text-bearish"
-                        : indicators.signalLabel === "Strong Bearish" ? "bg-bearish/20 text-bearish"
-                        : "bg-white/[0.08] text-gray-300"
-                      }`}>
-                        {indicators.signalLabel === "Strong Bullish" ? "▲▲" : indicators.signalLabel === "Bullish" ? "▲" : indicators.signalLabel === "Strong Bearish" ? "▼▼" : indicators.signalLabel === "Bearish" ? "▼" : "◆"} {indicators.signalLabel}
-                      </span>
-                    )}
-                    {indicators?.isGorengan && (
-                      <span className="text-xs font-bold font-mono px-3 py-1 rounded-md bg-amber-500/20 text-amber-400">
-                        ⚠ Gorengan
-                      </span>
-                    )}
                     {smaCrossText && (
                       <CrossBadge text={smaCrossText} isBullish={indicators?.smaCrossSignal === "golden_cross"} />
                     )}
@@ -459,6 +464,63 @@ export default async function StockDetailPage({
           dividends={idxDividendsSerialized}
         />
 
+        {/* Who holds this stock */}
+        {await (async () => {
+          const holders = await prisma.portfolioHolding.findMany({
+            where: {
+              stockTicker: ticker,
+              user: { portfolioPublic: true, bannedAt: null },
+            },
+            take: 5,
+            select: {
+              user: {
+                select: { username: true, name: true, image: true },
+              },
+            },
+          });
+          const totalHolders = await prisma.portfolioHolding.count({
+            where: {
+              stockTicker: ticker,
+              user: { portfolioPublic: true, bannedAt: null },
+            },
+          });
+          if (holders.length === 0) return null;
+          return (
+            <div className="bg-bg-card depth-shadow rounded-xl p-5 border border-border" style={{ borderTop: "3px solid #0d9488" }}>
+              <div className="flex items-center gap-2 mb-3">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-teal-500">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                <h3 className="text-xs font-mono font-semibold uppercase tracking-wider text-text-primary">
+                  Pemilik Saham
+                </h3>
+                <span className="text-[10px] font-mono text-text-tertiary ml-auto">{totalHolders} komunitas</span>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                {holders.map((h) => (
+                  <Link
+                    key={h.user.username}
+                    href={`/profile/${h.user.username}`}
+                    className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-bg-hover hover:bg-teal-50 transition-colors group"
+                  >
+                    {h.user.image ? (
+                      <img src={h.user.image} alt="" className="w-5 h-5 rounded-full object-cover" />
+                    ) : (
+                      <div className="w-5 h-5 rounded-full bg-teal-500/10 text-teal-600 flex items-center justify-center text-[8px] font-bold">
+                        {(h.user.name || h.user.username).charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <span className="text-xs text-text-secondary group-hover:text-teal-600 transition-colors">
+                      {h.user.username}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
+        <SentimentGauge ticker={ticker} />
         <StockDiscussion ticker={ticker} />
       </div>
 

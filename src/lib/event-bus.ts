@@ -37,6 +37,22 @@ export interface EventMap {
     postId: string | null;
     requestedBy: string;
   };
+  "community:post-reposted": {
+    postId: string;
+    userId: string;
+    authorId: string;
+  };
+  "community:post-unreposted": {
+    postId: string;
+    userId: string;
+    authorId: string;
+  };
+  "community:post-reacted": {
+    postId: string;
+    userId: string;
+    authorId: string;
+    reactionType: string;
+  };
 }
 
 class TypedEventBus extends EventEmitter {

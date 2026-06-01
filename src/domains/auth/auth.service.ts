@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { auth } from "@/lib/auth";
 import { USERNAME_REGEX } from "@/lib/constants";
+import { prisma } from "@/lib/prisma";
 import { authRepository } from "./auth.repository";
 import {
   NotAuthenticatedError, AccountSuspendedError, AdminRequiredError,
@@ -93,5 +94,39 @@ export const authService = {
   async isUsernameAvailable(username: string): Promise<boolean> {
     const existing = await authRepository.findUserByUsername(username);
     return !existing;
+  },
+
+  async searchUsers(query: string, userId?: string, limit = 8) {
+    if (!query || query.length < 1) return [];
+    const users = await authRepository.searchUsers(query, limit + 20);
+
+    if (!userId) {
+      return users.slice(0, limit).map((u) => ({
+        id: u.id,
+        username: u.username,
+        name: u.name,
+        image: u.image,
+        reputation: u.reputation,
+        isFollowing: false,
+      }));
+    }
+
+    const follows = await prisma.follow.findMany({
+      where: { followerId: userId, followingId: { in: users.map((u) => u.id) } },
+      select: { followingId: true },
+    });
+    const followingIds = new Set(follows.map((f) => f.followingId));
+
+    const enriched = users.map((u) => ({
+      id: u.id,
+      username: u.username,
+      name: u.name,
+      image: u.image,
+      reputation: u.reputation,
+      isFollowing: followingIds.has(u.id),
+    }));
+
+    enriched.sort((a, b) => (a.isFollowing === b.isFollowing ? 0 : a.isFollowing ? -1 : 1));
+    return enriched.slice(0, limit);
   },
 };

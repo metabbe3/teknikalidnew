@@ -4,6 +4,8 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { IDX_STOCKS } from "@/lib/constants";
 import { useCreatePost } from "@/hooks/use-posts";
+import { useMentionSearch, type MentionUser } from "@/hooks/use-mention-search";
+import { EmojiPicker } from "./emoji-picker";
 
 interface PostComposerProps {
   onPostCreated?: () => void;
@@ -22,9 +24,17 @@ export function PostComposer({ onPostCreated }: PostComposerProps) {
   const [stockSearchQuery, setStockSearchQuery] = useState("");
   const [predictionDirection, setPredictionDirection] = useState<PredictionDirection | null>(null);
   const [predictionTarget, setPredictionTarget] = useState("");
+  const [mentionQuery, setMentionQuery] = useState("");
+  const [mentionOpen, setMentionOpen] = useState(false);
+  const [mentionIndex, setMentionIndex] = useState(0);
+  const [pollMode, setPollMode] = useState(false);
+  const [pollOptions, setPollOptions] = useState(["", ""]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const stockSearchRef = useRef<HTMLDivElement>(null);
+  const mentionRef = useRef<HTMLDivElement>(null);
+
+  const { users: mentionUsers, isLoading: mentionLoading } = useMentionSearch(mentionQuery);
 
   const createPost = useCreatePost();
 
@@ -50,6 +60,12 @@ export function PostComposer({ onPostCreated }: PostComposerProps) {
       ) {
         setStockSearchOpen(false);
       }
+      if (
+        mentionRef.current &&
+        !mentionRef.current.contains(e.target as Node)
+      ) {
+        setMentionOpen(false);
+      }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -63,13 +79,21 @@ export function PostComposer({ onPostCreated }: PostComposerProps) {
       const cursorPos = e.target.selectionStart;
       const textBeforeCursor = value.slice(0, cursorPos);
       const dollarMatch = textBeforeCursor.match(/\$([A-Z]*)$/);
+      const mentionMatch = textBeforeCursor.match(/@([a-zA-Z0-9_]*)$/);
 
       if (dollarMatch) {
         setFilterText(dollarMatch[1]);
         setShowSuggestions(true);
         setSuggestionIndex(0);
+        setMentionOpen(false);
+      } else if (mentionMatch) {
+        setMentionQuery(mentionMatch[1]);
+        setMentionOpen(true);
+        setMentionIndex(0);
+        setShowSuggestions(false);
       } else {
         setShowSuggestions(false);
+        setMentionOpen(false);
       }
     },
     []
@@ -84,8 +108,71 @@ export function PostComposer({ onPostCreated }: PostComposerProps) {
     []
   );
 
+  const selectMention = useCallback(
+    (user: MentionUser) => {
+      const textarea = textareaRef.current;
+      if (!textarea) return;
+      const cursorPos = textarea.selectionStart;
+      const textBeforeCursor = content.slice(0, cursorPos);
+      const replaceStart = textBeforeCursor.lastIndexOf("@");
+      if (replaceStart === -1) return;
+
+      const before = content.slice(0, replaceStart);
+      const after = content.slice(cursorPos);
+      const newContent = `${before}@${user.username} ${after}`;
+      setContent(newContent);
+      setMentionOpen(false);
+
+      requestAnimationFrame(() => {
+        const newPos = replaceStart + user.username.length + 2;
+        textarea.setSelectionRange(newPos, newPos);
+        textarea.focus();
+      });
+    },
+    [content]
+  );
+
+  const insertEmoji = useCallback(
+    (emoji: string) => {
+      const textarea = textareaRef.current;
+      if (!textarea) return;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const newContent = content.slice(0, start) + emoji + content.slice(end);
+      setContent(newContent);
+
+      requestAnimationFrame(() => {
+        const newPos = start + emoji.length;
+        textarea.setSelectionRange(newPos, newPos);
+        textarea.focus();
+      });
+    },
+    [content]
+  );
+
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
+      // Mention dropdown takes priority when open
+      if (mentionOpen && mentionUsers.length > 0) {
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          setMentionIndex((i) => Math.min(i + 1, mentionUsers.length - 1));
+          return;
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          setMentionIndex((i) => Math.max(i - 1, 0));
+          return;
+        } else if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          selectMention(mentionUsers[mentionIndex]);
+          return;
+        } else if (e.key === "Escape") {
+          setMentionOpen(false);
+          return;
+        }
+      }
+
+      // Stock ticker dropdown
       if (!showSuggestions || filteredTickers.length === 0) return;
 
       if (e.key === "ArrowDown") {
@@ -101,7 +188,7 @@ export function PostComposer({ onPostCreated }: PostComposerProps) {
         setShowSuggestions(false);
       }
     },
-    [showSuggestions, filteredTickers, suggestionIndex, selectTicker]
+    [showSuggestions, filteredTickers, suggestionIndex, selectTicker, mentionOpen, mentionUsers, mentionIndex, selectMention]
   );
 
   const selectStockFromSearch = (ticker: string) => {
@@ -126,6 +213,7 @@ export function PostComposer({ onPostCreated }: PostComposerProps) {
         tickerTag,
         predictionDirection: tickerTag ? predictionDirection : null,
         predictionTarget: tickerTag && predictionTarget ? Number(predictionTarget) : null,
+        pollOptions: pollMode ? pollOptions.filter((o) => o.trim()) : undefined,
       },
       {
         onSuccess: () => {
@@ -133,6 +221,9 @@ export function PostComposer({ onPostCreated }: PostComposerProps) {
           setTickerTag(null);
           setPredictionDirection(null);
           setPredictionTarget("");
+          setMentionOpen(false);
+          setPollMode(false);
+          setPollOptions(["", ""]);
           onPostCreated?.();
         },
       }
@@ -203,6 +294,85 @@ export function PostComposer({ onPostCreated }: PostComposerProps) {
             ))}
           </div>
         )}
+
+        {mentionOpen && (mentionUsers.length > 0 || mentionLoading) && (
+          <div
+            ref={mentionRef}
+            className="absolute left-0 bottom-full mb-1 z-20 w-64 max-h-56 overflow-y-auto bg-bg-card rounded-xl depth-shadow border border-border py-1"
+          >
+            {mentionLoading ? (
+              <div className="px-3 py-2 text-xs text-text-tertiary">Mencari...</div>
+            ) : (() => {
+              const followed = mentionUsers.filter((u) => u.isFollowing);
+              const others = mentionUsers.filter((u) => !u.isFollowing);
+              let flatIdx = 0;
+              return (
+                <>
+                  {followed.map((user) => {
+                    const i = flatIdx++;
+                    return (
+                      <button
+                        key={user.id}
+                        type="button"
+                        onClick={() => selectMention(user)}
+                        onMouseEnter={() => setMentionIndex(i)}
+                        className={`w-full text-left px-3 py-2 flex items-center gap-2.5 transition-colors ${
+                          i === mentionIndex
+                            ? "bg-bg-hover"
+                            : "hover:bg-bg-hover"
+                        }`}
+                      >
+                        {user.image ? (
+                          <img src={user.image} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" />
+                        ) : (
+                          <div className="w-7 h-7 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xs font-semibold shrink-0">
+                            {(user.name || user.username).charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-text-primary truncate">{user.name || user.username}</p>
+                          <p className="text-[11px] text-text-tertiary">@{user.username}</p>
+                        </div>
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-accent/10 text-accent font-medium shrink-0">Mengikuti</span>
+                      </button>
+                    );
+                  })}
+                  {followed.length > 0 && others.length > 0 && (
+                    <div className="my-1 border-t border-border/50" />
+                  )}
+                  {others.map((user) => {
+                    const i = flatIdx++;
+                    return (
+                      <button
+                        key={user.id}
+                        type="button"
+                        onClick={() => selectMention(user)}
+                        onMouseEnter={() => setMentionIndex(i)}
+                        className={`w-full text-left px-3 py-2 flex items-center gap-2.5 transition-colors ${
+                          i === mentionIndex
+                            ? "bg-bg-hover"
+                            : "hover:bg-bg-hover"
+                        }`}
+                      >
+                        {user.image ? (
+                          <img src={user.image} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" />
+                        ) : (
+                          <div className="w-7 h-7 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xs font-semibold shrink-0">
+                            {(user.name || user.username).charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-text-primary truncate">{user.name || user.username}</p>
+                          <p className="text-[11px] text-text-tertiary">@{user.username}</p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </>
+              );
+            })()}
+          </div>
+        )}
       </div>
 
       {/* Stock attachment + prediction */}
@@ -269,6 +439,57 @@ export function PostComposer({ onPostCreated }: PostComposerProps) {
         </div>
       )}
 
+      {/* Poll creator */}
+      {pollMode && (
+        <div className="mt-2.5 rounded-lg border border-border bg-bg-primary p-3 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] text-text-tertiary font-semibold uppercase tracking-wider">Poll</span>
+            <button
+              type="button"
+              onClick={() => { setPollMode(false); setPollOptions(["", ""]); }}
+              className="p-1 rounded hover:text-bearish hover:bg-bearish/10 transition-colors text-text-tertiary"
+              aria-label="Hapus poll"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          {pollOptions.map((opt, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <input
+                type="text"
+                value={opt}
+                onChange={(e) => {
+                  const newOpts = [...pollOptions];
+                  newOpts[i] = e.target.value;
+                  setPollOptions(newOpts);
+                }}
+                placeholder={`Opsi ${i + 1}`}
+                maxLength={100}
+                className="flex-1 px-2.5 py-1.5 text-sm rounded-lg border border-border bg-bg-card focus:outline-none focus:ring-2 focus:ring-accent/30"
+              />
+              {pollOptions.length > 2 && (
+                <button
+                  type="button"
+                  onClick={() => setPollOptions(pollOptions.filter((_, idx) => idx !== i))}
+                  className="p-1 text-text-tertiary hover:text-bearish transition-colors"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              )}
+            </div>
+          ))}
+          {pollOptions.length < 4 && (
+            <button
+              type="button"
+              onClick={() => setPollOptions([...pollOptions, ""])}
+              className="text-xs text-accent hover:underline font-medium"
+            >
+              + Tambah opsi
+            </button>
+          )}
+        </div>
+      )}
+
       <div className="flex items-center justify-between mt-3">
         <div className="flex items-center gap-3">
           {tickerTag && (
@@ -294,6 +515,23 @@ export function PostComposer({ onPostCreated }: PostComposerProps) {
         </div>
 
         <div className="flex items-center gap-1.5 relative">
+          <EmojiPicker onSelect={insertEmoji} />
+          <button
+            type="button"
+            onClick={() => { setPollMode(!pollMode); if (pollMode) setPollOptions(["", ""]); }}
+            className={`p-2 rounded-lg transition-colors ${
+              pollMode
+                ? "text-teal-600 bg-teal-50"
+                : "text-text-secondary hover:text-teal-600 hover:bg-bg-hover"
+            }`}
+            title="Tambah poll"
+            aria-label="Tambah poll"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <path d="M9 11l2 2 4-4" />
+            </svg>
+          </button>
           <button
             type="button"
             onClick={() => {

@@ -80,4 +80,22 @@ export const socialGraphService = {
       ],
     };
   },
+
+  async toggleBlock(currentUserId: string, targetUserId: string): Promise<{ blocked: boolean }> {
+    if (!targetUserId) throw new InvalidTargetError();
+    if (targetUserId === currentUserId) throw new InvalidTargetError();
+
+    const existing = await socialGraphRepository.findBlock(currentUserId, targetUserId);
+    if (existing) {
+      await socialGraphRepository.deleteBlock(existing.id);
+      return { blocked: false };
+    }
+
+    await socialGraphRepository.createBlock(currentUserId, targetUserId);
+    return { blocked: true };
+  },
+
+  async getBlockedUserIds(userId: string): Promise<string[]> {
+    return socialGraphRepository.getBlockedUserIds(userId);
+  },
 };
