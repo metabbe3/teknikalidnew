@@ -42,11 +42,13 @@ interface ArticleFeedProps {
   initialArticles: ArticleItem[];
   initialCursor: string | null;
   activeTag?: string;
+  activeType?: string;
 }
 
-export function ArticleFeed({ initialArticles, initialCursor, activeTag }: ArticleFeedProps) {
+export function ArticleFeed({ initialArticles, initialCursor, activeTag, activeType }: ArticleFeedProps) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useArticles(
     activeTag,
+    activeType,
     { articles: initialArticles, nextCursor: initialCursor }
   );
 

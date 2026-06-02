@@ -17,15 +17,18 @@ export const articleRepository = {
     });
   },
 
-  findPublishedPaginated(opts: { cursor?: string; limit: number; tag?: string }) {
+  findPublishedPaginated(opts: { cursor?: string; limit: number; tag?: string; articleType?: string }) {
+    const where = {
+      status: ArticleStatus.PUBLISHED as typeof ArticleStatus.PUBLISHED,
+      isListed: true,
+      articleType: opts.articleType
+        ? (opts.articleType as ArticleType)
+        : { in: ["STOCK_ANALYSIS", "NEWS", "GENERAL"] as ArticleType[] },
+      ...(opts.tag ? { tags: { has: opts.tag } } : {}),
+      ...(opts.cursor ? { id: { lt: opts.cursor } } : {}),
+    };
     return prisma.article.findMany({
-      where: {
-        status: ArticleStatus.PUBLISHED,
-        isListed: true,
-        articleType: { in: ["STOCK_ANALYSIS", "NEWS", "GENERAL"] },
-        ...(opts.tag ? { tags: { has: opts.tag } } : {}),
-        ...(opts.cursor ? { id: { lt: opts.cursor } } : {}),
-      },
+      where,
       orderBy: [{ publishedAt: "desc" }, { id: "desc" }],
       take: opts.limit + 1,
       include: {
@@ -45,30 +48,6 @@ export const articleRepository = {
         select: { tags: true },
       })
       .then((rows) => [...new Set(rows.flatMap((r) => r.tags))].sort());
-  },
-
-  findPopularTags(limit = 10) {
-    return prisma.article
-      .findMany({
-        where: {
-          status: ArticleStatus.PUBLISHED,
-          isListed: true,
-          articleType: { in: ["STOCK_ANALYSIS", "NEWS", "GENERAL"] },
-        },
-        select: { tags: true },
-      })
-      .then((rows) => {
-        const freq = new Map<string, number>();
-        for (const r of rows) {
-          for (const t of r.tags) {
-            freq.set(t, (freq.get(t) ?? 0) + 1);
-          }
-        }
-        return [...freq.entries()]
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, limit)
-          .map(([tag]) => tag);
-      });
   },
 
   findBySlug(slug: string) {

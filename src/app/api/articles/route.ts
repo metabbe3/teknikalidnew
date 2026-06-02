@@ -9,6 +9,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const cursor = searchParams.get("cursor") || undefined;
     const tag = searchParams.get("tag") || undefined;
+    const articleType = searchParams.get("type") || undefined;
     const limit = Math.min(
       parseInt(searchParams.get("limit") || "12", 10),
       50
@@ -18,6 +19,7 @@ export async function GET(request: NextRequest) {
       cursor,
       limit,
       tag,
+      articleType,
     });
 
     const hasMore = rows.length > limit;

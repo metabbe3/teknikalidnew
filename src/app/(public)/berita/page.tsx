@@ -4,7 +4,6 @@ import { articleRepository } from "@/domains/article/article.repository";
 import { Badge } from "@/components/ui/badge";
 import { Newspaper } from "lucide-react";
 import { ArticleFeed } from "@/components/article/article-feed";
-import { TagFilterStrip } from "@/components/article/tag-filter-strip";
 
 export const metadata: Metadata = {
   title: "Berita & Analisis Saham — TeknikalID",
@@ -16,6 +15,12 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 12;
+
+const TYPE_FILTERS: { value: string; label: string }[] = [
+  { value: "STOCK_ANALYSIS", label: "Analisis Saham" },
+  { value: "NEWS", label: "Berita Pasar" },
+  { value: "GENERAL", label: "Opini & Insight" },
+];
 
 const TYPE_LABELS: Record<string, { label: string; color: string }> = {
   STOCK_ANALYSIS: { label: "Analisis Saham", color: "text-blue-500 bg-blue-500/10" },
@@ -34,18 +39,14 @@ function formatDate(date: Date | string): string {
 export default async function BeritaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tag?: string }>;
+  searchParams: Promise<{ type?: string }>;
 }) {
-  const { tag: activeTag } = await searchParams;
+  const { type: activeType } = await searchParams;
 
-  const [popularTags, allTags, rows] = await Promise.all([
-    articleRepository.findPopularTags(10),
-    articleRepository.findPublishedTags(),
-    articleRepository.findPublishedPaginated({
-      limit: PAGE_SIZE + 1, // 1 for featured + PAGE_SIZE for grid + 1 to detect hasMore
-      tag: activeTag,
-    }),
-  ]);
+  const rows = await articleRepository.findPublishedPaginated({
+    limit: PAGE_SIZE + 1,
+    articleType: activeType,
+  });
 
   const hasMoreThanFirstPage = rows.length > PAGE_SIZE + 1;
   const pageRows = hasMoreThanFirstPage ? rows.slice(0, PAGE_SIZE + 1) : rows;
@@ -78,10 +79,26 @@ export default async function BeritaPage({
       </section>
 
       <div className="max-w-6xl mx-auto px-4 py-10">
-        {/* Tag filter strip */}
-        {allTags.length > 0 && (
-          <TagFilterStrip popularTags={popularTags} allTags={allTags} activeTag={activeTag} />
-        )}
+        {/* Type filter strip */}
+        <div className="flex items-center gap-2 mb-8">
+          <Link
+            href="/berita"
+            className="akademi-filter-pill"
+            data-active={!activeType ? "true" : undefined}
+          >
+            Semua
+          </Link>
+          {TYPE_FILTERS.map((tf) => (
+            <Link
+              key={tf.value}
+              href={`/berita?type=${tf.value}`}
+              className="akademi-filter-pill"
+              data-active={activeType === tf.value ? "true" : undefined}
+            >
+              {tf.label}
+            </Link>
+          ))}
+        </div>
 
         {/* Featured article */}
         {featuredArticle && (
@@ -184,7 +201,7 @@ export default async function BeritaPage({
             author: a.author,
           }))}
           initialCursor={nextCursor}
-          activeTag={activeTag}
+          activeType={activeType}
         />
       </div>
     </div>

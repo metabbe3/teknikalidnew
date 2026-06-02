@@ -22,10 +22,11 @@ interface ArticlePage {
 
 export function useArticles(
   tag?: string,
+  articleType?: string,
   initialData?: { articles: ArticleItem[]; nextCursor: string | null }
 ) {
   return useInfiniteQuery<ArticlePage>({
-    queryKey: ["articles", tag],
+    queryKey: ["articles", tag, articleType],
     initialPageParam: null as string | null,
     ...(initialData
       ? {
@@ -39,6 +40,7 @@ export function useArticles(
       const params = new URLSearchParams();
       if (pageParam) params.set("cursor", pageParam as string);
       if (tag) params.set("tag", tag);
+      if (articleType) params.set("type", articleType);
       params.set("limit", "12");
       const res = await fetch(`/api/articles?${params}`);
       if (!res.ok) throw new Error("Gagal memuat artikel");
