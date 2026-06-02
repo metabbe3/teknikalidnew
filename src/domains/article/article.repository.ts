@@ -47,6 +47,30 @@ export const articleRepository = {
       .then((rows) => [...new Set(rows.flatMap((r) => r.tags))].sort());
   },
 
+  findPopularTags(limit = 10) {
+    return prisma.article
+      .findMany({
+        where: {
+          status: ArticleStatus.PUBLISHED,
+          isListed: true,
+          articleType: { in: ["STOCK_ANALYSIS", "NEWS", "GENERAL"] },
+        },
+        select: { tags: true },
+      })
+      .then((rows) => {
+        const freq = new Map<string, number>();
+        for (const r of rows) {
+          for (const t of r.tags) {
+            freq.set(t, (freq.get(t) ?? 0) + 1);
+          }
+        }
+        return [...freq.entries()]
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, limit)
+          .map(([tag]) => tag);
+      });
+  },
+
   findBySlug(slug: string) {
     return prisma.article.findUnique({
       where: { slug },

@@ -4,6 +4,7 @@ import { articleRepository } from "@/domains/article/article.repository";
 import { Badge } from "@/components/ui/badge";
 import { Newspaper } from "lucide-react";
 import { ArticleFeed } from "@/components/article/article-feed";
+import { TagFilterStrip } from "@/components/article/tag-filter-strip";
 
 export const metadata: Metadata = {
   title: "Berita & Analisis Saham — TeknikalID",
@@ -37,7 +38,8 @@ export default async function BeritaPage({
 }) {
   const { tag: activeTag } = await searchParams;
 
-  const [allTags, rows] = await Promise.all([
+  const [popularTags, allTags, rows] = await Promise.all([
+    articleRepository.findPopularTags(10),
     articleRepository.findPublishedTags(),
     articleRepository.findPublishedPaginated({
       limit: PAGE_SIZE + 1, // 1 for featured + PAGE_SIZE for grid + 1 to detect hasMore
@@ -78,25 +80,7 @@ export default async function BeritaPage({
       <div className="max-w-6xl mx-auto px-4 py-10">
         {/* Tag filter strip */}
         {allTags.length > 0 && (
-          <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
-            <Link
-              href="/berita"
-              className="akademi-filter-pill"
-              data-active={!activeTag ? "true" : undefined}
-            >
-              Semua
-            </Link>
-            {allTags.map((tag) => (
-              <Link
-                key={tag}
-                href={`/berita?tag=${encodeURIComponent(tag)}`}
-                className="akademi-filter-pill"
-                data-active={activeTag === tag ? "true" : undefined}
-              >
-                {tag}
-              </Link>
-            ))}
-          </div>
+          <TagFilterStrip popularTags={popularTags} allTags={allTags} activeTag={activeTag} />
         )}
 
         {/* Featured article */}
