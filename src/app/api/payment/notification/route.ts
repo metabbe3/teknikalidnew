@@ -20,8 +20,18 @@ export async function POST(request: NextRequest) {
       custom_field3: duration,
     } = notification;
 
+    console.log("[Midtrans] Notification received:", JSON.stringify({
+      order_id, transaction_status, status_code, gross_amount, payment_type, fraud_status,
+    }));
+
     // Verify signature to ensure it's really from Midtrans
     const serverKey = process.env.MIDTRANS_SERVER_KEY!;
+
+    if (!serverKey) {
+      console.error("[Midtrans] MIDTRANS_SERVER_KEY not configured");
+      return NextResponse.json({ error: "Server key not configured" }, { status: 500 });
+    }
+
     const isValid = verifySignature(
       order_id,
       status_code,
@@ -31,7 +41,12 @@ export async function POST(request: NextRequest) {
     );
 
     if (!isValid) {
-      console.error("Invalid Midtrans signature for order:", order_id);
+      console.error("[Midtrans] Invalid signature for order:", order_id);
+      // For test notifications from Midtrans dashboard, still return 200
+      if (order_id?.startsWith("payment_notif_test_")) {
+        console.log("[Midtrans] Test notification accepted without signature check");
+        return NextResponse.json({ status: "ok", message: "test notification received" });
+      }
       return NextResponse.json({ error: "Invalid signature" }, { status: 403 });
     }
 

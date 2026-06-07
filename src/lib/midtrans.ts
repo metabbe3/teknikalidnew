@@ -56,10 +56,20 @@ export function verifySignature(
   signatureKey: string
 ): boolean {
   const crypto = require("crypto");
+  const input = orderId + statusCode + grossAmount + serverKey;
   const hash = crypto
     .createHash("sha512")
-    .update(orderId + statusCode + grossAmount + serverKey)
+    .update(input)
     .digest("hex");
+  console.log("[Midtrans] Signature check:", {
+    orderId,
+    statusCode,
+    grossAmount,
+    input,
+    expectedHash: hash,
+    receivedSignature: signatureKey,
+    match: hash === signatureKey,
+  });
   return hash === signatureKey;
 }
 
