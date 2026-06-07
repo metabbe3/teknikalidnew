@@ -107,13 +107,44 @@ async function handlePaymentSuccess(
   grossAmount: string,
   paymentType: string
 ) {
-  if (!userId || !planId || !duration) return;
+  if (!planId || !duration) return;
 
   const durationDays = parseInt(duration.replace("d", ""));
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + durationDays);
 
-  // Upsert payment record
+  const amount = parseInt(parseFloat(grossAmount).toString());
+
+  // Check if user exists
+  let userExists = false;
+  if (userId) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    userExists = !!user;
+  }
+
+  if (!userExists) {
+    // User doesn't exist (e.g. test payment) — just log it
+    console.log(`[Midtrans] Payment success for non-existent user: ${userId}, order: ${orderId}, amount: ${grossAmount}`);
+    try {
+      await prisma.payment.create({
+        data: {
+          orderId,
+          userId: userId || "unknown",
+          planId,
+          amount,
+          status: "success",
+          paymentType,
+          paidAt: new Date(),
+          expiresAt,
+        },
+      });
+    } catch (e) {
+      console.log(`[Midtrans] Could not save payment record: ${e}`);
+    }
+    return;
+  }
+
+  // Real user — upsert payment and activate premium
   await prisma.payment.upsert({
     where: { orderId },
     update: {
@@ -125,7 +156,7 @@ async function handlePaymentSuccess(
       orderId,
       userId,
       planId,
-      amount: parseInt(grossAmount),
+      amount,
       status: "success",
       paymentType,
       paidAt: new Date(),
@@ -133,7 +164,6 @@ async function handlePaymentSuccess(
     },
   });
 
-  // Update user premium status
   await prisma.user.update({
     where: { id: userId },
     data: {

@@ -955,7 +955,7 @@ model QuestionFeedback {
 model Payment {
   id          String   @id @default(cuid())
   orderId     String   @unique
-  userId      String
+  userId      String?
   planId      String   @db.VarChar(20)
   amount      Int
   status      String   @db.VarChar(20)
@@ -965,7 +965,7 @@ model Payment {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([status])
