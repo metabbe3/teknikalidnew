@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
 import { IDX_STOCKS, IDX40_TICKERS, SITE_URL } from "@/lib/constants";
+import { GLOSSARY_TERMS } from "@/lib/glossary-terms";
+import { SECTORS } from "@/lib/sectors";
 import { ArticleType } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
@@ -69,6 +71,36 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.4,
   }));
 
+  // Sector pages
+  const sectorIndex = {
+    url: `${baseUrl}/sektor`,
+    lastModified: STATIC_DATE,
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
+  };
+
+  const sectorPages = SECTORS.map((s) => ({
+    url: `${baseUrl}/sektor/${s.slug}`,
+    lastModified: STATIC_DATE,
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  }));
+
+  // Glossary pages
+  const glossaryIndex = {
+    url: `${baseUrl}/akademi/glosarium`,
+    lastModified: STATIC_DATE,
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  };
+
+  const glossaryPages = GLOSSARY_TERMS.map((t) => ({
+    url: `${baseUrl}/akademi/glosarium/${t.slug}`,
+    lastModified: STATIC_DATE,
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
   return [
     { url: baseUrl, lastModified: STATIC_DATE, changeFrequency: "daily", priority: 1.0 },
     { url: `${baseUrl}/stocks`, lastModified: STATIC_DATE, changeFrequency: "daily", priority: 0.9 },
@@ -84,5 +116,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...articlePages,
     ...faqSitemapEntries,
     ...profilePages,
+    sectorIndex,
+    ...sectorPages,
+    glossaryIndex,
+    ...glossaryPages,
   ];
 }

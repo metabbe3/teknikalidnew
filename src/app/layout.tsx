@@ -59,6 +59,7 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/",
+    languages: { id: SITE_URL },
     types: { "application/rss+xml": `${SITE_URL}/feed.xml` },
   },
   openGraph: {

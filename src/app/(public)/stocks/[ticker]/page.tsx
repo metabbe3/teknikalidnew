@@ -304,6 +304,35 @@ export default async function StockDetailPage({
           { "@type": "ListItem", position: 2, name: stripJk(ticker), item: `${SITE_URL}/stocks/${ticker}` },
         ],
       },
+      {
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: `Berapa harga saham ${stripJk(ticker)} hari ini?`,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: `${stripJk(ticker)} saat ini diperdagangkan di harga Rp ${close !== null ? formatPrice(close) : "-"}. Cek analisis teknikal lengkap di TeknikalID.`,
+            },
+          },
+          {
+            "@type": "Question",
+            name: `Bagaimana analisis teknikal saham ${stripJk(ticker)}?`,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: `Lihat analisis teknikal ${stripJk(ticker)} termasuk RSI, MACD, Support, Resistance, dan sinyal trading di halaman ini.`,
+            },
+          },
+          {
+            "@type": "Question",
+            name: `Apa itu saham ${stripJk(ticker)}?`,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: `${stripJk(ticker)} adalah emiten yang tercatat di Bursa Efek Indonesia. Pantau pergerakan harga dan indikator teknikal di TeknikalID.`,
+            },
+          },
+        ],
+      },
     ],
   };
 
