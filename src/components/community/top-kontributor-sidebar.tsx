@@ -52,6 +52,7 @@ export function TopKontributorSidebar({ users }: { users: TopContributor[] }) {
                   className={`w-7 h-7 rounded-full object-cover ${
                     rank <= 3 ? `ring-2 ${style?.bg}` : ""
                   }`}
+                  loading="lazy"
                 />
               ) : (
                 <div

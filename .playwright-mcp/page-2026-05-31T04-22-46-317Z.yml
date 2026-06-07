@@ -1,0 +1,454 @@
+- generic [ref=e1]:
+  - text: 
+  - generic [ref=e4]:
+    - banner [ref=e6]:
+      - link "IDX" [ref=e7] [cursor=pointer]:
+        - /url: /id
+        - img "IDX" [ref=e8]
+      - navigation [ref=e9]:
+        - text:  
+        - generic [ref=e10]:
+          - generic:
+            - generic [ref=e11]:
+              - text: 31 Mei 2026
+              - generic [ref=e12]: "|"
+              - text: 11:22 WIB
+            - generic [ref=e13]:
+              - generic [ref=e15]:
+                - generic:
+                  - generic: 
+                - searchbox "" [ref=e16]
+                - text: 
+              - generic:
+                - list
+            - generic [ref=e18]:
+              - link "Masuk" [ref=e19] [cursor=pointer]:
+                - /url: /id/masuk?prev=%2Fid%2Fperusahaan-tercatat%2Fprofil-perusahaan-tercatat%2FBBCA
+              - link "Daftar" [ref=e20] [cursor=pointer]:
+                - /url: /id/daftar
+            - navigation [ref=e21]:
+              - link "en" [ref=e22] [cursor=pointer]:
+                - /url: /en/listed-companies/company-profiles/BBCA
+              - link "id" [ref=e23] [cursor=pointer]:
+                - /url: /id/perusahaan-tercatat/profil-perusahaan-tercatat/BBCA
+          - navigation [ref=e24]:
+            - list [ref=e26]:
+              - listitem [ref=e27]:
+                - link "Data Pasar":
+                  - /url: /id/#0
+                - text:  
+              - listitem [ref=e28]:
+                - link "Produk & Layanan":
+                  - /url: /id/#1
+                - text:  
+              - listitem [ref=e29]:
+                - link "Perusahaan Tercatat":
+                  - /url: /id/#2
+                - text:  
+              - listitem [ref=e30]:
+                - link "IDX Syariah":
+                  - /url: /id/idx-syariah/
+                - text:  
+              - listitem [ref=e31]:
+                - link "Anggota Bursa & Partisipan":
+                  - /url: /id/#4
+                - text:  
+              - listitem [ref=e32]:
+                - link "Berita":
+                  - /url: /id/#5
+                - text:  
+              - listitem [ref=e33]:
+                - link "Peraturan":
+                  - /url: /id/#6
+                - text:  
+              - listitem [ref=e34]:
+                - link "Investor":
+                  - /url: /id/#7
+                - text:  
+              - listitem [ref=e35]:
+                - link "Tentang BEI":
+                  - /url: /id/#8
+                - text:  
+    - main [ref=e37]:
+      - generic [ref=e38]:
+        - list [ref=e39]:
+          - listitem [ref=e40]:
+            - link "" [ref=e41] [cursor=pointer]:
+              - /url: /id
+              - generic [ref=e42]: 
+          - listitem [ref=e43]:
+            - generic [ref=e44]: 
+            - generic [ref=e45]: Perusahaan Tercatat
+          - listitem [ref=e46]:
+            - generic [ref=e47]: 
+            - link "Profil Perusahaan Tercatat" [ref=e48] [cursor=pointer]:
+              - /url: /id/perusahaan-tercatat/profil-perusahaan-tercatat/
+          - listitem [ref=e49]:
+            - generic [ref=e50]: 
+            - generic [ref=e51]: BBCA
+        - heading "Profil Perusahaan Tercatat" [level=1] [ref=e52]
+        - generic [ref=e53]:
+          - strong [ref=e55]: PT Bank Central Asia Tbk.
+          - combobox "Search for option" [ref=e58]:
+            - searchbox [ref=e60]
+      - generic [ref=e63]:
+        - navigation [ref=e65]:
+          - button "Profil" [ref=e66] [cursor=pointer]
+          - button "Dividen" [ref=e67] [cursor=pointer]
+          - button "Pencatatan Saham" [ref=e68] [cursor=pointer]
+          - button "Pengumuman" [ref=e69] [cursor=pointer]
+          - button "Obligasi & Sukuk" [ref=e70] [cursor=pointer]
+          - button "Info Perdagangan" [ref=e71] [cursor=pointer]
+          - button "Kalender" [ref=e72] [cursor=pointer]
+          - button "Laporan Keuangan" [ref=e73] [cursor=pointer]
+          - button "Historikal" [ref=e74] [cursor=pointer]
+          - button "Sejarah Dividen" [active] [ref=e75] [cursor=pointer]
+        - generic [ref=e695]:
+          - generic [ref=e696]:
+            - generic [ref=e697]: "Tahun:"
+            - combobox "Search for option" [ref=e699]:
+              - generic [ref=e700]:
+                - generic [ref=e701]: "2026"
+                - searchbox [ref=e702]
+          - separator [ref=e705]
+          - generic [ref=e706]:
+            - heading "Dividen Tunai" [level=3] [ref=e707]
+            - generic [ref=e709]:
+              - table [ref=e711]:
+                - rowgroup [ref=e724]:
+                  - row "Nama Perusahaan  Sort table by Nama Perusahaan in descending order  Tahun  Sort table by Tahun in descending order  Jenis  Sort table by Jenis in descending order  Mata Uang  Sort table by Mata Uang in descending order  Total  Sort table by Total in descending order  Cum & Negosiasi  Sort table by Cum & Negosiasi in descending order  Cum Tunai  Sort table by Cum Tunai in descending order  Ex Reguler & Negosiasi  Sort table by Ex Reguler & Negosiasi in descending order  Ex Tunai  Sort table by Ex Tunai in descending order  DPS  Sort table by DPS in descending order  Pembayaran  Sort table by Pembayaran in descending order " [ref=e725]:
+                    - columnheader "Nama Perusahaan  Sort table by Nama Perusahaan in descending order " [ref=e726]:
+                      - text: Nama Perusahaan
+                      - button " Sort table by Nama Perusahaan in descending order " [ref=e727] [cursor=pointer]:
+                        - text: 
+                        - generic [ref=e728]: Sort table by Nama Perusahaan in descending order
+                        - text: 
+                    - columnheader "Tahun  Sort table by Tahun in descending order " [ref=e729]:
+                      - text: Tahun
+                      - button " Sort table by Tahun in descending order " [ref=e730] [cursor=pointer]:
+                        - text: 
+                        - generic [ref=e731]: Sort table by Tahun in descending order
+                        - text: 
+                    - columnheader "Jenis  Sort table by Jenis in descending order " [ref=e732]:
+                      - text: Jenis
+                      - button " Sort table by Jenis in descending order " [ref=e733] [cursor=pointer]:
+                        - text: 
+                        - generic [ref=e734]: Sort table by Jenis in descending order
+                        - text: 
+                    - columnheader "Mata Uang  Sort table by Mata Uang in descending order " [ref=e735]:
+                      - text: Mata Uang
+                      - button " Sort table by Mata Uang in descending order " [ref=e736] [cursor=pointer]:
+                        - text: 
+                        - generic [ref=e737]: Sort table by Mata Uang in descending order
+                        - text: 
+                    - columnheader "Total  Sort table by Total in descending order " [ref=e738]:
+                      - text: Total
+                      - button " Sort table by Total in descending order " [ref=e739] [cursor=pointer]:
+                        - text: 
+                        - generic [ref=e740]: Sort table by Total in descending order
+                        - text: 
+                    - columnheader "Cum & Negosiasi  Sort table by Cum & Negosiasi in descending order " [ref=e741]:
+                      - text: Cum & Negosiasi
+                      - button " Sort table by Cum & Negosiasi in descending order " [ref=e742] [cursor=pointer]:
+                        - text: 
+                        - generic [ref=e743]: Sort table by Cum & Negosiasi in descending order
+                        - text: 
+                    - columnheader "Cum Tunai  Sort table by Cum Tunai in descending order " [ref=e744]:
+                      - text: Cum Tunai
+                      - button " Sort table by Cum Tunai in descending order " [ref=e745] [cursor=pointer]:
+                        - text: 
+                        - generic [ref=e746]: Sort table by Cum Tunai in descending order
+                        - text: 
+                    - columnheader "Ex Reguler & Negosiasi  Sort table by Ex Reguler & Negosiasi in descending order " [ref=e747]:
+                      - text: Ex Reguler & Negosiasi
+                      - button " Sort table by Ex Reguler & Negosiasi in descending order " [ref=e748] [cursor=pointer]:
+                        - text: 
+                        - generic [ref=e749]: Sort table by Ex Reguler & Negosiasi in descending order
+                        - text: 
+                    - columnheader "Ex Tunai  Sort table by Ex Tunai in descending order " [ref=e750]:
+                      - text: Ex Tunai
+                      - button " Sort table by Ex Tunai in descending order " [ref=e751] [cursor=pointer]:
+                        - text: 
+                        - generic [ref=e752]: Sort table by Ex Tunai in descending order
+                        - text: 
+                    - columnheader "DPS  Sort table by DPS in descending order " [ref=e753]:
+                      - text: DPS
+                      - button " Sort table by DPS in descending order " [ref=e754] [cursor=pointer]:
+                        - text: 
+                        - generic [ref=e755]: Sort table by DPS in descending order
+                        - text: 
+                    - columnheader "Pembayaran  Sort table by Pembayaran in descending order " [ref=e756]:
+                      - text: Pembayaran
+                      - button " Sort table by Pembayaran in descending order " [ref=e757] [cursor=pointer]:
+                        - text: 
+                        - generic [ref=e758]: Sort table by Pembayaran in descending order
+                        - text: 
+                - rowgroup [ref=e759]:
+                  - row "Data tidak ditemukan" [ref=e760]:
+                    - cell "Data tidak ditemukan" [ref=e761]:
+                      - generic [ref=e764]: Data tidak ditemukan
+              - generic [ref=e765]:
+                - generic [ref=e767]:
+                  - text: "Baris:"
+                  - combobox "Baris:" [ref=e768]:
+                    - option "10" [selected]
+                    - option "20"
+                    - option "30"
+                    - option "40"
+                    - option "50"
+                    - option "All"
+                - generic [ref=e769]:
+                  - generic [ref=e771]: 0 - 0 dari 0
+                  - button:
+                    - generic: 
+                  - button:
+                    - generic: 
+                  - button:
+                    - generic: 
+                  - button:
+                    - generic: 
+          - separator [ref=e772]
+          - generic [ref=e773]:
+            - heading "Dividen Saham" [level=3] [ref=e774]
+            - generic [ref=e776]:
+              - table [ref=e778]:
+                - rowgroup [ref=e791]:
+                  - row "Nama Perusahaan  Sort table by Nama Perusahaan in descending order  Tahun  Sort table by Tahun in descending order  Jenis  Sort table by Jenis in descending order  Mata Uang  Sort table by Mata Uang in descending order  Total  Sort table by Total in descending order  Cum & Negosiasi  Sort table by Cum & Negosiasi in descending order  Cum Tunai  Sort table by Cum Tunai in descending order  Ex Reguler & Negosiasi  Sort table by Ex Reguler & Negosiasi in descending order  Ex Tunai  Sort table by Ex Tunai in descending order  DPS  Sort table by DPS in descending order  Pembayaran  Sort table by Pembayaran in descending order " [ref=e792]:
+                    - columnheader "Nama Perusahaan  Sort table by Nama Perusahaan in descending order " [ref=e793]:
+                      - text: Nama Perusahaan
+                      - button " Sort table by Nama Perusahaan in descending order " [ref=e794] [cursor=pointer]:
+                        - text: 
+                        - generic [ref=e795]: Sort table by Nama Perusahaan in descending order
+                        - text: 
+                    - columnheader "Tahun  Sort table by Tahun in descending order " [ref=e796]:
+                      - text: Tahun
+                      - button " Sort table by Tahun in descending order " [ref=e797] [cursor=pointer]:
+                        - text: 
+                        - generic [ref=e798]: Sort table by Tahun in descending order
+                        - text: 
+                    - columnheader "Jenis  Sort table by Jenis in descending order " [ref=e799]:
+                      - text: Jenis
+                      - button " Sort table by Jenis in descending order " [ref=e800] [cursor=pointer]:
+                        - text: 
+                        - generic [ref=e801]: Sort table by Jenis in descending order
+                        - text: 
+                    - columnheader "Mata Uang  Sort table by Mata Uang in descending order " [ref=e802]:
+                      - text: Mata Uang
+                      - button " Sort table by Mata Uang in descending order " [ref=e803] [cursor=pointer]:
+                        - text: 
+                        - generic [ref=e804]: Sort table by Mata Uang in descending order
+                        - text: 
+                    - columnheader "Total  Sort table by Total in descending order " [ref=e805]:
+                      - text: Total
+                      - button " Sort table by Total in descending order " [ref=e806] [cursor=pointer]:
+                        - text: 
+                        - generic [ref=e807]: Sort table by Total in descending order
+                        - text: 
+                    - columnheader "Cum & Negosiasi  Sort table by Cum & Negosiasi in descending order " [ref=e808]:
+                      - text: Cum & Negosiasi
+                      - button " Sort table by Cum & Negosiasi in descending order " [ref=e809] [cursor=pointer]:
+                        - text: 
+                        - generic [ref=e810]: Sort table by Cum & Negosiasi in descending order
+                        - text: 
+                    - columnheader "Cum Tunai  Sort table by Cum Tunai in descending order " [ref=e811]:
+                      - text: Cum Tunai
+                      - button " Sort table by Cum Tunai in descending order " [ref=e812] [cursor=pointer]:
+                        - text: 
+                        - generic [ref=e813]: Sort table by Cum Tunai in descending order
+                        - text: 
+                    - columnheader "Ex Reguler & Negosiasi  Sort table by Ex Reguler & Negosiasi in descending order " [ref=e814]:
+                      - text: Ex Reguler & Negosiasi
+                      - button " Sort table by Ex Reguler & Negosiasi in descending order " [ref=e815] [cursor=pointer]:
+                        - text: 
+                        - generic [ref=e816]: Sort table by Ex Reguler & Negosiasi in descending order
+                        - text: 
+                    - columnheader "Ex Tunai  Sort table by Ex Tunai in descending order " [ref=e817]:
+                      - text: Ex Tunai
+                      - button " Sort table by Ex Tunai in descending order " [ref=e818] [cursor=pointer]:
+                        - text: 
+                        - generic [ref=e819]: Sort table by Ex Tunai in descending order
+                        - text: 
+                    - columnheader "DPS  Sort table by DPS in descending order " [ref=e820]:
+                      - text: DPS
+                      - button " Sort table by DPS in descending order " [ref=e821] [cursor=pointer]:
+                        - text: 
+                        - generic [ref=e822]: Sort table by DPS in descending order
+                        - text: 
+                    - columnheader "Pembayaran  Sort table by Pembayaran in descending order " [ref=e823]:
+                      - text: Pembayaran
+                      - button " Sort table by Pembayaran in descending order " [ref=e824] [cursor=pointer]:
+                        - text: 
+                        - generic [ref=e825]: Sort table by Pembayaran in descending order
+                        - text: 
+                - rowgroup [ref=e826]:
+                  - row "Data tidak ditemukan" [ref=e827]:
+                    - cell "Data tidak ditemukan" [ref=e828]:
+                      - generic [ref=e831]: Data tidak ditemukan
+              - generic [ref=e832]:
+                - generic [ref=e834]:
+                  - text: "Baris:"
+                  - combobox "Baris:" [ref=e835]:
+                    - option "10" [selected]
+                    - option "20"
+                    - option "30"
+                    - option "40"
+                    - option "50"
+                    - option "All"
+                - generic [ref=e836]:
+                  - generic [ref=e838]: 0 - 0 dari 0
+                  - button:
+                    - generic: 
+                  - button:
+                    - generic: 
+                  - button:
+                    - generic: 
+                  - button:
+                    - generic: 
+    - contentinfo [ref=e527]:
+      - generic [ref=e528]:
+        - list [ref=e530]:
+          - listitem [ref=e531]:
+            - link "OJK" [ref=e532] [cursor=pointer]:
+              - /url: https://www.ojk.go.id/
+              - img "OJK" [ref=e533]
+          - listitem [ref=e534]:
+            - link "IDClear" [ref=e535] [cursor=pointer]:
+              - /url: https://www.idclear.co.id/
+              - img "IDClear" [ref=e536]
+          - listitem [ref=e537]:
+            - link "KSEI" [ref=e538] [cursor=pointer]:
+              - /url: https://www.ksei.co.id/
+              - img "KSEI" [ref=e539]
+        - list [ref=e541]:
+          - listitem [ref=e542]:
+            - link "PBK" [ref=e543] [cursor=pointer]:
+              - /url: https://www.idscore.id/
+              - img "PBK" [ref=e544]
+          - listitem [ref=e545]:
+            - link "PEI" [ref=e546] [cursor=pointer]:
+              - /url: https://www.pei.co.id/id
+              - img "PEI" [ref=e547]
+          - listitem [ref=e548]:
+            - link "Pefindo" [ref=e549] [cursor=pointer]:
+              - /url: http://www.pefindo.com/
+              - img "Pefindo" [ref=e550]
+          - listitem [ref=e551]:
+            - link "TICMI" [ref=e552] [cursor=pointer]:
+              - /url: http://ticmi.co.id/
+              - img "TICMI" [ref=e553]
+        - list [ref=e555]:
+          - listitem [ref=e556]:
+            - link "Indonesia SIPF" [ref=e557] [cursor=pointer]:
+              - /url: http://www.indonesiasipf.co.id/
+              - img "Indonesia SIPF" [ref=e558]
+          - listitem [ref=e559]:
+            - link "IBPA" [ref=e560] [cursor=pointer]:
+              - /url: https://www.phei.co.id/
+              - img "IBPA" [ref=e561]
+          - listitem [ref=e562]:
+            - link "IDX Channel" [ref=e563] [cursor=pointer]:
+              - /url: https://www.idxchannel.com/
+              - img "IDX Channel" [ref=e564]
+          - listitem [ref=e565]:
+            - link "idxsti" [ref=e566] [cursor=pointer]:
+              - /url: https://idxsti.co.id/
+              - img "idxsti" [ref=e567]
+      - separator [ref=e568]
+      - generic [ref=e570]:
+        - generic [ref=e572]:
+          - link "Gedung Bursa Efek Indonesia,Tower 1, Lantai 6 Jl. Jend. Sudirman Kav 52-53 Jakarta Selatan 12190, Indonesia" [ref=e573] [cursor=pointer]:
+            - /url: /id/tentang-bei/hubungi-kami/
+            - generic [ref=e574]:
+              - text: Gedung Bursa Efek Indonesia,Tower 1, Lantai 6
+              - text: Jl. Jend. Sudirman Kav 52-53 Jakarta Selatan 12190, Indonesia
+          - list [ref=e575]:
+            - listitem [ref=e576]:
+              - link " 150515 (Nasional)" [ref=e577] [cursor=pointer]:
+                - /url: contactcenter@idx.co.id
+                - generic [ref=e578]: 
+                - text: 150515 (Nasional)
+            - listitem [ref=e579]:
+              - link " contactcenter@idx.co.id" [ref=e580] [cursor=pointer]:
+                - /url: mailto:contactcenter@idx.co.id
+                - generic [ref=e581]: 
+                - text: contactcenter@idx.co.id
+            - listitem [ref=e582]:
+              - link " +6281181150515" [ref=e583] [cursor=pointer]:
+                - /url: https://wa.me/6281181150515
+                - generic [ref=e584]: 
+                - text: "+6281181150515"
+        - navigation [ref=e586]:
+          - link "Syarat Penggunaan" [ref=e587] [cursor=pointer]:
+            - /url: "#"
+            - link "Syarat Penggunaan" [ref=e588]:
+              - /url: /id/syarat-penggunaan/
+          - link "FAQ" [ref=e589] [cursor=pointer]:
+            - /url: "#"
+            - link "FAQ" [ref=e590]:
+              - /url: /id/faq/
+          - link "Whistleblowing System" [ref=e591] [cursor=pointer]:
+            - /url: "#"
+            - link "Whistleblowing System" [ref=e592]:
+              - /url: https://id.deloitte-halo.com/idx/?Pg=1&Lang=id-ID
+          - link "Kebijakan Privasi" [ref=e593] [cursor=pointer]:
+            - /url: "#"
+            - link "Kebijakan Privasi" [ref=e594]:
+              - /url: https://www.idx.co.id/id/tentang-bei/kebijakan-privasi-bei/
+          - link "Browser yang Disarankan" [ref=e595] [cursor=pointer]:
+            - /url: "#"
+            - link "Browser yang Disarankan" [ref=e596]:
+              - /url: /id/footer/browser-yang-disarankan/
+        - generic [ref=e598]:
+          - generic [ref=e599]:
+            - generic [ref=e600]: terang
+            - button "Switch" [ref=e601] [cursor=pointer]:
+              - generic: Switch
+          - navigation [ref=e602]:
+            - link [ref=e603] [cursor=pointer]:
+              - /url: "#"
+              - link [ref=e604]:
+                - /url: https://www.facebook.com/indonesiastockexchange/
+                - generic [ref=e605]: 
+            - link [ref=e606] [cursor=pointer]:
+              - /url: "#"
+              - link [ref=e607]:
+                - /url: https://twitter.com/IDX_BEI
+                - generic [ref=e608]: 
+            - link [ref=e609] [cursor=pointer]:
+              - /url: "#"
+              - link [ref=e610]:
+                - /url: https://www.instagram.com/indonesiastockexchange
+                - generic [ref=e611]: 
+            - link [ref=e612] [cursor=pointer]:
+              - /url: "#"
+              - link [ref=e613]:
+                - /url: https://www.youtube.com/channel/UCXyfYHdOPLUgxMndSwf9tHg
+                - generic [ref=e614]: 
+            - link [ref=e615] [cursor=pointer]:
+              - /url: "#"
+              - link [ref=e616]:
+                - /url: https://wa.me/6281181150515
+                - generic [ref=e617]: 
+            - link [ref=e618] [cursor=pointer]:
+              - /url: "#"
+              - link [ref=e619]:
+                - /url: https://www.tiktok.com/@idx_bei
+                - generic [ref=e620]: 
+          - list [ref=e621]:
+            - listitem [ref=e622]:
+              - link "Get it on Google Play" [ref=e623] [cursor=pointer]:
+                - /url: https://play.google.com/store/apps/details?id=id.co.idx.idxmobile
+                - img "Get it on Google Play" [ref=e624]
+            - listitem [ref=e625]:
+              - link "Download on the App Store" [ref=e626] [cursor=pointer]:
+                - /url: https://apps.apple.com/app/id1658695361
+                - img "Download on the App Store" [ref=e627]
+          - generic [ref=e628]:
+            - text: Copyright © 2022 - 2024. Bursa Efek Indonesia
+            - text: All rights reserved.
+    - generic [ref=e466]: 
+    - link "" [ref=e467] [cursor=pointer]:
+      - /url: https://wa.me/+6281181150515
+      - generic [ref=e469]: 
+  - button [ref=e630] [cursor=pointer]:
+    - img [ref=e631]

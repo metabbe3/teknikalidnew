@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { X, Link2, Check } from "lucide-react";
+import { SITE_URL } from "@/lib/constants";
 
 const SHARE_TARGETS = [
   {
@@ -48,7 +49,7 @@ export function ShareModal({
   onClose: () => void;
 }) {
   const [copied, setCopied] = useState(false);
-  const postUrl = `https://teknikal.id/community/${postId}`;
+  const postUrl = `${SITE_URL}/community/${postId}`;
   const shareText = "Cek post ini di TeknikalID";
 
   const handleCopy = async () => {

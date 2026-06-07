@@ -1,4 +1,4 @@
-export const SITE_URL = "https://teknikalid.com";
+export const SITE_URL = "https://teknikal.id";
 
 export { IDX_STOCKS, IDX40_TICKERS, ALL_TICKERS, IDX_SECTORS, isIDX40, type IDXStockFull } from "./idx-stocks";
 import { IDX_STOCKS as _IDX_STOCKS, ALL_TICKERS as _ALL_TICKERS } from "./idx-stocks";

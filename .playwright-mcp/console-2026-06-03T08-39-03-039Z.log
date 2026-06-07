@@ -1,0 +1,4 @@
+[     124ms] [WARNING] Ignoring Event: localhost @ https://plausible.teknikal.id/js/script.js:0
+[     156ms] [WARNING] WebSocket connection to 'ws://localhost:3000/socket.io/?EIO=4&transport=websocket&sid=Ff62zDh3ALjGZTLTAAAS' failed: WebSocket is closed before the connection is established. @ http://localhost:3000/_next/static/chunks/69.5660d4934204ffc2.js:0
+[     222ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:3000/admin/login:0
+[   33855ms] [WARNING] WebSocket connection to 'ws://localhost:3000/socket.io/?EIO=4&transport=websocket&sid=etC1ZfmXkf1SFd9LAAAU' failed: WebSocket is closed before the connection is established. @ http://localhost:3000/_next/static/chunks/69.5660d4934204ffc2.js:0

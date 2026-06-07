@@ -1,0 +1,8 @@
+[   10232ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://teknikal.id/api/stocks/history?range=6mo:0
+[   11461ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://teknikal.id/api/stocks/history?range=6mo:0
+[   14078ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://teknikal.id/api/stocks/history?range=6mo:0
+[   18613ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://teknikal.id/api/stocks/history?range=6mo:0
+[   68136ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://teknikal.id/api/stocks/history?range=1D:0
+[   69380ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://teknikal.id/api/stocks/history?range=1D:0
+[   72116ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://teknikal.id/api/stocks/history?range=1D:0
+[   76476ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://teknikal.id/api/stocks/history?range=1D:0

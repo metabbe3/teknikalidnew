@@ -177,7 +177,7 @@ export function CommentForm({
                   }`}
                 >
                   {user.image ? (
-                    <img src={user.image} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" />
+                    <img src={user.image} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" loading="lazy" />
                   ) : (
                     <div className="w-7 h-7 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xs font-semibold shrink-0">
                       {(user.name || user.username).charAt(0).toUpperCase()}
@@ -207,7 +207,7 @@ export function CommentForm({
                   }`}
                 >
                   {user.image ? (
-                    <img src={user.image} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" />
+                    <img src={user.image} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" loading="lazy" />
                   ) : (
                     <div className="w-7 h-7 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xs font-semibold shrink-0">
                       {(user.name || user.username).charAt(0).toUpperCase()}
@@ -264,7 +264,7 @@ export function CommentForm({
             placeholder="Tulis balasan..."
             maxLength={500}
             rows={2}
-            className="w-full resize-none rounded-lg border border-border bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:ring-2 focus:ring-accent/40"
+            className="w-full resize-none rounded-lg border border-border bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
           />
           {mentionDropdown}
         </div>
@@ -275,7 +275,7 @@ export function CommentForm({
             disabled={!content.trim() || createComment.isPending}
             className="px-3 py-1.5 rounded-full bg-accent text-white text-xs font-medium hover:bg-accent/90 transition-colors disabled:opacity-50"
           >
-            {createComment.isPending ? "..." : "Balas"}
+            {createComment.isPending ? "…" : "Balas"}
           </button>
         </div>
       </form>
@@ -292,6 +292,7 @@ export function CommentForm({
             src={session.user.image}
             alt=""
             className="w-8 h-8 rounded-full object-cover shrink-0 mt-1"
+            loading="lazy"
           />
         ) : (
           <div className="w-8 h-8 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xs font-semibold shrink-0 mt-1">
@@ -307,7 +308,7 @@ export function CommentForm({
             placeholder={placeholder ?? "Tulis komentar..."}
             maxLength={500}
             rows={3}
-            className="w-full resize-none rounded-lg border border-border bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:ring-2 focus:ring-accent/40"
+            className="w-full resize-none rounded-lg border border-border bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
           />
           {mentionDropdown}
         </div>
@@ -331,7 +332,7 @@ export function CommentForm({
           disabled={!content.trim() || createComment.isPending}
           className="px-4 py-2 rounded-full bg-accent text-white text-sm font-medium hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {createComment.isPending ? "Mengirim..." : "Kirim"}
+          {createComment.isPending ? "Mengirim…" : "Kirim"}
         </button>
       </div>
     </form>

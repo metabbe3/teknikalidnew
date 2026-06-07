@@ -1,0 +1,56 @@
+[      71ms] [WARNING] Ignoring Event: localhost @ https://plausible.teknikal.id/js/script.js:0
+[     113ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[     135ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[     149ms] [ERROR] TypeError: Cannot read properties of undefined (reading 'status')
+    at p (http://localhost:3000/_next/static/chunks/app/admin/page-34b032f877e86575.js:1:851)
+    at aw (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:53376)
+    at o1 (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:73812)
+    at id (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:85414)
+    at sh (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:128654)
+    at http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:128499
+    at sm (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:128507)
+    at sr (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:124428)
+    at sY (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:150332)
+    at sj (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:148545) @ http://localhost:3000/_next/static/chunks/3794-ba2500baa4c52d55.js:0
+[  255743ms] [WARNING] Ignoring Event: localhost @ https://plausible.teknikal.id/js/script.js:0
+[  255766ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[  255770ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[  255782ms] [ERROR] TypeError: Cannot read properties of undefined (reading 'status')
+    at p (http://localhost:3000/_next/static/chunks/app/admin/page-34b032f877e86575.js:1:851)
+    at aw (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:53376)
+    at o1 (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:73812)
+    at id (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:85414)
+    at sh (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:128654)
+    at http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:128499
+    at sm (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:128507)
+    at sr (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:124428)
+    at sY (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:150332)
+    at sj (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:148545) @ http://localhost:3000/_next/static/chunks/3794-ba2500baa4c52d55.js:0
+[  328835ms] [WARNING] Ignoring Event: localhost @ https://plausible.teknikal.id/js/script.js:0
+[  328872ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[  328889ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[  328901ms] [ERROR] TypeError: Cannot read properties of undefined (reading 'status')
+    at p (http://localhost:3000/_next/static/chunks/app/admin/page-34b032f877e86575.js:1:851)
+    at aw (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:53376)
+    at o1 (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:73812)
+    at id (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:85414)
+    at sh (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:128654)
+    at http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:128499
+    at sm (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:128507)
+    at sr (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:124428)
+    at sY (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:150332)
+    at sj (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:148545) @ http://localhost:3000/_next/static/chunks/3794-ba2500baa4c52d55.js:0
+[  329608ms] [WARNING] Ignoring Event: localhost @ https://plausible.teknikal.id/js/script.js:0
+[  329627ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[  329648ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[  329660ms] [ERROR] TypeError: Cannot read properties of undefined (reading 'status')
+    at p (http://localhost:3000/_next/static/chunks/app/admin/page-34b032f877e86575.js:1:851)
+    at aw (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:53376)
+    at o1 (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:73812)
+    at id (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:85414)
+    at sh (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:128654)
+    at http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:128499
+    at sm (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:128507)
+    at sr (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:124428)
+    at sY (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:150332)
+    at sj (http://localhost:3000/_next/static/chunks/4bd1b696-e356ca5ba0218e27.js:1:148545) @ http://localhost:3000/_next/static/chunks/3794-ba2500baa4c52d55.js:0

@@ -16,15 +16,21 @@ import { StockActionBadge } from "@/components/stock/stock-action-badge";
 import { SentimentGauge } from "@/components/stock/sentiment-gauge";
 import { PresenceBadge } from "@/components/stock/presence-badge";
 import { StockAlertBanner } from "@/components/stock/stock-alert-banner";
+import { StockFAQWidget } from "@/components/faq/stock-faq-widget";
 import { CompanyDataTabs } from "@/components/stock/company-data-tabs";
 import { StockPaperPosition } from "@/components/paper-trading/stock-paper-position";
-import { technicalAnalysisService } from "@/domains/stock/technical-analysis.service";
+import { HealthScoreDetail } from "@/components/stock/health-score-detail";
+import { HealthScoreBadge } from "@/components/stock/health-score-badge";
+import { IndicatorTooltip } from "@/components/ui/indicator-tooltip";
+import { technicalAnalysisService, computeSignalScore } from "@/domains/stock/technical-analysis.service";
 import { stockRepository } from "@/domains/stock/stock.repository";
 import { calculatePivotPoints } from "@/lib/indicators";
 import { subDays } from "date-fns";
 import { IDX40, SITE_URL } from "@/lib/constants";
+import { ShareButtons } from "@/components/ui/share-buttons";
 import { IDX_STOCKS } from "@/lib/idx-stocks";
 import { prisma } from "@/lib/prisma";
+import { portfolioService } from "@/domains/portfolio/portfolio.service";
 
 export const revalidate = 300;
 export const dynamic = "force-dynamic";
@@ -53,6 +59,8 @@ export async function generateMetadata({
   if (!stock) return {};
 
   const name = stripJk(ticker);
+  const ogImage = `${SITE_URL}/api/og/stock?ticker=${encodeURIComponent(ticker)}`;
+
   return {
     title: `Analisa Teknikal ${name} — ${stock.stock.name}`,
     description: `Analisa teknikal saham ${stock.stock.name} (${name}) hari ini. Chart interaktif, RSI, MACD, Bollinger Bands, SMA/EMA, dan sinyal trading di TeknikalID.`,
@@ -61,6 +69,12 @@ export async function generateMetadata({
       title: `Analisa Teknikal ${name} (${stock.stock.name}) | TeknikalID`,
       description: `Chart saham ${name} hari ini dengan indikator RSI, MACD, dan sinyal teknikal.`,
       url: `${SITE_URL}/stocks/${ticker}`,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `Analisa Teknikal ${name}` }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `Analisa Teknikal ${name} (${stock.stock.name}) | TeknikalID`,
+      description: `Chart saham ${name} hari ini dengan indikator RSI, MACD, dan sinyal teknikal.`,
     },
   };
 }
@@ -85,6 +99,24 @@ export default async function StockDetailPage({
   const isPositive = change !== null && change >= 0;
 
   const now = new Date().getTime();
+
+  // Compute signal breakdown for health score detail
+  const signalBreakdown = indicators ? computeSignalScore({
+    price: close,
+    sma20: indicators.sma20,
+    sma50: indicators.sma50,
+    sma200: indicators.sma200,
+    ema12: indicators.ema12,
+    ema26: indicators.ema26,
+    rsi14: indicators.rsi14,
+    macdHist: indicators.macdHist,
+    stochK: indicators.stochK,
+    stochD: indicators.stochD,
+    adx: indicators.adx,
+    supertrend: indicators.supertrend,
+    obvTrend: indicators.obvTrend ?? null,
+    vwap: indicators.vwap,
+  }).breakdown : [];
 
   const smaCrossText = (() => {
     if (!indicators?.smaCrossSignal || !indicators.smaCrossDate) return null;
@@ -113,7 +145,7 @@ export default async function StockDetailPage({
     return "Neutral" as const;
   })();
 
-  const [socialData, { structure: marketStructure }, fundamentalRow, idxCommissioners, idxDirectors, idxShareholders, idxSubsidiaries, idxDividends] = await Promise.all([
+  const [socialData, { structure: marketStructure }, fundamentalRow, idxCommissioners, idxDirectors, idxShareholders, idxSubsidiaries, idxDividends, relatedArticles] = await Promise.all([
     prisma.post.aggregate({
       where: { tickerTag: ticker, createdAt: { gte: subDays(new Date(), 7) } },
       _count: true,
@@ -126,6 +158,12 @@ export default async function StockDetailPage({
     stockRepository.findShareholders(detail.stock.id),
     stockRepository.findSubsidiaries(detail.stock.id),
     stockRepository.findDividends(detail.stock.id),
+    prisma.article.findMany({
+      where: { status: "PUBLISHED", tickerTag: ticker },
+      orderBy: { publishedAt: "desc" },
+      take: 5,
+      select: { id: true, slug: true, title: true, publishedAt: true, articleType: true },
+    }),
   ]);
 
   const socialScore = (socialData._sum.likesCount ?? 0) * 0.5
@@ -241,7 +279,36 @@ export default async function StockDetailPage({
     paymentDate: d.paymentDate?.toISOString().split("T")[0] ?? null,
   }));
 
+  const ogImageUrl = `${SITE_URL}/api/og/stock?ticker=${encodeURIComponent(ticker)}`;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        name: `Analisa Teknikal ${stripJk(ticker)} — ${stock.name}`,
+        description: `Analisa teknikal saham ${stock.name} (${stripJk(ticker)}) hari ini.`,
+        url: `${SITE_URL}/stocks/${ticker}`,
+        image: ogImageUrl,
+        breadcrumb: { "@id": `${SITE_URL}/stocks/${ticker}#breadcrumb` },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${SITE_URL}/stocks/${ticker}#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Stocks", item: `${SITE_URL}/stocks` },
+          { "@type": "ListItem", position: 2, name: stripJk(ticker), item: `${SITE_URL}/stocks/${ticker}` },
+        ],
+      },
+    ],
+  };
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
     <div className="fade-in">
       {/* Dark Terminal Header */}
       <section className="stocks-hero" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}>
@@ -267,11 +334,11 @@ export default async function StockDetailPage({
               <div className="min-w-0">
                 <div className="flex items-center gap-2.5 flex-wrap">
                   {stock.logo && (
-                    <img src={stock.logo} alt="" className="w-8 h-8 rounded-md object-contain bg-white/10" />
+                    <img src={stock.logo} alt={`${stock.name} logo`} className="w-8 h-8 rounded-md object-contain bg-white/10" loading="lazy" />
                   )}
                   <h1 className="text-2xl font-bold tracking-tight text-white">{stripJk(ticker)}</h1>
                   {indicators?.signalLabel && (
-                    <span className={`text-sm font-bold px-3 py-1 rounded-lg ${
+                    <span className={`text-sm font-bold px-3 py-1 rounded-lg inline-flex items-center gap-1 ${
                       indicators.signalLabel === "Strong Bullish" ? "bg-emerald-500/25 text-emerald-300 border border-emerald-500/30"
                       : indicators.signalLabel === "Bullish" ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
                       : indicators.signalLabel === "Bearish" ? "bg-red-500/15 text-red-400 border border-red-500/20"
@@ -279,13 +346,16 @@ export default async function StockDetailPage({
                       : "bg-white/10 text-gray-300 border border-white/10"
                     }`}>
                       {indicators.signalLabel === "Strong Bullish" ? "▲▲" : indicators.signalLabel === "Bullish" ? "▲" : indicators.signalLabel === "Strong Bearish" ? "▼▼" : indicators.signalLabel === "Bearish" ? "▼" : "◆"} {indicators.signalLabel}
+                      <IndicatorTooltip indicator="Signal" className="opacity-60 hover:opacity-100" />
                     </span>
                   )}
                   {indicators?.isGorengan && (
-                    <span className="text-sm font-bold px-3 py-1 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                    <span className="text-sm font-bold px-3 py-1 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 inline-flex items-center gap-1">
                       ⚠ Gorengan
+                      <IndicatorTooltip indicator="Gorengan" className="opacity-60 hover:opacity-100" />
                     </span>
                   )}
+                  <HealthScoreBadge signalScore={indicators?.signalScore ?? null} size="lg" />
                   <span className="text-gray-600" aria-hidden="true">·</span>
                   <span className="text-xs text-gray-500 uppercase tracking-wider font-medium">{stock.sector}</span>
                 </div>
@@ -333,27 +403,30 @@ export default async function StockDetailPage({
               <div className="border-t border-white/[0.08] mt-5 pt-4">
                 <div className="flex items-center justify-between gap-4 flex-wrap">
                   <div className="flex items-center gap-2.5 flex-wrap text-sm">
-                    <span className={`font-mono font-semibold ${rsiColor(indicators.rsi14) || "text-gray-300"}`}>
+                    <span className={`font-mono font-semibold inline-flex items-center gap-1 ${rsiColor(indicators.rsi14) || "text-gray-300"}`}>
                       RSI {indicators.rsi14?.toFixed(0) ?? "—"}
+                      <IndicatorTooltip indicator="RSI" />
                     </span>
                     <Dot />
                     {indicators.macdHist !== null && (
                       <>
-                        <span className={`font-mono font-semibold ${indicators.macdHist >= 0 ? "text-bullish" : "text-bearish"}`}>
+                        <span className={`font-mono font-semibold inline-flex items-center gap-1 ${indicators.macdHist >= 0 ? "text-bullish" : "text-bearish"}`}>
                           MACD {indicators.macdHist >= 0 ? "▲" : "▼"}
+                          <IndicatorTooltip indicator="MACD" />
                         </span>
                         <Dot />
                       </>
                     )}
                     {indicators.atr !== null && (
                       <>
-                        <span className="font-mono text-gray-400">Vol {(indicators.atr / close * 100).toFixed(1)}%</span>
+                        <span className="font-mono text-gray-400 inline-flex items-center gap-1">Vol {(indicators.atr / close * 100).toFixed(1)}%<IndicatorTooltip indicator="Volatilitas" /></span>
                         <Dot />
                       </>
                     )}
                     {indicators.adx !== null && (
-                      <span className={`font-mono font-semibold ${indicators.adx > 25 ? "text-blue-400" : "text-gray-500"}`}>
+                      <span className={`font-mono font-semibold inline-flex items-center gap-1 ${indicators.adx > 25 ? "text-blue-400" : "text-gray-500"}`}>
                         {indicators.adx > 25 ? "Tren Kuat" : "Tren Lemah"}
+                        <IndicatorTooltip indicator="ADX" />
                       </span>
                     )}
                   </div>
@@ -369,7 +442,7 @@ export default async function StockDetailPage({
                       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
                         <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
                       </svg>
-                      Delayed
+                      Data tertunda ~5mnt
                     </span>
                     <Dot />
                     <PresenceBadge ticker={ticker} />
@@ -388,6 +461,18 @@ export default async function StockDetailPage({
                 </div>
               </div>
             )}
+
+            {/* Share bar */}
+            <div className="flex justify-end mt-3 pt-3 border-t border-white/[0.06]">
+              <ShareButtons
+                url={`${SITE_URL}/stocks/${ticker}`}
+                title={`Analisa Teknikal ${stripJk(ticker)} — ${stock.name}`}
+                text={`Chart dan indikator teknikal ${stripJk(ticker)} hari ini di TeknikalID`}
+                imageUrl={`${SITE_URL}/api/og/stock?ticker=${encodeURIComponent(ticker)}`}
+                storyImageUrl={`${SITE_URL}/api/og/stock-story?ticker=${encodeURIComponent(ticker)}`}
+                className="[&_button]:!border-white/10 [&_button]:!text-gray-400 [&_button:hover]:!text-white [&_button:hover]:!bg-white/5 [&_span]:!text-gray-500"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -429,11 +514,11 @@ export default async function StockDetailPage({
               />
             ) : (
               <div className="indicator-card depth-shadow p-8 text-center text-text-secondary">
-                No indicator data available
+                Data indikator belum tersedia untuk saham ini
               </div>
             )}
             <p className="text-[10px] text-text-tertiary text-center mt-2">
-              Sinyal teknikal berdasarkan indikator. Bukan rekomendasi investasi.
+              Sinyal teknikal berdasarkan perhitungan indikator — bukan rekomendasi jual/beli. Selalu DYOR.
             </p>
           </div>
           <div className="space-y-4">
@@ -448,6 +533,10 @@ export default async function StockDetailPage({
               sma20={indicators?.sma20 ?? null}
               sma50={indicators?.sma50 ?? null}
               sma200={indicators?.sma200 ?? null}
+            />
+            <HealthScoreDetail
+              signalScore={indicators?.signalScore ?? null}
+              breakdown={signalBreakdown}
             />
             <FundamentalData data={fundamentals} />
             {tradingPlan && <TradingPlanCard plan={tradingPlan} />}
@@ -466,24 +555,15 @@ export default async function StockDetailPage({
 
         {/* Who holds this stock */}
         {await (async () => {
-          const holders = await prisma.portfolioHolding.findMany({
-            where: {
-              stockTicker: ticker,
-              user: { portfolioPublic: true, bannedAt: null },
-            },
-            take: 5,
-            select: {
-              user: {
-                select: { username: true, name: true, image: true },
-              },
-            },
-          });
-          const totalHolders = await prisma.portfolioHolding.count({
-            where: {
-              stockTicker: ticker,
-              user: { portfolioPublic: true, bannedAt: null },
-            },
-          });
+          let holders: { username: string; name: string | null; image: string | null }[] = [];
+          let totalHolders = 0;
+          try {
+            const result = await portfolioService.getStockHolders(ticker, 5);
+            holders = result.holders;
+            totalHolders = result.total;
+          } catch {
+            return null;
+          }
           if (holders.length === 0) return null;
           return (
             <div className="bg-bg-card depth-shadow rounded-xl p-5 border border-border" style={{ borderTop: "3px solid #0d9488" }}>
@@ -492,26 +572,26 @@ export default async function StockDetailPage({
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
                 </svg>
                 <h3 className="text-xs font-mono font-semibold uppercase tracking-wider text-text-primary">
-                  Pemilik Saham
+                  Dipantau Komunitas
                 </h3>
                 <span className="text-[10px] font-mono text-text-tertiary ml-auto">{totalHolders} komunitas</span>
               </div>
               <div className="flex items-center gap-2 flex-wrap">
                 {holders.map((h) => (
                   <Link
-                    key={h.user.username}
-                    href={`/profile/${h.user.username}`}
+                    key={h.username}
+                    href={`/profile/${h.username}`}
                     className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-bg-hover hover:bg-teal-50 transition-colors group"
                   >
-                    {h.user.image ? (
-                      <img src={h.user.image} alt="" className="w-5 h-5 rounded-full object-cover" />
+                    {h.image ? (
+                      <img src={h.image} alt={`${h.username} avatar`} className="w-5 h-5 rounded-full object-cover" loading="lazy" />
                     ) : (
                       <div className="w-5 h-5 rounded-full bg-teal-500/10 text-teal-600 flex items-center justify-center text-[8px] font-bold">
-                        {(h.user.name || h.user.username).charAt(0).toUpperCase()}
+                        {(h.name || h.username).charAt(0).toUpperCase()}
                       </div>
                     )}
                     <span className="text-xs text-text-secondary group-hover:text-teal-600 transition-colors">
-                      {h.user.username}
+                      {h.username}
                     </span>
                   </Link>
                 ))}
@@ -522,9 +602,35 @@ export default async function StockDetailPage({
 
         <SentimentGauge ticker={ticker} />
         <StockDiscussion ticker={ticker} />
+
+        <StockFAQWidget ticker={ticker} />
+
+        {/* Related articles */}
+        {relatedArticles.length > 0 && (
+          <div className="space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">Artikel Terkait</p>
+            <div className="space-y-2">
+              {relatedArticles.map((ra) => (
+                <Link key={ra.id} href={`/berita/${ra.slug}`} className="group block bg-bg-card rounded-xl depth-shadow p-4 hover:depth-shadow-hover transition-all">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors line-clamp-2">
+                        {ra.title}
+                      </p>
+                      <p className="text-xs text-text-tertiary mt-1 font-mono">
+                        {new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" }).format(new Date(ra.publishedAt))}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <StockAlertBanner ticker={ticker} />
     </div>
+    </>
   );
 }

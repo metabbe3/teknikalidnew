@@ -1,4 +1,5 @@
 import { formatPrice, formatVolume } from "@/lib/utils";
+import { IndicatorTooltip } from "@/components/ui/indicator-tooltip";
 
 interface KeyStatisticsProps {
   open: number | null;
@@ -66,7 +67,7 @@ export function KeyStatistics({ open, high, low, close, volume, week52High, week
       {/* Moving averages section */}
       {([sma20, sma50, sma200].some(v => v !== null)) && (
         <div className="mt-3 pt-3 border-t border-border/40">
-          <p className="text-[10px] text-text-tertiary font-medium uppercase tracking-wider mb-2">Moving Averages</p>
+          <p className="text-[10px] text-text-tertiary font-medium uppercase tracking-wider mb-2 flex items-center gap-1">Moving Averages <IndicatorTooltip indicator="SMA" /></p>
           <div className="space-y-0">
             {([
               ["SMA 20", sma20],

@@ -49,13 +49,24 @@ export function TopPredictorList({ users }: { users: TopPredictor[] }) {
               >
                 {rank}
               </span>
-              <img
-                src={user.image}
-                alt={user.username}
-                className={`w-7 h-7 rounded-full object-cover ${
-                  rank <= 3 ? `ring-2 ${rankStyle.bg}` : ""
-                }`}
-              />
+              {user.image ? (
+                <img
+                  src={user.image}
+                  alt={user.username}
+                  className={`w-7 h-7 rounded-full object-cover ${
+                    rank <= 3 ? `ring-2 ${rankStyle.bg}` : ""
+                  }`}
+                  loading="lazy"
+                />
+              ) : (
+                <div
+                  className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                    rank <= 3 ? rankStyle.bg + " " + rankStyle.color : "bg-accent/10 text-accent"
+                  }`}
+                >
+                  {(user.name || user.username).charAt(0).toUpperCase()}
+                </div>
+              )}
               <div className="flex-1 min-w-0">
                 <p className="text-[12px] font-semibold text-gray-900 truncate">
                   {user.name ?? user.username}

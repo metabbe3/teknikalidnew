@@ -66,7 +66,7 @@ export const authRepository = {
           { name: { contains: query, mode: "insensitive" } },
         ],
       },
-      select: { id: true, username: true, name: true, image: true, reputation: true },
+      select: { id: true, username: true, name: true, email: true, image: true, reputation: true },
       take: limit,
     });
   },

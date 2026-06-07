@@ -2,17 +2,30 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen } from "lucide-react";
+import { BookOpen, MessageCircleQuestion } from "lucide-react";
+import { SITE_URL } from "@/lib/constants";
+import { FAQTabSection } from "@/components/faq/faq-tab-section";
+import { QuestionStatus } from "@/generated/prisma/client";
 
 export const metadata: Metadata = {
   title: "Akademi Trading — TeknikalID",
   description:
     "Belajar analisis teknikal saham BEI: panduan RSI, MACD, Bollinger Bands, dan strategi trading untuk investor Indonesia.",
   alternates: { canonical: "/akademi" },
+  openGraph: {
+    title: "Akademi Trading — TeknikalID",
+    description: "Belajar analisis teknikal saham BEI: panduan RSI, MACD, Bollinger Bands, dan strategi trading.",
+    url: `${SITE_URL}/akademi`,
+    images: [{ url: `${SITE_URL}/api/og?title=Akademi+Trading&type=akademi`, width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Akademi Trading — TeknikalID",
+    description: "Belajar analisis teknikal saham BEI: panduan RSI, MACD, dan strategi trading.",
+  },
 };
 
 export const dynamic = "force-dynamic";
-
 const TAG_COLORS: Record<string, string> = {
   RSI: "#d97706",
   MACD: "#8b5cf6",
@@ -34,9 +47,27 @@ function getTagColor(tag: string): string {
 export default async function AkademiPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tag?: string }>;
+  searchParams: Promise<{ tag?: string; tab?: string }>;
 }) {
-  const { tag: activeTag } = await searchParams;
+  const { tag: activeTag, tab } = await searchParams;
+  const activeTab = tab === "faq" ? "faq" : "artikel";
+
+  // Fetch initial FAQ data for the FAQ tab
+  const initialFAQs = activeTab === "faq"
+    ? await prisma.question.findMany({
+        where: { status: QuestionStatus.ANSWERED },
+        orderBy: { publishedAt: "desc" },
+        take: 20,
+        select: {
+          id: true,
+          question: true,
+          shortAnswer: true,
+          slug: true,
+          category: true,
+          helpfulVotes: true,
+        },
+      })
+    : [];
 
   const allArticles = await prisma.article.findMany({
     where: { status: "PUBLISHED", articleType: "EDUCATIONAL" },
@@ -53,7 +84,26 @@ export default async function AkademiPage({
   const featuredArticle = articles[0];
   const gridArticles = articles.slice(1);
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "CollectionPage", name: "Akademi Trading", url: `${SITE_URL}/akademi` },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+          { "@type": "ListItem", position: 2, name: "Akademi", item: `${SITE_URL}/akademi` },
+        ],
+      },
+    ],
+  };
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
     <div className="min-h-screen bg-bg-primary">
       {/* Dark terminal hero */}
       <section className="akademi-hero" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}>
@@ -76,6 +126,43 @@ export default async function AkademiPage({
       </section>
 
       <div className="max-w-6xl mx-auto px-4 py-10">
+        {/* Tab navigation */}
+        <div className="flex items-center gap-1 mb-8 border-b border-border">
+          <Link
+            href="/akademi"
+            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
+              activeTab === "artikel"
+                ? "border-accent text-accent"
+                : "border-transparent text-text-tertiary hover:text-text-secondary"
+            }`}
+          >
+            <BookOpen className="h-4 w-4" />
+            Artikel
+          </Link>
+          <Link
+            href="/akademi?tab=faq"
+            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
+              activeTab === "faq"
+                ? "border-accent text-accent"
+                : "border-transparent text-text-tertiary hover:text-text-secondary"
+            }`}
+          >
+            <MessageCircleQuestion className="h-4 w-4" />
+            Tanya Jawab
+          </Link>
+        </div>
+
+        {activeTab === "faq" ? (
+          <FAQTabSection initialFAQs={initialFAQs.map((q) => ({
+            id: q.id,
+            question: q.question,
+            shortAnswer: q.shortAnswer,
+            slug: q.slug,
+            category: q.category,
+            helpfulVotes: q.helpfulVotes,
+          }))} />
+        ) : (
+        <>
         {/* Tag filter strip */}
         {allTags.length > 0 && (
           <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
@@ -131,6 +218,7 @@ export default async function AkademiPage({
                         src={featuredArticle.coverImageUrl}
                         alt=""
                         className="w-full h-full object-cover"
+                        loading="lazy"
                       />
                     </div>
                   )}
@@ -217,6 +305,7 @@ export default async function AkademiPage({
                             src={article.coverImageUrl}
                             alt=""
                             className="w-full h-full object-cover"
+                            loading="lazy"
                           />
                         </div>
                       )}
@@ -261,8 +350,11 @@ export default async function AkademiPage({
             )}
           </>
         )}
+        </>
+        )}
       </div>
     </div>
+    </>
   );
 }
 

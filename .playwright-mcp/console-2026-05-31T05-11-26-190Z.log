@@ -1,0 +1,4 @@
+[     342ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0
+[    1354ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0
+[    3364ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0
+[    7373ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0

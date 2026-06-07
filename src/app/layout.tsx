@@ -6,21 +6,23 @@ import { SITE_URL } from "@/lib/constants";
 import "@/lib/events-init";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
-import { SocketProvider } from "@/components/providers/socket-provider";
+import { ConditionalSocketProvider as SocketProvider } from "@/components/providers/socket-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({subsets:['latin'],variable:'--font-sans',display:'swap'});
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const viewport: Viewport = {
@@ -52,7 +54,13 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "TeknikalID" }],
   metadataBase: new URL(SITE_URL),
-  alternates: { canonical: "/" },
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION,
+  },
+  alternates: {
+    canonical: "/",
+    types: { "application/rss+xml": `${SITE_URL}/feed.xml` },
+  },
   openGraph: {
     type: "website",
     locale: "id_ID",
@@ -60,6 +68,7 @@ export const metadata: Metadata = {
     siteName: "TeknikalID",
     title: "TeknikalID — Analisa Teknikal Saham BEI",
     description: "Platform analisa teknikal saham BEI terlengkap. Chart real-time, indikator RSI, MACD, dan screener untuk 40+ saham LQ45.",
+    images: [{ url: `${SITE_URL}/api/og?title=TeknikalID&type=berita`, width: 1200, height: 630, alt: "TeknikalID" }],
   },
   twitter: {
     card: "summary_large_image",
@@ -85,6 +94,36 @@ export default function RootLayout({
         >
           Skip to content
         </a>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  name: "TeknikalID",
+                  url: SITE_URL,
+                  logo: `${SITE_URL}/logo.png`,
+                  description: "Platform analisa teknikal saham BEI terlengkap dengan chart interaktif, indikator RSI MACD Bollinger Bands, screener, dan komunitas trader Indonesia.",
+                },
+                {
+                  "@type": "WebSite",
+                  name: "TeknikalID",
+                  url: SITE_URL,
+                  potentialAction: {
+                    "@type": "SearchAction",
+                    target: {
+                      "@type": "EntryPoint",
+                      urlTemplate: `${SITE_URL}/stocks?q={search_term_string}`,
+                    },
+                    "query-input": "required name=search_term_string",
+                  },
+                },
+              ],
+            }),
+          }}
+        />
         <QueryProvider>
           <AuthProvider>
             <SocketProvider>

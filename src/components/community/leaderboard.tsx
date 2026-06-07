@@ -89,7 +89,7 @@ export function Leaderboard() {
                 {i + 1}
               </span>
               {entry.image ? (
-                <img src={entry.image} alt="" className={`w-7 h-7 rounded-full object-cover ${i < 3 ? RANK_STYLES[i] : ""}`} />
+                <img src={entry.image} alt="" className={`w-7 h-7 rounded-full object-cover ${i < 3 ? RANK_STYLES[i] : ""}`} loading="lazy" />
               ) : (
                 <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold ${i < 3 ? RANK_STYLES[i] : "bg-accent/10 text-accent"}`}>
                   {(entry.name || entry.username).charAt(0).toUpperCase()}

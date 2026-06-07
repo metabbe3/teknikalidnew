@@ -9,6 +9,8 @@ import { createAIProvider } from "./ai-provider";
 import { buildStockAnalysisPrompt, buildEducationalPrompt, buildNewsPrompt, buildGeneralPrompt, pickNextTopic } from "./prompts";
 import { buildTemplateArticle, buildDailySnapshot, buildDailySlug } from "./article-template";
 import { ArticleNotFoundError, ArticleGenerationError, DuplicateSlugError } from "./article.errors";
+import { gatherMarketContext, formatMarketContextForPrompt, factCheckArticle, extractTickersFromText } from "./article-fact-check";
+import type { MarketContext } from "./article-fact-check";
 
 export const articleService = {
   async generateStockAnalysis(ticker: string): Promise<{ id: string; title: string; slug: string }> {
@@ -285,8 +287,9 @@ export const articleService = {
     return provider.researchKeywords(query, context);
   },
 
-  async generateNewsArticle(topic: string, keywords: string[], trendingAngles?: string[], context?: string, autoPublish = false): Promise<{ id: string; title: string; slug: string }> {
-    const { system, user } = buildNewsPrompt({ topic, keywords, trendingAngles, context });
+  async generateNewsArticle(topic: string, keywords: string[], trendingAngles?: string[], context?: string, autoPublish = false, marketCtx?: MarketContext): Promise<{ id: string; title: string; slug: string }> {
+    const marketDataSection = marketCtx ? formatMarketContextForPrompt(marketCtx) : undefined;
+    const { system, user } = buildNewsPrompt({ topic, keywords, trendingAngles, context, marketDataSection });
 
     const provider = createAIProvider();
     const result = await provider.generateArticle(system, user).catch((err) => {
@@ -301,18 +304,41 @@ export const articleService = {
     const adminUser = await articleRepository.findAdminUserId();
     if (!adminUser) throw new ArticleGenerationError("No admin user found");
 
+    // Fact-check if market context is available
+    let finalContent = result.content;
+    let finalTitle = result.title || topic;
+    let factCheckMeta: Record<string, string> = {};
+    if (marketCtx) {
+      const factCheck = await factCheckArticle(result.content, marketCtx, finalTitle);
+      if (!factCheck.passed && factCheck.correctedContent) {
+        finalContent = factCheck.correctedContent;
+        if (factCheck.correctedTitle) {
+          finalTitle = factCheck.correctedTitle;
+        }
+        console.log(`[NewsArticle] Fact-check corrected ${factCheck.mismatches.length} errors in: ${topic}`);
+      } else if (factCheck.passed) {
+        console.log(`[NewsArticle] Fact-check passed for: ${topic} (${factCheck.meta.claimsChecked} claims checked)`);
+      }
+      factCheckMeta = {
+        factCheckPassed: String(factCheck.passed),
+        factCheckClaimsChecked: String(factCheck.meta.claimsChecked),
+        factCheckErrors: String(factCheck.mismatches.length),
+        factCheckCorrected: String(!factCheck.passed && !!factCheck.correctedContent),
+      };
+    }
+
     const status = autoPublish ? ArticleStatus.PUBLISHED : ArticleStatus.DRAFT;
     const article = await articleRepository.create({
       slug,
-      title: result.title || topic,
+      title: finalTitle,
       excerpt: result.excerpt?.slice(0, 500) || "",
-      content: result.content,
+      content: finalContent,
       authorId: adminUser.id,
       tags: result.tags.length > 0 ? result.tags : keywords.slice(0, 5),
       status,
       articleType: ArticleType.NEWS,
       aiProvider: provider.name,
-      generationMeta: { provider: provider.name, topic, keywords, timestamp: new Date().toISOString() } as Record<string, string | string[]>,
+      generationMeta: { provider: provider.name, topic, keywords, timestamp: new Date().toISOString(), ...factCheckMeta } as Record<string, string | string[]>,
     });
 
     return { id: article.id, title: article.title, slug: article.slug };
@@ -434,9 +460,10 @@ export const articleService = {
     const stock = await stockRepository.findStockByTicker(ticker);
     if (!stock) return null;
 
-    const [prices, indicator] = await Promise.all([
+    const [prices, indicator, fundamental] = await Promise.all([
       stockRepository.findLatestPrices(stock.id, 2),
       stockRepository.findLatestIndicator(stock.id, "1d"),
+      stockRepository.findLatestFundamental(stock.id),
     ]);
 
     if (!indicator) return null;
@@ -466,14 +493,31 @@ export const articleService = {
       supertrend: decimalToNumber(indicator.supertrend), obvTrend: indicator.obvTrend,
       week52High: decimalToNumber(week52._max.high), week52Low: decimalToNumber(week52._min.low),
       volume: bigIntToNumber(latest.volume),
+      // New fields
+      signalScore: decimalToNumber(indicator.signalScore),
+      signalLabel: indicator.signalLabel,
+      isGorengan: indicator.isGorengan,
+      pe: fundamental ? decimalToNumber(fundamental.pe) : null,
+      forwardPe: fundamental ? decimalToNumber(fundamental.forwardPe) : null,
+      pb: fundamental ? decimalToNumber(fundamental.pb) : null,
+      eps: fundamental ? decimalToNumber(fundamental.eps) : null,
+      dividendYield: fundamental ? decimalToNumber(fundamental.dividendYield) : null,
+      marketCap: fundamental ? bigIntToNumber(fundamental.marketCap) : null,
+      prevClose: prev ? decimalToNumber(prev.close) : null,
+      high: decimalToNumber(latest.high),
+      low: decimalToNumber(latest.low),
+      open: decimalToNumber(latest.open),
+      smaCrossSignal: indicator.smaCrossSignal,
+      emaCrossSignal: indicator.emaCrossSignal,
     });
 
     const adminUser = await articleRepository.findAdminUserId();
     if (!adminUser) return null;
 
+    const signalLabel = indicator.signalLabel ?? "Netral";
     const article = await articleRepository.create({
       slug, title,
-      excerpt: `Ringkasan saham ${stock.name} (${t}) hari ini ${date}. Data harga, indikator teknikal, dan outlook terkini.`.slice(0, 500),
+      excerpt: `Saham ${stock.name} (${t}) hari ini ${date}: ${close !== null ? `Rp ${close.toLocaleString("id-ID")}` : "N/A"} (${changePercent !== null ? `${changePercent >= 0 ? "+" : ""}${changePercent.toFixed(2)}%` : "N/A"}). Sinyal: ${signalLabel}.`.slice(0, 500),
       content, authorId: adminUser.id,
       tags: [stock.sector, t, "saham hari ini"],
       status: ArticleStatus.PUBLISHED,
@@ -494,7 +538,8 @@ export const articleService = {
         const result = await this.generateDailySnapshot(ticker);
         if (result) generated++;
         else skipped++;
-      } catch {
+      } catch (err) {
+        console.error(`[daily-snapshot] ${ticker}:`, err instanceof Error ? err.message : err);
         errors++;
       }
     }
@@ -512,7 +557,11 @@ export const articleService = {
 
     for (const topic of selected) {
       try {
-        const result = await this.generateNewsArticle(topic.title, topic.keywords, [topic.angle], undefined, true);
+        // Gather market context for data-grounded generation
+        const mentionedTickers = extractTickersFromText(`${topic.title} ${topic.keywords.join(" ")}`);
+        const marketCtx = await gatherMarketContext(mentionedTickers);
+
+        const result = await this.generateNewsArticle(topic.title, topic.keywords, [topic.angle], undefined, true, marketCtx);
         generated.push(result.title);
         await new Promise((r) => setTimeout(r, 3000));
       } catch (err) {

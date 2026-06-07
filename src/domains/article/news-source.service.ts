@@ -3,6 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { ArticleStatus, ArticleType } from "@/generated/prisma/client";
 import { articleRepository } from "./article.repository";
 import { createAIProvider } from "./ai-provider";
+import { gatherMarketContext, formatMarketContextForPrompt, factCheckArticle, extractTickersFromText } from "./article-fact-check";
 
 const RSS_FEEDS = [
   { name: "Detik Finance", url: "https://finance.detik.com/rss" },
@@ -95,15 +96,24 @@ export const newsSourceService = {
 
     for (const item of impactful) {
       try {
+        // Step 1: Gather real market context
+        const mentionedTickers = extractTickersFromText(`${item.title} ${item.snippet}`);
+        const marketCtx = await gatherMarketContext(mentionedTickers);
+        const marketDataSection = formatMarketContextForPrompt(marketCtx);
+
         const systemPrompt = `Kamu adalah jurnalis keuangan Indonesia yang menulis untuk TeknikalID (teknikalid.com) — platform analisa teknikal saham BEI.
 Kamu menulis artikel berita pasar yang aktual, data-driven, dan SEO-friendly dalam bahasa Indonesia.
-Gaya tulis: jurnalistik tapi mudah dipahami, fokus pada fakta dan dampak ke pasar saham Indonesia.`;
+Gaya tulis: jurnalistik tapi mudah dipahami, fokus pada fakta dan dampak ke pasar saham Indonesia.
+
+AKURASI DATA: Gunakan HANYA data pasar yang disediakan. Jangan membuat angka harga saham, level IHSG, atau kurs rupiah sendiri.`;
 
         const userPrompt = `Tulis artikel berita berdasarkan headline berikut:
 
 **Headline**: ${item.title}
 **Sumber**: ${item.source}
 **Ringkasan**: ${item.snippet}
+
+${marketDataSection}
 
 ## FORMAT
 
@@ -124,12 +134,14 @@ Tulis artikel dalam format Markdown:
 
 - Fokus pada DAMPAK ke pasar saham IDX / investor Indonesia
 - Sebutkan saham atau sektor spesifik yang terdampak jika relevan
+- Gunakan HANYA data pasar yang disediakan di atas untuk angka harga, IHSG, dan kurs
 - Jangan gunakan emoji
 - Jangan tulis "disclaimer" atau "sebagai AI"
 - Target keyword: gunakan keyword natural terkait berita ini
 
 Respond with ONLY the article markdown content. No JSON, no code blocks.`;
 
+        // Step 2: Generate article with real data
         const result = await provider.generateArticle(systemPrompt, userPrompt);
 
         const slug = result.slug || `berita-${item.title.toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").slice(0, 80)}`;
@@ -141,11 +153,25 @@ Respond with ONLY the article markdown content. No JSON, no code blocks.`;
           continue;
         }
 
+        // Step 3: Fact-check before publishing
+        let finalContent = result.content;
+        let finalTitle = result.title || item.title;
+        const factCheck = await factCheckArticle(result.content, marketCtx, finalTitle);
+        if (!factCheck.passed && factCheck.correctedContent) {
+          finalContent = factCheck.correctedContent;
+          if (factCheck.correctedTitle) {
+            finalTitle = factCheck.correctedTitle;
+          }
+          console.log(`[NewsSource] Fact-check corrected ${factCheck.mismatches.length} errors in: ${item.title}`);
+        } else if (factCheck.passed) {
+          console.log(`[NewsSource] Fact-check passed for: ${item.title} (${factCheck.meta.claimsChecked} claims checked)`);
+        }
+
         const article = await articleRepository.create({
           slug,
-          title: result.title || item.title,
+          title: finalTitle,
           excerpt: result.excerpt?.slice(0, 500) || item.snippet.slice(0, 500),
-          content: result.content,
+          content: finalContent,
           authorId: adminUser.id,
           tags: result.tags.length > 0 ? result.tags : ["berita", "pasar-saham"],
           status: ArticleStatus.PUBLISHED,
@@ -157,6 +183,10 @@ Respond with ONLY the article markdown content. No JSON, no code blocks.`;
             originalTitle: item.title,
             provider: provider.name,
             timestamp: new Date().toISOString(),
+            factCheckPassed: String(factCheck.passed),
+            factCheckClaimsChecked: String(factCheck.meta.claimsChecked),
+            factCheckErrors: String(factCheck.mismatches.length),
+            factCheckCorrected: String(!factCheck.passed && !!factCheck.correctedContent),
           } as Record<string, string>,
         });
 

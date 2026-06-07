@@ -1,0 +1,248 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - main [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e6]:
+        - link "TeknikalID" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - img [ref=e8]
+          - generic [ref=e10]: TeknikalID
+        - navigation "Main navigation" [ref=e11]:
+          - link "Beranda" [ref=e12] [cursor=pointer]:
+            - /url: /
+          - link "Saham" [ref=e13] [cursor=pointer]:
+            - /url: /stocks
+          - link "Screener" [ref=e14] [cursor=pointer]:
+            - /url: /screener
+          - link "Simulasi" [ref=e15] [cursor=pointer]:
+            - /url: /paper-trading
+          - link "Bandingkan" [ref=e16] [cursor=pointer]:
+            - /url: /compare
+          - link "Komunitas" [ref=e17] [cursor=pointer]:
+            - /url: /community
+          - link "Berita" [ref=e18] [cursor=pointer]:
+            - /url: /berita
+          - link "Akademi" [ref=e19] [cursor=pointer]:
+            - /url: /akademi
+        - generic [ref=e20]:
+          - link "Daftar Pantauan" [ref=e21] [cursor=pointer]:
+            - /url: /watchlist
+            - img [ref=e22]
+          - button "Notifikasi" [ref=e25]:
+            - img [ref=e26]
+          - button "Menu pengguna" [ref=e30]
+      - generic [ref=e32]:
+        - generic [ref=e34]:
+          - generic [ref=e35]:
+            - img [ref=e37]
+            - heading "Berita" [level=1] [ref=e40]
+          - paragraph [ref=e41]:
+            - text: ">Analisis teknikal saham IDX terkini. Data indikator real-time, sinyal trading, dan insight pasar untuk investor Indonesia."
+            - generic [ref=e42]: _
+        - generic [ref=e43]:
+          - generic [ref=e44]:
+            - link "Semua" [ref=e45] [cursor=pointer]:
+              - /url: /berita
+            - link "Analisis Saham" [ref=e46] [cursor=pointer]:
+              - /url: /berita?type=STOCK_ANALYSIS
+            - link "Berita Pasar" [ref=e47] [cursor=pointer]:
+              - /url: /berita?type=NEWS
+            - link "Opini & Insight" [ref=e48] [cursor=pointer]:
+              - /url: /berita?type=GENERAL
+          - 'link "Berita Pasar 2 Juni 2026 Seketor GGR Royalti Naik: Ini Saham Tambang yang Harus Dikunci di Portofolio Kenaikan tarif royalti Gross Government Revenue (GGR) yang baru saja berlaku pada pertengahan 2026 membawa angin segar sekaligus tantangan baru bagi kinerja emiten di sektor pertambangan. Kebijakan ba T Tim TeknikalID saham tambang royalti GGR bursa efek" [ref=e49] [cursor=pointer]':
+            - /url: /berita/seketor-ggr-royalti-naik-ini-saham-tambang-yang-harus-dikunci-di-portofolio
+            - generic [ref=e52]:
+              - generic [ref=e53]:
+                - generic [ref=e54]: Berita Pasar
+                - generic [ref=e55]: 2 Juni 2026
+              - 'heading "Seketor GGR Royalti Naik: Ini Saham Tambang yang Harus Dikunci di Portofolio" [level=2] [ref=e56]'
+              - paragraph [ref=e57]: Kenaikan tarif royalti Gross Government Revenue (GGR) yang baru saja berlaku pada pertengahan 2026 membawa angin segar sekaligus tantangan baru bagi kinerja emiten di sektor pertambangan. Kebijakan ba
+              - generic [ref=e58]:
+                - generic [ref=e59]:
+                  - generic [ref=e60]: T
+                  - generic [ref=e61]: Tim TeknikalID
+                - generic [ref=e62]:
+                  - generic [ref=e63]: saham tambang
+                  - generic [ref=e64]: royalti GGR
+                  - generic [ref=e65]: bursa efek
+          - generic [ref=e82]:
+            - link "Berita Pasar 2 Juni 2026 berita ESDM Rilis Harga Batu Bara Acuan Juni 2026, Ini Rinciannya dan Dampaknya ke Pasar Saham Kementerian Energi dan Sumber Daya Mineral (ESDM) secara resmi telah menetapkan Harga Batubara Acuan (HBA) untuk periode pertama bulan Juni 2026. Penetapan harga ini menjadi sorotan utama pelaku pasar T Tim TeknikalID" [ref=e83] [cursor=pointer]:
+              - /url: /berita/esdm-rilis-harga-batu-bara-acuan-juni-2026-ini-rinciannya-dan-dampaknya-ke-pasar-saham
+              - generic [ref=e85]:
+                - generic [ref=e86]:
+                  - generic [ref=e87]:
+                    - generic [ref=e88]: Berita Pasar
+                    - generic [ref=e89]: 2 Juni 2026
+                  - generic [ref=e90]: berita
+                - heading "ESDM Rilis Harga Batu Bara Acuan Juni 2026, Ini Rinciannya dan Dampaknya ke Pasar Saham" [level=3] [ref=e91]
+                - paragraph [ref=e92]: Kementerian Energi dan Sumber Daya Mineral (ESDM) secara resmi telah menetapkan Harga Batubara Acuan (HBA) untuk periode pertama bulan Juni 2026. Penetapan harga ini menjadi sorotan utama pelaku pasar
+                - generic [ref=e93]:
+                  - generic [ref=e94]: T
+                  - generic [ref=e95]: Tim TeknikalID
+            - 'link "Berita Pasar 2 Juni 2026 berita Monopoli Ekspor Komoditas via BUMN DSI Berlaku Penuh 1 Januari 2027: Dampak ke Pasar Saham BEI Pemerintah Indonesia resmi menetapkan tenggat waktu baru yang krusial bagi industri perdagangan komoditas nasional. Melalui kebijakan yang baru disahkan, seluruh ekspor tiga komoditas utama yaitu CPO T Tim TeknikalID" [ref=e96] [cursor=pointer]':
+              - /url: /berita/monopoli-ekspor-komoditas-via-bumn-dsi-berlaku-penuh-1-januari-2027-dampak-ke-pasar-saham-bei
+              - generic [ref=e98]:
+                - generic [ref=e99]:
+                  - generic [ref=e100]:
+                    - generic [ref=e101]: Berita Pasar
+                    - generic [ref=e102]: 2 Juni 2026
+                  - generic [ref=e103]: berita
+                - 'heading "Monopoli Ekspor Komoditas via BUMN DSI Berlaku Penuh 1 Januari 2027: Dampak ke Pasar Saham BEI" [level=3] [ref=e104]'
+                - paragraph [ref=e105]: Pemerintah Indonesia resmi menetapkan tenggat waktu baru yang krusial bagi industri perdagangan komoditas nasional. Melalui kebijakan yang baru disahkan, seluruh ekspor tiga komoditas utama yaitu CPO
+                - generic [ref=e106]:
+                  - generic [ref=e107]: T
+                  - generic [ref=e108]: Tim TeknikalID
+            - 'link "Berita Pasar 2 Juni 2026 IHSG IHSG Melesat Tembus Level 8.500: Analisis Apakah Ini Puncak atau Bakal Terus Melambung Indeks Harga Saham Gabungan (IHSG) baru saja mencatatkan sejarah baru dengan menembus psikologis 8.500 pada perdagangan pertengahan Juni 2026. Rally pasar saham yang sangat agresif ini memicu perdebat T Tim TeknikalID" [ref=e109] [cursor=pointer]':
+              - /url: /berita/ihsg-melesat-tembus-level-8500-analisis-apakah-ini-puncak-atau-bakal-terus-melambung
+              - generic [ref=e111]:
+                - generic [ref=e112]:
+                  - generic [ref=e113]:
+                    - generic [ref=e114]: Berita Pasar
+                    - generic [ref=e115]: 2 Juni 2026
+                  - generic [ref=e116]: IHSG
+                - 'heading "IHSG Melesat Tembus Level 8.500: Analisis Apakah Ini Puncak atau Bakal Terus Melambung" [level=3] [ref=e117]'
+                - paragraph [ref=e118]: Indeks Harga Saham Gabungan (IHSG) baru saja mencatatkan sejarah baru dengan menembus psikologis 8.500 pada perdagangan pertengahan Juni 2026. Rally pasar saham yang sangat agresif ini memicu perdebat
+                - generic [ref=e119]:
+                  - generic [ref=e120]: T
+                  - generic [ref=e121]: Tim TeknikalID
+            - 'link "Berita Pasar 2 Juni 2026 berita Perusahaan Migas Wajib Tempatkan Minimal 30% DHE di Dalam Negeri: Dampak ke Pasar Saham BEI Pemerintah Indonesia resmi mengambil langkah tegas terkait pengelolaan Devisa Hasil Ekspor (DHE) Sumber Daya Alam (SDA). Kebijakan baru yang diumumkan oleh Menteri Keuangan Purbaya Yudhi Sadewa ini me T Tim TeknikalID" [ref=e122] [cursor=pointer]':
+              - /url: /berita/perusahaan-migas-wajib-tempatkan-minimal-30-dhe-di-dalam-negeri-dampak-ke-pasar-saham-bei
+              - generic [ref=e124]:
+                - generic [ref=e125]:
+                  - generic [ref=e126]:
+                    - generic [ref=e127]: Berita Pasar
+                    - generic [ref=e128]: 2 Juni 2026
+                  - generic [ref=e129]: berita
+                - 'heading "Perusahaan Migas Wajib Tempatkan Minimal 30% DHE di Dalam Negeri: Dampak ke Pasar Saham BEI" [level=3] [ref=e130]'
+                - paragraph [ref=e131]: Pemerintah Indonesia resmi mengambil langkah tegas terkait pengelolaan Devisa Hasil Ekspor (DHE) Sumber Daya Alam (SDA). Kebijakan baru yang diumumkan oleh Menteri Keuangan Purbaya Yudhi Sadewa ini me
+                - generic [ref=e132]:
+                  - generic [ref=e133]: T
+                  - generic [ref=e134]: Tim TeknikalID
+            - link "Berita Pasar 2 Juni 2026 berita IHSG Sepanjang Hari di Zona Hijau, Ditutup Menguat 1,11% di Level 6.195 Bursa Efek Indonesia (BEI) kembali mencatatkan performa positif yang membangun semangat investor di tengah ketidakpastian ekonomi global. Indeks Harga Saham Gabungan (IHSG) berhasil menutup perdaganga T Tim TeknikalID" [ref=e135] [cursor=pointer]:
+              - /url: /berita/ihsg-sepanjang-hari-di-zona-hijau-ditutup-menguat-111-di-level-6195
+              - generic [ref=e137]:
+                - generic [ref=e138]:
+                  - generic [ref=e139]:
+                    - generic [ref=e140]: Berita Pasar
+                    - generic [ref=e141]: 2 Juni 2026
+                  - generic [ref=e142]: berita
+                - heading "IHSG Sepanjang Hari di Zona Hijau, Ditutup Menguat 1,11% di Level 6.195" [level=3] [ref=e143]
+                - paragraph [ref=e144]: Bursa Efek Indonesia (BEI) kembali mencatatkan performa positif yang membangun semangat investor di tengah ketidakpastian ekonomi global. Indeks Harga Saham Gabungan (IHSG) berhasil menutup perdaganga
+                - generic [ref=e145]:
+                  - generic [ref=e146]: T
+                  - generic [ref=e147]: Tim TeknikalID
+            - 'link "Berita Pasar 2 Juni 2026 berita Dividen Perdana BLOG Senilai Rp70,96 Miliar: Sinyal Positif bagi Emiten Logistik dan Transportasi BEI PT Trimitra Trans Persada Tbk (BLOG) resmi mengumumkan pembagian dividen perdana dari laba tahun buku 2025. Emiten yang bergerak di sektor logistik dan transportasi ini akan membagikan kas sebesar Rp7 T Tim TeknikalID" [ref=e148] [cursor=pointer]':
+              - /url: /berita/dividen-perdana-blog-senilai-rp7096-miliar-sinyal-positif-bagi-emiten-logistik-dan-transportasi-bei
+              - generic [ref=e150]:
+                - generic [ref=e151]:
+                  - generic [ref=e152]:
+                    - generic [ref=e153]: Berita Pasar
+                    - generic [ref=e154]: 2 Juni 2026
+                  - generic [ref=e155]: berita
+                - 'heading "Dividen Perdana BLOG Senilai Rp70,96 Miliar: Sinyal Positif bagi Emiten Logistik dan Transportasi BEI" [level=3] [ref=e156]'
+                - paragraph [ref=e157]: PT Trimitra Trans Persada Tbk (BLOG) resmi mengumumkan pembagian dividen perdana dari laba tahun buku 2025. Emiten yang bergerak di sektor logistik dan transportasi ini akan membagikan kas sebesar Rp7
+                - generic [ref=e158]:
+                  - generic [ref=e159]: T
+                  - generic [ref=e160]: Tim TeknikalID
+            - 'link "Berita Pasar 2 Juni 2026 berita Kebijakan Baru DHE SDA: Perusahaan Migas Wajib Tempatkan 30% Di Dalam Negeri, Ini Dampaknya ke Pasar Saham Pemerintah Indonesia resmi mengambil langkah strategis untuk menjaga stabilitas makroekonomi dan memperkuat nilai tukar Rupiah. Menteri Keuangan Purbaya Yudhi Sadewa mengumumkan pemberlakakan ketentua T Tim TeknikalID" [ref=e161] [cursor=pointer]':
+              - /url: /berita/kebijakan-baru-dhe-sda-perusahaan-migas-wajib-tempatkan-30-di-dalam-negeri-ini-dampaknya-ke-pasar-sa
+              - generic [ref=e163]:
+                - generic [ref=e164]:
+                  - generic [ref=e165]:
+                    - generic [ref=e166]: Berita Pasar
+                    - generic [ref=e167]: 2 Juni 2026
+                  - generic [ref=e168]: berita
+                - 'heading "Kebijakan Baru DHE SDA: Perusahaan Migas Wajib Tempatkan 30% Di Dalam Negeri, Ini Dampaknya ke Pasar Saham" [level=3] [ref=e169]'
+                - paragraph [ref=e170]: Pemerintah Indonesia resmi mengambil langkah strategis untuk menjaga stabilitas makroekonomi dan memperkuat nilai tukar Rupiah. Menteri Keuangan Purbaya Yudhi Sadewa mengumumkan pemberlakakan ketentua
+                - generic [ref=e171]:
+                  - generic [ref=e172]: T
+                  - generic [ref=e173]: Tim TeknikalID
+            - link "Berita Pasar 2 Juni 2026 berita OJK Awasi Investasi Perusahaan Asuransi Usai Sejumlah Saham Didepak MSCI Otoritas Jasa Keuangan (OJK) secara resmi mengawasi dan mengkaji ulang portofolio investasi perusahaan asuransi di Indonesia. Langkah pengawasan ketat ini diambil menyusul penghapusan (dropping) sejum T Tim TeknikalID" [ref=e174] [cursor=pointer]:
+              - /url: /berita/ojk-awasi-investasi-perusahaan-asuransi-usai-sejumlah-saham-didepak-msci
+              - generic [ref=e176]:
+                - generic [ref=e177]:
+                  - generic [ref=e178]:
+                    - generic [ref=e179]: Berita Pasar
+                    - generic [ref=e180]: 2 Juni 2026
+                  - generic [ref=e181]: berita
+                - heading "OJK Awasi Investasi Perusahaan Asuransi Usai Sejumlah Saham Didepak MSCI" [level=3] [ref=e182]
+                - paragraph [ref=e183]: Otoritas Jasa Keuangan (OJK) secara resmi mengawasi dan mengkaji ulang portofolio investasi perusahaan asuransi di Indonesia. Langkah pengawasan ketat ini diambil menyusul penghapusan (dropping) sejum
+                - generic [ref=e184]:
+                  - generic [ref=e185]: T
+                  - generic [ref=e186]: Tim TeknikalID
+            - link "Berita Pasar 2 Juni 2026 berita Masa Transisi Ekspor Satu Pintu jadi Ujian Fleksibilitas Emiten Batu Bara Pemerintah Indonesia kembali mengirimkan sinyal kuat mengenai perubahan regulasi di sektor pertambangan. Kebijakan ekspor satu pintu yang dijadwalkan mulai direalisasikan pada Juni 2026 kini menjadi s T Tim TeknikalID" [ref=e187] [cursor=pointer]:
+              - /url: /berita/masa-transisi-ekspor-satu-pintu-jadi-ujian-fleksibilitas-emiten-batu-bara
+              - generic [ref=e189]:
+                - generic [ref=e190]:
+                  - generic [ref=e191]:
+                    - generic [ref=e192]: Berita Pasar
+                    - generic [ref=e193]: 2 Juni 2026
+                  - generic [ref=e194]: berita
+                - heading "Masa Transisi Ekspor Satu Pintu jadi Ujian Fleksibilitas Emiten Batu Bara" [level=3] [ref=e195]
+                - paragraph [ref=e196]: Pemerintah Indonesia kembali mengirimkan sinyal kuat mengenai perubahan regulasi di sektor pertambangan. Kebijakan ekspor satu pintu yang dijadwalkan mulai direalisasikan pada Juni 2026 kini menjadi s
+                - generic [ref=e197]:
+                  - generic [ref=e198]: T
+                  - generic [ref=e199]: Tim TeknikalID
+            - 'link "Berita Pasar 2 Juni 2026 berita Dividen Perdana BLOG Senilai Rp70,97 Miliar: Sinyal Positif Bagi Investor Saham Emiten Logistik PT Trimitra Trans Persada Tbk (BLOG) resmi memberikan hadiah bagi para pemegang sahamnya. Perusahaan yang bergerak di sektor logistik dan jasa angkutan ini akan membagikan dividen perdana senilai Rp70 T Tim TeknikalID" [ref=e200] [cursor=pointer]':
+              - /url: /berita/dividen-perdana-blog-senilai-rp7097-miliar-sinyal-positif-bagi-investor-saham-emiten-logistik
+              - generic [ref=e202]:
+                - generic [ref=e203]:
+                  - generic [ref=e204]:
+                    - generic [ref=e205]: Berita Pasar
+                    - generic [ref=e206]: 2 Juni 2026
+                  - generic [ref=e207]: berita
+                - 'heading "Dividen Perdana BLOG Senilai Rp70,97 Miliar: Sinyal Positif Bagi Investor Saham Emiten Logistik" [level=3] [ref=e208]'
+                - paragraph [ref=e209]: PT Trimitra Trans Persada Tbk (BLOG) resmi memberikan hadiah bagi para pemegang sahamnya. Perusahaan yang bergerak di sektor logistik dan jasa angkutan ini akan membagikan dividen perdana senilai Rp70
+                - generic [ref=e210]:
+                  - generic [ref=e211]: T
+                  - generic [ref=e212]: Tim TeknikalID
+            - link "Berita Pasar 2 Juni 2026 Rupiah Melemah Rupiah Melemah di Tengah Penguatan Dolar AS, Ini 3 Saham Devisa Pengaman Portofolio Kondisi **Rupiah Melemah** menjadi tantangan serius bagi pasar saham Indonesia pada pertengahan tahun 2026. Ketika mata uang Garuda terkoreksi terhadap Dolar AS, nilai aset berdenominasi Rupiah secara T Tim TeknikalID" [ref=e213] [cursor=pointer]:
+              - /url: /berita/rupiah-melemah-di-tengah-penguatan-dolar-as-ini-3-saham-devisa-pengaman-portofolio
+              - generic [ref=e215]:
+                - generic [ref=e216]:
+                  - generic [ref=e217]:
+                    - generic [ref=e218]: Berita Pasar
+                    - generic [ref=e219]: 2 Juni 2026
+                  - generic [ref=e220]: Rupiah Melemah
+                - heading "Rupiah Melemah di Tengah Penguatan Dolar AS, Ini 3 Saham Devisa Pengaman Portofolio" [level=3] [ref=e221]
+                - paragraph [ref=e222]: Kondisi **Rupiah Melemah** menjadi tantangan serius bagi pasar saham Indonesia pada pertengahan tahun 2026. Ketika mata uang Garuda terkoreksi terhadap Dolar AS, nilai aset berdenominasi Rupiah secara
+                - generic [ref=e223]:
+                  - generic [ref=e224]: T
+                  - generic [ref=e225]: Tim TeknikalID
+            - 'link "Berita Pasar 2 Juni 2026 Tarif Listrik Penyesuaian Tarif Listrik Juli 2026: Antara Momentum Saham Utilitas dan Tekanan Margin Manufaktur Pemerintah resmi mengumumkan kebijakan penyesuaian tarif listrik yang berlaku mulai Juli 2026, membawa angin segar bagi investor sektor energi sekaligus tantangan baru bagi pelaku industri. Kenaikan t T Tim TeknikalID" [ref=e226] [cursor=pointer]':
+              - /url: /berita/penyesuaian-tarif-listrik-juli-2026-antara-momentum-saham-utilitas-dan-tekanan-margin-manufaktur
+              - generic [ref=e228]:
+                - generic [ref=e229]:
+                  - generic [ref=e230]:
+                    - generic [ref=e231]: Berita Pasar
+                    - generic [ref=e232]: 2 Juni 2026
+                  - generic [ref=e233]: Tarif Listrik
+                - 'heading "Penyesuaian Tarif Listrik Juli 2026: Antara Momentum Saham Utilitas dan Tekanan Margin Manufaktur" [level=3] [ref=e234]'
+                - paragraph [ref=e235]: Pemerintah resmi mengumumkan kebijakan penyesuaian tarif listrik yang berlaku mulai Juli 2026, membawa angin segar bagi investor sektor energi sekaligus tantangan baru bagi pelaku industri. Kenaikan t
+                - generic [ref=e236]:
+                  - generic [ref=e237]: T
+                  - generic [ref=e238]: Tim TeknikalID
+          - button "Muat lebih banyak" [ref=e240]
+      - generic [ref=e242]:
+        - generic [ref=e243]:
+          - generic [ref=e244]:
+            - generic [ref=e245]:
+              - img [ref=e246]
+              - generic [ref=e248]: TeknikalID
+            - paragraph [ref=e249]: Platform analisa teknikal saham BEI. Data bersumber dari Yahoo Finance dengan jeda ~5-10 menit.
+          - generic [ref=e250]:
+            - link "Beranda" [ref=e251] [cursor=pointer]:
+              - /url: /
+            - link "Saham" [ref=e252] [cursor=pointer]:
+              - /url: /stocks
+            - link "Screener" [ref=e253] [cursor=pointer]:
+              - /url: /screener
+            - link "Disclaimer" [ref=e254] [cursor=pointer]:
+              - /url: /disclaimer
+            - link "Privasi" [ref=e255] [cursor=pointer]:
+              - /url: /privacy
+            - link "Ketentuan" [ref=e256] [cursor=pointer]:
+              - /url: /terms
+        - paragraph [ref=e258]: © 2026 TeknikalID. Bukan rekomendasi investasi.
+  - alert [ref=e259]

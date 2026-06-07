@@ -6,8 +6,9 @@ import { computeChange } from "@/lib/serialize";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Daftar Pantauan Saham",
-  description: "Pantau saham pilihan Anda di satu tempat. Lihat harga, perubahan, dan indikator teknikal untuk saham yang Anda pantau.",
+  title: "Watchlist Saham — TeknikalID",
+  description: "Pantau saham pilihan kamu di satu tempat. Lihat harga, perubahan, dan indikator teknikal untuk semua saham di watchlist kamu.",
+  robots: { index: false, follow: false },
 };
 
 export const revalidate = 60;
@@ -54,9 +55,9 @@ export default async function WatchlistPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-6 fade-in">
       <div className="space-y-1">
-        <h1 className="text-2xl font-bold">Daftar Pantauan</h1>
+        <h1 className="text-2xl font-bold">Watchlist Saham</h1>
         <p className="text-text-secondary text-sm">
-          Saham yang Anda pantau ({items.length} saham)
+          Pantau pergerakan saham pilihan kamu ({items.length} saham)
         </p>
       </div>
 
@@ -68,7 +69,7 @@ export default async function WatchlistPage() {
             </svg>
           </div>
           <p className="text-text-secondary text-sm">
-            Belum ada saham dipantau. Tambahkan saham dari halaman detail.
+            Watchlist masih kosong. Buka halaman saham lalu klik pantau untuk menambahkan.
           </p>
         </div>
       ) : (

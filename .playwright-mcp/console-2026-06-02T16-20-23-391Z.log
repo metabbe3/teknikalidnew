@@ -1,0 +1,26 @@
+[    1633ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=-XyhJc184aCdXfXlAAAC' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/69.5660d4934204ffc2.js:0
+[  124316ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/api/stocks/PGEO.JK/history?range=1m:0
+[  124324ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/api/stocks/SIDO.JK/history?range=1m:0
+[  124331ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/api/stocks/KLBF.JK/history?range=1m:0
+[  124371ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/api/stocks/ISAT.JK/history?range=1m:0
+[  124372ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/api/stocks/JPFA.JK/history?range=1m:0
+[  124401ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/api/stocks/TOWR.JK/history?range=1m:0
+[  124436ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/api/stocks/BRIS.JK/history?range=1m:0
+[  124473ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/api/stocks/UNTR.JK/history?range=1m:0
+[  124475ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/api/stocks/PGAS.JK/history?range=1m:0
+[  124533ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/api/stocks/AMMN.JK/history?range=1m:0
+[  125424ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/api/stocks/PGEO.JK/history?range=1m:0
+[  125428ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/api/stocks/SIDO.JK/history?range=1m:0
+[  125537ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/api/stocks/BRIS.JK/history?range=1m:0
+[  125561ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/api/stocks/JPFA.JK/history?range=1m:0
+[  125579ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/api/stocks/UNTR.JK/history?range=1m:0
+[  125628ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/api/stocks/KLBF.JK/history?range=1m:0
+[  125638ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/api/stocks/AMMN.JK/history?range=1m:0
+[  125646ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/api/stocks/ISAT.JK/history?range=1m:0
+[  125681ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/api/stocks/TOWR.JK/history?range=1m:0
+[  126047ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/api/stocks/PGAS.JK/history?range=1m:0
+[  127523ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/api/stocks/PGEO.JK/history?range=1m:0
+[  127525ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/api/stocks/SIDO.JK/history?range=1m:0
+[ 2634948ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_CLOSED @ https://teknikal.id/stocks/DSSA.JK?_rsc=tXyZJ52UQVBCVsD3:0
+[24647044ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=7AHmfm3Us8Dn5493AAAI' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/69.5660d4934204ffc2.js:0
+[43655514ms] [ERROR] Failed to load resource: the server responded with a status of 502 () @ https://teknikal.id/api/paper-trading/stock/ARII.JK:0

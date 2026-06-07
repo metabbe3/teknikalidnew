@@ -1,0 +1,411 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - main [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e6]:
+        - link "TeknikalID" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - img [ref=e8]
+          - generic [ref=e10]: TeknikalID
+        - navigation "Main navigation" [ref=e11]:
+          - link "Beranda" [ref=e12] [cursor=pointer]:
+            - /url: /
+          - link "Saham" [ref=e13] [cursor=pointer]:
+            - /url: /stocks
+          - link "Screener" [ref=e14] [cursor=pointer]:
+            - /url: /screener
+          - link "Simulasi" [ref=e15] [cursor=pointer]:
+            - /url: /paper-trading
+          - link "Bandingkan" [ref=e16] [cursor=pointer]:
+            - /url: /compare
+          - link "Komunitas" [ref=e17] [cursor=pointer]:
+            - /url: /community
+          - link "Berita" [ref=e18] [cursor=pointer]:
+            - /url: /berita
+          - link "Akademi" [ref=e19] [cursor=pointer]:
+            - /url: /akademi
+        - link "Masuk" [ref=e21] [cursor=pointer]:
+          - /url: /auth/signin
+      - generic [ref=e23]:
+        - generic [ref=e25]:
+          - generic [ref=e26]:
+            - img [ref=e28]
+            - heading "Berita" [level=1] [ref=e31]
+          - paragraph [ref=e32]:
+            - text: ">Analisis teknikal saham IDX terkini. Data indikator real-time, sinyal trading, dan insight pasar untuk investor Indonesia."
+            - generic [ref=e33]: _
+        - generic [ref=e34]:
+          - generic [ref=e35]:
+            - link "Semua" [ref=e36] [cursor=pointer]:
+              - /url: /berita
+            - link "ACST" [ref=e37] [cursor=pointer]:
+              - /url: /berita?tag=ACST
+            - link "ANTM" [ref=e38] [cursor=pointer]:
+              - /url: /berita?tag=ANTM
+            - link "Analisa Chart" [ref=e39] [cursor=pointer]:
+              - /url: /berita?tag=Analisa%20Chart
+            - link "Analisa Teknikal" [ref=e40] [cursor=pointer]:
+              - /url: /berita?tag=Analisa%20Teknikal
+            - link "Average Down" [ref=e41] [cursor=pointer]:
+              - /url: /berita?tag=Average%20Down
+            - link "BBCA" [ref=e42] [cursor=pointer]:
+              - /url: /berita?tag=BBCA
+            - link "BBRI" [ref=e43] [cursor=pointer]:
+              - /url: /berita?tag=BBRI
+            - link "BI 7DRR" [ref=e44] [cursor=pointer]:
+              - /url: /berita?tag=BI%207DRR
+            - link "Bank Indonesia" [ref=e45] [cursor=pointer]:
+              - /url: /berita?tag=Bank%20Indonesia
+            - link "Bull Trap" [ref=e46] [cursor=pointer]:
+              - /url: /berita?tag=Bull%20Trap
+            - link "CPO" [ref=e47] [cursor=pointer]:
+              - /url: /berita?tag=CPO
+            - link "Djahit" [ref=e48] [cursor=pointer]:
+              - /url: /berita?tag=Djahit
+            - link "E-commerce BEI" [ref=e49] [cursor=pointer]:
+              - /url: /berita?tag=E-commerce%20BEI
+            - link "Edukasi Saham" [ref=e50] [cursor=pointer]:
+              - /url: /berita?tag=Edukasi%20Saham
+            - link "Energi Terbaruan" [ref=e51] [cursor=pointer]:
+              - /url: /berita?tag=Energi%20Terbaruan
+            - link "Fake Breakout" [ref=e52] [cursor=pointer]:
+              - /url: /berita?tag=Fake%20Breakout
+            - link "ICBP" [ref=e53] [cursor=pointer]:
+              - /url: /berita?tag=ICBP
+            - link "IHSG" [ref=e54] [cursor=pointer]:
+              - /url: /berita?tag=IHSG
+            - link "IHSG bulan puasa" [ref=e55] [cursor=pointer]:
+              - /url: /berita?tag=IHSG%20bulan%20puasa
+            - link "IHSG hari ini" [ref=e56] [cursor=pointer]:
+              - /url: /berita?tag=IHSG%20hari%20ini
+            - link "Indeks Harga Saham Gabungan" [ref=e57] [cursor=pointer]:
+              - /url: /berita?tag=Indeks%20Harga%20Saham%20Gabungan
+            - link "Inflasi" [ref=e58] [cursor=pointer]:
+              - /url: /berita?tag=Inflasi
+            - link "Juni 2026" [ref=e59] [cursor=pointer]:
+              - /url: /berita?tag=Juni%202026
+            - link "Komoditas" [ref=e60] [cursor=pointer]:
+              - /url: /berita?tag=Komoditas
+            - link "Koreksi Pasar" [ref=e61] [cursor=pointer]:
+              - /url: /berita?tag=Koreksi%20Pasar
+            - link "LQ45" [ref=e62] [cursor=pointer]:
+              - /url: /berita?tag=LQ45
+            - link "MDKA" [ref=e63] [cursor=pointer]:
+              - /url: /berita?tag=MDKA
+            - link "Manajemen Risiko" [ref=e64] [cursor=pointer]:
+              - /url: /berita?tag=Manajemen%20Risiko
+            - link "PTBA" [ref=e65] [cursor=pointer]:
+              - /url: /berita?tag=PTBA
+            - link "Rally Pasca-Lebaran" [ref=e66] [cursor=pointer]:
+              - /url: /berita?tag=Rally%20Pasca-Lebaran
+            - link "Rupiah Melemah" [ref=e67] [cursor=pointer]:
+              - /url: /berita?tag=Rupiah%20Melemah
+            - link "Saham AI" [ref=e68] [cursor=pointer]:
+              - /url: /berita?tag=Saham%20AI
+            - link "Saham Asing" [ref=e69] [cursor=pointer]:
+              - /url: /berita?tag=Saham%20Asing
+            - link "Saham Devisa" [ref=e70] [cursor=pointer]:
+              - /url: /berita?tag=Saham%20Devisa
+            - link "Saham ESG" [ref=e71] [cursor=pointer]:
+              - /url: /berita?tag=Saham%20ESG
+            - link "Saham Juni 2026" [ref=e72] [cursor=pointer]:
+              - /url: /berita?tag=Saham%20Juni%202026
+            - link "Saham Perbankan" [ref=e73] [cursor=pointer]:
+              - /url: /berita?tag=Saham%20Perbankan
+            - link "Saham Tambang" [ref=e74] [cursor=pointer]:
+              - /url: /berita?tag=Saham%20Tambang
+            - link "Saham Teknologi" [ref=e75] [cursor=pointer]:
+              - /url: /berita?tag=Saham%20Teknologi
+            - link "Saham Utilitas" [ref=e76] [cursor=pointer]:
+              - /url: /berita?tag=Saham%20Utilitas
+            - link "Sektor Manufaktur" [ref=e77] [cursor=pointer]:
+              - /url: /berita?tag=Sektor%20Manufaktur
+            - link "Sektor Teknologi" [ref=e78] [cursor=pointer]:
+              - /url: /berita?tag=Sektor%20Teknologi
+            - link "Suku Bunga" [ref=e79] [cursor=pointer]:
+              - /url: /berita?tag=Suku%20Bunga
+            - link "Tarif Listrik" [ref=e80] [cursor=pointer]:
+              - /url: /berita?tag=Tarif%20Listrik
+            - link "Tekstil" [ref=e81] [cursor=pointer]:
+              - /url: /berita?tag=Tekstil
+            - link "analisa teknikal ihsg" [ref=e82] [cursor=pointer]:
+              - /url: /berita?tag=analisa%20teknikal%20ihsg
+            - link "analisis teknikal" [ref=e83] [cursor=pointer]:
+              - /url: /berita?tag=analisis%20teknikal
+            - link "arus dana asing" [ref=e84] [cursor=pointer]:
+              - /url: /berita?tag=arus%20dana%20asing
+            - link "berita" [ref=e85] [cursor=pointer]:
+              - /url: /berita?tag=berita
+            - link "bias libur panjang" [ref=e86] [cursor=pointer]:
+              - /url: /berita?tag=bias%20libur%20panjang
+            - link "blue chip" [ref=e87] [cursor=pointer]:
+              - /url: /berita?tag=blue%20chip
+            - link "bursa efek" [ref=e88] [cursor=pointer]:
+              - /url: /berita?tag=bursa%20efek
+            - link "cum date" [ref=e89] [cursor=pointer]:
+              - /url: /berita?tag=cum%20date
+            - link "emas global" [ref=e90] [cursor=pointer]:
+              - /url: /berita?tag=emas%20global
+            - link "ex date" [ref=e91] [cursor=pointer]:
+              - /url: /berita?tag=ex%20date
+            - link "harga emas hari ini" [ref=e92] [cursor=pointer]:
+              - /url: /berita?tag=harga%20emas%20hari%20ini
+            - link "income investing" [ref=e93] [cursor=pointer]:
+              - /url: /berita?tag=income%20investing
+            - link "investasi jangka panjang" [ref=e94] [cursor=pointer]:
+              - /url: /berita?tag=investasi%20jangka%20panjang
+            - link "jadwal dividen" [ref=e95] [cursor=pointer]:
+              - /url: /berita?tag=jadwal%20dividen
+            - link "komoditas" [ref=e96] [cursor=pointer]:
+              - /url: /berita?tag=komoditas
+            - link "komoditas emas" [ref=e97] [cursor=pointer]:
+              - /url: /berita?tag=komoditas%20emas
+            - link "kurs Rupiah" [ref=e98] [cursor=pointer]:
+              - /url: /berita?tag=kurs%20Rupiah
+            - link "laporan keuangan Q1" [ref=e99] [cursor=pointer]:
+              - /url: /berita?tag=laporan%20keuangan%20Q1
+            - link "outlook ihsg senin" [ref=e100] [cursor=pointer]:
+              - /url: /berita?tag=outlook%20ihsg%20senin
+            - link "pasar-saham" [ref=e101] [cursor=pointer]:
+              - /url: /berita?tag=pasar-saham
+            - link "passive income" [ref=e102] [cursor=pointer]:
+              - /url: /berita?tag=passive%20income
+            - link "pembukaan pasar saham" [ref=e103] [cursor=pointer]:
+              - /url: /berita?tag=pembukaan%20pasar%20saham
+            - link "portofolio saham" [ref=e104] [cursor=pointer]:
+              - /url: /berita?tag=portofolio%20saham
+            - link "price action" [ref=e105] [cursor=pointer]:
+              - /url: /berita?tag=price%20action
+            - link "rally pasar saham" [ref=e106] [cursor=pointer]:
+              - /url: /berita?tag=rally%20pasar%20saham
+            - link "royalti GGR" [ref=e107] [cursor=pointer]:
+              - /url: /berita?tag=royalti%20GGR
+            - link "saham ANTK" [ref=e108] [cursor=pointer]:
+              - /url: /berita?tag=saham%20ANTK
+            - link "saham ANTM" [ref=e109] [cursor=pointer]:
+              - /url: /berita?tag=saham%20ANTM
+            - link "saham BUMN" [ref=e110] [cursor=pointer]:
+              - /url: /berita?tag=saham%20BUMN
+            - link "saham LQ45" [ref=e111] [cursor=pointer]:
+              - /url: /berita?tag=saham%20LQ45
+            - link "saham aksi korporasi" [ref=e112] [cursor=pointer]:
+              - /url: /berita?tag=saham%20aksi%20korporasi
+            - link "saham dividen" [ref=e113] [cursor=pointer]:
+              - /url: /berita?tag=saham%20dividen
+            - link "saham ekspor impor" [ref=e114] [cursor=pointer]:
+              - /url: /berita?tag=saham%20ekspor%20impor
+            - link "saham konsumer" [ref=e115] [cursor=pointer]:
+              - /url: /berita?tag=saham%20konsumer
+            - link "saham ramadan" [ref=e116] [cursor=pointer]:
+              - /url: /berita?tag=saham%20ramadan
+            - link "saham tambang" [ref=e117] [cursor=pointer]:
+              - /url: /berita?tag=saham%20tambang
+            - link "sektor konsumer" [ref=e118] [cursor=pointer]:
+              - /url: /berita?tag=sektor%20konsumer
+            - link "sentimen global" [ref=e119] [cursor=pointer]:
+              - /url: /berita?tag=sentimen%20global
+            - link "sentimen pasar" [ref=e120] [cursor=pointer]:
+              - /url: /berita?tag=sentimen%20pasar
+            - link "suku bunga" [ref=e121] [cursor=pointer]:
+              - /url: /berita?tag=suku%20bunga
+            - link "swing trade" [ref=e122] [cursor=pointer]:
+              - /url: /berita?tag=swing%20trade
+            - link "wallstreet" [ref=e123] [cursor=pointer]:
+              - /url: /berita?tag=wallstreet
+          - 'link "Berita Pasar 2 Juni 2026 Seketor GGR Royalti Naik: Ini Saham Tambang yang Harus Dikunci di Portofolio Kenaikan tarif royalti Gross Government Revenue (GGR) yang baru saja berlaku pada pertengahan 2026 membawa angin segar sekaligus tantangan baru bagi kinerja emiten di sektor pertambangan. Kebijakan ba T Tim TeknikalID saham tambang royalti GGR bursa efek" [ref=e124] [cursor=pointer]':
+            - /url: /berita/seketor-ggr-royalti-naik-ini-saham-tambang-yang-harus-dikunci-di-portofolio
+            - generic [ref=e127]:
+              - generic [ref=e128]:
+                - generic [ref=e129]: Berita Pasar
+                - generic [ref=e130]: 2 Juni 2026
+              - 'heading "Seketor GGR Royalti Naik: Ini Saham Tambang yang Harus Dikunci di Portofolio" [level=2] [ref=e131]'
+              - paragraph [ref=e132]: Kenaikan tarif royalti Gross Government Revenue (GGR) yang baru saja berlaku pada pertengahan 2026 membawa angin segar sekaligus tantangan baru bagi kinerja emiten di sektor pertambangan. Kebijakan ba
+              - generic [ref=e133]:
+                - generic [ref=e134]:
+                  - generic [ref=e135]: T
+                  - generic [ref=e136]: Tim TeknikalID
+                - generic [ref=e137]:
+                  - generic [ref=e138]: saham tambang
+                  - generic [ref=e139]: royalti GGR
+                  - generic [ref=e140]: bursa efek
+          - generic [ref=e157]:
+            - link "Berita Pasar 2 Juni 2026 berita ESDM Rilis Harga Batu Bara Acuan Juni 2026, Ini Rinciannya dan Dampaknya ke Pasar Saham Kementerian Energi dan Sumber Daya Mineral (ESDM) secara resmi telah menetapkan Harga Batubara Acuan (HBA) untuk periode pertama bulan Juni 2026. Penetapan harga ini menjadi sorotan utama pelaku pasar T Tim TeknikalID" [ref=e158] [cursor=pointer]:
+              - /url: /berita/esdm-rilis-harga-batu-bara-acuan-juni-2026-ini-rinciannya-dan-dampaknya-ke-pasar-saham
+              - generic [ref=e160]:
+                - generic [ref=e161]:
+                  - generic [ref=e162]:
+                    - generic [ref=e163]: Berita Pasar
+                    - generic [ref=e164]: 2 Juni 2026
+                  - generic [ref=e165]: berita
+                - heading "ESDM Rilis Harga Batu Bara Acuan Juni 2026, Ini Rinciannya dan Dampaknya ke Pasar Saham" [level=3] [ref=e166]
+                - paragraph [ref=e167]: Kementerian Energi dan Sumber Daya Mineral (ESDM) secara resmi telah menetapkan Harga Batubara Acuan (HBA) untuk periode pertama bulan Juni 2026. Penetapan harga ini menjadi sorotan utama pelaku pasar
+                - generic [ref=e168]:
+                  - generic [ref=e169]: T
+                  - generic [ref=e170]: Tim TeknikalID
+            - 'link "Berita Pasar 2 Juni 2026 berita Monopoli Ekspor Komoditas via BUMN DSI Berlaku Penuh 1 Januari 2027: Dampak ke Pasar Saham BEI Pemerintah Indonesia resmi menetapkan tenggat waktu baru yang krusial bagi industri perdagangan komoditas nasional. Melalui kebijakan yang baru disahkan, seluruh ekspor tiga komoditas utama yaitu CPO T Tim TeknikalID" [ref=e171] [cursor=pointer]':
+              - /url: /berita/monopoli-ekspor-komoditas-via-bumn-dsi-berlaku-penuh-1-januari-2027-dampak-ke-pasar-saham-bei
+              - generic [ref=e173]:
+                - generic [ref=e174]:
+                  - generic [ref=e175]:
+                    - generic [ref=e176]: Berita Pasar
+                    - generic [ref=e177]: 2 Juni 2026
+                  - generic [ref=e178]: berita
+                - 'heading "Monopoli Ekspor Komoditas via BUMN DSI Berlaku Penuh 1 Januari 2027: Dampak ke Pasar Saham BEI" [level=3] [ref=e179]'
+                - paragraph [ref=e180]: Pemerintah Indonesia resmi menetapkan tenggat waktu baru yang krusial bagi industri perdagangan komoditas nasional. Melalui kebijakan yang baru disahkan, seluruh ekspor tiga komoditas utama yaitu CPO
+                - generic [ref=e181]:
+                  - generic [ref=e182]: T
+                  - generic [ref=e183]: Tim TeknikalID
+            - 'link "Berita Pasar 2 Juni 2026 IHSG IHSG Melesat Tembus Level 8.500: Analisis Apakah Ini Puncak atau Bakal Terus Melambung Indeks Harga Saham Gabungan (IHSG) baru saja mencatatkan sejarah baru dengan menembus psikologis 8.500 pada perdagangan pertengahan Juni 2026. Rally pasar saham yang sangat agresif ini memicu perdebat T Tim TeknikalID" [ref=e184] [cursor=pointer]':
+              - /url: /berita/ihsg-melesat-tembus-level-8500-analisis-apakah-ini-puncak-atau-bakal-terus-melambung
+              - generic [ref=e186]:
+                - generic [ref=e187]:
+                  - generic [ref=e188]:
+                    - generic [ref=e189]: Berita Pasar
+                    - generic [ref=e190]: 2 Juni 2026
+                  - generic [ref=e191]: IHSG
+                - 'heading "IHSG Melesat Tembus Level 8.500: Analisis Apakah Ini Puncak atau Bakal Terus Melambung" [level=3] [ref=e192]'
+                - paragraph [ref=e193]: Indeks Harga Saham Gabungan (IHSG) baru saja mencatatkan sejarah baru dengan menembus psikologis 8.500 pada perdagangan pertengahan Juni 2026. Rally pasar saham yang sangat agresif ini memicu perdebat
+                - generic [ref=e194]:
+                  - generic [ref=e195]: T
+                  - generic [ref=e196]: Tim TeknikalID
+            - 'link "Berita Pasar 2 Juni 2026 berita Perusahaan Migas Wajib Tempatkan Minimal 30% DHE di Dalam Negeri: Dampak ke Pasar Saham BEI Pemerintah Indonesia resmi mengambil langkah tegas terkait pengelolaan Devisa Hasil Ekspor (DHE) Sumber Daya Alam (SDA). Kebijakan baru yang diumumkan oleh Menteri Keuangan Purbaya Yudhi Sadewa ini me T Tim TeknikalID" [ref=e197] [cursor=pointer]':
+              - /url: /berita/perusahaan-migas-wajib-tempatkan-minimal-30-dhe-di-dalam-negeri-dampak-ke-pasar-saham-bei
+              - generic [ref=e199]:
+                - generic [ref=e200]:
+                  - generic [ref=e201]:
+                    - generic [ref=e202]: Berita Pasar
+                    - generic [ref=e203]: 2 Juni 2026
+                  - generic [ref=e204]: berita
+                - 'heading "Perusahaan Migas Wajib Tempatkan Minimal 30% DHE di Dalam Negeri: Dampak ke Pasar Saham BEI" [level=3] [ref=e205]'
+                - paragraph [ref=e206]: Pemerintah Indonesia resmi mengambil langkah tegas terkait pengelolaan Devisa Hasil Ekspor (DHE) Sumber Daya Alam (SDA). Kebijakan baru yang diumumkan oleh Menteri Keuangan Purbaya Yudhi Sadewa ini me
+                - generic [ref=e207]:
+                  - generic [ref=e208]: T
+                  - generic [ref=e209]: Tim TeknikalID
+            - link "Berita Pasar 2 Juni 2026 berita IHSG Sepanjang Hari di Zona Hijau, Ditutup Menguat 1,11% di Level 6.195 Bursa Efek Indonesia (BEI) kembali mencatatkan performa positif yang membangun semangat investor di tengah ketidakpastian ekonomi global. Indeks Harga Saham Gabungan (IHSG) berhasil menutup perdaganga T Tim TeknikalID" [ref=e210] [cursor=pointer]:
+              - /url: /berita/ihsg-sepanjang-hari-di-zona-hijau-ditutup-menguat-111-di-level-6195
+              - generic [ref=e212]:
+                - generic [ref=e213]:
+                  - generic [ref=e214]:
+                    - generic [ref=e215]: Berita Pasar
+                    - generic [ref=e216]: 2 Juni 2026
+                  - generic [ref=e217]: berita
+                - heading "IHSG Sepanjang Hari di Zona Hijau, Ditutup Menguat 1,11% di Level 6.195" [level=3] [ref=e218]
+                - paragraph [ref=e219]: Bursa Efek Indonesia (BEI) kembali mencatatkan performa positif yang membangun semangat investor di tengah ketidakpastian ekonomi global. Indeks Harga Saham Gabungan (IHSG) berhasil menutup perdaganga
+                - generic [ref=e220]:
+                  - generic [ref=e221]: T
+                  - generic [ref=e222]: Tim TeknikalID
+            - 'link "Berita Pasar 2 Juni 2026 berita Dividen Perdana BLOG Senilai Rp70,96 Miliar: Sinyal Positif bagi Emiten Logistik dan Transportasi BEI PT Trimitra Trans Persada Tbk (BLOG) resmi mengumumkan pembagian dividen perdana dari laba tahun buku 2025. Emiten yang bergerak di sektor logistik dan transportasi ini akan membagikan kas sebesar Rp7 T Tim TeknikalID" [ref=e223] [cursor=pointer]':
+              - /url: /berita/dividen-perdana-blog-senilai-rp7096-miliar-sinyal-positif-bagi-emiten-logistik-dan-transportasi-bei
+              - generic [ref=e225]:
+                - generic [ref=e226]:
+                  - generic [ref=e227]:
+                    - generic [ref=e228]: Berita Pasar
+                    - generic [ref=e229]: 2 Juni 2026
+                  - generic [ref=e230]: berita
+                - 'heading "Dividen Perdana BLOG Senilai Rp70,96 Miliar: Sinyal Positif bagi Emiten Logistik dan Transportasi BEI" [level=3] [ref=e231]'
+                - paragraph [ref=e232]: PT Trimitra Trans Persada Tbk (BLOG) resmi mengumumkan pembagian dividen perdana dari laba tahun buku 2025. Emiten yang bergerak di sektor logistik dan transportasi ini akan membagikan kas sebesar Rp7
+                - generic [ref=e233]:
+                  - generic [ref=e234]: T
+                  - generic [ref=e235]: Tim TeknikalID
+            - 'link "Berita Pasar 2 Juni 2026 berita Kebijakan Baru DHE SDA: Perusahaan Migas Wajib Tempatkan 30% Di Dalam Negeri, Ini Dampaknya ke Pasar Saham Pemerintah Indonesia resmi mengambil langkah strategis untuk menjaga stabilitas makroekonomi dan memperkuat nilai tukar Rupiah. Menteri Keuangan Purbaya Yudhi Sadewa mengumumkan pemberlakakan ketentua T Tim TeknikalID" [ref=e236] [cursor=pointer]':
+              - /url: /berita/kebijakan-baru-dhe-sda-perusahaan-migas-wajib-tempatkan-30-di-dalam-negeri-ini-dampaknya-ke-pasar-sa
+              - generic [ref=e238]:
+                - generic [ref=e239]:
+                  - generic [ref=e240]:
+                    - generic [ref=e241]: Berita Pasar
+                    - generic [ref=e242]: 2 Juni 2026
+                  - generic [ref=e243]: berita
+                - 'heading "Kebijakan Baru DHE SDA: Perusahaan Migas Wajib Tempatkan 30% Di Dalam Negeri, Ini Dampaknya ke Pasar Saham" [level=3] [ref=e244]'
+                - paragraph [ref=e245]: Pemerintah Indonesia resmi mengambil langkah strategis untuk menjaga stabilitas makroekonomi dan memperkuat nilai tukar Rupiah. Menteri Keuangan Purbaya Yudhi Sadewa mengumumkan pemberlakakan ketentua
+                - generic [ref=e246]:
+                  - generic [ref=e247]: T
+                  - generic [ref=e248]: Tim TeknikalID
+            - link "Berita Pasar 2 Juni 2026 berita OJK Awasi Investasi Perusahaan Asuransi Usai Sejumlah Saham Didepak MSCI Otoritas Jasa Keuangan (OJK) secara resmi mengawasi dan mengkaji ulang portofolio investasi perusahaan asuransi di Indonesia. Langkah pengawasan ketat ini diambil menyusul penghapusan (dropping) sejum T Tim TeknikalID" [ref=e249] [cursor=pointer]:
+              - /url: /berita/ojk-awasi-investasi-perusahaan-asuransi-usai-sejumlah-saham-didepak-msci
+              - generic [ref=e251]:
+                - generic [ref=e252]:
+                  - generic [ref=e253]:
+                    - generic [ref=e254]: Berita Pasar
+                    - generic [ref=e255]: 2 Juni 2026
+                  - generic [ref=e256]: berita
+                - heading "OJK Awasi Investasi Perusahaan Asuransi Usai Sejumlah Saham Didepak MSCI" [level=3] [ref=e257]
+                - paragraph [ref=e258]: Otoritas Jasa Keuangan (OJK) secara resmi mengawasi dan mengkaji ulang portofolio investasi perusahaan asuransi di Indonesia. Langkah pengawasan ketat ini diambil menyusul penghapusan (dropping) sejum
+                - generic [ref=e259]:
+                  - generic [ref=e260]: T
+                  - generic [ref=e261]: Tim TeknikalID
+            - link "Berita Pasar 2 Juni 2026 berita Masa Transisi Ekspor Satu Pintu jadi Ujian Fleksibilitas Emiten Batu Bara Pemerintah Indonesia kembali mengirimkan sinyal kuat mengenai perubahan regulasi di sektor pertambangan. Kebijakan ekspor satu pintu yang dijadwalkan mulai direalisasikan pada Juni 2026 kini menjadi s T Tim TeknikalID" [ref=e262] [cursor=pointer]:
+              - /url: /berita/masa-transisi-ekspor-satu-pintu-jadi-ujian-fleksibilitas-emiten-batu-bara
+              - generic [ref=e264]:
+                - generic [ref=e265]:
+                  - generic [ref=e266]:
+                    - generic [ref=e267]: Berita Pasar
+                    - generic [ref=e268]: 2 Juni 2026
+                  - generic [ref=e269]: berita
+                - heading "Masa Transisi Ekspor Satu Pintu jadi Ujian Fleksibilitas Emiten Batu Bara" [level=3] [ref=e270]
+                - paragraph [ref=e271]: Pemerintah Indonesia kembali mengirimkan sinyal kuat mengenai perubahan regulasi di sektor pertambangan. Kebijakan ekspor satu pintu yang dijadwalkan mulai direalisasikan pada Juni 2026 kini menjadi s
+                - generic [ref=e272]:
+                  - generic [ref=e273]: T
+                  - generic [ref=e274]: Tim TeknikalID
+            - 'link "Berita Pasar 2 Juni 2026 berita Dividen Perdana BLOG Senilai Rp70,97 Miliar: Sinyal Positif Bagi Investor Saham Emiten Logistik PT Trimitra Trans Persada Tbk (BLOG) resmi memberikan hadiah bagi para pemegang sahamnya. Perusahaan yang bergerak di sektor logistik dan jasa angkutan ini akan membagikan dividen perdana senilai Rp70 T Tim TeknikalID" [ref=e275] [cursor=pointer]':
+              - /url: /berita/dividen-perdana-blog-senilai-rp7097-miliar-sinyal-positif-bagi-investor-saham-emiten-logistik
+              - generic [ref=e277]:
+                - generic [ref=e278]:
+                  - generic [ref=e279]:
+                    - generic [ref=e280]: Berita Pasar
+                    - generic [ref=e281]: 2 Juni 2026
+                  - generic [ref=e282]: berita
+                - 'heading "Dividen Perdana BLOG Senilai Rp70,97 Miliar: Sinyal Positif Bagi Investor Saham Emiten Logistik" [level=3] [ref=e283]'
+                - paragraph [ref=e284]: PT Trimitra Trans Persada Tbk (BLOG) resmi memberikan hadiah bagi para pemegang sahamnya. Perusahaan yang bergerak di sektor logistik dan jasa angkutan ini akan membagikan dividen perdana senilai Rp70
+                - generic [ref=e285]:
+                  - generic [ref=e286]: T
+                  - generic [ref=e287]: Tim TeknikalID
+            - link "Berita Pasar 2 Juni 2026 Rupiah Melemah Rupiah Melemah di Tengah Penguatan Dolar AS, Ini 3 Saham Devisa Pengaman Portofolio Kondisi **Rupiah Melemah** menjadi tantangan serius bagi pasar saham Indonesia pada pertengahan tahun 2026. Ketika mata uang Garuda terkoreksi terhadap Dolar AS, nilai aset berdenominasi Rupiah secara T Tim TeknikalID" [ref=e288] [cursor=pointer]:
+              - /url: /berita/rupiah-melemah-di-tengah-penguatan-dolar-as-ini-3-saham-devisa-pengaman-portofolio
+              - generic [ref=e290]:
+                - generic [ref=e291]:
+                  - generic [ref=e292]:
+                    - generic [ref=e293]: Berita Pasar
+                    - generic [ref=e294]: 2 Juni 2026
+                  - generic [ref=e295]: Rupiah Melemah
+                - heading "Rupiah Melemah di Tengah Penguatan Dolar AS, Ini 3 Saham Devisa Pengaman Portofolio" [level=3] [ref=e296]
+                - paragraph [ref=e297]: Kondisi **Rupiah Melemah** menjadi tantangan serius bagi pasar saham Indonesia pada pertengahan tahun 2026. Ketika mata uang Garuda terkoreksi terhadap Dolar AS, nilai aset berdenominasi Rupiah secara
+                - generic [ref=e298]:
+                  - generic [ref=e299]: T
+                  - generic [ref=e300]: Tim TeknikalID
+            - 'link "Berita Pasar 2 Juni 2026 Tarif Listrik Penyesuaian Tarif Listrik Juli 2026: Antara Momentum Saham Utilitas dan Tekanan Margin Manufaktur Pemerintah resmi mengumumkan kebijakan penyesuaian tarif listrik yang berlaku mulai Juli 2026, membawa angin segar bagi investor sektor energi sekaligus tantangan baru bagi pelaku industri. Kenaikan t T Tim TeknikalID" [ref=e301] [cursor=pointer]':
+              - /url: /berita/penyesuaian-tarif-listrik-juli-2026-antara-momentum-saham-utilitas-dan-tekanan-margin-manufaktur
+              - generic [ref=e303]:
+                - generic [ref=e304]:
+                  - generic [ref=e305]:
+                    - generic [ref=e306]: Berita Pasar
+                    - generic [ref=e307]: 2 Juni 2026
+                  - generic [ref=e308]: Tarif Listrik
+                - 'heading "Penyesuaian Tarif Listrik Juli 2026: Antara Momentum Saham Utilitas dan Tekanan Margin Manufaktur" [level=3] [ref=e309]'
+                - paragraph [ref=e310]: Pemerintah resmi mengumumkan kebijakan penyesuaian tarif listrik yang berlaku mulai Juli 2026, membawa angin segar bagi investor sektor energi sekaligus tantangan baru bagi pelaku industri. Kenaikan t
+                - generic [ref=e311]:
+                  - generic [ref=e312]: T
+                  - generic [ref=e313]: Tim TeknikalID
+          - button "Muat lebih banyak" [ref=e315]
+      - generic [ref=e317]:
+        - generic [ref=e318]:
+          - generic [ref=e319]:
+            - generic [ref=e320]:
+              - img [ref=e321]
+              - generic [ref=e323]: TeknikalID
+            - paragraph [ref=e324]: Platform analisa teknikal saham BEI. Data bersumber dari Yahoo Finance dengan jeda ~5-10 menit.
+          - generic [ref=e325]:
+            - link "Beranda" [ref=e326] [cursor=pointer]:
+              - /url: /
+            - link "Saham" [ref=e327] [cursor=pointer]:
+              - /url: /stocks
+            - link "Screener" [ref=e328] [cursor=pointer]:
+              - /url: /screener
+            - link "Disclaimer" [ref=e329] [cursor=pointer]:
+              - /url: /disclaimer
+            - link "Privasi" [ref=e330] [cursor=pointer]:
+              - /url: /privacy
+            - link "Ketentuan" [ref=e331] [cursor=pointer]:
+              - /url: /terms
+        - paragraph [ref=e333]: © 2026 TeknikalID. Bukan rekomendasi investasi.
+  - alert [ref=e334]

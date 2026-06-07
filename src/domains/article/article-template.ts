@@ -1,3 +1,15 @@
+import {
+  translateRSI,
+  translateMACD,
+  translateStochastic,
+  translateSMA,
+  translateADX,
+  translateSupertrend,
+  translateOBV,
+  translateBB,
+  translateCrossSignal,
+} from "@/lib/indicator-translations";
+
 interface TemplateData {
   ticker: string;
   name: string;
@@ -20,6 +32,29 @@ interface TemplateData {
   week52High: number | null;
   week52Low: number | null;
   volume: number | null;
+
+  // Signal & classification (optional for buildTemplateArticle)
+  signalScore?: number | null;
+  signalLabel?: string | null;
+  isGorengan?: boolean;
+
+  // Fundamentals
+  pe?: number | null;
+  forwardPe?: number | null;
+  pb?: number | null;
+  eps?: number | null;
+  dividendYield?: number | null;
+  marketCap?: number | null;
+
+  // Extra price context
+  prevClose?: number | null;
+  high?: number | null;
+  low?: number | null;
+  open?: number | null;
+
+  // Crossover signals
+  smaCrossSignal?: string | null;
+  emaCrossSignal?: string | null;
 }
 
 type Outlook = "BULLISH" | "BEARISH" | "NETRAL";
@@ -100,6 +135,151 @@ function atrLabel(atr: number | null, close: number | null): string {
   if (ratio > 4) return "Tinggi — pergerakan harga sangat fluktuatif";
   if (ratio > 2.5) return "Moderat — pergerakan cukup aktif";
   return "Rendah — pergerakan harga relatif stabil";
+}
+
+// ── New helpers for daily snapshot ──
+
+function signalLabelToId(label: string | null): string {
+  if (!label) return "NETRAL";
+  const map: Record<string, string> = {
+    "Strong Bullish": "BULLISH KUAT",
+    "Bullish": "BULLISH",
+    "Netral": "NETRAL",
+    "Bearish": "BEARISH",
+    "Strong Bearish": "BEARISH KUAT",
+  };
+  return map[label] ?? "NETRAL";
+}
+
+function formatVolumeHuman(vol: number | null): string {
+  if (vol === null) return "N/A";
+  if (vol >= 1e9) return `${(vol / 1e9).toFixed(1)} miliar lot`;
+  if (vol >= 1e6) return `${(vol / 1e6).toFixed(1)} juta lot`;
+  if (vol >= 1e3) return `${(vol / 1e3).toFixed(1)} ribu lot`;
+  return `${vol} lot`;
+}
+
+function formatMarketCapHuman(mc: number | null): string {
+  if (mc === null) return "N/A";
+  if (mc >= 1e12) return `Rp ${(mc / 1e12).toFixed(1)} Triliun`;
+  if (mc >= 1e9) return `Rp ${(mc / 1e9).toFixed(1)} Miliar`;
+  return `Rp ${mc.toLocaleString("id-ID")}`;
+}
+
+function bbPosition(close: number, upper: number, lower: number): number {
+  if (upper === lower) return 50;
+  return Math.max(0, Math.min(100, ((close - lower) / (upper - lower)) * 100));
+}
+
+function buildChecklist(d: TemplateData): string {
+  const t = d.ticker.replace(".JK", "");
+  const lines: string[] = [];
+
+  const rsi = translateRSI(d.rsi14);
+  lines.push(`- **RSI (14)**: ${d.rsi14 !== null ? d.rsi14.toFixed(1) : "N/A"} — ${rsi.short}`);
+
+  const macd = translateMACD(d.macdHist);
+  lines.push(`- **MACD**: ${macd.short}${d.macdHist !== null ? ` (histogram ${d.macdHist > 0 ? "positif" : "negatif"})` : ""}`);
+
+  const sma = translateSMA(d.sma20, d.sma50, d.sma200, d.close);
+  lines.push(`- **SMA 20/50/200**: ${sma.short}`);
+
+  const stoch = translateStochastic(d.stochK, d.stochD);
+  lines.push(`- **Stochastic**: ${stoch.short}${d.stochK !== null && d.stochD !== null ? ` (K: ${d.stochK.toFixed(1)} / D: ${d.stochD.toFixed(1)})` : ""}`);
+
+  const adx = translateADX(d.adx);
+  lines.push(`- **ADX**: ${d.adx !== null ? d.adx.toFixed(1) : "N/A"} — ${adx.short}`);
+
+  const st = translateSupertrend(d.close, d.supertrend);
+  lines.push(`- **Supertrend**: ${st.short}`);
+
+  const bbPos = d.close !== null && d.bbUpper !== null && d.bbLower !== null
+    ? bbPosition(d.close, d.bbUpper, d.bbLower) : null;
+  const bb = translateBB(bbPos);
+  lines.push(`- **Bollinger Bands**: ${bb.short}`);
+
+  const obv = translateOBV(d.obvTrend);
+  lines.push(`- **OBV**: ${obv.short} — ${obv.explanation}`);
+
+  // Cross signals if present
+  if (d.smaCrossSignal) {
+    const cross = translateCrossSignal(d.smaCrossSignal, "sma");
+    lines.push(`- **SMA Cross**: ${cross.short}`);
+  }
+  if (d.emaCrossSignal) {
+    const cross = translateCrossSignal(d.emaCrossSignal, "ema");
+    lines.push(`- **EMA Cross**: ${cross.short}`);
+  }
+
+  return `:::checklist[Sinyal Teknikal ${t} Hari Ini]\n${lines.join("\n")}\n:::`;
+}
+
+function buildFundamentalSection(d: TemplateData): string {
+  if (!d.pe && !d.eps && !d.dividendYield && !d.marketCap) {
+    return "";
+  }
+  const t = d.ticker.replace(".JK", "");
+  let out = `## Fundamental ${t}\n\n| Metrik | Nilai |\n|--------|-------|\n`;
+  if (typeof d.pe === "number") out += `| P/E Ratio | ${d.pe.toFixed(1)}x |\n`;
+  if (typeof d.forwardPe === "number") out += `| Forward P/E | ${d.forwardPe.toFixed(1)}x |\n`;
+  if (typeof d.pb === "number") out += `| Price/Book | ${d.pb.toFixed(2)}x |\n`;
+  if (typeof d.eps === "number") out += `| EPS | ${price(d.eps)} |\n`;
+  if (typeof d.dividendYield === "number") out += `| Dividen Yield | ${d.dividendYield.toFixed(2)}% |\n`;
+  if (typeof d.marketCap === "number") out += `| Market Cap | ${formatMarketCapHuman(d.marketCap)} |\n`;
+  return out;
+}
+
+function outlookNarrative(d: TemplateData, support: number | null, resistance: number | null): string {
+  const score = d.signalScore ?? null;
+  const isBullish = score !== null && score > 0.2;
+  const isBearish = score !== null && score < -0.2;
+
+  if (isBullish) {
+    let text = `${d.name} menunjukkan momentum positif dengan konfirmasi dari beberapa indikator teknikal.`;
+    if (d.close !== null && d.sma50 !== null && d.close > d.sma50) {
+      text += ` Harga masih berada di atas SMA50 (${price(d.sma50)}), mengkonfirmasi tren naik.`;
+    }
+    if (resistance !== null) {
+      text += ` Perhatikan resistance di ${price(resistance)} — jika tembus, potensi lanjut ke ${price(d.week52High)} (high 52 minggu).`;
+    }
+    return text;
+  }
+  if (isBearish) {
+    let text = `Tekanan jual terlihat pada ${d.name}.`;
+    if (d.close !== null && d.sma50 !== null && d.close < d.sma50) {
+      text += ` Harga berada di bawah SMA50 (${price(d.sma50)}), sinyal tren turun.`;
+    }
+    if (support !== null) {
+      text += ` Support terdekat di ${price(support)} — jika jebol, potensi penurunan lanjutan.`;
+    }
+    return text;
+  }
+  let text = `${d.name} berada dalam kondisi netral — sinyal teknikal campuran tanpa dominasi jelas.`;
+  if (support !== null && resistance !== null) {
+    text += ` Range harian: ${price(support)} - ${price(resistance)}.`;
+  }
+  text += ` Disarankan menunggu konfirmasi arah yang lebih jelas.`;
+  return text;
+}
+
+function watchlistItems(d: TemplateData, support: number | null, resistance: number | null): string[] {
+  const items: string[] = [];
+
+  if (support !== null && d.close !== null) {
+    items.push(`Jika harga turun di bawah ${price(support)} (support), momentum bullish bisa gagal`);
+  }
+  if (d.rsi14 !== null && d.rsi14 > 60) {
+    items.push(`RSI sudah di ${d.rsi14.toFixed(1)} — waspadai potensi koreksi jangka pendek`);
+  }
+  if (d.rsi14 !== null && d.rsi14 < 40) {
+    items.push(`RSI di ${d.rsi14.toFixed(1)} — masih lemah, konfirmasi reversal belum terlihat`);
+  }
+  if (resistance !== null && d.close !== null) {
+    items.push(`Resistance di ${price(resistance)} harus tembus untuk konfirmasi lanjutan`);
+  }
+  items.push(`Perhatikan volume besok: jika menurun drastis, bisa sinyal pelemahan momentum`);
+
+  return items.slice(0, 3);
 }
 
 function tipText(outlook: Outlook, d: TemplateData): string {
@@ -231,8 +411,17 @@ ${outlook === "BULLISH"
 ${tipText(outlook, data)}
 :::
 
-:::warning[Peringatan Risiko]
-Analisa teknikal di atas berdasarkan data historis dan indikator matematis. Ini bukan rekomendasi beli atau jual. Selalu gunakan manajemen risiko yang baik, tentukan stop loss, dan pertimbangkan kondisi fundamental perusahaan sebelum mengambil keputusan investasi.
+## Kata Kunci Terkait
+
+| Keyword | Konteks |
+|---------|---------|
+| analisa teknikal ${t} | Headline, kesimpulan |
+| saham ${data.name} hari ini | Ringkasan, analisa harga |
+| harga saham ${t} | Tabel metrik, level kunci |
+| prediksi saham ${t} | Kesimpulan & outlook |
+
+:::warning[Disclaimer On]
+Analisa teknikal di atas berdasarkan data historis dan indikator matematis. Artikel ini disusun untuk tujuan edukasi dan informasi semata, bukan merupakan rekomendasi membeli atau menjual instrumen keuangan. Keputusan investasi sepenuhnya menjadi tanggung jawab pembaca. Selalu lakukan riset mandiri (DYOR) dan pertimbangkan konsultasi dengan penasihat keuangan berlisensi OJK sebelum mengambil keputusan investasi.
 :::
 
 :::cta[Pantau ${t} Real-time]
@@ -242,6 +431,15 @@ Lihat pergerakan harga ${data.name} secara real-time lengkap dengan chart intera
 }
 
 export function buildDailySnapshot(data: TemplateData): string {
+  try {
+    return buildDailySnapshotEnhanced(data);
+  } catch (err) {
+    console.error("[article-template] buildDailySnapshot failed, using fallback:", err instanceof Error ? err.message : err);
+    return buildDailySnapshotFallback(data);
+  }
+}
+
+function buildDailySnapshotFallback(data: TemplateData): string {
   const t = data.ticker.replace(".JK", "");
   const date = new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
   const outlook = determineOutlook(data);
@@ -255,15 +453,12 @@ export function buildDailySnapshot(data: TemplateData): string {
   if (data.bbUpper !== null) resistances.push(data.bbUpper);
   if (data.supertrend !== null && data.close !== null && data.supertrend > data.close) resistances.push(data.supertrend);
   if (data.sma50 !== null && data.close !== null && data.sma50 > data.close) resistances.push(data.sma50);
-
   const support = supports.length > 0 ? Math.max(...supports) : data.week52Low;
   const resistance = resistances.length > 0 ? Math.min(...resistances) : data.week52High;
 
   return `## Saham ${data.name} (${t}) Hari Ini — ${date}
 
-Ringkasan pergerakan saham ${data.name} (${t}) hari ini, ${date}. Berikut data harga, indikator teknikal, dan outlook terkini.
-
-## Harga ${data.name} Hari Ini
+Ringkasan pergerakan saham ${data.name} (${t}) hari ini, ${date}.
 
 | Metrik | Nilai |
 |--------|-------|
@@ -272,40 +467,134 @@ Ringkasan pergerakan saham ${data.name} (${t}) hari ini, ${date}. Berikut data h
 | Volume | ${data.volume ? fmt(data.volume) : "N/A"} |
 | Range 52 minggu | ${price(data.week52Low)} - ${price(data.week52High)} |
 
-## Indikator Teknikal ${t} Hari Ini
-
 | Indikator | Nilai | Sinyal |
 |-----------|-------|--------|
 | RSI(14) | ${data.rsi14 !== null ? data.rsi14.toFixed(1) : "N/A"} | ${data.rsi14 !== null ? (data.rsi14 < 30 ? "Oversold" : data.rsi14 > 70 ? "Overbought" : "Normal") : "N/A"} |
 | MACD Histogram | ${data.macdHist !== null ? data.macdHist.toFixed(2) : "N/A"} | ${data.macdHist !== null ? (data.macdHist > 0 ? "Bullish" : "Bearish") : "N/A"} |
 | ADX | ${data.adx !== null ? data.adx.toFixed(1) : "N/A"} | ${data.adx !== null ? (data.adx > 25 ? "Trending" : "Sideways") : "N/A"} |
-| SMA 20/50/200 | ${price(data.sma20)} / ${price(data.sma50)} / ${price(data.sma200)} | ${data.close !== null && data.sma50 !== null ? (data.close > data.sma50 ? "Di atas SMA50" : "Di bawah SMA50") : "N/A"} |
-| Bollinger Bands | ${price(data.bbLower)} - ${price(data.bbUpper)} | ${data.close !== null && data.bbUpper !== null && data.bbLower !== null ? (data.close > data.bbUpper ? "Di atas upper band" : data.close < data.bbLower ? "Di bawah lower band" : "Di dalam bands") : "N/A"} |
 | Supertrend | ${price(data.supertrend)} | ${data.close !== null && data.supertrend !== null ? (data.close > data.supertrend ? "Beli" : "Jual") : "N/A"} |
 
-## Level Support & Resistance
-
-| Level | Harga |
-|-------|-------|
-| **Support** | ${price(support)} |
-| **Resistance** | ${price(resistance)} |
-
-## Outlook ${t} Hari Ini
+**Support:** ${price(support)} | **Resistance:** ${price(resistance)}
 
 **Sentimen: ${outlookText}**
 
 ${outlook === "BULLISH"
-    ? `Mayoritas indikator menunjukkan sinyal positif untuk ${data.name}. Momentum menguat, perhatikan resistance di ${price(resistance)} sebagai target selanjutnya.`
+    ? `Mayoritas indikator menunjukkan sinyal positif. Perhatikan resistance di ${price(resistance)}.`
     : outlook === "BEARISH"
-    ? `Tekanan jual terlihat pada ${data.name}. Support terdekat di ${price(support)}, jika tembus potensi penurunan lanjutan.`
-    : `Sinyal indikator campuran — belum ada dominasi jelas. Disarankan menunggu konfirmasi arah.`}
+    ? `Tekanan jual terlihat. Support terdekat di ${price(support)}.`
+    : `Sinyal campuran — menunggu konfirmasi arah.`}
 
-:::warning[Peringatan]
-Data di atas merupakan snapshot pada waktu publish dan dapat berubah. Bukan rekomendasi beli/jual. Selalu gunakan manajemen risiko.
+:::warning[Disclaimer On]
+Data di atas merupakan snapshot pada waktu publish dan dapat berubah. Artikel ini disusun untuk tujuan edukasi dan informasi semata, bukan merupakan rekomendasi membeli atau menjual instrumen keuangan. Keputusan investasi sepenuhnya menjadi tanggung jawab pembaca. Selalu lakukan riset mandiri (DYOR) dan pertimbangkan konsultasi dengan penasihat keuangan berlisensi OJK sebelum mengambil keputusan investasi.
 :::
 
 :::cta[Lihat Chart ${t} Live]
 Pantau pergerakan harga ${data.name} secara real-time di halaman saham ${t} di TeknikalID.
+:::
+`;
+}
+
+function buildDailySnapshotEnhanced(data: TemplateData): string {
+  const t = data.ticker.replace(".JK", "");
+  const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+  const now = new Date();
+  const dayName = days[now.getDay()];
+  const date = now.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+
+  const signalText = signalLabelToId(data.signalLabel ?? null);
+  const signalScore = data.signalScore ?? null;
+  const signalDisplay = signalScore !== null ? `${signalText} | Skor: ${signalScore > 0 ? "+" : ""}${signalScore.toFixed(2)}` : signalText;
+
+  // Support / resistance computation
+  const supports: number[] = [];
+  const resistances: number[] = [];
+  if (data.bbLower !== null) supports.push(data.bbLower);
+  if (data.supertrend !== null && data.close !== null && data.supertrend < data.close) supports.push(data.supertrend);
+  if (data.sma50 !== null && data.close !== null && data.sma50 < data.close) supports.push(data.sma50);
+  if (data.bbUpper !== null) resistances.push(data.bbUpper);
+  if (data.supertrend !== null && data.close !== null && data.supertrend > data.close) resistances.push(data.supertrend);
+  if (data.sma50 !== null && data.close !== null && data.sma50 > data.close) resistances.push(data.sma50);
+  const support = supports.length > 0 ? Math.max(...supports) : data.week52Low;
+  const resistance = resistances.length > 0 ? Math.min(...resistances) : data.week52High;
+
+  // Opening narrative
+  const direction = data.changePercent !== null
+    ? (data.changePercent > 0 ? "naik" : data.changePercent < 0 ? "melemah" : "stagnan")
+    : "bergerak";
+  const openNarrative = data.close !== null && data.changePercent !== null
+    ? `${data.name} ditutup ${direction} **${pct(data.changePercent)}** ke **${price(data.close)}** hari ini${
+        data.close !== null && data.sma50 !== null
+          ? (data.close > data.sma50 ? ", menguat di atas garis SMA50" : ", melemah di bawah garis SMA50")
+          : ""
+      }. Volume perdagangan mencapai ${formatVolumeHuman(data.volume)}, menunjukkan partisipasi investor yang ${data.volume !== null && data.volume > 1e7 ? "aktif" : "cukup"}.`
+    : `Ringkasan pergerakan saham ${data.name} hari ini, ${date}.`;
+
+  // Support/resistance narrative
+  const levelNarrative = `Support terdekat di **${price(support)}**.${
+    resistance !== null ? ` Resistance di **${price(resistance)}**.` : ""
+  }${
+    resistance !== null && data.week52High !== null && resistance < data.week52High
+      ? ` Jika tembus ${price(resistance)}, target selanjutnya ${price(data.week52High)} (high 52 minggu).`
+      : ""
+  }`;
+
+  // Kesimpulan
+  const conclusionText = outlookNarrative(data, support, resistance);
+  const conclusionLabel = signalText;
+
+  // Watchlist items
+  const tips = watchlistItems(data, support, resistance);
+
+  // Fundamental section (conditional)
+  const fundamentalSection = buildFundamentalSection(data);
+
+  // Gorengan warning (conditional)
+  const gorenganWarning = data.isGorengan === true
+    ? `\n:::warning[Saham Gorengan — EKSTRA HATI-HATI]\nSaham ini terdeteksi sebagai **saham gorengan** berdasarkan volume abnormal, volatilitas tinggi, dan/atau market cap kecil. Pergerakan harga bisa sangat tidak wajar dan berisiko tinggi. Jangan tergiur kenaikan harga semata — selalu gunakan stop loss ketat.\n:::\n`
+    : "";
+
+  return `## Saham ${data.name} Hari Ini — ${dayName}, ${date}
+
+**Sinyal: ${signalDisplay}**
+
+${openNarrative}
+
+| | |
+|---|---|
+| **Harga Tutup** | ${price(data.close)} |
+| **Perubahan** | ${pct(data.changePercent)} |
+| **Tertinggi / Terendah** | ${price(data.high ?? null)} / ${price(data.low ?? null)} |
+| **Volume** | ${formatVolumeHuman(data.volume)} |
+| **Range 52 Minggu** | ${price(data.week52Low)} - ${price(data.week52High)} |
+
+${buildChecklist(data)}
+${gorenganWarning}
+**Level yang Perlu Diperhatikan:**
+
+${levelNarrative}
+${fundamentalSection ? `\n${fundamentalSection}\n` : ""}
+**Kesimpulan: ${conclusionLabel}**
+
+${conclusionText}
+
+:::tip[Yang Perlu Diwaspadai]
+${tips.map((item) => `- ${item}`).join("\n")}
+:::
+
+## Kata Kunci Terkait
+
+| Keyword | Konteks |
+|---------|---------|
+| saham ${data.name} hari ini | Headline, ringkasan |
+| analisa teknikal ${t} | Sinyal teknikal, kesimpulan |
+| harga saham ${t} | Tabel harga, level kunci |
+
+:::warning[Disclaimer On]
+Analisa teknikal di atas berdasarkan data historis dan indikator matematis. Artikel ini disusun untuk tujuan edukasi dan informasi semata, bukan merupakan rekomendasi membeli atau menjual instrumen keuangan. Keputusan investasi sepenuhnya menjadi tanggung jawab pembaca. Selalu lakukan riset mandiri (DYOR) dan pertimbangkan konsultasi dengan penasihat keuangan berlisensi OJK sebelum mengambil keputusan investasi.
+:::
+
+:::cta[Pantau ${t} Real-time]
+Lihat chart interaktif, indikator teknikal lengkap, dan trading plan ${data.name} di halaman saham ${t} di TeknikalID.
 :::
 `;
 }

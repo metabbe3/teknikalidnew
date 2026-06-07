@@ -1,15 +1,12 @@
 import Link from "next/link";
 
-const TICKER_RE = /\$([A-Z]{2,4}\.JK)/g;
-const MENTION_RE = /@([a-zA-Z0-9_]{3,20})/g;
-
 export function renderContent(content: string) {
   const parts: (string | React.ReactElement)[] = [];
   let lastIndex = 0;
 
-  // Combine all patterns: $TICKER.JK, @username, #hashtag
+  // Combine all patterns: $TICKER (with or without .JK), @username, #hashtag
   const combined = new RegExp(
-    `(\\$[A-Z]{2,4}\\.JK)|(@[a-zA-Z0-9_]{3,20})|#[a-zA-Z0-9_]{2,30}`,
+    `(\\$[A-Z]{2,4}(?:\\.JK)?)|(@[a-zA-Z0-9_]{3,20})|#[a-zA-Z0-9_]{2,30}`,
     "g"
   );
 
@@ -22,7 +19,8 @@ export function renderContent(content: string) {
     const text = match[0];
 
     if (text.startsWith("$")) {
-      const ticker = text.slice(1);
+      const rawTicker = text.slice(1);
+      const ticker = rawTicker.includes(".") ? rawTicker : `${rawTicker}.JK`;
       parts.push(
         <Link
           key={`t-${match.index}`}

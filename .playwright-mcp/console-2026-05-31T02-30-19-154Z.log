@@ -1,0 +1,12 @@
+[     173ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ https://teknikal.id/auth/signin:0
+[   11533ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=sQeF-DsYkl9lyXCUAAAA' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/2870-16cb3e27ae0d2ab7.js:0
+[ 1037807ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=Q6QHUqfqylxNMkr6AAAA' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/2870-16cb3e27ae0d2ab7.js:0
+[ 1037889ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/socket.io/?EIO=4&transport=polling&t=6j400ep3&sid=Q6QHUqfqylxNMkr6AAAA:0
+[ 2859761ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://teknikal.id/api/stocks/history?range=6mo:0
+[ 2860816ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://teknikal.id/api/stocks/history?range=6mo:0
+[ 2862870ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://teknikal.id/api/stocks/history?range=6mo:0
+[ 2866922ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://teknikal.id/api/stocks/history?range=6mo:0
+[ 3258298ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=vyEFN0WLJStIsXIlAAAE' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/2870-16cb3e27ae0d2ab7.js:0
+[ 3369519ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=rqQ8kjba8XZD8QJvAAAG' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/2870-16cb3e27ae0d2ab7.js:0
+[ 3773772ms] [ERROR] Failed to load resource: the server responded with a status of 502 () @ https://teknikal.id/api/admin/status:0
+[ 3774827ms] [ERROR] Failed to load resource: the server responded with a status of 502 () @ https://teknikal.id/api/admin/status:0

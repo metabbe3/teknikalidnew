@@ -50,7 +50,10 @@ function trimDecimal(n: number): string {
 }
 
 export function toDateKey(d: Date): string {
-  return d.toISOString().split("T")[0];
+  const yyyy = d.getUTCFullYear();
+  const mm = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(d.getUTCDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
 }
 
 export function stripJk(ticker: string): string {
@@ -120,4 +123,19 @@ export function aggregateDaily(
   return Object.entries(days)
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([date, count]) => ({ date, count }));
+}
+
+// --- Health Score helpers ---
+
+export function signalToHealthScore(signalScore: number | null): number | null {
+  if (signalScore === null) return null;
+  return Math.round((signalScore + 1) * 50);
+}
+
+export function healthScoreMeta(score: number): { color: string; bg: string; label: string } {
+  if (score >= 80) return { color: "#059669", bg: "rgba(5,150,105,0.10)", label: "Kondisi Baik" };
+  if (score >= 60) return { color: "#0d9488", bg: "rgba(13,148,136,0.10)", label: "Cukup Baik" };
+  if (score >= 40) return { color: "#d97706", bg: "rgba(217,119,6,0.10)", label: "Netral" };
+  if (score >= 20) return { color: "#ea580c", bg: "rgba(234,88,12,0.10)", label: "Kurang Baik" };
+  return { color: "#dc2626", bg: "rgba(220,38,38,0.10)", label: "Berisiko" };
 }

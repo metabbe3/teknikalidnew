@@ -1,0 +1,113 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - main [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e7]:
+        - generic [ref=e9]:
+          - img [ref=e11]
+          - generic [ref=e17]: TeknikalID Admin
+          - generic "DB Error" [ref=e18]
+        - generic [ref=e19]:
+          - generic [ref=e20]:
+            - generic [ref=e21]: Dashboard
+            - list [ref=e23]:
+              - listitem [ref=e24]:
+                - link "System Health Overview" [ref=e25] [cursor=pointer]:
+                  - /url: /admin
+                  - img [ref=e26]
+                  - generic [ref=e28]: System Health Overview
+          - generic [ref=e29]:
+            - generic [ref=e30]: Analytics
+            - list [ref=e32]:
+              - listitem [ref=e33]:
+                - button "Analytics" [ref=e34]:
+                  - img [ref=e35]
+                  - generic [ref=e37]: Analytics
+                  - img [ref=e38]
+          - generic [ref=e40]:
+            - generic [ref=e41]: Data Pipelines
+            - list [ref=e43]:
+              - listitem [ref=e44]:
+                - button "Data Pipelines" [ref=e45]:
+                  - img [ref=e46]
+                  - generic [ref=e49]: Data Pipelines
+                  - img [ref=e50]
+          - generic [ref=e52]:
+            - generic [ref=e53]: Market Data
+            - list [ref=e55]:
+              - listitem [ref=e56]:
+                - button "Market Data" [ref=e57]:
+                  - img [ref=e58]
+                  - generic [ref=e60]: Market Data
+                  - img [ref=e61]
+          - generic [ref=e63]:
+            - generic [ref=e64]: Settings
+            - list [ref=e66]:
+              - listitem [ref=e67]:
+                - button "Settings" [ref=e68]:
+                  - img [ref=e69]
+                  - generic [ref=e72]: Settings
+                  - img [ref=e73]
+          - generic [ref=e75]:
+            - generic [ref=e76]: Content
+            - list [ref=e78]:
+              - listitem [ref=e79]:
+                - link "Articles" [ref=e80] [cursor=pointer]:
+                  - /url: /admin/articles
+                  - img [ref=e81]
+                  - generic [ref=e84]: Articles
+          - generic [ref=e85]:
+            - generic [ref=e86]: Moderation
+            - list [ref=e88]:
+              - listitem [ref=e89]:
+                - link "Reports" [ref=e90] [cursor=pointer]:
+                  - /url: /admin/reports
+                  - img [ref=e91]
+                  - generic [ref=e93]: Reports
+        - button "A Admin" [ref=e95]:
+          - generic [ref=e97]: A
+          - generic [ref=e98]: Admin
+        - button "Toggle Sidebar" [ref=e99]
+      - main [ref=e100]:
+        - generic [ref=e101]:
+          - button "Toggle Sidebar" [ref=e102]:
+            - img
+            - generic [ref=e103]: Toggle Sidebar
+          - separator [ref=e104]
+          - navigation [ref=e105]:
+            - link "Admin" [ref=e106] [cursor=pointer]:
+              - /url: /admin
+            - text: /System Health
+        - generic [ref=e108]:
+          - generic [ref=e109]:
+            - generic [ref=e110]:
+              - img [ref=e112]
+              - generic [ref=e114]:
+                - heading "System Health" [level=1] [ref=e115]
+                - paragraph [ref=e116]: Real-time monitoring dashboard
+            - generic [ref=e118]:
+              - button "Force EOD Sync" [ref=e119]:
+                - img
+                - text: Force EOD Sync
+              - button "Force Intraday Sync" [ref=e120]:
+                - img
+                - text: Force Intraday Sync
+              - button "Clear Queue" [ref=e121]:
+                - img
+                - text: Clear Queue
+          - generic [ref=e122]:
+            - generic [ref=e125]:
+              - img [ref=e127]
+              - text: Last EOD Sync
+            - generic [ref=e135]:
+              - img [ref=e137]
+              - text: Last Intraday Sync
+            - generic [ref=e149]:
+              - img [ref=e151]
+              - text: Database
+            - generic [ref=e161]:
+              - img [ref=e163]
+              - text: Yahoo Finance API
+          - generic [ref=e173]: Recent Activity
+  - alert [ref=e181]

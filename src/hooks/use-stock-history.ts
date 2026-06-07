@@ -18,5 +18,6 @@ export function useStockHistory(ticker: string, range: string) {
       if (!res.ok) throw new Error("Failed to fetch history");
       return res.json();
     },
+    enabled: !!ticker,
   });
 }

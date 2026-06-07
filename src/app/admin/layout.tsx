@@ -49,6 +49,8 @@ import {
   Target,
   TrendingUp,
   UserCheck,
+  Bot,
+  Clock,
 } from "lucide-react";
 import { AdminStatusIndicator } from "@/components/admin/admin-status-indicator";
 
@@ -87,6 +89,7 @@ const sidebarNav: NavGroup[] = [
     group: "Data Pipelines",
     icon: ListChecks,
     items: [
+      { label: "Cron Monitor", href: "/admin/cron-monitor", icon: Clock },
       { label: "EOD Sync Logs", href: "/admin/eod-logs", icon: FileText },
       { label: "Intraday Sync Logs", href: "/admin/intraday-logs", icon: Repeat },
       { label: "Queue Monitor", href: "/admin/queue-monitor", icon: ListChecks },
@@ -122,10 +125,18 @@ const sidebarNav: NavGroup[] = [
       { label: "Reports", href: "/admin/reports", icon: Shield },
     ],
   },
+  {
+    group: "AI Agent Hub",
+    icon: Bot,
+    items: [
+      { label: "Dashboard", href: "/admin/agent-hub", icon: Bot },
+    ],
+  },
 ];
 
 const PAGE_NAMES: Record<string, string> = {
   "/admin": "System Health",
+  "/admin/cron-monitor": "Cron Monitor",
   "/admin/community": "Community",
   "/admin/predictions": "Predictions",
   "/admin/user-analytics": "User Analytics",
@@ -141,6 +152,11 @@ const PAGE_NAMES: Record<string, string> = {
   "/admin/reports": "Reports",
   "/admin/articles": "Articles",
   "/admin/articles/generate": "Generate Article",
+  "/admin/agent-hub": "AI Agent Hub",
+  "/admin/agent-hub/seo_optimizer": "SEO Optimizer",
+  "/admin/agent-hub/content_quality": "Content Quality",
+  "/admin/agent-hub/market_intel": "Market Intelligence",
+  "/admin/agent-hub/site_health": "Site Health",
 };
 
 function NavGroupWithSubmenu({ group, pathname }: { group: NavGroup; pathname: string }) {
@@ -217,6 +233,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (pathname === "/admin/login") {
     return <>{children}</>;
+  }
+
+  // Client-side guard: redirect non-admins
+  if (session !== undefined && session?.user?.role !== "ADMIN") {
+    router.replace("/admin/login?error=access_denied");
+    return null;
   }
 
   const pageName = PAGE_NAMES[pathname] ?? "Admin";

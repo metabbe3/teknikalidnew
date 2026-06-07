@@ -23,8 +23,9 @@ function buildPriceItems(
       if (r.quote.regularMarketPrice === null) return false;
       // Skip stale data on weekends/holidays — no real trading
       if (!r.quote.regularMarketVolume || r.quote.regularMarketVolume < 100) return false;
-      // Skip when market is closed (weekends/holidays) — Yahoo returns last trading day's data
-      if ((r.quote as Record<string, unknown>).marketState === "CLOSED") return false;
+      // Only skip truly post-market data; volume filter handles weekends/holidays
+      const ms = (r.quote as Record<string, unknown>).marketState;
+      if (ms === "POSTPOST") return false;
       return true;
     })
     .map((r) => {

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
+import { HealthScoreBadge } from "@/components/stock/health-score-badge";
 
 interface StockCardProps {
   ticker: string;
@@ -9,6 +10,7 @@ interface StockCardProps {
   change: number | null;
   changePercent: number | null;
   signalLabel?: string | null;
+  signalScore?: number | null;
   isGorengan?: boolean;
 }
 
@@ -20,7 +22,7 @@ const SIGNAL_STYLES: Record<string, string> = {
   "Strong Bearish": "bg-bearish/20 text-bearish",
 };
 
-export function StockCard({ ticker, name, sector, close, change, changePercent, signalLabel, isGorengan }: StockCardProps) {
+export function StockCard({ ticker, name, sector, close, change, changePercent, signalLabel, signalScore, isGorengan }: StockCardProps) {
   const isPositive = changePercent !== null && changePercent >= 0;
   const colorAccent = changePercent === null ? "" : isPositive ? "card-bullish" : "card-bearish";
   const bgTint = changePercent === null ? "bg-bg-card" : isPositive ? "bg-bullish/[0.02]" : "bg-bearish/[0.02]";
@@ -43,6 +45,7 @@ export function StockCard({ ticker, name, sector, close, change, changePercent, 
             {isGorengan && (
               <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-500">⚠</span>
             )}
+            <HealthScoreBadge signalScore={signalScore ?? null} size="sm" />
           </div>
           <p className="text-[11px] text-text-secondary truncate mt-0.5 leading-tight">{name}</p>
         </div>

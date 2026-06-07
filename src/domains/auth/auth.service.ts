@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { auth } from "@/lib/auth";
+import { getAvatarUrl } from "@/lib/avatar";
 import { USERNAME_REGEX } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
 import { authRepository } from "./auth.repository";
@@ -105,7 +106,7 @@ export const authService = {
         id: u.id,
         username: u.username,
         name: u.name,
-        image: u.image,
+        image: getAvatarUrl(u.image, u.email),
         reputation: u.reputation,
         isFollowing: false,
       }));
@@ -121,7 +122,7 @@ export const authService = {
       id: u.id,
       username: u.username,
       name: u.name,
-      image: u.image,
+      image: getAvatarUrl(u.image, u.email),
       reputation: u.reputation,
       isFollowing: followingIds.has(u.id),
     }));

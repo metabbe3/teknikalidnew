@@ -4,7 +4,10 @@ import { LegalPage } from "@/components/layout/legal-page";
 export const metadata: Metadata = {
   title: "Ketentuan Layanan",
   description: "Ketentuan layanan TeknikalID — syarat dan ketentuan penggunaan platform analisa teknikal saham.",
+  alternates: { canonical: "/terms" },
 };
+
+export const revalidate = 86400;
 
 export default function TermsPage() {
   return (

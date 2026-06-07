@@ -4,7 +4,10 @@ import { LegalPage } from "@/components/layout/legal-page";
 export const metadata: Metadata = {
   title: "Disclaimer",
   description: "Disclaimer platform analisa teknikal saham TeknikalID. Data bersifat informasi dan bukan rekomendasi investasi.",
+  alternates: { canonical: "/disclaimer" },
 };
+
+export const revalidate = 86400;
 
 export default function DisclaimerPage() {
   return (

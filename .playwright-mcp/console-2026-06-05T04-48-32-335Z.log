@@ -1,0 +1,2 @@
+[     665ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=FL_ssu_Nll1EF_CiAAAA' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/69.5660d4934204ffc2.js:0
+[     734ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/socket.io/?EIO=4&transport=polling&t=g1w4n5tm&sid=FL_ssu_Nll1EF_CiAAAA:0

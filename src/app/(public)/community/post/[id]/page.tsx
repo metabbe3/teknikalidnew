@@ -1,13 +1,46 @@
+import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { SITE_URL } from "@/lib/constants";
 import { PostCard } from "@/components/community/post-card";
 import { CommentList } from "@/components/community/comment-list";
 import { CommentForm } from "@/components/community/comment-form";
 import { PostRealtimeWrapper } from "@/components/community/post-realtime-wrapper";
 
 export const revalidate = 60;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const post = await prisma.post.findUnique({
+    where: { id },
+    select: { content: true, author: { select: { name: true } }, createdAt: true },
+  });
+  if (!post) return {};
+
+  const preview = post.content.slice(0, 120).replace(/\n/g, " ");
+  const title = `${post.author.name} di TeknikalID`;
+  const ogImage = `${SITE_URL}/api/og?title=${encodeURIComponent(preview)}&type=berita`;
+
+  return {
+    title,
+    description: preview,
+    alternates: { canonical: `/community/post/${id}` },
+    openGraph: {
+      title,
+      description: preview,
+      url: `${SITE_URL}/community/post/${id}`,
+      type: "article",
+      images: [{ url: ogImage, width: 1200, height: 630 }],
+    },
+    twitter: { card: "summary_large_image", title, description: preview },
+  };
+}
 
 export default async function PostDetailPage({
   params,

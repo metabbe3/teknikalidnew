@@ -1,0 +1,51 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - main [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e6]:
+        - link "TeknikalID" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - img [ref=e8]
+          - generic [ref=e10]: TeknikalID
+        - navigation "Main navigation" [ref=e11]:
+          - link "Beranda" [ref=e12] [cursor=pointer]:
+            - /url: /
+          - link "Saham" [ref=e13] [cursor=pointer]:
+            - /url: /stocks
+          - link "Screener" [ref=e14] [cursor=pointer]:
+            - /url: /screener
+          - link "Simulasi" [ref=e15] [cursor=pointer]:
+            - /url: /paper-trading
+          - link "Bandingkan" [ref=e16] [cursor=pointer]:
+            - /url: /compare
+          - link "Komunitas" [ref=e17] [cursor=pointer]:
+            - /url: /community
+          - link "Berita" [ref=e18] [cursor=pointer]:
+            - /url: /berita
+          - link "Akademi" [ref=e19] [cursor=pointer]:
+            - /url: /akademi
+        - link "Masuk" [ref=e21] [cursor=pointer]:
+          - /url: /auth/signin
+      - generic [ref=e39]:
+        - generic [ref=e40]:
+          - generic [ref=e41]:
+            - generic [ref=e42]:
+              - img [ref=e43]
+              - generic [ref=e45]: TeknikalID
+            - paragraph [ref=e46]: Platform analisa teknikal saham BEI. Data bersumber dari Yahoo Finance dengan jeda ~5-10 menit.
+          - generic [ref=e47]:
+            - link "Beranda" [ref=e48] [cursor=pointer]:
+              - /url: /
+            - link "Saham" [ref=e49] [cursor=pointer]:
+              - /url: /stocks
+            - link "Screener" [ref=e50] [cursor=pointer]:
+              - /url: /screener
+            - link "Disclaimer" [ref=e51] [cursor=pointer]:
+              - /url: /disclaimer
+            - link "Privasi" [ref=e52] [cursor=pointer]:
+              - /url: /privacy
+            - link "Ketentuan" [ref=e53] [cursor=pointer]:
+              - /url: /terms
+        - paragraph [ref=e55]: © 2026 TeknikalID. Bukan rekomendasi investasi.
+  - alert [ref=e56]

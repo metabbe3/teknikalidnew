@@ -17,6 +17,7 @@ import {
   type Translation,
 } from "@/lib/indicator-translations";
 import type { IndicatorValues } from "@/types/stock";
+import { IndicatorTooltip } from "@/components/ui/indicator-tooltip";
 
 interface IndicatorPanelProps {
   rsi14: number | null;
@@ -45,10 +46,13 @@ interface IndicatorPanelProps {
   prevIndicator: IndicatorValues | null;
 }
 
-function IndicatorCard({ label, children }: { label: string; children: React.ReactNode }) {
+function IndicatorCard({ label, children, tip }: { label: string; children: React.ReactNode; tip?: string }) {
   return (
     <div className="indicator-card depth-shadow p-4 space-y-3">
-      <h3 className="text-[11px] font-semibold text-text-tertiary uppercase tracking-wider">{label}</h3>
+      <h3 className="text-[11px] font-semibold text-text-tertiary uppercase tracking-wider flex items-center gap-1.5">
+        {label}
+        {tip && <IndicatorTooltip indicator={tip} />}
+      </h3>
       {children}
     </div>
   );
@@ -167,7 +171,7 @@ export function IndicatorPanel({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* RSI */}
-        <IndicatorCard label="RSI (14)">
+        <IndicatorCard label="RSI (14)" tip="RSI">
           {plainMode ? (
             <div className="space-y-2">
               <SentimentBadge sentiment={translateRSI(rsi14).sentiment}>
@@ -212,7 +216,7 @@ export function IndicatorPanel({
         </IndicatorCard>
 
         {/* MACD */}
-        <IndicatorCard label="MACD">
+        <IndicatorCard label="MACD" tip="MACD">
           {plainMode ? (
             <div className="space-y-2">
               <SentimentBadge sentiment={translateMACD(macdHist).sentiment}>
@@ -249,7 +253,7 @@ export function IndicatorPanel({
         </IndicatorCard>
 
         {/* Bollinger Bands */}
-        <IndicatorCard label="Bollinger Bands">
+        <IndicatorCard label="Bollinger Bands" tip="Bollinger Bands">
           {plainMode ? (
             <div className="space-y-2">
               <SentimentBadge sentiment={translateBB(bbPosition).sentiment}>
@@ -289,7 +293,7 @@ export function IndicatorPanel({
         </IndicatorCard>
 
         {/* Stochastic */}
-        <IndicatorCard label="Stochastic">
+        <IndicatorCard label="Stochastic" tip="Stochastic">
           {plainMode ? (
             <div className="space-y-2">
               <SentimentBadge sentiment={translateStochastic(stochK, stochD).sentiment}>
@@ -317,7 +321,7 @@ export function IndicatorPanel({
         </IndicatorCard>
 
         {/* SMA */}
-        <IndicatorCard label="SMA (20/50/200)">
+        <IndicatorCard label="SMA (20/50/200)" tip="SMA">
           {plainMode ? (
             <div className="space-y-2">
               <SentimentBadge sentiment={translateSMA(sma20, sma50, sma200, close).sentiment}>
@@ -362,7 +366,7 @@ export function IndicatorPanel({
         </IndicatorCard>
 
         {/* EMA */}
-        <IndicatorCard label="EMA (12/26)">
+        <IndicatorCard label="EMA (12/26)" tip="EMA">
           {plainMode ? (
             <div className="space-y-2">
               <SentimentBadge sentiment={translateEMA(ema12, ema26, close).sentiment}>
@@ -404,7 +408,7 @@ export function IndicatorPanel({
         </IndicatorCard>
 
         {/* OBV */}
-        <IndicatorCard label="OBV">
+        <IndicatorCard label="OBV" tip="OBV">
           {plainMode ? (
             <div className="space-y-2">
               <SentimentBadge sentiment={translateOBV(obvTrend).sentiment}>
@@ -433,7 +437,7 @@ export function IndicatorPanel({
         </IndicatorCard>
 
         {/* Supertrend */}
-        <IndicatorCard label="Supertrend">
+        <IndicatorCard label="Supertrend" tip="Supertrend">
           {plainMode ? (
             <div className="space-y-2">
               <SentimentBadge sentiment={translateSupertrend(close, supertrend).sentiment}>
@@ -462,7 +466,7 @@ export function IndicatorPanel({
         </IndicatorCard>
 
         {/* ADX */}
-        <IndicatorCard label="ADX (14)">
+        <IndicatorCard label="ADX (14)" tip="ADX">
           {plainMode ? (
             <div className="space-y-2">
               <SentimentBadge sentiment={translateADX(adx).sentiment}>
@@ -491,7 +495,7 @@ export function IndicatorPanel({
         </IndicatorCard>
 
         {/* VWAP */}
-        <IndicatorCard label="VWAP">
+        <IndicatorCard label="VWAP" tip="VWAP">
           {plainMode ? (
             <div className="space-y-2">
               <SentimentBadge sentiment={translateVWAP(close, vwap).sentiment}>
@@ -517,7 +521,7 @@ export function IndicatorPanel({
         </IndicatorCard>
 
         {/* ATR */}
-        <IndicatorCard label="ATR (14)">
+        <IndicatorCard label="ATR (14)" tip="ATR">
           {plainMode ? (
             <div className="space-y-2">
               <SentimentBadge sentiment={translateATR(atr, close).sentiment}>

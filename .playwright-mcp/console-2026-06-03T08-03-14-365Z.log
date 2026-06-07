@@ -1,0 +1,2 @@
+[      61ms] [WARNING] Ignoring Event: localhost @ https://plausible.teknikal.id/js/script.js:0
+[     144ms] [WARNING] WebSocket connection to 'ws://localhost:3000/socket.io/?EIO=4&transport=websocket&sid=ocbkN2fbp63nRmYkAAAK' failed: WebSocket is closed before the connection is established. @ http://localhost:3000/_next/static/chunks/69.5660d4934204ffc2.js:0

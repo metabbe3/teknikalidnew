@@ -1,0 +1,149 @@
+[   59594ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://192.168.2.1:8188/api/userdata/user.css:0
+[   59594ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://192.168.2.1:8188/user.css:0
+[   59783ms] [WARNING] [ComfyUI] The legacy queue/history menu is deprecated. Core functionality in this menu may break at any time. Issues and feature requests related to the legacy menu will not be addressed. To switch to the new menu: Settings → search "Use new menu" → change from "Disabled" to "Top". @ http://192.168.2.1:8188/assets/dialogService-DSBgqcNn.js:161
+[   59783ms] [WARNING] [ComfyUI] The legacy queue/history menu is deprecated. Core functionality in this menu may break at any time. Issues and feature requests related to the legacy menu will not be addressed. To switch to the new menu: Settings → search "Use new menu" → change from "Disabled" to "Top". @ http://192.168.2.1:8188/assets/dialogService-DSBgqcNn.js:161
+[   59828ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://192.168.2.1:8188/api/userdata?dir=workflows&recurse=true&split=false&full_info=true:0
+[   59832ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://192.168.2.1:8188/favicon.ico:0
+[   59872ms] [ERROR] ComfyApp graph accessed before initialization @ http://192.168.2.1:8188/assets/dialogService-DSBgqcNn.js:177
+[   59894ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://192.168.2.1:8188/api/userdata?dir=workflows&recurse=true&split=false&full_info=true:0
+[   59899ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://192.168.2.1:8188/api/userdata?dir=subgraphs&recurse=true&split=false&full_info=true:0
+[   59956ms] [WARNING] [MaskEditor] ComfyApp.open_maskeditor is deprecated. Plugins should migrate to using the command system or direct node context menu integration. @ http://192.168.2.1:8188/assets/core-2CicHcyz.js:2
+[   59958ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://192.168.2.1:8188/api/userdata/comfy.templates.json:0
+[  317314ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/api/jobs?status=in_progress,pending&limit=200&offset=0:0
+[  317314ms] [ERROR] [Jobs API] Error fetching jobs: TypeError: Failed to fetch
+    at ComfyApi.fetchApi (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:1622)
+    at fetchJobsRaw (http://192.168.2.1:8188/assets/api-D9vMMk51.js:2:432663)
+    at fetchQueue (http://192.168.2.1:8188/assets/api-D9vMMk51.js:2:433246)
+    at ComfyApi.getQueue (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:8132)
+    at Proxy.update (http://192.168.2.1:8188/assets/dialogService-DSBgqcNn.js:153:129108)
+    at Proxy.wrappedAction (http://192.168.2.1:8188/assets/vendor-vue-core-DO0afONr.js:2:90552)
+    at jt.immediate (http://192.168.2.1:8188/assets/GraphView-B1Csq2pm.js:18:104438)
+    at http://192.168.2.1:8188/assets/vendor-vueuse-CvOts9A_.js:1:8391 @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:1
+[  317315ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/api/jobs?status=completed,failed,cancelled&limit=64&offset=0:0
+[  317315ms] [ERROR] [Jobs API] Error fetching jobs: TypeError: Failed to fetch
+    at ComfyApi.fetchApi (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:1622)
+    at fetchJobsRaw (http://192.168.2.1:8188/assets/api-D9vMMk51.js:2:432663)
+    at fetchHistory (http://192.168.2.1:8188/assets/api-D9vMMk51.js:2:433115)
+    at ComfyApi.getHistory (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:8295)
+    at Proxy.update (http://192.168.2.1:8188/assets/dialogService-DSBgqcNn.js:153:129121)
+    at Proxy.wrappedAction (http://192.168.2.1:8188/assets/vendor-vue-core-DO0afONr.js:2:90552)
+    at jt.immediate (http://192.168.2.1:8188/assets/GraphView-B1Csq2pm.js:18:104438)
+    at http://192.168.2.1:8188/assets/vendor-vueuse-CvOts9A_.js:1:8391 @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:1
+[  317346ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/api/jobs?status=in_progress,pending&limit=200&offset=0:0
+[  317346ms] [ERROR] [Jobs API] Error fetching jobs: TypeError: Failed to fetch
+    at ComfyApi.fetchApi (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:1622)
+    at fetchJobsRaw (http://192.168.2.1:8188/assets/api-D9vMMk51.js:2:432663)
+    at fetchQueue (http://192.168.2.1:8188/assets/api-D9vMMk51.js:2:433246)
+    at ComfyApi.getQueue (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:8132)
+    at update (http://192.168.2.1:8188/assets/dialogService-DSBgqcNn.js:153:129108)
+    at Proxy.update (http://192.168.2.1:8188/assets/dialogService-DSBgqcNn.js:153:129794) @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:1
+[  317347ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/api/jobs?status=completed,failed,cancelled&limit=64&offset=0:0
+[  317347ms] [ERROR] [Jobs API] Error fetching jobs: TypeError: Failed to fetch
+    at ComfyApi.fetchApi (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:1622)
+    at fetchJobsRaw (http://192.168.2.1:8188/assets/api-D9vMMk51.js:2:432663)
+    at fetchHistory (http://192.168.2.1:8188/assets/api-D9vMMk51.js:2:433115)
+    at ComfyApi.getHistory (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:8295)
+    at update (http://192.168.2.1:8188/assets/dialogService-DSBgqcNn.js:153:129121)
+    at Proxy.update (http://192.168.2.1:8188/assets/dialogService-DSBgqcNn.js:153:129794) @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:1
+[  317616ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  317949ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  318285ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  318618ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  318952ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  319287ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  319625ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  319978ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  320333ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  320734ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  321161ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  321767ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  322474ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  323879ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  326274ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  328099ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  500356ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/api/jobs?status=in_progress,pending&limit=200&offset=0:0
+[  500356ms] [ERROR] [Jobs API] Error fetching jobs: TypeError: Failed to fetch
+    at ComfyApi.fetchApi (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:1622)
+    at fetchJobsRaw (http://192.168.2.1:8188/assets/api-D9vMMk51.js:2:432663)
+    at fetchQueue (http://192.168.2.1:8188/assets/api-D9vMMk51.js:2:433246)
+    at ComfyApi.getQueue (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:8132)
+    at Proxy.update (http://192.168.2.1:8188/assets/dialogService-DSBgqcNn.js:153:129108)
+    at Proxy.wrappedAction (http://192.168.2.1:8188/assets/vendor-vue-core-DO0afONr.js:2:90552)
+    at ComfyApi.onStatus (http://192.168.2.1:8188/assets/GraphView-B1Csq2pm.js:18:203454)
+    at ComfyApi.dispatchCustomEvent (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:2070)
+    at WebSocket.<anonymous> (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:3191) @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:1
+[  500357ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/api/jobs?status=completed,failed,cancelled&limit=64&offset=0:0
+[  500357ms] [ERROR] [Jobs API] Error fetching jobs: TypeError: Failed to fetch
+    at ComfyApi.fetchApi (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:1622)
+    at fetchJobsRaw (http://192.168.2.1:8188/assets/api-D9vMMk51.js:2:432663)
+    at fetchHistory (http://192.168.2.1:8188/assets/api-D9vMMk51.js:2:433115)
+    at ComfyApi.getHistory (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:8295)
+    at Proxy.update (http://192.168.2.1:8188/assets/dialogService-DSBgqcNn.js:153:129121)
+    at Proxy.wrappedAction (http://192.168.2.1:8188/assets/vendor-vue-core-DO0afONr.js:2:90552)
+    at ComfyApi.onStatus (http://192.168.2.1:8188/assets/GraphView-B1Csq2pm.js:18:203454)
+    at ComfyApi.dispatchCustomEvent (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:2070)
+    at WebSocket.<anonymous> (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:3191) @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:1
+[  500687ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  501057ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  501458ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  501841ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  502316ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  502725ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  503218ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  503734ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  504292ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  504835ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  505541ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  506317ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  508642ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  510243ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  511901ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  515325ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  655412ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/api/jobs?status=in_progress,pending&limit=200&offset=0:0
+[  655412ms] [ERROR] [Jobs API] Error fetching jobs: TypeError: Failed to fetch
+    at ComfyApi.fetchApi (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:1622)
+    at fetchJobsRaw (http://192.168.2.1:8188/assets/api-D9vMMk51.js:2:432663)
+    at fetchQueue (http://192.168.2.1:8188/assets/api-D9vMMk51.js:2:433246)
+    at ComfyApi.getQueue (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:8132)
+    at Proxy.update (http://192.168.2.1:8188/assets/dialogService-DSBgqcNn.js:153:129108)
+    at Proxy.wrappedAction (http://192.168.2.1:8188/assets/vendor-vue-core-DO0afONr.js:2:90552)
+    at ComfyApi.onStatus (http://192.168.2.1:8188/assets/GraphView-B1Csq2pm.js:18:203454)
+    at ComfyApi.dispatchCustomEvent (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:2070)
+    at WebSocket.<anonymous> (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:3191) @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:1
+[  655412ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/api/jobs?status=completed,failed,cancelled&limit=64&offset=0:0
+[  655412ms] [ERROR] [Jobs API] Error fetching jobs: TypeError: Failed to fetch
+    at ComfyApi.fetchApi (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:1622)
+    at fetchJobsRaw (http://192.168.2.1:8188/assets/api-D9vMMk51.js:2:432663)
+    at fetchHistory (http://192.168.2.1:8188/assets/api-D9vMMk51.js:2:433115)
+    at ComfyApi.getHistory (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:8295)
+    at Proxy.update (http://192.168.2.1:8188/assets/dialogService-DSBgqcNn.js:153:129121)
+    at Proxy.wrappedAction (http://192.168.2.1:8188/assets/vendor-vue-core-DO0afONr.js:2:90552)
+    at ComfyApi.onStatus (http://192.168.2.1:8188/assets/GraphView-B1Csq2pm.js:18:203454)
+    at ComfyApi.dispatchCustomEvent (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:2070)
+    at WebSocket.<anonymous> (http://192.168.2.1:8188/assets/api-D9vMMk51.js:4:3191) @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:1
+[  655735ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  656101ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  656486ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  656858ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  657310ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  657762ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  658174ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  658635ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  659464ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  659975ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  660673ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  661851ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  662741ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  665276ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  668346ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  672318ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  675128ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  680359ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  683892ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  687518ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  689935ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  693108ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  697901ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  701308ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  702904ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3
+[  708040ms] [ERROR] WebSocket connection to 'ws://192.168.2.1:8188/ws?clientId=7679c8fb369f46799207b11b24be0d9e' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://192.168.2.1:8188/assets/api-D9vMMk51.js:3

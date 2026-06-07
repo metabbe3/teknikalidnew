@@ -4,7 +4,10 @@ import { LegalPage } from "@/components/layout/legal-page";
 export const metadata: Metadata = {
   title: "Kebijakan Privasi",
   description: "Kebijakan privasi TeknikalID — bagaimana kami mengelola data Anda.",
+  alternates: { canonical: "/privacy" },
 };
+
+export const revalidate = 86400;
 
 export default function PrivacyPage() {
   return (

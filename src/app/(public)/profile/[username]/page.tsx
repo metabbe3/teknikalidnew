@@ -1,8 +1,10 @@
+import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { communityService } from "@/domains/community/community.service";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { SITE_URL } from "@/lib/constants";
 import { PostCard } from "@/components/community/post-card";
 import { FollowButton } from "@/components/community/follow-button";
 import { ReputationBadge } from "@/components/community/reputation-badge";
@@ -12,6 +14,35 @@ import { ProfileAchievements } from "@/components/community/profile-achievements
 import { getAvatarUrl } from "@/lib/avatar";
 
 export const revalidate = 60;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ username: string }>;
+}): Promise<Metadata> {
+  const { username } = await params;
+  const user = await prisma.user.findUnique({
+    where: { username },
+    select: { name: true, bio: true },
+  });
+  if (!user) return {};
+
+  const title = `${user.name} (@${username}) — TeknikalID`;
+  const description = user.bio?.slice(0, 160) ?? `Profil ${user.name} di TeknikalID — komunitas analisa teknikal saham BEI.`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/profile/${username}` },
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/profile/${username}`,
+      type: "profile",
+    },
+    twitter: { card: "summary", title, description },
+  };
+}
 
 interface SocialLinks {
   twitter?: string;
@@ -287,6 +318,7 @@ export default async function ProfilePage({
                 src={getAvatarUrl(user.image, user.email, 128)}
                 alt={user.name || user.username}
                 className="w-16 h-16 rounded-full object-cover ring-3 ring-teal-500/20"
+                loading="lazy"
               />
             </div>
             <div className="flex-1 min-w-0 space-y-1">

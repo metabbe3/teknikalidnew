@@ -1,0 +1,161 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - main [ref=e3]:
+    - generic [ref=e33]:
+      - generic [ref=e36]:
+        - generic [ref=e38]:
+          - img [ref=e40]
+          - generic [ref=e46]: TeknikalID
+          - generic "DB Connected" [ref=e47]
+        - generic [ref=e48]:
+          - generic [ref=e49]:
+            - generic [ref=e50]: Dashboard
+            - list [ref=e52]:
+              - listitem [ref=e53]:
+                - link "System Health Overview" [ref=e54] [cursor=pointer]:
+                  - /url: /admin
+                  - img [ref=e55]
+                  - generic [ref=e57]: System Health Overview
+          - generic [ref=e58]:
+            - generic [ref=e59]: Analytics
+            - list [ref=e61]:
+              - listitem [ref=e62]:
+                - button "Analytics" [ref=e63]:
+                  - img [ref=e64]
+                  - generic [ref=e66]: Analytics
+                  - img [ref=e67]
+          - generic [ref=e69]:
+            - generic [ref=e70]: Data Pipelines
+            - list [ref=e72]:
+              - listitem [ref=e73]:
+                - button "Data Pipelines" [ref=e74]:
+                  - img [ref=e75]
+                  - generic [ref=e78]: Data Pipelines
+                  - img [ref=e79]
+          - generic [ref=e81]:
+            - generic [ref=e82]: Market Data
+            - list [ref=e84]:
+              - listitem [ref=e85]:
+                - button "Market Data" [ref=e86]:
+                  - img [ref=e87]
+                  - generic [ref=e89]: Market Data
+                  - img [ref=e90]
+          - generic [ref=e92]:
+            - generic [ref=e93]: Settings
+            - list [ref=e95]:
+              - listitem [ref=e96]:
+                - button "Settings" [ref=e97]:
+                  - img [ref=e98]
+                  - generic [ref=e101]: Settings
+                  - img [ref=e102]
+          - generic [ref=e104]:
+            - generic [ref=e105]: Content
+            - list [ref=e107]:
+              - listitem [ref=e108]:
+                - link "Articles" [ref=e109] [cursor=pointer]:
+                  - /url: /admin/articles
+                  - img [ref=e110]
+                  - generic [ref=e113]: Articles
+          - generic [ref=e114]:
+            - generic [ref=e115]: Moderation
+            - list [ref=e117]:
+              - listitem [ref=e118]:
+                - link "Reports" [ref=e119] [cursor=pointer]:
+                  - /url: /admin/reports
+                  - img [ref=e120]
+                  - generic [ref=e122]: Reports
+          - generic [ref=e123]:
+            - generic [ref=e124]: AI Agent Hub
+            - list [ref=e126]:
+              - listitem [ref=e127]:
+                - link "Dashboard" [ref=e128] [cursor=pointer]:
+                  - /url: /admin/agent-hub
+                  - img [ref=e129]
+                  - generic [ref=e132]: Dashboard
+        - button "Tim TeknikalID" [ref=e134]:
+          - generic [ref=e136]: Tim TeknikalID
+        - button "Toggle Sidebar" [ref=e137]
+      - main [ref=e138]:
+        - generic [ref=e139]:
+          - button "Toggle Sidebar" [ref=e140]:
+            - img
+            - generic [ref=e141]: Toggle Sidebar
+          - separator [ref=e142]
+          - navigation [ref=e143]:
+            - link "Admin" [ref=e144] [cursor=pointer]:
+              - /url: /admin
+            - img [ref=e145]
+            - generic [ref=e147]: System Health
+        - generic [ref=e149]:
+          - generic [ref=e150]:
+            - generic [ref=e151]:
+              - img [ref=e153]
+              - generic [ref=e155]:
+                - heading "System Health" [level=1] [ref=e156]
+                - paragraph [ref=e157]: Real-time monitoring dashboard
+            - generic [ref=e159]:
+              - button "Force EOD Sync" [ref=e160]:
+                - img
+                - text: Force EOD Sync
+              - button "Force Intraday Sync" [ref=e161]:
+                - img
+                - text: Force Intraday Sync
+              - button "Clear Queue" [ref=e162]:
+                - img
+                - text: Clear Queue
+          - generic [ref=e163]:
+            - generic [ref=e164]:
+              - generic [ref=e166]:
+                - img [ref=e168]
+                - text: Last EOD Sync
+              - generic [ref=e170]:
+                - generic [ref=e171]:
+                  - generic [ref=e172]: success
+                  - generic [ref=e173]: success
+                - paragraph [ref=e174]: 7h ago
+            - generic [ref=e175]:
+              - generic [ref=e177]:
+                - img [ref=e179]
+                - text: Last Intraday Sync
+              - generic [ref=e185]:
+                - generic [ref=e186]:
+                  - generic [ref=e187]: success
+                  - generic [ref=e188]: success
+                - paragraph [ref=e189]: 7h ago
+            - generic [ref=e190]:
+              - generic [ref=e192]:
+                - img [ref=e194]
+                - text: Database
+              - generic [ref=e198]:
+                - generic [ref=e199]:
+                  - generic [ref=e200]: connected
+                  - generic [ref=e201]: connected
+                - paragraph [ref=e202]: Healthy
+            - generic [ref=e203]:
+              - generic [ref=e205]:
+                - img [ref=e207]
+                - text: Yahoo Finance API
+              - generic [ref=e211]:
+                - generic [ref=e212]:
+                  - generic [ref=e213]: connected
+                  - generic [ref=e214]: connected
+                - paragraph [ref=e215]: 1ms
+          - generic [ref=e216]:
+            - generic [ref=e218]: Recent Activity
+            - table [ref=e222]:
+              - rowgroup [ref=e223]:
+                - row "Status Action Duration Time" [ref=e224]:
+                  - columnheader "Status" [ref=e225]
+                  - columnheader "Action" [ref=e226]
+                  - columnheader "Duration" [ref=e227]
+                  - columnheader "Time" [ref=e228]
+              - rowgroup [ref=e229]:
+                - row "success Intraday Sync — 865 tickers, 865 prices, 865 indicators 4.4s 2m ago" [ref=e230]:
+                  - cell "success" [ref=e231]:
+                    - generic [ref=e232]: success
+                  - cell "Intraday Sync — 865 tickers, 865 prices, 865 indicators" [ref=e233]
+                  - cell "4.4s" [ref=e234]:
+                    - generic [ref=e235]: 4.4s
+                  - cell "2m ago" [ref=e236]
+  - alert [ref=e32]

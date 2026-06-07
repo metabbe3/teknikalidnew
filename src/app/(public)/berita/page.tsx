@@ -4,12 +4,24 @@ import { articleRepository } from "@/domains/article/article.repository";
 import { Badge } from "@/components/ui/badge";
 import { Newspaper } from "lucide-react";
 import { ArticleFeed } from "@/components/article/article-feed";
+import { SITE_URL } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Berita & Analisis Saham — TeknikalID",
   description:
     "Analisis teknikal saham IDX terkini: insight harga, indikator, dan sinyal trading untuk investor Indonesia.",
   alternates: { canonical: "/berita" },
+  openGraph: {
+    title: "Berita & Analisis Saham — TeknikalID",
+    description: "Analisis teknikal saham IDX terkini: insight harga, indikator, dan sinyal trading untuk investor Indonesia.",
+    url: `${SITE_URL}/berita`,
+    images: [{ url: `${SITE_URL}/api/og?title=Berita+Analisis+Saham&type=berita`, width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Berita & Analisis Saham — TeknikalID",
+    description: "Analisis teknikal saham IDX terkini: insight harga, indikator, dan sinyal trading untuk investor Indonesia.",
+  },
 };
 
 export const dynamic = "force-dynamic";
@@ -43,6 +55,19 @@ export default async function BeritaPage({
 }) {
   const { type: activeType } = await searchParams;
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "CollectionPage", name: "Berita & Analisis Saham", url: `${SITE_URL}/berita` },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+          { "@type": "ListItem", position: 2, name: "Berita", item: `${SITE_URL}/berita` },
+        ],
+      },
+    ],
+  };
   const rows = await articleRepository.findPublishedPaginated({
     limit: PAGE_SIZE + 1,
     articleType: activeType,
@@ -58,6 +83,11 @@ export default async function BeritaPage({
     : null;
 
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
     <div className="min-h-screen bg-bg-primary">
       {/* Dark terminal hero */}
       <section className="akademi-hero" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}>
@@ -113,6 +143,7 @@ export default async function BeritaPage({
                     src={featuredArticle.coverImageUrl}
                     alt=""
                     className="w-full h-full object-cover"
+                    loading="lazy"
                   />
                 </div>
               )}
@@ -205,5 +236,6 @@ export default async function BeritaPage({
         />
       </div>
     </div>
+    </>
   );
 }

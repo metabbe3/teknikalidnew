@@ -3,8 +3,8 @@ import type { NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
 
 const cspScriptSrc = process.env.NODE_ENV === "production"
-  ? "script-src 'self' 'unsafe-inline'"
-  : "script-src 'self' 'unsafe-inline' 'unsafe-eval'";
+  ? "script-src 'self' 'unsafe-inline' https://plausible.teknikal.id https://static.cloudflareinsights.com"
+  : "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://plausible.teknikal.id https://static.cloudflareinsights.com";
 
 const securityHeaders = {
   "Content-Security-Policy": [
@@ -13,7 +13,7 @@ const securityHeaders = {
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob:",
     "font-src 'self'",
-    "connect-src 'self' ws: wss:",
+    "connect-src 'self' ws: wss: https://plausible.teknikal.id",
     "frame-ancestors 'none'",
   ].join("; "),
   "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
@@ -72,6 +72,14 @@ export async function proxy(request: NextRequest) {
     response.headers.set("Cache-Control", "public, max-age=31536000, immutable");
   }
 
+  // CDN cache for public HTML pages (5 min shared, stale-while-revalidate 10 min)
+  // Browsers always revalidate (no max-age) but CDNs like Cloudflare cache aggressively
+  const isHtmlPage = !pathname.startsWith("/api/") && !pathname.startsWith("/_next/") && !pathname.includes(".");
+  const isAdminPage = pathname.startsWith("/admin") || pathname.startsWith("/dashboard") || pathname.startsWith("/profile/edit");
+  if (isHtmlPage && !isAdminPage) {
+    response.headers.set("Cache-Control", "public, s-maxage=300, stale-while-revalidate=600");
+  }
+
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
     ?? request.headers.get("x-real-ip")
     ?? "unknown";
@@ -111,15 +119,27 @@ export async function proxy(request: NextRequest) {
   if (isAdminRoute || isAdminApi) {
     const session = await auth();
 
-    if (!session?.user || session.user.role !== "ADMIN") {
+    if (!session?.user) {
       if (request.nextUrl.pathname.startsWith("/api/")) {
         return NextResponse.json({ error: "Not found" }, { status: 404 });
       }
-      if (session?.user && session.user.role !== "ADMIN") {
+      return NextResponse.redirect(new URL("/admin/login", request.url));
+    }
+
+    // Always verify role from DB (JWT may be stale after role changes)
+    if (session.user.role !== "ADMIN") {
+      const { prisma } = await import("@/lib/prisma");
+      const dbUser = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { role: true },
+      });
+      if (!dbUser || dbUser.role !== "ADMIN") {
+        if (request.nextUrl.pathname.startsWith("/api/")) {
+          return NextResponse.json({ error: "Not found" }, { status: 404 });
+        }
         const denyUrl = new URL("/admin/login?error=access_denied", request.url);
         return NextResponse.redirect(denyUrl);
       }
-      return NextResponse.redirect(new URL("/admin/login", request.url));
     }
 
     // Enforce session timeout based on rememberMe choice

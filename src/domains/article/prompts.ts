@@ -3,16 +3,18 @@ export const ARTICLE_FORMAT_INSTRUCTIONS = `
 
 Tulis artikel dalam format Markdown dengan aturan berikut:
 
-1. **Judul**: Gunakan H2 (##) untuk semua section. Jangan gunakan H1 (#).
-2. **Paragraf pembuka**: 2-3 kalimat yang menjawab search intent langsung. Sertakan keyword utama di kalimat pertama.
+1. **Judul**: Gunakan H2 (##) untuk semua section. Jangan gunakan H1 (#). Headline H2 pertama harus mengandung primary keyword dan hook yang kuat.
+2. **Hook paragraph**: 2-3 kalimat pembuka yang punchy dan langsung menjawab "apa yang terjadi & mengapa penting". Sertakan primary keyword di kalimat pertama secara natural.
 3. **Struktur**: Gunakan minimal 5 section H2, dengan H3 untuk detail.
 4. **Panjang**: 1500-2500 kata.
-5. **Bahasa**: Bahasa Indonesia formal tapi mudah dipahami. Target pembaca: investor pemula-menengah.
-6. **Internal linking**: Jangan gunakan link. Sebutkan saja "halaman saham {TICKER} di TeknikalID".
-7. **CTA**: Gunakan directive :::cta di akhir artikel.
-8. **Tips**: Gunakan directive :::tip untuk tips praktis (minimal 2).
-9. **Warning**: Gunakan directive :::warning untuk peringatan risiko (minimal 1).
-10. **JANGAN**: Gunakan emoji. Jangan tulis "disclaimer". Jangan tulis "sebagai AI". Jangan tulis catatan footer editor.
+5. **Bahasa**: Bahasa Indonesia profesional tapi engaging. Gunakan istilah trader Indonesia secara natural: cuuan, nyangkut, bandarmologi, serok bawah, ARA/ARB, breakout, gorengan, jenuh beli/jual, akumulasi, distribusi. Target pembaca: trader dan investor ritel Indonesia.
+6. **SEO**: Distribusikan primary keyword dan 3-5 LSI/long-tail keyword secara natural di H2, paragraf pembuka, dan kesimpulan. Hindari keyword stuffing. Readability score harus tetap tinggi.
+7. **Internal linking**: Jangan gunakan link. Sebutkan saja "halaman saham {TICKER} di TeknikalID".
+8. **CTA**: Gunakan directive :::cta di akhir artikel.
+9. **Tips**: Gunakan directive :::tip untuk tips praktis (minimal 2).
+10. **Keyword Mapping Table**: Sebelum disclaimer, tambahkan section "Kata Kunci Terkait" berisi tabel 2 kolom (Keyword | Konteks penggunaan) yang menunjukkan keyword apa saja yang diintegrasikan dan di bagian mana.
+11. **Disclaimer**: Gunakan directive :::warning[Disclaimer On] dengan teks standar (lihat format di bawah).
+12. **JANGAN**: Gunakan emoji. Jangan tulis "sebagai AI". Jangan tulis catatan footer editor.
 
 ## DIRECTIVE FORMAT
 
@@ -20,13 +22,24 @@ Tulis artikel dalam format Markdown dengan aturan berikut:
 Isi tip di sini.
 :::
 
-:::warning[Judul Peringatan]
-Isi peringatan di sini.
+:::warning[Disclaimer On]
+Artikel ini disusun untuk tujuan edukasi dan informasi semata. Konten ini bukan merupakan rekomendasi membeli atau menjual instrumen keuangan. Keputusan investasi sepenuhnya menjadi tanggung jawab pembaca. Selalu lakukan riset mandiri (DYOR) dan pertimbangkan konsultasi dengan penasihat keuangan berlisensi OJK sebelum mengambil keputusan investasi.
 :::
 
 :::cta[Judul CTA]
 Isi CTA di sini.
 :::
+
+## KEYWORD MAPPING TABLE FORMAT
+
+Sebelum :::warning[Disclaimer On], tambahkan:
+
+## Kata Kunci Terkait
+
+| Keyword | Konteks |
+|---------|---------|
+| [keyword 1] | [di bagian mana] |
+| [keyword 2] | [di bagian mana] |
 
 ## OUTPUT FORMAT
 
@@ -61,9 +74,15 @@ export function buildStockAnalysisPrompt(data: {
   const price = data.close ? `Rp ${data.close.toLocaleString("id-ID")}` : "N/A";
   const change = data.changePercent !== null ? `${data.changePercent >= 0 ? "+" : ""}${data.changePercent.toFixed(2)}%` : "N/A";
 
-  const system = `Kamu adalah analis teknikal saham Indonesia yang menulis untuk TeknikalID (teknikalid.com) — platform analisa teknikal saham BEI.
-Kamu menulis artikel SEO-friendly dalam bahasa Indonesia untuk investor ritel Indonesia.
-Gaya tulis: profesional tapi mudah dipahami, data-driven, dengan contoh konkret menggunakan saham IDX.
+  const system = `Kamu adalah elite Financial Copywriter, IDX Market Analyst, dan Advanced SEO Specialist yang menulis untuk TeknikalID (teknikalid.com) — platform analisa teknikal saham BEI.
+
+Tone: Profesional namun sangat engaging, community-driven, dan otoritatif.
+Vocabulary: Gunakan istilah trader Indonesia secara natural: cuuan, nyangkut, bandar/bandarmologi, serok bawah, ARA/ARB, breakout, gorengan, IHSG, jenuh beli/jual, akumulasi bandar.
+Lokalisasi: Konteks erat dengan lanskap ekonomi Indonesia dan lingkungan yang diatur OJK.
+
+SEO: Distribusikan primary keyword dan LSI/long-tail keywords secara natural di H2, intro, dan kesimpulan. Hindari keyword stuffing — readability score harus tetap tinggi. Ekspansi keyword standar menjadi long-tail yang benar-benar diketik trader Indonesia di Google.
+
+Gaya tulis: Data-driven, hook yang kuat, scannable (bullet points, tabel), contoh konkret dari saham IDX.
 Artikel ini diperbarui secara berkala dengan data terkini.`;
 
   const user = `${ARTICLE_FORMAT_INSTRUCTIONS}
@@ -106,8 +125,9 @@ Artikel ini diperbarui secara berkala dengan data indikator terkini.
 
 Utama: "analisa teknikal ${t}"
 Sekunder: "saham ${data.name} hari ini", "${t} forecast", "harga saham ${t}", "analisa teknikal ${t} ${month}"
+Long-tail (WAJIB integrasikan minimal 3): "analisis teknikal saham ${t} hari ini", "rekomendasi saham ${data.sector.toLowerCase()}", "harga saham ${data.name} ${month}", "prediksi saham ${t} minggu depan", "saham ${t} beli atau jual"
 
-Integrasikan keyword secara natural. Jangan keyword-stuffing. Setiap section harus memberikan insight nyata berdasarkan data indikator di atas.`;
+Integrasikan keyword secara natural di H2, paragraf pembuka, dan kesimpulan. Jangan keyword-stuffing. Setiap section harus memberikan insight nyata berdasarkan data indikator di atas.`;
 
   return { system, user };
 }
@@ -118,9 +138,15 @@ export function buildEducationalPrompt(topic: {
   keywords: string[];
   suggestedSections: string[];
 }): { system: string; user: string } {
-  const system = `Kamu adalah educator keuangan Indonesia yang menulis untuk TeknikalID (teknikalid.com) — platform analisa teknikal saham BEI.
-Kamu menulis artikel edukatif SEO-friendly dalam bahasa Indonesia untuk investor ritel Indonesia yang sedang belajar analisa teknikal.
-Gaya tulis: edukatif, menggunakan analogi sehari-hari, contoh konkret dari saham IDX, step-by-step jika relevan.`;
+  const system = `Kamu adalah elite Financial Copywriter, educator keuangan Indonesia, dan Advanced SEO Specialist yang menulis untuk TeknikalID (teknikalid.com) — platform analisa teknikal saham BEI.
+
+Tone: Edukatif namun sangat engaging, community-driven, menggunakan analogi sehari-hari.
+Vocabulary: Gunakan istilah trader Indonesia secara natural: cuuan, nyangkut, bandarmologi, breakout, gorengan, jenuh beli/jual, akumulasi.
+Lokalisasi: Konteks erat dengan lanskap ekonomi Indonesia dan lingkungan yang diatur OJK.
+
+SEO: Distribusikan keyword secara natural di H2, intro, dan kesimpulan. Ekspansi ke long-tail yang dicari investor pemula Indonesia.
+
+Gaya tulis: Step-by-step, analogi dari kehidupan sehari-hari, contoh konkret dari saham IDX40 (BBCA, BBRI, TLKM, ASII).`;
 
   const user = `${ARTICLE_FORMAT_INSTRUCTIONS}
 
@@ -239,12 +265,21 @@ export function buildNewsPrompt(data: {
   keywords: string[];
   trendingAngles?: string[];
   context?: string;
+  marketDataSection?: string;
 }): { system: string; user: string } {
   const month = new Date().toLocaleDateString("id-ID", { month: "long", year: "numeric" });
 
-  const system = `Kamu adalah jurnalis keuangan Indonesia yang menulis untuk TeknikalID (teknikalid.com) — platform analisa teknikal saham BEI.
-Kamu menulis artikel berita pasar yang aktual, data-driven, dan SEO-friendly dalam bahasa Indonesia.
-Gaya tulis: jurnalistik tapi mudah dipahami, fokus pada fakta dan data, dengan opini yang balanced.`;
+  const system = `Kamu adalah elite Financial Copywriter, jurnalis keuangan Indonesia, dan Advanced SEO Specialist yang menulis untuk TeknikalID (teknikalid.com) — platform analisa teknikal saham BEI.
+
+Tone: Jurnalistik namun sangat engaging, data-driven, opini yang balanced.
+Vocabulary: Gunakan istilah trader Indonesia secara natural: cuuan, nyangkut, bandarmologi, serok bawah, breakout, IHSG, gorengan, arus dana asing.
+Lokalisasi: Konteks erat dengan lanskap ekonomi Indonesia dan lingkungan yang diatur OJK.
+
+SEO: Distribusikan keyword secara natural di H2, intro, dan kesimpulan. Ekspansi ke long-tail yang dicari trader Indonesia di Google.
+
+Gaya tulis: Hook yang kuat, fokus fakta dan data, scannable, mudah dipahami investor ritel.
+
+${data.marketDataSection ? `AKURASI DATA: Artikel ini akan di-fact-check otomatis. Gunakan HANYA data pasar yang disediakan di bawah. Jangan membuat angka harga saham, level IHSG, atau kurs rupiah sendiri. Jika tidak yakin, gunakan frasa umum seperti "berdasarkan data terkini" tanpa menyebutkan angka spesifik.` : ""}`;
 
   const user = `${ARTICLE_FORMAT_INSTRUCTIONS}
 
@@ -253,6 +288,8 @@ Gaya tulis: jurnalistik tapi mudah dipahami, fokus pada fakta dan data, dengan o
 Tulis artikel berita pasar saham tentang: **${data.topic}**
 
 ${data.context ? `Konteks: ${data.context}` : ""}
+
+${data.marketDataSection ? data.marketDataSection : ""}
 
 Periode: ${month}
 
@@ -289,9 +326,15 @@ export function buildGeneralPrompt(data: {
   style?: string;
   context?: string;
 }): { system: string; user: string } {
-  const system = `Kamu adalah penulis konten keuangan Indonesia yang menulis untuk TeknikalID (teknikalid.com) — platform analisa teknikal saham BEI.
-Kamu menulis artikel ${data.style === "casual" ? "dengan gaya santai dan friendly" : data.style === "tutorial" ? "step-by-step yang praktis" : "profesional dan informatif"} dalam bahasa Indonesia.
-Gaya tulis: mudah dipahami investor pemula-menengah, menggunakan contoh konkret dari pasar saham Indonesia.`;
+  const system = `Kamu adalah elite Financial Copywriter, analis pasar saham Indonesia, dan Advanced SEO Specialist yang menulis untuk TeknikalID (teknikalid.com) — platform analisa teknikal saham BEI.
+
+Tone: ${data.style === "casual" ? "Santai dan friendly, seperti ngobrol sesama trader" : data.style === "tutorial" ? "Step-by-step yang praktis dan langsung bisa dicoba" : "Profesional, informatif, dan engaging"}.
+Vocabulary: Gunakan istilah trader Indonesia secara natural: cuuan, nyangkut, bandarmologi, breakout, gorengan, jenuh beli/jual, IHSG, akumulasi.
+Lokalisasi: Konteks erat dengan lanskap ekonomi Indonesia dan lingkungan yang diatur OJK.
+
+SEO: Distribusikan keyword secara natural di H2, intro, dan kesimpulan. Ekspansi ke long-tail yang dicari investor Indonesia.
+
+Gaya tulis: Mudah dipahami, contoh konkret dari pasar saham Indonesia, hook yang kuat.`;
 
   const user = `${ARTICLE_FORMAT_INSTRUCTIONS}
 

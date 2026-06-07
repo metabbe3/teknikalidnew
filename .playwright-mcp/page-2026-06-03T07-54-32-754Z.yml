@@ -1,0 +1,388 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - main [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e7]:
+        - generic [ref=e9]:
+          - img [ref=e11]
+          - generic [ref=e17]: TeknikalID
+          - generic "DB Connected" [ref=e125]
+        - generic [ref=e19]:
+          - generic [ref=e20]:
+            - generic [ref=e21]: Dashboard
+            - list [ref=e23]:
+              - listitem [ref=e24]:
+                - link "System Health Overview" [ref=e25] [cursor=pointer]:
+                  - /url: /admin
+                  - img [ref=e26]
+                  - generic [ref=e28]: System Health Overview
+          - generic [ref=e29]:
+            - generic [ref=e30]: Analytics
+            - list [ref=e32]:
+              - listitem [ref=e33]:
+                - button "Analytics" [ref=e34]:
+                  - img [ref=e35]
+                  - generic [ref=e37]: Analytics
+                  - img [ref=e38]
+          - generic [ref=e40]:
+            - generic [ref=e41]: Data Pipelines
+            - list [ref=e43]:
+              - listitem [ref=e44]:
+                - button "Data Pipelines" [ref=e45]:
+                  - img [ref=e46]
+                  - generic [ref=e49]: Data Pipelines
+                  - img [ref=e50]
+          - generic [ref=e52]:
+            - generic [ref=e53]: Market Data
+            - list [ref=e55]:
+              - listitem [ref=e56]:
+                - button "Market Data" [ref=e57]:
+                  - img [ref=e58]
+                  - generic [ref=e60]: Market Data
+                  - img [ref=e61]
+          - generic [ref=e63]:
+            - generic [ref=e64]: Settings
+            - list [ref=e66]:
+              - listitem [ref=e67]:
+                - button "Settings" [ref=e68]:
+                  - img [ref=e69]
+                  - generic [ref=e72]: Settings
+                  - img [ref=e73]
+          - generic [ref=e75]:
+            - generic [ref=e76]: Content
+            - list [ref=e78]:
+              - listitem [ref=e79]:
+                - link "Articles" [ref=e80] [cursor=pointer]:
+                  - /url: /admin/articles
+                  - img [ref=e81]
+                  - generic [ref=e84]: Articles
+          - generic [ref=e85]:
+            - generic [ref=e86]: Moderation
+            - list [ref=e88]:
+              - listitem [ref=e89]:
+                - link "Reports" [ref=e90] [cursor=pointer]:
+                  - /url: /admin/reports
+                  - img [ref=e91]
+                  - generic [ref=e93]: Reports
+          - generic [ref=e94]:
+            - generic [ref=e95]: AI Agent Hub
+            - list [ref=e97]:
+              - listitem [ref=e98]:
+                - link "Dashboard" [ref=e99] [cursor=pointer]:
+                  - /url: /admin/agent-hub
+                  - img [ref=e100]
+                  - generic [ref=e103]: Dashboard
+        - button "Tim TeknikalID" [ref=e105]:
+          - generic [ref=e107]: Tim TeknikalID
+        - button "Toggle Sidebar" [ref=e108]
+      - main [ref=e109]:
+        - generic [ref=e110]:
+          - button "Toggle Sidebar" [ref=e111]:
+            - img
+            - generic [ref=e112]: Toggle Sidebar
+          - separator [ref=e113]
+          - navigation [ref=e114]:
+            - link "Admin" [ref=e115] [cursor=pointer]:
+              - /url: /admin
+            - img [ref=e116]
+            - generic [ref=e118]: AI Agent Hub
+        - generic [ref=e120]:
+          - generic [ref=e126]:
+            - generic [ref=e127]:
+              - heading "AI Agent Hub" [level=1] [ref=e128]:
+                - img [ref=e129]
+                - text: AI Agent Hub
+              - paragraph [ref=e132]: Centralized agent orchestration — monitor, trigger, and manage AI agents
+            - generic [ref=e133]: 0 running
+          - generic [ref=e134]:
+            - generic [ref=e136]:
+              - generic [ref=e137]: "7"
+              - generic [ref=e138]: Total Jobs
+            - generic [ref=e140]:
+              - generic [ref=e141]: "1"
+              - generic [ref=e142]: Pending
+            - generic [ref=e144]:
+              - generic [ref=e145]: "5"
+              - generic [ref=e146]: Completed
+            - generic [ref=e148]:
+              - generic [ref=e149]: "1"
+              - generic [ref=e150]: Failed
+          - generic [ref=e151]:
+            - heading "Agents" [level=2] [ref=e152]
+            - generic [ref=e153]:
+              - generic [ref=e154]:
+                - generic [ref=e156]:
+                  - generic [ref=e157]:
+                    - img [ref=e159]
+                    - generic [ref=e162]:
+                      - generic [ref=e163]: SEO Optimizer
+                      - paragraph [ref=e164]: seo_optimizer
+                  - button "Run" [ref=e165]:
+                    - img
+                    - text: Run
+                - generic [ref=e166]:
+                  - generic [ref=e167]:
+                    - generic [ref=e168]:
+                      - generic [ref=e169]: "1"
+                      - generic [ref=e170]: Runs
+                    - generic [ref=e171]:
+                      - generic [ref=e172]: 100%
+                      - generic [ref=e173]: Success
+                    - generic [ref=e174]:
+                      - generic [ref=e175]: 4h ago
+                      - generic [ref=e176]: Last Run
+                  - link "View Details" [ref=e178] [cursor=pointer]:
+                    - /url: /admin/agent-hub/seo_optimizer
+                    - text: View Details
+                    - img [ref=e179]
+              - generic [ref=e183]:
+                - generic [ref=e185]:
+                  - generic [ref=e186]:
+                    - img [ref=e188]
+                    - generic [ref=e192]:
+                      - generic [ref=e193]: Content Quality
+                      - paragraph [ref=e194]: content_quality
+                  - button "Run" [ref=e195]:
+                    - img
+                    - text: Run
+                - generic [ref=e196]:
+                  - generic [ref=e197]:
+                    - generic [ref=e198]:
+                      - generic [ref=e199]: "1"
+                      - generic [ref=e200]: Runs
+                    - generic [ref=e201]:
+                      - generic [ref=e202]: 100%
+                      - generic [ref=e203]: Success
+                    - generic [ref=e204]:
+                      - generic [ref=e205]: 4h ago
+                      - generic [ref=e206]: Last Run
+                  - link "View Details" [ref=e208] [cursor=pointer]:
+                    - /url: /admin/agent-hub/content_quality
+                    - text: View Details
+                    - img [ref=e209]
+              - generic [ref=e213]:
+                - generic [ref=e215]:
+                  - generic [ref=e216]:
+                    - img [ref=e218]
+                    - generic [ref=e221]:
+                      - generic [ref=e222]: Market Intelligence
+                      - paragraph [ref=e223]: market_intel
+                  - button "Run" [ref=e224]:
+                    - img
+                    - text: Run
+                - generic [ref=e225]:
+                  - generic [ref=e226]:
+                    - generic [ref=e227]:
+                      - generic [ref=e228]: "1"
+                      - generic [ref=e229]: Runs
+                    - generic [ref=e230]:
+                      - generic [ref=e231]: 100%
+                      - generic [ref=e232]: Success
+                    - generic [ref=e233]:
+                      - generic [ref=e234]: 4h ago
+                      - generic [ref=e235]: Last Run
+                  - link "View Details" [ref=e237] [cursor=pointer]:
+                    - /url: /admin/agent-hub/market_intel
+                    - text: View Details
+                    - img [ref=e238]
+              - generic [ref=e242]:
+                - generic [ref=e244]:
+                  - generic [ref=e245]:
+                    - img [ref=e247]
+                    - generic [ref=e249]:
+                      - generic [ref=e250]: Site Health
+                      - paragraph [ref=e251]: site_health
+                  - button "Run" [ref=e252]:
+                    - img
+                    - text: Run
+                - generic [ref=e253]:
+                  - generic [ref=e254]:
+                    - generic [ref=e255]:
+                      - generic [ref=e256]: "2"
+                      - generic [ref=e257]: Runs
+                    - generic [ref=e258]:
+                      - generic [ref=e259]: 100%
+                      - generic [ref=e260]: Success
+                    - generic [ref=e261]:
+                      - generic [ref=e262]: 1h ago
+                      - generic [ref=e263]: Last Run
+                  - link "View Details" [ref=e265] [cursor=pointer]:
+                    - /url: /admin/agent-hub/site_health
+                    - text: View Details
+                    - img [ref=e266]
+              - generic [ref=e270]:
+                - generic [ref=e272]:
+                  - generic [ref=e273]:
+                    - img [ref=e275]
+                    - generic [ref=e278]:
+                      - generic [ref=e279]: Stock Alert
+                      - paragraph [ref=e280]: stock_alert
+                  - button "Run" [ref=e281]:
+                    - img
+                    - text: Run
+                - generic [ref=e282]:
+                  - generic [ref=e283]:
+                    - generic [ref=e284]:
+                      - generic [ref=e285]: "0"
+                      - generic [ref=e286]: Runs
+                    - generic [ref=e287]:
+                      - generic [ref=e288]: 0%
+                      - generic [ref=e289]: Success
+                    - generic [ref=e290]:
+                      - generic [ref=e291]: Never
+                      - generic [ref=e292]: Last Run
+                  - link "View Details" [ref=e294] [cursor=pointer]:
+                    - /url: /admin/agent-hub/stock_alert
+                    - text: View Details
+                    - img [ref=e295]
+              - generic [ref=e299]:
+                - generic [ref=e301]:
+                  - generic [ref=e302]:
+                    - img [ref=e304]
+                    - generic [ref=e306]:
+                      - generic [ref=e307]: Anomaly Detection
+                      - paragraph [ref=e308]: anomaly_detection
+                  - button "Run" [ref=e309]:
+                    - img
+                    - text: Run
+                - generic [ref=e310]:
+                  - generic [ref=e311]:
+                    - generic [ref=e312]:
+                      - generic [ref=e313]: "1"
+                      - generic [ref=e314]: Runs
+                    - generic [ref=e315]:
+                      - generic [ref=e316]: 0%
+                      - generic [ref=e317]: Success
+                    - generic [ref=e318]:
+                      - generic [ref=e319]: 26m ago
+                      - generic [ref=e320]: Last Run
+                  - link "View Details" [ref=e322] [cursor=pointer]:
+                    - /url: /admin/agent-hub/anomaly_detection
+                    - text: View Details
+                    - img [ref=e323]
+              - generic [ref=e327]:
+                - generic [ref=e329]:
+                  - generic [ref=e330]:
+                    - img [ref=e332]
+                    - generic [ref=e334]:
+                      - generic [ref=e335]: Community Sentiment
+                      - paragraph [ref=e336]: community_sentiment
+                  - button "Run" [ref=e337]:
+                    - img
+                    - text: Run
+                - generic [ref=e338]:
+                  - generic [ref=e339]:
+                    - generic [ref=e340]:
+                      - generic [ref=e341]: "0"
+                      - generic [ref=e342]: Runs
+                    - generic [ref=e343]:
+                      - generic [ref=e344]: 0%
+                      - generic [ref=e345]: Success
+                    - generic [ref=e346]:
+                      - generic [ref=e347]: Never
+                      - generic [ref=e348]: Last Run
+                  - link "View Details" [ref=e350] [cursor=pointer]:
+                    - /url: /admin/agent-hub/community_sentiment
+                    - text: View Details
+                    - img [ref=e351]
+              - generic [ref=e355]:
+                - generic [ref=e357]:
+                  - generic [ref=e358]:
+                    - img [ref=e360]
+                    - generic [ref=e365]:
+                      - generic [ref=e366]: User Engagement
+                      - paragraph [ref=e367]: user_engagement
+                  - button "Run" [ref=e368]:
+                    - img
+                    - text: Run
+                - generic [ref=e369]:
+                  - generic [ref=e370]:
+                    - generic [ref=e371]:
+                      - generic [ref=e372]: "0"
+                      - generic [ref=e373]: Runs
+                    - generic [ref=e374]:
+                      - generic [ref=e375]: 0%
+                      - generic [ref=e376]: Success
+                    - generic [ref=e377]:
+                      - generic [ref=e378]: Never
+                      - generic [ref=e379]: Last Run
+                  - link "View Details" [ref=e381] [cursor=pointer]:
+                    - /url: /admin/agent-hub/user_engagement
+                    - text: View Details
+                    - img [ref=e382]
+          - generic [ref=e386]:
+            - heading "Recent Jobs" [level=2] [ref=e387]
+            - table [ref=e391]:
+              - rowgroup [ref=e392]:
+                - row "Agent Status Priority Created Duration" [ref=e393]:
+                  - columnheader "Agent" [ref=e394]
+                  - columnheader "Status" [ref=e395]
+                  - columnheader "Priority" [ref=e396]
+                  - columnheader "Created" [ref=e397]
+                  - columnheader "Duration" [ref=e398]
+              - rowgroup [ref=e399]:
+                - row "stock_alert pending 3 0s ago -" [ref=e461]:
+                  - cell "stock_alert" [ref=e462]
+                  - cell "pending" [ref=e463]:
+                    - generic [ref=e464]:
+                      - img [ref=e465]
+                      - text: pending
+                  - cell "3" [ref=e468]
+                  - cell "0s ago" [ref=e469]
+                  - cell "-" [ref=e470]
+                - row "anomaly_detection failed 3 27m ago 0s" [ref=e471]:
+                  - cell "anomaly_detection" [ref=e401]
+                  - cell "failed" [ref=e402]:
+                    - generic [ref=e403]:
+                      - img [ref=e404]
+                      - text: failed
+                  - cell "3" [ref=e408]
+                  - cell "27m ago" [ref=e472]
+                  - cell "0s" [ref=e410]
+                - row "site_health done 5 1h ago 18s" [ref=e411]:
+                  - cell "site_health" [ref=e412]
+                  - cell "done" [ref=e413]:
+                    - generic [ref=e414]:
+                      - img [ref=e415]
+                      - text: done
+                  - cell "5" [ref=e418]
+                  - cell "1h ago" [ref=e419]
+                  - cell "18s" [ref=e420]
+                - row "site_health done 3 4h ago 22s" [ref=e421]:
+                  - cell "site_health" [ref=e422]
+                  - cell "done" [ref=e423]:
+                    - generic [ref=e424]:
+                      - img [ref=e425]
+                      - text: done
+                  - cell "3" [ref=e428]
+                  - cell "4h ago" [ref=e429]
+                  - cell "22s" [ref=e430]
+                - row "content_quality done 3 4h ago 0s" [ref=e431]:
+                  - cell "content_quality" [ref=e432]
+                  - cell "done" [ref=e433]:
+                    - generic [ref=e434]:
+                      - img [ref=e435]
+                      - text: done
+                  - cell "3" [ref=e438]
+                  - cell "4h ago" [ref=e439]
+                  - cell "0s" [ref=e440]
+                - row "market_intel done 3 4h ago 16s" [ref=e441]:
+                  - cell "market_intel" [ref=e442]
+                  - cell "done" [ref=e443]:
+                    - generic [ref=e444]:
+                      - img [ref=e445]
+                      - text: done
+                  - cell "3" [ref=e448]
+                  - cell "4h ago" [ref=e449]
+                  - cell "16s" [ref=e450]
+                - row "seo_optimizer done 3 4h ago 121s" [ref=e451]:
+                  - cell "seo_optimizer" [ref=e452]
+                  - cell "done" [ref=e453]:
+                    - generic [ref=e454]:
+                      - img [ref=e455]
+                      - text: done
+                  - cell "3" [ref=e458]
+                  - cell "4h ago" [ref=e459]
+                  - cell "121s" [ref=e460]
+  - alert [ref=e124]

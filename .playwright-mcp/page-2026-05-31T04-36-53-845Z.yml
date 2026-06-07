@@ -1,0 +1,506 @@
+- generic [active] [ref=e1]:
+  - text: 
+  - generic [ref=e4]:
+    - banner [ref=e6]:
+      - link "IDX" [ref=e7] [cursor=pointer]:
+        - /url: /id
+        - img "IDX" [ref=e8]
+      - navigation [ref=e9]:
+        - text:  
+        - generic [ref=e10]:
+          - generic:
+            - generic [ref=e11]:
+              - text: 31 Mei 2026
+              - generic [ref=e12]: "|"
+              - text: 11:36 WIB
+            - generic [ref=e13]:
+              - generic [ref=e15]:
+                - generic:
+                  - generic: 
+                - searchbox "" [ref=e16]
+                - text: 
+              - generic:
+                - list
+            - generic [ref=e18]:
+              - link "Masuk" [ref=e19] [cursor=pointer]:
+                - /url: /id/masuk?prev=%2Fid%2Fperusahaan-tercatat%2Fprofil-perusahaan-tercatat%2FBBCA
+              - link "Daftar" [ref=e20] [cursor=pointer]:
+                - /url: /id/daftar
+            - navigation [ref=e21]:
+              - link "en" [ref=e22] [cursor=pointer]:
+                - /url: /en/listed-companies/company-profiles/BBCA
+              - link "id" [ref=e23] [cursor=pointer]:
+                - /url: /id/perusahaan-tercatat/profil-perusahaan-tercatat/BBCA
+          - navigation [ref=e24]:
+            - list [ref=e26]:
+              - listitem [ref=e27]:
+                - link "Data Pasar":
+                  - /url: /id/#0
+                - text: 
+              - listitem [ref=e28]:
+                - link "Produk & Layanan":
+                  - /url: /id/#1
+                - text: 
+              - listitem [ref=e29]:
+                - link "Perusahaan Tercatat":
+                  - /url: /id/#2
+                - text: 
+              - listitem [ref=e30]:
+                - link "IDX Syariah":
+                  - /url: /id/idx-syariah/
+                - text: 
+              - listitem [ref=e31]:
+                - link "Anggota Bursa & Partisipan":
+                  - /url: /id/#4
+                - text: 
+              - listitem [ref=e32]:
+                - link "Berita":
+                  - /url: /id/#5
+                - text: 
+              - listitem [ref=e33]:
+                - link "Peraturan":
+                  - /url: /id/#6
+                - text: 
+              - listitem [ref=e34]:
+                - link "Investor":
+                  - /url: /id/#7
+                - text: 
+              - listitem [ref=e35]:
+                - link "Tentang BEI":
+                  - /url: /id/#8
+                - text: 
+    - main [ref=e37]:
+      - generic [ref=e38]:
+        - list [ref=e39]:
+          - listitem [ref=e40]:
+            - link "" [ref=e41] [cursor=pointer]:
+              - /url: /id
+              - generic [ref=e42]: 
+          - listitem [ref=e43]:
+            - generic [ref=e44]: 
+            - generic [ref=e45]: Perusahaan Tercatat
+          - listitem [ref=e46]:
+            - generic [ref=e47]: 
+            - link "Profil Perusahaan Tercatat" [ref=e48] [cursor=pointer]:
+              - /url: /id/perusahaan-tercatat/profil-perusahaan-tercatat/
+          - listitem [ref=e49]:
+            - generic [ref=e50]: 
+            - generic [ref=e51]: BBCA
+        - heading "Profil Perusahaan Tercatat" [level=1] [ref=e52]
+        - generic [ref=e53]:
+          - strong [ref=e55]: PT Bank Central Asia Tbk.
+          - combobox "Search for option" [ref=e58]:
+            - searchbox [ref=e60]
+      - generic [ref=e63]:
+        - navigation [ref=e65]:
+          - button "Profil" [ref=e66] [cursor=pointer]
+          - button "Dividen" [ref=e67] [cursor=pointer]
+          - button "Pencatatan Saham" [ref=e68] [cursor=pointer]
+          - button "Pengumuman" [ref=e69] [cursor=pointer]
+          - button "Obligasi & Sukuk" [ref=e70] [cursor=pointer]
+          - button "Info Perdagangan" [ref=e71] [cursor=pointer]
+          - button "Kalender" [ref=e72] [cursor=pointer]
+          - button "Laporan Keuangan" [ref=e73] [cursor=pointer]
+          - button "Historikal" [ref=e74] [cursor=pointer]
+          - button "Sejarah Dividen" [ref=e75] [cursor=pointer]
+        - generic [ref=e77]:
+          - generic [ref=e79]:
+            - table [ref=e81]:
+              - rowgroup [ref=e82]:
+                - 'row "Nama : PT Bank Central Asia Tbk." [ref=e83]':
+                  - cell "Nama" [ref=e84]
+                  - cell ":" [ref=e85]
+                  - cell "PT Bank Central Asia Tbk." [ref=e86]
+                - 'row "Kode : BBCA" [ref=e87]':
+                  - cell "Kode" [ref=e88]
+                  - cell ":" [ref=e89]
+                  - cell "BBCA" [ref=e90]
+                - 'row "Alamat Kantor : Menara BCA, Grand Indonesia Jalan MH Thamrin No. 1 Jakarta 10310" [ref=e91]':
+                  - cell "Alamat Kantor" [ref=e92]
+                  - cell ":" [ref=e93]
+                  - cell "Menara BCA, Grand Indonesia Jalan MH Thamrin No. 1 Jakarta 10310" [ref=e94]
+                - 'row "Alamat Email : investor_relations@bca.co.id" [ref=e95]':
+                  - cell "Alamat Email" [ref=e96]
+                  - cell ":" [ref=e97]
+                  - cell "investor_relations@bca.co.id" [ref=e98]
+                - 'row "Telepon : 021-23588000" [ref=e99]':
+                  - cell "Telepon" [ref=e100]
+                  - cell ":" [ref=e101]
+                  - cell "021-23588000" [ref=e102]
+                - 'row "Fax : 021-23588300" [ref=e103]':
+                  - cell "Fax" [ref=e104]
+                  - cell ":" [ref=e105]
+                  - cell "021-23588300" [ref=e106]
+                - 'row "NPWP : 01.308.449.6-091.000" [ref=e107]':
+                  - cell "NPWP" [ref=e108]
+                  - cell ":" [ref=e109]
+                  - cell "01.308.449.6-091.000" [ref=e110]
+                - 'row "Situs : www.bca.co.id" [ref=e111]':
+                  - cell "Situs" [ref=e112]
+                  - cell ":" [ref=e113]
+                  - cell "www.bca.co.id" [ref=e114]:
+                    - link "www.bca.co.id" [ref=e115] [cursor=pointer]:
+                      - /url: https://www.bca.co.id
+            - table [ref=e117]:
+              - rowgroup [ref=e118]:
+                - 'row "Tanggal Pencatatan : 2000-05-31" [ref=e119]':
+                  - cell "Tanggal Pencatatan" [ref=e120]
+                  - cell ":" [ref=e121]
+                  - cell "2000-05-31" [ref=e122]
+                - 'row "Papan Pencatatan : Utama" [ref=e123]':
+                  - cell "Papan Pencatatan" [ref=e124]
+                  - cell ":" [ref=e125]
+                  - cell "Utama" [ref=e126]
+                - 'row "Bidang Usaha Utama : Jasa Perbankan" [ref=e127]':
+                  - cell "Bidang Usaha Utama" [ref=e128]
+                  - cell ":" [ref=e129]
+                  - cell "Jasa Perbankan" [ref=e130]
+                - 'row "Sektor : Keuangan" [ref=e131]':
+                  - cell "Sektor" [ref=e132]
+                  - cell ":" [ref=e133]
+                  - cell "Keuangan" [ref=e134]
+                - 'row "Subsektor : Bank" [ref=e135]':
+                  - cell "Subsektor" [ref=e136]
+                  - cell ":" [ref=e137]
+                  - cell "Bank" [ref=e138]
+                - 'row "Industri : Bank" [ref=e139]':
+                  - cell "Industri" [ref=e140]
+                  - cell ":" [ref=e141]
+                  - cell "Bank" [ref=e142]
+                - 'row "Subindustri : Bank" [ref=e143]':
+                  - cell "Subindustri" [ref=e144]
+                  - cell ":" [ref=e145]
+                  - cell "Bank" [ref=e146]
+                - 'row "Biro Administrasi Efek : -" [ref=e147]':
+                  - cell "Biro Administrasi Efek" [ref=e148]
+                  - cell ":" [ref=e149]
+                  - cell "-" [ref=e150]
+          - generic [ref=e153]:
+            - list [ref=e155]:
+              - listitem [ref=e156]:
+                - link "Sekretaris Perusahaan" [ref=e157] [cursor=pointer]:
+                  - /url: "#Secretary"
+              - listitem [ref=e158]:
+                - link "Direktur" [ref=e159] [cursor=pointer]:
+                  - /url: "#Director"
+              - listitem [ref=e160]:
+                - link "Komisaris" [ref=e161] [cursor=pointer]:
+                  - /url: "#Comissioners"
+              - listitem [ref=e162]:
+                - link "Komite Audit" [ref=e163] [cursor=pointer]:
+                  - /url: "#Committee"
+              - listitem [ref=e164]:
+                - link "Pemegang Saham" [ref=e165] [cursor=pointer]:
+                  - /url: "#Shareholders"
+              - listitem [ref=e166]:
+                - link "Anak Perusahaan" [ref=e167] [cursor=pointer]:
+                  - /url: "#Subsidiary"
+              - listitem [ref=e168]:
+                - link "Akuntan Publik" [ref=e169] [cursor=pointer]:
+                  - /url: "#PublicAccountant"
+            - generic [ref=e170]:
+              - generic [ref=e171]:
+                - heading "Sekretaris Perusahaan" [level=4] [ref=e172]
+                - table [ref=e173]:
+                  - 'row "Nama : Rudy Budiardjo" [ref=e174]':
+                    - cell "Nama" [ref=e175]
+                    - cell ":" [ref=e176]
+                    - cell "Rudy Budiardjo" [ref=e177]
+                  - 'row "Alamat Email : corporate_secretary@bca.co.id" [ref=e178]':
+                    - cell "Alamat Email" [ref=e179]
+                    - cell ":" [ref=e180]
+                    - cell "corporate_secretary@bca.co.id" [ref=e181]
+                  - 'row "Nomor Telepon : 021-23588000" [ref=e182]':
+                    - cell "Nomor Telepon" [ref=e183]
+                    - cell ":" [ref=e184]
+                    - cell "021-23588000" [ref=e185]
+              - generic [ref=e186]:
+                - heading "Direktur" [level=4] [ref=e187]
+                - table [ref=e188]:
+                  - rowgroup [ref=e189]:
+                    - row "Nama Posisi Terafiliasi" [ref=e190]:
+                      - columnheader "Nama" [ref=e191]
+                      - columnheader "Posisi" [ref=e192]
+                      - columnheader "Terafiliasi" [ref=e193]
+                  - rowgroup [ref=e194]:
+                    - row "Gregory Hendra Lembong PRESIDEN DIREKTUR Ya" [ref=e195]:
+                      - cell "Gregory Hendra Lembong" [ref=e196]
+                      - cell "PRESIDEN DIREKTUR" [ref=e197]
+                      - cell "Ya" [ref=e198]
+                    - row "Armand Wahyudi Hartono WAKIL PRESIDEN DIREKTUR Ya" [ref=e199]:
+                      - cell "Armand Wahyudi Hartono" [ref=e200]
+                      - cell "WAKIL PRESIDEN DIREKTUR" [ref=e201]
+                      - cell "Ya" [ref=e202]
+                    - row "John Kosasih WAKIL PRESIDEN DIREKTUR Ya" [ref=e203]:
+                      - cell "John Kosasih" [ref=e204]
+                      - cell "WAKIL PRESIDEN DIREKTUR" [ref=e205]
+                      - cell "Ya" [ref=e206]
+                    - row "Tan Ho Hien/Subur atau dipanggil Subur Tan DIREKTUR Ya" [ref=e207]:
+                      - cell "Tan Ho Hien/Subur atau dipanggil Subur Tan" [ref=e208]
+                      - cell "DIREKTUR" [ref=e209]
+                      - cell "Ya" [ref=e210]
+                    - row "Lianawaty Suwono DIREKTUR Ya" [ref=e211]:
+                      - cell "Lianawaty Suwono" [ref=e212]
+                      - cell "DIREKTUR" [ref=e213]
+                      - cell "Ya" [ref=e214]
+                    - row "Santoso DIREKTUR Ya" [ref=e215]:
+                      - cell "Santoso" [ref=e216]
+                      - cell "DIREKTUR" [ref=e217]
+                      - cell "Ya" [ref=e218]
+                    - row "Vera Eve Lim DIREKTUR Ya" [ref=e219]:
+                      - cell "Vera Eve Lim" [ref=e220]
+                      - cell "DIREKTUR" [ref=e221]
+                      - cell "Ya" [ref=e222]
+                    - row "Haryanto Tiara Budiman DIREKTUR Ya" [ref=e223]:
+                      - cell "Haryanto Tiara Budiman" [ref=e224]
+                      - cell "DIREKTUR" [ref=e225]
+                      - cell "Ya" [ref=e226]
+                    - row "Frengky Chandra Kusuma DIREKTUR Ya" [ref=e227]:
+                      - cell "Frengky Chandra Kusuma" [ref=e228]
+                      - cell "DIREKTUR" [ref=e229]
+                      - cell "Ya" [ref=e230]
+                    - row "Antonius Widodo Mulyono DIREKTUR Ya" [ref=e231]:
+                      - cell "Antonius Widodo Mulyono" [ref=e232]
+                      - cell "DIREKTUR" [ref=e233]
+                      - cell "Ya" [ref=e234]
+                    - row "Hendra Tanumihardja DIREKTUR Ya" [ref=e235]:
+                      - cell "Hendra Tanumihardja" [ref=e236]
+                      - cell "DIREKTUR" [ref=e237]
+                      - cell "Ya" [ref=e238]
+                    - row "David Formula DIREKTUR Ya" [ref=e239]:
+                      - cell "David Formula" [ref=e240]
+                      - cell "DIREKTUR" [ref=e241]
+                      - cell "Ya" [ref=e242]
+              - generic [ref=e243]:
+                - heading "Komisaris" [level=4] [ref=e244]
+                - table [ref=e245]:
+                  - rowgroup [ref=e246]:
+                    - row "Nama Posisi Independen" [ref=e247]:
+                      - columnheader "Nama" [ref=e248]
+                      - columnheader "Posisi" [ref=e249]
+                      - columnheader "Independen" [ref=e250]
+                  - rowgroup [ref=e251]:
+                    - row "Sumantri Slamet KOMISARIS Ya" [ref=e252]:
+                      - cell "Sumantri Slamet" [ref=e253]
+                      - cell "KOMISARIS" [ref=e254]
+                      - cell "Ya" [ref=e255]
+                    - row "Jahja Setiaatmadja PRESIDEN KOMISARIS Tidak" [ref=e256]:
+                      - cell "Jahja Setiaatmadja" [ref=e257]
+                      - cell "PRESIDEN KOMISARIS" [ref=e258]
+                      - cell "Tidak" [ref=e259]
+                    - row "Tonny Kusnadi KOMISARIS Tidak" [ref=e260]:
+                      - cell "Tonny Kusnadi" [ref=e261]
+                      - cell "KOMISARIS" [ref=e262]
+                      - cell "Tidak" [ref=e263]
+                    - row "Raden Pardede KOMISARIS Ya" [ref=e264]:
+                      - cell "Raden Pardede" [ref=e265]
+                      - cell "KOMISARIS" [ref=e266]
+                      - cell "Ya" [ref=e267]
+              - generic [ref=e268]:
+                - heading "Komite Audit" [level=4] [ref=e269]
+                - table [ref=e270]:
+                  - rowgroup [ref=e271]:
+                    - row "Nama Posisi" [ref=e272]:
+                      - columnheader "Nama" [ref=e273]
+                      - columnheader "Posisi" [ref=e274]
+                  - rowgroup [ref=e275]:
+                    - row "Sumantri Slamet KETUA" [ref=e276]:
+                      - cell "Sumantri Slamet" [ref=e277]
+                      - cell "KETUA" [ref=e278]
+                    - row "Rallyati A. Wibowo ANGGOTA" [ref=e279]:
+                      - cell "Rallyati A. Wibowo" [ref=e280]
+                      - cell "ANGGOTA" [ref=e281]
+                    - row "Prabowo ANGGOTA" [ref=e282]:
+                      - cell "Prabowo" [ref=e283]
+                      - cell "ANGGOTA" [ref=e284]
+              - generic [ref=e285]:
+                - heading "Pemegang Saham" [level=4] [ref=e286]
+                - table [ref=e287]:
+                  - rowgroup [ref=e288]:
+                    - row "Nama Tipe Jumlah Persentase" [ref=e289]:
+                      - columnheader "Nama" [ref=e290]
+                      - columnheader "Tipe" [ref=e291]
+                      - columnheader "Jumlah" [ref=e292]
+                      - columnheader "Persentase" [ref=e293]
+                  - rowgroup [ref=e294]:
+                    - row "PT Dwimuria Investama Andalan Lebih dari 5% 67.729.950.000 54.942%" [ref=e295]:
+                      - cell "PT Dwimuria Investama Andalan" [ref=e296]
+                      - cell "Lebih dari 5%" [ref=e297]
+                      - cell "67.729.950.000" [ref=e298]
+                      - cell "54.942%" [ref=e299]
+                    - row "Saham Treasury Saham Treasury 401.316.300 0.326%" [ref=e300]:
+                      - cell "Saham Treasury" [ref=e301]
+                      - cell "Saham Treasury" [ref=e302]
+                      - cell "401.316.300" [ref=e303]
+                      - cell "0.326%" [ref=e304]
+                    - row "Masyarakat Warkat Masyarakat Warkat 3.091.408.880 2.508%" [ref=e305]:
+                      - cell "Masyarakat Warkat" [ref=e306]
+                      - cell "Masyarakat Warkat" [ref=e307]
+                      - cell "3.091.408.880" [ref=e308]
+                      - cell "2.508%" [ref=e309]
+                    - row "Masyarakat Non Warkat Masyarakat Non Warkat 51.971.999.178 42.159%" [ref=e310]:
+                      - cell "Masyarakat Non Warkat" [ref=e311]
+                      - cell "Masyarakat Non Warkat" [ref=e312]
+                      - cell "51.971.999.178" [ref=e313]
+                      - cell "42.159%" [ref=e314]
+                    - row "Vera Eve Lim Direksi 3.281.460 0.003%" [ref=e315]:
+                      - cell "Vera Eve Lim" [ref=e316]
+                      - cell "Direksi" [ref=e317]
+                      - cell "3.281.460" [ref=e318]
+                      - cell "0.003%" [ref=e319]
+                    - row "Gregory Hendra Lembong Direksi 2.666.921 0.002%" [ref=e320]:
+                      - cell "Gregory Hendra Lembong" [ref=e321]
+                      - cell "Direksi" [ref=e322]
+                      - cell "2.666.921" [ref=e323]
+                      - cell "0.002%" [ref=e324]
+                    - row "Haryanto Tiara Budiman Direksi 1.436.806 0.001%" [ref=e325]:
+                      - cell "Haryanto Tiara Budiman" [ref=e326]
+                      - cell "Direksi" [ref=e327]
+                      - cell "1.436.806" [ref=e328]
+                      - cell "0.001%" [ref=e329]
+                    - row "Frengky Chandra Kusuma Direksi 2.835.916 0.002%" [ref=e330]:
+                      - cell "Frengky Chandra Kusuma" [ref=e331]
+                      - cell "Direksi" [ref=e332]
+                      - cell "2.835.916" [ref=e333]
+                      - cell "0.002%" [ref=e334]
+                    - row "John Kosasih Direksi 1.720.729 0.001%" [ref=e335]:
+                      - cell "John Kosasih" [ref=e336]
+                      - cell "Direksi" [ref=e337]
+                      - cell "1.720.729" [ref=e338]
+                      - cell "0.001%" [ref=e339]
+                    - row "Antonius Widodo Mulyono Direksi 681.407 0.001%" [ref=e340]:
+                      - cell "Antonius Widodo Mulyono" [ref=e341]
+                      - cell "Direksi" [ref=e342]
+                      - cell "681.407" [ref=e343]
+                      - cell "0.001%" [ref=e344]
+                    - row "Jahja Setiaatmadja Komisaris 35.802.700 0.03%" [ref=e345]:
+                      - cell "Jahja Setiaatmadja" [ref=e346]
+                      - cell "Komisaris" [ref=e347]
+                      - cell "35.802.700" [ref=e348]
+                      - cell "0.03%" [ref=e349]
+                    - row "Armand Wahyudi Hartono Direksi 4.256.065 0.003%" [ref=e350]:
+                      - cell "Armand Wahyudi Hartono" [ref=e351]
+                      - cell "Direksi" [ref=e352]
+                      - cell "4.256.065" [ref=e353]
+                      - cell "0.003%" [ref=e354]
+                    - row "Tan Ho Hien/Subur disebut juga Subur Tan Direksi 11.788.002 0.01%" [ref=e355]:
+                      - cell "Tan Ho Hien/Subur disebut juga Subur Tan" [ref=e356]
+                      - cell "Direksi" [ref=e357]
+                      - cell "11.788.002" [ref=e358]
+                      - cell "0.01%" [ref=e359]
+                    - row "Lianawaty Suwono Direksi 3.906.242 0.003%" [ref=e360]:
+                      - cell "Lianawaty Suwono" [ref=e361]
+                      - cell "Direksi" [ref=e362]
+                      - cell "3.906.242" [ref=e363]
+                      - cell "0.003%" [ref=e364]
+                    - row "Santoso Direksi 3.764.062 0.003%" [ref=e365]:
+                      - cell "Santoso" [ref=e366]
+                      - cell "Direksi" [ref=e367]
+                      - cell "3.764.062" [ref=e368]
+                      - cell "0.003%" [ref=e369]
+                    - row "Hendra Tanumihardja Direksi 341.139 0%" [ref=e370]:
+                      - cell "Hendra Tanumihardja" [ref=e371]
+                      - cell "Direksi" [ref=e372]
+                      - cell "341.139" [ref=e373]
+                      - cell "0%" [ref=e374]
+                    - row "Tonny Kusnadi Komisaris 7.819.950 0.006%" [ref=e375]:
+                      - cell "Tonny Kusnadi" [ref=e376]
+                      - cell "Komisaris" [ref=e377]
+                      - cell "7.819.950" [ref=e378]
+                      - cell "0.006%" [ref=e379]
+                    - row "Raden Pardede Komisaris 0 0%" [ref=e380]:
+                      - cell "Raden Pardede" [ref=e381]
+                      - cell "Komisaris" [ref=e382]
+                      - cell "0" [ref=e383]
+                      - cell "0%" [ref=e384]
+                    - row "Sumantri Slamet Komisaris 0 0%" [ref=e385]:
+                      - cell "Sumantri Slamet" [ref=e386]
+                      - cell "Komisaris" [ref=e387]
+                      - cell "0" [ref=e388]
+                      - cell "0%" [ref=e389]
+                    - row "David Formula Direksi 74.243 0%" [ref=e390]:
+                      - cell "David Formula" [ref=e391]
+                      - cell "Direksi" [ref=e392]
+                      - cell "74.243" [ref=e393]
+                      - cell "0%" [ref=e394]
+              - generic [ref=e395]:
+                - heading "Anak Perusahaan" [level=4] [ref=e396]
+                - generic [ref=e399]:
+                  - generic:
+                    - generic: 
+                  - textbox "Kata kunci..." [ref=e400]
+                - generic [ref=e402]:
+                  - table [ref=e404]:
+                    - rowgroup [ref=e410]:
+                      - row "Nama Jenis Aset Total Persentase" [ref=e411]:
+                        - columnheader "Nama" [ref=e412]
+                        - columnheader "Jenis" [ref=e413]
+                        - columnheader "Aset Total" [ref=e414]
+                        - columnheader "Persentase" [ref=e415]
+                    - rowgroup [ref=e416]:
+                      - row "PT Asuransi Jiwa BCA Asuransi Jiwa 4.676.146 90 %" [ref=e417]:
+                        - cell "PT Asuransi Jiwa BCA" [ref=e418]
+                        - cell "Asuransi Jiwa" [ref=e419]
+                        - cell "4.676.146" [ref=e420]
+                        - cell "90 %" [ref=e421]
+                      - row "PT Asuransi Umum BCA Asuransi umum atau kerugian 3.454.384 100 %" [ref=e422]:
+                        - cell "PT Asuransi Umum BCA" [ref=e423]
+                        - cell "Asuransi umum atau kerugian" [ref=e424]
+                        - cell "3.454.384" [ref=e425]
+                        - cell "100 %" [ref=e426]
+                      - row "PT Bank BCA Syariah perbankan syariah 19.207.364 100 %" [ref=e427]:
+                        - cell "PT Bank BCA Syariah" [ref=e428]
+                        - cell "perbankan syariah" [ref=e429]
+                        - cell "19.207.364" [ref=e430]
+                        - cell "100 %" [ref=e431]
+                      - row "PT Bank Digital BCA Perbankan 18.923.844 100 %" [ref=e432]:
+                        - cell "PT Bank Digital BCA" [ref=e433]
+                        - cell "Perbankan" [ref=e434]
+                        - cell "18.923.844" [ref=e435]
+                        - cell "100 %" [ref=e436]
+                      - row "PT BCA Finance Pembiayaan investasi, modal kerja, pembiayaan multiguna, sewa operasi, keg pembiayaan lain brdsrkn persetujuan instansi yg berwenang 10.371.197 100 %" [ref=e437]:
+                        - cell "PT BCA Finance" [ref=e438]
+                        - cell "Pembiayaan investasi, modal kerja, pembiayaan multiguna, sewa operasi, keg pembiayaan lain brdsrkn persetujuan instansi yg berwenang" [ref=e439]
+                        - cell "10.371.197" [ref=e440]
+                        - cell "100 %" [ref=e441]
+                      - row "PT BCA Sekuritas Perantara perdagangan efek dan penjamin emisi efek 2.518.673 90 %" [ref=e442]:
+                        - cell "PT BCA Sekuritas" [ref=e443]
+                        - cell "Perantara perdagangan efek dan penjamin emisi efek" [ref=e444]
+                        - cell "2.518.673" [ref=e445]
+                        - cell "90 %" [ref=e446]
+                      - row "PT Central Capital Ventura Modal ventura 468.985 100 %" [ref=e447]:
+                        - cell "PT Central Capital Ventura" [ref=e448]
+                        - cell "Modal ventura" [ref=e449]
+                        - cell "468.985" [ref=e450]
+                        - cell "100 %" [ref=e451]
+                  - generic [ref=e452]:
+                    - generic [ref=e454]:
+                      - text: "Baris:"
+                      - combobox "Baris:" [ref=e455]:
+                        - option "10" [selected]
+                        - option "20"
+                        - option "30"
+                        - option "40"
+                        - option "50"
+                        - option "All"
+                    - generic [ref=e456]:
+                      - generic [ref=e458]: 1 - 7 dari 7
+                      - button:
+                        - generic: 
+                      - button:
+                        - generic: 
+                      - button:
+                        - generic: 
+                      - button:
+                        - generic: 
+              - generic [ref=e459]:
+                - heading "Akuntan Publik" [level=4] [ref=e460]
+                - table [ref=e461]:
+                  - rowgroup [ref=e462]:
+                    - row "Nama" [ref=e463]:
+                      - generic [ref=e464]: Nama
+                  - rowgroup
+    - generic [ref=e466]: 
+    - link "" [ref=e467] [cursor=pointer]:
+      - /url: https://wa.me/+6281181150515
+      - generic [ref=e469]: 

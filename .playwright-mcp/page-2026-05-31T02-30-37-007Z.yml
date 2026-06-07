@@ -1,0 +1,466 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - main [ref=e3]:
+    - generic [ref=e31]:
+      - link "TeknikalID" [ref=e32] [cursor=pointer]:
+        - /url: /
+        - img [ref=e33]
+        - generic [ref=e35]: TeknikalID
+      - navigation "Main navigation" [ref=e36]:
+        - link "Beranda" [ref=e37] [cursor=pointer]:
+          - /url: /
+        - link "Saham" [ref=e38] [cursor=pointer]:
+          - /url: /stocks
+        - link "Screener" [ref=e39] [cursor=pointer]:
+          - /url: /screener
+        - link "Bandingkan" [ref=e40] [cursor=pointer]:
+          - /url: /compare
+        - link "Komunitas" [ref=e41] [cursor=pointer]:
+          - /url: /community
+        - link "Berita" [ref=e42] [cursor=pointer]:
+          - /url: /berita
+        - link "Akademi" [ref=e43] [cursor=pointer]:
+          - /url: /akademi
+      - generic [ref=e44]:
+        - link "Daftar Pantauan" [ref=e45] [cursor=pointer]:
+          - /url: /watchlist
+          - img [ref=e46]
+        - button "Notifikasi" [ref=e49]:
+          - img [ref=e50]
+        - button "Menu pengguna" [ref=e54]:
+          - generic [ref=e55]: T
+    - generic [ref=e56]:
+      - generic [ref=e59]:
+        - generic [ref=e60]:
+          - generic [ref=e61]: Pasar Tutup — Data Sesi Terakhir
+          - heading "Analisa Teknikal Saham BEI" [level=1] [ref=e63]:
+            - text: Analisa Teknikal
+            - text: Saham BEI
+          - paragraph [ref=e64]:
+            - text: Chart interaktif, indikator teknikal, dan screener untuk
+            - generic [ref=e65]: 956+ saham
+            - text: IDX dari
+            - generic [ref=e66]: 11 sektor
+            - text: .
+            - generic [ref=e67]: _
+          - generic [ref=e68]:
+            - link "Lihat Saham" [ref=e69] [cursor=pointer]:
+              - /url: /stocks
+            - link "Coba Screener" [ref=e70] [cursor=pointer]:
+              - /url: /screener
+        - generic [ref=e71]:
+          - paragraph [ref=e72]: Market Pulse (sesi terakhir)
+          - generic [ref=e73]:
+            - paragraph [ref=e74]: Top Gainer
+            - generic [ref=e75]:
+              - generic [ref=e76]: KJEN
+              - generic [ref=e77]: +34.18%
+          - generic [ref=e78]:
+            - paragraph [ref=e79]: Top Loser
+            - generic [ref=e80]:
+              - generic [ref=e81]: APIC
+              - generic [ref=e82]: "-14.78%"
+          - generic [ref=e83]:
+            - paragraph [ref=e84]: Tracking
+            - generic [ref=e85]:
+              - generic [ref=e86]: 956+
+              - generic [ref=e87]: saham
+      - generic "Stock ticker" [ref=e88]:
+        - generic [ref=e89]:
+          - link "KJEN +34.18%" [ref=e90] [cursor=pointer]:
+            - /url: /stocks/KJEN.JK
+            - generic [ref=e91]: KJEN
+            - generic [ref=e92]: +34.18%
+          - link "BREN +25.00%" [ref=e93] [cursor=pointer]:
+            - /url: /stocks/BREN.JK
+            - generic [ref=e94]: BREN
+            - generic [ref=e95]: +25.00%
+          - link "RATU +25.00%" [ref=e96] [cursor=pointer]:
+            - /url: /stocks/RATU.JK
+            - generic [ref=e97]: RATU
+            - generic [ref=e98]: +25.00%
+          - link "PTRO +24.87%" [ref=e99] [cursor=pointer]:
+            - /url: /stocks/PTRO.JK
+            - generic [ref=e100]: PTRO
+            - generic [ref=e101]: +24.87%
+          - link "BRPT +24.76%" [ref=e102] [cursor=pointer]:
+            - /url: /stocks/BRPT.JK
+            - generic [ref=e103]: BRPT
+            - generic [ref=e104]: +24.76%
+          - link "APIC -14.78%" [ref=e105] [cursor=pointer]:
+            - /url: /stocks/APIC.JK
+            - generic [ref=e106]: APIC
+            - generic [ref=e107]: "-14.78%"
+          - link "ASPR -14.76%" [ref=e108] [cursor=pointer]:
+            - /url: /stocks/ASPR.JK
+            - generic [ref=e109]: ASPR
+            - generic [ref=e110]: "-14.76%"
+          - link "FILM -14.68%" [ref=e111] [cursor=pointer]:
+            - /url: /stocks/FILM.JK
+            - generic [ref=e112]: FILM
+            - generic [ref=e113]: "-14.68%"
+          - link "TALF -14.46%" [ref=e114] [cursor=pointer]:
+            - /url: /stocks/TALF.JK
+            - generic [ref=e115]: TALF
+            - generic [ref=e116]: "-14.46%"
+          - link "MGNA -14.41%" [ref=e117] [cursor=pointer]:
+            - /url: /stocks/MGNA.JK
+            - generic [ref=e118]: MGNA
+            - generic [ref=e119]: "-14.41%"
+          - link "KJEN +34.18%" [ref=e120] [cursor=pointer]:
+            - /url: /stocks/KJEN.JK
+            - generic [ref=e121]: KJEN
+            - generic [ref=e122]: +34.18%
+          - link "BREN +25.00%" [ref=e123] [cursor=pointer]:
+            - /url: /stocks/BREN.JK
+            - generic [ref=e124]: BREN
+            - generic [ref=e125]: +25.00%
+          - link "RATU +25.00%" [ref=e126] [cursor=pointer]:
+            - /url: /stocks/RATU.JK
+            - generic [ref=e127]: RATU
+            - generic [ref=e128]: +25.00%
+          - link "PTRO +24.87%" [ref=e129] [cursor=pointer]:
+            - /url: /stocks/PTRO.JK
+            - generic [ref=e130]: PTRO
+            - generic [ref=e131]: +24.87%
+          - link "BRPT +24.76%" [ref=e132] [cursor=pointer]:
+            - /url: /stocks/BRPT.JK
+            - generic [ref=e133]: BRPT
+            - generic [ref=e134]: +24.76%
+          - link "APIC -14.78%" [ref=e135] [cursor=pointer]:
+            - /url: /stocks/APIC.JK
+            - generic [ref=e136]: APIC
+            - generic [ref=e137]: "-14.78%"
+          - link "ASPR -14.76%" [ref=e138] [cursor=pointer]:
+            - /url: /stocks/ASPR.JK
+            - generic [ref=e139]: ASPR
+            - generic [ref=e140]: "-14.76%"
+          - link "FILM -14.68%" [ref=e141] [cursor=pointer]:
+            - /url: /stocks/FILM.JK
+            - generic [ref=e142]: FILM
+            - generic [ref=e143]: "-14.68%"
+          - link "TALF -14.46%" [ref=e144] [cursor=pointer]:
+            - /url: /stocks/TALF.JK
+            - generic [ref=e145]: TALF
+            - generic [ref=e146]: "-14.46%"
+          - link "MGNA -14.41%" [ref=e147] [cursor=pointer]:
+            - /url: /stocks/MGNA.JK
+            - generic [ref=e148]: MGNA
+            - generic [ref=e149]: "-14.41%"
+      - generic [ref=e150]:
+        - generic [ref=e151]:
+          - heading "Saham Paling Aktif" [level=2] [ref=e154]
+          - generic [ref=e155]:
+            - link "KJEN — Krida Jaringan Nusantara, Rp212, +34.18%" [ref=e157] [cursor=pointer]:
+              - /url: /stocks/KJEN.JK
+              - generic [ref=e158]:
+                - generic [ref=e159]:
+                  - generic [ref=e160]:
+                    - paragraph [ref=e161]: KJEN
+                    - generic [ref=e162]: Top Mover
+                  - paragraph [ref=e163]: Krida Jaringan Nusantara
+                - generic [ref=e164]:
+                  - paragraph [ref=e165]: Rp212
+                  - paragraph [ref=e166]: ++34,18%
+              - img [ref=e168]
+              - generic [ref=e172]:
+                - generic [ref=e173]: Transportation & Logistics
+                - generic [ref=e174]: ↑
+            - link "BREN — Barito Renewables Energy, Rp3.300, +25.00%" [ref=e176] [cursor=pointer]:
+              - /url: /stocks/BREN.JK
+              - generic [ref=e177]:
+                - generic [ref=e178]:
+                  - generic [ref=e179]:
+                    - paragraph [ref=e180]: BREN
+                    - generic [ref=e181]: Top Mover
+                  - paragraph [ref=e182]: Barito Renewables Energy
+                - generic [ref=e183]:
+                  - paragraph [ref=e184]: Rp3.300
+                  - paragraph [ref=e185]: ++25,00%
+              - img [ref=e187]
+              - generic [ref=e191]:
+                - generic [ref=e192]: Infrastructures
+                - generic [ref=e193]: ↑
+            - link "APIC — Pacific Strategic Financial Tb, Rp980, -14.78%" [ref=e195] [cursor=pointer]:
+              - /url: /stocks/APIC.JK
+              - generic [ref=e196]:
+                - generic [ref=e197]:
+                  - generic [ref=e198]:
+                    - paragraph [ref=e199]: APIC
+                    - generic [ref=e200]: Top Mover
+                  - paragraph [ref=e201]: Pacific Strategic Financial Tb
+                - generic [ref=e202]:
+                  - paragraph [ref=e203]: Rp980
+                  - paragraph [ref=e204]: "-14,78%"
+              - img [ref=e206]
+              - generic [ref=e210]:
+                - generic [ref=e211]: Financials
+                - generic [ref=e212]: ↓
+            - link "ASPR — Asia Pramulia, Rp179, -14.76%" [ref=e214] [cursor=pointer]:
+              - /url: /stocks/ASPR.JK
+              - generic [ref=e215]:
+                - generic [ref=e216]:
+                  - generic [ref=e217]:
+                    - paragraph [ref=e218]: ASPR
+                    - generic [ref=e219]: Top Mover
+                  - paragraph [ref=e220]: Asia Pramulia
+                - generic [ref=e221]:
+                  - paragraph [ref=e222]: Rp179
+                  - paragraph [ref=e223]: "-14,76%"
+              - img [ref=e225]
+              - generic [ref=e229]:
+                - generic [ref=e230]: Basic Materials
+                - generic [ref=e231]: ↓
+            - link "MPRO — Maha Properti Indonesia, Rp9.000, +0.00%" [ref=e233] [cursor=pointer]:
+              - /url: /stocks/MPRO.JK
+              - generic [ref=e234]:
+                - generic [ref=e235]:
+                  - generic [ref=e236]:
+                    - paragraph [ref=e237]: MPRO
+                    - generic [ref=e238]: Oversold
+                  - paragraph [ref=e239]: Maha Properti Indonesia
+                - generic [ref=e240]:
+                  - paragraph [ref=e241]: Rp9.000
+                  - paragraph [ref=e242]: +0,00%
+              - img [ref=e244]
+              - generic [ref=e246]:
+                - generic [ref=e247]: Properties & Real Estate
+                - generic [ref=e248]: ↑
+            - link "JECC — Jembo Cable Company, Rp520, -9.57%" [ref=e250] [cursor=pointer]:
+              - /url: /stocks/JECC.JK
+              - generic [ref=e251]:
+                - generic [ref=e252]:
+                  - generic [ref=e253]:
+                    - paragraph [ref=e254]: JECC
+                    - generic [ref=e255]: Oversold
+                  - paragraph [ref=e256]: Jembo Cable Company
+                - generic [ref=e257]:
+                  - paragraph [ref=e258]: Rp520
+                  - paragraph [ref=e259]: "-9,57%"
+              - img [ref=e261]
+              - generic [ref=e265]:
+                - generic [ref=e266]: Industrials
+                - generic [ref=e267]: ↓
+        - generic [ref=e268]:
+          - heading "Performa Sektor" [level=2] [ref=e271]
+          - generic [ref=e272]:
+            - generic [ref=e273]:
+              - paragraph [ref=e274]: Energy
+              - paragraph [ref=e275]: +0.99%
+              - paragraph [ref=e276]: 91 saham
+            - generic [ref=e277]:
+              - paragraph [ref=e278]: Consumer Non-Cyclicals
+              - paragraph [ref=e279]: "-0.04%"
+              - paragraph [ref=e280]: 132 saham
+            - generic [ref=e281]:
+              - paragraph [ref=e282]: Consumer Cyclicals
+              - paragraph [ref=e283]: "-0.28%"
+              - paragraph [ref=e284]: 163 saham
+            - generic [ref=e285]:
+              - paragraph [ref=e286]: Financials
+              - paragraph [ref=e287]: "-0.43%"
+              - paragraph [ref=e288]: 106 saham
+            - generic [ref=e289]:
+              - paragraph [ref=e290]: Infrastructures
+              - paragraph [ref=e291]: +0.53%
+              - paragraph [ref=e292]: 70 saham
+            - generic [ref=e293]:
+              - paragraph [ref=e294]: Properties & Real Estate
+              - paragraph [ref=e295]: +0.23%
+              - paragraph [ref=e296]: 92 saham
+            - generic [ref=e297]:
+              - paragraph [ref=e298]: Basic Materials
+              - paragraph [ref=e299]: "-0.42%"
+              - paragraph [ref=e300]: 113 saham
+            - generic [ref=e301]:
+              - paragraph [ref=e302]: Transportation & Logistics
+              - paragraph [ref=e303]: +0.99%
+              - paragraph [ref=e304]: 39 saham
+            - generic [ref=e305]:
+              - paragraph [ref=e306]: Industrials
+              - paragraph [ref=e307]: "-0.18%"
+              - paragraph [ref=e308]: 65 saham
+            - generic [ref=e309]:
+              - paragraph [ref=e310]: Technology
+              - paragraph [ref=e311]: +0.69%
+              - paragraph [ref=e312]: 47 saham
+            - generic [ref=e313]:
+              - paragraph [ref=e314]: Healthcare
+              - paragraph [ref=e315]: "-0.49%"
+              - paragraph [ref=e316]: 38 saham
+        - generic [ref=e317]:
+          - heading "Coba Langsung" [level=2] [ref=e320]
+          - generic [ref=e321]:
+            - generic [ref=e322]:
+              - generic [ref=e323]:
+                - paragraph [ref=e324]: Screener Teknikal
+                - paragraph [ref=e325]: Pilih strategi untuk melihat saham yang cocok
+              - generic [ref=e326]:
+                - generic [ref=e327]:
+                  - button "RSI Oversold" [ref=e328] [cursor=pointer]
+                  - button "Volume Spike" [ref=e329] [cursor=pointer]
+                  - button "Golden Cross" [ref=e330] [cursor=pointer]
+                  - button "MACD Bullish" [ref=e331] [cursor=pointer]
+                  - button "Hype Alert" [ref=e332] [cursor=pointer]
+                - paragraph [ref=e334]: Klik salah satu strategi di atas
+                - link "Lihat 30+ strategi screener" [ref=e335] [cursor=pointer]:
+                  - /url: /screener
+                  - text: Lihat 30+ strategi screener
+                  - img [ref=e336]
+            - generic [ref=e339]:
+              - generic [ref=e340]:
+                - paragraph [ref=e341]: Contoh Trading Plan
+                - paragraph [ref=e342]: BBCA — Otomatis dari Pivot Points & ATR
+              - generic [ref=e344]:
+                - generic [ref=e345]:
+                  - generic [ref=e346]:
+                    - generic [ref=e347]:
+                      - heading "Kalkulator Trading Plan" [level=3] [ref=e348]
+                      - paragraph [ref=e349]: "Sumber: Pivot Points & ATR"
+                    - generic [ref=e350]:
+                      - generic [ref=e351]: Wait & See
+                      - generic [ref=e352]: Rendah
+                  - generic [ref=e354]:
+                    - generic [ref=e355]: Harga pasar saat ini
+                    - generic [ref=e356]: Rp 5.700
+                  - generic [ref=e357]:
+                    - generic [ref=e358]:
+                      - generic [ref=e359]: Entry (Limit)
+                      - generic [ref=e360]:
+                        - generic [ref=e361]: Rp 5.650
+                        - generic [ref=e362]: Antri di S1
+                    - generic [ref=e363]:
+                      - generic [ref=e364]: TP 1
+                      - generic [ref=e365]:
+                        - generic [ref=e366]: Rp 5.800
+                        - generic [ref=e367]: (R1)
+                    - generic [ref=e368]:
+                      - generic [ref=e369]: TP 2
+                      - generic [ref=e370]:
+                        - generic [ref=e371]: Rp 5.925
+                        - generic [ref=e372]: (R2)
+                    - generic [ref=e373]:
+                      - generic [ref=e374]: Stop Loss
+                      - generic [ref=e375]:
+                        - generic [ref=e376]: Rp 5.400
+                        - generic [ref=e377]: (ATR (1.5x))
+                  - generic [ref=e379]:
+                    - generic [ref=e380]: "Risk : Reward"
+                    - generic [ref=e381]: "1 : 0.6"
+                  - generic [ref=e383]:
+                    - img [ref=e384]
+                    - paragraph [ref=e387]: Bahkan dengan antri di S1, rasio Risk:Reward (1:0.6) masih terlalu berisiko. Sebaiknya Wait & See atau cari saham lain dengan volatilitas arah yang lebih jelas.
+                - paragraph [ref=e389]: Perhitungan ini bersifat edukatif berdasarkan indikator teknikal. Bukan rekomendasi membeli atau menjual saham. Keputusan investasi sepenuhnya menjadi tanggung jawab Anda. Selalu pertimbangkan risiko dan konsultasikan dengan pihak berlisensi.
+              - link "Lihat trading plan lengkap →" [ref=e391] [cursor=pointer]:
+                - /url: /stocks/BBCA.JK
+            - generic [ref=e392]:
+              - generic [ref=e395]:
+                - paragraph [ref=e396]: Radar Pantulan
+                - paragraph [ref=e397]: Saham oversold dengan potensi rebound
+              - generic [ref=e399]:
+                - link "JECC Deep Vol↑ RSI 9 Rp520" [ref=e400] [cursor=pointer]:
+                  - /url: /stocks/JECC.JK
+                  - generic [ref=e401]:
+                    - generic [ref=e402]: JECC
+                    - generic [ref=e403]:
+                      - generic [ref=e404]: Deep
+                      - generic [ref=e405]: Vol↑
+                  - generic [ref=e406]:
+                    - generic [ref=e407]: RSI 9
+                    - generic [ref=e408]: Rp520
+                - link "SSMS Deep Vol↑ RSI 14 Rp700" [ref=e409] [cursor=pointer]:
+                  - /url: /stocks/SSMS.JK
+                  - generic [ref=e410]:
+                    - generic [ref=e411]: SSMS
+                    - generic [ref=e412]:
+                      - generic [ref=e413]: Deep
+                      - generic [ref=e414]: Vol↑
+                  - generic [ref=e415]:
+                    - generic [ref=e416]: RSI 14
+                    - generic [ref=e417]: Rp700
+                - link "TKIM Deep Vol↑ RSI 14 Rp5.575" [ref=e418] [cursor=pointer]:
+                  - /url: /stocks/TKIM.JK
+                  - generic [ref=e419]:
+                    - generic [ref=e420]: TKIM
+                    - generic [ref=e421]:
+                      - generic [ref=e422]: Deep
+                      - generic [ref=e423]: Vol↑
+                  - generic [ref=e424]:
+                    - generic [ref=e425]: RSI 14
+                    - generic [ref=e426]: Rp5.575
+                - link "TOWR Deep Vol↑ RSI 15 Rp380" [ref=e427] [cursor=pointer]:
+                  - /url: /stocks/TOWR.JK
+                  - generic [ref=e428]:
+                    - generic [ref=e429]: TOWR
+                    - generic [ref=e430]:
+                      - generic [ref=e431]: Deep
+                      - generic [ref=e432]: Vol↑
+                  - generic [ref=e433]:
+                    - generic [ref=e434]: RSI 15
+                    - generic [ref=e435]: Rp380
+                - link "Lihat semua saham oversold" [ref=e436] [cursor=pointer]:
+                  - /url: /screener
+                  - text: Lihat semua saham oversold
+                  - img [ref=e437]
+        - generic [ref=e439]:
+          - heading "Fitur Platform" [level=2] [ref=e442]
+          - generic [ref=e443]:
+            - link "Screener Teknikal 30+ strategi dari RSI Oversold hingga Golden Cross. Filter 900+ saham dalam hitungan detik." [ref=e444] [cursor=pointer]:
+              - /url: /screener
+              - generic [ref=e445]:
+                - img [ref=e447]
+                - generic [ref=e449]:
+                  - heading "Screener Teknikal" [level=3] [ref=e450]
+                  - paragraph [ref=e451]: 30+ strategi dari RSI Oversold hingga Golden Cross. Filter 900+ saham dalam hitungan detik.
+            - link "Trading Plan Entry, TP, dan Stop Loss otomatis berdasarkan Pivot Points & ATR. Sudah disesuaikan fraksi harga BEI." [ref=e452] [cursor=pointer]:
+              - /url: /stocks/BBCA.JK
+              - generic [ref=e453]:
+                - img [ref=e455]
+                - generic [ref=e458]:
+                  - heading "Trading Plan" [level=3] [ref=e459]
+                  - paragraph [ref=e460]: Entry, TP, dan Stop Loss otomatis berdasarkan Pivot Points & ATR. Sudah disesuaikan fraksi harga BEI.
+            - link "Bottom Fishing Radar Deteksi saham oversold dengan potensi reversal. RSI, Stochastic, dan volume spike otomatis." [ref=e461] [cursor=pointer]:
+              - /url: /screener
+              - generic [ref=e462]:
+                - img [ref=e464]
+                - generic [ref=e467]:
+                  - heading "Bottom Fishing Radar" [level=3] [ref=e468]
+                  - paragraph [ref=e469]: Deteksi saham oversold dengan potensi reversal. RSI, Stochastic, dan volume spike otomatis.
+            - link "Chart Interaktif Candlestick + 12 indikator teknikal real-time. SMA, EMA, RSI, MACD, Bollinger Bands, dan lainnya." [ref=e470] [cursor=pointer]:
+              - /url: /stocks
+              - generic [ref=e471]:
+                - img [ref=e473]
+                - generic [ref=e475]:
+                  - heading "Chart Interaktif" [level=3] [ref=e476]
+                  - paragraph [ref=e477]: Candlestick + 12 indikator teknikal real-time. SMA, EMA, RSI, MACD, Bollinger Bands, dan lainnya.
+        - generic [ref=e479]:
+          - paragraph [ref=e480]: Mulai Analisa Teknikal Sekarang
+          - paragraph [ref=e481]: 900+ saham BEI dengan chart interaktif, 30+ strategi screener, dan trading plan otomatis. Gratis, tanpa registrasi.
+          - generic [ref=e482]:
+            - link "Lihat Semua Saham" [ref=e483] [cursor=pointer]:
+              - /url: /stocks
+            - link "Bandingkan Saham" [ref=e484] [cursor=pointer]:
+              - /url: /compare
+    - generic [ref=e486]:
+      - generic [ref=e487]:
+        - generic [ref=e488]:
+          - generic [ref=e489]:
+            - img [ref=e490]
+            - generic [ref=e492]: TeknikalID
+          - paragraph [ref=e493]: Platform analisa teknikal saham BEI. Data bersumber dari Yahoo Finance dengan jeda ~5-10 menit.
+        - generic [ref=e494]:
+          - link "Beranda" [ref=e495] [cursor=pointer]:
+            - /url: /
+          - link "Saham" [ref=e496] [cursor=pointer]:
+            - /url: /stocks
+          - link "Screener" [ref=e497] [cursor=pointer]:
+            - /url: /screener
+          - link "Disclaimer" [ref=e498] [cursor=pointer]:
+            - /url: /disclaimer
+          - link "Privasi" [ref=e499] [cursor=pointer]:
+            - /url: /privacy
+          - link "Ketentuan" [ref=e500] [cursor=pointer]:
+            - /url: /terms
+      - paragraph [ref=e502]: © 2026 TeknikalID. Bukan rekomendasi investasi.
+  - alert [ref=e29]

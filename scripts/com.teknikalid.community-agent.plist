@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.teknikalid.community-agent</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/curl</string>
+        <string>-sf</string>
+        <string>-X</string>
+        <string>POST</string>
+        <string>-H</string>
+        <string>Authorization: Bearer FZlv5mT6Sgz7mRPJI4nKMG2ITm3UCTN</string>
+        <string>http://localhost:3000/api/cron/community-agent</string>
+    </array>
+    <!-- Fire every 30 minutes; API route handles active-hours + weekend checks -->
+    <key>StartInterval</key>
+    <integer>1800</integer>
+    <key>ExitTimeOut</key>
+    <integer>300</integer>
+    <key>StandardOutPath</key>
+    <string>/Users/nicholasandriansurjadi/Documents/teknikalidnew/community-agent.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/nicholasandriansurjadi/Documents/teknikalidnew/community-agent.log</string>
+    <key>WorkingDirectory</key>
+    <string>/Users/nicholasandriansurjadi/Documents/teknikalidnew</string>
+</dict>
+</plist>

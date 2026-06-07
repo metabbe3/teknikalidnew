@@ -90,6 +90,7 @@ function CommentItem({
             src={comment.author.image}
             alt={comment.author.username}
             className="w-7 h-7 rounded-full object-cover flex-shrink-0"
+            loading="lazy"
           />
         ) : (
           <div className="w-7 h-7 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xs font-semibold flex-shrink-0">

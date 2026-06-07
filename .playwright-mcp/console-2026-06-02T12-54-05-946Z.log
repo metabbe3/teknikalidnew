@@ -1,0 +1,2 @@
+[      24ms] [ERROR] WebSocket connection to 'wss://teknikal.id/_next/webpack-hmr?id=axglDrc97q3VQmt7SyWwB' failed: Error during WebSocket handshake: Unexpected response code: 530 @ https://teknikal.id/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js:13322
+[    2079ms] [ERROR] Failed to load resource: the server responded with a status of 530 () @ https://teknikal.id/:0

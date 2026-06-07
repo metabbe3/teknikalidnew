@@ -85,7 +85,13 @@ export function Header() {
                 aria-expanded={userMenuOpen}
                 aria-label="Menu pengguna"
               >
-                <img src={session.user.image!} alt="" className="w-7 h-7 rounded-full object-cover" />
+                {session.user.image ? (
+                  <img src={session.user.image} alt="" className="w-7 h-7 rounded-full object-cover" loading="lazy" />
+                ) : (
+                  <div className="w-7 h-7 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xs font-semibold">
+                    {(session.user.name || session.user.username || "?")[0].toUpperCase()}
+                  </div>
+                )}
               </button>
               {userMenuOpen && (
                 <>

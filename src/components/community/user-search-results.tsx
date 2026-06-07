@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
+import { generateIdenticonDataUri } from "@/lib/generate-avatar";
 import { FollowButton } from "./follow-button";
 import { ReputationBadge } from "./reputation-badge";
 
@@ -68,12 +69,12 @@ export function UserSearchResults({ topContributors }: { topContributors: TopUse
       {!loading && users.length > 0 && (
         <div className="space-y-2">
           {users.map((user) => {
-            const image = user.image || "https://www.gravatar.com/avatar/?d=mp&s=80";
+            const image = user.image || generateIdenticonDataUri(user.username);
             const reputation = "reputation" in user ? user.reputation : 0;
             return (
               <div key={user.id} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">
                 <Link href={`/profile/${user.username}`} className="shrink-0">
-                  <img src={image} alt="" className="w-9 h-9 rounded-full object-cover" />
+                  <img src={image} alt="" className="w-9 h-9 rounded-full object-cover" loading="lazy" />
                 </Link>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">

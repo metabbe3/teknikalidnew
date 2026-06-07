@@ -1,0 +1,10 @@
+[Worker] Agent Worker started. Polling for jobs...
+[Worker] Poll interval: 10s
+[Worker] Picked up job cmpxs2t2f000101s9dv1icufs (user_engagement)
+[Worker] Completed job cmpxs2t2f000101s9dv1icufs (user_engagement)
+[Worker] Picked up job cmpxs5512000201s9q341xpz0 (stock_alert)
+[Worker] Completed job cmpxs5512000201s9q341xpz0 (stock_alert)
+[Worker] Picked up job cmpxs7jls000301s9cjj4gvjf (anomaly_detection)
+[Worker] Completed job cmpxs7jls000301s9cjj4gvjf (anomaly_detection)
+[Worker] Picked up job cmpxsa0l2000401s9cobsesxe (community_sentiment)
+[Worker] Completed job cmpxsa0l2000401s9cobsesxe (community_sentiment)

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.teknikalid.idx-sync</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/homebrew/bin/node</string>
+        <string>--import</string>
+        <string>tsx</string>
+        <string>/Users/nicholasandriansurjadi/Documents/teknikalidnew/scripts/sync-idx-stocks.ts</string>
+    </array>
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Day</key>
+        <integer>1</integer>
+        <key>Hour</key>
+        <integer>6</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+    <key>ExitTimeOut</key>
+    <integer>300</integer>
+    <key>StandardOutPath</key>
+    <string>/Users/nicholasandriansurjadi/Documents/teknikalidnew/idx-sync.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/nicholasandriansurjadi/Documents/teknikalidnew/idx-sync.log</string>
+    <key>WorkingDirectory</key>
+    <string>/Users/nicholasandriansurjadi/Documents/teknikalidnew</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+        <key>CRON_SECRET</key>
+        <string>FZlv5mT6Sgz7mRPJI4nKMG2ITm3UCTN</string>
+    </dict>
+</dict>
+</plist>

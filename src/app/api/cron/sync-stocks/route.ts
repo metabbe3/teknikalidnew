@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stockSyncService, type IDXStockEntry } from "@/domains/stock/stock-sync.service";
+import { withCronLogging } from "@/domains/cron-monitoring/with-cron-logging";
 
 export async function POST(request: NextRequest) {
   const auth = request.headers.get("authorization");
@@ -19,13 +20,16 @@ export async function POST(request: NextRequest) {
       if (!s.code || !s.name || !s.board) {
         return NextResponse.json(
           { error: `Invalid stock entry: ${JSON.stringify(s)}. Required: code, name, board` },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
 
-    const result = await stockSyncService.syncFromIDXStockList(stocks);
-    return NextResponse.json({ data: result });
+    const { status: logStatus, body: logBody } = await withCronLogging("sync-stocks", async () => {
+      const result = await stockSyncService.syncFromIDXStockList(stocks);
+      return { status: 200, body: { data: result } as Record<string, unknown> };
+    });
+    return NextResponse.json(logBody, { status: logStatus });
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : String(error);
     return NextResponse.json({ error: msg }, { status: 500 });

@@ -52,6 +52,17 @@ export function SocketProvider({ children }: { children: ReactNode }) {
   );
 }
 
+/** Wrapper that only mounts SocketProvider for authenticated users */
+export function ConditionalSocketProvider({ children }: { children: ReactNode }) {
+  const { status } = useSession();
+
+  if (status === "authenticated") {
+    return <SocketProvider>{children}</SocketProvider>;
+  }
+
+  return <>{children}</>;
+}
+
 export function useSocket() {
   return useContext(SocketContext);
 }

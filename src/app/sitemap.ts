@@ -41,15 +41,47 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     };
   });
 
+  // FAQ pages for sitemap
+  const faqPages = await prisma.question.findMany({
+    where: { status: "ANSWERED" },
+    select: { slug: true, updatedAt: true },
+  });
+
+  const faqSitemapEntries = faqPages.map((q) => ({
+    url: `${baseUrl}/akademi/tanya/${q.slug}`,
+    lastModified: q.updatedAt,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  const activeUsers = await prisma.user.findMany({
+    where: { bannedAt: null },
+    orderBy: { reputation: "desc" },
+    take: 100,
+    select: { username: true, createdAt: true },
+  });
+
+  const profilePages = activeUsers.map((u) => ({
+    url: `${baseUrl}/profile/${u.username}`,
+    lastModified: u.createdAt,
+    changeFrequency: "weekly" as const,
+    priority: 0.4,
+  }));
+
   return [
     { url: baseUrl, lastModified: new Date(), changeFrequency: "daily", priority: 1.0 },
     { url: `${baseUrl}/stocks`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
     { url: `${baseUrl}/akademi`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
     { url: `${baseUrl}/berita`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
+    { url: `${baseUrl}/screener`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
+    { url: `${baseUrl}/community`, lastModified: new Date(), changeFrequency: "daily", priority: 0.6 },
+    { url: `${baseUrl}/compare`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
     { url: `${baseUrl}/disclaimer`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
     { url: `${baseUrl}/privacy`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
     { url: `${baseUrl}/terms`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
     ...stockPages,
     ...articlePages,
+    ...faqSitemapEntries,
+    ...profilePages,
   ];
 }

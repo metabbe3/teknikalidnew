@@ -1,0 +1,216 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - main [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e6]:
+        - link "TeknikalID" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - img [ref=e8]
+          - generic [ref=e10]: TeknikalID
+        - navigation "Main navigation" [ref=e11]:
+          - link "Beranda" [ref=e12] [cursor=pointer]:
+            - /url: /
+          - link "Saham" [ref=e13] [cursor=pointer]:
+            - /url: /stocks
+          - link "Screener" [ref=e14] [cursor=pointer]:
+            - /url: /screener
+          - link "Simulasi" [ref=e15] [cursor=pointer]:
+            - /url: /paper-trading
+          - link "Bandingkan" [ref=e16] [cursor=pointer]:
+            - /url: /compare
+          - link "Komunitas" [ref=e17] [cursor=pointer]:
+            - /url: /community
+          - link "Berita" [ref=e18] [cursor=pointer]:
+            - /url: /berita
+          - link "Akademi" [ref=e19] [cursor=pointer]:
+            - /url: /akademi
+        - generic [ref=e20]:
+          - link "Daftar Pantauan" [ref=e176] [cursor=pointer]:
+            - /url: /watchlist
+            - img [ref=e177]
+          - button "Notifikasi" [ref=e180]:
+            - img [ref=e181]
+          - button "Menu pengguna" [ref=e185]
+      - generic [ref=e23]:
+        - generic [ref=e25]:
+          - generic [ref=e26]:
+            - generic [ref=e27]: Bottom Fishing
+            - generic [ref=e29]:
+              - heading "Screener_" [level=1] [ref=e30]:
+                - text: Screener
+                - generic [ref=e31]: _
+              - paragraph [ref=e32]: ">Temukan saham oversold dengan potensi reversal"
+          - generic [ref=e33]:
+            - tab "Bottom" [selected] [ref=e34] [cursor=pointer]
+            - tab "Swing" [ref=e35] [cursor=pointer]
+            - tab "Momentum" [ref=e36] [cursor=pointer]
+            - tab "Long" [ref=e37] [cursor=pointer]
+            - tab "Custom" [ref=e38] [cursor=pointer]
+        - generic [ref=e39]:
+          - generic [ref=e40]:
+            - generic [ref=e43]:
+              - heading "Pilih Filter" [level=2] [ref=e44]
+              - paragraph [ref=e45]: 5 preset tersedia
+            - generic [ref=e46]:
+              - 'button "Radar Pantulan Smart scan: RSI + Stochastic + Volume Spike" [ref=e49] [cursor=pointer]':
+                - generic [ref=e50]:
+                  - img [ref=e52]
+                  - generic [ref=e56]:
+                    - heading "Radar Pantulan" [level=3] [ref=e57]
+                    - paragraph [ref=e58]: "Smart scan: RSI + Stochastic + Volume Spike"
+              - button "RSI Oversold RSI(14) < 30" [ref=e61] [cursor=pointer]:
+                - generic [ref=e62]:
+                  - img [ref=e64]
+                  - generic [ref=e66]:
+                    - heading "RSI Oversold" [level=3] [ref=e67]
+                    - paragraph [ref=e68]: RSI(14) < 30
+              - button "Stochastic Oversold %K & %D < 20" [ref=e71] [cursor=pointer]:
+                - generic [ref=e72]:
+                  - img [ref=e74]
+                  - generic [ref=e76]:
+                    - heading "Stochastic Oversold" [level=3] [ref=e77]
+                    - paragraph [ref=e78]: "%K & %D < 20"
+              - button "Bollinger Lower Touch Harga menyentuh lower band" [ref=e81] [cursor=pointer]:
+                - generic [ref=e82]:
+                  - img [ref=e84]
+                  - generic [ref=e87]:
+                    - heading "Bollinger Lower Touch" [level=3] [ref=e88]
+                    - paragraph [ref=e89]: Harga menyentuh lower band
+              - button "Volume Spike + Turun Volume tinggi saat harga turun" [ref=e92] [cursor=pointer]:
+                - generic [ref=e93]:
+                  - img [ref=e95]
+                  - generic [ref=e99]:
+                    - heading "Volume Spike + Turun" [level=3] [ref=e100]
+                    - paragraph [ref=e101]: Volume tinggi saat harga turun
+          - generic [ref=e103]:
+            - generic [ref=e105]:
+              - generic [ref=e106]:
+                - img [ref=e108]
+                - generic [ref=e112]:
+                  - heading "Radar Pantulan" [level=3] [ref=e113]
+                  - paragraph [ref=e114]: Saham memasuki area oversold — tunggu konfirmasi reversal
+              - generic [ref=e186]: 247 saham
+            - generic [ref=e118]:
+              - 'link "MPRO Properties & Real Estate RSI 6.4 Stoch 0/0 Deep Vol Spike Maha Properti Indonesia Rp 9.000 0,00% Support: Rp 9.000 +1.3% ke SMA20" [ref=e187] [cursor=pointer]':
+                - /url: /stocks/MPRO.JK
+                - generic [ref=e188]:
+                  - generic [ref=e189]:
+                    - generic [ref=e190]: MPRO
+                    - generic [ref=e191]: Properties & Real Estate
+                  - generic [ref=e192]:
+                    - generic [ref=e193]: RSI 6.4
+                    - generic [ref=e194]: Stoch 0/0
+                    - generic [ref=e195]: Deep
+                    - generic [ref=e196]: Vol Spike
+                - generic [ref=e197]:
+                  - generic [ref=e198]: Maha Properti Indonesia
+                  - generic [ref=e199]:
+                    - generic [ref=e200]: Rp 9.000
+                    - generic [ref=e201]: 0,00%
+                - generic [ref=e202]:
+                  - generic [ref=e203]: "Support: Rp 9.000"
+                  - generic [ref=e204]: +1.3% ke SMA20
+              - 'link "TOWR Infrastructures RSI 14.2 Stoch 2/1 Deep Vol Spike Sarana Menara Nusantara Rp 378 -0,53% Support: Rp 373 +12.1% ke SMA20" [ref=e205] [cursor=pointer]':
+                - /url: /stocks/TOWR.JK
+                - generic [ref=e206]:
+                  - generic [ref=e207]:
+                    - generic [ref=e208]: TOWR
+                    - generic [ref=e209]: Infrastructures
+                  - generic [ref=e210]:
+                    - generic [ref=e211]: RSI 14.2
+                    - generic [ref=e212]: Stoch 2/1
+                    - generic [ref=e213]: Deep
+                    - generic [ref=e214]: Vol Spike
+                - generic [ref=e215]:
+                  - generic [ref=e216]: Sarana Menara Nusantara
+                  - generic [ref=e217]:
+                    - generic [ref=e218]: Rp 378
+                    - generic [ref=e219]: "-0,53%"
+                - generic [ref=e220]:
+                  - generic [ref=e221]: "Support: Rp 373"
+                  - generic [ref=e222]: +12.1% ke SMA20
+              - 'link "MLIA Industrials RSI 14.8 Stoch 14/5 Deep Vol Spike Mulia Industrindo Rp 248 0,00% Support: Rp 247 +2.2% ke SMA20" [ref=e223] [cursor=pointer]':
+                - /url: /stocks/MLIA.JK
+                - generic [ref=e224]:
+                  - generic [ref=e225]:
+                    - generic [ref=e226]: MLIA
+                    - generic [ref=e227]: Industrials
+                  - generic [ref=e228]:
+                    - generic [ref=e229]: RSI 14.8
+                    - generic [ref=e230]: Stoch 14/5
+                    - generic [ref=e231]: Deep
+                    - generic [ref=e232]: Vol Spike
+                - generic [ref=e233]:
+                  - generic [ref=e234]: Mulia Industrindo
+                  - generic [ref=e235]:
+                    - generic [ref=e236]: Rp 248
+                    - generic [ref=e237]: 0,00%
+                - generic [ref=e238]:
+                  - generic [ref=e239]: "Support: Rp 247"
+                  - generic [ref=e240]: +2.2% ke SMA20
+              - 'link "NELY Transportation & Logistics RSI 17.1 Stoch 0/12 Deep Vol Spike Pelayaran Nelly Dwi Putri Rp 218 -6,84% Support: Rp 211 +22.7% ke SMA20" [ref=e241] [cursor=pointer]':
+                - /url: /stocks/NELY.JK
+                - generic [ref=e242]:
+                  - generic [ref=e243]:
+                    - generic [ref=e244]: NELY
+                    - generic [ref=e245]: Transportation & Logistics
+                  - generic [ref=e246]:
+                    - generic [ref=e247]: RSI 17.1
+                    - generic [ref=e248]: Stoch 0/12
+                    - generic [ref=e249]: Deep
+                    - generic [ref=e250]: Vol Spike
+                - generic [ref=e251]:
+                  - generic [ref=e252]: Pelayaran Nelly Dwi Putri
+                  - generic [ref=e253]:
+                    - generic [ref=e254]: Rp 218
+                    - generic [ref=e255]: "-6,84%"
+                - generic [ref=e256]:
+                  - generic [ref=e257]: "Support: Rp 211"
+                  - generic [ref=e258]: +22.7% ke SMA20
+              - 'link "HAJJ Consumer Cyclicals RSI 19.1 Stoch 10/19 Deep Vol Spike Arsy Buana Travelindo Rp 108 -3,57% Support: Rp 105 +14.7% ke SMA20" [ref=e259] [cursor=pointer]':
+                - /url: /stocks/HAJJ.JK
+                - generic [ref=e260]:
+                  - generic [ref=e261]:
+                    - generic [ref=e262]: HAJJ
+                    - generic [ref=e263]: Consumer Cyclicals
+                  - generic [ref=e264]:
+                    - generic [ref=e265]: RSI 19.1
+                    - generic [ref=e266]: Stoch 10/19
+                    - generic [ref=e267]: Deep
+                    - generic [ref=e268]: Vol Spike
+                - generic [ref=e269]:
+                  - generic [ref=e270]: Arsy Buana Travelindo
+                  - generic [ref=e271]:
+                    - generic [ref=e272]: Rp 108
+                    - generic [ref=e273]: "-3,57%"
+                - generic [ref=e274]:
+                  - generic [ref=e275]: "Support: Rp 105"
+                  - generic [ref=e276]: +14.7% ke SMA20
+            - button "Lihat Semua (242 lagi)" [ref=e278] [cursor=pointer]:
+              - generic [ref=e279]:
+                - text: Lihat Semua (242 lagi)
+                - img [ref=e280]
+            - paragraph [ref=e156]: Daftar ini bersifat edukatif berdasarkan indikator teknikal (RSI & Stochastic). Bukan rekomendasi membeli. Oversold tidak selalu berarti bottom. Selalu tunggu konfirmasi reversal sebelum entry.
+      - generic [ref=e158]:
+        - generic [ref=e159]:
+          - generic [ref=e160]:
+            - generic [ref=e161]:
+              - img [ref=e162]
+              - generic [ref=e164]: TeknikalID
+            - paragraph [ref=e165]: Platform analisa teknikal saham BEI. Data bersumber dari Yahoo Finance dengan jeda ~5-10 menit.
+          - generic [ref=e166]:
+            - link "Beranda" [ref=e167] [cursor=pointer]:
+              - /url: /
+            - link "Saham" [ref=e168] [cursor=pointer]:
+              - /url: /stocks
+            - link "Screener" [ref=e169] [cursor=pointer]:
+              - /url: /screener
+            - link "Disclaimer" [ref=e170] [cursor=pointer]:
+              - /url: /disclaimer
+            - link "Privasi" [ref=e171] [cursor=pointer]:
+              - /url: /privacy
+            - link "Ketentuan" [ref=e172] [cursor=pointer]:
+              - /url: /terms
+        - paragraph [ref=e174]: © 2026 TeknikalID. Bukan rekomendasi investasi.
+  - alert [ref=e175]

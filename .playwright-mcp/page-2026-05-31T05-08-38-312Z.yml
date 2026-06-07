@@ -1,0 +1,14 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - main [ref=e3]:
+    - generic [ref=e5]:
+      - paragraph [ref=e6]: "404"
+      - heading "Page not found" [level=2] [ref=e7]
+      - paragraph [ref=e8]: The stock you're looking for doesn't exist or is not tracked on TeknikalID.
+      - generic [ref=e9]:
+        - link "Home" [ref=e10] [cursor=pointer]:
+          - /url: /
+        - link "View All Stocks" [ref=e11] [cursor=pointer]:
+          - /url: /stocks
+  - alert [ref=e12]

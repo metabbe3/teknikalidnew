@@ -1,0 +1,26 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - main [ref=e3]:
+    - generic [ref=e8]:
+      - generic [ref=e9]:
+        - img [ref=e11]
+        - heading "TeknikalID" [level=1] [ref=e13]
+        - paragraph [ref=e14]: Internal Admin Access
+      - generic [ref=e15]:
+        - generic [ref=e17]: Admin Access
+        - generic [ref=e18]:
+          - button "Sign in with Google" [ref=e19]:
+            - img
+            - text: Sign in with Google
+          - generic [ref=e22]: or
+          - generic [ref=e24]:
+            - textbox "Email" [ref=e25]: admin@teknikal.id
+            - textbox "Password" [ref=e26]: admin123
+            - generic [ref=e27] [cursor=pointer]:
+              - checkbox "Remember me for 7 days" [ref=e28]
+              - generic [ref=e29]: Remember me for 7 days
+            - paragraph [ref=e33]: Email atau password salah
+            - button "Sign In" [ref=e30]
+      - paragraph [ref=e31]: Restricted access. Authorized personnel only.
+  - alert [ref=e32]

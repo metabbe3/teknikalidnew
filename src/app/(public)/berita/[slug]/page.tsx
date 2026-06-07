@@ -5,7 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { SITE_URL } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
 import { ArticleContent, extractHeadings, estimateReadingTime, extractTickers } from "@/components/article/article-renderer";
-import { ArrowLeft, TrendingUp, Clock, ChevronRight } from "lucide-react";
+import { ArrowLeft, Clock, ChevronRight } from "lucide-react";
+import { ShareButtons } from "@/components/ui/share-buttons";
 import { ArticleType } from "@/generated/prisma/client";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { StockArticleCard } from "@/components/stock/stock-article-card";
@@ -20,9 +21,11 @@ export async function generateMetadata({
   const { slug } = await params;
   const article = await prisma.article.findUnique({
     where: { slug },
-    select: { title: true, excerpt: true, articleType: true },
+    select: { title: true, excerpt: true, articleType: true, tickerTag: true },
   });
   if (!article || !BERITA_TYPES.includes(article.articleType)) return {};
+
+  const ogImage = `${SITE_URL}/api/og?title=${encodeURIComponent(article.title)}&type=berita${article.tickerTag ? `&ticker=${article.tickerTag.replace(".JK", "")}` : ""}`;
 
   return {
     title: `${article.title} — Berita TeknikalID`,
@@ -30,9 +33,15 @@ export async function generateMetadata({
     alternates: { canonical: `/berita/${slug}` },
     openGraph: {
       title: article.title,
-      description: article.excerpt,
+      description: article.excerpt ?? undefined,
       type: "article",
       url: `${SITE_URL}/berita/${slug}`,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: article.title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description: article.excerpt ?? undefined,
     },
   };
 }
@@ -56,7 +65,12 @@ export default async function BeritaArticlePage({
   const readingTime = estimateReadingTime(article.content);
   const mentionedTickers = extractTickers(article.content);
 
-  const [prevArticle, nextArticle, stockCards] = await Promise.all([
+  // Fetch related articles by ticker or overlapping tags
+  const relatedWhere = article.tickerTag
+    ? { status: "PUBLISHED" as const, articleType: { in: BERITA_TYPES }, id: { not: article.id }, tickerTag: article.tickerTag }
+    : { status: "PUBLISHED" as const, articleType: { in: BERITA_TYPES }, id: { not: article.id }, tags: { hasSome: article.tags } };
+
+  const [prevArticle, nextArticle, stockCards, relatedArticles] = await Promise.all([
     prisma.article.findFirst({
       where: { status: "PUBLISHED", articleType: { in: BERITA_TYPES }, publishedAt: { lt: article.publishedAt } },
       orderBy: { publishedAt: "desc" },
@@ -70,26 +84,54 @@ export default async function BeritaArticlePage({
     mentionedTickers.length > 0
       ? stockMarketService.getStockBatchWithIndicators(mentionedTickers)
       : Promise.resolve([]),
+    prisma.article.findMany({
+      where: relatedWhere,
+      orderBy: { publishedAt: "desc" },
+      take: 5,
+      select: { id: true, slug: true, title: true, publishedAt: true, articleType: true, tickerTag: true },
+    }),
   ]);
+
+  const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(article.title)}&type=berita${article.tickerTag ? `&ticker=${article.tickerTag.replace(".JK", "")}` : ""}`;
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "Article",
-    headline: article.title,
-    description: article.excerpt,
-    datePublished: article.publishedAt.toISOString(),
-    author: {
-      "@type": "Person",
-      name: article.author.name ?? article.author.username,
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "TeknikalID",
-    },
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": `${SITE_URL}/berita/${slug}`,
-    },
+    "@graph": [
+      {
+        "@type": "Article",
+        headline: article.title,
+        description: article.excerpt,
+        datePublished: article.publishedAt.toISOString(),
+        dateModified: article.updatedAt.toISOString(),
+        image: ogImageUrl,
+        author: {
+          "@type": "Person",
+          name: "Tim Analis TeknikalID",
+          jobTitle: "Analis Pasar Saham",
+          url: `${SITE_URL}/berita`,
+        },
+        publisher: {
+          "@type": "Organization",
+          name: "TeknikalID",
+          url: SITE_URL,
+          logo: { "@type": "ImageObject", url: `${SITE_URL}/logo.png` },
+        },
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          "@id": `${SITE_URL}/berita/${slug}`,
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Berita", item: `${SITE_URL}/berita` },
+          ...(article.tickerTag
+            ? [{ "@type": "ListItem" as const, position: 2, name: article.tickerTag.replace(".JK", ""), item: `${SITE_URL}/stocks/${article.tickerTag}` }]
+            : []),
+          { "@type": "ListItem", position: article.tickerTag ? 3 : 2, name: article.title, item: `${SITE_URL}/berita/${slug}` },
+        ],
+      },
+    ],
   };
 
   return (
@@ -103,19 +145,14 @@ export default async function BeritaArticlePage({
         <div className="max-w-7xl mx-auto px-4 py-10">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-1.5 text-xs font-mono text-text-tertiary mb-8">
-            <Link
-              href="/berita"
-              className="hover:text-accent transition-colors flex items-center gap-1"
-            >
+            <Link href="/berita" className="hover:text-accent transition-colors flex items-center gap-1">
               <ArrowLeft className="h-3 w-3" />
               Berita
             </Link>
             {article.tickerTag && (
               <>
                 <ChevronRight className="h-3 w-3 opacity-40" />
-                <span className="text-accent">
-                  {article.tickerTag.replace(".JK", "")}
-                </span>
+                <span className="text-accent">{article.tickerTag.replace(".JK", "")}</span>
               </>
             )}
             <ChevronRight className="h-3 w-3 opacity-40" />
@@ -146,29 +183,19 @@ export default async function BeritaArticlePage({
 
                 {article.coverImageUrl && (
                   <div className="rounded-xl overflow-hidden mb-6">
-                    <img
-                      src={article.coverImageUrl}
-                      alt=""
-                      className="w-full object-cover max-h-[400px]"
-                    />
+                    <img src={article.coverImageUrl} alt={article.title} className="w-full object-cover max-h-[400px]" loading="lazy" />
                   </div>
                 )}
 
                 <div className="flex flex-wrap items-center gap-4 text-sm text-text-tertiary">
                   <div className="flex items-center gap-2">
                     <div className="w-7 h-7 rounded-full bg-accent/10 text-accent text-xs font-semibold flex items-center justify-center">
-                      {(article.author.name ?? article.author.username)[0].toUpperCase()}
+                      T
                     </div>
-                    <span className="text-text-secondary font-medium">
-                      {article.author.name ?? article.author.username}
-                    </span>
+                    <span className="text-text-secondary font-medium">Tim Analis TeknikalID</span>
                   </div>
                   <span className="font-mono text-xs">
-                    {new Intl.DateTimeFormat("id-ID", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    }).format(new Date(article.publishedAt))}
+                    {new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric" }).format(new Date(article.publishedAt))}
                   </span>
                   <span className="flex items-center gap-1 font-mono text-xs">
                     <Clock className="h-3 w-3" />
@@ -179,11 +206,7 @@ export default async function BeritaArticlePage({
                 {article.tags.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mt-4">
                     {article.tags.map((tag) => (
-                      <Badge
-                        key={tag}
-                        variant="secondary"
-                        className="text-xs bg-accent-muted text-accent border-0"
-                      >
+                      <Badge key={tag} variant="secondary" className="text-xs bg-accent-muted text-accent border-0">
                         {tag}
                       </Badge>
                     ))}
@@ -191,15 +214,22 @@ export default async function BeritaArticlePage({
                 )}
               </header>
 
+              {/* Share bar */}
+              <div className="flex items-center gap-3 py-3 mb-6 border-y border-border">
+                <ShareButtons
+                  url={`${SITE_URL}/berita/${slug}`}
+                  title={article.title}
+                  text={article.excerpt ?? undefined}
+                />
+              </div>
+
               {/* Article body */}
               <ArticleContent content={article.content} />
 
               {/* Stock cards for mentioned tickers */}
               {stockCards.length > 0 && (
                 <div className="mt-8 space-y-3">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
-                    Saham yang Disebut
-                  </p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">Saham Terkait</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {stockCards.map((stock) => (
                       <StockArticleCard key={stock.ticker} {...stock} />
@@ -208,48 +238,58 @@ export default async function BeritaArticlePage({
                 </div>
               )}
 
-              {/* Source attribution */}
-              {article.generationMeta &&
-                typeof article.generationMeta === "object" &&
-                "sourceUrl" in article.generationMeta && (
-                  <div className="mt-8 p-4 bg-bg-card rounded-xl depth-shadow border-l-4 border-accent/30">
-                    <p className="text-xs text-text-tertiary font-medium mb-1">Sumber Berita</p>
-                    <a
-                      href={String(article.generationMeta.sourceUrl)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-accent hover:underline"
-                    >
-                      {String(article.generationMeta.sourceName ?? "Sumber Eksternal")}
-                      {"originalTitle" in article.generationMeta && (
-                        <span className="text-text-secondary"> — &ldquo;{String(article.generationMeta.originalTitle)}&rdquo;</span>
-                      )}
-                    </a>
+              {/* Related articles */}
+              {relatedArticles.length > 0 && (
+                <div className="mt-8 space-y-3">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">Artikel Terkait</p>
+                  <div className="space-y-2">
+                    {relatedArticles.map((ra) => (
+                      <Link key={ra.id} href={`/berita/${ra.slug}`} className="group block bg-bg-card rounded-xl depth-shadow p-4 hover:depth-shadow-hover transition-all">
+                        <div className="flex items-start gap-3">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors line-clamp-2">
+                              {ra.title}
+                            </p>
+                            <p className="text-xs text-text-tertiary mt-1 font-mono">
+                              {new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" }).format(new Date(ra.publishedAt))}
+                            </p>
+                          </div>
+                          {ra.tickerTag && (
+                            <span className="text-xs font-mono font-semibold text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded shrink-0">
+                              {ra.tickerTag.replace(".JK", "")}
+                            </span>
+                          )}
+                        </div>
+                      </Link>
+                    ))}
                   </div>
-                )}
+                </div>
+              )}
+
+              {/* Source attribution */}
+              {article.generationMeta && typeof article.generationMeta === "object" && "sourceUrl" in article.generationMeta && (
+                <div className="mt-8 p-4 bg-bg-card rounded-xl depth-shadow border-l-4 border-accent/30">
+                  <p className="text-xs text-text-tertiary font-medium mb-1">Referensi</p>
+                  <a href={String(article.generationMeta.sourceUrl)} target="_blank" rel="noopener noreferrer" className="text-sm text-accent hover:underline">
+                    {String(article.generationMeta.sourceName ?? "Baca selengkapnya")}
+                  </a>
+                </div>
+              )}
 
               {/* Bottom CTA banner */}
               <div className="akademi-cta-banner mt-12 p-8">
                 <div className="relative z-10 space-y-4">
-                  <p className="text-lg font-semibold text-white">
-                    Lihat data teknikal saham ini
-                  </p>
+                  <p className="text-lg font-semibold text-white">Cek Chart & Sinyal Teknikal</p>
                   <p className="text-gray-400 text-sm max-w-lg">
-                    Gunakan halaman saham TeknikalID untuk melihat chart real-time, indikator teknikal, dan sinyal trading terkini.
+                    Pantau pergerakan harga real-time, RSI, MACD, dan sinyal trading langsung dari halaman saham TeknikalID.
                   </p>
                   <div className="flex flex-wrap gap-3 pt-2">
                     {article.tickerTag && (
-                      <Link
-                        href={`/stocks/${article.tickerTag}`}
-                        className="bg-accent text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-accent/90 transition-colors press-scale"
-                      >
+                      <Link href={`/stocks/${article.tickerTag}`} className="bg-accent text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-accent/90 transition-colors press-scale">
                         Lihat {article.tickerTag.replace(".JK", "")}
                       </Link>
                     )}
-                    <Link
-                      href="/screener"
-                      className="bg-white/10 text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-white/20 transition-colors press-scale"
-                    >
+                    <Link href="/screener" className="bg-white/10 text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-white/20 transition-colors press-scale">
                       Buka Screener
                     </Link>
                   </div>
@@ -260,31 +300,17 @@ export default async function BeritaArticlePage({
               {(prevArticle || nextArticle) && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
                   {prevArticle ? (
-                    <Link
-                      href={`/berita/${prevArticle.slug}`}
-                      className="group bg-bg-card rounded-xl depth-shadow p-5 hover:depth-shadow-hover transition-all"
-                    >
-                      <p className="text-xs text-text-tertiary font-medium mb-1">
-                        Analisis Sebelumnya
-                      </p>
-                      <p className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors line-clamp-2">
-                        {prevArticle.title}
-                      </p>
+                    <Link href={`/berita/${prevArticle.slug}`} className="group bg-bg-card rounded-xl depth-shadow p-5 hover:depth-shadow-hover transition-all">
+                      <p className="text-xs text-text-tertiary font-medium mb-1">Analisa Sebelumnya</p>
+                      <p className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors line-clamp-2">{prevArticle.title}</p>
                     </Link>
                   ) : (
                     <div />
                   )}
                   {nextArticle && (
-                    <Link
-                      href={`/berita/${nextArticle.slug}`}
-                      className="group bg-bg-card rounded-xl depth-shadow p-5 hover:depth-shadow-hover transition-all text-right"
-                    >
-                      <p className="text-xs text-text-tertiary font-medium mb-1">
-                        Analisis Selanjutnya
-                      </p>
-                      <p className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors line-clamp-2">
-                        {nextArticle.title}
-                      </p>
+                    <Link href={`/berita/${nextArticle.slug}`} className="group bg-bg-card rounded-xl depth-shadow p-5 hover:depth-shadow-hover transition-all text-right">
+                      <p className="text-xs text-text-tertiary font-medium mb-1">Analisa Selanjutnya</p>
+                      <p className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors line-clamp-2">{nextArticle.title}</p>
                     </Link>
                   )}
                 </div>
@@ -296,18 +322,10 @@ export default async function BeritaArticlePage({
               <aside className="hidden lg:block">
                 <div className="toc-sidebar">
                   <div className="bg-bg-card rounded-xl depth-shadow p-4">
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-text-tertiary mb-3">
-                      Daftar Isi
-                    </p>
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-text-tertiary mb-3">Daftar Isi</p>
                     <nav className="space-y-0.5">
                       {headings.map((h) => (
-                        <a
-                          key={h.id}
-                          href={`#${h.id}`}
-                          className="toc-link"
-                        >
-                          {h.text}
-                        </a>
+                        <a key={h.id} href={`#${h.id}`} className="toc-link">{h.text}</a>
                       ))}
                     </nav>
                   </div>

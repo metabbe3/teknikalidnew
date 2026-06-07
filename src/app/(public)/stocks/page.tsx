@@ -5,6 +5,7 @@ import { IDX_STOCKS } from "@/lib/constants";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale/id";
 import type { MarketStatusResult } from "@/lib/market-hours";
+import { SITE_URL } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +13,17 @@ export const metadata: Metadata = {
   title: "Daftar Harga Saham IDX Hari Ini",
   description: "Cek harga saham IDX hari ini. Filter berdasarkan sektor, RSI, MACD, dan indikator teknikal lainnya. Analisa teknikal saham BEI terlengkap.",
   alternates: { canonical: "/stocks" },
+  openGraph: {
+    title: "Daftar Harga Saham IDX Hari Ini — TeknikalID",
+    description: "Cek harga saham IDX hari ini. Filter berdasarkan sektor, RSI, MACD, dan indikator teknikal lainnya.",
+    url: `${SITE_URL}/stocks`,
+    images: [{ url: `${SITE_URL}/api/og?title=Daftar+Saham+IDX&type=berita`, width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Daftar Harga Saham IDX Hari Ini — TeknikalID",
+    description: "Cek harga saham IDX hari ini dengan indikator teknikal.",
+  },
 };
 
 function MarketStatus({ marketStatus, latestPrice }: { marketStatus: MarketStatusResult; latestPrice: { date: Date } | null }) {
@@ -107,7 +119,26 @@ export default async function StocksPage() {
   const unchanged = withChange.length - gainers - losers;
   const isClosed = !marketInfo.marketStatus.isOpen;
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "CollectionPage", name: "Daftar Harga Saham IDX", url: `${SITE_URL}/stocks` },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+          { "@type": "ListItem", position: 2, name: "Saham", item: `${SITE_URL}/stocks` },
+        ],
+      },
+    ],
+  };
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
     <div className="fade-in">
       {/* Terminal Hero */}
       <section className="stocks-hero" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}>
@@ -160,5 +191,6 @@ export default async function StocksPage() {
         <StockTable stocks={rows} sectors={sectors} />
       </div>
     </div>
+    </>
   );
 }

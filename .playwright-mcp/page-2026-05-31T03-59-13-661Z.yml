@@ -1,0 +1,228 @@
+- generic [active] [ref=e1]:
+  - text: 
+  - generic [ref=e4]:
+    - banner [ref=e6]:
+      - link "IDX" [ref=e7] [cursor=pointer]:
+        - /url: /id
+        - img "IDX" [ref=e8]
+      - navigation [ref=e9]:
+        - text:  
+        - generic [ref=e10]:
+          - generic:
+            - generic [ref=e11]:
+              - text: 31 Mei 2026
+              - generic [ref=e12]: "|"
+              - text: 10:59 WIB
+            - generic [ref=e13]:
+              - generic [ref=e15]:
+                - generic:
+                  - generic: 
+                - searchbox "" [ref=e16]
+                - text: 
+              - generic:
+                - list
+            - generic [ref=e18]:
+              - link "Masuk" [ref=e19] [cursor=pointer]:
+                - /url: /id/masuk?prev=%2Fid%2Fdata-pasar%2Fdata-saham%2Fdaftar-saham%2F
+              - link "Daftar" [ref=e20] [cursor=pointer]:
+                - /url: /id/daftar
+            - navigation [ref=e21]:
+              - link "en" [ref=e22] [cursor=pointer]:
+                - /url: /en/market-data/stocks-data/stock-list
+              - link "id" [ref=e23] [cursor=pointer]:
+                - /url: /id/data-pasar/data-saham/daftar-saham
+          - navigation [ref=e24]:
+            - list [ref=e26]:
+              - listitem [ref=e27]:
+                - link "Data Pasar":
+                  - /url: /id/#0
+                - text: 
+              - listitem [ref=e28]:
+                - link "Produk & Layanan":
+                  - /url: /id/#1
+                - text: 
+              - listitem [ref=e29]:
+                - link "Perusahaan Tercatat":
+                  - /url: /id/#2
+                - text: 
+              - listitem [ref=e30]:
+                - link "IDX Syariah":
+                  - /url: /id/idx-syariah/
+                - text: 
+              - listitem [ref=e31]:
+                - link "Anggota Bursa & Partisipan":
+                  - /url: /id/#4
+                - text: 
+              - listitem [ref=e32]:
+                - link "Berita":
+                  - /url: /id/#5
+                - text: 
+              - listitem [ref=e33]:
+                - link "Peraturan":
+                  - /url: /id/#6
+                - text: 
+              - listitem [ref=e34]:
+                - link "Investor":
+                  - /url: /id/#7
+                - text: 
+              - listitem [ref=e35]:
+                - link "Tentang BEI":
+                  - /url: /id/#8
+                - text: 
+    - main [ref=e37]:
+      - generic [ref=e38]:
+        - list [ref=e39]:
+          - listitem [ref=e40]:
+            - link "" [ref=e41] [cursor=pointer]:
+              - /url: /id
+              - generic [ref=e42]: 
+          - listitem [ref=e43]:
+            - generic [ref=e44]: 
+            - generic [ref=e45]: Data Pasar
+          - listitem [ref=e46]:
+            - generic [ref=e47]: 
+            - generic [ref=e48]: Data Saham
+          - listitem [ref=e49]:
+            - generic [ref=e50]: 
+            - generic [ref=e51]: Daftar Saham
+        - heading "Daftar Saham" [level=1] [ref=e52]
+        - generic [ref=e54]:
+          - combobox "Search for option" [ref=e56]:
+            - searchbox [ref=e58]
+          - combobox "Search for option" [ref=e62]:
+            - searchbox [ref=e64]
+          - combobox "Search for option" [ref=e68]:
+            - searchbox [ref=e70]
+          - button " Unduh" [ref=e74] [cursor=pointer]:
+            - generic [ref=e75]: 
+            - text: Unduh
+        - generic [ref=e77]:
+          - table [ref=e79]:
+            - rowgroup [ref=e86]:
+              - row "No Kode  Sort table by Kode in descending order  Nama Perusahaan  Sort table by Nama Perusahaan in descending order  Tanggal Pencatatan  Sort table by Tanggal Pencatatan in descending order  Saham  Sort table by Saham in descending order  Papan Pencatatan  Sort table by Papan Pencatatan in descending order " [ref=e87]:
+                - columnheader "No" [ref=e88]
+                - columnheader "Kode  Sort table by Kode in descending order " [ref=e89]:
+                  - text: Kode
+                  - button " Sort table by Kode in descending order " [ref=e90] [cursor=pointer]:
+                    - text: 
+                    - generic [ref=e91]: Sort table by Kode in descending order
+                    - text: 
+                - columnheader "Nama Perusahaan  Sort table by Nama Perusahaan in descending order " [ref=e92]:
+                  - text: Nama Perusahaan
+                  - button " Sort table by Nama Perusahaan in descending order " [ref=e93] [cursor=pointer]:
+                    - text: 
+                    - generic [ref=e94]: Sort table by Nama Perusahaan in descending order
+                    - text: 
+                - columnheader "Tanggal Pencatatan  Sort table by Tanggal Pencatatan in descending order " [ref=e95]:
+                  - text: Tanggal Pencatatan
+                  - button " Sort table by Tanggal Pencatatan in descending order " [ref=e96] [cursor=pointer]:
+                    - text: 
+                    - generic [ref=e97]: Sort table by Tanggal Pencatatan in descending order
+                    - text: 
+                - columnheader "Saham  Sort table by Saham in descending order " [ref=e98]:
+                  - text: Saham
+                  - button " Sort table by Saham in descending order " [ref=e99] [cursor=pointer]:
+                    - text: 
+                    - generic [ref=e100]: Sort table by Saham in descending order
+                    - text: 
+                - columnheader "Papan Pencatatan  Sort table by Papan Pencatatan in descending order " [ref=e101]:
+                  - text: Papan Pencatatan
+                  - button " Sort table by Papan Pencatatan in descending order " [ref=e102] [cursor=pointer]:
+                    - text: 
+                    - generic [ref=e103]: Sort table by Papan Pencatatan in descending order
+                    - text: 
+            - rowgroup [ref=e104]:
+              - row "1 AALI Astra Agro Lestari Tbk. 09 Des 1997 1.924.688.333 Utama" [ref=e105]:
+                - rowheader "1" [ref=e106]
+                - cell "AALI" [ref=e107]
+                - cell "Astra Agro Lestari Tbk." [ref=e108]
+                - cell "09 Des 1997" [ref=e109]
+                - cell "1.924.688.333" [ref=e110]
+                - cell "Utama" [ref=e111]
+              - row "2 ABBA Mahaka Media Tbk. 03 Apr 2002 3.935.892.857 Pemantauan Khusus" [ref=e112]:
+                - rowheader "2" [ref=e113]
+                - cell "ABBA" [ref=e114]
+                - cell "Mahaka Media Tbk." [ref=e115]
+                - cell "03 Apr 2002" [ref=e116]
+                - cell "3.935.892.857" [ref=e117]
+                - cell "Pemantauan Khusus" [ref=e118]
+              - row "3 ABDA Asuransi Bina Dana Arta Tbk. 06 Jul 1989 620.806.680 Pengembangan" [ref=e119]:
+                - rowheader "3" [ref=e120]
+                - cell "ABDA" [ref=e121]
+                - cell "Asuransi Bina Dana Arta Tbk." [ref=e122]
+                - cell "06 Jul 1989" [ref=e123]
+                - cell "620.806.680" [ref=e124]
+                - cell "Pengembangan" [ref=e125]
+              - row "4 ABMM ABM Investama Tbk. 06 Des 2011 2.753.165.000 Utama" [ref=e126]:
+                - rowheader "4" [ref=e127]
+                - cell "ABMM" [ref=e128]
+                - cell "ABM Investama Tbk." [ref=e129]
+                - cell "06 Des 2011" [ref=e130]
+                - cell "2.753.165.000" [ref=e131]
+                - cell "Utama" [ref=e132]
+              - row "5 ACES Aspirasi Hidup Indonesia Tbk. 06 Nov 2007 17.120.389.700 Utama" [ref=e133]:
+                - rowheader "5" [ref=e134]
+                - cell "ACES" [ref=e135]
+                - cell "Aspirasi Hidup Indonesia Tbk." [ref=e136]
+                - cell "06 Nov 2007" [ref=e137]
+                - cell "17.120.389.700" [ref=e138]
+                - cell "Utama" [ref=e139]
+              - row "6 ACST Acset Indonusa Tbk. 24 Jun 2013 17.675.160.000 Pemantauan Khusus" [ref=e140]:
+                - rowheader "6" [ref=e141]
+                - cell "ACST" [ref=e142]
+                - cell "Acset Indonusa Tbk." [ref=e143]
+                - cell "24 Jun 2013" [ref=e144]
+                - cell "17.675.160.000" [ref=e145]
+                - cell "Pemantauan Khusus" [ref=e146]
+              - row "7 ADES Akasha Wira International Tbk. 13 Jun 1994 589.896.800 Utama" [ref=e147]:
+                - rowheader "7" [ref=e148]
+                - cell "ADES" [ref=e149]
+                - cell "Akasha Wira International Tbk." [ref=e150]
+                - cell "13 Jun 1994" [ref=e151]
+                - cell "589.896.800" [ref=e152]
+                - cell "Utama" [ref=e153]
+              - row "8 ADHI Adhi Karya (Persero) Tbk. 18 Mar 2004 8.407.608.979 Utama" [ref=e154]:
+                - rowheader "8" [ref=e155]
+                - cell "ADHI" [ref=e156]
+                - cell "Adhi Karya (Persero) Tbk." [ref=e157]
+                - cell "18 Mar 2004" [ref=e158]
+                - cell "8.407.608.979" [ref=e159]
+                - cell "Utama" [ref=e160]
+              - row "9 AISA FKS Food Sejahtera Tbk. 11 Jun 1997 9.311.800.000 Utama" [ref=e161]:
+                - rowheader "9" [ref=e162]
+                - cell "AISA" [ref=e163]
+                - cell "FKS Food Sejahtera Tbk." [ref=e164]
+                - cell "11 Jun 1997" [ref=e165]
+                - cell "9.311.800.000" [ref=e166]
+                - cell "Utama" [ref=e167]
+              - row "10 AKKU Anugerah Kagum Karya Utama Tbk 01 Nov 2004 6.449.463.636 Pemantauan Khusus" [ref=e168]:
+                - rowheader "10" [ref=e169]
+                - cell "AKKU" [ref=e170]
+                - cell "Anugerah Kagum Karya Utama Tbk" [ref=e171]
+                - cell "01 Nov 2004" [ref=e172]
+                - cell "6.449.463.636" [ref=e173]
+                - cell "Pemantauan Khusus" [ref=e174]
+          - generic [ref=e175]:
+            - generic [ref=e177]:
+              - text: "Baris:"
+              - combobox "Baris:" [ref=e178]:
+                - option "10" [selected]
+                - option "20"
+                - option "30"
+                - option "40"
+                - option "50"
+                - option "All"
+            - generic [ref=e179]:
+              - generic [ref=e181]: 1 - 10 dari 957
+              - button:
+                - generic: 
+              - button:
+                - generic: 
+              - button [ref=e182] [cursor=pointer]:
+                - generic [ref=e183]: 
+              - button [ref=e184] [cursor=pointer]:
+                - generic [ref=e185]: 
+    - generic [ref=e187]: 
+    - link "" [ref=e188] [cursor=pointer]:
+      - /url: https://wa.me/+6281181150515
+      - generic [ref=e190]: 

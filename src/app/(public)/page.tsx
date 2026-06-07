@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import dynamicImport from "next/dynamic";
 import { prisma } from "@/lib/prisma";
 import { decimalToNumber } from "@/lib/serialize";
-import { SITE_URL, IDX_STOCKS, SECTORS } from "@/lib/constants";
+import { IDX_STOCKS, SECTORS } from "@/lib/constants";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { technicalAnalysisService } from "@/domains/stock/technical-analysis.service";
 import { FeaturedStockCard } from "@/components/home/featured-stock-card";
@@ -11,9 +12,16 @@ import { SectorHeatmap } from "@/components/home/sector-heatmap";
 import { PlatformFeatures } from "@/components/home/platform-features";
 import { CtaSection } from "@/components/home/cta-section";
 import { TickerTape } from "@/components/home/ticker-tape";
-import { MiniScreenerPreview } from "@/components/home/mini-screener-preview";
-import { RadarPreview } from "@/components/home/radar-preview";
 import { TradingPlanCard } from "@/components/stock/trading-plan-card";
+
+const MiniScreenerPreview = dynamicImport(
+  () => import("@/components/home/mini-screener-preview").then((m) => ({ default: m.MiniScreenerPreview })),
+  { loading: () => <div className="h-[200px] bg-bg-card rounded-xl animate-pulse" /> },
+);
+const RadarPreview = dynamicImport(
+  () => import("@/components/home/radar-preview").then((m) => ({ default: m.RadarPreview })),
+  { loading: () => <div className="h-[200px] bg-bg-card rounded-xl animate-pulse" /> },
+);
 
 export const metadata: Metadata = {
   title: "TeknikalID — Analisa Teknikal Saham BEI Terlengkap",
@@ -22,7 +30,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-// Force dynamic rendering — DB not available at build time in Docker
+// DB not available at build time in Docker — service-level cache handles 5-min caching at runtime
 export const dynamic = "force-dynamic";
 
 // ── Skeleton fallbacks ──────────────────────────────────────────────
@@ -32,7 +40,7 @@ function FeaturedSkeleton() {
     <section className="space-y-5">
       <div className="flex items-center gap-3">
         <div className="w-1 h-6 bg-accent rounded-full" />
-        <h2 className="text-lg font-semibold tracking-tight">Saham Paling Aktif</h2>
+        <h2 className="text-lg font-semibold tracking-tight">Saham Paling Aktif Hari Ini</h2>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
         {Array.from({ length: 6 }).map((_, i) => (
@@ -64,7 +72,7 @@ function PreviewSkeleton() {
     <section className="space-y-5">
       <div className="flex items-center gap-3">
         <div className="w-1 h-6 bg-accent rounded-full" />
-        <h2 className="text-lg font-semibold tracking-tight">Coba Langsung</h2>
+        <h2 className="text-lg font-semibold tracking-tight">Coba Fitur Analisa</h2>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {Array.from({ length: 3 }).map((_, i) => (
@@ -167,7 +175,7 @@ async function FeaturedStocksSection({
     <section className="space-y-5">
       <div className="flex items-center gap-3">
         <div className="w-1 h-6 bg-accent rounded-full" aria-hidden="true" />
-        <h2 className="text-lg font-semibold tracking-tight">Saham Paling Aktif</h2>
+        <h2 className="text-lg font-semibold tracking-tight">Saham Paling Aktif Hari Ini</h2>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 stagger-grid">
         {featured.map((s, i) => (
@@ -215,7 +223,7 @@ async function TradingPlanPreview() {
     <section className="space-y-5 content-auto">
       <div className="flex items-center gap-3">
         <div className="w-1 h-6 bg-accent rounded-full" aria-hidden="true" />
-        <h2 className="text-lg font-semibold tracking-tight">Coba Langsung</h2>
+        <h2 className="text-lg font-semibold tracking-tight">Coba Fitur Analisa</h2>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <MiniScreenerPreview />
@@ -274,26 +282,8 @@ export default async function HomePage() {
     changePercent: s.changePercent as number | null,
   }));
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: "TeknikalID",
-    url: SITE_URL,
-    description: "Platform analisa teknikal saham BEI terlengkap",
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${SITE_URL}/stocks?q={search_term_string}`,
-      "query-input": "required name=search_term_string",
-    },
-  };
-
   return (
     <div className="fade-in">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-
       {/* Section 1: Terminal Hero */}
       <section className="akademi-hero" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}>
         <div className="relative z-[1] max-w-7xl mx-auto px-4 py-14 sm:py-20">
@@ -301,7 +291,7 @@ export default async function HomePage() {
             <div className="max-w-xl space-y-6">
               <div className={`inline-flex items-center gap-2 text-xs font-medium px-3 py-1 rounded-full border ${isClosed ? "text-amber-400 bg-amber-500/10 border-amber-500/20" : "text-teal-400 bg-teal-500/10 border-teal-500/20"}`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${isClosed ? "bg-amber-400" : "bg-teal-400 animate-pulse"}`} aria-hidden="true" />
-                {isClosed ? "Pasar Tutup — Data Sesi Terakhir" : "Data Pasar Saham Hari Ini"}
+                {isClosed ? "Pasar Tutup — Data Sesi Terakhir" : "Pasar Sedang Buka — Data Real-time"}
               </div>
               <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-[1.1] text-white">
                 Analisa Teknikal
@@ -311,9 +301,9 @@ export default async function HomePage() {
                 </span>
               </h1>
               <p className="text-gray-300 text-base sm:text-lg leading-relaxed">
-                Chart interaktif, indikator teknikal, dan screener untuk{" "}
+                Chart interaktif, RSI, MACD, Bollinger Bands, dan screener untuk{" "}
                 <span className="text-white font-semibold">{totalStocks}+ saham</span> IDX dari{" "}
-                <span className="text-white font-semibold">{totalSectors} sektor</span>.
+                <span className="text-white font-semibold">{totalSectors} sektor</span>. Buat keputusan trading lebih tajam.
                 <span className="akademi-cursor" />
               </p>
               <div className="flex items-center gap-3 pt-2">

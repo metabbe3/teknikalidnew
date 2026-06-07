@@ -270,7 +270,7 @@ export function PostComposer({ onPostCreated }: PostComposerProps) {
           placeholder="Tulis post..."
           maxLength={1000}
           rows={3}
-          className="w-full resize-none rounded-lg border border-border bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:ring-2 focus:ring-accent/40"
+          className="w-full resize-none rounded-lg border border-border bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
         />
 
         {showSuggestions && filteredTickers.length > 0 && (
@@ -323,7 +323,7 @@ export function PostComposer({ onPostCreated }: PostComposerProps) {
                         }`}
                       >
                         {user.image ? (
-                          <img src={user.image} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" />
+                          <img src={user.image} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" loading="lazy" />
                         ) : (
                           <div className="w-7 h-7 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xs font-semibold shrink-0">
                             {(user.name || user.username).charAt(0).toUpperCase()}
@@ -355,7 +355,7 @@ export function PostComposer({ onPostCreated }: PostComposerProps) {
                         }`}
                       >
                         {user.image ? (
-                          <img src={user.image} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" />
+                          <img src={user.image} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" loading="lazy" />
                         ) : (
                           <div className="w-7 h-7 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xs font-semibold shrink-0">
                             {(user.name || user.username).charAt(0).toUpperCase()}
@@ -426,11 +426,12 @@ export function PostComposer({ onPostCreated }: PostComposerProps) {
                   <span className="text-xs font-medium text-text-tertiary bg-bg-card px-1.5 py-0.5 rounded border border-border">Rp</span>
                   <input
                     type="number"
+                    inputMode="decimal"
                     value={predictionTarget}
                     onChange={(e) => setPredictionTarget(e.target.value)}
                     placeholder="Opsional"
                     min="1"
-                    className="flex-1 px-2 py-1 text-xs font-medium rounded-lg border border-border bg-bg-card tabular-nums focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent/40"
+                    className="flex-1 px-2 py-1 text-xs font-medium rounded-lg border border-border bg-bg-card tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:border-accent/40"
                   />
                 </div>
               </div>
@@ -465,7 +466,8 @@ export function PostComposer({ onPostCreated }: PostComposerProps) {
                 }}
                 placeholder={`Opsi ${i + 1}`}
                 maxLength={100}
-                className="flex-1 px-2.5 py-1.5 text-sm rounded-lg border border-border bg-bg-card focus:outline-none focus:ring-2 focus:ring-accent/30"
+                autoComplete="off"
+                className="flex-1 px-2.5 py-1.5 text-sm rounded-lg border border-border bg-bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
               />
               {pollOptions.length > 2 && (
                 <button
@@ -564,7 +566,7 @@ export function PostComposer({ onPostCreated }: PostComposerProps) {
                 onChange={(e) => setStockSearchQuery(e.target.value.toUpperCase())}
                 placeholder="Cari saham..."
                 autoFocus
-                className="w-full px-2.5 py-1.5 text-sm rounded-lg border border-border bg-bg-primary focus:outline-none focus:ring-2 focus:ring-accent/40"
+                className="w-full px-2.5 py-1.5 text-sm rounded-lg border border-border bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
               />
               {stockSearchResults.length > 0 && (
                 <div className="mt-1.5 max-h-40 overflow-y-auto">
@@ -591,7 +593,7 @@ export function PostComposer({ onPostCreated }: PostComposerProps) {
             disabled={!content.trim() || createPost.isPending}
             className="px-5 py-2 rounded-full bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {createPost.isPending ? "Mengirim..." : "Post"}
+            {createPost.isPending ? "Mengirim…" : "Post"}
           </button>
         </div>
       </div>

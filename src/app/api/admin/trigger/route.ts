@@ -7,6 +7,8 @@ import { stockRepository } from "@/domains/stock/stock.repository";
 import { fetchQuote } from "@/lib/yahoo-finance";
 import { qstash } from "@/lib/queue";
 import { pushActivity } from "@/lib/activity-log";
+import { cronMonitoringService } from "@/domains/cron-monitoring/cron-monitoring.service";
+import { CRON_JOB_REGISTRY } from "@/domains/cron-monitoring/cron-registry";
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,6 +24,14 @@ export async function POST(request: NextRequest) {
         const batches = await dataSyncService.dispatchEndOfDaySync(tickers);
         const duration = ((Date.now() - startTime) / 1000).toFixed(1);
         await auditService.log(user.id, "admin:sync_eod", { batches, duration }, ip);
+        cronMonitoringService.logExecution({
+          jobName: "sync-eod",
+          status: "success",
+          startedAt: new Date(startTime),
+          durationMs: Date.now() - startTime,
+          result: { batches, duration: `${duration}s` },
+          triggeredBy: "manual",
+        });
         return NextResponse.json({ success: true, batches, duration: `${duration}s` });
       }
       case "sync-intraday": {
@@ -29,6 +39,14 @@ export async function POST(request: NextRequest) {
         const result = await dataSyncService.syncIntradayHotList();
         const duration = ((Date.now() - startTime) / 1000).toFixed(1);
         await auditService.log(user.id, "admin:sync_intraday", { duration }, ip);
+        cronMonitoringService.logExecution({
+          jobName: "sync-intraday",
+          status: "success",
+          startedAt: new Date(startTime),
+          durationMs: Date.now() - startTime,
+          result: { ...result, duration: `${duration}s` },
+          triggeredBy: "manual",
+        });
         return NextResponse.json({ success: true, ...result, duration: `${duration}s` });
       }
       case "clear-queue":
@@ -65,8 +83,21 @@ export async function POST(request: NextRequest) {
           price: quote.regularMarketPrice,
         });
       }
-      default:
-        return NextResponse.json({ error: "Unknown action" }, { status: 400 });
+      default: {
+        // Generic proxy: forward to cron route with CRON_SECRET
+        const job = CRON_JOB_REGISTRY.find((j) => j.jobName === action);
+        if (!job) {
+          return NextResponse.json({ error: "Unknown action" }, { status: 400 });
+        }
+        const baseUrl = process.env.SITE_URL || "http://localhost:3000";
+        const proxyRes = await fetch(`${baseUrl}${job.route}`, {
+          method: job.method,
+          headers: { Authorization: `Bearer ${process.env.CRON_SECRET}` },
+        });
+        const result = await proxyRes.json();
+        await auditService.log(user.id, `admin:trigger_${action}`, { ok: proxyRes.ok }, ip);
+        return NextResponse.json(result, { status: proxyRes.status });
+      }
     }
   } catch (error: unknown) {
     return handleApiError(error, "admin trigger");

@@ -6,6 +6,7 @@ import { SITE_URL } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
 import { ArticleContent, extractHeadings, estimateReadingTime } from "@/components/article/article-renderer";
 import { ArrowLeft, BookOpen, Clock, User, ChevronRight, ArrowRight } from "lucide-react";
+import { ShareButtons } from "@/components/ui/share-buttons";
 
 export async function generateMetadata({
   params,
@@ -19,15 +20,23 @@ export async function generateMetadata({
   });
   if (!article) return {};
 
+  const ogImage = `${SITE_URL}/api/og?title=${encodeURIComponent(article.title)}&type=akademi`;
+
   return {
     title: `${article.title} — Akademi TeknikalID`,
     description: article.excerpt,
     alternates: { canonical: `/akademi/${slug}` },
     openGraph: {
       title: article.title,
-      description: article.excerpt,
+      description: article.excerpt ?? undefined,
       type: "article",
       url: `${SITE_URL}/akademi/${slug}`,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: article.title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description: article.excerpt ?? undefined,
     },
   };
 }
@@ -65,22 +74,38 @@ export default async function ArticlePage({
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "Article",
-    headline: article.title,
-    description: article.excerpt,
-    datePublished: article.publishedAt.toISOString(),
-    author: {
-      "@type": "Person",
-      name: article.author.name ?? article.author.username,
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "TeknikalID",
-    },
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": `${SITE_URL}/akademi/${slug}`,
-    },
+    "@graph": [
+      {
+        "@type": "Article",
+        headline: article.title,
+        description: article.excerpt,
+        image: `${SITE_URL}/api/og?title=${encodeURIComponent(article.title)}&type=akademi`,
+        datePublished: article.publishedAt.toISOString(),
+        dateModified: article.updatedAt.toISOString(),
+        author: {
+          "@type": "Person",
+          name: article.author.name ?? article.author.username,
+        },
+        publisher: {
+          "@type": "Organization",
+          name: "TeknikalID",
+          url: SITE_URL,
+          logo: { "@type": "ImageObject", url: `${SITE_URL}/logo.png` },
+        },
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          "@id": `${SITE_URL}/akademi/${slug}`,
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+          { "@type": "ListItem", position: 2, name: "Akademi", item: `${SITE_URL}/akademi` },
+          { "@type": "ListItem", position: 3, name: article.title, item: `${SITE_URL}/akademi/${slug}` },
+        ],
+      },
+    ],
   };
 
   return (
@@ -121,8 +146,9 @@ export default async function ArticlePage({
                   <div className="rounded-xl overflow-hidden mb-6">
                     <img
                       src={article.coverImageUrl}
-                      alt=""
+                      alt={article.title}
                       className="w-full object-cover max-h-[400px]"
+                      loading="lazy"
                     />
                   </div>
                 )}
@@ -163,6 +189,15 @@ export default async function ArticlePage({
                   </div>
                 )}
               </header>
+
+              {/* Share bar */}
+              <div className="flex items-center gap-3 py-3 mb-6 border-y border-border">
+                <ShareButtons
+                  url={`${SITE_URL}/akademi/${slug}`}
+                  title={article.title}
+                  text={article.excerpt ?? undefined}
+                />
+              </div>
 
               {/* Article body */}
               <ArticleContent content={article.content} />

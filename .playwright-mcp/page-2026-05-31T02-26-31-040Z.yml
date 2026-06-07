@@ -1,0 +1,30 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - main [ref=e3]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - heading "Masuk ke TeknikalID" [level=1] [ref=e7]
+        - paragraph [ref=e8]: Bergabung dengan komunitas trader IDX
+      - button "Masuk dengan Google" [ref=e9]:
+        - img [ref=e10]
+        - text: Masuk dengan Google
+      - generic [ref=e17]: atau
+      - generic [ref=e19]:
+        - generic [ref=e20]:
+          - generic [ref=e21]: Email
+          - textbox "Email" [ref=e22]:
+            - /placeholder: nama@email.com
+            - text: admin@teknikal.id
+        - generic [ref=e23]:
+          - generic [ref=e24]: Password
+          - textbox "Password" [ref=e25]:
+            - /placeholder: Masukkan password
+            - text: admin123
+        - paragraph [ref=e30]: Email atau password salah
+        - button "Masuk" [ref=e26]
+      - paragraph [ref=e27]:
+        - text: Belum punya akun?
+        - link "Daftar" [ref=e28] [cursor=pointer]:
+          - /url: /auth/register
+  - alert [ref=e29]

@@ -1,0 +1,36 @@
+[     268ms] [WARNING] Ignoring Event: localhost @ https://plausible.teknikal.id/js/script.js:0
+[     472ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[     497ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[    4238ms] [WARNING] Ignoring Event: localhost @ https://plausible.teknikal.id/js/script.js:0
+[    4271ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[    4279ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[    5089ms] [WARNING] Ignoring Event: localhost @ https://plausible.teknikal.id/js/script.js:0
+[    5110ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[    5122ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[   35138ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[   65125ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[   65145ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[   95153ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[  125134ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[  125160ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[  155169ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[  185142ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[  185179ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[  215189ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/admin/status:0
+[  215907ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ https://teknikal.id/admin/login:0
+[  230504ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=vf1Xmt6jxGZWkOCuAAAA' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/69.5660d4934204ffc2.js:0
+[  230551ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/socket.io/?EIO=4&transport=polling&t=p41y1pdb&sid=vf1Xmt6jxGZWkOCuAAAA:0
+[  367842ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=jsqu55LTl8uHkbArAAAC' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/69.5660d4934204ffc2.js:0
+[  790013ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=5HTKtGtFT9UrGel0AAAA' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/69.5660d4934204ffc2.js:0
+[  790065ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/socket.io/?EIO=4&transport=polling&t=pg1nygdi&sid=5HTKtGtFT9UrGel0AAAA:0
+[  941305ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=kRqR2bFsGnU1N_K4AAAC' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/69.5660d4934204ffc2.js:0
+[ 1658894ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/socket.io/?EIO=4&transport=polling&t=pyo22hsx&sid=KLHNmMUZAuFs2nqhAAAA:0
+[ 1665411ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=Wu_1OFb17JR8-wbOAAAC' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/69.5660d4934204ffc2.js:0
+[ 1665455ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/socket.io/?EIO=4&transport=polling&t=pyt4kzn4&sid=Wu_1OFb17JR8-wbOAAAC:0
+[ 2186618ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=Nl9qdT6LC3CUPEiOAAAA' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/69.5660d4934204ffc2.js:0
+[ 2186666ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/socket.io/?EIO=4&transport=polling&t=q9zajium&sid=Nl9qdT6LC3CUPEiOAAAA:0
+[ 2371058ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=Zzj9uw2We_cyfTmDAAAC' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/69.5660d4934204ffc2.js:0
+[ 2944438ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=T4IgnGicEe0yTMF9AAAE' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/69.5660d4934204ffc2.js:0
+[ 3694691ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=3CGZUP417tSHhbdSAAAG' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/69.5660d4934204ffc2.js:0
+[ 3794969ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=la0GFEzvTWRwjxAtAAAI' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/69.5660d4934204ffc2.js:0
+[ 3893364ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=p1GUEt9eFbSyuHK2AAAK' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/69.5660d4934204ffc2.js:0

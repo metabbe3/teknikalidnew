@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { getAvatarUrl } from "@/lib/avatar";
 import { socialGraphService } from "@/domains/social/social-graph.service";
 import { communityService } from "@/domains/community/community.service";
 import { PostComposer } from "@/components/community/post-composer";
@@ -11,6 +12,7 @@ import { TopKontributorSidebar } from "@/components/community/top-kontributor-si
 import { TrendingSidebar } from "@/components/community/trending-sidebar";
 import { UserSearchResults } from "@/components/community/user-search-results";
 import { TopPredictorList } from "@/components/community/top-predictor-list";
+import { SITE_URL } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
 
@@ -18,9 +20,18 @@ export const metadata: Metadata = {
   title: "Komunitas Saham BEI — Diskusi Analisa Teknikal",
   description: "Komunitas trader Indonesia untuk diskusi analisa teknikal saham BEI. Bagikan prediksi harga, chart, dan strategi trading bersama ribuan trader.",
   alternates: { canonical: "/community" },
+  openGraph: {
+    title: "Komunitas Saham BEI — TeknikalID",
+    description: "Komunitas trader Indonesia untuk diskusi analisa teknikal saham BEI.",
+    url: `${SITE_URL}/community`,
+    images: [{ url: `${SITE_URL}/api/og?title=Komunitas+Saham+BEI&type=berita`, width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Komunitas Saham BEI — TeknikalID",
+    description: "Komunitas trader Indonesia untuk diskusi analisa teknikal saham BEI.",
+  },
 };
-
-export const revalidate = 60;
 
 export default async function CommunityPage({
   searchParams,
@@ -41,7 +52,7 @@ export default async function CommunityPage({
           ? { tags: { some: { tag } } }
           : undefined,
     include: {
-      author: { select: { id: true, username: true, name: true, image: true, reputation: true, _count: { select: { followers: true } } } },
+      author: { select: { id: true, username: true, name: true, email: true, image: true, reputation: true, _count: { select: { followers: true } } } },
       comments: { take: 0, select: { id: true } },
       likes: session?.user?.id
         ? { where: { userId: session.user.id }, select: { id: true } }
@@ -121,7 +132,7 @@ export default async function CommunityPage({
       id: post.author.id,
       username: post.author.username,
       name: post.author.name,
-      image: post.author.image,
+      image: getAvatarUrl(post.author.image, post.author.email),
       reputation: post.author.reputation,
       followersCount: post.author._count.followers,
     },
@@ -155,7 +166,7 @@ export default async function CommunityPage({
           user: { select: { username: true, name: true } },
           post: {
             include: {
-              author: { select: { id: true, username: true, name: true, image: true, reputation: true, _count: { select: { followers: true } } } },
+              author: { select: { id: true, username: true, name: true, email: true, image: true, reputation: true, _count: { select: { followers: true } } } },
               likes: { where: { userId: session.user.id }, select: { id: true } },
               bookmarks: { where: { userId: session.user.id }, select: { id: true } },
               reposts: { where: { userId: session.user.id }, select: { id: true } },
@@ -200,7 +211,7 @@ export default async function CommunityPage({
             id: r.post.author.id,
             username: r.post.author.username,
             name: r.post.author.name,
-            image: r.post.author.image,
+            image: getAvatarUrl(r.post.author.image, r.post.author.email),
             reputation: r.post.author.reputation,
             followersCount: r.post.author._count.followers,
           },
@@ -245,7 +256,26 @@ export default async function CommunityPage({
     { key: "users", label: "Pengguna", href: tag ? `/community?search=users&tag=${encodeURIComponent(tag)}` : "/community?search=users" },
   ];
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "CollectionPage", name: "Komunitas Saham BEI", url: `${SITE_URL}/community` },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+          { "@type": "ListItem", position: 2, name: "Komunitas", item: `${SITE_URL}/community` },
+        ],
+      },
+    ],
+  };
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
     <div className="fade-in min-h-screen bg-gray-50">
       {/* Hero */}
       <section className="community-hero border-b border-slate-700/50" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}>
@@ -256,7 +286,7 @@ export default async function CommunityPage({
               <span className="text-slate-300">Saham</span>
             </h1>
             <p className="text-slate-400 text-sm sm:text-base max-w-lg">
-              Diskusi dan analisis saham IDX bersama komunitas TeknikalID
+              Diskusi analisa teknikal, sharing sinyal, dan strategi trading saham IDX bareng komunitas TeknikalID.
             </p>
           </div>
 
@@ -335,11 +365,11 @@ export default async function CommunityPage({
               </Suspense>
             ) : (
               <div className="bg-white rounded-xl border border-gray-200 px-6 py-12 text-center space-y-3">
-                <p className="text-lg font-bold text-gray-900">Jadilah yang Pertama Berdiskusi</p>
+                <p className="text-lg font-bold text-gray-900">Mulai Diskusi Pertama</p>
                 <p className="text-sm text-gray-500">
                   {activeTab === "following"
-                    ? "Belum ada post dari orang yang Anda ikuti."
-                    : "Mulai diskusi analisis teknikal saham IDX Anda!"}
+                    ? "Belum ada postingan dari trader yang kamu ikuti. Yuk explore tab Semua dulu!"
+                    : "Share analisa teknikal atau sinyal saham IDX kamu ke komunitas!"}
                 </p>
               </div>
             )}
@@ -356,5 +386,6 @@ export default async function CommunityPage({
         </div>
       </div>
     </div>
+    </>
   );
 }

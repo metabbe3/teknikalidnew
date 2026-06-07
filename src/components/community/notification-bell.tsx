@@ -71,7 +71,7 @@ export function NotificationBell() {
                 >
                   <div className="flex items-start gap-2.5">
                     {n.actor.image ? (
-                      <img src={n.actor.image} alt="" className="w-7 h-7 rounded-full object-cover shrink-0 mt-0.5" />
+                      <img src={n.actor.image} alt="" className="w-7 h-7 rounded-full object-cover shrink-0 mt-0.5" loading="lazy" />
                     ) : (
                       <div className="w-7 h-7 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xs font-semibold shrink-0 mt-0.5">
                         {(n.actor.name || n.actor.username).charAt(0).toUpperCase()}

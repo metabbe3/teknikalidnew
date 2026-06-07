@@ -63,6 +63,42 @@ async function fetchStockBase(ticker: string, priceTake: number) {
   return { stock, prices, latest, prev, prevClose, close, change, changePercent, week52, indicator, prevIndicator };
 }
 
+export interface StockOgData {
+  ticker: string;
+  name: string;
+  sector: string;
+  close: number | null;
+  change: number | null;
+  changePercent: number | null;
+  signalLabel: string | null;
+  rsi14: number | null;
+  macdHist: number | null;
+  smaStatus: string;
+  isGorengan: boolean;
+  volume: number | null;
+  sparkline: number[];
+  // Extra indicators (for Story card)
+  stochK: number | null;
+  stochD: number | null;
+  adx: number | null;
+  atr: number | null;
+  supertrend: number | null;
+  bbUpper: number | null;
+  bbLower: number | null;
+  obvTrend: string | null;
+  // Trading plan
+  tradingStrategy: string | null;
+  entryPrice: number | null;
+  tp1: number | null;
+  tp1Source: string;
+  tp2: number | null;
+  sl: number | null;
+  slSource: string;
+  riskReward: number | null;
+  confidence: string | null;
+  tradingWarning: string | null;
+}
+
 export interface StockDetailBatchItem {
   stock: { id: number; ticker: string; name: string; sector: string };
   close: number | null;
@@ -208,6 +244,91 @@ export const stockMarketService = {
     };
   },
 
+  async getStockOgData(ticker: string): Promise<StockOgData> {
+    const base = await fetchStockBase(ticker, 31);
+    const indicator = serializeIndicatorOrNull(base.indicator);
+
+    // Serialize sparkline prices (last 30, oldest first)
+    const sparkline = base.prices
+      .slice(0, 30)
+      .map((p) => decimalToNumber(p.close))
+      .filter((v): v is number => v !== null)
+      .reverse();
+
+    // Build SMA status
+    let smaStatus = "Netral";
+    if (base.close !== null && indicator) {
+      if (indicator.sma20 !== null && base.close > indicator.sma20) smaStatus = "Di Atas SMA20";
+      else if (indicator.sma50 !== null && base.close > indicator.sma50) smaStatus = "Di Atas SMA50";
+      else if (indicator.sma50 !== null && base.close < indicator.sma50) smaStatus = "Di Bawah SMA50";
+      else if (indicator.sma20 !== null && base.close < indicator.sma20) smaStatus = "Di Bawah SMA20";
+    }
+
+    // Generate trading plan
+    const latestHigh = base.latest ? decimalToNumber(base.latest.high) : null;
+    const latestLow = base.latest ? decimalToNumber(base.latest.low) : null;
+    const tradingPlan = (base.close !== null && latestHigh !== null)
+      ? technicalAnalysisService.generateTradingPlan({
+          currentPrice: base.close,
+          high: latestHigh,
+          low: latestLow ?? base.close,
+          close: base.close,
+          prevClose: base.prevClose ?? base.close,
+          atr: indicator?.atr ?? null,
+          rsi14: indicator?.rsi14 ?? null,
+          sma20: indicator?.sma20 ?? null,
+          sma50: indicator?.sma50 ?? null,
+          sma200: indicator?.sma200 ?? null,
+          macdHist: indicator?.macdHist ?? null,
+          supertrend: indicator?.supertrend ?? null,
+          obvTrend: indicator?.obvTrend ?? null,
+          stochK: indicator?.stochK ?? null,
+          stochD: indicator?.stochD ?? null,
+          adx: indicator?.adx ?? null,
+        })
+      : null;
+
+    const strategyMap: Record<string, string> = {
+      MARKET_ENTRY: "Market Entry",
+      BUY_ON_WEAKNESS: "Buy on Weakness",
+      WAIT_AND_SEE: "Wait & See",
+    };
+
+    return {
+      ticker: base.stock.ticker,
+      name: base.stock.name,
+      sector: base.stock.sector ?? "",
+      close: base.close,
+      change: base.change,
+      changePercent: base.changePercent,
+      signalLabel: indicator?.signalLabel ?? null,
+      rsi14: indicator?.rsi14 ?? null,
+      macdHist: indicator?.macdHist ?? null,
+      smaStatus,
+      isGorengan: indicator?.isGorengan ?? false,
+      volume: base.latest ? bigIntToNumber(base.latest.volume) : null,
+      sparkline,
+      stochK: indicator?.stochK ?? null,
+      stochD: indicator?.stochD ?? null,
+      adx: indicator?.adx ?? null,
+      atr: indicator?.atr ?? null,
+      supertrend: indicator?.supertrend ?? null,
+      bbUpper: indicator?.bbUpper ?? null,
+      bbLower: indicator?.bbLower ?? null,
+      obvTrend: indicator?.obvTrend ?? null,
+      tradingStrategy: tradingPlan ? strategyMap[tradingPlan.strategy] ?? tradingPlan.strategy : null,
+      entryPrice: tradingPlan?.entry ?? null,
+      tp1: tradingPlan?.tp1 ?? null,
+      tp1Source: tradingPlan?.tp1Source ?? "",
+      tp2: tradingPlan?.tp2 ?? null,
+      sl: tradingPlan?.sl ?? null,
+      slSource: tradingPlan?.slSource ?? "",
+      riskReward: tradingPlan?.riskReward ?? null,
+      confidence: tradingPlan?.confidence ?? null,
+      tradingWarning: tradingPlan?.warnings[0] ?? tradingPlan?.suggestion ?? null,
+    };
+  },
+
   async getStockHistory(ticker: string, days: number) {
     const period1 = subDays(new Date(), days);
     const prices = await stockRepository.findPricesByTicker(ticker, { date: { gte: period1 } });
@@ -229,9 +350,11 @@ export const stockMarketService = {
     });
 
     return raw.map((row) => ({
-      date: row.date instanceof Date
-        ? Math.floor(row.date.getTime() / 1000)
-        : Math.floor(new Date(row.date).getTime() / 1000),
+      date: (() => {
+        const ms = row.date instanceof Date ? row.date.getTime() : new Date(row.date).getTime();
+        // Shift UTC→WIB (+7h) so TradingView (which treats all times as UTC) shows Jakarta time
+        return Math.floor((ms + 7 * 3600 * 1000) / 1000);
+      })(),
       open: row.open,
       high: row.high,
       low: row.low,

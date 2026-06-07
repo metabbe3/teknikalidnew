@@ -491,7 +491,21 @@ export function CandlestickChart({
   }, [chartType]);
 
   const formatDate = (dateStr: string | number) => {
-    const d = typeof dateStr === "number" ? new Date(dateStr * 1000) : new Date(dateStr);
+    if (typeof dateStr === "number") {
+      // Intraday: timestamps are pre-shifted UTC→WIB, so use UTC methods to avoid double-shifting
+      const d = new Date(dateStr * 1000);
+      const day = String(d.getUTCDate()).padStart(2, "0");
+      const month = d.toLocaleDateString("id-ID", { month: "short", timeZone: "UTC" });
+      if (isTimeVisible) {
+        const hh = String(d.getUTCHours()).padStart(2, "0");
+        const mm = String(d.getUTCMinutes()).padStart(2, "0");
+        return `${day} ${month} ${hh}:${mm}`;
+      }
+      const year = d.getUTCFullYear();
+      return `${day} ${month} ${year}`;
+    }
+    // Daily: YYYY-MM-DD string
+    const d = new Date(dateStr);
     if (isTimeVisible) {
       return d.toLocaleDateString("id-ID", { day: "2-digit", month: "short" }) + " " + d.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
     }

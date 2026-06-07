@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
       "lucide-react",
       "@base-ui/react",
       "date-fns",
+      "technicalindicators",
     ],
   },
   compiler: {

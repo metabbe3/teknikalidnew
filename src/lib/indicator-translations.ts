@@ -103,3 +103,25 @@ export function translateEMA(ema12: number | null, ema26: number | null, price: 
   if (price < ema12 && ema12 < ema26) return { short: "Momentum Turun", explanation: "EMA 12 di bawah EMA 26. Bearish.", sentiment: "negatif" };
   return { short: "Netral", explanation: "EMA berdekatan. Belum ada arah jelas.", sentiment: "netral" };
 }
+
+// --- Tooltip definitions for indicators ---
+
+export const INDICATOR_TIPS: Record<string, string> = {
+  RSI: "Relative Strength Index — Mengukur kecepatan perubahan harga. Di atas 70 = jenuh beli, di bawah 30 = jenuh jual.",
+  MACD: "Moving Average Convergence Divergence — Menunjukkan arah momentum. Histogram positif = tekanan beli, negatif = tekanan jual.",
+  SMA: "Simple Moving Average — Harga rata-rata over periode tertentu. Jika harga di atas SMA, tren cenderung naik.",
+  EMA: "Exponential Moving Average — Seperti SMA tapi lebih responsif terhadap perubahan terbaru. EMA 12 di atas EMA 26 = bullish.",
+  "Bollinger Bands": "Band volatilitas di atas dan bawah SMA 20. Harga mendekati band atas = kemungkinan overbought.",
+  Stochastic: "Membandingkan harga penutupan dengan range periode tertentu. Di atas 80 = jenuh beli, di bawah 20 = jenuh jual.",
+  ADX: "Average Directional Index — Mengukur kekuatan tren (bukan arah). Di atas 25 = tren kuat, di bawah 20 = sideways.",
+  OBV: "On-Balance Volume — Mengukur tekanan beli/jual berdasarkan volume. Naik = akumulasi, turun = distribusi.",
+  Supertrend: "Indikator tren berbasis ATR. Harga di atas Supertrend = bullish, di bawah = bearish.",
+  VWAP: "Volume Weighted Average Price — Harga rata-rata berbobot volume. Acuan institusi, harga di atas VWAP = sentimen positif.",
+  ATR: "Average True Range — Mengukur volatilitas. Nilai tinggi = pergerakan besar, rendah = pergerakan kecil.",
+  "Health Score": "Skor 0-100 berdasarkan 9 indikator teknikal. Mengukur kondisi keseluruhan saham: tren, momentum, dan volume.",
+  Gorengan: "Saham dengan volatilitas tinggi dan volume tidak wajar — cenderung dimanipulasi. Hati-hati, bukan untuk pemula.",
+  Signal: "Sinyal gabungan dari semua indikator teknikal. Strong Bullish/Bearish = mayoritas indikator searah.",
+  Volatilitas: "Persentase pergerakan harga harian berdasarkan ATR. Tinggi = risiko besar, rendah = pergerakan tenang.",
+  "Golden Cross": "SMA 50 memotong SMA 200 ke atas — sinyal bullish jangka panjang.",
+  "Death Cross": "SMA 50 memotong SMA 200 ke bawah — sinyal bearish jangka panjang.",
+};

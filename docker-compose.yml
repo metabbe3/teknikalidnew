@@ -41,6 +41,27 @@ services:
     networks:
       - internal
 
+  worker:
+    build:
+      context: .
+      target: builder
+    environment:
+      - DATABASE_URL=${DOCKER_DATABASE_URL:-postgresql://teknikalid:teknikalid_secret_2024@db:5432/teknikalid}
+      - NODE_ENV=production
+      - ANTHROPIC_AUTH_TOKEN=${ANTHROPIC_AUTH_TOKEN:-}
+      - ANTHROPIC_BASE_URL=${ANTHROPIC_BASE_URL:-}
+      - ANTHROPIC_MODEL=${ANTHROPIC_MODEL:-glm-5.1}
+      - API_TIMEOUT_MS=${API_TIMEOUT_MS:-300000}
+      - SITE_URL=${SITE_URL:-http://app:3000}
+      - CRON_SECRET=${CRON_SECRET:-}
+    command: ["npx", "tsx", "src/worker/agent-worker.ts"]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - internal
+
   db:
     image: postgres:16-alpine
     ports:
@@ -59,60 +80,60 @@ services:
     networks:
       - internal
 
-  # ── Plausible Analytics ──
-
-  plausible_db:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_PASSWORD: ${PLAUSIBLE_DB_PASSWORD:-plausible_secret_2024}
-    volumes:
-      - plausible_db_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    networks:
-      - internal
-
-  plausible_events_db:
-    image: clickhouse/clickhouse-server:24.12-alpine
-    environment:
-      CLICKHOUSE_SKIP_USER_SETUP: 1
-    volumes:
-      - plausible_event_data:/var/lib/clickhouse
-      - plausible_event_logs:/var/log/clickhouse-server
-      - ./clickhouse/logs.xml:/etc/clickhouse-server/config.d/logs.xml:ro
-      - ./clickhouse/ipv4-only.xml:/etc/clickhouse-server/config.d/ipv4-only.xml:ro
-      - ./clickhouse/low-resources.xml:/etc/clickhouse-server/config.d/low-resources.xml:ro
-      - ./clickhouse/default-profile-low-resources-overrides.xml:/etc/clickhouse-server/users.d/default-profile-low-resources-overrides.xml:ro
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:8123/ping"]
-      interval: 15s
-      timeout: 10s
-      retries: 10
-      start_period: 30s
-    networks:
-      - internal
-
-  plausible:
-    image: ghcr.io/plausible/community-edition:v3.2.1
-    command: sh -c "/entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh run"
-    depends_on:
-      plausible_db:
-        condition: service_healthy
-      plausible_events_db:
-        condition: service_healthy
-    environment:
-      - BASE_URL=${PLAUSIBLE_BASE_URL:-http://localhost:8000}
-      - SECRET_KEY_BASE=${PLAUSIBLE_SECRET_KEY_BASE:-change_me_to_a_random_64_char_string}
-      - DATABASE_URL=postgresql://postgres:${PLAUSIBLE_DB_PASSWORD:-plausible_secret_2024}@plausible_db:5432/plausible
-      - CLICKHOUSE_DATABASE_URL=http://plausible_events_db:8123/plausible
-    ports:
-      - "8000:8000"
-    restart: unless-stopped
-    networks:
-      - internal
+  # ── DISABLED: Plausible Analytics (not actively used, saves 656MB RAM) ──
+  # To re-enable: uncomment below and set NEXT_PUBLIC_PLAUSIBLE_DOMAIN in .env
+  # plausible_db:
+  #   image: postgres:16-alpine
+  #   environment:
+  #     POSTGRES_PASSWORD: ${PLAUSIBLE_DB_PASSWORD:-plausible_secret_2024}
+  #   volumes:
+  #     - plausible_db_data:/var/lib/postgresql/data
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 5
+  #   networks:
+  #     - internal
+  #
+  # plausible_events_db:
+  #   image: clickhouse/clickhouse-server:24.12-alpine
+  #   environment:
+  #     CLICKHOUSE_SKIP_USER_SETUP: 1
+  #   volumes:
+  #     - plausible_event_data:/var/lib/clickhouse
+  #     - plausible_event_logs:/var/log/clickhouse-server
+  #     - ./clickhouse/logs.xml:/etc/clickhouse-server/config.d/logs.xml:ro
+  #     - ./clickhouse/ipv4-only.xml:/etc/clickhouse-server/config.d/ipv4-only.xml:ro
+  #     - ./clickhouse/low-resources.xml:/etc/clickhouse-server/config.d/low-resources.xml:ro
+  #     - ./clickhouse/default-profile-low-resources-overrides.xml:/etc/clickhouse-server/users.d/default-profile-low-resources-overrides.xml:ro
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:8123/ping"]
+  #     interval: 15s
+  #     timeout: 10s
+  #     retries: 10
+  #     start_period: 30s
+  #   networks:
+  #     - internal
+  #
+  # plausible:
+  #   image: ghcr.io/plausible/community-edition:v3.2.1
+  #   command: sh -c "/entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh run"
+  #   depends_on:
+  #     plausible_db:
+  #       condition: service_healthy
+  #     plausible_events_db:
+  #       condition: service_healthy
+  #   environment:
+  #     - BASE_URL=${PLAUSIBLE_BASE_URL:-http://localhost:8000}
+  #     - SECRET_KEY_BASE=${PLAUSIBLE_SECRET_KEY_BASE:-change_me_to_a_random_64_char_string}
+  #     - DATABASE_URL=postgresql://postgres:${PLAUSIBLE_DB_PASSWORD:-plausible_secret_2024}@plausible_db:5432/plausible
+  #     - CLICKHOUSE_DATABASE_URL=http://plausible_events_db:8123/plausible
+  #   ports:
+  #     - "8000:8000"
+  #   restart: unless-stopped
+  #   networks:
+  #     - internal
 
 networks:
   internal:
@@ -120,6 +141,6 @@ networks:
 volumes:
   pgdata:
   comfyui_images:
-  plausible_db_data:
-  plausible_event_data:
-  plausible_event_logs:
+  # plausible_db_data:
+  # plausible_event_data:
+  # plausible_event_logs:

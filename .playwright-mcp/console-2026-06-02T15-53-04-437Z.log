@@ -1,0 +1,8 @@
+[   17473ms] [ERROR] H: Failed to fetch. Read more at https://errors.authjs.dev#autherror
+    at W (https://teknikal.id/_next/static/chunks/4921-88a8358a1c1e46d5.js:1:2545)
+    at async ee (https://teknikal.id/_next/static/chunks/4921-88a8358a1c1e46d5.js:1:4205)
+    at async en (https://teknikal.id/_next/static/chunks/4921-88a8358a1c1e46d5.js:2:786) @ https://teknikal.id/_next/static/chunks/4921-88a8358a1c1e46d5.js:0
+[   17473ms] [ERROR] H: Failed to fetch. Read more at https://errors.authjs.dev#autherror
+    at W (https://teknikal.id/_next/static/chunks/4921-88a8358a1c1e46d5.js:1:2545)
+    at async Z (https://teknikal.id/_next/static/chunks/4921-88a8358a1c1e46d5.js:1:4063)
+    at async Object._getSession (https://teknikal.id/_next/static/chunks/4921-88a8358a1c1e46d5.js:2:1637) @ https://teknikal.id/_next/static/chunks/4921-88a8358a1c1e46d5.js:0

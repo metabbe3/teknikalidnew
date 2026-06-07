@@ -94,6 +94,7 @@ export function ArticleFeed({ initialArticles, initialCursor, activeTag, activeT
                     src={article.coverImageUrl}
                     alt=""
                     className="w-full h-full object-cover"
+                    loading="lazy"
                   />
                 </div>
               )}
@@ -151,9 +152,9 @@ export function ArticleFeed({ initialArticles, initialCursor, activeTag, activeT
           <button
             onClick={() => fetchNextPage()}
             disabled={isFetchingNextPage}
-            className="bg-bg-card depth-shadow rounded-full px-6 py-2.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:depth-shadow-hover transition-all press-scale disabled:opacity-50"
+            className="bg-bg-card depth-shadow rounded-full px-6 py-2.5 text-sm font-medium text-text-secondary hover:text-text-primary hover:depth-shadow-hover transition-[color,box-shadow,transform] press-scale disabled:opacity-50"
           >
-            {isFetchingNextPage ? "Memuat..." : "Muat lebih banyak"}
+            {isFetchingNextPage ? "Memuat…" : "Muat lebih banyak"}
           </button>
         </div>
       )}

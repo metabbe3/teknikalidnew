@@ -1,0 +1,33 @@
+[     336ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0
+[    1244ms] [WARNING] Ignoring Event: localhost @ https://plausible.teknikal.id/js/script.js:0
+[    1347ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0
+[    3362ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0
+[    7377ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0
+[  199872ms] [WARNING] Ignoring Event: localhost @ https://plausible.teknikal.id/js/script.js:0
+[  207764ms] [WARNING] Ignoring Event: localhost @ https://plausible.teknikal.id/js/script.js:0
+[  208117ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0
+[  209130ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0
+[  211146ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0
+[  215160ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0
+[  218690ms] [WARNING] Ignoring Event: localhost @ https://plausible.teknikal.id/js/script.js:0
+[  221644ms] [WARNING] Ignoring Event: localhost @ https://plausible.teknikal.id/js/script.js:0
+[  222011ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0
+[  223022ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0
+[  225035ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0
+[  229045ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0
+[  242809ms] [WARNING] Ignoring Event: localhost @ https://plausible.teknikal.id/js/script.js:0
+[  246214ms] [WARNING] Ignoring Event: localhost @ https://plausible.teknikal.id/js/script.js:0
+[  246564ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0
+[  247578ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0
+[  249590ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0
+[  253602ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0
+[  256630ms] [WARNING] Ignoring Event: localhost @ https://plausible.teknikal.id/js/script.js:0
+[  267486ms] [WARNING] Ignoring Event: localhost @ https://plausible.teknikal.id/js/script.js:0
+[  440678ms] [WARNING] Ignoring Event: localhost @ https://plausible.teknikal.id/js/script.js:0
+[  445409ms] [WARNING] Ignoring Event: localhost @ https://plausible.teknikal.id/js/script.js:0
+[  458011ms] [WARNING] Ignoring Event: localhost @ https://plausible.teknikal.id/js/script.js:0
+[  460296ms] [WARNING] Ignoring Event: localhost @ https://plausible.teknikal.id/js/script.js:0
+[  460658ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0
+[  461669ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0
+[  463681ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0
+[  467696ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/api/stocks/history?range=6mo:0

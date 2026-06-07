@@ -1,0 +1,395 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - alert [ref=e3]
+  - main [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]:
+        - link "TeknikalID" [ref=e8] [cursor=pointer]:
+          - /url: /
+          - img [ref=e9]
+          - generic [ref=e11]: TeknikalID
+        - navigation "Main navigation" [ref=e12]:
+          - link "Beranda" [ref=e13] [cursor=pointer]:
+            - /url: /
+          - link "Saham" [ref=e14] [cursor=pointer]:
+            - /url: /stocks
+          - link "Screener" [ref=e15] [cursor=pointer]:
+            - /url: /screener
+          - link "Simulasi" [ref=e16] [cursor=pointer]:
+            - /url: /paper-trading
+          - link "Bandingkan" [ref=e17] [cursor=pointer]:
+            - /url: /compare
+          - link "Komunitas" [ref=e18] [cursor=pointer]:
+            - /url: /community
+          - link "Berita" [ref=e19] [cursor=pointer]:
+            - /url: /berita
+          - link "Akademi" [ref=e20] [cursor=pointer]:
+            - /url: /akademi
+        - generic [ref=e21]:
+          - link "Daftar Pantauan" [ref=e22] [cursor=pointer]:
+            - /url: /watchlist
+            - img [ref=e23]
+          - button "Notifikasi" [ref=e26]:
+            - img [ref=e27]
+          - button "Menu pengguna" [ref=e31]:
+            - generic [ref=e32]: T
+      - generic [ref=e34]:
+        - generic [ref=e36]:
+          - navigation "Breadcrumb" [ref=e37]:
+            - link "Stocks" [ref=e38] [cursor=pointer]:
+              - /url: /stocks
+            - img [ref=e39]
+            - generic [ref=e41]: BBCA
+          - generic [ref=e42]:
+            - generic [ref=e44]:
+              - generic [ref=e45]:
+                - generic [ref=e46]:
+                  - img "Bank Central Asia logo" [ref=e47]
+                  - heading "BBCA" [level=1] [ref=e48]
+                  - generic [ref=e49]: ◆ Netral
+                  - generic [ref=e50]: ·
+                  - generic [ref=e51]: Financials
+                - paragraph [ref=e52]: Bank Central Asia
+              - generic [ref=e53]:
+                - paragraph [ref=e54]: Rp5.125
+                - paragraph [ref=e55]:
+                  - text: "-5,53%"
+                  - generic [ref=e56]: (Rp-300)
+                - generic [ref=e57]:
+                  - button "Pantau saham ini" [ref=e59]:
+                    - img [ref=e60]
+                    - text: Pantau
+                  - link "Bandingkan" [ref=e62] [cursor=pointer]:
+                    - /url: /compare?s=BBCA.JK
+                    - img [ref=e63]
+                    - text: Bandingkan
+            - generic [ref=e67]:
+              - generic [ref=e68]:
+                - generic [ref=e69]: RSI 23
+                - generic [ref=e70]: ·
+                - generic [ref=e71]: MACD ▼
+                - generic [ref=e72]: ·
+                - generic [ref=e73]: Vol 3.8%
+                - generic [ref=e74]: ·
+                - generic [ref=e75]: Tren Lemah
+              - generic [ref=e76]:
+                - generic [ref=e77]: ▼ EMA Bearish Cross 179d ago
+                - generic [ref=e78]:
+                  - img [ref=e79]
+                  - text: Data tertunda ~5mnt
+                - generic [ref=e82]: ·
+            - generic [ref=e84]:
+              - generic [ref=e85]: Bagikan
+              - button "Bagikan ke Story atau Download" [ref=e86]:
+                - img [ref=e87]
+                - text: Story
+              - button "Bagikan ke WhatsApp" [ref=e90]:
+                - img [ref=e91]
+              - button "Bagikan ke X" [ref=e94]:
+                - img [ref=e95]
+              - button "Bagikan ke Telegram" [ref=e97]:
+                - img [ref=e98]
+              - button "Salin tautan" [ref=e100]:
+                - img [ref=e101]
+        - generic [ref=e104]:
+          - generic [ref=e116]:
+            - generic [ref=e117]:
+              - generic [ref=e118]:
+                - generic [ref=e119]:
+                  - heading "Indikator Teknikal" [level=3] [ref=e120]
+                  - button "Bahasa Sederhana" [ref=e121]
+                - generic [ref=e122]:
+                  - generic [ref=e123]:
+                    - heading "RSI (14)" [level=3] [ref=e124]
+                    - generic [ref=e125]:
+                      - paragraph [ref=e126]: 22.7▼
+                      - generic [ref=e127]: Oversold
+                    - progressbar "RSI 14 value" [ref=e128]
+                    - generic [ref=e132]:
+                      - generic [ref=e133]: "30"
+                      - generic [ref=e134]: "70"
+                  - generic [ref=e135]:
+                    - heading "MACD" [level=3] [ref=e136]
+                    - generic [ref=e137]:
+                      - generic [ref=e138]:
+                        - generic [ref=e139]: Line
+                        - generic [ref=e140]:
+                          - text: "-213.26"
+                          - generic "decreased" [ref=e141]: ▼
+                      - generic [ref=e142]:
+                        - generic [ref=e143]: Signal
+                        - generic [ref=e144]: "-156.54"
+                      - generic [ref=e145]:
+                        - generic [ref=e146]: Histogram
+                        - generic [ref=e147]:
+                          - text: "-56.72"
+                          - generic "decreased" [ref=e148]: ▼
+                  - generic [ref=e152]:
+                    - heading "Bollinger Bands" [level=3] [ref=e153]
+                    - generic [ref=e154]:
+                      - generic [ref=e155]:
+                        - generic [ref=e156]: Upper
+                        - generic [ref=e157]: "6389"
+                      - generic [ref=e158]:
+                        - generic [ref=e159]: Middle
+                        - generic [ref=e160]: "5868"
+                      - generic [ref=e161]:
+                        - generic [ref=e162]: Lower
+                        - generic [ref=e163]: "5346"
+                    - generic [ref=e164]:
+                      - meter "Price position within Bollinger Bands" [ref=e165]
+                      - paragraph [ref=e167]: "-21% of band"
+                  - generic [ref=e168]:
+                    - heading "Stochastic" [level=3] [ref=e169]
+                    - generic [ref=e170]:
+                      - generic [ref=e171]:
+                        - generic [ref=e172]: "%K"
+                        - generic [ref=e173]:
+                          - text: "2.3"
+                          - generic "decreased" [ref=e174]: ▼
+                      - generic [ref=e175]:
+                        - generic [ref=e176]: "%D"
+                        - generic [ref=e177]: "5.4"
+                    - text: Oversold
+                  - generic [ref=e178]:
+                    - heading "SMA (20/50/200)" [level=3] [ref=e179]
+                    - generic [ref=e180]:
+                      - generic [ref=e181]:
+                        - generic [ref=e182]: SMA 20
+                        - generic [ref=e183]:
+                          - generic [ref=e184]: "5868"
+                          - generic "decreased" [ref=e185]: ▼
+                          - generic [ref=e186]: Below
+                      - generic [ref=e187]:
+                        - generic [ref=e188]: SMA 50
+                        - generic [ref=e189]:
+                          - generic [ref=e190]: "6157"
+                          - generic "decreased" [ref=e191]: ▼
+                          - generic [ref=e192]: Below
+                      - generic [ref=e193]:
+                        - generic [ref=e194]: SMA 200
+                        - generic [ref=e195]:
+                          - generic [ref=e196]: "7455"
+                          - generic "decreased" [ref=e197]: ▼
+                          - generic [ref=e198]: Below
+                  - generic [ref=e199]:
+                    - heading "EMA (12/26)" [level=3] [ref=e200]
+                    - generic [ref=e201]:
+                      - generic [ref=e202]:
+                        - generic [ref=e203]: EMA 12
+                        - generic [ref=e204]:
+                          - generic [ref=e205]: "5666"
+                          - generic "decreased" [ref=e206]: ▼
+                          - generic [ref=e207]: Below
+                      - generic [ref=e208]:
+                        - generic [ref=e209]: EMA 26
+                        - generic [ref=e210]:
+                          - generic [ref=e211]: "5879"
+                          - generic "decreased" [ref=e212]: ▼
+                          - generic [ref=e213]: Below
+                      - generic [ref=e214]: Bearish Cross
+                  - generic [ref=e215]:
+                    - heading "OBV" [level=3] [ref=e216]
+                    - generic [ref=e217]:
+                      - paragraph [ref=e218]: "-7448.6M▼"
+                      - generic [ref=e219]: Distribution
+                    - paragraph [ref=e220]: On-Balance Volume
+                  - generic [ref=e221]:
+                    - heading "Supertrend" [level=3] [ref=e222]
+                    - generic [ref=e223]:
+                      - paragraph [ref=e224]: 5844▼
+                      - generic [ref=e225]: Bearish
+                    - paragraph [ref=e226]: 10 · 3x ATR
+                  - generic [ref=e227]:
+                    - heading "ADX (14)" [level=3] [ref=e228]
+                    - generic [ref=e229]:
+                      - paragraph [ref=e230]: 22.9▲
+                      - generic [ref=e231]: Weak
+                    - paragraph [ref=e232]: Average Directional Index
+                  - generic [ref=e233]:
+                    - heading "VWAP" [level=3] [ref=e234]
+                    - generic [ref=e235]:
+                      - paragraph [ref=e236]: "7411"
+                      - generic [ref=e237]: Below
+                    - paragraph [ref=e238]: Volume Weighted Avg Price
+                  - generic [ref=e239]:
+                    - heading "ATR (14)" [level=3] [ref=e240]
+                    - paragraph [ref=e242]: 193▲
+                    - paragraph [ref=e243]: Average True Range · 3.8%
+              - paragraph [ref=e244]: Sinyal teknikal berdasarkan perhitungan indikator — bukan rekomendasi jual/beli. Selalu DYOR.
+            - generic [ref=e245]:
+              - generic [ref=e246]:
+                - heading "Key Statistics" [level=3] [ref=e247]
+                - generic [ref=e249]:
+                  - generic [ref=e250]: Rp5.100
+                  - generic [ref=e251]: 52W Range
+                  - generic [ref=e252]: Rp9.125
+                - list [ref=e256]:
+                  - listitem [ref=e257]:
+                    - generic [ref=e258]: Open
+                    - generic [ref=e259]: Rp5.325
+                  - listitem [ref=e260]:
+                    - generic [ref=e261]: Day High
+                    - generic [ref=e262]: Rp5.375
+                  - listitem [ref=e263]:
+                    - generic [ref=e264]: Day Low
+                    - generic [ref=e265]: Rp5.100
+                  - listitem [ref=e266]:
+                    - generic [ref=e267]: Range
+                    - generic [ref=e268]: 5.12%
+                  - listitem [ref=e269]:
+                    - generic [ref=e270]: Volume
+                    - generic [ref=e271]: 334.4M
+                - generic [ref=e272]:
+                  - paragraph [ref=e273]: Moving Averages
+                  - generic [ref=e274]:
+                    - generic [ref=e275]:
+                      - generic [ref=e276]: SMA 20
+                      - generic [ref=e277]:
+                        - generic [ref=e278]: Below
+                        - generic [ref=e279]: Rp5.868
+                    - generic [ref=e280]:
+                      - generic [ref=e281]: SMA 50
+                      - generic [ref=e282]:
+                        - generic [ref=e283]: Below
+                        - generic [ref=e284]: Rp6.157
+                    - generic [ref=e285]:
+                      - generic [ref=e286]: SMA 200
+                      - generic [ref=e287]:
+                        - generic [ref=e288]: Below
+                        - generic [ref=e289]: Rp7.455
+              - generic [ref=e290]:
+                - heading "Fundamentals" [level=3] [ref=e291]
+                - list [ref=e292]:
+                  - listitem [ref=e293]:
+                    - generic [ref=e294]: Market Cap
+                    - generic [ref=e295]: 639T
+                  - listitem [ref=e296]:
+                    - generic [ref=e297]: P/E (TTM)
+                    - generic [ref=e298]: "11.04"
+                  - listitem [ref=e299]:
+                    - generic [ref=e300]: Forward P/E
+                    - generic [ref=e301]: "10.78"
+                  - listitem [ref=e302]:
+                    - generic [ref=e303]: P/B Ratio
+                    - generic [ref=e304]: "2.47"
+                  - listitem [ref=e305]:
+                    - generic [ref=e306]: EPS
+                    - generic [ref=e307]: —
+                  - listitem [ref=e308]:
+                    - generic [ref=e309]: Div Yield
+                    - generic [ref=e310]: 6.19%
+              - generic [ref=e311]:
+                - generic [ref=e312]:
+                  - generic [ref=e313]:
+                    - generic [ref=e314]:
+                      - heading "Kalkulator Trading Plan" [level=3] [ref=e315]
+                      - paragraph [ref=e316]: "Sumber: Pivot Points & ATR"
+                    - generic [ref=e317]:
+                      - generic [ref=e318]: Wait & See
+                      - generic [ref=e319]: Rendah
+                  - generic [ref=e321]:
+                    - generic [ref=e322]:
+                      - generic [ref=e323]: Entry (Limit)
+                      - generic [ref=e324]:
+                        - generic [ref=e325]: Rp 5.125
+                        - generic [ref=e326]: Sekitar Rp 5.125
+                    - generic [ref=e327]:
+                      - generic [ref=e328]: TP 1
+                      - generic [ref=e329]:
+                        - generic [ref=e330]: Rp 5.300
+                        - generic [ref=e331]: (R1)
+                    - generic [ref=e332]:
+                      - generic [ref=e333]: Stop Loss
+                      - generic [ref=e334]:
+                        - generic [ref=e335]: Rp 4.730
+                        - generic [ref=e336]: (ATR (2x))
+                  - generic [ref=e338]:
+                    - generic [ref=e339]: "Risk : Reward"
+                    - generic [ref=e340]: "1 : 0.4"
+                  - generic [ref=e342]:
+                    - img [ref=e343]
+                    - paragraph [ref=e346]: Saham sedang dalam fase Downtrend kuat (berada di bawah MA20 dan MACD Bearish). Risiko menangkap pisau jatuh sangat tinggi. Sangat disarankan Wait & See hingga ada konfirmasi reversal.
+                - paragraph [ref=e348]: Perhitungan ini bersifat edukatif berdasarkan indikator teknikal. Bukan rekomendasi membeli atau menjual saham. Keputusan investasi sepenuhnya menjadi tanggung jawab Anda. Selalu pertimbangkan risiko dan konsultasikan dengan pihak berlisensi.
+          - button "Data Perusahaan13 data points Profil Komisaris4 Anak Perusahaan7 Dividen" [ref=e350]:
+            - generic [ref=e351]:
+              - img [ref=e353]
+              - generic [ref=e355]:
+                - text: Data Perusahaan
+                - generic [ref=e356]: 13 data points
+            - generic [ref=e357]:
+              - generic [ref=e358]:
+                - generic [ref=e359]: Profil
+                - generic [ref=e360]: Komisaris4
+                - generic [ref=e361]: Anak Perusahaan7
+                - generic [ref=e362]: Dividen
+              - img [ref=e363]
+          - generic [ref=e365]:
+            - heading "Sentimen Komunitas" [level=3] [ref=e366]
+            - paragraph [ref=e367]: Belum ada data sentimen untuk saham ini.
+          - generic [ref=e368]:
+            - generic [ref=e370]:
+              - img [ref=e371]
+              - heading "Diskusi" [level=2] [ref=e373]
+              - generic [ref=e374]: BBCA
+            - generic [ref=e376]:
+              - generic [ref=e377]:
+                - generic [ref=e378]: T
+                - textbox "Bagikan analisa atau pertanyaan tentang BBCA..." [ref=e380]
+              - generic [ref=e381]:
+                - generic [ref=e382]:
+                  - button "Pilih emoji" [ref=e384]:
+                    - img [ref=e385]
+                  - generic [ref=e388]: 0/500
+                  - generic [ref=e389]: $TICKER.JK · @username
+                - button "Kirim" [disabled] [ref=e390]
+          - generic [ref=e416]:
+            - paragraph [ref=e417]: Artikel Terkait
+            - generic [ref=e418]:
+              - link "Saham Bank Central Asia (BBCA) Hari Ini — 5 Juni 2026 5 Jun 2026" [ref=e419] [cursor=pointer]:
+                - /url: /berita/saham-bbca-5-juni-2026
+                - generic [ref=e421]:
+                  - paragraph [ref=e422]: Saham Bank Central Asia (BBCA) Hari Ini — 5 Juni 2026
+                  - paragraph [ref=e423]: 5 Jun 2026
+              - link "Saham Bank Central Asia (BBCA) Hari Ini — 4 Juni 2026 4 Jun 2026" [ref=e424] [cursor=pointer]:
+                - /url: /berita/saham-bbca-4-juni-2026
+                - generic [ref=e426]:
+                  - paragraph [ref=e427]: Saham Bank Central Asia (BBCA) Hari Ini — 4 Juni 2026
+                  - paragraph [ref=e428]: 4 Jun 2026
+              - link "Saham Bank Central Asia (BBCA) Hari Ini — 3 Juni 2026 3 Jun 2026" [ref=e429] [cursor=pointer]:
+                - /url: /berita/saham-bbca-3-juni-2026
+                - generic [ref=e431]:
+                  - paragraph [ref=e432]: Saham Bank Central Asia (BBCA) Hari Ini — 3 Juni 2026
+                  - paragraph [ref=e433]: 3 Jun 2026
+              - link "Saham Bank Central Asia (BBCA) Hari Ini — 2 Juni 2026 2 Jun 2026" [ref=e434] [cursor=pointer]:
+                - /url: /berita/saham-bbca-2-juni-2026
+                - generic [ref=e436]:
+                  - paragraph [ref=e437]: Saham Bank Central Asia (BBCA) Hari Ini — 2 Juni 2026
+                  - paragraph [ref=e438]: 2 Jun 2026
+              - link "Saham Bank Central Asia (BBCA) Hari Ini — 1 Juni 2026 1 Jun 2026" [ref=e439] [cursor=pointer]:
+                - /url: /berita/saham-bbca-1-juni-2026
+                - generic [ref=e441]:
+                  - paragraph [ref=e442]: Saham Bank Central Asia (BBCA) Hari Ini — 1 Juni 2026
+                  - paragraph [ref=e443]: 1 Jun 2026
+      - generic [ref=e445]:
+        - generic [ref=e446]:
+          - generic [ref=e447]:
+            - generic [ref=e448]:
+              - img [ref=e449]
+              - generic [ref=e451]: TeknikalID
+            - paragraph [ref=e452]: Platform analisa teknikal saham BEI. Data bersumber dari Yahoo Finance dengan jeda ~5-10 menit.
+          - generic [ref=e453]:
+            - link "Beranda" [ref=e454] [cursor=pointer]:
+              - /url: /
+            - link "Saham" [ref=e455] [cursor=pointer]:
+              - /url: /stocks
+            - link "Screener" [ref=e456] [cursor=pointer]:
+              - /url: /screener
+            - link "Disclaimer" [ref=e457] [cursor=pointer]:
+              - /url: /disclaimer
+            - link "Privasi" [ref=e458] [cursor=pointer]:
+              - /url: /privacy
+            - link "Ketentuan" [ref=e459] [cursor=pointer]:
+              - /url: /terms
+        - paragraph [ref=e461]: © 2026 TeknikalID. Bukan rekomendasi investasi.

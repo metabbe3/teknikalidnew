@@ -1,6 +1,7 @@
 "use client";
 
-import { getAvatarUrl } from "@/lib/avatar";
+import { useMemo } from "react";
+import { generateIdenticonDataUri } from "@/lib/generate-avatar";
 
 const SIZES = {
   xs: "w-5 h-5 text-[8px]",
@@ -15,6 +16,7 @@ interface UserAvatarProps {
   src: string | null | undefined;
   name?: string | null;
   username?: string | null;
+  email?: string | null;
   size?: keyof typeof SIZES;
   className?: string;
 }
@@ -23,29 +25,37 @@ export function UserAvatar({
   src,
   name,
   username,
+  email,
   size = "md",
   className = "",
 }: UserAvatarProps) {
   const initial = (name || username || "U").charAt(0).toUpperCase();
 
-  if (!src) {
-    return (
-      <div
-        className={`rounded-full shrink-0 bg-accent/10 flex items-center justify-center font-semibold text-accent ${SIZES[size]} ${className}`}
-      >
-        <span className="select-none" aria-hidden="true">{initial}</span>
-      </div>
-    );
-  }
+  const fallbackSrc = useMemo(
+    () => generateIdenticonDataUri(email || username || "unknown"),
+    [email, username],
+  );
+
+  const avatarSrc = src || fallbackSrc;
 
   return (
     <div
       className={`relative rounded-full overflow-hidden shrink-0 bg-accent/10 ${SIZES[size]} ${className}`}
     >
       <img
-        src={src}
-        alt=""
+        src={avatarSrc}
+        alt={name || username || "Avatar"}
         className="w-full h-full object-cover"
+        loading="lazy"
+        onError={(e) => {
+          // If the image fails to load, fall back to a colored initial
+          const target = e.currentTarget;
+          target.style.display = "none";
+          const fallback = document.createElement("span");
+          fallback.className = "flex items-center justify-center w-full h-full font-semibold text-accent select-none";
+          fallback.textContent = initial;
+          target.parentElement?.appendChild(fallback);
+        }}
       />
     </div>
   );

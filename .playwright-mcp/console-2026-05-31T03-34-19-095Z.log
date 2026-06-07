@@ -1,0 +1,16 @@
+[     445ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=45g94iX0ibE5aOaKAAAA' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/69.5660d4934204ffc2.js:0
+[     560ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/socket.io/?EIO=4&transport=polling&t=876heh2i&sid=45g94iX0ibE5aOaKAAAA:0
+[   34303ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://teknikal.id/api/stocks/history?range=6mo:0
+[   35355ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://teknikal.id/api/stocks/history?range=6mo:0
+[  182066ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=yRmgY-48jmzhdihwAAAC' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/69.5660d4934204ffc2.js:0
+[  182117ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://teknikal.id/api/stocks/history?range=6mo:0
+[  183174ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://teknikal.id/api/stocks/history?range=6mo:0
+[  184482ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=roQAvoLL9-l4lbiJAAAE' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/69.5660d4934204ffc2.js:0
+[  505782ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=OgKClYwnn4xyCJCrAAAA' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/69.5660d4934204ffc2.js:0
+[  553245ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=_DTct_VnxBzsVklkAAAC' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/69.5660d4934204ffc2.js:0
+[  931556ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=HMpHb7m9WYmxWFAYAAAA' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/69.5660d4934204ffc2.js:0
+[  931644ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/socket.io/?EIO=4&transport=polling&t=8r4xmuzc&sid=HMpHb7m9WYmxWFAYAAAA:0
+[  936618ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://teknikal.id/api/stocks/history?range=6mo:0
+[  937684ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://teknikal.id/api/stocks/history?range=6mo:0
+[  939754ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://teknikal.id/api/stocks/history?range=6mo:0
+[ 1322134ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=wP_tVP4pnbAefgSKAAAA' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/69.5660d4934204ffc2.js:0

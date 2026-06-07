@@ -1,0 +1,9 @@
+[     227ms] [WARNING] Ignoring Event: localhost @ https://plausible.teknikal.id/js/script.js:0
+[56201457ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/api/admin/agent-hub:0
+[56202233ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ http://localhost:3000/api/admin/status:0
+[56202459ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ http://localhost:3000/api/admin/agent-hub:0
+[56409857ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/api/admin/agent-hub:0
+[56410861ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ http://localhost:3000/api/admin/agent-hub:0
+[64983923ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=ymy837yUPpSrnA19AAAC' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/69.5660d4934204ffc2.js:0
+[64984007ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://teknikal.id/socket.io/?EIO=4&transport=polling&t=41m6uj8v&sid=ymy837yUPpSrnA19AAAC:0
+[64987062ms] [WARNING] WebSocket connection to 'wss://teknikal.id/socket.io/?EIO=4&transport=websocket&sid=3zrGS6YyTTEYKOdnAAAE' failed: WebSocket is closed before the connection is established. @ https://teknikal.id/_next/static/chunks/69.5660d4934204ffc2.js:0

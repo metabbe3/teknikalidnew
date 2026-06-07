@@ -1,0 +1,174 @@
+- generic [ref=e1]:
+  - navigation [ref=e2]:
+    - navigation [ref=e4]:
+      - link "Plausible logo" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img "Plausible logo" [ref=e7]
+      - list [ref=e9]:
+        - listitem [ref=e10]:
+          - link "Login" [ref=e12] [cursor=pointer]:
+            - /url: /login
+  - main [ref=e13]:
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - heading "Register your Plausible CE account" [level=1] [ref=e16]
+        - generic [ref=e17]: Set up privacy-friendly analytics with just a few clicks
+      - generic [ref=e19]:
+        - generic [ref=e20]:
+          - generic [ref=e21]: "1"
+          - generic [ref=e22]: Register
+        - generic [ref=e24]:
+          - generic [ref=e25]: "2"
+          - generic [ref=e26]: Activate account
+        - generic [ref=e28]:
+          - generic [ref=e29]: "3"
+          - generic [ref=e30]: Add site info
+        - generic [ref=e32]:
+          - generic [ref=e33]: "4"
+          - generic [ref=e34]: Install Plausible
+        - generic [ref=e36]:
+          - generic [ref=e37]: "5"
+          - generic [ref=e38]: Verify installation
+      - generic [ref=e40]:
+        - heading "Enter your details" [level=2] [ref=e41]
+        - generic [ref=e43]:
+          - generic [ref=e44]:
+            - generic [ref=e45]: Full name
+            - textbox "Jane Doe" [ref=e48]: Admin
+          - generic [ref=e49]:
+            - generic [ref=e50]:
+              - generic [ref=e51]: Email
+              - paragraph [ref=e52]: No spam, guaranteed.
+            - textbox "example@email.com" [ref=e55]: admin@teknikal.id
+          - generic [ref=e56]:
+            - generic [ref=e57]:
+              - generic [ref=e58]: Password
+              - paragraph [ref=e59]: Min 12 characters
+            - textbox [ref=e62]: N!ch0l@5Teknikal2026
+          - generic [ref=e63]:
+            - generic [ref=e64]: Confirm password
+            - textbox [ref=e67]: N!ch0l@5Teknikal2026
+          - button "Create my account" [active] [ref=e68] [cursor=pointer]
+          - paragraph [ref=e69]:
+            - text: Already have an account?
+            - link "Log in" [ref=e70] [cursor=pointer]:
+              - /url: /login
+  - generic [ref=e73]:
+    - generic [ref=e74]:
+      - heading "Plausible logo" [level=4] [ref=e75]:
+        - img "Plausible logo" [ref=e76]
+      - paragraph [ref=e77]:
+        - text: This dashboard is running on self-managed infrastructure, not tested by Plausible Analytics. We cannot vouch for its performance or reliability. For official managed hosting, check out
+        - link "plausible.io" [ref=e78] [cursor=pointer]:
+          - /url: https://plausible.io
+    - generic [ref=e79]:
+      - generic [ref=e80]:
+        - generic [ref=e81]:
+          - heading "Getting started" [level=4] [ref=e82]
+          - list [ref=e83]:
+            - listitem [ref=e84]:
+              - link "Integration guides" [ref=e85] [cursor=pointer]:
+                - /url: https://plausible.io/docs/integration-guides
+            - listitem [ref=e86]:
+              - link "WordPress plugin" [ref=e87] [cursor=pointer]:
+                - /url: https://plausible.io/wordpress-analytics-plugin
+            - listitem [ref=e88]:
+              - link "Troubleshooting" [ref=e89] [cursor=pointer]:
+                - /url: https://plausible.io/docs/troubleshoot-integration
+            - listitem [ref=e90]:
+              - link "Script extensions" [ref=e91] [cursor=pointer]:
+                - /url: https://plausible.io/docs/script-extensions
+            - listitem [ref=e92]:
+              - link "Import stats" [ref=e93] [cursor=pointer]:
+                - /url: https://plausible.io/docs/google-analytics-import
+            - listitem [ref=e94]:
+              - link "Search Console" [ref=e95] [cursor=pointer]:
+                - /url: https://plausible.io/docs/google-search-console-integration
+            - listitem [ref=e96]:
+              - link "Invite team members" [ref=e97] [cursor=pointer]:
+                - /url: https://plausible.io/docs/users-roles
+            - listitem [ref=e98]:
+              - link "Exclude traffic" [ref=e99] [cursor=pointer]:
+                - /url: https://plausible.io/docs/excluding
+        - generic [ref=e100]:
+          - heading "Help guides" [level=4] [ref=e101]
+          - list [ref=e102]:
+            - listitem [ref=e103]:
+              - link "Compare stats" [ref=e104] [cursor=pointer]:
+                - /url: https://plausible.io/docs/compare-stats
+            - listitem [ref=e105]:
+              - link "Segment audience" [ref=e106] [cursor=pointer]:
+                - /url: https://plausible.io/docs/filters-segments
+            - listitem [ref=e107]:
+              - link "Track campaigns" [ref=e108] [cursor=pointer]:
+                - /url: https://plausible.io/docs/manual-link-tagging
+            - listitem [ref=e109]:
+              - link "Event conversions" [ref=e110] [cursor=pointer]:
+                - /url: https://plausible.io/docs/goal-conversions
+            - listitem [ref=e111]:
+              - link "Funnel analysis" [ref=e112] [cursor=pointer]:
+                - /url: https://plausible.io/docs/funnel-analysis
+            - listitem [ref=e113]:
+              - link "Revenue attribution" [ref=e114] [cursor=pointer]:
+                - /url: https://plausible.io/docs/ecommerce-revenue-tracking
+            - listitem [ref=e115]:
+              - link "Custom properties" [ref=e116] [cursor=pointer]:
+                - /url: https://plausible.io/docs/custom-props/introduction
+            - listitem [ref=e117]:
+              - link "Bypass adblockers" [ref=e118] [cursor=pointer]:
+                - /url: https://plausible.io/docs/proxy/introduction
+      - generic [ref=e119]:
+        - generic [ref=e120]:
+          - heading "Community" [level=4] [ref=e121]
+          - list [ref=e122]:
+            - listitem [ref=e123]:
+              - link "What's new" [ref=e124] [cursor=pointer]:
+                - /url: https://plausible.io/changelog
+            - listitem [ref=e125]:
+              - link "Status" [ref=e126] [cursor=pointer]:
+                - /url: https://plausible.io/status
+            - listitem [ref=e127]:
+              - link "Blog" [ref=e128] [cursor=pointer]:
+                - /url: https://plausible.io/blog
+            - listitem [ref=e129]:
+              - link "Documentation" [ref=e130] [cursor=pointer]:
+                - /url: https://plausible.io/docs
+            - listitem [ref=e131]:
+              - link "GitHub" [ref=e132] [cursor=pointer]:
+                - /url: https://github.com/plausible/analytics
+            - listitem [ref=e133]:
+              - link "Twitter" [ref=e134] [cursor=pointer]:
+                - /url: https://twitter.com/plausiblehq
+            - listitem [ref=e135]:
+              - link "Mastodon" [ref=e136] [cursor=pointer]:
+                - /url: https://fosstodon.org/@plausible
+            - listitem [ref=e137]:
+              - link "LinkedIn" [ref=e138] [cursor=pointer]:
+                - /url: https://www.linkedin.com/company/plausible-analytics/
+        - generic [ref=e139]:
+          - heading "Company" [level=4] [ref=e140]
+          - list [ref=e141]:
+            - listitem [ref=e142]:
+              - link "About" [ref=e143] [cursor=pointer]:
+                - /url: https://plausible.io/about
+            - listitem [ref=e144]:
+              - link "Contact" [ref=e145] [cursor=pointer]:
+                - /url: https://plausible.io/contact
+            - listitem [ref=e146]:
+              - link "Privacy" [ref=e147] [cursor=pointer]:
+                - /url: https://plausible.io/privacy
+            - listitem [ref=e148]:
+              - link "Data policy" [ref=e149] [cursor=pointer]:
+                - /url: https://plausible.io/data-policy
+            - listitem [ref=e150]:
+              - link "Terms" [ref=e151] [cursor=pointer]:
+                - /url: https://plausible.io/terms
+            - listitem [ref=e152]:
+              - link "DPA" [ref=e153] [cursor=pointer]:
+                - /url: https://plausible.io/dpa
+            - listitem [ref=e154]:
+              - link "Security" [ref=e155] [cursor=pointer]:
+                - /url: https://plausible.io/security
+            - listitem [ref=e156]:
+              - link "Imprint" [ref=e157] [cursor=pointer]:
+                - /url: https://plausible.io/imprint

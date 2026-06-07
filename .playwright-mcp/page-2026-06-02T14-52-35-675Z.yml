@@ -1,0 +1,380 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - main [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e6]:
+        - link "TeknikalID" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - img [ref=e8]
+          - generic [ref=e10]: TeknikalID
+        - navigation "Main navigation" [ref=e11]:
+          - link "Beranda" [ref=e12] [cursor=pointer]:
+            - /url: /
+          - link "Saham" [ref=e13] [cursor=pointer]:
+            - /url: /stocks
+          - link "Screener" [ref=e14] [cursor=pointer]:
+            - /url: /screener
+          - link "Simulasi" [ref=e15] [cursor=pointer]:
+            - /url: /paper-trading
+          - link "Bandingkan" [ref=e16] [cursor=pointer]:
+            - /url: /compare
+          - link "Komunitas" [ref=e17] [cursor=pointer]:
+            - /url: /community
+          - link "Berita" [ref=e18] [cursor=pointer]:
+            - /url: /berita
+          - link "Akademi" [ref=e19] [cursor=pointer]:
+            - /url: /akademi
+        - generic [ref=e20]:
+          - link "Daftar Pantauan" [ref=e21] [cursor=pointer]:
+            - /url: /watchlist
+            - img [ref=e22]
+          - button "Notifikasi" [ref=e25]:
+            - img [ref=e26]
+          - button "Menu pengguna" [ref=e30]
+      - generic [ref=e32]:
+        - generic [ref=e34]:
+          - generic [ref=e35]:
+            - generic [ref=e36]:
+              - generic [ref=e37]:
+                - generic [ref=e38]:
+                  - generic [ref=e40]: Pasar Tutup
+                  - generic [ref=e42]: HARI LIBUR NASIONAL
+                - generic [ref=e43]: "Data sesi terakhir: 2 Jun 2026"
+              - generic [ref=e45]:
+                - img [ref=e47]
+                - generic [ref=e49]:
+                  - paragraph [ref=e50]: Pasar saham BEI tutup hari ini (Selasa, 2 Juni 2026)
+                  - paragraph [ref=e51]: Hari libur nasional — tidak ada sesi perdagangan. Data yang ditampilkan adalah dari sesi perdagangan terakhir. Harga dan indikator teknikal belum diperbarui sejak penutupan pasar.
+            - heading "Daftar Saham BEI" [level=1] [ref=e52]
+            - paragraph [ref=e53]:
+              - text: Screen
+              - generic [ref=e54]: 956+
+              - text: saham IDX berdasarkan sektor, indikator teknikal, dan performa.
+          - generic [ref=e55]:
+            - generic [ref=e56]:
+              - paragraph [ref=e57]: Total
+              - paragraph [ref=e58]: 865 saham
+            - generic [ref=e59]:
+              - paragraph [ref=e60]: Naik
+              - paragraph [ref=e61]: "298"
+            - generic [ref=e62]:
+              - paragraph [ref=e63]: Turun
+              - paragraph [ref=e64]: "414"
+            - generic [ref=e65]:
+              - paragraph [ref=e66]: Tetap
+              - paragraph [ref=e67]: "153"
+            - generic [ref=e68]:
+              - paragraph [ref=e69]: Status
+              - paragraph [ref=e70]: SESI TERAKHIR
+        - generic [ref=e72]:
+          - generic [ref=e73]:
+            - generic [ref=e74]:
+              - generic [ref=e75]:
+                - img [ref=e76]
+                - searchbox "Cari saham berdasarkan ticker atau nama" [ref=e79]
+              - generic [ref=e80]: 865 saham
+            - generic [ref=e82]:
+              - button "Semua" [ref=e83]
+              - button "Basic Materials" [ref=e84]
+              - button "Consumer Cyclicals" [ref=e85]
+              - button "Consumer Non-Cyclicals" [ref=e86]
+              - button "Energy" [ref=e87]
+              - button "Financials" [ref=e88]
+              - button "Healthcare" [ref=e89]
+              - button "Industrials" [ref=e90]
+              - button "Infrastructures" [ref=e91]
+              - button "Properties & Real Estate" [ref=e92]
+              - button "Technology" [ref=e93]
+              - button "Transportation & Logistics" [ref=e94]
+              - button "Uncategorized" [ref=e95]
+          - generic [ref=e97]:
+            - generic [ref=e98]:
+              - button "Ticker" [ref=e539] [cursor=pointer]:
+                - text: Ticker
+                - generic [ref=e540]: ↑
+              - button "Name" [ref=e541] [cursor=pointer]
+              - button "Sector" [ref=e542] [cursor=pointer]
+              - generic [ref=e103]: Price
+              - generic [ref=e104]: 7D
+              - button "Change" [ref=e543] [cursor=pointer]
+              - button "Volume" [ref=e544] [cursor=pointer]
+              - button "RSI" [ref=e545] [cursor=pointer]
+            - generic [ref=e108]:
+              - generic [ref=e109] [cursor=pointer]:
+                - link "AADI" [ref=e111]:
+                  - /url: /stocks/AADI.JK
+                - link "Adaro Andalan Indonesia" [ref=e113]:
+                  - /url: /stocks/AADI.JK
+                - generic [ref=e114]: Energy
+                - generic [ref=e115]: Rp8.325
+                - img [ref=e546]
+                - generic [ref=e117]: "-0,89%"
+                - generic [ref=e118]: 16.8M
+                - generic [ref=e121]: "34.9"
+              - generic [ref=e128] [cursor=pointer]:
+                - link "AALI" [ref=e130]:
+                  - /url: /stocks/AALI.JK
+                - link "Astra Agro Lestari" [ref=e132]:
+                  - /url: /stocks/AALI.JK
+                - generic [ref=e133]: Consumer Non-Cyclicals
+                - generic [ref=e134]: Rp6.825
+                - img [ref=e548]
+                - generic [ref=e136]: +5,41%
+                - generic [ref=e137]: 3.6M
+                - generic [ref=e140]: "40.3"
+              - generic [ref=e147] [cursor=pointer]:
+                - link "ABBA" [ref=e149]:
+                  - /url: /stocks/ABBA.JK
+                - generic [ref=e150]:
+                  - link "Mahaka Media" [ref=e151]:
+                    - /url: /stocks/ABBA.JK
+                  - generic [ref=e152]: Special Monitoring
+                - generic [ref=e153]: Consumer Cyclicals
+                - generic [ref=e154]: Rp37
+                - img [ref=e550]
+                - generic [ref=e156]: +2,78%
+                - generic [ref=e157]: 102K
+                - generic [ref=e160]: "46.6"
+              - generic [ref=e167] [cursor=pointer]:
+                - link "ABDA" [ref=e169]:
+                  - /url: /stocks/ABDA.JK
+                - generic [ref=e170]:
+                  - link "Asuransi Bina Dana Arta" [ref=e171]:
+                    - /url: /stocks/ABDA.JK
+                  - generic [ref=e172]: Dev
+                - generic [ref=e173]: Financials
+                - generic [ref=e174]: Rp3.500
+                - img [ref=e552]
+                - generic [ref=e176]: 0,00%
+                - generic [ref=e177]: "500"
+                - generic [ref=e180]: "55.1"
+              - generic [ref=e187] [cursor=pointer]:
+                - link "ABMM" [ref=e189]:
+                  - /url: /stocks/ABMM.JK
+                - link "ABM Investama" [ref=e191]:
+                  - /url: /stocks/ABMM.JK
+                - generic [ref=e192]: Energy
+                - generic [ref=e193]: Rp2.390
+                - img [ref=e553]
+                - generic [ref=e195]: "-0,42%"
+                - generic [ref=e196]: 613K
+                - generic [ref=e199]: "23.3"
+              - generic [ref=e206] [cursor=pointer]:
+                - link "ACES" [ref=e208]:
+                  - /url: /stocks/ACES.JK
+                - link "Aspirasi Hidup Indonesia" [ref=e210]:
+                  - /url: /stocks/ACES.JK
+                - generic [ref=e211]: Consumer Cyclicals
+                - generic [ref=e212]: Rp348
+                - img [ref=e555]
+                - generic [ref=e214]: 0,00%
+                - generic [ref=e215]: 27.7M
+                - generic [ref=e218]: "39.7"
+              - generic [ref=e225] [cursor=pointer]:
+                - link "ACRO" [ref=e227]:
+                  - /url: /stocks/ACRO.JK
+                - generic [ref=e228]:
+                  - link "Samcro Hyosung Adilestari" [ref=e229]:
+                    - /url: /stocks/ACRO.JK
+                  - generic [ref=e230]: Dev
+                - generic [ref=e231]: Consumer Cyclicals
+                - generic [ref=e232]: Rp65
+                - img [ref=e557]
+                - generic [ref=e234]: +1,56%
+                - generic [ref=e235]: 1.4M
+                - generic [ref=e238]: "38.4"
+              - generic [ref=e245] [cursor=pointer]:
+                - link "ACST" [ref=e247]:
+                  - /url: /stocks/ACST.JK
+                - generic [ref=e248]:
+                  - link "Acset Indonusa" [ref=e249]:
+                    - /url: /stocks/ACST.JK
+                  - generic [ref=e250]: Special Monitoring
+                - generic [ref=e251]: Infrastructures
+                - generic [ref=e252]: Rp83
+                - img [ref=e559]
+                - generic [ref=e254]: "-1,19%"
+                - generic [ref=e255]: 120K
+                - generic [ref=e258]: "25.9"
+              - generic [ref=e265] [cursor=pointer]:
+                - link "ADCP" [ref=e267]:
+                  - /url: /stocks/ADCP.JK
+                - generic [ref=e268]:
+                  - link "Adhi Commuter Properti" [ref=e269]:
+                    - /url: /stocks/ADCP.JK
+                  - generic [ref=e270]: Dev
+                - generic [ref=e271]: Properties & Real Estate
+                - generic [ref=e272]: Rp50
+                - img [ref=e561]
+                - generic [ref=e274]: 0,00%
+                - generic [ref=e275]: 88.5K
+                - generic [ref=e278]: "43.9"
+              - generic [ref=e285] [cursor=pointer]:
+                - link "ADES" [ref=e287]:
+                  - /url: /stocks/ADES.JK
+                - link "Akasha Wira International" [ref=e289]:
+                  - /url: /stocks/ADES.JK
+                - generic [ref=e290]: Consumer Non-Cyclicals
+                - generic [ref=e291]: Rp22.225
+                - img [ref=e562]
+                - generic [ref=e293]: +5,83%
+                - generic [ref=e294]: 90.1K
+                - generic [ref=e297]: "69.5"
+              - generic [ref=e304] [cursor=pointer]:
+                - link "ADHI" [ref=e306]:
+                  - /url: /stocks/ADHI.JK
+                - link "Adhi Karya" [ref=e308]:
+                  - /url: /stocks/ADHI.JK
+                - generic [ref=e309]: Infrastructures
+                - generic [ref=e310]: Rp166
+                - img [ref=e564]
+                - generic [ref=e312]: "-1,19%"
+                - generic [ref=e313]: 4.8M
+                - generic [ref=e316]: "29.6"
+              - generic [ref=e323] [cursor=pointer]:
+                - link "ADMF" [ref=e325]:
+                  - /url: /stocks/ADMF.JK
+                - generic [ref=e326]:
+                  - link "Adira Dinamika Multi Finance T" [ref=e327]:
+                    - /url: /stocks/ADMF.JK
+                  - generic [ref=e328]: Dev
+                - generic [ref=e329]: Financials
+                - generic [ref=e330]: Rp8.325
+                - img [ref=e566]
+                - generic [ref=e332]: "-0,60%"
+                - generic [ref=e333]: 11.7K
+                - generic [ref=e336]: "39.9"
+              - generic [ref=e343] [cursor=pointer]:
+                - link "ADMG" [ref=e345]:
+                  - /url: /stocks/ADMG.JK
+                - generic [ref=e346]:
+                  - link "Polychem Indonesia" [ref=e347]:
+                    - /url: /stocks/ADMG.JK
+                  - generic [ref=e348]: Dev
+                - generic [ref=e349]: Basic Materials
+                - generic [ref=e350]: Rp214
+                - img [ref=e568]
+                - generic [ref=e352]: 0,00%
+                - generic [ref=e353]: 509.5K
+                - generic [ref=e356]: "63.1"
+              - generic [ref=e363] [cursor=pointer]:
+                - link "ADMR" [ref=e365]:
+                  - /url: /stocks/ADMR.JK
+                - link "Alamtri Minerals Indonesia" [ref=e367]:
+                  - /url: /stocks/ADMR.JK
+                - generic [ref=e368]: Energy
+                - generic [ref=e369]: Rp1.450
+                - img [ref=e570]
+                - generic [ref=e371]: "-5,23%"
+                - generic [ref=e372]: 43M
+                - generic [ref=e375]: "32.8"
+              - generic [ref=e382] [cursor=pointer]:
+                - link "ADRO" [ref=e384]:
+                  - /url: /stocks/ADRO.JK
+                - link "Alamtri Resources Indonesia Tb" [ref=e386]:
+                  - /url: /stocks/ADRO.JK
+                - generic [ref=e387]: Energy
+                - generic [ref=e388]: Rp2.280
+                - img [ref=e572]
+                - generic [ref=e390]: "-0,87%"
+                - generic [ref=e391]: 65.5M
+                - generic [ref=e394]: "39.2"
+              - generic [ref=e401] [cursor=pointer]:
+                - link "AEGS" [ref=e403]:
+                  - /url: /stocks/AEGS.JK
+                - generic [ref=e404]:
+                  - link "Anugerah Spareparts Sejahtera" [ref=e405]:
+                    - /url: /stocks/AEGS.JK
+                  - generic [ref=e406]: Accel
+                - generic [ref=e407]: Consumer Cyclicals
+                - generic [ref=e408]: Rp46
+                - img [ref=e574]
+                - generic [ref=e410]: "-4,17%"
+                - generic [ref=e411]: 1.4M
+                - generic [ref=e414]: "39.1"
+              - generic [ref=e421] [cursor=pointer]:
+                - link "AGAR" [ref=e423]:
+                  - /url: /stocks/AGAR.JK
+                - generic [ref=e424]:
+                  - link "Asia Sejahtera Mina" [ref=e425]:
+                    - /url: /stocks/AGAR.JK
+                  - generic [ref=e426]: Dev
+                - generic [ref=e427]: Consumer Non-Cyclicals
+                - generic [ref=e428]: Rp230
+                - img [ref=e576]
+                - generic [ref=e430]: "-3,36%"
+                - generic [ref=e431]: 1.9M
+                - generic [ref=e434]: "46.5"
+              - generic [ref=e441] [cursor=pointer]:
+                - link "AGII" [ref=e443]:
+                  - /url: /stocks/AGII.JK
+                - generic [ref=e444]:
+                  - link "Samator Indo Gas" [ref=e445]:
+                    - /url: /stocks/AGII.JK
+                  - generic [ref=e446]: Dev
+                - generic [ref=e447]: Basic Materials
+                - generic [ref=e448]: Rp2.810
+                - img [ref=e578]
+                - generic [ref=e450]: +2,55%
+                - generic [ref=e451]: 281.5K
+                - generic [ref=e454]: "45.5"
+              - generic [ref=e461] [cursor=pointer]:
+                - link "AGRO" [ref=e463]:
+                  - /url: /stocks/AGRO.JK
+                - link "Bank Raya Indonesia" [ref=e465]:
+                  - /url: /stocks/AGRO.JK
+                - generic [ref=e466]: Financials
+                - generic [ref=e467]: Rp164
+                - img [ref=e580]
+                - generic [ref=e469]: "-0,61%"
+                - generic [ref=e470]: 2.9M
+                - generic [ref=e473]: "39.2"
+              - generic [ref=e480] [cursor=pointer]:
+                - link "AGRS" [ref=e482]:
+                  - /url: /stocks/AGRS.JK
+                - generic [ref=e483]:
+                  - link "Bank IBK Indonesia" [ref=e484]:
+                    - /url: /stocks/AGRS.JK
+                  - generic [ref=e485]: Dev
+                - generic [ref=e486]: Financials
+                - generic [ref=e487]: Rp64
+                - img [ref=e582]
+                - generic [ref=e489]: "-1,54%"
+                - generic [ref=e490]: 1.9M
+                - generic [ref=e493]: "37.7"
+              - generic [ref=e500] [cursor=pointer]:
+                - link "AHAP" [ref=e502]:
+                  - /url: /stocks/AHAP.JK
+                - generic [ref=e503]:
+                  - link "Asuransi Harta Aman Pratama Tb" [ref=e504]:
+                    - /url: /stocks/AHAP.JK
+                  - generic [ref=e505]: Dev
+                - generic [ref=e506]: Financials
+                - generic [ref=e507]: Rp89
+                - img [ref=e584]
+                - generic [ref=e509]: +4,71%
+                - generic [ref=e510]: 23.5M
+                - generic [ref=e513]: "38.8"
+      - generic [ref=e521]:
+        - generic [ref=e522]:
+          - generic [ref=e523]:
+            - generic [ref=e524]:
+              - img [ref=e525]
+              - generic [ref=e527]: TeknikalID
+            - paragraph [ref=e528]: Platform analisa teknikal saham BEI. Data bersumber dari Yahoo Finance dengan jeda ~5-10 menit.
+          - generic [ref=e529]:
+            - link "Beranda" [ref=e530] [cursor=pointer]:
+              - /url: /
+            - link "Saham" [ref=e531] [cursor=pointer]:
+              - /url: /stocks
+            - link "Screener" [ref=e532] [cursor=pointer]:
+              - /url: /screener
+            - link "Disclaimer" [ref=e533] [cursor=pointer]:
+              - /url: /disclaimer
+            - link "Privasi" [ref=e534] [cursor=pointer]:
+              - /url: /privacy
+            - link "Ketentuan" [ref=e535] [cursor=pointer]:
+              - /url: /terms
+        - paragraph [ref=e537]: © 2026 TeknikalID. Bukan rekomendasi investasi.
+  - alert [ref=e538]

@@ -102,6 +102,7 @@ function PostMenu({
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
+        aria-label="Opsi lainnya"
         className="p-1.5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -190,7 +191,7 @@ function PostMenu({
                     disabled={deleteMutation.isPending}
                     className="text-xs bg-red-600 text-white px-3 py-1 rounded-lg font-medium hover:bg-red-700 disabled:opacity-50"
                   >
-                    {deleteMutation.isPending ? "Menghapus..." : "Hapus"}
+                    {deleteMutation.isPending ? "Menghapus…" : "Hapus"}
                   </button>
                   <button
                     onClick={() => setConfirmDelete(false)}
@@ -214,7 +215,7 @@ function PostMenu({
               onChange={(e) => setEditContent(e.target.value)}
               maxLength={1000}
               rows={4}
-              className="w-full rounded-lg border border-gray-200 bg-gray-50 text-gray-900 text-sm p-3 resize-none focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 text-gray-900 text-sm p-3 resize-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/30 focus-visible:border-teal-500"
             />
             <div className="flex justify-end gap-2 mt-3">
               <button
@@ -228,7 +229,7 @@ function PostMenu({
                 disabled={updateMutation.isPending || !editContent.trim()}
                 className="text-sm bg-teal-600 text-white px-4 py-1.5 rounded-lg font-medium hover:bg-teal-700 disabled:opacity-50"
               >
-                {updateMutation.isPending ? "Menyimpan..." : "Simpan"}
+                {updateMutation.isPending ? "Menyimpan…" : "Simpan"}
               </button>
             </div>
           </div>
@@ -322,11 +323,18 @@ export function PostCard({ post, repostedBy }: PostCardProps) {
         <div className="flex gap-3">
           {/* Avatar */}
           <Link href={`/profile/${post.author.username}`} className="shrink-0 pt-0.5">
-            <img
-              src={post.author.image!}
-              alt={post.author.username}
-              className="w-9 h-9 rounded-full object-cover"
-            />
+            {post.author.image ? (
+              <img
+                src={post.author.image}
+                alt={post.author.username}
+                className="w-9 h-9 rounded-full object-cover"
+                loading="lazy"
+              />
+            ) : (
+              <div className="w-9 h-9 rounded-full bg-accent/10 text-accent flex items-center justify-center text-sm font-semibold">
+                {(post.author.name || post.author.username)[0].toUpperCase()}
+              </div>
+            )}
           </Link>
 
           {/* Content */}

@@ -277,6 +277,8 @@ model User {
   portfolioHoldings  PortfolioHolding[]
   achievements       Achievement[]
   paperAccount       PaperAccount?
+  submittedQuestions Question[]
+  questionFeedback   QuestionFeedback[]
 }
 
 enum Role {
@@ -417,6 +419,7 @@ model Comment {
   notifications Notification[]
 
   @@index([postId])
+  @@index([postId, createdAt(sort: Desc)])
   @@index([stockTicker])
   @@index([parentId])
   @@index([authorId])
@@ -433,6 +436,7 @@ model Watchlist {
   stock       Stock    @relation(fields: [stockTicker], references: [ticker], onDelete: Cascade)
 
   @@unique([userId, stockTicker])
+  @@index([userId])
 }
 
 model PortfolioHolding {
@@ -616,6 +620,9 @@ enum NotificationType {
   FOLLOW
   STOCK_POST
   REACTION
+  STOCK_ALERT
+  AGENT_ALERT
+  RE_ENGAGE
 }
 
 model Notification {
@@ -825,4 +832,118 @@ model PaperOrder {
   @@index([accountId])
   @@index([status])
   @@index([stockTicker, status])
+}
+
+model AgentJob {
+  id           String   @id @default(cuid())
+  agentType    String   @db.VarChar(50)
+  status       String   @default("pending") @db.VarChar(20)
+  priority     Int      @default(5)
+  payload      Json
+  result       Json?
+  error        String?  @db.Text
+  attempts     Int      @default(0)
+  maxAttempts  Int      @default(3)
+  parentJobId  String?
+  startedAt    DateTime?
+  completedAt  DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([status, priority])
+  @@index([agentType, status])
+  @@index([createdAt])
+  @@index([parentJobId])
+}
+
+model AgentConfig {
+  id           String   @id @default(cuid())
+  agentType    String   @unique @db.VarChar(50)
+  isEnabled    Boolean  @default(true)
+  systemPrompt String?  @db.Text
+  scheduleCron String?  @db.VarChar(50)
+  scheduleMeta Json?
+  config       Json?
+  updatedAt    DateTime @updatedAt
+  createdAt    DateTime @default(now())
+
+  @@index([agentType])
+}
+
+model CronLog {
+  id           Int      @id @default(autoincrement())
+  jobName      String   @db.VarChar(50)
+  status       String   @db.VarChar(20)
+  startedAt    DateTime @default(now())
+  durationMs   Int
+  result       Json?
+  errorMessage String?  @db.Text
+  triggeredBy  String   @db.VarChar(20) @default("cron")
+
+  @@index([jobName, startedAt(sort: Desc)])
+  @@index([startedAt])
+}
+
+// --- FAQ / Q&A System ---
+
+enum QuestionSource {
+  AI_GENERATED
+  USER_SUBMITTED
+  TRENDING
+}
+
+enum QuestionStatus {
+  PENDING
+  ANSWERED
+  REJECTED
+}
+
+enum QuestionFormat {
+  FAQ
+  MINI_ARTICLE
+}
+
+model Question {
+  id              String          @id @default(cuid())
+  slug            String          @unique @db.VarChar(255)
+  question        String          @db.VarChar(500)
+  shortAnswer     String          @db.VarChar(1000)
+  longAnswer      String?         @db.Text
+  format          QuestionFormat  @default(FAQ)
+  category        String          @db.VarChar(50)
+  tags            String[]        @default([])
+  relatedTickers  String[]        @default([])
+  source          QuestionSource  @default(AI_GENERATED)
+  status          QuestionStatus  @default(ANSWERED)
+  submittedById   String?
+  aiProvider      String?         @db.VarChar(20)
+  generationMeta  Json?
+  views           Int             @default(0)
+  helpfulVotes    Int             @default(0)
+  unhelpfulVotes  Int             @default(0)
+  metaDescription String?         @db.VarChar(300)
+  publishedAt     DateTime        @default(now())
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  submittedBy     User?           @relation(fields: [submittedById], references: [id], onDelete: SetNull)
+  feedback        QuestionFeedback[]
+
+  @@index([status, category])
+  @@index([status, publishedAt(sort: Desc)])
+  @@index([relatedTickers])
+}
+
+model QuestionFeedback {
+  id          String   @id @default(cuid())
+  questionId  String
+  userId      String
+  isHelpful   Boolean
+  createdAt   DateTime @default(now())
+
+  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questionId])
+  @@index([questionId])
 }
