@@ -8,29 +8,25 @@ export function SectorHeatmap({ sectors }: { sectors: Record<string, SectorData>
 
   return (
     <section className="space-y-5">
-      <div className="flex items-center gap-3">
-        <div className="w-1 h-6 bg-accent rounded-full" aria-hidden="true" />
-        <h2 className="text-lg font-semibold tracking-tight">Performa Sektor</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold tracking-tight">Performa Sektor</h2>
+        <span className="text-[10px] text-text-tertiary uppercase tracking-wider font-medium">{entries.length} sektor</span>
       </div>
       <div className="flex flex-wrap gap-3 stagger-grid">
         {entries.map(([sector, { count, avgChange }], i) => {
           const isPositive = avgChange >= 0;
           const magnitude = Math.min(Math.abs(avgChange) / 3, 1);
-          const opacity = 0.08 + magnitude * 0.22;
-          const color = isPositive
+          const opacity = 0.06 + magnitude * 0.18;
+          const bgTint = isPositive
             ? `rgba(13, 148, 136, ${opacity})`
             : `rgba(220, 38, 38, ${opacity})`;
-          const borderLeft = isPositive
-            ? `3px solid rgba(13, 148, 136, ${0.4 + magnitude * 0.6})`
-            : `3px solid rgba(220, 38, 38, ${0.4 + magnitude * 0.6})`;
 
           return (
             <div
               key={sector}
               style={{
                 "--stagger-i": i,
-                background: `linear-gradient(135deg, ${color}, var(--color-bg-card))`,
-                borderLeft,
+                background: `linear-gradient(145deg, ${bgTint}, var(--color-bg-card))`,
               } as React.CSSProperties}
               className="sector-heatmap-cell depth-shadow min-w-[140px]"
             >

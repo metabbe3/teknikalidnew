@@ -71,6 +71,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Better text wrapping for headings and prose */
+h1, h2, h3, h4 {
+  text-wrap: balance;
+}
+p, li {
+  text-wrap: pretty;
+}
+
 * {
   scrollbar-width: thin;
   scrollbar-color: #d6d3d1 transparent;
@@ -159,12 +167,12 @@ button:focus-visible,
   background-size: 48px 48px;
 }
 
-/* Card with directional color accent */
+/* Card with directional color accent — background tint, no side-stripe */
 .card-bullish {
-  border-left: 3px solid var(--color-bullish);
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.06) 0%, transparent 60%);
 }
 .card-bearish {
-  border-left: 3px solid var(--color-bearish);
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.06) 0%, transparent 60%);
 }
 
 /* Indicator glow on active values */

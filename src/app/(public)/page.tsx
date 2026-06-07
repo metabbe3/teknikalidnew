@@ -174,8 +174,8 @@ async function FeaturedStocksSection({
   return (
     <section className="space-y-5">
       <div className="flex items-center gap-3">
-        <div className="w-1 h-6 bg-accent rounded-full" aria-hidden="true" />
-        <h2 className="text-lg font-semibold tracking-tight">Saham Paling Aktif Hari Ini</h2>
+        <h2 className="text-xl font-bold tracking-tight">Saham Paling Aktif Hari Ini</h2>
+        <span className="text-xs text-text-tertiary font-mono tabular-nums">{featured.length} saham</span>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 stagger-grid">
         {featured.map((s, i) => (
@@ -222,13 +222,13 @@ async function TradingPlanPreview() {
   return (
     <section className="space-y-5 content-auto">
       <div className="flex items-center gap-3">
-        <div className="w-1 h-6 bg-accent rounded-full" aria-hidden="true" />
-        <h2 className="text-lg font-semibold tracking-tight">Coba Fitur Analisa</h2>
+        <h2 className="text-xl font-bold tracking-tight">Coba Fitur Analisa</h2>
+        <span className="text-[10px] text-text-tertiary uppercase tracking-wider font-medium">live preview</span>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <MiniScreenerPreview />
         <div className="space-y-4">
-          <div className="preview-panel depth-shadow" style={{ borderTop: "3px solid #0d9488" }}>
+          <div className="preview-panel depth-shadow" style={{ background: "linear-gradient(180deg, rgba(13, 148, 136, 0.06) 0%, var(--color-bg-card) 40%)" }}>
             <div className="preview-panel-header">
               <p className="text-xs font-semibold text-text-primary">Contoh Trading Plan</p>
               <p className="text-[10px] text-text-tertiary mt-0.5">
@@ -296,7 +296,7 @@ export default async function HomePage() {
               <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-[1.1] text-white">
                 Analisa Teknikal
                 <br />
-                <span className="bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
+                <span className="text-teal-400">
                   Saham BEI
                 </span>
               </h1>
@@ -323,37 +323,60 @@ export default async function HomePage() {
             </div>
 
             {/* Market Pulse Panel */}
-            <div className="hidden lg:flex flex-col gap-2.5 min-w-[220px]">
-              <p className="text-[10px] font-mono uppercase tracking-widest text-gray-500 mb-1">
-                Market Pulse{isClosed ? " (sesi terakhir)" : ""}
+            <div className="hidden lg:flex flex-col gap-3 min-w-[240px]">
+              <p className="text-[10px] font-mono uppercase tracking-widest text-gray-500 mb-0.5">
+                Market Pulse{isClosed ? " · sesi terakhir" : " · live"}
               </p>
               {topGainer && (
-                <div className="terminal-stat">
-                  <p className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">Top Gainer</p>
-                  <div className="flex items-center justify-between mt-1">
-                    <span className="text-sm font-semibold text-white">{topGainer.ticker.replace(".JK", "")}</span>
-                    <span className="text-sm font-bold font-mono text-bullish tabular-nums">
-                      +{topGainer.changePercent.toFixed(2)}%
-                    </span>
+                <div className="terminal-stat group">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">Top Gainer</p>
+                      <p className="text-sm font-semibold text-white mt-0.5">{topGainer.ticker.replace(".JK", "")}</p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-lg font-bold font-mono text-bullish tabular-nums">
+                        +{topGainer.changePercent.toFixed(2)}%
+                      </span>
+                    </div>
                   </div>
+                  {topGainer.close != null && (
+                    <p className="text-[10px] text-gray-500 font-mono mt-1">
+                      Rp {topGainer.close.toLocaleString("id-ID")}
+                    </p>
+                  )}
                 </div>
               )}
               {topLoser && (
                 <div className="terminal-stat">
-                  <p className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">Top Loser</p>
-                  <div className="flex items-center justify-between mt-1">
-                    <span className="text-sm font-semibold text-white">{topLoser.ticker.replace(".JK", "")}</span>
-                    <span className="text-sm font-bold font-mono text-bearish tabular-nums">
-                      {topLoser.changePercent.toFixed(2)}%
-                    </span>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">Top Loser</p>
+                      <p className="text-sm font-semibold text-white mt-0.5">{topLoser.ticker.replace(".JK", "")}</p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-lg font-bold font-mono text-bearish tabular-nums">
+                        {topLoser.changePercent.toFixed(2)}%
+                      </span>
+                    </div>
                   </div>
+                  {topLoser.close != null && (
+                    <p className="text-[10px] text-gray-500 font-mono mt-1">
+                      Rp {topLoser.close.toLocaleString("id-ID")}
+                    </p>
+                  )}
                 </div>
               )}
               <div className="terminal-stat">
-                <p className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">Tracking</p>
-                <div className="flex items-center justify-between mt-1">
-                  <span className="text-sm font-semibold text-white">{totalStocks}+</span>
-                  <span className="text-xs text-gray-400">saham</span>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">Coverage</p>
+                    <p className="text-sm font-semibold text-white mt-0.5">{totalStocks} saham</p>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-sm font-bold font-mono text-gray-300 tabular-nums">{totalSectors}</span>
+                    <p className="text-[10px] text-gray-500">sektor</p>
+                  </div>
                 </div>
               </div>
             </div>
