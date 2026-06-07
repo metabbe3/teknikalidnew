@@ -14,7 +14,11 @@ import { UserSearchResults } from "@/components/community/user-search-results";
 import { TopPredictorList } from "@/components/community/top-predictor-list";
 import { SITE_URL } from "@/lib/constants";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
+
+const PAGE_SIZE = 20;
+
+type SearchParams = Promise<{ tab?: string; tag?: string; search?: string; page?: string }>;
 
 export const metadata: Metadata = {
   title: "Komunitas Saham BEI — Diskusi Analisa Teknikal",
@@ -36,48 +40,58 @@ export const metadata: Metadata = {
 export default async function CommunityPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string; tag?: string; search?: string }>;
+  searchParams: SearchParams;
 }) {
   const session = await auth();
-  const { tab, tag, search } = await searchParams;
+  const { tab, tag, search, page } = await searchParams;
   const activeTab = tab === "trending" || tab === "following" || tab === "predictors" ? tab : "all";
   const searchMode = search === "users";
+  const currentPage = Math.max(1, parseInt(page ?? "1", 10) || 1);
 
-  const posts = await prisma.post.findMany({
-    where: activeTab === "trending"
-      ? { createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } }
-      : activeTab === "following" && session?.user?.id
-        ? (await socialGraphService.buildFollowingFilter(session.user.id)) ?? undefined
-        : tag
-          ? { tags: { some: { tag } } }
-          : undefined,
-    include: {
-      author: { select: { id: true, username: true, name: true, email: true, image: true, reputation: true, _count: { select: { followers: true } } } },
-      comments: { take: 0, select: { id: true } },
-      likes: session?.user?.id
-        ? { where: { userId: session.user.id }, select: { id: true } }
-        : { select: { userId: true } },
-      bookmarks: session?.user?.id
-        ? { where: { userId: session.user.id }, select: { id: true } }
-        : false,
-      reposts: session?.user?.id
-        ? { where: { userId: session.user.id }, select: { id: true } }
-        : false,
-      poll: { include: { options: { orderBy: { order: "asc" } } } },
-    },
-    orderBy: activeTab === "trending"
-      ? [{ likesCount: "desc" }, { commentsCount: "desc" }, { createdAt: "desc" }]
-      : { createdAt: "desc" },
-    take: 21,
-  });
+  // Build the where clause for posts
+  const postsWhere = activeTab === "trending"
+    ? { createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } }
+    : activeTab === "following" && session?.user?.id
+      ? (await socialGraphService.buildFollowingFilter(session.user.id)) ?? undefined
+      : tag
+        ? { tags: { some: { tag } } }
+        : undefined;
+
+  // Get total count and paginated posts
+  const [totalCount, posts] = await Promise.all([
+    prisma.post.count({ where: postsWhere }),
+    prisma.post.findMany({
+      where: postsWhere,
+      include: {
+        author: { select: { id: true, username: true, name: true, email: true, image: true, reputation: true, _count: { select: { followers: true } } } },
+        comments: { take: 0, select: { id: true } },
+        likes: session?.user?.id
+          ? { where: { userId: session.user.id }, select: { id: true } }
+          : { select: { userId: true } },
+        bookmarks: session?.user?.id
+          ? { where: { userId: session.user.id }, select: { id: true } }
+          : false,
+        reposts: session?.user?.id
+          ? { where: { userId: session.user.id }, select: { id: true } }
+          : false,
+        poll: { include: { options: { orderBy: { order: "asc" } } } },
+      },
+      orderBy: activeTab === "trending"
+        ? [{ likesCount: "desc" }, { commentsCount: "desc" }, { createdAt: "desc" }]
+        : { createdAt: "desc" },
+      skip: (currentPage - 1) * PAGE_SIZE,
+      take: PAGE_SIZE + 1,
+    }),
+  ]);
 
   const blockedIds = session?.user?.id
     ? await socialGraphService.getBlockedUserIds(session.user.id)
     : [];
   const blockedSet = new Set(blockedIds);
 
-  const hasMore = posts.length > 20;
-  const displayPosts = (hasMore ? posts.slice(0, 20) : posts).filter(
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const hasMore = posts.length > PAGE_SIZE;
+  const displayPosts = (hasMore ? posts.slice(0, PAGE_SIZE) : posts).filter(
     (p) => !blockedSet.has(p.author.id)
   );
 
@@ -235,7 +249,7 @@ export default async function CommunityPage({
         (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
       serialized.length = 0;
-      serialized.push(...merged.slice(0, 20));
+      serialized.push(...merged.slice(0, PAGE_SIZE));
     }
   }
 
@@ -248,18 +262,49 @@ export default async function CommunityPage({
     communityService.getTopPredictors(10),
   ]);
 
+  const buildTabHref = (tabKey: string, searchVal?: string) => {
+    const params = new URLSearchParams();
+    if (tabKey && tabKey !== "all") params.set("tab", tabKey);
+    if (searchVal) params.set("search", searchVal);
+    if (tag) params.set("tag", tag);
+    if (currentPage > 1) params.set("page", String(currentPage));
+    const qs = params.toString();
+    return `/community${qs ? `?${qs}` : ""}`;
+  };
+
   const tabs = [
-    { key: "all", label: "Semua", href: tag ? `/community?tag=${encodeURIComponent(tag)}` : "/community" },
-    { key: "trending", label: "Trending", href: tag ? `/community?tab=trending&tag=${encodeURIComponent(tag)}` : "/community?tab=trending" },
-    ...(session?.user?.id ? [{ key: "following", label: "Mengikuti", href: tag ? `/community?tab=following&tag=${encodeURIComponent(tag)}` : "/community?tab=following" }] : []),
-    { key: "predictors", label: "Top Prediktor", href: tag ? `/community?tab=predictors&tag=${encodeURIComponent(tag)}` : "/community?tab=predictors" },
-    { key: "users", label: "Pengguna", href: tag ? `/community?search=users&tag=${encodeURIComponent(tag)}` : "/community?search=users" },
+    { key: "all", label: "Semua", href: buildTabHref("all") },
+    { key: "trending", label: "Trending", href: buildTabHref("trending") },
+    ...(session?.user?.id ? [{ key: "following", label: "Mengikuti", href: buildTabHref("following") }] : []),
+    { key: "predictors", label: "Top Prediktor", href: buildTabHref("predictors") },
+    { key: "users", label: "Pengguna", href: buildTabHref("all", "users") },
   ];
+
+  // Build pagination URLs
+  const tabParams = tab && tab !== "all" ? `tab=${tab}` : "";
+  const tagParams = tag ? `tag=${encodeURIComponent(tag)}` : "";
+  const buildPageUrl = (p: number) => {
+    const params: string[] = [];
+    if (tabParams) params.push(tabParams);
+    if (tagParams) params.push(tagParams);
+    if (p > 1) params.push(`page=${p}`);
+    return `/community${params.length > 0 ? `?${params.join("&")}` : ""}`;
+  };
+  const prevHref = currentPage > 1 ? buildPageUrl(currentPage - 1) : null;
+  const nextHref = currentPage < totalPages ? buildPageUrl(currentPage + 1) : null;
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
     "@graph": [
-      { "@type": "CollectionPage", name: "Komunitas Saham BEI", url: `${SITE_URL}/community` },
+      {
+        "@type": "CollectionPage",
+        name: "Komunitas Saham BEI",
+        url: `${SITE_URL}/community`,
+        ...(totalPages > 1 ? { potentialAction: {
+          "@type": "ReadAction",
+          target: Array.from({ length: Math.min(totalPages, 10) }, (_, i) => `${SITE_URL}/community?page=${i + 1}`),
+        } } : {}),
+      },
       {
         "@type": "BreadcrumbList",
         itemListElement: [
@@ -270,8 +315,17 @@ export default async function CommunityPage({
     ],
   };
 
+  // rel=next/prev link tags for SEO
+  const relLinks = (
+    <>
+      {prevHref && <link rel="prev" href={prevHref} />}
+      {nextHref && <link rel="next" href={nextHref} />}
+    </>
+  );
+
   return (
     <>
+      {relLinks}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
@@ -374,6 +428,39 @@ export default async function CommunityPage({
               </div>
             )}
             </>
+            )}
+
+            {/* Server-rendered pagination bar for SEO crawlability */}
+            {totalPages > 1 && !searchMode && activeTab !== "predictors" && (
+              <nav className="flex items-center justify-center gap-4 mt-6 pt-4 border-t border-gray-200" aria-label="Pagination">
+                {prevHref ? (
+                  <Link
+                    href={prevHref}
+                    className="px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 hover:bg-gray-50 transition-all"
+                  >
+                    ← Sebelumnya
+                  </Link>
+                ) : (
+                  <span className="px-4 py-2 text-sm font-medium rounded-lg bg-gray-50 text-gray-400 cursor-not-allowed">
+                    ← Sebelumnya
+                  </span>
+                )}
+                <span className="text-sm text-gray-500 font-mono">
+                  Halaman {currentPage} dari {totalPages}
+                </span>
+                {nextHref ? (
+                  <Link
+                    href={nextHref}
+                    className="px-4 py-2 text-sm font-medium rounded-lg bg-white border border-gray-200 hover:bg-gray-50 transition-all"
+                  >
+                    Selanjutnya →
+                  </Link>
+                ) : (
+                  <span className="px-4 py-2 text-sm font-medium rounded-lg bg-gray-50 text-gray-400 cursor-not-allowed">
+                    Selanjutnya →
+                  </span>
+                )}
+              </nav>
             )}
           </div>
 

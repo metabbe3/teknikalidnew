@@ -1,30 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { articleRepository } from "@/domains/article/article.repository";
+import { prisma } from "@/lib/prisma";
+import { ArticleStatus, ArticleType } from "@/generated/prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { Newspaper } from "lucide-react";
 import { ArticleFeed } from "@/components/article/article-feed";
 import { SITE_URL } from "@/lib/constants";
 
-export const metadata: Metadata = {
-  title: "Berita & Analisis Saham — TeknikalID",
-  description:
-    "Analisis teknikal saham IDX terkini: insight harga, indikator, dan sinyal trading untuk investor Indonesia.",
-  alternates: { canonical: "/berita" },
-  openGraph: {
-    title: "Berita & Analisis Saham — TeknikalID",
-    description: "Analisis teknikal saham IDX terkini: insight harga, indikator, dan sinyal trading untuk investor Indonesia.",
-    url: `${SITE_URL}/berita`,
-    images: [{ url: `${SITE_URL}/api/og?title=Berita+Analisis+Saham&type=berita`, width: 1200, height: 630 }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Berita & Analisis Saham — TeknikalID",
-    description: "Analisis teknikal saham IDX terkini: insight harga, indikator, dan sinyal trading untuk investor Indonesia.",
-  },
-};
-
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 const PAGE_SIZE = 12;
 
@@ -48,17 +31,121 @@ function formatDate(date: Date | string): string {
   }).format(new Date(date));
 }
 
+type SearchParams = Promise<{ type?: string; page?: string }>;
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}): Promise<Metadata> {
+  const { type: activeType, page } = await searchParams;
+  const currentPage = Math.max(1, parseInt(page ?? "1", 10) || 1);
+  const typeSuffix = activeType ? `?type=${activeType}` : "";
+  const canonicalPath = currentPage > 1 ? `/berita?page=${currentPage}${activeType ? `&type=${activeType}` : ""}` : `/berita${typeSuffix}`;
+
+  const links: Record<string, string> = {};
+  if (currentPage > 1) {
+    links.prev = `${SITE_URL}/berita${currentPage === 2 ? typeSuffix : `?page=${currentPage - 1}${activeType ? `&type=${activeType}` : ""}`}`;
+  }
+
+  // We need to know total pages for next link; do a quick count
+  const articleWhere: Record<string, unknown> = {
+    status: ArticleStatus.PUBLISHED,
+    isListed: true,
+    articleType: activeType
+      ? (activeType as ArticleType)
+      : { in: ["STOCK_ANALYSIS", "NEWS", "GENERAL"] as ArticleType[] },
+  };
+  const totalCount = await prisma.article.count({ where: articleWhere as never });
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  if (currentPage < totalPages) {
+    links.next = `${SITE_URL}/berita?page=${currentPage + 1}${activeType ? `&type=${activeType}` : ""}`;
+  }
+
+  return {
+    title: currentPage > 1 ? `Berita & Analisis Saham — Halaman ${currentPage} — TeknikalID` : "Berita & Analisis Saham — TeknikalID",
+    description:
+      "Analisis teknikal saham IDX terkini: insight harga, indikator, dan sinyal trading untuk investor Indonesia.",
+    alternates: { canonical: canonicalPath },
+    openGraph: {
+      title: "Berita & Analisis Saham — TeknikalID",
+      description: "Analisis teknikal saham IDX terkini: insight harga, indikator, dan sinyal trading untuk investor Indonesia.",
+      url: `${SITE_URL}/berita`,
+      images: [{ url: `${SITE_URL}/api/og?title=Berita+Analisis+Saham&type=berita`, width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Berita & Analisis Saham — TeknikalID",
+      description: "Analisis teknikal saham IDX terkini: insight harga, indikator, dan sinyal trading untuk investor Indonesia.",
+    },
+    ...(Object.keys(links).length > 0 ? { other: links } : {}),
+  };
+}
+
 export default async function BeritaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ type?: string }>;
+  searchParams: SearchParams;
 }) {
-  const { type: activeType } = await searchParams;
+  const { type: activeType, page } = await searchParams;
+  const currentPage = Math.max(1, parseInt(page ?? "1", 10) || 1);
+
+  // Build where clause for articles
+  const articleWhere: Record<string, unknown> = {
+    status: ArticleStatus.PUBLISHED,
+    isListed: true,
+    articleType: activeType
+      ? (activeType as ArticleType)
+      : { in: ["STOCK_ANALYSIS", "NEWS", "GENERAL"] as ArticleType[] },
+  };
+
+  // Get total count for pagination
+  const [totalCount, rows] = await Promise.all([
+    prisma.article.count({ where: articleWhere as never }),
+    prisma.article.findMany({
+      where: articleWhere as never,
+      orderBy: [{ publishedAt: "desc" }, { id: "desc" }],
+      skip: (currentPage - 1) * PAGE_SIZE,
+      take: PAGE_SIZE + 1,
+      include: {
+        author: { select: { name: true, username: true } },
+      },
+    }),
+  ]);
+
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const hasMore = rows.length > PAGE_SIZE;
+  const pageRows = hasMore ? rows.slice(0, PAGE_SIZE) : rows;
+
+  const featuredArticle = pageRows[0];
+  const gridArticles = pageRows.slice(1);
+  const nextCursor = hasMore && gridArticles.length > 0
+    ? gridArticles[gridArticles.length - 1].id
+    : null;
+
+  // Build pagination URLs
+  const typeSuffix = activeType ? `&type=${activeType}` : "";
+  const prevHref = currentPage > 1
+    ? currentPage === 2
+      ? `/berita${activeType ? `?type=${activeType}` : ""}`
+      : `/berita?page=${currentPage - 1}${typeSuffix}`
+    : null;
+  const nextHref = currentPage < totalPages
+    ? `/berita?page=${currentPage + 1}${typeSuffix}`
+    : null;
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
     "@graph": [
-      { "@type": "CollectionPage", name: "Berita & Analisis Saham", url: `${SITE_URL}/berita` },
+      {
+        "@type": "CollectionPage",
+        name: "Berita & Analisis Saham",
+        url: `${SITE_URL}/berita`,
+        ...(totalPages > 1 ? { potentialAction: {
+          "@type": "ReadAction",
+          target: Array.from({ length: totalPages }, (_, i) => `${SITE_URL}/berita?page=${i + 1}`),
+        } } : {}),
+      },
       {
         "@type": "BreadcrumbList",
         itemListElement: [
@@ -68,22 +155,18 @@ export default async function BeritaPage({
       },
     ],
   };
-  const rows = await articleRepository.findPublishedPaginated({
-    limit: PAGE_SIZE + 1,
-    articleType: activeType,
-  });
 
-  const hasMoreThanFirstPage = rows.length > PAGE_SIZE + 1;
-  const pageRows = hasMoreThanFirstPage ? rows.slice(0, PAGE_SIZE + 1) : rows;
-
-  const featuredArticle = pageRows[0];
-  const gridArticles = pageRows.slice(1);
-  const nextCursor = hasMoreThanFirstPage && gridArticles.length > 0
-    ? gridArticles[gridArticles.length - 1].id
-    : null;
+  // rel=next/prev link tags for SEO
+  const relLinks = (
+    <>
+      {prevHref && <link rel="prev" href={prevHref} />}
+      {nextHref && <link rel="next" href={nextHref} />}
+    </>
+  );
 
   return (
     <>
+      {relLinks}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
@@ -112,7 +195,7 @@ export default async function BeritaPage({
         {/* Type filter strip */}
         <div className="flex items-center gap-2 mb-8">
           <Link
-            href="/berita"
+            href={currentPage > 1 ? `/berita?page=${currentPage}` : "/berita"}
             className="akademi-filter-pill"
             data-active={!activeType ? "true" : undefined}
           >
@@ -121,7 +204,7 @@ export default async function BeritaPage({
           {TYPE_FILTERS.map((tf) => (
             <Link
               key={tf.value}
-              href={`/berita?type=${tf.value}`}
+              href={`/berita?type=${tf.value}${currentPage > 1 ? `&page=${currentPage}` : ""}`}
               className="akademi-filter-pill"
               data-active={activeType === tf.value ? "true" : undefined}
             >
@@ -217,7 +300,7 @@ export default async function BeritaPage({
           </Link>
         )}
 
-        {/* Article grid with Load More */}
+        {/* Article grid with client-side infinite scroll as progressive enhancement */}
         <ArticleFeed
           initialArticles={gridArticles.map((a) => ({
             id: a.id,
@@ -234,6 +317,39 @@ export default async function BeritaPage({
           initialCursor={nextCursor}
           activeType={activeType}
         />
+
+        {/* Server-rendered pagination bar for SEO crawlability */}
+        {totalPages > 1 && (
+          <nav className="flex items-center justify-center gap-4 mt-10 pt-6 border-t border-border" aria-label="Pagination">
+            {prevHref ? (
+              <Link
+                href={prevHref}
+                className="px-4 py-2 text-sm font-medium rounded-lg bg-bg-card depth-shadow hover:depth-shadow-hover transition-all"
+              >
+                ← Sebelumnya
+              </Link>
+            ) : (
+              <span className="px-4 py-2 text-sm font-medium rounded-lg bg-bg-card/50 text-text-tertiary cursor-not-allowed">
+                ← Sebelumnya
+              </span>
+            )}
+            <span className="text-sm text-text-secondary font-mono">
+              Halaman {currentPage} dari {totalPages}
+            </span>
+            {nextHref ? (
+              <Link
+                href={nextHref}
+                className="px-4 py-2 text-sm font-medium rounded-lg bg-bg-card depth-shadow hover:depth-shadow-hover transition-all"
+              >
+                Selanjutnya →
+              </Link>
+            ) : (
+              <span className="px-4 py-2 text-sm font-medium rounded-lg bg-bg-card/50 text-text-tertiary cursor-not-allowed">
+                Selanjutnya →
+              </span>
+            )}
+          </nav>
+        )}
       </div>
     </div>
     </>

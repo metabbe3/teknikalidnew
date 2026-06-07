@@ -8,10 +8,11 @@ export const dynamic = "force-dynamic";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = SITE_URL;
   const idx40Set = new Set(IDX40_TICKERS);
+  const STATIC_DATE = new Date("2026-01-01");
 
   const stockPages = IDX_STOCKS.map((stock) => ({
     url: `${baseUrl}/stocks/${stock.ticker}`,
-    lastModified: new Date(),
+    lastModified: STATIC_DATE,
     changeFrequency: "daily" as const,
     priority: idx40Set.has(stock.ticker) ? 0.8 : 0.5,
   }));
@@ -69,16 +70,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   return [
-    { url: baseUrl, lastModified: new Date(), changeFrequency: "daily", priority: 1.0 },
-    { url: `${baseUrl}/stocks`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
-    { url: `${baseUrl}/akademi`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
-    { url: `${baseUrl}/berita`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
-    { url: `${baseUrl}/screener`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
-    { url: `${baseUrl}/community`, lastModified: new Date(), changeFrequency: "daily", priority: 0.6 },
-    { url: `${baseUrl}/compare`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
-    { url: `${baseUrl}/disclaimer`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
-    { url: `${baseUrl}/privacy`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
-    { url: `${baseUrl}/terms`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
+    { url: baseUrl, lastModified: STATIC_DATE, changeFrequency: "daily", priority: 1.0 },
+    { url: `${baseUrl}/stocks`, lastModified: STATIC_DATE, changeFrequency: "daily", priority: 0.9 },
+    { url: `${baseUrl}/akademi`, lastModified: STATIC_DATE, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${baseUrl}/berita`, lastModified: STATIC_DATE, changeFrequency: "daily", priority: 0.8 },
+    { url: `${baseUrl}/screener`, lastModified: STATIC_DATE, changeFrequency: "daily", priority: 0.8 },
+    { url: `${baseUrl}/community`, lastModified: STATIC_DATE, changeFrequency: "daily", priority: 0.6 },
+    { url: `${baseUrl}/compare`, lastModified: STATIC_DATE, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${baseUrl}/disclaimer`, lastModified: STATIC_DATE, changeFrequency: "monthly", priority: 0.3 },
+    { url: `${baseUrl}/privacy`, lastModified: STATIC_DATE, changeFrequency: "monthly", priority: 0.3 },
+    { url: `${baseUrl}/terms`, lastModified: STATIC_DATE, changeFrequency: "monthly", priority: 0.3 },
     ...stockPages,
     ...articlePages,
     ...faqSitemapEntries,

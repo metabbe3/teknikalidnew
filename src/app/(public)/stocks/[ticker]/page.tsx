@@ -26,7 +26,7 @@ import { technicalAnalysisService, computeSignalScore } from "@/domains/stock/te
 import { stockRepository } from "@/domains/stock/stock.repository";
 import { calculatePivotPoints } from "@/lib/indicators";
 import { subDays } from "date-fns";
-import { IDX40, SITE_URL } from "@/lib/constants";
+import { IDX40, IDX40_TICKERS, SITE_URL } from "@/lib/constants";
 import { ShareButtons } from "@/components/ui/share-buttons";
 import { IDX_STOCKS } from "@/lib/idx-stocks";
 import { prisma } from "@/lib/prisma";
@@ -34,6 +34,10 @@ import { portfolioService } from "@/domains/portfolio/portfolio.service";
 
 export const revalidate = 300;
 export const dynamic = "force-dynamic";
+
+export function generateStaticParams() {
+  return IDX40_TICKERS.slice(0, 40).map((ticker) => ({ ticker }));
+}
 
 function Dot() {
   return <span className="text-gray-500" aria-hidden="true">·</span>;
