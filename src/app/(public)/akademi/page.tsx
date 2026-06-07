@@ -216,7 +216,7 @@ export default async function AkademiPage({
                     <div className="aspect-[3/1] overflow-hidden">
                       <img
                         src={featuredArticle.coverImageUrl}
-                        alt=""
+                        alt={featuredArticle.title}
                         className="w-full h-full object-cover"
                         loading="lazy"
                       />
@@ -303,7 +303,7 @@ export default async function AkademiPage({
                         <div className="aspect-[2/1] overflow-hidden">
                           <img
                             src={article.coverImageUrl}
-                            alt=""
+                            alt={article.title}
                             className="w-full h-full object-cover"
                             loading="lazy"
                           />

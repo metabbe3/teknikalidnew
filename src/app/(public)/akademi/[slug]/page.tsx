@@ -16,7 +16,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const article = await prisma.article.findUnique({
     where: { slug },
-    select: { title: true, excerpt: true },
+    select: { title: true, excerpt: true, publishedAt: true, updatedAt: true },
   });
   if (!article) return {};
 
@@ -31,6 +31,8 @@ export async function generateMetadata({
       description: article.excerpt ?? undefined,
       type: "article",
       url: `${SITE_URL}/akademi/${slug}`,
+      publishedTime: article.publishedAt.toISOString(),
+      modifiedTime: article.updatedAt.toISOString(),
       images: [{ url: ogImage, width: 1200, height: 630, alt: article.title }],
     },
     twitter: {

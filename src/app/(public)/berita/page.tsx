@@ -141,7 +141,7 @@ export default async function BeritaPage({
                 <div className="aspect-[3/1] overflow-hidden">
                   <img
                     src={featuredArticle.coverImageUrl}
-                    alt=""
+                    alt={featuredArticle.title}
                     className="w-full h-full object-cover"
                     loading="lazy"
                   />
