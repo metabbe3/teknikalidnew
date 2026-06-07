@@ -8,6 +8,7 @@ export async function POST(request: NextRequest) {
 
     // Validate plan
     const plans: Record<string, { name: string; price: number; duration: string }> = {
+      test: { name: "Test Payment", price: 1000, duration: "1d" },
       monthly: { name: "Premium Monthly", price: 99000, duration: "30d" },
       yearly: { name: "Premium Yearly", price: 799000, duration: "365d" },
     };
