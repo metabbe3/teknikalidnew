@@ -81,14 +81,32 @@ export abstract class BaseAgent {
   }
 
   protected parseJsonResponse(text: string): Record<string, unknown> | null {
-    const jsonMatch = text.match(/```json\s*([\s\S]*?)```/) ?? text.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
+    // 1. Try ```json ... ``` code block
+    const codeBlockMatch = text.match(/```json\s*([\s\S]*?)```/);
+    if (codeBlockMatch) {
       try {
-        return JSON.parse(jsonMatch[1] ?? jsonMatch[0]);
-      } catch {
-        return null;
+        return JSON.parse(codeBlockMatch[1].trim());
+      } catch {}
+    }
+    // 2. Try first balanced { ... } using brace counting
+    const firstBrace = text.indexOf("{");
+    if (firstBrace !== -1) {
+      let depth = 0;
+      for (let i = firstBrace; i < text.length; i++) {
+        if (text[i] === "{") depth++;
+        else if (text[i] === "}") depth--;
+        if (depth === 0) {
+          try {
+            return JSON.parse(text.slice(firstBrace, i + 1));
+          } catch {}
+          break;
+        }
       }
     }
+    // 3. Try the whole text trimmed
+    try {
+      return JSON.parse(text.trim());
+    } catch {}
     return null;
   }
 }

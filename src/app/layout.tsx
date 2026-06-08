@@ -28,13 +28,13 @@ const geistMono = Geist_Mono({
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#2563eb",
+  themeColor: "#0d9488",
 };
 
 export const metadata: Metadata = {
-  title: { default: "TeknikalID — Analisa Teknikal Saham BEI", template: "%s | TeknikalID" },
+  title: { default: "Analisa Teknikal Saham BEI Terlengkap — Chart Real-Time & Screener", template: "%s | TeknikalID" },
   description:
-    "Platform analisa teknikal saham BEI terlengkap. Chart real-time, indikator RSI, MACD, Bollinger Bands, SMA/EMA, dan screener untuk 40+ saham LQ45.",
+    "Platform analisa teknikal saham BEI terlengkap. Chart real-time, indikator RSI, MACD, Bollinger Bands, SMA/EMA, screener gratis, dan komunitas trader Indonesia. Analisa 956+ saham IDX.",
   keywords: [
     "analisa teknikal",
     "analisa saham",
@@ -68,13 +68,13 @@ export const metadata: Metadata = {
     url: SITE_URL,
     siteName: "TeknikalID",
     title: "TeknikalID — Analisa Teknikal Saham BEI",
-    description: "Platform analisa teknikal saham BEI terlengkap. Chart real-time, indikator RSI, MACD, dan screener untuk 40+ saham LQ45.",
+    description: "Platform analisa teknikal saham BEI terlengkap. Chart real-time, indikator RSI, MACD, dan screener untuk 956+ saham IDX.",
     images: [{ url: `${SITE_URL}/api/og?title=TeknikalID&type=berita`, width: 1200, height: 630, alt: "TeknikalID" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "TeknikalID — Analisa Teknikal Saham BEI",
-    description: "Platform analisa teknikal saham BEI terlengkap. Chart real-time, indikator RSI, MACD, dan screener untuk 40+ saham LQ45.",
+    description: "Platform analisa teknikal saham BEI terlengkap. Chart real-time, indikator RSI, MACD, dan screener untuk 956+ saham IDX.",
   },
   icons: { icon: "/favicon.ico", apple: "/apple-touch-icon.png" },
 };

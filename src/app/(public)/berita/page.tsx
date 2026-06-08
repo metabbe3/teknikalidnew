@@ -4,8 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { ArticleStatus, ArticleType } from "@/generated/prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { Newspaper } from "lucide-react";
-import { ArticleFeed } from "@/components/article/article-feed";
 import { SITE_URL } from "@/lib/constants";
+import { BeritaGrid } from "./berita-grid";
 
 export const revalidate = 300;
 
@@ -48,7 +48,6 @@ export async function generateMetadata({
     links.prev = `${SITE_URL}/berita${currentPage === 2 ? typeSuffix : `?page=${currentPage - 1}${activeType ? `&type=${activeType}` : ""}`}`;
   }
 
-  // We need to know total pages for next link; do a quick count
   const articleWhere: Record<string, unknown> = {
     status: ArticleStatus.PUBLISHED,
     isListed: true,
@@ -63,20 +62,23 @@ export async function generateMetadata({
   }
 
   return {
-    title: currentPage > 1 ? `Berita & Analisis Saham — Halaman ${currentPage} — TeknikalID` : "Berita & Analisis Saham — TeknikalID",
-    description:
-      "Analisis teknikal saham IDX terkini: insight harga, indikator, dan sinyal trading untuk investor Indonesia.",
+    title: currentPage > 1 ? `Berita Saham & Rekomendasi Hari Ini — Halaman ${currentPage}` : "Berita Saham & Rekomendasi Hari Ini — Analisa Teknikal IDX",
+    description: "Berita saham IDX terkini, analisis teknikal, rekomendasi saham hari ini, dan insight pasar untuk investor Indonesia. Update harian.",
     alternates: { canonical: canonicalPath },
+    keywords: [
+      "berita saham hari ini", "rekomendasi saham hari ini", "analisis saham",
+      "berita saham idx", "insight pasar saham", "analisa teknikal saham hari ini",
+    ],
     openGraph: {
-      title: "Berita & Analisis Saham — TeknikalID",
-      description: "Analisis teknikal saham IDX terkini: insight harga, indikator, dan sinyal trading untuk investor Indonesia.",
+      title: "Berita Saham & Rekomendasi Hari Ini — Analisa Teknikal IDX",
+      description: "Berita saham IDX terkini, analisis teknikal, rekomendasi saham hari ini, dan insight pasar untuk investor Indonesia.",
       url: `${SITE_URL}/berita`,
-      images: [{ url: `${SITE_URL}/api/og?title=Berita+Analisis+Saham&type=berita`, width: 1200, height: 630 }],
+      images: [{ url: `${SITE_URL}/api/og?title=Berita+Saham+Rekomendasi+Hari+Ini&type=berita`, width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
-      title: "Berita & Analisis Saham — TeknikalID",
-      description: "Analisis teknikal saham IDX terkini: insight harga, indikator, dan sinyal trading untuk investor Indonesia.",
+      title: "Berita Saham & Rekomendasi Hari Ini — Analisa Teknikal IDX",
+      description: "Berita saham IDX terkini, analisis teknikal, rekomendasi saham hari ini, dan insight pasar.",
     },
     ...(Object.keys(links).length > 0 ? { other: links } : {}),
   };
@@ -90,7 +92,6 @@ export default async function BeritaPage({
   const { type: activeType, page } = await searchParams;
   const currentPage = Math.max(1, parseInt(page ?? "1", 10) || 1);
 
-  // Build where clause for articles
   const articleWhere: Record<string, unknown> = {
     status: ArticleStatus.PUBLISHED,
     isListed: true,
@@ -99,14 +100,13 @@ export default async function BeritaPage({
       : { in: ["STOCK_ANALYSIS", "NEWS", "GENERAL"] as ArticleType[] },
   };
 
-  // Get total count for pagination
   const [totalCount, rows] = await Promise.all([
     prisma.article.count({ where: articleWhere as never }),
     prisma.article.findMany({
       where: articleWhere as never,
       orderBy: [{ publishedAt: "desc" }, { id: "desc" }],
       skip: (currentPage - 1) * PAGE_SIZE,
-      take: PAGE_SIZE + 1,
+      take: PAGE_SIZE,
       include: {
         author: { select: { name: true, username: true } },
       },
@@ -114,16 +114,25 @@ export default async function BeritaPage({
   ]);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
-  const hasMore = rows.length > PAGE_SIZE;
-  const pageRows = hasMore ? rows.slice(0, PAGE_SIZE) : rows;
 
-  const featuredArticle = pageRows[0];
-  const gridArticles = pageRows.slice(1);
-  const nextCursor = hasMore && gridArticles.length > 0
-    ? gridArticles[gridArticles.length - 1].id
-    : null;
+  const featuredArticle = rows[0];
+  const gridArticles = rows.slice(1);
 
-  // Build pagination URLs
+  // Serialize grid articles for client component
+  const serializedGrid = gridArticles.map((a) => ({
+    id: a.id,
+    slug: a.slug,
+    title: a.title,
+    excerpt: a.excerpt,
+    articleType: a.articleType,
+    tickerTag: a.tickerTag,
+    tags: a.tags,
+    publishedAt: a.publishedAt.toISOString(),
+    coverImageUrl: a.coverImageUrl ?? null,
+    author: { name: a.author.name, username: a.author.username },
+  }));
+
+  // Pagination URLs for SEO link tags
   const typeSuffix = activeType ? `&type=${activeType}` : "";
   const prevHref = currentPage > 1
     ? currentPage === 2
@@ -156,202 +165,152 @@ export default async function BeritaPage({
     ],
   };
 
-  // rel=next/prev link tags for SEO
-  const relLinks = (
+  return (
     <>
       {prevHref && <link rel="prev" href={prevHref} />}
       {nextHref && <link rel="next" href={nextHref} />}
-    </>
-  );
-
-  return (
-    <>
-      {relLinks}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-    <div className="min-h-screen bg-bg-primary">
-      {/* Dark terminal hero */}
-      <section className="akademi-hero" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}>
-        <div className="relative z-[1] max-w-6xl mx-auto px-4 py-16 sm:py-20">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2.5 rounded-lg bg-blue-500/10 border border-blue-500/20">
-              <Newspaper className="h-5 w-5 text-blue-400" />
+      <div className="min-h-screen bg-bg-primary">
+        {/* Dark terminal hero */}
+        <section className="akademi-hero" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}>
+          <div className="relative z-[1] max-w-6xl mx-auto px-4 py-16 sm:py-20">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2.5 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                <Newspaper className="h-5 w-5 text-blue-400" />
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white font-mono uppercase tracking-[0.15em]">
+                Berita
+              </h1>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white font-mono uppercase tracking-[0.15em]">
-              Berita
-            </h1>
+            <p className="text-gray-300 max-w-2xl text-sm sm:text-base leading-relaxed">
+              <span className="text-gray-400 font-mono text-xs mr-2">&gt;</span>
+              Analisis teknikal saham IDX terkini. Data indikator real-time, sinyal trading, dan insight pasar untuk investor Indonesia.
+              <span className="akademi-cursor" />
+            </p>
           </div>
-          <p className="text-gray-300 max-w-2xl text-sm sm:text-base leading-relaxed">
-            <span className="text-gray-400 font-mono text-xs mr-2">&gt;</span>
-            Analisis teknikal saham IDX terkini. Data indikator real-time, sinyal trading, dan insight pasar untuk investor Indonesia.
-            <span className="akademi-cursor" />
-          </p>
-        </div>
-      </section>
+        </section>
 
-      <div className="max-w-6xl mx-auto px-4 py-10">
-        {/* Type filter strip */}
-        <div className="flex items-center gap-2 mb-8">
-          <Link
-            href={currentPage > 1 ? `/berita?page=${currentPage}` : "/berita"}
-            className="akademi-filter-pill"
-            data-active={!activeType ? "true" : undefined}
-          >
-            Semua
-          </Link>
-          {TYPE_FILTERS.map((tf) => (
+        <div className="max-w-6xl mx-auto px-4 py-10">
+          {/* Type filter strip */}
+          <div className="flex items-center gap-2 mb-8">
             <Link
-              key={tf.value}
-              href={`/berita?type=${tf.value}${currentPage > 1 ? `&page=${currentPage}` : ""}`}
+              href={currentPage > 1 ? `/berita?page=${currentPage}` : "/berita"}
               className="akademi-filter-pill"
-              data-active={activeType === tf.value ? "true" : undefined}
+              data-active={!activeType ? "true" : undefined}
             >
-              {tf.label}
+              Semua
             </Link>
-          ))}
-        </div>
+            {TYPE_FILTERS.map((tf) => (
+              <Link
+                key={tf.value}
+                href={`/berita?type=${tf.value}${currentPage > 1 ? `&page=${currentPage}` : ""}`}
+                className="akademi-filter-pill"
+                data-active={activeType === tf.value ? "true" : undefined}
+              >
+                {tf.label}
+              </Link>
+            ))}
+          </div>
 
-        {/* Featured article */}
-        {featuredArticle && (
-          <Link
-            href={`/berita/${featuredArticle.slug}`}
-            className="block mb-8"
-          >
-            <div className="akademi-featured depth-shadow-strong overflow-hidden hover:scale-[1.005] transition-transform duration-300">
-              {featuredArticle.coverImageUrl && (
-                <div className="aspect-[3/1] overflow-hidden">
-                  <img
-                    src={featuredArticle.coverImageUrl}
-                    alt={featuredArticle.title}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-              )}
-              <div className="relative z-10 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 p-6 sm:p-8">
-                <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded ${TYPE_LABELS[featuredArticle.articleType]?.color ?? "text-blue-500 bg-blue-500/10"}`}>
-                      {TYPE_LABELS[featuredArticle.articleType]?.label ?? "Artikel"}
-                    </span>
-                    {featuredArticle.tickerTag && (
-                      <span className="text-[10px] font-mono font-semibold text-accent bg-accent/10 px-2 py-0.5 rounded">
-                        {featuredArticle.tickerTag.replace(".JK", "")}
+          {/* Featured article */}
+          {featuredArticle && (
+            <Link
+              href={`/berita/${featuredArticle.slug}`}
+              className="block mb-8"
+            >
+              <div className="akademi-featured depth-shadow-strong overflow-hidden hover:scale-[1.005] transition-transform duration-300">
+                {featuredArticle.coverImageUrl && (
+                  <div className="aspect-[3/1] overflow-hidden">
+                    <img
+                      src={featuredArticle.coverImageUrl}
+                      alt={featuredArticle.title}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+                <div className="relative z-10 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 p-6 sm:p-8">
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded ${TYPE_LABELS[featuredArticle.articleType]?.color ?? "text-blue-500 bg-blue-500/10"}`}>
+                        {TYPE_LABELS[featuredArticle.articleType]?.label ?? "Artikel"}
                       </span>
-                    )}
-                    <span className="text-xs text-text-tertiary font-mono">
-                      {formatDate(featuredArticle.publishedAt)}
-                    </span>
-                  </div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-text-primary mb-3 leading-snug">
-                    {featuredArticle.title}
-                  </h2>
-                  <p className="text-sm text-text-secondary line-clamp-3 mb-4">
-                    {featuredArticle.excerpt}
-                  </p>
-                  <div className="flex items-center gap-3">
-                    {featuredArticle.author.name && (
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-accent/10 text-accent text-[10px] font-semibold flex items-center justify-center">
-                          {featuredArticle.author.name[0].toUpperCase()}
-                        </div>
-                        <span className="text-xs text-text-secondary">
-                          {featuredArticle.author.name}
+                      {featuredArticle.tickerTag && (
+                        <span className="text-[10px] font-mono font-semibold text-accent bg-accent/10 px-2 py-0.5 rounded">
+                          {featuredArticle.tickerTag.replace(".JK", "")}
                         </span>
-                      </div>
-                    )}
-                    {featuredArticle.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {featuredArticle.tags.slice(0, 3).map((tag) => (
-                          <Badge
-                            key={tag}
-                            variant="secondary"
-                            className="text-[10px] bg-gray-100 text-text-secondary border-0"
-                          >
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
+                      )}
+                      <span className="text-xs text-text-tertiary font-mono">
+                        {formatDate(featuredArticle.publishedAt)}
+                      </span>
+                    </div>
+                    <h2 className="text-xl sm:text-2xl font-bold text-text-primary mb-3 leading-snug">
+                      {featuredArticle.title}
+                    </h2>
+                    <p className="text-sm text-text-secondary line-clamp-3 mb-4">
+                      {featuredArticle.excerpt}
+                    </p>
+                    <div className="flex items-center gap-3">
+                      {featuredArticle.author.name && (
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full bg-accent/10 text-accent text-[10px] font-semibold flex items-center justify-center">
+                            {featuredArticle.author.name[0].toUpperCase()}
+                          </div>
+                          <span className="text-xs text-text-secondary">
+                            {featuredArticle.author.name}
+                          </span>
+                        </div>
+                      )}
+                      {featuredArticle.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5">
+                          {featuredArticle.tags.slice(0, 3).map((tag) => (
+                            <Badge
+                              key={tag}
+                              variant="secondary"
+                              className="text-[10px] bg-gray-100 text-text-secondary border-0"
+                            >
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {/* Decorative chart stripes */}
+                  <div className="hidden md:flex items-end gap-[3px] h-24 opacity-30">
+                    {[40, 65, 50, 80, 55, 70, 45, 90, 60, 75, 55, 85, 50, 70, 60].map(
+                      (h, i) => (
+                        <div
+                          key={i}
+                          className={`w-[3px] rounded-full ${
+                            i % 3 === 0
+                              ? "bg-bearish/40"
+                              : i % 3 === 1
+                              ? "bg-bullish/40"
+                              : "bg-blue-400/30"
+                          }`}
+                          style={{ height: `${h}%` }}
+                        />
+                      )
                     )}
                   </div>
-                </div>
-                {/* Decorative chart stripes visible on md+ */}
-                <div className="hidden md:flex items-end gap-[3px] h-24 opacity-30">
-                  {[40, 65, 50, 80, 55, 70, 45, 90, 60, 75, 55, 85, 50, 70, 60].map(
-                    (h, i) => (
-                      <div
-                        key={i}
-                        className={`w-[3px] rounded-full ${
-                          i % 3 === 0
-                            ? "bg-bearish/40"
-                            : i % 3 === 1
-                            ? "bg-bullish/40"
-                            : "bg-blue-400/30"
-                        }`}
-                        style={{ height: `${h}%` }}
-                      />
-                    )
-                  )}
                 </div>
               </div>
-            </div>
-          </Link>
-        )}
+            </Link>
+          )}
 
-        {/* Article grid with client-side infinite scroll as progressive enhancement */}
-        <ArticleFeed
-          initialArticles={gridArticles.map((a) => ({
-            id: a.id,
-            slug: a.slug,
-            title: a.title,
-            excerpt: a.excerpt,
-            articleType: a.articleType,
-            tickerTag: a.tickerTag,
-            tags: a.tags,
-            publishedAt: a.publishedAt.toISOString(),
-            coverImageUrl: a.coverImageUrl ?? null,
-            author: a.author,
-          }))}
-          initialCursor={nextCursor}
-          activeType={activeType}
-        />
-
-        {/* Server-rendered pagination bar for SEO crawlability */}
-        {totalPages > 1 && (
-          <nav className="flex items-center justify-center gap-4 mt-10 pt-6 border-t border-border" aria-label="Pagination">
-            {prevHref ? (
-              <Link
-                href={prevHref}
-                className="px-4 py-2 text-sm font-medium rounded-lg bg-bg-card depth-shadow hover:depth-shadow-hover transition-all"
-              >
-                ← Sebelumnya
-              </Link>
-            ) : (
-              <span className="px-4 py-2 text-sm font-medium rounded-lg bg-bg-card/50 text-text-tertiary cursor-not-allowed">
-                ← Sebelumnya
-              </span>
-            )}
-            <span className="text-sm text-text-secondary font-mono">
-              Halaman {currentPage} dari {totalPages}
-            </span>
-            {nextHref ? (
-              <Link
-                href={nextHref}
-                className="px-4 py-2 text-sm font-medium rounded-lg bg-bg-card depth-shadow hover:depth-shadow-hover transition-all"
-              >
-                Selanjutnya →
-              </Link>
-            ) : (
-              <span className="px-4 py-2 text-sm font-medium rounded-lg bg-bg-card/50 text-text-tertiary cursor-not-allowed">
-                Selanjutnya →
-              </span>
-            )}
-          </nav>
-        )}
+          {/* Grid with pagination — replaces infinite scroll */}
+          <BeritaGrid
+            articles={serializedGrid}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            activeType={activeType}
+          />
+        </div>
       </div>
-    </div>
     </>
   );
 }

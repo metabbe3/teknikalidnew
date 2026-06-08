@@ -9,7 +9,7 @@
         <string>/usr/bin/curl</string>
         <string>-sf</string>
         <string>--max-time</string>
-        <string>600</string>
+        <string>1200</string>
         <string>-X</string>
         <string>POST</string>
         <string>-H</string>

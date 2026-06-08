@@ -35,8 +35,10 @@ export async function generateMetadata({
 
   if (!entry) return {};
 
-  const title = `Apa itu ${entry.term}? — Glosarium TeknikalID`;
-  const description = entry.definition.slice(0, 160);
+  const title = `Pengertian ${entry.term} — Glosarium Saham & Cara Menggunakannya`;
+  const description = entry.definition.length > 160
+    ? entry.definition.slice(0, 157) + "..."
+    : entry.definition;
 
   return {
     title,

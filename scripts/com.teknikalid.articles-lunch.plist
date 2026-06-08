@@ -7,9 +7,13 @@
     <key>ProgramArguments</key>
     <array>
         <string>/usr/bin/curl</string>
-        <string>-sf</string>
+        <string>-s</string>
+        <string>--retry</string>
+        <string>2</string>
+        <string>--retry-delay</string>
+        <string>10</string>
         <string>--max-time</string>
-        <string>600</string>
+        <string>1800</string>
         <string>-X</string>
         <string>POST</string>
         <string>-H</string>

@@ -17,11 +17,30 @@ export function TickerTape({ items }: { items: TickerItem[] }) {
   return (
     <div className="ticker-tape" aria-label="Stock ticker">
       <div className="ticker-tape-inner">
-        {[...display, ...display].map((s, i) => (
+        {display.map((s, i) => (
           <Link
             key={`${s.ticker}-${i}`}
             href={`/stocks/${s.ticker}`}
             className="ticker-item"
+          >
+            <span className="text-gray-400 font-semibold">{stripJk(s.ticker)}</span>
+            {s.changePercent !== null && (
+              <span className={changeColor(s.changePercent)}>
+                {s.changePercent >= 0 ? "+" : ""}
+                {s.changePercent.toFixed(2)}%
+              </span>
+            )}
+          </Link>
+        ))}
+      </div>
+      {/* Duplicate set for infinite scroll — hidden from screen readers */}
+      <div className="ticker-tape-inner" aria-hidden="true">
+        {display.map((s, i) => (
+          <Link
+            key={`dup-${s.ticker}-${i}`}
+            href={`/stocks/${s.ticker}`}
+            className="ticker-item"
+            tabIndex={-1}
           >
             <span className="text-gray-400 font-semibold">{stripJk(s.ticker)}</span>
             {s.changePercent !== null && (

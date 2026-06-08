@@ -8,19 +8,24 @@ import ScreenerClient from "@/components/screener/screener-client";
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "Screener Saham IDX — TeknikalID",
-  description: "Screener saham IDX40 dengan filter teknikal: RSI, MACD, Stochastic, Bollinger Bands, SMA/EMA crossover. Temukan saham berdasarkan strategi trading Anda.",
+  title: "Screener Saham IDX Gratis — Filter RSI, MACD, Golden Cross & Bollinger Bands",
+  description: "Screener saham IDX gratis dengan filter teknikal lengkap: RSI oversold/overbought, MACD crossover, Golden Cross, Bollinger Bands squeeze. Temukan saham untuk scalping, swing trading, dan investasi.",
   alternates: { canonical: "/screener" },
+  keywords: [
+    "screener saham gratis", "screener saham indonesia", "screener saham idx",
+    "saham oversold hari ini", "screener saham untuk swing trading", "screener saham untuk scalping",
+    "golden cross saham hari ini", "saham MACD bullish", "filter saham teknikal",
+  ],
   openGraph: {
-    title: "Screener Saham IDX — TeknikalID",
-    description: "Screener saham IDX40 dengan filter teknikal. Temukan saham berdasarkan strategi trading Anda.",
+    title: "Screener Saham IDX Gratis — Filter Teknikal Lengkap",
+    description: "Screener saham IDX gratis dengan filter teknikal: RSI, MACD, Golden Cross, Bollinger Bands. Temukan saham berdasarkan strategi trading Anda.",
     url: `${SITE_URL}/screener`,
-    images: [{ url: `${SITE_URL}/api/og?title=Screener+Saham+IDX&type=berita`, width: 1200, height: 630 }],
+    images: [{ url: `${SITE_URL}/api/og?title=Screener+Saham+IDX+Gratis&type=berita`, width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Screener Saham IDX — TeknikalID",
-    description: "Screener saham IDX40 dengan filter teknikal. Temukan saham berdasarkan strategi trading Anda.",
+    title: "Screener Saham IDX Gratis — Filter Teknikal Lengkap",
+    description: "Screener saham IDX gratis dengan filter teknikal: RSI, MACD, Golden Cross, Bollinger Bands.",
   },
 };
 

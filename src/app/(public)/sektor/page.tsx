@@ -6,14 +6,14 @@ import { SITE_URL } from "@/lib/constants";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Sektor Saham BEI — Analisis Teknikal per Sektor",
+  title: "Sektor Saham BEI — Daftar Harga & Analisa Teknikal per Sektor",
   description:
-    "Jelajahi analisis teknikal saham BEI berdasarkan sektor: perbankan, pertambangan, agrikultur, properti, teknologi, dan lainnya. Pantau indikator RSI, MACD, dan sinyal trading tiap sektor.",
+    "Jelajahi analisa teknikal saham BEI berdasarkan sektor: perbankan, pertambangan, agrikultur, properti, teknologi, dan lainnya. Pantau indikator RSI, MACD, dan sinyal trading tiap sektor.",
   alternates: { canonical: "/sektor" },
   openGraph: {
-    title: "Sektor Saham BEI — Analisis Teknikal per Sektor | TeknikalID",
+    title: "Sektor Saham BEI — Daftar Harga & Analisa Teknikal per Sektor",
     description:
-      "Jelajahi analisis teknikal saham BEI berdasarkan sektor: perbankan, pertambangan, agrikultur, properti, teknologi, dan lainnya.",
+      "Jelajahi analisa teknikal saham BEI berdasarkan sektor: perbankan, pertambangan, agrikultur, properti, teknologi, dan lainnya.",
     url: `${SITE_URL}/sektor`,
   },
 };

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "//www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
     <key>Label</key>
@@ -8,17 +8,19 @@
     <array>
         <string>/usr/bin/curl</string>
         <string>-sf</string>
+        <string>--max-time</string>
+        <string>30</string>
         <string>-X</string>
         <string>POST</string>
         <string>-H</string>
         <string>Authorization: Bearer FZlv5mT6Sgz7mRPJI4nKMG2ITm3UCTN</string>
         <string>http://localhost:3000/api/cron/agent-hub-scheduler</string>
     </array>
-    <key>StartCalendarInterval</key>
-    <dict>
-        <key>Minute</key>
-        <integer>0</integer>
-    </dict>
+    <!-- Fire every 30 minutes so */30 cron patterns work correctly -->
+    <key>StartInterval</key>
+    <integer>1800</integer>
+    <key>ExitTimeOut</key>
+    <integer>35</integer>
     <key>StandardOutPath</key>
     <string>/Users/nicholasandriansurjadi/Documents/teknikalidnew/logs/agent-scheduler.log</string>
     <key>StandardErrorPath</key>

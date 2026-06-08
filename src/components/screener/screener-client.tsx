@@ -816,7 +816,7 @@ function ScreenerPageContent() {
             </div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-white font-mono uppercase tracking-[0.15em]">
-                Screener<span className="akademi-cursor" />
+                Screener
               </h1>
               <p className="text-gray-400 max-w-lg text-sm sm:text-base mt-2 leading-relaxed">
                 <span className="text-gray-500 font-mono text-xs mr-2">&gt;</span>

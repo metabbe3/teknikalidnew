@@ -158,6 +158,28 @@ export const agentHubRepository = {
     return count > 0;
   },
 
+  /**
+   * Recover jobs that have been stuck in "running" state for too long.
+   * These are jobs where the worker crashed mid-execution.
+   */
+  async recoverStuckJobs(timeoutMinutes: number = 30): Promise<number> {
+    const cutoff = new Date();
+    cutoff.setMinutes(cutoff.getMinutes() - timeoutMinutes);
+
+    const result = await prisma.agentJob.updateMany({
+      where: {
+        status: "running",
+        startedAt: { lt: cutoff },
+      },
+      data: {
+        status: "failed",
+        error: `Job timed out: stuck in "running" for >${timeoutMinutes}min (auto-recovered)`,
+        completedAt: new Date(),
+      },
+    });
+    return result.count;
+  },
+
   async cleanupOldJobs(daysOld: number = 30): Promise<number> {
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - daysOld);

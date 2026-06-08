@@ -24,9 +24,9 @@ const RadarPreview = dynamicImport(
 );
 
 export const metadata: Metadata = {
-  title: "TeknikalID — Analisa Teknikal Saham BEI Terlengkap",
+  title: "Analisa Teknikal Saham BEI Terlengkap — Chart Real-Time & Screener",
   description:
-    "Analisa teknikal saham BEI real-time. Chart interaktif, indikator RSI MACD Bollinger Bands, screener saham, dan komunitas trader Indonesia.",
+    "Platform analisa teknikal saham BEI terlengkap. Chart interaktif real-time, indikator RSI MACD Bollinger Bands, screener saham gratis, dan komunitas trader Indonesia. Pantau 956+ saham IDX.",
   alternates: { canonical: "/" },
 };
 
@@ -174,7 +174,7 @@ async function FeaturedStocksSection({
   return (
     <section className="space-y-5">
       <div className="flex items-center gap-3">
-        <h2 className="text-xl font-bold tracking-tight">Saham Paling Aktif Hari Ini</h2>
+        <h2 className="text-xl font-black tracking-tight">Saham Paling Aktif Hari Ini</h2>
         <span className="text-xs text-text-tertiary font-mono tabular-nums">{featured.length} saham</span>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 stagger-grid">
@@ -222,7 +222,7 @@ async function TradingPlanPreview() {
   return (
     <section className="space-y-5 content-auto">
       <div className="flex items-center gap-3">
-        <h2 className="text-xl font-bold tracking-tight">Coba Fitur Analisa</h2>
+        <h2 className="text-xl font-black tracking-tight">Coba Fitur Analisa</h2>
         <span className="text-[10px] text-text-tertiary uppercase tracking-wider font-medium">live preview</span>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -263,6 +263,10 @@ async function TradingPlanPreview() {
 // ── Main Page ───────────────────────────────────────────────────────
 
 export default async function HomePage() {
+  // TODO(SSR-blocking): getMarketOverview() and getMarketStatusForPage() block the entire
+  // page SSR. While force-dynamic + 5-min service cache keeps this fast for now, consider
+  // wrapping the hero in a <Suspense> boundary in the future so the shell streams instantly
+  // and market data loads asynchronously without delaying first paint.
   // Fast cached calls only — hero renders immediately
   const [overview, marketInfo] = await Promise.all([
     stockMarketService.getMarketOverview(),
@@ -293,7 +297,7 @@ export default async function HomePage() {
                 <span className={`w-1.5 h-1.5 rounded-full ${isClosed ? "bg-amber-400" : "bg-teal-400 animate-pulse"}`} aria-hidden="true" />
                 {isClosed ? "Pasar Tutup — Data Sesi Terakhir" : "Pasar Sedang Buka — Data Real-time"}
               </div>
-              <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-[1.1] text-white">
+              <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-[1.1] text-white">
                 Analisa Teknikal
                 <br />
                 <span className="text-teal-400">
@@ -301,9 +305,7 @@ export default async function HomePage() {
                 </span>
               </h1>
               <p className="text-gray-300 text-base sm:text-lg leading-relaxed">
-                Chart interaktif, RSI, MACD, Bollinger Bands, dan screener untuk{" "}
-                <span className="text-white font-semibold">{totalStocks}+ saham</span> IDX dari{" "}
-                <span className="text-white font-semibold">{totalSectors} sektor</span>. Buat keputusan trading lebih tajam.
+                {"Chart interaktif, RSI, MACD, Bollinger Bands, dan screener untuk "}<span className="text-white font-semibold">{totalStocks}+ saham</span>{" IDX dari "}<span className="text-white font-semibold">{totalSectors} sektor</span>{". Buat keputusan trading lebih tajam."}
                 <span className="akademi-cursor" />
               </p>
               <div className="flex items-center gap-3 pt-2">

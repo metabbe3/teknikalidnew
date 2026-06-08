@@ -15,7 +15,7 @@ export function CtaSection() {
       />
       <div className="relative z-10 max-w-lg space-y-4">
         <p className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-          Analisa 900+ saham dalam hitungan detik
+          Analisa 950+ saham dalam hitungan detik
         </p>
         <p className="text-gray-400 text-sm leading-relaxed">
           Chart interaktif, 30+ strategi screener, dan trading plan otomatis. Gratis, tanpa registrasi.

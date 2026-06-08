@@ -12,10 +12,13 @@ import { withCronLogging } from "@/domains/cron-monitoring/with-cron-logging";
  */
 function shouldFireNow(cron: string): boolean {
   const now = new Date();
-  // Convert to WIB (UTC+7)
-  const wibHour = ((now.getUTCHours() + 7) % 24);
-  const wibMinute = now.getUTCMinutes();
-  const dayOfWeek = now.getUTCDay(); // 0=Sun, 6=Sat
+  // Convert to WIB (UTC+7) — use a shifted Date so day rollover is correct
+  const wibOffset = 7 * 60; // WIB offset in minutes
+  const wibMs = now.getTime() + wibOffset * 60_000;
+  const wibDate = new Date(wibMs);
+  const wibHour = wibDate.getUTCHours();
+  const wibMinute = wibDate.getUTCMinutes();
+  const dayOfWeek = wibDate.getUTCDay(); // 0=Sun, 6=Sat (WIB-correct)
 
   const parts = cron.trim().split(/\s+/);
   if (parts.length !== 5) return false;

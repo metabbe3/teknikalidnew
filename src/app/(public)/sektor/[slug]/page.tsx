@@ -20,12 +20,16 @@ export async function generateMetadata({
   if (!sector) return {};
 
   return {
-    title: `Sektor ${sector.name} — Analisis Teknikal Saham BEI`,
-    description: sector.description.slice(0, 160),
+    title: `Daftar Harga Saham Sektor ${sector.name} BEI Hari Ini — Analisa Teknikal`,
+    description: sector.description.length > 160
+      ? sector.description.slice(0, 157) + "..."
+      : sector.description,
     alternates: { canonical: `/sektor/${slug}` },
     openGraph: {
-      title: `Sektor ${sector.name} — Analisis Teknikal Saham | TeknikalID`,
-      description: sector.description.slice(0, 160),
+      title: `Sektor ${sector.name} — Daftar Saham & Harga Hari Ini | TeknikalID`,
+      description: sector.description.length > 160
+        ? sector.description.slice(0, 157) + "..."
+        : sector.description,
       url: `${SITE_URL}/sektor/${slug}`,
     },
   };

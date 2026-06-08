@@ -425,7 +425,7 @@ button:focus-visible,
   border-radius: 50%;
 }
 .akademi-cursor::after {
-  content: '_';
+  content: '|';
   animation: cursorBlink 1s step-end infinite;
   color: #5eead4;
   font-weight: 200;

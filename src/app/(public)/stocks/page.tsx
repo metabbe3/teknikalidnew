@@ -10,19 +10,24 @@ import { SITE_URL } from "@/lib/constants";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Daftar Harga Saham IDX Hari Ini",
-  description: "Cek harga saham IDX hari ini. Filter berdasarkan sektor, RSI, MACD, dan indikator teknikal lainnya. Analisa teknikal saham BEI terlengkap.",
+  title: "Daftar Harga Saham IDX Hari Ini — Live Chart & Analisa Teknikal 956+ Saham",
+  description: "Cek harga saham IDX hari ini lengkap dengan analisa teknikal. Filter berdasarkan sektor, RSI, MACD, Bollinger Bands, dan indikator teknikal lainnya. Chart live real-time untuk 956+ saham BEI.",
   alternates: { canonical: "/stocks" },
+  keywords: [
+    "daftar harga saham hari ini", "harga saham idx hari ini", "harga saham live",
+    "chart saham gratis", "chart saham live", "chart saham realtime",
+    "analisa saham online", "saham idx hari ini", "daftar saham BEI",
+  ],
   openGraph: {
-    title: "Daftar Harga Saham IDX Hari Ini — TeknikalID",
-    description: "Cek harga saham IDX hari ini. Filter berdasarkan sektor, RSI, MACD, dan indikator teknikal lainnya.",
+    title: "Daftar Harga Saham IDX Hari Ini — Live Chart & Analisa Teknikal",
+    description: "Cek harga saham IDX hari ini lengkap dengan analisa teknikal. Chart live, RSI, MACD, dan filter indikator untuk 956+ saham BEI.",
     url: `${SITE_URL}/stocks`,
-    images: [{ url: `${SITE_URL}/api/og?title=Daftar+Saham+IDX&type=berita`, width: 1200, height: 630 }],
+    images: [{ url: `${SITE_URL}/api/og?title=Daftar+Harga+Saham+IDX+Hari+Ini&type=berita`, width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Daftar Harga Saham IDX Hari Ini — TeknikalID",
-    description: "Cek harga saham IDX hari ini dengan indikator teknikal.",
+    title: "Daftar Harga Saham IDX Hari Ini — Live Chart & Analisa Teknikal",
+    description: "Cek harga saham IDX hari ini lengkap dengan analisa teknikal. Chart live, RSI, MACD, dan filter indikator.",
   },
 };
 

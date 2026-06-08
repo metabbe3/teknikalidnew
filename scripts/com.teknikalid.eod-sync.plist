@@ -7,7 +7,13 @@
     <key>ProgramArguments</key>
     <array>
         <string>/usr/bin/curl</string>
-        <string>-sf</string>
+        <string>-s</string>
+        <string>--retry</string>
+        <string>3</string>
+        <string>--retry-delay</string>
+        <string>5</string>
+        <string>--max-time</string>
+        <string>300</string>
         <string>-H</string>
         <string>Authorization: Bearer FZlv5mT6Sgz7mRPJI4nKMG2ITm3UCTN</string>
         <string>http://localhost:3000/api/cron/sync-eod</string>

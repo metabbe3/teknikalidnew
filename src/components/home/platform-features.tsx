@@ -3,7 +3,7 @@ import Link from "next/link";
 const features = [
   {
     title: "Screener Teknikal",
-    description: "30+ strategi dari RSI Oversold hingga Golden Cross. Filter 900+ saham dalam hitungan detik.",
+    description: "30+ strategi dari RSI Oversold hingga Golden Cross. Filter 950+ saham dalam hitungan detik.",
     href: "/screener",
     color: "#2563eb",
     stat: "30+",
@@ -39,7 +39,7 @@ export function PlatformFeatures() {
   return (
     <section className="space-y-5">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold tracking-tight text-text-primary">Fitur Platform</h2>
+        <h2 className="text-xl font-black tracking-tight text-text-primary">Fitur Platform</h2>
         <Link href="/screener" className="text-xs font-medium text-accent hover:underline">
           Lihat semua fitur →
         </Link>

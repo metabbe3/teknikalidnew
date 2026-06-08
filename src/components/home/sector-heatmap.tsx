@@ -4,12 +4,14 @@ interface SectorData {
 }
 
 export function SectorHeatmap({ sectors }: { sectors: Record<string, SectorData> }) {
-  const entries = Object.entries(sectors);
+  const entries = Object.entries(sectors).filter(
+    ([sector]) => !sector.toUpperCase().includes("UNCATEGORIZED")
+  );
 
   return (
     <section className="space-y-5">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold tracking-tight">Performa Sektor</h2>
+        <h2 className="text-xl font-black tracking-tight">Performa Sektor</h2>
         <span className="text-[10px] text-text-tertiary uppercase tracking-wider font-medium">{entries.length} sektor</span>
       </div>
       <div className="flex flex-wrap gap-3 stagger-grid">

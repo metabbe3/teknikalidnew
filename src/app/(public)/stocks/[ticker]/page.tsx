@@ -31,12 +31,13 @@ import { ShareButtons } from "@/components/ui/share-buttons";
 import { IDX_STOCKS } from "@/lib/idx-stocks";
 import { prisma } from "@/lib/prisma";
 import { portfolioService } from "@/domains/portfolio/portfolio.service";
+import DailyAnalysisSection from "@/components/stock/daily-analysis-section";
 
 export const revalidate = 300;
 export const dynamic = "force-dynamic";
 
 export function generateStaticParams() {
-  return IDX40_TICKERS.slice(0, 40).map((ticker) => ({ ticker }));
+  return IDX40_TICKERS.slice(0, 100).map((ticker) => ({ ticker }));
 }
 
 function Dot() {
@@ -63,22 +64,36 @@ export async function generateMetadata({
   if (!stock) return {};
 
   const name = stripJk(ticker);
+  const fullName = stock.stock.name;
+  const price = stock.close !== null ? formatPrice(stock.close) : "";
+  const changeStr = stock.changePercent !== null
+    ? ` (${stock.changePercent >= 0 ? "+" : ""}${formatPercent(stock.changePercent)})`
+    : "";
   const ogImage = `${SITE_URL}/api/og/stock?ticker=${encodeURIComponent(ticker)}`;
 
+  // SEO-optimized title targeting "harga saham X hari ini" queries
+  const title = price
+    ? `Harga Saham ${name} Hari Ini ${price}${changeStr} — ${fullName}`
+    : `Harga Saham ${name} (${fullName}) Hari Ini — Analisa Teknikal`;
+  const description = price
+    ? `Analisa teknikal saham ${name} (${fullName}) lengkap hari ini. Chart interaktif, indikator RSI, MACD, Bollinger Bands, support/resistance, dan sinyal trading.`
+    : `Analisa teknikal saham ${fullName} (${name}) hari ini. Chart interaktif, RSI, MACD, Bollinger Bands, SMA/EMA, dan sinyal trading di TeknikalID.`;
+
   return {
-    title: `Analisa Teknikal ${name} — ${stock.stock.name}`,
-    description: `Analisa teknikal saham ${stock.stock.name} (${name}) hari ini. Chart interaktif, RSI, MACD, Bollinger Bands, SMA/EMA, dan sinyal trading di TeknikalID.`,
+    title,
+    description,
+    keywords: [`harga saham ${name} hari ini`, `saham ${name}`, `${name} idx`, `analisa teknikal ${name}`, fullName, `harga ${name}`, `${ticker} harga`],
     alternates: { canonical: `/stocks/${ticker}` },
     openGraph: {
-      title: `Analisa Teknikal ${name} (${stock.stock.name}) | TeknikalID`,
-      description: `Chart saham ${name} hari ini dengan indikator RSI, MACD, dan sinyal teknikal.`,
+      title: `Harga Saham ${name} (${fullName}) Hari Ini | TeknikalID`,
+      description: description,
       url: `${SITE_URL}/stocks/${ticker}`,
-      images: [{ url: ogImage, width: 1200, height: 630, alt: `Analisa Teknikal ${name}` }],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: `Harga Saham ${name} Hari Ini` }],
     },
     twitter: {
       card: "summary_large_image",
-      title: `Analisa Teknikal ${name} (${stock.stock.name}) | TeknikalID`,
-      description: `Chart saham ${name} hari ini dengan indikator RSI, MACD, dan sinyal teknikal.`,
+      title: `Harga Saham ${name} (${fullName}) Hari Ini | TeknikalID`,
+      description: description,
     },
   };
 }
@@ -290,11 +305,39 @@ export default async function StockDetailPage({
     "@graph": [
       {
         "@type": "WebPage",
-        name: `Analisa Teknikal ${stripJk(ticker)} — ${stock.name}`,
-        description: `Analisa teknikal saham ${stock.name} (${stripJk(ticker)}) hari ini.`,
+        name: `Harga Saham ${stripJk(ticker)} Hari Ini — ${stock.name}`,
+        description: `Harga saham ${stock.name} (${stripJk(ticker)}) hari ini. Analisa teknikal, chart, RSI, MACD, dan sinyal trading.`,
         url: `${SITE_URL}/stocks/${ticker}`,
         image: ogImageUrl,
         breadcrumb: { "@id": `${SITE_URL}/stocks/${ticker}#breadcrumb` },
+      },
+      {
+        // FinancialProduct schema for Google rich snippets
+        "@type": "FinancialProduct",
+        name: `Saham ${stripJk(ticker)} — ${stock.name}`,
+        description: `Harga saham ${stripJk(ticker)} (${stock.name}) hari ini${close !== null ? ` ${formatPrice(close)}` : ""}. Analisa teknikal dan chart di TeknikalID.`,
+        url: `${SITE_URL}/stocks/${ticker}`,
+        ...(close !== null ? {
+          offers: {
+            "@type": "Offer",
+            price: close,
+            priceCurrency: "IDR",
+            availability: "https://schema.org/InStock",
+            ...(changePercent !== null ? {
+              priceSpecification: {
+                "@type": "PriceSpecification",
+                price: close,
+                priceCurrency: "IDR",
+                valueAddedTaxIncluded: false,
+              },
+            } : {}),
+          },
+        } : {}),
+        provider: {
+          "@type": "Organization",
+          name: "TeknikalID",
+          url: SITE_URL,
+        },
       },
       {
         "@type": "BreadcrumbList",
@@ -312,7 +355,7 @@ export default async function StockDetailPage({
             name: `Berapa harga saham ${stripJk(ticker)} hari ini?`,
             acceptedAnswer: {
               "@type": "Answer",
-              text: `${stripJk(ticker)} saat ini diperdagangkan di harga Rp ${close !== null ? formatPrice(close) : "-"}. Cek analisis teknikal lengkap di TeknikalID.`,
+              text: `Harga saham ${stripJk(ticker)} hari ini ${close !== null ? formatPrice(close) : "-"}` + (changePercent !== null ? ` (${changePercent >= 0 ? "+" : ""}${formatPercent(changePercent)})` : "") + `. Lihat chart, indikator teknikal, dan analisa lengkap di TeknikalID.`,
             },
           },
           {
@@ -320,15 +363,15 @@ export default async function StockDetailPage({
             name: `Bagaimana analisis teknikal saham ${stripJk(ticker)}?`,
             acceptedAnswer: {
               "@type": "Answer",
-              text: `Lihat analisis teknikal ${stripJk(ticker)} termasuk RSI, MACD, Support, Resistance, dan sinyal trading di halaman ini.`,
+              text: `Analisis teknikal ${stripJk(ticker)} termasuk RSI${indicators?.rsi14 !== null ? ` (${indicators?.rsi14?.toFixed?.(1) ?? "-"})` : ""}, MACD, Support/Resistance, Bollinger Bands, dan sinyal trading tersedia lengkap di halaman ini.`,
             },
           },
           {
             "@type": "Question",
-            name: `Apa itu saham ${stripJk(ticker)}?`,
+            name: `Apa itu saham ${stripJk(ticker)} (${stock.name})?`,
             acceptedAnswer: {
               "@type": "Answer",
-              text: `${stripJk(ticker)} adalah emiten yang tercatat di Bursa Efek Indonesia. Pantau pergerakan harga dan indikator teknikal di TeknikalID.`,
+              text: `${stripJk(ticker)} (${stock.name}) adalah emiten yang tercatat di Bursa Efek Indonesia${stock.sector ? `, sektor ${stock.sector}` : ""}. Pantau pergerakan harga, indikator teknikal, dan diskusi komunitas di TeknikalID.`,
             },
           },
         ],
@@ -515,6 +558,47 @@ export default async function StockDetailPage({
         {/* Chart */}
         <ChartSection ticker={ticker} />
 
+        {/* Daily Analysis — right after chart, before indicator details */}
+        {close !== null && (
+          <DailyAnalysisSection
+            ticker={ticker}
+            stockName={stock.name}
+            sector={stock.sector}
+            close={close}
+            change={change}
+            changePercent={changePercent}
+            high={latestHigh}
+            low={latestLow}
+            volume={latestVolume}
+            week52High={detail.week52High}
+            week52Low={detail.week52Low}
+            rsi14={indicators?.rsi14 ?? null}
+            macdHist={indicators?.macdHist ?? null}
+            sma20={indicators?.sma20 ?? null}
+            sma50={indicators?.sma50 ?? null}
+            sma200={indicators?.sma200 ?? null}
+            adx={indicators?.adx ?? null}
+            stochK={indicators?.stochK ?? null}
+            stochD={indicators?.stochD ?? null}
+            supertrend={indicators?.supertrend ?? null}
+            atr={indicators?.atr ?? null}
+            obvTrend={indicators?.obvTrend ?? null}
+            signalLabel={indicators?.signalLabel ?? null}
+            signalScore={indicators?.signalScore ?? null}
+            emaCrossSignal={indicators?.emaCrossSignal ?? null}
+            smaCrossSignal={indicators?.smaCrossSignal ?? null}
+            bbUpper={indicators?.bbUpper ?? null}
+            bbLower={indicators?.bbLower ?? null}
+            pe={fundamentals?.pe ?? null}
+            pb={fundamentals?.pb ?? null}
+            eps={fundamentals?.eps ?? null}
+            dividendYield={fundamentals?.dividendYield ?? null}
+            marketCap={fundamentals?.marketCap ?? null}
+            pivotR1={pivots?.r1 ?? null}
+            pivotS1={pivots?.s1 ?? null}
+          />
+        )}
+
         {/* Indicators + Sidebar */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           <div className="lg:col-span-3">
@@ -632,6 +716,8 @@ export default async function StockDetailPage({
             </div>
           );
         })()}
+
+        {/* Daily Analysis moved up — right after chart */}
 
         <SentimentGauge ticker={ticker} />
         <StockDiscussion ticker={ticker} />
