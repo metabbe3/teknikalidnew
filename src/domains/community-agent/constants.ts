@@ -5,11 +5,11 @@ export const BOT_CONFIG = {
   BIO: "Robot analisis teknikal otomatis TeknikalID. Sharing insight saham IDX setiap hari.",
   CUSTOM_TITLE: "Robo Analyst",
 
-  MAX_POSTS_PER_DAY: 25,
-  MAX_REPLIES_PER_DAY: 15,
-  MAX_AI_CALLS_PER_RUN: 3,
-  MAX_POSTS_PER_RUN: 1,
-  MAX_REPLIES_PER_RUN: 1,
+  MAX_POSTS_PER_DAY: 0,
+  MAX_REPLIES_PER_DAY: 0,
+  MAX_AI_CALLS_PER_RUN: 0,
+  MAX_POSTS_PER_RUN: 0,
+  MAX_REPLIES_PER_RUN: 0,
 
   RSI_EXTREME_LOW: 25,
   RSI_EXTREME_HIGH: 80,
