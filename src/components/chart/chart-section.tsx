@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { useStockHistory } from "@/hooks/use-stock-history";
 import { useIndicators } from "@/hooks/use-indicators";
@@ -11,6 +11,16 @@ import { formatPrice } from "@/lib/utils";
 const CandlestickChart = dynamic(
   () => import("@/components/chart/candlestick-chart").then((mod) => mod.CandlestickChart),
   { ssr: false, loading: () => <div className="w-full h-[450px] bg-bg-card rounded-xl animate-pulse" /> }
+);
+
+const RsiPanel = dynamic(
+  () => import("@/components/chart/rsi-panel"),
+  { ssr: false, loading: () => <div className="w-full h-[120px] bg-bg-card rounded-b-lg animate-pulse" /> }
+);
+
+const MacdPanel = dynamic(
+  () => import("@/components/chart/macd-panel"),
+  { ssr: false, loading: () => <div className="w-full h-[120px] bg-bg-card rounded-b-lg animate-pulse" /> }
 );
 
 interface ChartSectionProps {
@@ -43,9 +53,18 @@ export function ChartSection({ ticker }: ChartSectionProps) {
   const [showEma12, setShowEma12] = useState(false);
   const [showEma26, setShowEma26] = useState(false);
   const [showZigzag, setShowZigzag] = useState(false);
+  const [showBb, setShowBb] = useState(false);
+  const [showRsi, setShowRsi] = useState(false);
+  const [showMacd, setShowMacd] = useState(false);
   const [compareQuery, setCompareQuery] = useState("");
   const [compareTicker, setCompareTicker] = useState<string | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
+
+  // Shared visible time range for multi-pane sync
+  const [visibleRange, setVisibleRange] = useState<{ from: number; to: number } | null>(null);
+  const handleVisibleRangeChange = useCallback((from: number, to: number) => {
+    setVisibleRange({ from, to });
+  }, []);
 
   const isIntraday = !!INTRADAY_CONFIG[range];
   const { data: history, isLoading: historyLoading } = useStockHistory(ticker, range);
@@ -94,6 +113,11 @@ export function ChartSection({ ticker }: ChartSectionProps) {
     const sr = calculateNearestSR(prices, history[history.length - 1].close);
     return sr;
   })();
+
+  // Build RSI data for panel
+  const rsiPanelData = indicators?.rsi14 && indicators.dates
+    ? indicators.dates.map((date: string | number, i: number) => ({ date, value: indicators.rsi14[i] ?? null }))
+    : [];
 
   return (
     <div className="space-y-3">
@@ -202,7 +226,7 @@ export function ChartSection({ ticker }: ChartSectionProps) {
         </div>
 
         {/* Overlay toggles */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 flex-wrap">
           <OverlayToggle label="SMA 20" active={showSma20} onClick={() => setShowSma20(!showSma20)} activeClass="bg-amber-500/10 text-amber-600 ring-1 ring-amber-500/20" />
           <OverlayToggle label="SMA 50" active={showSma50} onClick={() => setShowSma50(!showSma50)} activeClass="bg-violet-500/10 text-violet-600 ring-1 ring-violet-500/20" />
           <OverlayToggle label="SMA 200" active={showSma200} onClick={() => setShowSma200(!showSma200)} activeClass="bg-red-500/10 text-red-600 ring-1 ring-red-500/20" />
@@ -214,39 +238,80 @@ export function ChartSection({ ticker }: ChartSectionProps) {
 
           <div className="w-px h-4 bg-border mx-0.5" aria-hidden="true" />
 
+          <OverlayToggle label="BB" active={showBb} onClick={() => setShowBb(!showBb)} activeClass="bg-blue-500/10 text-blue-600 ring-1 ring-blue-500/20" />
           <OverlayToggle label="ZigZag" active={showZigzag} onClick={() => setShowZigzag(!showZigzag)} activeClass="bg-amber-500/10 text-amber-600 ring-1 ring-amber-500/20" />
+
+          <div className="w-px h-4 bg-border mx-0.5" aria-hidden="true" />
+
+          <OverlayToggle label="RSI" active={showRsi} onClick={() => setShowRsi(!showRsi)} activeClass="bg-violet-500/10 text-violet-600 ring-1 ring-violet-500/20" />
+          <OverlayToggle label="MACD" active={showMacd} onClick={() => setShowMacd(!showMacd)} activeClass="bg-blue-500/10 text-blue-600 ring-1 ring-blue-500/20" />
         </div>
       </div>
 
-      {/* Chart container */}
-      <div className="depth-shadow-strong rounded-xl overflow-hidden bg-bg-card relative">
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border/60 to-transparent" aria-hidden="true" />
+      {/* Chart container — multi-pane */}
+      <div className="depth-shadow-strong rounded-xl overflow-hidden bg-bg-card">
+        <div className="h-px bg-gradient-to-r from-transparent via-border/60 to-transparent" aria-hidden="true" />
+
+        {/* Main chart */}
         <CandlestickChart
           data={history}
           chartType={chartType}
-          sma20={isIntraday ? undefined : indicators?.sma20}
-          sma50={isIntraday ? undefined : indicators?.sma50}
-          sma200={isIntraday ? undefined : indicators?.sma200}
-          ema12={isIntraday ? undefined : indicators?.ema12}
-          ema26={isIntraday ? undefined : indicators?.ema26}
-          showSma20={showSma20 && !isIntraday}
-          showSma50={showSma50 && !isIntraday}
-          showSma200={showSma200 && !isIntraday}
-          showEma12={showEma12 && !isIntraday}
-          showEma26={showEma26 && !isIntraday}
-          supportLevel={isIntraday ? null : srLevels.support}
-          resistanceLevel={isIntraday ? null : srLevels.resistance}
-          swingPoints={isIntraday ? undefined : indicators?.swingPoints}
-          unconfirmedLeg={isIntraday ? null : indicators?.unconfirmedLeg ?? null}
-          showZigzag={showZigzag && !isIntraday}
+          sma20={indicators?.sma20}
+          sma50={indicators?.sma50}
+          sma200={indicators?.sma200}
+          ema12={indicators?.ema12}
+          ema26={indicators?.ema26}
+          showSma20={showSma20}
+          showSma50={showSma50}
+          showSma200={showSma200}
+          showEma12={showEma12}
+          showEma26={showEma26}
+          supportLevel={srLevels.support}
+          resistanceLevel={srLevels.resistance}
+          swingPoints={indicators?.swingPoints}
+          unconfirmedLeg={indicators?.unconfirmedLeg ?? null}
+          showZigzag={showZigzag}
+          bbUpper={indicators?.bb?.upper}
+          bbMiddle={indicators?.bb?.middle}
+          bbLower={indicators?.bb?.lower}
+          showBb={showBb}
           compareData={compareData}
           compareLabel={compareLabel}
           isTimeVisible={isIntraday}
+          onVisibleTimeRangeChange={handleVisibleRangeChange}
+          parentVisibleRange={visibleRange}
         />
+
+        {/* RSI subplot */}
+        {showRsi && rsiPanelData.length > 0 && (
+          <div className="border-t border-border/50">
+            <RsiPanel
+              data={rsiPanelData}
+              isTimeVisible={isIntraday}
+              onVisibleTimeRangeChange={handleVisibleRangeChange}
+              parentVisibleRange={visibleRange}
+            />
+          </div>
+        )}
+
+        {/* MACD subplot */}
+        {showMacd && indicators?.macd && indicators.dates && (
+          <div className="border-t border-border/50">
+            <MacdPanel
+              dates={indicators.dates}
+              macdLine={indicators.macd.line}
+              signal={indicators.macd.signal}
+              histogram={indicators.macd.histogram}
+              isTimeVisible={isIntraday}
+              onVisibleTimeRangeChange={handleVisibleRangeChange}
+              parentVisibleRange={visibleRange}
+            />
+          </div>
+        )}
       </div>
 
       {/* S/R level indicators */}
-      {!isIntraday && (srLevels.support !== null || srLevels.resistance !== null) && (
+      {srLevels.support !== null || srLevels.resistance !== null ? (
         <div className="flex items-center gap-4 text-[11px] bg-bg-card/60 depth-shadow rounded-lg px-3 py-2">
           {srLevels.support !== null && (
             <div className="flex items-center gap-1.5">
@@ -261,7 +326,7 @@ export function ChartSection({ ticker }: ChartSectionProps) {
             </div>
           )}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

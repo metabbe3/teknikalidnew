@@ -52,9 +52,15 @@ interface CandlestickChartProps {
   swingPoints?: SwingPoint[];
   unconfirmedLeg?: SwingPoint | null;
   showZigzag?: boolean;
+  bbUpper?: (number | null)[];
+  bbMiddle?: (number | null)[];
+  bbLower?: (number | null)[];
+  showBb?: boolean;
   compareData?: ComparePoint[];
   compareLabel?: string;
   isTimeVisible?: boolean;
+  onVisibleTimeRangeChange?: (from: number, to: number) => void;
+  parentVisibleRange?: { from: number; to: number } | null;
 }
 
 interface ChartState {
@@ -72,6 +78,9 @@ interface ChartState {
   resistanceSeries: ISeriesApi<"Line">;
   zigzagSeries: ISeriesApi<"Line">;
   zigzagUnconfirmedSeries: ISeriesApi<"Line">;
+  bbUpperSeries: ISeriesApi<"Line">;
+  bbMiddleSeries: ISeriesApi<"Line">;
+  bbLowerSeries: ISeriesApi<"Line">;
   compareSeries: ISeriesApi<"Line">;
 }
 
@@ -106,9 +115,15 @@ export function CandlestickChart({
   swingPoints,
   unconfirmedLeg,
   showZigzag = false,
+  bbUpper,
+  bbMiddle,
+  bbLower,
+  showBb = false,
   compareData,
   compareLabel,
   isTimeVisible = false,
+  onVisibleTimeRangeChange,
+  parentVisibleRange,
 }: CandlestickChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const stateRef = useRef<ChartState | null>(null);
@@ -308,13 +323,51 @@ export function CandlestickChart({
       visible: false,
     });
 
+    // Bollinger Bands
+    const bbUpperSeries = chart.addSeries(LineSeries, {
+      color: "rgba(59, 130, 246, 0.5)",
+      lineWidth: 1,
+      lineStyle: 2,
+      priceLineVisible: false,
+      lastValueVisible: false,
+      crosshairMarkerVisible: false,
+      visible: false,
+    });
+    const bbMiddleSeries = chart.addSeries(LineSeries, {
+      color: "rgba(59, 130, 246, 0.7)",
+      lineWidth: 1,
+      priceLineVisible: false,
+      lastValueVisible: false,
+      crosshairMarkerVisible: false,
+      visible: false,
+    });
+    const bbLowerSeries = chart.addSeries(LineSeries, {
+      color: "rgba(59, 130, 246, 0.5)",
+      lineWidth: 1,
+      lineStyle: 2,
+      priceLineVisible: false,
+      lastValueVisible: false,
+      crosshairMarkerVisible: false,
+      visible: false,
+    });
+
     // Crosshair tooltip subscription
     chart.subscribeCrosshairMove(handleCrosshairMove);
+
+    // Sync visible time range with parent (for multi-pane)
+    if (onVisibleTimeRangeChange) {
+      chart.timeScale().subscribeVisibleTimeRangeChange((range) => {
+        if (range && onVisibleTimeRangeChange) {
+          onVisibleTimeRangeChange(range.from as unknown as number, range.to as unknown as number);
+        }
+      });
+    }
 
     stateRef.current = {
       chart, candleSeries, lineSeries, areaSeries, volumeSeries,
       sma20Series, sma50Series, sma200Series, ema12Series, ema26Series,
       supportSeries, resistanceSeries, zigzagSeries, zigzagUnconfirmedSeries,
+      bbUpperSeries, bbMiddleSeries, bbLowerSeries,
       compareSeries,
     };
 
@@ -372,6 +425,11 @@ export function CandlestickChart({
     if (ema12) s.ema12Series.setData(toLineData(ema12));
     if (ema26) s.ema26Series.setData(toLineData(ema26));
 
+    // Bollinger Bands data
+    s.bbUpperSeries.setData(toLineData(bbUpper));
+    s.bbMiddleSeries.setData(toLineData(bbMiddle));
+    s.bbLowerSeries.setData(toLineData(bbLower));
+
     if (supportLevel != null && data.length > 0) {
       s.supportSeries.setData([
         { time: data[0].date as import("lightweight-charts").Time, value: supportLevel },
@@ -410,42 +468,39 @@ export function CandlestickChart({
     }
 
     s.chart.timeScale().fitContent();
-  }, [data, sma20, sma50, sma200, ema12, ema26, supportLevel, resistanceLevel, swingPoints, unconfirmedLeg]);
+  }, [data, sma20, sma50, sma200, ema12, ema26, supportLevel, resistanceLevel, swingPoints, unconfirmedLeg, bbUpper, bbMiddle, bbLower]);
 
-  // Update compare data
+  // Update compare data — normalized to % change
   useEffect(() => {
     const s = stateRef.current;
     if (!s) return;
 
-    if (compareData && compareData.length > 0) {
-      // Normalize to percentage change from first point
-      const baseValue = compareData[0].value;
-      const normalized = compareData
-        .filter((d) => d.value !== 0)
-        .map((d) => ({ time: d.date, value: ((d.value - baseValue) / baseValue) * 100 }));
+    if (compareData && compareData.length > 0 && data.length > 0) {
+      const mainBase = data[0].close;
+      const compareBase = compareData[0].value;
 
-      // Also normalize main data to percentage for overlay
-      if (data.length > 0) {
-        const mainBase = data[0].close;
-        const mainNormalized = data
-          .map((d) => ({ time: d.date, value: ((d.close - mainBase) / mainBase) * 100 }));
+      if (mainBase && compareBase) {
+        // Normalize both to % change from first data point
+        const mainPct = data
+          .map((d) => ({ time: d.date as import("lightweight-charts").Time, value: ((d.close - mainBase) / mainBase) * 100 }));
 
-        // Set percentage scale on a separate price scale
+        const comparePct = compareData
+          .filter((d) => d.value !== 0)
+          .map((d) => ({ time: d.date as import("lightweight-charts").Time, value: ((d.value - compareBase) / compareBase) * 100 }));
+
         s.compareSeries.applyOptions({
           visible: true,
           priceScaleId: "compare",
           title: compareLabel ?? "",
         });
+        s.compareSeries.setData(comparePct);
 
-        // Use percentage overlay: we need to overlay on the same scale
-        // Simpler approach: just overlay the raw compare line on its own price scale
-        s.compareSeries.applyOptions({
+        // Update main chart to also show % on compare scale
+        // Keep original price on right scale, compare gets its own left scale
+        s.chart.priceScale("compare").applyOptions({
+          scaleMargins: { top: 0.1, bottom: 0.2 },
           visible: true,
-          priceScaleId: "right",
         });
-        s.compareSeries.setData(
-          compareData.filter((d) => d.value !== 0).map((d) => ({ time: d.date as import("lightweight-charts").Time, value: d.value }))
-        );
       }
     } else {
       s.compareSeries.setData([]);
@@ -480,6 +535,25 @@ export function CandlestickChart({
     s.zigzagSeries.applyOptions({ visible: showZigzag });
     s.zigzagUnconfirmedSeries.applyOptions({ visible: showZigzag });
   }, [showZigzag]);
+
+  // Toggle Bollinger Bands
+  useEffect(() => {
+    const s = stateRef.current;
+    if (!s) return;
+    s.bbUpperSeries.applyOptions({ visible: showBb });
+    s.bbMiddleSeries.applyOptions({ visible: showBb });
+    s.bbLowerSeries.applyOptions({ visible: showBb });
+  }, [showBb]);
+
+  // Sync parent visible time range
+  useEffect(() => {
+    const s = stateRef.current;
+    if (!s || !parentVisibleRange) return;
+    s.chart.timeScale().setVisibleRange({
+      from: parentVisibleRange.from as import("lightweight-charts").Time,
+      to: parentVisibleRange.to as import("lightweight-charts").Time,
+    });
+  }, [parentVisibleRange]);
 
   // Toggle chart type visibility
   useEffect(() => {
