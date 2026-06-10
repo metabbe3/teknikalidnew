@@ -461,7 +461,7 @@ export const articleService = {
     if (!stock) return null;
 
     const [prices, indicator, fundamental] = await Promise.all([
-      stockRepository.findLatestPrices(stock.id, 2),
+      stockRepository.findLatestPrices(stock.id, 30),
       stockRepository.findLatestIndicator(stock.id, "1d"),
       stockRepository.findLatestFundamental(stock.id),
     ]);
@@ -477,6 +477,12 @@ export const articleService = {
     const changePercent = prev
       ? (() => { const p = decimalToNumber(prev.close); return p ? ((close! - p) / p) * 100 : null; })()
       : null;
+
+    // Extract 30-day price history for mini chart (reverse to get chronological order)
+    const priceHistory = prices
+      .map(p => decimalToNumber(p.close))
+      .filter((p): p is number => p !== null)
+      .reverse();
 
     const t = ticker.replace(".JK", "");
     const date = new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
@@ -509,6 +515,7 @@ export const articleService = {
       open: decimalToNumber(latest.open),
       smaCrossSignal: indicator.smaCrossSignal,
       emaCrossSignal: indicator.emaCrossSignal,
+      priceHistory,
     });
 
     const adminUser = await articleRepository.findAdminUserId();
@@ -574,5 +581,10 @@ export const articleService = {
 
   async updateCoverImage(articleId: string, imageUrl: string) {
     return articleRepository.update(articleId, { coverImageUrl: imageUrl } as Parameters<typeof articleRepository.update>[1]);
+  },
+
+  async cleanupOldSnapshots() {
+    const result = await articleRepository.deleteOldSnapshots();
+    return { deleted: result.deletedCount };
   },
 };

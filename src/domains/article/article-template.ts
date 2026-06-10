@@ -55,6 +55,9 @@ interface TemplateData {
   // Crossover signals
   smaCrossSignal?: string | null;
   emaCrossSignal?: string | null;
+
+  // 30-day price history for mini chart
+  priceHistory?: number[];
 }
 
 type Outlook = "BULLISH" | "BEARISH" | "NETRAL";
@@ -135,6 +138,49 @@ function atrLabel(atr: number | null, close: number | null): string {
   if (ratio > 4) return "Tinggi — pergerakan harga sangat fluktuatif";
   if (ratio > 2.5) return "Moderat — pergerakan cukup aktif";
   return "Rendah — pergerakan harga relatif stabil";
+}
+
+// ── SVG Mini Chart Generator ──
+
+function buildSVGMiniChart(prices: number[]): string {
+  if (!prices || prices.length === 0) {
+    return `<svg width="300" height="150" xmlns="http://www.w3.org/2000/svg" style="background: #1a1a2e; border-radius: 8px;">
+      <text x="150" y="75" text-anchor="middle" fill="#888" font-size="12">No price data available</text>
+    </svg>`;
+  }
+
+  const width = 300;
+  const height = 150;
+  const padding = 10;
+  const effectiveWidth = width - padding * 2;
+  const effectiveHeight = height - padding * 2;
+
+  // Find min and max prices
+  const minPrice = Math.min(...prices);
+  const maxPrice = Math.max(...prices);
+  const priceRange = maxPrice - minPrice || 1; // Avoid division by zero
+
+  // Generate points for the line
+  const points = prices.map((price, index) => {
+    const x = padding + (index / (prices.length - 1)) * effectiveWidth;
+    const y = height - padding - ((price - minPrice) / priceRange) * effectiveHeight;
+    return `${x},${y}`;
+  });
+
+  // Build the SVG
+  return `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg" style="background: #1a1a2e; border-radius: 8px;">
+    <polyline
+      points="${points.join(' ')}"
+      fill="none"
+      stroke="#00d4ff"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <circle cx="${points[points.length - 1].split(',')[0]}" cy="${points[points.length - 1].split(',')[1]}" r="3" fill="#00d4ff" />
+    <text x="${padding}" y="${height - 2}" fill="#666" font-size="10">${minPrice.toFixed(0)}</text>
+    <text x="${width - padding}" y="${height - 2}" text-anchor="end" fill="#666" font-size="10">${maxPrice.toFixed(0)}</text>
+  </svg>`;
 }
 
 // ── New helpers for daily snapshot ──
@@ -529,6 +575,11 @@ function buildDailySnapshotEnhanced(data: TemplateData): string {
       }. Volume perdagangan mencapai ${formatVolumeHuman(data.volume)}, menunjukkan partisipasi investor yang ${data.volume !== null && data.volume > 1e7 ? "aktif" : "cukup"}.`
     : `Ringkasan pergerakan saham ${data.name} hari ini, ${date}.`;
 
+  // SVG Mini Chart (30-day price history)
+  const miniChart = data.priceHistory && data.priceHistory.length > 0
+    ? `\n\n**Pergerakan Harga 30 Hari Terakhir:**\n\n${buildSVGMiniChart(data.priceHistory)}\n`
+    : "";
+
   // Support/resistance narrative
   const levelNarrative = `Support terdekat di **${price(support)}**.${
     resistance !== null ? ` Resistance di **${price(resistance)}**.` : ""
@@ -557,8 +608,7 @@ function buildDailySnapshotEnhanced(data: TemplateData): string {
 
 **Sinyal: ${signalDisplay}**
 
-${openNarrative}
-
+${openNarrative}${miniChart}
 | | |
 |---|---|
 | **Harga Tutup** | ${price(data.close)} |
