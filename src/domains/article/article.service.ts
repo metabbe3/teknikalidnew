@@ -486,7 +486,29 @@ export const articleService = {
 
     const t = ticker.replace(".JK", "");
     const date = new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
-    const title = `Saham ${stock.name} (${t}) Hari Ini — ${date}`;
+    const signalLabelForTitle = indicator.signalLabel ?? "Netral";
+    const signalEmoji = signalLabelForTitle.includes("Bullish") ? "🟢" : signalLabelForTitle.includes("Bearish") ? "🔴" : "🟡";
+    const priceStr = close !== null ? `Rp${close.toLocaleString("id-ID")}` : "";
+    const changeStr = changePercent !== null ? `${changePercent >= 0 ? "+" : ""}${changePercent.toFixed(2)}%` : "";
+    const title = `Harga Saham ${stock.name} (${t}) Hari Ini ${priceStr} ${changeStr} — Analisis & Sinyal ${signalEmoji}`;
+
+    // Compute support/resistance for excerpt
+    const bbLower = decimalToNumber(indicator.bbLower);
+    const bbUpper = decimalToNumber(indicator.bbUpper);
+    const sma50v = decimalToNumber(indicator.sma50);
+    const supertrendV = decimalToNumber(indicator.supertrend);
+    const w52Low = decimalToNumber(week52._min.low);
+    const w52High = decimalToNumber(week52._max.high);
+    const supportArr: number[] = [];
+    const resistArr: number[] = [];
+    if (bbLower !== null) supportArr.push(bbLower);
+    if (supertrendV !== null && close !== null && supertrendV < close) supportArr.push(supertrendV);
+    if (sma50v !== null && close !== null && sma50v < close) supportArr.push(sma50v);
+    if (bbUpper !== null) resistArr.push(bbUpper);
+    if (supertrendV !== null && close !== null && supertrendV > close) resistArr.push(supertrendV);
+    if (sma50v !== null && close !== null && sma50v > close) resistArr.push(sma50v);
+    const supportVal = supportArr.length > 0 ? Math.max(...supportArr) : w52Low;
+    const resistanceVal = resistArr.length > 0 ? Math.min(...resistArr) : w52High;
 
     const content = buildDailySnapshot({
       ticker: stock.ticker, name: stock.name, sector: stock.sector,
@@ -521,12 +543,13 @@ export const articleService = {
     const adminUser = await articleRepository.findAdminUserId();
     if (!adminUser) return null;
 
-    const signalLabel = indicator.signalLabel ?? "Netral";
+    const signalLabel2 = indicator.signalLabel ?? "Netral";
+    const fmtPrice = (v: number | null) => v !== null ? `Rp ${v.toLocaleString("id-ID")}` : "N/A";
     const article = await articleRepository.create({
       slug, title,
-      excerpt: `Saham ${stock.name} (${t}) hari ini ${date}: ${close !== null ? `Rp ${close.toLocaleString("id-ID")}` : "N/A"} (${changePercent !== null ? `${changePercent >= 0 ? "+" : ""}${changePercent.toFixed(2)}%` : "N/A"}). Sinyal: ${signalLabel}.`.slice(0, 500),
+      excerpt: `Harga saham ${stock.name} (${t}) hari ini ${date}: ${close !== null ? `Rp ${close.toLocaleString("id-ID")}` : "N/A"} (${changePercent !== null ? `${changePercent >= 0 ? "+" : ""}${changePercent.toFixed(2)}%` : "N/A"}). Analisis teknikal ${t}: sinyal ${signalLabel2}, support ${fmtPrice(supportVal)}, resistance ${fmtPrice(resistanceVal)}.`.slice(0, 500),
       content, authorId: adminUser.id,
-      tags: [stock.sector, t, "saham hari ini"],
+      tags: [stock.sector, t, "saham hari ini", "analisis teknikal", `harga saham ${t}`],
       status: ArticleStatus.PUBLISHED,
       articleType: "DAILY_SNAPSHOT" as ArticleType,
       aiProvider: "template", tickerTag: ticker,
