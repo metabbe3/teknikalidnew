@@ -6,11 +6,10 @@ import { withCronLogging } from "@/domains/cron-monitoring/with-cron-logging";
 import type { AgentType } from "@/domains/agent-hub/agent-hub.types";
 
 /**
- * Generate Articles — DAILY_SNAPSHOT only
+ * Generate Articles — DAILY_SNAPSHOT + Trending News
  *
- * Only generates DAILY_SNAPSHOT articles for all IDX tickers.
- * Other generators (news, evergreen, FAQ) remain disabled.
- * Old snapshots are auto-deleted daily at 01:30 via cleanup cron.
+ * Generates DAILY_SNAPSHOT for all IDX tickers + trending news articles.
+ * Old snapshots auto-deleted daily at 01:30 via cleanup cron.
  */
 export async function POST(request: NextRequest) {
   const auth = request.headers.get("authorization");
@@ -36,9 +35,9 @@ export async function POST(request: NextRequest) {
         };
       }
 
-      // Only dispatch gen_snapshots
-      const isRunning = await agentHubRepository.hasRunningJob("gen_snapshots" as AgentType);
-      if (isRunning) {
+      // 1. Dispatch gen_snapshots (daily snapshot for all tickers)
+      const isSnapshotRunning = await agentHubRepository.hasRunningJob("gen_snapshots" as AgentType);
+      if (isSnapshotRunning) {
         skipped.push("gen_snapshots: already running");
       } else {
         const job = await agentHubService.createJob({
@@ -49,6 +48,19 @@ export async function POST(request: NextRequest) {
         dispatched.push(`gen_snapshots: ${job.id}`);
       }
 
+      // 2. Dispatch gen_trending_news (3-5 news articles)
+      const isNewsRunning = await agentHubRepository.hasRunningJob("gen_trending_news" as AgentType);
+      if (isNewsRunning) {
+        skipped.push("gen_trending_news: already running");
+      } else {
+        const newsJob = await agentHubService.createJob({
+          agentType: "gen_trending_news" as AgentType,
+          payload: { count: 3 },
+          priority: 5,
+        });
+        dispatched.push(`gen_trending_news: ${newsJob.id}`);
+      }
+
       return {
         status: 200,
         body: {
@@ -57,7 +69,7 @@ export async function POST(request: NextRequest) {
             dispatched: dispatched.length,
             jobs: dispatched,
             skipped,
-            note: "DAILY_SNAPSHOT only. Old articles auto-deleted at 01:30.",
+            note: "DAILY_SNAPSHOT + Trending News (3 articles). Old snapshots auto-deleted at 01:30.",
           },
         } as Record<string, unknown>,
       };

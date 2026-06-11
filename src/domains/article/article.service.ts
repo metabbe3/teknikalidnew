@@ -338,6 +338,7 @@ export const articleService = {
       status,
       articleType: ArticleType.NEWS,
       aiProvider: provider.name,
+      isListed: true,
       generationMeta: { provider: provider.name, topic, keywords, timestamp: new Date().toISOString(), ...factCheckMeta } as Record<string, string | string[]>,
     });
 
