@@ -12,14 +12,12 @@ export const revalidate = 300;
 const PAGE_SIZE = 12;
 
 const TYPE_FILTERS: { value: string; label: string }[] = [
-  { value: "DAILY_SNAPSHOT", label: "Saham Hari Ini" },
   { value: "STOCK_ANALYSIS", label: "Analisis Saham" },
   { value: "NEWS", label: "Berita Pasar" },
   { value: "GENERAL", label: "Opini & Insight" },
 ];
 
 const TYPE_LABELS: Record<string, { label: string; color: string }> = {
-  DAILY_SNAPSHOT: { label: "Saham Hari Ini", color: "text-emerald-500 bg-emerald-500/10" },
   STOCK_ANALYSIS: { label: "Analisis Saham", color: "text-blue-500 bg-blue-500/10" },
   NEWS: { label: "Berita Pasar", color: "text-amber-500 bg-amber-500/10" },
   GENERAL: { label: "Opini & Insight", color: "text-purple-500 bg-purple-500/10" },
@@ -55,7 +53,7 @@ export async function generateMetadata({
     isListed: true,
     articleType: activeType
       ? (activeType as ArticleType)
-      : { in: ["DAILY_SNAPSHOT", "STOCK_ANALYSIS", "NEWS", "GENERAL"] as ArticleType[] },
+      : { in: ["STOCK_ANALYSIS", "NEWS", "GENERAL"] as ArticleType[] },
   };
   const totalCount = await prisma.article.count({ where: articleWhere as never });
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
@@ -99,7 +97,7 @@ export default async function BeritaPage({
     isListed: true,
     articleType: activeType
       ? (activeType as ArticleType)
-      : { in: ["DAILY_SNAPSHOT", "STOCK_ANALYSIS", "NEWS", "GENERAL"] as ArticleType[] },
+      : { in: ["STOCK_ANALYSIS", "NEWS", "GENERAL"] as ArticleType[] },
   };
 
   const [totalCount, rows] = await Promise.all([

@@ -531,7 +531,7 @@ export const articleService = {
       articleType: "DAILY_SNAPSHOT" as ArticleType,
       aiProvider: "template", tickerTag: ticker,
       generationMeta: { provider: "template", date: new Date().toISOString().slice(0, 10) } as Record<string, string>,
-      isListed: true,
+      isListed: false,
     });
 
     return { id: article.id, title: article.title, slug: article.slug };
