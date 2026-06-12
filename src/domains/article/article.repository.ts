@@ -194,27 +194,4 @@ export const articleRepository = {
 
     return [...neverGenerated, ...needsUpdate].slice(0, batchSize);
   },
-
-  async deleteOldSnapshots() {
-    // Delete all DAILY_SNAPSHOT articles created BEFORE today (keep only today's)
-    const startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
-
-    const oldSnapshots = await prisma.article.findMany({
-      where: {
-        articleType: "DAILY_SNAPSHOT",
-        createdAt: { lt: startOfToday },
-      },
-      select: { id: true },
-    });
-
-    const ids = oldSnapshots.map((a) => a.id);
-    if (ids.length === 0) return { deletedCount: 0 };
-
-    await prisma.article.deleteMany({
-      where: { id: { in: ids } },
-    });
-
-    return { deletedCount: ids.length };
-  },
 };

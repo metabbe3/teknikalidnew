@@ -31,7 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const isIdx40Analysis = a.articleType === ArticleType.STOCK_ANALYSIS && a.tickerTag && idx40Set.has(a.tickerTag);
 
     let priority: number;
-    if (isSnapshot) priority = 0.5;
+    if (isSnapshot) priority = 0.8;
     else if (isIdx40Analysis) priority = 0.9;
     else if (a.articleType === ArticleType.STOCK_ANALYSIS) priority = 0.8;
     else priority = 0.7;
@@ -39,7 +39,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return {
       url: `${baseUrl}${path}`,
       lastModified: a.updatedAt,
-      changeFrequency: isSnapshot ? "never" as const : isEducational ? "weekly" as const : "monthly" as const,
+      changeFrequency: isSnapshot ? "daily" as const : isEducational ? "weekly" as const : "monthly" as const,
       priority,
     };
   });

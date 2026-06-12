@@ -476,6 +476,47 @@ Lihat pergerakan harga ${data.name} secara real-time lengkap dengan chart intera
 `;
 }
 
+function buildPerformanceContext(d: TemplateData, t: string, support: number | null, resistance: number | null): string {
+  const parts: string[] = [];
+
+  // RSI context
+  if (d.rsi14 !== null) {
+    if (d.rsi14 < 25) parts.push(`Indikator RSI ${t} berada di ${d.rsi14.toFixed(1)}, mengindikasikan kondisi oversold ekstrem yang secara historis sering mendahului rebound harga. Investor value investing mungkin melihat ini sebagai peluang akumulasi bertahap.`);
+    else if (d.rsi14 < 35) parts.push(`RSI ${t} di zona oversold (${d.rsi14.toFixed(1)}). Secara teknis, area ini menarik bagi investor yang mengincar harga murah, namun konfirmasi reversal dari indikator lain masih diperlukan.`);
+    else if (d.rsi14 > 75) parts.push(`RSI ${t} menunjukkan pembacaan ${d.rsi14.toFixed(1)} yang masuk zona overbought ekstrem. Hati-hati terhadap potensi koreksi tajam, terutama jika tidak didukung oleh volume perdagangan yang kuat.`);
+    else if (d.rsi14 > 65) parts.push(`Dengan RSI di ${d.rsi14.toFixed(1)}, ${t} mendekati area overbought. Momentum positif masih ada, namun potensi profit taking dari investor yang sudah berada di posisi perlu diwaspadai.`);
+    else if (d.rsi14 >= 45 && d.rsi14 <= 55) parts.push(`RSI ${t} berada di area netral (${d.rsi14.toFixed(1)}), menandakan keseimbangan relatif antara tekanan beli dan jual. Pasar sedang menunggu katalis baru untuk menentukan arah selanjutnya.`);
+    else parts.push(`RSI ${t} tercatat di ${d.rsi14.toFixed(1)}, masih dalam area normal trading tanpa sinyal oversold maupun overbought yang signifikan.`);
+  }
+
+  // MACD + trend context
+  if (d.macdHist !== null && d.adx !== null) {
+    if (d.macdHist > 0 && d.adx > 25) parts.push(`MACD histogram positif dipadukan dengan ADX yang menunjukkan tren aktif (${d.adx.toFixed(1)}) — kombinasi ini mengkonfirmasi momentum bullish ${t} cukup kuat untuk dipertimbangkan.`);
+    else if (d.macdHist > 0 && d.adx <= 25) parts.push(`Meskipun MACD menunjukkan sinyal bullish, ADX yang rendah (${d.adx.toFixed(1)}) mengindikasikan tren belum sepenuhnya terbentuk. Perlu konfirmasi tambahan dari peningkatan volume.`);
+    else if (d.macdHist < 0 && d.adx > 25) parts.push(`Tekanan jual terlihat dari MACD negatif yang diperkuat oleh ADX tinggi (${d.adx.toFixed(1)}), menandakan tren bearish ${t} masih dominan dan belum ada tanda-tanda pembalikan.`);
+    else if (d.macdHist < 0 && d.adx <= 25) parts.push(`MACD bearish namun ADX rendah (${d.adx.toFixed(1)}) menunjukkan pergerakan ${t} lebih bersifat sideways. Strategi range-bound lebih tepat daripada mengikuti tren.`);
+  }
+
+  // Volume context
+  if (d.volume !== null && d.close !== null && d.prevClose != null) {
+    const priceUp = d.close > d.prevClose;
+    if (priceUp && d.volume > 1e7) parts.push(`Lonjakan volume transaksi (${formatVolumeHuman(d.volume)}) yang disertai kenaikan harga menunjukkan akumulasi bersih oleh investor besar — sinyal positif untuk kelanjutan tren naik.`);
+    else if (!priceUp && d.volume > 1e7) parts.push(`Volume tinggi (${formatVolumeHuman(d.volume)}) disertai penurunan harga mengindikasikan distribusi atau tekanan jual dari investor besar. Perlu waspada terhadap potensi penurunan lebih lanjut.`);
+    else if (d.volume < 1e5) parts.push(`Volume perdagangan ${t} sangat rendah (${formatVolumeHuman(d.volume)}), menandakan minat investor terhadap saham ini sedang berkurang. Perubahan harga mungkin tidak terlalu signifikan.`);
+  }
+
+  // BB + ATR volatility context
+  if (d.close !== null && d.bbUpper !== null && d.bbLower !== null && d.atr !== null) {
+    const bbPos = bbPosition(d.close, d.bbUpper, d.bbLower);
+    const atrPct = (d.atr / d.close) * 100;
+    if (bbPos > 85 && atrPct > 3) parts.push(`Harga ${t} menyentuh upper Bollinger Band dengan volatilitas tinggi (ATR ${atrPct.toFixed(1)}% dari harga). Kondisi ini biasanya mendahului koreksi — pertimbangkan untuk mengamankan profit jika sudah berada di posisi.`);
+    else if (bbPos < 15 && atrPct > 3) parts.push(`Harga mendekati lower Bollinger Band dengan volatilitas tinggi. Kombinasi ini bisa menjadi tanda oversold yang menarik, namun juga berisiko jika tren turun masih kuat.`);
+    else if (bbPos > 40 && bbPos < 60 && atrPct < 2) parts.push(`Bollinger Bands menyempit dan volatilitas rendah (ATR ${atrPct.toFixed(1)}%), menandakan ${t} sedang dalam fase konsolidasi. Breakout biasanya terjadi setelah periode seperti ini.`);
+  }
+
+  return parts.length > 0 ? parts.join("\n\n") : "";
+}
+
 export function buildDailySnapshot(data: TemplateData): string {
   try {
     return buildDailySnapshotEnhanced(data);
@@ -575,6 +616,9 @@ function buildDailySnapshotEnhanced(data: TemplateData): string {
       }. Volume perdagangan mencapai ${formatVolumeHuman(data.volume)}, menunjukkan partisipasi investor yang ${data.volume !== null && data.volume > 1e7 ? "aktif" : "cukup"}.`
     : `Ringkasan pergerakan saham ${data.name} hari ini, ${date}.`;
 
+  // Performance context paragraph (unique per stock condition)
+  const perfContext = buildPerformanceContext(data, t, support, resistance);
+
   // SVG Mini Chart (30-day price history)
   const miniChart = data.priceHistory && data.priceHistory.length > 0
     ? `\n\n**Pergerakan Harga 30 Hari Terakhir:**\n\n${buildSVGMiniChart(data.priceHistory)}\n`
@@ -608,7 +652,9 @@ function buildDailySnapshotEnhanced(data: TemplateData): string {
 
 **Sinyal: ${signalDisplay}**
 
-${openNarrative}${miniChart}
+${openNarrative}
+
+${perfContext}${miniChart}
 | | |
 |---|---|
 | **Harga Tutup** | ${price(data.close)} |
@@ -651,10 +697,5 @@ Lihat chart interaktif, indikator teknikal lengkap, dan trading plan ${data.name
 
 export function buildDailySlug(ticker: string): string {
   const t = ticker.replace(".JK", "").toLowerCase();
-  const now = new Date();
-  const day = now.getDate();
-  const months = ["januari", "februari", "maret", "april", "mei", "juni", "juli", "agustus", "september", "oktober", "november", "desember"];
-  const month = months[now.getMonth()];
-  const year = now.getFullYear();
-  return `saham-${t}-${day}-${month}-${year}`;
+  return `saham-${t}`;
 }

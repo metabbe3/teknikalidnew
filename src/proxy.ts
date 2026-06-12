@@ -156,6 +156,14 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // Redirect old date-based snapshot URLs → evergreen (301 permanent)
+  const redirectMatch = request.nextUrl.pathname.match(/^\/berita\/saham-([a-z]+)-\d+-[a-z]+-\d{4}$/);
+  if (redirectMatch) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/berita/saham-${redirectMatch[1]}`;
+    return NextResponse.redirect(url, 301);
+  }
+
   return response;
 }
 

@@ -454,10 +454,6 @@ export const articleService = {
   async generateDailySnapshot(ticker: string): Promise<{ id: string; title: string; slug: string } | null> {
     const slug = buildDailySlug(ticker);
 
-    // Skip if today's snapshot already exists
-    const existing = await articleRepository.findBySlug(slug);
-    if (existing) return null;
-
     const stock = await stockRepository.findStockByTicker(ticker);
     if (!stock) return null;
 
@@ -546,15 +542,34 @@ export const articleService = {
 
     const signalLabel2 = indicator.signalLabel ?? "Netral";
     const fmtPrice = (v: number | null) => v !== null ? `Rp ${v.toLocaleString("id-ID")}` : "N/A";
+    const excerpt = `Harga saham ${stock.name} (${t}) hari ini ${date}: ${close !== null ? `Rp ${close.toLocaleString("id-ID")}` : "N/A"} (${changePercent !== null ? `${changePercent >= 0 ? "+" : ""}${changePercent.toFixed(2)}%` : "N/A"}). Analisis teknikal ${t}: sinyal ${signalLabel2}, support ${fmtPrice(supportVal)}, resistance ${fmtPrice(resistanceVal)}.`.slice(0, 500);
+    const tags = [stock.sector, t, "saham hari ini", "analisis teknikal", `harga saham ${t}`];
+    const generationMeta = { provider: "template", date: new Date().toISOString().slice(0, 10) } as Record<string, string>;
+
+    // Evergreen upsert: update if exists, create if not
+    const existing = await articleRepository.findBySlug(slug);
+    if (existing) {
+      await articleRepository.update(existing.id, {
+        title,
+        excerpt,
+        content,
+        tags,
+        status: ArticleStatus.PUBLISHED,
+        publishedAt: new Date(),
+        generationMeta,
+      });
+      return { id: existing.id, title, slug };
+    }
+
     const article = await articleRepository.create({
       slug, title,
-      excerpt: `Harga saham ${stock.name} (${t}) hari ini ${date}: ${close !== null ? `Rp ${close.toLocaleString("id-ID")}` : "N/A"} (${changePercent !== null ? `${changePercent >= 0 ? "+" : ""}${changePercent.toFixed(2)}%` : "N/A"}). Analisis teknikal ${t}: sinyal ${signalLabel2}, support ${fmtPrice(supportVal)}, resistance ${fmtPrice(resistanceVal)}.`.slice(0, 500),
+      excerpt,
       content, authorId: adminUser.id,
-      tags: [stock.sector, t, "saham hari ini", "analisis teknikal", `harga saham ${t}`],
+      tags,
       status: ArticleStatus.PUBLISHED,
       articleType: "DAILY_SNAPSHOT" as ArticleType,
       aiProvider: "template", tickerTag: ticker,
-      generationMeta: { provider: "template", date: new Date().toISOString().slice(0, 10) } as Record<string, string>,
+      generationMeta,
       isListed: false,
     });
 
@@ -605,10 +620,5 @@ export const articleService = {
 
   async updateCoverImage(articleId: string, imageUrl: string) {
     return articleRepository.update(articleId, { coverImageUrl: imageUrl } as Parameters<typeof articleRepository.update>[1]);
-  },
-
-  async cleanupOldSnapshots() {
-    const result = await articleRepository.deleteOldSnapshots();
-    return { deleted: result.deletedCount };
   },
 };
