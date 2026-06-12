@@ -71,7 +71,6 @@ export function PersonalizedBeranda() {
                 <div>
                   <p className="text-xs text-muted-foreground">P&L</p>
                   <p className={`text-sm font-semibold ${changeColor(data.paperTrading.totalPnl)}`}>
-                    {data.paperTrading.totalPnl >= 0 ? "+" : ""}
                     {formatRp(data.paperTrading.totalPnl)} ({formatPercent(data.paperTrading.totalPnlPct)})
                   </p>
                 </div>
@@ -174,7 +173,7 @@ export function PersonalizedBeranda() {
                   )}
                   <span className={`text-sm font-semibold ${changeColor(stock.changePercent)}`}>
                     {stock.changePercent !== null
-                      ? `${stock.changePercent >= 0 ? "+" : ""}${formatPercent(stock.changePercent)}`
+                      ? formatPercent(stock.changePercent)
                       : "-"}
                   </span>
                 </div>
