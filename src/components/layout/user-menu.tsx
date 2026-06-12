@@ -22,17 +22,9 @@ interface User {
   role?: string;
 }
 
-interface UserMenuProps {
-  /** The current user from the session. `undefined` means logged out — renders a sign-in link. */
-  user: User | undefined | null;
-  /** Which set of menu items to render. Defaults to "public" (layout header). */
-  variant?: "public" | "dashboard";
-}
-
-export function UserMenu({ user, variant = "public" }: UserMenuProps) {
+export function UserMenu({ user }: { user: User | undefined | null }) {
   // Logged-out state: show sign-in button
   if (!user) {
-    if (variant === "dashboard") return null;
     return (
       <Link
         href="/auth/signin"
@@ -44,7 +36,7 @@ export function UserMenu({ user, variant = "public" }: UserMenuProps) {
   }
 
   const initials = getUserInitials(user);
-  const profileHref = user.username ? `/profile/${user.username}` : "/dashboard/settings";
+  const profileHref = user.username ? `/profile/${user.username}` : "/settings";
 
   return (
     <DropdownMenu>
@@ -59,11 +51,6 @@ export function UserMenu({ user, variant = "public" }: UserMenuProps) {
             {initials}
           </AvatarFallback>
         </Avatar>
-        {variant === "dashboard" && (
-          <span className="hidden md:inline text-sm font-medium text-foreground">
-            {user.username ?? user.name ?? "User"}
-          </span>
-        )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
         <div className="px-1.5 py-1 text-xs font-medium text-muted-foreground">
@@ -76,56 +63,37 @@ export function UserMenu({ user, variant = "public" }: UserMenuProps) {
         </div>
         <DropdownMenuSeparator />
 
-        {variant === "public" ? <PublicMenuItems profileHref={profileHref} role={user.role} /> : <DashboardMenuItems profileHref={profileHref} />}
+        <DropdownMenuItem render={<Link href={profileHref} />}>
+          Profil Saya
+        </DropdownMenuItem>
+        <DropdownMenuItem render={<Link href="/watchlist" />}>
+          Daftar Pantauan
+        </DropdownMenuItem>
+        <DropdownMenuItem render={<Link href="/portfolio" />}>
+          Portofolio
+        </DropdownMenuItem>
+        <DropdownMenuItem render={<Link href="/paper-trading" />}>
+          Simulasi Trading
+        </DropdownMenuItem>
+        <DropdownMenuItem render={<Link href="/bottom-fishing" />}>
+          Bottom Fishing
+        </DropdownMenuItem>
+        <DropdownMenuItem render={<Link href="/trading-plan" />}>
+          Trading Plan
+        </DropdownMenuItem>
+        <DropdownMenuItem render={<Link href="/settings" />}>
+          Pengaturan
+        </DropdownMenuItem>
+        {user.role === "ADMIN" && (
+          <DropdownMenuItem render={<Link href="/admin/reports" />}>
+            Moderasi
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => signOut()}>
+          Keluar
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
-}
-
-function PublicMenuItems({ profileHref, role }: { profileHref: string; role?: string }) {
-  return (
-    <>
-      <DropdownMenuItem render={<Link href={profileHref} />}>
-        Profil Saya
-      </DropdownMenuItem>
-      <DropdownMenuItem render={<Link href="/watchlist" />}>
-        Daftar Pantauan
-      </DropdownMenuItem>
-      <DropdownMenuItem render={<Link href="/portfolio" />}>
-        Portofolio
-      </DropdownMenuItem>
-      <DropdownMenuItem render={<Link href="/paper-trading" />}>
-        Simulasi Trading
-      </DropdownMenuItem>
-      <DropdownMenuItem render={<Link href="/profile/edit" />}>
-        Pengaturan
-      </DropdownMenuItem>
-      {role === "ADMIN" && (
-        <DropdownMenuItem render={<Link href="/admin/reports" />}>
-          Moderasi
-        </DropdownMenuItem>
-      )}
-      <DropdownMenuSeparator />
-      <DropdownMenuItem onClick={() => signOut()}>
-        Keluar
-      </DropdownMenuItem>
-    </>
-  );
-}
-
-function DashboardMenuItems({ profileHref }: { profileHref: string }) {
-  return (
-    <>
-      <DropdownMenuItem render={<Link href={profileHref} />}>
-        Profile
-      </DropdownMenuItem>
-      <DropdownMenuItem render={<Link href="/dashboard/settings" />}>
-        Settings
-      </DropdownMenuItem>
-      <DropdownMenuSeparator />
-      <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })}>
-        Sign out
-      </DropdownMenuItem>
-    </>
   );
 }

@@ -32,8 +32,17 @@ const authRateLimitMap = new Map<string, { count: number; resetAt: number }>();
 const AUTH_RATE_LIMIT = 10;
 const AUTH_RATE_WINDOW = 60_000;
 
-const PROTECTED_PREFIXES = ["/dashboard", "/watchlist", "/profile"];
+const PROTECTED_PREFIXES = ["/watchlist", "/profile"];
 const ADMIN_LOGIN_ROUTE = "/admin/login";
+
+// Old dashboard routes → new public routes
+const DASHBOARD_REDIRECTS: Record<string, string> = {
+  "/dashboard/billing": "/billing",
+  "/dashboard/bottom-fishing": "/bottom-fishing",
+  "/dashboard/market-structure": "/market-structure",
+  "/dashboard/settings": "/settings",
+  "/dashboard/trading-plan": "/trading-plan",
+};
 
 function rateLimited(map: Map<string, { count: number; resetAt: number }>, ip: string, limit: number, window: number): boolean {
   const now = Date.now();
@@ -75,7 +84,7 @@ export async function proxy(request: NextRequest) {
   // CDN cache for public HTML pages (5 min shared, stale-while-revalidate 10 min)
   // Browsers always revalidate (no max-age) but CDNs like Cloudflare cache aggressively
   const isHtmlPage = !pathname.startsWith("/api/") && !pathname.startsWith("/_next/") && !pathname.includes(".");
-  const isAdminPage = pathname.startsWith("/admin") || pathname.startsWith("/dashboard") || pathname.startsWith("/profile/edit");
+  const isAdminPage = pathname.startsWith("/admin") || pathname.startsWith("/profile/edit");
   if (isHtmlPage && !isAdminPage) {
     response.headers.set("Cache-Control", "public, s-maxage=300, stale-while-revalidate=600");
   }
@@ -154,6 +163,15 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL("/admin/login", request.url));
       }
     }
+  }
+
+  // Redirect old /dashboard/* routes → new public routes (308 permanent)
+  if (pathname === "/dashboard" || pathname === "/dashboard/") {
+    return NextResponse.redirect(new URL("/", request.url), 308);
+  }
+  const dashTarget = DASHBOARD_REDIRECTS[pathname];
+  if (dashTarget) {
+    return NextResponse.redirect(new URL(dashTarget, request.url), 308);
   }
 
   // Redirect old date-based snapshot URLs → evergreen (301 permanent)

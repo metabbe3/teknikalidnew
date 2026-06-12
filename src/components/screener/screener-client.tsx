@@ -2,11 +2,24 @@
 
 import { useState, useCallback, useMemo, Suspense, useRef } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { BottomFishingRadar } from "@/components/stock/bottom-fishing-radar";
+import { SavedScreenerBar } from "@/components/screener/saved-screener-bar";
 import { formatPrice, formatPercent, formatVolume, stripJk, changeColor, rsiColor } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import { useWatchlist, useToggleWatchlist, useBatchAddToWatchlist } from "@/hooks/use-watchlist";
+
+// ── Bookmark Icon Component ──
+
+function BookmarkIcon({ filled, className }: { filled: boolean; className?: string }) {
+  return (
+    <svg className={className ?? "w-4 h-4"} viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+    </svg>
+  );
+}
 
 // ── Trading Style Definitions ──
 
@@ -358,6 +371,7 @@ interface CustomFilter {
   enabled: boolean;
   params: Record<string, number | boolean>;
   paramDefs: { key: string; label: string; type: "range" | "toggle"; min?: number; max?: number; default?: number | boolean; step?: number }[];
+  authRequired?: boolean;
 }
 
 const CUSTOM_FILTERS: CustomFilter[] = [
@@ -391,6 +405,18 @@ const CUSTOM_FILTERS: CustomFilter[] = [
     id: "bb", label: "Bollinger Squeeze", enabled: false, params: { bbSqueeze: true },
     paramDefs: [{ key: "bbSqueeze", label: "Band width < 5%", type: "toggle", default: true }],
   },
+  {
+    id: "signalScore", label: "Signal Score", enabled: false, params: { signalScoreMin: -0.2 },
+    paramDefs: [
+      { key: "signalScoreMin", label: "Minimum Score", type: "range", min: -1, max: 1, default: -0.2, step: 0.1 },
+    ],
+    authRequired: true,
+  },
+  {
+    id: "gorengan", label: "Exclude Gorengan", enabled: false, params: { excludeGorengan: true },
+    paramDefs: [{ key: "excludeGorengan", label: "Buang saham gorengan", type: "toggle", default: true }],
+    authRequired: true,
+  },
 ];
 
 function CustomBuilder({
@@ -399,6 +425,8 @@ function CustomBuilder({
   onFilterChange: (params: Record<string, string>) => void;
 }) {
   const [filters, setFilters] = useState<CustomFilter[]>(CUSTOM_FILTERS);
+  const { data: session } = useSession();
+  const isAuthenticated = !!session?.user;
 
   const toggleFilter = (id: string) => {
     setFilters((prev) => prev.map((f) => f.id === id ? { ...f, enabled: !f.enabled } : f));
@@ -422,6 +450,7 @@ function CustomBuilder({
             rsiMax: "rsi_max", rsiMin: "rsi_min",
             stochKMax: "stoch_k_max", stochKMin: "stoch_k_min",
             adxMin: "adx_min",
+            signalScoreMin: "signal_score_min", signalScoreMax: "signal_score_max",
           };
           params[apiMap[k] ?? k] = String(v);
         }
@@ -449,7 +478,32 @@ function CustomBuilder({
         <span className="text-xs text-text-tertiary">{enabledCount} filter{enabledCount !== 1 ? "s" : ""} aktif</span>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 stagger-grid">
-        {filters.map((filter, i) => (
+        {filters.map((filter, i) => {
+          // Auth gate: show login prompt for auth-required filters
+          if (filter.authRequired && !isAuthenticated) {
+            return (
+              <div
+                key={filter.id}
+                className="screener-preset-card depth-shadow p-4 opacity-60"
+                style={{ "--stagger-i": i, "--card-accent": "#64748b" } as React.CSSProperties}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-text-secondary">{filter.label}</span>
+                  <svg className="w-4 h-4 text-text-tertiary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                </div>
+                <Link
+                  href="/auth/signin"
+                  className="mt-3 block text-xs text-accent hover:underline"
+                >
+                  Daftar untuk filter lanjutan
+                </Link>
+              </div>
+            );
+          }
+
+          return (
           <div
             key={filter.id}
             className={`screener-preset-card depth-shadow p-4 ${
@@ -508,7 +562,8 @@ function CustomBuilder({
               </div>
             ))}
           </div>
-        ))}
+        );
+        })}
       </div>
     </div>
   );
@@ -529,6 +584,8 @@ interface ScreenerStock {
   pb?: number | null;
   dividendYield?: number | null;
   marketCap?: number | null;
+  signalScore?: number | null;
+  signalLabel?: string | null;
 }
 
 type ViewMode = "table" | "cards";
@@ -537,45 +594,69 @@ function ResultsHeader({
   count,
   viewMode,
   onViewChange,
+  tickers,
+  onBatchAdd,
+  isBatchAdding,
 }: {
   count: number;
   viewMode: ViewMode;
   onViewChange: (v: ViewMode) => void;
+  tickers: string[];
+  onBatchAdd: () => void;
+  isBatchAdding: boolean;
 }) {
+  const { data: session } = useSession();
+  const isAuthenticated = !!session?.user;
+
   return (
     <div className="flex items-center justify-between flex-1">
       <div className="flex items-center gap-2.5">
         <h3 className="text-lg font-semibold tracking-tight">Hasil</h3>
         <span className="text-xs text-text-tertiary tabular-nums font-mono">{count} saham</span>
       </div>
-      <div className="flex items-center gap-1 bg-bg-card border border-border rounded-lg p-0.5">
-        <button
-          onClick={() => onViewChange("table")}
-          className={`p-1.5 rounded-md transition-colors cursor-pointer ${viewMode === "table" ? "bg-bg-hover text-text-primary" : "text-text-tertiary hover:text-text-secondary"}`}
-          aria-label="Table view"
-          aria-pressed={viewMode === "table"}
-        >
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-            <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
-          </svg>
-        </button>
-        <button
-          onClick={() => onViewChange("cards")}
-          className={`p-1.5 rounded-md transition-colors cursor-pointer ${viewMode === "cards" ? "bg-bg-hover text-text-primary" : "text-text-tertiary hover:text-text-secondary"}`}
-          aria-label="Card view"
-          aria-pressed={viewMode === "cards"}
-        >
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-            <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" />
-            <rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" />
-          </svg>
-        </button>
+      <div className="flex items-center gap-2">
+        {isAuthenticated && count > 0 && (
+          <button
+            onClick={onBatchAdd}
+            disabled={isBatchAdding}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-bg-card hover:bg-bg-hover transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Tambahkan semua ke watchlist"
+          >
+            <BookmarkIcon filled={false} className="w-3.5 h-3.5" />
+            {isBatchAdding ? "Menambahkan..." : "Tambah ke Watchlist"}
+          </button>
+        )}
+        <div className="flex items-center gap-1 bg-bg-card border border-border rounded-lg p-0.5">
+          <button
+            onClick={() => onViewChange("table")}
+            className={`p-1.5 rounded-md transition-colors cursor-pointer ${viewMode === "table" ? "bg-bg-hover text-text-primary" : "text-text-tertiary hover:text-text-secondary"}`}
+            aria-label="Table view"
+            aria-pressed={viewMode === "table"}
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+          <button
+            onClick={() => onViewChange("cards")}
+            className={`p-1.5 rounded-md transition-colors cursor-pointer ${viewMode === "cards" ? "bg-bg-hover text-text-primary" : "text-text-tertiary hover:text-text-secondary"}`}
+            aria-label="Card view"
+            aria-pressed={viewMode === "cards"}
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
-function ResultsTable({ stocks }: { stocks: ScreenerStock[] }) {
+function ResultsTable({ stocks, watchlistTickers, onToggleWatchlist }: { stocks: ScreenerStock[]; watchlistTickers: Set<string>; onToggleWatchlist: (ticker: string) => void }) {
+  const { data: session } = useSession();
+  const isAuthenticated = !!session?.user;
   const scrollRef = useRef<HTMLDivElement>(null);
   const ROW_HEIGHT = 49;
 
@@ -586,7 +667,7 @@ function ResultsTable({ stocks }: { stocks: ScreenerStock[] }) {
     overscan: 8,
   });
 
-  const gridCols = "grid-cols-[100px_200px_130px_90px_80px_90px_80px_1fr]";
+  const gridCols = "grid-cols-[36px_100px_200px_130px_90px_80px_90px_80px_1fr]";
 
   if (stocks.length === 0) {
     return (
@@ -600,7 +681,8 @@ function ResultsTable({ stocks }: { stocks: ScreenerStock[] }) {
   return (
     <div className="overflow-x-auto rounded-xl depth-shadow-strong bg-bg-card relative">
       <div ref={scrollRef} className="max-h-[60vh] overflow-y-auto overflow-x-hidden">
-        <div className={`glass-header sticky top-0 z-10 grid ${gridCols} text-text-tertiary text-[11px] uppercase tracking-wider min-w-[870px]`}>
+        <div className={`glass-header sticky top-0 z-10 grid ${gridCols} text-text-tertiary text-[11px] uppercase tracking-wider min-w-[906px]`}>
+          <div className="px-2 py-3 font-medium"></div>
           <div className="px-4 py-3 font-medium">Ticker</div>
           <div className="px-4 py-3 font-medium">Name</div>
           <div className="px-4 py-3 font-medium">Sector</div>
@@ -610,9 +692,10 @@ function ResultsTable({ stocks }: { stocks: ScreenerStock[] }) {
           <div className="px-4 py-3 text-right font-medium">RSI</div>
           <div className="px-4 py-3 text-right font-medium">SMA 20</div>
         </div>
-        <div className="relative min-w-[870px]" style={{ height: `${virtualizer.getTotalSize()}px` }}>
+        <div className="relative min-w-[906px]" style={{ height: `${virtualizer.getTotalSize()}px` }}>
           {virtualizer.getVirtualItems().map((virtualRow) => {
             const stock = stocks[virtualRow.index];
+            const inWatchlist = watchlistTickers.has(stock.ticker);
             return (
               <div
                 key={stock.ticker}
@@ -625,6 +708,23 @@ function ResultsTable({ stocks }: { stocks: ScreenerStock[] }) {
                 }}
                 onClick={() => { window.location.href = `/stocks/${stock.ticker}`; }}
               >
+                <div className="px-2 py-3 flex items-center justify-center">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (isAuthenticated) {
+                        onToggleWatchlist(stock.ticker);
+                      }
+                    }}
+                    className={`p-0.5 rounded transition-colors ${
+                      isAuthenticated ? "cursor-pointer hover:text-accent" : "cursor-default text-text-tertiary/40"
+                    } ${inWatchlist ? "text-accent" : "text-text-tertiary/60"}`}
+                    aria-label={isAuthenticated ? (inWatchlist ? "Hapus dari watchlist" : "Tambah ke watchlist") : "Daftar untuk menggunakan watchlist"}
+                    title={isAuthenticated ? (inWatchlist ? "Hapus dari watchlist" : "Tambah ke watchlist") : "Daftar untuk menggunakan watchlist"}
+                  >
+                    <BookmarkIcon filled={inWatchlist} className="w-3.5 h-3.5" />
+                  </button>
+                </div>
                 <div className="px-4 py-3">
                   <Link href={`/stocks/${stock.ticker}`} className="font-semibold text-accent hover:underline" onClick={(e) => e.stopPropagation()}>
                     {stripJk(stock.ticker)}
@@ -654,7 +754,10 @@ function ResultsTable({ stocks }: { stocks: ScreenerStock[] }) {
   );
 }
 
-function ResultsCards({ stocks, styleDef }: { stocks: ScreenerStock[]; styleDef: TradingStyleDef }) {
+function ResultsCards({ stocks, styleDef, watchlistTickers, onToggleWatchlist }: { stocks: ScreenerStock[]; styleDef: TradingStyleDef; watchlistTickers: Set<string>; onToggleWatchlist: (ticker: string) => void }) {
+  const { data: session } = useSession();
+  const isAuthenticated = !!session?.user;
+
   if (stocks.length === 0) {
     return (
       <div className="card-gradient depth-shadow rounded-xl p-8 text-center border border-border">
@@ -666,14 +769,33 @@ function ResultsCards({ stocks, styleDef }: { stocks: ScreenerStock[]; styleDef:
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
       {stocks.map((stock) => {
-        const isUp = (stock.changePercent ?? 0) >= 0;
+        const inWatchlist = watchlistTickers.has(stock.ticker);
         return (
-          <Link
+          <div
             key={stock.ticker}
-            href={`/stocks/${stock.ticker}`}
-            className="card-gradient depth-shadow rounded-xl border border-border p-4 hover:depth-shadow-hover transition-all duration-200 press-scale group"
+            className="card-gradient depth-shadow rounded-xl border border-border p-4 hover:depth-shadow-hover transition-all duration-200 press-scale group relative"
           >
-            <div className="flex items-start justify-between">
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (isAuthenticated) {
+                  onToggleWatchlist(stock.ticker);
+                }
+              }}
+              className={`absolute top-3 right-3 p-1 rounded transition-colors z-10 ${
+                isAuthenticated ? "cursor-pointer hover:text-accent" : "cursor-default text-text-tertiary/40"
+              } ${inWatchlist ? "text-accent" : "text-text-tertiary/60"}`}
+              aria-label={isAuthenticated ? (inWatchlist ? "Hapus dari watchlist" : "Tambah ke watchlist") : "Daftar untuk menggunakan watchlist"}
+              title={isAuthenticated ? (inWatchlist ? "Hapus dari watchlist" : "Tambah ke watchlist") : "Daftar untuk menggunakan watchlist"}
+            >
+              <BookmarkIcon filled={inWatchlist} className="w-4 h-4" />
+            </button>
+            <Link
+              href={`/stocks/${stock.ticker}`}
+              className="block"
+            >
+            <div className="flex items-start justify-between pr-6">
               <div>
                 <span className="font-bold text-accent group-hover:underline">{stripJk(stock.ticker)}</span>
                 <p className="text-[11px] text-text-secondary mt-0.5 truncate max-w-[180px]">{stock.name}</p>
@@ -707,7 +829,8 @@ function ResultsCards({ stocks, styleDef }: { stocks: ScreenerStock[]; styleDef:
                 </span>
               )}
             </div>
-          </Link>
+            </Link>
+          </div>
         );
       })}
     </div>
@@ -723,6 +846,7 @@ function ScreenerPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   const [activeStyle, setActiveStyle] = useState<TradingStyle>(
     () => {
@@ -801,6 +925,22 @@ function ScreenerPageContent() {
 
   const showRadar = activeStyle === "bottom-fishing" && (activePreset === "radar" || activePreset === null);
 
+  // Watchlist integration
+  const { data: watchlistData } = useWatchlist();
+  const watchlistTickers = useMemo(() => new Set<string>((watchlistData ?? []).map((item) => item.ticker)), [watchlistData]);
+  const toggleWatchlist = useToggleWatchlist();
+  const batchAdd = useBatchAddToWatchlist();
+
+  const handleToggleWatchlist = useCallback((ticker: string) => {
+    const action = watchlistTickers.has(ticker) ? "remove" : "add";
+    toggleWatchlist.mutate({ ticker, action });
+  }, [watchlistTickers, toggleWatchlist]);
+
+  const handleBatchAdd = useCallback(() => {
+    const tickers = stocks.map((s) => s.ticker);
+    batchAdd.mutate(tickers);
+  }, [stocks, batchAdd]);
+
   return (
     <div className="fade-in">
       {/* Hero Header — dark terminal style */}
@@ -830,6 +970,18 @@ function ScreenerPageContent() {
 
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+        {/* Saved Screener Bar — authenticated users only */}
+        {session?.user && (
+          <SavedScreenerBar
+            currentFilters={activeStyle === "custom" ? customParams : {}}
+            onLoadScreener={(filters) => {
+              setActiveStyle("custom");
+              setCustomParams(filters);
+            }}
+            tradingStyle={activeStyle}
+          />
+        )}
+
         {/* Preset Cards */}
         {activeStyle !== "custom" && (
           <section className="space-y-4">
@@ -889,6 +1041,9 @@ function ScreenerPageContent() {
                 count={isLoading ? 0 : stocks.length}
                 viewMode={viewMode}
                 onViewChange={setViewMode}
+                tickers={stocks.map((s) => s.ticker)}
+                onBatchAdd={handleBatchAdd}
+                isBatchAdding={batchAdd.isPending}
               />
             </div>
 
@@ -902,8 +1057,8 @@ function ScreenerPageContent() {
               </div>
             ) : (
               viewMode === "table"
-                ? <ResultsTable stocks={stocks} />
-                : <ResultsCards stocks={stocks} styleDef={styleDef} />
+                ? <ResultsTable stocks={stocks} watchlistTickers={watchlistTickers} onToggleWatchlist={handleToggleWatchlist} />
+                : <ResultsCards stocks={stocks} styleDef={styleDef} watchlistTickers={watchlistTickers} onToggleWatchlist={handleToggleWatchlist} />
             )}
           </section>
         )}

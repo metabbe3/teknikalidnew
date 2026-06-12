@@ -632,12 +632,23 @@ export const technicalAnalysisService = {
     stochKMin?: number; stochKMax?: number;
     adxMin?: number;
     bbSqueeze?: boolean;
+    signalScoreMin?: number; signalScoreMax?: number;
+    sector?: string[];
+    priceMin?: number; priceMax?: number;
+    excludeGorengan?: boolean;
+    sortBy?: string;
+    sortOrder?: string;
   }) {
     const latestDateRow = await stockRepository.getLatestIndicatorDate();
     if (!latestDateRow) return [];
 
     const latestDate = latestDateRow.date;
-    const base = { interval: "1d" as const, date: latestDate, stock: { isActive: true } };
+    const stockWhere: Record<string, unknown> = { isActive: true };
+    if (filters.sector && filters.sector.length > 0) {
+      stockWhere.sector = { in: filters.sector };
+    }
+
+    const base = { interval: "1d" as const, date: latestDate, stock: stockWhere };
 
     // Build dynamic where clause
     const where: Record<string, unknown> = { ...base };
@@ -669,6 +680,15 @@ export const technicalAnalysisService = {
     if (filters.aboveSma200 || filters.belowSma200) {
       indicatorConditions.sma200 = { not: null };
     }
+    if (filters.signalScoreMin !== undefined || filters.signalScoreMax !== undefined) {
+      const ss: Record<string, number> = {};
+      if (filters.signalScoreMin !== undefined) ss.gte = filters.signalScoreMin;
+      if (filters.signalScoreMax !== undefined) ss.lte = filters.signalScoreMax;
+      indicatorConditions.signalScore = Object.keys(ss).length > 0 ? ss : undefined;
+    }
+    if (filters.excludeGorengan) {
+      indicatorConditions.isGorengan = { not: true };
+    }
 
     Object.assign(where, indicatorConditions);
     const results = await stockRepository.findIndicatorsByDate(latestDate, where);
@@ -683,8 +703,19 @@ export const technicalAnalysisService = {
         rsi14: decimalToNumber(r.rsi14),
         sma20: decimalToNumber(r.sma20),
         sma200: decimalToNumber(r.sma200),
+        signalScore: decimalToNumber(r.signalScore),
+        signalLabel: r.signalLabel ?? null,
+        isGorengan: r.isGorengan,
       };
     });
+
+    // Post-filter: price range
+    if (filters.priceMin !== undefined) {
+      stocks = stocks.filter((s) => s.close !== null && s.close >= (filters.priceMin ?? 0));
+    }
+    if (filters.priceMax !== undefined) {
+      stocks = stocks.filter((s) => s.close !== null && s.close <= (filters.priceMax ?? Infinity));
+    }
 
     if (filters.aboveSma200) {
       stocks = stocks.filter((s) => s.close !== null && s.sma200 !== null && s.close > s.sma200);
@@ -701,6 +732,45 @@ export const technicalAnalysisService = {
         const lower = decimalToNumber(si.bbLower);
         const middle = decimalToNumber(si.bbMiddle);
         return upper !== null && lower !== null && middle !== null && middle > 0 && (upper - lower) / middle < 0.05;
+      });
+    }
+
+    // Sorting
+    const sortBy = filters.sortBy as string | undefined;
+    const sortOrder = filters.sortOrder === "asc" ? 1 : -1;
+
+    if (sortBy) {
+      stocks.sort((a, b) => {
+        let aVal: number | null = null;
+        let bVal: number | null = null;
+
+        switch (sortBy) {
+          case "signalScore":
+            aVal = a.signalScore ?? null;
+            bVal = b.signalScore ?? null;
+            break;
+          case "rsi14":
+            aVal = a.rsi14;
+            bVal = b.rsi14;
+            break;
+          case "volume":
+            aVal = a.volume;
+            bVal = b.volume;
+            break;
+          case "changePercent":
+            aVal = a.changePercent;
+            bVal = b.changePercent;
+            break;
+          case "close":
+            aVal = a.close;
+            bVal = b.close;
+            break;
+        }
+
+        if (aVal === null && bVal === null) return 0;
+        if (aVal === null) return 1;
+        if (bVal === null) return -1;
+        return (aVal - bVal) * sortOrder;
       });
     }
 

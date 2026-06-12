@@ -33,6 +33,13 @@ export const watchlistRepository = {
     });
   },
 
+  createManyEntries(userId: string, stockTickers: string[]) {
+    return prisma.watchlist.createMany({
+      data: stockTickers.map((stockTicker) => ({ userId, stockTicker })),
+      skipDuplicates: true,
+    });
+  },
+
   findAllWatchlistTickers() {
     return prisma.watchlist
       .findMany({ select: { stockTicker: true }, distinct: ["stockTicker"] })

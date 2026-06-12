@@ -19,7 +19,7 @@ interface NotificationActor {
 
 interface NotificationData {
   id: string;
-  type: "LIKE" | "COMMENT" | "MENTION" | "FOLLOW" | "STOCK_POST" | "REACTION";
+  type: "LIKE" | "COMMENT" | "MENTION" | "FOLLOW" | "STOCK_POST" | "REACTION" | "STOCK_ALERT" | "AGENT_ALERT" | "RE_ENGAGE" | "SCREENER_MATCH";
   read: boolean;
   createdAt: string;
   actor: NotificationActor;
@@ -72,6 +72,12 @@ export function notificationText(n: NotificationData): string {
       return `${name} membahas saham yang Anda ikuti`;
     case "REACTION":
       return `${name} memberikan reaksi di post Anda`;
+    case "SCREENER_MATCH":
+      return `Saham baru cocok dengan filter screener Anda`;
+    case "STOCK_ALERT":
+    case "AGENT_ALERT":
+    case "RE_ENGAGE":
+      return `${name} mengirimkan pemberitahuan`;
     default:
       return `${name} berinteraksi dengan Anda`;
   }

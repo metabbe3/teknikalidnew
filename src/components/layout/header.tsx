@@ -71,7 +71,7 @@ export function Header() {
           <NotificationBell />
 
           <div className="hidden sm:block">
-            <UserMenu user={session?.user} variant="public" />
+            <UserMenu user={session?.user} />
           </div>
 
           {/* Mobile hamburger */}
@@ -141,6 +141,20 @@ export function Header() {
                 className="block py-2.5 px-3 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
               >
                 Portofolio
+              </Link>
+              <Link
+                href="/bottom-fishing"
+                onClick={() => setMenuOpen(false)}
+                className="block py-2.5 px-3 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
+              >
+                Bottom Fishing
+              </Link>
+              <Link
+                href="/trading-plan"
+                onClick={() => setMenuOpen(false)}
+                className="block py-2.5 px-3 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
+              >
+                Trading Plan
               </Link>
               <button
                 onClick={() => { setMenuOpen(false); signOut(); }}

@@ -62,3 +62,22 @@ export function useToggleWatchlist() {
     },
   });
 }
+
+export function useBatchAddToWatchlist() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (tickers: string[]) => {
+      const res = await fetch("/api/watchlist/batch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tickers }),
+      });
+      if (!res.ok) throw new Error("Gagal menambahkan ke watchlist");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["watchlist"] });
+    },
+  });
+}

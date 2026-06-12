@@ -7,6 +7,7 @@ import { decimalToNumber } from "@/lib/serialize";
 import { IDX_STOCKS, SECTORS } from "@/lib/constants";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { technicalAnalysisService } from "@/domains/stock/technical-analysis.service";
+import { authService } from "@/domains/auth/auth.service";
 import { FeaturedStockCard } from "@/components/home/featured-stock-card";
 import { SectorHeatmap } from "@/components/home/sector-heatmap";
 import { PlatformFeatures } from "@/components/home/platform-features";
@@ -14,6 +15,8 @@ import { CtaSection } from "@/components/home/cta-section";
 import { TickerTape } from "@/components/home/ticker-tape";
 import { TradingPlanCard } from "@/components/stock/trading-plan-card";
 import { WelcomeBackBanner } from "@/components/ui/welcome-back-banner";
+import { PersonalizedBeranda } from "@/components/home/personalized-beranda";
+import { PersonalizedGreeting } from "@/components/home/personalized-greeting";
 
 const MiniScreenerPreview = dynamicImport(
   () => import("@/components/home/mini-screener-preview").then((m) => ({ default: m.MiniScreenerPreview })),
@@ -268,6 +271,10 @@ export default async function HomePage() {
   // page SSR. While force-dynamic + 5-min service cache keeps this fast for now, consider
   // wrapping the hero in a <Suspense> boundary in the future so the shell streams instantly
   // and market data loads asynchronously without delaying first paint.
+
+  // Check auth server-side for conditional rendering
+  const currentUser = await authService.getCurrentUser();
+
   // Fast cached calls only — hero renders immediately
   const [overview, marketInfo] = await Promise.all([
     stockMarketService.getMarketOverview(),
@@ -286,6 +293,29 @@ export default async function HomePage() {
     ticker: s.ticker,
     changePercent: s.changePercent as number | null,
   }));
+
+  // ── Logged-in: personalized beranda ──────────────────────────────
+  if (currentUser) {
+    const userName = currentUser.username ?? currentUser.name ?? "Trader";
+
+    return (
+      <div className="fade-in">
+        <PersonalizedGreeting name={userName} marketInfo={marketInfo} overview={overview} />
+        <TickerTape items={tickerItems} />
+        <div className="max-w-7xl mx-auto px-4 py-10 space-y-14">
+          <PersonalizedBeranda />
+          <Suspense fallback={<FeaturedSkeleton />}>
+            <FeaturedStocksSection gainers={gainers} losers={losers} />
+          </Suspense>
+          <Suspense fallback={<SectorSkeleton />}>
+            <SectorHeatmap sectors={sectors} />
+          </Suspense>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Anonymous: marketing homepage ────────────────────────────────
 
   return (
     <div className="fade-in">

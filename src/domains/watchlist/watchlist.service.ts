@@ -2,6 +2,7 @@ import { watchlistRepository } from "./watchlist.repository";
 import { stockMarketService, type StockDetailBatchItem } from "@/domains/stock/stock-market.service";
 import { StockNotFoundError } from "@/domains/stock/stock.errors";
 import { StockAlreadyInWatchlistError, StockNotInWatchlistError } from "./watchlist.errors";
+import { ValidationError } from "@/lib/common-errors";
 
 export interface WatchlistItem {
   ticker: string;
@@ -79,6 +80,26 @@ export const watchlistService = {
     if (!entry) throw new StockNotInWatchlistError(ticker);
 
     return watchlistRepository.deleteEntry(userId, ticker);
+  },
+
+  async addBatch(userId: string, tickers: string[]) {
+    if (!tickers || tickers.length === 0) {
+      throw new ValidationError("Tickers array is required and must not be empty");
+    }
+
+    // Validate all tickers exist by fetching them from stock domain
+    const validTickers: string[] = [];
+    for (const ticker of tickers) {
+      const exists = await stockMarketService.stockExists(ticker);
+      if (exists) validTickers.push(ticker);
+    }
+
+    if (validTickers.length === 0) {
+      throw new StockNotFoundError(tickers.join(", "));
+    }
+
+    const result = await watchlistRepository.createManyEntries(userId, validTickers);
+    return { added: result.count };
   },
 
   getAllWatchlistTickers() {
