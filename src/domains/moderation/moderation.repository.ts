@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { cursorWhere } from "@/lib/pagination";
 import type { ReportTarget, ReportReason, ReportStatus } from "@/generated/prisma/client";
 
 export const moderationRepository = {
@@ -20,7 +21,7 @@ export const moderationRepository = {
       take: params.limit + 1,
       where: {
         status: "PENDING",
-        ...(params.cursor ? { id: { lt: params.cursor } } : {}),
+        ...cursorWhere(params.cursor),
       },
       orderBy: { createdAt: "desc" },
       include: {

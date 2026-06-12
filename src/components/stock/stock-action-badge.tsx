@@ -9,6 +9,28 @@ interface StockActionBadgeProps {
   ticker: string;
 }
 
+const PANTAU_CLICKS_PREFIX = "teknikal:pantau_clicks:";
+
+function getPantauClickCount(ticker: string): number {
+  if (typeof window === "undefined") return 0;
+  try {
+    const raw = localStorage.getItem(`${PANTAU_CLICKS_PREFIX}${ticker}`);
+    return raw ? parseInt(raw, 10) : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function incrementPantauClick(ticker: string): number {
+  const count = getPantauClickCount(ticker) + 1;
+  try {
+    localStorage.setItem(`${PANTAU_CLICKS_PREFIX}${ticker}`, String(count));
+  } catch {
+    // ignore storage errors
+  }
+  return count;
+}
+
 export function StockActionBadge({ ticker }: StockActionBadgeProps) {
   const { status } = useSession();
   const isAuthenticated = status === "authenticated";
@@ -26,6 +48,13 @@ export function StockActionBadge({ ticker }: StockActionBadgeProps) {
 
   const handleClick = () => {
     if (!isAuthenticated) {
+      const clickCount = incrementPantauClick(ticker);
+
+      if (clickCount >= 2) {
+        window.location.href = "/auth/signin";
+        return;
+      }
+
       setShowTooltip(true);
       setTimeout(() => setShowTooltip(false), 2000);
       return;

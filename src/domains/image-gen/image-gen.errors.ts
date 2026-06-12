@@ -1,25 +1,30 @@
-import { DomainError } from "@/lib/domain-error";
+import {
+  ServiceUnavailableError,
+  ExternalServiceError,
+  ValidationError,
+  NotFoundError,
+} from "@/lib/common-errors";
 
-export class ComfyUIUnavailableError extends DomainError {
+export class ComfyUIUnavailableError extends ServiceUnavailableError {
   constructor() {
-    super("Image generation is currently unavailable", 503);
+    super("Image generation is currently unavailable");
   }
 }
 
-export class ImageGenerationFailedError extends DomainError {
+export class ImageGenerationFailedError extends ExternalServiceError {
   constructor(reason?: string) {
-    super(reason || "Image generation failed", 500);
+    super("Image generation", reason || "Unknown error");
   }
 }
 
-export class InvalidPromptError extends DomainError {
+export class InvalidPromptError extends ValidationError {
   constructor() {
-    super("Prompt is required and must be under 2000 characters", 400);
+    super("Prompt is required and must be under 2000 characters");
   }
 }
 
-export class ImageJobNotFoundError extends DomainError {
+export class ImageJobNotFoundError extends NotFoundError {
   constructor() {
-    super("Image generation job not found", 404);
+    super("Image generation job");
   }
 }

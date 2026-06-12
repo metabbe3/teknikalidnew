@@ -1,9 +1,9 @@
-import "dotenv/config";
 import { chromium } from "playwright";
 import * as xlsx from "xlsx";
 import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
+import { runScript } from "./lib/run";
 
 const API_URL = process.env.SYNC_API_URL || "http://localhost:3000/api/cron/sync-stocks";
 const CRON_SECRET = process.env.CRON_SECRET || "";
@@ -109,7 +109,7 @@ async function syncToAPI(stocks: ParsedStock[]): Promise<unknown> {
   return res.json();
 }
 
-async function main() {
+runScript("sync-idx-stocks", async () => {
   const xlsxPath = await downloadIDXXlsx();
 
   try {
@@ -134,9 +134,4 @@ async function main() {
     await fs.promises.unlink(xlsxPath).catch(() => {});
     await fs.promises.rmdir(path.dirname(xlsxPath)).catch(() => {});
   }
-}
-
-main().catch((e) => {
-  console.error("Sync failed:", e);
-  process.exit(1);
 });

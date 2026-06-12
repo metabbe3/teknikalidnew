@@ -1,61 +1,55 @@
-import { DomainError } from "@/lib/domain-error";
+import { NotFoundError, ForbiddenError, ValidationError } from "@/lib/common-errors";
 
-export class CommunityError extends DomainError {
-  constructor(message: string, statusCode: number) {
-    super(message, statusCode);
-  }
-}
-
-export class PostNotFoundError extends CommunityError {
+export class PostNotFoundError extends NotFoundError {
   constructor() {
-    super("Post not found", 404);
+    super("Post");
   }
 }
 
-export class CommentNotFoundError extends CommunityError {
+export class CommentNotFoundError extends NotFoundError {
   constructor() {
-    super("Comment not found", 404);
+    super("Comment");
   }
 }
 
-export class ContentRequiredError extends CommunityError {
+export class ContentRequiredError extends ValidationError {
   constructor() {
-    super("Content is required", 400);
+    super("Content is required");
   }
 }
 
-export class ContentTooLongError extends CommunityError {
+export class ContentTooLongError extends ValidationError {
   constructor(max: number) {
-    super(`Content must be ${max} characters or less`, 400);
+    super(`Content must be ${max} characters or less`);
   }
 }
 
-export class InvalidTickerError extends CommunityError {
+export class InvalidTickerError extends ValidationError {
   constructor() {
-    super("Invalid ticker tag", 400);
+    super("Invalid ticker tag");
   }
 }
 
-export class InvalidPredictionError extends CommunityError {
+export class InvalidPredictionError extends ValidationError {
   constructor() {
-    super("Invalid prediction direction", 400);
+    super("Invalid prediction direction");
   }
 }
 
-export class InvalidPredictionTargetError extends CommunityError {
+export class InvalidPredictionTargetError extends ValidationError {
   constructor() {
-    super("Invalid prediction target", 400);
+    super("Invalid prediction target");
   }
 }
 
-export class NotAuthorizedError extends CommunityError {
+export class NotAuthorizedError extends ForbiddenError {
   constructor() {
-    super("Not authorized", 403);
+    super();
   }
 }
 
-export class MissingPostIdOrTickerError extends CommunityError {
+export class MissingPostIdOrTickerError extends ValidationError {
   constructor() {
-    super("Either postId or stockTicker must be provided", 400);
+    super("Either postId or stockTicker must be provided");
   }
 }

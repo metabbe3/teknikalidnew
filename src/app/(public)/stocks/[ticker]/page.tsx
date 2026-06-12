@@ -20,6 +20,7 @@ import { StockFAQWidget } from "@/components/faq/stock-faq-widget";
 import { CompanyDataTabs } from "@/components/stock/company-data-tabs";
 import { StockPaperPosition } from "@/components/paper-trading/stock-paper-position";
 import { HealthScoreDetail } from "@/components/stock/health-score-detail";
+import { GatedContent } from "@/components/ui/gated-content";
 import { HealthScoreBadge } from "@/components/stock/health-score-badge";
 import { IndicatorTooltip } from "@/components/ui/indicator-tooltip";
 import { technicalAnalysisService, computeSignalScore } from "@/domains/stock/technical-analysis.service";
@@ -164,7 +165,12 @@ export default async function StockDetailPage({
     return "Neutral" as const;
   })();
 
-  const [socialData, { structure: marketStructure }, fundamentalRow, idxCommissioners, idxDirectors, idxShareholders, idxSubsidiaries, idxDividends, relatedArticles] = await Promise.all([
+  // Find sector peer tickers for related articles
+  const sectorPeers = stock.sector
+    ? IDX_STOCKS.filter((s) => s.sector === stock.sector && s.ticker !== ticker).map((s) => s.ticker)
+    : [];
+
+  const [socialData, { structure: marketStructure }, fundamentalRow, idxCommissioners, idxDirectors, idxShareholders, idxSubsidiaries, idxDividends, relatedArticles, dailySnapshot, sectorArticles] = await Promise.all([
     prisma.post.aggregate({
       where: { tickerTag: ticker, createdAt: { gte: subDays(new Date(), 7) } },
       _count: true,
@@ -183,6 +189,23 @@ export default async function StockDetailPage({
       take: 5,
       select: { id: true, slug: true, title: true, publishedAt: true, articleType: true },
     }),
+    prisma.article.findFirst({
+      where: { status: "PUBLISHED", articleType: "DAILY_SNAPSHOT", tickerTag: ticker },
+      orderBy: { publishedAt: "desc" },
+      select: { id: true, slug: true, title: true, excerpt: true, publishedAt: true },
+    }),
+    sectorPeers.length > 0
+      ? prisma.article.findMany({
+          where: {
+            status: "PUBLISHED",
+            tickerTag: { in: sectorPeers },
+            articleType: { not: "DAILY_SNAPSHOT" },
+          },
+          orderBy: { publishedAt: "desc" },
+          take: 3,
+          select: { id: true, slug: true, title: true, publishedAt: true, tickerTag: true },
+        })
+      : [],
   ]);
 
   const socialScore = (socialData._sum.likesCount ?? 0) * 0.5
@@ -599,9 +622,35 @@ export default async function StockDetailPage({
           />
         )}
 
+        {/* Saham Hari Ini — daily snapshot article */}
+        {dailySnapshot && (
+          <section className="mt-6">
+            <Link
+              href={`/berita/${dailySnapshot.slug}`}
+              className="block bg-bg-card rounded-xl depth-shadow p-5 hover:depth-shadow-hover transition-all border border-border"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded text-green-500 bg-green-500/10">
+                  Saham Hari Ini
+                </span>
+                <span className="text-xs text-text-tertiary font-mono">
+                  {new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" }).format(new Date(dailySnapshot.publishedAt))}
+                </span>
+              </div>
+              <p className="text-sm font-semibold text-text-primary hover:text-accent transition-colors">
+                {dailySnapshot.title}
+              </p>
+              {dailySnapshot.excerpt && (
+                <p className="text-xs text-text-secondary mt-1 line-clamp-2">{dailySnapshot.excerpt}</p>
+              )}
+            </Link>
+          </section>
+        )}
+
         {/* Indicators + Sidebar */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           <div className="lg:col-span-3">
+            <GatedContent message="Daftar gratis untuk melihat 12 indikator teknikal lengkap">
             {indicators ? (
               <IndicatorPanel
                 close={close}
@@ -634,6 +683,7 @@ export default async function StockDetailPage({
                 Data indikator belum tersedia untuk saham ini
               </div>
             )}
+            </GatedContent>
             <p className="text-[10px] text-text-tertiary text-center mt-2">
               Sinyal teknikal berdasarkan perhitungan indikator — bukan rekomendasi jual/beli. Selalu DYOR.
             </p>
@@ -651,12 +701,18 @@ export default async function StockDetailPage({
               sma50={indicators?.sma50 ?? null}
               sma200={indicators?.sma200 ?? null}
             />
+            <GatedContent message="Daftar gratis untuk melihat analisis mendalam per indikator">
             <HealthScoreDetail
               signalScore={indicators?.signalScore ?? null}
               breakdown={signalBreakdown}
             />
+            </GatedContent>
+            <GatedContent message="Daftar gratis untuk melihat data fundamental saham ini">
             <FundamentalData data={fundamentals} />
+            </GatedContent>
+            <GatedContent message="Daftar gratis untuk melihat trading plan lengkap dengan harga entry & target">
             {tradingPlan && <TradingPlanCard plan={tradingPlan} />}
+            </GatedContent>
           </div>
         </div>
 
@@ -739,6 +795,38 @@ export default async function StockDetailPage({
                       <p className="text-xs text-text-tertiary mt-1 font-mono">
                         {new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" }).format(new Date(ra.publishedAt))}
                       </p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Sector-related articles */}
+        {sectorArticles.length > 0 && (
+          <div className="space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
+              Berita Sektor {stock.sector}
+            </p>
+            <div className="space-y-2">
+              {sectorArticles.map((sa) => (
+                <Link key={sa.id} href={`/berita/${sa.slug}`} className="group block bg-bg-card rounded-xl depth-shadow p-4 hover:depth-shadow-hover transition-all">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors line-clamp-2">
+                        {sa.title}
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        {sa.tickerTag && (
+                          <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-accent/10 text-accent">
+                            {stripJk(sa.tickerTag)}
+                          </span>
+                        )}
+                        <span className="text-xs text-text-tertiary font-mono">
+                          {new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" }).format(new Date(sa.publishedAt))}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </Link>

@@ -9,7 +9,7 @@ Tulis artikel dalam format Markdown dengan aturan berikut:
 4. **Panjang**: 1500-2500 kata.
 5. **Bahasa**: Bahasa Indonesia profesional tapi engaging. Gunakan istilah trader Indonesia secara natural: cuuan, nyangkut, bandarmologi, serok bawah, ARA/ARB, breakout, gorengan, jenuh beli/jual, akumulasi, distribusi. Target pembaca: trader dan investor ritel Indonesia.
 6. **SEO**: Distribusikan primary keyword dan 3-5 LSI/long-tail keyword secara natural di H2, paragraf pembuka, dan kesimpulan. Hindari keyword stuffing. Readability score harus tetap tinggi.
-7. **Internal linking**: Jangan gunakan link. Sebutkan saja "halaman saham {TICKER} di TeknikalID".
+7. **Internal linking**: Jangan gunakan format markdown link [text](url). Sebagai gantinya, sebutkan ticker saham dalam format teks biasa menggunakan kode uppercase (misalnya: ASII, BBCA, TLKM) — sistem akan otomatis menghubungkan ke halaman saham terkait. Sebutkan minimal 3-5 ticker relevan secara natural di seluruh artikel, terutama saat membahas perbandingan atau sektor.
 8. **CTA**: Gunakan directive :::cta di akhir artikel.
 9. **Tips**: Gunakan directive :::tip untuk tips praktis (minimal 2).
 10. **Keyword Mapping Table**: Sebelum disclaimer, tambahkan section "Kata Kunci Terkait" berisi tabel 2 kolom (Keyword | Konteks penggunaan) yang menunjukkan keyword apa saja yang diintegrasikan dan di bagian mana.
@@ -92,6 +92,14 @@ Artikel ini diperbarui secara berkala dengan data terkini.`;
 Tulis artikel analisa teknikal untuk saham **${data.name} (${t})** per bulan ${month}.
 Artikel ini diperbarui secara berkala dengan data indikator terkini.
 
+## JUDUL ARTIKEL
+
+Pilih judul yang SEO-friendly mengikuti format ini:
+- "Analisa Teknikal {Nama Saham} ({TICKER}) Hari Ini {Harga} ({Perubahan}) — Sinyal {Bullish/Bearish/Netral}"
+- Atau variasi yang memuat: nama saham, harga, keyword "hari ini", dan sinyal teknikal
+
+Jangan gunakan format generik seperti "Analisa Teknikal TICKER Bulan X". Judul harus mengandung harga dan sinyal karena itu yang dicari trader di Google.
+
 ## DATA SAHAM TERKINI
 
 - **Saham**: ${data.name} (${t}) — Sektor: ${data.sector}
@@ -126,6 +134,13 @@ Artikel ini diperbarui secara berkala dengan data indikator terkini.
 Utama: "analisa teknikal ${t}"
 Sekunder: "saham ${data.name} hari ini", "${t} forecast", "harga saham ${t}", "analisa teknikal ${t} ${month}"
 Long-tail (WAJIB integrasikan minimal 3): "analisis teknikal saham ${t} hari ini", "rekomendasi saham ${data.sector.toLowerCase()}", "harga saham ${data.name} ${month}", "prediksi saham ${t} minggu depan", "saham ${t} beli atau jual"
+
+## TICKER YANG HARUS DISEBUTKAN
+
+Sebutkan ticker-ticker berikut secara natural di artikel (bukan sebagai link, cukup teks biasa uppercase seperti ASII):
+- ${t} (saham utama yang dianalisis)
+- Sebutkan 2-3 saham sejawat dari sektor ${data.sector} sebagai perbandingan
+- Jika membahas IHSG atau tren pasar secara umum, sebutkan BBCA atau BBRI sebagai referensi
 
 Integrasikan keyword secara natural di H2, paragraf pembuka, dan kesimpulan. Jangan keyword-stuffing. Setiap section harus memberikan insight nyata berdasarkan data indikator di atas.`;
 
@@ -165,7 +180,7 @@ ${topic.suggestedSections.map((s, i) => `${i + 1}. ${s}`).join("\n")}
 Utama: "${topic.keywords[0]}"
 Sekunder: ${topic.keywords.slice(1).map((k) => `"${k}"`).join(", ")}
 
-Integrasikan keyword secara natural. Gunakan contoh dari saham-saham IDX40 seperti BBCA, BBRI, TLKM, ASII, dll. Jangan hanya teori — berikan contoh praktis cara membaca/menggunakan konsep ini di chart saham nyata.`;
+Integrasikan keyword secara natural. Gunakan contoh dari saham-saham IDX40 seperti BBCA, BBRI, TLKM, ASII, dll. Jangan hanya teori — berikan contoh praktis cara membaca/menggunakan konsep ini di chart saham nyata. Sebutkan ticker saham dalam teks biasa uppercase (ASII, BBCA, dll) saat memberikan contoh — sistem akan otomatis menghubungkan ke halaman saham. Hindari penulisan format link markdown.`;
 
   return { system, user };
 }
@@ -314,7 +329,7 @@ ${data.trendingAngles.map((a) => `- ${a}`).join("\n")}
 
 Pilih yang paling relevan dan kembangkan secara mendalam.` : ""}
 
-Integrasikan keyword secara natural. Gunakan contoh dari saham-saham BEI yang relevan.`;
+Integrasikan keyword secara natural. Gunakan contoh dari saham-saham BEI yang relevan. Sebutkan ticker saham dalam teks biasa uppercase (ASII, BBCA, dll) saat membahas saham spesifik — sistem akan otomatis menghubungkan ke halaman saham. Hindari penulisan format link markdown.`;
 
   return { system, user };
 }
@@ -356,7 +371,7 @@ ${data.trendingAngles.map((a) => `- ${a}`).join("\n")}
 
 Pilih yang paling relevan dan kembangkan secara mendalam.` : ""}
 
-Integrasikan keyword secara natural. Sesuaikan kedalaman dan contoh dengan target pembaca investor Indonesia.`;
+Integrasikan keyword secara natural. Sesuaikan kedalaman dan contoh dengan target pembaca investor Indonesia. Sebutkan ticker saham dalam teks biasa uppercase (ASII, BBCA, dll) saat memberikan contoh — sistem akan otomatis menghubungkan ke halaman saham. Hindari penulisan format link markdown.`;
 
   return { system, user };
 }

@@ -1,49 +1,44 @@
 import { DomainError } from "@/lib/domain-error";
+import { NotFoundError, ValidationError } from "@/lib/common-errors";
 
-export class ModerationError extends DomainError {
-  constructor(message: string, statusCode: number) {
-    super(message, statusCode);
-  }
-}
-
-export class MissingFieldsError extends ModerationError {
+export class MissingFieldsError extends ValidationError {
   constructor() {
-    super("targetType, targetId, and reason are required", 400);
+    super("targetType, targetId, and reason are required");
   }
 }
 
-export class InvalidTargetTypeError extends ModerationError {
+export class InvalidTargetTypeError extends ValidationError {
   constructor() {
-    super("Invalid targetType. Must be POST or COMMENT", 400);
+    super("Invalid targetType. Must be POST or COMMENT");
   }
 }
 
-export class InvalidReasonError extends ModerationError {
+export class InvalidReasonError extends ValidationError {
   constructor() {
-    super("Invalid reason. Must be SPAM, ABUSE, MISINFORMATION, or OTHER", 400);
+    super("Invalid reason. Must be SPAM, ABUSE, MISINFORMATION, or OTHER");
   }
 }
 
-export class TargetNotFoundError extends ModerationError {
+export class TargetNotFoundError extends NotFoundError {
   constructor(type: "post" | "comment") {
-    super(`Target ${type} not found`, 404);
+    super(`Target ${type}`);
   }
 }
 
-export class ReportNotFoundError extends ModerationError {
+export class ReportNotFoundError extends NotFoundError {
   constructor() {
-    super("Report not found", 404);
+    super("Report");
   }
 }
 
-export class ReportAlreadyReviewedError extends ModerationError {
+export class ReportAlreadyReviewedError extends DomainError {
   constructor() {
     super("Report has already been reviewed", 400);
   }
 }
 
-export class InvalidActionError extends ModerationError {
+export class InvalidActionError extends ValidationError {
   constructor() {
-    super("Action must be 'delete', 'dismiss', or 'ban'", 400);
+    super("Action must be 'delete', 'dismiss', or 'ban'");
   }
 }

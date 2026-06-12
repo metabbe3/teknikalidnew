@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useStockPosition, useClosePosition } from "@/hooks/use-paper-trading";
 import { TradeModal } from "./trade-modal";
+import { PaperTradingTeaser } from "./paper-trading-teaser";
 import { useToast } from "./toast";
 
 function formatRupiah(n: number): string {
@@ -12,9 +13,12 @@ function formatRupiah(n: number): string {
 
 interface StockPaperPositionProps {
   ticker: string;
+  entryPrice?: number | null;
+  tp?: number | null;
+  sl?: number | null;
 }
 
-export function StockPaperPosition({ ticker }: StockPaperPositionProps) {
+export function StockPaperPosition({ ticker, entryPrice, tp, sl }: StockPaperPositionProps) {
   const { data: session } = useSession();
   const { data: position, isLoading } = useStockPosition(ticker);
   const closePosition = useClosePosition();
@@ -23,7 +27,9 @@ export function StockPaperPosition({ ticker }: StockPaperPositionProps) {
   const [confirmClose, setConfirmClose] = useState(false);
   const { toast } = useToast();
 
-  if (!session?.user) return null;
+  if (!session?.user) {
+    return <PaperTradingTeaser ticker={ticker} entryPrice={entryPrice} tp={tp} sl={sl} />;
+  }
 
   if (isLoading) {
     return (

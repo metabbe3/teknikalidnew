@@ -1,19 +1,13 @@
-import { DomainError } from "@/lib/domain-error";
+import { NotFoundError, AlreadyExistsError } from "@/lib/common-errors";
 
-export class WatchlistError extends DomainError {
-  constructor(message: string, statusCode: number) {
-    super(message, statusCode);
+export class StockAlreadyInWatchlistError extends AlreadyExistsError {
+  constructor(ticker: string) {
+    super(`Stock ${ticker}`);
   }
 }
 
-export class StockAlreadyInWatchlistError extends WatchlistError {
+export class StockNotInWatchlistError extends NotFoundError {
   constructor(ticker: string) {
-    super(`${ticker} sudah ada di daftar pantauan`, 409);
-  }
-}
-
-export class StockNotInWatchlistError extends WatchlistError {
-  constructor(ticker: string) {
-    super(`${ticker} tidak ditemukan di daftar pantauan`, 404);
+    super(`Stock ${ticker} in watchlist`);
   }
 }

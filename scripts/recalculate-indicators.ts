@@ -1,18 +1,8 @@
-import "dotenv/config";
 import { technicalAnalysisService } from "../src/domains/stock/technical-analysis.service";
-import { prisma } from "../src/lib/prisma";
+import { runScript } from "./lib/run";
 
-async function main() {
+runScript("recalculate-indicators", async () => {
   console.log("Recalculating indicators for all stocks...");
   await technicalAnalysisService.calculateAllIndicators();
   console.log("Indicator recalculation complete.");
-}
-
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+});

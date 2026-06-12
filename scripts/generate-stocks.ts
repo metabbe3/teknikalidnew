@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import { runScript } from "./lib/run";
 
 const SECTOR_MAP: Record<string, string> = {
   basic_materials: "Basic Materials",
@@ -41,7 +42,7 @@ interface ParsedStock {
   listingBoard: string;
 }
 
-function main() {
+runScript("generate-stocks", async () => {
   const stocks: ParsedStock[] = [];
 
   for (const [sectorId, sectorName] of Object.entries(SECTOR_MAP)) {
@@ -113,6 +114,4 @@ export function isIDX40(ticker: string): boolean {
 
   fs.writeFileSync(OUTPUT_FILE, code);
   console.log(`Generated ${stocks.length} stocks (${idx40Tickers.length} IDX40) → ${OUTPUT_FILE}`);
-}
-
-main();
+});

@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { IDX_STOCKS, IDX40_TICKERS, SITE_URL } from "@/lib/constants";
 import { GLOSSARY_TERMS } from "@/lib/glossary-terms";
 import { SECTORS } from "@/lib/sectors";
+import { IDX_INDICES } from "@/lib/idx-indices";
 import { ArticleType } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
@@ -86,6 +87,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
+  // Index pages
+  const indexIndex = {
+    url: `${baseUrl}/indeks`,
+    lastModified: STATIC_DATE,
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
+  };
+
+  const indexPages = IDX_INDICES.map((idx) => ({
+    url: `${baseUrl}/indeks/${idx.slug}`,
+    lastModified: STATIC_DATE,
+    changeFrequency: "daily" as const,
+    priority: 0.9,
+  }));
+
   // Glossary pages
   const glossaryIndex = {
     url: `${baseUrl}/akademi/glosarium`,
@@ -118,6 +134,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...profilePages,
     sectorIndex,
     ...sectorPages,
+    indexIndex,
+    ...indexPages,
     glossaryIndex,
     ...glossaryPages,
   ];

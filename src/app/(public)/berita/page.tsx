@@ -15,12 +15,14 @@ const TYPE_FILTERS: { value: string; label: string }[] = [
   { value: "STOCK_ANALYSIS", label: "Analisis Saham" },
   { value: "NEWS", label: "Berita Pasar" },
   { value: "GENERAL", label: "Opini & Insight" },
+  { value: "DAILY_SNAPSHOT", label: "Saham Hari Ini" },
 ];
 
 const TYPE_LABELS: Record<string, { label: string; color: string }> = {
   STOCK_ANALYSIS: { label: "Analisis Saham", color: "text-blue-500 bg-blue-500/10" },
   NEWS: { label: "Berita Pasar", color: "text-amber-500 bg-amber-500/10" },
   GENERAL: { label: "Opini & Insight", color: "text-purple-500 bg-purple-500/10" },
+  DAILY_SNAPSHOT: { label: "Saham Hari Ini", color: "text-green-500 bg-green-500/10" },
 };
 
 function formatDate(date: Date | string): string {
@@ -53,7 +55,7 @@ export async function generateMetadata({
     isListed: true,
     articleType: activeType
       ? (activeType as ArticleType)
-      : { in: ["STOCK_ANALYSIS", "NEWS", "GENERAL"] as ArticleType[] },
+      : { in: ["STOCK_ANALYSIS", "NEWS", "GENERAL", "DAILY_SNAPSHOT"] as ArticleType[] },
   };
   const totalCount = await prisma.article.count({ where: articleWhere as never });
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
@@ -92,12 +94,22 @@ export default async function BeritaPage({
   const { type: activeType, page } = await searchParams;
   const currentPage = Math.max(1, parseInt(page ?? "1", 10) || 1);
 
+  const dailySnapshots = await prisma.article.findMany({
+    where: {
+      status: ArticleStatus.PUBLISHED,
+      articleType: "DAILY_SNAPSHOT" as ArticleType,
+    },
+    orderBy: { publishedAt: "desc" },
+    take: 8,
+    select: { id: true, slug: true, title: true, tickerTag: true, publishedAt: true },
+  });
+
   const articleWhere: Record<string, unknown> = {
     status: ArticleStatus.PUBLISHED,
     isListed: true,
     articleType: activeType
       ? (activeType as ArticleType)
-      : { in: ["STOCK_ANALYSIS", "NEWS", "GENERAL"] as ArticleType[] },
+      : { in: ["STOCK_ANALYSIS", "NEWS", "GENERAL", "DAILY_SNAPSHOT"] as ArticleType[] },
   };
 
   const [totalCount, rows] = await Promise.all([
@@ -214,6 +226,34 @@ export default async function BeritaPage({
               </Link>
             ))}
           </div>
+
+          {/* Saham Hari Ini — daily snapshots strip */}
+          {dailySnapshots.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-sm font-semibold uppercase tracking-wider text-text-tertiary mb-3">Saham Hari Ini</h2>
+              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
+                {dailySnapshots.map((ds) => (
+                  <Link
+                    key={ds.id}
+                    href={`/berita/${ds.slug}`}
+                    className="flex-shrink-0 bg-bg-card rounded-xl depth-shadow p-4 hover:depth-shadow-hover transition-all min-w-[200px] max-w-[240px]"
+                  >
+                    <div className="flex items-center gap-1.5 mb-1.5">
+                      {ds.tickerTag && (
+                        <span className="text-[10px] font-mono font-semibold text-blue-500 bg-blue-500/10 px-1.5 py-0.5 rounded">
+                          {ds.tickerTag.replace(".JK", "")}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs font-medium text-text-primary line-clamp-2">{ds.title}</p>
+                    <p className="text-[10px] text-text-tertiary font-mono mt-1">
+                      {new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short" }).format(new Date(ds.publishedAt))}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Featured article */}
           {featuredArticle && (

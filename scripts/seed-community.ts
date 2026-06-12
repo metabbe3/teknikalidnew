@@ -1,8 +1,8 @@
-import "dotenv/config";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
 import { IDX40_TICKERS } from "../src/lib/idx-stocks";
+import { runScript } from "./lib/run";
 
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
@@ -115,7 +115,7 @@ function randDate(daysAgo: number): Date {
   return new Date(past + Math.random() * (now - past));
 }
 
-async function main() {
+runScript("seed-community", async () => {
   console.log("🌱 Seeding community test data...\n");
 
   // ─── 1. Create Users ───────────────────────────────────────────
@@ -269,14 +269,8 @@ async function main() {
 
   console.log("\n✅ Seed complete!");
   console.log(`   Users: ${totalUsers} | Posts: ${totalPosts} | Likes: ${totalLikes} | Comments: ${totalComments} | Follows: ${totalFollows}`);
-}
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-    await pool.end();
-  });
+  // Cleanup custom prisma and pool
+  await prisma.$disconnect();
+  await pool.end();
+});

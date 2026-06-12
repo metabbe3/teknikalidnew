@@ -1,10 +1,10 @@
-import "dotenv/config";
 import { prisma } from "../src/lib/prisma";
 import { gatherMarketContext, factCheckArticle, extractTickersFromText } from "../src/domains/article/article-fact-check";
+import { runScript } from "./lib/run";
 
 const DELAY_MS = 3000;
 
-async function main() {
+runScript("fact-check-existing-articles", async () => {
   // Fetch all published NEWS articles
   const articles = await prisma.article.findMany({
     where: {
@@ -152,11 +152,4 @@ async function main() {
   console.log(`Failed:          ${failed}`);
   console.log(`Skipped:         ${skipped}`);
   console.log("═══════════════════════════════════════");
-}
-
-main()
-  .catch((err) => {
-    console.error("[FactCheck] Fatal error:", err);
-    process.exit(1);
-  })
-  .finally(() => prisma.$disconnect());
+});

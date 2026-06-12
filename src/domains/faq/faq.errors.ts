@@ -1,19 +1,23 @@
-import { DomainError } from "@/lib/domain-error";
+import {
+  NotFoundError,
+  AlreadyExistsError,
+  ExternalServiceError,
+} from "@/lib/common-errors";
 
-export class QuestionNotFoundError extends DomainError {
+export class QuestionNotFoundError extends NotFoundError {
   constructor() {
-    super("Question not found", 404);
+    super("Question");
   }
 }
 
-export class DuplicateVoteError extends DomainError {
+export class DuplicateVoteError extends AlreadyExistsError {
   constructor() {
-    super("You have already voted on this question", 409);
+    super("Vote");
   }
 }
 
-export class FAQGenerationError extends DomainError {
+export class FAQGenerationError extends ExternalServiceError {
   constructor(reason: string) {
-    super(`FAQ generation failed: ${reason}`, 500);
+    super("FAQ generation", reason);
   }
 }

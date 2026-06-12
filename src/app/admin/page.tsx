@@ -1,123 +1,64 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
-import { AdminKpiCard } from "@/components/admin/admin-kpi-card";
-import { AdminDataTable } from "@/components/admin/admin-data-table";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ManualTriggerButtons } from "@/components/admin/manual-trigger-buttons";
-import { Activity, Database, Radio, Wifi } from "lucide-react";
-import { timeAgo } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Activity, BarChart3, Users, MessageSquare, TrendingUp, Target, Shield, Eye } from "lucide-react";
+import { OverviewTab } from "./_components/overview-tab";
+import { UsersTab } from "./_components/users-tab";
+import { CommunityTab } from "./_components/community-tab";
+import { StocksTab } from "./_components/stocks-tab";
+import { PredictionsTab } from "./_components/predictions-tab";
+import { AuthTab } from "./_components/auth-tab";
+import { PageViewsTab } from "./_components/page-views-tab";
 
-interface StatusData {
-  lastEodSync: { status: string; timestamp: string | null };
-  lastIntradaySync: { status: string; timestamp: string | null };
-  dbPool: { status: string };
-  yahooApi: { status: string; latency: number };
-  recentActivity: Array<{
-    action: string;
-    timestamp: string;
-    duration: number;
-    status: string;
-  }>;
-}
+const TABS = [
+  { id: "overview", label: "Overview", icon: Activity },
+  { id: "users", label: "Users", icon: Users },
+  { id: "community", label: "Community", icon: MessageSquare },
+  { id: "stocks", label: "Stocks", icon: TrendingUp },
+  { id: "predictions", label: "Predictions", icon: Target },
+  { id: "auth", label: "Auth", icon: Shield },
+  { id: "pageviews", label: "Page Views", icon: Eye },
+] as const;
+
+type TabId = (typeof TABS)[number]["id"];
 
 export default function AdminOverviewPage() {
-  const { data, isLoading } = useQuery<StatusData>({
-    queryKey: ["admin-status"],
-    queryFn: async () => {
-      const r = await fetch("/api/admin/status");
-      if (!r.ok) return undefined;
-      return r.json();
-    },
-    refetchInterval: 30_000,
-  });
-
-  const kpis = [
-    {
-      title: "Last EOD Sync",
-      icon: Activity,
-      status: data?.lastEodSync?.status ?? "unknown",
-      detail: timeAgo(data?.lastEodSync?.timestamp ?? null),
-      gradient: "blue" as const,
-    },
-    {
-      title: "Last Intraday Sync",
-      icon: Radio,
-      status: data?.lastIntradaySync?.status ?? "unknown",
-      detail: timeAgo(data?.lastIntradaySync?.timestamp ?? null),
-      gradient: "emerald" as const,
-    },
-    {
-      title: "Database",
-      icon: Database,
-      status: data?.dbPool?.status ?? "unknown",
-      detail: data?.dbPool?.status === "connected" ? "Healthy" : "Error",
-      gradient: "amber" as const,
-    },
-    {
-      title: "Yahoo Finance API",
-      icon: Wifi,
-      status: data?.yahooApi?.status ?? "unknown",
-      detail: data?.yahooApi?.latency ? `${data.yahooApi.latency}ms` : undefined,
-      gradient: "rose" as const,
-    },
-  ];
-
-  const activityColumns = [
-    {
-      header: "Status",
-      cell: (e: StatusData["recentActivity"][0]) => (
-        <Badge variant={e.status === "success" ? "default" : "destructive"}
-          className={e.status === "success" ? "bg-emerald-500 hover:bg-emerald-600" : ""}>
-          {e.status}
-        </Badge>
-      ),
-    },
-    { header: "Action", cell: (e: StatusData["recentActivity"][0]) => <span className="text-sm font-semibold text-gray-800">{e.action}</span> },
-    { header: "Duration", cell: (e: StatusData["recentActivity"][0]) => <span className="text-sm font-mono tabular-nums font-semibold text-blue-600">{e.duration}s</span> },
-    { header: "Time", cell: (e: StatusData["recentActivity"][0]) => <span className="text-xs text-gray-400 font-mono">{timeAgo(e.timestamp)}</span>, className: "text-right" },
-  ];
+  const [activeTab, setActiveTab] = useState<TabId>("overview");
 
   return (
     <div className="space-y-6 fade-in">
       <AdminPageHeader
-        title="System Health"
-        description="Real-time monitoring dashboard"
-        icon={Activity}
-        actions={<ManualTriggerButtons />}
+        title="Dashboard"
+        description="All analytics and system monitoring in one place"
+        icon={BarChart3}
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {kpis.map((kpi) => (
-          <AdminKpiCard
-            key={kpi.title}
-            title={kpi.title}
-            icon={kpi.icon}
-            value={kpi.status}
-            subtitle={kpi.detail}
-            status={kpi.status as "success"}
-            loading={isLoading}
-            gradient={kpi.gradient}
-          />
+      {/* Tab Bar */}
+      <div className="flex gap-1 overflow-x-auto pb-1">
+        {TABS.map((tab) => (
+          <Button
+            key={tab.id}
+            variant={activeTab === tab.id ? "default" : "outline"}
+            size="sm"
+            onClick={() => setActiveTab(tab.id)}
+            className="gap-1.5 shrink-0"
+          >
+            <tab.icon className="h-3.5 w-3.5" />
+            {tab.label}
+          </Button>
         ))}
       </div>
 
-      <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
-        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
-          <CardTitle className="text-sm font-bold text-gray-800">Recent Activity</CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <AdminDataTable
-            columns={activityColumns}
-            data={data?.recentActivity}
-            loading={isLoading}
-            emptyMessage="No activity recorded yet"
-            keyFn={(_, i) => i}
-          />
-        </CardContent>
-      </Card>
+      {/* Tab Content */}
+      {activeTab === "overview" && <OverviewTab />}
+      {activeTab === "users" && <UsersTab />}
+      {activeTab === "community" && <CommunityTab />}
+      {activeTab === "stocks" && <StocksTab />}
+      {activeTab === "predictions" && <PredictionsTab />}
+      {activeTab === "auth" && <AuthTab />}
+      {activeTab === "pageviews" && <PageViewsTab />}
     </div>
   );
 }

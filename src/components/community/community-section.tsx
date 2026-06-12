@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { CommunityFeed } from "./community-feed";
+import { Feed } from "./feed";
 import type { Post } from "@/hooks/use-posts";
 
 interface CommunitySectionProps {
@@ -57,7 +57,8 @@ export function CommunitySection({ initialPosts, initialCursor, activeTab }: Com
 
       {/* Feed card */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <CommunityFeed
+        <Feed
+          variant="community"
           initialPosts={initialPosts}
           initialCursor={initialCursor}
           activeTab={activeTab}

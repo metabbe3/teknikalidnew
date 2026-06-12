@@ -1,16 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { NotificationBell } from "@/components/community/notification-bell";
+import { UserMenu } from "@/components/layout/user-menu";
 
 const navLinks = [
   { href: "/", label: "Beranda" },
   { href: "/stocks", label: "Saham" },
   { href: "/screener", label: "Screener" },
-  { href: "/paper-trading", label: "Simulasi" },
+  { href: "/paper-trading", label: "Latihan Trading" },
   { href: "/compare", label: "Bandingkan" },
   { href: "/community", label: "Komunitas" },
   { href: "/berita", label: "Berita" },
@@ -24,16 +25,8 @@ function isActive(pathname: string, href: string) {
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const pathname = usePathname();
   const { data: session } = useSession();
-
-  useEffect(() => {
-    if (!userMenuOpen) return;
-    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setUserMenuOpen(false); };
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
-  }, [userMenuOpen]);
 
   return (
     <header className="glass-header sticky top-0 z-50">
@@ -77,89 +70,9 @@ export function Header() {
 
           <NotificationBell />
 
-          {session?.user ? (
-            <div className="relative hidden sm:block">
-              <button
-                onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center gap-2 p-1 rounded-lg hover:bg-bg-hover transition-colors"
-                aria-expanded={userMenuOpen}
-                aria-label="Menu pengguna"
-              >
-                {session.user.image ? (
-                  <img src={session.user.image} alt="" className="w-7 h-7 rounded-full object-cover" loading="lazy" />
-                ) : (
-                  <div className="w-7 h-7 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xs font-semibold">
-                    {(session.user.name || session.user.username || "?")[0].toUpperCase()}
-                  </div>
-                )}
-              </button>
-              {userMenuOpen && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setUserMenuOpen(false)} />
-                  <div className="absolute right-0 top-full mt-1.5 w-48 bg-bg-card depth-shadow rounded-xl border border-border py-1 z-50">
-                    <Link
-                      href={`/profile/${session.user.username}`}
-                      onClick={() => setUserMenuOpen(false)}
-                      className="block px-3 py-2 text-sm text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-colors"
-                    >
-                      Profil Saya
-                    </Link>
-                    <Link
-                      href="/watchlist"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="block px-3 py-2 text-sm text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-colors"
-                    >
-                      Daftar Pantauan
-                    </Link>
-                    <Link
-                      href="/portfolio"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="block px-3 py-2 text-sm text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-colors"
-                    >
-                      Portofolio
-                    </Link>
-                    <Link
-                      href="/paper-trading"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="block px-3 py-2 text-sm text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-colors"
-                    >
-                      Simulasi Trading
-                    </Link>
-                    <Link
-                      href="/profile/edit"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="block px-3 py-2 text-sm text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-colors"
-                    >
-                      Pengaturan
-                    </Link>
-                    {session.user.role === "ADMIN" && (
-                      <Link
-                        href="/admin/reports"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="block px-3 py-2 text-sm text-accent hover:bg-bg-hover transition-colors"
-                      >
-                        Moderasi
-                      </Link>
-                    )}
-                    <hr className="my-1 border-border" />
-                    <button
-                      onClick={() => { setUserMenuOpen(false); signOut(); }}
-                      className="w-full text-left px-3 py-2 text-sm text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-colors"
-                    >
-                      Keluar
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          ) : (
-            <Link
-              href="/auth/signin"
-              className="hidden sm:inline-flex items-center bg-text-primary text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-text-primary/90 transition-colors press-scale"
-            >
-              Masuk
-            </Link>
-          )}
+          <div className="hidden sm:block">
+            <UserMenu user={session?.user} variant="public" />
+          </div>
 
           {/* Mobile hamburger */}
           <button

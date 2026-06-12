@@ -5,6 +5,7 @@
  */
 
 import { prisma } from "../src/lib/prisma";
+import { runScript } from "./lib/run";
 
 const DEFAULT_CONFIGS = [
   {
@@ -115,7 +116,7 @@ const DEFAULT_CONFIGS = [
   },
 ];
 
-async function main() {
+runScript("seed-agent-configs", async () => {
   console.log("Seeding AgentConfig rows...");
 
   for (const cfg of DEFAULT_CONFIGS) {
@@ -138,10 +139,4 @@ async function main() {
   }
 
   console.log("Done.");
-  await prisma.$disconnect();
-}
-
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
 });

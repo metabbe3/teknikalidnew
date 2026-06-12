@@ -1,25 +1,23 @@
-import { DomainError } from "@/lib/domain-error";
+import {
+  NotFoundError,
+  ValidationError,
+  AlreadyExistsError,
+} from "@/lib/common-errors";
 
-export class AgentHubError extends DomainError {
-  constructor(message: string, statusCode: number) {
-    super(message, statusCode);
-  }
-}
-
-export class AgentJobNotFoundError extends AgentHubError {
+export class AgentJobNotFoundError extends NotFoundError {
   constructor(id: string) {
-    super(`Agent job not found: ${id}`, 404);
+    super(`Agent job ${id}`);
   }
 }
 
-export class InvalidAgentTypeError extends AgentHubError {
+export class InvalidAgentTypeError extends ValidationError {
   constructor(type: string) {
-    super(`Invalid agent type: ${type}`, 400);
+    super(`Invalid agent type: ${type}`);
   }
 }
 
-export class AgentAlreadyRunningError extends AgentHubError {
+export class AgentAlreadyRunningError extends AlreadyExistsError {
   constructor(type: string) {
-    super(`Agent already has a running job: ${type}`, 409);
+    super(`Running job for agent ${type}`);
   }
 }

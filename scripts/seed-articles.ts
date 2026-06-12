@@ -1,5 +1,5 @@
-import "dotenv/config";
 import { prisma } from "../src/lib/prisma";
+import { runScript } from "./lib/run";
 
 const articles = [
   {
@@ -967,7 +967,7 @@ Selain Classic, ada beberapa variasi pivot point:
 ### Strategi 1: Trading di Area Support (Beli saat Mantul)
 
 **Kapan:** Harga mendekati S1 atau S2
-**Asumsi:** Support akan menahan penurunan dan harga akan memantul
+**Asumsi:** Support akan menahan penurunan dan harga akan memantul naik
 
 \`\`\`
    R1 ─ ─ ─ ─ Rp3.400 ─ ─ ─ ─ ─ ─ ─ ─ ─ TARGET 2
@@ -997,7 +997,7 @@ Selain Classic, ada beberapa variasi pivot point:
 - Target 1: Rp3.250 (PP) → profit +4.2%
 - Target 2: Rp3.400 (R1) → profit +9%
 
-### Strategi 2: Trading di Area Resistance (Jual saat Mental)
+### Strategia 2: Trading di Area Resistance (Jual saat Mental)
 
 **Kapan:** Harga mendekati R1 atau R2
 **Asumsi:** Resistance akan menahan kenaikan dan harga akan turun kembali
@@ -1210,7 +1210,34 @@ Buka halaman saham IDX40 mana saja di TeknikalID dan temukan level S1, S2, R1, R
   },
 ];
 
-async function main() {
+async function findAuthor() {
+  const admin = await prisma.user.findFirst({
+    where: { role: "ADMIN" },
+    select: { id: true, name: true, username: true },
+  });
+
+  if (admin) {
+    console.log(`Using admin author: ${admin.name ?? admin.username}\n`);
+    return admin;
+  }
+
+  const user = await prisma.user.findFirst({
+    select: { id: true, name: true, username: true },
+  });
+
+  if (user) {
+    console.log(
+      `No admin found. Using user as author: ${user.name ?? user.username}\n`
+    );
+    return user;
+  }
+
+  throw new Error(
+    "No users found in database. Create a user first before seeding articles."
+  );
+}
+
+runScript("seed-articles", async () => {
   console.log("Seeding Akademi articles...\n");
 
   const author = await findAuthor();
@@ -1241,40 +1268,4 @@ async function main() {
   }
 
   console.log("Done! 3 articles seeded.");
-}
-
-async function findAuthor() {
-  const admin = await prisma.user.findFirst({
-    where: { role: "ADMIN" },
-    select: { id: true, name: true, username: true },
-  });
-
-  if (admin) {
-    console.log(`Using admin author: ${admin.name ?? admin.username}\n`);
-    return admin;
-  }
-
-  const user = await prisma.user.findFirst({
-    select: { id: true, name: true, username: true },
-  });
-
-  if (user) {
-    console.log(
-      `No admin found. Using user as author: ${user.name ?? user.username}\n`
-    );
-    return user;
-  }
-
-  throw new Error(
-    "No users found in database. Create a user first before seeding articles."
-  );
-}
-
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+});

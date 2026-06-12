@@ -1,12 +1,11 @@
-import "dotenv/config";
 import { ALL_TICKERS, IDX_STOCKS } from "../src/lib/idx-stocks";
 import { stockMarketService } from "../src/domains/stock/stock-market.service";
-import { prisma } from "../src/lib/prisma";
+import { runScript } from "./lib/run";
 
 const DAYS = 500;
 const startIndex = parseInt(process.argv[2] || "0", 10);
 
-async function main() {
+runScript("backfill-historical", async () => {
   const tickers = ALL_TICKERS;
   const total = tickers.length;
   const start = Math.max(0, Math.min(startIndex, total - 1));
@@ -37,13 +36,4 @@ async function main() {
     console.log(`Some stocks failed. Re-run to retry (upsert is idempotent):`);
     console.log(`  npx tsx scripts/backfill-historical.ts ${start}`);
   }
-}
-
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+});

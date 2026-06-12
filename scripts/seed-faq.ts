@@ -4,18 +4,18 @@
  * Usage:
  *   DATABASE_URL="postgresql://teknikalid:5gaWHFzdeG7P3jG8SS0zhgNqytGPN0@localhost:5433/teknikalid" npx tsx scripts/seed-faq.ts
  */
-import "dotenv/config";
 import { faqService } from "../src/domains/faq/faq.service";
+import { runScript } from "./lib/run";
 
 const TOTAL = 20;
 const BATCH_SIZE = 5;
 
-async function main() {
+runScript("seed-faq", async () => {
   console.log(`\n🌱 Seeding FAQ — generating ${TOTAL} items in batches of ${BATCH_SIZE}...\n`);
 
   let totalGenerated = 0;
   let totalErrors = 0;
-  let batches = Math.ceil(TOTAL / BATCH_SIZE);
+  const batches = Math.ceil(TOTAL / BATCH_SIZE);
 
   for (let b = 0; b < batches; b++) {
     const remaining = TOTAL - totalGenerated;
@@ -42,7 +42,4 @@ async function main() {
   }
 
   console.log(`\n🎯 Done! Generated: ${totalGenerated}, Errors: ${totalErrors}\n`);
-  process.exit(0);
-}
-
-main();
+});

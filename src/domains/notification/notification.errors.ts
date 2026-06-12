@@ -1,13 +1,7 @@
-import { DomainError } from "@/lib/domain-error";
+import { NotFoundError } from "@/lib/common-errors";
 
-export class NotificationError extends DomainError {
-  constructor(message: string, statusCode: number) {
-    super(message, statusCode);
-  }
-}
-
-export class NotificationNotFoundError extends NotificationError {
+export class NotificationNotFoundError extends NotFoundError {
   constructor() {
-    super("Notification not found", 404);
+    super("Notification");
   }
 }

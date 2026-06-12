@@ -3,12 +3,13 @@ import pLimit from "p-limit";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { toDateKey } from "@/lib/utils";
+import { TtlCache } from "@/lib/cache";
 import type { StockQuote, OHLCV } from "@/types/stock";
 
 const yahooFinance = new YahooFinance({ suppressNotices: ["ripHistorical", "yahooSurvey"] });
 const limit = pLimit(1);
 
-const memoryCache = new Map<string, { data: unknown; expiresAt: number }>();
+const memoryCache = new TtlCache<unknown>(200);
 
 const QUOTE_TTL_MS = 5 * 60 * 1000;
 const HISTORICAL_TTL_MS = 60 * 60 * 1000;
@@ -84,26 +85,6 @@ async function fetchWithRetry<T>(fn: () => Promise<T>, maxRetries = 3): Promise<
   throw new Error("Unreachable");
 }
 
-function getMemoryCache<T>(key: string): T | null {
-  const entry = memoryCache.get(key);
-  if (entry && entry.expiresAt > Date.now()) return entry.data as T;
-  if (entry) memoryCache.delete(key);
-  return null;
-}
-
-function setMemoryCache(key: string, data: unknown, ttlMs: number): void {
-  if (memoryCache.size >= 200) {
-    const now = Date.now();
-    for (const [k, v] of memoryCache) {
-      if (v.expiresAt <= now) memoryCache.delete(k);
-    }
-    if (memoryCache.size >= 200) {
-      const oldest = [...memoryCache.entries()].sort((a, b) => a[1].expiresAt - b[1].expiresAt)[0];
-      if (oldest) memoryCache.delete(oldest[0]);
-    }
-  }
-  memoryCache.set(key, { data, expiresAt: Date.now() + ttlMs });
-}
 
 async function getDbCache<T>(key: string): Promise<T | null> {
   const row = await prisma.cachedApiCall.findUnique({ where: { cacheKey: key } });
@@ -128,17 +109,17 @@ async function cachedFetch<T>(
   dbTtlMs: number,
   fetcher: () => Promise<T>
 ): Promise<T> {
-  const memResult = getMemoryCache<T>(cacheKey);
-  if (memResult !== null) return memResult;
+  const memResult = memoryCache.get(cacheKey);
+  if (memResult !== undefined) return memResult as T;
 
   const dbResult = await getDbCache<T>(cacheKey);
   if (dbResult !== null) {
-    setMemoryCache(cacheKey, dbResult, ttlMs);
+    memoryCache.set(cacheKey, dbResult, ttlMs);
     return dbResult;
   }
 
   const result = await limit(() => fetchWithRetry(fetcher));
-  setMemoryCache(cacheKey, result, ttlMs);
+  memoryCache.set(cacheKey, result, ttlMs);
   await setDbCache(cacheKey, result, dbTtlMs);
   return result;
 }

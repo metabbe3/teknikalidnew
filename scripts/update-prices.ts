@@ -1,9 +1,8 @@
-import "dotenv/config";
 import { stockMarketService } from "../src/domains/stock/stock-market.service";
-import { prisma } from "../src/lib/prisma";
 import { getMarketStatus } from "../src/lib/market-hours";
+import { runScript } from "./lib/run";
 
-async function main() {
+runScript("update-prices", async () => {
   const status = getMarketStatus();
   const now = new Date();
   const jakarta = new Date(now.getTime() + (7 * 60 + now.getTimezoneOffset()) * 60000);
@@ -16,13 +15,4 @@ async function main() {
   console.log("Starting daily price update...");
   await stockMarketService.updateAllStocks();
   console.log("Daily price update complete.");
-}
-
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+});

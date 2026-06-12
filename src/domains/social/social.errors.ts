@@ -1,19 +1,14 @@
 import { DomainError } from "@/lib/domain-error";
+import { ValidationError } from "@/lib/common-errors";
 
-export class SocialError extends DomainError {
-  constructor(message: string, statusCode: number) {
-    super(message, statusCode);
-  }
-}
-
-export class SelfFollowError extends SocialError {
+export class SelfFollowError extends DomainError {
   constructor() {
     super("Cannot follow yourself", 400);
   }
 }
 
-export class InvalidTargetError extends SocialError {
+export class InvalidTargetError extends ValidationError {
   constructor() {
-    super("Invalid target", 400);
+    super("Invalid target");
   }
 }

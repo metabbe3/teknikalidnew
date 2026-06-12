@@ -1,19 +1,23 @@
-import { DomainError } from "@/lib/domain-error";
+import {
+  NotFoundError,
+  ExternalServiceError,
+  AlreadyExistsError,
+} from "@/lib/common-errors";
 
-export class ArticleNotFoundError extends DomainError {
+export class ArticleNotFoundError extends NotFoundError {
   constructor() {
-    super("Article not found", 404);
+    super("Article");
   }
 }
 
-export class ArticleGenerationError extends DomainError {
+export class ArticleGenerationError extends ExternalServiceError {
   constructor(reason: string) {
-    super(`Article generation failed: ${reason}`, 500);
+    super("Article generation", reason);
   }
 }
 
-export class DuplicateSlugError extends DomainError {
+export class DuplicateSlugError extends AlreadyExistsError {
   constructor(slug: string) {
-    super(`Article with slug "${slug}" already exists`, 409);
+    super(`Article with slug "${slug}"`);
   }
 }

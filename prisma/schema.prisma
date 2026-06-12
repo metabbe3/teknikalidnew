@@ -283,6 +283,7 @@ model User {
   submittedQuestions Question[]
   questionFeedback   QuestionFeedback[]
   payments           Payment[]
+  pageViews          PageView[]
 }
 
 enum Role {
@@ -970,4 +971,20 @@ model Payment {
   @@index([userId])
   @@index([status])
   @@index([expiresAt])
+}
+
+model PageView {
+  id        Int      @id @default(autoincrement())
+  path      String   @db.VarChar(255)
+  referrer  String?  @db.VarChar(500)
+  userId    String?
+  ip        String?  @db.VarChar(45)
+  userAgent String?  @db.VarChar(500)
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([path])
+  @@index([createdAt])
+  @@index([path, createdAt(sort: Desc)])
 }

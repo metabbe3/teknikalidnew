@@ -22,7 +22,7 @@ export function formatPrice(value: number): string {
 }
 
 export function formatRp(value: number): string {
-  return `Rp ${Math.round(value).toLocaleString("id-ID")}`;
+  return formatPrice(value);
 }
 
 export function formatPercent(value: number): string {
@@ -82,15 +82,6 @@ export function rsiColor(value: number | null): string {
   if (value > 70) return "text-bearish";
   if (value < 30) return "text-bullish";
   return "";
-}
-
-export function timeAgo(iso: string | null): string {
-  if (!iso) return "Never";
-  const diff = Date.now() - new Date(iso).getTime();
-  if (diff < 60_000) return `${Math.floor(diff / 1000)}s ago`;
-  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`;
-  if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`;
-  return `${Math.floor(diff / 86_400_000)}d ago`;
 }
 
 export function rsiBgColor(value: number | null): string {

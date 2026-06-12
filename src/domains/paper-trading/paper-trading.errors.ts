@@ -1,8 +1,13 @@
 import { DomainError } from "@/lib/domain-error";
+import {
+  NotFoundError,
+  ValidationError,
+  AlreadyExistsError,
+} from "@/lib/common-errors";
 
-export class AccountNotFoundError extends DomainError {
+export class AccountNotFoundError extends NotFoundError {
   constructor() {
-    super("Akun simulasi tidak ditemukan", 404);
+    super("Akun simulasi");
   }
 }
 
@@ -12,26 +17,26 @@ export class InsufficientBalanceError extends DomainError {
   }
 }
 
-export class PositionNotFoundError extends DomainError {
+export class PositionNotFoundError extends NotFoundError {
   constructor() {
-    super("Posisi tidak ditemukan", 404);
+    super("Posisi");
   }
 }
 
-export class OrderNotFoundError extends DomainError {
+export class OrderNotFoundError extends NotFoundError {
   constructor() {
-    super("Order tidak ditemukan", 404);
+    super("Order");
   }
 }
 
-export class InvalidOrderError extends DomainError {
+export class InvalidOrderError extends ValidationError {
   constructor(message: string) {
-    super(message, 400);
+    super(message);
   }
 }
 
-export class AccountAlreadyExistsError extends DomainError {
+export class AccountAlreadyExistsError extends AlreadyExistsError {
   constructor() {
-    super("Akun simulasi sudah ada", 409);
+    super("Akun simulasi");
   }
 }

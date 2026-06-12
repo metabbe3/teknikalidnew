@@ -13,6 +13,7 @@ import { PlatformFeatures } from "@/components/home/platform-features";
 import { CtaSection } from "@/components/home/cta-section";
 import { TickerTape } from "@/components/home/ticker-tape";
 import { TradingPlanCard } from "@/components/stock/trading-plan-card";
+import { WelcomeBackBanner } from "@/components/ui/welcome-back-banner";
 
 const MiniScreenerPreview = dynamicImport(
   () => import("@/components/home/mini-screener-preview").then((m) => ({ default: m.MiniScreenerPreview })),
@@ -391,6 +392,9 @@ export default async function HomePage() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-10 space-y-14">
+        {/* Welcome Back Banner for returning anonymous visitors */}
+        <WelcomeBackBanner />
+
         {/* Section 3: Featured Stocks — lazy-loaded with Suspense */}
         <Suspense fallback={<FeaturedSkeleton />}>
           <FeaturedStocksSection gainers={gainers} losers={losers} />

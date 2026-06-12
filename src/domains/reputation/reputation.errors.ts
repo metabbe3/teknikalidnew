@@ -1,19 +1,13 @@
-import { DomainError } from "@/lib/domain-error";
+import { NotFoundError, AlreadyExistsError } from "@/lib/common-errors";
 
-export class ReputationError extends DomainError {
-  constructor(message: string, statusCode: number) {
-    super(message, statusCode);
+export class UserNotFoundError extends NotFoundError {
+  constructor() {
+    super("User");
   }
 }
 
-export class UserNotFoundError extends ReputationError {
+export class DailyAlreadyClaimedError extends AlreadyExistsError {
   constructor() {
-    super("User not found", 404);
-  }
-}
-
-export class DailyAlreadyClaimedError extends ReputationError {
-  constructor() {
-    super("Already claimed today", 409);
+    super("Daily reward");
   }
 }

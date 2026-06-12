@@ -34,23 +34,15 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Activity,
-  FileText,
-  Repeat,
-  Radio,
-  ListChecks,
+  AlertTriangle,
   Database,
   BarChart3,
-  Settings,
-  Key,
+  FileText,
   Shield,
   LogOut,
   ChevronRight,
-  Users,
-  Target,
-  TrendingUp,
-  UserCheck,
   Bot,
-  Clock,
+  Radio,
 } from "lucide-react";
 import { AdminStatusIndicator } from "@/components/admin/admin-status-indicator";
 
@@ -71,44 +63,16 @@ const sidebarNav: NavGroup[] = [
     group: "Dashboard",
     icon: Activity,
     items: [
-      { label: "System Health Overview", href: "/admin", icon: Activity },
-    ],
-  },
-  {
-    group: "Analytics",
-    icon: BarChart3,
-    items: [
-      { label: "Community Analytics", href: "/admin/community", icon: Users },
-      { label: "Predictions", href: "/admin/predictions", icon: Target },
-      { label: "User Analytics", href: "/admin/user-analytics", icon: UserCheck },
-      { label: "Stock Engagement", href: "/admin/stock-engagement", icon: TrendingUp },
-      { label: "Auth & Security", href: "/admin/auth-health", icon: Shield },
-    ],
-  },
-  {
-    group: "Data Pipelines",
-    icon: ListChecks,
-    items: [
-      { label: "Cron Monitor", href: "/admin/cron-monitor", icon: Clock },
-      { label: "EOD Sync Logs", href: "/admin/eod-logs", icon: FileText },
-      { label: "Intraday Sync Logs", href: "/admin/intraday-logs", icon: Repeat },
-      { label: "Queue Monitor", href: "/admin/queue-monitor", icon: ListChecks },
+      { label: "Overview", href: "/admin", icon: Activity },
+      { label: "Error Hub", href: "/admin/errors", icon: AlertTriangle },
+      { label: "Data Pipelines", href: "/admin/pipelines", icon: Database },
     ],
   },
   {
     group: "Market Data",
     icon: BarChart3,
     items: [
-      { label: "Ticker Manager (IDX40)", href: "/admin/ticker-manager", icon: BarChart3 },
-      { label: "Indicator Database", href: "/admin/indicators", icon: Database },
-    ],
-  },
-  {
-    group: "Settings",
-    icon: Settings,
-    items: [
-      { label: "Cron Configuration", href: "/admin/cron-config", icon: Settings },
-      { label: "API Keys", href: "/admin/api-keys", icon: Key },
+      { label: "Ticker Manager", href: "/admin/ticker-manager", icon: BarChart3 },
     ],
   },
   {
@@ -116,42 +80,26 @@ const sidebarNav: NavGroup[] = [
     icon: FileText,
     items: [
       { label: "Articles", href: "/admin/articles", icon: FileText },
-    ],
-  },
-  {
-    group: "Moderation",
-    icon: Shield,
-    items: [
       { label: "Reports", href: "/admin/reports", icon: Shield },
     ],
   },
   {
-    group: "AI Agent Hub",
+    group: "AI Agents",
     icon: Bot,
     items: [
-      { label: "Dashboard", href: "/admin/agent-hub", icon: Bot },
+      { label: "Agent Dashboard", href: "/admin/agent-hub", icon: Bot },
     ],
   },
 ];
 
 const PAGE_NAMES: Record<string, string> = {
-  "/admin": "System Health",
-  "/admin/cron-monitor": "Cron Monitor",
-  "/admin/community": "Community",
-  "/admin/predictions": "Predictions",
-  "/admin/user-analytics": "User Analytics",
-  "/admin/stock-engagement": "Stock Engagement",
-  "/admin/auth-health": "Auth & Security",
-  "/admin/eod-logs": "EOD Sync Logs",
-  "/admin/intraday-logs": "Intraday Logs",
-  "/admin/queue-monitor": "Queue Monitor",
+  "/admin": "Dashboard",
+  "/admin/errors": "Error Hub",
+  "/admin/pipelines": "Data Pipelines",
   "/admin/ticker-manager": "Ticker Manager",
-  "/admin/indicators": "Indicators",
-  "/admin/cron-config": "Cron Config",
-  "/admin/api-keys": "API Keys",
-  "/admin/reports": "Reports",
   "/admin/articles": "Articles",
   "/admin/articles/generate": "Generate Article",
+  "/admin/reports": "Reports",
   "/admin/agent-hub": "AI Agent Hub",
   "/admin/agent-hub/seo_optimizer": "SEO Optimizer",
   "/admin/agent-hub/content_quality": "Content Quality",
@@ -160,7 +108,7 @@ const PAGE_NAMES: Record<string, string> = {
 };
 
 function NavGroupWithSubmenu({ group, pathname }: { group: NavGroup; pathname: string }) {
-  const hasActiveChild = group.items.some((item) => pathname === item.href);
+  const hasActiveChild = group.items.some((item) => pathname === item.href || pathname.startsWith(item.href + "/"));
   const [open, setOpen] = useState(hasActiveChild);
   const GroupIcon = group.icon;
 
@@ -174,7 +122,7 @@ function NavGroupWithSubmenu({ group, pathname }: { group: NavGroup; pathname: s
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
-                isActive={pathname === item.href}
+                isActive={pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href))}
                 tooltip={item.label}
                 render={<Link href={item.href} />}
               >
@@ -209,7 +157,7 @@ function NavGroupWithSubmenu({ group, pathname }: { group: NavGroup; pathname: s
                 {group.items.map((item) => (
                   <SidebarMenuSubItem key={item.href}>
                     <SidebarMenuSubButton
-                      isActive={pathname === item.href}
+                      isActive={pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href))}
                       render={<Link href={item.href} />}
                     >
                       <item.icon className="h-4 w-4" />
@@ -308,7 +256,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Separator orientation="vertical" className="mx-2 h-4 bg-gray-200" />
           <nav className="text-xs flex items-center">
             <Link href="/admin" className="text-gray-400 hover:text-blue-600 transition-colors">Admin</Link>
-            {pageName !== "Admin" && (
+            {pageName !== "Admin" && pageName !== "Dashboard" && (
               <>
                 <ChevronRight className="h-3 w-3 mx-1 text-gray-300" />
                 <span className="text-gray-800 font-bold">{pageName}</span>

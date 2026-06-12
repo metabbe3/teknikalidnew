@@ -95,7 +95,14 @@ export const articleService = {
 
     // Evergreen: update existing article or create new
     const existing = await articleRepository.findBySlug(slug);
-    const title = result.title || `Analisa Teknikal ${t.toUpperCase()} ${month}`;
+    const priceStr = close !== null ? `Rp${close.toLocaleString("id-ID")}` : "";
+    const changeStr = changePercent !== null ? ` (${changePercent >= 0 ? "+" : ""}${changePercent.toFixed(2)}%)` : "";
+    const signalLabel = indicatorData.macdHist !== null
+      ? (indicatorData.macdHist > 0 ? "Bullish" : indicatorData.macdHist < 0 ? "Bearish" : "Netral")
+      : null;
+    const signalStr = signalLabel ? ` — Sinyal ${signalLabel}` : "";
+    const defaultTitle = `Analisa Teknikal ${stock.name} (${t.toUpperCase()}) Hari Ini ${priceStr}${changeStr}${signalStr}`;
+    const title = result.title || defaultTitle;
     const tags = result.tags.length > 0 ? result.tags : [stock.sector, t.toUpperCase(), "analisa teknikal"];
     const meta = { provider: provider.name, model: process.env.ANTHROPIC_MODEL, timestamp: new Date().toISOString() } as Record<string, string>;
 
@@ -165,7 +172,14 @@ export const articleService = {
     const t = ticker.replace(".JK", "").toLowerCase();
     const month = new Date().toLocaleDateString("id-ID", { month: "long", year: "numeric" });
     const slug = `analisa-teknikal-${t}`;
-    const title = `Analisa Teknikal ${t.toUpperCase()} ${month}`;
+    const priceStr = close !== null ? `Rp${close.toLocaleString("id-ID")}` : "";
+    const changeStr = changePercent !== null ? ` (${changePercent >= 0 ? "+" : ""}${changePercent.toFixed(2)}%)` : "";
+    const sma50Val = decimalToNumber(indicator.sma50);
+    const outlook = close !== null && sma50Val !== null
+      ? (close > sma50Val ? "Bullish" : close < sma50Val ? "Bearish" : "Netral")
+      : null;
+    const signalStr = outlook ? ` — Sinyal ${outlook}` : "";
+    const title = `Analisa Teknikal ${stock.name} (${t.toUpperCase()}) ${priceStr}${changeStr}${signalStr}`;
 
     const content = buildTemplateArticle({
       ticker: stock.ticker,

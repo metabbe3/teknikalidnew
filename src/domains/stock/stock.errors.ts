@@ -1,18 +1,13 @@
 import { DomainError } from "@/lib/domain-error";
+import { NotFoundError } from "@/lib/common-errors";
 
-export class StockError extends DomainError {
-  constructor(message: string, statusCode: number) {
-    super(message, statusCode);
-  }
-}
-
-export class StockNotFoundError extends StockError {
+export class StockNotFoundError extends NotFoundError {
   constructor(ticker: string) {
-    super(`Stock not found: ${ticker}`, 404);
+    super(`Stock ${ticker}`);
   }
 }
 
-export class InsufficientDataError extends StockError {
+export class InsufficientDataError extends DomainError {
   constructor(ticker: string) {
     super(`Not enough data for ${ticker}`, 400);
   }

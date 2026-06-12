@@ -1,19 +1,16 @@
-import { DomainError } from "@/lib/domain-error";
+import {
+  NotFoundError,
+  ForbiddenError,
+} from "@/lib/common-errors";
 
-export class PortfolioError extends DomainError {
-  constructor(message: string, statusCode: number) {
-    super(message, statusCode);
-  }
-}
-
-export class HoldingNotFoundError extends PortfolioError {
+export class HoldingNotFoundError extends NotFoundError {
   constructor(ticker: string) {
-    super(`${ticker} tidak ditemukan di portofolio`, 404);
+    super(`${ticker} di portofolio`);
   }
 }
 
-export class PortfolioPrivateError extends PortfolioError {
+export class PortfolioPrivateError extends ForbiddenError {
   constructor() {
-    super("Portofolio ini bersifat privat", 403);
+    super("Portofolio ini bersifat privat");
   }
 }

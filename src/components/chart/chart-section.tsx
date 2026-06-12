@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import dynamic from "next/dynamic";
+import { useSession } from "next-auth/react";
 import { useStockHistory } from "@/hooks/use-stock-history";
 import { useIndicators } from "@/hooks/use-indicators";
 import { RANGE_KEYS, INTRADAY_CONFIG, IDX_STOCKS, type DateRange } from "@/lib/constants";
@@ -45,6 +46,8 @@ function OverlayToggle({ label, active, onClick, activeClass }: { label: string;
 }
 
 export function ChartSection({ ticker }: ChartSectionProps) {
+  const { status } = useSession();
+  const isAuthed = status === "authenticated";
   const [range, setRange] = useState<DateRange>("6mo");
   const [chartType, setChartType] = useState<"candlestick" | "line" | "area">("candlestick");
   const [showSma20, setShowSma20] = useState(false);
@@ -227,24 +230,26 @@ export function ChartSection({ ticker }: ChartSectionProps) {
 
         {/* Overlay toggles */}
         <div className="flex items-center gap-1.5 flex-wrap">
-          <OverlayToggle label="SMA 20" active={showSma20} onClick={() => setShowSma20(!showSma20)} activeClass="bg-amber-500/10 text-amber-600 ring-1 ring-amber-500/20" />
-          <OverlayToggle label="SMA 50" active={showSma50} onClick={() => setShowSma50(!showSma50)} activeClass="bg-violet-500/10 text-violet-600 ring-1 ring-violet-500/20" />
-          <OverlayToggle label="SMA 200" active={showSma200} onClick={() => setShowSma200(!showSma200)} activeClass="bg-red-500/10 text-red-600 ring-1 ring-red-500/20" />
-
-          <div className="w-px h-4 bg-border mx-0.5" aria-hidden="true" />
-
-          <OverlayToggle label="EMA 12" active={showEma12} onClick={() => setShowEma12(!showEma12)} activeClass="bg-cyan-500/10 text-cyan-600 ring-1 ring-cyan-500/20" />
-          <OverlayToggle label="EMA 26" active={showEma26} onClick={() => setShowEma26(!showEma26)} activeClass="bg-pink-500/10 text-pink-600 ring-1 ring-pink-500/20" />
-
-          <div className="w-px h-4 bg-border mx-0.5" aria-hidden="true" />
-
-          <OverlayToggle label="BB" active={showBb} onClick={() => setShowBb(!showBb)} activeClass="bg-blue-500/10 text-blue-600 ring-1 ring-blue-500/20" />
-          <OverlayToggle label="ZigZag" active={showZigzag} onClick={() => setShowZigzag(!showZigzag)} activeClass="bg-amber-500/10 text-amber-600 ring-1 ring-amber-500/20" />
-
-          <div className="w-px h-4 bg-border mx-0.5" aria-hidden="true" />
-
-          <OverlayToggle label="RSI" active={showRsi} onClick={() => setShowRsi(!showRsi)} activeClass="bg-violet-500/10 text-violet-600 ring-1 ring-violet-500/20" />
-          <OverlayToggle label="MACD" active={showMacd} onClick={() => setShowMacd(!showMacd)} activeClass="bg-blue-500/10 text-blue-600 ring-1 ring-blue-500/20" />
+          {isAuthed ? (
+            <>
+              <OverlayToggle label="SMA 20" active={showSma20} onClick={() => setShowSma20(!showSma20)} activeClass="bg-amber-500/10 text-amber-600 ring-1 ring-amber-500/20" />
+              <OverlayToggle label="SMA 50" active={showSma50} onClick={() => setShowSma50(!showSma50)} activeClass="bg-violet-500/10 text-violet-600 ring-1 ring-violet-500/20" />
+              <OverlayToggle label="SMA 200" active={showSma200} onClick={() => setShowSma200(!showSma200)} activeClass="bg-red-500/10 text-red-600 ring-1 ring-red-500/20" />
+              <div className="w-px h-4 bg-border mx-0.5" aria-hidden="true" />
+              <OverlayToggle label="EMA 12" active={showEma12} onClick={() => setShowEma12(!showEma12)} activeClass="bg-cyan-500/10 text-cyan-600 ring-1 ring-cyan-500/20" />
+              <OverlayToggle label="EMA 26" active={showEma26} onClick={() => setShowEma26(!showEma26)} activeClass="bg-pink-500/10 text-pink-600 ring-1 ring-pink-500/20" />
+              <div className="w-px h-4 bg-border mx-0.5" aria-hidden="true" />
+              <OverlayToggle label="BB" active={showBb} onClick={() => setShowBb(!showBb)} activeClass="bg-blue-500/10 text-blue-600 ring-1 ring-blue-500/20" />
+              <OverlayToggle label="ZigZag" active={showZigzag} onClick={() => setShowZigzag(!showZigzag)} activeClass="bg-amber-500/10 text-amber-600 ring-1 ring-amber-500/20" />
+              <div className="w-px h-4 bg-border mx-0.5" aria-hidden="true" />
+              <OverlayToggle label="RSI" active={showRsi} onClick={() => setShowRsi(!showRsi)} activeClass="bg-violet-500/10 text-violet-600 ring-1 ring-violet-500/20" />
+              <OverlayToggle label="MACD" active={showMacd} onClick={() => setShowMacd(!showMacd)} activeClass="bg-blue-500/10 text-blue-600 ring-1 ring-blue-500/20" />
+            </>
+          ) : (
+            <a href="/auth/signin" className="text-[11px] font-mono text-text-tertiary hover:text-accent transition-colors">
+              Daftar untuk menambahkan indikator di chart &rarr;
+            </a>
+          )}
         </div>
       </div>
 

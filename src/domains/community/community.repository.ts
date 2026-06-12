@@ -1,28 +1,8 @@
 import { prisma } from "@/lib/prisma";
-import { getAvatarUrl } from "@/lib/avatar";
+import { AUTHOR_SELECT, serializeAuthor } from "@/lib/author-select";
+import { cursorWhere } from "@/lib/pagination";
 
-const AUTHOR_SELECT = {
-  id: true,
-  username: true,
-  name: true,
-  email: true,
-  image: true,
-  customTitle: true,
-} as const;
-
-type AuthorRow = {
-  id: string;
-  username: string;
-  name: string | null;
-  email: string;
-  image: string | null;
-  customTitle: string | null;
-};
-
-export function serializeAuthor(author: AuthorRow) {
-  const { email, image, ...rest } = author;
-  return { ...rest, image: getAvatarUrl(image, email) };
-}
+export { serializeAuthor };
 
 export const communityRepository = {
   // Posts
@@ -87,7 +67,7 @@ export const communityRepository = {
     userId?: string;
   }) {
     const where: Record<string, unknown> = {
-      ...(params.cursor ? { id: { lt: params.cursor } } : {}),
+      ...cursorWhere(params.cursor),
     };
 
     if (params.followingFilter) {
@@ -133,7 +113,7 @@ export const communityRepository = {
   }) {
     const where: Record<string, unknown> = {
       content: { contains: params.query, mode: "insensitive" },
-      ...(params.cursor ? { id: { lt: params.cursor } } : {}),
+      ...cursorWhere(params.cursor),
     };
     if (params.ticker) where.tickerTag = params.ticker;
 
@@ -333,7 +313,7 @@ export const communityRepository = {
   }) {
     const where: Record<string, unknown> = {
       tags: { some: { tag: params.tag } },
-      ...(params.cursor ? { id: { lt: params.cursor } } : {}),
+      ...cursorWhere(params.cursor),
     };
 
     return prisma.post.findMany({

@@ -7,7 +7,9 @@ if (!CRON_SECRET) {
   process.exit(1);
 }
 
-async function main() {
+import { runScript } from "./lib/run";
+
+runScript("run-community-agent", async () => {
   // ── Active hours check (08:00-21:00 WIB = 01:00-14:00 UTC) ──
   const now = new Date();
   const utcHour = now.getUTCHours();
@@ -45,10 +47,4 @@ async function main() {
 
   const result = await response.json();
   console.log(`[community-agent] Result:`, JSON.stringify(result.data, null, 2));
-}
-
-main()
-  .catch((e) => {
-    console.error("[community-agent] Error:", e);
-    process.exit(1);
-  });
+});

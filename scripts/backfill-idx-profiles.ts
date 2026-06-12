@@ -1,8 +1,8 @@
-import "dotenv/config";
 import { chromium, type Browser, type Page } from "playwright";
 import { prisma } from "../src/lib/prisma";
 import { stockSyncService } from "../src/domains/stock/stock-sync.service";
 import type { IDXProfileResponse, IDXTradingInfoResponse } from "../src/lib/idx-api";
+import { runScript } from "./lib/run";
 
 // ── Backoff config ──
 const BASE_DELAY = 2000;
@@ -57,7 +57,7 @@ async function refreshCookies(page: Page): Promise<void> {
 
 // ── Main ──
 
-async function main() {
+runScript("backfill-idx-profiles", async () => {
   console.log("=== IDX Data Backfill (Playwright + Exponential Backoff) ===\n");
 
   const stocks = await prisma.stock.findMany({
@@ -200,11 +200,4 @@ async function main() {
   }
 
   await browser.close();
-}
-
-main()
-  .catch((e) => {
-    console.error("Backfill failed:", e);
-    process.exit(1);
-  })
-  .finally(() => process.exit(0));
+});

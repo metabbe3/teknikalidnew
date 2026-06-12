@@ -1,18 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getAvatarUrl } from "@/lib/avatar";
-
-const AUTHOR_SELECT = {
-  id: true,
-  username: true,
-  name: true,
-  email: true,
-  image: true,
-} as const;
-
-function stripAuthor(a: { id: string; username: string; name: string | null; email: string; image: string | null }) {
-  return { id: a.id, username: a.username, name: a.name, image: getAvatarUrl(a.image, a.email) };
-}
+import { AUTHOR_SELECT, serializeAuthor } from "@/lib/author-select";
 
 export async function GET(
   _req: NextRequest,
@@ -45,11 +33,11 @@ export async function GET(
 
   const data = comments.map((c) => ({
     ...c,
-    author: stripAuthor(c.author),
+    author: serializeAuthor(c.author),
     replies: c.replies.map((r) => ({
       ...r,
-      author: stripAuthor(r.author),
-      parent: r.parent ? { ...r.parent, author: stripAuthor(r.parent.author) } : null,
+      author: serializeAuthor(r.author),
+      parent: r.parent ? { ...r.parent, author: serializeAuthor(r.parent.author) } : null,
     })),
   }));
 

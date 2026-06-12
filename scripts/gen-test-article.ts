@@ -1,12 +1,12 @@
-import "dotenv/config";
 import { articleService } from "../src/domains/article/article.service";
 import { imageGenService } from "../src/domains/image-gen/image-gen.service";
 import { articleRepository } from "../src/domains/article/article.repository";
+import { runScript } from "./lib/run";
 
 const ADMIN_ID = "cmpqtl0gc0000rc0z39jugn70";
 const TICKER = "BBCA.JK";
 
-async function main() {
+runScript("gen-test-article", async () => {
   console.log(`\n=== Generating article for ${TICKER} ===\n`);
 
   // Step 1: Generate article
@@ -46,11 +46,4 @@ async function main() {
   console.log(`\n=== Done! Article: ${result.title} ===`);
   console.log(`    Slug: ${result.slug}`);
   console.log(`    ID: ${result.id}\n`);
-
-  process.exit(0);
-}
-
-main().catch((err) => {
-  console.error("Error:", err);
-  process.exit(1);
 });
