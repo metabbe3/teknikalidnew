@@ -25,7 +25,7 @@ import { ResultsHeader, ResultsTable, ResultsCards } from "./screener-results";
 
 // ── Main Page Component ──
 
-function ScreenerPageContent() {
+function ScreenerPageContent({ assetClass }: { assetClass?: "EQUITY" | "CRYPTO" }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -77,8 +77,11 @@ function ScreenerPageContent() {
     if (base && sortBy) {
       base += `${base.includes("?") ? "&" : "?"}sort_by=${sortBy}&sort_order=${sortOrder}`;
     }
+    if (base && assetClass) {
+      base += `${base.includes("?") ? "&" : "?"}assetClass=${assetClass}`;
+    }
     return base;
-  }, [activeStyle, activePreset, sliderValues, customParams, sortBy, sortOrder]);
+  }, [activeStyle, activePreset, sliderValues, customParams, sortBy, sortOrder, assetClass]);
 
   const { data: stocks = [], isLoading, isError, refetch } = useQuery<ScreenerStock[]>({
     queryKey: ["screener", fetchUrl],
@@ -297,10 +300,10 @@ function ScreenerPageSkeleton() {
   );
 }
 
-export default function ScreenerClient() {
+export default function ScreenerClient({ assetClass }: { assetClass?: "EQUITY" | "CRYPTO" }) {
   return (
     <Suspense fallback={<ScreenerPageSkeleton />}>
-      <ScreenerPageContent />
+      <ScreenerPageContent assetClass={assetClass} />
     </Suspense>
   );
 }

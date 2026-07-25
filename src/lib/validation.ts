@@ -182,6 +182,7 @@ export const schemas = {
     bb_squeeze: z.enum(["true", "false"]).optional(),
     sort_by: z.enum(["signalScore", "rsi14", "volume", "changePercent", "close"]).optional(),
     sort_order: z.enum(["asc", "desc"]).optional(),
+    assetClass: z.enum(["EQUITY", "CRYPTO"]).optional(),
   }),
 
   // faq/submit - POST body

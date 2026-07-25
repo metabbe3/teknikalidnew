@@ -198,6 +198,36 @@ export const stockMarketService = {
     return result;
   },
 
+  async getCryptoList(): Promise<StockListRow[]> {
+    const cacheKey = "crypto-list";
+    const cached = stockCache.get(cacheKey);
+    if (cached) return cached as StockListRow[];
+
+    const stocks = await stockRepository.findActiveStocksWithPrices({ assetClass: "CRYPTO" });
+
+    const result = stocks.map((stock) => {
+      const prices = dedupeStalePrices(stock.prices);
+      const { close, change, changePercent } = computeChange(prices[0], prices[1]);
+      const indicator = stock.indicators?.[0];
+
+      return {
+        ticker: stock.ticker,
+        name: stock.name,
+        sector: stock.sector,
+        listingBoard: stock.listingBoard ?? null,
+        close,
+        change,
+        changePercent,
+        volume: prices[0] ? bigIntToNumber(prices[0].volume) : null,
+        rsi14: indicator ? decimalToNumber(indicator.rsi14) : null,
+        sma20: indicator ? decimalToNumber(indicator.sma20) : null,
+      };
+    });
+
+    stockCache.set(cacheKey, result, 300_000);
+    return result;
+  },
+
   async getStockDetail(ticker: string) {
     const base = await fetchStockBase(ticker, 2);
 

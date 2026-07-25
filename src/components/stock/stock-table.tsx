@@ -24,6 +24,7 @@ export interface StockRow {
 export interface StockTableProps {
   stocks: StockRow[];
   sectors: string[];
+  linkBase?: string;
 }
 
 type SortKey = "ticker" | "name" | "sector" | "close" | "changePercent" | "volume" | "rsi14";
@@ -43,7 +44,7 @@ function ListingBoardBadge({ board }: { board: string }) {
   return <span className={`ml-1.5 inline-block px-1.5 py-0.5 text-[9px] font-semibold rounded ${c.cls}`}>{c.label}</span>;
 }
 
-export function StockTable({ stocks, sectors }: StockTableProps) {
+export function StockTable({ stocks, sectors, linkBase = "/stocks" }: StockTableProps) {
   const [sectorFilter, setSectorFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -221,15 +222,15 @@ export function StockTable({ stocks, sectors }: StockTableProps) {
                     height: `${virtualRow.size}px`,
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
-                  onClick={() => router.push(`/stocks/${stock.ticker}`)}
+                  onClick={() => router.push(`${linkBase}/${stock.ticker}`)}
                 >
                   <div className="px-4 py-3">
-                    <Link href={`/stocks/${stock.ticker}`} className="font-semibold text-accent hover:underline" onClick={(e) => e.stopPropagation()}>
+                    <Link href={`${linkBase}/${stock.ticker}`} className="font-semibold text-accent hover:underline" onClick={(e) => e.stopPropagation()}>
                       {stripJk(stock.ticker)}
                     </Link>
                   </div>
                   <div className="px-4 py-3 text-text-secondary truncate">
-                    <Link href={`/stocks/${stock.ticker}`} onClick={(e) => e.stopPropagation()}>{stock.name}</Link>
+                    <Link href={`${linkBase}/${stock.ticker}`} onClick={(e) => e.stopPropagation()}>{stock.name}</Link>
                     {stock.listingBoard && stock.listingBoard !== "Utama" && (
                       <ListingBoardBadge board={stock.listingBoard} />
                     )}

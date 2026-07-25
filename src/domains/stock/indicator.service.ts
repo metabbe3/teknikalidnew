@@ -70,8 +70,8 @@ function detectCrossover(
   return { signal: null as string | null, date: null as Date | null };
 }
 
-function buildIndicatorWhere(preset: PresetKey, date: Date) {
-  const base = { interval: "1d" as const, date, stock: { isActive: true } };
+function buildIndicatorWhere(preset: PresetKey, date: Date, assetClass: "EQUITY" | "CRYPTO" = "EQUITY") {
+  const base = { interval: "1d" as const, date, stock: { isActive: true, assetClass } };
   switch (preset) {
     case "rsi_oversold": return { ...base, rsi14: { lt: 30 } };
     case "rsi_overbought": return { ...base, rsi14: { gt: 70 } };

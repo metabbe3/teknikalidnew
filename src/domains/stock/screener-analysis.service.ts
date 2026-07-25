@@ -4,7 +4,7 @@ import { stockRepository } from "./stock.repository";
 import { buildIndicatorWhere, VOLUME_SPIKE_MULTIPLIER, VALID_PRESETS } from "./indicator.service";
 
 export const screenerAnalysisService = {
-  async screenerQuery(preset: string) {
+  async screenerQuery(preset: string, assetClass: "EQUITY" | "CRYPTO" = "EQUITY") {
     if (!VALID_PRESETS.has(preset)) return { error: "Invalid preset" };
 
     const latestDateRow = await stockRepository.getLatestIndicatorDate();
@@ -85,7 +85,7 @@ export const screenerAnalysisService = {
       }));
     }
 
-    const where = buildIndicatorWhere(preset as any, latestDate);
+    const where = buildIndicatorWhere(preset as any, latestDate, assetClass);
     const results = await stockRepository.findIndicatorsByDate(latestDate, where);
 
     let stocks = results.map((r) => {
@@ -299,12 +299,13 @@ export const screenerAnalysisService = {
     excludeGorengan?: boolean;
     sortBy?: string;
     sortOrder?: string;
+    assetClass?: "EQUITY" | "CRYPTO";
   }) {
     const latestDateRow = await stockRepository.getLatestIndicatorDate();
     if (!latestDateRow) return [];
 
     const latestDate = latestDateRow.date;
-    const stockWhere: Record<string, unknown> = { isActive: true };
+    const stockWhere: Record<string, unknown> = { isActive: true, assetClass: filters.assetClass ?? "EQUITY" };
     if (filters.sector && filters.sector.length > 0) {
       stockWhere.sector = { in: filters.sector };
     }

@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     if (error) return error;
 
     if (data.preset) {
-      const result = await technicalAnalysisService.screenerQuery(data.preset);
+      const result = await technicalAnalysisService.screenerQuery(data.preset, data.assetClass);
       if (result && "error" in result) {
         return NextResponse.json({ error: result.error }, { status: 400 });
       }
@@ -38,6 +38,7 @@ export async function GET(request: NextRequest) {
     if (data.exclude_gorengan === "true") filters.excludeGorengan = true;
     if (data.sort_by) filters.sortBy = data.sort_by;
     if (data.sort_order) filters.sortOrder = data.sort_order;
+    if (data.assetClass) filters.assetClass = data.assetClass;
 
     if (Object.keys(filters).length === 0) {
       return NextResponse.json({ error: "Provide preset or filter parameters" }, { status: 400 });

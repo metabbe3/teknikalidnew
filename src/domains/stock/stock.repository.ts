@@ -105,7 +105,7 @@ export const stockRepository = {
     return prisma.stock.findMany({ orderBy: { ticker: "asc" } });
   },
 
-  findActiveStocksWithPrices(where?: { sector?: string }, includeIndicators = true) {
+  findActiveStocksWithPrices(where?: { sector?: string; assetClass?: "EQUITY" | "CRYPTO" }, includeIndicators = true) {
     return prisma.stock.findMany({
       where: { isActive: true, ...where },
       orderBy: { ticker: "asc" },

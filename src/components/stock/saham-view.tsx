@@ -11,7 +11,19 @@ import ScreenerClient from "@/components/screener/screener-client";
  * /stocks?view=screener&tab=...&preset=... links land on the right view. ScreenerClient reads
  * its own ?tab=&preset= params unchanged.
  */
-export function SahamView({ stocks, sectors }: { stocks: StockRow[]; sectors: string[] }) {
+export function SahamView({
+  stocks,
+  sectors,
+  assetClass,
+  browseLabel = "Semua Saham",
+  linkBase = "/stocks",
+}: {
+  stocks: StockRow[];
+  sectors: string[];
+  assetClass?: "EQUITY" | "CRYPTO";
+  browseLabel?: string;
+  linkBase?: string;
+}) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -36,19 +48,19 @@ export function SahamView({ stocks, sectors }: { stocks: StockRow[]; sectors: st
     <div className="space-y-4">
       <div
         role="tablist"
-        aria-label="Mode tampilan saham"
+        aria-label="Mode tampilan"
         className="inline-flex items-center gap-1 rounded-lg border border-border bg-bg-card p-1"
       >
-        <Tab active={!isScreener} onClick={showBrowse}>Semua Saham</Tab>
+        <Tab active={!isScreener} onClick={showBrowse}>{browseLabel}</Tab>
         <Tab active={isScreener} onClick={showScreener}>Screener</Tab>
       </div>
 
       {isScreener ? (
         <Suspense fallback={<div className="p-8 text-center text-text-secondary">Memuat screener…</div>}>
-          <ScreenerClient />
+          <ScreenerClient assetClass={assetClass} />
         </Suspense>
       ) : (
-        <StockTable stocks={stocks} sectors={sectors} />
+        <StockTable stocks={stocks} sectors={sectors} linkBase={linkBase} />
       )}
     </div>
   );
