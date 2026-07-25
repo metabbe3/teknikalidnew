@@ -4,15 +4,15 @@ import { useState, useMemo, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import type { TradingStyle, TradingStyleDef, PresetDef, CustomFilter } from "./screener-types";
-import { STYLES, CUSTOM_FILTERS } from "./screener-types";
+import { stylesForAssetClass, customFiltersForAssetClass } from "./screener-types";
 import { PresetIcon } from "./screener-icons";
 
 // ── Tab Navigation ──
 
-export function ScreenerTabs({ activeStyle, onStyleChange, accentHex }: { activeStyle: TradingStyle; onStyleChange: (s: TradingStyle) => void; accentHex: string }) {
+export function ScreenerTabs({ activeStyle, onStyleChange, accentHex, assetClass }: { activeStyle: TradingStyle; onStyleChange: (s: TradingStyle) => void; accentHex: string; assetClass?: "EQUITY" | "CRYPTO" }) {
   return (
     <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-0.5" style={{ scrollbarWidth: "none" }}>
-      {STYLES.map((style) => {
+      {stylesForAssetClass(assetClass).map((style) => {
         const isActive = activeStyle === style.id;
         return (
           <button
@@ -110,10 +110,12 @@ export function PresetCard({
 
 export function CustomBuilder({
   onFilterChange,
+  assetClass,
 }: {
   onFilterChange: (params: Record<string, string>) => void;
+  assetClass?: "EQUITY" | "CRYPTO";
 }) {
-  const [filters, setFilters] = useState<CustomFilter[]>(CUSTOM_FILTERS);
+  const [filters, setFilters] = useState<CustomFilter[]>(() => customFiltersForAssetClass(assetClass));
   const { data: session } = useSession();
   const isAuthenticated = !!session?.user;
 

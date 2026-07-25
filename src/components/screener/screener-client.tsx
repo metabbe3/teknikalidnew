@@ -19,7 +19,7 @@ export { ResultsHeader, ResultsTable, ResultsCards } from "./screener-results";
 
 // Import for internal use
 import type { TradingStyle, PresetDef, ViewMode, SortField, SortOrder, ScreenerStock } from "./screener-types";
-import { STYLES } from "./screener-types";
+import { stylesForAssetClass } from "./screener-types";
 import { ScreenerTabs, PresetCard, CustomBuilder } from "./screener-presets";
 import { ResultsHeader, ResultsTable, ResultsCards } from "./screener-results";
 
@@ -31,10 +31,12 @@ function ScreenerPageContent({ assetClass }: { assetClass?: "EQUITY" | "CRYPTO" 
   const pathname = usePathname();
   const { data: session } = useSession();
 
+  const styles = stylesForAssetClass(assetClass);
+
   const [activeStyle, setActiveStyle] = useState<TradingStyle>(
     () => {
       const tab = searchParams.get("tab");
-      return (STYLES.find((s) => s.id === tab)?.id ?? "bottom-fishing") as TradingStyle;
+      return (styles.find((s) => s.id === tab)?.id ?? "bottom-fishing") as TradingStyle;
     }
   );
   const [activePreset, setActivePreset] = useState<string | null>(() => searchParams.get("preset"));
@@ -44,7 +46,7 @@ function ScreenerPageContent({ assetClass }: { assetClass?: "EQUITY" | "CRYPTO" 
   const [sortBy, setSortBy] = useState<SortField>("");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
-  const styleDef = STYLES.find((s) => s.id === activeStyle)!;
+  const styleDef = styles.find((s) => s.id === activeStyle)!;
 
   // Determine fetch URL
   const fetchUrl = useMemo(() => {
@@ -55,7 +57,7 @@ function ScreenerPageContent({ assetClass }: { assetClass?: "EQUITY" | "CRYPTO" 
       base = `/api/screener?${qs}`;
     } else {
       if (!activePreset || activePreset === "radar") return null;
-      const presetDef = STYLES.flatMap((s) => s.presets).find((p) => p.key === activePreset);
+      const presetDef = styles.flatMap((s) => s.presets).find((p) => p.key === activePreset);
       if (presetDef?.sliders && presetDef.sliders.length > 0) {
         const params = new URLSearchParams();
         const modifiedFilters: Record<string, string> = {};
@@ -158,7 +160,7 @@ function ScreenerPageContent({ assetClass }: { assetClass?: "EQUITY" | "CRYPTO" 
           className="max-w-6xl mx-auto px-4"
           style={{ "--screener-accent-rgb": styleDef.accentRgb, "--screener-accent": styleDef.accentHex } as React.CSSProperties}
         >
-          <ScreenerTabs activeStyle={activeStyle} onStyleChange={handleStyleChange} accentHex={styleDef.accentHex} />
+          <ScreenerTabs activeStyle={activeStyle} onStyleChange={handleStyleChange} accentHex={styleDef.accentHex} assetClass={assetClass} />
         </div>
       </div>
 
@@ -222,6 +224,7 @@ function ScreenerPageContent({ assetClass }: { assetClass?: "EQUITY" | "CRYPTO" 
             </div>
             <CustomBuilder
               onFilterChange={(params) => setCustomParams(params)}
+              assetClass={assetClass}
             />
           </section>
         )}

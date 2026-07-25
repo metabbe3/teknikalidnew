@@ -9,6 +9,7 @@ export interface PresetDef {
   icon: "radar" | "rsi" | "stoch" | "bb" | "vol" | "macd" | "cross" | "trend" | "super" | "obv" | "hype" | "adx" | "ema" | "fund" | "sliders";
   params?: Record<string, string>;
   sliders?: { key: string; label: string; min: number; max: number; default: number; param: string }[];
+  equityOnly?: boolean;
 }
 
 export interface TradingStyleDef {
@@ -107,11 +108,11 @@ export const STYLES: TradingStyleDef[] = [
     accentRgb: "139, 92, 246",
     accentHex: "#8b5cf6",
     presets: [
-      { key: "undervalued", label: "Undervalued", desc: "P/E < 15 & P/B < 1.5", icon: "fund" },
+      { key: "undervalued", label: "Undervalued", desc: "P/E < 15 & P/B < 1.5", icon: "fund", equityOnly: true },
       { key: "above_sma200", label: "Above SMA 200", desc: "Harga di atas rata-rata 200 hari", icon: "trend" },
-      { key: "high_dividend", label: "High Dividend", desc: "Dividend yield > 3%", icon: "fund" },
-      { key: "blue_chip", label: "Blue Chip", desc: "Market cap > Rp 50T", icon: "fund" },
-      { key: "value_growth", label: "Value + Growth", desc: "P/E < 20 & EPS positif", icon: "fund" },
+      { key: "high_dividend", label: "High Dividend", desc: "Dividend yield > 3%", icon: "fund", equityOnly: true },
+      { key: "blue_chip", label: "Blue Chip", desc: "Market cap > Rp 50T", icon: "fund", equityOnly: true },
+      { key: "value_growth", label: "Value + Growth", desc: "P/E < 20 & EPS positif", icon: "fund", equityOnly: true },
     ],
   },
   {
@@ -141,6 +142,7 @@ export interface CustomFilter {
   params: Record<string, number | boolean>;
   paramDefs: { key: string; label: string; type: "range" | "toggle"; min?: number; max?: number; default?: number | boolean; step?: number }[];
   authRequired?: boolean;
+  equityOnly?: boolean;
 }
 
 export const CUSTOM_FILTERS: CustomFilter[] = [
@@ -185,8 +187,24 @@ export const CUSTOM_FILTERS: CustomFilter[] = [
     id: "gorengan", label: "Exclude Gorengan", group: "Kualitas", enabled: false, params: { excludeGorengan: true },
     paramDefs: [{ key: "excludeGorengan", label: "Buang saham gorengan", type: "toggle", default: true }],
     authRequired: true,
+    equityOnly: true,
   },
 ];
+
+// ── Asset-class curation ──
+// Crypto screener shows only technical presets/filters; IDX-only fundamentals
+// (undervalued/dividend/blue_chip/value_growth) + gorengan are equityOnly.
+export function stylesForAssetClass(assetClass?: "EQUITY" | "CRYPTO"): TradingStyleDef[] {
+  if (assetClass !== "CRYPTO") return STYLES;
+  return STYLES
+    .map((s) => ({ ...s, presets: s.presets.filter((p) => !p.equityOnly) }))
+    .filter((s) => s.presets.length > 0 || s.id === "custom");
+}
+
+export function customFiltersForAssetClass(assetClass?: "EQUITY" | "CRYPTO"): CustomFilter[] {
+  if (assetClass !== "CRYPTO") return CUSTOM_FILTERS;
+  return CUSTOM_FILTERS.filter((f) => !f.equityOnly);
+}
 
 // ── Results Types ──
 
