@@ -25,6 +25,13 @@ export function formatRp(value: number): string {
   return formatPrice(value);
 }
 
+// Plain number with id-ID thousand separators (no Rp prefix) — for indicator values,
+// large for crypto (BTC ~1.15B) where raw toFixed(0) is unreadable.
+export function formatNumber(value: number): string {
+  if (!Number.isFinite(value)) return "0";
+  return priceFormatter.format(value);
+}
+
 export function formatPercent(value: number): string {
   if (!Number.isFinite(value)) return "0.00%";
   return `${percentFormatter.format(value)}%`;

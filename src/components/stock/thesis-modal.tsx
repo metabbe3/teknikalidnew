@@ -5,6 +5,13 @@ import { createPortal } from "react-dom";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useTheses, useUpsertThesis, useDeleteThesis, type ThesisBias } from "@/hooks/use-thesis";
+import { isCryptoTicker } from "@/lib/constants";
+
+function trackCryptoThesis() {
+  if (typeof window !== "undefined") {
+    (window as unknown as { plausible?: (e: string) => void }).plausible?.("crypto_thesis_submit");
+  }
+}
 
 const BIASES: { value: ThesisBias; label: string; active: string }[] = [
   { value: "BULLISH", label: "Bullish", active: "bg-bullish text-white border-bullish" },
@@ -35,6 +42,7 @@ function ThesisForm({ ticker, onClose }: { ticker: string; onClose: () => void }
         stopLoss: stop ? Number(stop) : null,
         rationale: rationale.trim() || undefined,
       });
+      if (isCryptoTicker(ticker)) trackCryptoThesis();
       onClose();
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Gagal menyimpan");

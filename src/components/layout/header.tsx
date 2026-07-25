@@ -11,6 +11,9 @@ import { useIhsg } from "@/hooks/use-ihsg";
 const navLinks = [
   { href: "/", label: "Beranda" },
   { href: "/stocks", label: "Saham" },
+  ...(process.env.NEXT_PUBLIC_CRYPTO_ENABLED === "true"
+    ? [{ href: "/stocks/BTC", label: "Crypto" }]
+    : []),
   { href: "/community", label: "Komunitas" },
   { href: "/berita", label: "Berita" },
   { href: "/akademi", label: "Akademi" },

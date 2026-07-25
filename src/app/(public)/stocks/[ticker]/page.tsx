@@ -29,7 +29,7 @@ import { technicalAnalysisService, computeSignalScore } from "@/domains/stock/te
 import { stockRepository } from "@/domains/stock/stock.repository";
 import { calculatePivotPoints } from "@/lib/indicators";
 import { subDays } from "date-fns";
-import { IDX40, SITE_URL } from "@/lib/constants";
+import { IDX40, SITE_URL, isCryptoTicker } from "@/lib/constants";
 import { SECTORS, getSectorSlug, sectorToBahasa } from "@/lib/sectors";
 import { ShareButtons } from "@/components/ui/share-buttons";
 import { IDX_STOCKS } from "@/lib/idx-stocks";
@@ -71,8 +71,11 @@ export async function generateMetadata({
   const changeStr = stock.changePercent !== null
     ? ` (${formatPercent(stock.changePercent)})`
     : "";
-  // Canonical must ALWAYS be uppercase TICKER.JK to prevent duplicate content
-  const canonicalTicker = ticker.toUpperCase().endsWith(".JK") ? ticker.toUpperCase() : `${stripJk(ticker.toUpperCase())}.JK`;
+  // Canonical: IDX → uppercase TICKER.JK; crypto → bare uppercase ticker.
+  const upperTicker = ticker.toUpperCase();
+  const canonicalTicker = isCryptoTicker(upperTicker)
+    ? upperTicker
+    : upperTicker.endsWith(".JK") ? upperTicker : `${stripJk(upperTicker)}.JK`;
   const canonicalPath = `/stocks/${canonicalTicker}`;
   const ogImage = `${SITE_URL}/api/og/stock?ticker=${encodeURIComponent(canonicalTicker)}`;
 

@@ -70,7 +70,10 @@ function buildFundamentalItems(
 
 export const dataSyncService = {
   async syncEndOfDayData(tickers?: string[]) {
-    const allTickers = tickers ?? (await stockRepository.findActiveStocks()).map((s) => s.ticker);
+    // IDX equities only — crypto has its own Indodax refresh path; Yahoo fetch would corrupt it.
+    const allTickers = tickers ?? (await stockRepository.findActiveStocks())
+      .filter((s) => s.assetClass !== "CRYPTO")
+      .map((s) => s.ticker);
     const startTime = Date.now();
 
     const stocks = await stockRepository.findStocksByTickers(allTickers);
@@ -242,7 +245,9 @@ export const dataSyncService = {
   },
 
   async syncIntradayHotList() {
-    const allStocks = (await stockRepository.findActiveStocks()).map((s) => s.ticker);
+    const allStocks = (await stockRepository.findActiveStocks())
+      .filter((s) => s.assetClass !== "CRYPTO")
+      .map((s) => s.ticker);
 
     const written = await this.syncIntradayPrices(allStocks);
     return { tickers: allStocks.length, prices: written };

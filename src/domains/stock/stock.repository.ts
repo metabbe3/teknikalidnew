@@ -1,18 +1,20 @@
 import { prisma } from "@/lib/prisma";
 import { subDays, startOfDay } from "date-fns";
 import { Prisma } from "@/generated/prisma/client";
-import { INTERVAL } from "@/lib/constants";
+import { INTERVAL, isCryptoTicker } from "@/lib/constants";
 import { toDateKey } from "@/lib/utils";
 
 export const stockRepository = {
   // ── Stock ──
 
   findStockByTicker(ticker: string) {
-    // Normalize: ensure uppercase + .JK suffix (handles "bbca" → "BBCA.JK")
-    const normalized = ticker.trim().toUpperCase().endsWith(".JK")
-      ? ticker.trim().toUpperCase()
-      : `${ticker.trim().toUpperCase()}.JK`;
-    return prisma.stock.findUnique({ where: { ticker: normalized } });
+    const normalized = ticker.trim().toUpperCase();
+    // Crypto tickers (BTC-USD, …) pass through verbatim; IDX keeps .JK suffix.
+    if (isCryptoTicker(normalized)) {
+      return prisma.stock.findUnique({ where: { ticker: normalized } });
+    }
+    const withSuffix = normalized.endsWith(".JK") ? normalized : `${normalized}.JK`;
+    return prisma.stock.findUnique({ where: { ticker: withSuffix } });
   },
 
   findStocksByTickers(tickers: string[]) {

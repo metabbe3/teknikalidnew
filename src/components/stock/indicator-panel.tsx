@@ -18,6 +18,7 @@ import {
 } from "@/lib/indicator-translations";
 import type { IndicatorValues } from "@/types/stock";
 import { IndicatorTooltip } from "@/components/ui/indicator-tooltip";
+import { formatNumber } from "@/lib/utils";
 
 interface IndicatorPanelProps {
   rsi14: number | null;
@@ -264,9 +265,9 @@ export function IndicatorPanel({
           ) : (
             <>
               <div className="space-y-1.5">
-                <ValueRow label="Upper" value={bbUpper !== null ? bbUpper.toFixed(0) : "—"} />
-                <ValueRow label="Middle" value={bbMiddle !== null ? bbMiddle.toFixed(0) : "—"} />
-                <ValueRow label="Lower" value={bbLower !== null ? bbLower.toFixed(0) : "—"} />
+                <ValueRow label="Upper" value={bbUpper !== null ? formatNumber(bbUpper) : "—"} />
+                <ValueRow label="Middle" value={bbMiddle !== null ? formatNumber(bbMiddle) : "—"} />
+                <ValueRow label="Lower" value={bbLower !== null ? formatNumber(bbLower) : "—"} />
               </div>
               {bbPosition !== null && (
                 <div className="space-y-1.5">
@@ -335,7 +336,7 @@ export function IndicatorPanel({
                 <span className="text-[12px] text-text-secondary">SMA 20</span>
                 <span className="flex items-center gap-1.5">
                   <span className="text-[13px] font-mono tabular-nums font-medium">
-                    {sma20 !== null ? sma20.toFixed(0) : "—"}
+                    {sma20 !== null ? formatNumber(sma20) : "—"}
                   </span>
                   <DeltaArrow current={sma20} prev={p("sma20") as number | null} />
                   <AboveBelowBadge price={close} level={sma20} />
@@ -345,7 +346,7 @@ export function IndicatorPanel({
                 <span className="text-[12px] text-text-secondary">SMA 50</span>
                 <span className="flex items-center gap-1.5">
                   <span className="text-[13px] font-mono tabular-nums font-medium">
-                    {sma50 !== null ? sma50.toFixed(0) : "—"}
+                    {sma50 !== null ? formatNumber(sma50) : "—"}
                   </span>
                   <DeltaArrow current={sma50} prev={p("sma50") as number | null} />
                   <AboveBelowBadge price={close} level={sma50} />
@@ -355,7 +356,7 @@ export function IndicatorPanel({
                 <span className="text-[12px] text-text-secondary">SMA 200</span>
                 <span className="flex items-center gap-1.5">
                   <span className="text-[13px] font-mono tabular-nums font-medium">
-                    {sma200 !== null ? sma200.toFixed(0) : "—"}
+                    {sma200 !== null ? formatNumber(sma200) : "—"}
                   </span>
                   <DeltaArrow current={sma200} prev={p("sma200") as number | null} />
                   <AboveBelowBadge price={close} level={sma200} />
@@ -380,7 +381,7 @@ export function IndicatorPanel({
                 <span className="text-[12px] text-text-secondary">EMA 12</span>
                 <span className="flex items-center gap-1.5">
                   <span className="text-[13px] font-mono tabular-nums font-medium">
-                    {ema12 !== null ? ema12.toFixed(0) : "—"}
+                    {ema12 !== null ? formatNumber(ema12) : "—"}
                   </span>
                   <DeltaArrow current={ema12} prev={p("ema12") as number | null} />
                   <AboveBelowBadge price={close} level={ema12} />
@@ -390,7 +391,7 @@ export function IndicatorPanel({
                 <span className="text-[12px] text-text-secondary">EMA 26</span>
                 <span className="flex items-center gap-1.5">
                   <span className="text-[13px] font-mono tabular-nums font-medium">
-                    {ema26 !== null ? ema26.toFixed(0) : "—"}
+                    {ema26 !== null ? formatNumber(ema26) : "—"}
                   </span>
                   <DeltaArrow current={ema26} prev={p("ema26") as number | null} />
                   <AboveBelowBadge price={close} level={ema26} />
@@ -449,7 +450,7 @@ export function IndicatorPanel({
             <>
               <div className="flex items-baseline justify-between gap-2">
                 <p className="text-lg font-bold tabular-nums">
-                  {supertrend !== null ? supertrend.toFixed(0) : "—"}
+                  {supertrend !== null ? formatNumber(supertrend) : "—"}
                   <DeltaArrow current={supertrend} prev={p("supertrend") as number | null} />
                 </p>
                 {supertrend !== null && close !== null && (
@@ -506,7 +507,7 @@ export function IndicatorPanel({
           ) : (
             <>
               <div className="flex items-baseline justify-between gap-2">
-                <p className="text-lg font-bold tabular-nums">{vwap !== null ? vwap.toFixed(0) : "—"}</p>
+                <p className="text-lg font-bold tabular-nums">{vwap !== null ? formatNumber(vwap) : "—"}</p>
                 {vwap !== null && close !== null && (
                   <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
                     close > vwap ? "bg-bullish-bg text-bullish" : "bg-bearish-bg text-bearish"
@@ -533,7 +534,7 @@ export function IndicatorPanel({
             <>
               <div className="flex items-baseline justify-between gap-2">
                 <p className="text-lg font-bold tabular-nums">
-                  {atr !== null ? atr.toFixed(0) : "—"}
+                  {atr !== null ? formatNumber(atr) : "—"}
                   <DeltaArrow current={atr} prev={p("atr") as number | null} />
                 </p>
               </div>

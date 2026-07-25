@@ -316,22 +316,24 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // ── Stock page canonical: force /stocks/{TICKER}.JK (uppercase) ──
-  // Redirect ANY non-canonical format to uppercase TICKER.JK:
-  //   /stocks/bbca     → /stocks/BBCA.JK
-  //   /stocks/bbca.jk  → /stocks/BBCA.JK
-  //   /stocks/BBCA     → /stocks/BBCA.JK
-  //   /stocks/Bbca.Jk  → /stocks/BBCA.JK
+  // ── Stock page canonical ──
+  // IDX: force /stocks/{TICKER}.JK (uppercase). Crypto: bare uppercase ticker (no .JK).
+  //   /stocks/bbca → /stocks/BBCA.JK   |   /stocks/btc → /stocks/BTC
   // Without this, each stock has multiple indexable URLs with different canonicals
   // → Google treats as duplicate content → mass devaluation.
   const stockMatch = pathname.match(/^\/stocks\/([A-Z]{2,5})(\.(JK))?$/i);
   if (stockMatch) {
     const ticker = stockMatch[1].toUpperCase();
     const hasSuffix = !!stockMatch[2];
-    const isCanonical = hasSuffix && stockMatch[1] === ticker && stockMatch[2] === ".JK";
+    // ponytail: inline crypto set — proxy runs on the edge runtime, importing the big
+    // constants/idx-stocks module would bloat the bundle. Keep in sync with src/lib/constants.ts.
+    const isCrypto = ticker === "BTC";
+    const isCanonical = isCrypto
+      ? stockMatch[1] === ticker && !hasSuffix
+      : hasSuffix && stockMatch[1] === ticker && stockMatch[2] === ".JK";
     if (!isCanonical) {
       const url = request.nextUrl.clone();
-      url.pathname = `/stocks/${ticker}.JK`;
+      url.pathname = `/stocks/${ticker}${isCrypto ? "" : ".JK"}`;
       return NextResponse.redirect(url, 301);
     }
   }

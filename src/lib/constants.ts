@@ -105,3 +105,20 @@ export const PREDICTION_OUTCOME = {
   INCORRECT: "INCORRECT",
   EXPIRED: "EXPIRED",
 } as const;
+
+// ── Crypto (second asset class — spike, feature-flagged via NEXT_PUBLIC_CRYPTO_ENABLED) ──
+// Clean tickers (no -USD/-IDR suffix) → URL /stocks/BTC. isCryptoTicker gates the .JK suffix
+// in findStockByTicker: crypto passes through verbatim, everything else keeps IDX .JK behavior.
+// IDR pricing comes from Indodax (see src/lib/indodax.ts), not Yahoo.
+export const CRYPTO_TICKERS = ["BTC"] as const;
+
+export function isCryptoTicker(ticker: string): boolean {
+  const t = ticker.trim().toUpperCase();
+  return (CRYPTO_TICKERS as readonly string[]).includes(t);
+}
+
+export type AssetKind = "IDX" | "CRYPTO";
+
+export function inferAssetKind(ticker: string): AssetKind {
+  return isCryptoTicker(ticker) ? "CRYPTO" : "IDX";
+}

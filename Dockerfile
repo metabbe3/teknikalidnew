@@ -9,8 +9,10 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ARG NEXT_PUBLIC_PLAUSIBLE_DOMAIN
 ARG NEXT_PUBLIC_PLAUSIBLE_SRC
+ARG NEXT_PUBLIC_CRYPTO_ENABLED
 ENV NEXT_PUBLIC_PLAUSIBLE_DOMAIN=$NEXT_PUBLIC_PLAUSIBLE_DOMAIN
 ENV NEXT_PUBLIC_PLAUSIBLE_SRC=$NEXT_PUBLIC_PLAUSIBLE_SRC
+ENV NEXT_PUBLIC_CRYPTO_ENABLED=$NEXT_PUBLIC_CRYPTO_ENABLED
 RUN npx prisma generate
 RUN npm run build
 RUN npx esbuild server.ts --bundle --platform=node --format=cjs --outdir=./dist --external:next --external:socket.io --external:next-auth

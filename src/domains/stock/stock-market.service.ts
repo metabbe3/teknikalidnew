@@ -1,5 +1,6 @@
 import { subDays } from "date-fns";
 import { fetchHistorical, fetchQuote, fetchChart } from "@/lib/yahoo-finance";
+import { cryptoPair, fetchCryptoIdrOHLC } from "@/lib/indodax";
 import { computeChange, bigIntToNumber, decimalToNumber, serializePriceRow, serializeIndicator } from "@/lib/serialize";
 import { INTERVAL, RANGE_DAYS, type DateRange, type IntradayInterval, INTRADAY_CONFIG } from "@/lib/constants";
 import { toDateKey } from "@/lib/utils";
@@ -346,6 +347,24 @@ export const stockMarketService = {
     const stock = await stockRepository.findStockByTicker(ticker);
     if (!stock) throw new StockNotFoundError(ticker);
 
+    // Crypto: Indodax intraday OHLC (24/7, no Yahoo intraday for BTC-IDR).
+    if (stock.assetClass === "CRYPTO") {
+      const info = cryptoPair(ticker);
+      if (info) {
+        const tf = interval === "5m" ? "15" : "60";
+        const rows = await fetchCryptoIdrOHLC(info.symbol, days, tf);
+        return rows.map((r) => ({
+          date: Math.floor((r.date.getTime() + 7 * 3600 * 1000) / 1000),
+          open: r.open,
+          high: r.high,
+          low: r.low,
+          close: r.close,
+          volume: r.volume,
+          adjClose: null,
+        }));
+      }
+    }
+
     const period1 = subDays(new Date(), days);
     const raw = await fetchChart(ticker, {
       period1,
@@ -502,10 +521,12 @@ export const stockMarketService = {
   },
 
   async updateAllStocks(): Promise<void> {
-    const stocks = await stockRepository.findActiveStocks();
+    // IDX equities only — crypto has its own 24/7 refresh path (refreshCryptoPrices).
+    const stocks = (await stockRepository.findActiveStocks()).filter(
+      (s) => s.assetClass !== "CRYPTO",
+    );
 
     const limit = pLimit(5);
-    let done = 0;
     const results = await Promise.allSettled(
       stocks.map((stock) => limit(async () => {
         await this.updateLatestPrice(stock.ticker);
@@ -514,6 +535,34 @@ export const stockMarketService = {
 
     const failures = results.filter((r) => r.status === "rejected").length;
     if (failures > 0) console.error(`${failures} stocks failed to update`);
+  },
+
+  // Crypto is 24/7 — refresh latest IDR OHLC from Indodax daily (incl. weekends).
+  async refreshCryptoPrices(): Promise<void> {
+    const stocks = (await stockRepository.findActiveStocks()).filter(
+      (s) => s.assetClass === "CRYPTO",
+    );
+    for (const s of stocks) {
+      const info = cryptoPair(s.ticker);
+      if (!info) continue;
+      try {
+        const ohlc = await fetchCryptoIdrOHLC(info.symbol, 3);
+        if (ohlc.length === 0) continue;
+        await stockRepository.batchUpsertTodayPrices(
+          ohlc.map((r) => ({
+            stockId: s.id,
+            date: r.date,
+            open: r.open,
+            high: r.high,
+            low: r.low,
+            close: r.close,
+            volume: BigInt(Math.round(r.volume)),
+          })),
+        );
+      } catch (e) {
+        console.error(`[crypto-refresh] ${s.ticker}:`, e);
+      }
+    }
   },
 
   async getCompareData(tickers: string[], range: DateRange) {
