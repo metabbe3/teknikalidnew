@@ -8,7 +8,7 @@ interface TelemetryEvent {
 }
 
 function transport(event: TelemetryEvent) {
-  console.log(`[Telemetry] ${JSON.stringify(event)}`);
+  // Telemetry event transport (no-op in production)
 }
 
 export function trackEvent(

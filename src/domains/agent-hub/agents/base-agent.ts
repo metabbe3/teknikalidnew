@@ -1,4 +1,4 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { createAIClient } from "@/lib/ai-client";
 import type { AgentType, AgentJobPayload, AgentJobResult, AgentConfigRow } from "../agent-hub.types";
 import { agentHubRepository } from "../agent-hub.repository";
 
@@ -55,24 +55,22 @@ export abstract class BaseAgent {
   }
 
   protected async callAI(system: string, user: string, maxTokens = 4000): Promise<string> {
-    const client = new Anthropic({
-      apiKey: process.env.ANTHROPIC_AUTH_TOKEN,
-      baseURL: process.env.ANTHROPIC_BASE_URL,
-      timeout: 120_000,
-    });
-    const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-4-20250514";
+    const client = createAIClient();
+    const model = process.env.ANTHROPIC_MODEL || "qd/qmodel_latest";
 
-    const response = await client.messages.create({
-      model,
-      max_tokens: maxTokens,
-      system,
-      messages: [{ role: "user", content: user }],
-    });
+    const response = await client.chat.completions.create(
+      {
+        model,
+        max_tokens: maxTokens,
+        messages: [
+          { role: "system", content: system },
+          { role: "user", content: user },
+        ],
+      },
+      { signal: AbortSignal.timeout(120_000) }, // 2 min per-call timeout
+    );
 
-    return response.content
-      .filter((block): block is Anthropic.TextBlock => block.type === "text")
-      .map((block) => block.text)
-      .join("\n");
+    return response.choices[0]?.message?.content ?? "";
   }
 
   protected truncateForAudit(value: string, maxLen = 300): string {

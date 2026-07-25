@@ -20,10 +20,6 @@ export async function POST(request: NextRequest) {
       custom_field3: duration,
     } = notification;
 
-    console.log("[Midtrans] Notification received:", JSON.stringify({
-      order_id, transaction_status, status_code, gross_amount, payment_type, fraud_status,
-    }));
-
     // Verify signature to ensure it's really from Midtrans
     const serverKey = process.env.MIDTRANS_SERVER_KEY!;
 
@@ -42,11 +38,6 @@ export async function POST(request: NextRequest) {
 
     if (!isValid) {
       console.error("[Midtrans] Invalid signature for order:", order_id);
-      // For test notifications from Midtrans dashboard, still return 200
-      if (order_id?.startsWith("payment_notif_test_")) {
-        console.log("[Midtrans] Test notification accepted without signature check");
-        return NextResponse.json({ status: "ok", message: "test notification received" });
-      }
       return NextResponse.json({ error: "Invalid signature" }, { status: 403 });
     }
 
@@ -86,15 +77,13 @@ export async function POST(request: NextRequest) {
         // Refund — deactivate premium
         await handleRefund(order_id, userId, planId);
         break;
-
-      default:
-        console.log(`Unhandled transaction status: ${effectiveStatus} for order ${order_id}`);
     }
 
     // Always return 200 to Midtrans so they stop retrying
     return NextResponse.json({ status: "ok" });
-  } catch (error: any) {
-    console.error("Midtrans notification error:", error);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Midtrans notification error:", message);
     return NextResponse.json({ status: "ok" }); // Still return 200
   }
 }
@@ -124,7 +113,6 @@ async function handlePaymentSuccess(
 
   if (!userExists) {
     // User doesn't exist (e.g. test payment) — just log it
-    console.log(`[Midtrans] Payment success for non-existent user: ${userId}, order: ${orderId}, amount: ${grossAmount}`);
     try {
       await prisma.payment.create({
         data: {
@@ -139,7 +127,7 @@ async function handlePaymentSuccess(
         },
       });
     } catch (e) {
-      console.log(`[Midtrans] Could not save payment record: ${e}`);
+      // Failed to save payment record
     }
     return;
   }
@@ -172,8 +160,6 @@ async function handlePaymentSuccess(
       premiumPlan: planId,
     },
   });
-
-  console.log(`✅ Premium activated for user ${userId}, plan ${planId}, expires ${expiresAt}`);
 }
 
 async function handlePaymentPending(
@@ -197,8 +183,6 @@ async function handlePaymentPending(
       paymentType,
     },
   });
-
-  console.log(`⏳ Payment pending for order ${orderId}`);
 }
 
 async function handlePaymentFailure(
@@ -220,8 +204,6 @@ async function handlePaymentFailure(
       status,
     },
   });
-
-  console.log(`❌ Payment ${status} for order ${orderId}`);
 }
 
 async function handleRefund(orderId: string, userId: string | undefined, planId: string | undefined) {
@@ -240,6 +222,4 @@ async function handleRefund(orderId: string, userId: string | undefined, planId:
       premiumPlan: null,
     },
   });
-
-  console.log(`🔄 Refund processed for order ${orderId}`);
 }

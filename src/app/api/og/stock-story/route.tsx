@@ -160,7 +160,7 @@ function fallbackImage(ticker: string) {
           backgroundColor: "#f1f5f9",
         }}
       >
-        <div style={{ display: "flex", width: 1080, height: 8, backgroundColor: "#2563eb" }} />
+        <div style={{ display: "flex", width: 1080, height: 8, backgroundColor: "#0ea5e9" }} />
         <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", width: 1080, height: 1912 }}>
           <span style={{ color: "#0f172a", fontSize: 96, fontWeight: 800, fontFamily: "monospace" }}>
             {stripJk(ticker)}
@@ -197,7 +197,7 @@ export async function GET(request: NextRequest) {
       (
         <div style={{ width: 1080, height: 1920, display: "flex", flexDirection: "column", backgroundColor: "#f1f5f9" }}>
           {/* === Top Accent Bar === */}
-          <div style={{ display: "flex", width: 1080, height: 8, backgroundColor: "#2563eb" }} />
+          <div style={{ display: "flex", width: 1080, height: 8, backgroundColor: "#0ea5e9" }} />
 
           {/* === Background ambient glow === */}
           <svg width="1080" height="1912" viewBox="0 0 1080 1912" style={{ position: "absolute", top: 8, left: 0 }}>
@@ -335,7 +335,7 @@ export async function GET(request: NextRequest) {
             <div style={{ display: "flex", flexDirection: "column" }}>
               {/* Section Header */}
               <div style={{ display: "flex", alignItems: "center", paddingBottom: 12 }}>
-                <div style={{ height: 4, width: 36, backgroundColor: "#2563eb", borderRadius: 2 }} />
+                <div style={{ height: 4, width: 36, backgroundColor: "#0ea5e9", borderRadius: 2 }} />
                 <span style={{ color: "#334155", fontSize: 22, fontWeight: 800, marginLeft: 10, letterSpacing: "0.08em" }}>
                   INDIKATOR TEKNIKAL
                 </span>
@@ -475,7 +475,7 @@ export async function GET(request: NextRequest) {
             <div style={{ display: "flex", flexDirection: "column" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div style={{ display: "flex", alignItems: "center" }}>
-                  <div style={{ height: 2, width: 32, backgroundColor: "#2563eb", borderRadius: 1 }} />
+                  <div style={{ height: 2, width: 32, backgroundColor: "#0ea5e9", borderRadius: 1 }} />
                   <span style={{ color: "#64748b", fontSize: 24, fontWeight: 500, marginLeft: 10 }}>
                     teknikal.id/stocks/{stripJk(data.ticker)}
                   </span>

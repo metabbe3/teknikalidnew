@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { authService } from "@/domains/auth/auth.service";
 import { communityService } from "@/domains/community/community.service";
 import { handleApiError } from "@/lib/api-error";
+import { parseQuery, parseBody, schemas } from "@/lib/validation";
 
 export async function GET(
   request: NextRequest,
@@ -9,17 +10,13 @@ export async function GET(
 ) {
   try {
     const { ticker } = await params;
-    const { searchParams } = new URL(request.url);
-    const cursor = searchParams.get("cursor");
-    const limit = Math.min(
-      parseInt(searchParams.get("limit") || "20", 10),
-      50
-    );
+    const [data, error] = parseQuery(request.nextUrl.searchParams, schemas.stockComments);
+    if (error) return error;
 
     const result = await communityService.getStockTickerComments(
       ticker,
-      cursor || undefined,
-      limit
+      data.cursor || undefined,
+      data.limit
     );
     return NextResponse.json(result);
   } catch (error) {
@@ -34,13 +31,13 @@ export async function POST(
   try {
     const user = await authService.requireAuth();
     const { ticker } = await params;
-    const body = await request.json();
-    const { content, parentId } = body;
+    const [data, error] = await parseBody(request, schemas.createStockComment);
+    if (error) return error;
 
     const comment = await communityService.createStockComment(
       user.id,
       ticker,
-      { content, parentId }
+      { content: data.content, parentId: data.parentId }
     );
     return NextResponse.json({ data: comment }, { status: 201 });
   } catch (error) {

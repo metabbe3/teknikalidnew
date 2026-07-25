@@ -42,9 +42,11 @@ export function translateBB(position: number | null): Translation {
 
 export function translateADX(adx: number | null): Translation {
   if (adx === null) return { short: "Tidak ada data", explanation: "", sentiment: "netral" };
-  if (adx > 50) return { short: "Tren Sangat Kuat", explanation: "Tren sangat kuat. Waspadai potensi jenuh.", sentiment: "positif" };
-  if (adx > 25) return { short: "Tren Kuat", explanation: "Tren sedang berlangsung. Ikuti arah tren.", sentiment: "positif" };
-  if (adx > 20) return { short: "Tren Mulai Terbentuk", explanation: "Pergerakan mulai menunjukkan arah.", sentiment: "netral" };
+  // ponytail: IDX-calibrated thresholds. Indonesian stocks are more volatile —
+  // ADX 20+ indicates a meaningful trend (vs 25 in Western/NYSE norms).
+  if (adx > 40) return { short: "Tren Sangat Kuat", explanation: "Tren sangat kuat. Waspadai potensi jenuh.", sentiment: "positif" };
+  if (adx > 20) return { short: "Tren Kuat", explanation: "Tren sedang berlangsung. Ikuti arah tren.", sentiment: "positif" };
+  if (adx > 15) return { short: "Tren Mulai Terbentuk", explanation: "Pergerakan mulai menunjukkan arah.", sentiment: "netral" };
   return { short: "Tren Lemah", explanation: "Belum ada arah jelas. Harga bergerak sideways.", sentiment: "netral" };
 }
 
@@ -113,7 +115,7 @@ export const INDICATOR_TIPS: Record<string, string> = {
   EMA: "Exponential Moving Average — Seperti SMA tapi lebih responsif terhadap perubahan terbaru. EMA 12 di atas EMA 26 = bullish.",
   "Bollinger Bands": "Band volatilitas di atas dan bawah SMA 20. Harga mendekati band atas = kemungkinan overbought.",
   Stochastic: "Membandingkan harga penutupan dengan range periode tertentu. Di atas 80 = jenuh beli, di bawah 20 = jenuh jual.",
-  ADX: "Average Directional Index — Mengukur kekuatan tren (bukan arah). Di atas 25 = tren kuat, di bawah 20 = sideways.",
+  ADX: "Average Directional Index — Mengukur kekuatan tren (bukan arah). Di atas 20 = tren kuat, di bawah 15 = sideways (disesuaikan untuk volatilitas IDX).",
   OBV: "On-Balance Volume — Mengukur tekanan beli/jual berdasarkan volume. Naik = akumulasi, turun = distribusi.",
   Supertrend: "Indikator tren berbasis ATR. Harga di atas Supertrend = bullish, di bawah = bearish.",
   VWAP: "Volume Weighted Average Price — Harga rata-rata berbobot volume. Acuan institusi, harga di atas VWAP = sentimen positif.",

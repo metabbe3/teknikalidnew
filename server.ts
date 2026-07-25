@@ -24,7 +24,7 @@ async function start() {
     port,
     hostname: process.env.HOSTNAME || "0.0.0.0",
     dev: false,
-    minimalMode: true,
+    minimalMode: false,
     quiet: false,
   });
 

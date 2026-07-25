@@ -3,7 +3,7 @@ import Link from "next/link";
 const footerLinks = [
   { href: "/", label: "Beranda" },
   { href: "/stocks", label: "Saham" },
-  { href: "/screener", label: "Screener" },
+  { href: "/stocks?view=screener", label: "Screener" },
   { href: "/berita", label: "Berita" },
   { href: "/akademi", label: "Akademi" },
 ];

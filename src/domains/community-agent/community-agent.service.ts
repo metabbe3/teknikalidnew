@@ -1,7 +1,6 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { createAIClient } from "@/lib/ai-client";
 import { communityAgentRepository } from "./community-agent.repository";
 import { communityService } from "@/domains/community/community.service";
-import { stockRepository } from "@/domains/stock/stock.repository";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { decimalToNumber } from "@/lib/serialize";
 import { BOT_CONFIG } from "./constants";
@@ -12,12 +11,8 @@ import { IDX40_TICKERS } from "@/lib/constants";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-function createAnthropicClient() {
-  return new Anthropic({
-    apiKey: process.env.ANTHROPIC_AUTH_TOKEN,
-    baseURL: process.env.ANTHROPIC_BASE_URL,
-    timeout: 30_000,
-  });
+function createAIClientLocal() {
+  return createAIClient();
 }
 
 export const communityAgentService = {
@@ -120,7 +115,6 @@ export const communityAgentService = {
     let user = await communityAgentRepository.findBotUser();
     if (!user) {
       user = await communityAgentRepository.createBotUser();
-      console.log(`[community-agent] Created bot user: ${BOT_CONFIG.USERNAME} (${user.id})`);
     }
     return user;
   },
@@ -137,13 +131,13 @@ export const communityAgentService = {
     let aiCalls = 0;
 
     // Fetch IDX40 stocks with indicators
-    const allStocks = await stockRepository.findActiveStocksWithPrices();
+    const allStocks = await stockMarketService.findActiveStocksWithPrices();
     const idx40Set = new Set(IDX40_TICKERS);
     const stocks = allStocks.filter((s) => idx40Set.has(s.ticker));
 
     // Fetch avg volumes for volume spike detection
     const stockIds = stocks.map((s) => s.id);
-    const avgVolumes = await stockRepository.findAvgVolumeByStockIds(stockIds);
+    const avgVolumes = await stockMarketService.findAvgVolumeByStockIds(stockIds);
 
     // Scan signals
     const signals = scanSignals(stocks, avgVolumes);
@@ -211,7 +205,7 @@ export const communityAgentService = {
 
   async generateRandomInsight(botUserId: string): Promise<boolean> {
     // Fetch IDX40 stocks with indicators
-    const allStocks = await stockRepository.findActiveStocksWithPrices();
+    const allStocks = await stockMarketService.findActiveStocksWithPrices();
     const idx40Set = new Set(IDX40_TICKERS);
     const stocks = allStocks.filter((s) => idx40Set.has(s.ticker) && s.indicators[0]);
 
@@ -279,7 +273,7 @@ export const communityAgentService = {
 
       try {
         // Fetch indicator data for this ticker
-        const stock = await stockRepository.findStockByTicker(post.tickerTag);
+        const stock = await stockMarketService.findStockByTicker(post.tickerTag);
         if (!stock) continue;
 
         const indicatorData = await this.getIndicatorSnapshot(post.tickerTag);
@@ -319,31 +313,30 @@ export const communityAgentService = {
       throw new AIGenerationError("ANTHROPIC_AUTH_TOKEN not configured");
     }
 
-    try {
-      const client = createAnthropicClient();
-      const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-4-20250514";
+    // NOTE: AI call errors are intentionally NOT caught here. Callers (e.g.
+    // scanAndPostSignals, scanAndReply) already wrap callAI in try/catch and
+    // push the error message into their `errors` array, which is surfaced in
+    // the cron log output. Catching here would swallow the error and produce
+    // a misleading `postsCreated:0, errors:[]` — exactly the symptom that
+    // obscured the 2026-06-18 outage (env var override caused silent 404s).
+    const client = createAIClientLocal();
+    const model = process.env.ANTHROPIC_MODEL || "qd/qmodel_latest";
 
-      const response = await client.messages.create({
-        model,
-        max_tokens: 150,
-        system: systemPrompt,
-        messages: [{ role: "user", content: userPrompt }],
-      });
+    const response = await client.chat.completions.create({
+      model,
+      max_tokens: 150,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+    });
 
-      const text = response.content
-        .filter((block): block is Anthropic.TextBlock => block.type === "text")
-        .map((block) => block.text)
-        .join("\n")
-        .trim();
+    const text = (response.choices[0]?.message?.content ?? "").trim();
 
-      if (!text) return null;
+    if (!text) return null;
 
-      // Strip any surrounding quotes
-      return text.replace(/^["']|["']$/g, "");
-    } catch (err) {
-      console.error("[community-agent] AI call failed:", err instanceof Error ? err.message : err);
-      return null;
-    }
+    // Strip any surrounding quotes
+    return text.replace(/^["']|["']$/g, "");
   },
 
   // ── Helper: get quick indicator snapshot for a ticker ──
@@ -356,7 +349,7 @@ export const communityAgentService = {
     signalLabel: string | null;
     supertrend: number | null;
   } | null> {
-    const stocks = await stockRepository.findActiveStocksWithPrices(
+    const stocks = await stockMarketService.findActiveStocksWithPrices(
       undefined,
       true,
     );

@@ -39,6 +39,29 @@ export const moderationRepository = {
     });
   },
 
+  /** Ban a user (set bannedAt) + audit trail + blocklist the IP. Used by auto-abuse suspension. */
+  async banUser(userId: string, reason: string, ipAddress?: string | null) {
+    await prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: userId },
+        data: { bannedAt: new Date() },
+      });
+      await tx.auditLog.create({
+        data: {
+          userId,
+          action: "BAN_AUTO_ABUSE",
+          details: { reason },
+          ipAddress: ipAddress ?? null,
+        },
+      });
+    });
+    // Blocklist the IP so the same browser/IP can't keep crawling anonymously after the ban.
+    if (ipAddress) {
+      const { block } = await import("@/lib/ip-blocklist");
+      await block(ipAddress, reason, userId).catch(() => {});
+    }
+  },
+
   reviewWithAction(params: {
     reportId: string;
     targetType: string;

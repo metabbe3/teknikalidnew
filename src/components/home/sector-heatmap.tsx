@@ -1,3 +1,5 @@
+import { SectionHeading } from "@/components/ui/section-heading";
+
 interface SectorData {
   avgChange: number;
   count: number;
@@ -10,10 +12,14 @@ export function SectorHeatmap({ sectors }: { sectors: Record<string, SectorData>
 
   return (
     <section className="space-y-5">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-black tracking-tight">Performa Sektor</h2>
-        <span className="text-[10px] text-text-tertiary uppercase tracking-wider font-medium">{entries.length} sektor</span>
-      </div>
+      <SectionHeading
+        title="Performa Sektor"
+        action={
+          <span className="text-[10px] text-text-tertiary uppercase tracking-wider font-medium">
+            {entries.length} sektor
+          </span>
+        }
+      />
       <div className="flex flex-wrap gap-3 stagger-grid">
         {entries.map(([sector, { count, avgChange }], i) => {
           const isPositive = avgChange >= 0;
@@ -30,7 +36,7 @@ export function SectorHeatmap({ sectors }: { sectors: Record<string, SectorData>
                 "--stagger-i": i,
                 background: `linear-gradient(145deg, ${bgTint}, var(--color-bg-card))`,
               } as React.CSSProperties}
-              className="sector-heatmap-cell depth-shadow min-w-[140px]"
+              className="sector-heatmap-cell min-w-[140px]"
             >
               <p className="text-xs font-bold text-text-primary uppercase tracking-wider truncate max-w-[160px]">
                 {sector}

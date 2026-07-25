@@ -292,42 +292,15 @@ function generateNarrative(props: DailyAnalysisSectionProps): NarrativeParts {
 
 // ─── Component ──────────────────────────────────────────────────
 
-function moodGradient(mood: NarrativeParts["mood"]): string {
-  switch (mood) {
-    case "bullish": return "from-teal-500/8 via-transparent to-transparent";
-    case "bearish": return "from-red-500/8 via-transparent to-transparent";
-    case "mixed": return "from-amber-500/8 via-transparent to-transparent";
-    default: return "from-gray-500/5 via-transparent to-transparent";
-  }
-}
-
-function moodAccent(mood: NarrativeParts["mood"]): string {
-  switch (mood) {
-    case "bullish": return "#0d9488";
-    case "bearish": return "#dc2626";
-    case "mixed": return "#f59e0b";
-    default: return "#78716c";
-  }
-}
-
-// ─── Component ──────────────────────────────────────────────────
-
 export default function DailyAnalysisSection(props: DailyAnalysisSectionProps) {
   const { changePercent } = props;
   const narrative = generateNarrative(props);
-  const accent = moodAccent(narrative.mood);
 
   const hasContent = narrative.investorSegments.length > 0 || narrative.traderSegments.length > 0;
 
   return (
     <div className="relative rounded-2xl border border-border bg-bg-card overflow-hidden">
-      {/* Top accent bar */}
-      <div className="h-[3px] w-full" style={{ background: accent }} />
-
-      {/* Subtle mood gradient overlay */}
-      <div className={`absolute inset-0 pointer-events-none bg-gradient-to-br ${moodGradient(narrative.mood)}`} />
-
-      <div className="relative z-[1] p-6 sm:p-8 space-y-6">
+      <div className="p-6 sm:p-8 space-y-6">
         {/* Header — title + date only, no redundant score/badge */}
         <div className="space-y-1">
           <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-text-primary leading-tight">
@@ -342,11 +315,9 @@ export default function DailyAnalysisSection(props: DailyAnalysisSectionProps) {
         <div className="space-y-5">
           {/* Paragraph 1 — What happened */}
           {narrative.p1Segments.length > 0 && (
-            <div className="relative pl-5 border-l-[3px]" style={{ borderColor: accent }}>
-              <p className="text-base sm:text-lg font-semibold text-text-primary leading-relaxed">
-                {narrative.p1Segments}
-              </p>
-            </div>
+            <p className="text-base sm:text-lg font-semibold text-text-primary leading-relaxed">
+              {narrative.p1Segments}
+            </p>
           )}
 
           {/* Paragraph 2 — Technical picture */}
@@ -362,14 +333,11 @@ export default function DailyAnalysisSection(props: DailyAnalysisSectionProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Investor */}
             {narrative.investorSegments.length > 0 && (
-              <div className="rounded-xl bg-teal-50/60 border border-teal-200/50 p-5 space-y-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-base">🏦</span>
-                  <h4 className="text-xs font-black uppercase tracking-wider text-teal-700">
-                    Untuk Investor
-                  </h4>
-                </div>
-                <p className="text-sm font-semibold text-teal-900/80 leading-relaxed">
+              <div className="rounded-xl bg-bg-primary/60 border border-border p-5 space-y-2">
+                <h4 className="text-xs font-semibold text-text-secondary">
+                  Untuk Investor
+                </h4>
+                <p className="text-sm font-medium text-text-secondary leading-relaxed">
                   {narrative.investorSegments}
                 </p>
               </div>
@@ -377,14 +345,11 @@ export default function DailyAnalysisSection(props: DailyAnalysisSectionProps) {
 
             {/* Trader */}
             {narrative.traderSegments.length > 0 && (
-              <div className="rounded-xl bg-blue-50/60 border border-blue-200/50 p-5 space-y-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-base">⚡</span>
-                  <h4 className="text-xs font-black uppercase tracking-wider text-blue-700">
-                    Untuk Trader
-                  </h4>
-                </div>
-                <p className="text-sm font-semibold text-blue-900/80 leading-relaxed">
+              <div className="rounded-xl bg-bg-primary/60 border border-border p-5 space-y-2">
+                <h4 className="text-xs font-semibold text-text-secondary">
+                  Untuk Trader
+                </h4>
+                <p className="text-sm font-medium text-text-secondary leading-relaxed">
                   {narrative.traderSegments}
                 </p>
               </div>
@@ -394,7 +359,7 @@ export default function DailyAnalysisSection(props: DailyAnalysisSectionProps) {
 
         {/* Footer */}
         <div className="pt-4 border-t border-border/50 flex items-center justify-between gap-4 flex-wrap">
-          <p className="text-[11px] text-text-tertiary leading-relaxed max-w-xl">
+          <p className="text-xs text-text-secondary leading-relaxed max-w-xl">
             Analisa ini berdasarkan data teknikal & fundamental historis — bukan rekomendasi jual/beli.
             Selalu lakukan riset mandiri sebelum mengambil keputusan investasi.
           </p>

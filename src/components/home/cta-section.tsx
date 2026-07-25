@@ -23,12 +23,12 @@ export function CtaSection() {
         <div className="flex flex-wrap gap-3 pt-2">
           <Link
             href="/stocks"
-            className="bg-teal-500 hover:bg-teal-400 text-white px-5 py-2.5 rounded-lg font-medium text-sm transition-colors press-scale"
+            className="bg-white text-text-primary hover:bg-white/90 px-5 py-2.5 rounded-lg font-medium text-sm transition-colors press-scale"
           >
             Lihat Semua Saham
           </Link>
           <Link
-            href="/screener"
+            href="/stocks?view=screener"
             className="border border-white/20 text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-white/10 transition-all press-scale"
           >
             Coba Screener

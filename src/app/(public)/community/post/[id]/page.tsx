@@ -30,6 +30,10 @@ export async function generateMetadata({
   return {
     title,
     description: preview,
+    robots: {
+      index: false,
+      follow: true,
+    },
     alternates: { canonical: `/community/post/${id}` },
     openGraph: {
       title,

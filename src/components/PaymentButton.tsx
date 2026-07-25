@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { PREMIUM_PLANS, getClientKey, getSnapUrl } from "@/lib/midtrans";
+import { PREMIUM_PLANS, getClientKey, getSnapUrl, type MidtransResult } from "@/lib/midtrans";
 
 interface PaymentButtonProps {
   userId: string;
@@ -70,17 +70,17 @@ export default function PaymentButton({
       }
 
       // Open Snap payment popup
-      if (snapLoaded && (window as any).snap) {
-        (window as any).snap.pay(data.token, {
-          onSuccess: (result: any) => {
+      if (snapLoaded && window.snap) {
+        window.snap.pay(data.token, {
+          onSuccess: (result: MidtransResult) => {
             onSuccess?.(result.order_id);
             setLoading(false);
           },
-          onPending: (result: any) => {
+          onPending: (result: MidtransResult) => {
             onSuccess?.(result.order_id); // Still treat as success flow
             setLoading(false);
           },
-          onError: (result: any) => {
+          onError: (result: MidtransResult) => {
             onError?.(result.status_message || "Payment error");
             setLoading(false);
           },
@@ -93,8 +93,9 @@ export default function PaymentButton({
         // Fallback: redirect to payment page
         window.location.href = data.redirect_url;
       }
-    } catch (error: any) {
-      onError?.(error.message || "Something went wrong");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      onError?.(message || "Something went wrong");
       setLoading(false);
     }
   };

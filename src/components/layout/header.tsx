@@ -6,16 +6,20 @@ import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { NotificationBell } from "@/components/community/notification-bell";
 import { UserMenu } from "@/components/layout/user-menu";
+import { useIhsg } from "@/hooks/use-ihsg";
 
 const navLinks = [
   { href: "/", label: "Beranda" },
   { href: "/stocks", label: "Saham" },
-  { href: "/screener", label: "Screener" },
-  { href: "/paper-trading", label: "Latihan Trading" },
-  { href: "/compare", label: "Bandingkan" },
   { href: "/community", label: "Komunitas" },
   { href: "/berita", label: "Berita" },
   { href: "/akademi", label: "Akademi" },
+];
+
+// Tools demoted from main nav (low use: compare 2 views, paper-trading 13). Kept reachable.
+const toolLinks = [
+  { href: "/compare", label: "Bandingkan Saham" },
+  { href: "/paper-trading", label: "Latihan Trading" },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -25,18 +29,50 @@ function isActive(pathname: string, href: string) {
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
   const pathname = usePathname();
   const { data: session } = useSession();
+  const { data: ihsg } = useIhsg();
 
   return (
     <header className="glass-header sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 text-base font-bold text-text-primary press-scale">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-accent" aria-hidden="true">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-          </svg>
-          <span>TeknikalID</span>
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-2 text-base font-bold text-text-primary press-scale">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-accent-bright" aria-hidden="true">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+            </svg>
+            <span>TeknikalID</span>
+          </Link>
+
+          {/* IHSG badge */}
+          {ihsg && ihsg.close !== null && (
+            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-border bg-bg-surface text-xs">
+              <span className="text-text-secondary font-medium">IHSG</span>
+              <span className="font-mono font-semibold text-text-primary tabular-nums">{ihsg.close.toLocaleString("id-ID", { minimumFractionDigits: 2 })}</span>
+              {ihsg.changePercent !== null && (
+                <span className={`font-mono font-bold tabular-nums ${ihsg.changePercent >= 0 ? "text-bullish" : "text-bearish"}`}>
+                  {ihsg.changePercent >= 0 ? "+" : ""}{ihsg.changePercent.toFixed(2)}%
+                </span>
+              )}
+            </div>
+          )}
+          {ihsg && ihsg.close === null && (
+            <div className="hidden sm:block w-28 h-6 animate-pulse bg-bg-hover rounded-md" />
+          )}
+
+          {/* Mobile IHSG — compact */}
+          {ihsg && ihsg.close !== null && (
+            <div className="sm:hidden flex items-center gap-1 text-xs">
+              <span className="text-text-secondary font-medium">IHSG</span>
+              {ihsg.changePercent !== null && (
+                <span className={`font-mono font-bold tabular-nums ${ihsg.changePercent >= 0 ? "text-bullish" : "text-bearish"}`}>
+                  {ihsg.changePercent >= 0 ? "+" : ""}{ihsg.changePercent.toFixed(2)}%
+                </span>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Desktop nav */}
         <nav className="hidden sm:flex items-center gap-1 text-sm font-medium" aria-label="Main navigation">
@@ -56,6 +92,41 @@ export function Header() {
               </Link>
             );
           })}
+
+          {/* Tools dropdown (demoted: compare, paper-trading) */}
+          <div className="relative">
+            <button
+              onClick={() => setToolsOpen((v) => !v)}
+              onBlur={() => setTimeout(() => setToolsOpen(false), 120)}
+              className="px-3 py-1.5 rounded-md text-text-secondary hover:text-text-primary hover:bg-bg-hover/50 transition-colors duration-150 inline-flex items-center gap-1"
+              aria-expanded={toolsOpen}
+              aria-haspopup="menu"
+            >
+              Tools
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            {toolsOpen && (
+              <div className="absolute right-0 top-full mt-1 min-w-[11rem] rounded-md border border-border bg-bg-surface shadow-lg py-1 z-50">
+                {toolLinks.map((t) => (
+                  <Link
+                    key={t.href}
+                    href={t.href}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => setToolsOpen(false)}
+                    className={`block px-3 py-2 text-sm rounded mx-1 transition-colors ${
+                      pathname.startsWith(t.href)
+                        ? "text-text-primary bg-bg-hover"
+                        : "text-text-secondary hover:text-text-primary hover:bg-bg-hover"
+                    }`}
+                  >
+                    {t.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </nav>
 
         {/* Right side */}
@@ -119,6 +190,21 @@ export function Header() {
               </Link>
             );
           })}
+          <p className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-text-tertiary">Tools</p>
+          {toolLinks.map((t) => (
+            <Link
+              key={t.href}
+              href={t.href}
+              onClick={() => setMenuOpen(false)}
+              className={`block py-2.5 px-3 rounded-lg text-sm font-medium transition-colors ${
+                pathname.startsWith(t.href)
+                  ? "text-text-primary bg-bg-hover"
+                  : "text-text-secondary hover:text-text-primary hover:bg-bg-hover"
+              }`}
+            >
+              {t.label}
+            </Link>
+          ))}
           {session?.user ? (
             <>
               <Link

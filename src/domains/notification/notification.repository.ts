@@ -1,26 +1,22 @@
 import { prisma } from "@/lib/prisma";
-import { NotificationType } from "@/generated/prisma/client";
+import { NotificationType, Prisma } from "@/generated/prisma/client";
+
+type CreateInput = {
+  type: NotificationType;
+  recipientId: string;
+  actorId: string;
+  postId?: string;
+  commentId?: string;
+  ticker?: string;
+  meta?: Prisma.InputJsonValue;
+};
 
 export const notificationRepository = {
-  create(data: {
-    type: NotificationType;
-    recipientId: string;
-    actorId: string;
-    postId?: string;
-    commentId?: string;
-  }) {
+  create(data: CreateInput) {
     return prisma.notification.create({ data });
   },
 
-  createMany(
-    items: Array<{
-      type: NotificationType;
-      recipientId: string;
-      actorId: string;
-      postId?: string;
-      commentId?: string;
-    }>
-  ) {
+  createMany(items: Array<CreateInput>) {
     return prisma.notification.createMany({ data: items });
   },
 

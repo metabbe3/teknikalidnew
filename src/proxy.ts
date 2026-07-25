@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
+import { isBlocked, block as blockIp } from "@/lib/ip-blocklist";
+import { recordApiRequest } from "@/lib/api-traffic-log";
 
 const cspScriptSrc = process.env.NODE_ENV === "production"
   ? "script-src 'self' 'unsafe-inline' https://plausible.teknikal.id https://static.cloudflareinsights.com"
@@ -14,11 +16,15 @@ const securityHeaders = {
     "img-src 'self' data: blob:",
     "font-src 'self'",
     "connect-src 'self' ws: wss: https://plausible.teknikal.id",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
     "frame-ancestors 'none'",
   ].join("; "),
   "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
   "X-Frame-Options": "DENY",
   "X-Content-Type-Options": "nosniff",
+  "X-XSS-Protection": "1; mode=block",
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
 } as const;
@@ -31,6 +37,25 @@ const MAX_ENTRIES = 10_000;
 const authRateLimitMap = new Map<string, { count: number; resetAt: number }>();
 const AUTH_RATE_LIMIT = 10;
 const AUTH_RATE_WINDOW = 60_000;
+
+const registerRateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const REGISTER_RATE_LIMIT = 5;  // 5 registrations per hour per IP
+const REGISTER_RATE_WINDOW = 60 * 60_000;
+
+// Stricter limit on scrape-prone stock data APIs + repeat-offender IP cooldown
+const stockApiRateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const STOCK_API_RATE_LIMIT = 60; // req/min/IP on /api/stocks/* etc.
+const stockApiViolations = new Map<string, { count: number; resetAt: number }>();
+const STOCK_API_VIOLATION_WINDOW = 10 * 60_000; // track repeat offenders over 10 min
+const STOCK_API_BLOCK_WINDOW = 60 * 60_000; // 1h cooldown after 3 violations
+const blockedIps = new Map<string, number>(); // ip → unblockAt (ms)
+
+// Rate-limit + blocklist for the public /stocks/* HTML pages (the scrape surface).
+const stockPageRateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const STOCK_PAGE_RATE_LIMIT = 180; // req/min/IP — generous for humans/NAT, catches enumeration
+const stockPageViolations = new Map<string, { count: number; resetAt: number }>();
+const STOCK_PAGE_VIOLATION_WINDOW = 10 * 60_000; // track repeat offenders over 10 min
+const STOCK_PAGE_BLOCK_WINDOW = 60 * 60_000; // 1h cooldown after 3 violations
 
 const PROTECTED_PREFIXES = ["/watchlist", "/profile"];
 const ADMIN_LOGIN_ROUTE = "/admin/login";
@@ -68,15 +93,83 @@ function isAuthRoute(pathname: string): boolean {
   return pathname.startsWith("/api/auth/") && !pathname.includes("session");
 }
 
+/**
+ * Canonical URL enforcement — ensures all traffic resolves to a single
+ * origin (https://teknikal.id) to prevent duplicate-content issues in
+ * Google's index. Acts as defense-in-depth alongside Cloudflare redirects.
+ *
+ * Order: www→apex first, then http→https, so at most one redirect hop.
+ */
+const CANONICAL_HOST = "teknikal.id";
+
+function buildCanonicalUrl(request: NextRequest): URL | null {
+  const { hostname, pathname, search, port } = request.nextUrl;
+  // Use x-forwarded-host (set by Cloudflare) — falls back to request hostname
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  const effectiveHost = forwardedHost ?? hostname;
+  const proto = request.headers.get("x-forwarded-proto") ?? request.nextUrl.protocol.replace(":", "");
+
+  // Skip canonical enforcement for non-production hosts (localhost, Docker container IDs, etc.)
+  const isProdHost = effectiveHost === CANONICAL_HOST || effectiveHost === `www.${CANONICAL_HOST}`;
+  if (!isProdHost) return null;
+
+  const isWww = effectiveHost.startsWith("www.");
+  const isHttp = proto === "http";
+
+  // No redirect needed if already canonical + https
+  if (!isWww && !isHttp) return null;
+
+  const targetHost = isWww ? effectiveHost.slice(4) : effectiveHost; // strip "www."
+  const url = new URL(`${pathname}${search}`, `https://${targetHost}`);
+  return url;
+}
+
 export async function proxy(request: NextRequest) {
+  // ── Canonical redirect (www→apex, http→https) ──
+  const canonicalUrl = buildCanonicalUrl(request);
+  if (canonicalUrl) {
+    return NextResponse.redirect(canonicalUrl, 308); // permanent
+  }
+
   const response = NextResponse.next();
 
   for (const [key, value] of Object.entries(securityHeaders)) {
     response.headers.set(key, value);
   }
 
-  // Cache immutable static assets (fonts, images with hashes)
   const pathname = request.nextUrl.pathname;
+
+  // CSRF protection: verify Origin/Referer for state-changing requests
+  // Allow same-origin requests, reject cross-site POST/PUT/PATCH/DELETE
+  const method = request.method.toUpperCase();
+  if (["POST", "PUT", "PATCH", "DELETE"].includes(method) && pathname.startsWith("/api/")) {
+    const origin = request.headers.get("origin");
+    const referer = request.headers.get("referer");
+    const host = request.headers.get("host");
+    const allowedHosts = [host, "teknikal.id", "www.teknikal.id"];
+
+    const isAllowed = (checkUrl: string | null) => {
+      if (!checkUrl) return false;
+      try {
+        const parsed = new URL(checkUrl);
+        return allowedHosts.some(h => h && parsed.host === h);
+      } catch {
+        return false;
+      }
+    };
+
+    // Skip CSRF for payment webhooks (verified by signature), auth callbacks,
+    // and cron endpoints (verified by Bearer CRON_SECRET, not cookies)
+    const isExempt = pathname.startsWith("/api/payment/notification") ||
+                     pathname.startsWith("/api/auth/") ||
+                     pathname.startsWith("/api/cron/");
+
+    if (!isExempt && !isAllowed(origin) && !isAllowed(referer)) {
+      return NextResponse.json({ error: "Cross-site request blocked" }, { status: 403 });
+    }
+  }
+
+  // Cache immutable static assets (fonts, images with hashes)
   if (pathname.match(/\.\w{8,}\.(js|css|woff2?|ttf|ico|png|jpg|svg|webp)$/)) {
     response.headers.set("Cache-Control", "public, max-age=31536000, immutable");
   }
@@ -89,7 +182,8 @@ export async function proxy(request: NextRequest) {
     response.headers.set("Cache-Control", "public, s-maxage=300, stale-while-revalidate=600");
   }
 
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+  const ip = request.headers.get("cf-connecting-ip")?.trim()
+    ?? request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
     ?? request.headers.get("x-real-ip")
     ?? "unknown";
 
@@ -99,9 +193,64 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // Stricter rate limit for registration endpoint
+  if (request.nextUrl.pathname === "/api/auth/register") {
+    if (rateLimited(registerRateLimitMap, ip, REGISTER_RATE_LIMIT, REGISTER_RATE_WINDOW)) {
+      return NextResponse.json({ error: "Too many registration attempts" }, { status: 429 });
+    }
+  }
+
   if (request.nextUrl.pathname.startsWith("/api/") && !request.nextUrl.pathname.includes("/api/auth/session")) {
     if (rateLimited(rateLimitMap, ip, RATE_LIMIT, RATE_WINDOW)) {
+      recordApiRequest(ip, request.nextUrl.pathname, 429);
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+    recordApiRequest(ip, request.nextUrl.pathname, 200);
+  }
+
+  // Blocked-IP gate (DB-backed cache) — banned scrapers + escalated HTML violators.
+  const isStockRoute = pathname.startsWith("/stocks/") || pathname.startsWith("/api/stocks/") || pathname.startsWith("/api/screener");
+  if (isStockRoute && await isBlocked(ip)) {
+    return new NextResponse(null, { status: 403 });
+  }
+
+  // Stricter limit on scrape-prone stock data endpoints (+ IP cooldown for repeat offenders)
+  const isStockApi = pathname.startsWith("/api/stocks/") || pathname.startsWith("/api/screener");
+  if (isStockApi) {
+    const blockedUntil = blockedIps.get(ip);
+    if (blockedUntil && blockedUntil > Date.now()) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+    if (blockedUntil) blockedIps.delete(ip); // expired block — clean up
+    if (rateLimited(stockApiRateLimitMap, ip, STOCK_API_RATE_LIMIT, RATE_WINDOW)) {
+      // record violation; escalate to a 1h block on 3 violations within 10 min
+      const now = Date.now();
+      const v = stockApiViolations.get(ip);
+      const entry = !v || now > v.resetAt
+        ? { count: 1, resetAt: now + STOCK_API_VIOLATION_WINDOW }
+        : { count: v.count + 1, resetAt: v.resetAt };
+      stockApiViolations.set(ip, entry);
+      if (entry.count >= 3) {
+        blockedIps.set(ip, now + STOCK_API_BLOCK_WINDOW);
+      }
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+  }
+
+  // Rate-limit public /stocks/* HTML pages per IP (the scrape surface — previously unlimited).
+  if (pathname.startsWith("/stocks/")) {
+    if (rateLimited(stockPageRateLimitMap, ip, STOCK_PAGE_RATE_LIMIT, RATE_WINDOW)) {
+      const now = Date.now();
+      const v = stockPageViolations.get(ip);
+      const entry = !v || now > v.resetAt
+        ? { count: 1, resetAt: now + STOCK_PAGE_VIOLATION_WINDOW }
+        : { count: v.count + 1, resetAt: v.resetAt };
+      stockPageViolations.set(ip, entry);
+      if (entry.count >= 3) {
+        blockedIps.set(ip, now + STOCK_PAGE_BLOCK_WINDOW);
+        blockIp(ip, "auto: stock-page scrape escalation").catch(() => {});
+      }
+      return new NextResponse(null, { status: 429 });
     }
   }
 
@@ -152,16 +301,38 @@ export async function proxy(request: NextRequest) {
     }
 
     // Enforce session timeout based on rememberMe choice
-    const loginAt = (session.user as any).loginAt as number | undefined;
-    const rememberMe = (session.user as any).rememberMe as boolean;
+    // Admin sessions expire after 4 hours regardless of rememberMe
+    const su = session.user as { loginAt?: number; rememberMe?: boolean };
+    const loginAt = su.loginAt;
+    const rememberMe = su.rememberMe;
     if (loginAt) {
-      const maxMs = rememberMe ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
+      const maxMs = rememberMe ? 7 * 24 * 60 * 60 * 1000 : 4 * 60 * 60 * 1000;
       if (Date.now() - loginAt > maxMs) {
         if (request.nextUrl.pathname.startsWith("/api/")) {
           return NextResponse.json({ error: "Not found" }, { status: 404 });
         }
         return NextResponse.redirect(new URL("/admin/login", request.url));
       }
+    }
+  }
+
+  // ── Stock page canonical: force /stocks/{TICKER}.JK (uppercase) ──
+  // Redirect ANY non-canonical format to uppercase TICKER.JK:
+  //   /stocks/bbca     → /stocks/BBCA.JK
+  //   /stocks/bbca.jk  → /stocks/BBCA.JK
+  //   /stocks/BBCA     → /stocks/BBCA.JK
+  //   /stocks/Bbca.Jk  → /stocks/BBCA.JK
+  // Without this, each stock has multiple indexable URLs with different canonicals
+  // → Google treats as duplicate content → mass devaluation.
+  const stockMatch = pathname.match(/^\/stocks\/([A-Z]{2,5})(\.(JK))?$/i);
+  if (stockMatch) {
+    const ticker = stockMatch[1].toUpperCase();
+    const hasSuffix = !!stockMatch[2];
+    const isCanonical = hasSuffix && stockMatch[1] === ticker && stockMatch[2] === ".JK";
+    if (!isCanonical) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/stocks/${ticker}.JK`;
+      return NextResponse.redirect(url, 301);
     }
   }
 
@@ -172,6 +343,11 @@ export async function proxy(request: NextRequest) {
   const dashTarget = DASHBOARD_REDIRECTS[pathname];
   if (dashTarget) {
     return NextResponse.redirect(new URL(dashTarget, request.url), 308);
+  }
+  // Catch-all: any other legacy /dashboard/* (e.g. /dashboard/portfolio) → home.
+  // Without this, old indexed dashboard URLs that aren't in DASHBOARD_REDIRECTS 404.
+  if (pathname.startsWith("/dashboard")) {
+    return NextResponse.redirect(new URL("/", request.url), 308);
   }
 
   // Redirect old date-based snapshot URLs → evergreen (301 permanent)

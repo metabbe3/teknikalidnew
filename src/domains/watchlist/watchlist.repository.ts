@@ -40,6 +40,12 @@ export const watchlistRepository = {
     });
   },
 
+  deleteManyEntries(userId: string, stockTickers: string[]) {
+    return prisma.watchlist.deleteMany({
+      where: { userId, stockTicker: { in: stockTickers } },
+    });
+  },
+
   findAllWatchlistTickers() {
     return prisma.watchlist
       .findMany({ select: { stockTicker: true }, distinct: ["stockTicker"] })

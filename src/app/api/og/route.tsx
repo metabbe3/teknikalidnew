@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
                 width: 36,
                 height: 36,
                 borderRadius: 8,
-                backgroundColor: "#3b82f6",
+                backgroundColor: "#0ea5e9",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -130,7 +130,7 @@ export async function GET(request: NextRequest) {
         {/* Footer row */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ height: 2, width: 40, backgroundColor: "#3b82f6", borderRadius: 1 }} />
+            <div style={{ height: 2, width: 40, backgroundColor: "#0ea5e9", borderRadius: 1 }} />
             <span style={{ color: "#64748b", fontSize: 13 }}>teknikal.id</span>
           </div>
           <span style={{ color: "#475569", fontSize: 11 }}>Analisis Teknikal Saham Indonesia</span>

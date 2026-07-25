@@ -1,29 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { articleRepository } from "@/domains/article/article.repository";
 import { handleApiError } from "@/lib/api-error";
+import { parseQuery, schemas } from "@/lib/validation";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const cursor = searchParams.get("cursor") || undefined;
-    const tag = searchParams.get("tag") || undefined;
-    const articleType = searchParams.get("type") || undefined;
-    const limit = Math.min(
-      parseInt(searchParams.get("limit") || "12", 10),
-      50
-    );
+    const [data, error] = parseQuery(request.nextUrl.searchParams, schemas.articlesList);
+    if (error) return error;
 
     const rows = await articleRepository.findPublishedPaginated({
-      cursor,
-      limit,
-      tag,
-      articleType,
+      cursor: data.cursor,
+      limit: data.limit,
+      tag: data.tag,
+      articleType: data.type ?? "DAILY_SNAPSHOT",
     });
 
-    const hasMore = rows.length > limit;
-    const items = hasMore ? rows.slice(0, limit) : rows;
+    const hasMore = rows.length > data.limit;
+    const items = hasMore ? rows.slice(0, data.limit) : rows;
 
     return NextResponse.json({
       data: items,

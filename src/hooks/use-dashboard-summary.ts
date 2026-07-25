@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export interface DashboardSummary {
   paperTrading: {
@@ -33,6 +33,11 @@ export interface DashboardSummary {
       image: string | null;
     };
   }[];
+  dailyReward: {
+    canClaim: boolean;
+    streak: number;
+    lastClaimDate: string | null;
+  } | null;
 }
 
 export function useDashboardSummary() {
@@ -45,5 +50,24 @@ export function useDashboardSummary() {
       return json.data;
     },
     staleTime: 60_000,
+  });
+}
+
+export function useClaimDailyReward() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/reputation", { method: "POST" });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error ?? "Gagal klaim reward");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] });
+      queryClient.invalidateQueries({ queryKey: ["reputation"] });
+    },
   });
 }

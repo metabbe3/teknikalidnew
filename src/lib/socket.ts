@@ -44,9 +44,13 @@ async function authenticateSocket(
 }
 
 export function initIO(httpServer: import("http").Server): Server {
+  const allowedOrigins = process.env.NODE_ENV === "production"
+    ? [SITE_URL]
+    : [SITE_URL, "http://localhost:3000"];
+
   io = new Server(httpServer, {
     cors: {
-      origin: [SITE_URL, "http://localhost:3000"],
+      origin: allowedOrigins,
       credentials: true,
     },
   });

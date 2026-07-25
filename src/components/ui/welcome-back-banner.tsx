@@ -75,7 +75,7 @@ export function WelcomeBackBanner() {
         </div>
         <p className="text-sm text-text-secondary truncate">
           Selamat datang kembali! Terakhir Anda melihat{" "}
-          <span className="font-semibold text-text-primary">{displayTicker}</span>
+          <span className="font-mono font-semibold text-text-primary tabular-nums">{displayTicker}</span>
         </p>
       </div>
 

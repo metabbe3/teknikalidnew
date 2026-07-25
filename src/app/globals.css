@@ -10,8 +10,8 @@
   --color-bg-hover: #f5f5f4;
   --color-bg-surface: rgba(255, 255, 255, 0.95);
   --color-text-primary: #1c1917;
-  --color-text-secondary: #78716c;
-  --color-text-tertiary: #928b85;
+  --color-text-secondary: #635c56;
+  --color-text-tertiary: #78716c;
   --color-border: #e7e5e4;
   --color-border-light: #d6d3d1;
   --color-green: #22c55e;
@@ -20,11 +20,15 @@
   --color-bearish: #dc2626;
   --color-bullish-bg: rgba(13, 148, 136, 0.08);
   --color-bearish-bg: rgba(220, 38, 38, 0.08);
-  --color-accent: #2563eb;
-  --color-accent-muted: rgba(37, 99, 235, 0.12);
+  --color-warning: #b45309;
+  --color-warning-bg: rgba(180, 83, 9, 0.1);
+  --color-accent: #0369a1;
+  --color-accent-bright: #0ea5e9;
+  --color-accent-muted: rgba(3, 105, 161, 0.12);
   --font-sans: var(--font-jakarta);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-jakarta);
+  --font-serif: var(--font-newsreader);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -104,6 +108,15 @@ button:focus-visible,
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+/* Hide scrollbar but keep scroll (cross-browser) — used by horizontal pill rows */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }
 
 .depth-shadow {
@@ -233,49 +246,19 @@ button:focus-visible,
   --sidebar-ring: oklch(0.6 0.15 260);
 }
 
-/* Admin KPI gradient cards — bolder, more vivid */
-.admin-kpi-gradient-blue {
-  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 50%, #7c3aed 100%);
-  color: white;
-  border: none;
-  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
-}
-.admin-kpi-gradient-blue .text-muted-foreground { color: rgba(255,255,255,0.8) !important; }
+/* Admin KPI cards — flat and restrained. The gradient prop is now a no-op;
+   every card uses the same calm light treatment (see admin-kpi-card.tsx). */
 
-.admin-kpi-gradient-emerald {
-  background: linear-gradient(135deg, #059669 0%, #0d9488 50%, #0891b2 100%);
-  color: white;
-  border: none;
-  box-shadow: 0 4px 16px rgba(13, 148, 136, 0.25);
-}
-.admin-kpi-gradient-emerald .text-muted-foreground { color: rgba(255,255,255,0.8) !important; }
-
-.admin-kpi-gradient-amber {
-  background: linear-gradient(135deg, #d97706 0%, #ea580c 50%, #dc2626 100%);
-  color: white;
-  border: none;
-  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.25);
-}
-.admin-kpi-gradient-amber .text-muted-foreground { color: rgba(255,255,255,0.8) !important; }
-
-.admin-kpi-gradient-rose {
-  background: linear-gradient(135deg, #e11d48 0%, #db2777 50%, #a855f7 100%);
-  color: white;
-  border: none;
-  box-shadow: 0 4px 16px rgba(244, 63, 94, 0.25);
-}
-.admin-kpi-gradient-rose .text-muted-foreground { color: rgba(255,255,255,0.8) !important; }
-
-/* Admin colored accent bar on cards */
+/* Admin colored accent rule on cards — top edge only, never a side stripe */
 .admin-accent-blue { border-top: 3px solid #3b82f6; }
 .admin-accent-emerald { border-top: 3px solid #10b981; }
 .admin-accent-amber { border-top: 3px solid #f59e0b; }
 .admin-accent-rose { border-top: 3px solid #f43f5e; }
-.admin-accent-violet { border-left: 3px solid #8b5cf6; }
-.admin-accent-blue-left { border-left: 3px solid #3b82f6; }
-.admin-accent-emerald-left { border-left: 3px solid #10b981; }
-.admin-accent-amber-left { border-left: 3px solid #f59e0b; }
-.admin-accent-rose-left { border-left: 3px solid #f43f5e; }
+.admin-accent-violet { border-top: 3px solid #8b5cf6; }
+.admin-accent-blue-left { border-top: 3px solid #3b82f6; }
+.admin-accent-emerald-left { border-top: 3px solid #10b981; }
+.admin-accent-amber-left { border-top: 3px solid #f59e0b; }
+.admin-accent-rose-left { border-top: 3px solid #f43f5e; }
 
 /* Admin status indicator pulse */
 @keyframes admin-pulse {
@@ -286,12 +269,9 @@ button:focus-visible,
   animation: admin-pulse 2s ease-in-out infinite;
 }
 
-/* Admin gradient text */
+/* Admin wordmark — solid ink, no gradient text */
 .admin-gradient-text {
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--color-text-primary);
 }
 
 /* Reduced motion */
@@ -308,6 +288,17 @@ button:focus-visible,
   }
   .admin-pulse-dot {
     animation: none;
+  }
+  /* Extended coverage: pulses, glows, and the ticker marquee */
+  .animate-pulse,
+  .pulse-dot,
+  .market-dot-pulse,
+  .ticker-tape-inner {
+    animation: none;
+  }
+  .glow-bullish,
+  .glow-bearish {
+    box-shadow: none;
   }
 }
 
@@ -465,26 +456,7 @@ button:focus-visible,
   background: var(--color-bg-card);
   border-radius: 1rem;
   overflow: hidden;
-  border-left: 4px solid var(--color-accent);
-}
-.akademi-featured::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 320px;
-  height: 100%;
-  background:
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 8px,
-      rgba(13, 148, 136, 0.06) 8px,
-      rgba(13, 148, 136, 0.06) 9px
-    );
-  opacity: 0.5;
-  mask-image: linear-gradient(to right, transparent 0%, black 60%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 60%);
+  border: 1px solid var(--color-border);
 }
 
 /* ─── Akademi Filter Pills ─── */
@@ -519,16 +491,16 @@ button:focus-visible,
 }
 .toc-link {
   display: block;
-  padding: 0.375rem 0 0.375rem 0.75rem;
+  padding: 0.375rem 0.5rem;
   font-size: 0.8125rem;
   color: var(--color-text-secondary);
-  border-left: 2px solid transparent;
+  border-radius: 6px;
   transition: all 150ms ease;
   text-decoration: none;
 }
 .toc-link:hover {
   color: var(--color-accent);
-  border-left-color: var(--color-accent);
+  background: var(--color-accent-muted);
 }
 
 /* ─── Akademi CTA Banner ─── */
@@ -640,8 +612,8 @@ button:focus-visible,
   border-radius: 9999px;
   font-size: 0.8125rem;
   font-weight: 500;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
   background: transparent;
   transition: all 150ms ease;
   white-space: nowrap;
@@ -649,13 +621,13 @@ button:focus-visible,
   text-decoration: none;
 }
 .screener-pill:hover {
-  border-color: rgba(255, 255, 255, 0.25);
-  color: rgba(255, 255, 255, 0.85);
+  border-color: var(--color-accent);
+  color: var(--color-text-primary);
 }
 .screener-pill[data-active="true"] {
-  background: var(--screener-accent, #0d9488);
+  background: var(--color-accent);
   color: white;
-  border-color: var(--screener-accent, #0d9488);
+  border-color: var(--color-accent);
 }
 
 /* ─── Screener Preset Card ─── */
@@ -777,39 +749,6 @@ button:focus-visible,
   background: rgba(255, 255, 255, 0.08);
 }
 
-/* ─── Market Closed Banner ─── */
-.market-closed-bar {
-  background: linear-gradient(90deg, #451a03 0%, #78350f 50%, #451a03 100%);
-  border-top: 1px solid rgba(251, 191, 36, 0.3);
-  border-bottom: 1px solid rgba(251, 191, 36, 0.15);
-  position: relative;
-}
-.market-closed-bar::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    -45deg,
-    transparent,
-    transparent 8px,
-    rgba(251, 191, 36, 0.04) 8px,
-    rgba(251, 191, 36, 0.04) 9px
-  );
-  pointer-events: none;
-}
-.market-closed-glow {
-  box-shadow:
-    0 0 20px rgba(245, 158, 11, 0.15),
-    inset 0 1px 0 rgba(251, 191, 36, 0.1);
-}
-@keyframes market-dot-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-.market-dot-pulse {
-  animation: market-dot-pulse 2s ease-in-out infinite;
-}
-
 /* ─── Stocks: Indicator Card ─── */
 .indicator-card {
   border: 1px solid var(--color-border);
@@ -871,19 +810,10 @@ button:focus-visible,
   border-radius: 12px;
   background: var(--color-bg-card);
   border: 1px solid var(--color-border);
+  border-top: 3px solid var(--card-accent, var(--color-accent));
   transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   overflow: hidden;
-}
-.featured-stock-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 3px;
-  background: var(--card-accent, var(--color-accent));
-  border-radius: 12px 0 0 12px;
 }
 .featured-stock-card:hover {
   transform: translateY(-3px);
@@ -898,11 +828,8 @@ button:focus-visible,
 .preview-panel {
   border-radius: 12px;
   background: var(--color-bg-card);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--color-border);
   overflow: hidden;
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.04),
-    0 4px 12px rgba(0, 0, 0, 0.03);
   transition: box-shadow 300ms ease;
 }
 .preview-panel:hover {
@@ -977,10 +904,10 @@ button:focus-visible,
 .article-prose li { @apply text-gray-600; }
 .article-prose blockquote {
   @apply my-6 relative;
-  border-left: 3px solid var(--color-accent);
-  padding: 1rem 1rem 1rem 1.5rem;
-  background: rgba(37, 99, 235, 0.03);
-  border-radius: 0 0.5rem 0.5rem 0;
+  border: 1px solid rgba(14, 165, 233, 0.25);
+  padding: 1rem 1.25rem;
+  background: rgba(14, 165, 233, 0.03);
+  border-radius: 0.5rem;
   font-style: normal;
   color: var(--color-text-primary);
 }
@@ -1045,7 +972,7 @@ button:focus-visible,
   border-radius: 0.5rem;
 }
 .article-prose .cta-box a:hover {
-  background: #1d4ed8;
+  background: #0284c7;
 }
 .article-prose .cta-box .callout-label strong {
   color: var(--color-bullish);
@@ -1056,8 +983,8 @@ button:focus-visible,
 .article-prose .tip-box {
   @apply rounded-lg my-5 overflow-hidden;
   background: rgba(245, 158, 11, 0.06);
-  border-left: 4px solid #f59e0b;
-  padding: 1rem 1rem 1rem 1.25rem;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  padding: 1rem;
 }
 .article-prose .tip-box p:last-child { @apply mb-0; }
 .article-prose .tip-box .callout-label strong {
@@ -1068,8 +995,8 @@ button:focus-visible,
 .article-prose .warning-box {
   @apply rounded-lg my-5 overflow-hidden;
   background: rgba(220, 38, 38, 0.06);
-  border-left: 4px solid #dc2626;
-  padding: 1rem 1rem 1rem 1.25rem;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  padding: 1rem;
 }
 .article-prose .warning-box p:last-child { @apply mb-0; }
 .article-prose .warning-box .callout-label strong {
@@ -1151,12 +1078,12 @@ button:focus-visible,
 .article-prose .comparison-positive {
   @apply rounded-lg p-4;
   background: rgba(13, 148, 136, 0.05);
-  border-left: 3px solid var(--color-bullish);
+  border: 1px solid rgba(13, 148, 136, 0.2);
 }
 .article-prose .comparison-negative {
   @apply rounded-lg p-4;
   background: rgba(220, 38, 38, 0.05);
-  border-left: 3px solid var(--color-bearish);
+  border: 1px solid rgba(220, 38, 38, 0.2);
 }
 
 /* ─── Paper Trading: Simulation Hero ─── */
@@ -1205,14 +1132,13 @@ button:focus-visible,
 }
 
 .trade-card-bullish {
-  border-left: 3px solid var(--color-bullish);
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.06) 0%, transparent 60%);
 }
 .trade-card-bearish {
-  border-left: 3px solid var(--color-bearish);
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.06) 0%, transparent 60%);
 }
 .trade-card-pending {
-  border-left: 3px solid #f59e0b;
-  background: rgba(245, 158, 11, 0.02);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.06) 0%, transparent 60%);
 }
 
 /* ─── Paper Trading: Toast Notifications ─── */
@@ -1338,10 +1264,10 @@ button:focus-visible,
   border-color: transparent;
 }
 .holding-card-bullish {
-  border-left: 3px solid var(--color-bullish);
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.06) 0%, transparent 60%);
 }
 .holding-card-bearish {
-  border-left: 3px solid var(--color-bearish);
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.06) 0%, transparent 60%);
 }
 
 /* ─── Portfolio: Health Card ─── */

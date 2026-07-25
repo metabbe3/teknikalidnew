@@ -5,10 +5,14 @@ import { prisma } from "@/lib/prisma";
 
 export const dashboardService = {
   async getSummary(userId: string) {
-    const [paperAccount, watchlistItems, reputation, recentPosts] = await Promise.all([
+    const [paperAccount, watchlistItems, userRep, userStreak, recentPosts] = await Promise.all([
       paperTradingService.getAccount(userId).catch(() => null),
       watchlistService.getWatchlist(userId).catch(() => []),
-      reputationService.getUserReputation(userId).catch(() => ({ reputation: 0, badge: { level: "Pemula", color: "slate" } })),
+      reputationService.getUserReputation(userId).catch(() => null),
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: { dailyStreak: true, lastDailyClaimAt: true },
+      }).catch(() => null),
       prisma.post.findMany({
         where: { createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
         orderBy: { createdAt: "desc" },
@@ -47,15 +51,28 @@ export const dashboardService = {
         changePercent: item.changePercent,
       }));
 
+    // Process daily reward status
+    const badge = userRep?.badge ?? { level: "Pemula", color: "slate" };
+    const streak = userStreak?.dailyStreak ?? 0;
+    const lastClaim = userStreak?.lastDailyClaimAt ?? null;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const canClaim = !lastClaim || new Date(lastClaim).getTime() < today.getTime();
+
     return {
       paperTrading,
       watchlistMovers,
       reputation: {
-        score: reputation?.reputation ?? 0,
-        badge: reputation?.badge?.level ?? "Pemula",
-        badgeColor: reputation?.badge?.color ?? "slate",
+        score: userRep?.reputation ?? 0,
+        badge: badge.level,
+        badgeColor: badge.color,
       },
       recentPosts,
+      dailyReward: {
+        canClaim,
+        streak,
+        lastClaimDate: lastClaim?.toISOString() ?? null,
+      },
     };
   },
 };

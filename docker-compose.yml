@@ -9,7 +9,7 @@ services:
       - "3000:3000"
     environment:
       - DATABASE_URL=${DOCKER_DATABASE_URL:-postgresql://teknikalid:teknikalid_secret_2024@db:5432/teknikalid}
-      - AUTH_SECRET=${AUTH_SECRET:-b/AZq+pIn04xhSsn07vBMc6wdnPMsgKY8qB4hU4UVe8=}
+      - AUTH_SECRET=${AUTH_SECRET:?AUTH_SECRET is required}
       - AUTH_URL=${AUTH_URL:-https://teknikal.id}
       - AUTH_TRUST_HOST=true
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
@@ -34,6 +34,13 @@ services:
       db:
         condition: service_healthy
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          memory: 512M
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/api/health"]
       interval: 30s
@@ -63,13 +70,20 @@ services:
       db:
         condition: service_healthy
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          memory: 256M
     networks:
       - internal
 
   db:
     image: postgres:16-alpine
     ports:
-      - "5433:5432"
+      - "127.0.0.1:5433:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-teknikalid}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-teknikalid_secret_2024}
@@ -77,6 +91,13 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          memory: 128M
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U teknikalid"]
       interval: 5s

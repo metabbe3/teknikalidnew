@@ -2,12 +2,15 @@ import { NextResponse } from "next/server";
 import { authService } from "@/domains/auth/auth.service";
 import { socialGraphService } from "@/domains/social/social-graph.service";
 import { handleApiError } from "@/lib/api-error";
+import { parseBody, schemas } from "@/lib/validation";
 
 export async function POST(request: Request) {
   try {
     const user = await authService.requireAuth();
-    const { userId } = await request.json();
-    const result = await socialGraphService.toggleFollow(user.id, userId);
+    const [data, error] = await parseBody(request, schemas.follow);
+    if (error) return error;
+
+    const result = await socialGraphService.toggleFollow(user.id, data.userId);
     return NextResponse.json(result);
   } catch (error) {
     return handleApiError(error, "toggle follow");

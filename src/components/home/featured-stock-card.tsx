@@ -2,6 +2,14 @@ import Link from "next/link";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { MiniSparkline } from "@/components/chart/mini-sparkline";
 
+type BadgeTone = "bullish" | "bearish" | "neutral";
+
+const BADGE_TONES: Record<BadgeTone, string> = {
+  bullish: "bg-bullish-bg text-bullish",
+  bearish: "bg-bearish-bg text-bearish",
+  neutral: "bg-bg-hover text-text-secondary",
+};
+
 interface FeaturedStockCardProps {
   ticker: string;
   name: string;
@@ -11,7 +19,7 @@ interface FeaturedStockCardProps {
   changePercent: number | null;
   sparklineData?: number[];
   badge?: string;
-  badgeColor?: string;
+  badgeTone?: BadgeTone;
 }
 
 export function FeaturedStockCard({
@@ -22,30 +30,30 @@ export function FeaturedStockCard({
   changePercent,
   sparklineData,
   badge,
-  badgeColor,
+  badgeTone,
 }: FeaturedStockCardProps) {
   const isPositive = changePercent !== null && changePercent >= 0;
-  const accentColor = changePercent === null ? "#2563eb" : isPositive ? "#0d9488" : "#dc2626";
+  // Leading accent rule (border-top) tinted by direction — a leading rule, not a side-stripe.
+  const accentVar =
+    changePercent === null
+      ? "var(--color-accent)"
+      : isPositive
+        ? "var(--color-bullish)"
+        : "var(--color-bearish)";
 
   return (
     <Link
       href={`/stocks/${ticker}`}
-      className="featured-stock-card depth-shadow p-4 pl-5 block"
-      style={{ "--card-accent": accentColor } as React.CSSProperties}
+      className="featured-stock-card p-4 pl-5 block"
+      style={{ "--card-accent": accentVar } as React.CSSProperties}
       aria-label={`${stripJk(ticker)} — ${name}, ${close !== null ? formatPrice(close) : "no price"}${changePercent !== null ? `, ${changePercent >= 0 ? "+" : ""}${changePercent.toFixed(2)}%` : ""}`}
     >
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <p className="font-semibold text-[15px] tracking-tight">{stripJk(ticker)}</p>
+            <p className="font-mono font-semibold text-[15px] tabular-nums">{stripJk(ticker)}</p>
             {badge && (
-              <span
-                className="text-[9px] font-medium px-1.5 py-0.5 rounded-full"
-                style={{
-                  background: `${badgeColor ?? "#2563eb"}15`,
-                  color: badgeColor ?? "#2563eb",
-                }}
-              >
+              <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full ${BADGE_TONES[badgeTone ?? "neutral"]}`}>
                 {badge}
               </span>
             )}
@@ -54,12 +62,12 @@ export function FeaturedStockCard({
         </div>
         <div className="text-right shrink-0 tabular-nums">
           {close != null ? (
-            <p className="font-semibold text-[15px] tracking-tight">{formatPrice(close)}</p>
+            <p className="font-mono font-semibold text-[15px]">{formatPrice(close)}</p>
           ) : (
             <p className="font-semibold text-text-tertiary">—</p>
           )}
           {changePercent !== null && (
-            <p className={`text-xs font-medium mt-0.5 ${changeColor(changePercent)}`}>
+            <p className={`text-xs font-medium mt-0.5 font-mono ${changeColor(changePercent)}`}>
               {formatPercent(changePercent)}
             </p>
           )}

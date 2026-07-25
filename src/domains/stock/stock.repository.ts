@@ -8,7 +8,11 @@ export const stockRepository = {
   // ── Stock ──
 
   findStockByTicker(ticker: string) {
-    return prisma.stock.findUnique({ where: { ticker } });
+    // Normalize: ensure uppercase + .JK suffix (handles "bbca" → "BBCA.JK")
+    const normalized = ticker.trim().toUpperCase().endsWith(".JK")
+      ? ticker.trim().toUpperCase()
+      : `${ticker.trim().toUpperCase()}.JK`;
+    return prisma.stock.findUnique({ where: { ticker: normalized } });
   },
 
   findStocksByTickers(tickers: string[]) {
@@ -28,6 +32,31 @@ export const stockRepository = {
       include: {
         prices: { orderBy: { date: "desc" }, take: 6 },
         indicators: { orderBy: { date: "desc" }, take: 1, where: { interval: INTERVAL.DAY } },
+      },
+    });
+  },
+
+  // Latest 2 daily indicators + latest 2 closes for day-over-day delta (morning-delta card)
+  findStocksWithIndicatorHistory(tickers: string[]) {
+    if (tickers.length === 0) return Promise.resolve([]);
+    return prisma.stock.findMany({
+      where: { ticker: { in: tickers }, isActive: true },
+      select: {
+        ticker: true,
+        name: true,
+        prices: { orderBy: { date: "desc" }, take: 2, select: { close: true } },
+        indicators: {
+          orderBy: { date: "desc" },
+          take: 2,
+          where: { interval: INTERVAL.DAY },
+          select: {
+            date: true,
+            signalLabel: true,
+            macdHist: true,
+            smaCrossSignal: true,
+            emaCrossSignal: true,
+          },
+        },
       },
     });
   },

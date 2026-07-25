@@ -48,18 +48,10 @@ export async function POST(request: NextRequest) {
         dispatched.push(`gen_snapshots: ${job.id}`);
       }
 
-      // 2. Dispatch gen_trending_news (3-5 news articles)
-      const isNewsRunning = await agentHubRepository.hasRunningJob("gen_trending_news" as AgentType);
-      if (isNewsRunning) {
-        skipped.push("gen_trending_news: already running");
-      } else {
-        const newsJob = await agentHubService.createJob({
-          agentType: "gen_trending_news" as AgentType,
-          payload: { count: 3 },
-          priority: 5,
-        });
-        dispatched.push(`gen_trending_news: ${newsJob.id}`);
-      }
+      // 2. gen_trending_news DISABLED — AI news articles drove ~1 external view vs 32 for
+      //    the free DAILY_SNAPSHOT templates (see analytics audit). AgentConfig.isEnabled
+      //    is also false. To re-enable: restore the dispatch below + flip isEnabled to true.
+      skipped.push("gen_trending_news: disabled (low-ROI AI content)");
 
       return {
         status: 200,

@@ -9,6 +9,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // ponytail: feature flag off. teknikal_robo was 182 of 183 posts with 0 organic
+  // engagement; stopped to cut token cost. To restart: flip to true AND set
+  // site_health.autoRemediate.noCommunityPosts back to true.
+  const COMMUNITY_AGENT_ENABLED = false;
+  if (!COMMUNITY_AGENT_ENABLED) {
+    return NextResponse.json({ data: { skipped: "disabled" } });
+  }
+
   const now = new Date();
   const isWeekend = now.getDay() === 0 || now.getDay() === 6;
   if (isWeekend) {

@@ -3,14 +3,15 @@
 import { useState } from "react";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { Button } from "@/components/ui/button";
-import { Activity, BarChart3, Users, MessageSquare, TrendingUp, Target, Shield, Eye } from "lucide-react";
+import { Activity, BarChart3, Users, MessageSquare, TrendingUp, Target, Shield, UserCog, LineChart } from "lucide-react";
 import { OverviewTab } from "./_components/overview-tab";
 import { UsersTab } from "./_components/users-tab";
 import { CommunityTab } from "./_components/community-tab";
 import { StocksTab } from "./_components/stocks-tab";
 import { PredictionsTab } from "./_components/predictions-tab";
 import { AuthTab } from "./_components/auth-tab";
-import { PageViewsTab } from "./_components/page-views-tab";
+import { UserManagementTab } from "./_components/user-management-tab";
+import { AnalyticsTab } from "./_components/analytics-tab";
 
 const TABS = [
   { id: "overview", label: "Overview", icon: Activity },
@@ -19,7 +20,8 @@ const TABS = [
   { id: "stocks", label: "Stocks", icon: TrendingUp },
   { id: "predictions", label: "Predictions", icon: Target },
   { id: "auth", label: "Auth", icon: Shield },
-  { id: "pageviews", label: "Page Views", icon: Eye },
+  { id: "analytics", label: "Analytics", icon: LineChart },
+  { id: "usermgmt", label: "User Mgmt", icon: UserCog },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
@@ -36,10 +38,24 @@ export default function AdminOverviewPage() {
       />
 
       {/* Tab Bar */}
-      <div className="flex gap-1 overflow-x-auto pb-1">
+      <div
+        className="flex gap-1 overflow-x-auto pb-1"
+        role="tablist"
+        aria-label="Dashboard sections"
+        onKeyDown={(e) => {
+          if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+          e.preventDefault();
+          const idx = TABS.findIndex((t) => t.id === activeTab);
+          const next = e.key === "ArrowRight" ? (idx + 1) % TABS.length : (idx - 1 + TABS.length) % TABS.length;
+          setActiveTab(TABS[next].id);
+        }}
+      >
         {TABS.map((tab) => (
           <Button
             key={tab.id}
+            role="tab"
+            aria-selected={activeTab === tab.id}
+            tabIndex={activeTab === tab.id ? 0 : -1}
             variant={activeTab === tab.id ? "default" : "outline"}
             size="sm"
             onClick={() => setActiveTab(tab.id)}
@@ -58,7 +74,8 @@ export default function AdminOverviewPage() {
       {activeTab === "stocks" && <StocksTab />}
       {activeTab === "predictions" && <PredictionsTab />}
       {activeTab === "auth" && <AuthTab />}
-      {activeTab === "pageviews" && <PageViewsTab />}
+      {activeTab === "analytics" && <AnalyticsTab />}
+      {activeTab === "usermgmt" && <UserManagementTab />}
     </div>
   );
 }

@@ -61,10 +61,11 @@ export async function POST(request: NextRequest) {
       redirect_url: transaction.redirect_url,
       order_id: orderId,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Midtrans create transaction error:", error);
+    const message = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
-      { error: "Failed to create transaction", detail: error.message },
+      { error: "Failed to create transaction", detail: message },
       { status: 500 }
     );
   }

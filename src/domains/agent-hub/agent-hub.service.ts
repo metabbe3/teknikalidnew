@@ -1,6 +1,7 @@
 import { agentHubRepository } from "./agent-hub.repository";
 import { AGENT_TYPES, AGENT_META } from "./agent-hub.types";
 import type { AgentType, AgentJobPayload, AgentHubStats, AgentConfigRow } from "./agent-hub.types";
+import type { Prisma } from "@/generated/prisma/client";
 import { InvalidAgentTypeError, AgentJobNotFoundError, AgentAlreadyRunningError } from "./agent-hub.errors";
 
 function validateAgentType(type: string): asserts type is AgentType {
@@ -125,8 +126,8 @@ export const agentHubService = {
     isEnabled?: boolean;
     systemPrompt?: string | null;
     scheduleCron?: string | null;
-    scheduleMeta?: Record<string, unknown> | null;
-    config?: Record<string, unknown> | null;
+    scheduleMeta?: Prisma.InputJsonValue | null;
+    config?: Prisma.InputJsonValue | null;
   }): Promise<AgentConfigRow> {
     validateAgentType(agentType);
     return agentHubRepository.upsertConfig({ agentType, ...updates });

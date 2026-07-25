@@ -18,11 +18,11 @@ export function TradingPlanCard({ plan }: { plan: TradingPlan }) {
   const isWaitAndSee = plan.strategy === "WAIT_AND_SEE";
 
   return (
-    <div className={`depth-shadow rounded-xl border overflow-hidden ${isWaitAndSee ? "border-bearish/30 border-t-2 border-t-bearish/40" : isBOW ? "border-border border-t-2 border-t-amber-400/40" : "border-border border-t-2 border-t-bullish/40"}`}>
+    <div className={`depth-shadow rounded-xl border overflow-hidden ${isWaitAndSee ? "border-bearish/30" : "border-border"}`}>
       <div className="p-4 space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-semibold">Kalkulator Trading Plan</h3>
+            <h2 className="text-sm font-semibold">Kalkulator Trading Plan</h2>
             <p className="text-[10px] text-text-tertiary mt-0.5">Sumber: Pivot Points & ATR</p>
           </div>
           <div className="flex items-center gap-1.5">
@@ -118,7 +118,7 @@ export function TradingPlanCard({ plan }: { plan: TradingPlan }) {
       </div>
 
       <div className="bg-bg-primary/60 px-4 py-2.5 border-t border-border/60">
-        <p className="text-[9px] text-text-tertiary leading-relaxed">
+        <p className="text-xs text-text-secondary leading-relaxed">
           Perhitungan ini bersifat edukatif berdasarkan indikator teknikal. Bukan rekomendasi membeli atau menjual saham. Keputusan investasi sepenuhnya menjadi tanggung jawab Anda. Selalu pertimbangkan risiko dan konsultasikan dengan pihak berlisensi.
         </p>
       </div>

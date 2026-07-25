@@ -19,6 +19,7 @@ export const AGENT_TYPES = [
   "internal_linker",
   "schema_builder",
   "growth_monitor",
+  "gen_movement_analysis",
 ] as const;
 
 export type AgentType = (typeof AGENT_TYPES)[number];
@@ -219,6 +220,14 @@ export const AGENT_META: Record<AgentType, AgentMeta> = {
     icon: "TrendingUp",
     defaultSchedule: "After orchestrator dispatch",
     estimatedAiCalls: 0,
+  },
+  gen_movement_analysis: {
+    type: "gen_movement_analysis",
+    label: "Generate Movement Analysis",
+    description: "Scans all stocks for >3% movers and generates SEO articles: 'Kenapa Saham X Naik/Turun Hari Ini?' Only triggers for significant moves — cost-efficient.",
+    icon: "TrendingUp",
+    defaultSchedule: "Daily 16:30 WIB (after market close)",
+    estimatedAiCalls: 40,
   },
 };
 

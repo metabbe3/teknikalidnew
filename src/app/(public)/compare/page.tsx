@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageHero } from "@/components/layout/page-hero";
 import { ComparePageClient } from "@/components/compare/compare-page-client";
 import { SITE_URL } from "@/lib/constants";
 
@@ -44,7 +45,11 @@ export default function ComparePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <h1 className="sr-only">Bandingkan Saham IDX</h1>
+      <PageHero
+        eyebrow="Bandingkan"
+        title="Bandingkan Saham IDX"
+        description="Bandingkan pergerakan harga, indikator teknikal, fundamental, dan trading plan beberapa saham sekaligus."
+      />
       <ComparePageClient />
     </>
   );

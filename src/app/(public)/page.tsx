@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import dynamicImport from "next/dynamic";
 import { prisma } from "@/lib/prisma";
 import { decimalToNumber } from "@/lib/serialize";
-import { IDX_STOCKS, SECTORS } from "@/lib/constants";
+import { IDX_STOCKS } from "@/lib/constants";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { technicalAnalysisService } from "@/domains/stock/technical-analysis.service";
 import { authService } from "@/domains/auth/auth.service";
@@ -13,10 +13,16 @@ import { SectorHeatmap } from "@/components/home/sector-heatmap";
 import { PlatformFeatures } from "@/components/home/platform-features";
 import { CtaSection } from "@/components/home/cta-section";
 import { TickerTape } from "@/components/home/ticker-tape";
+import { SahamStrategyLinks } from "@/components/seo/saham-strategy-links";
 import { TradingPlanCard } from "@/components/stock/trading-plan-card";
 import { WelcomeBackBanner } from "@/components/ui/welcome-back-banner";
 import { PersonalizedBeranda } from "@/components/home/personalized-beranda";
+import { MorningDeltaCard } from "@/components/home/morning-delta-card";
+import { ThesisCard } from "@/components/home/thesis-card";
 import { PersonalizedGreeting } from "@/components/home/personalized-greeting";
+import { SnapshotCard, type SnapshotCardData } from "@/components/berita/snapshot-card";
+import { MarketBreathStrip } from "@/components/ui/market-breath-strip";
+import { SectionHeading } from "@/components/ui/section-heading";
 
 const MiniScreenerPreview = dynamicImport(
   () => import("@/components/home/mini-screener-preview").then((m) => ({ default: m.MiniScreenerPreview })),
@@ -42,10 +48,7 @@ export const dynamic = "force-dynamic";
 function FeaturedSkeleton() {
   return (
     <section className="space-y-5">
-      <div className="flex items-center gap-3">
-        <div className="w-1 h-6 bg-accent rounded-full" />
-        <h2 className="text-lg font-semibold tracking-tight">Saham Paling Aktif Hari Ini</h2>
-      </div>
+      <SectionHeading title="Saham Paling Aktif Hari Ini" />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
         {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="h-[120px] bg-bg-card rounded-xl animate-pulse" />
@@ -58,10 +61,7 @@ function FeaturedSkeleton() {
 function SectorSkeleton() {
   return (
     <section className="space-y-5">
-      <div className="flex items-center gap-3">
-        <div className="w-1 h-6 bg-accent rounded-full" />
-        <h2 className="text-lg font-semibold tracking-tight">Performa Sektor</h2>
-      </div>
+      <SectionHeading title="Performa Sektor" />
       <div className="flex flex-wrap gap-3">
         {Array.from({ length: 8 }).map((_, i) => (
           <div key={i} className="h-[80px] min-w-[140px] bg-bg-card rounded-xl animate-pulse" />
@@ -74,10 +74,7 @@ function SectorSkeleton() {
 function PreviewSkeleton() {
   return (
     <section className="space-y-5">
-      <div className="flex items-center gap-3">
-        <div className="w-1 h-6 bg-accent rounded-full" />
-        <h2 className="text-lg font-semibold tracking-tight">Coba Fitur Analisa</h2>
-      </div>
+      <SectionHeading eyebrow="live preview" title="Coba Fitur Analisa" />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {Array.from({ length: 3 }).map((_, i) => (
           <div key={i} className="h-[200px] bg-bg-card rounded-xl animate-pulse" />
@@ -105,7 +102,7 @@ type FeaturedItem = {
   change: number | null;
   changePercent: number | null;
   badge?: string;
-  badgeColor?: string;
+  badgeTone?: "bullish" | "bearish" | "neutral";
 };
 
 async function FeaturedStocksSection({
@@ -142,13 +139,13 @@ async function FeaturedStocksSection({
       ...s,
       change: null as number | null,
       badge: "Top Mover",
-      badgeColor: "#0d9488",
+      badgeTone: "bullish" as const,
     })),
     ...losers.slice(0, 2).map((s) => ({
       ...s,
       change: null as number | null,
       badge: "Top Mover",
-      badgeColor: "#dc2626",
+      badgeTone: "bearish" as const,
     })),
     ...oversoldRaw.slice(0, 2).map((oi) => {
       const s = oi.stock;
@@ -164,7 +161,7 @@ async function FeaturedStocksSection({
         change: close && prevClose ? close - prevClose : null,
         changePercent: changePct,
         badge: "Oversold",
-        badgeColor: "#8b5cf6",
+        badgeTone: "neutral" as const,
       };
     }),
   ];
@@ -177,10 +174,12 @@ async function FeaturedStocksSection({
 
   return (
     <section className="space-y-5">
-      <div className="flex items-center gap-3">
-        <h2 className="text-xl font-black tracking-tight">Saham Paling Aktif Hari Ini</h2>
-        <span className="text-xs text-text-tertiary font-mono tabular-nums">{featured.length} saham</span>
-      </div>
+      <SectionHeading
+        title="Saham Paling Aktif Hari Ini"
+        action={
+          <span className="text-xs text-text-tertiary font-mono tabular-nums">{featured.length} saham</span>
+        }
+      />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 stagger-grid">
         {featured.map((s, i) => (
           <div key={s.ticker} style={{ "--stagger-i": i } as React.CSSProperties}>
@@ -225,14 +224,11 @@ async function TradingPlanPreview() {
 
   return (
     <section className="space-y-5 content-auto">
-      <div className="flex items-center gap-3">
-        <h2 className="text-xl font-black tracking-tight">Coba Fitur Analisa</h2>
-        <span className="text-[10px] text-text-tertiary uppercase tracking-wider font-medium">live preview</span>
-      </div>
+      <SectionHeading eyebrow="live preview" title="Coba Fitur Analisa" />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <MiniScreenerPreview />
         <div className="space-y-4">
-          <div className="preview-panel depth-shadow" style={{ background: "linear-gradient(180deg, rgba(13, 148, 136, 0.06) 0%, var(--color-bg-card) 40%)" }}>
+          <div className="preview-panel" style={{ background: "linear-gradient(180deg, rgba(13, 148, 136, 0.06) 0%, var(--color-bg-card) 40%)" }}>
             <div className="preview-panel-header">
               <p className="text-xs font-semibold text-text-primary">Contoh Trading Plan</p>
               <p className="text-[10px] text-text-tertiary mt-0.5">
@@ -276,10 +272,24 @@ export default async function HomePage() {
   const currentUser = await authService.getCurrentUser();
 
   // Fast cached calls only — hero renders immediately
-  const [overview, marketInfo] = await Promise.all([
+  const [overview, marketInfo, ihsgPrices] = await Promise.all([
     stockMarketService.getMarketOverview(),
     stockMarketService.getMarketStatusForPage(),
+    prisma.stock.findUnique({ where: { ticker: "^JKSE" } })
+      .then((stock) => stock ? prisma.stockPrice.findMany({ where: { stockId: stock.id }, orderBy: { date: "desc" }, take: 2 }) : null)
+      .catch(() => null),
   ]);
+
+  // Compute IHSG change
+  const ihsgLatest = ihsgPrices?.[0];
+  const ihsgPrev = ihsgPrices?.[1];
+  const ihsgClose = ihsgLatest ? decimalToNumber(ihsgLatest.close) : null;
+  const ihsgPrevClose = ihsgPrev ? decimalToNumber(ihsgPrev.close) : null;
+  const ihsgChange = ihsgClose !== null && ihsgPrevClose !== null ? ihsgClose - ihsgPrevClose : null;
+  const ihsgChangePercent = ihsgClose !== null && ihsgPrevClose !== null && ihsgPrevClose !== 0
+    ? ((ihsgClose - ihsgPrevClose) / ihsgPrevClose) * 100
+    : null;
+  const ihsg = ihsgClose !== null ? { close: ihsgClose, change: ihsgChange, changePercent: ihsgChangePercent } : null;
 
   const isClosed = !marketInfo.marketStatus.isOpen;
   const { gainers, losers, sectors } = overview;
@@ -287,7 +297,6 @@ export default async function HomePage() {
   const topGainer = gainers[0];
   const topLoser = losers[0];
   const totalStocks = IDX_STOCKS.length;
-  const totalSectors = SECTORS.length;
 
   const tickerItems = [...gainers, ...losers].map((s) => ({
     ticker: s.ticker,
@@ -300,9 +309,11 @@ export default async function HomePage() {
 
     return (
       <div className="fade-in">
-        <PersonalizedGreeting name={userName} marketInfo={marketInfo} overview={overview} />
         <TickerTape items={tickerItems} />
+        <PersonalizedGreeting name={userName} marketInfo={marketInfo} overview={overview} ihsg={ihsg} />
         <div className="max-w-7xl mx-auto px-4 py-10 space-y-14">
+          <MorningDeltaCard />
+          <ThesisCard />
           <PersonalizedBeranda />
           <Suspense fallback={<FeaturedSkeleton />}>
             <FeaturedStocksSection gainers={gainers} losers={losers} />
@@ -317,107 +328,94 @@ export default async function HomePage() {
 
   // ── Anonymous: marketing homepage ────────────────────────────────
 
+  // Hero signal cards — top movers (anonymous landing)
+  const heroMovers = [...gainers.slice(0, 4), ...losers.slice(0, 4)];
+  const [heroSparkMap, heroBatch] = await Promise.all([
+    stockMarketService.getSparklines(),
+    stockMarketService.getStockBatchWithIndicators(heroMovers.map((m) => m.ticker)),
+  ]);
+  const heroBatchMap = new Map(heroBatch.map((b) => [b.ticker, b]));
+  const heroCards: SnapshotCardData[] = heroMovers.slice(0, 4).map((m) => {
+    const b = heroBatchMap.get(m.ticker);
+    return {
+      ticker: m.ticker,
+      slug: `saham-${m.ticker.replace(/\.JK$/i, "").toLowerCase()}`,
+      name: m.name,
+      sector: m.sector,
+      close: m.close,
+      changePercent: m.changePercent,
+      sparkline: heroSparkMap[m.ticker] ?? [],
+      signalScore: b?.signalScore ?? null,
+      signalLabel: b?.signalLabel ?? null,
+      rsi14: b?.rsi14 ?? null,
+      isGorengan: b?.isGorengan ?? false,
+    };
+  });
+
   return (
     <div className="fade-in">
-      {/* Section 1: Terminal Hero */}
-      <section className="akademi-hero" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}>
-        <div className="relative z-[1] max-w-7xl mx-auto px-4 py-14 sm:py-20">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-10 items-center">
-            <div className="max-w-xl space-y-6">
-              <div className={`inline-flex items-center gap-2 text-xs font-medium px-3 py-1 rounded-full border ${isClosed ? "text-amber-400 bg-amber-500/10 border-amber-500/20" : "text-teal-400 bg-teal-500/10 border-teal-500/20"}`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${isClosed ? "bg-amber-400" : "bg-teal-400 animate-pulse"}`} aria-hidden="true" />
-                {isClosed ? "Pasar Tutup — Data Sesi Terakhir" : "Pasar Sedang Buka — Data Real-time"}
-              </div>
-              <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-[1.1] text-white">
-                Analisa Teknikal
-                <br />
-                <span className="text-teal-400">
-                  Saham BEI
-                </span>
-              </h1>
-              <p className="text-gray-300 text-base sm:text-lg leading-relaxed">
-                {"Chart interaktif, RSI, MACD, Bollinger Bands, dan screener untuk "}<span className="text-white font-semibold">{totalStocks}+ saham</span>{" IDX dari "}<span className="text-white font-semibold">{totalSectors} sektor</span>{". Buat keputusan trading lebih tajam."}
-                <span className="akademi-cursor" />
-              </p>
-              <div className="flex items-center gap-3 pt-2">
-                <Link
-                  href="/stocks"
-                  className="bg-accent text-white px-6 py-2.5 rounded-lg font-medium hover:bg-accent/90 transition-colors press-scale"
-                >
-                  Lihat Saham
-                </Link>
-                <Link
-                  href="/screener"
-                  className="bg-white/10 text-white border border-white/15 px-6 py-2.5 rounded-lg font-medium hover:bg-white/20 transition-all press-scale"
-                >
-                  Coba Screener
-                </Link>
-              </div>
+      {/* ── Editorial masthead hero ── */}
+      <section className="relative overflow-hidden border-b border-border bg-bg-card">
+        <div
+          className="absolute inset-0 opacity-[0.04] pointer-events-none"
+          aria-hidden
+          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, #1c1917 1px, transparent 0)", backgroundSize: "22px 22px" }}
+        />
+        <div className="relative max-w-7xl mx-auto px-4 py-12 sm:py-16 lg:py-20">
+          <div className="max-w-3xl">
+            <div className={`inline-flex items-center gap-2 text-xs font-medium px-3 py-1 rounded-full border ${isClosed ? "text-amber-700 bg-amber-500/10 border-amber-500/20" : "text-bullish bg-bullish/10 border-bullish/20"}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${isClosed ? "bg-amber-500" : "bg-bullish animate-pulse"}`} aria-hidden />
+              {isClosed ? "Pasar Tutup — Data Sesi Terakhir" : "Pasar Buka — Data Real-time"}
             </div>
+            <h1 className="mt-5 font-serif text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.03] text-text-primary">
+              Trading saham IDX
+              <br />
+              <span className="text-bullish">tanpa nebak-nebak.</span>
+            </h1>
+            <p className="mt-5 text-base sm:text-lg text-text-secondary max-w-xl leading-relaxed">
+              Chart interaktif, 12 indikator teknikal, sinyal trading otomatis, dan screener untuk{" "}
+              <span className="font-semibold text-text-primary">{totalStocks}+ saham</span> IDX. Lihat peluang bullish &amp; bearish dalam hitungan detik — gratis.
+            </p>
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              <Link
+                href="/stocks"
+                className="inline-flex items-center gap-2 bg-text-primary text-white px-6 py-3 rounded-xl font-semibold hover:bg-text-primary/90 transition-colors press-scale"
+              >
+                Analisa Saham Sekarang
+              </Link>
+              <Link
+                href="/screener"
+                className="inline-flex items-center gap-2 bg-bg-primary text-text-primary border border-border px-6 py-3 rounded-xl font-semibold hover:border-accent/40 transition-colors press-scale"
+              >
+                Coba Screener
+              </Link>
+            </div>
+          </div>
 
-            {/* Market Pulse Panel */}
-            <div className="hidden lg:flex flex-col gap-3 min-w-[240px]">
-              <p className="text-[10px] font-mono uppercase tracking-widest text-gray-500 mb-0.5">
-                Market Pulse{isClosed ? " · sesi terakhir" : " · live"}
-              </p>
-              {topGainer && (
-                <div className="terminal-stat group">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">Top Gainer</p>
-                      <p className="text-sm font-semibold text-white mt-0.5">{topGainer.ticker.replace(".JK", "")}</p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-lg font-bold font-mono text-bullish tabular-nums">
-                        +{topGainer.changePercent.toFixed(2)}%
-                      </span>
-                    </div>
-                  </div>
-                  {topGainer.close != null && (
-                    <p className="text-[10px] text-gray-500 font-mono mt-1">
-                      Rp {topGainer.close.toLocaleString("id-ID")}
-                    </p>
-                  )}
-                </div>
-              )}
-              {topLoser && (
-                <div className="terminal-stat">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">Top Loser</p>
-                      <p className="text-sm font-semibold text-white mt-0.5">{topLoser.ticker.replace(".JK", "")}</p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-lg font-bold font-mono text-bearish tabular-nums">
-                        {topLoser.changePercent.toFixed(2)}%
-                      </span>
-                    </div>
-                  </div>
-                  {topLoser.close != null && (
-                    <p className="text-[10px] text-gray-500 font-mono mt-1">
-                      Rp {topLoser.close.toLocaleString("id-ID")}
-                    </p>
-                  )}
-                </div>
-              )}
-              <div className="terminal-stat">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">Coverage</p>
-                    <p className="text-sm font-semibold text-white mt-0.5">{totalStocks} saham</p>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-sm font-bold font-mono text-gray-300 tabular-nums">{totalSectors}</span>
-                    <p className="text-[10px] text-gray-500">sektor</p>
-                  </div>
-                </div>
+          {/* Market breath + hero signal grid */}
+          <div className="mt-10 pt-8 border-t border-border">
+            <MarketBreathStrip
+              data={{
+                advancersCount: overview.advancersCount,
+                declinersCount: overview.declinersCount,
+                unchangedCount: overview.unchangedCount,
+                topGainer,
+                topLoser,
+                ihsg,
+              }}
+            />
+            {heroCards.length > 0 && (
+              <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                {heroCards.map((c) => (
+                  <SnapshotCard key={c.ticker} {...c} />
+                ))}
               </div>
-            </div>
+            )}
           </div>
         </div>
       </section>
 
-      {/* Section 2: Ticker Tape */}
+      {/* Ticker Tape */}
       <TickerTape items={tickerItems} />
 
       {/* Main Content */}
@@ -425,25 +423,28 @@ export default async function HomePage() {
         {/* Welcome Back Banner for returning anonymous visitors */}
         <WelcomeBackBanner />
 
-        {/* Section 3: Featured Stocks — lazy-loaded with Suspense */}
-        <Suspense fallback={<FeaturedSkeleton />}>
-          <FeaturedStocksSection gainers={gainers} losers={losers} />
-        </Suspense>
-
-        {/* Section 4: Sector Heatmap */}
-        <Suspense fallback={<SectorSkeleton />}>
-          <SectorHeatmap sectors={sectors} />
-        </Suspense>
-
-        {/* Section 5: "Coba Langsung" — Interactive Tool Previews */}
+        {/* Try it — interactive tool previews (show-don't-tell, pairs with hero CTAs) */}
         <Suspense fallback={<PreviewSkeleton />}>
           <TradingPlanPreview />
         </Suspense>
 
-        {/* Section 6: Platform Features */}
+        {/* Featured Stocks — the single proper movers showcase */}
+        <Suspense fallback={<FeaturedSkeleton />}>
+          <FeaturedStocksSection gainers={gainers} losers={losers} />
+        </Suspense>
+
+        {/* Sector Heatmap */}
+        <Suspense fallback={<SectorSkeleton />}>
+          <SectorHeatmap sectors={sectors} />
+        </Suspense>
+
+        {/* Platform Features */}
         <PlatformFeatures />
 
-        {/* Section 7: CTA Banner */}
+        {/* Screener strategi — de-orphan commercial landing pages */}
+        <SahamStrategyLinks />
+
+        {/* CTA Banner */}
         <CtaSection />
       </div>
     </div>

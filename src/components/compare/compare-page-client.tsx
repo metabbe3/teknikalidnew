@@ -3,10 +3,12 @@
 import { Suspense, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
+import { useSession } from "next-auth/react";
 import { RANGE_KEYS, type DateRange } from "@/lib/constants";
 import { useCompareData } from "@/hooks/use-compare-data";
 import { StockSelector } from "./stock-selector";
 import { ComparisonTable } from "./comparison-table";
+import { GatedContent } from "@/components/ui/gated-content";
 import { stripJk, formatPercent } from "@/lib/utils";
 
 const NormalizedOverlayChart = dynamic(
@@ -26,6 +28,9 @@ const PRESETS = [
 function CompareContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { status } = useSession();
+  const isAuthed = status === "authenticated";
+  const maxStocks = isAuthed ? 4 : 2;
   const tickers = searchParams.getAll("s");
   const range = (searchParams.get("range") ?? "6mo") as DateRange;
   const { data, isLoading, error, refetch } = useCompareData(tickers, range);
@@ -42,8 +47,9 @@ function CompareContent() {
   }, [tickers, navigate]);
 
   const addStock = useCallback((ticker: string) => {
+    if (tickers.length >= maxStocks) return;
     navigate([...tickers, ticker], range);
-  }, [tickers, range, navigate]);
+  }, [tickers, range, navigate, maxStocks]);
 
   const removeStock = useCallback((ticker: string) => {
     const next = tickers.filter((t) => t !== ticker);
@@ -55,8 +61,9 @@ function CompareContent() {
   }, [tickers, range, navigate, router]);
 
   const loadPreset = useCallback((presetTickers: string[]) => {
-    navigate(presetTickers, range);
-  }, [range, navigate]);
+    const toLoad = isAuthed ? presetTickers : presetTickers.slice(0, maxStocks);
+    navigate(toLoad, range);
+  }, [range, navigate, isAuthed, maxStocks]);
 
   const stocks = data?.stocks ?? [];
   const isPresetActive = (presetTickers: string[]) =>
@@ -83,7 +90,7 @@ function CompareContent() {
             </button>
           ))}
         </div>
-        <StockSelector selected={tickers} onAdd={addStock} onRemove={removeStock} stocks={stocks} />
+        <StockSelector selected={tickers} onAdd={addStock} onRemove={removeStock} stocks={stocks} maxStocks={maxStocks} />
       </div>
 
       {tickers.length >= 2 && (
@@ -165,7 +172,9 @@ function CompareContent() {
               ))}
             </div>
           ) : stocks.length > 0 && !error ? (
-            <ComparisonTable stocks={stocks} />
+            <GatedContent message="Daftar gratis untuk melihat tabel perbandingan lengkap indikator & fundamental">
+              <ComparisonTable stocks={stocks} />
+            </GatedContent>
           ) : null}
         </>
       )}
@@ -210,34 +219,6 @@ function CompareContent() {
 export function ComparePageClient() {
   return (
     <div className="fade-in">
-      <section className="compare-hero border-b border-slate-700/50">
-        <div className="relative z-10 max-w-5xl mx-auto px-4 py-8 sm:py-10 space-y-4">
-          <div className="space-y-2">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white font-mono">
-              <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">Bandingkan</span>{" "}
-              Saham
-            </h1>
-            <p className="text-slate-400 text-sm sm:text-base max-w-lg">
-              Bandingkan performa hingga 4 saham IDX dengan grafik overlay dan tabel perbandingan indikator.
-            </p>
-          </div>
-
-          {/* Terminal stat pills */}
-          <div className="flex flex-wrap gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/60 border border-slate-700/50 text-[10px] font-mono font-semibold text-cyan-300 tracking-wider">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" aria-hidden="true" />
-              900+ SAHAM
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/60 border border-slate-700/50 text-[10px] font-mono font-semibold text-teal-300 tracking-wider">
-              <span className="w-1.5 h-1.5 rounded-full bg-teal-400" aria-hidden="true" />
-              OVERLAY CHART
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/60 border border-slate-700/50 text-[10px] font-mono font-semibold text-slate-400 tracking-wider">
-              MAX 4 SAHAM
-            </span>
-          </div>
-        </div>
-      </section>
       <Suspense fallback={null}>
         <CompareContent />
       </Suspense>

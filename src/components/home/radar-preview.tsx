@@ -31,7 +31,7 @@ export function RadarPreview() {
   }, []);
 
   return (
-    <div className="preview-panel depth-shadow" style={{ borderTop: "3px solid #8b5cf6" }}>
+    <div className="preview-panel" style={{ borderTop: "3px solid var(--color-accent)" }}>
       <div className="preview-panel-header">
         <div className="flex items-center justify-between">
           <div>
@@ -44,7 +44,7 @@ export function RadarPreview() {
       <div className="p-4 space-y-3">
         {loading && (
           <div className="flex items-center justify-center py-8">
-            <div className="w-5 h-5 border-2 border-violet-200 border-t-violet-500 rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-border border-t-accent rounded-full animate-spin" />
           </div>
         )}
         {!loading && stocks.length === 0 && (
@@ -59,15 +59,15 @@ export function RadarPreview() {
             className="flex items-center justify-between p-2 rounded-lg hover:bg-bg-hover transition-colors"
           >
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold">{stripJk(s.ticker)}</span>
+              <span className="text-xs font-semibold font-mono tabular-nums">{stripJk(s.ticker)}</span>
               <div className="flex gap-1">
                 {s.isDeepOversold && (
-                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-red-500 text-white">
+                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-bearish text-white">
                     Deep
                   </span>
                 )}
                 {s.hasVolumeSpike && (
-                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-amber-500 text-white">
+                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-warning-bg text-warning border border-warning/25">
                     Vol↑
                   </span>
                 )}
@@ -76,13 +76,13 @@ export function RadarPreview() {
             <div className="flex items-center gap-2 tabular-nums">
               {s.rsi14 != null && (
                 <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${
-                  s.rsi14 <= 20 ? "bg-red-100 text-red-700" : "bg-violet-100 text-violet-700"
+                  s.rsi14 <= 20 ? "bg-bearish-bg text-bearish" : "bg-bg-hover text-text-secondary"
                 }`}>
                   RSI {s.rsi14.toFixed(0)}
                 </span>
               )}
               {s.close != null && (
-                <span className="text-xs font-medium">{formatPrice(s.close)}</span>
+                <span className="text-xs font-medium font-mono">{formatPrice(s.close)}</span>
               )}
             </div>
           </Link>
@@ -91,7 +91,7 @@ export function RadarPreview() {
         {/* CTA */}
         <Link
           href="/screener"
-          className="flex items-center justify-center gap-2 w-full py-2 rounded-lg bg-violet-500 text-white text-xs font-semibold hover:bg-violet-600 transition-colors press-scale"
+          className="flex items-center justify-center gap-2 w-full py-2 rounded-lg bg-text-primary text-white text-xs font-semibold hover:bg-text-primary/80 transition-colors press-scale"
         >
           Lihat semua saham oversold
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">

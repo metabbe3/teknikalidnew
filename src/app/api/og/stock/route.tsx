@@ -153,7 +153,7 @@ export async function GET(request: NextRequest) {
               <div
                 style={{
                   width: 36, height: 36, borderRadius: 8,
-                  backgroundColor: "#3b82f6",
+                  backgroundColor: "#0ea5e9",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   color: "white", fontSize: 18, fontWeight: 800,
                 }}
@@ -271,7 +271,7 @@ export async function GET(request: NextRequest) {
           {/* Row 5: Footer */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <div style={{ height: 2, width: 40, backgroundColor: "#3b82f6", borderRadius: 1 }} />
+              <div style={{ height: 2, width: 40, backgroundColor: "#0ea5e9", borderRadius: 1 }} />
               <span style={{ color: "#64748b", fontSize: 13 }}>
                 teknikal.id/stocks/{data.ticker}
               </span>

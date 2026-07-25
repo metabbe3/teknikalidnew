@@ -12,7 +12,9 @@ import { FundamentalData } from "@/components/stock/fundamental-data";
 import { TradingPlanCard } from "@/components/stock/trading-plan-card";
 import { HypeWarningBadge } from "@/components/stock/hype-warning-badge";
 import { StockDiscussion } from "@/components/community/stock-discussion";
+import { RegistrationInlinePrompt } from "@/components/ui/registration-inline-prompt";
 import { StockActionBadge } from "@/components/stock/stock-action-badge";
+import { ThesisButton } from "@/components/stock/thesis-modal";
 import { SentimentGauge } from "@/components/stock/sentiment-gauge";
 import { PresenceBadge } from "@/components/stock/presence-badge";
 import { StockAlertBanner } from "@/components/stock/stock-alert-banner";
@@ -20,26 +22,25 @@ import { StockFAQWidget } from "@/components/faq/stock-faq-widget";
 import { CompanyDataTabs } from "@/components/stock/company-data-tabs";
 import { StockPaperPosition } from "@/components/paper-trading/stock-paper-position";
 import { HealthScoreDetail } from "@/components/stock/health-score-detail";
-import { GatedContent } from "@/components/ui/gated-content";
-import { HealthScoreBadge } from "@/components/stock/health-score-badge";
+import { StockLogo } from "@/components/stock/stock-logo";
+import { SignalVerdict } from "@/components/stock/signal-verdict";
 import { IndicatorTooltip } from "@/components/ui/indicator-tooltip";
 import { technicalAnalysisService, computeSignalScore } from "@/domains/stock/technical-analysis.service";
 import { stockRepository } from "@/domains/stock/stock.repository";
 import { calculatePivotPoints } from "@/lib/indicators";
 import { subDays } from "date-fns";
-import { IDX40, IDX40_TICKERS, SITE_URL } from "@/lib/constants";
+import { IDX40, SITE_URL } from "@/lib/constants";
+import { SECTORS, getSectorSlug, sectorToBahasa } from "@/lib/sectors";
 import { ShareButtons } from "@/components/ui/share-buttons";
 import { IDX_STOCKS } from "@/lib/idx-stocks";
 import { prisma } from "@/lib/prisma";
 import { portfolioService } from "@/domains/portfolio/portfolio.service";
 import DailyAnalysisSection from "@/components/stock/daily-analysis-section";
+import { LoginGate } from "@/components/auth/login-gate";
+import { auth } from "@/lib/auth";
 
-export const revalidate = 300;
+// ponytail: page is per-request SSR (auth-gated data varies by session — can't be SSG).
 export const dynamic = "force-dynamic";
-
-export function generateStaticParams() {
-  return IDX40_TICKERS.slice(0, 100).map((ticker) => ({ ticker }));
-}
 
 function Dot() {
   return <span className="text-gray-500" aria-hidden="true">·</span>;
@@ -68,9 +69,12 @@ export async function generateMetadata({
   const fullName = stock.stock.name;
   const price = stock.close !== null ? formatPrice(stock.close) : "";
   const changeStr = stock.changePercent !== null
-    ? ` (${stock.changePercent >= 0 ? "+" : ""}${formatPercent(stock.changePercent)})`
+    ? ` (${formatPercent(stock.changePercent)})`
     : "";
-  const ogImage = `${SITE_URL}/api/og/stock?ticker=${encodeURIComponent(ticker)}`;
+  // Canonical must ALWAYS be uppercase TICKER.JK to prevent duplicate content
+  const canonicalTicker = ticker.toUpperCase().endsWith(".JK") ? ticker.toUpperCase() : `${stripJk(ticker.toUpperCase())}.JK`;
+  const canonicalPath = `/stocks/${canonicalTicker}`;
+  const ogImage = `${SITE_URL}/api/og/stock?ticker=${encodeURIComponent(canonicalTicker)}`;
 
   // SEO-optimized title targeting "harga saham X hari ini" queries
   const title = price
@@ -84,11 +88,11 @@ export async function generateMetadata({
     title,
     description,
     keywords: [`harga saham ${name} hari ini`, `saham ${name}`, `${name} idx`, `analisa teknikal ${name}`, fullName, `harga ${name}`, `${ticker} harga`],
-    alternates: { canonical: `/stocks/${ticker}` },
+    alternates: { canonical: canonicalPath },
     openGraph: {
       title: `Harga Saham ${name} (${fullName}) Hari Ini | TeknikalID`,
       description: description,
-      url: `${SITE_URL}/stocks/${ticker}`,
+      url: `${SITE_URL}${canonicalPath}`,
       images: [{ url: ogImage, width: 1200, height: 630, alt: `Harga Saham ${name} Hari Ini` }],
     },
     twitter: {
@@ -105,6 +109,12 @@ export default async function StockDetailPage({
   params: Promise<{ ticker: string }>;
 }) {
   const { ticker } = await params;
+
+  // Server-side auth gate: detailed data (chart, indicators, fundamentals) only for logged-in
+  // users. Anon gets the SEO teaser (price/name/signal) + LoginGate placeholders — never the
+  // underlying data in the HTML, so scrapers can't read it.
+  const session = await auth();
+  const isAuthed = !!session?.user;
 
   let detail;
   try {
@@ -378,7 +388,7 @@ export default async function StockDetailPage({
             name: `Berapa harga saham ${stripJk(ticker)} hari ini?`,
             acceptedAnswer: {
               "@type": "Answer",
-              text: `Harga saham ${stripJk(ticker)} hari ini ${close !== null ? formatPrice(close) : "-"}` + (changePercent !== null ? ` (${changePercent >= 0 ? "+" : ""}${formatPercent(changePercent)})` : "") + `. Lihat chart, indikator teknikal, dan analisa lengkap di TeknikalID.`,
+              text: `Harga saham ${stripJk(ticker)} hari ini ${close !== null ? formatPrice(close) : "-"}` + (changePercent !== null ? ` (${formatPercent(changePercent)})` : "") + `. Lihat chart, indikator teknikal, dan analisa lengkap di TeknikalID.`,
             },
           },
           {
@@ -386,7 +396,7 @@ export default async function StockDetailPage({
             name: `Bagaimana analisis teknikal saham ${stripJk(ticker)}?`,
             acceptedAnswer: {
               "@type": "Answer",
-              text: `Analisis teknikal ${stripJk(ticker)} termasuk RSI${indicators?.rsi14 !== null ? ` (${indicators?.rsi14?.toFixed?.(1) ?? "-"})` : ""}, MACD, Support/Resistance, Bollinger Bands, dan sinyal trading tersedia lengkap di halaman ini.`,
+              text: `Analisis teknikal ${stripJk(ticker)} termasuk RSI, MACD, Support/Resistance, Bollinger Bands, dan sinyal trading tersedia lengkap di halaman ini.`,
             },
           },
           {
@@ -394,7 +404,7 @@ export default async function StockDetailPage({
             name: `Apa itu saham ${stripJk(ticker)} (${stock.name})?`,
             acceptedAnswer: {
               "@type": "Answer",
-              text: `${stripJk(ticker)} (${stock.name}) adalah emiten yang tercatat di Bursa Efek Indonesia${stock.sector ? `, sektor ${stock.sector}` : ""}. Pantau pergerakan harga, indikator teknikal, dan diskusi komunitas di TeknikalID.`,
+              text: `${stripJk(ticker)} (${stock.name}) adalah emiten yang tercatat di Bursa Efek Indonesia${stock.sector ? `, sektor ${sectorToBahasa(stock.sector)}` : ""}. Pantau pergerakan harga, indikator teknikal, dan diskusi komunitas di TeknikalID.`,
             },
           },
         ],
@@ -409,20 +419,31 @@ export default async function StockDetailPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
     <div className="fade-in">
-      {/* Dark Terminal Header */}
-      <section className="stocks-hero" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}>
-        <div className="relative z-[1] max-w-7xl mx-auto px-4 py-8 sm:py-10 space-y-5">
+      {/* ── Signal verdict (leads the page) ── */}
+      <SignalVerdict
+        ticker={ticker}
+        signalLabel={indicators?.signalLabel ?? null}
+        signalScore={isAuthed ? indicators?.signalScore ?? null : null}
+        outlook={outlook}
+        rsi14={isAuthed ? indicators?.rsi14 ?? null : null}
+        isGorengan={indicators?.isGorengan ?? false}
+        showHypeAlert={showHypeAlert}
+      />
+
+      {/* Price header (light broadsheet) */}
+      <section className="border-b border-border bg-bg-card">
+        <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8 space-y-5">
           {/* Breadcrumb */}
-          <nav className="text-xs text-gray-500 flex items-center gap-1.5 font-mono" aria-label="Breadcrumb">
-            <Link href="/stocks" className="hover:text-white transition-colors">Stocks</Link>
+          <nav className="text-xs text-text-tertiary flex items-center gap-1.5 font-mono" aria-label="Breadcrumb">
+            <Link href="/stocks" className="hover:text-text-primary transition-colors">Stocks</Link>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <polyline points="9 18 15 12 9 6" />
             </svg>
-            <span className="text-gray-300" aria-current="page">{stripJk(ticker)}</span>
+            <span className="text-text-secondary" aria-current="page">{stripJk(ticker)}</span>
           </nav>
 
           {/* Price Header Card */}
-          <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-5 sm:p-6 relative overflow-hidden backdrop-blur-sm">
+          <div className="rounded-xl border border-border bg-bg-primary/60 p-5 sm:p-6 relative overflow-hidden">
             <div className={`absolute top-0 left-0 right-0 h-[3px] rounded-t-xl ${
               change !== null
                 ? (isPositive ? "bg-gradient-to-r from-bullish via-bullish/40 to-transparent" : "bg-gradient-to-r from-bearish via-bearish/40 to-transparent")
@@ -432,56 +453,42 @@ export default async function StockDetailPage({
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
                 <div className="flex items-center gap-2.5 flex-wrap">
-                  {stock.logo && (
-                    <img src={stock.logo} alt={`${stock.name} logo`} className="w-8 h-8 rounded-md object-contain bg-white/10" loading="lazy" />
-                  )}
-                  <h1 className="text-2xl font-bold tracking-tight text-white">{stripJk(ticker)}</h1>
-                  {indicators?.signalLabel && (
-                    <span className={`text-sm font-bold px-3 py-1 rounded-lg inline-flex items-center gap-1 ${
-                      indicators.signalLabel === "Strong Bullish" ? "bg-emerald-500/25 text-emerald-300 border border-emerald-500/30"
-                      : indicators.signalLabel === "Bullish" ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
-                      : indicators.signalLabel === "Bearish" ? "bg-red-500/15 text-red-400 border border-red-500/20"
-                      : indicators.signalLabel === "Strong Bearish" ? "bg-red-500/25 text-red-300 border border-red-500/30"
-                      : "bg-white/10 text-gray-300 border border-white/10"
-                    }`}>
-                      {indicators.signalLabel === "Strong Bullish" ? "▲▲" : indicators.signalLabel === "Bullish" ? "▲" : indicators.signalLabel === "Strong Bearish" ? "▼▼" : indicators.signalLabel === "Bearish" ? "▼" : "◆"} {indicators.signalLabel}
-                      <IndicatorTooltip indicator="Signal" className="opacity-60 hover:opacity-100" />
-                    </span>
-                  )}
+                  <StockLogo src={stock.logo} name={stock.name} ticker={ticker} />
+                  <h1 className="text-2xl font-bold tracking-tight text-text-primary">{stripJk(ticker)}</h1>
                   {indicators?.isGorengan && (
-                    <span className="text-sm font-bold px-3 py-1 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 inline-flex items-center gap-1">
+                    <span className="text-sm font-bold px-3 py-1 rounded-lg bg-amber-500/15 text-amber-600 border border-amber-500/30 inline-flex items-center gap-1">
                       ⚠ Gorengan
                       <IndicatorTooltip indicator="Gorengan" className="opacity-60 hover:opacity-100" />
                     </span>
                   )}
-                  <HealthScoreBadge signalScore={indicators?.signalScore ?? null} size="lg" />
-                  <span className="text-gray-600" aria-hidden="true">·</span>
-                  <span className="text-xs text-gray-500 uppercase tracking-wider font-medium">{stock.sector}</span>
+                  <span className="text-text-tertiary" aria-hidden="true">·</span>
+                  <span className="text-xs text-text-tertiary font-medium">{sectorToBahasa(stock.sector)}</span>
                 </div>
-                <p className="text-sm text-gray-400 mt-0.5">{stock.name}</p>
+                <p className="text-sm text-text-secondary mt-0.5">{stock.name}</p>
               </div>
               {close !== null && (
                 <div className="text-right shrink-0">
-                  <p className="text-2xl sm:text-3xl font-bold tracking-tight leading-none tabular-nums text-white">{formatPrice(close)}</p>
+                  <p className="text-2xl sm:text-3xl font-bold tracking-tight leading-none tabular-nums text-text-primary">{formatPrice(close)}</p>
                   {changePercent !== null && (
                     <p className={`text-sm mt-1 tabular-nums ${
                       changePercent === 0
-                        ? "text-gray-500"
+                        ? "text-text-tertiary"
                         : `font-semibold ${changeColor(changePercent)}`
                     }`}>
                       {formatPercent(changePercent)}
                       {change !== null && changePercent !== 0 && (
-                        <span className="text-gray-500 font-normal ml-1">
+                        <span className="text-text-tertiary font-normal ml-1">
                           ({isPositive ? "+" : ""}{formatPrice(change)})
                         </span>
                       )}
                     </p>
                   )}
-                  <div className="mt-3 flex items-center gap-2 opacity-80">
+                  <div className="mt-3 flex items-center gap-2 opacity-90">
                     <StockActionBadge ticker={ticker} />
+                    <ThesisButton ticker={ticker} />
                     <Link
                       href={`/compare?s=${ticker}`}
-                      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium border border-white/[0.06] text-gray-500 hover:bg-white/[0.04] hover:text-gray-300 transition-all press-scale"
+                      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium border border-border text-text-tertiary hover:bg-bg-hover hover:text-text-primary transition-all press-scale"
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                         <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
@@ -497,12 +504,12 @@ export default async function StockDetailPage({
             {/* Paper trading position card */}
             {close !== null && <StockPaperPosition ticker={ticker} />}
 
-            {/* Indicator strip */}
-            {indicators && close !== null && (
-              <div className="border-t border-white/[0.08] mt-5 pt-4">
+            {/* Indicator strip — auth-gated (current indicator values are scrape data) */}
+            {isAuthed && indicators && close !== null && (
+              <div className="border-t border-border mt-5 pt-4">
                 <div className="flex items-center justify-between gap-4 flex-wrap">
                   <div className="flex items-center gap-2.5 flex-wrap text-sm">
-                    <span className={`font-mono font-semibold inline-flex items-center gap-1 ${rsiColor(indicators.rsi14) || "text-gray-300"}`}>
+                    <span className={`font-mono font-semibold inline-flex items-center gap-1 ${rsiColor(indicators.rsi14) || "text-text-secondary"}`}>
                       RSI {indicators.rsi14?.toFixed(0) ?? "—"}
                       <IndicatorTooltip indicator="RSI" />
                     </span>
@@ -518,12 +525,12 @@ export default async function StockDetailPage({
                     )}
                     {indicators.atr !== null && (
                       <>
-                        <span className="font-mono text-gray-400 inline-flex items-center gap-1">Vol {(indicators.atr / close * 100).toFixed(1)}%<IndicatorTooltip indicator="Volatilitas" /></span>
+                        <span className="font-mono text-text-secondary inline-flex items-center gap-1">Vol {(indicators.atr / close * 100).toFixed(1)}%<IndicatorTooltip indicator="Volatilitas" /></span>
                         <Dot />
                       </>
                     )}
                     {indicators.adx !== null && (
-                      <span className={`font-mono font-semibold inline-flex items-center gap-1 ${indicators.adx > 25 ? "text-blue-400" : "text-gray-500"}`}>
+                      <span className={`font-mono font-semibold inline-flex items-center gap-1 ${indicators.adx > 25 ? "text-accent" : "text-text-tertiary"}`}>
                         {indicators.adx > 25 ? "Tren Kuat" : "Tren Lemah"}
                         <IndicatorTooltip indicator="ADX" />
                       </span>
@@ -537,7 +544,7 @@ export default async function StockDetailPage({
                     {emaCrossText && (
                       <CrossBadge text={emaCrossText} isBullish={indicators?.emaCrossSignal === "bullish"} />
                     )}
-                    <span className="text-xs text-gray-400 flex items-center gap-1 font-mono">
+                    <span className="text-xs text-text-tertiary flex items-center gap-1 font-mono">
                       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
                         <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
                       </svg>
@@ -562,14 +569,14 @@ export default async function StockDetailPage({
             )}
 
             {/* Share bar */}
-            <div className="flex justify-end mt-3 pt-3 border-t border-white/[0.06]">
+            <div className="flex justify-end mt-3 pt-3 border-t border-border">
               <ShareButtons
                 url={`${SITE_URL}/stocks/${ticker}`}
                 title={`Analisa Teknikal ${stripJk(ticker)} — ${stock.name}`}
                 text={`Chart dan indikator teknikal ${stripJk(ticker)} hari ini di TeknikalID`}
                 imageUrl={`${SITE_URL}/api/og/stock?ticker=${encodeURIComponent(ticker)}`}
                 storyImageUrl={`${SITE_URL}/api/og/stock-story?ticker=${encodeURIComponent(ticker)}`}
-                className="[&_button]:!border-white/10 [&_button]:!text-gray-400 [&_button:hover]:!text-white [&_button:hover]:!bg-white/5 [&_span]:!text-gray-500"
+                className="[&_button]:!border-border [&_button]:!text-text-tertiary [&_button:hover]:!text-text-primary [&_button:hover]:!bg-bg-hover [&_span]:!text-text-tertiary"
               />
             </div>
           </div>
@@ -578,49 +585,56 @@ export default async function StockDetailPage({
 
       {/* Main content */}
       <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-        {/* Chart */}
-        <ChartSection ticker={ticker} />
-
-        {/* Daily Analysis — right after chart, before indicator details */}
-        {close !== null && (
-          <DailyAnalysisSection
-            ticker={ticker}
-            stockName={stock.name}
-            sector={stock.sector}
-            close={close}
-            change={change}
-            changePercent={changePercent}
-            high={latestHigh}
-            low={latestLow}
-            volume={latestVolume}
-            week52High={detail.week52High}
-            week52Low={detail.week52Low}
-            rsi14={indicators?.rsi14 ?? null}
-            macdHist={indicators?.macdHist ?? null}
-            sma20={indicators?.sma20 ?? null}
-            sma50={indicators?.sma50 ?? null}
-            sma200={indicators?.sma200 ?? null}
-            adx={indicators?.adx ?? null}
-            stochK={indicators?.stochK ?? null}
-            stochD={indicators?.stochD ?? null}
-            supertrend={indicators?.supertrend ?? null}
-            atr={indicators?.atr ?? null}
-            obvTrend={indicators?.obvTrend ?? null}
-            signalLabel={indicators?.signalLabel ?? null}
-            signalScore={indicators?.signalScore ?? null}
-            emaCrossSignal={indicators?.emaCrossSignal ?? null}
-            smaCrossSignal={indicators?.smaCrossSignal ?? null}
-            bbUpper={indicators?.bbUpper ?? null}
-            bbLower={indicators?.bbLower ?? null}
-            pe={fundamentals?.pe ?? null}
-            pb={fundamentals?.pb ?? null}
-            eps={fundamentals?.eps ?? null}
-            dividendYield={fundamentals?.dividendYield ?? null}
-            marketCap={fundamentals?.marketCap ?? null}
-            pivotR1={pivots?.r1 ?? null}
-            pivotS1={pivots?.s1 ?? null}
+        {/* Chart — auth-gated. Anon gets a login placeholder; the OHLC series is never sent. */}
+        {isAuthed ? (
+          <ChartSection ticker={ticker} />
+        ) : (
+          <LoginGate
+            feature="Chart Interaktif"
+            message="Daftar gratis untuk membuka chart candlestick interaktif, indikator teknikal, dan analisa pergerakan harga lengkap."
           />
         )}
+
+        {/* Daily Analysis — auth-gated (embeds indicator values in narrative) */}
+        {isAuthed && close !== null ? (
+            <DailyAnalysisSection
+              ticker={ticker}
+              stockName={stock.name}
+              sector={stock.sector}
+              close={close}
+              change={change}
+              changePercent={changePercent}
+              high={latestHigh}
+              low={latestLow}
+              volume={latestVolume}
+              week52High={detail.week52High}
+              week52Low={detail.week52Low}
+              rsi14={indicators?.rsi14 ?? null}
+              macdHist={indicators?.macdHist ?? null}
+              sma20={indicators?.sma20 ?? null}
+              sma50={indicators?.sma50 ?? null}
+              sma200={indicators?.sma200 ?? null}
+              adx={indicators?.adx ?? null}
+              stochK={indicators?.stochK ?? null}
+              stochD={indicators?.stochD ?? null}
+              supertrend={indicators?.supertrend ?? null}
+              atr={indicators?.atr ?? null}
+              obvTrend={indicators?.obvTrend ?? null}
+              signalLabel={indicators?.signalLabel ?? null}
+              signalScore={indicators?.signalScore ?? null}
+              emaCrossSignal={indicators?.emaCrossSignal ?? null}
+              smaCrossSignal={indicators?.smaCrossSignal ?? null}
+              bbUpper={indicators?.bbUpper ?? null}
+              bbLower={indicators?.bbLower ?? null}
+              pe={fundamentals?.pe ?? null}
+              pb={fundamentals?.pb ?? null}
+              eps={fundamentals?.eps ?? null}
+              dividendYield={fundamentals?.dividendYield ?? null}
+              marketCap={fundamentals?.marketCap ?? null}
+              pivotR1={pivots?.r1 ?? null}
+              pivotS1={pivots?.s1 ?? null}
+            />
+        ) : null}
 
         {/* Saham Hari Ini — daily snapshot article */}
         {dailySnapshot && (
@@ -630,7 +644,7 @@ export default async function StockDetailPage({
               className="block bg-bg-card rounded-xl depth-shadow p-5 hover:depth-shadow-hover transition-all border border-border"
             >
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded text-green-500 bg-green-500/10">
+                <span className="text-xs text-text-tertiary font-mono">
                   Saham Hari Ini
                 </span>
                 <span className="text-xs text-text-tertiary font-mono">
@@ -650,8 +664,7 @@ export default async function StockDetailPage({
         {/* Indicators + Sidebar */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           <div className="lg:col-span-3">
-            <GatedContent message="Daftar gratis untuk melihat 12 indikator teknikal lengkap">
-            {indicators ? (
+            {isAuthed && indicators ? (
               <IndicatorPanel
                 close={close}
                 rsi14={indicators.rsi14}
@@ -678,53 +691,71 @@ export default async function StockDetailPage({
                 ema26={indicators.ema26}
                 prevIndicator={prevIndicator}
               />
-            ) : (
+            ) : isAuthed ? (
               <div className="indicator-card depth-shadow p-8 text-center text-text-secondary">
                 Data indikator belum tersedia untuk saham ini
               </div>
+            ) : (
+              <LoginGate
+                feature="Indikator Teknikal"
+                message="Daftar gratis untuk membuka panel indikator lengkap — RSI, MACD, Bollinger Bands, Stochastic, ADX, dan moving average."
+              />
             )}
-            </GatedContent>
-            <p className="text-[10px] text-text-tertiary text-center mt-2">
-              Sinyal teknikal berdasarkan perhitungan indikator — bukan rekomendasi jual/beli. Selalu DYOR.
-            </p>
           </div>
           <div className="space-y-4">
-            <KeyStatistics
-              open={latest ? decimalToNumber(latest.open) : null}
-              high={latest ? decimalToNumber(latest.high) : null}
-              low={latest ? decimalToNumber(latest.low) : null}
-              close={close}
-              volume={latest ? bigIntToNumber(latest.volume) : null}
-              week52High={detail.week52High}
-              week52Low={detail.week52Low}
-              sma20={indicators?.sma20 ?? null}
-              sma50={indicators?.sma50 ?? null}
-              sma200={indicators?.sma200 ?? null}
-            />
-            <GatedContent message="Daftar gratis untuk melihat analisis mendalam per indikator">
-            <HealthScoreDetail
-              signalScore={indicators?.signalScore ?? null}
-              breakdown={signalBreakdown}
-            />
-            </GatedContent>
-            <GatedContent message="Daftar gratis untuk melihat data fundamental saham ini">
-            <FundamentalData data={fundamentals} />
-            </GatedContent>
-            <GatedContent message="Daftar gratis untuk melihat trading plan lengkap dengan harga entry & target">
-            {tradingPlan && <TradingPlanCard plan={tradingPlan} />}
-            </GatedContent>
+            {isAuthed ? (
+              <KeyStatistics
+                open={latest ? decimalToNumber(latest.open) : null}
+                high={latest ? decimalToNumber(latest.high) : null}
+                low={latest ? decimalToNumber(latest.low) : null}
+                close={close}
+                volume={latest ? bigIntToNumber(latest.volume) : null}
+                week52High={detail.week52High}
+                week52Low={detail.week52Low}
+                sma20={indicators?.sma20 ?? null}
+                sma50={indicators?.sma50 ?? null}
+                sma200={indicators?.sma200 ?? null}
+              />
+            ) : (
+              <LoginGate
+                feature="Key Statistics"
+                message="Daftar gratis untuk membuka data statistik lengkap — OHLC harian, volume, SMA, dan range 52 minggu."
+              />
+            )}
+            {isAuthed ? (
+              <div className="space-y-4">
+                <HealthScoreDetail
+                  signalScore={indicators?.signalScore ?? null}
+                  breakdown={signalBreakdown}
+                />
+                <FundamentalData data={fundamentals} />
+                {tradingPlan && <TradingPlanCard plan={tradingPlan} />}
+              </div>
+            ) : (
+              <LoginGate
+                feature="Health Score & Fundamental"
+                message="Daftar gratis untuk membuka Health Score detail, data fundamental, dan trading plan lengkap."
+              />
+            )}
           </div>
         </div>
 
-        {/* IDX Company Data Tabs */}
-        <CompanyDataTabs
-          profile={idxProfile}
-          commissioners={idxCommissionersSerialized}
-          directors={idxDirectorsSerialized}
-          shareholders={idxShareholdersSerialized}
-          subsidiaries={idxSubsidiariesSerialized}
-          dividends={idxDividendsSerialized}
-        />
+        {/* IDX Company Data Tabs — auth-gated */}
+        {isAuthed ? (
+          <CompanyDataTabs
+            profile={idxProfile}
+            commissioners={idxCommissionersSerialized}
+            directors={idxDirectorsSerialized}
+            shareholders={idxShareholdersSerialized}
+            subsidiaries={idxSubsidiariesSerialized}
+            dividends={idxDividendsSerialized}
+          />
+        ) : (
+          <LoginGate
+            feature="Data Perusahaan"
+            message="Daftar gratis untuk melihat data perusahaan lengkap — komisaris, direksi, pemegang saham, dan dividen."
+          />
+        )}
 
         {/* Who holds this stock */}
         {await (async () => {
@@ -739,14 +770,14 @@ export default async function StockDetailPage({
           }
           if (holders.length === 0) return null;
           return (
-            <div className="bg-bg-card depth-shadow rounded-xl p-5 border border-border" style={{ borderTop: "3px solid #0d9488" }}>
+            <div className="bg-bg-card depth-shadow rounded-xl p-5 border border-border">
               <div className="flex items-center gap-2 mb-3">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-teal-500">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
                 </svg>
-                <h3 className="text-xs font-mono font-semibold uppercase tracking-wider text-text-primary">
+                <h2 className="text-sm font-semibold text-text-primary">
                   Dipantau Komunitas
-                </h3>
+                </h2>
                 <span className="text-[10px] font-mono text-text-tertiary ml-auto">{totalHolders} komunitas</span>
               </div>
               <div className="flex items-center gap-2 flex-wrap">
@@ -776,6 +807,7 @@ export default async function StockDetailPage({
         {/* Daily Analysis moved up — right after chart */}
 
         <SentimentGauge ticker={ticker} />
+        <RegistrationInlinePrompt ticker={ticker} />
         <StockDiscussion ticker={ticker} />
 
         <StockFAQWidget ticker={ticker} />
@@ -783,7 +815,7 @@ export default async function StockDetailPage({
         {/* Related articles */}
         {relatedArticles.length > 0 && (
           <div className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">Artikel Terkait</p>
+            <p className="text-sm font-semibold text-text-primary">Artikel Terkait</p>
             <div className="space-y-2">
               {relatedArticles.map((ra) => (
                 <Link key={ra.id} href={`/berita/${ra.slug}`} className="group block bg-bg-card rounded-xl depth-shadow p-4 hover:depth-shadow-hover transition-all">
@@ -806,8 +838,8 @@ export default async function StockDetailPage({
         {/* Sector-related articles */}
         {sectorArticles.length > 0 && (
           <div className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
-              Berita Sektor {stock.sector}
+            <p className="text-sm font-semibold text-text-primary">
+              Berita Sektor {sectorToBahasa(stock.sector)}
             </p>
             <div className="space-y-2">
               {sectorArticles.map((sa) => (
@@ -832,6 +864,33 @@ export default async function StockDetailPage({
                 </Link>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* ── SEO Internal Links: Sector peers + sector page ── */}
+        {stock.sector && (
+          <div className="space-y-3">
+            <p className="text-sm font-semibold text-text-primary">
+              Saham Sektor {sectorToBahasa(stock.sector)} Lainnya
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {sectorPeers.slice(0, 10).map((peer) => (
+                <Link
+                  key={peer}
+                  href={`/stocks/${peer}`}
+                  className="text-xs font-mono font-semibold px-3 py-1.5 rounded-full bg-bg-card depth-shadow text-text-secondary hover:text-accent hover:border-accent/20 transition-colors"
+                >
+                  {stripJk(peer)}
+                </Link>
+              ))}
+            </div>
+            {/* Sector page link for SEO */}
+            <Link
+              href={`/sektor/${getSectorSlug(stock.sector)}`}
+              className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:text-accent/80 transition-colors"
+            >
+              Lihat semua saham sektor {sectorToBahasa(stock.sector)} →
+            </Link>
           </div>
         )}
       </div>

@@ -17,3 +17,9 @@ export class ScreenerNameExistsError extends DomainError {
     super(`Screener "${name}" already exists`, 409);
   }
 }
+
+export class AlertNotFoundError extends DomainError {
+  constructor() {
+    super("Alert not found", 404);
+  }
+}

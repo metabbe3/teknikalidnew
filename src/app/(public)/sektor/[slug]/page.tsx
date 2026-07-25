@@ -131,7 +131,7 @@ export default async function SectorDetailPage({
 
         {/* Header */}
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-text-primary">
+          <h1 className="text-2xl sm:text-3xl font-bold font-serif text-text-primary">
             Sektor {sector.name}
           </h1>
           <p className="text-text-secondary mt-3 text-sm sm:text-base leading-relaxed max-w-3xl">

@@ -1,9 +1,9 @@
 import { subDays } from "date-fns";
 import { ArticleStatus, ArticleType } from "@/generated/prisma/client";
 import { IDX40 } from "@/lib/constants";
-import { ALL_TICKERS } from "@/lib/idx-stocks";
+import { IDX40_TICKERS } from "@/lib/idx-stocks";
 import { decimalToNumber, bigIntToNumber } from "@/lib/serialize";
-import { stockRepository } from "@/domains/stock/stock.repository";
+import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { articleRepository } from "./article.repository";
 import { createAIProvider } from "./ai-provider";
 import { buildStockAnalysisPrompt, buildEducationalPrompt, buildNewsPrompt, buildGeneralPrompt, pickNextTopic } from "./prompts";
@@ -11,17 +11,19 @@ import { buildTemplateArticle, buildDailySnapshot, buildDailySlug } from "./arti
 import { ArticleNotFoundError, ArticleGenerationError, DuplicateSlugError } from "./article.errors";
 import { gatherMarketContext, formatMarketContextForPrompt, factCheckArticle, extractTickersFromText } from "./article-fact-check";
 import type { MarketContext } from "./article-fact-check";
+import { validateArticle } from "./quality-validator";
+import { resolveTitle } from "./title-guard";
 
 export const articleService = {
   async generateStockAnalysis(ticker: string): Promise<{ id: string; title: string; slug: string }> {
-    const stock = await stockRepository.findStockByTicker(ticker);
+    const stock = await stockMarketService.findStockByTicker(ticker);
     if (!stock) throw new ArticleGenerationError(`Stock ${ticker} not found`);
 
     const [prices, indicator, prevIndicator, fundamental] = await Promise.all([
-      stockRepository.findLatestPrices(stock.id, 2),
-      stockRepository.findLatestIndicator(stock.id, "1d"),
-      stockRepository.findPrevIndicator(stock.id, "1d"),
-      stockRepository.findLatestFundamental(stock.id),
+      stockMarketService.findLatestPrices(stock.id, 2),
+      stockMarketService.findLatestIndicator(stock.id, "1d"),
+      stockMarketService.findPrevIndicator(stock.id, "1d"),
+      stockMarketService.findLatestFundamental(stock.id),
     ]);
 
     if (!indicator) throw new ArticleGenerationError(`No indicator data for ${ticker}`);
@@ -32,7 +34,7 @@ export const articleService = {
       throw new ArticleGenerationError(`Skipping ${ticker}: stale price data (${latest.date.toISOString().slice(0, 10)})`);
     }
 
-    const week52 = await stockRepository.getWeek52HighLow(stock.id);
+    const week52 = await stockMarketService.getWeek52HighLow(stock.id);
 
     const indicatorData = {
       rsi14: decimalToNumber(indicator.rsi14),
@@ -102,7 +104,7 @@ export const articleService = {
       : null;
     const signalStr = signalLabel ? ` — Sinyal ${signalLabel}` : "";
     const defaultTitle = `Analisa Teknikal ${stock.name} (${t.toUpperCase()}) Hari Ini ${priceStr}${changeStr}${signalStr}`;
-    const title = result.title || defaultTitle;
+    const title = resolveTitle(result.title, result.content, defaultTitle);
     const tags = result.tags.length > 0 ? result.tags : [stock.sector, t.toUpperCase(), "analisa teknikal"];
     const meta = { provider: provider.name, model: process.env.ANTHROPIC_MODEL, timestamp: new Date().toISOString() } as Record<string, string>;
 
@@ -143,12 +145,12 @@ export const articleService = {
   },
 
   async generateTemplateAnalysis(ticker: string): Promise<{ id: string; title: string; slug: string }> {
-    const stock = await stockRepository.findStockByTicker(ticker);
+    const stock = await stockMarketService.findStockByTicker(ticker);
     if (!stock) throw new ArticleGenerationError(`Stock ${ticker} not found`);
 
     const [prices, indicator] = await Promise.all([
-      stockRepository.findLatestPrices(stock.id, 2),
-      stockRepository.findLatestIndicator(stock.id, "1d"),
+      stockMarketService.findLatestPrices(stock.id, 2),
+      stockMarketService.findLatestIndicator(stock.id, "1d"),
     ]);
 
     if (!indicator) throw new ArticleGenerationError(`No indicator data for ${ticker}`);
@@ -158,7 +160,7 @@ export const articleService = {
       throw new ArticleGenerationError(`Skipping ${ticker}: stale price data`);
     }
 
-    const week52 = await stockRepository.getWeek52HighLow(stock.id);
+    const week52 = await stockMarketService.getWeek52HighLow(stock.id);
     const close = latest ? decimalToNumber(latest.close) : null;
     const prev = prices[1];
     const changePercent = latest && prev
@@ -255,7 +257,7 @@ export const articleService = {
 
     const article = await articleRepository.create({
       slug,
-      title: result.title || topic.title,
+      title: resolveTitle(result.title, result.content, topic.title),
       excerpt: result.excerpt?.slice(0, 500) || "",
       content: result.content,
       authorId: adminUser.id,
@@ -303,12 +305,32 @@ export const articleService = {
 
   async generateNewsArticle(topic: string, keywords: string[], trendingAngles?: string[], context?: string, autoPublish = false, marketCtx?: MarketContext): Promise<{ id: string; title: string; slug: string }> {
     const marketDataSection = marketCtx ? formatMarketContextForPrompt(marketCtx) : undefined;
-    const { system, user } = buildNewsPrompt({ topic, keywords, trendingAngles, context, marketDataSection });
+    const recentPromptTitles = await articleRepository.findRecentTitles(5).catch(() => [] as string[]);
+    const { system, user } = buildNewsPrompt({ topic, keywords, trendingAngles, context, marketDataSection, recentTitles: recentPromptTitles });
 
     const provider = createAIProvider();
     const result = await provider.generateArticle(system, user).catch((err) => {
       throw new ArticleGenerationError(err instanceof Error ? err.message : "AI generation failed");
     });
+
+    // ── Gate 1: Quality validation (instant, deterministic, zero tokens) ──
+    const quality = validateArticle(result.content, result.title || topic, keywords);
+    console.info(`[QualityGate] Score: ${quality.score}/100 | Passed: ${quality.passed} | Words: ${quality.meta.wordCount} | H2: ${quality.meta.h2Count} | Tickers: ${quality.meta.tickerCount}`);
+    if (!quality.passed) {
+      const errorIssues = quality.issues.filter((i) => i.severity === "error");
+      console.warn(`[QualityGate] REJECTED — Issues: ${errorIssues.map((i) => `${i.rule}(${i.severity})`).join(", ")}`);
+      throw new ArticleGenerationError(
+        `Article rejected by quality gate: ${errorIssues.map((i) => i.message).join("; ")}`
+      );
+    }
+
+    // ── Gate 2: Dedup check (1 AI call — skip if too similar to recent articles) ──
+    const recentTitles = await articleRepository.findRecentTitles(30);
+    const dedup = await provider.checkArticleSimilarity(result.title || topic, recentTitles);
+    console.info(`[DedupCheck] Similarity: ${dedup.similarityScore}% | Duplicate: ${dedup.isDuplicate}${dedup.similarTo ? ` | Similar to: "${dedup.similarTo.slice(0, 60)}..."` : ""}`);
+    if (dedup.isDuplicate) {
+      throw new ArticleGenerationError(`Skipped: article too similar (score ${dedup.similarityScore}%) to existing article: "${dedup.similarTo}"`);
+    }
 
     const slug = result.slug || `berita-${topic.toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").slice(0, 80)}`;
 
@@ -320,7 +342,7 @@ export const articleService = {
 
     // Fact-check if market context is available
     let finalContent = result.content;
-    let finalTitle = result.title || topic;
+    let finalTitle = resolveTitle(result.title, result.content, topic);
     let factCheckMeta: Record<string, string> = {};
     if (marketCtx) {
       const factCheck = await factCheckArticle(result.content, marketCtx, finalTitle);
@@ -329,9 +351,6 @@ export const articleService = {
         if (factCheck.correctedTitle) {
           finalTitle = factCheck.correctedTitle;
         }
-        console.log(`[NewsArticle] Fact-check corrected ${factCheck.mismatches.length} errors in: ${topic}`);
-      } else if (factCheck.passed) {
-        console.log(`[NewsArticle] Fact-check passed for: ${topic} (${factCheck.meta.claimsChecked} claims checked)`);
       }
       factCheckMeta = {
         factCheckPassed: String(factCheck.passed),
@@ -353,7 +372,13 @@ export const articleService = {
       articleType: ArticleType.NEWS,
       aiProvider: provider.name,
       isListed: true,
-      generationMeta: { provider: provider.name, topic, keywords, timestamp: new Date().toISOString(), ...factCheckMeta } as Record<string, string | string[]>,
+      generationMeta: { provider: provider.name, topic, keywords, timestamp: new Date().toISOString(), ...factCheckMeta,
+        qualityScore: String(quality.score),
+        qualityPassed: String(quality.passed),
+        qualityWordCount: String(quality.meta.wordCount),
+        dedupScore: String(dedup.similarityScore),
+        dedupDuplicate: String(dedup.isDuplicate),
+      } as Record<string, string | string[]>,
     });
 
     return { id: article.id, title: article.title, slug: article.slug };
@@ -377,7 +402,7 @@ export const articleService = {
 
     const article = await articleRepository.create({
       slug,
-      title: result.title || topic,
+      title: resolveTitle(result.title, result.content, topic),
       excerpt: result.excerpt?.slice(0, 500) || "",
       content: result.content,
       authorId: adminUser.id,
@@ -436,7 +461,7 @@ export const articleService = {
     const errors: string[] = [];
     const skipped: string[] = [];
 
-    const tickers = await articleRepository.findTickersNeedingGeneration(batchSize, ALL_TICKERS);
+    const tickers = await articleRepository.findTickersNeedingGeneration(batchSize, IDX40_TICKERS);
     const idx40Set = new Set(IDX40.map((s) => s.ticker));
 
     for (const ticker of tickers) {
@@ -468,13 +493,13 @@ export const articleService = {
   async generateDailySnapshot(ticker: string): Promise<{ id: string; title: string; slug: string } | null> {
     const slug = buildDailySlug(ticker);
 
-    const stock = await stockRepository.findStockByTicker(ticker);
+    const stock = await stockMarketService.findStockByTicker(ticker);
     if (!stock) return null;
 
     const [prices, indicator, fundamental] = await Promise.all([
-      stockRepository.findLatestPrices(stock.id, 30),
-      stockRepository.findLatestIndicator(stock.id, "1d"),
-      stockRepository.findLatestFundamental(stock.id),
+      stockMarketService.findLatestPrices(stock.id, 30),
+      stockMarketService.findLatestIndicator(stock.id, "1d"),
+      stockMarketService.findLatestFundamental(stock.id),
     ]);
 
     if (!indicator) return null;
@@ -482,7 +507,7 @@ export const articleService = {
     const latest = prices[0];
     if (!latest || latest.date < subDays(new Date(), 7)) return null;
 
-    const week52 = await stockRepository.getWeek52HighLow(stock.id);
+    const week52 = await stockMarketService.getWeek52HighLow(stock.id);
     const close = decimalToNumber(latest.close);
     const prev = prices[1];
     const changePercent = prev
@@ -584,7 +609,7 @@ export const articleService = {
       articleType: "DAILY_SNAPSHOT" as ArticleType,
       aiProvider: "template", tickerTag: ticker,
       generationMeta,
-      isListed: false,
+      isListed: true,
     });
 
     return { id: article.id, title: article.title, slug: article.slug };
@@ -593,7 +618,7 @@ export const articleService = {
   async runDailySnapshotGeneration(): Promise<{ generated: number; errors: number; skipped: number }> {
     let generated = 0, errors = 0, skipped = 0;
 
-    for (const ticker of ALL_TICKERS) {
+    for (const ticker of IDX40_TICKERS) {
       try {
         const result = await this.generateDailySnapshot(ticker);
         if (result) generated++;
@@ -607,29 +632,85 @@ export const articleService = {
     return { generated, errors, skipped };
   },
 
-  async generateTrendingNews(count: number = 10): Promise<{ generated: string[]; errors: string[] }> {
+  async generateTrendingNews(count: number = 10): Promise<{ generated: string[]; articleIds: string[]; errors: string[] }> {
     const generated: string[] = [];
+    const articleIds: string[] = [];
     const errors: string[] = [];
 
+    // Gather market context ONCE before topic discovery — so topics are grounded in real data
+    const marketCtx = await gatherMarketContext();
+    const marketDataString = formatMarketContextForPrompt(marketCtx);
+
+    // ── Pass recent titles to topic discovery so the AI avoids repetition ──
+    const recentTitles = await articleRepository.findRecentTitles(15).catch(() => [] as string[]);
     const provider = createAIProvider();
-    const topics = await provider.discoverTrendingTopics();
-    const selected = topics.slice(0, count);
+    const topics = await provider.discoverTrendingTopics(marketDataString, recentTitles);
+
+    // ── Diversity filtering: enforce ticker and theme caps ──
+    const MAX_PER_TICKER = 1;
+    const MAX_PER_THEME = 2;
+    const GENERIC_THEMES = ["IHSG", "Rupiah", "Kurs", "Bank", "Perbankan", "Sektor"];
+
+    const tickerCount = new Map<string, number>();
+    const themeCount = new Map<string, number>();
+    const filtered: typeof topics = [];
+
+    for (const topic of topics) {
+      // Extract tickers from topic title (e.g., "TLKM", "BBCA")
+      const tickersInTitle = (topic.title.match(/\b[A-Z]{4}\b/g) || []);
+      const primaryTicker = tickersInTitle[0];
+      if (primaryTicker) {
+        const current = tickerCount.get(primaryTicker) || 0;
+        if (current >= MAX_PER_TICKER) {
+          console.info(`[DiversityFilter] Skipping "${topic.title.slice(0, 50)}..." — ticker ${primaryTicker} already at cap (${current})`);
+          continue;
+        }
+      }
+
+      // Check generic themes (IHSG, Rupiah, banking, etc.)
+      const titleUpper = topic.title.toUpperCase();
+      let themeBlocked = false;
+      for (const theme of GENERIC_THEMES) {
+        if (titleUpper.includes(theme.toUpperCase())) {
+          const current = themeCount.get(theme) || 0;
+          if (current >= MAX_PER_THEME) {
+            console.info(`[DiversityFilter] Skipping "${topic.title.slice(0, 50)}..." — theme ${theme} already at cap (${current})`);
+            themeBlocked = true;
+            break;
+          }
+        }
+      }
+      if (themeBlocked) continue;
+
+      // Passed filters — track and add
+      if (primaryTicker) tickerCount.set(primaryTicker, (tickerCount.get(primaryTicker) || 0) + 1);
+      for (const theme of GENERIC_THEMES) {
+        if (titleUpper.includes(theme.toUpperCase())) {
+          themeCount.set(theme, (themeCount.get(theme) || 0) + 1);
+        }
+      }
+      filtered.push(topic);
+    }
+
+    const selected = filtered.slice(0, count);
+    console.info(`[DiversityFilter] ${topics.length} topics → ${filtered.length} after filtering → ${selected.length} selected`);
 
     for (const topic of selected) {
       try {
-        // Gather market context for data-grounded generation
+        // Gather specific market context for tickers mentioned in this topic
         const mentionedTickers = extractTickersFromText(`${topic.title} ${topic.keywords.join(" ")}`);
-        const marketCtx = await gatherMarketContext(mentionedTickers);
+        const topicMarketCtx = await gatherMarketContext(mentionedTickers);
 
-        const result = await this.generateNewsArticle(topic.title, topic.keywords, [topic.angle], undefined, true, marketCtx);
+        const result = await this.generateNewsArticle(topic.title, topic.keywords, [topic.angle], undefined, true, topicMarketCtx);
         generated.push(result.title);
+        articleIds.push(result.id);
         await new Promise((r) => setTimeout(r, 3000));
       } catch (err) {
         errors.push(`${topic.title}: ${err instanceof Error ? err.message : "Failed"}`);
       }
     }
 
-    return { generated, errors };
+    return { generated, articleIds, errors };
   },
 
   async updateCoverImage(articleId: string, imageUrl: string) {

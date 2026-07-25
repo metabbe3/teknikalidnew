@@ -43,6 +43,7 @@ import {
   ChevronRight,
   Bot,
   Radio,
+  Smartphone,
 } from "lucide-react";
 import { AdminStatusIndicator } from "@/components/admin/admin-status-indicator";
 
@@ -80,6 +81,7 @@ const sidebarNav: NavGroup[] = [
     icon: FileText,
     items: [
       { label: "Articles", href: "/admin/articles", icon: FileText },
+      { label: "Social Cards", href: "/admin/social-cards", icon: Smartphone },
       { label: "Reports", href: "/admin/reports", icon: Shield },
     ],
   },
@@ -194,9 +196,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <SidebarProvider>
       <Sidebar className="admin-sidebar-light border-r border-sidebar-border">
-        <SidebarHeader className="border-b border-sidebar-border px-4 py-3 bg-gradient-to-r from-blue-50/80 to-indigo-50/60">
+        <SidebarHeader className="border-b border-sidebar-border px-4 py-3 bg-slate-50">
           <div className="flex items-center gap-2.5 font-bold text-sidebar-foreground">
-            <div className="p-1.5 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 shadow-sm shadow-blue-500/20">
+            <div className="p-1.5 rounded-lg bg-slate-900">
               <Radio className="h-3.5 w-3.5 text-white" />
             </div>
             <span className="tracking-tight">TeknikalID</span>
@@ -210,12 +212,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           ))}
         </SidebarContent>
 
-        <SidebarFooter className="border-t border-sidebar-border p-3 bg-gradient-to-t from-blue-50/40 to-transparent">
+        <SidebarFooter className="border-t border-sidebar-border p-3">
           <DropdownMenu>
             <DropdownMenuTrigger className="flex items-center gap-2.5 w-full rounded-lg px-2.5 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-all">
               <Avatar className="h-8 w-8 ring-2 ring-blue-100">
                 {session?.user?.image && <AvatarImage src={session.user.image} alt="" />}
-                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-xs font-bold">
+                <AvatarFallback className="bg-slate-700 text-white text-xs font-bold">
                   {session?.user?.name?.charAt(0)?.toUpperCase() ?? "A"}
                 </AvatarFallback>
               </Avatar>
@@ -225,7 +227,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <div className="flex items-center gap-2 px-2 py-1.5">
                 <Avatar className="h-8 w-8">
                   {session?.user?.image && <AvatarImage src={session.user.image} alt="" />}
-                  <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-sm font-bold">
+                  <AvatarFallback className="bg-slate-700 text-white text-sm font-bold">
                     {session?.user?.name?.charAt(0)?.toUpperCase() ?? "A"}
                   </AvatarFallback>
                 </Avatar>
@@ -264,7 +266,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             )}
           </nav>
         </header>
-        <div className="flex-1 p-4 md:p-6 min-h-[calc(100vh-3rem)]" style={{ background: "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 30%, #eff6ff 70%, #f5f3ff 100%)" }}>
+        <div className="flex-1 p-4 md:p-6 min-h-[calc(100vh-3rem)] bg-slate-50">
           {children}
         </div>
       </SidebarInset>

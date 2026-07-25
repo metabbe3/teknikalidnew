@@ -46,7 +46,7 @@ export function formatMarketCap(v: number): string {
 }
 
 function trimDecimal(n: number): string {
-  return n.toFixed(1).replace(/\.0$/, "");
+  return n.toFixed(2).replace(/\.?0+$/, "");
 }
 
 export function toDateKey(d: Date): string {
@@ -58,6 +58,40 @@ export function toDateKey(d: Date): string {
 
 export function stripJk(ticker: string): string {
   return ticker.replace(/\.JK$/, "");
+}
+
+/**
+ * Strip markdown formatting characters from a string.
+ * Used for titles/excerpts displayed as plain text in listing pages.
+ * Removes: **bold**, *italic*, __bold__, _italic_, ~~strike~~, `code`, [text](url), #headings, :::directives, etc.
+ */
+export function stripMarkdown(text: string): string {
+  if (!text) return "";
+  return text
+    // Remove directive blocks (:::tip[...], :::warning[...], etc.) and everything after on the line
+    .replace(/:::[a-z]+(\[[^\]]*\])?.*/gi, "")
+    // Remove markdown links [text](url) → keep text
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+    // Remove bold+italic combos ***text*** or ___text___
+    .replace(/\*{3}|_{3}/g, "")
+    // Remove bold **text** or __text__
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .replace(/__(.+?)__/g, "$1")
+    // Remove italic *text* or _text_ (but not standalone * or _ like in lists)
+    .replace(/(?<!\w)\*([^*\n]+?)\*(?!\w)/g, "$1")
+    .replace(/(?<!\w)_([^_\n]+?)_(?!\w)/g, "$1")
+    // Remove strikethrough ~~text~~
+    .replace(/~~(.+?)~~/g, "$1")
+    // Remove inline code `text`
+    .replace(/`([^`]+)`/g, "$1")
+    // Remove heading markers
+    .replace(/^#{1,6}\s+/gm, "")
+    // Remove horizontal rules
+    .replace(/^[-*_]{3,}\s*$/gm, "")
+    // Clean up extra whitespace and markdown table pipes
+    .replace(/\|/g, " ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
 }
 
 export function normalizeTicker(input: string): string {
@@ -120,13 +154,18 @@ export function aggregateDaily(
 
 export function signalToHealthScore(signalScore: number | null): number | null {
   if (signalScore === null) return null;
-  return Math.round((signalScore + 1) * 50);
+  // ponytail: signal scores range [-1, +1] in theory, but the actual distribution
+  // (32K records) is [-0.78, +0.88] with P5-P95 = [-0.44, +0.34]. Mapping the
+  // theoretical [-1, +1] → [0, 100] compresses 90% of stocks into [28, 67].
+  // Map [-0.6, +0.6] → [0, 100] (clamped) so the full band range is usable.
+  const clamped = Math.max(-0.6, Math.min(0.6, signalScore));
+  return Math.round(((clamped + 0.6) / 1.2) * 100);
 }
 
 export function healthScoreMeta(score: number): { color: string; bg: string; label: string } {
   if (score >= 80) return { color: "#059669", bg: "rgba(5,150,105,0.10)", label: "Kondisi Baik" };
   if (score >= 60) return { color: "#0d9488", bg: "rgba(13,148,136,0.10)", label: "Cukup Baik" };
   if (score >= 40) return { color: "#d97706", bg: "rgba(217,119,6,0.10)", label: "Netral" };
-  if (score >= 20) return { color: "#ea580c", bg: "rgba(234,88,12,0.10)", label: "Kurang Baik" };
+  if (score >= 20) return { color: "#b45309", bg: "rgba(180,83,9,0.10)", label: "Lemah" };
   return { color: "#dc2626", bg: "rgba(220,38,38,0.10)", label: "Berisiko" };
 }

@@ -48,4 +48,50 @@ export const screenerRepository = {
       where: { userId, isDefault: true },
     });
   },
+
+  // ── Alert methods ──
+
+  findAlertsByUserId(userId: string) {
+    return prisma.screenerAlert.findMany({
+      where: { userId },
+      include: { savedScreener: { select: { name: true, filters: true } } },
+      orderBy: { createdAt: "desc" },
+    });
+  },
+
+  findAlertById(id: string, userId: string) {
+    return prisma.screenerAlert.findFirst({
+      where: { id, userId },
+    });
+  },
+
+  findAlertByScreenerId(savedScreenerId: string) {
+    return prisma.screenerAlert.findUnique({
+      where: { savedScreenerId },
+    });
+  },
+
+  createAlert(data: { userId: string; savedScreenerId: string; frequency: string }) {
+    return prisma.screenerAlert.create({ data });
+  },
+
+  updateAlert(id: string, data: { isEnabled?: boolean; frequency?: string; lastTriggeredAt?: Date; lastMatchCount?: number }) {
+    return prisma.screenerAlert.update({
+      where: { id },
+      data,
+    });
+  },
+
+  deleteAlert(id: string) {
+    return prisma.screenerAlert.delete({
+      where: { id },
+    });
+  },
+
+  findEnabledAlerts() {
+    return prisma.screenerAlert.findMany({
+      where: { isEnabled: true },
+      include: { savedScreener: true },
+    });
+  },
 };

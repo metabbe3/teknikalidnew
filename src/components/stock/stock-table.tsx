@@ -2,12 +2,13 @@
 
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { formatPrice, formatPercent, formatVolume, stripJk, changeColor, rsiColor, rsiBgColor } from "@/lib/utils";
 import { Sparkline } from "@/components/stock/sparkline";
 
-interface StockRow {
+export interface StockRow {
   ticker: string;
   name: string;
   sector: string;
@@ -20,7 +21,7 @@ interface StockRow {
   sma20: number | null;
 }
 
-interface StockTableProps {
+export interface StockTableProps {
   stocks: StockRow[];
   sectors: string[];
 }
@@ -50,6 +51,7 @@ export function StockTable({ stocks, sectors }: StockTableProps) {
   const [sortAsc, setSortAsc] = useState(true);
   const pillsRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedQuery(searchQuery), 150);
@@ -146,7 +148,7 @@ export function StockTable({ stocks, sectors }: StockTableProps) {
               className="w-full bg-bg-card border border-border rounded-lg pl-9 pr-3 py-2.5 text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent/40 depth-shadow transition-all"
             />
           </div>
-          <span className="text-xs text-text-secondary tabular-nums font-medium bg-bg-card depth-shadow px-3 py-2 rounded-lg">{filtered.length} saham</span>
+          <span className="text-xs text-text-secondary tabular-nums font-medium bg-bg-card border border-border px-3 py-2 rounded-lg">{filtered.length} saham</span>
         </div>
 
         {/* Sector pills */}
@@ -160,7 +162,7 @@ export function StockTable({ stocks, sectors }: StockTableProps) {
               onClick={() => setSectorFilter("all")}
               className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all press-scale ${
                 sectorFilter === "all"
-                  ? "bg-accent text-white shadow-sm"
+                  ? "bg-accent text-white"
                   : "bg-bg-card border border-border text-text-secondary hover:text-text-primary hover:border-accent/30"
               }`}
             >
@@ -172,7 +174,7 @@ export function StockTable({ stocks, sectors }: StockTableProps) {
                 onClick={() => setSectorFilter(sector)}
                 className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all press-scale ${
                   sectorFilter === sector
-                    ? "bg-accent text-white shadow-sm"
+                    ? "bg-accent text-white"
                     : "bg-bg-card border border-border text-text-secondary hover:text-text-primary hover:border-accent/30"
                 }`}
               >
@@ -219,7 +221,7 @@ export function StockTable({ stocks, sectors }: StockTableProps) {
                     height: `${virtualRow.size}px`,
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
-                  onClick={() => { window.location.href = `/stocks/${stock.ticker}`; }}
+                  onClick={() => router.push(`/stocks/${stock.ticker}`)}
                 >
                   <div className="px-4 py-3">
                     <Link href={`/stocks/${stock.ticker}`} className="font-semibold text-accent hover:underline" onClick={(e) => e.stopPropagation()}>

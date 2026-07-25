@@ -2,28 +2,44 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import type { AdapterUser } from "next-auth/adapters";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { authRepository } from "@/domains/auth/auth.repository";
 import { getAvatarUrl } from "@/lib/avatar";
 import type { NextAuthConfig } from "next-auth";
 
+// Augment JWT with custom fields
+declare module "next-auth/jwt" {
+  interface JWT {
+    username?: string;
+    role?: string;
+    image?: string;
+    rememberMe?: boolean;
+    loginAt?: number;
+    checkedAt?: number;
+  }
+}
+
 export const authConfig: NextAuthConfig = {
   adapter: {
     ...PrismaAdapter(prisma),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async createUser(data: any) {
+    async createUser(data: AdapterUser) {
       const suffix = crypto.randomUUID().replace(/-/g, "").slice(0, 12);
-      // OAuth providers (Google) verify emails — mark as verified immediately
       const emailVerified = data.emailVerified ?? new Date();
       const user = await authRepository.createUser({
-        ...data,
+        email: data.email,
+        name: data.name ?? undefined,
+        image: data.image ?? undefined,
         emailVerified,
         username: `user_${suffix}`,
       });
-      return { ...user, emailVerified } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      return { ...data, ...user, emailVerified: emailVerified ?? null } as AdapterUser;
     },
   },
+  // NextAuth v5 auto-configures secure cookies in production:
+  // - __Secure-authjs.session-token (httpOnly, sameSite=lax, secure=true)
+  // - authjs.session-token in development
   session: { strategy: "jwt", maxAge: 7 * 24 * 60 * 60 },
   pages: {
     signIn: "/auth/signin",
@@ -84,29 +100,43 @@ export const authConfig: NextAuthConfig = {
           token.username = dbUser.username;
           token.role = dbUser.role;
           token.image = getAvatarUrl(dbUser.image, dbUser.email);
-          token.rememberMe = (user as any).rememberMe ?? false;
+          token.rememberMe = (user as { rememberMe?: boolean }).rememberMe ?? false;
           token.loginAt = Date.now();
+          token.checkedAt = Date.now();
         }
       }
-      // Refresh role from DB on update trigger (covers role changes, bans)
-      if (trigger === "update" && token.id) {
+      // ponytail: throttled revalidation. JWT is stateless and can't be revoked, so a
+      // ban wouldn't take effect until the 7-day cookie expired. Re-check the DB every
+      // REVALIDATE_MS (or immediately on an explicit update trigger) to propagate bans
+      // and role changes. Ceiling: a ban takes ≤REVALIDATE_MS to log the user out.
+      // 60s so a banned scraper's session dies within ~1 min (was 5 min); cost is one
+      // findUserById per active session per 60s. Upgrade path: per-request check or a
+      // server-side session store if 60s is still too loose or DB load too high.
+      const REVALIDATE_MS = 60_000;
+      const stale =
+        trigger === "update" ||
+        !token.checkedAt ||
+        Date.now() - token.checkedAt > REVALIDATE_MS;
+      if (token.id && stale) {
         const dbUser = await authRepository.findUserById(token.id as string);
         if (!dbUser || dbUser.bannedAt) {
           return { ...token, id: undefined };
         }
         token.role = dbUser.role;
         token.image = getAvatarUrl(dbUser.image, dbUser.email);
+        token.checkedAt = Date.now();
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id as string;
-        session.user.username = token.username as string;
-        session.user.role = token.role as string;
-        session.user.image = (token.image as string) ?? null;
-        (session.user as any).rememberMe = token.rememberMe as boolean;
-        (session.user as any).loginAt = token.loginAt as number;
+        const u = session.user as unknown as Record<string, unknown>;
+        u.id = token.id as string;
+        u.username = token.username as string;
+        u.role = token.role as string;
+        u.image = (token.image as string) ?? null;
+        u.rememberMe = token.rememberMe as boolean;
+        u.loginAt = token.loginAt as number;
       }
       return session;
     },

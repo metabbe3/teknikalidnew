@@ -10,6 +10,7 @@ interface AdminKpiCardProps {
   subtitle?: string;
   status?: "success" | "connected" | "safe" | "stale" | "warning" | "error" | "unknown" | "fresh" | "missing";
   loading?: boolean;
+  /** Reserved for backwards compatibility — no longer applies a visual treatment. */
   gradient?: "blue" | "emerald" | "amber" | "rose";
 }
 
@@ -25,16 +26,15 @@ const STATUS_VARIANT: Record<string, "default" | "secondary" | "destructive" | "
   unknown: "outline",
 };
 
-export function AdminKpiCard({ title, icon: Icon, value, subtitle, status, loading, gradient }: AdminKpiCardProps) {
-  const gradientClass = gradient ? `admin-kpi-gradient-${gradient}` : "";
-  const accentClass = !gradient && status ? getAccentClass(status) : "";
+export function AdminKpiCard({ title, icon: Icon, value, subtitle, status, loading }: AdminKpiCardProps) {
+  const accentClass = status ? getAccentClass(status) : "";
 
   return (
-    <Card className={`${gradientClass} ${accentClass} transition-all hover:shadow-lg hover:-translate-y-0.5`}>
+    <Card className={`${accentClass} transition-all hover:shadow-lg hover:-translate-y-0.5`}>
       <CardHeader className="pb-2">
-        <CardTitle className={`flex items-center gap-2 text-sm font-medium ${gradient ? "text-white/80" : "text-gray-500"}`}>
-          <div className={`p-1.5 rounded-lg ${gradient ? "bg-white/20" : "bg-blue-50"}`}>
-            <Icon className={`h-4 w-4 ${gradient ? "text-white" : "text-blue-600"}`} />
+        <CardTitle className="flex items-center gap-2 text-sm font-medium text-gray-500">
+          <div className="p-1.5 rounded-lg bg-blue-50">
+            <Icon className="h-4 w-4 text-blue-600" />
           </div>
           {title}
         </CardTitle>
@@ -42,26 +42,23 @@ export function AdminKpiCard({ title, icon: Icon, value, subtitle, status, loadi
       <CardContent>
         {loading ? (
           <div className="space-y-2">
-            <Skeleton className={`h-7 w-24 ${gradient ? "bg-white/20" : ""}`} />
-            <Skeleton className={`h-4 w-16 ${gradient ? "bg-white/15" : ""}`} />
+            <Skeleton className="h-7 w-24" />
+            <Skeleton className="h-4 w-16" />
           </div>
         ) : (
           <div className="flex items-center justify-between gap-2">
-            <span className={`text-xl font-bold tabular-nums ${gradient ? "text-white" : "text-gray-900"}`}>
+            <span className="text-xl font-bold tabular-nums text-gray-900">
               {value}
             </span>
             {status && (
-              <Badge
-                variant={gradient ? "outline" : STATUS_VARIANT[status] ?? "outline"}
-                className={`capitalize text-xs ${gradient ? "border-white/30 text-white bg-white/15" : ""}`}
-              >
+              <Badge variant={STATUS_VARIANT[status] ?? "outline"} className="capitalize text-xs">
                 {status}
               </Badge>
             )}
           </div>
         )}
         {subtitle && !loading && (
-          <p className={`text-xs mt-1 ${gradient ? "text-white/70" : "text-gray-400"}`}>{subtitle}</p>
+          <p className="text-xs mt-1 text-gray-500">{subtitle}</p>
         )}
       </CardContent>
     </Card>

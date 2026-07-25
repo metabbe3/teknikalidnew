@@ -1,5 +1,5 @@
 import { QuestionStatus, QuestionSource, QuestionFormat } from "@/generated/prisma/client";
-import Anthropic from "@anthropic-ai/sdk";
+import { createAIClient } from "@/lib/ai-client";
 import { faqRepository } from "./faq.repository";
 import { QuestionNotFoundError, FAQGenerationError } from "./faq.errors";
 import { buildFAQPrompt, type FAQGeneratedOutput } from "./faq-prompts";
@@ -116,23 +116,18 @@ export const faqService = {
   ): Promise<{ id: string; slug: string }> {
     const { system, user } = buildFAQPrompt({ question, category, format, relatedTickers });
 
-    const client = new Anthropic({
-      apiKey: process.env.ANTHROPIC_AUTH_TOKEN,
-      baseURL: process.env.ANTHROPIC_BASE_URL,
-      timeout: 60_000,
-    });
+    const client = createAIClient();
 
-    const response = await client.messages.create({
-      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-4-20250514",
+    const response = await client.chat.completions.create({
+      model: process.env.ANTHROPIC_MODEL || "qd/qmodel_latest",
       max_tokens: format === "MINI_ARTICLE" ? 4000 : 1000,
-      system,
-      messages: [{ role: "user", content: user }],
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: user },
+      ],
     });
 
-    const text = response.content
-      .filter((block): block is Anthropic.TextBlock => block.type === "text")
-      .map((block) => block.text)
-      .join("\n");
+    const text = response.choices[0]?.message?.content ?? "";
 
     const jsonMatch = text.match(/```json\s*([\s\S]*?)```/) ?? text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new FAQGenerationError("No JSON in AI response");

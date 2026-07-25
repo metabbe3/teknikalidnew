@@ -19,10 +19,12 @@ interface NotificationActor {
 
 interface NotificationData {
   id: string;
-  type: "LIKE" | "COMMENT" | "MENTION" | "FOLLOW" | "STOCK_POST" | "REACTION" | "STOCK_ALERT" | "AGENT_ALERT" | "RE_ENGAGE" | "SCREENER_MATCH";
+  type: "LIKE" | "COMMENT" | "MENTION" | "FOLLOW" | "STOCK_POST" | "REACTION" | "STOCK_ALERT" | "AGENT_ALERT" | "RE_ENGAGE" | "SCREENER_MATCH" | "THESIS_BREACH";
   read: boolean;
   createdAt: string;
   actor: NotificationActor;
+  ticker: string | null;
+  meta: { breachKind?: string } | null;
   post: { id: string; content: string } | null;
 }
 
@@ -59,6 +61,19 @@ export function useMarkNotificationsRead() {
 
 export function notificationText(n: NotificationData): string {
   const name = n.actor.name || `@${n.actor.username}`;
+  if (n.type === "THESIS_BREACH") {
+    const t = n.ticker ? n.ticker.replace(/\.JK$/i, "") : "Saham";
+    switch (n.meta?.breachKind) {
+      case "target_hit":
+        return `Tesis ${t} — target tercapai 🎯`;
+      case "stop_hit":
+        return `Tesis ${t} — stop loss tersentuh`;
+      case "verdict_flipped":
+        return `Tesis ${t} — sinyal berbalik`;
+      default:
+        return `Tesis ${t} sedang diuji, cek sekarang`;
+    }
+  }
   switch (n.type) {
     case "LIKE":
       return `${name} menyukai post Anda`;

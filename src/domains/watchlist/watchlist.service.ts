@@ -1,5 +1,6 @@
 import { watchlistRepository } from "./watchlist.repository";
 import { stockMarketService, type StockDetailBatchItem } from "@/domains/stock/stock-market.service";
+import { stockRepository } from "@/domains/stock/stock.repository";
 import { StockNotFoundError } from "@/domains/stock/stock.errors";
 import { StockAlreadyInWatchlistError, StockNotInWatchlistError } from "./watchlist.errors";
 import { ValidationError } from "@/lib/common-errors";
@@ -88,11 +89,8 @@ export const watchlistService = {
     }
 
     // Validate all tickers exist by fetching them from stock domain
-    const validTickers: string[] = [];
-    for (const ticker of tickers) {
-      const exists = await stockMarketService.stockExists(ticker);
-      if (exists) validTickers.push(ticker);
-    }
+    const existingStocks = await stockRepository.findStocksByTickers(tickers);
+    const validTickers = existingStocks.map(s => s.ticker);
 
     if (validTickers.length === 0) {
       throw new StockNotFoundError(tickers.join(", "));
@@ -100,6 +98,21 @@ export const watchlistService = {
 
     const result = await watchlistRepository.createManyEntries(userId, validTickers);
     return { added: result.count };
+  },
+
+  async removeBatch(userId: string, tickers: string[]) {
+    if (!tickers || tickers.length === 0) {
+      throw new ValidationError("Tickers array is required and must not be empty");
+    }
+
+    const result = await watchlistRepository.deleteManyEntries(userId, tickers);
+    return { removed: result.count };
+  },
+
+  getWatchlistTickers(userId: string): Promise<string[]> {
+    return watchlistRepository
+      .findUserWatchlist(userId)
+      .then((rows) => rows.map((r) => r.stockTicker));
   },
 
   getAllWatchlistTickers() {

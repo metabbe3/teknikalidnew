@@ -1,7 +1,7 @@
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { screenerRepository } from "./screener.repository";
-import { ScreenerNotFoundError, ScreenerLimitError, ScreenerNameExistsError } from "./screener.errors";
+import { ScreenerNotFoundError, ScreenerLimitError, ScreenerNameExistsError, AlertNotFoundError } from "./screener.errors";
 
 const MAX_SCREENER_COUNT = 10;
 
@@ -97,5 +97,54 @@ export const screenerService = {
       where: { id },
       data: { lastRunAt: new Date(), lastResultCount: resultCount },
     });
+  },
+
+  // ── Alert methods ──
+
+  async listAlerts(userId: string) {
+    return screenerRepository.findAlertsByUserId(userId);
+  },
+
+  async createAlert(
+    userId: string,
+    data: { savedScreenerId: string; frequency: string },
+  ) {
+    // Verify ownership of the screener
+    const screener = await screenerRepository.findById(data.savedScreenerId, userId);
+    if (!screener) throw new ScreenerNotFoundError();
+
+    // Check if alert already exists for this screener (one-to-one)
+    const existing = await screenerRepository.findAlertByScreenerId(data.savedScreenerId);
+    if (existing) {
+      // Re-enable if disabled
+      if (!existing.isEnabled) {
+        return screenerRepository.updateAlert(existing.id, { isEnabled: true });
+      }
+      return existing;
+    }
+
+    return screenerRepository.createAlert({
+      userId,
+      savedScreenerId: data.savedScreenerId,
+      frequency: data.frequency,
+    });
+  },
+
+  async updateAlert(
+    userId: string,
+    id: string,
+    data: { isEnabled?: boolean; frequency?: string },
+  ) {
+    const alert = await screenerRepository.findAlertById(id, userId);
+    if (!alert) throw new AlertNotFoundError();
+
+    return screenerRepository.updateAlert(id, data);
+  },
+
+  async deleteAlert(userId: string, id: string) {
+    const alert = await screenerRepository.findAlertById(id, userId);
+    if (!alert) throw new AlertNotFoundError();
+
+    return screenerRepository.deleteAlert(id);
   },
 };

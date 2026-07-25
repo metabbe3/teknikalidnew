@@ -235,7 +235,7 @@ export function CandlestickChart({
     });
 
     const sma200Series = chart.addSeries(LineSeries, {
-      color: "#ef4444",
+      color: "#0ea5e9",
       lineWidth: 2,
       visible: false,
       priceLineVisible: false,

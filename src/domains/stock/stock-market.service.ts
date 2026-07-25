@@ -159,6 +159,10 @@ export const stockMarketService = {
         volume: latest ? bigIntToNumber(latest.volume) : null,
         rsi14: indicator ? decimalToNumber(indicator.rsi14) : null,
         sma20: indicator ? decimalToNumber(indicator.sma20) : null,
+        signalScore: indicator ? decimalToNumber(indicator.signalScore) : null,
+        signalLabel: indicator?.signalLabel ?? null,
+        macdHist: indicator ? decimalToNumber(indicator.macdHist) : null,
+        isGorengan: indicator?.isGorengan ?? false,
       };
     });
   },
@@ -368,17 +372,21 @@ export const stockMarketService = {
     gainers: { ticker: string; name: string; sector: string; close: number | null; changePercent: number }[];
     losers: { ticker: string; name: string; sector: string; close: number | null; changePercent: number }[];
     sectors: Record<string, { avgChange: number; count: number }>;
+    advancersCount: number;
+    declinersCount: number;
+    unchangedCount: number;
   }> {
     const cached = stockCache.get("market-overview");
     if (cached) return cached as Awaited<ReturnType<typeof this.getMarketOverview>>;
 
     const stocks = await stockRepository.findActiveStocksWithPrices(undefined, false);
 
-    type StockChange = { ticker: string; name: string; sector: string; close: number | null; changePercent: number | null };
+    type StockChange = { ticker: string; name: string; sector: string; close: number | null; changePercent: number | null; volume: number | null };
     const stockChanges: StockChange[] = stocks.map((stock) => {
       const prices = dedupeStalePrices(stock.prices);
       const { close, changePercent } = computeChange(prices[0], prices[1]);
-      return { ticker: stock.ticker, name: stock.name, sector: stock.sector, close, changePercent };
+      const volume = prices[0] ? bigIntToNumber(prices[0].volume) : null;
+      return { ticker: stock.ticker, name: stock.name, sector: stock.sector, close, changePercent, volume };
     });
 
     const withChange = stockChanges.filter((s): s is StockChange & { changePercent: number } => s.changePercent !== null);
@@ -390,6 +398,9 @@ export const stockMarketService = {
       .sort((a, b) => a.changePercent - b.changePercent)
       .slice(0, 5);
 
+    // ponytail: simple arithmetic mean (not market-cap-weighted). A small-cap
+    // moving 50% affects this as much as BBCA moving 0.5%. Upgrade path: weight
+    // by marketCap when fundamental data is available in this query path.
     const sectorMap = new Map<string, { total: number; sum: number }>();
     for (const s of withChange) {
       const existing = sectorMap.get(s.sector) ?? { total: 0, sum: 0 };
@@ -403,7 +414,14 @@ export const stockMarketService = {
       sectors[sector] = { avgChange: Number((sum / total).toFixed(2)), count: total };
     }
 
-    const result = { gainers, losers, sectors };
+    // Market breadth: only count stocks that actually traded (volume > 0).
+    // Suspended/halted stocks show 0% but aren't trading — exclude from breadth.
+    const tradingStocks = withChange.filter((s) => s.volume !== null && s.volume > 0);
+    const advancersCount = tradingStocks.filter((s) => s.changePercent > 0).length;
+    const declinersCount = tradingStocks.filter((s) => s.changePercent < 0).length;
+    const unchangedCount = tradingStocks.filter((s) => s.changePercent === 0).length;
+
+    const result = { gainers, losers, sectors, advancersCount, declinersCount, unchangedCount };
     stockCache.set("market-overview", result, 300_000);
     return result;
   },
@@ -485,13 +503,11 @@ export const stockMarketService = {
 
   async updateAllStocks(): Promise<void> {
     const stocks = await stockRepository.findActiveStocks();
-    console.log(`Updating prices for ${stocks.length} stocks...`);
 
     const limit = pLimit(5);
     let done = 0;
     const results = await Promise.allSettled(
       stocks.map((stock) => limit(async () => {
-        console.log(`[${++done}/${stocks.length}] ${stock.ticker}`);
         await this.updateLatestPrice(stock.ticker);
       }))
     );
@@ -527,6 +543,15 @@ export const stockMarketService = {
       }),
     );
 
+    // Common start date for fair comparison: latest first-date among all stocks.
+    // Without this, a stock with 1 month of data starts at 0% from last month,
+    // making its comparison misleading vs a stock with 6 months from January.
+    const commonStart = perStockData
+      .map((p) => p?.priceHistory?.[0]?.date)
+      .filter(Boolean)
+      .map((d) => new Date(d as string | Date))
+      .sort((a, b) => b.getTime() - a.getTime())[0];
+
     const results = stocks.map((s, idx) => {
       const prices = dedupeStalePrices(s.prices);
       const latest = prices[0];
@@ -536,9 +561,13 @@ export const stockMarketService = {
       const perStock = perStockData[idx];
 
       const history = (() => {
-        if (!perStock?.priceHistory.length) return [];
-        const firstClose = decimalToNumber(perStock.priceHistory[0].close) ?? 0;
-        return perStock.priceHistory.map((p) => {
+        const hist = perStock?.priceHistory ?? [];
+        if (!hist.length) return [];
+        // Trim to common start date so all stocks compare from the same baseline
+        const trimmed = commonStart ? hist.filter((p) => new Date(p.date) >= commonStart) : hist;
+        if (!trimmed.length) return [];
+        const firstClose = decimalToNumber(trimmed[0].close) ?? 0;
+        return trimmed.map((p) => {
           const pClose = decimalToNumber(p.close) ?? 0;
           return {
             time: toDateKey(p.date),
@@ -608,5 +637,46 @@ export const stockMarketService = {
     });
 
     return results;
+  },
+
+  // Passthrough methods for article domain (DDD compliance)
+  async findStockByTicker(ticker: string) {
+    return stockRepository.findStockByTicker(ticker);
+  },
+
+  async findLatestPrices(stockId: number, take: number) {
+    return stockRepository.findLatestPrices(stockId, take);
+  },
+
+  async findLatestTradingPrices(stockId: number, take: number) {
+    return stockRepository.findLatestTradingPrices(stockId, take);
+  },
+
+  async findLatestIndicator(stockId: number, interval: string) {
+    return stockRepository.findLatestIndicator(stockId, interval);
+  },
+
+  async findPrevIndicator(stockId: number, interval: string) {
+    return stockRepository.findPrevIndicator(stockId, interval);
+  },
+
+  async findLatestFundamental(stockId: number) {
+    return stockRepository.findLatestFundamental(stockId);
+  },
+
+  async getWeek52HighLow(stockId: number) {
+    return stockRepository.getWeek52HighLow(stockId);
+  },
+
+  async findStocksByTickersWithIndicators(tickers: string[]) {
+    return stockRepository.findStocksByTickersWithIndicators(tickers);
+  },
+
+  async findActiveStocksWithPrices(where?: { sector?: string }, includeIndicators = true) {
+    return stockRepository.findActiveStocksWithPrices(where, includeIndicators);
+  },
+
+  async findAvgVolumeByStockIds(stockIds: number[]) {
+    return stockRepository.findAvgVolumeByStockIds(stockIds);
   },
 };

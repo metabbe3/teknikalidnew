@@ -2,171 +2,138 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { ArticleStatus, ArticleType } from "@/generated/prisma/client";
-import { Badge } from "@/components/ui/badge";
-import { Newspaper } from "lucide-react";
+import { TrendingUp, TrendingDown, Activity, Search, ArrowUpRight } from "lucide-react";
 import { SITE_URL } from "@/lib/constants";
-import { BeritaGrid } from "./berita-grid";
+import { stockMarketService } from "@/domains/stock/stock-market.service";
+import { SnapshotCard, type SnapshotCardData } from "@/components/berita/snapshot-card";
+import { BeritaPagination, buildBeritaUrl } from "./berita-grid";
 
 export const revalidate = 300;
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 24;
 
-const TYPE_FILTERS: { value: string; label: string }[] = [
-  { value: "STOCK_ANALYSIS", label: "Analisis Saham" },
-  { value: "NEWS", label: "Berita Pasar" },
-  { value: "GENERAL", label: "Opini & Insight" },
-  { value: "DAILY_SNAPSHOT", label: "Saham Hari Ini" },
-];
-
-const TYPE_LABELS: Record<string, { label: string; color: string }> = {
-  STOCK_ANALYSIS: { label: "Analisis Saham", color: "text-blue-500 bg-blue-500/10" },
-  NEWS: { label: "Berita Pasar", color: "text-amber-500 bg-amber-500/10" },
-  GENERAL: { label: "Opini & Insight", color: "text-purple-500 bg-purple-500/10" },
-  DAILY_SNAPSHOT: { label: "Saham Hari Ini", color: "text-green-500 bg-green-500/10" },
-};
-
-function formatDate(date: Date | string): string {
-  return new Intl.DateTimeFormat("id-ID", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date(date));
-}
-
-type SearchParams = Promise<{ type?: string; page?: string }>;
+type SearchParams = Promise<{ trend?: string; q?: string; page?: string }>;
 
 export async function generateMetadata({
   searchParams,
 }: {
   searchParams: SearchParams;
 }): Promise<Metadata> {
-  const { type: activeType, page } = await searchParams;
+  const { trend, q, page } = await searchParams;
   const currentPage = Math.max(1, parseInt(page ?? "1", 10) || 1);
-  const typeSuffix = activeType ? `?type=${activeType}` : "";
-  const canonicalPath = currentPage > 1 ? `/berita?page=${currentPage}${activeType ? `&type=${activeType}` : ""}` : `/berita${typeSuffix}`;
-
+  const filtered = !!(trend || q);
   const links: Record<string, string> = {};
-  if (currentPage > 1) {
-    links.prev = `${SITE_URL}/berita${currentPage === 2 ? typeSuffix : `?page=${currentPage - 1}${activeType ? `&type=${activeType}` : ""}`}`;
-  }
+  if (currentPage > 1) links.prev = buildBeritaUrl(currentPage - 1, trend, q);
+  links.next = buildBeritaUrl(currentPage + 1, trend, q);
 
-  const articleWhere: Record<string, unknown> = {
-    status: ArticleStatus.PUBLISHED,
-    isListed: true,
-    articleType: activeType
-      ? (activeType as ArticleType)
-      : { in: ["STOCK_ANALYSIS", "NEWS", "GENERAL", "DAILY_SNAPSHOT"] as ArticleType[] },
-  };
-  const totalCount = await prisma.article.count({ where: articleWhere as never });
-  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
-  if (currentPage < totalPages) {
-    links.next = `${SITE_URL}/berita?page=${currentPage + 1}${activeType ? `&type=${activeType}` : ""}`;
-  }
+  const title = filtered
+    ? "Saham Hari Ini — Sinyal & Analisa Teknikal IDX"
+    : "Saham Hari Ini: Harga, Sinyal Trading & Analisa Teknikal IDX — TeknikalID";
+  const description =
+    "Saham hari ini: harga terbaru, sinyal trading (RSI, MACD, SMA), dan analisa teknikal harian untuk ratusan saham IDX. Pantau top mover dan sinyal bullish/bearish.";
 
+  const isSearch = !!q;
   return {
-    title: currentPage > 1 ? `Berita Saham & Rekomendasi Hari Ini — Halaman ${currentPage}` : "Berita Saham & Rekomendasi Hari Ini — Analisa Teknikal IDX",
-    description: "Berita saham IDX terkini, analisis teknikal, rekomendasi saham hari ini, dan insight pasar untuk investor Indonesia. Update harian.",
-    alternates: { canonical: canonicalPath },
+    title,
+    description,
+    // Self-referencing canonical per page/filter — paginated & filtered views show
+    // different articles, so collapsing them onto /berita caused 114 "duplicate,
+    // no canonical". Search-results pages (?q=) are noindex per Google guidance.
+    ...(isSearch ? { robots: { index: false, follow: true } } : {}),
+    alternates: { canonical: isSearch ? "/berita" : buildBeritaUrl(currentPage, trend, q) },
     keywords: [
-      "berita saham hari ini", "rekomendasi saham hari ini", "analisis saham",
-      "berita saham idx", "insight pasar saham", "analisa teknikal saham hari ini",
+      "saham hari ini", "harga saham hari ini", "sinyal saham", "saham naik hari ini",
+      "top mover saham", "analisa saham hari ini", "sinyal trading saham", "saham idx",
     ],
     openGraph: {
-      title: "Berita Saham & Rekomendasi Hari Ini — Analisa Teknikal IDX",
-      description: "Berita saham IDX terkini, analisis teknikal, rekomendasi saham hari ini, dan insight pasar untuk investor Indonesia.",
+      title: "Saham Hari Ini — Sinyal & Analisa Teknikal IDX",
+      description: description,
       url: `${SITE_URL}/berita`,
-      images: [{ url: `${SITE_URL}/api/og?title=Berita+Saham+Rekomendasi+Hari+Ini&type=berita`, width: 1200, height: 630 }],
+      images: [{ url: `${SITE_URL}/api/og?title=Saham+Hari+Ini&type=berita`, width: 1200, height: 630 }],
     },
-    twitter: {
-      card: "summary_large_image",
-      title: "Berita Saham & Rekomendasi Hari Ini — Analisa Teknikal IDX",
-      description: "Berita saham IDX terkini, analisis teknikal, rekomendasi saham hari ini, dan insight pasar.",
-    },
+    twitter: { card: "summary_large_image", title: "Saham Hari Ini — TeknikalID", description },
     ...(Object.keys(links).length > 0 ? { other: links } : {}),
   };
 }
 
-export default async function BeritaPage({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
-  const { type: activeType, page } = await searchParams;
+export default async function BeritaPage({ searchParams }: { searchParams: SearchParams }) {
+  const { trend, q, page } = await searchParams;
   const currentPage = Math.max(1, parseInt(page ?? "1", 10) || 1);
+  const query = (q ?? "").trim().toUpperCase();
+  const activeTrend = trend === "gain" ? "gain" : trend === "loss" ? "loss" : "all";
 
-  const dailySnapshots = await prisma.article.findMany({
+  // All DAILY_SNAPSHOT (regenerated daily per ticker) — light select, no content body.
+  const snapshots = await prisma.article.findMany({
     where: {
       status: ArticleStatus.PUBLISHED,
+      isListed: true,
       articleType: "DAILY_SNAPSHOT" as ArticleType,
+      tickerTag: { not: null },
     },
     orderBy: { publishedAt: "desc" },
-    take: 8,
     select: { id: true, slug: true, title: true, tickerTag: true, publishedAt: true },
   });
 
-  const articleWhere: Record<string, unknown> = {
-    status: ArticleStatus.PUBLISHED,
-    isListed: true,
-    articleType: activeType
-      ? (activeType as ArticleType)
-      : { in: ["STOCK_ANALYSIS", "NEWS", "GENERAL", "DAILY_SNAPSHOT"] as ArticleType[] },
-  };
+  const tickers = Array.from(new Set(snapshots.map((s) => s.tickerTag!).filter(Boolean)));
 
-  const [totalCount, rows] = await Promise.all([
-    prisma.article.count({ where: articleWhere as never }),
-    prisma.article.findMany({
-      where: articleWhere as never,
-      orderBy: [{ publishedAt: "desc" }, { id: "desc" }],
-      skip: (currentPage - 1) * PAGE_SIZE,
-      take: PAGE_SIZE,
-      include: {
-        author: { select: { name: true, username: true } },
-      },
-    }),
+  const [sparklineMap, batch, overview] = await Promise.all([
+    stockMarketService.getSparklines(),
+    stockMarketService.getStockBatchWithIndicators(tickers),
+    stockMarketService.getMarketOverview(),
   ]);
+  const batchMap = new Map(batch.map((b) => [b.ticker, b]));
 
-  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  // Build card data
+  let cards = snapshots.map<SnapshotCardData>((s) => {
+    const t = s.tickerTag!;
+    const b = batchMap.get(t);
+    return {
+      ticker: t,
+      slug: s.slug,
+      name: b?.name ?? s.title,
+      sector: b?.sector ?? null,
+      close: b?.close ?? null,
+      changePercent: b?.changePercent ?? null,
+      sparkline: sparklineMap[t] ?? [],
+      signalScore: b?.signalScore ?? null,
+      signalLabel: b?.signalLabel ?? null,
+      rsi14: b?.rsi14 ?? null,
+      isGorengan: b?.isGorengan ?? false,
+    };
+  });
 
-  const featuredArticle = rows[0];
-  const gridArticles = rows.slice(1);
+  // Filter
+  if (query) {
+    cards = cards.filter(
+      (c) => c.ticker.replace(/\.JK$/i, "").includes(query) || c.name.toUpperCase().includes(query),
+    );
+  }
+  if (activeTrend === "gain") cards = cards.filter((c) => (c.changePercent ?? 0) > 0);
+  if (activeTrend === "loss") cards = cards.filter((c) => (c.changePercent ?? 0) < 0);
 
-  // Serialize grid articles for client component
-  const serializedGrid = gridArticles.map((a) => ({
-    id: a.id,
-    slug: a.slug,
-    title: a.title,
-    excerpt: a.excerpt,
-    articleType: a.articleType,
-    tickerTag: a.tickerTag,
-    tags: a.tags,
-    publishedAt: a.publishedAt.toISOString(),
-    coverImageUrl: a.coverImageUrl ?? null,
-    author: { name: a.author.name, username: a.author.username },
-  }));
+  // Sort: biggest movers first (most interesting); gain → strongest up, loss → strongest down
+  cards.sort((a, b) => {
+    const av = a.changePercent ?? -Infinity;
+    const bv = b.changePercent ?? -Infinity;
+    if (activeTrend === "gain") return bv - av;
+    if (activeTrend === "loss") return av - bv;
+    return Math.abs(bv) - Math.abs(av);
+  });
 
-  // Pagination URLs for SEO link tags
-  const typeSuffix = activeType ? `&type=${activeType}` : "";
-  const prevHref = currentPage > 1
-    ? currentPage === 2
-      ? `/berita${activeType ? `?type=${activeType}` : ""}`
-      : `/berita?page=${currentPage - 1}${typeSuffix}`
-    : null;
-  const nextHref = currentPage < totalPages
-    ? `/berita?page=${currentPage + 1}${typeSuffix}`
-    : null;
+  const totalPages = Math.max(1, Math.ceil(cards.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const pageCards = cards.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+
+  const today = new Intl.DateTimeFormat("id-ID", {
+    weekday: "long", day: "numeric", month: "long", year: "numeric",
+  }).format(new Date());
+  const topGainer = overview.gainers[0];
+  const topLoser = overview.losers[0];
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
     "@graph": [
-      {
-        "@type": "CollectionPage",
-        name: "Berita & Analisis Saham",
-        url: `${SITE_URL}/berita`,
-        ...(totalPages > 1 ? { potentialAction: {
-          "@type": "ReadAction",
-          target: Array.from({ length: totalPages }, (_, i) => `${SITE_URL}/berita?page=${i + 1}`),
-        } } : {}),
-      },
+      { "@type": "CollectionPage", name: "Saham Hari Ini", url: `${SITE_URL}/berita` },
       {
         "@type": "BreadcrumbList",
         itemListElement: [
@@ -179,176 +146,119 @@ export default async function BeritaPage({
 
   return (
     <>
-      {prevHref && <link rel="prev" href={prevHref} />}
-      {nextHref && <link rel="next" href={nextHref} />}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
+      <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
       <div className="min-h-screen bg-bg-primary">
-        {/* Dark terminal hero */}
-        <section className="akademi-hero" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}>
-          <div className="relative z-[1] max-w-6xl mx-auto px-4 py-16 sm:py-20">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                <Newspaper className="h-5 w-5 text-blue-400" />
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white font-mono uppercase tracking-[0.15em]">
-                Berita
-              </h1>
+        {/* ── Editorial masthead ── */}
+        <section className="border-b border-border bg-bg-card">
+          <div className="max-w-6xl mx-auto px-4 py-10 sm:py-14">
+            <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.2em] text-text-tertiary mb-3">
+              <Activity className="h-3.5 w-3.5" aria-hidden />
+              <time dateTime={new Date().toISOString()}>{today}</time>
             </div>
-            <p className="text-gray-300 max-w-2xl text-sm sm:text-base leading-relaxed">
-              <span className="text-gray-400 font-mono text-xs mr-2">&gt;</span>
-              Analisis teknikal saham IDX terkini. Data indikator real-time, sinyal trading, dan insight pasar untuk investor Indonesia.
-              <span className="akademi-cursor" />
+            <h1 className="font-serif text-4xl sm:text-5xl font-semibold tracking-tight text-text-primary leading-[1.05]">
+              Saham Hari Ini
+            </h1>
+            <p className="mt-3 text-sm sm:text-base text-text-secondary max-w-2xl leading-relaxed">
+              Ringkasan teknikal harian untuk ratusan saham IDX — harga terbaru, sinyal trading, dan analisa indikator. Klik saham untuk analisa lengkap.
             </p>
+
+            {/* Market breadth strip */}
+            <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+              <span className="inline-flex items-center gap-1.5 font-semibold text-bullish">
+                <TrendingUp className="h-4 w-4" aria-hidden />
+                {overview.advancersCount} naik
+              </span>
+              <span className="inline-flex items-center gap-1.5 font-semibold text-bearish">
+                <TrendingDown className="h-4 w-4" aria-hidden />
+                {overview.declinersCount} turun
+              </span>
+              <span className="text-text-tertiary">{overview.unchangedCount} stagnan</span>
+              {topGainer && (
+                <Link href={`/berita/saham-${topGainer.ticker.replace(/\.JK$/i, "").toLowerCase()}`}
+                  className="hidden sm:inline-flex items-center gap-1 text-text-secondary hover:text-bullish transition-colors">
+                  Top Gainer:
+                  <span className="font-mono font-bold text-bullish">{topGainer.ticker.replace(/\.JK$/i, "")}</span>
+                  <span className="font-mono text-bullish">+{topGainer.changePercent.toFixed(2)}%</span>
+                </Link>
+              )}
+              {topLoser && (
+                <Link href={`/berita/saham-${topLoser.ticker.replace(/\.JK$/i, "").toLowerCase()}`}
+                  className="hidden sm:inline-flex items-center gap-1 text-text-secondary hover:text-bearish transition-colors">
+                  Top Loser:
+                  <span className="font-mono font-bold text-bearish">{topLoser.ticker.replace(/\.JK$/i, "")}</span>
+                  <span className="font-mono text-bearish">{topLoser.changePercent.toFixed(2)}%</span>
+                </Link>
+              )}
+            </div>
           </div>
         </section>
 
-        <div className="max-w-6xl mx-auto px-4 py-10">
-          {/* Type filter strip */}
-          <div className="flex items-center gap-2 mb-8">
-            <Link
-              href={currentPage > 1 ? `/berita?page=${currentPage}` : "/berita"}
-              className="akademi-filter-pill"
-              data-active={!activeType ? "true" : undefined}
-            >
-              Semua
-            </Link>
-            {TYPE_FILTERS.map((tf) => (
-              <Link
-                key={tf.value}
-                href={`/berita?type=${tf.value}${currentPage > 1 ? `&page=${currentPage}` : ""}`}
-                className="akademi-filter-pill"
-                data-active={activeType === tf.value ? "true" : undefined}
-              >
-                {tf.label}
-              </Link>
-            ))}
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          {/* ── Filter bar ── */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
+              {([
+                { value: "all", label: "Semua" },
+                { value: "gain", label: "Naik" },
+                { value: "loss", label: "Turun" },
+              ] as const).map((f) => (
+                <Link
+                  key={f.value}
+                  href={buildBeritaUrl(1, f.value === "all" ? undefined : f.value, q)}
+                  aria-current={activeTrend === f.value ? "page" : undefined}
+                  className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                    activeTrend === f.value
+                      ? "bg-text-primary text-white"
+                      : "bg-bg-card text-text-secondary border border-border hover:border-accent/30"
+                  }`}
+                >
+                  {f.label}
+                </Link>
+              ))}
+            </div>
+
+            <form className="relative sm:ml-auto sm:w-72" action="/berita" method="GET" role="search">
+              {activeTrend !== "all" && <input type="hidden" name="trend" value={activeTrend} />}
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary pointer-events-none" aria-hidden />
+              <input
+                type="search"
+                name="q"
+                defaultValue={q ?? ""}
+                placeholder="Cari ticker / nama saham…"
+                aria-label="Cari saham"
+                className="w-full rounded-full border border-border bg-bg-card pl-9 pr-4 py-2 text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent/40"
+              />
+            </form>
           </div>
 
-          {/* Saham Hari Ini — daily snapshots strip */}
-          {dailySnapshots.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-text-tertiary mb-3">Saham Hari Ini</h2>
-              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
-                {dailySnapshots.map((ds) => (
-                  <Link
-                    key={ds.id}
-                    href={`/berita/${ds.slug}`}
-                    className="flex-shrink-0 bg-bg-card rounded-xl depth-shadow p-4 hover:depth-shadow-hover transition-all min-w-[200px] max-w-[240px]"
-                  >
-                    <div className="flex items-center gap-1.5 mb-1.5">
-                      {ds.tickerTag && (
-                        <span className="text-[10px] font-mono font-semibold text-blue-500 bg-blue-500/10 px-1.5 py-0.5 rounded">
-                          {ds.tickerTag.replace(".JK", "")}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs font-medium text-text-primary line-clamp-2">{ds.title}</p>
-                    <p className="text-[10px] text-text-tertiary font-mono mt-1">
-                      {new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short" }).format(new Date(ds.publishedAt))}
-                    </p>
-                  </Link>
-                ))}
-              </div>
+          {/* ── Signal-card grid ── */}
+          {pageCards.length === 0 ? (
+            <div className="text-center py-24">
+              <p className="text-text-tertiary">Tidak ada saham yang cocok dengan filter ini.</p>
+              <Link href="/berita" className="mt-3 inline-block text-sm font-medium text-accent hover:underline">
+                Reset filter
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+              {pageCards.map((c) => (
+                <SnapshotCard key={c.ticker} {...c} />
+              ))}
             </div>
           )}
 
-          {/* Featured article */}
-          {featuredArticle && (
-            <Link
-              href={`/berita/${featuredArticle.slug}`}
-              className="block mb-8"
-            >
-              <div className="akademi-featured depth-shadow-strong overflow-hidden hover:scale-[1.005] transition-transform duration-300">
-                {featuredArticle.coverImageUrl && (
-                  <div className="aspect-[3/1] overflow-hidden">
-                    <img
-                      src={featuredArticle.coverImageUrl}
-                      alt={featuredArticle.title}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                    />
-                  </div>
-                )}
-                <div className="relative z-10 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 p-6 sm:p-8">
-                  <div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded ${TYPE_LABELS[featuredArticle.articleType]?.color ?? "text-blue-500 bg-blue-500/10"}`}>
-                        {TYPE_LABELS[featuredArticle.articleType]?.label ?? "Artikel"}
-                      </span>
-                      {featuredArticle.tickerTag && (
-                        <span className="text-[10px] font-mono font-semibold text-accent bg-accent/10 px-2 py-0.5 rounded">
-                          {featuredArticle.tickerTag.replace(".JK", "")}
-                        </span>
-                      )}
-                      <span className="text-xs text-text-tertiary font-mono">
-                        {formatDate(featuredArticle.publishedAt)}
-                      </span>
-                    </div>
-                    <h2 className="text-xl sm:text-2xl font-bold text-text-primary mb-3 leading-snug">
-                      {featuredArticle.title}
-                    </h2>
-                    <p className="text-sm text-text-secondary line-clamp-3 mb-4">
-                      {featuredArticle.excerpt}
-                    </p>
-                    <div className="flex items-center gap-3">
-                      {featuredArticle.author.name && (
-                        <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-accent/10 text-accent text-[10px] font-semibold flex items-center justify-center">
-                            {featuredArticle.author.name[0].toUpperCase()}
-                          </div>
-                          <span className="text-xs text-text-secondary">
-                            {featuredArticle.author.name}
-                          </span>
-                        </div>
-                      )}
-                      {featuredArticle.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5">
-                          {featuredArticle.tags.slice(0, 3).map((tag) => (
-                            <Badge
-                              key={tag}
-                              variant="secondary"
-                              className="text-[10px] bg-gray-100 text-text-secondary border-0"
-                            >
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  {/* Decorative chart stripes */}
-                  <div className="hidden md:flex items-end gap-[3px] h-24 opacity-30">
-                    {[40, 65, 50, 80, 55, 70, 45, 90, 60, 75, 55, 85, 50, 70, 60].map(
-                      (h, i) => (
-                        <div
-                          key={i}
-                          className={`w-[3px] rounded-full ${
-                            i % 3 === 0
-                              ? "bg-bearish/40"
-                              : i % 3 === 1
-                              ? "bg-bullish/40"
-                              : "bg-blue-400/30"
-                          }`}
-                          style={{ height: `${h}%` }}
-                        />
-                      )
-                    )}
-                  </div>
-                </div>
-              </div>
-            </Link>
-          )}
+          <BeritaPagination currentPage={safePage} totalPages={totalPages} trend={activeTrend !== "all" ? activeTrend : undefined} q={q} />
 
-          {/* Grid with pagination — replaces infinite scroll */}
-          <BeritaGrid
-            articles={serializedGrid}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            activeType={activeType}
-          />
+          {/* Footer link to screener */}
+          <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-3 rounded-xl depth-shadow border border-border/60 bg-bg-card p-5">
+            <div>
+              <p className="text-sm font-semibold text-text-primary">Cari saham berdasarkan sinyal teknikal</p>
+              <p className="text-xs text-text-tertiary mt-0.5">Golden cross, oversold, volume spike — filter ratusan saham IDX sekaligus.</p>
+            </div>
+            <Link href="/screener" className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:underline whitespace-nowrap">
+              Buka Screener <ArrowUpRight className="h-4 w-4" aria-hidden />
+            </Link>
+          </div>
         </div>
       </div>
     </>

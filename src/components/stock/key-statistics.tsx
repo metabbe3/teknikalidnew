@@ -27,7 +27,7 @@ export function KeyStatistics({ open, high, low, close, volume, week52High, week
 
   return (
     <div className="indicator-card depth-shadow p-4">
-      <h3 className="text-[11px] font-semibold text-text-tertiary uppercase tracking-wider mb-3">Key Statistics</h3>
+      <h3 className="text-sm font-semibold text-text-primary mb-3">Key Statistics</h3>
 
       {/* 52-week range - prominent at top */}
       {week52Position !== null && week52High !== null && week52Low !== null && (

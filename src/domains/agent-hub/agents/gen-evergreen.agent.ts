@@ -5,8 +5,9 @@ import { prisma } from "@/lib/prisma";
 
 /**
  * Agent: Generate IDX40 evergreen technical analysis articles.
- * Each run processes a small batch (typically 2 stocks).
- * ~5 min per batch.
+ * Default batch = 1 (slow planting cadence: 1 evergreen article/day via the
+ * agent-hub-scheduler, which dispatches jobs with an empty payload).
+ * ~3-5 min per article.
  * After completion, chains content_quality jobs for each new DRAFT article.
  */
 export class GenEvergreenAgent extends BaseAgent {
@@ -14,7 +15,7 @@ export class GenEvergreenAgent extends BaseAgent {
   readonly label = "Generate Evergreen Analysis";
 
   async execute(payload: AgentJobPayload): Promise<AgentJobResult> {
-    const batchSize = (payload.batchSize as number) || 2;
+    const batchSize = (payload.batchSize as number) || 1;
     const startTime = new Date();
     const result = await articleService.runBatchGeneration(batchSize);
 

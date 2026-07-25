@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { ArticleStatus, ArticleType, Prisma } from "@/generated/prisma/client";
+import { passesTitleGuard } from "./title-guard";
 
 export const articleRepository = {
   findPublished(tags?: string[], articleType?: ArticleType) {
@@ -110,6 +111,15 @@ export const articleRepository = {
   },
 
   update(id: string, data: Prisma.ArticleUpdateInput) {
+    // Defense-in-depth: reject title updates that fail the title guard.
+    // Prevents any future code path (agents, admin tools, etc.) from accidentally
+    // overwriting a good title with AI-leaked preamble. Callers who legitimately
+    // need to bypass this can use `prisma.article.update` directly.
+    if (typeof data.title === "string" && !passesTitleGuard(data.title)) {
+      throw new Error(
+        `ArticleRepository.update: rejected invalid title "${data.title.slice(0, 80)}..." (failed passesTitleGuard)`,
+      );
+    }
     return prisma.article.update({ where: { id }, data });
   },
 
@@ -169,6 +179,18 @@ export const articleRepository = {
       where: { id },
       data: { version: { increment: 1 }, lastGeneratedAt: new Date() },
     });
+  },
+
+  /** Fetch recent article titles for dedup checking */
+  findRecentTitles(limit: number = 30) {
+    return prisma.article
+      .findMany({
+        where: { status: ArticleStatus.PUBLISHED },
+        orderBy: { publishedAt: "desc" },
+        select: { title: true },
+        take: limit,
+      })
+      .then((rows) => rows.map((r) => r.title));
   },
 
   async findTickersNeedingGeneration(batchSize: number, allTickers: string[]): Promise<string[]> {

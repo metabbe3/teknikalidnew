@@ -156,7 +156,7 @@ export function IndicatorPanel({
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold text-text-primary">Indikator Teknikal</h3>
+        <h2 className="text-sm font-semibold text-text-primary">Indikator Teknikal</h2>
         <button
           onClick={() => setPlainMode(!plainMode)}
           className={`text-[11px] font-medium px-3 py-1.5 rounded-full transition-colors ${

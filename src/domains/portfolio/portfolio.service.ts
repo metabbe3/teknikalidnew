@@ -4,6 +4,8 @@ import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { StockNotFoundError } from "@/domains/stock/stock.errors";
 import { HoldingNotFoundError, PortfolioPrivateError } from "./portfolio.errors";
 import { decimalToNumber } from "@/lib/serialize";
+import { generateAdvice, summarizePortfolioAdvice } from "./advice-engine";
+import type { HoldingAdvice, PortfolioAdviceSummary } from "./advice-engine";
 
 export interface HoldingItem {
   ticker: string;
@@ -19,6 +21,11 @@ export interface HoldingItem {
   marketValue: number | null;
   rsi14: number | null;
   macdSignal: string | null;
+  sma50: number | null;
+  sma200: number | null;
+  signalScore: number | null;
+  isGorengan: boolean;
+  advice: HoldingAdvice;
 }
 
 export interface PortfolioSummary {
@@ -34,6 +41,7 @@ export interface PortfolioSummary {
 export interface PortfolioData {
   holdings: HoldingItem[];
   summary: PortfolioSummary;
+  adviceSummary: PortfolioAdviceSummary;
   isPublic: boolean;
 }
 
@@ -127,6 +135,36 @@ export const portfolioService = {
       const rsi14 = indicator ? decimalToNumber(indicator.rsi14) : null;
       const macdHist = indicator ? decimalToNumber(indicator.macdHist) : null;
       const macdSignal = macdHist !== null ? (macdHist > 0 ? "Bullish" : "Bearish") : null;
+      const sma50 = indicator ? decimalToNumber(indicator.sma50) : null;
+      const sma200 = indicator ? decimalToNumber(indicator.sma200) : null;
+      const signalScore = indicator ? decimalToNumber(indicator.signalScore) : null;
+      const isGorengan = indicator?.isGorengan ?? false;
+
+      // Generate technical advice
+      const advice = generateAdvice({
+        currentPrice: currentPrice ?? 0,
+        rsi14,
+        macdHist,
+        macdLine: indicator ? decimalToNumber(indicator.macdLine) : null,
+        macdSignal: indicator ? decimalToNumber(indicator.macdSignal) : null,
+        sma20: indicator ? decimalToNumber(indicator.sma20) : null,
+        sma50,
+        sma200,
+        ema12: indicator ? decimalToNumber(indicator.ema12) : null,
+        ema26: indicator ? decimalToNumber(indicator.ema26) : null,
+        bbUpper: indicator ? decimalToNumber(indicator.bbUpper) : null,
+        bbMiddle: indicator ? decimalToNumber(indicator.bbMiddle) : null,
+        bbLower: indicator ? decimalToNumber(indicator.bbLower) : null,
+        stochK: indicator ? decimalToNumber(indicator.stochK) : null,
+        stochD: indicator ? decimalToNumber(indicator.stochD) : null,
+        adx: indicator ? decimalToNumber(indicator.adx) : null,
+        atr: indicator ? decimalToNumber(indicator.atr) : null,
+        vwap: indicator ? decimalToNumber(indicator.vwap) : null,
+        signalScore,
+        signalLabel: indicator?.signalLabel ?? null,
+        supertrend: indicator ? decimalToNumber(indicator.supertrend) : null,
+        isGorengan,
+      });
 
       return {
         ticker: h.stockTicker,
@@ -142,6 +180,11 @@ export const portfolioService = {
         marketValue,
         rsi14,
         macdSignal,
+        sma50,
+        sma200,
+        signalScore,
+        isGorengan,
+        advice,
       };
     });
 
@@ -167,6 +210,11 @@ export const portfolioService = {
     // Since we don't have username here, we'll add a separate method
     const isPublic = false; // Will be fetched separately via settings
 
+    // Generate portfolio-level advice summary
+    const adviceSummary = summarizePortfolioAdvice(
+      items.map((h) => ({ ticker: h.ticker, advice: h.advice })),
+    );
+
     return {
       holdings: items,
       summary: {
@@ -178,6 +226,7 @@ export const portfolioService = {
         bearishCount,
         sectorBreakdown,
       },
+      adviceSummary,
       isPublic: false, // Caller should fetch separately
     };
   },

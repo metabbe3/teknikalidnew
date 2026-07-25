@@ -370,6 +370,31 @@ export function buildTemplateArticle(data: TemplateData): string {
       : `SMA20 berada di bawah SMA50 (death cross) — sinyal bearish jangka pendek-menengah.`)
     : "";
 
+  // Signal breakdown for "Mengapa Sinyal Ini?" section (unique per-ticker narrative)
+  const signals: string[] = [];
+  if (data.rsi14 !== null) {
+    if (data.rsi14 < 30) signals.push(`RSI di zona oversold (${data.rsi14.toFixed(0)}) — berpotensi rebound teknikal`);
+    else if (data.rsi14 > 70) signals.push(`RSI overbought (${data.rsi14.toFixed(0)}) — waspadai koreksi`);
+    else signals.push(`RSI netral (${data.rsi14.toFixed(0)}) — momentum seimbang`);
+  }
+  if (data.macdHist !== null) {
+    signals.push(data.macdHist >= 0
+      ? `MACD histogram positif (+${data.macdHist.toFixed(2)}) — momentum beli menguat`
+      : `MACD histogram negatif (${data.macdHist.toFixed(2)}) — momentum jual dominan`);
+  }
+  if (data.close !== null && data.sma50 !== null) {
+    signals.push(data.close > data.sma50
+      ? `Harga di atas SMA50 — tren jangka menengah bullish`
+      : `Harga di bawah SMA50 — tren jangka menengah bearish`);
+  }
+  if (data.close !== null && data.supertrend !== null) {
+    signals.push(data.close > data.supertrend
+      ? `Supertrend bullish — harga di atas garis indikatif`
+      : `Supertrend bearish — harga di bawah garis indikatif`);
+  }
+  const bullCount = signals.filter((s) => /positif|naik|bullish|oversold|rebound|di atas/i.test(s)).length;
+  const bearCount = signals.filter((s) => /negatif|turun|bearish|overbought|koreksi|di bawah/i.test(s)).length;
+
   return `## Ringkasan Analisa Teknikal ${data.name} (${t}) — ${month}
 
 ${outlookEmoji} **Outlook: ${outlook}**
@@ -456,6 +481,20 @@ ${outlook === "BULLISH"
 :::tip[Tips Trading ${t}]
 ${tipText(outlook, data)}
 :::
+
+## Mengapa Sinyal Ini?
+
+Sinyal **${outlook}** untuk ${data.name} (${t}) didasarkan pada konsensus ${bullCount} indikator bullish dan ${bearCount} indikator bearish dari total indikator yang dianalisa. Berikut rincian faktor-faktor yang membentuk sinyal ini:
+
+${signals.map((s, i) => `${i + 1}. ${s}`).join("\n")}
+
+Kombinasi indikator di atas membentuk dasar penilaian teknikal untuk ${data.name}. Sinyal dapat berubah dengan cepat seiring perubahan harga, volume, dan kondisi pasar secara keseluruhan. Selalu pantau pergerakan harga real-time dan gunakan stop-loss untuk mengelola risiko.
+
+## Konteks Sektor ${data.sector}
+
+${data.name} (${t}) merupakan saham di sektor **${data.sector}**. Pergerakan harga saham ini tidak hanya dipengaruhi oleh faktor teknikal individual, tetapi juga oleh tren dan sentimen sektor ${data.sector} secara keseluruhan. Faktor makroekonomi seperti suku bunga, kebijakan pemerintah, dan kondisi global dapat berdampak signifikan pada saham sektor ${data.sector}.
+
+Trader disarankan untuk membandingkan performa ${t} dengan saham-saham ${data.sector} lainnya, memahami dinamika sektoral, dan tidak hanya bergantung pada analisa teknikal satu saham secara terisolasi. Diversifikasi portofolio tetap merupakan strategi manajemen risiko yang penting.
 
 ## Kata Kunci Terkait
 

@@ -1,7 +1,7 @@
 import { communityRepository, serializeAuthor } from "./community.repository";
 import { socialGraphService } from "@/domains/social/social-graph.service";
 import { eventBus } from "@/lib/event-bus";
-import { stockRepository } from "@/domains/stock/stock.repository";
+import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { prisma } from "@/lib/prisma";
 import { PREDICTION_OUTCOME } from "@/lib/constants";
 import { getAvatarUrl } from "@/lib/avatar";
@@ -180,7 +180,7 @@ export const communityService = {
     if (data.content.length > 1000) {
       throw new ContentTooLongError(1000);
     }
-    if (data.tickerTag && !(await stockRepository.findStockByTicker(data.tickerTag))) {
+    if (data.tickerTag && !(await stockMarketService.stockExists(data.tickerTag))) {
       throw new InvalidTickerError();
     }
     if (
@@ -362,7 +362,7 @@ export const communityService = {
     ticker: string,
     data: { content: string; parentId?: string }
   ) {
-    if (!(await stockRepository.findStockByTicker(ticker))) throw new InvalidTickerError();
+    if (!(await stockMarketService.stockExists(ticker))) throw new InvalidTickerError();
     if (!data.content || typeof data.content !== "string") {
       throw new ContentRequiredError();
     }
@@ -448,7 +448,7 @@ export const communityService = {
   },
 
   async getStockTickerComments(ticker: string, cursor?: string, limit: number = 20) {
-    if (!(await stockRepository.findStockByTicker(ticker))) throw new InvalidTickerError();
+    if (!(await stockMarketService.stockExists(ticker))) throw new InvalidTickerError();
 
     const [posts, comments] =
       await communityRepository.findStockTickerComments(ticker);
@@ -516,19 +516,21 @@ export const communityService = {
       const ticker = post.tickerTag!;
 
       // Find the stock and its ID
-      const stock = await stockRepository.findStockByTicker(ticker);
-      if (!stock) continue;
+      const stockDetail = await stockMarketService.getStockDetail(ticker);
+      if (!stockDetail) continue;
+
+      const stockId = stockDetail.stock.id;
 
       // Get price on prediction date (nearest trading day on or after)
       const priceOnDate = await prisma.stockPrice.findFirst({
-        where: { stockId: stock.id, date: { gte: post.createdAt } },
+        where: { stockId, date: { gte: post.createdAt } },
         orderBy: { date: "asc" },
       });
       if (!priceOnDate) continue;
 
       // Get latest price
       const latestPrice = await prisma.stockPrice.findFirst({
-        where: { stockId: stock.id },
+        where: { stockId },
         orderBy: { date: "desc" },
       });
       if (!latestPrice) continue;

@@ -31,6 +31,17 @@ const nextConfig: NextConfig = {
     }
     return config;
   },
+  async redirects() {
+    return [
+      // Screener merged into Saham (/stocks?view=screener). 308 permanent — SEO equity passes.
+      // Source query params (tab, preset) are forwarded to the destination.
+      {
+        source: "/screener",
+        destination: "/stocks?view=screener",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
@@ -38,6 +49,7 @@ const nextConfig: NextConfig = {
         headers: [
           { key: "X-Frame-Options", value: "DENY" },
           { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-XSS-Protection", value: "1; mode=block" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           {
             key: "Strict-Transport-Security",

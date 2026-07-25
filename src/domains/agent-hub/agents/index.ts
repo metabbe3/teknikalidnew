@@ -20,6 +20,7 @@ import { ContentExpanderAgent } from "./content-expander.agent";
 import { InternalLinkerAgent } from "./internal-linker.agent";
 import { SchemaBuilderAgent } from "./schema-builder.agent";
 import { GrowthMonitorAgent } from "./growth-monitor.agent";
+import { GenMovementAnalysisAgent } from "./gen-movement-analysis.agent";
 
 const agents: Record<AgentType, BaseAgent> = {
   site_health: new SiteHealthAgent(),
@@ -42,6 +43,7 @@ const agents: Record<AgentType, BaseAgent> = {
   internal_linker: new InternalLinkerAgent(),
   schema_builder: new SchemaBuilderAgent(),
   growth_monitor: new GrowthMonitorAgent(),
+  gen_movement_analysis: new GenMovementAnalysisAgent(),
 };
 
 export function getAgent(type: AgentType): BaseAgent {

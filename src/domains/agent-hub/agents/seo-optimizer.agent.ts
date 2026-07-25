@@ -2,6 +2,7 @@ import { BaseAgent } from "./base-agent";
 import type { AgentType, AgentJobPayload, AgentJobResult } from "../agent-hub.types";
 import type { AutoFixRecord } from "../auto-fix.types";
 import { prisma } from "@/lib/prisma";
+import { findTitleViolation, passesTitleGuard } from "@/domains/article/title-guard";
 
 export class SeoOptimizerAgent extends BaseAgent {
   readonly type: AgentType = "seo_optimizer";
@@ -346,7 +347,10 @@ Gunakan type "tag_enrichment" untuk tags yang sudah ada tapi bisa ditambah.`;
     const system = "Generate a concise, SEO-optimized article title in Indonesian for a stock analysis platform. 40-60 characters. Respond with ONLY the title text, no quotes, no explanation.";
     const user = `Current title: "${currentTitle}"\nContent preview: ${content.slice(0, 500)}`;
     const result = await this.callAI(system, user, 200);
-    return result.trim().replace(/^["']|["']$/g, "").slice(0, 255) || null;
+    const cleaned = result.trim().replace(/^["']|["']$/g, "").slice(0, 255);
+    // Reject AI-leaked or structurally invalid titles (defense vs. 2026-06-18 incident).
+    if (!cleaned || findTitleViolation(cleaned) || !passesTitleGuard(cleaned)) return null;
+    return cleaned;
   }
 
   private async optimizeSeoTitle(content: string, currentTitle: string): Promise<string | null> {
@@ -355,7 +359,10 @@ Respond with ONLY the optimized title text, no quotes, no explanation. If the ti
     const user = `Current title: "${currentTitle}"\nContent preview: ${content.slice(0, 500)}`;
     const result = await this.callAI(system, user, 200);
     const optimized = result.trim().replace(/^["']|["']$/g, "").slice(0, 255);
-    return optimized && optimized !== currentTitle ? optimized : null;
+    if (!optimized || optimized === currentTitle) return null;
+    // Reject AI-leaked or structurally invalid titles (defense vs. 2026-06-18 incident).
+    if (findTitleViolation(optimized) || !passesTitleGuard(optimized)) return null;
+    return optimized;
   }
 
   private async generateSeoExcerpt(content: string): Promise<string | null> {
@@ -437,6 +444,8 @@ Respond with ONLY the shortened title text, no quotes, no explanation.`;
     const shortened = result.trim().replace(/^["']|["']$/g, "").slice(0, 255);
     if (!shortened || shortened === currentTitle) return null;
     if (shortened.length >= currentTitle.length || shortened.length > 60) return null;
+    // Reject AI-leaked or structurally invalid titles (defense vs. 2026-06-18 incident).
+    if (findTitleViolation(shortened) || !passesTitleGuard(shortened)) return null;
     return shortened;
   }
 

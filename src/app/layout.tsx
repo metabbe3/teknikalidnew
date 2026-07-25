@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { Plus_Jakarta_Sans, Geist_Mono, Geist } from "next/font/google";
+import { Plus_Jakarta_Sans, Geist_Mono, Newsreader } from "next/font/google";
 import "./globals.css";
 import { SITE_URL } from "@/lib/constants";
 import "@/lib/events-init";
@@ -9,8 +9,6 @@ import { AuthProvider } from "@/components/providers/auth-provider";
 import { ConditionalSocketProvider as SocketProvider } from "@/components/providers/socket-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-
-const geist = Geist({subsets:['latin'],variable:'--font-sans',display:'swap'});
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
@@ -25,10 +23,19 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
+// Editorial serif — used for the /berita masthead + section headlines (trustworthy journalism feel)
+const newsreader = Newsreader({
+  variable: "--font-newsreader",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#0d9488",
+  themeColor: "#0ea5e9",
 };
 
 export const metadata: Metadata = {
@@ -54,6 +61,17 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "TeknikalID" }],
   metadataBase: new URL(SITE_URL),
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   verification: {
     google: process.env.GOOGLE_SITE_VERIFICATION,
   },
@@ -87,7 +105,7 @@ export default function RootLayout({
   const plausibleDomain = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN;
 
   return (
-    <html lang="id" className={cn("h-full", "antialiased", jakarta.variable, geistMono.variable, "font-sans", geist.variable)}>
+    <html lang="id" className={cn("h-full", "antialiased", jakarta.variable, geistMono.variable, newsreader.variable, "font-sans")}>
       <body className="min-h-full flex flex-col bg-bg-primary text-text-primary">
         <a
           href="#main-content"

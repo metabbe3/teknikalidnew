@@ -7,6 +7,11 @@ import {
   useDeleteScreener,
   type SavedScreenerItem,
 } from "@/hooks/use-saved-screeners";
+import {
+  useScreenerAlerts,
+  useCreateAlert,
+  useToggleAlert,
+} from "@/hooks/use-screener-alerts";
 
 interface SavedScreenerBarProps {
   currentFilters: Record<string, string>;
@@ -22,9 +27,16 @@ export function SavedScreenerBar({
   const { data: screeners = [], isLoading } = useSavedScreeners();
   const saveMutation = useSaveScreener();
   const deleteMutation = useDeleteScreener();
+  const { data: alerts = [] } = useScreenerAlerts();
+  const createAlert = useCreateAlert();
+  const toggleAlert = useToggleAlert();
+
   const [showSaveForm, setShowSaveForm] = useState(false);
   const [saveName, setSaveName] = useState("");
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+
+  // Build a map of screenerId -> alert for quick lookup
+  const alertMap = new Map(alerts.map((a) => [a.savedScreenerId, a]));
 
   const handleSave = () => {
     const name = saveName.trim();
@@ -46,12 +58,21 @@ export function SavedScreenerBar({
     });
   };
 
+  const handleToggleBell = (screenerId: string) => {
+    const existing = alertMap.get(screenerId);
+    if (existing) {
+      toggleAlert.mutate({ id: existing.id, isEnabled: !existing.isEnabled });
+    } else {
+      createAlert.mutate({ savedScreenerId: screenerId });
+    }
+  };
+
   const hasFilters = Object.keys(currentFilters).length > 0;
 
   // Empty state when no saved screeners
   if (!isLoading && screeners.length === 0 && !showSaveForm) {
     return (
-      <div className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-border/50 bg-bg-card/50">
+      <div className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-border bg-bg-card/50">
         <div className="flex items-center gap-2 text-text-tertiary text-xs">
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
@@ -84,74 +105,91 @@ export function SavedScreenerBar({
               ))}
             </div>
           ) : (
-            screeners.map((screener: SavedScreenerItem) => (
-              <div
-                key={screener.id}
-                className="group relative flex items-center gap-1.5 pl-3 pr-2 py-1.5 rounded-lg border border-border/50 bg-bg-card hover:bg-bg-hover transition-colors cursor-pointer whitespace-nowrap text-sm"
-                onClick={() => {
-                  const filters = (typeof screener.filters === "object" && screener.filters !== null)
-                    ? screener.filters as Record<string, string>
-                    : {};
-                  onLoadScreener(filters);
-                }}
-              >
-                <span className="text-text-primary font-medium text-xs">
-                  {screener.name}
-                </span>
+            screeners.map((screener: SavedScreenerItem) => {
+              const alert = alertMap.get(screener.id);
+              const bellActive = alert?.isEnabled ?? false;
 
-                {/* Result count badge */}
-                {screener.lastResultCount !== null && screener.lastResultCount !== undefined && (
-                  <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[9px] font-mono font-semibold rounded-full bg-accent/10 text-accent">
-                    {screener.lastResultCount}
+              return (
+                <div
+                  key={screener.id}
+                  className="group relative flex items-center gap-1.5 pl-3 pr-2 py-1.5 rounded-lg border border-border bg-bg-card hover:bg-bg-hover transition-colors cursor-pointer whitespace-nowrap text-sm"
+                  onClick={() => {
+                    const filters = (typeof screener.filters === "object" && screener.filters !== null)
+                      ? screener.filters as Record<string, string>
+                      : {};
+                    onLoadScreener(filters);
+                  }}
+                >
+                  <span className="text-text-primary font-medium text-xs">
+                    {screener.name}
                   </span>
-                )}
 
-                {/* Bell icon placeholder for future alerts */}
-                <span className="text-text-tertiary/40 hover:text-text-tertiary" aria-hidden="true">
-                  <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                  </svg>
-                </span>
+                  {/* Result count badge */}
+                  {screener.lastResultCount !== null && screener.lastResultCount !== undefined && (
+                    <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[9px] font-mono font-semibold rounded-full bg-accent/10 text-accent">
+                      {screener.lastResultCount}
+                    </span>
+                  )}
 
-                {/* Delete button */}
-                {deleteConfirmId === screener.id ? (
+                  {/* Bell icon — toggle alert */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleDelete(screener.id);
+                      handleToggleBell(screener.id);
                     }}
-                    className="flex items-center justify-center w-5 h-5 rounded bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors cursor-pointer"
-                    aria-label="Confirm delete"
+                    className={`p-0.5 rounded transition-colors cursor-pointer ${
+                      bellActive
+                        ? "text-amber-500 hover:text-amber-600"
+                        : "text-text-tertiary/70 hover:text-text-tertiary"
+                    }`}
+                    aria-label={bellActive ? "Nonaktifkan notifikasi" : "Aktifkan notifikasi"}
+                    title={bellActive ? "Notifikasi aktif — klik untuk menonaktifkan" : "Aktifkan notifikasi harian"}
                   >
-                    <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true">
-                      <polyline points="20 6 9 17 4 12" />
+                    <svg className="w-3 h-3" viewBox="0 0 24 24" fill={bellActive ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
                     </svg>
                   </button>
-                ) : (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setDeleteConfirmId(screener.id);
-                      setTimeout(() => setDeleteConfirmId(null), 3000);
-                    }}
-                    className="flex items-center justify-center w-5 h-5 rounded text-text-tertiary/0 group-hover:text-text-tertiary hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer"
-                    aria-label={`Delete ${screener.name}`}
-                  >
-                    <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-                      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
-                  </button>
-                )}
-              </div>
-            ))
+
+                  {/* Delete button */}
+                  {deleteConfirmId === screener.id ? (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(screener.id);
+                      }}
+                      className="flex items-center justify-center w-5 h-5 rounded bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors cursor-pointer"
+                      aria-label="Confirm delete"
+                    >
+                      <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeleteConfirmId(screener.id);
+                        setTimeout(() => setDeleteConfirmId(null), 3000);
+                      }}
+                      className="flex items-center justify-center w-5 h-5 rounded text-text-tertiary/0 group-hover:text-text-tertiary hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer"
+                      aria-label={`Delete ${screener.name}`}
+                    >
+                      <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              );
+            })
           )}
 
           {/* Save button */}
           {hasFilters && !showSaveForm && (
             <button
               onClick={() => setShowSaveForm(true)}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-dashed border-border/50 text-text-tertiary hover:text-accent hover:border-accent/30 transition-colors cursor-pointer text-xs whitespace-nowrap"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-dashed border-border text-text-tertiary hover:text-accent hover:border-accent/30 transition-colors cursor-pointer text-xs whitespace-nowrap"
             >
               <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
                 <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />

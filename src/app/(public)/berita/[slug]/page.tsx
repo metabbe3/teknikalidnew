@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { SITE_URL } from "@/lib/constants";
+import { SITE_URL, IDX40_TICKERS } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
 import { ArticleContent, extractHeadings, estimateReadingTime, extractTickers } from "@/components/article/article-renderer";
 import { ArrowLeft, Clock, ChevronRight } from "lucide-react";
@@ -10,8 +10,11 @@ import { ShareButtons } from "@/components/ui/share-buttons";
 import { ArticleType } from "@/generated/prisma/client";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { StockArticleCard } from "@/components/stock/stock-article-card";
+import { stripMarkdown } from "@/lib/utils";
+import { SnapshotBriefing, type SnapshotBriefingData } from "@/components/berita/snapshot-briefing";
+import { decimalToNumber, bigIntToNumber } from "@/lib/serialize";
 
-const BERITA_TYPES: ArticleType[] = [ArticleType.STOCK_ANALYSIS, ArticleType.NEWS, ArticleType.GENERAL, ArticleType.DAILY_SNAPSHOT];
+const BERITA_TYPES: ArticleType[] = [ArticleType.STOCK_ANALYSIS, ArticleType.NEWS, ArticleType.GENERAL, ArticleType.DAILY_SNAPSHOT, ArticleType.MOVEMENT_ANALYSIS];
 
 export async function generateMetadata({
   params,
@@ -27,10 +30,16 @@ export async function generateMetadata({
 
   const ogImage = `${SITE_URL}/api/og?title=${encodeURIComponent(article.title)}&type=berita${article.tickerTag ? `&ticker=${article.tickerTag.replace(".JK", "")}` : ""}`;
 
+  // noindex non-IDX40 DAILY_SNAPSHOT pages — reduces "scaled content" signal (spam update recovery)
+  const isLongTailSnapshot = article.articleType === ArticleType.DAILY_SNAPSHOT
+    && article.tickerTag != null
+    && !IDX40_TICKERS.includes(article.tickerTag);
+
   return {
     title: `${article.title} — Berita TeknikalID`,
     description: article.excerpt,
     alternates: { canonical: `/berita/${slug}` },
+    ...(isLongTailSnapshot ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title: article.title,
       description: article.excerpt ?? undefined,
@@ -66,6 +75,60 @@ export default async function BeritaArticlePage({
   const headings = extractHeadings(article.content);
   const readingTime = estimateReadingTime(article.content);
   const mentionedTickers = extractTickers(article.content);
+
+  // DAILY_SNAPSHOT → hydrate live stock data by ticker for the briefing dashboard
+  const isSnapshot = article.articleType === ArticleType.DAILY_SNAPSHOT && !!article.tickerTag;
+  let briefingData: SnapshotBriefingData | null = null;
+  if (isSnapshot && article.tickerTag) {
+    try {
+      const d = await stockMarketService.getStockDetailForPage(article.tickerTag);
+      const ind = d.indicator;
+      briefingData = {
+        ticker: d.stock.ticker,
+        name: d.stock.name,
+        sector: d.stock.sector ?? null,
+        close: d.close,
+        change: d.change,
+        changePercent: d.changePercent,
+        sparkline: d.prices
+          .slice(0, 30)
+          .map((p) => decimalToNumber(p.close))
+          .filter((v): v is number => v !== null)
+          .reverse(),
+        latest: d.latest
+          ? {
+              open: decimalToNumber(d.latest.open),
+              high: decimalToNumber(d.latest.high),
+              low: decimalToNumber(d.latest.low),
+              volume: bigIntToNumber(d.latest.volume),
+            }
+          : null,
+        week52High: d.week52High,
+        week52Low: d.week52Low,
+        indicator: ind
+          ? {
+              signalScore: ind.signalScore,
+              signalLabel: ind.signalLabel,
+              rsi14: ind.rsi14,
+              macdHist: ind.macdHist,
+              sma20: ind.sma20,
+              sma50: ind.sma50,
+              sma200: ind.sma200,
+              stochK: ind.stochK,
+              stochD: ind.stochD,
+              adx: ind.adx,
+              bbUpper: ind.bbUpper,
+              bbLower: ind.bbLower,
+              supertrend: ind.supertrend,
+              obvTrend: ind.obvTrend,
+              isGorengan: ind.isGorengan,
+            }
+          : null,
+      };
+    } catch {
+      briefingData = null;
+    }
+  }
 
   // Fetch related articles by ticker or overlapping tags
   const relatedWhere = article.tickerTag
@@ -159,7 +222,7 @@ export default async function BeritaArticlePage({
             )}
             <ChevronRight className="h-3 w-3 opacity-40" />
             <span className="text-text-secondary truncate max-w-[200px] sm:max-w-none">
-              {article.title}
+              {stripMarkdown(article.title)}
             </span>
           </nav>
 
@@ -180,12 +243,12 @@ export default async function BeritaArticlePage({
                   )}
                 </div>
                 <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-text-primary mb-5">
-                  {article.title}
+                  {stripMarkdown(article.title)}
                 </h1>
 
                 {article.coverImageUrl && (
-                  <div className="rounded-xl overflow-hidden mb-6">
-                    <img src={article.coverImageUrl} alt={article.title} className="w-full object-cover max-h-[400px]" loading="lazy" />
+                  <div className="rounded-xl overflow-hidden mb-6 aspect-[2/1] max-h-[400px]">
+                    <img src={article.coverImageUrl} alt={article.title} width={1200} height={600} className="w-full h-full object-cover" loading="lazy" />
                   </div>
                 )}
 
@@ -225,7 +288,10 @@ export default async function BeritaArticlePage({
                 />
               </div>
 
-              {/* Article body */}
+              {/* Snapshot briefing dashboard (DAILY_SNAPSHOT only) */}
+              {briefingData && <SnapshotBriefing data={briefingData} />}
+
+              {/* Analysis body */}
               <ArticleContent content={article.content} />
 
               {/* Stock cards for mentioned tickers */}
@@ -293,6 +359,12 @@ export default async function BeritaArticlePage({
                     )}
                     <Link href="/screener" className="bg-white/10 text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-white/20 transition-colors press-scale">
                       Buka Screener
+                    </Link>
+                    <Link href="/community" className="bg-white/10 text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-white/20 transition-colors press-scale">
+                      Diskusi di Community
+                    </Link>
+                    <Link href="/akademi" className="bg-white/10 text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-white/20 transition-colors press-scale">
+                      Belajar di Akademi
                     </Link>
                   </div>
                 </div>

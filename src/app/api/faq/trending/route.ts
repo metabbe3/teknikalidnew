@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiError } from "@/lib/api-error";
 import { faqService } from "@/domains/faq/faq.service";
+import { parseQuery, schemas } from "@/lib/validation";
 
 export async function GET(request: NextRequest) {
   try {
-    const url = new URL(request.url);
-    const limit = Math.min(Number(url.searchParams.get("limit")) || 10, 20);
-    const data = await faqService.getTrending(limit);
-    return NextResponse.json({ data });
+    const [data, error] = parseQuery(request.nextUrl.searchParams, schemas.faqTrending);
+    if (error) return error;
+
+    const result = await faqService.getTrending(data.limit);
+    return NextResponse.json({ data: result });
   } catch (error) {
     return handleApiError(error, "fetch trending FAQ");
   }

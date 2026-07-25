@@ -60,16 +60,16 @@ export function HealthScoreDetail({ signalScore, breakdown }: HealthScoreDetailP
   grouped.sort((a, b) => a.order - b.order);
 
   return (
-    <div className="bg-bg-card depth-shadow rounded-xl border border-border p-5" style={{ borderTop: `3px solid ${meta.color}` }}>
+    <div className="bg-bg-card depth-shadow rounded-xl border border-border p-5">
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={meta.color} strokeWidth="2" strokeLinecap="round" aria-hidden="true">
           <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
         </svg>
-        <h3 className="text-xs font-mono font-semibold uppercase tracking-wider text-text-primary flex items-center gap-1.5">
+        <h2 className="text-sm font-semibold text-text-primary flex items-center gap-1.5">
           Health Score
           <IndicatorTooltip indicator="Health Score" />
-        </h3>
+        </h2>
       </div>
 
       {/* Score row: big number + label pill */}

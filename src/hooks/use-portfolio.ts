@@ -2,6 +2,20 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+export interface HoldingAdvice {
+  action: "STRONG_BUY" | "BUY" | "HOLD" | "SELL" | "STRONG_SELL";
+  confidence: number;
+  score: number;
+  reasons: string[];
+  warnings: string[];
+  stopLoss: number | null;
+  takeProfit1: number | null;
+  takeProfit2: number | null;
+  riskRewardRatio: number | null;
+  trend: "uptrend" | "downtrend" | "sideways";
+  isGorengan: boolean;
+}
+
 export interface HoldingItem {
   ticker: string;
   name: string;
@@ -16,6 +30,21 @@ export interface HoldingItem {
   marketValue: number | null;
   rsi14: number | null;
   macdSignal: string | null;
+  sma50: number | null;
+  sma200: number | null;
+  signalScore: number | null;
+  isGorengan: boolean;
+  advice: HoldingAdvice;
+}
+
+export interface PortfolioAdviceSummary {
+  overallAction: "STRONG_BUY" | "BUY" | "HOLD" | "SELL" | "STRONG_SELL";
+  bullishCount: number;
+  bearishCount: number;
+  neutralCount: number;
+  averageScore: number;
+  topOpportunities: string[];
+  riskWarnings: string[];
 }
 
 export interface PortfolioSummary {
@@ -31,6 +60,7 @@ export interface PortfolioSummary {
 export interface PortfolioData {
   holdings: HoldingItem[];
   summary: PortfolioSummary;
+  adviceSummary: PortfolioAdviceSummary;
   isPublic: boolean;
 }
 

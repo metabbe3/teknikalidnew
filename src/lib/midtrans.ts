@@ -61,15 +61,6 @@ export function verifySignature(
     .createHash("sha512")
     .update(input)
     .digest("hex");
-  console.log("[Midtrans] Signature check:", {
-    orderId,
-    statusCode,
-    grossAmount,
-    input,
-    expectedHash: hash,
-    receivedSignature: signatureKey,
-    match: hash === signatureKey,
-  });
   return hash === signatureKey;
 }
 
@@ -108,6 +99,38 @@ export interface MidtransNotification {
   custom_field1?: string;
   custom_field2?: string;
   custom_field3?: string;
+}
+
+// Snap callback result interface
+export interface MidtransResult {
+  transaction_status: MidtransTransactionStatus;
+  status_code: string;
+  status_message: string;
+  transaction_id: string;
+  order_id: string;
+  gross_amount: string;
+  payment_type: string;
+  transaction_time: string;
+  fraud_status?: string;
+}
+
+// Global window.snap interface
+export interface SnapWindow {
+  snap: {
+    pay: (
+      token: string,
+      options: {
+        onSuccess?: (result: MidtransResult) => void;
+        onPending?: (result: MidtransResult) => void;
+        onError?: (result: MidtransResult) => void;
+        onClose?: () => void;
+      }
+    ) => void;
+  };
+}
+
+declare global {
+  interface Window extends SnapWindow {}
 }
 
 // Plan definitions for premium features

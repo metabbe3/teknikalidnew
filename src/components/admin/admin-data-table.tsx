@@ -54,7 +54,7 @@ export function AdminDataTable<T>({
     <div className="rounded-xl border border-gray-200/80 overflow-hidden">
       <Table>
         <TableHeader>
-          <TableRow className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-600 hover:to-indigo-600 border-0">
+          <TableRow className="bg-slate-900 hover:bg-slate-900 border-0">
             {columns.map((col) => (
               <TableHead key={col.header} className={`text-xs font-bold text-white/90 uppercase tracking-wider ${col.className ?? ""}`}>
                 {col.header}

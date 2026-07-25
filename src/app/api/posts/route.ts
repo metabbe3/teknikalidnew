@@ -3,45 +3,37 @@ import { authService } from "@/domains/auth/auth.service";
 import { communityService } from "@/domains/community/community.service";
 import { auth } from "@/lib/auth";
 import { handleApiError } from "@/lib/api-error";
+import { parseBody, parseQuery, schemas } from "@/lib/validation";
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const cursor = searchParams.get("cursor");
-    const limit = Math.min(
-      parseInt(searchParams.get("limit") || "20", 10),
-      50
-    );
-    const sort = searchParams.get("sort") as "trending" | null;
-    const filter = searchParams.get("filter") as "following" | null;
-    const q = searchParams.get("q");
-    const ticker = searchParams.get("ticker");
-    const tag = searchParams.get("tag");
+    const [data, error] = parseQuery(request.nextUrl.searchParams, schemas.postsFeed);
+    if (error) return error;
 
     const session = await auth();
     const userId = session?.user?.id;
 
-    const result = q
+    const result = data.q
       ? await communityService.searchPosts({
           userId,
-          query: q,
-          ticker: ticker || undefined,
-          cursor: cursor || undefined,
-          limit,
+          query: data.q,
+          ticker: data.ticker || undefined,
+          cursor: data.cursor || undefined,
+          limit: data.limit,
         })
-      : tag
+      : data.tag
       ? await communityService.getFeedByTag({
-          tag,
+          tag: data.tag,
           userId,
-          cursor: cursor || undefined,
-          limit,
+          cursor: data.cursor || undefined,
+          limit: data.limit,
         })
       : await communityService.getFeed({
           userId,
-          cursor: cursor || undefined,
-          limit,
-          sort: sort || undefined,
-          filter: filter || undefined,
+          cursor: data.cursor || undefined,
+          limit: data.limit,
+          sort: data.sort || undefined,
+          filter: data.filter || undefined,
         });
 
     return NextResponse.json(result);
@@ -53,19 +45,19 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const user = await authService.requireAuth();
-    const body = await request.json();
-    const { content, tickerTag, predictionDirection, predictionTarget, imageUrl, pollOptions } = body;
+    const [data, error] = await parseBody(request, schemas.createPost);
+    if (error) return error;
 
     const post = await communityService.createPost(user.id, {
-      content,
-      tickerTag,
-      predictionDirection,
-      predictionTarget,
-      imageUrl,
+      content: data.content,
+      tickerTag: data.tickerTag,
+      predictionDirection: data.predictionDirection,
+      predictionTarget: data.predictionTarget,
+      imageUrl: data.imageUrl,
     });
 
-    if (pollOptions && pollOptions.length >= 2) {
-      await communityService.createPoll(post.id, pollOptions);
+    if (data.pollOptions && data.pollOptions.length >= 2) {
+      await communityService.createPoll(post.id, data.pollOptions);
     }
 
     return NextResponse.json({ data: post }, { status: 201 });

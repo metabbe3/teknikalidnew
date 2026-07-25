@@ -238,6 +238,14 @@ Enums: `Role` (USER, ADMIN), `NotificationType`, `ReportTarget`, `ReportReason`,
 
 ---
 
+## Workflow Conventions
+
+- **Symbol navigation**: Prefer the LSP tool (`goToDefinition`, `findReferences`, `hover`, `documentSymbol`, `workspaceSymbol`, `goToImplementation`) over `grep`/`Grep` for navigating code symbols — definitions, references, implementations. Use `grep` only for literal text searches (strings, log lines, comments, config values).
+- **Trust the language server**: Trust LSP results as the source of truth. Do not re-read files to confirm definitions/references the LSP already returned — that wastes a round-trip and tokens. Only re-read when the LSP result is incomplete or you need surrounding context the symbol query didn't give.
+- **Branching per goal/feature**: Create a new branch for every goal or feature (e.g. `feat/<slug>`, `fix/<slug>`), not work directly on `main`. Merge to `main` only after the work is verified working. One branch per goal — keep it focused.
+
+---
+
 ## Commands
 
 ```bash
@@ -268,3 +276,12 @@ Runs `prisma migrate deploy` on startup. Uses standalone Next.js output. Postgre
 - `scripts/recalculate-indicators.ts` — daily cron to update indicator values
 
 Run with: `npx tsx scripts/<script>.ts`
+
+## Testing Authenticated Surfaces
+
+For design/UX work that needs a logged-in session (personalized beranda, portfolio, watchlist) without Google OAuth:
+
+- **Register a throwaway Credentials account** via `http://localhost:3000/auth/register` (email + password ≥ 8 chars), then complete the profile at `/auth/complete-profile` (username 3–20 chars). No email verification needed.
+- **Existing local-dev test account:** `claude.critique.test@example.com` / username `claude_critique` (disposable password `ClaudeTest2026!`). Created via the standard register flow; safe to delete or reuse for critique/audit runs.
+- **Sign out** via `/api/auth/signout` (the button can be slow to redirect — clear cookies if the session persists).
+- To inspect the account in the DB: `docker exec teknikalidnew-db-1 psql -U teknikalid -d teknikalid -c "select id,email,name,username from \"User\" where email='claude.critique.test@example.com';"`

@@ -13,8 +13,8 @@ export function AdminPageHeader({ title, description, icon: Icon, actions }: Adm
     <div className="flex items-start justify-between gap-4 pb-4 border-b border-gray-200/60">
       <div className="flex items-center gap-3">
         {Icon && (
-          <div className="p-2.5 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-600 shadow-lg shadow-blue-600/20">
-            <Icon className="h-5 w-5 text-white" />
+          <div className="p-2.5 rounded-xl bg-slate-100">
+            <Icon className="h-5 w-5 text-slate-700" />
           </div>
         )}
         <div>

@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@/generated/prisma/client";
 import type { AgentType, AgentJobRow, AgentJobPayload, AgentJobResult, AgentConfigRow } from "./agent-hub.types";
 
 function toRow(row: Record<string, unknown>): AgentJobRow {
@@ -17,7 +18,7 @@ export const agentHubRepository = {
       data: {
         agentType: params.agentType,
         priority: params.priority ?? 5,
-        payload: params.payload as any,
+        payload: params.payload as unknown as Prisma.InputJsonValue,
         maxAttempts: params.maxAttempts ?? 3,
         parentJobId: params.parentJobId,
       },
@@ -47,7 +48,7 @@ export const agentHubRepository = {
       where: { id },
       data: {
         status: "done",
-        result: result as any,
+        result: result as unknown as Prisma.InputJsonValue,
         completedAt: new Date(),
       },
     });
@@ -211,8 +212,8 @@ export const agentHubRepository = {
     isEnabled?: boolean;
     systemPrompt?: string | null;
     scheduleCron?: string | null;
-    scheduleMeta?: Record<string, unknown> | null;
-    config?: Record<string, unknown> | null;
+    scheduleMeta?: Prisma.InputJsonValue | null;
+    config?: Prisma.InputJsonValue | null;
   }): Promise<AgentConfigRow> {
     const result = await prisma.agentConfig.upsert({
       where: { agentType: params.agentType },
@@ -220,16 +221,16 @@ export const agentHubRepository = {
         ...(params.isEnabled !== undefined ? { isEnabled: params.isEnabled } : {}),
         ...(params.systemPrompt !== undefined ? { systemPrompt: params.systemPrompt } : {}),
         ...(params.scheduleCron !== undefined ? { scheduleCron: params.scheduleCron } : {}),
-        ...(params.scheduleMeta !== undefined ? { scheduleMeta: params.scheduleMeta as any } : {}),
-        ...(params.config !== undefined ? { config: params.config as any } : {}),
+        ...(params.scheduleMeta !== undefined ? { scheduleMeta: params.scheduleMeta as unknown as Prisma.InputJsonValue } : {}),
+        ...(params.config !== undefined ? { config: params.config as unknown as Prisma.InputJsonValue } : {}),
       },
       create: {
         agentType: params.agentType,
         isEnabled: params.isEnabled ?? true,
         systemPrompt: params.systemPrompt ?? null,
         scheduleCron: params.scheduleCron ?? null,
-        scheduleMeta: params.scheduleMeta as any ?? null,
-        config: params.config as any ?? null,
+        scheduleMeta: params.scheduleMeta as unknown as Prisma.InputJsonValue,
+        config: params.config as unknown as Prisma.InputJsonValue,
       },
     });
     return result as unknown as AgentConfigRow;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 
 export interface WatchlistItem {
   ticker: string;
@@ -11,6 +12,7 @@ export interface WatchlistItem {
 }
 
 export function useWatchlist() {
+  const { status } = useSession();
   return useQuery<WatchlistItem[]>({
     queryKey: ["watchlist"],
     queryFn: async () => {
@@ -19,10 +21,12 @@ export function useWatchlist() {
       const json = await res.json();
       return json.data;
     },
+    enabled: status === "authenticated",
   });
 }
 
 export function useWatchlistStatus(ticker: string | undefined) {
+  const { status } = useSession();
   return useQuery<{ inWatchlist: boolean }>({
     queryKey: ["watchlist-status", ticker],
     queryFn: async () => {
@@ -30,7 +34,7 @@ export function useWatchlistStatus(ticker: string | undefined) {
       if (!res.ok) throw new Error("Gagal memuat status watchlist");
       return res.json();
     },
-    enabled: !!ticker,
+    enabled: !!ticker && status === "authenticated",
   });
 }
 
@@ -74,6 +78,25 @@ export function useBatchAddToWatchlist() {
         body: JSON.stringify({ tickers }),
       });
       if (!res.ok) throw new Error("Gagal menambahkan ke watchlist");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["watchlist"] });
+    },
+  });
+}
+
+export function useBatchRemoveFromWatchlist() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (tickers: string[]) => {
+      const res = await fetch("/api/watchlist/batch", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tickers }),
+      });
+      if (!res.ok) throw new Error("Gagal menghapus dari watchlist");
       return res.json();
     },
     onSuccess: () => {

@@ -17,6 +17,8 @@ export const notificationService = {
         read: n.read,
         createdAt: n.createdAt.toISOString(),
         actor: n.actor,
+        ticker: n.ticker,
+        meta: n.meta,
         post: n.post
           ? { id: n.post.id, content: n.post.content.slice(0, 80) }
           : null,
@@ -141,6 +143,20 @@ export const notificationService = {
         }
       } catch (e) {
         console.error("Failed to create reaction notification:", e);
+      }
+    });
+
+    eventBus.on("thesis:breach", async ({ userId, ticker, breachKind }) => {
+      try {
+        await notificationRepository.create({
+          type: "THESIS_BREACH",
+          recipientId: userId,
+          actorId: userId,
+          ticker,
+          meta: { breachKind },
+        });
+      } catch (e) {
+        console.error("Failed to create thesis breach notification:", e);
       }
     });
   },

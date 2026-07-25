@@ -28,30 +28,13 @@ interface ChartSectionProps {
   ticker: string;
 }
 
-function OverlayToggle({ label, active, onClick, activeClass }: { label: string; active: boolean; onClick: () => void; activeClass: string }) {
-  return (
-    <button
-      onClick={onClick}
-      aria-pressed={active}
-      aria-label={`Toggle ${label}`}
-      className={`px-2 py-1 text-[11px] font-mono font-medium rounded transition-all duration-150 ${
-        active
-          ? activeClass
-          : "bg-bg-card text-text-tertiary hover:text-text-secondary"
-      }`}
-    >
-      {label}
-    </button>
-  );
-}
-
 export function ChartSection({ ticker }: ChartSectionProps) {
   const { status } = useSession();
   const isAuthed = status === "authenticated";
   const [range, setRange] = useState<DateRange>("6mo");
   const [chartType, setChartType] = useState<"candlestick" | "line" | "area">("candlestick");
   const [showSma20, setShowSma20] = useState(false);
-  const [showSma50, setShowSma50] = useState(false);
+  const [showSma50, setShowSma50] = useState(true);
   const [showSma200, setShowSma200] = useState(false);
   const [showEma12, setShowEma12] = useState(false);
   const [showEma26, setShowEma26] = useState(false);
@@ -62,6 +45,7 @@ export function ChartSection({ ticker }: ChartSectionProps) {
   const [compareQuery, setCompareQuery] = useState("");
   const [compareTicker, setCompareTicker] = useState<string | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showOverlays, setShowOverlays] = useState(false);
 
   // Shared visible time range for multi-pane sync
   const [visibleRange, setVisibleRange] = useState<{ from: number; to: number } | null>(null);
@@ -122,6 +106,40 @@ export function ChartSection({ ticker }: ChartSectionProps) {
     ? indicators.dates.map((date: string | number, i: number) => ({ date, value: indicators.rsi14[i] ?? null }))
     : [];
 
+  // Overlay menu — 10 toggles distilled into one grouped dropdown.
+  const OVERLAYS = [
+    {
+      label: "Moving Average",
+      items: [
+        { name: "SMA 20", color: "#d97706", value: showSma20, toggle: () => setShowSma20(!showSma20) },
+        { name: "SMA 50", color: "#8b5cf6", value: showSma50, toggle: () => setShowSma50(!showSma50) },
+        { name: "SMA 200", color: "#0ea5e9", value: showSma200, toggle: () => setShowSma200(!showSma200) },
+        { name: "EMA 12", color: "#06b6d4", value: showEma12, toggle: () => setShowEma12(!showEma12) },
+        { name: "EMA 26", color: "#ec4899", value: showEma26, toggle: () => setShowEma26(!showEma26) },
+      ],
+    },
+    {
+      label: "Overlay",
+      items: [
+        { name: "Bollinger Bands", color: "#2563eb", value: showBb, toggle: () => setShowBb(!showBb) },
+        { name: "ZigZag", color: "#f59e0b", value: showZigzag, toggle: () => setShowZigzag(!showZigzag) },
+      ],
+    },
+    {
+      label: "Panel",
+      items: [
+        { name: "RSI", color: "#8b5cf6", value: showRsi, toggle: () => setShowRsi(!showRsi) },
+        { name: "MACD", color: "#2563eb", value: showMacd, toggle: () => setShowMacd(!showMacd) },
+      ],
+    },
+  ];
+  const overlayCount = OVERLAYS.flatMap((g) => g.items).filter((i) => i.value).length;
+  const resetOverlays = () => {
+    setShowSma20(false); setShowSma50(false); setShowSma200(false);
+    setShowEma12(false); setShowEma26(false); setShowBb(false);
+    setShowZigzag(false); setShowRsi(false); setShowMacd(false);
+  };
+
   return (
     <div className="space-y-3">
       {/* Toolbar */}
@@ -170,16 +188,16 @@ export function ChartSection({ ticker }: ChartSectionProps) {
         {/* Compare */}
         <div className="relative">
           {compareTicker ? (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-500/10 border border-blue-500/20 text-xs">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-accent-muted border border-accent/20 text-xs">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
                 <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
               </svg>
-              <span className="font-mono font-semibold text-blue-400">
+              <span className="font-mono font-semibold text-accent">
                 {compareTicker.replace(/\.JK$/, "")}
               </span>
               <button
                 onClick={() => { setCompareTicker(null); setCompareQuery(""); }}
-                className="ml-0.5 text-blue-400/60 hover:text-blue-300 transition-colors"
+                className="ml-0.5 text-accent/60 hover:text-accent transition-colors"
                 aria-label="Hapus perbandingan"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
@@ -228,22 +246,59 @@ export function ChartSection({ ticker }: ChartSectionProps) {
           )}
         </div>
 
-        {/* Overlay toggles */}
-        <div className="flex items-center gap-1.5 flex-wrap">
+        {/* Overlay selector — 10 toggles distilled into one grouped dropdown */}
+        <div className="relative">
           {isAuthed ? (
             <>
-              <OverlayToggle label="SMA 20" active={showSma20} onClick={() => setShowSma20(!showSma20)} activeClass="bg-amber-500/10 text-amber-600 ring-1 ring-amber-500/20" />
-              <OverlayToggle label="SMA 50" active={showSma50} onClick={() => setShowSma50(!showSma50)} activeClass="bg-violet-500/10 text-violet-600 ring-1 ring-violet-500/20" />
-              <OverlayToggle label="SMA 200" active={showSma200} onClick={() => setShowSma200(!showSma200)} activeClass="bg-red-500/10 text-red-600 ring-1 ring-red-500/20" />
-              <div className="w-px h-4 bg-border mx-0.5" aria-hidden="true" />
-              <OverlayToggle label="EMA 12" active={showEma12} onClick={() => setShowEma12(!showEma12)} activeClass="bg-cyan-500/10 text-cyan-600 ring-1 ring-cyan-500/20" />
-              <OverlayToggle label="EMA 26" active={showEma26} onClick={() => setShowEma26(!showEma26)} activeClass="bg-pink-500/10 text-pink-600 ring-1 ring-pink-500/20" />
-              <div className="w-px h-4 bg-border mx-0.5" aria-hidden="true" />
-              <OverlayToggle label="BB" active={showBb} onClick={() => setShowBb(!showBb)} activeClass="bg-blue-500/10 text-blue-600 ring-1 ring-blue-500/20" />
-              <OverlayToggle label="ZigZag" active={showZigzag} onClick={() => setShowZigzag(!showZigzag)} activeClass="bg-amber-500/10 text-amber-600 ring-1 ring-amber-500/20" />
-              <div className="w-px h-4 bg-border mx-0.5" aria-hidden="true" />
-              <OverlayToggle label="RSI" active={showRsi} onClick={() => setShowRsi(!showRsi)} activeClass="bg-violet-500/10 text-violet-600 ring-1 ring-violet-500/20" />
-              <OverlayToggle label="MACD" active={showMacd} onClick={() => setShowMacd(!showMacd)} activeClass="bg-blue-500/10 text-blue-600 ring-1 ring-blue-500/20" />
+              <button
+                type="button"
+                onClick={() => setShowOverlays((v) => !v)}
+                aria-expanded={showOverlays}
+                aria-haspopup="menu"
+                className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md border border-border bg-bg-card text-text-secondary hover:text-text-primary transition-colors"
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" /></svg>
+                Indikator
+                {overlayCount > 0 && (
+                  <span className="inline-flex items-center justify-center min-w-[16px] h-4 px-1 text-[10px] font-mono font-bold rounded-full bg-accent text-white">{overlayCount}</span>
+                )}
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className={`transition-transform ${showOverlays ? "rotate-180" : ""}`} aria-hidden="true"><polyline points="6 9 12 15 18 9" /></svg>
+              </button>
+
+              {showOverlays && (
+                <>
+                  <button type="button" tabIndex={-1} aria-hidden="true" onClick={() => setShowOverlays(false)} className="fixed inset-0 z-30 cursor-default" />
+                  <div role="menu" className="absolute top-full right-0 mt-1 w-60 bg-bg-card depth-shadow-strong rounded-lg border border-border overflow-hidden z-40 p-1.5">
+                    <div className="flex items-center justify-between px-2 py-1">
+                      <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-text-tertiary">Indikator</span>
+                      {overlayCount > 0 && (
+                        <button type="button" onClick={resetOverlays} className="text-[10px] text-accent hover:underline">Reset</button>
+                      )}
+                    </div>
+                    {OVERLAYS.map((group) => (
+                      <div key={group.label} className="pt-1">
+                        <p className="px-2 py-0.5 text-[10px] font-medium text-text-tertiary">{group.label}</p>
+                        {group.items.map((it) => (
+                          <button
+                            key={it.name}
+                            type="button"
+                            role="menuitemcheckbox"
+                            aria-checked={it.value}
+                            onClick={it.toggle}
+                            className="w-full flex items-center gap-2 px-2 py-1.5 text-xs rounded-md text-text-primary hover:bg-bg-hover transition-colors text-left"
+                          >
+                            <span className={`flex items-center justify-center w-4 h-4 rounded border ${it.value ? "bg-text-primary border-text-primary" : "border-border"}`} aria-hidden="true">
+                              {it.value && <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>}
+                            </span>
+                            <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: it.color }} aria-hidden="true" />
+                            <span className="font-mono">{it.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
             </>
           ) : (
             <a href="/auth/signin" className="text-[11px] font-mono text-text-tertiary hover:text-accent transition-colors">

@@ -71,7 +71,6 @@ function buildFundamentalItems(
 export const dataSyncService = {
   async syncEndOfDayData(tickers?: string[]) {
     const allTickers = tickers ?? (await stockRepository.findActiveStocks()).map((s) => s.ticker);
-    console.log(`[DataSync] Starting EOD sync for ${allTickers.length} tickers...`);
     const startTime = Date.now();
 
     const stocks = await stockRepository.findStocksByTickers(allTickers);
@@ -85,7 +84,6 @@ export const dataSyncService = {
       const batch = allTickers.slice(i, i + BATCH_SIZE);
       const batchNum = Math.floor(i / BATCH_SIZE) + 1;
       const totalBatches = Math.ceil(allTickers.length / BATCH_SIZE);
-      console.log(`[DataSync] Batch ${batchNum}/${totalBatches}: ${batch.join(", ")}`);
 
       const quoteResults = await fetchQuotesBatch(batch);
       const priceItems = buildPriceItems(quoteResults, stockLookup);
@@ -138,7 +136,6 @@ export const dataSyncService = {
     }
 
     const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-    console.log(`[DataSync] Complete in ${elapsed}s — ${pricesWritten} prices, ${indicatorsWritten} indicators, ${failures} failures`);
 
     pushActivity({
       action: `EOD Sync — ${allTickers.length} tickers, ${pricesWritten} prices, ${indicatorsWritten} indicators`,
@@ -150,7 +147,6 @@ export const dataSyncService = {
   },
 
   async processBatch(tickers: string[]) {
-    console.log(`[DataSync] Processing batch of ${tickers.length}: ${tickers.join(", ")}`);
     const startTime = Date.now();
 
     const stocks = await stockRepository.findStocksByTickers(tickers);
@@ -181,7 +177,6 @@ export const dataSyncService = {
     await stockRepository.batchUpsertFundamentals(fundamentalItems);
 
     const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-    console.log(`[DataSync] Batch complete in ${elapsed}s — ${result.prices} prices, ${result.indicators} indicators`);
 
     pushActivity({
       action: `Queue Batch — ${tickers.join(", ")}`,
@@ -195,7 +190,6 @@ export const dataSyncService = {
   },
 
   async syncIntradayPrices(tickers: string[]) {
-    console.log(`[DataSync] Intraday sync for ${tickers.length} tickers...`);
     const startTime = Date.now();
 
     const stocks = await stockRepository.findStockIdsByTickers(tickers);
@@ -229,7 +223,6 @@ export const dataSyncService = {
     }
 
     const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-    console.log(`[DataSync] Intraday complete in ${elapsed}s — ${written} prices, ${indicatorsUpdated} indicators updated`);
 
     try {
       await stockAlertService.checkAlerts(updatedTickers);
@@ -258,8 +251,6 @@ export const dataSyncService = {
   async dispatchEndOfDaySync(tickers: string[]) {
     let dispatched = 0;
 
-    console.log(`[DataSync] Dispatching ${tickers.length} tickers in batches of ${BATCH_SIZE}...`);
-
     for (let i = 0; i < tickers.length; i += BATCH_SIZE) {
       const batch = tickers.slice(i, i + BATCH_SIZE);
 
@@ -269,12 +260,10 @@ export const dataSyncService = {
       });
 
       dispatched++;
-      console.log(`[DataSync] Dispatched batch ${dispatched}: ${batch.join(", ")}`);
 
       if (i + BATCH_SIZE < tickers.length) await sleep(200);
     }
 
-    console.log(`[DataSync] Dispatched ${dispatched} batches for ${tickers.length} tickers`);
     return dispatched;
   },
 };

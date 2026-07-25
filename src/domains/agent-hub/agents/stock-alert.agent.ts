@@ -3,6 +3,8 @@ import type { AgentType, AgentJobPayload, AgentJobResult } from "../agent-hub.ty
 import { prisma } from "@/lib/prisma";
 import { NotificationType } from "@/generated/prisma/client";
 import { decimalToNumber } from "@/lib/serialize";
+import { screenerRepository } from "@/domains/screener/screener.repository";
+import { technicalAnalysisService } from "@/domains/stock/technical-analysis.service";
 
 interface Alert {
   ticker: string;
@@ -200,10 +202,85 @@ export class StockAlertAgent extends BaseAgent {
       }
     }
 
+    // ── Screener Alert: run saved screeners for enabled alerts ──
+    let screenerAlertsCreated = 0;
+    try {
+      const enabledAlerts = await screenerRepository.findEnabledAlerts();
+      const systemUser = await prisma.user.findFirst({
+        where: { role: "ADMIN" },
+        select: { id: true },
+      });
+
+      if (systemUser && enabledAlerts.length > 0) {
+        for (const alert of enabledAlerts) {
+          const filters = alert.savedScreener.filters as Record<string, string>;
+          if (!filters || typeof filters !== "object") continue;
+
+          // Convert saved filters to the format expected by customScreenerQuery
+          const queryFilters: Record<string, unknown> = {};
+          if (filters.rsi_min) queryFilters.rsiMin = Number(filters.rsi_min);
+          if (filters.rsi_max) queryFilters.rsiMax = Number(filters.rsi_max);
+          if (filters.stoch_k_min) queryFilters.stochKMin = Number(filters.stoch_k_min);
+          if (filters.stoch_k_max) queryFilters.stochKMax = Number(filters.stoch_k_max);
+          if (filters.adx_min) queryFilters.adxMin = Number(filters.adx_min);
+          if (filters.vol_multiplier) queryFilters.volumeMinMultiplier = Number(filters.vol_multiplier);
+          if (filters.above_sma200 === "true") queryFilters.aboveSma200 = true;
+          if (filters.below_sma200 === "true") queryFilters.belowSma200 = true;
+          if (filters.macd_bullish === "true") queryFilters.macdBullish = true;
+          if (filters.bb_squeeze === "true") queryFilters.bbSqueeze = true;
+          if (filters.signal_score_min) queryFilters.signalScoreMin = Number(filters.signal_score_min);
+          if (filters.signal_score_max) queryFilters.signalScoreMax = Number(filters.signal_score_max);
+          if (filters.sector) queryFilters.sector = filters.sector.split(",").map((s: string) => s.trim()).filter(Boolean);
+          if (filters.price_min) queryFilters.priceMin = Number(filters.price_min);
+          if (filters.price_max) queryFilters.priceMax = Number(filters.price_max);
+          if (filters.exclude_gorengan === "true") queryFilters.excludeGorengan = true;
+
+          try {
+            const results = await technicalAnalysisService.customScreenerQuery(queryFilters);
+            const matchCount = results.length;
+
+            // Update lastTriggeredAt and lastMatchCount
+            await screenerRepository.updateAlert(alert.id, {
+              lastTriggeredAt: new Date(),
+              lastMatchCount: matchCount,
+            });
+
+            // Only notify if there are matches
+            if (matchCount > 0) {
+              // Check if we already sent a SCREENER_MATCH notification for this alert today
+              const existingNotif = await prisma.notification.findFirst({
+                where: {
+                  type: "SCREENER_MATCH" as NotificationType,
+                  recipientId: alert.userId,
+                  createdAt: { gte: today },
+                },
+              });
+
+              if (!existingNotif) {
+                await prisma.notification.create({
+                  data: {
+                    type: "SCREENER_MATCH" as NotificationType,
+                    recipientId: alert.userId,
+                    actorId: systemUser.id,
+                  },
+                });
+                screenerAlertsCreated++;
+              }
+            }
+          } catch {
+            // Skip this screener if it fails, continue to next
+          }
+        }
+      }
+    } catch {
+      // Screener alerts are non-critical, don't fail the whole agent
+    }
+
     return {
-      summary: `Found ${limitedAlerts.length} alerts across ${new Set(limitedAlerts.map((a) => a.ticker)).size} stocks, notified ${usersNotified} users`,
+      summary: `Found ${limitedAlerts.length} alerts across ${new Set(limitedAlerts.map((a) => a.ticker)).size} stocks, notified ${usersNotified} users. Screener alerts: ${screenerAlertsCreated}`,
       alertsFound: limitedAlerts.length,
       usersNotified,
+      screenerAlertsCreated,
       alerts: limitedAlerts,
     };
   }

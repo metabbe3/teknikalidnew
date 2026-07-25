@@ -78,7 +78,7 @@ export default function SectorIndexPage() {
               Sektor
             </span>
           </nav>
-          <h1 className="text-2xl sm:text-3xl font-bold text-text-primary">
+          <h1 className="text-2xl sm:text-3xl font-bold font-serif text-text-primary">
             Sektor Saham BEI
           </h1>
           <p className="text-text-secondary mt-2 text-sm sm:text-base max-w-2xl">

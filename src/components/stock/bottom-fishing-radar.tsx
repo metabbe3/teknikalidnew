@@ -42,28 +42,19 @@ export function BottomFishingRadar() {
   const hasMore = stocks.length > INITIAL_SHOW;
 
   return (
-    <div className="relative bg-bg-card rounded-xl depth-shadow-strong overflow-hidden border-l-[4px] border-l-blue-500">
-      {/* Decorative chart stripes */}
-      <div className="absolute bottom-0 right-0 w-64 h-full opacity-[0.35] pointer-events-none" aria-hidden="true">
-        <div className="absolute inset-0" style={{
-          background: `repeating-linear-gradient(0deg, transparent, transparent 8px, rgba(59, 130, 246, 0.06) 8px, rgba(59, 130, 246, 0.06) 9px)`,
-          maskImage: "linear-gradient(to right, transparent 0%, black 60%)",
-          WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 60%)",
-        }} />
-      </div>
-
+    <div className="relative bg-bg-card rounded-xl depth-shadow-strong overflow-hidden border border-border">
       {/* Header */}
       <div className="relative z-10 px-5 sm:px-6 pt-5 pb-3 space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-blue-500/10 border border-blue-500/20">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.75" strokeLinecap="round" aria-hidden="true">
+            <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-accent-muted border border-accent/20">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.75" strokeLinecap="round" aria-hidden="true">
                 <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />
                 <line x1="12" y1="2" x2="12" y2="6" /><line x1="12" y1="18" x2="12" y2="22" />
               </svg>
             </div>
             <div>
-              <h3 className="text-sm font-bold text-text-primary font-mono uppercase tracking-wider">Radar Pantulan</h3>
+              <h3 className="text-base font-bold text-text-primary">Radar Pantulan</h3>
               <p className="text-[10px] text-text-tertiary">Saham memasuki area oversold — tunggu konfirmasi reversal</p>
             </div>
           </div>

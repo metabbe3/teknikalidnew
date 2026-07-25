@@ -5,6 +5,52 @@ export interface Sector {
   stocks: string[];
 }
 
+/** Map English IDX sector names to TeknikalID sector slugs */
+export const SECTOR_SLUG_MAP: Record<string, string> = {
+  "Financials": "perbankan",
+  "Energy": "energi",
+  "Consumer Cyclicals": "perdagangan",
+  "Consumer Non-Cyclicals": "konsumer",
+  "Basic Materials": "industri-dasar",
+  "Healthcare": "kesehatan",
+  "Industrials": "industri",
+  "Infrastructures": "infrastruktur",
+  "Properties & Real Estate": "properti",
+  "Technology": "teknologi",
+  "Transportation & Logistics": "transportasi",
+};
+
+/** Get sector slug from English sector name */
+export function getSectorSlug(englishSector: string): string {
+  return SECTOR_SLUG_MAP[englishSector] ?? "";
+}
+
+/** Map English GICS/IDX sector names to Bahasa Indonesia display labels. */
+const SECTOR_NAME_ID: Record<string, string> = {
+  "Financials": "Keuangan",
+  "Energy": "Energi",
+  "Consumer Cyclicals": "Konsumen Siklis",
+  "Consumer Cyclical": "Konsumen Siklis",
+  "Consumer Non-Cyclicals": "Konsumen Non-Siklis",
+  "Consumer Defensive": "Konsumen Defensif",
+  "Basic Materials": "Bahan Dasar",
+  "Healthcare": "Kesehatan",
+  "Industrials": "Industri",
+  "Infrastructures": "Infrastruktur",
+  "Properties & Real Estate": "Properti",
+  "Real Estate": "Properti",
+  "Technology": "Teknologi",
+  "Communication Services": "Layanan Komunikasi",
+  "Utilities": "Utilitas",
+  "Transportation & Logistics": "Transportasi & Logistik",
+};
+
+/** Bahasa Indonesia display label for a sector; falls back to the input. */
+export function sectorToBahasa(sector: string | null | undefined): string {
+  if (!sector) return "";
+  return SECTOR_NAME_ID[sector] ?? sector;
+}
+
 export const SECTORS: Sector[] = [
   {
     slug: "perbankan",

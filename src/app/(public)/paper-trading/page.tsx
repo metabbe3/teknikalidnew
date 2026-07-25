@@ -10,6 +10,8 @@ import { TradeHistory } from "@/components/paper-trading/trade-history";
 import { TradeModal } from "@/components/paper-trading/trade-modal";
 import { CreateAccount } from "@/components/paper-trading/create-account";
 import { ToastProvider } from "@/components/paper-trading/toast";
+import { PaperTradingPreview } from "@/components/paper-trading/paper-trading-preview";
+import { useSession } from "next-auth/react";
 
 const TABS = [
   { key: "positions", label: "Posisi" },
@@ -54,6 +56,18 @@ export default function PaperTradingPage() {
 }
 
 function PaperTradingRouter() {
+  const { status } = useSession();
+
+  // Anonymous: show blurred preview — no API calls fire
+  if (status === "unauthenticated") {
+    return <PaperTradingPreview />;
+  }
+
+  // Authenticated or loading: render the real dashboard
+  return <PaperTradingDashboardRouter />;
+}
+
+function PaperTradingDashboardRouter() {
   const searchParams = useSearchParams();
   const { data: account, isLoading, error } = usePaperAccount();
 

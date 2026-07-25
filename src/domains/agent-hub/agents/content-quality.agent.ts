@@ -2,6 +2,7 @@ import { BaseAgent } from "./base-agent";
 import type { AgentType, AgentJobPayload, AgentJobResult } from "../agent-hub.types";
 import type { AutoFixRecord } from "../auto-fix.types";
 import { prisma } from "@/lib/prisma";
+import { findTitleViolation, passesTitleGuard } from "@/domains/article/title-guard";
 
 interface ArticleData {
   id: string;
@@ -341,6 +342,22 @@ Konten preview: ${content.slice(0, 500)}`;
           after: "",
           applied: false,
           reason: "Generated title was empty or identical",
+        };
+      }
+
+      // Guard: reject AI output that fails structural/pattern checks (e.g., leaked
+      // preamble like "Berikut adalah kelanjutan..."). Without this, the agent would
+      // overwrite legitimate titles with AI-leaked text (2026-06-18 incident).
+      const violation = findTitleViolation(newTitle);
+      const passesStructural = passesTitleGuard(newTitle);
+      if (violation || !passesStructural) {
+        return {
+          type: "clickbait_title",
+          field: "title",
+          before,
+          after: "",
+          applied: false,
+          reason: `AI returned invalid title (${violation?.rule ?? "structural"}): "${newTitle.slice(0, 80)}..."`,
         };
       }
 

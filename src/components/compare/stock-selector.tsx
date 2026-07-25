@@ -10,9 +10,10 @@ interface Props {
   onAdd: (ticker: string) => void;
   onRemove: (ticker: string) => void;
   stocks?: CompareStock[];
+  maxStocks?: number;
 }
 
-export function StockSelector({ selected, onAdd, onRemove, stocks }: Props) {
+export function StockSelector({ selected, onAdd, onRemove, stocks, maxStocks = 4 }: Props) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -34,7 +35,7 @@ export function StockSelector({ selected, onAdd, onRemove, stocks }: Props) {
       (s.ticker.toLowerCase().includes(query.toLowerCase()) || s.name.toLowerCase().includes(query.toLowerCase())),
   ).slice(0, 8);
 
-  const canAdd = selected.length < 4;
+  const canAdd = selected.length < maxStocks;
 
   return (
     <div className="space-y-3">
@@ -115,8 +116,13 @@ export function StockSelector({ selected, onAdd, onRemove, stocks }: Props) {
       )}
 
       {/* Max reached indicator */}
-      {!canAdd && selected.length === 4 && (
-        <p className="text-[10px] text-text-tertiary text-center">Maksimal 4 saham untuk perbandingan</p>
+      {!canAdd && (
+        <p className="text-[10px] text-text-tertiary text-center">
+          Maksimal {maxStocks} saham untuk perbandingan
+          {maxStocks < 4 && (
+            <> &middot; <a href="/auth/signin" className="text-accent hover:underline">Daftar gratis</a> untuk membandingkan hingga 4 saham</>
+          )}
+        </p>
       )}
     </div>
   );

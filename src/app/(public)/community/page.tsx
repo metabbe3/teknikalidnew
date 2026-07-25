@@ -13,6 +13,7 @@ import { TrendingSidebar } from "@/components/community/trending-sidebar";
 import { UserSearchResults } from "@/components/community/user-search-results";
 import { TopPredictorList } from "@/components/community/top-predictor-list";
 import { SITE_URL } from "@/lib/constants";
+import { PageHero } from "@/components/layout/page-hero";
 
 export const revalidate = 300;
 
@@ -331,51 +332,44 @@ export default async function CommunityPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
     <div className="fade-in min-h-screen bg-gray-50">
-      {/* Hero */}
-      <section className="community-hero border-b border-slate-700/50" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}>
-        <div className="relative z-10 max-w-5xl mx-auto px-4 py-8 sm:py-10 space-y-4">
-          <div className="space-y-2">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white font-mono">
-              <span className="bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">Komunitas</span>{" "}
-              <span className="text-slate-300">Saham</span>
-            </h1>
-            <p className="text-slate-400 text-sm sm:text-base max-w-lg">
-              Diskusi analisa teknikal, sharing sinyal, dan strategi trading saham IDX bareng komunitas TeknikalID.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/60 border border-slate-700/50 text-[10px] font-mono font-semibold text-teal-300 tracking-wider">
-              <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" aria-hidden="true" />
-              DISKUSI SAHAM
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/60 border border-slate-700/50 text-[10px] font-mono font-semibold text-emerald-300 tracking-wider">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" aria-hidden="true" />
-              IDX COMMUNITY
-            </span>
-          </div>
-
-          {/* Tabs */}
-          <div className="flex items-center gap-1 border-b border-slate-700/50 -mb-8 sm:-mb-10 pt-2">
-            {tabs.map((t) => (
-              <Link
-                key={t.key}
-                href={t.href}
-                className={`px-4 py-2.5 text-sm font-medium transition-all duration-200 relative ${
-                  activeTab === t.key
-                    ? "text-white font-semibold"
-                    : "text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                {t.label}
-                {activeTab === t.key && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal-400 rounded-t" />
-                )}
-              </Link>
-            ))}
-          </div>
+      <PageHero
+        eyebrow="Komunitas"
+        title="Komunitas Saham"
+        description="Diskusi analisa teknikal, sharing sinyal, dan strategi trading saham IDX bareng komunitas TeknikalID."
+      >
+        <div className="flex flex-wrap gap-2">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-bullish/10 border border-bullish/20 text-[10px] font-mono font-semibold text-bullish tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-bullish animate-pulse" aria-hidden="true" />
+            DISKUSI SAHAM
+          </span>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent/10 border border-accent/20 text-[10px] font-mono font-semibold text-accent tracking-wider">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent" aria-hidden="true" />
+            IDX COMMUNITY
+          </span>
         </div>
-      </section>
+      </PageHero>
+
+      {/* Tabs */}
+      <div className="border-b border-border bg-bg-card">
+        <div className="max-w-5xl mx-auto px-4 flex items-center gap-1 overflow-x-auto scrollbar-thin">
+          {tabs.map((t) => (
+            <Link
+              key={t.key}
+              href={t.href}
+              className={`px-4 py-3 text-sm font-medium transition-colors relative whitespace-nowrap ${
+                activeTab === t.key
+                  ? "text-accent font-semibold"
+                  : "text-text-tertiary hover:text-text-primary"
+              }`}
+            >
+              {t.label}
+              {activeTab === t.key && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent rounded-t" />
+              )}
+            </Link>
+          ))}
+        </div>
+      </div>
 
       {/* Main content — Threads-like layout */}
       <div className="max-w-[960px] mx-auto px-4 py-6">

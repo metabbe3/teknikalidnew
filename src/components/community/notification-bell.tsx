@@ -63,7 +63,7 @@ export function NotificationBell() {
               data?.data.map((n) => (
                 <Link
                   key={n.id}
-                  href={n.type === "SCREENER_MATCH" ? "/screener" : n.post ? `/community/post/${n.post.id}` : `/profile/${n.actor.username}`}
+                  href={n.type === "THESIS_BREACH" && n.ticker ? `/stocks/${n.ticker}` : n.type === "SCREENER_MATCH" ? "/screener" : n.post ? `/community/post/${n.post.id}` : `/profile/${n.actor.username}`}
                   onClick={() => setOpen(false)}
                   className={`block px-3 py-2.5 text-sm transition-colors ${
                     n.read ? "text-text-secondary" : "text-text-primary bg-accent/[0.03]"

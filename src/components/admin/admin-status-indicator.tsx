@@ -16,6 +16,9 @@ export function AdminStatusIndicator() {
   const healthy = data?.dbPool?.status === "connected";
   return (
     <span
+      role="status"
+      aria-live="polite"
+      aria-label={healthy ? "Database connected" : "Database error"}
       className={`inline-block h-2.5 w-2.5 rounded-full ml-1 ${healthy ? "bg-emerald-400 text-emerald-400 admin-pulse-dot" : "bg-rose-400"}`}
       title={healthy ? "DB Connected" : "DB Error"}
     />

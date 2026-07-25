@@ -1,8 +1,9 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { createAIClient } from "@/lib/ai-client";
 import { IDX40 } from "@/lib/constants";
 import { decimalToNumber, bigIntToNumber } from "@/lib/serialize";
-import { stockRepository } from "@/domains/stock/stock.repository";
+import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { fetchQuote } from "@/lib/yahoo-finance";
+import { passesTitleGuard } from "./title-guard";
 
 // ── Types ──
 
@@ -84,7 +85,7 @@ export async function gatherMarketContext(tickers?: string[]): Promise<MarketCon
     year: "numeric",
   });
 
-  // Fetch IHSG (^JKSE) quote
+  // Fetch IHSG (^JKSE) — try Yahoo Finance first, fall back to DB
   let ihsg: MarketContext["ihsg"] = { level: null, changePercent: null };
   try {
     const ihsgQuote = await fetchQuote("^JKSE");
@@ -93,21 +94,40 @@ export async function gatherMarketContext(tickers?: string[]): Promise<MarketCon
       changePercent: ihsgQuote.regularMarketChangePercent ?? null,
     };
   } catch (err) {
-    console.error("[FactCheck] Failed to fetch IHSG:", err instanceof Error ? err.message : err);
+    console.warn("[FactCheck] Yahoo fetch IHSG failed, trying DB:", err instanceof Error ? err.message : err);
+  }
+  // DB fallback: if Yahoo Finance failed or returned null, use latest StockPrice from DB
+  if (ihsg.level === null) {
+    try {
+      const ihsgStock = await stockMarketService.findStocksByTickersWithIndicators(["^JKSE"]);
+      const latest = ihsgStock[0]?.prices?.[0];
+      const prev = ihsgStock[0]?.prices?.[1];
+      if (latest) {
+        const close = decimalToNumber(latest.close);
+        const prevClose = prev ? decimalToNumber(prev.close) : null;
+        const changePct = close !== null && prevClose !== null && prevClose !== 0
+          ? ((close - prevClose) / prevClose) * 100
+          : null;
+        ihsg = { level: close, changePercent: changePct };
+        console.info(`[FactCheck] IHSG from DB fallback: ${close} (${changePct?.toFixed(2)}%)`);
+      }
+    } catch (dbErr) {
+      console.error("[FactCheck] DB fallback for IHSG also failed:", dbErr instanceof Error ? dbErr.message : dbErr);
+    }
   }
 
-  // Fetch USD/IDR exchange rate
+  // Fetch USD/IDR exchange rate — try Yahoo Finance, no DB fallback (volatile)
   let usdIdr: number | null = null;
   try {
     const fxQuote = await fetchQuote("IDR=X");
     usdIdr = fxQuote.regularMarketPrice ?? null;
   } catch (err) {
-    console.error("[FactCheck] Failed to fetch USD/IDR:", err instanceof Error ? err.message : err);
+    console.warn("[FactCheck] Failed to fetch USD/IDR from Yahoo:", err instanceof Error ? err.message : err);
   }
 
   // Fetch top IDX40 stocks from DB (fast, already synced)
   const topTickers = IDX40.slice(0, 10).map((s) => s.ticker);
-  const topStocksData = await stockRepository.findStocksByTickersWithIndicators(topTickers);
+  const topStocksData = await stockMarketService.findStocksByTickersWithIndicators(topTickers);
 
   const topStocks: MarketContext["topStocks"] = topStocksData.map((s) => {
     const latest = s.prices[0];
@@ -135,7 +155,7 @@ export async function gatherMarketContext(tickers?: string[]): Promise<MarketCon
       .filter((t) => !topTickers.includes(t));
 
     if (relatedTickers.length > 0) {
-      const relatedData = await stockRepository.findStocksByTickersWithIndicators(relatedTickers);
+      const relatedData = await stockMarketService.findStocksByTickersWithIndicators(relatedTickers);
       relatedStocks = relatedData.map((s) => {
         const latest = s.prices[0];
         const prev = s.prices[1];
@@ -202,10 +222,14 @@ export function formatMarketContextForPrompt(ctx: MarketContext): string {
   }
 
   lines.push("");
-  lines.push("**PENTING**:");
-  lines.push("- Gunakan HANYA data di atas untuk semua angka harga saham, IHSG, dan kurs rupiah.");
-  lines.push("- Jangan membuat angka sendiri. Jika tidak yakin tentang angka tertentu, gunakan frasa \"berdasarkan data terkini\" tanpa menyebutkan angka spesifik.");
-  lines.push("- Jika berita menyebutkan angka yang berbeda dari data di atas, gunakan data di atas sebagai referensi dan catat bahwa berita sebelumnya menyebutkan angka berbeda.");
+  lines.push("**ATURAN ANGKA (SANGAT PENTING — PELANGGARAN = ARTIKEL DITOLAK)**:");
+  lines.push("1. SALIN PERSIS angka dari tabel di atas. JANGAN DIBULATKAN.");
+  lines.push("   Contoh: BBCA = Rp 6.425 → tulis \"6.425\", BUKAN \"6.400\" atau \"6.430\" atau \"sekitar 6.400\".");
+  lines.push("2. DILARANG MEMBUAT ANGKA SENDIRI. Setiap harga saham, IHSG, dan kurs di artikel HARUS berasal dari tabel di atas.");
+  lines.push("3. Format Rupiah: gunakan titik sebagai pemisah ribuan (contoh: Rp 6.425, bukan Rp 6,425).");
+  lines.push("4. Jika tidak ada data untuk saham tertentu, JANGAN sebutkan harganya sama sekali. Gunakan frasa \"berdasarkan data terkini\" tanpa angka.");
+  lines.push("5. Persentase perubahan: SALIN dari tabel di atas. Jangan hitung ulang atau dibulatkan.");
+  lines.push("6. Angka yang BENAR dari DB lebih penting dari angka yang \"terdengar lebih bagus\". Utamakan akurasi.");
 
   return lines.join("\n");
 }
@@ -244,7 +268,10 @@ export async function factCheckArticle(
         if (mismatch) titleMismatches.push(mismatch);
       }
       if (titleMismatches.length > 0) {
-        const correctedTitle = await correctTitleErrors(title, titleMismatches);
+        const detTitle = deterministicCorrectTitle(title, titleMismatches);
+        const correctedTitle = detTitle.replacements > 0
+          ? detTitle.title
+          : await correctTitleErrors(title, titleMismatches);
         return {
           passed: false,
           mismatches: titleMismatches,
@@ -275,13 +302,28 @@ export async function factCheckArticle(
 
   const passed = mismatches.length === 0;
 
-  // If there are mismatches, do a correction pass
+  // If there are mismatches, correct them deterministically first, then fall back to AI
   let correctedContent: string | null = null;
   let correctedTitle: string | null = null;
   if (!passed) {
-    correctedContent = await correctArticleErrors(content, mismatches);
+    // Layer 1: Deterministic correction (fast, no API call, guaranteed accuracy)
+    const detContent = deterministicCorrectContent(content, mismatches);
+    if (detContent.replacements > 0) {
+      correctedContent = detContent.content;
+      console.info(`[FactCheck] Deterministic correction: ${detContent.replacements} price(s) fixed`);
+    } else {
+      // Layer 2: AI fallback only if deterministic didn't match any values
+      console.warn("[FactCheck] Deterministic correction made 0 replacements, falling back to AI");
+      correctedContent = await correctArticleErrors(content, mismatches);
+    }
+
     if (title) {
-      correctedTitle = await correctTitleErrors(title, mismatches);
+      const detTitle = deterministicCorrectTitle(title, mismatches);
+      if (detTitle.replacements > 0) {
+        correctedTitle = detTitle.title;
+      } else {
+        correctedTitle = await correctTitleErrors(title, mismatches);
+      }
     }
   }
 
@@ -300,11 +342,7 @@ async function extractClaimsFromArticle(content: string): Promise<ExtractedClaim
   if (!process.env.ANTHROPIC_AUTH_TOKEN) return [];
 
   try {
-    const client = new Anthropic({
-      apiKey: process.env.ANTHROPIC_AUTH_TOKEN,
-      baseURL: process.env.ANTHROPIC_BASE_URL,
-      timeout: Number(process.env.API_TIMEOUT_MS) || 120_000,
-    });
+    const client = createAIClient();
 
     const systemPrompt = `Kamu adalah fact-checker untuk artikel keuangan Indonesia.
 Tugas: Ekstrak semua klaim angka yang bisa diverifikasi dari artikel.
@@ -322,7 +360,7 @@ JANGAN ekstrak:
 - Angka yang bukan harga/level/nilai tukar
 
 ARTIKEL:
-${content.slice(0, 5000)}
+${content.slice(0, 15000)}
 
 Output JSON array:
 [{"claim": "BBCA di Rp 9.800", "type": "stock_price", "ticker": "BBCA", "value": 9800}]
@@ -331,17 +369,16 @@ Output JSON array:
 
 Jika tidak ada klaim yang bisa diverifikasi, output: []`;
 
-    const response = await client.messages.create({
-      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-4-20250514",
+    const response = await client.chat.completions.create({
+      model: process.env.ANTHROPIC_MODEL || "qd/qmodel_latest",
       max_tokens: 2000,
-      system: systemPrompt,
-      messages: [{ role: "user", content: userPrompt }],
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
     });
 
-    const text = response.content
-      .filter((block): block is Anthropic.TextBlock => block.type === "text")
-      .map((block) => block.text)
-      .join("\n");
+    const text = response.choices[0]?.message?.content ?? "";
 
     const jsonMatch = text.match(/\[[\s\S]*\]/);
     if (jsonMatch) {
@@ -377,7 +414,7 @@ function verifyClaim(
   if (claim.type === "stock_price" && claim.ticker) {
     const actual = priceLookup.get(claim.ticker.toUpperCase());
     if (actual?.close !== null && actual?.close !== undefined) {
-      const tolerance = 0.05; // 5% tolerance for stock prices
+      const tolerance = 0.003; // 0.3% tolerance — catches rounding deviations (e.g., 6400 vs 6425)
       const diff = Math.abs(claim.value - actual.close) / actual.close;
       if (diff > tolerance) {
         return {
@@ -392,7 +429,7 @@ function verifyClaim(
 
   if (claim.type === "index_level") {
     if (indexLookup.level !== null) {
-      const tolerance = 0.05; // 5% tolerance for index
+      const tolerance = 0.003; // 0.3% tolerance for index level — strict
       const diff = Math.abs(claim.value - indexLookup.level) / indexLookup.level;
       if (diff > tolerance) {
         return {
@@ -423,7 +460,60 @@ function verifyClaim(
   return null;
 }
 
-// ── Article correction ──
+// ── Deterministic correction (no AI — guaranteed accuracy) ──
+
+function escapeRegex(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * Deterministically replace wrong prices with exact DB values.
+ * Handles Indonesian format (6.400), plain (6400), and English (6,400).
+ * Returns corrected content and count of replacements made.
+ */
+function deterministicCorrectContent(
+  content: string,
+  mismatches: FactCheckResult["mismatches"],
+): { content: string; replacements: number } {
+  let corrected = content;
+  let totalReplacements = 0;
+
+  for (const m of mismatches) {
+    // Build all possible string representations of stated and actual values
+    const formats = [
+      { stated: m.statedValue.toLocaleString("id-ID"), actual: m.actualValue.toLocaleString("id-ID") }, // "6.400" → "6.425"
+      { stated: m.statedValue.toLocaleString("en-US"), actual: m.actualValue.toLocaleString("en-US") }, // "6,400" → "6,425"
+      { stated: String(m.statedValue), actual: String(m.actualValue) },                                  // "6400" → "6425"
+    ];
+
+    for (const { stated, actual } of formats) {
+      const escaped = escapeRegex(stated);
+      // Match only when NOT surrounded by other digits (prevents partial matches like "16.400" matching "6.400")
+      const regex = new RegExp(`(?<![\\d])${escaped}(?![\\d])`, "g");
+      const matches = corrected.match(regex);
+      if (matches && matches.length > 0) {
+        totalReplacements += matches.length;
+        corrected = corrected.replace(regex, actual);
+      }
+    }
+  }
+
+  return { content: corrected, replacements: totalReplacements };
+}
+
+/**
+ * Deterministically fix wrong prices in the title.
+ * Titles are short, so we just do a global replace.
+ */
+function deterministicCorrectTitle(
+  title: string,
+  mismatches: FactCheckResult["mismatches"],
+): { title: string; replacements: number } {
+  const result = deterministicCorrectContent(title, mismatches);
+  return { title: result.content, replacements: result.replacements };
+}
+
+// ── Article correction (AI fallback) ──
 
 async function correctArticleErrors(
   content: string,
@@ -432,11 +522,7 @@ async function correctArticleErrors(
   if (!process.env.ANTHROPIC_AUTH_TOKEN) return null;
 
   try {
-    const client = new Anthropic({
-      apiKey: process.env.ANTHROPIC_AUTH_TOKEN,
-      baseURL: process.env.ANTHROPIC_BASE_URL,
-      timeout: Number(process.env.API_TIMEOUT_MS) || 120_000,
-    });
+    const client = createAIClient();
 
     const errorList = mismatches
       .map((m) => `- ${m.description}`)
@@ -457,17 +543,16 @@ ${content}
 
 Kembalikan artikel lengkap yang sudah diperbaiki. Jangan tambahkan catatan editor.`;
 
-    const response = await client.messages.create({
-      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-4-20250514",
+    const response = await client.chat.completions.create({
+      model: process.env.ANTHROPIC_MODEL || "qd/qmodel_latest",
       max_tokens: 8000,
-      system: systemPrompt,
-      messages: [{ role: "user", content: userPrompt }],
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
     });
 
-    const text = response.content
-      .filter((block): block is Anthropic.TextBlock => block.type === "text")
-      .map((block) => block.text)
-      .join("\n");
+    const text = response.choices[0]?.message?.content ?? "";
 
     return text.trim() || null;
   } catch (err) {
@@ -485,11 +570,7 @@ async function correctTitleErrors(
   if (!process.env.ANTHROPIC_AUTH_TOKEN) return null;
 
   try {
-    const client = new Anthropic({
-      apiKey: process.env.ANTHROPIC_AUTH_TOKEN,
-      baseURL: process.env.ANTHROPIC_BASE_URL,
-      timeout: Number(process.env.API_TIMEOUT_MS) || 120_000,
-    });
+    const client = createAIClient();
 
     const errorList = mismatches
       .map((m) => `- ${m.description}`)
@@ -498,7 +579,8 @@ async function correctTitleErrors(
     const systemPrompt = `Kamu adalah editor judul artikel keuangan Indonesia.
 Tugas: Perbaiki angka-angka yang salah dalam judul artikel.
 PENTING: Hanya ubah angka yang salah. Pertahankan gaya bahasa, hook, dan struktur judul yang sama.
-Respond with ONLY the corrected title text. No explanation, no quotes, no JSON.`;
+Respond with ONLY the corrected title text. No explanation, no quotes, no JSON.
+Jika judul yang diberikan BUKAN judul artikel sungguhan (mis. percakapan, variasi judul, atau teks AI), kembalikan string kosong.`;
 
     const userPrompt = `Perbaiki judul berikut sesuai daftar error:
 
@@ -510,21 +592,25 @@ ${title}
 
 Kembalikan hanya judul yang sudah diperbaiki. Jangan ubah gaya bahasa atau struktur, hanya perbaiki angka yang salah.`;
 
-    const response = await client.messages.create({
-      model: process.env.ANTHROPIC_MODEL || "claude-sonnet-4-20250514",
+    const response = await client.chat.completions.create({
+      model: process.env.ANTHROPIC_MODEL || "qd/qmodel_latest",
       max_tokens: 200,
-      system: systemPrompt,
-      messages: [{ role: "user", content: userPrompt }],
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
     });
 
-    const text = response.content
-      .filter((block): block is Anthropic.TextBlock => block.type === "text")
-      .map((block) => block.text)
-      .join("\n")
-      .trim();
+    const text = (response.choices[0]?.message?.content ?? "").trim();
 
-    // Basic sanity check: corrected title shouldn't be empty or wildly different in length
-    if (!text || text.length < 10 || text.length > title.length * 2) {
+    // Tightened sanity checks: corrected title must pass the full title guard.
+    // This catches AI-leaked conversational responses.
+    if (!text) return null;
+    if (text.length < 10 || text.length > 200) return null;
+    if (text.includes("\n") || text.includes("\r")) return null;
+    if (text.startsWith("{") || text.startsWith("[")) return null;
+    if (!passesTitleGuard(text)) {
+      console.warn(`[FactCheck] correctTitleErrors output failed title guard: "${text.slice(0, 80)}..."`);
       return null;
     }
 

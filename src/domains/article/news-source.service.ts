@@ -1,9 +1,10 @@
 import RSSParser from "rss-parser";
-import Anthropic from "@anthropic-ai/sdk";
+import { createAIClient } from "@/lib/ai-client";
 import { ArticleStatus, ArticleType } from "@/generated/prisma/client";
 import { articleRepository } from "./article.repository";
 import { createAIProvider } from "./ai-provider";
 import { gatherMarketContext, formatMarketContextForPrompt, factCheckArticle, extractTickersFromText } from "./article-fact-check";
+import { resolveTitle } from "./title-guard";
 
 const RSS_FEEDS = [
   { name: "Detik Finance", url: "https://finance.detik.com/rss" },
@@ -63,29 +64,22 @@ export const newsSourceService = {
     const errors: string[] = [];
 
     if (!process.env.ANTHROPIC_AUTH_TOKEN) {
-      console.log("[NewsSource] Skipping — ANTHROPIC_AUTH_TOKEN not set");
       return { generated, errors, skipped: 0 };
     }
 
     // 1. Fetch headlines from all sources
     const headlines = await this.fetchHeadlines();
     if (headlines.length === 0) {
-      console.log("[NewsSource] No headlines fetched");
       return { generated, errors, skipped: 0 };
     }
-
-    console.log(`[NewsSource] Fetched ${headlines.length} headlines from ${RSS_FEEDS.length} sources`);
 
     // 2. Ask AI to filter only stock-market-impacting news
     const provider = createAIProvider();
     const impactful = await this.filterImpactfulHeadlines(provider, headlines, maxArticles);
 
     if (impactful.length === 0) {
-      console.log("[NewsSource] No impactful headlines found");
       return { generated, errors, skipped: headlines.length };
     }
-
-    console.log(`[NewsSource] AI selected ${impactful.length} impactful headlines`);
 
     // 3. Generate an article for each impactful headline
     const adminUser = await articleRepository.findAdminUserId();
@@ -105,7 +99,19 @@ export const newsSourceService = {
 Kamu menulis artikel berita pasar yang aktual, data-driven, dan SEO-friendly dalam bahasa Indonesia.
 Gaya tulis: jurnalistik tapi mudah dipahami, fokus pada fakta dan dampak ke pasar saham Indonesia.
 
-AKURASI DATA: Gunakan HANYA data pasar yang disediakan. Jangan membuat angka harga saham, level IHSG, atau kurs rupiah sendiri.`;
+AKURASI DATA: Gunakan HANYA data pasar yang disediakan. Jangan membuat angka harga saham, level IHSG, atau kurs rupiah sendiri.
+
+## ATURAN OUTPUT (SANGAT PENTING — PELANGGARAN = ARTIKEL DITOLAK)
+
+1. Mulai respons LANGSUNG dengan baris yang dimulai "## ". Tidak ada teks sebelumnya.
+2. Output HANYA Markdown artikel. DILARANG:
+   - JSON, object, atau code block (\`\`\`).
+   - Pembuka percakapan seperti "Berikut adalah...", "Ini artikel...", "Tentu...", "Sebagai AI...".
+   - Catatan editor, penjelasan, atau komentar meta.
+   - Variasi judul atau judul alternatif. Hanya SATU artikel dengan SATU judul.
+3. Karakter pertama respons Anda HARUS "#".
+4. Judul artikel = H2 pertama. Tulis seperti headline KORAN (5-10 kata, MAKSIMAL 65 karakter). Singkat dan padat.
+5. Hindari pengulangan pola judul yang sama dengan artikel terbaru (gunakan variasi struktur: headline langsung, pertanyaan, kontras, angka, dll).`;
 
         const userPrompt = `Tulis artikel berita berdasarkan headline berikut:
 
@@ -139,7 +145,22 @@ Tulis artikel dalam format Markdown:
 - Jangan tulis "disclaimer" atau "sebagai AI"
 - Target keyword: gunakan keyword natural terkait berita ini
 
-Respond with ONLY the article markdown content. No JSON, no code blocks.`;
+## CONTOH JUDUL YANG DITOLAK (jangan tiru)
+
+- "Berikut adalah beberapa variasi judul alternatif..."
+- "Berikut adalah kelanjutan artikel yang logis..."
+- "Teks Anda terpotong di bagian akhir..."
+- "Sebagai AI, saya merekomendasikan..."
+- Judul yang diawali sapaan/percakapan atau berakhir "..."
+- Lebih dari satu pilihan judul.
+
+## CONTOH JUDUL YANG BAGUS
+
+- "BBCA Lengkapi 1,2% di Tengah Ekspektasi GCG Bank Q2"
+- "Anomali Pasar: Saham Bank Big Cap Flat Meski IHSG Terbang"
+- "IHSG Tembus 7.200: 3 Sektor yang Bisa Diserok Pekan Ini"
+
+Respond with ONLY the article markdown content. No JSON, no code blocks, no conversational preface.`;
 
         // Step 2: Generate article with real data
         const result = await provider.generateArticle(systemPrompt, userPrompt);
@@ -149,22 +170,18 @@ Respond with ONLY the article markdown content. No JSON, no code blocks.`;
         // Check for duplicate slug
         const existing = await articleRepository.findBySlug(slug);
         if (existing) {
-          console.log(`[NewsSource] Skipping duplicate: ${slug}`);
           continue;
         }
 
         // Step 3: Fact-check before publishing
         let finalContent = result.content;
-        let finalTitle = result.title || item.title;
+        let finalTitle = resolveTitle(result.title, result.content, item.title);
         const factCheck = await factCheckArticle(result.content, marketCtx, finalTitle);
         if (!factCheck.passed && factCheck.correctedContent) {
           finalContent = factCheck.correctedContent;
           if (factCheck.correctedTitle) {
             finalTitle = factCheck.correctedTitle;
           }
-          console.log(`[NewsSource] Fact-check corrected ${factCheck.mismatches.length} errors in: ${item.title}`);
-        } else if (factCheck.passed) {
-          console.log(`[NewsSource] Fact-check passed for: ${item.title} (${factCheck.meta.claimsChecked} claims checked)`);
         }
 
         const article = await articleRepository.create({
@@ -191,7 +208,6 @@ Respond with ONLY the article markdown content. No JSON, no code blocks.`;
         });
 
         generated.push(`${item.source}: ${article.title}`);
-        console.log(`[NewsSource] Generated: ${article.title}`);
 
         // Rate limit between articles
         await new Promise((r) => setTimeout(r, 3000));
@@ -214,6 +230,12 @@ Respond with ONLY the article markdown content. No JSON, no code blocks.`;
       return headlines.slice(0, maxCount);
     }
 
+    // ── Get recent titles to avoid repetition ──
+    const recentTitles = await articleRepository.findRecentTitles(10).catch(() => [] as string[]);
+    const recentSection = recentTitles.length > 0
+      ? `\nARTIKEL YANG SUDAH DIPUBLIKASIKAN (JANGAN PILIH HEADLINE YANG SAMA TEMA/TICKER):\n${recentTitles.map((t, i) => `${i + 1}. ${t}`).join("\n")}\n`
+      : "";
+
     const headlineList = headlines
       .slice(0, 50)
       .map((h, i) => `${i + 1}. [${h.source}] ${h.title}`)
@@ -221,10 +243,11 @@ Respond with ONLY the article markdown content. No JSON, no code blocks.`;
 
     const systemPrompt = `Kamu adalah editor berita keuangan Indonesia untuk platform analisa teknikal saham (teknikalid.com).
 Tugas: Pilih headline yang LANGSUNG berdampak ke harga saham IDX atau sentimen investor.
+DIVERSITAS: Hindari memilih headline tentang ticker/tema yang sudah ada di daftar artikel terbaru. Maksimal 1 headline per ticker.
 Respond ONLY with valid JSON, no other text.`;
 
     const userPrompt = `Dari daftar headline berikut, pilih MAKSIMAL ${maxCount} yang paling berdampak ke pasar saham Indonesia (IDX).
-
+${recentSection}
 KRITERIA — pilih yang:
 - Dampak langsung ke harga saham (rate hike, earnings, dividen, rights issue, delisting)
 - Sentimen pasar besar (rupiah, IHSG, arus asing, geopolitik yang impact market)
@@ -235,6 +258,7 @@ JANGAN pilih yang:
 - Berita politik murni tanpa dampak pasar
 - Berita konsumer/lifestyle
 - Berita yang tidak relevan ke investor saham Indonesia
+- Headline tentang ticker/tema yang SUDAH ada di daftar artikel terbaru di atas
 
 DAFTAR HEADLINE:
 ${headlineList}
@@ -243,23 +267,18 @@ Output JSON dengan nomor headline yang dipilih:
 {"indices": [1, 5, 12]}`;
 
     try {
-      const client = new Anthropic({
-        apiKey: process.env.ANTHROPIC_AUTH_TOKEN,
-        baseURL: process.env.ANTHROPIC_BASE_URL,
-        timeout: 30_000,
-      });
+      const client = createAIClient();
 
-      const response = await client.messages.create({
-        model: process.env.ANTHROPIC_MODEL || "claude-sonnet-4-20250514",
+      const response = await client.chat.completions.create({
+        model: process.env.ANTHROPIC_MODEL || "qd/qmodel_latest",
         max_tokens: 500,
-        system: systemPrompt,
-        messages: [{ role: "user", content: userPrompt }],
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
       });
 
-      const text = response.content
-        .filter((block): block is Anthropic.TextBlock => block.type === "text")
-        .map((block) => block.text)
-        .join("\n");
+      const text = response.choices[0]?.message?.content ?? "";
 
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       if (jsonMatch) {

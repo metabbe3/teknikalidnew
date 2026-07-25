@@ -44,7 +44,7 @@ export function MiniScreenerPreview() {
   }
 
   return (
-    <div className="preview-panel depth-shadow" style={{ borderTop: "3px solid #2563eb" }}>
+    <div className="preview-panel" style={{ borderTop: "3px solid var(--color-accent)" }}>
       <div className="preview-panel-header">
         <p className="text-xs font-semibold text-text-primary">Screener Teknikal</p>
         <p className="text-[10px] text-text-tertiary mt-0.5">Pilih strategi untuk melihat saham yang cocok</p>
@@ -58,8 +58,8 @@ export function MiniScreenerPreview() {
               onClick={() => handlePreset(p.key)}
               className={`px-3 py-1.5 rounded-full text-[11px] font-medium transition-all duration-150 cursor-pointer ${
                 active === p.key
-                  ? "bg-blue-500 text-white shadow-sm"
-                  : "bg-gray-50 text-text-secondary border border-border hover:border-blue-300 hover:text-blue-600"
+                  ? "bg-text-primary text-white shadow-sm"
+                  : "bg-bg-card text-text-secondary border border-border hover:border-accent/40 hover:text-accent"
               }`}
             >
               {p.label}
@@ -76,7 +76,7 @@ export function MiniScreenerPreview() {
           )}
           {loading && (
             <div className="flex items-center justify-center py-8">
-              <div className="w-5 h-5 border-2 border-blue-200 border-t-blue-500 rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-border border-t-accent rounded-full animate-spin" />
             </div>
           )}
           {!loading && results.length > 0 && (
@@ -88,20 +88,20 @@ export function MiniScreenerPreview() {
                   className="flex items-center justify-between p-2 rounded-lg hover:bg-bg-hover transition-colors"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold">{stripJk(r.ticker)}</span>
+                    <span className="text-xs font-semibold font-mono tabular-nums">{stripJk(r.ticker)}</span>
                     <span className="text-[10px] text-text-tertiary truncate max-w-[100px]">{r.name}</span>
                   </div>
                   <div className="flex items-center gap-2 tabular-nums">
                     {r.rsi14 != null && (
                       <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${
-                        r.rsi14 <= 30 ? "bg-red-50 text-red-600" : r.rsi14 <= 50 ? "bg-amber-50 text-amber-600" : "bg-blue-50 text-blue-600"
+                        r.rsi14 <= 30 ? "bg-bearish-bg text-bearish" : r.rsi14 <= 50 ? "bg-bg-hover text-text-secondary" : "bg-bullish-bg text-bullish"
                       }`}>
                         RSI {r.rsi14.toFixed(0)}
                       </span>
                     )}
-                    <span className="text-xs font-medium">{formatPrice(r.close)}</span>
+                    <span className="text-xs font-medium font-mono">{formatPrice(r.close)}</span>
                     {r.changePercent != null && (
-                      <span className={`text-[10px] font-bold ${changeColor(r.changePercent)}`}>
+                      <span className={`text-[10px] font-bold font-mono ${changeColor(r.changePercent)}`}>
                         {formatPercent(r.changePercent)}
                       </span>
                     )}
@@ -120,7 +120,7 @@ export function MiniScreenerPreview() {
         {/* CTA */}
         <Link
           href="/screener"
-          className="flex items-center justify-center gap-2 w-full py-2 rounded-lg bg-blue-500 text-white text-xs font-semibold hover:bg-blue-600 transition-colors press-scale"
+          className="flex items-center justify-center gap-2 w-full py-2 rounded-lg bg-text-primary text-white text-xs font-semibold hover:bg-text-primary/80 transition-colors press-scale"
         >
           Lihat 30+ strategi screener
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">

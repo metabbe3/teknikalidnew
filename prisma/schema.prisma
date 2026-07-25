@@ -252,6 +252,9 @@ model User {
   dailyStreak      Int      @default(0)
   customTitle   String?  @db.VarChar(30)
   bannedAt      DateTime?
+  signupIp      String?   @db.VarChar(45)
+  signupAsn     String?   @db.VarChar(20)
+  flaggedAt     DateTime?
   sessionVersion Int      @default(0)
   portfolioPublic Boolean @default(false)
   createdAt     DateTime  @default(now())
@@ -286,6 +289,7 @@ model User {
   pageViews          PageView[]
   savedScreeners     SavedScreener[]
   screenerAlerts     ScreenerAlert[]
+  theses             StockThesis[]
 }
 
 enum Role {
@@ -360,6 +364,7 @@ model Post {
   @@index([createdAt(sort: Desc)])
   @@index([authorId])
   @@index([authorId, createdAt(sort: Desc)])
+  @@index([predictionOutcome])
 }
 
 model PostTag {
@@ -444,6 +449,27 @@ model Watchlist {
 
   @@unique([userId, stockTicker])
   @@index([userId])
+}
+
+// A user's committed directional thesis on a stock (target/stop/rationale).
+// Breach state is computed on-demand against live price + signal (no cron).
+model StockThesis {
+  id          String   @id @default(cuid())
+  userId      String
+  ticker      String   @db.VarChar(20)
+  bias        String   @db.VarChar(10) // BULLISH | BEARISH | NEUTRAL
+  targetPrice Decimal? @db.Decimal(12, 2)
+  stopLoss    Decimal? @db.Decimal(12, 2)
+  rationale   String?  @db.VarChar(280)
+  lastNotifiedBreach String? @db.VarChar(20)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, ticker])
+  @@index([userId])
+  @@index([ticker])
 }
 
 model PortfolioHolding {
@@ -631,6 +657,7 @@ enum NotificationType {
   AGENT_ALERT
   RE_ENGAGE
   SCREENER_MATCH
+  THESIS_BREACH
 }
 
 model Notification {
@@ -640,6 +667,8 @@ model Notification {
   actorId     String
   postId      String?
   commentId   String?
+  ticker      String?          @db.VarChar(20)
+  meta        Json?
   read        Boolean          @default(false)
   createdAt   DateTime         @default(now())
 
@@ -676,6 +705,7 @@ enum ArticleType {
   NEWS
   GENERAL
   DAILY_SNAPSHOT
+  MOVEMENT_ANALYSIS
 }
 
 model Article {
@@ -983,6 +1013,7 @@ model PageView {
   userId    String?
   ip        String?  @db.VarChar(45)
   userAgent String?  @db.VarChar(500)
+  isBot     Boolean  @default(false)
   createdAt DateTime @default(now())
 
   user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
@@ -990,6 +1021,7 @@ model PageView {
   @@index([path])
   @@index([createdAt])
   @@index([path, createdAt(sort: Desc)])
+  @@index([isBot])
 }
 
 model SavedScreener {
@@ -1028,4 +1060,16 @@ model ScreenerAlert {
 
   @@index([userId])
   @@index([isEnabled, frequency])
+}
+
+/// Persistent IP blocklist (populated on ban / scrape-escalation; checked in proxy.ts).
+model BlockedIp {
+  id           String    @id @default(cuid())
+  ip           String    @unique
+  reason       String    @db.VarChar(255)
+  bannedUserId String?
+  createdAt    DateTime  @default(now())
+  expiresAt    DateTime?
+
+  @@index([ip])
 }

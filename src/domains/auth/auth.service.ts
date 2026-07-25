@@ -32,6 +32,9 @@ export const authService = {
   async register(email: string, password: string, confirmPassword: string) {
     if (!email || !password) throw new ValidationError("Email dan password wajib diisi");
     if (password.length < 8) throw new ValidationError("Password minimal 8 karakter");
+    if (password.length > 128) throw new ValidationError("Password maksimal 128 karakter");
+    if (!/[a-z]/.test(password)) throw new ValidationError("Password harus mengandung huruf kecil");
+    if (!/[A-Z]/.test(password) && !/[0-9]/.test(password)) throw new ValidationError("Password harus mengandung huruf besar atau angka");
     if (password !== confirmPassword) throw new ValidationError("Password tidak cocok");
 
     const existing = await authRepository.findUserByEmail(email);

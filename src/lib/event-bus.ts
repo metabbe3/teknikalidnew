@@ -53,6 +53,11 @@ export interface EventMap {
     authorId: string;
     reactionType: string;
   };
+  "thesis:breach": {
+    userId: string;
+    ticker: string;
+    breachKind: "target_hit" | "stop_hit" | "verdict_flipped";
+  };
 }
 
 class TypedEventBus extends EventEmitter {

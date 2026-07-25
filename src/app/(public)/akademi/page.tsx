@@ -3,6 +3,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { BookOpen, MessageCircleQuestion } from "lucide-react";
 import { SITE_URL } from "@/lib/constants";
+import { PageHero } from "@/components/layout/page-hero";
 import { FAQTabSection } from "@/components/faq/faq-tab-section";
 import { QuestionStatus } from "@/generated/prisma/client";
 import { AkademiGrid } from "./akademi-grid";
@@ -120,30 +121,11 @@ export default async function AkademiPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <div className="min-h-screen bg-bg-primary">
-        {/* Dark terminal hero */}
-        <section
-          className="akademi-hero"
-          style={{
-            background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
-          }}
-        >
-          <div className="relative z-[1] max-w-6xl mx-auto px-4 py-16 sm:py-20">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 rounded-lg bg-teal-500/10 border border-teal-500/20">
-                <BookOpen className="h-5 w-5 text-teal-400" />
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white font-mono uppercase tracking-[0.15em]">
-                Akademi
-              </h1>
-            </div>
-            <p className="text-gray-300 max-w-2xl text-sm sm:text-base leading-relaxed">
-              <span className="text-gray-400 font-mono text-xs mr-2">&gt;</span>
-              Panduan dan edukasi analisis teknikal untuk investor Indonesia.
-              Belajar membaca chart, indikator, dan strategi trading saham BEI.
-              <span className="akademi-cursor" />
-            </p>
-          </div>
-        </section>
+        <PageHero
+          eyebrow="Edukasi"
+          title="Akademi"
+          description="Panduan dan edukasi analisis teknikal untuk investor Indonesia. Belajar membaca chart, indikator, dan strategi trading saham BEI."
+        />
 
         <div className="max-w-6xl mx-auto px-4 py-10">
           {/* Tab navigation */}

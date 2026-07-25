@@ -3,17 +3,29 @@ import { requireAdmin } from "@/lib/auth-guard";
 import { handleApiError } from "@/lib/api-error";
 import { prisma } from "@/lib/prisma";
 import { getRecentActivity } from "@/lib/activity-log";
+import { z } from "zod";
+import { parseQuery } from "@/lib/validation";
 
 export const dynamic = "force-dynamic";
 
+const eodLogsSchema = z.object({
+  from: z.string().optional(),
+  to: z.string().optional(),
+});
+
+// GET /api/admin/users — List all users with pagination, search, filters
 export async function GET(request: NextRequest) {
   try {
     await requireAdmin();
-  const { searchParams } = request.nextUrl;
-  const from = searchParams.get("from")
-    ? new Date(searchParams.get("from")!)
-    : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-  const to = searchParams.get("to") ? new Date(searchParams.get("to")!) : new Date();
+    const { searchParams } = request.nextUrl;
+
+    const [data, error] = parseQuery(searchParams, eodLogsSchema);
+    if (error) return error;
+
+    const from = data.from
+      ? new Date(data.from)
+      : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const to = data.to ? new Date(data.to) : new Date();
 
   const [priceCounts, indicatorCounts] = await Promise.all([
     prisma.$queryRaw<

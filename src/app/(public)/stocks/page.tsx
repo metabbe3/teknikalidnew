@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { Suspense } from "react";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
-import { StockTable } from "@/components/stock/stock-table";
+import { SahamView } from "@/components/stock/saham-view";
 import { IDX_STOCKS } from "@/lib/constants";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale/id";
 import type { MarketStatusResult } from "@/lib/market-hours";
 import { SITE_URL } from "@/lib/constants";
+import { MarketBreathStrip } from "@/components/ui/market-breath-strip";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { ArrowUpRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -35,76 +40,52 @@ function MarketStatus({ marketStatus, latestPrice }: { marketStatus: MarketStatu
   const dateStr = latestPrice
     ? format(latestPrice.date, "d MMM yyyy", { locale: idLocale })
     : null;
-  const todayStr = format(new Date(), "EEEE, d MMMM yyyy", { locale: idLocale });
 
   if (marketStatus.isOpen) {
     return (
-      <div className="flex items-center gap-3 text-sm">
-        <div className="flex items-center gap-2 text-emerald-400 bg-emerald-500/10 px-4 py-2 rounded-lg border border-emerald-500/20">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true" />
-          <span className="font-mono font-semibold uppercase tracking-wider text-xs">Pasar Buka</span>
-        </div>
-        {dateStr && (
-          <span className="text-gray-400 text-xs font-mono">
-            Data terakhir: {dateStr}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+        <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5">
+          <span className="relative flex h-2 w-2" aria-hidden="true">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
           </span>
+          <span className="font-mono text-xs font-semibold uppercase tracking-[0.15em] text-emerald-700">Pasar Buka</span>
+        </span>
+        {dateStr && (
+          <span className="font-mono text-xs text-text-tertiary">Data terakhir: {dateStr}</span>
         )}
       </div>
     );
   }
 
   const reasonLabel = marketStatus.reason === "weekend"
-    ? "AKHIR PEKAN"
+    ? "Akhir Pekan"
     : marketStatus.reason === "holiday"
-      ? "HARI LIBUR NASIONAL"
-      : "SESI BERAKHIR";
+      ? "Hari Libur Nasional"
+      : "Sesi Berakhir";
 
   const reasonDesc = marketStatus.reason === "weekend"
-    ? "Bursa Efek Indonesia tutup pada hari Sabtu & Minggu"
+    ? "Bursa Efek Indonesia tutup pada hari Sabtu & Minggu."
     : marketStatus.reason === "holiday"
-      ? "Hari libur nasional — tidak ada sesi perdagangan"
-      : "Sesi perdagangan hari ini telah berakhir";
+      ? "Hari libur nasional — tidak ada sesi perdagangan."
+      : "Sesi perdagangan hari ini telah berakhir.";
 
   return (
-    <div className="space-y-0">
-      {/* Hero status strip */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
-        <div className="flex items-center gap-2.5 bg-amber-500/15 px-4 py-2.5 rounded-lg border border-amber-500/30 market-closed-glow">
-          <span className="w-2.5 h-2.5 rounded-full bg-amber-400 market-dot-pulse" aria-hidden="true" />
-          <span className="font-mono font-bold uppercase tracking-widest text-sm text-amber-300">
-            Pasar Tutup
-          </span>
-          <span className="hidden sm:block w-px h-4 bg-amber-500/30" aria-hidden="true" />
-          <span className="font-mono text-xs text-amber-400/80 uppercase tracking-wider">
-            {reasonLabel}
-          </span>
-        </div>
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+        <span className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5">
+          <span className="h-2 w-2 rounded-full bg-amber-500" aria-hidden="true" />
+          <span className="font-mono text-xs font-semibold uppercase tracking-[0.15em] text-amber-800">Pasar Tutup · {reasonLabel}</span>
+        </span>
         {dateStr && (
-          <span className="text-gray-400 text-xs font-mono">
-            Data sesi terakhir: <span className="text-gray-300 font-semibold">{dateStr}</span>
+          <span className="font-mono text-xs text-text-tertiary">
+            Data sesi terakhir: <span className="font-medium text-text-secondary">{dateStr}</span>
           </span>
         )}
       </div>
-
-      {/* Full-width info banner */}
-      <div className="market-closed-bar rounded-lg px-5 py-4 mt-4">
-        <div className="relative z-10 flex items-start gap-3">
-          <div className="shrink-0 mt-0.5">
-            <svg className="h-5 w-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <div className="space-y-1">
-            <p className="text-sm font-semibold text-amber-100">
-              Pasar saham BEI tutup hari ini ({todayStr})
-            </p>
-            <p className="text-xs text-amber-200/70 leading-relaxed">
-              {reasonDesc}. Data yang ditampilkan adalah dari sesi perdagangan terakhir.
-              Harga dan indikator teknikal belum diperbarui sejak penutupan pasar.
-            </p>
-          </div>
-        </div>
-      </div>
+      <p className="text-xs leading-relaxed text-text-tertiary max-w-2xl">
+        {reasonDesc} Data yang ditampilkan berasal dari sesi perdagangan terakhir.
+      </p>
     </div>
   );
 }
@@ -122,7 +103,11 @@ export default async function StocksPage() {
   const gainers = withChange.filter((s) => s.changePercent! > 0).length;
   const losers = withChange.filter((s) => s.changePercent! < 0).length;
   const unchanged = withChange.length - gainers - losers;
-  const isClosed = !marketInfo.marketStatus.isOpen;
+
+  const sortedDesc = [...withChange].sort((a, b) => b.changePercent! - a.changePercent!);
+  const sortedAsc = [...withChange].sort((a, b) => a.changePercent! - b.changePercent!);
+  const topGainer = sortedDesc[0] ? { ticker: sortedDesc[0].ticker, changePercent: sortedDesc[0].changePercent! } : undefined;
+  const topLoser = sortedAsc[0] ? { ticker: sortedAsc[0].ticker, changePercent: sortedAsc[0].changePercent! } : undefined;
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
@@ -145,55 +130,61 @@ export default async function StocksPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
     <div className="fade-in">
-      {/* Terminal Hero */}
-      <section className="stocks-hero" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}>
-        <div className="relative z-[1] max-w-7xl mx-auto px-4 py-12 sm:py-16">
-          <div className="max-w-3xl space-y-5">
-            <MarketStatus marketStatus={marketInfo.marketStatus} latestPrice={latestPrice} />
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
-              Daftar Saham
-              <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent"> BEI</span>
-            </h1>
-            <p className="text-gray-300 text-base leading-relaxed">
-              Screen <span className="text-white font-semibold">{IDX_STOCKS.length}+</span> saham IDX berdasarkan sektor, indikator teknikal, dan performa.
-            </p>
+      {/* ── Editorial header ── */}
+      <section className="border-b border-border bg-bg-card">
+        <div className="max-w-7xl mx-auto px-4 py-10 sm:py-12">
+          <MarketStatus marketStatus={marketInfo.marketStatus} latestPrice={latestPrice} />
+          <h1 className="mt-5 font-serif text-4xl sm:text-5xl font-semibold tracking-tight text-text-primary leading-[1.05]">
+            Pasar Saham IDX
+          </h1>
+          <p className="mt-3 text-sm sm:text-base text-text-secondary max-w-2xl leading-relaxed">
+            Harga, sinyal teknikal, dan analisa untuk {IDX_STOCKS.length}+ saham IDX. Mulai dari top mover hari ini, atau saring sesuai strategi Anda.
+          </p>
+          <div className="mt-6">
+            <MarketBreathStrip
+              data={{
+                advancersCount: gainers,
+                declinersCount: losers,
+                unchangedCount: unchanged,
+                topGainer,
+                topLoser,
+              }}
+            />
           </div>
 
-          {/* Market Stats */}
-          <div className={`flex flex-wrap items-center gap-2.5 mt-8 ${isClosed ? "opacity-70" : ""}`}>
-            <div className="terminal-stat">
-              <p className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">Total</p>
-              <p className="text-sm font-bold text-white tabular-nums mt-0.5">
-                {rows.length} <span className="text-xs font-normal text-gray-400">saham</span>
-              </p>
-            </div>
-            <div className="terminal-stat">
-              <p className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">Naik</p>
-              <p className="text-sm font-bold text-bullish tabular-nums mt-0.5">{gainers}</p>
-            </div>
-            <div className="terminal-stat">
-              <p className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">Turun</p>
-              <p className="text-sm font-bold text-bearish tabular-nums mt-0.5">{losers}</p>
-            </div>
-            {unchanged > 0 && (
-              <div className="terminal-stat">
-                <p className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">Tetap</p>
-                <p className="text-sm font-bold text-gray-300 tabular-nums mt-0.5">{unchanged}</p>
-              </div>
-            )}
-            {isClosed && (
-              <div className="terminal-stat border-amber-500/20 bg-amber-500/5">
-                <p className="text-[10px] text-amber-500/80 font-mono uppercase tracking-wider">Status</p>
-                <p className="text-sm font-bold text-amber-300 font-mono mt-0.5">SESI TERAKHIR</p>
-              </div>
-            )}
+          {/* Quick discovery pills → screener tab */}
+          <div className="mt-6 flex flex-wrap gap-2">
+            {[
+              { label: "Sinyal Bullish", href: "/stocks?view=screener&tab=swing-trade&preset=bullish_signal" },
+              { label: "Oversold (RSI<30)", href: "/stocks?view=screener&tab=bottom-fishing&preset=rsi_oversold" },
+              { label: "Golden Cross", href: "/stocks?view=screener&tab=swing-trade&preset=golden_cross" },
+              { label: "Volume Spike", href: "/stocks?view=screener&tab=bottom-fishing&preset=volume_spike_low" },
+            ].map((p) => (
+              <Link
+                key={p.label}
+                href={p.href}
+                className="inline-flex items-center gap-1 rounded-full border border-border bg-bg-card px-3.5 py-2 text-xs font-semibold text-text-secondary hover:border-accent/40 hover:text-accent transition-colors"
+              >
+                {p.label}
+                <ArrowUpRight className="h-3 w-3" aria-hidden />
+              </Link>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Table Section */}
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <StockTable stocks={rows} sectors={sectors} />
+        {/* Browse | Screener (merged) */}
+        <section>
+          <SectionHeading
+            eyebrow="Database Lengkap"
+            title="Semua Saham IDX"
+            description="Cari, saring per sektor, urutkan 900+ saham — atau gunakan Screener untuk filter sinyal teknikal."
+          />
+          <Suspense fallback={<div className="p-8 text-center text-text-secondary">Memuat…</div>}>
+            <SahamView stocks={rows} sectors={sectors} />
+          </Suspense>
+        </section>
       </div>
     </div>
     </>

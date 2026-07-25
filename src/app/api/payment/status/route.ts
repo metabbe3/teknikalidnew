@@ -14,9 +14,10 @@ export async function GET(request: NextRequest) {
     const status = await core.transactionStatus(orderId);
 
     return NextResponse.json({ status });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
-      { error: "Failed to check status", detail: error.message },
+      { error: "Failed to check status", detail: message },
       { status: 500 }
     );
   }
