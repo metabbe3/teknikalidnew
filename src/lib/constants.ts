@@ -110,7 +110,7 @@ export const PREDICTION_OUTCOME = {
 // Clean tickers (no -USD/-IDR suffix) → URL /stocks/BTC. isCryptoTicker gates the .JK suffix
 // in findStockByTicker: crypto passes through verbatim, everything else keeps IDX .JK behavior.
 // IDR pricing comes from Indodax (see src/lib/indodax.ts), not Yahoo.
-export const CRYPTO_TICKERS = ["BTC"] as const;
+export const CRYPTO_TICKERS = ["BTC", "ETH", "SOL"] as const;
 
 export function isCryptoTicker(ticker: string): boolean {
   const t = ticker.trim().toUpperCase();

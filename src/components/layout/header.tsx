@@ -12,7 +12,7 @@ const navLinks = [
   { href: "/", label: "Beranda" },
   { href: "/stocks", label: "Saham" },
   ...(process.env.NEXT_PUBLIC_CRYPTO_ENABLED === "true"
-    ? [{ href: "/stocks/BTC", label: "Crypto" }]
+    ? [{ href: "/crypto", label: "Crypto" }]
     : []),
   { href: "/community", label: "Komunitas" },
   { href: "/berita", label: "Berita" },

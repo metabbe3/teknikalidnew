@@ -5,9 +5,11 @@ import { prisma } from "./prisma";
 const BASE = "https://indodax.com";
 const SPOT_TTL_MS = 90_000; // 90s spot cache (breach scan + page share it)
 
-// Map our crypto ticker -> Indodax pair/symbol. Add ETH/SOL here when expanded.
+// Map our crypto ticker -> Indodax pair/symbol.
 const PAIR_MAP: Record<string, { pair: string; symbol: string }> = {
   BTC: { pair: "btc_idr", symbol: "BTCIDR" },
+  ETH: { pair: "eth_idr", symbol: "ETHIDR" },
+  SOL: { pair: "sol_idr", symbol: "SOLIDR" },
 };
 
 export function cryptoPair(ticker: string): { pair: string; symbol: string } | null {

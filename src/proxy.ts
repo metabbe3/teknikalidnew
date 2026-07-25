@@ -327,7 +327,7 @@ export async function proxy(request: NextRequest) {
     const hasSuffix = !!stockMatch[2];
     // ponytail: inline crypto set — proxy runs on the edge runtime, importing the big
     // constants/idx-stocks module would bloat the bundle. Keep in sync with src/lib/constants.ts.
-    const isCrypto = ticker === "BTC";
+    const isCrypto = ["BTC", "ETH", "SOL"].includes(ticker);
     const isCanonical = isCrypto
       ? stockMatch[1] === ticker && !hasSuffix
       : hasSuffix && stockMatch[1] === ticker && stockMatch[2] === ".JK";
