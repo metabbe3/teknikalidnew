@@ -5,15 +5,15 @@ import { prisma } from "./prisma";
 const BASE = "https://indodax.com";
 const SPOT_TTL_MS = 90_000; // 90s spot cache (breach scan + page share it)
 
-// Map our crypto ticker -> Indodax pair/symbol.
-const PAIR_MAP: Record<string, { pair: string; symbol: string }> = {
-  BTC: { pair: "btc_idr", symbol: "BTCIDR" },
-  ETH: { pair: "eth_idr", symbol: "ETHIDR" },
-  SOL: { pair: "sol_idr", symbol: "SOLIDR" },
-};
+// Map our crypto ticker -> Indodax pair/symbol. Derived from ticker for scalability
+// (any coin: ticker "XRP" -> pair "xrp_idr", symbol "XRPIDR"). Overrides for exceptions only.
+const PAIR_OVERRIDES: Record<string, { pair: string; symbol: string }> = {};
 
 export function cryptoPair(ticker: string): { pair: string; symbol: string } | null {
-  return PAIR_MAP[ticker] ?? null;
+  const t = ticker.trim().toUpperCase();
+  if (PAIR_OVERRIDES[t]) return PAIR_OVERRIDES[t];
+  if (!/^[A-Z0-9]{2,10}$/.test(t)) return null; // sane coin symbol
+  return { pair: `${t.toLowerCase()}_idr`, symbol: `${t}IDR` };
 }
 
 export type CryptoOHLC = {

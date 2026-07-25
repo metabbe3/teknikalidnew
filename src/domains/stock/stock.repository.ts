@@ -1,20 +1,26 @@
 import { prisma } from "@/lib/prisma";
 import { subDays, startOfDay } from "date-fns";
 import { Prisma } from "@/generated/prisma/client";
-import { INTERVAL, isCryptoTicker } from "@/lib/constants";
+import { INTERVAL } from "@/lib/constants";
 import { toDateKey } from "@/lib/utils";
 
 export const stockRepository = {
   // ── Stock ──
 
-  findStockByTicker(ticker: string) {
-    const normalized = ticker.trim().toUpperCase();
-    // Crypto tickers (BTC-USD, …) pass through verbatim; IDX keeps .JK suffix.
-    if (isCryptoTicker(normalized)) {
-      return prisma.stock.findUnique({ where: { ticker: normalized } });
+  // Crypto tickers are stored bare (BTC, ETH, …); IDX with .JK suffix.
+  // Try exact first (crypto), fall back to .JK (IDX) — works for any coin without a static set.
+  // The .JK-strip fallback catches crypto tickers the proxy canonicalized to {TICKER}.JK.
+  async findStockByTicker(ticker: string) {
+    const t = ticker.trim().toUpperCase();
+    const exact = await prisma.stock.findUnique({ where: { ticker: t } });
+    if (exact) return exact;
+    const withSuffix = t.endsWith(".JK") ? t : `${t}.JK`;
+    const jkd = await prisma.stock.findUnique({ where: { ticker: withSuffix } });
+    if (jkd) return jkd;
+    if (t.endsWith(".JK")) {
+      return prisma.stock.findUnique({ where: { ticker: t.replace(/\.JK$/, "") } });
     }
-    const withSuffix = normalized.endsWith(".JK") ? normalized : `${normalized}.JK`;
-    return prisma.stock.findUnique({ where: { ticker: withSuffix } });
+    return null;
   },
 
   findStocksByTickers(tickers: string[]) {
@@ -39,6 +45,23 @@ export const stockRepository = {
   },
 
   // Latest 2 daily indicators + latest 2 closes for day-over-day delta (morning-delta card)
+  // All active crypto stocks with latest 2 closes + latest indicator (for /crypto list).
+  findCryptoStocksWithIndicators() {
+    return prisma.stock.findMany({
+      where: { assetClass: "CRYPTO", isActive: true },
+      orderBy: { ticker: "asc" },
+      include: {
+        prices: { orderBy: { date: "desc" }, take: 2, select: { close: true } },
+        indicators: {
+          orderBy: { date: "desc" },
+          take: 1,
+          where: { interval: INTERVAL.DAY },
+          select: { signalLabel: true, signalScore: true, rsi14: true },
+        },
+      },
+    });
+  },
+
   findStocksWithIndicatorHistory(tickers: string[]) {
     if (tickers.length === 0) return Promise.resolve([]);
     return prisma.stock.findMany({

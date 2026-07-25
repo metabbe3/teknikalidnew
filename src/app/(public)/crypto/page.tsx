@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { stockRepository } from "@/domains/stock/stock.repository";
-import { CRYPTO_TICKERS, SITE_URL } from "@/lib/constants";
+import { SITE_URL } from "@/lib/constants";
 import { decimalToNumber } from "@/lib/serialize";
 import { formatPrice, formatPercent, changeColor, stripJk } from "@/lib/utils";
 import { SectionHeading } from "@/components/ui/section-heading";
@@ -30,7 +30,7 @@ function signalTone(label: string | null): string {
 }
 
 export default async function CryptoPage() {
-  const stocks = await stockRepository.findStocksByTickersWithIndicators([...CRYPTO_TICKERS]);
+  const stocks = await stockRepository.findCryptoStocksWithIndicators();
 
   const cards = stocks.map((s) => {
     const close = s.prices[0] ? decimalToNumber(s.prices[0].close) : null;
@@ -66,7 +66,7 @@ export default async function CryptoPage() {
               return (
                 <Link
                   key={c.ticker}
-                  href={`/stocks/${c.ticker}`}
+                  href={`/crypto/${c.ticker}`}
                   className="group flex flex-col bg-bg-card rounded-xl p-4 border border-border/60 hover:border-accent/30 hover:depth-shadow-hover transition-all"
                 >
                   <div className="flex items-start justify-between gap-2">

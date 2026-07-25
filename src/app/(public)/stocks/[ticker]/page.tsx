@@ -1,5 +1,5 @@
 import { type Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { StockNotFoundError } from "@/domains/stock/stock.errors";
@@ -112,6 +112,13 @@ export default async function StockDetailPage({
   params: Promise<{ ticker: string }>;
 }) {
   const { ticker } = await params;
+
+  // Crypto lives under /crypto/* — redirect before the IDX render.
+  // Crypto tickers are stored bare (BTC); IDX with .JK — so a resolved bare ticker = crypto.
+  const precheck = await stockRepository.findStockByTicker(ticker);
+  if (precheck && !precheck.ticker.endsWith(".JK")) {
+    redirect(`/crypto/${precheck.ticker}`);
+  }
 
   // Server-side auth gate: detailed data (chart, indicators, fundamentals) only for logged-in
   // users. Anon gets the SEO teaser (price/name/signal) + LoginGate placeholders — never the

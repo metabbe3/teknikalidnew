@@ -227,6 +227,7 @@ export const stockMarketService = {
     return {
       stock: {
         id: base.stock.id, ticker: base.stock.ticker, name: base.stock.name, sector: base.stock.sector,
+        assetClass: base.stock.assetClass,
         logo: base.stock.logo, industry: base.stock.industry, subIndustry: base.stock.subIndustry,
         subSector: base.stock.subSector, listingBoard: base.stock.listingBoard,
         listingDate: base.stock.listingDate, address: base.stock.address,
