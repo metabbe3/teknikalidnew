@@ -46,7 +46,7 @@ export async function fetchCryptoIdrOHLC(symbol: string, days: number, tf = "1D"
     high: r.High,
     low: r.Low,
     close: r.Close,
-    volume: Number(r.Volume),
+    volume: Math.round(r.Close * Number(r.Volume)),
   }));
 }
 
