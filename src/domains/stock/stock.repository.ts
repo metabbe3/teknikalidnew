@@ -118,10 +118,11 @@ export const stockRepository = {
     });
   },
 
-  findOversoldStocks() {
+  findOversoldStocks(assetClass?: "EQUITY" | "CRYPTO") {
     return prisma.stock.findMany({
       where: {
         isActive: true,
+        ...(assetClass ? { assetClass } : {}),
         indicators: {
           some: {
             interval: INTERVAL.DAY,
@@ -302,9 +303,9 @@ export const stockRepository = {
     });
   },
 
-  getLatestIndicatorDate() {
+  getLatestIndicatorDate(assetClass?: "EQUITY" | "CRYPTO") {
     return prisma.stockIndicator.findFirst({
-      where: { interval: INTERVAL.DAY },
+      where: { interval: INTERVAL.DAY, ...(assetClass ? { stock: { assetClass } } : {}) },
       orderBy: { date: "desc" },
       select: { date: true },
     });
@@ -571,12 +572,14 @@ export const stockRepository = {
     });
   },
 
-  findVolumeSpikes(latestDate: Date, multiplier: number) {
+  findVolumeSpikes(latestDate: Date, multiplier: number, assetClass?: "EQUITY" | "CRYPTO") {
     const twentyDaysAgo = new Date(latestDate);
     twentyDaysAgo.setDate(twentyDaysAgo.getDate() - 20);
-    return prisma.$queryRaw<
+    const params: (Date | number | string)[] = [twentyDaysAgo, latestDate, multiplier];
+    if (assetClass) params.push(assetClass);
+    return prisma.$queryRawUnsafe<
       { ticker: string; name: string; sector: string; close: number; prev_close: number | null; change_percent: number; volume: bigint; rsi14: number | null; sma20: number | null }[]
-    >`
+    >(`
       SELECT
         s.ticker, s.name, s.sector, sp_latest.close,
         sp_prev.close AS prev_close, sp_latest.volume, si.rsi14, si.sma20
@@ -590,20 +593,22 @@ export const stockRepository = {
       ) sp_prev ON true
       JOIN (
         SELECT "stockId", AVG(volume)::bigint AS avg_volume
-        FROM "StockPrice" WHERE date >= ${twentyDaysAgo}
+        FROM "StockPrice" WHERE date >= $1
         GROUP BY "stockId"
       ) avg ON avg."stockId" = s.id
-      WHERE si.interval = '1d' AND si.date = ${latestDate} AND s."isActive" = true
-        AND sp_latest.volume > avg.avg_volume * ${multiplier}
-    `;
+      WHERE si.interval = '1d' AND si.date = $2 AND s."isActive" = true
+        AND sp_latest.volume > avg.avg_volume * $3${assetClass ? ` AND s."assetClass" = $4` : ""}
+    `, ...params);
   },
 
-  findHypeAlerts(latestDate: Date) {
+  findHypeAlerts(latestDate: Date, assetClass?: "EQUITY" | "CRYPTO") {
     const twentyDaysAgo = new Date(latestDate);
     twentyDaysAgo.setDate(twentyDaysAgo.getDate() - 20);
-    return prisma.$queryRaw<
+    const params: (Date | string)[] = [twentyDaysAgo, latestDate];
+    if (assetClass) params.push(assetClass);
+    return prisma.$queryRawUnsafe<
       { ticker: string; name: string; sector: string; close: number; prev_close: number | null; volume: bigint; avg_volume: bigint; rsi14: number | null }[]
-    >`
+    >(`
       SELECT
         s.ticker, s.name, s.sector, sp_latest.close,
         sp_prev.close AS prev_close, sp_latest.volume, avg.avg_volume, si.rsi14
@@ -617,11 +622,11 @@ export const stockRepository = {
       ) sp_prev ON true
       JOIN (
         SELECT "stockId", AVG(volume)::bigint AS avg_volume
-        FROM "StockPrice" WHERE date >= ${twentyDaysAgo}
+        FROM "StockPrice" WHERE date >= $1
         GROUP BY "stockId"
       ) avg ON avg."stockId" = s.id
-      WHERE si.interval = '1d' AND si.date = ${latestDate} AND s."isActive" = true AND si.rsi14 > 70
-    `;
+      WHERE si.interval = '1d' AND si.date = $2 AND s."isActive" = true AND si.rsi14 > 70${assetClass ? ` AND s."assetClass" = $3` : ""}
+    `, ...params);
   },
 
   // ── StockFundamental reads ──

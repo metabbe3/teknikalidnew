@@ -169,11 +169,12 @@ export const stockMarketService = {
   },
 
   async getStockList(sector?: string): Promise<StockListRow[]> {
-    const cacheKey = `stock-list:${sector ?? "all"}`;
+    const cacheKey = `stock-list:equity:${sector ?? "all"}`;
     const cached = stockCache.get(cacheKey);
     if (cached) return cached as StockListRow[];
 
-    const stocks = await stockRepository.findActiveStocksWithPrices(sector ? { sector } : undefined);
+    // ponytail: /stocks is IDX-only; crypto has its own getCryptoList(). Keeps the two asset classes separated.
+    const stocks = await stockRepository.findActiveStocksWithPrices({ assetClass: "EQUITY", ...(sector ? { sector } : {}) });
 
     const result = stocks.map((stock) => {
       const prices = dedupeStalePrices(stock.prices);

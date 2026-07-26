@@ -22,14 +22,21 @@ interface RadarStock {
 
 const INITIAL_SHOW = 5;
 
-export function BottomFishingRadar() {
+export function BottomFishingRadar({
+  assetClass,
+  linkBase = "/stocks",
+}: {
+  assetClass?: "EQUITY" | "CRYPTO";
+  linkBase?: string;
+}) {
   const [expanded, setExpanded] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const noun = linkBase === "/crypto" ? "koin" : "saham";
 
   const { data: stocks = [], isLoading, isError } = useQuery<RadarStock[]>({
-    queryKey: ["radar"],
+    queryKey: ["radar", assetClass ?? "all"],
     queryFn: async () => {
-      const res = await fetch("/api/stocks/radar");
+      const res = await fetch(`/api/stocks/radar${assetClass ? `?assetClass=${assetClass}` : ""}`);
       if (!res.ok) throw new Error("Failed to fetch radar");
       const data = await res.json();
       return data.data ?? [];
@@ -55,12 +62,12 @@ export function BottomFishingRadar() {
             </div>
             <div>
               <h3 className="text-base font-bold text-text-primary">Radar Pantulan</h3>
-              <p className="text-[10px] text-text-tertiary">Saham memasuki area oversold — tunggu konfirmasi reversal</p>
+              <p className="text-[10px] text-text-tertiary">{noun === "koin" ? "Koin" : "Saham"} memasuki area oversold — tunggu konfirmasi reversal</p>
             </div>
           </div>
           {!isLoading && stocks.length > 0 && (
             <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-600 border border-blue-500/20 tabular-nums">
-              {stocks.length} saham
+              {stocks.length} {noun}
             </span>
           )}
         </div>
@@ -100,13 +107,13 @@ export function BottomFishingRadar() {
               </div>
             ) : stocks.length === 0 ? (
               <div className="py-8 text-center">
-                <p className="text-xs text-text-tertiary">Tidak ada saham dalam kondisi oversold saat ini.</p>
+                <p className="text-xs text-text-tertiary">Tidak ada {noun} dalam kondisi oversold saat ini.</p>
               </div>
             ) : (
               visibleStocks.map((stock) => (
                 <Link
                   key={stock.ticker}
-                  href={`/stocks/${stock.ticker}`}
+                  href={`${linkBase}/${stock.ticker}`}
                   className="block rounded-lg border border-border/40 p-3 hover:bg-bg-hover hover:border-blue-200/50 hover:-translate-y-px transition-all duration-200 group"
                 >
                   <div className="flex items-center justify-between">

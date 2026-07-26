@@ -7,12 +7,12 @@ export const screenerAnalysisService = {
   async screenerQuery(preset: string, assetClass: "EQUITY" | "CRYPTO" = "EQUITY") {
     if (!VALID_PRESETS.has(preset)) return { error: "Invalid preset" };
 
-    const latestDateRow = await stockRepository.getLatestIndicatorDate();
+    const latestDateRow = await stockRepository.getLatestIndicatorDate(assetClass);
     if (!latestDateRow) return [];
     const latestDate = latestDateRow.date;
 
     if (preset === "volume_spike") {
-      const rows = await stockRepository.findVolumeSpikes(latestDate, VOLUME_SPIKE_MULTIPLIER);
+      const rows = await stockRepository.findVolumeSpikes(latestDate, VOLUME_SPIKE_MULTIPLIER, assetClass);
       return rows.map((r) => ({
         ticker: r.ticker, name: r.name, sector: r.sector,
         close: Number(r.close),
@@ -26,7 +26,7 @@ export const screenerAnalysisService = {
     }
 
     if (preset === "volume_spike_low") {
-      const rows = await stockRepository.findVolumeSpikes(latestDate, VOLUME_SPIKE_MULTIPLIER);
+      const rows = await stockRepository.findVolumeSpikes(latestDate, VOLUME_SPIKE_MULTIPLIER, assetClass);
       return rows
         .filter((r) => {
           const changePct = r.prev_close ? ((Number(r.close) - Number(r.prev_close)) / Number(r.prev_close)) : 0;
@@ -45,7 +45,7 @@ export const screenerAnalysisService = {
     }
 
     if (preset === "hype_alert") {
-      const rows = await stockRepository.findHypeAlerts(latestDate);
+      const rows = await stockRepository.findHypeAlerts(latestDate, assetClass);
       return rows
         .filter((r) => {
           const vol = Number(r.volume);
@@ -161,7 +161,7 @@ export const screenerAnalysisService = {
     return stocks;
   },
 
-  async getBottomFishingRadar(): Promise<{
+  async getBottomFishingRadar(assetClass?: "EQUITY" | "CRYPTO"): Promise<{
     ticker: string;
     name: string;
     sector: string;
@@ -175,7 +175,7 @@ export const screenerAnalysisService = {
     hasVolumeSpike: boolean;
     upsideToSma20: number | null;
   }[]> {
-    const stocks = await stockRepository.findOversoldStocks();
+    const stocks = await stockRepository.findOversoldStocks(assetClass);
 
     // Intermediate type carrying stockId for avg volume lookup
     type Intermediate = {
@@ -301,7 +301,7 @@ export const screenerAnalysisService = {
     sortOrder?: string;
     assetClass?: "EQUITY" | "CRYPTO";
   }) {
-    const latestDateRow = await stockRepository.getLatestIndicatorDate();
+    const latestDateRow = await stockRepository.getLatestIndicatorDate(filters.assetClass);
     if (!latestDateRow) return [];
 
     const latestDate = latestDateRow.date;

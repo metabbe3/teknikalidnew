@@ -155,7 +155,7 @@ export default async function StocksPage() {
           {/* Quick discovery pills → screener tab */}
           <div className="mt-6 flex flex-wrap gap-2">
             {[
-              { label: "Sinyal Bullish", href: "/stocks?view=screener&tab=swing-trade&preset=bullish_signal" },
+              { label: "Sinyal Bullish", href: "/stocks?view=screener&tab=swing-trade&preset=macd_bullish" },
               { label: "Oversold (RSI<30)", href: "/stocks?view=screener&tab=bottom-fishing&preset=rsi_oversold" },
               { label: "Golden Cross", href: "/stocks?view=screener&tab=swing-trade&preset=golden_cross" },
               { label: "Volume Spike", href: "/stocks?view=screener&tab=bottom-fishing&preset=volume_spike_low" },
@@ -182,7 +182,7 @@ export default async function StocksPage() {
             description="Cari, saring per sektor, urutkan 900+ saham — atau gunakan Screener untuk filter sinyal teknikal."
           />
           <Suspense fallback={<div className="p-8 text-center text-text-secondary">Memuat…</div>}>
-            <SahamView stocks={rows} sectors={sectors} />
+            <SahamView stocks={rows} sectors={sectors} assetClass="EQUITY" linkBase="/stocks" />
           </Suspense>
         </section>
       </div>

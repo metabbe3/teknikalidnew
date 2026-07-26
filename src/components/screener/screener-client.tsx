@@ -25,7 +25,7 @@ import { ResultsHeader, ResultsTable, ResultsCards } from "./screener-results";
 
 // ── Main Page Component ──
 
-function ScreenerPageContent({ assetClass }: { assetClass?: "EQUITY" | "CRYPTO" }) {
+function ScreenerPageContent({ assetClass, linkBase = "/stocks" }: { assetClass?: "EQUITY" | "CRYPTO"; linkBase?: string }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -208,7 +208,7 @@ function ScreenerPageContent({ assetClass }: { assetClass?: "EQUITY" | "CRYPTO" 
         {/* Radar (bottom fishing only) — below preset cards */}
         {showRadar && (
           <section>
-            <BottomFishingRadar />
+            <BottomFishingRadar assetClass={assetClass} linkBase={linkBase} />
           </section>
         )}
 
@@ -303,10 +303,10 @@ function ScreenerPageSkeleton() {
   );
 }
 
-export default function ScreenerClient({ assetClass }: { assetClass?: "EQUITY" | "CRYPTO" }) {
+export default function ScreenerClient({ assetClass, linkBase }: { assetClass?: "EQUITY" | "CRYPTO"; linkBase?: string }) {
   return (
     <Suspense fallback={<ScreenerPageSkeleton />}>
-      <ScreenerPageContent assetClass={assetClass} />
+      <ScreenerPageContent assetClass={assetClass} linkBase={linkBase} />
     </Suspense>
   );
 }

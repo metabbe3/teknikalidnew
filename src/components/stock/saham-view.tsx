@@ -57,7 +57,7 @@ export function SahamView({
 
       {isScreener ? (
         <Suspense fallback={<div className="p-8 text-center text-text-secondary">Memuat screener…</div>}>
-          <ScreenerClient assetClass={assetClass} />
+          <ScreenerClient assetClass={assetClass} linkBase={linkBase} />
         </Suspense>
       ) : (
         <StockTable stocks={stocks} sectors={sectors} linkBase={linkBase} />
