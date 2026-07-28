@@ -78,7 +78,7 @@ export default function RegisterPage() {
           <div className="w-full max-w-sm space-y-6">
             <div className="lg:hidden">
               <Link href="/" className="font-serif text-xl font-semibold text-text-primary">TeknikalID</Link>
-              <p className="text-sm text-text-secondary">Analisa teknikal saham IDX</p>
+              <p className="text-sm text-text-secondary">Analisa teknikal untuk trader Indonesia</p>
             </div>
 
             <div>

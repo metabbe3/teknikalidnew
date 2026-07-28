@@ -23,10 +23,11 @@ export default function PrivacyPage() {
       <section className="space-y-2">
         <h2 className="text-lg font-semibold text-text-primary">Analytics</h2>
         <p>
-          We use Plausible Analytics, a privacy-friendly, cookie-free analytics service.
-          Plausible does not use cookies, does not collect personal data, and is fully compliant
-          with GDPR, CCPA, and PECB. We collect only aggregate metrics: page views, referral
-          source, country (based on IP, which is never stored), and device type.
+          We use first-party, privacy-friendly analytics built in-house. We do not use cookies,
+          third-party tracking services, or advertising networks. We collect only aggregate
+          metrics server-side: page views, share-button clicks, referral source, approximate
+          region (derived from IP, which is not retained), and device type. No analytics data is
+          ever shared with third-party vendors.
         </p>
       </section>
 

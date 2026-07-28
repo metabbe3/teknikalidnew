@@ -128,7 +128,7 @@ export function ResultsHeader({
 
 // ── Results Table ──
 
-export function ResultsTable({ stocks, watchlistTickers, onToggleWatchlist }: { stocks: ScreenerStock[]; watchlistTickers: Set<string>; onToggleWatchlist: (ticker: string) => void }) {
+export function ResultsTable({ stocks, watchlistTickers, onToggleWatchlist, linkBase = "/stocks" }: { stocks: ScreenerStock[]; watchlistTickers: Set<string>; onToggleWatchlist: (ticker: string) => void; linkBase?: string }) {
   const { data: session } = useSession();
   const isAuthenticated = !!session?.user;
   const router = useRouter();
@@ -184,11 +184,11 @@ export function ResultsTable({ stocks, watchlistTickers, onToggleWatchlist }: { 
                   height: `${virtualRow.size}px`,
                   transform: `translateY(${virtualRow.start}px)`,
                 }}
-                onClick={() => router.push(`/stocks/${stock.ticker}`)}
+                onClick={() => router.push(`${linkBase}/${stock.ticker}`)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
-                    router.push(`/stocks/${stock.ticker}`);
+                    router.push(`${linkBase}/${stock.ticker}`);
                   }
                 }}
               >
@@ -210,7 +210,7 @@ export function ResultsTable({ stocks, watchlistTickers, onToggleWatchlist }: { 
                   </button>
                 </div>
                 <div className="px-4 py-3">
-                  <Link href={`/stocks/${stock.ticker}`} className="font-semibold text-accent hover:underline" onClick={(e) => e.stopPropagation()}>
+                  <Link href={`${linkBase}/${stock.ticker}`} className="font-semibold text-accent hover:underline" onClick={(e) => e.stopPropagation()}>
                     {stripJk(stock.ticker)}
                   </Link>
                 </div>
@@ -247,7 +247,7 @@ export function ResultsTable({ stocks, watchlistTickers, onToggleWatchlist }: { 
 
 // ── Results Cards ──
 
-export function ResultsCards({ stocks, styleDef, watchlistTickers, onToggleWatchlist }: { stocks: ScreenerStock[]; styleDef: TradingStyleDef; watchlistTickers: Set<string>; onToggleWatchlist: (ticker: string) => void }) {
+export function ResultsCards({ stocks, styleDef, watchlistTickers, onToggleWatchlist, linkBase = "/stocks" }: { stocks: ScreenerStock[]; styleDef: TradingStyleDef; watchlistTickers: Set<string>; onToggleWatchlist: (ticker: string) => void; linkBase?: string }) {
   const { data: session } = useSession();
   const isAuthenticated = !!session?.user;
 
@@ -285,7 +285,7 @@ export function ResultsCards({ stocks, styleDef, watchlistTickers, onToggleWatch
               <BookmarkIcon filled={inWatchlist} className="w-4 h-4" />
             </button>
             <Link
-              href={`/stocks/${stock.ticker}`}
+              href={`${linkBase}/${stock.ticker}`}
               className="block"
             >
             <div className="flex items-start justify-between pr-6">

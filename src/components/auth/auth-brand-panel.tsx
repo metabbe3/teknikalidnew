@@ -2,7 +2,7 @@ import { CandlestickChart, Gauge, ScanLine, Target, ShieldCheck } from "lucide-r
 
 const VALUE_BULLETS = [
   { icon: Gauge, title: "Sinyal otomatis", desc: "12 indikator teknikal dihitung otomatis jadi satu skor sinyal." },
-  { icon: ScanLine, title: "Screener 956+ saham", desc: "Golden cross, oversold, volume spike — tersaring dalam detik." },
+  { icon: ScanLine, title: "Screener saham + crypto", desc: "Golden cross, oversold, volume spike — tersaring dalam detik." },
   { icon: Target, title: "Trading plan siap pakai", desc: "Entry, stop loss, dan take profit dari pivot & ATR." },
   { icon: CandlestickChart, title: "Paper trading gratis", desc: "Latihan trading tanpa risiko uang asli." },
 ];
@@ -29,8 +29,8 @@ export function AuthBrandPanel() {
           TeknikalID
         </div>
         <h2 className="mt-5 font-serif text-3xl sm:text-4xl font-semibold leading-[1.08] tracking-tight">
-          Analisa teknikal saham IDX yang bikin trading makin{" "}
-          <span className="text-bullish">tajam.</span>
+          Baca chart, bukan{" "}
+          <span className="text-bullish">tebakan</span> — untuk saham, crypto, dan lebih.
         </h2>
         <p className="mt-3 text-sm text-white/70 max-w-md leading-relaxed">
           Ribuan trader Indonesia pakai TeknikalID untuk menemukan peluang dan menghindari jebakan — tanpa nebak-nebak.

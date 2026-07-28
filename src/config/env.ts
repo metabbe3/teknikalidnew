@@ -60,10 +60,6 @@ const envSchema = z.object({
     (v) => (typeof v === "string" ? parseInt(v, 10) : v),
     z.number().int().positive(),
   ).default(30000),
-
-  // Plausible Analytics (public - exposed to client)
-  NEXT_PUBLIC_PLAUSIBLE_DOMAIN: z.string().optional(),
-  NEXT_PUBLIC_PLAUSIBLE_SRC: z.string().url().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

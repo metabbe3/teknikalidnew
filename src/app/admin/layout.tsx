@@ -44,6 +44,7 @@ import {
   Bot,
   Radio,
   Smartphone,
+  Share2,
 } from "lucide-react";
 import { AdminStatusIndicator } from "@/components/admin/admin-status-indicator";
 
@@ -67,6 +68,7 @@ const sidebarNav: NavGroup[] = [
       { label: "Overview", href: "/admin", icon: Activity },
       { label: "Error Hub", href: "/admin/errors", icon: AlertTriangle },
       { label: "Data Pipelines", href: "/admin/pipelines", icon: Database },
+      { label: "Share Tracking", href: "/admin/shares", icon: Share2 },
     ],
   },
   {
@@ -98,6 +100,7 @@ const PAGE_NAMES: Record<string, string> = {
   "/admin": "Dashboard",
   "/admin/errors": "Error Hub",
   "/admin/pipelines": "Data Pipelines",
+  "/admin/shares": "Share Tracking",
   "/admin/ticker-manager": "Ticker Manager",
   "/admin/articles": "Articles",
   "/admin/articles/generate": "Generate Article",

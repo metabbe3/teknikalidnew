@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import Script from "next/script";
 import { Plus_Jakarta_Sans, Geist_Mono, Newsreader } from "next/font/google";
 import "./globals.css";
 import { SITE_URL } from "@/lib/constants";
@@ -39,9 +38,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: { default: "Analisa Teknikal Saham BEI Terlengkap — Chart Real-Time & Screener", template: "%s | TeknikalID" },
+  title: { default: "Analisa Teknikal Saham, Crypto & Chart Real-Time — TeknikalID", template: "%s | TeknikalID" },
   description:
-    "Platform analisa teknikal saham BEI terlengkap. Chart real-time, indikator RSI, MACD, Bollinger Bands, SMA/EMA, screener gratis, dan komunitas trader Indonesia. Analisa 956+ saham IDX.",
+    "Platform analisa teknikal untuk trader Indonesia — saham IDX, crypto, dan aset lainnya. Chart real-time, indikator RSI, MACD, Bollinger Bands, SMA/EMA, screener gratis, dan komunitas trader Indonesia. Analisa 956+ saham IDX.",
   keywords: [
     "analisa teknikal",
     "analisa saham",
@@ -85,14 +84,14 @@ export const metadata: Metadata = {
     locale: "id_ID",
     url: SITE_URL,
     siteName: "TeknikalID",
-    title: "TeknikalID — Analisa Teknikal Saham BEI",
-    description: "Platform analisa teknikal saham BEI terlengkap. Chart real-time, indikator RSI, MACD, dan screener untuk 956+ saham IDX.",
+    title: "TeknikalID — Analisa Teknikal Saham & Crypto",
+    description: "Platform analisa teknikal untuk trader Indonesia — saham IDX, crypto, dan aset lainnya. Chart real-time, indikator RSI/MACD, dan screener untuk 956+ saham IDX.",
     images: [{ url: `${SITE_URL}/api/og?title=TeknikalID&type=berita`, width: 1200, height: 630, alt: "TeknikalID" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "TeknikalID — Analisa Teknikal Saham BEI",
-    description: "Platform analisa teknikal saham BEI terlengkap. Chart real-time, indikator RSI, MACD, dan screener untuk 956+ saham IDX.",
+    title: "TeknikalID — Analisa Teknikal Saham & Crypto",
+    description: "Platform analisa teknikal untuk trader Indonesia — saham IDX, crypto, dan aset lainnya. Chart real-time, indikator RSI/MACD, dan screener untuk 956+ saham IDX.",
   },
   icons: { icon: "/favicon.ico", apple: "/apple-touch-icon.png" },
 };
@@ -102,8 +101,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const plausibleDomain = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN;
-
   return (
     <html lang="id" className={cn("h-full", "antialiased", jakarta.variable, geistMono.variable, newsreader.variable, "font-sans")}>
       <body className="min-h-full flex flex-col bg-bg-primary text-text-primary">
@@ -124,7 +121,7 @@ export default function RootLayout({
                   name: "TeknikalID",
                   url: SITE_URL,
                   logo: `${SITE_URL}/logo.png`,
-                  description: "Platform analisa teknikal saham BEI terlengkap dengan chart interaktif, indikator RSI MACD Bollinger Bands, screener, dan komunitas trader Indonesia.",
+                  description: "Analisa teknikal untuk trader Indonesia — saham IDX, crypto, dan aset lainnya. Chart interaktif, indikator RSI MACD Bollinger Bands, screener, dan komunitas trader Indonesia.",
                 },
                 {
                   "@type": "WebSite",
@@ -152,13 +149,6 @@ export default function RootLayout({
             </SocketProvider>
           </AuthProvider>
         </QueryProvider>
-        {plausibleDomain && (
-          <Script
-            defer
-            data-domain={plausibleDomain}
-            src={process.env.NEXT_PUBLIC_PLAUSIBLE_SRC || "https://plausible.io/js/script.js"}
-          />
-        )}
       </body>
     </html>
   );

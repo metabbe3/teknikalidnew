@@ -303,6 +303,29 @@ export const stockRepository = {
     });
   },
 
+  // ponytail: single-row reads for the dated indicator archive (/stocks/[ticker]/indikator/[date]).
+  // History is per-date (StockIndicator @@unique [stockId,date,interval]) — no overwrite.
+  // Range query (not exact equality) to sidestep @db.Date timezone edge cases.
+  findIndicatorByStockAndDate(stockId: number, date: Date, interval: string = INTERVAL.DAY) {
+    const start = new Date(date);
+    start.setUTCHours(0, 0, 0, 0);
+    const end = new Date(start);
+    end.setUTCDate(start.getUTCDate() + 1);
+    return prisma.stockIndicator.findFirst({
+      where: { stockId, interval, date: { gte: start, lt: end } },
+    });
+  },
+
+  findPriceByStockAndDate(stockId: number, date: Date) {
+    const start = new Date(date);
+    start.setUTCHours(0, 0, 0, 0);
+    const end = new Date(start);
+    end.setUTCDate(start.getUTCDate() + 1);
+    return prisma.stockPrice.findFirst({
+      where: { stockId, date: { gte: start, lt: end } },
+    });
+  },
+
   getLatestIndicatorDate(assetClass?: "EQUITY" | "CRYPTO") {
     return prisma.stockIndicator.findFirst({
       where: { interval: INTERVAL.DAY, ...(assetClass ? { stock: { assetClass } } : {}) },

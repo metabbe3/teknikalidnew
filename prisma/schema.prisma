@@ -288,6 +288,7 @@ model User {
   questionFeedback   QuestionFeedback[]
   payments           Payment[]
   pageViews          PageView[]
+  shareEvents        ShareEvent[]
   savedScreeners     SavedScreener[]
   screenerAlerts     ScreenerAlert[]
   theses             StockThesis[]
@@ -1027,6 +1028,27 @@ model PageView {
   @@index([path])
   @@index([createdAt])
   @@index([path, createdAt(sort: Desc)])
+  @@index([isBot])
+}
+
+// Share-button clicks (WhatsApp/X/Telegram/Copy/Story), first-party DB log.
+// target/context are short enum-like strings.
+model ShareEvent {
+  id        Int      @id @default(autoincrement())
+  target    String   @db.VarChar(16) // whatsapp | x | telegram | copy | story
+  context   String   @db.VarChar(16) // asset | saham | berita | akademi | community | other
+  path      String   @db.VarChar(255)
+  userId    String?
+  ip        String?  @db.VarChar(45)
+  userAgent String?  @db.VarChar(500)
+  isBot     Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([target, createdAt(sort: Desc)])
+  @@index([context, createdAt])
   @@index([isBot])
 }
 

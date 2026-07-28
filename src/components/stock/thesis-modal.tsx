@@ -6,12 +6,6 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useTheses, useUpsertThesis, useDeleteThesis, type ThesisBias } from "@/hooks/use-thesis";
 
-function trackCryptoThesis() {
-  if (typeof window !== "undefined") {
-    (window as unknown as { plausible?: (e: string) => void }).plausible?.("crypto_thesis_submit");
-  }
-}
-
 const BIASES: { value: ThesisBias; label: string; active: string }[] = [
   { value: "BULLISH", label: "Bullish", active: "bg-bullish text-white border-bullish" },
   { value: "BEARISH", label: "Bearish", active: "bg-bearish text-white border-bearish" },
@@ -41,7 +35,6 @@ function ThesisForm({ ticker, onClose }: { ticker: string; onClose: () => void }
         stopLoss: stop ? Number(stop) : null,
         rationale: rationale.trim() || undefined,
       });
-      if (!ticker.endsWith(".JK")) trackCryptoThesis();
       onClose();
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Gagal menyimpan");

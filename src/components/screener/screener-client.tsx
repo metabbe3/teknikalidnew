@@ -104,6 +104,7 @@ function ScreenerPageContent({ assetClass, linkBase = "/stocks" }: { assetClass?
     setActivePreset(null);
     setSliderValues({});
     const params = new URLSearchParams();
+    params.set("view", "screener");
     params.set("tab", style);
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
   }, [router, pathname]);
@@ -112,6 +113,7 @@ function ScreenerPageContent({ assetClass, linkBase = "/stocks" }: { assetClass?
     setActivePreset((prev) => prev === presetKey ? null : presetKey);
     setSliderValues({});
     const params = new URLSearchParams();
+    params.set("view", "screener");
     params.set("tab", activeStyle);
     if (presetKey !== "radar") {
       params.set("preset", presetKey);
@@ -267,8 +269,8 @@ function ScreenerPageContent({ assetClass, linkBase = "/stocks" }: { assetClass?
               </div>
             ) : (
               viewMode === "table"
-                ? <ResultsTable stocks={stocks} watchlistTickers={watchlistTickers} onToggleWatchlist={handleToggleWatchlist} />
-                : <ResultsCards stocks={stocks} styleDef={styleDef} watchlistTickers={watchlistTickers} onToggleWatchlist={handleToggleWatchlist} />
+                ? <ResultsTable stocks={stocks} watchlistTickers={watchlistTickers} onToggleWatchlist={handleToggleWatchlist} linkBase={linkBase} />
+                : <ResultsCards stocks={stocks} styleDef={styleDef} watchlistTickers={watchlistTickers} onToggleWatchlist={handleToggleWatchlist} linkBase={linkBase} />
             )}
           </section>
         )}

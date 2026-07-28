@@ -204,6 +204,13 @@ export const schemas = {
     referrer: z.union([z.string().url(), z.literal("")]).optional(),
   }),
 
+  // track/share - POST body (share-button click beacon)
+  share: z.object({
+    target: z.string().min(1).max(16), // whatsapp | x | telegram | copy | story
+    context: z.string().min(1).max(16), // asset | saham | berita | akademi | community | other
+    path: z.string().min(1).max(255),
+  }),
+
   // admin/eod-logs - GET query
   eodLogs: z.object({
     from: z.string().optional(),

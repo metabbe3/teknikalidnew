@@ -36,7 +36,7 @@ const VALUES = [
   {
     icon: Heart,
     title: "Untuk Trader Indonesia",
-    desc: "Dibuat khusus untuk investor dan trader Bursa Efek Indonesia. Konten dalam Bahasa Indonesia, data IDX lengkap.",
+    desc: "Dibuat untuk trader Indonesia. Analisa teknikal untuk saham IDX, crypto, dan aset lainnya — konten dalam Bahasa Indonesia.",
   },
 ];
 
@@ -46,7 +46,7 @@ export default function AboutPage() {
       <PageHero
         eyebrow="Tentang Kami"
         title="Tentang TeknikalID"
-        description="Platform analisa teknikal saham BEI yang gratis dan mudah digunakan. Chart interaktif, indikator lengkap, screener, paper trading, dan komunitas untuk trader Indonesia."
+        description="Analisa teknikal untuk trader Indonesia — saham IDX, crypto, dan aset lainnya. Gratis dan mudah digunakan: chart interaktif, indikator lengkap, screener, paper trading, dan komunitas."
       />
 
       <div className="max-w-3xl mx-auto px-4 py-10 space-y-12">

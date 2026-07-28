@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X, Link2, Check } from "lucide-react";
 import { SITE_URL } from "@/lib/constants";
+import { trackShare } from "@/lib/track-share";
 
 const SHARE_TARGETS = [
   {
@@ -49,10 +50,14 @@ export function ShareModal({
   onClose: () => void;
 }) {
   const [copied, setCopied] = useState(false);
-  const postUrl = `${SITE_URL}/community/${postId}`;
+  // Real route is /community/post/[id]. Old shares used /community/<id> (404).
+  const postUrl = `${SITE_URL}/community/post/${postId}`;
   const shareText = "Cek post ini di TeknikalID";
 
+  const path = `/community/post/${postId}`;
+
   const handleCopy = async () => {
+    trackShare("copy", "community", path);
     try {
       await navigator.clipboard.writeText(postUrl);
       setCopied(true);
@@ -93,6 +98,7 @@ export function ShareModal({
               <button
                 key={target.name}
                 onClick={() => {
+                  trackShare(target.name.toLowerCase().split(" ")[0], "community", path);
                   window.open(target.getUrl(postUrl, shareText), "_blank", "noopener,noreferrer,width=600,height=400");
                 }}
                 className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-50 transition-colors group"

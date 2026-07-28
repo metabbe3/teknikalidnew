@@ -33,17 +33,24 @@ export async function isBlocked(ip: string | null | undefined): Promise<boolean>
   return cache?.has(ip) ?? false;
 }
 
-/** Persist a block (survives restart) + add to the in-memory cache immediately. */
+/**
+ * Persist a block (survives restart) + add to the in-memory cache immediately.
+ * Omit `expiresAt` for a permanent block (confirmed bots / manual bans); pass a
+ * Date for a self-expiring block (scrape-escalation cooldowns). `refresh()` only
+ * loads rows where expiresAt IS NULL OR expiresAt > now, so expired rows drop out
+ * of the cache within the 60s TTL.
+ */
 export async function block(
   ip: string,
   reason: string,
   bannedUserId?: string,
+  expiresAt?: Date,
 ): Promise<void> {
   const { prisma } = await import("@/lib/prisma");
   await prisma.blockedIp.upsert({
     where: { ip },
-    create: { ip, reason, bannedUserId },
-    update: { reason, bannedUserId }, // re-block refreshes the reason
+    create: { ip, reason, bannedUserId, expiresAt },
+    update: { reason, bannedUserId, expiresAt }, // re-block refreshes reason + expiry
   });
   cache?.add(ip);
 }

@@ -28,6 +28,7 @@ import { IndicatorTooltip } from "@/components/ui/indicator-tooltip";
 import { technicalAnalysisService, computeSignalScore } from "@/domains/stock/technical-analysis.service";
 import { stockRepository } from "@/domains/stock/stock.repository";
 import { calculatePivotPoints } from "@/lib/indicators";
+import { summarizeVerdict, toSnapshot } from "@/lib/verdict-prose";
 import { subDays } from "date-fns";
 import { IDX40, SITE_URL, isCryptoTicker } from "@/lib/constants";
 import { SECTORS, getSectorSlug, sectorToBahasa } from "@/lib/sectors";
@@ -184,6 +185,12 @@ export default async function StockDetailPage({
     if (bearish) return "Bearish" as const;
     return "Neutral" as const;
   })();
+
+  // Dynamic per-stock verdict prose (SEO: replaces the static 3-sentence fallback
+  // with unique copy per ticker, derived from which indicators actually agree).
+  const verdictProse = indicators
+    ? summarizeVerdict(toSnapshot(indicators), outlook, close)
+    : undefined;
 
   // Find sector peer tickers for related articles
   const sectorPeers = stock.sector
@@ -438,6 +445,7 @@ export default async function StockDetailPage({
         rsi14={isAuthed ? indicators?.rsi14 ?? null : null}
         isGorengan={indicators?.isGorengan ?? false}
         showHypeAlert={showHypeAlert}
+        summary={verdictProse}
       />
 
       {/* Price header (light broadsheet) */}

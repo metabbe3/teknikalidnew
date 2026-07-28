@@ -10,6 +10,8 @@ export interface SignalVerdictProps {
   rsi14: number | null;
   isGorengan?: boolean | null;
   showHypeAlert?: boolean;
+  /** Dynamic per-stock prose (summarizeVerdict). Falls back to static tone summary. */
+  summary?: string;
 }
 
 const TONE: Record<SignalVerdictProps["outlook"], { color: string; summary: string }> = {
@@ -22,9 +24,10 @@ const TONE: Record<SignalVerdictProps["outlook"], { color: string; summary: stri
  * SignalVerdict — the bold, plain-language verdict that leads the stock page.
  * Answers the beginner's "should I buy/hold/sell?" before the data dump.
  */
-export function SignalVerdict({ ticker, signalLabel, signalScore, outlook, rsi14, isGorengan, showHypeAlert }: SignalVerdictProps) {
+export function SignalVerdict({ ticker, signalLabel, signalScore, outlook, rsi14, isGorengan, showHypeAlert, summary }: SignalVerdictProps) {
   const tone = TONE[outlook];
   const verdictLabel = signalLabel ?? outlook;
+  const verdictSummary = summary ?? tone.summary;
   const rsiHint =
     rsi14 !== null ? (rsi14 >= 70 ? "RSI overbought" : rsi14 <= 30 ? "RSI oversold" : null) : null;
 
@@ -45,7 +48,7 @@ export function SignalVerdict({ ticker, signalLabel, signalScore, outlook, rsi14
 
           {/* Plain-language summary */}
           <div className="flex-1 min-w-0">
-            <p className="text-sm text-text-secondary leading-relaxed">{tone.summary}</p>
+            <p className="text-sm text-text-secondary leading-relaxed">{verdictSummary}</p>
             <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] font-mono">
               <span className="text-text-tertiary">{stripJk(ticker)}</span>
               {rsiHint && (

@@ -11,6 +11,7 @@ import {
   Wifi, MapPin, Target, Hash, ExternalLink,
 } from "lucide-react";
 import { formatVolume } from "@/lib/utils";
+import { wibDayStart, wibNextDayStart } from "@/lib/datetime-wib";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -117,8 +118,10 @@ export function AnalyticsTab() {
   const [sourceFilter, setSourceFilter] = useState<string>("");
 
   const buildUrl = useCallback(() => {
-    const end = new Date();
-    const start = new Date(end.getTime() - rangeDays * 24 * 60 * 60 * 1000);
+    // Calendar-day WIB bounds: Today = today's WIB day; N Days = last N WIB days inclusive.
+    const now = new Date();
+    const end = wibNextDayStart(now);
+    const start = wibDayStart(new Date(now.getTime() - (rangeDays - 1) * 24 * 60 * 60 * 1000));
     const params = new URLSearchParams({
       start: start.toISOString(),
       end: end.toISOString(),

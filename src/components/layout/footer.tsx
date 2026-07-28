@@ -28,10 +28,10 @@ export function Footer() {
               <span className="text-sm font-bold text-text-primary">TeknikalID</span>
             </div>
             <p className="text-xs text-text-secondary max-w-xs leading-relaxed">
-              Platform analisa teknikal saham BEI. Data bersumber dari Yahoo Finance dengan jeda ~5-10 menit. Bukan rekomendasi investasi.
+              Analisa teknikal untuk trader Indonesia — saham, crypto, dan aset lainnya. Data bersumber dari Yahoo Finance dengan jeda ~5-10 menit. Bukan rekomendasi investasi.
             </p>
             <div className="flex items-center gap-3 pt-1">
-              <span className="text-[10px] text-text-tertiary font-mono uppercase tracking-wider">Built for IDX traders</span>
+              <span className="text-[10px] text-text-tertiary font-mono uppercase tracking-wider">Bahasa chart untuk trader Indonesia</span>
             </div>
           </div>
 

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Check, Download, Link2, Share2 } from "lucide-react";
+import { trackShare } from "@/lib/track-share";
 
 interface ShareButtonsProps {
   url: string;
@@ -39,13 +40,33 @@ function TelegramIcon() {
   );
 }
 
+function pathnameOf(url: string): string {
+  try {
+    return new URL(url).pathname;
+  } catch {
+    return url;
+  }
+}
+
+function shareContext(url: string): string {
+  if (url.includes("/stocks/") || url.includes("/crypto/")) return "asset";
+  if (url.includes("/saham/")) return "saham";
+  if (url.includes("/berita/")) return "berita";
+  if (url.includes("/akademi/")) return "akademi";
+  if (url.includes("/community/")) return "community";
+  return "other";
+}
+
 export function ShareButtons({ url, title, text, className, imageUrl, storyImageUrl }: ShareButtonsProps) {
   const [copied, setCopied] = useState(false);
   const [storyState, setStoryState] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   const shareText = text ? `${title} — ${text}` : title;
+  const ctx = shareContext(url);
+  const path = pathnameOf(url);
 
   const handleWhatsApp = () => {
+    trackShare("whatsapp", ctx, path);
     window.open(
       `https://wa.me/?text=${encodeURIComponent(shareText + "\n" + url)}`,
       "_blank",
@@ -54,6 +75,7 @@ export function ShareButtons({ url, title, text, className, imageUrl, storyImage
   };
 
   const handleX = () => {
+    trackShare("x", ctx, path);
     window.open(
       `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}`,
       "_blank",
@@ -62,6 +84,7 @@ export function ShareButtons({ url, title, text, className, imageUrl, storyImage
   };
 
   const handleTelegram = () => {
+    trackShare("telegram", ctx, path);
     window.open(
       `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(shareText)}`,
       "_blank",
@@ -70,6 +93,7 @@ export function ShareButtons({ url, title, text, className, imageUrl, storyImage
   };
 
   const handleCopy = async () => {
+    trackShare("copy", ctx, path);
     try {
       await navigator.clipboard.writeText(url);
     } catch {
@@ -87,6 +111,7 @@ export function ShareButtons({ url, title, text, className, imageUrl, storyImage
   const handleStoryShare = async () => {
     const fetchUrl = storyImageUrl || imageUrl;
     if (!fetchUrl || storyState === "loading") return;
+    trackShare("story", ctx, path);
     setStoryState("loading");
 
     try {

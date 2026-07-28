@@ -34,9 +34,9 @@ const RadarPreview = dynamicImport(
 );
 
 export const metadata: Metadata = {
-  title: "Analisa Teknikal Saham BEI Terlengkap — Chart Real-Time & Screener",
+  title: "Analisa Teknikal Saham, Crypto & Chart Real-Time",
   description:
-    "Platform analisa teknikal saham BEI terlengkap. Chart interaktif real-time, indikator RSI MACD Bollinger Bands, screener saham gratis, dan komunitas trader Indonesia. Pantau 956+ saham IDX.",
+    "Platform analisa teknikal untuk trader Indonesia — saham IDX, crypto, dan aset lainnya. Chart interaktif real-time, indikator RSI MACD Bollinger Bands, screener saham gratis, dan komunitas trader Indonesia. Pantau 956+ saham IDX.",
   alternates: { canonical: "/" },
 };
 
@@ -368,20 +368,21 @@ export default async function HomePage() {
               {isClosed ? "Pasar Tutup — Data Sesi Terakhir" : "Pasar Buka — Data Real-time"}
             </div>
             <h1 className="mt-5 font-serif text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.03] text-text-primary">
-              Trading saham IDX
-              <br />
-              <span className="text-bullish">tanpa nebak-nebak.</span>
+              TeknikalID
             </h1>
+            <p className="mt-3 text-xl sm:text-2xl font-semibold tracking-tight text-text-primary">
+              Trading <span className="text-bullish">tanpa nebak-nebak.</span>
+            </p>
             <p className="mt-5 text-base sm:text-lg text-text-secondary max-w-xl leading-relaxed">
-              Chart interaktif, 12 indikator teknikal, sinyal trading otomatis, dan screener untuk{" "}
-              <span className="font-semibold text-text-primary">{totalStocks}+ saham</span> IDX. Lihat peluang bullish &amp; bearish dalam hitungan detik — gratis.
+              Chart profesional, 12 indikator teknikal, dan screener untuk{" "}
+              <span className="font-semibold text-text-primary">{totalStocks}+ saham IDX</span>, crypto, dan (segera) gold. Gratis.
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-3">
               <Link
                 href="/stocks"
                 className="inline-flex items-center gap-2 bg-text-primary text-white px-6 py-3 rounded-xl font-semibold hover:bg-text-primary/90 transition-colors press-scale"
               >
-                Analisa Saham Sekarang
+                Analisa Sekarang
               </Link>
               <Link
                 href="/screener"

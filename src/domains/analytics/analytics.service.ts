@@ -19,6 +19,7 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@/generated/prisma/client";
 import { getApiTrafficSummary, type ApiTrafficSummary } from "@/lib/api-traffic-log";
+import { wibDayKey, wibHour } from "@/lib/datetime-wib";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -27,6 +28,14 @@ export interface AnalyticsFilter {
   endDate: Date;
   pathPattern?: string;
   source?: TrafficSource;
+}
+
+export interface ShareAnalytics {
+  total: number;
+  byTarget: { target: string; count: number }[];
+  byContext: { context: string; count: number }[];
+  daily: { date: string; count: number }[];
+  topPaths: { path: string; count: number }[];
 }
 
 export type TrafficSource =
@@ -563,7 +572,7 @@ export const analyticsService = {
     for (let h = 0; h < 24; h++) hourBuckets[h] = { views: 0, ips: new Set() };
 
     for (const pv of realViews) {
-      const h = pv.createdAt.getHours();
+      const h = wibHour(pv.createdAt);
       hourBuckets[h].views++;
       if (pv.ip) hourBuckets[h].ips.add(pv.ip);
     }
@@ -594,7 +603,7 @@ export const analyticsService = {
       { views: number; ips: Set<string> }
     > = {};
     for (const pv of realViews) {
-      const dateKey = pv.createdAt.toISOString().slice(0, 10);
+      const dateKey = wibDayKey(pv.createdAt);
       if (!dailyMap[dateKey]) dailyMap[dateKey] = { views: 0, ips: new Set() };
       dailyMap[dateKey].views++;
       if (pv.ip) dailyMap[dateKey].ips.add(pv.ip);
@@ -928,6 +937,56 @@ export const analyticsService = {
         previousUnique: prevUnique,
         uniqueChangePct,
       },
+    };
+  },
+
+  /**
+   * Share-button click analytics (first-party, ShareEvent table). Excludes bots.
+   * Daily buckets are WIB (Asia/Jakarta) calendar days. One query + in-memory rollup,
+   * same pattern as getComprehensiveAnalytics.
+   */
+  async getShareAnalytics(
+    filter: { startDate: Date; endDate: Date },
+  ): Promise<ShareAnalytics> {
+    const { startDate, endDate } = filter;
+
+    const events = await prisma.shareEvent.findMany({
+      where: {
+        createdAt: { gte: startDate, lt: endDate },
+        isBot: false,
+      },
+      select: { target: true, context: true, path: true, createdAt: true },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const byTarget = new Map<string, number>();
+    const byContext = new Map<string, number>();
+    const daily = new Map<string, number>();
+    const topPaths = new Map<string, number>();
+
+    for (const e of events) {
+      byTarget.set(e.target, (byTarget.get(e.target) ?? 0) + 1);
+      byContext.set(e.context, (byContext.get(e.context) ?? 0) + 1);
+      const key = wibDayKey(e.createdAt);
+      daily.set(key, (daily.get(key) ?? 0) + 1);
+      topPaths.set(e.path, (topPaths.get(e.path) ?? 0) + 1);
+    }
+
+    const ranked = (m: Map<string, number>) =>
+      [...m.entries()]
+        .map(([k, count]) => ({ k, count }))
+        .sort((a, b) => b.count - a.count);
+
+    return {
+      total: events.length,
+      byTarget: ranked(byTarget).map(({ k, count }) => ({ target: k, count })),
+      byContext: ranked(byContext).map(({ k, count }) => ({ context: k, count })),
+      daily: [...daily.entries()]
+        .sort(([a], [b]) => (a < b ? -1 : 1))
+        .map(([date, count]) => ({ date, count })),
+      topPaths: ranked(topPaths)
+        .slice(0, 10)
+        .map(({ k, count }) => ({ path: k, count })),
     };
   },
 };

@@ -5,8 +5,8 @@ import { isBlocked, block as blockIp } from "@/lib/ip-blocklist";
 import { recordApiRequest } from "@/lib/api-traffic-log";
 
 const cspScriptSrc = process.env.NODE_ENV === "production"
-  ? "script-src 'self' 'unsafe-inline' https://plausible.teknikal.id https://static.cloudflareinsights.com"
-  : "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://plausible.teknikal.id https://static.cloudflareinsights.com";
+  ? "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com"
+  : "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com";
 
 const securityHeaders = {
   "Content-Security-Policy": [
@@ -15,7 +15,7 @@ const securityHeaders = {
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob:",
     "font-src 'self'",
-    "connect-src 'self' ws: wss: https://plausible.teknikal.id",
+    "connect-src 'self' ws: wss:",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
@@ -56,6 +56,15 @@ const STOCK_PAGE_RATE_LIMIT = 180; // req/min/IP — generous for humans/NAT, ca
 const stockPageViolations = new Map<string, { count: number; resetAt: number }>();
 const STOCK_PAGE_VIOLATION_WINDOW = 10 * 60_000; // track repeat offenders over 10 min
 const STOCK_PAGE_BLOCK_WINDOW = 60 * 60_000; // 1h cooldown after 3 violations
+
+// Dev/member scrape whitelist: IPs listed here (anon dev scripts) bypass the /stocks/*
+// IP block. Logged-in users bypass it too (see the gate in proxy()). Comma-split env.
+const WHITELIST_IPS = new Set(
+  (process.env.SCRAPER_WHITELIST_IPS ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean),
+);
 
 const PROTECTED_PREFIXES = ["/watchlist", "/profile"];
 const ADMIN_LOGIN_ROUTE = "/admin/login";
@@ -210,8 +219,14 @@ export async function proxy(request: NextRequest) {
 
   // Blocked-IP gate (DB-backed cache) — banned scrapers + escalated HTML violators.
   const isStockRoute = pathname.startsWith("/stocks/") || pathname.startsWith("/api/stocks/") || pathname.startsWith("/api/screener");
-  if (isStockRoute && await isBlocked(ip)) {
-    return new NextResponse(null, { status: 403 });
+  if (isStockRoute && (await isBlocked(ip))) {
+    // Dev/member whitelist: forgive a blocked IP if it's allowlisted (anon dev scripts)
+    // or the request is authenticated (devs/members). Authed scrapers are still caught
+    // by the pageview route's account-ban; the session revalidates from DB within ~60s.
+    if (!WHITELIST_IPS.has(ip ?? "")) {
+      const session = await auth();
+      if (!session?.user) return new NextResponse(null, { status: 403 });
+    }
   }
 
   // Stricter limit on scrape-prone stock data endpoints (+ IP cooldown for repeat offenders)
@@ -248,7 +263,7 @@ export async function proxy(request: NextRequest) {
       stockPageViolations.set(ip, entry);
       if (entry.count >= 3) {
         blockedIps.set(ip, now + STOCK_PAGE_BLOCK_WINDOW);
-        blockIp(ip, "auto: stock-page scrape escalation").catch(() => {});
+        blockIp(ip, "auto: stock-page scrape escalation", undefined, new Date(now + STOCK_PAGE_BLOCK_WINDOW)).catch(() => {});
       }
       return new NextResponse(null, { status: 429 });
     }

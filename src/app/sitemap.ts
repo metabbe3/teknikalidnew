@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { subDays } from "date-fns";
 import { IDX_STOCKS, IDX40_TICKERS, SITE_URL } from "@/lib/constants";
 import { GLOSSARY_TERMS } from "@/lib/glossary-terms";
 import { SECTORS } from "@/lib/sectors";
@@ -12,6 +13,7 @@ export const revalidate = 3600; // Regenerate hourly
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = SITE_URL;
   const idx40Set = new Set(IDX40_TICKERS);
+  const today = new Date();
 
   // ── Fetch real lastmod dates from the database ──
 
@@ -64,6 +66,39 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     };
   });
 
+  // "Kenapa naik/turun hari ini" pages — deterministic, always-on (no longer 404).
+  const kenapaPages = IDX_STOCKS.filter((stock) => sitemapTickers.has(stock.ticker)).map((stock) => {
+    const sid = tickerToStockId.get(stock.ticker);
+    const realDate = sid ? stockIdToDate.get(sid) : undefined;
+    return {
+      url: `${baseUrl}/saham/${stock.ticker.replace(/\.JK$/, "").toLowerCase()}/kenapa-naik-hari-ini`,
+      lastModified: realDate ?? today,
+      changeFrequency: "daily" as const,
+      priority: idx40Set.has(stock.ticker) ? 0.7 : 0.5,
+    };
+  });
+
+  // Dated indicator archive — IDX40 × last ~35 days of indicator rows.
+  // ponytail: bounded to IDX40 × recent dates to respect the deliberately-narrowed
+  // sitemap. Older dates + top-150 discovered via the archive's prev/next internal links.
+  const idx40StockIds = IDX_STOCKS
+    .filter((s) => idx40Set.has(s.ticker))
+    .map((s) => tickerToStockId.get(s.ticker))
+    .filter((id): id is number => id != null);
+  const recentIndicatorRows = latestDate
+    ? await prisma.stockIndicator.findMany({
+        where: { interval: "1d", stockId: { in: idx40StockIds }, date: { gte: subDays(latestDate, 35) } },
+        select: { date: true, stock: { select: { ticker: true } } },
+        orderBy: { date: "desc" },
+      })
+    : [];
+  const archivePages = recentIndicatorRows.map((r) => ({
+    url: `${baseUrl}/stocks/${r.stock.ticker.replace(/\.JK$/, "").toLowerCase()}/indikator/${r.date.toISOString().slice(0, 10)}`,
+    lastModified: r.date,
+    changeFrequency: "monthly" as const,
+    priority: 0.5,
+  }));
+
   // Article pages — already use real updatedAt
   const articles = await prisma.article.findMany({
     where: { status: "PUBLISHED", isListed: true },
@@ -110,7 +145,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Keeping low-value UGC pages in the sitemap wastes crawl budget.
 
   // ── Static pages with today's date (they update daily) ──
-  const today = new Date();
 
   const sectorIndex = {
     url: `${baseUrl}/sektor`,
@@ -171,6 +205,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/terms`, lastModified: new Date("2026-01-01"), changeFrequency: "monthly", priority: 0.3 },
     { url: `${baseUrl}/about`, lastModified: today, changeFrequency: "monthly", priority: 0.6 },
     ...stockPages,
+    ...kenapaPages,
+    ...archivePages,
     ...articlePages,
     ...faqSitemapEntries,
     sectorIndex,
