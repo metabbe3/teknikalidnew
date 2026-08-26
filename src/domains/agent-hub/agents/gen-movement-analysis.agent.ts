@@ -13,7 +13,11 @@ export class GenMovementAnalysisAgent extends BaseAgent {
   readonly label = "Generate Movement Analysis";
 
   async execute(payload: AgentJobPayload): Promise<AgentJobResult> {
-    const maxStocks = (payload.maxStocks as number) || undefined;
+    // Default cap 25: top movers are processed first (sorted by % move), and
+    // each run skips stocks already generated today — so 3x/day dispatch
+    // (morning/lunch/afternoon) still covers all 40-60 movers without any
+    // single run blowing past the 18-min agent timeout (~20s per stock).
+    const maxStocks = (payload.maxStocks as number) ?? 25;
     const result = await movementAnalysisService.runBatchGeneration(maxStocks);
     return {
       summary: `Movement Analysis: ${result.generated.length} generated, ${result.skipped.length} skipped, ${result.errors.length} errors`,
