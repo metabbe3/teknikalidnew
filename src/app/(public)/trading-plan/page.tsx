@@ -2,6 +2,19 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calculator } from "lucide-react";
 import { PageHero } from "@/components/layout/page-hero";
+import type { Metadata } from "next";
+
+// Stub page ("Coming Soon") — must not compete with the homepage in the index.
+// Self-canonical + noindex until the real calculator ships; then flip to
+// index:true with "Kalkulator Trading Saham" keyword targeting (see
+// docs/seo-audit-2026-08-26.md, keyword: "kalkulator trading saham").
+export const metadata: Metadata = {
+  title: "Kalkulator Trading Plan Saham",
+  description:
+    "Hitung trading plan saham otomatis: entry, target, dan cut loss untuk saham IDX40 dengan kalkulator trading TeknikalID.",
+  alternates: { canonical: "/trading-plan" },
+  robots: { index: false, follow: true },
+};
 
 export default function TradingPlanPage() {
   return (

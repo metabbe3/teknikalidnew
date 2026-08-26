@@ -11,16 +11,19 @@ import { SITE_URL } from "@/lib/constants";
 import { MarketBreathStrip } from "@/components/ui/market-breath-strip";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { ArrowUpRight } from "lucide-react";
+import { SahamStrategyLinks } from "@/components/seo/saham-strategy-links";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Daftar Harga Saham IDX Hari Ini — Live Chart & Analisa Teknikal 956+ Saham",
-  description: "Cek harga saham IDX hari ini lengkap dengan analisa teknikal. Filter berdasarkan sektor, RSI, MACD, Bollinger Bands, dan indikator teknikal lainnya. Chart live real-time untuk 956+ saham BEI.",
+  title: "Harga Saham IDX Hari Ini — Screener Saham Gratis & Chart Live 956+ Saham",
+  description:
+    "Cek harga saham IDX hari ini + screener saham gratis: filter sektor, RSI, MACD, golden cross, dan indikator teknikal lainnya. Chart live real-time untuk 956+ saham BEI.",
   alternates: { canonical: "/stocks" },
   keywords: [
     "daftar harga saham hari ini", "harga saham idx hari ini", "harga saham live",
-    "chart saham gratis", "chart saham live", "chart saham realtime",
+    "screener saham gratis", "screener saham indonesia", "chart saham gratis",
+    "chart saham live", "chart saham realtime",
     "analisa saham online", "saham idx hari ini", "daftar saham BEI",
   ],
   openGraph: {
@@ -109,7 +112,7 @@ export default async function StocksPage() {
   const topGainer = sortedDesc[0] ? { ticker: sortedDesc[0].ticker, changePercent: sortedDesc[0].changePercent! } : undefined;
   const topLoser = sortedAsc[0] ? { ticker: sortedAsc[0].ticker, changePercent: sortedAsc[0].changePercent! } : undefined;
 
-  const breadcrumbJsonLd = {
+  const faqJsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       { "@type": "CollectionPage", name: "Daftar Harga Saham IDX", url: `${SITE_URL}/stocks` },
@@ -120,6 +123,43 @@ export default async function StocksPage() {
           { "@type": "ListItem", position: 2, name: "Saham", item: `${SITE_URL}/stocks` },
         ],
       },
+      {
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: "Apa itu analisa teknikal saham?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Analisa teknikal adalah metode mempelajari pergerakan harga saham menggunakan chart dan indikator matematika seperti RSI, MACD, dan Moving Average. Tujuannya memprediksi arah harga berdasarkan pola historis, bukan fundamental perusahaan.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Indikator teknikal apa saja yang tersedia di TeknikalID?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "TeknikalID menyediakan 12+ indikator: RSI, MACD, Bollinger Bands, Supertrend, ADX, Stochastic Oscillator, On-Balance Volume (OBV), ATR, dan Moving Average (SMA 20/50/200). Semua indikator dihitung otomatis dan ditampilkan di chart interaktif.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Bagaimana cara membaca chart saham IDX?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Mulai dari candlestick chart untuk melihat pergerakan harga harian. Gunakan indikator RSI untuk mengetahui kondisi overbought/oversold, MACD untuk sinyal tren, dan Moving Average untuk arah tren jangka panjang. TeknikalID menampilkan semua ini dalam satu dashboard.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Apakah data harga saham di TeknikalID real-time?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Data diperbarui setiap 5 menit saat pasar buka. Ada delay ~5-10 menit dari data resmi BEI karena sumber data dari Yahoo Finance. Untuk trading intraday, kami sarankan mengacu pada data broker Anda.",
+            },
+          },
+        ],
+      },
     ],
   };
 
@@ -127,7 +167,7 @@ export default async function StocksPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
     <div className="fade-in">
       {/* ── Editorial header ── */}
@@ -184,6 +224,65 @@ export default async function StocksPage() {
           <Suspense fallback={<div className="p-8 text-center text-text-secondary">Memuat…</div>}>
             <SahamView stocks={rows} sectors={sectors} assetClass="EQUITY" linkBase="/stocks" />
           </Suspense>
+        </section>
+
+        {/* ── SEO Content Block: Educational + FAQ + Strategy Links ── */}
+        <section className="mt-16 space-y-10">
+          {/* Educational intro — targets "analisa teknikal saham" keyword */}
+          <div className="max-w-3xl space-y-4 text-sm leading-relaxed text-text-secondary">
+            <h2 className="text-xl font-bold text-text-primary">Analisa Teknikal Saham IDX — Panduan Lengkap</h2>
+            <p>
+              TeknikalID menyediakan <strong className="text-text-primary">analisa teknikal saham</strong> untuk 956+ saham di Bursa Efek Indonesia (IDX). 
+              Setiap saham dilengkapi chart interaktif real-time, 12+ indikator teknikal (RSI, MACD, Bollinger Bands, 
+              Supertrend, ADX, dan lainnya), serta trading plan otomatis berdasarkan Pivot Points & ATR.
+            </p>
+            <p>
+              Gunakan daftar di atas untuk memantau harga saham hari ini, atau manfaatkan screener untuk menemukan 
+              saham oversold, overbought, golden cross, dan volume spike secara otomatis. Data diperbarui setiap 
+              5 menit saat pasar buka (Senin–Jumat, pukul 09:00–16:00 WIB).
+            </p>
+          </div>
+
+          {/* FAQ Section — targets featured snippets */}
+          <div className="max-w-3xl space-y-5">
+            <h2 className="text-xl font-bold text-text-primary">Pertanyaan Umum tentang Analisa Teknikal Saham</h2>
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-sm font-semibold text-text-primary">Apa itu analisa teknikal saham?</h3>
+                <p className="mt-1 text-xs text-text-secondary leading-relaxed">
+                  Analisa teknikal adalah metode mempelajari pergerakan harga saham menggunakan chart dan indikator matematika 
+                  seperti RSI, MACD, dan Moving Average. Tujuannya memprediksi arah harga berdasarkan pola historis, 
+                  bukan fundamental perusahaan.
+                </p>
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-text-primary">Indikator teknikal apa saja yang tersedia di TeknikalID?</h3>
+                <p className="mt-1 text-xs text-text-secondary leading-relaxed">
+                  TeknikalID menyediakan 12+ indikator: RSI, MACD, Bollinger Bands, Supertrend, ADX, 
+                  Stochastic Oscillator, On-Balance Volume (OBV), ATR, dan Moving Average (SMA 20/50/200). 
+                  Semua indikator dihitung otomatis dan ditampilkan di chart interaktif.
+                </p>
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-text-primary">Bagaimana cara membaca chart saham IDX?</h3>
+                <p className="mt-1 text-xs text-text-secondary leading-relaxed">
+                  Mulai dari candlestick chart untuk melihat pergerakan harga harian. Gunakan indikator RSI untuk 
+                  mengetahui kondisi overbought/oversold, MACD untuk sinyal tren, dan Moving Average untuk arah tren 
+                  jangka panjang. TeknikalID menampilkan semua ini dalam satu dashboard.
+                </p>
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-text-primary">Apakah data harga saham di TeknikalID real-time?</h3>
+                <p className="mt-1 text-xs text-text-secondary leading-relaxed">
+                  Data diperbarui setiap 5 menit saat pasar buka. Ada delay ~5-10 menit dari data resmi BEI karena 
+                  sumber data dari Yahoo Finance. Untuk trading intraday, kami sarankan mengacu pada data broker Anda.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Strategy links — passes equity to commercial pages */}
+          <SahamStrategyLinks />
         </section>
       </div>
     </div>

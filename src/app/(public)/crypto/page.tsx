@@ -7,7 +7,10 @@ import { SectionHeading } from "@/components/ui/section-heading";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Harga Crypto Hari Ini — BTC, ETH & 400+ Koin (IDR) + Screener | TeknikalID",
+  // ponytail: crypto is a logged-in signal/ledger tool, not SEO inventory —
+  // CoinGecko/CMC own crypto SERPs (DA90+); indexing dilutes IDX topical authority.
+  robots: { index: false, follow: true },
+  title: "Harga Crypto Hari Ini — BTC, ETH & 400+ Koin (IDR) + Screener",
   description:
     "Harga crypto dalam Rupiah (Indodax) untuk ratusan koin. Browse semua koin atau gunakan Screener teknikal — RSI, MACD, SMA, sinyal trading crypto bahasa Indonesia.",
   alternates: { canonical: "/crypto" },

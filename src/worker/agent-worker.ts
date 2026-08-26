@@ -26,6 +26,9 @@ const AGENT_TIMEOUTS: Record<string, number> = {
   internal_linker: 10,
   schema_builder: 5,
   growth_monitor: 5,
+  // Movement batch takes 8-10+ min when many stocks move >3% — 10min cap was
+  // killing 3/4 runs. 18 stays under STUCK_JOB_TIMEOUT_MIN (20).
+  gen_movement_analysis: 18,
 };
 
 async function recoverStuckJobs() {
