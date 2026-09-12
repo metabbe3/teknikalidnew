@@ -14,17 +14,20 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         // Explicitly allow Googlebot (defense against CF merge ambiguity)
+        // /profile intentionally NOT disallowed: profile pages are meta-noindexed,
+        // and a robots block hides the noindex from crawlers ("blocked, indexed
+        // anyway" limbo). Crawling them lets Google drop the URLs cleanly.
         userAgent: "Googlebot",
         allow: "/",
-        disallow: ["/api/", "/auth/", "/admin/", "/paper-trading/", "/portfolio/", "/profile", "/watchlist", "/billing", "/settings", "/payment"],
+        disallow: ["/api/", "/auth/", "/admin/", "/paper-trading/", "/portfolio/", "/watchlist", "/billing", "/settings", "/payment"],
       },
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/auth/", "/admin/", "/paper-trading/", "/portfolio/", "/profile", "/watchlist", "/billing", "/settings", "/payment"],
+        disallow: ["/api/", "/auth/", "/admin/", "/paper-trading/", "/portfolio/", "/watchlist", "/billing", "/settings", "/payment"],
       },
     ],
-    sitemap: `${SITE_URL}/sitemap.xml`,
+    sitemap: [`${SITE_URL}/sitemap.xml`, `${SITE_URL}/sitemap-news.xml`],
     host: SITE_URL,
   };
 }

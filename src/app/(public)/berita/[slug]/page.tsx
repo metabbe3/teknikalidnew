@@ -170,11 +170,16 @@ export default async function BeritaArticlePage({
 
   const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(article.title)}&type=berita${article.tickerTag ? `&ticker=${article.tickerTag.replace(".JK", "")}` : ""}`;
 
+  // NewsArticle type only while fresh — Google News relevance window is ~2 days
+  const isFreshNews =
+    article.articleType === ArticleType.NEWS &&
+    Date.now() - article.publishedAt.getTime() < 2 * 24 * 60 * 60 * 1000;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "Article",
+        "@type": isFreshNews ? ["Article", "NewsArticle"] : "Article",
         headline: article.title,
         description: article.excerpt,
         datePublished: article.publishedAt.toISOString(),
