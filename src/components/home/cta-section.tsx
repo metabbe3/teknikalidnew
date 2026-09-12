@@ -1,6 +1,24 @@
+"use client";
+
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 export function CtaSection() {
+  const { status } = useSession();
+  const isAuthed = status === "authenticated";
+
+  // Anon variant is the safe default while session status resolves (no hydration flash)
+  const headline = isAuthed
+    ? "Lanjutkan analisa Anda"
+    : "Simpan analisa Anda, jangan mulai dari nol besok";
+  const sub = isAuthed
+    ? "Watchlist, paper trading, dan portfolio tracker sudah aktif di akun Anda."
+    : "Watchlist pribadi, alert sinyal golden cross & oversold, dan trading plan otomatis untuk 950+ saham IDX. Daftar gratis, 30 detik selesai.";
+  const primaryHref = isAuthed ? "/watchlist" : "/auth/register";
+  const primaryLabel = isAuthed ? "Buka Watchlist" : "Daftar Gratis";
+  const secondaryHref = isAuthed ? "/paper-trading" : "/stocks";
+  const secondaryLabel = isAuthed ? "Coba Paper Trading" : "Jelajahi Saham Dulu";
+
   return (
     <div className="relative overflow-hidden rounded-xl bg-[#0f172a] p-8 sm:p-10">
       {/* Subtle grid pattern */}
@@ -15,23 +33,21 @@ export function CtaSection() {
       />
       <div className="relative z-10 max-w-lg space-y-4">
         <p className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-          Analisa 950+ saham dalam hitungan detik
+          {headline}
         </p>
-        <p className="text-gray-400 text-sm leading-relaxed">
-          Chart interaktif, 30+ strategi screener, dan trading plan otomatis. Gratis, tanpa registrasi.
-        </p>
+        <p className="text-gray-400 text-sm leading-relaxed">{sub}</p>
         <div className="flex flex-wrap gap-3 pt-2">
           <Link
-            href="/stocks"
+            href={primaryHref}
             className="bg-white text-text-primary hover:bg-white/90 px-5 py-2.5 rounded-lg font-medium text-sm transition-colors press-scale"
           >
-            Lihat Semua Saham
+            {primaryLabel}
           </Link>
           <Link
-            href="/stocks?view=screener"
+            href={secondaryHref}
             className="border border-white/20 text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-white/10 transition-all press-scale"
           >
-            Coba Screener
+            {secondaryLabel}
           </Link>
         </div>
       </div>
