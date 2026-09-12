@@ -12,6 +12,7 @@ import { MarketBreathStrip } from "@/components/ui/market-breath-strip";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { ArrowUpRight } from "lucide-react";
 import { SahamStrategyLinks } from "@/components/seo/saham-strategy-links";
+import { LoginGate } from "@/components/auth/login-gate";
 
 export const dynamic = "force-dynamic";
 
@@ -210,6 +211,19 @@ export default async function StocksPage() {
               </Link>
             ))}
           </div>
+
+          {/* Compact signup CTA — anon conversion */}
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-accent/30 bg-accent/5 px-4 py-3">
+            <p className="text-xs sm:text-sm text-text-secondary">
+              🚀 Simpan watchlist, aktifkan alert sinyal, dan buka chart 5 tahun — gratis.
+            </p>
+            <Link
+              href="/auth/register"
+              className="inline-flex items-center justify-center bg-accent text-white rounded-lg px-4 py-2 text-sm font-semibold hover:bg-accent/90 transition-colors press-scale whitespace-nowrap"
+            >
+              Daftar Gratis
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -225,6 +239,12 @@ export default async function StocksPage() {
             <SahamView stocks={rows} sectors={sectors} assetClass="EQUITY" linkBase="/stocks" />
           </Suspense>
         </section>
+
+        {/* Signup CTA — watchlist & signal alerts */}
+        <LoginGate
+          feature="Watchlist & Alert Sinyal"
+          message="Daftar gratis untuk menyimpan watchlist, alert golden cross/oversold, dan trading plan otomatis untuk 950+ saham IDX."
+        />
 
         {/* ── SEO Content Block: Educational + FAQ + Strategy Links ── */}
         <section className="mt-16 space-y-10">

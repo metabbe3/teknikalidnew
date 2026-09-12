@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useStockHistory } from "@/hooks/use-stock-history";
 import { useIndicators } from "@/hooks/use-indicators";
@@ -28,6 +29,9 @@ interface ChartSectionProps {
   ticker: string;
 }
 
+// Hybrid freemium: anon chart caps at 3mo (server clamps API to ~90 days too).
+const ANON_RANGES: DateRange[] = ["1D", "5D", "1mo", "3mo"];
+
 export function ChartSection({ ticker }: ChartSectionProps) {
   const { status } = useSession();
   const isAuthed = status === "authenticated";
@@ -53,12 +57,14 @@ export function ChartSection({ ticker }: ChartSectionProps) {
     setVisibleRange({ from, to });
   }, []);
 
-  const isIntraday = !!INTRADAY_CONFIG[range];
-  const { data: history, isLoading: historyLoading } = useStockHistory(ticker, range);
-  const { data: indicators, isLoading: indicatorsLoading } = useIndicators(ticker, isIntraday ? "1mo" : range);
+  const visibleRanges = isAuthed ? RANGE_KEYS : ANON_RANGES;
+  const effectiveRange: DateRange = visibleRanges.includes(range) ? range : "3mo";
+  const isIntraday = !!INTRADAY_CONFIG[effectiveRange];
+  const { data: history, isLoading: historyLoading } = useStockHistory(ticker, effectiveRange);
+  const { data: indicators, isLoading: indicatorsLoading } = useIndicators(ticker, isIntraday ? "1mo" : effectiveRange);
 
   // Compare data
-  const { data: compareHistory } = useStockHistory(compareTicker ?? "", range);
+  const { data: compareHistory } = useStockHistory(compareTicker ?? "", effectiveRange);
   const compareData = compareTicker && compareHistory
     ? compareHistory.map((d: { date: string; close: number }) => ({ date: d.date, value: d.close }))
     : undefined;
@@ -145,22 +151,33 @@ export function ChartSection({ ticker }: ChartSectionProps) {
       {/* Toolbar */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         {/* Range selector */}
-        <div className="flex bg-bg-card depth-shadow rounded-lg p-0.5">
-          {RANGE_KEYS.map((r) => (
-            <button
-              key={r}
-              onClick={() => setRange(r)}
-              aria-pressed={range === r}
-              aria-label={`Show ${r} chart`}
-              className={`px-3 py-1 text-xs font-medium rounded-md transition-all duration-150 ${
-                range === r
-                  ? "bg-text-primary text-white shadow-sm"
-                  : "text-text-secondary hover:text-text-primary"
-              }`}
+        <div className="flex items-center gap-2">
+          <div className="flex bg-bg-card depth-shadow rounded-lg p-0.5">
+            {visibleRanges.map((r) => (
+              <button
+                key={r}
+                onClick={() => setRange(r)}
+                aria-pressed={effectiveRange === r}
+                aria-label={`Show ${r} chart`}
+                className={`px-3 py-1 text-xs font-medium rounded-md transition-all duration-150 ${
+                  effectiveRange === r
+                    ? "bg-text-primary text-white shadow-sm"
+                    : "text-text-secondary hover:text-text-primary"
+                }`}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
+          {!isAuthed && (
+            <Link
+              href="/auth/register"
+              className="text-xs px-2 py-1 rounded-md border border-accent/40 bg-accent/10 text-accent hover:bg-accent/20 transition-colors font-medium whitespace-nowrap"
+              title="Rentang lebih panjang untuk member"
             >
-              {r}
-            </button>
-          ))}
+              🔒 Buka 6mo+
+            </Link>
+          )}
         </div>
 
         {/* Chart type toggle */}
