@@ -4,9 +4,10 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { SITE_URL } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
-import { ArticleContent, extractHeadings, estimateReadingTime } from "@/components/article/article-renderer";
-import { ArrowLeft, BookOpen, Clock, User, ChevronRight, ArrowRight } from "lucide-react";
+import { ArticleContent, extractHeadings, estimateReadingTime, extractTickers } from "@/components/article/article-renderer";
+import { ArrowLeft, BookOpen, Clock, User, ChevronRight, ArrowRight, TrendingUp, BarChart3 } from "lucide-react";
 import { ShareButtons } from "@/components/ui/share-buttons";
+import { LiveIndicatorExample } from "@/components/akademi/live-indicator-example";
 
 export async function generateMetadata({
   params,
@@ -60,6 +61,33 @@ export default async function ArticlePage({
 
   const headings = extractHeadings(article.content);
   const readingTime = estimateReadingTime(article.content);
+  const relatedTickers = extractTickers(article.content).slice(0, 6);
+
+  // Map article topic to relevant screener preset for contextual CTA
+  const contentLower = article.content.toLowerCase();
+  const titleLower = article.title.toLowerCase();
+  const topicMap: Array<{keywords: string[]; preset: string; label: string}> = [
+    { keywords: ["rsi", "relative strength"], preset: "rsi_oversold", label: "Saham RSI Oversold" },
+    { keywords: ["macd", "moving average convergence"], preset: "macd_bullish", label: "Saham MACD Bullish" },
+    { keywords: ["stochastic", "stoch"], preset: "stoch_oversold", label: "Saham Stochastic Oversold" },
+    { keywords: ["bollinger", "bb"], preset: "bb_squeeze", label: "Saham BB Squeeze" },
+    { keywords: ["volume", "volatility", "volume spike"], preset: "volume_spike", label: "Saham Volume Spike" },
+    { keywords: ["adx", "trend strength"], preset: "adx_strong", label: "Saham ADX Strong" },
+    { keywords: ["sma", "moving average", "sma20", "sma200"], preset: "above_sma200", label: "Saham di Atas SMA200" },
+    { keywords: ["support", "resistance", "pivot"], preset: "bottom_fishing", label: "Bottom Fishing Radar" },
+    { keywords: ["candlestick", "pattern", "reversal"], preset: "rsi_oversold", label: "Saham Potensial Reversal" },
+    { keywords: ["supertrend", "trend"], preset: "supertrend_bullish", label: "Saham Supertrend Bullish" },
+  ];
+
+  let screenerPreset = "";
+  let screenerLabel = "";
+  for (const mapping of topicMap) {
+    if (mapping.keywords.some(k => contentLower.includes(k) || titleLower.includes(k))) {
+      screenerPreset = mapping.preset;
+      screenerLabel = mapping.label;
+      break;
+    }
+  }
 
   const [prevArticle, nextArticle] = await Promise.all([
     prisma.article.findFirst({
@@ -203,6 +231,59 @@ export default async function ArticlePage({
 
               {/* Article body */}
               <ArticleContent content={article.content} />
+
+              {/* Live example — deterministic verdict for the first ticker the
+                  article mentions; turns the static pillar into a daily-refreshing
+                  live-data page (SEO) + funnels into the gated stock page (conversion). */}
+              {relatedTickers.length > 0 && <LiveIndicatorExample ticker={relatedTickers[0]} />}
+
+              {/* Related Stocks — contextual internal links to product pages */}
+              {relatedTickers.length > 0 && (
+                <section className="mt-12 mb-8" aria-label="Saham terkait dalam artikel">
+                  <h2 className="text-xl font-bold text-text-primary mb-4 flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-accent" />
+                    Saham Terkait
+                  </h2>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {relatedTickers.map((ticker) => (
+                      <Link
+                        key={ticker}
+                        href={`/stocks/${ticker}`}
+                        className="group bg-bg-card rounded-xl depth-shadow p-4 hover:depth-shadow-hover transition-all"
+                      >
+                        <p className="text-sm font-bold text-text-primary group-hover:text-accent transition-colors">
+                          {ticker}
+                        </p>
+                        <p className="text-xs text-text-tertiary mt-1">
+                          Lihat analisa teknikal →
+                        </p>
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Smart Screener CTA — maps article topic to relevant screener preset */}
+              {screenerPreset && (
+                <section className="mb-8 p-6 bg-bg-card rounded-xl depth-shadow border border-border">
+                  <h2 className="text-lg font-bold text-text-primary mb-2 flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5 text-accent" />
+                    Terapkan Ilmu Ini
+                  </h2>
+                  <p className="text-sm text-text-secondary mb-4">
+                    Gunakan Screener untuk menemukan{" "}
+                    <strong className="text-accent">{screenerLabel}</strong>{" "}
+                    berdasarkan indikator yang dibahas di artikel ini.
+                  </p>
+                  <Link
+                    href={`/screener?preset=${screenerPreset}`}
+                    className="inline-flex items-center gap-2 bg-accent text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-accent/90 transition-colors press-scale"
+                  >
+                    Buka Screener: {screenerLabel}
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </section>
+              )}
 
               {/* Bottom CTA banner */}
               <div className="akademi-cta-banner mt-12 p-8">

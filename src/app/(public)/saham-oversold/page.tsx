@@ -8,7 +8,7 @@ import { SITE_URL } from "@/lib/constants";
 export const revalidate = 300; // 5 min ISR
 
 export const metadata: Metadata = {
-  title: "Saham Oversold Hari Ini — RSI Dibawah 30 | TeknikalID",
+  title: "Saham Oversold Hari Ini — RSI Dibawah 30",
   description:
     "Daftar saham IDX oversold hari ini berdasarkan indikator RSI dibawah 30. Saham oversold berpotensi rebound — temukan peluang beli saham murah di Bursa Efek Indonesia.",
   alternates: { canonical: "/saham-oversold" },
@@ -230,6 +230,12 @@ export default async function SahamOversoldPage() {
           </Link>
           <Link href="/saham-golden-cross" className="rounded-lg border px-4 py-2 text-sm font-semibold hover:bg-muted">
             📈 Saham Golden Cross
+          </Link>
+          <Link href="/saham-macd-bullish" className="rounded-lg border px-4 py-2 text-sm font-semibold hover:bg-muted">
+            📈 Saham MACD Bullish
+          </Link>
+          <Link href="/saham-stochastic-oversold" className="rounded-lg border px-4 py-2 text-sm font-semibold hover:bg-muted">
+            🎯 Saham Stochastic Oversold
           </Link>
           <Link href="/saham-overbought" className="rounded-lg border px-4 py-2 text-sm font-semibold hover:bg-muted">
             ⚠️ Saham Overbought

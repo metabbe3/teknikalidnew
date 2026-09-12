@@ -8,7 +8,7 @@ import { stripJk } from "@/lib/utils";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Daftar Saham Blue Chip Indonesia — IDX40 & LQ45 Terlengkap | TeknikalID",
+  title: "Daftar Saham Blue Chip Indonesia — IDX40 & LQ45 Terlengkap",
   description:
     "Daftar lengkap saham blue chip Indonesia (IDX40 & LQ45) dengan analisa teknikal. Saham blue chip adalah saham perusahaan besar dengan likuiditas tinggi seperti BBCA, BBRI, TLKM, ASII.",
   alternates: { canonical: "/saham-blue-chip" },

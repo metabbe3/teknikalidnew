@@ -8,7 +8,7 @@ import { SITE_URL } from "@/lib/constants";
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "Saham Golden Cross Hari Ini — Sinyal Bullish MA50 > MA200 | TeknikalID",
+  title: "Saham Golden Cross Hari Ini — Sinyal Bullish MA50 > MA200",
   description:
     "Daftar saham IDX golden cross hari ini — sinyal bullish ketika MA50 crossing diatas MA200. Temukan saham dengan momentum naik untuk swing trading dan investasi jangka menengah.",
   alternates: { canonical: "/saham-golden-cross" },

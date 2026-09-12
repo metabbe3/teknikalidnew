@@ -350,7 +350,7 @@ export default async function CommunityPage({
       </PageHero>
 
       {/* Tabs */}
-      <div className="border-b border-border bg-bg-card">
+      <div className="relative border-b border-border bg-bg-card">
         <div className="max-w-5xl mx-auto px-4 flex items-center gap-1 overflow-x-auto scrollbar-thin">
           {tabs.map((t) => (
             <Link
@@ -369,9 +369,9 @@ export default async function CommunityPage({
             </Link>
           ))}
         </div>
+        {/* Scroll affordance: tabs overflow on mobile — fade hints more content right. */}
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-bg-card to-transparent sm:hidden" aria-hidden />
       </div>
-
-      {/* Main content — Threads-like layout */}
       <div className="max-w-[960px] mx-auto px-4 py-6">
         <div className="flex gap-6">
           {/* Feed column */}
@@ -382,13 +382,24 @@ export default async function CommunityPage({
                 <PostComposer />
               </div>
             ) : (
-              <div className="bg-white rounded-xl p-4 text-center mb-4 border border-gray-200">
-                <p className="text-sm text-gray-500">
-                  <Link href="/auth/signin" className="text-teal-600 hover:underline font-semibold">
-                    Masuk
-                  </Link>{" "}
-                  untuk bergabung dalam diskusi
+              <div className="bg-bg-card rounded-xl p-4 text-center mb-4 border border-border">
+                <p className="text-sm text-text-secondary mb-3">
+                  Masuk untuk ikut diskusi, posting analisa, dan kasih like.
                 </p>
+                <div className="flex items-center justify-center gap-2">
+                  <Link
+                    href="/auth/signin"
+                    className="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium text-text-primary bg-bg-hover hover:bg-border transition-colors"
+                  >
+                    Masuk
+                  </Link>
+                  <Link
+                    href="/auth/register"
+                    className="inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold text-white bg-accent hover:bg-accent/90 transition-colors press-scale"
+                  >
+                    Daftar Gratis
+                  </Link>
+                </div>
               </div>
             )}
 

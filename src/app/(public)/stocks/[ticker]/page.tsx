@@ -24,15 +24,20 @@ import { StockPaperPosition } from "@/components/paper-trading/stock-paper-posit
 import { HealthScoreDetail } from "@/components/stock/health-score-detail";
 import { StockLogo } from "@/components/stock/stock-logo";
 import { SignalVerdict } from "@/components/stock/signal-verdict";
+import { RelatedStocks } from "@/components/stock/related-stocks";
+import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { IndicatorTooltip } from "@/components/ui/indicator-tooltip";
 import { technicalAnalysisService, computeSignalScore } from "@/domains/stock/technical-analysis.service";
 import { stockRepository } from "@/domains/stock/stock.repository";
 import { calculatePivotPoints } from "@/lib/indicators";
 import { summarizeVerdict, toSnapshot } from "@/lib/verdict-prose";
 import { subDays } from "date-fns";
-import { IDX40, SITE_URL, isCryptoTicker } from "@/lib/constants";
-import { SECTORS, getSectorSlug, sectorToBahasa } from "@/lib/sectors";
+import { SITE_URL, isCryptoTicker } from "@/lib/constants";
+import { getSectorSlug, sectorToBahasa } from "@/lib/sectors";
 import { ShareButtons } from "@/components/ui/share-buttons";
+import { articleRepository } from "@/domains/article/article.repository";
+import { isStaleArticle, DATA_SOURCE_LABEL } from "@/domains/article/article-freshness";
+import { ArticleContent } from "@/components/article/article-renderer";
 import { IDX_STOCKS } from "@/lib/idx-stocks";
 import { prisma } from "@/lib/prisma";
 import { portfolioService } from "@/domains/portfolio/portfolio.service";
@@ -80,28 +85,27 @@ export async function generateMetadata({
   const canonicalPath = `/stocks/${canonicalTicker}`;
   const ogImage = `${SITE_URL}/api/og/stock?ticker=${encodeURIComponent(canonicalTicker)}`;
 
-  // SEO-optimized title targeting "harga saham X hari ini" queries
-  const title = price
-    ? `Harga Saham ${name} Hari Ini ${price}${changeStr} — ${fullName}`
-    : `Harga Saham ${name} (${fullName}) Hari Ini — Analisa Teknikal`;
+  // SEO-optimized title — keep under 47 chars (root template adds "| TeknikalID" = ~13 chars → total < 60)
+  // Price lives in meta description, not title (title stays stable for SERP consistency)
+  const shortName = fullName.length > 25 ? fullName.substring(0, 25).trimEnd() + "…" : fullName;
+  const title = `${name} — ${shortName}`;
   const description = price
-    ? `Analisa teknikal saham ${name} (${fullName}) lengkap hari ini. Chart interaktif, indikator RSI, MACD, Bollinger Bands, support/resistance, dan sinyal trading.`
+    ? `Harga saham ${name} (${fullName}) hari ini ${price}${changeStr}. Analisa teknikal lengkap: chart interaktif, RSI, MACD, Bollinger Bands, support/resistance, dan sinyal trading.`
     : `Analisa teknikal saham ${fullName} (${name}) hari ini. Chart interaktif, RSI, MACD, Bollinger Bands, SMA/EMA, dan sinyal trading di TeknikalID.`;
 
   return {
     title,
     description,
-    keywords: [`harga saham ${name} hari ini`, `saham ${name}`, `${name} idx`, `analisa teknikal ${name}`, fullName, `harga ${name}`, `${ticker} harga`],
     alternates: { canonical: canonicalPath },
     openGraph: {
-      title: `Harga Saham ${name} (${fullName}) Hari Ini | TeknikalID`,
+      title: `${name} — ${fullName} | TeknikalID`,
       description: description,
       url: `${SITE_URL}${canonicalPath}`,
       images: [{ url: ogImage, width: 1200, height: 630, alt: `Harga Saham ${name} Hari Ini` }],
     },
     twitter: {
       card: "summary_large_image",
-      title: `Harga Saham ${name} (${fullName}) Hari Ini | TeknikalID`,
+      title: `${name} — ${fullName} | TeknikalID`,
       description: description,
     },
   };
@@ -121,9 +125,10 @@ export default async function StockDetailPage({
     redirect(`/crypto/${precheck.ticker}`);
   }
 
-  // Server-side auth gate: detailed data (chart, indicators, fundamentals) only for logged-in
-  // users. Anon gets the SEO teaser (price/name/signal) + LoginGate placeholders — never the
-  // underlying data in the HTML, so scrapers can't read it.
+  // Hybrid freemium: chart + indicator panel are free (chart data fetched client-side,
+  // API range-clamped to ~90d for anon). Still gated: key stats, health score,
+  // fundamentals, company data, daily analysis — LoginGate placeholders, data never
+  // in the anon HTML.
   const session = await auth();
   const isAuthed = !!session?.user;
 
@@ -211,7 +216,7 @@ export default async function StockDetailPage({
     stockRepository.findSubsidiaries(detail.stock.id),
     stockRepository.findDividends(detail.stock.id),
     prisma.article.findMany({
-      where: { status: "PUBLISHED", tickerTag: ticker },
+      where: { status: "PUBLISHED", tickerTag: ticker, articleType: { notIn: ["DAILY_SNAPSHOT", "STOCK_ANALYSIS"] } },
       orderBy: { publishedAt: "desc" },
       take: 5,
       select: { id: true, slug: true, title: true, publishedAt: true, articleType: true },
@@ -219,7 +224,7 @@ export default async function StockDetailPage({
     prisma.article.findFirst({
       where: { status: "PUBLISHED", articleType: "DAILY_SNAPSHOT", tickerTag: ticker },
       orderBy: { publishedAt: "desc" },
-      select: { id: true, slug: true, title: true, excerpt: true, publishedAt: true },
+      select: { id: true, slug: true, title: true, excerpt: true, publishedAt: true, content: true, articleType: true, updatedAt: true },
     }),
     sectorPeers.length > 0
       ? prisma.article.findMany({
@@ -360,6 +365,45 @@ export default async function StockDetailPage({
         url: `${SITE_URL}/stocks/${ticker}`,
         image: ogImageUrl,
         breadcrumb: { "@id": `${SITE_URL}/stocks/${ticker}#breadcrumb` },
+      },
+      {
+        // Stock schema — Google's preferred type for equities
+        "@type": "Stock",
+        name: stripJk(ticker),
+        description: `Saham ${stock.name} (${stripJk(ticker)}) di Bursa Efek Indonesia${stock.sector ? `, sektor ${sectorToBahasa(stock.sector)}` : ""}.`,
+        ticker: `${stripJk(ticker)}.JK`,
+        tradingStatus: "ACTIVE",
+        exchange: {
+          "@type": "Organization",
+          name: "Bursa Efek Indonesia",
+        },
+        ...(close !== null ? {
+          price: {
+            "@type": "MonetaryAmount",
+            value: {
+              "@type": "QuantitativeValue",
+              value: close,
+              unitText: "IDR",
+            },
+          },
+        } : {}),
+        ...(fundamentals?.marketCap != null ? {
+          marketCapitalization: {
+            "@type": "MonetaryAmount",
+            value: {
+              "@type": "QuantitativeValue",
+              value: fundamentals.marketCap,
+              unitText: "IDR",
+            },
+          },
+        } : {}),
+        issuer: {
+          "@type": "Organization",
+          name: stock.name,
+          ...(stock.sector ? {
+            industry: stock.sector,
+          } : {}),
+        },
       },
       {
         // FinancialProduct schema for Google rich snippets
@@ -603,15 +647,109 @@ export default async function StockDetailPage({
 
       {/* Main content */}
       <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-        {/* Chart — auth-gated. Anon gets a login placeholder; the OHLC series is never sent. */}
-        {isAuthed ? (
-          <ChartSection ticker={ticker} />
-        ) : (
-          <LoginGate
-            feature="Chart Interaktif"
-            message="Daftar gratis untuk membuka chart candlestick interaktif, indikator teknikal, dan analisa pergerakan harga lengkap."
-          />
+        <Breadcrumbs
+          items={[
+            { label: "Beranda", href: "/" },
+            { label: "Saham", href: "/stocks" },
+            ...(stock.sector
+              ? [{ label: sectorToBahasa(stock.sector), href: `/sektor/${getSectorSlug(stock.sector)}` }]
+              : []),
+            { label: stripJk(ticker) },
+          ]}
+        />
+        {/* ── SEO Teaser: Technical analysis summary for crawlers (anon only) ── */}
+        {/* Renders server-side text that Google can index — real indicator values, not gate copy. */}
+        {!isAuthed && indicators && close !== null && (
+          <section className="bg-bg-card rounded-xl border border-border p-5 space-y-4" aria-label="Ringkasan analisa teknikal">
+            <h2 className="font-serif text-base font-semibold text-text-primary">Ringkasan Analisa Teknikal {stripJk(ticker)}</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div className="space-y-2">
+                <p className="text-text-secondary">
+                  <span className="font-semibold text-text-primary">Sinyal:</span>{' '}
+                  <span style={{ color: outlook === "Bullish" ? "var(--color-bullish)" : outlook === "Bearish" ? "var(--color-bearish)" : "var(--color-text-tertiary)" }}>
+                    {indicators.signalLabel ?? outlook}
+                  </span>
+                  {' — '}
+                  {verdictProse || `Indikator teknikal menunjukkan sinyal ${outlook.toLowerCase()} untuk ${stripJk(ticker)}.`}
+                </p>
+                <p className="text-text-secondary">
+                  <span className="font-semibold text-text-primary">Harga:</span> {formatPrice(close)}
+                  {changePercent !== null && ` (${formatPercent(changePercent)})`}
+                  {latestHigh && latestLow && <> · <span className="font-semibold text-text-primary">Range:</span> {formatPrice(latestLow)} — {formatPrice(latestHigh)}</>}
+                </p>
+                {fundamentals && (
+                  <p className="text-text-secondary">
+                    <span className="font-semibold text-text-primary">Fundamental:</span>
+                    {fundamentals.pe !== null && ` P/E ${fundamentals.pe.toFixed(1)}`}
+                    {fundamentals.pb !== null && ` · P/B ${fundamentals.pb.toFixed(1)}`}
+                    {fundamentals.marketCap !== null && ` · Market Cap Rp${(fundamentals.marketCap / 1e12).toFixed(1)}T`}
+                  </p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <p className="text-text-secondary">
+                  <span className="font-semibold text-text-primary">RSI (14):</span> {indicators.rsi14?.toFixed(1) ?? "—"}
+                  {' '}
+                  <span className="text-text-tertiary">
+                    {indicators.rsi14 !== null ? (indicators.rsi14 > 70 ? "(Overbought)" : indicators.rsi14 < 30 ? "(Oversold)" : "(Normal)") : ""}
+                  </span>
+                </p>
+                <p className="text-text-secondary">
+                  <span className="font-semibold text-text-primary">MACD:</span>{' '}
+                  {indicators.macdHist !== null ? (indicators.macdHist > 0 ? "Bullish" : "Bearish") : "—"}
+                  {' '}
+                  {indicators.adx !== null && `· ADX ${indicators.adx.toFixed(0)} (${indicators.adx > 25 ? "Tren Kuat" : "Tren Lemah"})`}
+                </p>
+                <p className="text-text-secondary">
+                  <span className="font-semibold text-text-primary">SMA:</span>
+                  {indicators.sma20 !== null && close > indicators.sma20 ? " ▲ di atas SMA20" : indicators.sma20 !== null ? " ▼ di bawah SMA20" : ""}
+                  {indicators.sma50 !== null && close > indicators.sma50 ? " · ▲ di atas SMA50" : indicators.sma50 !== null ? " · ▼ di bawah SMA50" : ""}
+                  {indicators.sma200 !== null && close > indicators.sma200 ? " · ▲ di atas SMA200" : indicators.sma200 !== null ? " · ▼ di bawah SMA200" : ""}
+                </p>
+              </div>
+            </div>
+            {tradingPlan && (
+              <div className="border-t border-border pt-3 text-sm text-text-secondary">
+                <p className="font-semibold text-text-primary mb-1">Trading Plan Hari Ini:</p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <div><span className="text-text-tertiary text-xs">Entry</span><p className="font-mono">{formatPrice(tradingPlan.entry)}</p></div>
+                  <div><span className="text-text-tertiary text-xs">Target</span><p className="font-mono text-bullish">{formatPrice(tradingPlan.tp1)}</p></div>
+                  <div><span className="text-text-tertiary text-xs">Stop Loss</span><p className="font-mono text-bearish">{formatPrice(tradingPlan.sl)}</p></div>
+                  <div><span className="text-text-tertiary text-xs">Risk/Reward</span><p className="font-mono">1:{tradingPlan.riskReward.toFixed(1)}</p></div>
+                </div>
+              </div>
+            )}
+            <div className="border-t border-border pt-3">
+              <RegistrationInlinePrompt ticker={ticker} />
+            </div>
+          </section>
         )}
+
+        {/* Chart — free for everyone (hybrid freemium). Anon fetches via API, range-clamped to ~90d; the OHLC series is still never SSR-embedded. */}
+        <ChartSection ticker={ticker} />
+
+        {/* Today's market brief, if this stock is mentioned (≤3 days old) — anon-visible internal link */}
+        {await (async () => {
+          const brief = await articleRepository.findLatestBriefMentioning(ticker).catch(() => null);
+          if (!brief) return null;
+          return (
+            <section className="mt-4" aria-label="Brief pasar terkait">
+              <Link
+                href={`/berita/${brief.slug}`}
+                className="group flex items-start gap-3 rounded-xl border border-accent/25 bg-accent/5 p-4 hover:depth-shadow-hover transition-all"
+              >
+                <span className="shrink-0 text-lg" aria-hidden>📰</span>
+                <div className="min-w-0">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-accent">Disebut di Brief Pasar Hari Ini</p>
+                  <p className="mt-0.5 text-sm font-semibold text-text-primary leading-snug group-hover:text-accent transition-colors">
+                    {brief.title}
+                  </p>
+                  <p className="mt-1 text-xs font-semibold text-accent">Baca brief lengkap →</p>
+                </div>
+              </Link>
+            </section>
+          );
+        })()}
 
         {/* Daily Analysis — auth-gated (embeds indicator values in narrative) */}
         {isAuthed && close !== null ? (
@@ -654,35 +792,22 @@ export default async function StockDetailPage({
             />
         ) : null}
 
-        {/* Saham Hari Ini — daily snapshot article */}
-        {dailySnapshot && (
-          <section className="mt-6">
-            <Link
-              href={`/berita/${dailySnapshot.slug}`}
-              className="block bg-bg-card rounded-xl depth-shadow p-5 hover:depth-shadow-hover transition-all border border-border"
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs text-text-tertiary font-mono">
-                  Saham Hari Ini
-                </span>
-                <span className="text-xs text-text-tertiary font-mono">
-                  {new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" }).format(new Date(dailySnapshot.publishedAt))}
-                </span>
-              </div>
-              <p className="text-sm font-semibold text-text-primary hover:text-accent transition-colors">
-                {dailySnapshot.title}
-              </p>
-              {dailySnapshot.excerpt && (
-                <p className="text-xs text-text-secondary mt-1 line-clamp-2">{dailySnapshot.excerpt}</p>
-              )}
-            </Link>
-          </section>
-        )}
+        {/* Saham Hari Ini section moved to bottom (before related articles) — full daily
+            snapshot prose renders on this page now; /berita/saham-<ticker> 308s here. */}
 
         {/* Indicators + Sidebar */}
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="font-serif text-lg font-semibold text-text-primary">Indikator Teknikal</h2>
+          <Link
+            href={`/stocks/${ticker}/indikator`}
+            className="text-xs text-primary hover:underline"
+          >
+            Riwayat indikator historis →
+          </Link>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           <div className="lg:col-span-3">
-            {isAuthed && indicators ? (
+            {indicators ? (
               <IndicatorPanel
                 close={close}
                 rsi14={indicators.rsi14}
@@ -709,15 +834,10 @@ export default async function StockDetailPage({
                 ema26={indicators.ema26}
                 prevIndicator={prevIndicator}
               />
-            ) : isAuthed ? (
+            ) : (
               <div className="indicator-card depth-shadow p-8 text-center text-text-secondary">
                 Data indikator belum tersedia untuk saham ini
               </div>
-            ) : (
-              <LoginGate
-                feature="Indikator Teknikal"
-                message="Daftar gratis untuk membuka panel indikator lengkap — RSI, MACD, Bollinger Bands, Stochastic, ADX, dan moving average."
-              />
             )}
           </div>
           <div className="space-y-4">
@@ -830,6 +950,34 @@ export default async function StockDetailPage({
 
         <StockFAQWidget ticker={ticker} />
 
+        {/* Saham Hari Ini — full daily snapshot prose, SSR'd anon-visible for SEO.
+            /berita/saham-<ticker> 308s here, so the per-ticker ranking signals land
+            on this URL. Stale snapshots (>3d, e.g. paused generation) render nothing
+            rather than claiming "hari ini" with old data (article-freshness.ts). */}
+        {dailySnapshot && !isStaleArticle(dailySnapshot) && (
+          <section className="mt-6" aria-label="Saham hari ini">
+            <div className="bg-bg-card rounded-xl depth-shadow border border-border p-5 sm:p-6">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-accent">
+                  Saham Hari Ini
+                </span>
+                <span className="text-xs text-text-tertiary font-mono">
+                  {new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" }).format(dailySnapshot.updatedAt)}
+                </span>
+                <span className="ml-auto text-[10px] font-mono text-text-tertiary">
+                  Data: {DATA_SOURCE_LABEL}
+                </span>
+              </div>
+              <h2 className="font-serif text-xl sm:text-2xl font-semibold text-text-primary leading-snug">
+                {dailySnapshot.title}
+              </h2>
+              <div className="mt-4">
+                <ArticleContent content={dailySnapshot.content} />
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* Related articles */}
         {relatedArticles.length > 0 && (
           <div className="space-y-3">
@@ -884,6 +1032,9 @@ export default async function StockDetailPage({
             </div>
           </div>
         )}
+
+        {/* Internal-link mesh: ranked same-sector cards (verdict + %change) */}
+        <RelatedStocks ticker={ticker} />
 
         {/* ── SEO Internal Links: Sector peers + sector page ── */}
         {stock.sector && (

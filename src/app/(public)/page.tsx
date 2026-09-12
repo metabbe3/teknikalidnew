@@ -36,7 +36,7 @@ const RadarPreview = dynamicImport(
 export const metadata: Metadata = {
   title: "Analisa Teknikal Saham, Crypto & Chart Real-Time",
   description:
-    "Platform analisa teknikal untuk trader Indonesia — saham IDX, crypto, dan aset lainnya. Chart interaktif real-time, indikator RSI MACD Bollinger Bands, screener saham gratis, dan komunitas trader Indonesia. Pantau 956+ saham IDX.",
+    "Platform analisa teknikal untuk trader Indonesia — saham IDX dan aset lainnya. Chart interaktif real-time, indikator RSI MACD Bollinger Bands, screener saham gratis, dan komunitas trader Indonesia. Pantau 956+ saham IDX.",
   alternates: { canonical: "/" },
 };
 
@@ -119,7 +119,7 @@ async function FeaturedStocksSection({
         where: {
           interval: "1d",
           rsi14: { lt: 35 },
-          stock: { isActive: true },
+          stock: { isActive: true, assetClass: "EQUITY" },
         },
         include: {
           stock: {
@@ -375,7 +375,7 @@ export default async function HomePage() {
             </p>
             <p className="mt-5 text-base sm:text-lg text-text-secondary max-w-xl leading-relaxed">
               Chart profesional, 12 indikator teknikal, dan screener untuk{" "}
-              <span className="font-semibold text-text-primary">{totalStocks}+ saham IDX</span>, crypto, dan (segera) gold. Gratis.
+              <span className="font-semibold text-text-primary">{totalStocks}+ saham IDX</span>. Gratis.
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-3">
               <Link

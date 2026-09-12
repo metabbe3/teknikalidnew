@@ -6,6 +6,7 @@ import { SITE_URL, IDX40_TICKERS } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
 import { ArticleContent, extractHeadings, estimateReadingTime, extractTickers } from "@/components/article/article-renderer";
 import { ArrowLeft, Clock, ChevronRight } from "lucide-react";
+import { RegisterCtaBar } from "@/components/ui/register-cta-bar";
 import { ShareButtons } from "@/components/ui/share-buttons";
 import { ArticleType } from "@/generated/prisma/client";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
@@ -13,8 +14,15 @@ import { StockArticleCard } from "@/components/stock/stock-article-card";
 import { stripMarkdown } from "@/lib/utils";
 import { SnapshotBriefing, type SnapshotBriefingData } from "@/components/berita/snapshot-briefing";
 import { decimalToNumber, bigIntToNumber } from "@/lib/serialize";
+import { isStaleArticle, DATA_SOURCE_LABEL } from "@/domains/article/article-freshness";
 
+// Renderable at /berita/<slug>. Per-ticker types (STOCK_ANALYSIS, DAILY_SNAPSHOT,
+// MOVEMENT_ANALYSIS) 308 to /stocks via proxy.ts — kept renderable for direct
+// edge cases but never linked internally (see LINKABLE_TYPES).
 const BERITA_TYPES: ArticleType[] = [ArticleType.STOCK_ANALYSIS, ArticleType.NEWS, ArticleType.GENERAL, ArticleType.DAILY_SNAPSHOT, ArticleType.MOVEMENT_ANALYSIS];
+
+// Internal links (prev/next/related) point only at types with live /berita pages.
+const LINKABLE_TYPES: ArticleType[] = [ArticleType.NEWS, ArticleType.GENERAL];
 
 export async function generateMetadata({
   params,
@@ -34,12 +42,14 @@ export async function generateMetadata({
   const isLongTailSnapshot = article.articleType === ArticleType.DAILY_SNAPSHOT
     && article.tickerTag != null
     && !IDX40_TICKERS.includes(article.tickerTag);
+  // E-E-A-T: noindex stale articles so time-sensitive queries don't rank on old data
+  const isStale = isStaleArticle(article);
 
   return {
-    title: `${article.title} — Berita TeknikalID`,
+    title: article.title,
     description: article.excerpt,
     alternates: { canonical: `/berita/${slug}` },
-    ...(isLongTailSnapshot ? { robots: { index: false, follow: true } } : {}),
+    ...((isLongTailSnapshot || isStale) ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title: article.title,
       description: article.excerpt ?? undefined,
@@ -67,6 +77,7 @@ export default async function BeritaArticlePage({
     where: { slug },
     include: {
       author: { select: { name: true, username: true, image: true } },
+      reviewedBy: { select: { name: true, username: true } },
     },
   });
 
@@ -132,17 +143,17 @@ export default async function BeritaArticlePage({
 
   // Fetch related articles by ticker or overlapping tags
   const relatedWhere = article.tickerTag
-    ? { status: "PUBLISHED" as const, articleType: { in: BERITA_TYPES }, id: { not: article.id }, tickerTag: article.tickerTag }
-    : { status: "PUBLISHED" as const, articleType: { in: BERITA_TYPES }, id: { not: article.id }, tags: { hasSome: article.tags } };
+    ? { status: "PUBLISHED" as const, articleType: { in: LINKABLE_TYPES }, id: { not: article.id }, tickerTag: article.tickerTag }
+    : { status: "PUBLISHED" as const, articleType: { in: LINKABLE_TYPES }, id: { not: article.id }, tags: { hasSome: article.tags } };
 
   const [prevArticle, nextArticle, stockCards, relatedArticles] = await Promise.all([
     prisma.article.findFirst({
-      where: { status: "PUBLISHED", articleType: { in: BERITA_TYPES }, publishedAt: { lt: article.publishedAt } },
+      where: { status: "PUBLISHED", articleType: { in: LINKABLE_TYPES }, publishedAt: { lt: article.publishedAt } },
       orderBy: { publishedAt: "desc" },
       select: { slug: true, title: true },
     }),
     prisma.article.findFirst({
-      where: { status: "PUBLISHED", articleType: { in: ["STOCK_ANALYSIS", "NEWS", "GENERAL"] }, publishedAt: { gt: article.publishedAt } },
+      where: { status: "PUBLISHED", articleType: { in: LINKABLE_TYPES }, publishedAt: { gt: article.publishedAt } },
       orderBy: { publishedAt: "asc" },
       select: { slug: true, title: true },
     }),
@@ -170,11 +181,13 @@ export default async function BeritaArticlePage({
         dateModified: article.updatedAt.toISOString(),
         image: ogImageUrl,
         author: {
-          "@type": "Person",
-          name: "Tim Analis TeknikalID",
-          jobTitle: "Analis Pasar Saham",
-          url: `${SITE_URL}/berita`,
+          "@type": "Organization",
+          name: "TeknikalID",
+          url: SITE_URL,
         },
+        ...(article.reviewedBy
+          ? { editor: { "@type": "Person", name: article.reviewedBy.name, url: `${SITE_URL}/berita` } }
+          : {}),
         publisher: {
           "@type": "Organization",
           name: "TeknikalID",
@@ -257,7 +270,14 @@ export default async function BeritaArticlePage({
                     <div className="w-7 h-7 rounded-full bg-accent/10 text-accent text-xs font-semibold flex items-center justify-center">
                       T
                     </div>
-                    <span className="text-text-secondary font-medium">Tim Analis TeknikalID</span>
+                    <div className="flex flex-col leading-tight">
+                      <span className="text-text-secondary font-medium">
+                        Diproduksi oleh sistem TeknikalID{article.reviewedBy ? ` · Ditinjau oleh ${article.reviewedBy.name}` : ""}
+                      </span>
+                      <span className="font-mono text-[11px] text-text-tertiary">
+                        Data terakhir: {new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" }).format(new Date(article.updatedAt))} · Sumber: {DATA_SOURCE_LABEL}
+                      </span>
+                    </div>
                   </div>
                   <span className="font-mono text-xs">
                     {new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric" }).format(new Date(article.publishedAt))}
@@ -369,6 +389,9 @@ export default async function BeritaArticlePage({
                   </div>
                 </div>
               </div>
+
+              {/* Register CTA — anon readers (brief + articles are lead surfaces) */}
+              <RegisterCtaBar />
 
               {/* Prev / Next navigation */}
               {(prevArticle || nextArticle) && (

@@ -8,7 +8,7 @@ import { SITE_URL } from "@/lib/constants";
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "Saham Overbought Hari Ini — RSI Diatas 70 | TeknikalID",
+  title: "Saham Overbought Hari Ini — RSI Diatas 70",
   description:
     "Daftar saham IDX overbought hari ini (RSI diatas 70). Saham overbought berpotensi koreksi — pertimbangkan take profit atau hindari beli di harga tinggi.",
   alternates: { canonical: "/saham-overbought" },

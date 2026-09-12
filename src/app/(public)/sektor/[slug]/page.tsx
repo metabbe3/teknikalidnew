@@ -3,8 +3,10 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { SECTORS } from "@/lib/sectors";
 import { SITE_URL } from "@/lib/constants";
+import { stockMarketService } from "@/domains/stock/stock-market.service";
+import { StockCard } from "@/components/stock/stock-card";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 export function generateStaticParams() {
   return SECTORS.map((s) => ({ slug: s.slug }));
@@ -43,6 +45,26 @@ export default async function SectorDetailPage({
   const { slug } = await params;
   const sector = SECTORS.find((s) => s.slug === slug);
   if (!sector) notFound();
+
+  // Live data for representative tickers. SECTORS stores bare tickers; DB uses .JK.
+  // Fail-soft so a DB hiccup degrades to an empty list, not a 500.
+  const tickers = sector.stocks.map((t) => (t.endsWith(".JK") ? t : `${t}.JK`));
+  let stocks: Awaited<ReturnType<typeof stockMarketService.getStockBatchWithIndicators>> = [];
+  try {
+    stocks = await stockMarketService.getStockBatchWithIndicators(tickers);
+  } catch {
+    stocks = [];
+  }
+  const breath = stocks.reduce(
+    (acc, s) => {
+      const l = s.signalLabel ?? "";
+      if (l.includes("Bullish")) acc.bullish++;
+      else if (l.includes("Bearish")) acc.bearish++;
+      else acc.neutral++;
+      return acc;
+    },
+    { bullish: 0, bearish: 0, neutral: 0 },
+  );
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -139,32 +161,29 @@ export default async function SectorDetailPage({
           </p>
         </div>
 
-        {/* Stock list */}
+        {/* Stock list — live verdicts + %change */}
         <div>
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-text-tertiary mb-4">
-            Saham Representatif
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {sector.stocks.map((ticker) => (
-              <Link
-                key={ticker}
-                href={`/stocks/${ticker}`}
-                className="group flex items-center gap-3 bg-bg-card rounded-xl depth-shadow p-4 hover:depth-shadow-hover border border-border transition-all"
-              >
-                <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center font-bold text-accent text-sm font-mono shrink-0">
-                  {ticker.slice(0, 2)}
-                </div>
-                <div className="min-w-0">
-                  <p className="font-semibold text-text-primary group-hover:text-accent transition-colors font-mono">
-                    {ticker}
-                  </p>
-                  <p className="text-xs text-text-tertiary">
-                    Lihat analisis teknikal →
-                  </p>
-                </div>
-              </Link>
-            ))}
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-text-tertiary">
+              Saham Sektor {sector.name} Hari Ini
+            </h2>
+            {stocks.length > 0 && (
+              <div className="flex items-center gap-3 text-xs font-mono">
+                <span className="text-bullish">▲ {breath.bullish}</span>
+                <span className="text-gray-400">◆ {breath.neutral}</span>
+                <span className="text-bearish">▼ {breath.bearish}</span>
+              </div>
+            )}
           </div>
+          {stocks.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {stocks.map((s) => (
+                <StockCard key={s.ticker} {...s} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-text-tertiary">Belum ada data harga untuk saham di sektor ini.</p>
+          )}
         </div>
 
         {/* Back link */}

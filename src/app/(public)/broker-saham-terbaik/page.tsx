@@ -4,7 +4,7 @@ import Link from "next/link";
 import { SITE_URL } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: "Perbandingan Broker Saham Terbaik 2026 — Fee Termurah & Aplikasi Terbaik | TeknikalID",
+  title: "Perbandingan Broker Saham Terbaik 2026 — Fee Termurah & Aplikasi Terbaik",
   description:
     "Perbandingan lengkap broker saham Indonesia 2026: Stockbit, Bareksa, IPOT, Mirae, BNI Sekuritas. Bandingkan fee beli/jual, minimum deposit, fitur, dan aplikasi. Pilih broker terbaik untuk trading saham IDX.",
   alternates: { canonical: "/broker-saham-terbaik" },

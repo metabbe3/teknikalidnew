@@ -35,7 +35,10 @@ export const metadata: Metadata = {
   },
 };
 
-export const dynamic = "force-dynamic";
+// ISR (was force-dynamic): the unbounded per-request article query here OOM-crashed
+// the container (2026-09-07 heap FATAL on this exact URL → GSC 5xx). Educational
+// content is slow-moving; hourly revalidation removes the per-request DB load.
+export const revalidate = 3600;
 
 export default async function AkademiPage({
   searchParams,
@@ -66,6 +69,7 @@ export default async function AkademiPage({
   const allArticles = await prisma.article.findMany({
     where: { status: "PUBLISHED", articleType: "EDUCATIONAL" },
     orderBy: { publishedAt: "desc" },
+    take: 200, // hard ceiling — unbounded growth was the OOM trigger
     include: {
       author: { select: { name: true, username: true } },
     },
