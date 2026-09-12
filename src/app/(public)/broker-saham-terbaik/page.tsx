@@ -6,7 +6,7 @@ import { SITE_URL } from "@/lib/constants";
 export const metadata: Metadata = {
   title: "Perbandingan Broker Saham Terbaik 2026 — Fee Termurah & Aplikasi Terbaik",
   description:
-    "Perbandingan lengkap broker saham Indonesia 2026: Stockbit, Bareksa, IPOT, Mirae, BNI Sekuritas. Bandingkan fee beli/jual, minimum deposit, fitur, dan aplikasi. Pilih broker terbaik untuk trading saham IDX.",
+    "Perbandingan broker saham Indonesia 2026 — Stockbit, IPOT, Mirae, Bareksa. Bandingkan fee, minimum deposit, dan fitur aplikasi, lalu pilih broker paling pas.",
   alternates: { canonical: "/broker-saham-terbaik" },
   keywords: [
     "broker saham terbaik 2026",

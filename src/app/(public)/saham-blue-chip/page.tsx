@@ -10,7 +10,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Daftar Saham Blue Chip Indonesia — IDX40 & LQ45 Terlengkap",
   description:
-    "Daftar lengkap saham blue chip Indonesia (IDX40 & LQ45) dengan analisa teknikal. Saham blue chip adalah saham perusahaan besar dengan likuiditas tinggi seperti BBCA, BBRI, TLKM, ASII.",
+    "Daftar saham blue chip Indonesia (IDX40 & LQ45) seperti BBCA, BBRI, dan TLKM dengan analisa teknikal gratis. Pelajari tren harga saham besar sebelum membeli.",
   alternates: { canonical: "/saham-blue-chip" },
   keywords: [
     "saham blue chip indonesia",

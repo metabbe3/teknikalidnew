@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
   title: "Harga Crypto Hari Ini — BTC, ETH & 400+ Koin (IDR) + Screener",
   description:
-    "Harga crypto dalam Rupiah (Indodax) untuk ratusan koin. Browse semua koin atau gunakan Screener teknikal — RSI, MACD, SMA, sinyal trading crypto bahasa Indonesia.",
+    "Harga crypto dalam Rupiah lengkap dengan screener teknikal RSI, MACD, dan SMA. Analisa ratusan koin, pantau sinyal beli-jual, dan ambil keputusan lebih cepat.",
   alternates: { canonical: "/crypto" },
   keywords: ["harga crypto hari ini", "harga btc idr", "daftar crypto", "screener crypto", "analisa teknikal crypto", "bitcoin indonesia"],
   openGraph: {
