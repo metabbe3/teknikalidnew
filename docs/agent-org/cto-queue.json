@@ -1,0 +1,32 @@
+{
+  "protocol": "CTO task queue — dibaca CTO agent (slot 07:30 & 16:45; quiet zone 09:00-16:15 = larang deploy), ditulis CEO (08:15) / Council (Min 08:00). Entry: {id, date, spec, priority (P0 darurat/P1 tinggi/P2 normal), north_star, status (pending/done/failed/blocked_for_owner), result}. CTO: max 1 deploy per slot (2/hari total), eksekusi claude code pipeline, update status + verify evidence.",
+  "entries": [
+    {
+      "id": "test-001",
+      "date": "2026-09-13",
+      "spec": "INTENT: Naikkan konversi register dari signal pages. Brief 7d: register_views=2 dari 668 views, padahal /saham-oversold (21v), /saham-golden-cross (10v), /saham-volume-spike (7v) + screener preset golden_cross (104v) punya trafik nyata; IG carousel mulai 14 Sep 17:30 akan tambah trafik ke sini. Tugas: tambahkan CTA register kontekstual (inline banner setelah 5 baris pertama tabel screener) di ketiga signal pages. ACCEPTANCE CRITERIA: (1) CTA render di /saham-oversold, /saham-golden-cross, /saham-volume-spike; (2) link UTM-tagged ke /auth/signup agar register_views per-source terukur; (3) tidak ada regresi layout mobile (viewport 375px); (4) Lighthouse/CLS tidak memburuk; (5) deploy via claude code pipeline, bukan manual.",
+      "priority": "P1",
+      "north_star": "register growth (baseline ~9/minggu, target 2x dalam 2 minggu via konversi traffic yang sudah ada)",
+      "status": "tested-dryrun",
+      "result": "[DRY-RUN SPEC — TIDAK DIEKSEKUSI]\n1. BUAT: src/components/marketing/register-cta.tsx (server component, banner inline: copy 'Lihat sinyal ini tiap hari? Daftar gratis' + tombol Link ke /auth/register?utm_source=signal_page&utm_medium=cta&utm_campaign={slug}; catatan koreksi: route register = /auth/register, BUKAN /auth/signup seperti di intent CEO).\n2. UBAH 3 file: src/app/(public)/saham-oversold/page.tsx, saham-golden-cross/page.tsx, saham-volume-spike/page.tsx — insert <RegisterCta slug=\"...\"/> setelah </table> (lebih aman dari 'setelah 5 baris tabel' karena tabel di-render server-side per-baris via .map; posisi setelah tabel = CLS nol).\n3. VERIFY: (a) pnpm build && grep CTA di output HTML masing-masing route (curl -A Mozilla -L https://teknikal.id/saham-oversold | grep -c 'utm_campaign=saham-oversold'); (b) cek layout 375px via DevTools; (c) pantau register_views per-source di ceo_brief.py 7d berikutnya.\n4. ROLLBACK: git revert single commit (1 commit = 1 task), redeploy pipeline; tidak ada migration DB sehingga rollback bersih tanpa langkah tambahan."
+    },
+    {
+      "id": "council-2026-09-13-01",
+      "date": "2026-09-13",
+      "spec": "INTENT (Council 13 Sep): konversi trafik signal pages yang sudah ada jadi register — retro 7-13 Sep: register_views=2 vs baseline ~9/minggu, padahal signal pages punya trafik nyata (/saham-oversold 21v, /saham-pullback-sma20 15v, /saham-golden-cross 10v, /saham-volume-spike 7v) + /stocks 170v; IG carousel debut 14 Sep 17:30 akan menambah trafik ke halaman ini. EKSEKUSI: jalankan spec teknis hasil dry-run test-001 (register-cta.tsx + insert <RegisterCta> setelah tabel di 3 signal pages; route benar /auth/register — bukan /auth/signup; UTM utm_source=signal_page&utm_medium=cta&utm_campaign={slug}). SLOT: CTO hanya 07:30 & 16:45; quiet zone 09:00-16:15 = DILARANG deploy — kalau belum selesai sebelum 08:45, set status=deferred dan lanjut slot 16:45. ACCEPTANCE CRITERIA: (1) CTA render live di /saham-oversold, /saham-golden-cross, /saham-volume-spike (curl -A Mozilla -L | grep utm_campaign masing-masing route); (2) link UTM-tagged ke /auth/register agar register_views per-source terukur; (3) tanpa regresi layout 375px & CLS; (4) register_views per-source terlihat di ceo_brief 7d berikutnya; (5) via claude code pipeline, 1 commit sempit, rollback = git revert.",
+      "priority": "P1",
+      "north_star": "register growth: register_views 2 → ≥9/minggu dalam 2 pekan (konversi trafik existing)",
+      "status": "pending",
+      "result": null
+    },
+    {
+      "id": "council-2026-09-13-02",
+      "date": "2026-09-13",
+      "spec": "INTENT (Council 13 Sep): naikkan discovery artikel + session depth (north star: time spent & returning). Retro 7-13 Sep: 16 dari 20 artikel = 0 views — halaman yang benar-benar dipakai orang adalah signal pages & screener, tapi artikel tidak menautkannya. Tugas: komponen server-side 'Sinyal Terkait' di template artikel (NEWS brief & STOCK_ANALYSIS) yang render ≥2 link kanonik ke signal pages (/saham-golden-cross, /saham-oversold, /saham-volume-spike, /saham-pullback-sma20) berdasar ticker/sinyal yang disebut artikel + 1 link ke /stocks. ACCEPTANCE CRITERIA: (1) blok Sinyal Terkait render di artikel baru + retro-fit 10 artikel terakhir (curl grep href kanonik); (2) link internal pakai path kanonik signal pages; (3) tanpa regresi CLS/mobile 375px; (4) terukur 2 pekan: signal page views naik dari baseline 38v/pekan → ≥60v/pekan dan pages/session naik. SLOT: kerjakan setelah council-2026-09-13-01; patuh quiet zone 09:00-16:15 (defer kalau keburu jam market).",
+      "priority": "P2",
+      "north_star": "time spent & returning: signal page views 38 → ≥60/pekan + pages/session naik dalam 2 pekan",
+      "status": "pending",
+      "result": null
+    }
+  ]
+}
