@@ -51,3 +51,24 @@ Template HTML di dalam f-string Python = SyntaxError berulang (CSS `{}` bentrok 
 ## 2026-09-13 | domain | Jam tutup IDX = ~16:00, bukan 15:00
 
 Sesi II sampai 15:49:59 + prapenutupan 16:00 + pascapenutupan 16:15 (JATS terbaru). Quiet zone resmi 09:00–16:15. Data lama di kepala agent = salah — selalu verify jam bursa dari sumber fresh sebelum pasang jadwal.
+
+## 2026-09-13 | tooling | GSC UI kebal klik programmatic
+
+Submit sitemap via GSC web (Angular closure, tanpa <form>): 6 jurus gagal — JS .click(), CDP trusted mouse events (hover+press+release), per-char keydown, insertText, form.requestSubmit, internal fetch endpoint (404). Error "Alamat peta situs tidak valid" bahkan saat value bersih. Owner klik manual 10 detik = beres.
+**Pencegahan:** navigasi & BACA data GSC via gsc_cdp.py aman; untuk SUBMIT/konfirmasi UI → minta owner klik di window Chrome visible (~/.hermes/browser-gsc, port 9222). Jangan buang >10 menit untuk UI automation Google.
+
+### 2026-09-13 — Dashboard /site "nothing happened when clicked"
+- Gejala: klik tab /site kadang diam — server render sinkron berat (brief DB 90s + IG bridge 25s + curl + docker + git) pas cache expired; di HP kelihatan mati.
+- Fix 1: stale-while-revalidate semua sumber berat (_run_brief/_ig_stats/_ig_engagement/_status_cells) — cache lama disaji instan, refresh jalan di background thread.
+- Fix 2: kartu paling lambat (IG Engagement, Status&Infra) jadi LAZY: server render skeleton + client fetch /api/site-card?f=ig|status.
+- Pitfall: route /api/site-card HARUS di-cek sebelum branch /api generik (startswith menang salah urutan) — gejalanya response JSON /api masuk ke kartu.
+- Hasil: /site first-byte 0.09s (dari 30-90s saat cache expired), 13 kartu lengkap.
+
+## 2026-09-14 — Data-integrity: baris sesi fantasi non-trading (P0 ceo-2026-09-14-01)
+
+- Root cause BERLAPIS: (1) Yahoo v7 quote mati ~8 Sep → provider diganti TradingView scanner (10 Sep, UNCOMMITTED) yang regularMarketTime=null + marketState di-hardcode REGULAR → guard lama (filter POSTPOST + quote-time stamping) tidak pernah memicu; scanner re-serve OHLC+volume sesi terakhir di luar jam bursa sehingga volume-filter pun lolos. (2) fix cleanup 85k-row 7 Sep + migrasi scanner hidup sebagai working-tree diff 4 hari — HEAD tanpa guard, tiap deploy dari checkout bersih kehilangan fix lagi (bukti: MAX(StockPrice)=Minggu 13 Sep lolos gate pagi). (3) CronLog.startedAt = UTC — jam 17:02 WIB terbaca 10:02, forensik harus selalu pakai AT TIME ZONE Asia/Jakarta.
+- Gejala: 865 baris StockPrice+StockIndicator tertanggal Minggu 13 Sep (ditulis Senin 00:00-10:21 UTC oleh cron 5-menit tanpa guard efektif), 865 baris pre-market Senin (tertulis 00:00 WIB, harga identik Jumat). MAX(date)=Minggu lolos freshness gate pagi (hole #2). Golden-cross ter-mutasi 75→77→82.
+- Fix (commit d29f24d, deploy 17:17 WIB): write-guard isWibWriteWindow() di buildPriceItems — tulis StockPrice hanya Sen-Jum 09:00-18:00 WIB (sesi 09:00-16:15 + buffer sync EOD 16:30/17:00); di luar jendela return []. Diverifikasi di bundle: konstanta 540/1080 ada di sync-intraday/route.js; run 17:17+17:26 WIB perilaku benar (865 upsert tanggal sama, bukan baris baru).
+- Fix gate: teknikalid_data_freshness.py men-flag MAX(date) akhir pekan sebagai ANOMALI (ok=false) — unit-test is_weekend: Minggu/Sabtu=True; live run FRESH, MAX=Senin 14 Sep, rows 865.
+- Cleanup dieksekusi (policy owner 14 Sep, backup 08:30 valid): DELETE 865 StockPrice + 865 StockIndicator tanggal 2026-09-13, transaksi tunggal, verifikasi pasca 0 baris. Log eksekusi: docs/agent-org/decisions.md.
+- Sisa utang (untuk owner/CTO berikut): ~60k baris weekend historis 2025-03→2026-07 (pre-cleanup-7Sep, ~330-487 baris/Sabtu) + 865 baris pre-market Senin 14 Sep tertimpa EOD asli (aman, upsert) + kalender libur IDX belum ada (~18 hari/thn) + guard masih uncommitted-untuk-file-lain (market-quotes.ts dll) — commit sisa diff sebelum deploy berikutnya.

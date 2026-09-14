@@ -74,3 +74,13 @@ Deploy limit: 2/hari. DB read-only. auth/payment/security/monetisasi = owner-onl
   4. WHERE clause sempit & spesifik (no blanket DELETE).
   5. Log eksekusi + rowcount ke decisions.md.
 - Tetap `blocked_for_owner`: auth/payments/security/env vars/drop database/drop schema.
+
+## 2026-09-14 17:30 WIB — CTO sore: cleanup baris fantasi 13 Sep (ceo-2026-09-14-01)
+
+- Konteks: root cause + fix write-guard isWibWriteWindow() (commit d29f24d, deploy 17:17 WIB) — lihat lessons-learned.md 14 Sep.
+- Backup: ~/backups/teknikalid/last-success = 2026-09-14T08:30 (valid <24 jam).
+- SQL dieksekusi (docker exec psql, transaksi tunggal BEGIN/COMMIT):
+  DELETE FROM "StockPrice" WHERE date::date = '2026-09-13';  → 865 rows
+  DELETE FROM "StockIndicator" WHERE date::date = '2026-09-13';  → 865 rows
+- Preview COUNT sebelum: 865 / 865 (WHERE sama). Verifikasi pasca: 0 / 0 baris. Kontaminasi baru berhenti (guard live, run 17:17/17:26 WIB perilaku benar).
+- Sisa utang data (bukan scope hari ini): ~60k baris weekend historis 2025-03→2026-07 + kalender libur IDX.
