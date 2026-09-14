@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/layout/page-hero";
+import { RegisterCta } from "@/components/signal/register-cta";
 import Link from "next/link";
 import { technicalAnalysisService } from "@/domains/stock/technical-analysis.service";
 import { formatPrice, formatPercent, stripJk, changeColor, rsiColor } from "@/lib/utils";
@@ -222,6 +223,8 @@ export default async function SahamOversoldPage() {
               )}
             </tbody>
           </table>
+
+          <RegisterCta slug="saham-oversold" />
         </div>
 
         <div className="mt-8 flex flex-wrap gap-3">
