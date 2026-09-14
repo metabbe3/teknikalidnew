@@ -45,3 +45,14 @@ Deploy limit: 2/hari. DB read-only. auth/payment/security/monetisasi = owner-onl
 **HEALTH AGENT ORG (audit 13 Sep):** 13 job teknikal.id di jobs.json — semua enabled. Model terpin: Mandor daily glm-5.3, Weekly Retro glm-5.3, Watchdog no_agent (script), SEO Monitor no_agent, IG Carousel glm-5.3-flash, CEO Daily glm-5.3, CEO Evening glm-5.3-flash, CTO pagi+sore glm-5.3, Content Reviewer glm-5.3-flash, Sunday Council glm-5.3, Monthly Recap glm-5.3. last_status: tidak ada fail/skip — Watchdog ok (1711x), Mandor ok 13 Sep 06:34, Weekly Retro ok 7 Sep. CATATAN: 5 job baru (CEO/CTO/Reviewer/IG/Council, dibuat 13 Sep) belum pernah jalan — completed=0, debut Senin-Minggu ini; IG Carousel schedule 17:30 Mon-Sat, next 14 Sep; CEO Evening debut malam ini 21:00.
 
 **VERDICT PEKAN:** pekan observasi + 2 perbaikan konversi berbiaya rendah. Tidak ada kanal yang mati — traffic turun besar kemungkinan reindex GSC, bukan konten. Keputusan besar ditunda ke council 20 Sep setelah data IG carousel + reindex masuk.
+
+- 15:0x | Schedule queue: council-01 → Senin 07:30 CTO pagi, council-02 → Senin 16:45 CTO sore; test-001 superseded | owner lihat dashboard: 'CTO ada pending, kapan dikerjakan?' | queue terupdate, dashboard akan tampil slot
+
+## 2026-09-14 — Agent baru: SEO Keyword Researcher (b469b2365817)
+- **Trigger:** owner minta agent khusus riset query GSC + visited pages ("gsc data is best").
+- **Keputusan:** agent BARU (bukan diembed ke CEO/Council) — analisis keyword butuh fokus + history diff mingguan, beda ritme dari CEO harian. Read-only murni.
+- **Jadwal:** Selasa 08:00 WIB (hari retro+listicle pipeline), glm-5.3-flash (pinned manual — bug cronjob_manage model=None), attach_to_session=true.
+- **Input:** ~/.hermes/data/teknikalid-growth/gsc-keyword-history.jsonl (BARU: gsc_snapshot.py append queries harian, dedupe per tanggal) + page_views DB read-only + web_search varian ID.
+- **Klasifikasi:** striking-distance (pos 5-15) / content-gap (pos>=30, impr>=10) / intent-gagal.
+- **Output:** max 3 brief [KEYWORD-RESEARCH] ke ceo-decisions.md → pipeline Mandor; laporan 10-15 baris ke owner.
+- **Guardrail:** no deploy, no repo edit, no credential, no self-edit cron.
