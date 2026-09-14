@@ -100,3 +100,12 @@ Verifikasi: jobs.json valid 33 job, 25 LLM pinned, semua enabled, next_run utuh.
 - Bukti DB: AgentJob terakhir 10 Sep 06:35 done, setelahnya 0 job dibuat (bukan failed).
 - Fix: prompt Mandor + blok KONTEKS SEJARAH (pivot 10 Sep + gen_trending_news/gen_evergreen juga mati by design).
 - Sisa: anomali minor `log --json` error → queue CTO.
+
+## 2026-09-15 — Backup: false alarm semalam dijelaskan + celah idempotent DITUTUP
+- Alert 01:15 "tanpa CREATE TABLE" = false alarm versi lama (grep -q SIGPIPE race, sudah di-fixed dini hari tadi).
+- File backup 15 Sep valid 47MB/52 tabel; marker 01:17 (regen pas fix).
+- CELAH BARU DITUTUP (usulan Evolution Coordinator malam #1): cabang idempotent dulu verify cuma gzip -t →
+  dump korup bisa lolos jadi last-success (gate destructive SQL!). Sekarang: idempotent branch verify
+  CREATE TABLE >=40 tabel juga; kalau gagal → ALERT + regenerate, BUKAN tulis last-success.
+- Verified end-to-end: regen 06:43 exit 0 (47MB/52 tabel) + run#2 idempotent 2.4s exit 0.
+- hivePOS backup sidecar sehat: pos_saas_20260914_223537 37 tabel, umur 1.1 jam.
