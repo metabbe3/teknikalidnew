@@ -84,3 +84,13 @@ Deploy limit: 2/hari. DB read-only. auth/payment/security/monetisasi = owner-onl
   DELETE FROM "StockIndicator" WHERE date::date = '2026-09-13';  → 865 rows
 - Preview COUNT sebelum: 865 / 865 (WHERE sama). Verifikasi pasca: 0 / 0 baris. Kontaminasi baru berhenti (guard live, run 17:17/17:26 WIB perilaku benar).
 - Sisa utang data (bukan scope hari ini): ~60k baris weekend historis 2025-03→2026-07 + kalender libur IDX.
+
+## 2026-09-15 — GUARDRAIL AUDIT (owner request)
+Audit semua agent org. Patches applied ke 11 agent (teknikal 5 + hivepos 6):
+- CTO (4 slot): ANTI-LOOP (2x gagal = stop+eskalasi), NO-PANIC-REFACTOR, ROLLBACK ANCHOR (catat image+commit sebelum deploy), VERIFY EXTERNAL (curl konten kunci bukan cuma tsc), [SILENT] dilarang (slot kosong = health report).
+- CEO (3): anti-loop dispatch (topik failed 2x = eskalasi bukan re-dispatch), max 2 dispatch + 1 eksperimen/deploy, duplikat-queue check.
+- Mandor: gap data wajib eksplisit, silent dilarang.
+- Blog Writer hivePOS: SQL hanya INSERT BlogPost; tabel lain haram; pre-publish idempotent check + post-publish verify; anti-loop.
+- IG autopost: double-post guard via post-log; 2x gagal = fallback manual; angka wajib _caption_numbers_ok.
+- GSC snapshot: tab safety (jangan sentuh tab IG).
+Verifikasi: jobs.json valid 33 job, 25 LLM pinned, semua enabled, next_run utuh.
