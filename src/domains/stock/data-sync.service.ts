@@ -13,15 +13,37 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+/** The TradingView scanner (market-quotes.ts) carries no trade timestamp
+ * (regularMarketTime is always null, marketState is hardcoded 'REGULAR'), and it
+ * re-serves the last session's data with full volume outside exchange hours. The
+ * old POSTPOST filter + quote-time stamping therefore never fire, and the
+ * 5-minute intraday cron mints fantasy rows stamped with the wall-clock date —
+ * 865 rows dated Sunday 2026-09-13 (from 17:02) and Monday 14 Sep pre-market
+ * (00:00–08:59). So writing is only allowed Mon–Fri 09:00–18:00 WIB (session
+ * 09:00–16:15 plus the EOD sync buffer at 16:30/17:00); outside that window the
+ * data would be re-served last-session quotes. Holidays are NOT covered — see
+ * TODO in the filter below. */
+function isWibWriteWindow(): boolean {
+  const wib = new Date(Date.now() + 7 * 60 * 60 * 1000);
+  const day = wib.getUTCDay();
+  if (day === 0 || day === 6) return false;
+  const mins = wib.getUTCHours() * 60 + wib.getUTCMinutes();
+  return mins >= 9 * 60 && mins <= 18 * 60;
+}
+
 function buildPriceItems(
-  quoteResults: { ticker: string; quote: { regularMarketPrice?: number | null; regularMarketOpen?: number | null; regularMarketPreviousClose?: number | null; regularMarketDayHigh?: number | null; regularMarketDayLow?: number | null; regularMarketVolume?: number | null } | null }[],
+  quoteResults: { ticker: string; quote: { regularMarketPrice?: number | null; regularMarketOpen?: number | null; regularMarketPreviousClose?: number | null; regularMarketDayHigh?: number | null; regularMarketDayLow?: number | null; regularMarketVolume?: number | null; regularMarketTime?: number | null } | null }[],
   stockLookup: Map<string, { id: number }>,
 ) {
+  if (!isWibWriteWindow()) return [];
   return quoteResults
     .filter((r): r is { ticker: string; quote: NonNullable<typeof r.quote> } => {
       if (!r.quote) return false;
       if (r.quote.regularMarketPrice === null) return false;
-      // Skip stale data on weekends/holidays — no real trading
+      // Skip stale data — no real trading. TODO(holidays): the scanner re-serves
+      // the last session's data on IDX holidays too; weekends are caught above,
+      // holidays would mint same-shape dup rows (~18 days/yr) — needs an IDX
+      // holiday calendar or a cross-check against the last stored row date.
       if (!r.quote.regularMarketVolume || r.quote.regularMarketVolume < 100) return false;
       // Only skip truly post-market data; volume filter handles weekends/holidays
       const ms = (r.quote as Record<string, unknown>).marketState;
@@ -32,9 +54,16 @@ function buildPriceItems(
       const stock = stockLookup.get(r.ticker);
       if (!stock) return null;
       const price = r.quote.regularMarketPrice!;
+      // Stamp with the QUOTE's market time, not wall clock. On weekends/holidays
+      // Yahoo re-serves Friday's quote; a wall-clock date minted exact-duplicate
+      // Sat/Sun rows (~85k contaminated rows, compressed every indicator window).
+      // With quote-time stamping a weekend cron run upserts into the real trading
+      // date instead — a no-op.
+      const marketTime = r.quote.regularMarketTime;
+      const date = marketTime && marketTime > 0 ? new Date(marketTime * 1000) : new Date();
       return {
         stockId: stock.id,
-        date: new Date(),
+        date,
         open: r.quote.regularMarketOpen ?? r.quote.regularMarketPreviousClose ?? price,
         high: r.quote.regularMarketDayHigh ?? price,
         low: r.quote.regularMarketDayLow ?? price,
