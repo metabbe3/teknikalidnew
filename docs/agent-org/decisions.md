@@ -56,3 +56,21 @@ Deploy limit: 2/hari. DB read-only. auth/payment/security/monetisasi = owner-onl
 - **Klasifikasi:** striking-distance (pos 5-15) / content-gap (pos>=30, impr>=10) / intent-gagal.
 - **Output:** max 3 brief [KEYWORD-RESEARCH] ke ceo-decisions.md → pipeline Mandor; laporan 10-15 baris ke owner.
 - **Guardrail:** no deploy, no repo edit, no credential, no self-edit cron.
+
+## 2026-09-14 (CEO Morning)
+
+- 08:25 | DISPATCH P0 ceo-2026-09-14-01: sesi fantasi di StockPrice/StockIndicator | 865 rows utk 13 Sep (MINGGU, bursa tutup) + 14 Sep pre-market; close identik Jumat 11/9 di 3 tanggal (BBCA 6325, BBRI 3270, AMMN 4860); golden_cross termutasi 75→77→82 oleh sesi yang tidak ada | query psql langsung 08:15; CTO sore 16:45 diagnose writer + trading-day guard
+- 08:25 | DEFER council-2026-09-13-02 ke 15 Sep 07:30 | max 1 deploy/slot; P0 data-integrity menang slot sore hari ini | cto-queue.json scheduled_slot updated
+- 08:25 | Register CTA (council-01) TERVERIFIKASI live — pantau saja, tidak ada pekerjaan konversi baru | curl 3/3 signal pages HTTP 200 + utm_campaign ter-render (deploy CTO pagi 07:4x); register_views 2/7d masih pra-CTA — jendela ukur 2 pekan | curl -A Mozilla pagi ini
+- 08:25 | Fix metrik ceo_brief.py: login_views selalu 0 karena LIKE '%auth/login%' padahal route asli /auth/signin (9 views/7d tak terhitung) | grep script + top_pages | patch 1 baris di script tooling (bukan deploy)
+
+## 2026-09-14 — Guardrail update: destructive SQL + backup harian (owner approval)
+- **Owner decision:** "SQL boleh di run, asal lakukan backup harian" → policy `blocked_for_owner` utk DELETE/UPDATE DILOONGGAR (conditional).
+- **Backup harian LIVE:** `teknikalid_db_backup.sh` (cron bc592e49f339, 01:15, no_agent watchdog: sukses=diam, gagal=ALERT ke owner). pg_dump → gzip ~/backups/teknikalid/db-YYYYMMDD.sql.gz, verify gzip+CREATE TABLE+size, prune 14 hari. First run 14 Sep 08:30: 50.3MB, 52 CREATE TABLE, verified. Marker `last-success` = age check utk agent guard.
+- **Syarat CTO run destructive SQL (semua wajib):**
+  1. Backup valid <24 jam (baca `~/backups/teknikalid/last-success`; kalau stale → run backup script dulu).
+  2. Preview SQL exact di report sebelum eksekusi.
+  3. COUNT baris target dulu (SELECT COUNT dengan WHERE yang sama).
+  4. WHERE clause sempit & spesifik (no blanket DELETE).
+  5. Log eksekusi + rowcount ke decisions.md.
+- Tetap `blocked_for_owner`: auth/payments/security/env vars/drop database/drop schema.
