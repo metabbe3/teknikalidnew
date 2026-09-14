@@ -94,3 +94,9 @@ Audit semua agent org. Patches applied ke 11 agent (teknikal 5 + hivepos 6):
 - IG autopost: double-post guard via post-log; 2x gagal = fallback manual; angka wajib _caption_numbers_ok.
 - GSC snapshot: tab safety (jangan sentuh tab IG).
 Verifikasi: jobs.json valid 33 job, 25 LLM pinned, semua enabled, next_run utuh.
+
+## 2026-09-15 — KLARIFIKASI: MOVEMENT_ANALYSIS memang dimatikan (owner confirm)
+- Mandor 15 Sep lapor "pipeline MOVEMENT mati 3 hari" → FALSE ALARM: gen_movement_analysis sengaja dihapus dari AgentConfig 10 Sep saat pivot NEWS (owner: "Movement analysis bukanya memang di matikan?").
+- Bukti DB: AgentJob terakhir 10 Sep 06:35 done, setelahnya 0 job dibuat (bukan failed).
+- Fix: prompt Mandor + blok KONTEKS SEJARAH (pivot 10 Sep + gen_trending_news/gen_evergreen juga mati by design).
+- Sisa: anomali minor `log --json` error → queue CTO.
