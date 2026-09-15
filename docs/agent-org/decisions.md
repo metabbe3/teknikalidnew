@@ -161,3 +161,13 @@ Trust fix: artikel bilang '278.5 juta lot' padahal DB = saham (2.78 juta lot) ->
 3. Baseline-then-deploy — snapshot before/after dengan list check sama, diff eksplisit
 4. handoff.md — kontinuitas antar slot (dibaca di awal, di-append di akhir)
 Skip (sudah tercakup / gak relevan): RTK-caveman-ponytail (tiering udah), semantic search (repo kecil).
+
+## 2026-09-15 — COST OPTIMIZATION: LLM → script (owner: "pastikan hasil & akurasi sama, kalau makin jelek jangan")
+Parity-tested sebelum switch (angka identik vs output LLM kemarin):
+1. GSC Snapshot teknikal → no_agent gsc_daily_line.py (LLM cuma format 1 baris; parity: klik 28 · tayang 4,93rb · CTR 0,6% · pos 37,4 ✓ + bonus trend 4w)
+2. hivePOS GSC daily → no_agent gsc_hivepos_daily_line.py (angka+diff; parity 7/72/9,7%/10,6 ✓);
+   INSIGHT panjang (query peluang) PINDAH weekly Senin 03:30 flash 47ba1fb7 — kualitas insight dijaga, frekuensi turun
+3. Mandor → hybrid: mandor_brief.py pre-run (artikel+HTTP live, views nobot, top pages, eod) — LLM fokus anomali/narasi;
+   parity: views kemarin 169-170 (selisih ±1 = boundary jam 06:30 cutoff), artikel+top pages identik
+Schema lesson: Article (bukan BlogPost), createdAt camelCase, StockPrice.date — mandor_brief verified live.
+Rollback: llm_backup field di jobs.json tiap job.
