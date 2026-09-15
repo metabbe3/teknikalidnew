@@ -115,3 +115,41 @@ Verifikasi: jobs.json valid 33 job, 25 LLM pinned, semua enabled, next_run utuh.
 - Commit 90225ca (2 files +8/-8: fmtVol + formatVolumeHuman unit word only; hunk authorId pre-existing TIDAK ikut).
 - DB patch plan (owner-approved SQL protocol, backup 06:44 valid <24jm): UPDATE "Article" SET content=replace(content,' lot',' saham') WHERE status='PUBLISHED' AND content LIKE '%juta lot%'; — preview COUNT=41, WHERE sempit (hanya string ' lot' → ' saham' di baris yang mengandung 'juta lot'; pola label formatter selalu '<num> lot'). Eksekusi + rowcount dicatat di bawah.
 - SQL EXECUTED 07:44: UPDATE "Article" SET content=replace(content,' lot',' saham') WHERE status='PUBLISHED' AND content LIKE '%juta lot%' → **41 rows** (transaksi tunggal). Residual 'juta lot'=0; 'juta saham'=42 (41 patched + 1 pre-existing benar). Pre-checks: max per-article ' lot' count == 'juta lot' count (3=3); 5 artikel edukasi luar scope ('1 lot = 100 lembar') terverifikasi TIDAK tersentuh WHERE.
+
+## 2026-09-15 07:30 CTO pagi — reviewer-2026-09-15-01 DONE (volume label 100x)
+Trust fix: artikel bilang '278.5 juta lot' padahal DB = saham (2.78 juta lot) -> 100x inflated. Fix generator commit 90225ca (label lot->saham, 2 formatter), deploy app+worker 07:46 pre-market, patch SQL 41 artikel (protokol owner-approved, backup 06:44, residual=0). Live: BBRI '278.5 juta saham', MDKA '77.7 juta saham'. Bonus: mandor-01 (log --json IndexError) fixed tanpa deploy. Deploy 1/2. Next: council-02 16:45.
+
+## 2026-09-15 — [KEYWORD-RESEARCH] Mingguan (baseline hari-2 snapshot GSC baru; <7 hari → belum ada diff mingguan). 3 brief ke pipeline Mandor:
+
+**Brief 1 — "idx smc liquid" · P1**
+- Keyword: idx smc liquid (16 impr, pos 76.5, 0 klik) + varian "indeks smc liquid"
+- Intent: informasional — apa itu indeks + daftar saham penyusunnya
+- Angle/judul: "Apa Itu Indeks IDX SMC Liquid: Kriteria, Daftar Saham Penyusun, dan Cara Memakainya sebagai Universe Screener" — SERP didominasi Cermati (pengertian+panduan, Mar 2026), BigAlpha, Liputan6 trivia; BELUM ada yang kaitkan anggota indeks dengan workflow screening teknikal (filter likuiditas small-mid cap) + tabel anggota yang di-refresh tiap evaluasi BEI (Feb/Agu). Human-first: tabel saham penyusun + FAQ schema.
+- Internal link: /saham-volume-spike · /saham-golden-cross · /stocks
+
+**Brief 2 — "eastspring idx esg leaders plus kelas a" · P2**
+- Keyword: eastspring idx esg leaders plus kelas a (36 impr, pos 79.9, 0 klik) — impr tertinggi di baseline
+- Intent: informasional/transaksional — NAV, komposisi portofolio, perbandingan produk
+- Angle/judul: "Isi Portofolio Eastspring IDX ESG Leaders Plus: Saham Apa Saja yang Dibeli dan Cara Membaca Teknikalnya" — SERP = halaman produk Bibit/Bareksa/Eastspring/Cermati (NAV/harga); tidak ada yang bedah KOMPUSI portofolio dari sisi teknikal per emiten. Angle komposisi + cara baca chart emiten penopangnya; hindari klaim transaksional (kompetitor E-E-A-T kuat).
+- Internal link: /stocks · /laporan-pasar/minggu-2026-09-07 · /strategi-swing-trade-saham-untuk-pemula
+
+**Brief 3 — "hrta11" quick-win CTR · P2**
+- Keyword: hrta11 (pos 5.0–5.1, impr 24→19, CTR 0%)
+- Intent: navigasional — chart/harga HRTA (Hartadinata Abadi)
+- Bukan artikel baru: optimasi title + meta description /stocks/HRTA.JK agar menang klik di pos 5 (0 klik dari 24 impr, 14 Sep). Tambah blok "analisa teknikal HRTA" di atas fold. Internal link: /stocks/HRTA.JK dari artikel analisa-teknikal & brief pasar berikutnya.
+
+## 2026-09-15 08:15 — CEO pagi: council-02 tetap slot sore + dispatch analisa utang weekend-rows (P2, read-only)
+- Baca data: views 7d 599 vs 566 minggu lalu (+6%, stabil pasca-jatuh; prev 1187 = 2 pekan lalu) → GSC reindex window, NOISE — tidak panic-refactor.
+- Signal pages 51v/7d vs baseline 38 (+34%, target 60) = PERTUMBUHAN → council-2026-09-13-02 (Sinyal Terkait) tepat sasaran, jadwal tetap 16:45 hari ini.
+- Register 2/7d (baseline 9) = MATI tapi CTA register baru live 14 Sep (hari-1) → beri 2 pekan sesuai acceptance criteria; DILARANG stacking hipotesis baru di metrik yang sama (attribution).
+- P0 kemarin terverifikasi bertahan: eod_latest=2026-09-14, freshness FRESH. Utang ~60k baris weekend historis → dispatch ceo-2026-09-15-01 (analisa dampak indikator, read-only; eksekusi DELETE jika perlu = blocked_for_owner).
+- Returning IP 7.9% (minggu lalu 10%) — basis kecil (IP), watch saja.
+
+## 2026-09-15 — GSC INDEXING AUDIT (owner request: "check yang index dan tidak terindeks")
+- teknikal.id: 1.100 indexed / 8.640 tidak. Tidak ada error berbahaya:
+  * noindex 3.240 = artikel stale by-design (auto-noindex) — masuk queue seo-2026-09-15-01 (sitemap masih kirim = buang crawl budget)
+  * redirect 2.543 = URL lama → /stocks (pivot) — sehat
+  * robots 1.493 = /auth /portfolio dll privat — benar
+  * crawled-not-indexed 553 = tipis, watch
+- hivepos.id: 8 indexed / 16 tidak: 4×404 (/bulan /track — jejak link WA gateway?), 2 noindex, 8 crawled-not-indexed (halaman muda). Sitemap 62 URL fresh lastmod hari ini.
+- Kesimpulan: TIDAK ada yang perlu emergency fix; 1 task queue P2 (sitemap hygiene) + 1 task kecil hivepos (404 /bulan /track → cek generator link WA).
