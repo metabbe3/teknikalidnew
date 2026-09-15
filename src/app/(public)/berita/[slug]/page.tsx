@@ -13,6 +13,7 @@ import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { StockArticleCard } from "@/components/stock/stock-article-card";
 import { stripMarkdown } from "@/lib/utils";
 import { SnapshotBriefing, type SnapshotBriefingData } from "@/components/berita/snapshot-briefing";
+import { RelatedSignals } from "@/components/berita/related-signals";
 import { decimalToNumber, bigIntToNumber } from "@/lib/serialize";
 import { isStaleArticle, DATA_SOURCE_LABEL } from "@/domains/article/article-freshness";
 
@@ -86,6 +87,7 @@ export default async function BeritaArticlePage({
   const headings = extractHeadings(article.content);
   const readingTime = estimateReadingTime(article.content);
   const mentionedTickers = extractTickers(article.content);
+  const relatedSignalTicker = article.tickerTag ?? mentionedTickers[0] ?? null;
 
   // DAILY_SNAPSHOT → hydrate live stock data by ticker for the briefing dashboard
   const isSnapshot = article.articleType === ArticleType.DAILY_SNAPSHOT && !!article.tickerTag;
@@ -318,6 +320,9 @@ export default async function BeritaArticlePage({
 
               {/* Analysis body */}
               <ArticleContent content={article.content} />
+
+              {/* Contextual signal links (server-rendered, SEO/discovery) */}
+              <RelatedSignals ticker={relatedSignalTicker} />
 
               {/* Stock cards for mentioned tickers */}
               {stockCards.length > 0 && (
