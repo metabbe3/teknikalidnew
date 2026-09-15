@@ -26,8 +26,9 @@
       "spec": "INTENT (Council 13 Sep): naikkan discovery artikel + session depth (north star: time spent & returning). Retro 7-13 Sep: 16 dari 20 artikel = 0 views — halaman yang benar-benar dipakai orang adalah signal pages & screener, tapi artikel tidak menautkannya. Tugas: komponen server-side 'Sinyal Terkait' di template artikel (NEWS brief & STOCK_ANALYSIS) yang render ≥2 link kanonik ke signal pages (/saham-golden-cross, /saham-oversold, /saham-volume-spike, /saham-pullback-sma20) berdasar ticker/sinyal yang disebut artikel + 1 link ke /stocks. ACCEPTANCE CRITERIA: (1) blok Sinyal Terkait render di artikel baru + retro-fit 10 artikel terakhir (curl grep href kanonik); (2) link internal pakai path kanonik signal pages; (3) tanpa regresi CLS/mobile 375px; (4) terukur 2 pekan: signal page views naik dari baseline 38v/pekan → ≥60v/pekan dan pages/session naik. SLOT: kerjakan setelah council-2026-09-13-01; patuh quiet zone 09:00-16:15 (defer kalau keburu jam market).",
       "priority": "P2",
       "north_star": "time spent & returning: signal page views 38 → ≥60/pekan + pages/session naik dalam 2 pekan",
-      "status": "pending",
-      "result": null,
+      "status": "done",
+      "completed_at": "2026-09-15 17:05",
+      "result": "DONE 15 Sep 17:05 CTO sore. Commit f75dd7d (2 file kode + spec): related-signals.tsx server component (SSR curl-visible; predikat paritas screener: smaCrossSignal='golden_cross', rsi14<30, vol>3x avg20, |close-sma20|/sma20<=3%; contextual max 3 + fallback min 2 + link /stocks) + insert setelah ArticleContent di berita/[slug]/page.tsx. Retro-fit OTOMATIS serve-time semua artikel ber-ticker (tickerTag ?? first mentioned) — tanpa regen/patch DB. tsc clean. Deploy 16:58 (1 deploy, pasca-market). VERIFIKASI live: brief-pasar-15 Sep blok 'Sinyal Terkait' render + href golden-cross/oversold/pullback-sma20 + /stocks. Catatan: artikel saham-*/analisa-teknikal-* sesi 14 Sep kini 308→/stocks/TICKER (stale by design pasca-EOD 15 Sep — bukan regresi; pagi tadi masih 200 karena EOD belum ganti). Signal pages 4/4=200, register-CTA kemarin utuh, /stocks/BBRI.JK 200. Rollback anchor: image 5c89d6ac9964, HEAD d449b58 (decisions.md). Ukur 2 pekan: signal page views 38→≥60/pekan + pages/session.",
       "scheduled_slot": "2026-09-15 16:45 CTO sore (pagi dipakai reviewer P1 + mandor P2)"
     },
     {
@@ -61,6 +62,25 @@
       "scheduled_slot": "07:30",
       "completed_at": "2026-09-15 07:50",
       "result": "DONE 15 Sep 07:50 CTO pagi. Sumber: fmtVol (movement-analysis.service.ts L76) + formatVolumeHuman (article-template.ts L200) — label 'lot' padahal StockPrice.volume = saham (verif BBRI.JK 14 Sep = 278.495.400). Commit 90225ca (2 file +8/-8, kata unit saja; hunk authorId pre-existing tidak ikut). tsc clean. Deploy app+worker 07:46 (1 deploy, pre-market). SQL patch 41 PUBLISHED artikel (backup 06:44, preview COUNT=41, ' lot'=='juta lot' terverifikasi 100% di scope, 5 artikel edukasi lot-benar tidak tersentuh): residual juta lot=0. Live-check: /berita/saham-bbri '278.5 juta saham' x6, /berita/saham-mdka '77.7 juta saham' x6, 0 'juta lot'. Log: docs/agent-org/decisions.md. Rollback anchor: image app f705987548db/worker 4b3414f9b5e7, commit 4228de481c."
+    },
+    {
+      "id": "ceo-2026-09-15-01",
+      "date": "2026-09-15",
+      "title": "P2 analisa read-only: dampak ~60k baris weekend historis ke indikator/sinyal (utang P0 14 Sep)",
+      "priority": "P2",
+      "north_star": "trust & moat — akurasi sinyal golden-cross/oversold/volume-spike (sumber trafik 51v/7d, fondasi brief+IG)",
+      "spec": "INTENT (CEO 15 Sep): kuantifikasi utang P0 14 Sep — ~60k baris StockPrice/StockIndicator tanggal non-trading historis (weekend, close disalin dari hari Jumat). Pertanyaan kunci: apakah baris fantasi itu ikut window lookback SMA/EMA/golden-cross (dihitung per-baris, bukan per-tanggal-trading), dan berapa sinyal aktif hari ini yang berubah kalau dibuang. READ-ONLY: SELECT saja, TANPA deploy, TANPA mutasi. ACCEPTANCE CRITERIA: (1) identifikasi code path/query perhitungan indikator (per-baris vs by-date) + cite file/query; (2) simulasi: COUNT sinyal golden_cross/oversold/volume-spike hari ini (versi live) vs versi baris-weekend-dikecualikan — laporkan diff per sinyal; (3) jika diff=0 → catat 'no impact', utang ditutup, selesai; (4) jika diff>0 → tulis usulan DELETE SQL lengkap (daftar tanggal weekend + WHERE guard + COUNT preview) di result dan tandai eksekusinya blocked_for_owner (SQL destruktif = wajib approval owner); (5) append temuan ke docs/agent-org/lessons-learned.md kalau ada kejutan. SLOT: setelah council-2026-09-13-02 hari ini 16:45, atau besok 07:30. Bukan deploy — boleh berbagi slot.",
+      "status": "pending",
+      "scheduled_slot": "2026-09-15 16:45 (setelah council-02) atau 2026-09-16 07:30 — analisa tanpa deploy",
+      "result": null
+    },
+    {
+      "id": "seo-2026-09-15-01",
+      "title": "GSC indexing hygiene: refresh noindex-stale sitemap & investigasi 3.240 noindex lama",
+      "priority": "P2",
+      "status": "pending",
+      "scheduled_slot": "2026-09-16 07:30 CTO pagi",
+      "spec": "GSC audit 15 Sep: 1.100 indexed vs 8.640 tidak. Breakdown: noindex 3.240 (artikel saham-* stale auto-noindex — by design, tapi sitemap.xml masih kirim mereka = crawl budget terbuang), redirect 2.543 (URL lama /berita/saham-X kini 308 → /stocks — sehat, biarkan), robots 1.493 (area privat — benar), crawled-not-indexed 553 (halaman tipis — watch). ACTION: pastikan sitemap.xml generator EXCLUDE artikel ber-noindex/stale (cek article-freshness.ts interplay); ukur sitemap size sebelum/sesudah; target <1000 URL di sitemap dari 708+stale."
     }
   ]
 }
