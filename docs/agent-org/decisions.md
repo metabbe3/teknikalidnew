@@ -171,3 +171,8 @@ Parity-tested sebelum switch (angka identik vs output LLM kemarin):
    parity: views kemarin 169-170 (selisih ±1 = boundary jam 06:30 cutoff), artikel+top pages identik
 Schema lesson: Article (bukan BlogPost), createdAt camelCase, StockPrice.date — mandor_brief verified live.
 Rollback: llm_backup field di jobs.json tiap job.
+
+## 2026-09-15 16:55 — CTO sore: ROLLBACK ANCHOR council-2026-09-13-02
+- Pre-deploy: HEAD d449b58, image app 5c89d6ac9964 / worker 741f4aa97254
+- Task commit: f75dd7d (related-signals.tsx + berita/[slug]/page.tsx + spec)
+- Rollback: git revert f75dd7d && docker compose build app && docker compose up -d
