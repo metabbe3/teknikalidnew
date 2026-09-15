@@ -75,10 +75,10 @@ function pct(val: number | null): string {
 
 function fmtVol(val: number | null): string {
   if (val === null) return "N/A";
-  if (val >= 1e9) return `${(val / 1e9).toFixed(2)} miliar lot`;
-  if (val >= 1e6) return `${(val / 1e6).toFixed(2)} juta lot`;
-  if (val >= 1e3) return `${(val / 1e3).toFixed(1)} ribu lot`;
-  return `${val} lot`;
+  if (val >= 1e9) return `${(val / 1e9).toFixed(2)} miliar saham`;
+  if (val >= 1e6) return `${(val / 1e6).toFixed(2)} juta saham`;
+  if (val >= 1e3) return `${(val / 1e3).toFixed(1)} ribu saham`;
+  return `${val} saham`;
 }
 
 function fmtMC(val: number | null): string {

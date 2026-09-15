@@ -199,10 +199,10 @@ function signalLabelToId(label: string | null): string {
 
 function formatVolumeHuman(vol: number | null): string {
   if (vol === null) return "N/A";
-  if (vol >= 1e9) return `${(vol / 1e9).toFixed(1)} miliar lot`;
-  if (vol >= 1e6) return `${(vol / 1e6).toFixed(1)} juta lot`;
-  if (vol >= 1e3) return `${(vol / 1e3).toFixed(1)} ribu lot`;
-  return `${vol} lot`;
+  if (vol >= 1e9) return `${(vol / 1e9).toFixed(1)} miliar saham`;
+  if (vol >= 1e6) return `${(vol / 1e6).toFixed(1)} juta saham`;
+  if (vol >= 1e3) return `${(vol / 1e3).toFixed(1)} ribu saham`;
+  return `${vol} saham`;
 }
 
 function formatMarketCapHuman(mc: number | null): string {
