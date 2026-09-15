@@ -186,3 +186,10 @@ Rollback: llm_backup field di jobs.json tiap job.
   Brief pagi 06:37 16 Sep sudah benar & live.
 - FOLLOW-UP utk CTO: patch lib/yahoo-finance v7→v8 chart fallback + guardrail gen_daily_brief
   (max 1 NEWS/hari + validasi tanggal sesi vs tanggal publish) → antrean cto-queue.
+
+## 2026-09-16 (agent utama) — Bot net "Android 10; K" US datacenter flagged retroaktif
+- Temuan: 26/30 "human" views 15 Sep = 7 IP datacenter AS (Linode/ColoCrossing dkk) UA identik
+  "Linux; Android 10; K" scanning /stocks/*. Clean nobot 15 Sep = 4 views.
+- FIX: UPDATE isBot=true utk UA pattern itu di 7 IP (26 rows, semua 15 Sep — net baru).
+- FOLLOW-UP CTO: tambah deteksi runtime "Android 10; K" + AS-datacenter IP ke bot gate middleware
+  (biar gak perlu manual lagi). Masuk antreanjkse-2026-09-16-01 detail.
