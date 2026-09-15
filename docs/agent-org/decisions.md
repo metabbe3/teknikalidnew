@@ -176,3 +176,13 @@ Rollback: llm_backup field di jobs.json tiap job.
 - Pre-deploy: HEAD d449b58, image app 5c89d6ac9964 / worker 741f4aa97254
 - Task commit: f75dd7d (related-signals.tsx + berita/[slug]/page.tsx + spec)
 - Rollback: git revert f75dd7d && docker compose build app && docker compose up -d
+
+## 2026-09-16 (agent utama) — Fix anomali Mandor: ^JKSE stale + double-post brief salah tanggal
+- ROOT CAUSE ^JKSE stale 3 Sep: Yahoo v7 quote API kini 401 (auth crumb) — worker fetchQuotesBatch gagal
+  senyap utk ^JKSE. v8 chart API masih hidup. Backfill manual 4–14 Sep (7 hari, INSERT 0 7) + 15 Sep
+  close 6.461,15 (cross-check 2 sumber: Okezone + Kontan, −1,13%) — DB kini s/d 15 Sep.
+- Artikel gen_daily_brief 21:31 15 Sep (brief-pasar-saham-ihsg-koreksi-047) pakai close basi 6.636
+  (4 Sep) + label "Rabu 16 Sep" utk data Selasa → UNPUBLISH (status DRAFT, isListed false).
+  Brief pagi 06:37 16 Sep sudah benar & live.
+- FOLLOW-UP utk CTO: patch lib/yahoo-finance v7→v8 chart fallback + guardrail gen_daily_brief
+  (max 1 NEWS/hari + validasi tanggal sesi vs tanggal publish) → antrean cto-queue.
