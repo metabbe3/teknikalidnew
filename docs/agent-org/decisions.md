@@ -153,3 +153,11 @@ Trust fix: artikel bilang '278.5 juta lot' padahal DB = saham (2.78 juta lot) ->
   * crawled-not-indexed 553 = tipis, watch
 - hivepos.id: 8 indexed / 16 tidak: 4×404 (/bulan /track — jejak link WA gateway?), 2 noindex, 8 crawled-not-indexed (halaman muda). Sitemap 62 URL fresh lastmod hari ini.
 - Kesimpulan: TIDAK ada yang perlu emergency fix; 1 task queue P2 (sitemap hygiene) + 1 task kecil hivepos (404 /bulan /track → cek generator link WA).
+
+## 2026-09-15 — PROTOKOL CTO v2 (dari Claude-Skills deck, owner-approved)
+4 aturan baru di kedua prompt CTO (teknikal pagi/sore + hivepos slot1/2) + dispatch rule CEO:
+1. DONE WHEN contract — task tanpa cek testable gak boleh dieksekusi
+2. Impact-first editing — daftar pemanggil sebelum ubah apapun
+3. Baseline-then-deploy — snapshot before/after dengan list check sama, diff eksplisit
+4. handoff.md — kontinuitas antar slot (dibaca di awal, di-append di akhir)
+Skip (sudah tercakup / gak relevan): RTK-caveman-ponytail (tiering udah), semantic search (repo kecil).
