@@ -109,3 +109,8 @@ Verifikasi: jobs.json valid 33 job, 25 LLM pinned, semua enabled, next_run utuh.
   CREATE TABLE >=40 tabel juga; kalau gagal → ALERT + regenerate, BUKAN tulis last-success.
 - Verified end-to-end: regen 06:43 exit 0 (47MB/52 tabel) + run#2 idempotent 2.4s exit 0.
 - hivePOS backup sidecar sehat: pos_saas_20260914_223537 37 tabel, umur 1.1 jam.
+
+## 2026-09-15 07:41 — CTO pagi: reviewer-2026-09-15-01 (volume label lot→saham, P1)
+- Rollback anchor: image app f705987548db / worker 4b3414f9b5e7, commit 4228de481c.
+- Commit 90225ca (2 files +8/-8: fmtVol + formatVolumeHuman unit word only; hunk authorId pre-existing TIDAK ikut).
+- DB patch plan (owner-approved SQL protocol, backup 06:44 valid <24jm): UPDATE "Article" SET content=replace(content,' lot',' saham') WHERE status='PUBLISHED' AND content LIKE '%juta lot%'; — preview COUNT=41, WHERE sempit (hanya string ' lot' → ' saham' di baris yang mengandung 'juta lot'; pola label formatter selalu '<num> lot'). Eksekusi + rowcount dicatat di bawah.
