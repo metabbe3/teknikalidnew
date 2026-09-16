@@ -231,3 +231,17 @@ Rollback: llm_backup field di jobs.json tiap job.
 - TEMUAN ekosistem: ternyata ada 11 LaunchAgent teknikal lama (agent-scheduler tiap jam,
   articles-morning/lunch/afternoon, idx-sync 06:00, intraday, community, worker) — jadwal ganda
   dengan crontab+Hermes org. Perlu audit rasionalisasi terpisah (jangan sentuh malam ini).
+
+## 2026-09-16 ~20:00 — OpenClaw pensiun + rasionalisasi scheduler teknikal (owner: "openclaw sudah tidak dipakai, semua hermes")
+- 7 LaunchAgent teknikal MATI+ARSIP (docs/agent-org/launchd-archive-2026-09-16/): agent-scheduler,
+  agent-worker, community-agent, intraday-sync (semua → localhost:3000 dev dead), articles-morning/
+  lunch/afternoon (generate-articles count=5 duplikat bentrok launchd 17:00 baru).
+- KEEP launchd: eod-sync 16:30, generate-articles 17:00, resolve-predictions 17:30 (WIB benar),
+  idx-sync 06:00 (script repo sync-idx-stocks.ts).
+- OpenClaw: news delivery UDAH dead berminggu-minggu (script hilang, error log tiap 8:00/19:00);
+  RSS scraper nulis ke openclaw.db lokal (bukan teknikal) → 2 script di-stub no-op.
+  Dir ~/.openclaw 199MB dipertahankan (credentials/history) — kandidat archive penuh nanti.
+- crontab binary write PERMANENTLY BROKEN di macOS 26.6.2 (hang 6+ attempt, root stuck killed);
+  crontab lama 6 entry MASIH AKTIF → besok double-run pagi (cron 09:30/10:00/10:30) + sore
+  (launchd 16:30/17:00/17:30). Semua idempotent → aman. Fix permanen butuh owner 1 baris:
+  `crontab /tmp/final_crontab.txt` (semua entry teknikal+openclaw sudah dikomentari di file itu).
