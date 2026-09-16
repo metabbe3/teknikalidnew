@@ -277,3 +277,20 @@ Rollback: llm_backup field di jobs.json tiap job.
   spam-loop. Verify: run-2 SILENT sehat.
 - Fire-test launchd eod-sync: runs=1 exit=0 log 22:11 {"success":true} — full path proven.
 - Besok 16:30/17:00/17:30 = jadwal launchd baru pertama kali live dgn token benar.
+
+## 2026-09-17 06:4x — Mandor anomaly fixes (agent-utama, owner request 'check anomali dan fix')
+- ANOMALI 1 (market-brief-data top_movers [] + breadth 0/0): ROOT CAUSE = script masih query
+  articleType MOVEMENT_ANALYSIS yang sudah pensiun (0 rows di DB — konten pindah ke NEWS briefs).
+  Breadth proxy via judul artikel juga mati senyap. FIX: top_movers query NEWS+DAILY_SNAPSHOT
+  (+filter kata gerak), breadth kini dari DATA HARGA ASLI (StockPrice close vs prev close,
+  self-join MAX(date)). Verified: top_movers 4, breadth 210/451 (16 Sep sesi asli).
+- ANOMALI 2 (^JKSE 16 Sep kosong padahal 865 saham masuk): ROOT CAUSE = Yahoo v8 chart array
+  daily close = None utk index 16 Sep (delay data index), padahal meta.regularMarketPrice
+  6436.853 ADA (timestamp pas closing 16:00 WIB). Yahoo v7 = 401 Unauthorized (mati).
+  FIX DATA: backfill ^JKSE 16 Sep dari intraday bars 15m (open 6453.91 high 6535.46 low/close
+  6436.85) — additive INSERT + idempotent guard.
+  FIX SISTEM (TODO CTO): sync pipeline harus fallback meta.regularMarketPrice kalau daily array
+  None — pola sama dgn fix chart jkse-2026-09-16-01. IDX & Google Finance & stooq = walled.
+- SIDE FINDING: intraday-sync.log penuh 'Operation not permitted' utk scripts/cron-curl.sh =
+  macOS quarantine attr — sync tetap sukses via jalur lain, tapi cron-curl.sh perlu
+  xattr -d com.apple.quarantine. Low priority.
