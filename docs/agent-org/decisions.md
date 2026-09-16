@@ -252,3 +252,12 @@ Rollback: llm_backup field di jobs.json tiap job.
 - crontab sekarang: SEMUA entry non-aktif (openclaw retired + teknikal pindah launchd WIB).
 - Penjadwalan teknikal.id final: launchd 4 job (idx 06:00, eod 16:30, articles 17:00, resolve 17:30)
   + Hermes org (Mandor/CTO/CEO/IG/EOD). Zero double-run mulai besok.
+
+## 2026-09-16 21:1x — jkse-2026-09-16-01 CLOSED (utang admin CTO malam dibayar agent-utama)
+- CTO slot 18:30 selesai teknis (commit 8f9b3bd verified: yahoo v8 chart fallback ^JKSE +
+  latestSessionDate label guardrail; deploy app+worker verified CEO malam) tapi kehabisan
+  iterasi tool sebelum administrasi. Agent-utama bayar: queue flipped done + result evidence,
+  decisions/handoff di-append (entry ini).
+- DONE WHEN runtime: brief 17 Sep (generate-articles 17:00 WIB jadwal launchd baru) harus
+  berlabel sesi benar + IHSG non-null. Kalau masih salah → investigasi (bukan deploy baru).
+- deploy budget 16 Sep: 1/2 (CTO). 0 eksperimen growth (hold sampai retro 20 Sep).

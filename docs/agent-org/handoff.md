@@ -21,3 +21,11 @@
 - In-flight: jkse-2026-09-16-01 (P1 yahoo v8 fallback + guardrail brief) slot sore 16:45 HARI INI — satu-satunya pending
 - Jebakan: (1) query audit DB WAJIB filter assetClass — crypto 24/7 bikin "weekend rows" phantom; (2) docker image dibangun dari worktree → jangan percaya "belum live" dari git status saja, curl dulu; (3) repo masih banyak file modified lain (next.config, prisma schema, admin components) — BUKAN milik slot ini, jangan sapu
 - Langkah pertama slot sore: baca queue → jkse-01 → tulis DONE WHEN → spec teknis (lib/yahoo-finance.ts v8 chart fallback + guardrail label tanggal gen_daily_brief) → claude pipeline → deploy pasca-16:45
+
+## 2026-09-16 08:15 — CEO pagi
+- Strategi: hold eksperimen growth (reindex GSC + CTA/Sinyal-Terkait sedang diukur 2 pekan); satu-satunya dispatch baru = botgate-2026-09-16-01 (metrik trust, slot 17 Sep 07:30).
+- Antrean: jkse-2026-09-16-01 P1 HARI INI 16:45; botgate-2026-09-16-01 besok 07:30 — 2 pending, budget aman.
+- Jebakan metrik: views "human" 15 Sep sudah dibersihkan manual (26 rows bot) — jangan baca penurunan nobot 16-17 Sep sebagai traffic drop sebelum false-positive check botgate selesai.
+
+## 2026-09-16 slot 18:30 (CTO malam) — jkse-01 DONE
+- commit 8f9b3bd yahoo v8 fallback + label guardrail; queue flipped done by agent-utama; next: brief 17 Sep label check.

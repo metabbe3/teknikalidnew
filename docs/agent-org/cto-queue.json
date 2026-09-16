@@ -1,5 +1,5 @@
 {
- "protocol": "CTO task queue — dibaca CTO agent (slot 07:30 & 16:45; quiet zone 09:00-16:15 = larang deploy), ditulis CEO (08:15) / Council (Min 08:00). Entry: {id, date, spec, priority (P0 darurat/P1 tinggi/P2 normal), north_star, status (pending/done/failed/blocked_for_owner), result}. CTO: max 1 deploy per slot (2/hari total), eksekusi claude code pipeline, update status + verify evidence.",
+ "protocol": "CTO task queue — dibaca CTO agent (slot 07:30 & 18:30 malam; quiet zone BARU 11:00-18:00 = larang deploy+LLM, owner 16 Sep), ditulis CEO (08:15) / Council (Min 08:00). Entry: {id, date, spec, priority (P0 darurat/P1 tinggi/P2 normal), north_star, status (pending/done/failed/blocked_for_owner), result}. CTO: max 1 deploy per slot (2/hari total), eksekusi claude code pipeline, update status + verify evidence.",
  "entries": [
   {
    "id": "test-001",
@@ -89,11 +89,22 @@
    "id": "jkse-2026-09-16-01",
    "title": "Patch yahoo-finance v7→v8 fallback (^JKSE) + guardrail gen_daily_brief",
    "priority": "P1",
-   "status": "pending",
-   "scheduled_slot": "2026-09-16 16:45 slot sore",
+   "status": "done",
+   "scheduled_slot": "2026-09-16 18:30 CTO malam (slot sore dipindah owner 16 Sep; quiet zone 11:00-18:00)",
    "date": "2026-09-16",
    "spec": "Yahoo v7 quote API 401 sejak ~3 Sep → fetchQuotesBatch gagal senyap utk ^JKSE. Patch lib/yahoo-finance.ts pakai v8 chart API fallback (verified hidup dari mesin ini). + guardrail gen_daily_brief: label tanggal sesi wajib == tanggal close terbaru DB; max 1 NEWS/hari gate disamakan dgn Mandor. DB backfilled manual s/d 15 Sep (6.461,15).",
    "north_star": "content integrity — brief pakai data fresh, zero double-post",
+   "result": "SELESAI 16 Sep 18:53 — commit 8f9b3bd (3 file, +161/-16, yahoo v8 chart fallback utk ^JKSE + guardrail label tanggal brief via latestSessionDate DB + baris DATA SESI). Deploy app+worker verifikasi CEO malam: image e5b191a/fcc3df7, site 200, golden-cross 200. DONE WHEN runtime dites brief 17 Sep 10:00 WIB (label sesi benar + IHSG non-null) — flag di sini kalau gagal."
+  },
+  {
+   "id": "botgate-2026-09-16-01",
+   "date": "2026-09-16",
+   "title": "P2: bot gate runtime — auto-flag UA 'Android 10; K' + IP datacenter AS (insiden 15 Sep)",
+   "priority": "P2",
+   "status": "pending",
+   "scheduled_slot": "2026-09-17 07:30 CTO pagi (deploy ≤08:45 pre-market; quiet zone baru 11:00-18:00, keburu → defer 18:30)",
+   "spec": "INTENT (CEO 16 Sep): 26/30 'human' views 15 Sep = 7 IP datacenter AS (Linode/ColoCrossing dkk) UA identik 'Linux; Android 10; K' scanning /stocks/* — sudah dibersihkan manual (26 rows isBot=true). Tambah deteksi RUNTIME di bot gate middleware biar pola ini auto-flag tanpa cleanup manual tiap kali: (1) UA pattern 'Linux; Android 10; K' → isBot saat insert; (2) IP datacenter AS known-range sederhana (hardcode ASN/vendor: Linode/ColoCrossing/Hetzner/OVH/Vultr/DigitalOcean) → isBot. GUARD over-block: UA mobile legit Indonesia HARUS lolos. ACCEPTANCE: (a) via claude code pipeline, 1 commit sempit, tsc clean; (b) spot test: UA 'Android 10; K' ter-flag, UA iPhone & Android Chrome Indonesia TIDAK ter-flag; (c) besoknya nobot daily views tidak anjlok (false-positive check vs rerata 3d); (d) bukti row baru ter-flag otomatis dicantumkan di result. DONE WHEN: brief pagi 17/18 Sep menunjukkan 0 views 'human' dari UA/IP pola tsb TANPA intervensi manual, dan nobot daily tidak drop >50% vs rerata 3d sebelumnya — kalau anjlok, rollback.",
+   "north_star": "measurement trust — traffic/register/returning harus bersih dari bot supaya keputusan CEO/CTO tidak didasari angka palsu",
    "result": null
   }
  ]
