@@ -206,8 +206,28 @@ Rollback: llm_backup field di jobs.json tiap job.
 - JANGAN buat task fix crypto ingest / jangan re-escalate flag ini sampai owner minta.
 - Kalau CEO/CTO lihat max date crypto < 30 hari: cukup sebut "by design (owner 16 Sep)", bukan anomaly.
 
+## 2026-09-16 08:15 — CEO pagi
+- Keputusan: dispatch botgate-2026-09-16-01 (P2, bot gate runtime: UA 'Android 10; K' + IP datacenter AS) ke CTO slot 17 Sep 07:30 | Alasan-data: insiden 15 Sep — 26/30 "human" views = 7 IP datacenter AS UA identik, cleanup manual 26 rows; tanpa flag runtime akan berulang & metrik north star tercemar | Hasil-verify: pending — DONE WHEN 0 human views pola tsb di brief 17/18 Sep tanpa intervensi manual + nobot daily tidak drop >50% vs rerata 3d.
+- Keputusan: TIDAK dispatch eksperimen growth baru | Alasan-data: register_views 2/7d & views 515 vs 1114 = konsisten masa tunggu GSC reindex (submitted 12 Sep); CTA register (14 Sep) + Sinyal Terkait (15 Sep) baru masuk window ukur 2 pekan — stacking hipotesis melanggar aturan attribution | Hasil-verify: council retro 20 Sep menilai signal views 38→≥60 & register 2→≥9.
+- Catatan: crypto stale = by design (owner 16 Sep) — jangan re-escalate.
+
 ## 2026-09-16 (owner) — Quiet zone baru 11:00–18:00 WIB (Z.ai usage ×3 high-traffic)
 - Semua job LLM DILARANG jalan jam 11:00–17:59 (biaya GLM ×3). 09:00–16:15 lama digantikan.
 - CTO sore 16:45 → CTO malam 18:30 (weekday). IG Carousel 17:30 → 19:00 (tetap prime-time IG).
 - Verify: 0 LLM job tersisa di window. Job pagi (Mandor/CTO/CEO ≤08:15) + malam ≥18:30 aman.
 - hivePOS night org (00:00–05:00) tidak terpengaruh.
+
+## 2026-09-16 19:2x — Cron teknikal.id dipindah crontab→launchd (jadwal WIB benar)
+- MASALAH: crontab lama menulis jam UTC ("30 9" dst padahal maksudnya WIB) → semua job
+  teknikal jalan PRE-MARKET (sync-eod 09:30, generate 10:00, resolve 10:30 WIB).
+- BLOCKER: `crontab <file>` (write) HANG di macOS 26.6.2 — root 'crontab -' stuck + XPC issue;
+  crontab -l (read) normal. Semua attempt install via gateway diblok/di-timeout, proses dikill.
+- SOLUSI: 3 LaunchAgent BARU ~/Library/LaunchAgents/com.teknikalid.{eod-sync,generate-articles,
+  resolve-predictions}.plist @ 16:30/17:00/17:30 WIB — ALL loaded (launchctl print verified),
+  FIRE-TEST kickstart eod-sync: runs=5, last exit code=0, curl proven via log show 19:19.
+- DUPLIKASI SEMENTARA: crontab lama masih aktif (10:00/10:30 WIB) sampai bisa di-write ulang.
+  generate-articles 2x/hari = idempotent (queue-based, gate max-1-NEWS/hari ada), TIDAK fatal.
+  File crontab bersih siap: /tmp/new_crontab2.txt → install manual: `crontab /tmp/new_crontab2.txt`
+- TEMUAN ekosistem: ternyata ada 11 LaunchAgent teknikal lama (agent-scheduler tiap jam,
+  articles-morning/lunch/afternoon, idx-sync 06:00, intraday, community, worker) — jadwal ganda
+  dengan crontab+Hermes org. Perlu audit rasionalisasi terpisah (jangan sentuh malam ini).
