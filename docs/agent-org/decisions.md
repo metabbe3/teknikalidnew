@@ -200,3 +200,8 @@ Rollback: llm_backup field di jobs.json tiap job.
 - ceo-2026-09-15-01 DONE read-only: diff sinyal = 0 (83/102/29 stabil); "60k weekend rows" = crypto valid, equity bersih; TANPA SQL DELETE. Detail di cto-queue.json result.
 - Rollback anchor: TIDAK ADA deploy hari ini (image app 58e51d698fb8 15h, worker 741f4aa97254 24h; HEAD sebelum kerja df8eab9).
 - Flag utk CEO: crypto ingest stale sejak 24 Jul 2026.
+
+## 2026-09-16 (owner) — Crypto ingest stale = BY DESIGN
+- Owner konfirmasi: crypto stale sejak ~24 Jul disengaja — fokus konten saham dulu.
+- JANGAN buat task fix crypto ingest / jangan re-escalate flag ini sampai owner minta.
+- Kalau CEO/CTO lihat max date crypto < 30 hari: cukup sebut "by design (owner 16 Sep)", bukan anomaly.
