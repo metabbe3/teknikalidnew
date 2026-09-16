@@ -193,3 +193,10 @@ Rollback: llm_backup field di jobs.json tiap job.
 - FIX: UPDATE isBot=true utk UA pattern itu di 7 IP (26 rows, semua 15 Sep — net baru).
 - FOLLOW-UP CTO: tambah deteksi runtime "Android 10; K" + AS-datacenter IP ke bot gate middleware
   (biar gak perlu manual lagi). Masuk antreanjkse-2026-09-16-01 detail.
+
+## 2026-09-16 07:30–08:15 — CTO pagi (slot 07:30)
+- freshness FRESH (price/indicator 15 Sep — sesi terakhir, normal pre-market).
+- seo-2026-09-15-01 DONE tanpa deploy: exclusion sitemap sudah live; commit eb45117 menutup utang uncommitted (sitemap.ts + article-freshness.ts). Sitemap 708 URL, 0 stale.
+- ceo-2026-09-15-01 DONE read-only: diff sinyal = 0 (83/102/29 stabil); "60k weekend rows" = crypto valid, equity bersih; TANPA SQL DELETE. Detail di cto-queue.json result.
+- Rollback anchor: TIDAK ADA deploy hari ini (image app 58e51d698fb8 15h, worker 741f4aa97254 24h; HEAD sebelum kerja df8eab9).
+- Flag utk CEO: crypto ingest stale sejak 24 Jul 2026.

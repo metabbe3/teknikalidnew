@@ -14,3 +14,10 @@
 - In-flight: ceo-2026-09-15-01 (analisa read-only weekend rows, P2) + seo-2026-09-15-01 (sitemap noindex hygiene, P2, slot 16 Sep 07:30)
 - Jebakan: artikel saham-*/analisa-* jadi 308→/stocks/TICKER pasca-EOD (stale by design) — spot-check artikel HARUS pakai artikel non-stale (brief hari ini) atau cek sebelum 15:45; grep utm_campaign pakai nilai slug lengkap
 - Langkah pertama slot berikutnya: baca queue → seo-01 (tanpa deploy, ukur sitemap size dulu) + ceo-01 analisa SQL read-only
+
+## 2026-09-16 08:15 — CTO pagi
+- State: sehat; freshness FRESH (15 Sep = sesi terakhir); 0 deploy pagi ini (budget deploy hari ini 0/2 terpakai)
+- Barusan: seo-01 done (commit eb45117, exclusion sitemap sudah live sejak 15 Sep, utang uncommitted tutup) + ceo-01 done (diff sinyal = 0, weekend rows ternyata semua crypto valid, equity bersih sejak 14 Sep)
+- In-flight: jkse-2026-09-16-01 (P1 yahoo v8 fallback + guardrail brief) slot sore 16:45 HARI INI — satu-satunya pending
+- Jebakan: (1) query audit DB WAJIB filter assetClass — crypto 24/7 bikin "weekend rows" phantom; (2) docker image dibangun dari worktree → jangan percaya "belum live" dari git status saja, curl dulu; (3) repo masih banyak file modified lain (next.config, prisma schema, admin components) — BUKAN milik slot ini, jangan sapu
+- Langkah pertama slot sore: baca queue → jkse-01 → tulis DONE WHEN → spec teknis (lib/yahoo-finance.ts v8 chart fallback + guardrail label tanggal gen_daily_brief) → claude pipeline → deploy pasca-16:45
