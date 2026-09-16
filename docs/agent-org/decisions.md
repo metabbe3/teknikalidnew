@@ -205,3 +205,9 @@ Rollback: llm_backup field di jobs.json tiap job.
 - Owner konfirmasi: crypto stale sejak ~24 Jul disengaja — fokus konten saham dulu.
 - JANGAN buat task fix crypto ingest / jangan re-escalate flag ini sampai owner minta.
 - Kalau CEO/CTO lihat max date crypto < 30 hari: cukup sebut "by design (owner 16 Sep)", bukan anomaly.
+
+## 2026-09-16 (owner) — Quiet zone baru 11:00–18:00 WIB (Z.ai usage ×3 high-traffic)
+- Semua job LLM DILARANG jalan jam 11:00–17:59 (biaya GLM ×3). 09:00–16:15 lama digantikan.
+- CTO sore 16:45 → CTO malam 18:30 (weekday). IG Carousel 17:30 → 19:00 (tetap prime-time IG).
+- Verify: 0 LLM job tersisa di window. Job pagi (Mandor/CTO/CEO ≤08:15) + malam ≥18:30 aman.
+- hivePOS night org (00:00–05:00) tidak terpengaruh.
