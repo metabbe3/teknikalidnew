@@ -245,3 +245,10 @@ Rollback: llm_backup field di jobs.json tiap job.
   crontab lama 6 entry MASIH AKTIF → besok double-run pagi (cron 09:30/10:00/10:30) + sore
   (launchd 16:30/17:00/17:30). Semua idempotent → aman. Fix permanen butuh owner 1 baris:
   `crontab /tmp/final_crontab.txt` (semua entry teknikal+openclaw sudah dikomentari di file itu).
+
+## 2026-09-16 ~20:1x — crontab write SOLVED: env -i bypass
+- ROOT CAUSE hang: env var gateway (HERMES_*/AI_AGENT dst) di-inherit crontab setuid → XPC deadlock.
+- FIX: `env -i /usr/bin/crontab /tmp/final_crontab.txt` (environment kosong) → RC=0 instant.
+- crontab sekarang: SEMUA entry non-aktif (openclaw retired + teknikal pindah launchd WIB).
+- Penjadwalan teknikal.id final: launchd 4 job (idx 06:00, eod 16:30, articles 17:00, resolve 17:30)
+  + Hermes org (Mandor/CTO/CEO/IG/EOD). Zero double-run mulai besok.
