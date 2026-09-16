@@ -1,4 +1,5 @@
 import { subDays } from "date-fns";
+import { wibDayKey } from "@/lib/datetime-wib";
 import { ArticleStatus, ArticleType } from "@/generated/prisma/client";
 import { IDX40 } from "@/lib/constants";
 import { IDX40_TICKERS } from "@/lib/idx-stocks";
@@ -303,7 +304,7 @@ export const articleService = {
     return provider.researchKeywords(query, context);
   },
 
-  async generateNewsArticle(topic: string, keywords: string[], trendingAngles?: string[], context?: string, autoPublish = false, marketCtx?: MarketContext): Promise<{ id: string; title: string; slug: string }> {
+  async generateNewsArticle(topic: string, keywords: string[], trendingAngles?: string[], context?: string, autoPublish = false, marketCtx?: MarketContext, opts?: { minWords?: number }): Promise<{ id: string; title: string; slug: string }> {
     const marketDataSection = marketCtx ? formatMarketContextForPrompt(marketCtx) : undefined;
     const recentPromptTitles = await articleRepository.findRecentTitles(5).catch(() => [] as string[]);
     const { system, user } = buildNewsPrompt({ topic, keywords, trendingAngles, context, marketDataSection, recentTitles: recentPromptTitles });
@@ -314,7 +315,7 @@ export const articleService = {
     });
 
     // ── Gate 1: Quality validation (instant, deterministic, zero tokens) ──
-    const quality = validateArticle(result.content, result.title || topic, keywords);
+    const quality = validateArticle(result.content, result.title || topic, keywords, opts);
     console.info(`[QualityGate] Score: ${quality.score}/100 | Passed: ${quality.passed} | Words: ${quality.meta.wordCount} | H2: ${quality.meta.h2Count} | Tickers: ${quality.meta.tickerCount}`);
     if (!quality.passed) {
       const errorIssues = quality.issues.filter((i) => i.severity === "error");
@@ -632,6 +633,55 @@ export const articleService = {
     return { generated, errors, skipped };
   },
 
+  /**
+   * The daily market brief — market-wide NEWS article (tickerTag null) featured
+   * on /berita and cross-linked from any stock page whose ticker it mentions
+   * (rehype stock linker auto-links tickers at render). One per WIB day.
+   */
+  async generateDailyBrief(): Promise<{ id: string; title: string; slug: string; skipped?: boolean }> {
+    // WIB-day dedupe — never two briefs for the same WIB calendar day (not a
+    // rolling 24h window: a brief at 22:00 WIB must not block the next day's
+    // 16:10 run, and a 00:30 brief must not double up with a later one).
+    const existing = await articleRepository.findLatestDailyBrief().catch(() => null);
+    if (existing && wibDayKey(new Date(existing.publishedAt)) === wibDayKey(new Date())) {
+      return { id: "", title: existing.title, slug: existing.slug, skipped: true };
+    }
+
+    const marketCtx = await gatherMarketContext();
+    const sessionDate = marketCtx.latestSessionDate;
+
+    const nowWib = new Date(Date.now() + 7 * 60 * 60 * 1000);
+    // Label with the data session's date, not the wall clock — a brief generated
+    // after midnight WIB still describes the previous close.
+    const dateId = (sessionDate ? new Date(sessionDate + "T00:00:00Z") : nowWib)
+      .toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+
+    const todayWibIso = nowWib.toISOString().slice(0, 10);
+    const context = [
+      ...(sessionDate
+        ? [`DATA SESI: tanggal close terbaru database = ${sessionDate} (hari WIB sekarang ${todayWibIso}). Judul dan semua penyebutan tanggal WAJIB mengacu tanggal sesi data tersebut, bukan tanggal kalender.`]
+        : []),
+      `Tulis BRIEF PASAR HARI INI untuk ${dateId} (pasar IDX).`,
+      "Struktur: (1) ringkasan singkat kondisi pasar dan breadth, (2) top movers hari ini dengan alasan teknikalnya,",
+      "(3) sinyal teknikal yang menonjol — golden cross / death cross / oversold baru — sebut ticker spesifik,",
+      "(4) apa yang perlu dipantau besok.",
+      "WAJIB menyebut ticker spesifik (format 4 huruf, mis. BBCA, TLKM) agar ter-link otomatis ke chart sahamnya.",
+      "Gunakan HANYA data pasar pada context yang diberikan — jangan mengarang angka. Ringkas, padat, maksimal 500 kata.",
+    ].join(" ");
+
+    const result = await this.generateNewsArticle(
+      `Brief Pasar IDX Hari Ini, ${dateId}`,
+      ["brief pasar saham", "ringkasan ihsg hari ini", "top mover saham", "sinyal saham hari ini"],
+      undefined,
+      context,
+      true, // autoPublish — brief must be listed immediately
+      marketCtx,
+      { minWords: 350 }, // briefs are deliberately concise — the 1200-word article gate doesn't apply
+    );
+
+    return result;
+  },
+
   async generateTrendingNews(count: number = 10): Promise<{ generated: string[]; articleIds: string[]; errors: string[] }> {
     const generated: string[] = [];
     const articleIds: string[] = [];
@@ -715,5 +765,15 @@ export const articleService = {
 
   async updateCoverImage(articleId: string, imageUrl: string) {
     return articleRepository.update(articleId, { coverImageUrl: imageUrl } as Parameters<typeof articleRepository.update>[1]);
+  },
+
+  // E-E-A-T review queue: lists PUBLISHED articles with no editor sign-off, and
+  // records a real human approval (sets reviewedById => "ditinjau oleh" byline).
+  listPendingReview() {
+    return articleRepository.listPendingReview();
+  },
+
+  async approveArticle(articleId: string, editorId: string): Promise<void> {
+    await articleRepository.markReviewed(articleId, editorId);
   },
 };

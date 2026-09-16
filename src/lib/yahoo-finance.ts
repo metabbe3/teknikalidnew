@@ -1,4 +1,5 @@
 import YahooFinance from "yahoo-finance2";
+import { fetchQuotesTradingView } from "@/lib/market-quotes";
 import pLimit from "p-limit";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -22,6 +23,7 @@ const QuoteSchema = z
     regularMarketChange: z.number().nullable().optional(),
     regularMarketChangePercent: z.number().nullable().optional(),
     regularMarketVolume: z.number().nullable().optional(),
+    regularMarketTime: z.number().nullable().optional(),
     regularMarketDayHigh: z.number().nullable().optional(),
     regularMarketDayLow: z.number().nullable().optional(),
     regularMarketOpen: z.number().nullable().optional(),
@@ -130,17 +132,78 @@ function normalizePriceToBook(raw: number | null | undefined, price: number | nu
   return null;
 }
 
+/**
+ * Yahoo v8 chart-meta quote — fallback for tickers the TradingView scanner
+ * doesn't cover (indices like ^JKSE return totalCount 0 there). Uncached:
+ * rare path, and callers already cache their own results.
+ */
+async function fetchQuoteV8(ticker: string): Promise<Record<string, unknown> | null> {
+  try {
+    const res = await fetch(
+      `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?range=2d&interval=1d`,
+      {
+        headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)", Accept: "application/json" },
+        signal: AbortSignal.timeout(8000),
+      }
+    );
+    if (!res.ok) return null;
+    const body = (await res.json()) as { chart?: { result?: Array<{ meta?: Record<string, unknown> }> } };
+    const meta = body.chart?.result?.[0]?.meta;
+    if (!meta) return null;
+
+    const price = typeof meta.regularMarketPrice === "number" ? meta.regularMarketPrice : null;
+    const prevClose =
+      typeof meta.chartPreviousClose === "number" ? meta.chartPreviousClose :
+      typeof meta.previousClose === "number" ? meta.previousClose : null;
+    const changePercent =
+      typeof meta.regularMarketChangePercent === "number" ? meta.regularMarketChangePercent :
+      price != null && prevClose != null && prevClose !== 0 ? ((price - prevClose) / prevClose) * 100 : null;
+    const change = price != null && prevClose != null ? price - prevClose : null;
+    const shortName =
+      typeof meta.shortName === "string" ? meta.shortName :
+      typeof meta.longName === "string" ? meta.longName : null;
+    const fullExchangeName = typeof meta.fullExchangeName === "string" ? meta.fullExchangeName : null;
+
+    const symbol = typeof meta.symbol === "string" ? meta.symbol : ticker;
+    const quote: Record<string, unknown> = {
+      symbol,
+      marketState: typeof meta.marketState === "string" ? meta.marketState : "REGULAR",
+    };
+    if (price != null) quote.regularMarketPrice = price;
+    if (change != null) quote.regularMarketChange = change;
+    if (changePercent != null) quote.regularMarketChangePercent = changePercent;
+    if (prevClose != null) quote.regularMarketPreviousClose = prevClose;
+    if (typeof meta.regularMarketTime === "number") quote.regularMarketTime = meta.regularMarketTime;
+    if (typeof meta.currency === "string") quote.currency = meta.currency;
+    if (shortName != null) quote.shortName = shortName;
+    if (fullExchangeName != null) quote.longName = `${symbol} (${fullExchangeName})`;
+    return quote;
+  } catch {
+    return null;
+  }
+}
+
 export async function fetchQuote(ticker: string): Promise<StockQuote> {
   const cacheKey = `yf:quote:${ticker}`;
+  // Yahoo v7 quote endpoint shut (~2026-09-08) — quotes come from the TradingView
+  // batch scanner now; cachedFetch still handles memory+DB caching below.
   const raw = await cachedFetch(cacheKey, QUOTE_TTL_MS, QUOTE_TTL_MS, () =>
-    yahooFinance.quote(ticker)
+    fetchQuotesTradingView([ticker]).then((q) => q[0] as unknown as Record<string, unknown>)
   );
 
   const parsed = QuoteSchema.safeParse(raw);
   if (!parsed.success) {
     throw new Error(`Invalid quote data for ${ticker}: ${parsed.error.message}`);
   }
-  const d = parsed.data;
+  let d = parsed.data;
+
+  // TradingView scanner serves no indices (^JKSE → totalCount 0 → null price).
+  // Retry those via Yahoo v8 chart meta before giving up on a price.
+  if (d.regularMarketPrice == null) {
+    const v8 = await fetchQuoteV8(ticker);
+    const v8Parsed = v8 ? QuoteSchema.safeParse(v8) : null;
+    if (v8Parsed?.success) d = v8Parsed.data;
+  }
 
   return {
     symbol: d.symbol,
@@ -148,6 +211,7 @@ export async function fetchQuote(ticker: string): Promise<StockQuote> {
     regularMarketChange: d.regularMarketChange ?? null,
     regularMarketChangePercent: d.regularMarketChangePercent ?? null,
     regularMarketVolume: d.regularMarketVolume ?? null,
+    regularMarketTime: d.regularMarketTime ?? null,
     regularMarketDayHigh: d.regularMarketDayHigh ?? null,
     regularMarketDayLow: d.regularMarketDayLow ?? null,
     regularMarketOpen: d.regularMarketOpen ?? null,
@@ -169,23 +233,33 @@ export async function fetchQuote(ticker: string): Promise<StockQuote> {
 }
 
 export async function fetchQuotesBatch(tickers: string[]) {
-  const BATCH_SIZE = 50;
-  const allResults: unknown[] = [];
+  // Yahoo v7 quote endpoint shut ~2026-09-08 (Unauthorized for all tickers) —
+  // batch quotes come from the TradingView scanner instead (150/POST, verified
+  // value-identical to Yahoo). Same return shape as before.
+  const quotes = await fetchQuotesTradingView(tickers);
 
-  for (let i = 0; i < tickers.length; i += BATCH_SIZE) {
-    const batch = tickers.slice(i, i + BATCH_SIZE);
-    const batchResults = await limit(() => fetchWithRetry(() => yahooFinance.quote(batch)));
-    allResults.push(...batchResults);
-  }
-
-  return allResults.map((raw: unknown, i: number) => {
+  const results = quotes.map((quote, i) => {
     try {
-      return { ticker: tickers[i], quote: QuoteSchema.parse(raw) };
+      return { ticker: tickers[i], quote: QuoteSchema.parse(quote) };
     } catch {
-      console.error(`[YahooFinance] Batch quote parse failed for ${tickers[i]}`);
+      console.error(`[MarketQuotes] Batch quote parse failed for ${tickers[i]}`);
       return { ticker: tickers[i], quote: null };
     }
   });
+
+  // Patch null/priceless entries (indices the scanner misses) via Yahoo v8.
+  for (const entry of results) {
+    if (entry.quote != null && entry.quote.regularMarketPrice != null) continue;
+    const v8 = await fetchQuoteV8(entry.ticker);
+    if (!v8) continue;
+    const v8Parsed = QuoteSchema.safeParse(v8);
+    if (v8Parsed.success) {
+      entry.quote = v8Parsed.data;
+      console.info(`[MarketQuotes] v8 chart fallback used for ${entry.ticker}`);
+    }
+  }
+
+  return results;
 }
 
 export async function fetchHistorical(

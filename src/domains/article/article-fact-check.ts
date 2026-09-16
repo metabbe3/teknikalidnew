@@ -9,6 +9,8 @@ import { passesTitleGuard } from "./title-guard";
 
 export interface MarketContext {
   date: string;
+  /** Latest DB price session across top stocks, ISO 'yyyy-mm-dd' — null when no prices. */
+  latestSessionDate: string | null;
   ihsg: { level: number | null; changePercent: number | null };
   usdIdr: number | null;
   topStocks: Array<{
@@ -129,6 +131,15 @@ export async function gatherMarketContext(tickers?: string[]): Promise<MarketCon
   const topTickers = IDX40.slice(0, 10).map((s) => s.ticker);
   const topStocksData = await stockMarketService.findStocksByTickersWithIndicators(topTickers);
 
+  // Max latest-price date across these stocks — the session the data describes,
+  // which can lag the WIB calendar (night runs, holidays, sync gaps).
+  const sessionDateTimes = topStocksData
+    .map((s) => s.prices[0]?.date?.getTime())
+    .filter((t): t is number => t != null);
+  const latestSessionDate = sessionDateTimes.length > 0
+    ? new Date(Math.max(...sessionDateTimes)).toISOString().slice(0, 10)
+    : null;
+
   const topStocks: MarketContext["topStocks"] = topStocksData.map((s) => {
     const latest = s.prices[0];
     const prev = s.prices[1];
@@ -177,7 +188,7 @@ export async function gatherMarketContext(tickers?: string[]): Promise<MarketCon
     }
   }
 
-  return { date, ihsg, usdIdr, topStocks, relatedStocks };
+  return { date, latestSessionDate, ihsg, usdIdr, topStocks, relatedStocks };
 }
 
 // ── Format market context for prompt injection ──
