@@ -1,14 +1,28 @@
 import type { MetadataRoute } from "next";
-import { subDays } from "date-fns";
 import { IDX_STOCKS, IDX40_TICKERS, SITE_URL } from "@/lib/constants";
 import { GLOSSARY_TERMS } from "@/lib/glossary-terms";
 import { SECTORS } from "@/lib/sectors";
 import { IDX_INDICES } from "@/lib/idx-indices";
 import { ArticleType } from "@/generated/prisma/client";
+import { isStaleArticle } from "@/domains/article/article-freshness";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic"; // generated at runtime (build stage has no DB access)
 export const revalidate = 3600; // Regenerate hourly
+
+/** Mondays of the last n completed weeks (skips the in-progress week — it has
+ *  no full trading data yet; bounded list, anti-spam: no unbounded dated URLs). */
+function lastNWeeks(n: number): Date[] {
+  const mon = new Date();
+  const day = mon.getUTCDay();
+  mon.setUTCDate(mon.getUTCDate() + (day === 0 ? -6 : 1 - day) - 7); // previous Monday
+  mon.setUTCHours(0, 0, 0, 0);
+  return Array.from({ length: n }, (_, i) => {
+    const w = new Date(mon);
+    w.setUTCDate(w.getUTCDate() - i * 7);
+    return w;
+  });
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = SITE_URL;
@@ -54,6 +68,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .slice(0, 150)
     .forEach((r) => sitemapTickers.add(r.ticker));
 
+  // Phase 3 staged stock claim: add human-promoted wave tickers; keep unpromoted
+  // wave landing articles out of the sitemap until an editor reviews them.
+  const promotedWave = await prisma.waveAssignment.findMany({
+    where: { status: "PROMOTED" },
+    select: { ticker: true },
+  });
+  promotedWave.forEach((w) => sitemapTickers.add(w.ticker));
+  const unpromotedLandingIds = new Set(
+    (await prisma.waveAssignment.findMany({
+      where: { status: { not: "PROMOTED" }, landingArticleId: { not: null } },
+      select: { landingArticleId: true },
+    }))
+      .map((w) => w.landingArticleId)
+      .filter((id): id is string => id != null),
+  );
+
   // Enrich the shortlisted stocks with real dates
   const stockPages = IDX_STOCKS.filter((stock) => sitemapTickers.has(stock.ticker)).map((stock) => {
     const sid = tickerToStockId.get(stock.ticker);
@@ -78,52 +108,44 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     };
   });
 
-  // Dated indicator archive — IDX40 × last ~35 days of indicator rows.
-  // ponytail: bounded to IDX40 × recent dates to respect the deliberately-narrowed
-  // sitemap. Older dates + top-150 discovered via the archive's prev/next internal links.
-  const idx40StockIds = IDX_STOCKS
-    .filter((s) => idx40Set.has(s.ticker))
-    .map((s) => tickerToStockId.get(s.ticker))
-    .filter((id): id is number => id != null);
-  const recentIndicatorRows = latestDate
-    ? await prisma.stockIndicator.findMany({
-        where: { interval: "1d", stockId: { in: idx40StockIds }, date: { gte: subDays(latestDate, 35) } },
-        select: { date: true, stock: { select: { ticker: true } } },
-        orderBy: { date: "desc" },
-      })
-    : [];
-  const archivePages = recentIndicatorRows.map((r) => ({
-    url: `${baseUrl}/stocks/${r.stock.ticker.replace(/\.JK$/, "").toLowerCase()}/indikator/${r.date.toISOString().slice(0, 10)}`,
-    lastModified: r.date,
-    changeFrequency: "monthly" as const,
-    priority: 0.5,
-  }));
-
-  // Article pages — already use real updatedAt
-  const articles = await prisma.article.findMany({
-    where: { status: "PUBLISHED", isListed: true },
-    select: { slug: true, updatedAt: true, articleType: true, tickerTag: true },
+  // Indicator history TABLE pages — one URL per ticker (NOT per date).
+  // Anti-spam: collapsed ~47k dated URLs into ~190 table pages. See SEO plan.
+  const indicatorHistoryPages = IDX_STOCKS.filter((s) => sitemapTickers.has(s.ticker)).map((s) => {
+    const sid = tickerToStockId.get(s.ticker);
+    const realDate = sid ? stockIdToDate.get(sid) : undefined;
+    return {
+      url: `${baseUrl}/stocks/${s.ticker.replace(/\.JK$/, "").toLowerCase()}/indikator`,
+      lastModified: realDate ?? today,
+      changeFrequency: "daily" as const,
+      priority: idx40Set.has(s.ticker) ? 0.6 : 0.4,
+    };
   });
 
-  // Exclude non-IDX40 DAILY_SNAPSHOT from sitemap (noindex'd — reduces scaled-content signal)
+  // Article pages — all PUBLISHED articles indexed regardless of isListed flag
+  const articles = await prisma.article.findMany({
+    where: { status: "PUBLISHED" },
+    select: { id: true, slug: true, updatedAt: true, articleType: true, tickerTag: true },
+  });
+
+  // Exclude stale articles (auto-noindex — see article-freshness.ts), unpromoted
+  // wave landings, and per-ticker types now 308'd to /stocks (DAILY_SNAPSHOT via
+  // saham-<ticker>, STOCK_ANALYSIS via analisa-teknikal-<ticker> — their content
+  // lives on the stock page, so listing them here would advertise redirected URLs)
   const articlePages = articles
-    .filter((a) => !(a.articleType === "DAILY_SNAPSHOT" && a.tickerTag && !idx40Set.has(a.tickerTag)))
+    .filter((a) => a.articleType !== ArticleType.DAILY_SNAPSHOT)
+    .filter((a) => a.articleType !== ArticleType.STOCK_ANALYSIS)
+    .filter((a) => !isStaleArticle(a))
+    .filter((a) => !unpromotedLandingIds.has(a.id))
     .map((a) => {
     const isEducational = a.articleType === ArticleType.EDUCATIONAL;
-    const isSnapshot = a.articleType === "DAILY_SNAPSHOT";
     const path = isEducational ? `/akademi/${a.slug}` : `/berita/${a.slug}`;
-    const isIdx40Analysis = a.articleType === ArticleType.STOCK_ANALYSIS && a.tickerTag && idx40Set.has(a.tickerTag);
 
-    let priority: number;
-    if (isSnapshot) priority = 0.8;
-    else if (isIdx40Analysis) priority = 0.9;
-    else if (a.articleType === ArticleType.STOCK_ANALYSIS) priority = 0.8;
-    else priority = 0.7;
+    const priority = 0.7;
 
     return {
       url: `${baseUrl}${path}`,
       lastModified: a.updatedAt,
-      changeFrequency: isSnapshot ? "daily" as const : isEducational ? "weekly" as const : "monthly" as const,
+      changeFrequency: isEducational ? "weekly" as const : "monthly" as const,
       priority,
     };
   });
@@ -190,12 +212,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     { url: baseUrl, lastModified: today, changeFrequency: "daily", priority: 1.0 },
+    { url: `${baseUrl}/laporan-pasar`, lastModified: today, changeFrequency: "weekly", priority: 0.7 },
+    ...lastNWeeks(8).map((w) => ({
+      url: `${baseUrl}/laporan-pasar/minggu-${w.toISOString().slice(0, 10)}`,
+      lastModified: w,
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    })),
     { url: `${baseUrl}/stocks`, lastModified: today, changeFrequency: "daily", priority: 0.9 },
     { url: `${baseUrl}/akademi`, lastModified: today, changeFrequency: "weekly", priority: 0.8 },
     { url: `${baseUrl}/berita`, lastModified: today, changeFrequency: "daily", priority: 0.8 },
     { url: `${baseUrl}/saham-oversold`, lastModified: today, changeFrequency: "daily", priority: 0.8 },
     { url: `${baseUrl}/saham-overbought`, lastModified: today, changeFrequency: "daily", priority: 0.8 },
     { url: `${baseUrl}/saham-golden-cross`, lastModified: today, changeFrequency: "daily", priority: 0.8 },
+    { url: `${baseUrl}/saham-macd-bullish`, lastModified: today, changeFrequency: "daily", priority: 0.8 },
+    { url: `${baseUrl}/saham-stochastic-oversold`, lastModified: today, changeFrequency: "daily", priority: 0.8 },
+    { url: `${baseUrl}/saham-volume-spike`, lastModified: today, changeFrequency: "daily", priority: 0.8 },
+    { url: `${baseUrl}/saham-death-cross`, lastModified: today, changeFrequency: "daily", priority: 0.8 },
+    { url: `${baseUrl}/saham-pullback-sma20`, lastModified: today, changeFrequency: "daily", priority: 0.8 },
+    { url: `${baseUrl}/saham-ema-cross`, lastModified: today, changeFrequency: "daily", priority: 0.8 },
     { url: `${baseUrl}/saham-blue-chip`, lastModified: today, changeFrequency: "weekly", priority: 0.8 },
     { url: `${baseUrl}/broker-saham-terbaik`, lastModified: today, changeFrequency: "weekly", priority: 0.9 },
     { url: `${baseUrl}/community`, lastModified: today, changeFrequency: "daily", priority: 0.6 },
@@ -206,7 +241,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/about`, lastModified: today, changeFrequency: "monthly", priority: 0.6 },
     ...stockPages,
     ...kenapaPages,
-    ...archivePages,
+    ...indicatorHistoryPages,
     ...articlePages,
     ...faqSitemapEntries,
     sectorIndex,
