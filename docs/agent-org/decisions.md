@@ -261,3 +261,19 @@ Rollback: llm_backup field di jobs.json tiap job.
 - DONE WHEN runtime: brief 17 Sep (generate-articles 17:00 WIB jadwal launchd baru) harus
   berlabel sesi benar + IHSG non-null. Kalau masih salah → investigasi (bukan deploy baru).
 - deploy budget 16 Sep: 1/2 (CTO). 0 eksperimen growth (hold sampai retro 20 Sep).
+
+## 2026-09-16 22:1x — Post-mortem watchdog spam + launchd plist korup (agent-utama)
+- SPAM ROOT CAUSE berlapis: (1) watchdog check#3 masih heartbeat agent-scheduler yang DIKUBUR
+  19:50 → tiap 90 menit "nyelametin" sistem mati; (2) check#4 log lama (articles-morning.log)
+  vs launchd baru (generate-articles.log belum ada sampai 17:00 besok) → dispatch manual tiap
+  15 menit sampai 23:00.
+- BUG DITEMUKAN & FIXED: plist eod-sync & resolve-predictings korup (XML close-tag mismatch dari
+  write_file) + SEMUA plist berisi token REDACTED gateway (FZlv5m...UCTN) bukan secret .env asli
+  → launchd curl exit 56 ditolak server. Rewrite via python plistlib + secret asli dari .env.
+  LESSON: jangan pernah copy token dari output tool (gateway selalu redact); SELALU baca dari
+  source file langsung saat menulis credential ke config.
+- FIX watchdog: check#3 dihapus (komentar RETIRED), check#4 jadwal disesuaikan (eod 17-23 gate
+  16:00, articles 18-23 gate 17:00 via generate-articles.log baru), gate 8-jam per-endpoint anti
+  spam-loop. Verify: run-2 SILENT sehat.
+- Fire-test launchd eod-sync: runs=1 exit=0 log 22:11 {"success":true} — full path proven.
+- Besok 16:30/17:00/17:30 = jadwal launchd baru pertama kali live dgn token benar.
