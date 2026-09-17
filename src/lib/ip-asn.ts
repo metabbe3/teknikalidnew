@@ -20,11 +20,15 @@ export const DATACENTER_ASNS = new Set<string>([
   "AS16276", // OVH
   "AS45102", // Alibaba Cloud
   "AS24534", // PT Transhybrid (Indonesian datacenter)
+  "AS36352", // ColoCrossing (insiden 15 Sep)
+  "AS31898", // Oracle Cloud (insiden 15 Sep)
+  "AS200373", // 3xK Tech GmbH (insiden 15 Sep)
+  "AS21743", // Atlas Networks (insiden 15 Sep)
 ]);
 
 // Org-name fallback — catches datacenter IPs whose ASN isn't in the set above.
 const DATACENTER_ORG_RE =
-  /hetzner|digital\s?ocean|ovhcloud|^ovh|amazon|aws|google\s?cloud|microsoft|azure|alibaba|linode|vultr|contabo|choopa|datacamp/i;
+  /hetzner|digital\s?ocean|ovhcloud|^ovh|amazon|aws|google\s?cloud|microsoft|azure|alibaba|linode|vultr|contabo|choopa|datacamp|oracle|colocrossing|atlas networks|3xk/i;
 
 export function getClientIp(headers: Headers): string | null {
   return (
