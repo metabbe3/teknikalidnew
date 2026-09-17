@@ -358,3 +358,15 @@ dispatch engineering sebelum status spec_ready (SDLC).
   Test live 17 Sep: 21 run-record tertulis; verify mode SILENT (sehat).
 - Cron ca2bc4046171 05:45 no_agent deliver telegram (silent-OK), fire-tested via engine.
 - Melengkapi: Skip Monitor hivepos 3cb3df88 (per-org) → ledger = lapisan global.
+
+## 2026-09-17 — IG Stat Post Workflow v2 (hybrid CSS+Gemini, owner delegate)
+- PEMUTUSAN: CSS = tulang punggung harian (akurasi 100%, sparkline data asli, 2s);
+  Gemini Pro (subs owner, via browser CDP — gemini_image.py) = varian premium 2-3x/mgg.
+- TRIGGER Gemini: Selasa+Kamis ATAU saham non-gorengan move >= +10%. QC vision WAJIB
+  (semua teks persis; 1 typo = gugur → fallback CSS). Timeout 5mnt → fallback CSS.
+- Template prompt ter-validasi (2 QC 7/7 PASS): teks di-quote, layout top-to-bottom,
+  <50 kata, style lock, angka format simple.
+- Tooling: gemini_image.py (bridge, blob→canvas trick), ig_stat_gemini.py (live-data +
+  valid-eod guard). Temuan sampingan: eod-sync 17 Sep duplikat close 16 Sep (865 saham
+  identical, ^JKSE 17 kosong) — masuk task CTO jkse-2026-09-17-01.
+- Stat post = preview ke owner dulu; carousel utama tetap autopost 17:30.
