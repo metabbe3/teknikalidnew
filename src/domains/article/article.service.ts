@@ -522,12 +522,18 @@ export const articleService = {
       .reverse();
 
     const t = ticker.replace(".JK", "");
+    // 2026-09-17: IDX master data ships truncated company names ("Bank Rakyat Indonesia (Persero")
+    // which produced broken titles "(Persero (BRIS)". Strip dangling unbalanced suffix before use.
+    const cleanStockName = stock.name
+      .replace(/\s*\((Perser(?:o)?)\s*$/i, "")   // dangling "(Persero" / "(Perser" at end
+      .replace(/\s*\(Persero\)\s*Tbk\.?$/i, "") // full legal suffix — too long for SEO titles
+      .trim();
     const date = new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
     const signalLabelForTitle = indicator.signalLabel ?? "Netral";
     const signalEmoji = signalLabelForTitle.includes("Bullish") ? "🟢" : signalLabelForTitle.includes("Bearish") ? "🔴" : "🟡";
     const priceStr = close !== null ? `Rp${close.toLocaleString("id-ID")}` : "";
     const changeStr = changePercent !== null ? `${changePercent >= 0 ? "+" : ""}${changePercent.toFixed(2)}%` : "";
-    const title = `Harga Saham ${stock.name} (${t}) Hari Ini ${priceStr} ${changeStr} — Analisis & Sinyal ${signalEmoji}`;
+    const title = `Harga Saham ${cleanStockName} (${t}) Hari Ini ${priceStr} ${changeStr} — Analisis & Sinyal ${signalEmoji}`;
 
     // Compute support/resistance for excerpt
     const bbLower = decimalToNumber(indicator.bbLower);
