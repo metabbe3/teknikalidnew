@@ -349,3 +349,12 @@ dispatch engineering sebelum status spec_ready (SDLC).
 - LESSON: saat sebuah job dipindahkan kepemilikan (Hermes → in-app scheduler), checklist
   migrasi WAJIB termasuk 'hapus watcher lama' — watchdog yang ditinggalkan jadi sumber
   false-positive yang persis menyerupai insiden yang dia buat untuk tangkap.
+
+## 2026-09-17 09:3x — RUN LEDGER live (trigger.dev-inspired, tanpa migrasi)
+- Riset trigger.dev (owner): plus = durable/retry/observability; minus = TS-only, self-host
+  kernel wall, overkill utk 41 job Python. KEPUTUSAN: curi idenya, bukan tool-nya.
+- run_ledger.py (~/.hermes/scripts/): ledger JSONL per fire + verify jadwal-vs-ledger
+  (silent skip detection) + schema guard (repeat dict) + model-pin check.
+  Test live 17 Sep: 21 run-record tertulis; verify mode SILENT (sehat).
+- Cron ca2bc4046171 05:45 no_agent deliver telegram (silent-OK), fire-tested via engine.
+- Melengkapi: Skip Monitor hivepos 3cb3df88 (per-org) → ledger = lapisan global.
