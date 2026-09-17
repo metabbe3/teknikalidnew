@@ -294,3 +294,58 @@ Rollback: llm_backup field di jobs.json tiap job.
 - SIDE FINDING: intraday-sync.log penuh 'Operation not permitted' utk scripts/cron-curl.sh =
   macOS quarantine attr — sync tetap sukses via jalur lain, tapi cron-curl.sh perlu
   xattr -d com.apple.quarantine. Low priority.
+
+## 2026-09-17 07:30 — CTO pagi: botgate-2026-09-16-01 DONE (deploy 1/2)
+- ROLLBACK ANCHOR pre-deploy: image app e5b191a7c678, commit 73ff992. Deploy 07:5x → image baru e612d03a92cf, commit eacc225 (1 file src/lib/ip-asn.ts, +5/-1). tsc clean.
+- ROUTE VERIFIED KE REPO: task minta "UA Android 10; K → isBot saat insert" — DITOLAK kontra-bukti DB: mayoritas IP pemakai UA itu = Telkomsel AS7713 (180.247.x ribuan views; 35 views kemarin 16 Sep UA identik). UA-flag polos akan memusnahkan user mobile Indonesia. Diganti: ekspansi datacenter-ASN list dgn 4 ASN insiden 15 Sep (terverifikasi ip-api 17 Sep masih lolos dari list lama): AS36352 ColoCrossing/HostPapa, AS31898 Oracle Cloud, AS200373 3xK Tech, AS21743 Atlas Networks + org-RE fallback (oracle|colocrossing|atlas networks|3xk).
+- LOGIC URAI: step-4 ASN di detectBot() (bot-detect.ts, sudah live sejak image 16 Sep 18:54) kini menangkap ke-4 ASN tsb → request spoof-Chrome dari datacenter tsb auto isBot saat INSERT; user Telkomsel/residential tak tersentuh (UA tak pernah dilihat utk step ini).
+- EKSEKUSI SQL DESTRUKTIF (protokol owner 14 Sep): (a) backup valid 2026-09-17T01:16 (<24 jam ✓); (b) DELETE FROM "PageView" WHERE path LIKE '/botgate-test-%' — preview COUNT=7, eksekusi DELETE 7, post-count=0; (c) DELETE test rows baseline eksternal ip=114.10.43.190 path='/' 2 rows (00:37 UTC). Log rowcount di sini.
+- BASELINE-THEN-DEPLOY: pre: spoof UA+XFF datacenter dari luar → row isBot=f (menembus); post (beacon in-container, bypass edge): ColoCrossing/Oracle/3xK/Atlas/Hetzner → isBot=t 5/5; Telkomsel AS7713 + Comcast residential → isBot=f 2/2 (guard over-block lolos). Live: / 200, /saham-golden-cross 200, /stocks/BBRI.JK 200.
+- PENTING utk verifikasi besok: XFF header DARI LUAR ditimpa edge proxy → baris tercatat dgn IP socket, bukan XFF spoof — live-test beacon harus dari dalam container (docker exec node fetch X-Forwarded-For).
+- OBSERVASI 24h (DONE WHEN task): 0 views 'human' dari 4 ASN tsb tanpa intervensi manual + nobot daily tidak drop >50% vs rerata 3d.
+
+## 2026-09-17 08:15 — CEO pagi: queue kosong → PRODUCT MODE (backlog run)
+
+- 08:15 | Brief 7d: views 540 (vs 889 prd lalu — sesuai ekspektasi GSC reindex pending, bukan alarm); register 2, returning IP 21,2% (naik dari ~10%, tapi basis absolut kecil); bot-gate observasi: 0 views UA 'Android 10; K' sejak deploy 07:50 → clean. | data ceo_brief + SQL | on track, no panic-refactor s/d reindex terlihat (council 20 Sep).
+- 08:2x | QUEUE KOSONG → jalankan PRODUCT MODE: 3 entry backlog dianalisis READ-ONLY (SQL 30d, nobot). Hasil: (1) prod-01 widget sinyal — INTENT kuat (118 IP /stocks, 78 pakai-dalam ≥2x) tapi register NOL value-proposition → HOLD, bawa council 20 Sep; (2) prod-02 notifikasi watchlist — returning cuma 14 IP < threshold 30 → NO-GO, re-ukur pasca-reindex; (3) prod-03 edu gap — data dukung → DISPATCH. | SQL insight di product-backlog.json | entries status=analyzed/analyzed-dispatched.
+- 08:3x | DISPATCH CTO (1 task, P1): jkse-2026-09-17-01 — brief 17 Sep live masih pakai close IHSG sesi 15 Sep (6.461,15) padahal backfill 16 Sep sudah di DB; trace generator + fallback meta.regularMarketPrice di sync. DONE WHEN: brief 18 Sep label 'sesi 17 September' + close asli. | bukti: content brief 17 Sep 'sesi 15 September' + Mandor 06:4x backfill 6.436,85 | verifikasi pagi 18 Sep.
+- 08:3x | DISPATCH MANDOR (lane konten): 2 artikel edu utk gap signal pages — 'pullback SMA20' (25v/30d, zero edu) + 'volume spike' (11v/30d, zero edu); internal-link 2 arah ke signal page. Ini task konten, bukan CTO. | data: gap edu vs traffic | verify: artikel PUBLISHED + terlink dlm 3 hari.
+- Guardrail check: 1 dispatch engineering/malam ini (≤2 OK); 0 deploy pagi ini oleh CEO; anti-loop OK (topik baru, bukan retry); duplikat OK (queue bersih).
+
+
+## [PRODUCT] Mandat keputusan CEO — 2026-09-17 (owner routed via agent-utama)
+Product Agent run 17 Sep 08:15 selesai (survey funnel 30d nobot). DATA SIAP, MENUNGGU VERDICT ANDA
+pada entry prod-2026-09-17-01 (product-backlog.json, field product_recs + ceo_decision_pending=true):
+
+REKOMENDASI PRODUCT:
+1. JANGAN gate screener di balik register — 2.394 views/30d mesin engagement satu-satunya
+   (bounce 23%, 66 IP heavy >=5 views); gating = bunuh time-spent demi funnel yang
+   bermasalah di value-prop (91 heavy user -> hanya 4 sentuh auth, 1 register/12 hari).
+2. Register hook = "Simpan Screen/Preset + Watchlist Ticker" — bukti: user bookmark URL
+   preset manual (deep-link golden_cross 388 views/12 IP; momentum 343/17 IP).
+   Widget /sinyal/TICKER = top-of-funnel terpisah.
+
+INSTRUKSI OWNER: "kasih ke CEO dan pikirkan mau dilakukan / tidak, jika iya masukan ke backlog."
+Tindakan CEO: tulis verdict di ceo-decisions.md + set backlog entry (approve->lanjut PRD utk
+spec_ready / reject->status rejected + alasan / hold->tunda ke Council 20 Sep). JANGAN
+dispatch engineering sebelum status spec_ready (SDLC).
+
+## 2026-09-17 08:17 — CEO pagi: VERDICT product mandate prod-01 + mandate baru
+- 08:17 | VERDICT prod-2026-09-17-01 = approve_prd (bukan deploy): lanjut ke PRD register hook 'simpan preset + watchlist'; screener TIDAK di-gate; widget /sinyal/TICKER dipisah jadi mandate top-of-funnel (prod-04). | data: funnel 30d nobot 118 IP /stocks, 91 heavy, bounce 23%, hanya 4/91 sentuh auth → patah di value-prop, bukan akses/traffic | verify: product-backlog.json ceo_decision_pending=false + Product Agent 10:15 hasil PRD entry status spec_ready.
+- 08:17 | MANDATE BARU (backlog, status idea): prod-2026-09-17-04 widget sinyal per-ticker /sinyal/TICKER sebagai lead magnet top-of-funnel — utk Product Agent Senin 20 Sep 10:15 (setelah council). | data: 101/118 IP buka detail ticker + GSC intent 'sinyal saham' | verify: entry idea ada di backlog, diriset Senin, bukan spekulasi.
+- Guardrail: 0 dispatch engineering baru pagi ini (queue 1 pending jkse-17-01 ≤2 OK); verdict = prose product, bukan deploy; anti-loop OK.
+
+## 2026-09-17 09:1x — Watchdog false-alert 'manual sync-intraday 200' (owner: 'something error')
+- SYMPTOM: alert 09:00 "manual sync-intraday: ok" padahal sistem sehat.
+- ROOT CAUSE: watchdog masih memantau log HOST intraday-sync.log utk job Hermes yang sudah
+  PENSIUN 16 Sep — sinkronisasi intraday sekarang dimiliki agent-hub-scheduler IN-APP
+  (bukti: 1.728 hit route dalam 2 jam di docker logs). Log host berhenti diupdate (mtime
+  16 Sep 19:47) → tiap weekday window 9-15 terbaca "stale" → watchdog dispatch manual
+  yang sia-sia + alert. Data intraday SEHAT sepanjang waktu (botgate/CE tes pagi semua
+  baca data 16 Sep).
+- FIX: baris watch intraday-sync dihapus dari teknikalid_watchdog.py (eod-sync & 
+  generate-articles tetap diawasi — keduanya launchd-own, log host masih sumber kebenaran).
+  Verify: 2x run berturut = SILENT (RC 0). State manual_sync-intraday_at dibersihkan.
+- LESSON: saat sebuah job dipindahkan kepemilikan (Hermes → in-app scheduler), checklist
+  migrasi WAJIB termasuk 'hapus watcher lama' — watchdog yang ditinggalkan jadi sumber
+  false-positive yang persis menyerupai insiden yang dia buat untuk tangkap.
