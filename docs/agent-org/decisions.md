@@ -434,3 +434,7 @@ Owner: "Gas semua agent bisa paralel kalau tidak saling ganggu"
 - Patched prompt Mandor 714dbdc87f54: Sab-Min = edu/evergreen (target ≥2/weekend, prod-03), listicle Sabtu, usulan improvement via [WEEKEND-IDEA] di ceo-decisions.md (CEO Senin verdict, data-first). Weekday = mode biasa tanpa perubahan.
 - Rasional data: Sab 197/Min 234 views vs weekday 500+ (nobot, 28d) — pengunjung weekend = riset/evergreen; konten Sab+Min 7 artikel vs 44 Jumat = gap. Market close = brief pasar weekend tidak relevan.
 - Verify: jobs.json repeat dict OK, WEEKEND MODE di prompt, enabled true.
+
+## 2026-09-18 21:31 (owner) — SDLC IDLE BRAINSTORM MODE (kedua org)
+- Owner: "SDLC juga bisa lebih banyak? Kalau empty bisa brainstorming."
+- Patched 8 slot: CTO×2 + Product teknikal, CTO×2 + Night CEO + Product hivePOS, CEO pagi teknikal. Queue kosong → health check TETAP + MAX 1-2 ide ber-data ke product-backlog.json (status=candidate, dedupe, larang deploy saat idle). CEO verdict promote→PRD (SDLC chain utuh, gak ada jalur pintas).
