@@ -419,3 +419,18 @@ Owner: "Gas semua agent bisa paralel kalau tidak saling ganggu"
 - Owner konfirmasi ulang: crypto memang sengaja dimatikan (16 Sep). Task crypto-2026-09-19-01 (dispatch CEO pagi 18 Sep) = PELANGGARAN standing decision → cancelled/superseded.
 - GUARD baru utk CEO & CTO: sebelum dispatch/ambil task, cek decisions.md bagian 'BY DESIGN / standing' — item di sana TIDAK BOLEH jadi task tanpa owner yang minta ulang secara eksplisit.
 - CTO pagi 07:30 besok: crypto-01 sudah tidak ada di queue — jangan diangkat; ganti dengan health check reguler.
+
+## 2026-09-18 21:2x - CEO sore (review eksekusi)
+- STATE: sehat. Site 200 (0.38s → sore ini juga 200 di + /saham-golden-cross, baris terisi). jkse-2026-09-18-02 DONE 18:50 (SafetyNet live image 0ed98e5ed73a, org deploy 2/2) → queue engineering malam ini KOSONG setelah cancel.
+- VERIFIED BRIEF 18 Sep (utang pagi): DB content = "sesi Kamis 17 September", breadth 401 naik/252 turun (data segar sesi 17 Sep) — DONE WHEN jkse-01 TERPENUHI. Fix d83848f terbukti end-to-end. Impact gabung jkse-01+02 = cek 21 Sep (close ^JKSE 18 Sep C=6441.16 sudah in via launchd 16:30 sebelum deploy).
+- PROD-03 EDU MANDOR: query DB = 0 EDUCATIONAL published sejak 17 Sep. Window kepatuhan s/d 19 Sep (Mandor 06:30 besok = kesempatan terakhir sebelum eskalasi owner). Nudge sudah 2x via decision log — besok pagi cek lagi, kalau 19 Sep masih 0 → eskalasi owner (bukan task teknis).
+- DISPATCH (1 task ops, pengganti slot crypto yang dicancel): isr-2026-09-19-01 P2 — signal pages render empty-state ~10mnt pasca-deploy (ISR bake + catch{} swallow; temuan CTO malam, self-heal). Spec: fail-open ATAU blok 'data sedang diperbarui'. DONE WHEN: repro fetch-reject saat bake TIDAK merender 'tidak ada sinyal' + 3 signal pages 200 tanpa jendela kosong pasca-deploy + error ter-log. Guard: task eksplisit larang sentuh crypto (BY DESIGN). Anti-loop OK (topik baru, bukan retry); duplikat OK (belum ada task ISR); budget 1 dispatch/malam ≤2.
+- METRIK SORE (7d): views 566 vs 791 — komposisi penurunan = bot cleanup (periode lalu tercemar) + IG stopped 17 Sep + GSC belum reindex; bukan sinyal produk mati. Register views 2 (baseline 9), returning 14.6%, signal pages 20v. Verifikator tetap: tren 7-14 hari data bersih, council 20 Sep (prod-01 PRD) = keputusan produk terbesar menanti.
+- RITUAL [PRODUCT]: grep '\[PRODUCT\]' = 0 entry baru sejak verdict 17 Sep 08:17 (sudah terjawab approve_prd). prod-04 menunggu Product Agent Senin 20 Sep 10:15. CEO tidak bikin spec fitur baru (SDLC 17 Sep).
+
+
+## 2026-09-18 21:26 (owner) — Mandor WEEKEND MODE
+- Owner: "Weekday seperti sekarang, weekend fokus improvement dan fitur dll."
+- Patched prompt Mandor 714dbdc87f54: Sab-Min = edu/evergreen (target ≥2/weekend, prod-03), listicle Sabtu, usulan improvement via [WEEKEND-IDEA] di ceo-decisions.md (CEO Senin verdict, data-first). Weekday = mode biasa tanpa perubahan.
+- Rasional data: Sab 197/Min 234 views vs weekday 500+ (nobot, 28d) — pengunjung weekend = riset/evergreen; konten Sab+Min 7 artikel vs 44 Jumat = gap. Market close = brief pasar weekend tidak relevan.
+- Verify: jobs.json repeat dict OK, WEEKEND MODE di prompt, enabled true.
