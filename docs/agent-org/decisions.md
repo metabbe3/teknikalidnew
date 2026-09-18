@@ -456,3 +456,9 @@ Owner: "Gas semua agent bisa paralel kalau tidak saling ganggu"
 - Blocked ≠ gagal: itu GATE. 3 jenis: blocked_for_prd (jangan build, ambil task lain; >2 slot/±48 jam = [ESCALATE] ke owner) · blocked_owner (siapkan owner package: investigasi read-only + file + risiko + rollback; TETAP blocked sampai owner approve) · blocked_external (catat field needs, lapor 1 baris).
 - Dilarang: build tanpa spec, drop task diam-diam, bypass PRD gate, sentuh owner-only.
 - Patched: CTO teknikal pagi+malam, hivePOS slot1+slot2. Kasus live: hivepos-2026-09-17-02 blocked_for_prd (prd-activation, Product Agent first run Sab 19 Sep 01:30).
+
+## 2026-09-18 23:44 (owner) — Backlog anti-stagnation + P1-P4 scale + dashboard desktop responsive
+- PRIORITY SCALE dikunci: P1=minggu ini (customer-facing/data-integrity), P2=2 minggu, P3=bulan ini, P4=someday. Semua entry aktif di 4 file backlog sudah dinormalisasi.
+- ANTI-STAGNATION rule dipatch ke 3 CEO (teknikal pagi+evening, hivePOS night): idea/candidate >7 hari tanpa verdict = WAJIB verdict run itu; spec_ready >3 hari = eskalasi; blocked >2 slot = [ESCALATE]; dispatched >2 hari tanpa output = nudge max 2x.
+- Audit hari ini: TIDAK ada yang mandek — isr-01 P2 terjadwal besok 07:30; hivepos-02 P1 blocked_for_prd (PRD first run Sab 01:30, eskalasi kalau >2 slot); prod-01 P1 tunggu Council Minggu; prd-activation P1 (P0 lama dinormalisasi ke skala baru).
+- DASHBOARD RESPONSIVE: body max-width tier (480 → 980@900px → 1280@1280px → 1440@1600px) + layout /agents grid: office+SDLC side-by-side desktop (5fr/7fr), cards lain full-width, mobile tetap 1 kolom. Verified 390px & 1440px no overflow.
