@@ -135,7 +135,11 @@ function normalizePriceToBook(raw: number | null | undefined, price: number | nu
 /**
  * Yahoo v8 chart-meta quote — fallback for tickers the TradingView scanner
  * doesn't cover (indices like ^JKSE return totalCount 0 there). Uncached:
- * rare path, and callers already cache their own results.
+ * rare path, and callers already cache their own results. The last daily bar
+ * of the same response also enriches the quote with OHLC — bar values are
+ * authoritative over the meta day ranges when present. Indices report bar
+ * volume 0, which is left absent on purpose so downstream no-volume guards
+ * see "missing", not junk.
  */
 async function fetchQuoteV8(ticker: string): Promise<Record<string, unknown> | null> {
   try {
@@ -147,8 +151,11 @@ async function fetchQuoteV8(ticker: string): Promise<Record<string, unknown> | n
       }
     );
     if (!res.ok) return null;
-    const body = (await res.json()) as { chart?: { result?: Array<{ meta?: Record<string, unknown> }> } };
-    const meta = body.chart?.result?.[0]?.meta;
+    const body = (await res.json()) as {
+      chart?: { result?: Array<{ meta?: Record<string, unknown>; indicators?: { quote?: Array<Record<string, unknown>> } }> };
+    };
+    const result = body.chart?.result?.[0];
+    const meta = result?.meta;
     if (!meta) return null;
 
     const price = typeof meta.regularMarketPrice === "number" ? meta.regularMarketPrice : null;
@@ -177,6 +184,33 @@ async function fetchQuoteV8(ticker: string): Promise<Record<string, unknown> | n
     if (typeof meta.currency === "string") quote.currency = meta.currency;
     if (shortName != null) quote.shortName = shortName;
     if (fullExchangeName != null) quote.longName = `${symbol} (${fullExchangeName})`;
+
+    // Enrich with OHLCV from the last daily bar of this same response.
+    const bars = result?.indicators?.quote?.[0] as
+      | { open?: unknown[]; high?: unknown[]; low?: unknown[]; close?: unknown[]; volume?: unknown[] }
+      | undefined;
+    const closes = bars?.close;
+    let lastBar = -1;
+    if (Array.isArray(closes)) {
+      for (let i = closes.length - 1; i >= 0; i--) {
+        if (typeof closes[i] === "number" && Number.isFinite(closes[i])) {
+          lastBar = i;
+          break;
+        }
+      }
+    }
+    if (lastBar >= 0 && bars) {
+      const finiteOrUndef = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? v : undefined);
+      const open = finiteOrUndef(bars.open?.[lastBar]);
+      const high = finiteOrUndef(bars.high?.[lastBar]);
+      const low = finiteOrUndef(bars.low?.[lastBar]);
+      const volume = finiteOrUndef(bars.volume?.[lastBar]);
+      if (open != null) quote.regularMarketOpen = open;
+      if (high != null) quote.regularMarketDayHigh = high;
+      if (low != null) quote.regularMarketDayLow = low;
+      // Indices report volume 0 — keep absent so no-volume guards see "missing".
+      if (volume != null && volume > 0) quote.regularMarketVolume = volume;
+    }
     return quote;
   } catch {
     return null;

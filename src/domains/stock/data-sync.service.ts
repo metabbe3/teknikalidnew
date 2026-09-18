@@ -40,11 +40,16 @@ function buildPriceItems(
     .filter((r): r is { ticker: string; quote: NonNullable<typeof r.quote> } => {
       if (!r.quote) return false;
       if (r.quote.regularMarketPrice === null) return false;
-      // Skip stale data — no real trading. TODO(holidays): the scanner re-serves
+      // Skip stale data — no real trading. ^JKSE is the exception: the index
+      // comes from the v8 chart fallback, which carries no volume (indices
+      // report 0), so a missing volume passes it through while everything
+      // else needs a real traded volume. TODO(holidays): the scanner re-serves
       // the last session's data on IDX holidays too; weekends are caught above,
       // holidays would mint same-shape dup rows (~18 days/yr) — needs an IDX
       // holiday calendar or a cross-check against the last stored row date.
-      if (!r.quote.regularMarketVolume || r.quote.regularMarketVolume < 100) return false;
+      if (!r.quote.regularMarketVolume) {
+        if (r.ticker !== "^JKSE") return false;
+      } else if (r.quote.regularMarketVolume < 100) return false;
       // Only skip truly post-market data; volume filter handles weekends/holidays
       const ms = (r.quote as Record<string, unknown>).marketState;
       if (ms === "POSTPOST") return false;
