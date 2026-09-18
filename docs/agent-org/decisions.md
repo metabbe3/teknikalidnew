@@ -414,3 +414,8 @@ Owner: "Gas semua agent bisa paralel kalau tidak saling ganggu"
 - DEPLOY 1/1 slot malam (org 2/2 hari ini): docker compose build app + up -d app, 18:35 WIB (pasca-quiet-zone 11:00-18:00). Deploy cap aman.
 - VERIFY: SafetyNet live di container (grep 0→1); 3 halaman kunci 200; tsc clean; brief HTML identik (buildId saja). DONE WHEN-1 PASS, DONE WHEN-2 PASS; DONE WHEN-3 (row ^JKSE 18 Sep via launchd) SUDAH terpenuhi jam 16:30 sebelum deploy — C=6441.16 OHLC lengkap; safety net mulai berlaku EOD berikutnya.
 - TEMUAN (bukan regresi deploy, terjadi pasca-restart): golden-cross page empty-state ~10 menit — ISR bake + catch{} swallow; self-heal. Kandidat task P3: fail-open jangan render empty-state stale. Tidak dibuat task baru malam ini (queue discipline: max 2 pending; catat di lessons).
+
+## 2026-09-18 21:09 (owner) — CANCEL crypto-2026-09-19-01; standing decision DITEGAKKAN
+- Owner konfirmasi ulang: crypto memang sengaja dimatikan (16 Sep). Task crypto-2026-09-19-01 (dispatch CEO pagi 18 Sep) = PELANGGARAN standing decision → cancelled/superseded.
+- GUARD baru utk CEO & CTO: sebelum dispatch/ambil task, cek decisions.md bagian 'BY DESIGN / standing' — item di sana TIDAK BOLEH jadi task tanpa owner yang minta ulang secara eksplisit.
+- CTO pagi 07:30 besok: crypto-01 sudah tidak ada di queue — jangan diangkat; ganti dengan health check reguler.
