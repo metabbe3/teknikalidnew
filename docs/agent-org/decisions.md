@@ -444,3 +444,10 @@ Owner: "Gas semua agent bisa paralel kalau tidak saling ganggu"
 - IT-SEC Auditor d677bd5dfd45 Senin 09:00 (glm-5.3, brief itsec_brief.py: ports/.env/auth-err/SSL/backup) — READ-ONLY, temuan → backlog candidate (source:itsec), auth/payments/security config tetap owner-only.
 - SRE 52522478db5f Rabu+Sabtu 09:30 (glm-5.3, brief sre_brief.py: docker/disk/latency/error/ledger) — READ-ONLY, usulan → backlog (source:sre), 🔴 insiden langsung lapor owner.
 - SDLC: keduanya MASUK chain sebagai idea-generator — CEO verdict → Product PRD (kalau fitur) → CTO build. Tidak ada jalur pintas deploy.
+
+## 2026-09-18 23:01 (owner) — IT-SEC upgrade: RED+BLUE TEAM + SECURITY GATE shift-left di SDLC
+- Owner: IT-SEC harus review per-FITUR (safe/technical-hackable), cari celah per fitur & web — white hat, red team + blue team.
+- itsec_brief.py v2: [A] infra [B] FITUR BARU 7 hari via git diff (fokus review) [C] passive probes (headers/cookies).
+- Prompt IT-SEC d677bd5dfd45: RED (exploitability per fitur baru: IDOR/injection/privesc/logic/rate-bypass; passive only; tenant asli DILARANG disentuh — QA Test only) + BLUE (headers/SSL/port/secret hygiene) → temuan → backlog source:itsec-red/blue dgn exploitability rating. P0 = 🔴 baris pertama.
+- SECURITY GATE baru di SDLC: PRD Product Agent + task CTO yang sentuh auth/input/db/money WAJIB baris 'SEC-REVIEW: <poin serangan+mitigasi>' — dipatch ke 6 slot (Product×2 + CTO×4). IT-SEC Senin verify sampling.
+- Basis riset: shift-left security, OWASP ASVS L1-2, STRIDE ringan; passive-only red team (internal white-hat).
