@@ -80,3 +80,8 @@ Submit sitemap via GSC web (Angular closure, tanpa <form>): 6 jurus gagal — JS
 - **Lesson: uncommitted-working-tree ≠ belum live.** Sitemap exclusion sudah berjalan di production (image dibangun dari worktree) padahal `git status` menyebut modified/untracked. Verifikasi KEBAIKAN harus: (a) cek perilaku live (curl), (b) cek `git blame`/`git status` utk utang commit. Sebelum menulis spec "tambahkan exclusion", curl dulu — kerjaan bisa tinggal commit.
 - **Lesson: window indikator = per-BARIS (250 terakhir), bukan per-tanggal-trading** (indicator.service.ts L327). Kalau suatu saat baris fantasi equity beneran masuk DB lagi, dampaknya nyata ke SMA/EMA. Simulasi replikasi eksak (865/865 saham match DB, max err 0.005) = cara murah membuktikan no-impact tanpa mutasi.
 - **Temuan terpisah (belum jadi task): injest crypto stale sejak ~24 Jul 2026** — max(date) crypto = 2026-07-24. Kalau halaman /crypto dipakai user, ini task P1 calon.
+
+## 2026-09-17 — botgate (CTO pagi)
+- **Lesson: UA reduced `Linux; Android 10; K` ≠ bot.** Mayoritas IP pemakai UA itu = Telkomsel AS7713 asli (ribuan views). Spec "flag UA pattern" akan memusnahkan user mobile Indonesia — pembeda insiden 15 Sep adalah datacenter ASN, bukan UA. Spec yang menyebut pola UA wajib diuji dulu ke kolom `ip` DB sebelum dieksekusi.
+- **Lesson: XFF spoof dari luar TIDAK sampai ke app** (edge menimpa jadi IP socket) → beacon test bot-gate harus dari DALAM container app (`docker exec ... node fetch` dgn X-Forwarded-For). DB timestamp = UTC (WIB-7), sesuaikan window query.
+- **Lesson: ASN insiden lolos karena org mismatch** — ip-api `org` tak selalu mengandung nama vendor (AS36352 tampil "CloudIT Assets", bukan ColoCrossing) → org-RE saja tak cukup; rawat daftar AS number + org-RE bersamaan.

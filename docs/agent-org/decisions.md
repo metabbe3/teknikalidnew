@@ -370,3 +370,33 @@ dispatch engineering sebelum status spec_ready (SDLC).
   valid-eod guard). Temuan sampingan: eod-sync 17 Sep duplikat close 16 Sep (865 saham
   identical, ^JKSE 17 kosong) — masuk task CTO jkse-2026-09-17-01.
 - Stat post = preview ke owner dulu; carousel utama tetap autopost 17:30.
+
+## [OWNER DECISION] 17 Sep 19:20 WIB — IG CONTENT STOPPED
+Owner: "Stop ig content I think its bad we focus on our website first then social media"
+- Job IG Carousel c3617c4b58db PAUSED (enabled=false, verified). Tidak ada konten IG baru (carousel + stat post) sampai notice owner.
+- IG monitoring metrics (engagement stats existing posts) TETAP jalan — data utk evaluasi.
+- Rerouting energi growth: WEBSITE FIRST (SEO/GSC reindex, funnel value-prop 4/91, register preset+watchlist hook prod-01, widget prod-04). Social media menyusul setelah fondasi website sehat.
+- Aset dipreserve: ig_carousel.py stat mode + gemini_image.py + ig_stat_gemini.py + autopost pipeline — siap re-activate kapan pun (unpause + prompt utuh).
+
+## [OWNER] 17 Sep — IG content STOP (website first). CEO pagi: jangan dispatch task IG; fokus = funnel website + prod-01 + prod-04. IG metrics monitoring tetap.
+
+## [OWNER NORTH STAR] 17 Sep 19:26 WIB — Prioritas perusahaan
+"Fokus teknikal dan hivepos aplikasi consistency, trust, dan easy to use. Focus on customer! Data need to one reliable."
+- SEMUA keputusan produk & dispatch dinilai lewat 4 lensa: (1) CONSISTENCY, (2) TRUST, (3) EASY TO USE, (4) DATA RELIABLE (satu sumber kebenaran).
+- CUSTOMER FIRST: apa yang bikin user bingung/frustrasi/balik lagi = P0. Fitur baru yang tidak memperkuat 4 lensa = HOLD.
+- Untuk teknikal.id artinya: brief pasar akurat tiap pagi (data EOD benar — jkse-01 selesai pagi), funnel register mulus, error message jelas bahasa Indonesia, widget ticker (prod-04) selaras.
+- Untuk hivePOS: onboarding mulus (Umalas stuck di delete-customer = P0 kontinu), konsistensi UI, data order/revenue reliable.
+
+## [OWNER MANDATE] 17 Sep 20:30 WIB — PARALLEL EXECUTION PROTOCOL
+Owner: "Gas semua agent bisa paralel kalau tidak saling ganggu"
+- CTO builders (teknikal pagi+malam, hivePOS slot1) kini BOLEH 2+ claude code paralel dalam slot.
+- Gate: NON-OVERLAP file/area wajib (BE+FE ok; sama file/prisma/config = sequential).
+- Commit per-task sempit; deploy tetap 1 pintu akhir slot; QA slot berikutnya tetap (pembangun ≠ pemeriksa).
+- Laporan wajib sebut task paralel + bukti non-overlap (daftar file).
+- Patched ke jobs.json 3 prompt CTO. Eksperimen pertama: malam ini hivePOS P0 delete-customer (BE) ∥ P1 onboarding checklist (FE).
+
+## 2026-09-17 21:25 - CEO sore (review eksekusi)
+- DONE: Site 200 (0.38s), app/worker/db healthy, 0 error app 12h. Botgate deploy 1/2 verified. IG carousel terakhir terkirim 19:11 (DdY0PIXn6i7 Volume Spike) lalu job PAUSED per owner 19:20. prod-01 PRD spec_ready + verdict approve. Tracking pipeline TERVERIFIKASI sehat: beacon->204->DB (SSR initial-load & client-nav, live browser test 21:1x).
+- WARNING: Views 17 Sep 150 = ilusi: hanya 4 IP uniq (108 burst dari 1 IP jam 12:00 = bot/crawler, sisanya testing deploy jam 07:00). Human real ~4 IP vs 16 kemarin. Pagi: putuskan apakah botgate berhasil filter bot (metrik bersih = bagus) ATAU memblokir manusia/crawler sehat (Bing referrer muncul kemarin).
+- WARNING: jkse-2026-09-17-01 MASIH pending; CTO malam 18:57 run ok tapi TIDAK eksekusi task itu (tidak ada entry di log). Brief 18 Sep (generate ~23:30) berisiko stale-session lagi.
+- PAGI 18 Sep (1 fokus): re-dispatch jkse-01 (ke-2, batas anti-loop) -> verifikasi brief 18 Sep "sesi 17 September" + close asli; sekalian verdict botgate vs traffic-drop. Plus cek prod-03 (2 artikel edu Mandor) belum ada output.

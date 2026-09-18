@@ -43,3 +43,10 @@
 - Traffic 540v/7d = GSC reindex pending (expected); returning IP 21,2% naik tapi n kecil; bot-gate bersih 0 hit sejak deploy. No panic-refactor; keputusan fitur besar (widget, notifikasi) ditunda ke council 20 Sep.
 
 - [18 Sep 07:5x] jkse-01 DONE: commit d83848f + deploy + sync → ^JKSE 17 Sep OHLC lengkap (C 6462.43). Next: Reviewer/QA cek konsistensi brief 18 Sep pasca-EOD; impact check 2026-09-21 (row 18 Sep).
+
+## 2026-09-18 08:2x — CTO pagi (queue kosong → health + admin-debt)
+- State: sehat; freshness FRESH (17 Sep); deploy pagi 1/1 terpakai (07:52, image 11ef0d8c86bc); home/golden-cross/brief-18 semua 200.
+- Barusan: temuan GAP — commit 3c12781 (JKSE-SafetyNet) dibuat 07:59 SETELAH build 07:52 → BELUM live (grep container 0 hit); buat entry jkse-2026-09-18-02 slot malam + commit docs debt (queue/decisions/lessons/handoff + NODE_OPTIONS compose).
+- In-flight: jkse-2026-09-18-02 (deploy 3c12781) slot 18:30 malam ini; observasi: brief 18 Sep label sesi (PASS per reviewer 07:15) + botgate nobot daily.
+- Jebakan: EOD sync jalan via LAUNCHD → app API /api/cron/sync-eod (bukan worker; worker image masih 16 Sep tapi tak eksekusi EOD); build image dari WORKTREE — commit setelah build = tidak otomatis live, SELALU grep container.
+- Langkah pertama slot malam: baca queue → jkse-02: docker compose build app && up -d app → grep JKSE-SafetyNet + curl 200 → changelog + queue flip.
