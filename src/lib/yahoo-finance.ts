@@ -289,7 +289,7 @@ export async function fetchQuotesBatch(tickers: string[]) {
     const v8Parsed = QuoteSchema.safeParse(v8);
     if (v8Parsed.success) {
       entry.quote = v8Parsed.data;
-      console.info(`[MarketQuotes] v8 chart fallback used for ${entry.ticker}`);
+      console.error(`[MarketQuotes] v8 chart fallback used for ${entry.ticker}`);
     }
   }
 

@@ -1,10 +1,11 @@
-import { fetchQuotesBatch } from "@/lib/yahoo-finance";
+import { fetchQuote, fetchQuotesBatch } from "@/lib/yahoo-finance";
 import { SITE_URL } from "@/lib/constants";
 import { qstash } from "@/lib/queue";
 import { stockRepository } from "./stock.repository";
 import { technicalAnalysisService } from "./technical-analysis.service";
 import { pushActivity } from "@/lib/activity-log";
 import { stockAlertService } from "./stock-alert.service";
+import { prisma } from "@/lib/prisma";
 
 const BATCH_SIZE = 50;
 const BATCH_DELAY_MS = 500;
@@ -119,9 +120,6 @@ export const dataSyncService = {
 
     for (let i = 0; i < allTickers.length; i += BATCH_SIZE) {
       const batch = allTickers.slice(i, i + BATCH_SIZE);
-      const batchNum = Math.floor(i / BATCH_SIZE) + 1;
-      const totalBatches = Math.ceil(allTickers.length / BATCH_SIZE);
-
       const quoteResults = await fetchQuotesBatch(batch);
       const priceItems = buildPriceItems(quoteResults, stockLookup);
 
@@ -173,6 +171,44 @@ export const dataSyncService = {
     }
 
     const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+
+    // Safety net: ^JKSE is the one series the daily brief cannot lose, and it is
+    // also the one quote that rides the v8 fallback (no volume). If the batch
+    // still dropped it, write a minimal row from a single-quote fetch.
+    try {
+      const wibDateKey = new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString().slice(0, 10);
+      const jkse = stockLookup.get("^JKSE");
+      const hasToday = jkse
+        ? await prisma.stockPrice.findFirst({
+            where: { stockId: jkse.id, date: new Date(`${wibDateKey}T00:00:00Z`) },
+            select: { id: true },
+          })
+        : null;
+      if (jkse && !hasToday && isWibWriteWindow()) {
+        const quote = await fetchQuote("^JKSE");
+        const price = quote.regularMarketPrice;
+        if (price != null) {
+          await stockRepository.batchUpsertTodayPrices([
+            {
+              stockId: jkse.id,
+              date:
+                quote.regularMarketTime && quote.regularMarketTime > 0
+                  ? new Date(quote.regularMarketTime * 1000)
+                  : new Date(),
+              open: quote.regularMarketOpen ?? quote.regularMarketPreviousClose ?? price,
+              high: quote.regularMarketDayHigh ?? price,
+              low: quote.regularMarketDayLow ?? price,
+              close: price,
+              volume: BigInt(0),
+            },
+          ]);
+          console.error(`[JKSE-SafetyNet] wrote missing ^JKSE price for ${wibDateKey}`);
+        }
+      }
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : String(error);
+      console.error(`[JKSE-SafetyNet] failed — ${msg}`);
+    }
 
     pushActivity({
       action: `EOD Sync — ${allTickers.length} tickers, ${pricesWritten} prices, ${indicatorsWritten} indicators`,
