@@ -462,3 +462,9 @@ Owner: "Gas semua agent bisa paralel kalau tidak saling ganggu"
 - ANTI-STAGNATION rule dipatch ke 3 CEO (teknikal pagi+evening, hivePOS night): idea/candidate >7 hari tanpa verdict = WAJIB verdict run itu; spec_ready >3 hari = eskalasi; blocked >2 slot = [ESCALATE]; dispatched >2 hari tanpa output = nudge max 2x.
 - Audit hari ini: TIDAK ada yang mandek — isr-01 P2 terjadwal besok 07:30; hivepos-02 P1 blocked_for_prd (PRD first run Sab 01:30, eskalasi kalau >2 slot); prod-01 P1 tunggu Council Minggu; prd-activation P1 (P0 lama dinormalisasi ke skala baru).
 - DASHBOARD RESPONSIVE: body max-width tier (480 → 980@900px → 1280@1280px → 1440@1600px) + layout /agents grid: office+SDLC side-by-side desktop (5fr/7fr), cards lain full-width, mobile tetap 1 kolom. Verified 390px & 1440px no overflow.
+
+## 2026-09-19 05:40 (owner, via agent-utama) — EVOLUTION IMPROVE malam #5 dieksekusi
+- Proposal #7 (kontradiksi budget CTO slot2 hivePOS): 'max 3 deploy/malam' → diselaraskan ke 'max 6-8/malam' (satu angka resmi owner 16 Sep). Sweep slot1 + Night CEO: sudah konsisten 6-8.
+- Proposal #2 (STATUS line): KONVENSI RESMI — baris terakhir setiap laporan WAJIB 'STATUS: ok|warn|error|blocked — alasan'. Dipatch ke 15 job reporter kedua org. Monitor/Evolution classifier baca baris ini dulu.
+- Proposal #6 (angka basi Night CEO): baris hardcoded '4 tenant/9 users/~86 orders' diganti instruksi 'ambil dari JSON brief script'.
+- Classifier has_error agent_coach_brief.py: FP 7/7 → 0 — scan hanya ekor laporan 2500 char (STATUS line dulu, fallback kata-kerja-hasil). True positive tetap tertangkap (bukti: laporan deploy-gagal slot1 terdeteksi benar).
