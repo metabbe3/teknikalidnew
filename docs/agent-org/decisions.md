@@ -438,3 +438,9 @@ Owner: "Gas semua agent bisa paralel kalau tidak saling ganggu"
 ## 2026-09-18 21:31 (owner) — SDLC IDLE BRAINSTORM MODE (kedua org)
 - Owner: "SDLC juga bisa lebih banyak? Kalau empty bisa brainstorming."
 - Patched 8 slot: CTO×2 + Product teknikal, CTO×2 + Night CEO + Product hivePOS, CEO pagi teknikal. Queue kosong → health check TETAP + MAX 1-2 ide ber-data ke product-backlog.json (status=candidate, dedupe, larang deploy saat idle). CEO verdict promote→PRD (SDLC chain utuh, gak ada jalur pintas).
+
+## 2026-09-18 22:57 (owner) — HIRE 2 agent baru: IT-SEC + SRE (shared service, masuk SDLC)
+- Owner: perlu IT-SEC (security), SRE (stabilitas); DBA ditunda (CTO pegang dulu).
+- IT-SEC Auditor d677bd5dfd45 Senin 09:00 (glm-5.3, brief itsec_brief.py: ports/.env/auth-err/SSL/backup) — READ-ONLY, temuan → backlog candidate (source:itsec), auth/payments/security config tetap owner-only.
+- SRE 52522478db5f Rabu+Sabtu 09:30 (glm-5.3, brief sre_brief.py: docker/disk/latency/error/ledger) — READ-ONLY, usulan → backlog (source:sre), 🔴 insiden langsung lapor owner.
+- SDLC: keduanya MASUK chain sebagai idea-generator — CEO verdict → Product PRD (kalau fitur) → CTO build. Tidak ada jalur pintas deploy.
