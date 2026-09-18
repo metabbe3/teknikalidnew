@@ -451,3 +451,8 @@ Owner: "Gas semua agent bisa paralel kalau tidak saling ganggu"
 - Prompt IT-SEC d677bd5dfd45: RED (exploitability per fitur baru: IDOR/injection/privesc/logic/rate-bypass; passive only; tenant asli DILARANG disentuh — QA Test only) + BLUE (headers/SSL/port/secret hygiene) → temuan → backlog source:itsec-red/blue dgn exploitability rating. P0 = 🔴 baris pertama.
 - SECURITY GATE baru di SDLC: PRD Product Agent + task CTO yang sentuh auth/input/db/money WAJIB baris 'SEC-REVIEW: <poin serangan+mitigasi>' — dipatch ke 6 slot (Product×2 + CTO×4). IT-SEC Senin verify sampling.
 - Basis riset: shift-left security, OWASP ASVS L1-2, STRIDE ringan; passive-only red team (internal white-hat).
+
+## 2026-09-18 23:31 (owner Q via agent-utama) — BLOCKED-TASK PROTOCOL dikunci di 4 CTO builder
+- Blocked ≠ gagal: itu GATE. 3 jenis: blocked_for_prd (jangan build, ambil task lain; >2 slot/±48 jam = [ESCALATE] ke owner) · blocked_owner (siapkan owner package: investigasi read-only + file + risiko + rollback; TETAP blocked sampai owner approve) · blocked_external (catat field needs, lapor 1 baris).
+- Dilarang: build tanpa spec, drop task diam-diam, bypass PRD gate, sentuh owner-only.
+- Patched: CTO teknikal pagi+malam, hivePOS slot1+slot2. Kasus live: hivepos-2026-09-17-02 blocked_for_prd (prd-activation, Product Agent first run Sab 19 Sep 01:30).
