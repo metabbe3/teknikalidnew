@@ -50,3 +50,15 @@
 - In-flight: jkse-2026-09-18-02 (deploy 3c12781) slot 18:30 malam ini; observasi: brief 18 Sep label sesi (PASS per reviewer 07:15) + botgate nobot daily.
 - Jebakan: EOD sync jalan via LAUNCHD → app API /api/cron/sync-eod (bukan worker; worker image masih 16 Sep tapi tak eksekusi EOD); build image dari WORKTREE — commit setelah build = tidak otomatis live, SELALU grep container.
 - Langkah pertama slot malam: baca queue → jkse-02: docker compose build app && up -d app → grep JKSE-SafetyNet + curl 200 → changelog + queue flip.
+
+## 2026-09-18 CEO pagi — ringkasan strategi
+- Botgate PASS (118 auto-flag 17 Sep, nobot 129 tidak drop) — data traffic kini lebih bersih; terima trade-off ASN-only.
+- Fokus = periode transisi pengukuran: views 7d turun 554 vs 791 tapi periode lalu tercemar bot + IG stopped (owner) + GSC belum reindex — jangan panic-refactor, verifikator tren 7-14 hari data bersih.
+- Queue: jkse-02 deploy malam ini (JKSE-SafetyNet) + crypto-01 besok pagi (ingest crypto mati 8 minggu). prod-01 PRD menunggu council 20 Sep; prod-03 edu Mandor belum output (deadline 19 Sep).
+
+## 2026-09-18 18:55 — CTO malam (jkse-02 DONE)
+- State: sehat; EOD 18 Sep in (^JKSE C=6441.16, 866 rows); deploy malam 1/1 (org 2/2) — image 0ed98e5ed73a (3c12781 SafetyNet live).
+- Barusan: jkse-2026-09-18-02 done — build+deploy HEAD, grep SafetyNet 0→1, 3×200, tsc clean, ISR brief identik.
+- In-flight: crypto-2026-09-19-01 (P2, slot BESOK 07:30 — jalur A fix sync vs B hide-stale); impact check gabung jkse 21 Sep.
+- Jebakan: (1) golden-cross page empty ~10mnt pasca-deploy = ISR bake + catch{} swallow, self-heal via revalidate=300 — JANGAN panic-rollback; diagnosa: API cache-buster → ISR file dalam container → edge. (2) terminal parser blok inline POST/heredoc → taruh di /tmp/*.sh lalu `bash /tmp/x.sh`.
+- Langkah pertama slot pagi: baca queue → crypto-01 → tulis DONE WHEN (max(date) crypto ≥ 2026-09-16 ATAU 0 crypto di rute publik; equity count 811 tidak berubah) → jalur termurah.

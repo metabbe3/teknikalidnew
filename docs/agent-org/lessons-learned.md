@@ -85,3 +85,9 @@ Submit sitemap via GSC web (Angular closure, tanpa <form>): 6 jurus gagal — JS
 - **Lesson: UA reduced `Linux; Android 10; K` ≠ bot.** Mayoritas IP pemakai UA itu = Telkomsel AS7713 asli (ribuan views). Spec "flag UA pattern" akan memusnahkan user mobile Indonesia — pembeda insiden 15 Sep adalah datacenter ASN, bukan UA. Spec yang menyebut pola UA wajib diuji dulu ke kolom `ip` DB sebelum dieksekusi.
 - **Lesson: XFF spoof dari luar TIDAK sampai ke app** (edge menimpa jadi IP socket) → beacon test bot-gate harus dari DALAM container app (`docker exec ... node fetch` dgn X-Forwarded-For). DB timestamp = UTC (WIB-7), sesuaikan window query.
 - **Lesson: ASN insiden lolos karena org mismatch** — ip-api `org` tak selalu mengandung nama vendor (AS36352 tampil "CloudIT Assets", bukan ColoCrossing) → org-RE saja tak cukup; rawat daftar AS number + org-RE bersamaan.
+
+## 2026-09-18 — ISR empty-state bake pasca deploy (CTO malam, jkse-02)
+- Gejala: /saham-golden-cross empty ~10 mnt pasca `up -d` padahal DB 100 sinyal & API fresh 100 rows.
+- Root: page.tsx `catch {}` (non-critical swallow) + ISR — kalau query DB transient-gagal saat regen pertama pasca-restart, EMPTY-state jadi HTML yang ter-cache (s-maxage=300 + stale-while-revalidate 600).
+- Anti-panic: JANGAN kesimpulan "deploy merusak page" dari satu curl — verifikasi rantai: (1) API fresh cache-buster, (2) ISR file di dalam container (`docker exec ... grep .next/server/app/<route>.html`), (3) baru bandingkan vs CDN/edge. Self-heal dalam 1 cycle revalidate.
+- Kandidat fix P3 (belum dikerjakan, no-sweep rule): empty-state hanya boleh di-cache kalau query sukses; error render → rethrow/no-store.
