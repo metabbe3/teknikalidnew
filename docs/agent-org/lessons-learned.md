@@ -91,3 +91,10 @@ Submit sitemap via GSC web (Angular closure, tanpa <form>): 6 jurus gagal — JS
 - Root: page.tsx `catch {}` (non-critical swallow) + ISR — kalau query DB transient-gagal saat regen pertama pasca-restart, EMPTY-state jadi HTML yang ter-cache (s-maxage=300 + stale-while-revalidate 600).
 - Anti-panic: JANGAN kesimpulan "deploy merusak page" dari satu curl — verifikasi rantai: (1) API fresh cache-buster, (2) ISR file di dalam container (`docker exec ... grep .next/server/app/<route>.html`), (3) baru bandingkan vs CDN/edge. Self-heal dalam 1 cycle revalidate.
 - Kandidat fix P3 (belum dikerjakan, no-sweep rule): empty-state hanya boleh di-cache kalau query sukses; error render → rethrow/no-store.
+
+## TCC-block pasca hermes upgrade + SIGALRM-dari-thread (2026-09-19)
+- Upgrade hermes (restart gateway) bisa MENGHILANGKAN izin TCC ~/Documents utk proses baru → open() Documents = block UNINTERRUPTIBLE (kill -9 & SIGALRM tak mempan) → /agents hang total, kernel agent mati 3x.
+- MITIGASI PERMANEN: (1) daemon/dashboard JANGAN refer path ~/Documents langsung — simpan data di ~/.hermes/data/ (queue/backlog lokal) atau mirror ~/.hermes/data/org-mirror/; (2) guard `_tcc_safe(path)`: path Documents → mirror, mirror tak ada → skip graceful; (3) JANGAN pakai signal.alarm di HTTP handler thread — ValueError di non-main thread bikin fungsi return kosong diam-diam (= SDLC board kosong 35→0 tanpa error log!).
+- Restore owner: System Settings → Privacy & Security → Full Disk Access (proses baru pasca-upgrade = perlu re-grant).
+- Verifikasi kesembuhan: curl /agents <5s + SDLC header >0 task + test read file repo via subprocess timeout.
+
