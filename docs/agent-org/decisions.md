@@ -468,3 +468,8 @@ Owner: "Gas semua agent bisa paralel kalau tidak saling ganggu"
 - Proposal #2 (STATUS line): KONVENSI RESMI — baris terakhir setiap laporan WAJIB 'STATUS: ok|warn|error|blocked — alasan'. Dipatch ke 15 job reporter kedua org. Monitor/Evolution classifier baca baris ini dulu.
 - Proposal #6 (angka basi Night CEO): baris hardcoded '4 tenant/9 users/~86 orders' diganti instruksi 'ambil dari JSON brief script'.
 - Classifier has_error agent_coach_brief.py: FP 7/7 → 0 — scan hanya ekor laporan 2500 char (STATUS line dulu, fallback kata-kerja-hasil). True positive tetap tertangkap (bukti: laporan deploy-gagal slot1 terdeteksi benar).
+
+## 2026-09-19 (TCC-incident darurat)
+- 07:45 | data/teknikalid-growth/{cto-queue,ceo-decisions} symlink → Documents DIPUTUS; snapshot lokal + org-mirror dibuat | TCC block uninterruptible pasca hermes 0.21.3 bikin /agents hang & job gagal akses repo | verify: /agents 200 <5s, TCC restored by owner 08:0x
+- 08:15 | Hermes 0.21.1→0.21.3 (a51143fb); gateway restart 06:12; scheduler catch-up verified | 4593 commits (backup-fix, catch-up) | verify: gateway_state 0.21.3 running; fire-test ok
+- 07:50 | Office v5: animasi "ngetik" → "on duty ⚡" standing holo-briefing; label filter & HUD ikut | owner request | verify: QC visual
