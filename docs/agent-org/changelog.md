@@ -38,3 +38,11 @@
 - QA: slot berikutnya (pembangun ≠ pemeriksa) — cek pagi 19 Sep: ^JKSE row 18 Sep SUDAH ada (launchd sync ~16:30 SEBELUM deploy, C=6441.16 lengkap — bukti d83848f) + safety net berlaku utk EOD 21 Sep dst.
 - Impact check: 2026-09-21 (gabung jkse-01) — ^JKSE row muncul tiap EOD tanpa manual sync.
 - Catatan insiden minor (bukan regresi deploy): /saham-golden-cross sempat render empty-state ~18:35-18:45 (ISR bake saat container restart; page.tsx L41 catch{} menelan error render → fallback empty ter-cache s-maxage=300). Self-heal <10 mnt via revalidate=300; final: tabel 30 baris live (AMAR.JK, BFIN.JK, ...), API screener fresh = 100 rows exact vs DB. Lesson → lessons-learned.md (candidate fix: empty-state jangan di-cache saat ISR stale, atau error boundary).
+
+## [2026-09-20 07:45] qa-2026-09-20-01 — rekap mingguan: 20→21 golden cross + definisi GC fix [tanpa deploy]
+- Type: ops (SQL content patch)  |  PRD: -
+- Deploy: tanpa deploy — ISR revalidate=300 serve fresh  |  Rollback: SQL reverse-replace (21→20, frasa SMA200→lama) bila perlu
+- Verify: DB POST title/excerpt/body '21 golden cross' 1/1/1 & '20 golden cross' 0; LIVE 2-pass: '21 golden cross' 3 hit / '20' 0; 'SMA50 memotong ke atas SMA200' 2 / 'SMA20 memotong' 0; angka lain utuh (lead 208/460 x3, TOWR x4, DC=4 x2). Baseline-then-deploy: before 20gc=3/21gc=0/sma20m=2 -> after 21gc=3/20gc=0/sma20m=0.
+- QA: reviewer besok pagi (pembangun != pemeriksa) — konten rekap penuh.
+- Impact check: 2026-09-23 — pola mixed-freshness rekap mingguan berikutnya (generasi 26 Sep) pakai indikator sesi terakhir.
+- SQL log: decisions.md (backup 20 Sep 01:15 valid; preview COUNT 1/1/1; UPDATE 1 row; WHERE slug+PUBLISHED+LIKE guard).

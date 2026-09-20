@@ -483,3 +483,11 @@ Owner: "Gas semua agent bisa paralel kalau tidak saling ganggu"
 - NUDGE #1 prod-03 (edu 2 artikel ke Mandor, dispatched 17 Sep): 0/2 edu (EDUCATIONAL sejak 17 Sep = 0; Sabtu cap terpakai). Deadline final Senin 21 Sep 06:30 → eskalasi owner kalau tetap 0.
 - RESCHEDULE: isr-2026-09-19-01 (P2, blocked_external oleh TCC pagi) → Senin 21 Sep 07:30. Slot sore hari ini = qa-01 → qa-02 sequential (1 deploy akhir). Anti-loop OK: bukan retry-gagal, block eksternal yang sudah pulih.
 - DISPATCH BARU: 0 (budget CTO sore penuh; max 2 pending terjaga: qa-01+qa-02 aktif, isr-01 terjadwal Senin).
+
+## 2026-09-20 07:4x WIB — CTO pagi: qa-2026-09-20-01 SQL content patch (rekap mingguan 19 Sep)
+- Backup valid <24h: db-20260920.sql.gz 01:15 (last-success verified).
+- PREVIEW (WHERE sama seperti eksekusi): title '20 Golden Cross' 1 - excerpt '20 golden cross baru' 1 - body '20 golden cross baru' 1 - definisi 'SMA20 memotong ke atas SMA50' 1 — persis ekspektasi.
+- SQL: UPDATE "Article" SET title/excerpt/content = nested-replace (20->21 golden cross; 'SMA20 memotong ke atas SMA50'->'SMA50 memotong ke atas SMA200'), "updatedAt"=now() WHERE slug='rekap-pasar-mingguan-2026-09-19' AND status='PUBLISHED' AND content LIKE guard keduanya — single transaction, UPDATE 1, COMMIT.
+- POST: '21 golden cross' t/e/c = 1/1/1, '20 golden cross' = 0, definisi benar 1; lead 208/460, TOWR, DC=4 utuh.
+- LIVE: 2-pass curl -A Mozilla (0s + 90s): 21gc 3 / 20gc 0 / sma20m 0 / sma50-200 2. Tanpa deploy (ISR 300s).
+- Insiden minor: percobaan pertama docker exec TANPA -i = heredoc stdin tak sampai, UPDATE senyap tidak jalan — tertangkap POST-check; rerun -i sukses. Lesson -> lessons-learned.md.

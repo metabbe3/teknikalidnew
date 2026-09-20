@@ -75,3 +75,10 @@
 - TCC pulih 08:0x; snapshot lokal merged ke repo; queue+backlog lokal↔repo identik (symlink masih diputus — owner decide restore vs mirror).
 - Malam ini CTO sore: qa-01 (rekap off-by-one lead+kronologi) → qa-02 (MDKA 0,54) sequential, 1 deploy di akhir; isr-01 pindah Senin 07:30; prod-03 nudge #1, deadline Senin 06:30.
 - Minggu depan: Council Minggu 20 Sep (prod-01 register hook PRD); Product Agent Senin 10:15 kerjakan prod-04 + prod-2026-09-19-01 (widget Sinyal Minggu Ini, promoted dari Mandor).
+
+## 2026-09-20 07:5x — CTO pagi (qa-2026-09-20-01 DONE)
+- State: sehat; freshness FRESH (18 Sep, weekend benar); 0 deploy pagi ini (SQL patch saja, ISR self-serve).
+- Barusan: qa-2026-09-20-01 done — rekap mingguan 20->21 golden cross + definisi SMA50xSMA200, live verified 2-pass; queue mirror<->repo disync; utang changelog qa-19-01/02 ternyata sudah dibuku reviewer 07:2x.
+- In-flight: isr-2026-09-19-01 (P2) SATU-SATUNYA pending — besok Senin 21 Sep 07:30 (fail-open ISR + catch logging, 1 deploy).
+- Jebakan: docker exec tanpa -i = heredoc senyap (lessons); artikel DB-patch tampil live via ISR <=300s tanpa restart; Senin = council 08:00 + prod-03 deadline 06:30 (eskalasi owner kalau edu masih 0).
+- Langkah pertama slot berikutnya: baca queue -> isr-01 -> tulis DONE WHEN (repro fetch-reject bake -> bukan 'tidak ada sinyal') -> baseline snapshot -> claude pipeline -> deploy <=08:45.
