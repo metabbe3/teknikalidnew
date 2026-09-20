@@ -150,7 +150,8 @@
    "title": "ops: signal pages render empty-state ~10mnt pasca-deploy (ISR bake + catch{} swallow) — ubah jadi fail-open",
    "priority": "P2",
    "status": "pending",
-   "scheduled_slot": "2026-09-19 07:30 CTO pagi (deploy ≤08:45)",
+   "scheduled_slot": "2026-09-21 07:30 CTO pagi (RESCHEDULE CEO 19 Sep 08:15: TCC pulih 08:0x; slot sore 19 Sep dipakai qa-01+qa-02 sequential, max 1 deploy/slot)",
+   "note": "Pagi 19 Sep sempat blocked_external (TCC repo) — pulih oleh owner 08:0x; CTO sore 19 Sep fokus qa-01/qa-02.",
    "north_star": "trust + data reliable (owner lens 17 Sep): signal pages = moat & fondasi trafik; user yang lihat tabel 'tidak ada sinyal' padahal DB sehat = trust rusak",
    "spec": "TEMUAN CTO 18 Sep 18:50 (saat jkse-02): pasca docker up -d, /saham-golden-cross render empty-state ~10 menit — ISR page bake ulang + catch{} di data-fetch menelan error lalu render kosong, padahal DB sehat (self-heal revalidate=300, final live 30 baris, API fresh exact vs DB). CATATAN: task ini PENGGANTI slot crypto-01 yang dicancel owner 21:09 — crypto BY DESIGN, JANGAN sentuh crypto di task ini. Tugas: (1) temukan catch{} di data path signal pages (cite file/baris); (2) ubah failure-mode jadi fail-open: fetch gagal saat bake → tahan versi konten lama (stale-while-revalidate) ATAU render data live/fallback, JANGAN render empty-state dari error; (3) error yang tadinya ditelan → log ke container. Kalau (2) berat >1 slot: minimal ganti empty-state error jadi blok 'data sedang diperbarui' + retry, laporkan pilihan di result. Non-goal: tidak ubah perhitungan sinyal, tidak ubah interval revalidate, tidak sentuh crypto. DONE WHEN: (a) repro test: simulate fetch-reject saat bake → halaman TIDAK merender 'tidak ada sinyal' (integration test ATAU repro manual di container dgn fetch diblok, before/after dicatat); (b) via claude code pipeline, tsc clean, 1 commit sempit; (c) live pasca-deploy: 3 signal pages 200 + baris terisi TANPA jendela kosong (curl spot-check ≤2mnt setelah up -d); (d) error sebelumnya tertelan kini muncul di docker logs (grep bukti). Rollback: git revert + rebuild."
   },
@@ -158,21 +159,41 @@
    "id": "qa-2026-09-19-01",
    "title": "FIX Rekap Mingguan 2026-09-19: lead + kronologi salah hari (off-by-one)",
    "priority": "P1",
-   "status": "pending",
+   "status": "done",
    "scheduled_slot": "16:45 hari ini",
    "source": "Content Reviewer QA 07:00 (rekonstruksi 19 Sep 08:2x — entri asli hilang oleh TCC write-block)",
    "spec": "Lead 'Jumat (18/9): 401 saham naik, bank pulih' SALAH — itu angka Kamis 17/9. DB Jumat 18/9 = 208 naik/459 turun (merah, bank -0,6 s/d -4,2%). Kronologi mundur 1 hari seragam ('Senin 463 turun' = sesi Jumat 11/9 dst). REWRITE lead + kronologi + outlook; JANGAN sentuh angka lain (GC 20/DC 4 persis, movers 11→18, TOWR -8,81%) — sudah benar.",
-   "done_when": "curl rekap: lead menyebut Jumat 208/459; kronologi align DB; angka GC/DC/movers utuh; deploy + changelog"
+   "done_when": "curl rekap: lead menyebut Jumat 208/459; kronologi align DB; angka GC/DC/movers utuh; deploy + changelog",
+   "completed_at": "2026-09-20 07:2x (dieksekusi CTO 19 Sep sore; dibuku reviewer dari bukti live)",
+   "qa_verified": true,
+   "result": "QA VERIFIED reviewer 20 Sep 07:2x: lead + semua 5 baris kronologi align DB (228/448, 324/330, 210/451, 402/252, 208/460); movers 10/10 exact; live 200. CATATAN: done_when tertulis '208/459' — angka benar vs DB = 208/460, artikel SUDAH benar (jangan dikoreksi ke 459). RESIDUAL: headline '20 golden cross' = snapshot basi s.d. 17 Sep + definisi GC salah tulis -> lanjut qa-2026-09-20-01. Eksekusi 19 Sep via DB content patch (lastGeneratedAt tak berubah); changelog eksekusi belum dibuat CTO."
   },
   {
    "id": "qa-2026-09-19-02",
    "title": "FIX Listicle Basic Materials: skor MDKA 0,56 → 0,54",
    "priority": "P1",
-   "status": "pending",
+   "status": "done",
    "scheduled_slot": "16:45 hari ini (setelah qa-01)",
    "source": "Content Reviewer QA 07:00 (rekonstruksi 19 Sep 08:2x)",
    "spec": "Ganti 1 angka skor MDKA 0,56 → 0,54 (DB sumber). 6 pemain lain sudah persis — jangan disentuh.",
-   "done_when": "curl listicle: '0,54' muncul, '0,56' hilang; deploy + changelog"
+   "done_when": "curl listicle: '0,54' muncul, '0,56' hilang; deploy + changelog",
+   "completed_at": "2026-09-20 07:2x (dieksekusi CTO 19 Sep sore; dibuku reviewer dari bukti live)",
+   "qa_verified": true,
+   "result": "QA VERIFIED reviewer 20 Sep 07:2x: live listicle '0,54' muncul (2 hit), '0,56' tersisa hanya utk INCI/BMSR yang memang 0.56 di DB; MDKA signalScore=0.54 exact; 6 pemain lain exact; halaman 200. DONE WHEN terpenuhi. Changelog entry eksekusi belum dibuat CTO — tolong dibukuin di slot berikutnya."
+  },
+  {
+   "id": "qa-2026-09-20-01",
+   "date": "2026-09-20",
+   "title": "P1: Rekap Mingguan 19 Sep — headline '20 golden cross baru' stale (harusnya 21 per metode artikel) + definisi GC salah (SMA20×SMA50 → SMA50×SMA200)",
+   "priority": "P1",
+   "status": "done",
+   "scheduled_slot": "2026-09-20 07:30 CTO pagi (SQL content patch + log decisions.md; tanpa deploy app)",
+   "source": "Content Reviewer QA 20 Sep 07:0x",
+   "spec": "INTENT: lanjutan qa-2026-09-19-01 — breadth/movers rekap-pasar-mingguan-2026-09-19 sudah benar (402 Kamis, 208/460 Jumat, 10 movers exact vs DB), TAPI (a) headline '20 golden cross baru' di title+excerpt+body dihitung dari data yang berhenti 17 Sep: replikasi eksak weekly-window logic (prev_sma50<=prev_sma200 & sma50>sma200 di indikator in-window terakhir) = GC 20 PERSIS jika snapshot berhenti 17 Sep; dengan data 18 Sep lengkap + filter non-gorengan sesuai metode artikel = 21 (DC=4 valid di kedua varian); (b) body menulis 'golden cross baru — SMA20 memotong ke atas SMA50' SALAH DEFINISI (golden cross = SMA50 memotong ke atas SMA200; konsisten dgn sinyal situs). ROOT CAUSE (jangan regen artikel): lastGeneratedAt 18 Sep 23:33 — breadth/movers baca StockPrice (fresh pasca EOD 16:30) tapi cross counts efektif baca StockIndicator SEBELUM baris indikator 18 Sep dihitung -> mixed-freshness (pola hari ke-2, lihat lessons-learned). ACCEPTANCE: (1) SQL content patch (protokol backup<24jm + COUNT preview + log decisions.md): '20 golden cross' -> '21 golden cross' di title, excerpt, dan body rekap tsb; (2) ganti frasa definisi jadi 'SMA50 memotong ke atas SMA200'; (3) JANGAN sentuh angka lain (breadth/movers/proxy/TOWR/DC=4 exact); (4) curl -A Mozilla: '21 golden cross' muncul di meta+body, frasa 'SMA20 memotong' hilang; (5) rekomendasi generator (catat di result, bukan eksekusi wajib): rekap mingguan jangan generate sebelum indicator EOD sesi terakhir selesai, atau hitung cross on-the-fly dari pasangan snapshot harga (pola weekly-report.service.ts findWeeklyIndicatorSnapshots).",
+   "north_star": "trust — headline number salah hitung + definisi indikator salah di rekap edukasi mingguan = pembaca awam belajar definisi keliru",
+   "completed_at": "2026-09-20 07:45",
+   "done_when": "curl rekap: '21 golden cross' muncul (title+excerpt+body), '20 golden cross' & 'SMA20 memotong' hilang; angka lain utuh (breadth/movers/TOWR/DC=4); log decisions.md + changelog",
+   "result": "DONE 20 Sep 07:45 CTO pagi (TANPA deploy — ISR revalidate=300 serve fresh). SQL content patch 1 row rekap-pasar-mingguan-2026-09-19 (backup harian 20 Sep 01:15 valid <24h; preview COUNT: title/excerpt/body '20 golden cross' masing 1 + definisi salah 1; nested-replace dalam SATU transaksi + WHERE sempit slug+PUBLISHED+LIKE guard; UPDATE 1; log decisions.md). LIVE verified 2 pass (langsung + 90 detik): '21 golden cross' 3 / '20 golden cross' 0; 'SMA20 memotong' 0 → 'SMA50 memotong ke atas SMA200' 2; angka lain utuh: lead '208 naik vs 460 turun' 3, TOWR 4, '4 death cross' 2. PITFALL: docker exec TANPA -i = heredoc stdin tidak sampai (UPDATE senyap 0 rows) — WAJIB docker exec -i (lesson). REKOMENDASI GENERATOR (belum dieksekusi): weekly rekap generate SETELAH indikator EOD sesi Jumat selesai, atau hitung cross-count on-the-fly dari StockPrice — mixed-freshness hari ke-2 (lihat lessons-learned)."
   }
  ]
 }

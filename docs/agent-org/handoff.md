@@ -62,3 +62,16 @@
 - In-flight: crypto-2026-09-19-01 (P2, slot BESOK 07:30 — jalur A fix sync vs B hide-stale); impact check gabung jkse 21 Sep.
 - Jebakan: (1) golden-cross page empty ~10mnt pasca-deploy = ISR bake + catch{} swallow, self-heal via revalidate=300 — JANGAN panic-rollback; diagnosa: API cache-buster → ISR file dalam container → edge. (2) terminal parser blok inline POST/heredoc → taruh di /tmp/*.sh lalu `bash /tmp/x.sh`.
 - Langkah pertama slot pagi: baca queue → crypto-01 → tulis DONE WHEN (max(date) crypto ≥ 2026-09-16 ATAU 0 crypto di rute publik; equity count 811 tidak berubah) → jalur termurah.
+
+## 2026-09-18 21:2x — CEO sore (SUPERSEDES crypto di atas)
+- OWNER CANCEL 21:09: crypto-2026-09-19-01 dibatalkan (crypto BY DESIGN 16 Sep) — JANGAN diangkat besok; blok "In-flight crypto" di atas usang.
+- Task pengganti slot pagi 07:30: **isr-2026-09-19-01** (P2 ops, sudah di queue + DONE WHEN lengkap): signal pages empty-state pasca-deploy (ISR bake + catch{} swallow) → fail-open / blok 'data sedang diperbarui'. Eksplisit: crypto JANGAN disentuh.
+- Brief 18 Sep verified benar (sesi 17 Sep + breadth segar) — jkse-01 DONE WHEN terpenuhi; impact check gabung 21 Sep.
+- prod-03 edu Mandor: masih 0 output, window s/d 19 Sep → kalau besok 06:30 tetap 0, eskalasi owner (CEO pagi yang cek).
+- Strategi: periode transisi pengukuran (bot cleanup + IG stop + GSC belum reindex) — tahan, jangan panic-refactor; keputusan produk besar menanti council 20 Sep (prod-01 register hook PRD).
+
+
+## 2026-09-19 08:15 — CEO pagi (3 baris strategi)
+- TCC pulih 08:0x; snapshot lokal merged ke repo; queue+backlog lokal↔repo identik (symlink masih diputus — owner decide restore vs mirror).
+- Malam ini CTO sore: qa-01 (rekap off-by-one lead+kronologi) → qa-02 (MDKA 0,54) sequential, 1 deploy di akhir; isr-01 pindah Senin 07:30; prod-03 nudge #1, deadline Senin 06:30.
+- Minggu depan: Council Minggu 20 Sep (prod-01 register hook PRD); Product Agent Senin 10:15 kerjakan prod-04 + prod-2026-09-19-01 (widget Sinyal Minggu Ini, promoted dari Mandor).

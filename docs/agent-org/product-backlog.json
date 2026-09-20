@@ -1,0 +1,160 @@
+{
+ "protocol": {
+  "purpose": "Product discovery backlog — CEO/CTO dispatch dari sini saat engineering queue kosong. Bukan commitment deploy.",
+  "rules": "Tide-first: setiap entry WAJIB mulai dari DATA (traffic/search/funnel) sebelum spec. Output = insight + spec berbasis bukti, bukan fitur tergesa-gesa. Max 1 survey/dispatch per slot kosong.",
+  "lifecycle": "idea -> researching -> spec_ready (wajib: user_story, acceptance_criteria, data_evidence, impact, effort). CTO hanya boleh bangun entry spec_ready (via prd_id di cto-queue). type=ops exempt."
+ },
+ "entries": [
+  {
+   "id": "prod-2026-09-17-01",
+   "date": "2026-09-17",
+   "priority": "P1",
+   "status": "spec_ready",
+   "hypothesis": "Fitur cek-sinyal gratis per-ticker (widget embed + /sinyal/TICKER) bisa jadi lead magnet: /stocks 156 views/7d adalah permintaan terbesar kita tapi CTA register cuma konversi 2/9. Perkuat intent sebelum minta register.",
+   "first_step": "ANALISIS DATA (no code): PageView 30d utk /stocks & /stocks/*.JK — dari mana (referer), bounce (1 vs 2+ pageviews), berapa % klik CTA screener; bandingkan pola visitor yang register vs tidak. Spec hanya kalau data mendukung.",
+   "north_star": "growth traffic + register",
+   "insight": "CEO 17 Sep: HOLD, council 20 Sep. DATA LENGKAP 17 Sep (30d, nobot): 118 IP pakai area /stocks; 77% multi-visit (91 IP >=2 views, 66 IP >=5 views, total 2.394 views); 101 IP buka detail ticker. BOUNCE RENDAH: 1-hit cuma 23%. BUKTI SAVED-SCREEN MANUAL: referer deep-link preset golden_cross 388v/12IP + tab momentum 343v/17IP — user bookmark URL screener bertparameter. FUNNEL REGISTER PATAH: dari 91 heavy user cuma 4 (4,4%) sentuh auth, 3 buka /auth/register, 1 selesai (~0,8% dari 118 IP); pendaftar = user berat 12 hari (bukan konversi cepat). 2 User baru/30d. KESIMPULAN PRODUK: bukan masalah traffic/engagement (tool usage kuat), masalah VALUE-PROP register. Arah spec utk council: JANGAN gate screener (bunuh 2.4rb views/bln); register hook = 'simpan screen/preset + watchlist ticker' (cocok dgn perilaku bookmark manual yang sudah terjadi), widget /sinyal/TICKER jadi top-of-funnel terpisah.",
+   "data_evidence": {
+    "window": "30d ending 2026-09-17, isBot=false",
+    "stocks_area": {
+     "uniq_ip": 118,
+     "views": 2394,
+     "ip_2plus_views": 91,
+     "ip_5plus_views": 66,
+     "ip_opened_ticker_detail": 101,
+     "one_hit_pct": 23
+    },
+    "preset_deep_links": {
+     "golden_cross_preset": "388 views / 12 IP",
+     "momentum_tab": "343 views / 17 IP",
+     "stocks_internal_nav": "825 views / 22 IP",
+     "direct": "532 views / 56 IP"
+    },
+    "funnel_register": {
+     "heavy_touch_auth": "4/91 (4.4%)",
+     "register_page_ip": 3,
+     "complete_profile_ip": 1,
+     "new_users": 2,
+     "registrant_profile": "heavy user 12 hari sebelum register"
+    },
+    "sources": [
+     "PageView SQL 17 Sep 08:1x WIB",
+     "kpis teknikalid_growth.py"
+    ]
+   },
+   "product_recs": [
+    {
+     "rec": "JANGAN gate screener di balik register",
+     "alasan": "2.394 views/30d = mesin engagement satu-satunya; gating membunuh time-spent demi funnel yang bermasalah di value-prop, bukan akses. Bounce screener cuma 23%, 66 IP heavy (>=5 views)."
+    },
+    {
+     "rec": "Register hook = 'Simpan Screen/Preset + Watchlist Ticker'",
+     "alasan": "Bukti perilaku: referer deep-link preset=golden_cross 388 views/12 IP + tab momentum 343/17 IP = user bookmark URL preset manual. Fitur save-screen = jawaban resmi + alasan register jelas. Widget /sinyal/TICKER = top-of-funnel terpisah, bukan pengganti."
+    }
+   ],
+   "ceo_decision_pending": false,
+   "ceo_verdict": {
+    "verdict": "approve_prd",
+    "decided_at": "2026-09-17 08:17 CEO pagi",
+    "keputusan": "SETUJU rekomendasi Product: (1) JANGAN gate screener — 2.394 views/30d = mesin time-spent; (2) register hook = 'Simpan Screen/Preset + Watchlist Ticker' — LANJUT KE PRD (spec_ready) oleh Product Agent Kamis 17 Sep 10:15. Widget /sinyal/TICKER DIPISAH jadi mandate top-of-funnel (prod-2026-09-17-04).",
+    "gate": "SDLC: engineering dispatch HANYA setelah status spec_ready (prd_id wajib). Council 20 Sep review PRD sebelum CTO build."
+   },
+   "note": "PRD spec_ready ditulis Product Agent 17 Sep 10:15 sesuai verdict CEO 08:17. Scope = register hook only, screener TIDAK di-gate. Council 20 Sep review sebelum dispatch ke CTO.",
+   "prd": {
+    "title": "Register Hook: Simpan Screen/Preset + Watchlist Ticker (guest-visible save intent)",
+    "date": "2026-09-17",
+    "user_story": [
+     "Sebagai guest yang memakai screener dengan filter/preset tertentu, saya ingin menekan tombol 'Simpan Screen' dan diminta daftar, supaya preset tersimpan di akun — menggantikan kebiasaan saya bookmark URL screener secara manual.",
+     "Sebagai guest di halaman detail ticker, saya ingin menekan tombol '+' watchlist dan diminta daftar, supaya ticker masuk watchlist yang bisa saya pantau balik."
+    ],
+    "acceptance_criteria": [
+     "AC1 Guest visibility: saat guest (unauthenticated) membuka /stocks, tombol 'Simpan Screen' terlihat di area hasil/bar preset; klik → register prompt (bukan silent / bukan hidden). Test: sesi anon di browser, tombol ada & prompt muncul.",
+     "AC2 Zero-effort activation: setelah register+login dari prompt AC1, screen/preset terakhir (URL params aktif) otomatis tersimpan sebagai SavedScreener pertama user. Test: row baru di tabel SavedScreener sesuai filter.",
+     "AC3 Watchlist dari detail ticker: guest lihat tombol watchlist di halaman ticker; klik → register prompt; pasca-register ticker tercatat. Test: row baru di tabel Watchlist.",
+     "AC4 NO gating (non-goal dijaga): semua hasil screener & halaman ticker tetap fully accessible tanpa login — tidak ada perubahan akses. Test: curl anon ke /stocks, hasil tetap render penuh.",
+     "AC5 Metric gate (4 minggu pasca-live, ukur via PageView isBot=false): register-page views dari area /stocks >=10 IP/30d (baseline 3 IP) ATAU register selesai >=8/30d (baseline 2). Gagal → iterasi copy/placement prompt, BUKAN gating screener."
+    ],
+    "data_evidence": {
+     "window": "30d ending 2026-09-17, isBot=false",
+     "demand": "118 IP unik area /stocks, 2.394 views, bounce rendah (1-hit hanya 23%), 66 IP heavy (>=5 views), 101 IP buka detail ticker",
+     "bookmark_manual_proof": "deep-link preset golden_cross 388 views/12 IP + tab momentum 343 views/17 IP = user mem-bookmark URL screener berparameter karena tidak ada fitur save untuk guest",
+     "funnel_break": "dari 91 heavy user hanya 4 (4,4%) sentuh auth, 3 buka register page, 1 selesai; pendaftar = heavy user 12 hari (bukan konversi cepat) → masalah value-prop register, bukan akses",
+     "infra_existing": "Tabel SavedScreener (2 row), Watchlist (12), StockFollow (6), ScreenerAlert (2) + hooks/tombol (use-saved-screeners, use-watchlist, saved-screener-bar, watchlist-button) SUDAH ADA di codebase — saved-screener-bar saat ini TIDAK punya handling guest (rg login/register: 0 hasil) → guest tidak pernah melihat ajakan simpan"
+    },
+    "impact": 5,
+    "impact_note": "Langsung north-star #1 (register): pool 91 heavy user/bln dgn 4,4% touch-auth; infra sudah ada sehingga marginal cost kecil.",
+    "effort": 2,
+    "effort_note": "BUKAN build-from-zero: tabel + hooks + tombol authed sudah ada. Kerjaan = guest-visible save prompt (AC1/AC3), pasca-register auto-save (AC2), copy. Estimasi 1 slot CTO.",
+    "non_goals": [
+     "Gating screener di balik register (DILARANG per CEO verdict 08:17)",
+     "Widget /sinyal/TICKER (dipisah ke prod-2026-09-17-04)",
+     "Notifikasi email/WA (prod-02 rejected: cohort 14 IP < 30)"
+    ],
+    "build_note_for_cto": "Utamakan AC1+AC2 (screener save intent, bukti bookmark terkuat) > AC3. Ukur AC5 via PageView referer=/stocks → /auth/register.",
+    "gate": "spec_ready 17 Sep 10:15 oleh Product Agent. Council 20 Sep review PRD sebelum CTO build (per CEO verdict). Dispatch engineering via prd_id=prod-2026-09-17-01 SETELAH council."
+   }
+  },
+  {
+   "id": "prod-2026-09-17-02",
+   "date": "2026-09-17",
+   "priority": "P1",
+   "status": "rejected",
+   "hypothesis": "Return-visit loop lewat 'watchlist email/WA' — sinyal saham watchlist kirim notifikasi harian. 40 returning IP 10% = upside besar. GSC queries menunjukkan intent 'sinyal saham' organik.",
+   "first_step": "ANALISIS DATA (no code): returning IP cohort 30d — halaman apa yang bikin mereka balik; hitung berapa banyak yang visit signal pages ≥2x. Output: size of prize + spec notifikasi kalau ≥30 user cocok.",
+   "north_star": "user kembali",
+   "insight": "CEO 17 Sep: returning cuma 14 IP < threshold 30 → NO-GO (ukur ulang kalau cohort naik)."
+  },
+  {
+   "id": "prod-2026-09-17-03",
+   "date": "2026-09-17",
+   "priority": "P3",
+   "status": "dispatched",
+   "hypothesis": "Edu content gaps: /saham-pullback-sma20 13 views/7d belum punya halaman edu — 5 signal page lain juga cek. Edu = SEO long-tail entry point.",
+   "first_step": "ANALISIS DATA (no code): semua /saham-* views 30d + GSC queries containing kata signal; list gap page edu vs signal page. Dispatch ke Mandor kalau jelas.",
+   "north_star": "growth traffic",
+   "insight": "CEO 17 Sep: DISPATCH ke Mandor — 2 artikel edu (pullback-SMA20 25v/30d, volume-spike 11v) link 2 arah. || CEO 19 Sep 08:15 NUDGE #1: 0/2 edu s/d 19 Sep (EDUCATIONAL sejak 17 Sep = 0; Sabtu cap 2 post terpakai rekap+listicle; Mandor rencana edu Minggu). DEADLINE FINAL Senin 21 Sep 06:30 — kalau tetap 0 → eskalasi owner (aturan dispatched>2hari, nudge max 2x)."
+  },
+  {
+   "id": "prod-2026-09-17-04",
+   "date": "2026-09-17",
+   "priority": "P2",
+   "status": "idea",
+   "hypothesis": "Widget cek-sinyal gratis per-ticker (/sinyal/TICKER, render sinyal hari ini dari DB kita) = lead magnet top-of-funnel yang embeddable. Dipisahkan dari register hook (prod-01) karena beda pekerjaan funnel: top-of-funnel acquisition vs conversion. Bukti awal: 101/118 IP area /stocks buka detail ticker; GSC intent 'sinyal saham'.",
+   "first_step": "ANALISIS DATA (no code): (1) GSC keyword history — volume & posisi query pattern 'sinyal|golden cross|oversold saham <ticker>'; (2) PageView 30d /stocks/*.JK vs konversi ke signal pages — ada tidaknya permintaan cek-sinyal cepat; (3) competitor scan singkat (apakah ada yang kasih widget sinyal IDX gratis). Spec hanya kalau data support.",
+   "north_star": "growth traffic (top-of-funnel) — target utk diuji Product Agent",
+   "note": "Mandate CEO 17 Sep 08:17. UNTUK PRODUCT AGENT Senin 20 Sep 10:15 (setelah council Minggu). TIDAK boleh dispatch engineering sebelum spec_ready."
+  },
+  {
+   "id": "sre-2026-09-18-1",
+   "date": "2026-09-18",
+   "priority": "P3",
+   "status": "candidate",
+   "ceo_verdict": {"verdict": "approve_defer", "decided_at": "2026-09-19 08:15 WIB", "review_date": "2026-09-22", "alasan": "Mystery restart 18 Sep ±18:57 TERJAWAB = deploy jkse-02 CTO (up -d 18:35, selesai 18:50) — bukan insiden. Sisa nilai = instrumentasi: sre_brief.py baca run/deploy-ledger utk korrelasi restart-vs-deploy + exit code/OOM grep. Dispatch saat slot ops longgar."},
+   "source": "sre",
+   "type": "ops",
+   "title": "Tangkap root-cause restart container: teknikalidnew-app-1 Up 4h vs peers 22j-8hari, tanpa jejak kenapa",
+   "data": "SRE brief 18 Sep 22:57: teknikalidnew-app-1 'Up 4 hours (healthy)' = restart tunggal ±18:57 WIB, sedangkan worker Up 2 hari & db Up 8 hari. App error 24h = 0, latency teknikal.id 0.62s (SLO <1.5s ok), tidak ada restart loop — jadi BUKAN insiden, tapi restart ±19:00 ini di luar jendela deploy pagi (deadline 08:45) dan brief tidak menyimpan exit reason / bukti OOM / siapa yang restart. Tanpa data itu, pola tidak bisa dibedakan: deploy CTO sore 16:45 vs OOM crash vs manual restart. Usulan (ops, kecil): tambahkan di SRE brief script (1) exit code + finished-at dari `docker inspect` container yang Up < 24h, (2) grep dmesg/log 'OOM|killed' host, (3) catat image digest utk deteksi redeploy. North star: DATA RELIABLE — restart tanpa penjelasan = kepercayaan sistem yang bolong."
+  },
+  {
+   "id": "prod-2026-09-19-01",
+   "date": "2026-09-19",
+   "priority": "P2",
+   "status": "idea",
+   "source": "mandor-weekend-idea",
+   "hypothesis": "Widget 'Sinyal Minggu Ini' di atas tabel /stocks: jumlah golden cross & death cross baru pekan ini (angka sudah dihitung pipeline StockIndicator) + link ke /saham-golden-cross & /saham-death-cross. /stocks = 202v/7d (36% trafik) tapi weekend mendarat di data Jumat beku; pola internal-link page#1 → signal pages sudah tervalidasi (related-signals brief).",
+   "first_step": "ANALISIS DATA (no code): (1) pola views /stocks weekend vs weekday — berapa sesi butuh konteks mingguan; (2) CTR proxy link/tab sinyal dari /stocks (referer data); (3) stabilitas angka GC/DC mingguan (fluktuasi antar-pekan). Spec hanya kalau data mendukung.",
+   "north_star": "growth traffic + time spent (internal-link equity dari halaman terpopuler)",
+   "note": "PROMOTED CEO 19 Sep 08:15 dari [WEEKEND-IDEA] Mandor (weekend-ideas.md). UNTUK PRODUCT AGENT Senin 20 Sep 10:15. FITUR → wajib PRD spec_ready sebelum dispatch engineering."
+  },
+  {
+   "id": "sre-2026-09-19-1",
+   "date": "2026-09-19",
+   "priority": "P2",
+   "status": "candidate",
+   "source": "sre",
+   "type": "ops",
+   "title": "HEALTHCHECK teknikalidnew-worker-1 — satu-satunya container teknikal tanpa health status; worker hang = data basi senyap",
+   "data": "SRE brief 18+19 Sep: teknikalidnew-worker-1 'Up 2 days' TANPA label (healthy) = satu-satunya container teknikal.id tanpa HEALTHCHECK (app-1 & db-1 punya). Worker = pipeline StockIndicator/queue — kalau hang, docker tetap 'Up' selamanya, gejala pertama baru terlihat sebagai data basi di site. Risiko bukan teoretis: lessons commit fba97c9 (19 Sep) mendokumentasikan class bug signal.alarm-di-thread → ValueError ditelan try/except = hasil kosong SENYAP (board '0 tasks' padahal queue 16) — persis pola yang healthcheck tangkap. Pattern fix sudah terbukti produksi di hivePOS 19 Sep 02:44 (commit 82e9952: HEALTHCHECK whatsapp-gateway via probe internal + self-heal auto-restart, 0 endpoint publik baru, sekarang healthy). Usulan sama utk worker: probe ringan (heartbeat file mtime / freshness log poll / process check) di docker-compose + autoheal. North star: DATA RELIABLE — uptime palsu lebih berbahaya daripada downtime yang terlihat."
+  }
+ ]
+}
