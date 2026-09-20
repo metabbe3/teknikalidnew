@@ -98,3 +98,8 @@ Submit sitemap via GSC web (Angular closure, tanpa <form>): 6 jurus gagal — JS
 - Restore owner: System Settings → Privacy & Security → Full Disk Access (proses baru pasca-upgrade = perlu re-grant).
 - Verifikasi kesembuhan: curl /agents <5s + SDLC header >0 task + test read file repo via subprocess timeout.
 
+
+## 2026-09-20 — Rekap mingguan mixed-freshness (pola hari ke-2)
+- Gejala: rekap-pasar-mingguan-2026-09-19 — breadth/movers pakai StockPrice 18 Sep fresh, tapi '20 golden cross' cocok EKSAK dengan snapshot indikator s.d. 17 Sep (20 = replikasi thru-17; 21 = full-week non-gorengan). Kemarin (qa-19-01) lead/kronologi mundur 1 hari. Akar keluarga sama: generator mencampur sumber data yang EOD-nya selesai beda waktu (harga ~16:30 vs indikator belakangan), atau generate sebelum seluruh EOD selesai (lastGeneratedAt 23:33, indikator 18 Sep belum ada).
+- Aturan: angka turunan indikator (cross/sinyal) di rekap harian/mingguan wajib disangkan dari StockIndicator yang SUDAH memuat sesi terakhir window artikel. Kalau generate sebelum EOD lengkap -> jangan pakai angka window penuh, atau tunda generate. Rekomendasi struktural: weekly-report.service.ts sudah hitung cross dari pasangan snapshot (prev vs in-window) — generator rekap sebaiknya pakai jalur yang sama, satu sumber kebenaran.
+- QA guard reviewer: replikasi query setiap angka agregat DENGAN window yang dinyatakan artikel; kalau angka hanya cocok dengan window lebih pendek -> mixed-freshness, flag P1. (Beruntun: 19 & 20 Sep.)

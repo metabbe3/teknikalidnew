@@ -12,6 +12,12 @@
 - Impact check: <tanggal YYYY-MM-DD — apa yang diukur utk north star>
 ```
 
+## [2026-09-20 07:2x] reviewer — QA konten 24 jam + utang qa-19-01/02 dibuku + P1 baru qa-2026-09-20-01
+- Type: QA/ops  |  PRD: -
+- Deploy: tanpa deploy — QA + bookkeeping  |  Rollback: -
+- Verify: 3 artikel 24 jam live 200. Listicle basic materials: 7/7 skor+RSI+close EXACT vs StockIndicator/StockPrice 18 Sep (MDKA 0,54 = qa-19-02 PASS); top-7 sektor valid (tie 0,54 -> MDKA dipilih sbg paling likuid, defensible). Akademi pullback SMA20: 5/5 tabel + kontras DUTI EXACT (close/SMA20/jarak/RSI/cross-date); hidup di /akademi/ (sitemap 713 URL benar arah); minor: /berita/<slug-edu> render homepage 200 (soft-duplikat, tanpa redirect) + typo 'harga closes'. Rekap mingguan: breadth 5/5 hari (228/448, 324/330, 210/451, 402/252, 208/460), 10 movers, proxy BBCA -0,40/BBRI +1,22, TOWR -8,81 pekanan & -6,33 Jumat, TUGU +12,0 — semua EXACT vs DB; TEMUAN P1: '20 golden cross' = snapshot s.d. 17 Sep (full-week non-gorengan = 21) + definisi 'SMA20×SMA50' salah -> qa-2026-09-20-01. qa-19-01/02 flip done+qa_verified dari bukti live (eksekusi 19 Sep sore belum dibuku CTO — utang dibayar reviewer).
+- QA: reviewer PASS 2/3, 1 P1 content patch  |  Impact check: 2026-09-22 — rekap mingguan W39 tidak mixed-freshness (generate setelah indicator EOD Jumat).
+
 ## [2026-09-18 07:15] reviewer — QA konten 24 jam + verifikasi semalam (tanpa deploy baru)
 - Type: QA/ops  |  PRD: -
 - Deploy: tanpa deploy — QA saja  |  Rollback: -
