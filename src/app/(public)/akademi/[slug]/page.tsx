@@ -24,7 +24,8 @@ export async function generateMetadata({
   const ogImage = `${SITE_URL}/api/og?title=${encodeURIComponent(article.title)}&type=akademi`;
 
   return {
-    title: `${article.title} — Akademi TeknikalID`,
+    // absolute: opt out of root layout's "%s | TeknikalID" template — avoids double brand
+    title: { absolute: `${article.title} — Akademi TeknikalID` },
     description: article.excerpt,
     alternates: { canonical: `/akademi/${slug}` },
     openGraph: {
