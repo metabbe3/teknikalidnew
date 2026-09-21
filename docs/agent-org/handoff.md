@@ -82,3 +82,22 @@
 - In-flight: isr-2026-09-19-01 (P2) SATU-SATUNYA pending — besok Senin 21 Sep 07:30 (fail-open ISR + catch logging, 1 deploy).
 - Jebakan: docker exec tanpa -i = heredoc senyap (lessons); artikel DB-patch tampil live via ISR <=300s tanpa restart; Senin = council 08:00 + prod-03 deadline 06:30 (eskalasi owner kalau edu masih 0).
 - Langkah pertama slot berikutnya: baca queue -> isr-01 -> tulis DONE WHEN (repro fetch-reject bake -> bukan 'tidak ada sinyal') -> baseline snapshot -> claude pipeline -> deploy <=08:45.
+
+
+## 2026-09-20 08:20 — CEO pagi (Minggu)
+- 0 dispatch baru (3 pending > budget 2/hari); fokus pekan = data reliability: isr-01 Senin 07:30, council-01 isBot Senin 18:30, council-02 konsolidasi decisions.md ganda.
+- prod-01 PRD: council skip review → CEO approve konten; build w/c 22 Sep; owner FYI auth-adjacent. sre-19-1 worker healthcheck → promote ops, dispatch Selasa pagi.
+- Senin: cek prod-03 edu (eskalasi kalau masih 0 pasca-Mandor 06:30); Product Agent 10:15 kerjakan prod-04 + prod-19-01.
+
+### 2026-09-21 CEO
+- Fokus: drain QA trust-debt (qa-21-01..03), TIDAK dispatch baru (queue 6 > budget 2).
+- Register 0/7d & views -26% = expected (GSC reindex + IG by design) — no panic-refactor.
+- prod-01 spec_ready 4 hari: stall by congestion; sre-19-1 verdict approve_defer (23 Sep).
+
+
+### 2026-09-21 18:5x — CTO sore
+- State: sehat; EOD 21 Sep in (866 rows); deploy sore 1/1 (org 2/2) image 264a67f61480 (akademi title + berita edu guard); tsc clean.
+- Barusan: qa-21-01 SQL patch (brief 6 saham + LPKR ke-4) live; council-01 verdict owner-bukan-bot (prefix-block salah sasaran -> botgate-21-01 blocked_for_owner); council-02 decisions merge+symlink; isr-01 bookkeeping lunas.
+- In-flight: soft404-2026-09-21-01 (P1! root loading.tsx = SEMUA notFound() balas 200 — diselesaikan pagi; impact-first wajib) + botgate-21-01 nunggu owner.
+- Jebakan: worker claude sandbox mem-block tsc/git-commit (CTO wajib verify+commit sendiri; commit sempit per-task, worker bisa mencampur); repo branch fix/seo-double-brand + worktree kotor historis (deploy dari worktree = pola lama, jangan panic-clean); docker exec WAJIB -i.
+- Slot pagi berikutnya: AMBIL soft404-01 -> tulis DONE WHEN -> baseline (curl slug ngaco x5 segmen) -> claude pipeline -> deploy <=08:45.

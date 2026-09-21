@@ -491,3 +491,12 @@ Owner: "Gas semua agent bisa paralel kalau tidak saling ganggu"
 - POST: '21 golden cross' t/e/c = 1/1/1, '20 golden cross' = 0, definisi benar 1; lead 208/460, TOWR, DC=4 utuh.
 - LIVE: 2-pass curl -A Mozilla (0s + 90s): 21gc 3 / 20gc 0 / sma20m 0 / sma50-200 2. Tanpa deploy (ISR 300s).
 - Insiden minor: percobaan pertama docker exec TANPA -i = heredoc stdin tak sampai, UPDATE senyap tidak jalan — tertangkap POST-check; rerun -i sukses. Lesson -> lessons-learned.md.
+
+
+## 2026-09-21 18:5x WIB — CTO sore: qa-21-01/02/03 + council-01/02 + isr-01 bookkeeping (deploy 1/1 sore, 2/2 org)
+- SQL PATCH qa-21-01 (protokol): backup 21 Sep 01:15 valid (last-success). PREVIEW: A7=1, Bvol=1, guard-other=0. UPDATE 1 row nested-replace + WHERE slug+PUBLISHED+LIKE x2 guard, single transaction, COMMIT. POST: old false/new true. Log lengkap di queue result.
+- DEPLOY sore 18:47 (pasca-market): docker compose build app (dari worktree, pola lama) + up -d; commits 75033e1 (akademi title.absolute) + e3ecbfe (berita edu guard). Rollback anchor: image 2acfc8dfdaea / HEAD sebelum 75033e1=2cebf97. Image baru 264a67f61480.
+- BASELINE-THEN-DEPLOY: before akademi title double-brand x2 slug, brief old-phrase x2+x2; after: single-brand x2, new-phrase x2+x2, old 0; 8 rute 200 (/, golden-cross, brief, akademi x2, berita edu+news, register, stocks).
+- COUNCIL-01 VERDICT: IP 2404:c0:* = owner (Telkomsel v6 AS23693) — BUKAN bot; blanket prefix-block di ip-blocklist.ts (uncommitted L31-35) memaksa isBot. Re-class impact: nobot 457->807 (+76%) pekan 14-20 Sep. -> botgate-2026-09-21-01 blocked_for_owner (owner_brief terisi).
+- COUNCIL-02: ceo-decisions.md merge 9 entri + symlink restored -> repo kanonik tunggal.
+- IMPACT CHECK 21 Sep (gabungan jkse-17-01/18-02): ^JKSE row 21 Sep ADA (C=6384.73 H=6451.33) via launchd sync tanpa manual — PASS.

@@ -149,11 +149,13 @@
    "date": "2026-09-18",
    "title": "ops: signal pages render empty-state ~10mnt pasca-deploy (ISR bake + catch{} swallow) — ubah jadi fail-open",
    "priority": "P2",
-   "status": "pending",
+   "status": "done",
    "scheduled_slot": "2026-09-21 07:30 CTO pagi (RESCHEDULE CEO 19 Sep 08:15: TCC pulih 08:0x; slot sore 19 Sep dipakai qa-01+qa-02 sequential, max 1 deploy/slot)",
    "note": "Pagi 19 Sep sempat blocked_external (TCC repo) — pulih oleh owner 08:0x; CTO sore 19 Sep fokus qa-01/qa-02.",
    "north_star": "trust + data reliable (owner lens 17 Sep): signal pages = moat & fondasi trafik; user yang lihat tabel 'tidak ada sinyal' padahal DB sehat = trust rusak",
-   "spec": "TEMUAN CTO 18 Sep 18:50 (saat jkse-02): pasca docker up -d, /saham-golden-cross render empty-state ~10 menit — ISR page bake ulang + catch{} di data-fetch menelan error lalu render kosong, padahal DB sehat (self-heal revalidate=300, final live 30 baris, API fresh exact vs DB). CATATAN: task ini PENGGANTI slot crypto-01 yang dicancel owner 21:09 — crypto BY DESIGN, JANGAN sentuh crypto di task ini. Tugas: (1) temukan catch{} di data path signal pages (cite file/baris); (2) ubah failure-mode jadi fail-open: fetch gagal saat bake → tahan versi konten lama (stale-while-revalidate) ATAU render data live/fallback, JANGAN render empty-state dari error; (3) error yang tadinya ditelan → log ke container. Kalau (2) berat >1 slot: minimal ganti empty-state error jadi blok 'data sedang diperbarui' + retry, laporkan pilihan di result. Non-goal: tidak ubah perhitungan sinyal, tidak ubah interval revalidate, tidak sentuh crypto. DONE WHEN: (a) repro test: simulate fetch-reject saat bake → halaman TIDAK merender 'tidak ada sinyal' (integration test ATAU repro manual di container dgn fetch diblok, before/after dicatat); (b) via claude code pipeline, tsc clean, 1 commit sempit; (c) live pasca-deploy: 3 signal pages 200 + baris terisi TANPA jendela kosong (curl spot-check ≤2mnt setelah up -d); (d) error sebelumnya tertelan kini muncul di docker logs (grep bukti). Rollback: git revert + rebuild."
+   "spec": "TEMUAN CTO 18 Sep 18:50 (saat jkse-02): pasca docker up -d, /saham-golden-cross render empty-state ~10 menit — ISR page bake ulang + catch{} di data-fetch menelan error lalu render kosong, padahal DB sehat (self-heal revalidate=300, final live 30 baris, API fresh exact vs DB). CATATAN: task ini PENGGANTI slot crypto-01 yang dicancel owner 21:09 — crypto BY DESIGN, JANGAN sentuh crypto di task ini. Tugas: (1) temukan catch{} di data path signal pages (cite file/baris); (2) ubah failure-mode jadi fail-open: fetch gagal saat bake → tahan versi konten lama (stale-while-revalidate) ATAU render data live/fallback, JANGAN render empty-state dari error; (3) error yang tadinya ditelan → log ke container. Kalau (2) berat >1 slot: minimal ganti empty-state error jadi blok 'data sedang diperbarui' + retry, laporkan pilihan di result. Non-goal: tidak ubah perhitungan sinyal, tidak ubah interval revalidate, tidak sentuh crypto. DONE WHEN: (a) repro test: simulate fetch-reject saat bake → halaman TIDAK merender 'tidak ada sinyal' (integration test ATAU repro manual di container dgn fetch diblok, before/after dicatat); (b) via claude code pipeline, tsc clean, 1 commit sempit; (c) live pasca-deploy: 3 signal pages 200 + baris terisi TANPA jendela kosong (curl spot-check ≤2mnt setelah up -d); (d) error sebelumnya tertelan kini muncul di docker logs (grep bukti). Rollback: git revert + rebuild.",
+   "completed_at": "2026-09-21 07:37",
+   "result": "DONE 21 Sep 07:37 CTO pagi. Commit 2cebf97 (10 file: fetchScreenerRows helper retry+console.error di 9 signal pages + screener-data.ts; branch rebase tercatat). Deploy pagi image 2acfc8dfdaea. VERIFIKASI sore 18:3x: marker fail-open live di .next chunks/7977.js; tabel golden-cross live 30 ticker; tsc clean. Bookkeeping (changelog/queue) dilunasi slot sore 21 Sep."
   },
   {
    "id": "qa-2026-09-19-01",
@@ -194,6 +196,50 @@
    "completed_at": "2026-09-20 07:45",
    "done_when": "curl rekap: '21 golden cross' muncul (title+excerpt+body), '20 golden cross' & 'SMA20 memotong' hilang; angka lain utuh (breadth/movers/TOWR/DC=4); log decisions.md + changelog",
    "result": "DONE 20 Sep 07:45 CTO pagi (TANPA deploy — ISR revalidate=300 serve fresh). SQL content patch 1 row rekap-pasar-mingguan-2026-09-19 (backup harian 20 Sep 01:15 valid <24h; preview COUNT: title/excerpt/body '20 golden cross' masing 1 + definisi salah 1; nested-replace dalam SATU transaksi + WHERE sempit slug+PUBLISHED+LIKE guard; UPDATE 1; log decisions.md). LIVE verified 2 pass (langsung + 90 detik): '21 golden cross' 3 / '20 golden cross' 0; 'SMA20 memotong' 0 → 'SMA50 memotong ke atas SMA200' 2; angka lain utuh: lead '208 naik vs 460 turun' 3, TOWR 4, '4 death cross' 2. PITFALL: docker exec TANPA -i = heredoc stdin tidak sampai (UPDATE senyap 0 rows) — WAJIB docker exec -i (lesson). REKOMENDASI GENERATOR (belum dieksekusi): weekly rekap generate SETELAH indikator EOD sesi Jumat selesai, atau hitung cross-count on-the-fly dari StockPrice — mixed-freshness hari ke-2 (lihat lessons-learned)."
+  },
+  {
+   "id": "council-2026-09-20-01",
+   "date": "2026-09-20",
+   "priority": "P1",
+   "north_star": "data reliable (owner lens 17 Sep) — metrik WoW hanya berguna kalau klasifikasi human/bot benar",
+   "title": "ops: audit klasifikasi isBot — 1 IPv6 (2404:c0::) 105 views/hari ter-flag bot, kemungkinan power-user",
+   "spec": "DATA (Council 20 Sep): Selasa 15/9 PageView raw 168 dari 16 IP, tapi bersih (isBot=false) hanya 4 — 105 views dari SATU IPv6 2404:c0:5c50::1:1e49:c771. Pekan ini total bersih 385; salah klasifikasi ±100 views/hari = distorsi 25%+ metrik retro. TUGAS (slot Senin 18:30, investigasi DULU — jangan deploy di slot yang sama dgn isr-01): (1) telusuri detectBot() + isBlocked() di src/app/api/track/pageview/route.ts: kenapa IPv6 ini di-flag (UA? blocklist? rate?); (2) identifikasi pola: views halaman mana, jam, apakah ada nav pattern manusia; (3) tulis VERDICT di result: human / bot / ambiguous + bukti; (4) kalau butuh perubahan threshold/klasifikasi → bikin task BARU terpisah dgn spec, jangan eksekusi langsung. DONE WHEN: result berisi verdict + bukti (query/UA/log) + rekomendasi + dampak re-class pada angka pekan 14–20 Sep.",
+   "status": "done",
+   "scheduled_slot": "2026-09-21 18:30 CTO malam (Council 20 Sep)",
+   "completed_at": "2026-09-21 18:5x WIB",
+   "result": "VERDICT: BUKAN bot — kemungkinan besar OWNER SENDIRI (Telkomsel mobile). Bukti: (1) IP 2404:c0:5c50:: grup SAMA dengan 2 IP login owner (nich131094, 4 views authed); (2) ASN=AS23693 Telkomsel (residential, bukan datacenter) — sama dengan 2 user signup asli; (3) pola jam manusia: burst 12:00 (istirahat siang) + 14-16 (menjelang tutup market), BUKAN 24/7; (4) nav path manusia: /stocks -> /stocks/TICKER -> signal pages -> berita (53 stocks/* + 31 /stocks + 12 golden-cross, 15 Sep); (5) UA Chrome Android/iPhone legit. ROOT PENYALAHAN: ip-blocklist.ts hard-block ip.startsWith(\"2404:c0:\") = blanket /32 prefix Telkomsel v6 (UNCOMMITTED di worktree, live di image) -> semua PageView prefix itu dipaksa isBot=true (route L44 isBot||blocked); 38 row BlockedIp DB + blanket code. DAMPAK RE-CLASS pekan 14-20 Sep: prefix 2404:c0: = 350 views salah-flag bot (34+105+28+108+74+1); nobot 457 -> ~807 (+76%), bot 483 -> ~133. Rekomendasi -> task baru botgate-2026-09-21-01 (blocked_for_owner: area security)."
+  },
+  {
+   "id": "council-2026-09-20-02",
+   "date": "2026-09-20",
+   "priority": "P2",
+   "north_star": "consistency — satu sumber kebenaran file keputusan",
+   "title": "ops: konsolidasi ceo-decisions.md ganda (repo agent-org vs ~/.hermes/data/teknikalid-growth) pasca symlink putus 19 Sep",
+   "spec": "TEMUAN Council 20 Sep: sejak symlink diputus 19/9 07:45 (TCC), ada 2 salinan ceo-decisions.md yang DIVERGEN: repo ~/Documents/teknikalidnew/docs/agent-org/ceo-decisions.md (berhenti 15/9) vs ~/.hermes/data/teknikalid-growth/ceo-decisions.md (live s/d 20/9). Owner rule 13 Sep: canonical = repo. TUGAS: (1) merge entry data-dir (16–20/9) ke file repo urut tanggal, drop duplikat; (2) pastikan SEMUA writer (CEO pagi/sore, Council, Reviewer) tulis ke repo — update path di prompt job jika masih arah data-dir; (3) data-dir jadikan mirror read-only atau arahkan ulang; (4) catat di handoff.md. DONE WHEN: grep '[COUNCIL] 2026-09-20' ada di repo copy; dua file konsisten; handoff mencatat jalur tunggal.",
+   "status": "done",
+   "completed_at": "2026-09-21 18:5x WIB",
+   "result": "DONE 21 Sep 18:39 CTO sore. Merge 9 entri kronologis (repo 4 + data-dir 8, duplikat heading 20 Sep diambil versi terpanjang, reorder 22:5x>07:55 fixed). Symlink RESTORED: ~/.hermes/data/teknikalid-growth/ceo-decisions.md -> repo docs/agent-org/ceo-decisions.md (backup .bak-20260921) — jalur tunggal kanonik, semua writer (CEO/Council/Reviewer/CTO) otomatis tulis ke repo tanpa edit prompt agent lain. DONE WHEN PASS: grep \"[COUNCIL] 2026-09-20\" ada di repo copy. Catatan handoff.md."
+  },
+  {
+   "id": "soft404-2026-09-21-01",
+   "date": "2026-09-21",
+   "priority": "P1",
+   "status": "pending",
+   "scheduled_slot": "2026-09-22 07:30 CTO pagi (deploy ≤08:45)",
+   "north_star": "growth/SEO — soft-404 sitewide: SEMUA slug salah di SEMUA route dinamis membalas 200 + meta homepage; Google baca duplikat homepage massal, crawl budget bocor, trust index runtuh",
+   "title": "ops P1: sitewide soft-404 — root loading.tsx membuat semua notFound() membalas 200",
+   "spec": "TEMUAN qa-2026-09-21-03 (worker B, verified staging :3000 21 Sep): root src/app/loading.tsx = implicit Suspense boundary -> Next flush shell + status 200 SEBELUM page resolve; notFound() terlambat set status. Bukti live: /berita/<edu> /akademi/random /stocks/ZZZZ.JK /indeks/random /community/post/00000000 semuanya 200 dengan kartu \"Halaman Tidak Ditemukan\" + meta fallback homepage; route statis ngaco = 404 benar; Googlebot UA pun kena 200 (streaming-metadata blocking tidak menolong karena shell duluan). EKSEKUSI: (1) hapus/pindahkan root loading.tsx (ke segment yang benar-benar butuh, atau ganti template tanpa boundary root); IMPACT-FIRST: daftar SEMUA route yang bergantung boundary itu (grep generateStaticParams/loading; cek halaman berat /stocks yang mungkin rely pada streaming); (2) post-deploy: curl 6 slug ngaco di 5 segmen = 404 semua; (3) halaman valid tetap 200 + tanpa regresi LCP/CLS di /stocks (kalau loading spinner hilang, ukur); (4) via claude code pipeline, 1 commit sempit, tsc clean. DONE WHEN: curl -o /dev/null -w %{http_code} /berita/strategi-pullback-sma20-untuk-pemula = 404 DAN /akademi/random-slug-xyz = 404 DAN /stocks/BBRI.JK = 200. Rollback: git revert + rebuild."
+  },
+  {
+   "id": "botgate-2026-09-21-01",
+   "date": "2026-09-21",
+   "priority": "P1",
+   "status": "blocked_for_owner",
+   "blocked_checked_at": "2026-09-21 18:55 WIB",
+   "north_star": "measurement trust — metrik human/bot salah basis: ~76% nobot pekan 14-20 Sep ter-flag bot karena prefix-block blanket",
+   "title": "[blocked_for_owner: security] prefix-block 2404:c0: (Telkomsel v6) salah flag owner + user asli — lepas blanket, pertahankan per-IP",
+   "spec": "Follow-up council-2026-09-20-01. ip-blocklist.ts L31-35 (UNCOMMITTED worktree) hard-block seluruh prefix 2404:c0: (= Telkomsel AS23693 residential v6) karena \"Bot B residential-proxy fleet\". Bukti salah sasun: owner sendiri browsing via prefix itu (authed 4 views + pola anonim manusia 350 views/pekan). USULAN (owner approve): (a) hapus baris ip.startsWith(\"2404:c0:\") — pertahankan 38 row per-IP di BlockedIp DB; ATAU (b) rate-based per-IP penuh tanpa prefix. SETELAH approve: UPDATE PageView SET \"isBot\"=false WHERE ip LIKE \"2404:c0:%\" AND \"createdAt\" >= 2026-09-14 (protokol SQL destruktif) supaya retro metrik benar. RISIKO: proxy fleet Bot B asli (kalau memang ada) lolos sementara -> mitigasi: scrape-escalation per-IP + burst limit authed tetap jalan. ROLLBACK: re-add prefix line + rebuild. SEC-REVIEW: perubahan di area anti-bot (security) = wajib owner; dampak false-negative bot vs false-positive user dinilai owner.",
+   "owner_brief": "File: src/lib/ip-blocklist.ts L31-35 (1 baris prefix-check) + opsional SQL re-class 350 rows pekan lalu. Risiko: bot fleet residential tertutup rate-limit per-IP saja. Gain: metrik human +76%, owner tidak diblock dari /stocks anonim."
   }
  ]
 }

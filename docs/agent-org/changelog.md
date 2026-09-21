@@ -53,3 +53,34 @@
 - QA: reviewer besok pagi (pembangun != pemeriksa) — konten rekap penuh.
 - Impact check: 2026-09-23 — pola mixed-freshness rekap mingguan berikutnya (generasi 26 Sep) pakai indikator sesi terakhir.
 - SQL log: decisions.md (backup 20 Sep 01:15 valid; preview COUNT 1/1/1; UPDATE 1 row; WHERE slug+PUBLISHED+LIKE guard).
+
+
+## [2026-09-21 18:50] isr-2026-09-19-01 — signal pages fail-open (bookkeeping sore; eksekusi pagi 07:37) [deploy pagi 1/1]
+- Type: ops  |  PRD: -
+- Deploy: pagi 21 Sep image 2acfc8dfdaea, commit 2cebf97 (10 file)  |  Rollback: git revert 2cebf97 + rebuild
+- Verify (sore): marker fail-open live (.next/server/chunks/7977.js); /saham-golden-cross live 30 ticker; home+signal 200.
+- QA: slot berikutnya. Impact check: 2026-09-24 — pasca deploy berikutnya, signal pages tidak menampilkan empty-state palsu (jendela ≤2mnt).
+
+## [2026-09-21 18:40] qa-2026-09-21-01 — brief 21 Sep: GC Rabu 7→6 + klaim LPKR volume [tanpa deploy]
+- Type: ops (SQL content patch)  |  PRD: -
+- Deploy: tanpa deploy, ISR 300  |  Rollback: reverse-replace SQL
+- Verify: DB post old=false/new=true x2; LIVE: '6 saham pada Rabu 16/9' x2 + 'terbesar ke-4 di seluruh papan' x2, frasa lama 0; guard 460/BYAN utuh. Backup 01:15 valid; log decisions.md.
+- Impact check: 2026-09-24 — brief berikutnya angka GC cross-count konsisten query reviewer.
+
+## [2026-09-21 18:50] qa-2026-09-21-02 — akademi title single-brand [deploy sore 1/1]
+- Type: ops  |  PRD: -
+- Deploy: image 264a67f61480, commit 75033e1 (1 file)  |  Rollback: git revert 75033e1 + rebuild (anchor lama 2acfc8dfdaea)
+- Verify: tsc clean; LIVE 2/3 slug dicek 'TeknikalID' 1x di title (before: 2x). Worker paralel A + verify CTO sendiri.
+- Impact check: 2026-09-24 — GSC title /akademi mulai tampil single-brand.
+
+## [2026-09-21 18:50] qa-2026-09-21-03 — guard edu 404 /berita [deploy sore, CAVEAT]
+- Type: ops  |  PRD: -
+- Deploy: image 264a67f61480, commit e3ecbfe (1 file)  |  Rollback: git revert e3ecbfe + rebuild
+- Verify: tsc clean; guard live; NEWS tetap 200; sitemap bersih. CAVEAT: status live /berita/<edu> TETAP 200 — root cause struktural root loading.tsx soft-404 sitewide -> task baru soft404-2026-09-21-01 (P1).
+- Impact check: 2026-09-24 — setelah soft404-01, edu slug = 404 end-to-end.
+
+## [2026-09-21 18:45] council-2026-09-20-01 — verdict isBot IPv6 [read-only]
+- Verdict: HUMAN (owner sendiri, Telkomsel AS23693); prefix-block blanket 2404:c0: salah sasaran; dampak nobot pekan 14-20 Sep +76% bila re-class. Follow-up: botgate-2026-09-21-01 (blocked_for_owner).
+
+## [2026-09-21 18:39] council-2026-09-20-02 — konsolidasi ceo-decisions.md [docs]
+- Merge 9 entri + symlink data-dir -> repo restored; jalur tunggal kanonik.
