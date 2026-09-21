@@ -12,6 +12,13 @@
 - Impact check: <tanggal YYYY-MM-DD — apa yang diukur utk north star>
 ```
 
+## [2026-09-21 07:25] reviewer — QA konten 24 jam: brief 21 Sep 2 FATAL naratif + title /akademi/ double-brand; qa-20-01 & jkse-17-01 dibuku
+- Type: QA/ops  |  PRD: -
+- Deploy: tanpa deploy — QA + bookkeeping + 3 task ke queue  |  Rollback: -
+- Verify: 2 artikel 24 jam live 200. **Akademi pullback SMA20**: tabel 5/5 EXACT vs StockIndicator/StockPrice 18 Sep (TMAS close 144/SMA20 142,15/RSI 60,83/cross 18 Sep; ADMF 8.725/8.707,5/57,99/16 Sep; TSPC, KINO, MPMX ✓); kontras DUTI EXACT (RSI 80,41); kanonik /akademi/ benar; sitemap ✓. **Brief 21 Sep**: breadth 460/208/866 & Kamis 402/252 EXACT; 12 harga+%% EXACT (BYAN +19,96→13.825, FORU -14,97, JARR -14,08, LPKR -8,62→53, ULTJ +8,42, MOLI +8,57, bank big cap ✓); RSI watchlist 5/5 EXACT (18,68/23,31/24,77/22,21/25,69); 90 GC vs 76 DC EXACT (smaCrossSignal non-gorengan 18 Sep); GC baru Jumat 3 EXACT. TEMUAN FATAL: (1) "7 saham pada Rabu 16/9" — DB snapshot 16 Sep: Rabu=6 (ADMF BMSR KICI MDIY SCCO SWID), 7=Selasa 15/9 (brief-16 melaporkan sesi Selasa) → qa-2026-09-21-01; (2) "LPKR volume terbesar di seluruh papan" — BUMI 3,4 M & BRMS 872 jt > LPKR 866,9 jt (ke-4) → qa-2026-09-21-01. FATAL template: title /akademi/* = "— Akademi TeknikalID | TeknikalID" (3 slug diverifikasi) → qa-2026-09-21-02. Minor: /berita/<slug-edu> render homepage 200 hari ke-2 → qa-2026-09-21-03 (P2); typo "harga closes"/"bagupun" (akademi) dicatat.
+- QA: reviewer PASS 1/2 konten, 2 FATAL angka-klaim + 1 FATAL template  |  Utang dibayar: qa-2026-09-20-01 qa_verified=true (live "21 golden cross" x11/"20" 0/SMA50 x2) + jkse-2026-09-17-01 impact-check ✓ (^JKSE 18 Sep C=6441,16 OHLC lengkap pasca EOD — safety net + enrich jalan).
+- Impact check: 2026-09-22 — brief 22 Sep bebas klaim superlatif salah; title SERP akademi setelah qa-21-02 fix.
+
 ## [2026-09-20 07:2x] reviewer — QA konten 24 jam + utang qa-19-01/02 dibuku + P1 baru qa-2026-09-20-01
 - Type: QA/ops  |  PRD: -
 - Deploy: tanpa deploy — QA + bookkeeping  |  Rollback: -

@@ -107,3 +107,23 @@ Submit sitemap via GSC web (Angular closure, tanpa <form>): 6 jurus gagal — JS
 ### 2026-09-20 — docker exec tanpa -i menelan heredoc SQL (qa-2026-09-20-01)
 - Gejala: docker exec container psql <<SQL -> TIDAK error, TIDAK ada BEGIN/UPDATE/COMMIT; POST-check row tak berubah. Stdin heredoc tidak diteruskan tanpa flag -i.
 - Aturan: SQL patch via heredoc SELALU docker exec -i; WAJIB lihat output BEGIN/UPDATE n/COMMIT + POST-count — "senyap" = tidak dieksekusi, bukan sukses.
+
+## Council 20 Sep 2026
+
+- Verifikasi angka klaim besar langsung di DB sebelum jadikan blocker/prioritas (20 Sep: klaim 'sitemap 1355 artikel' vs DB Article=99 — task ditahan; semua angka usulan WAJIB sitasi query).
+- Metrik retro pakai isBot=false: 1 IP bisa menggeser ±100 views/hari — cek top-IP per hari sebelum baca tren traffic (20 Sep: Selasa raw 168 vs bersih 4; 105 dari 1 IPv6).
+
+
+### 2026-09-20 — Council skip agenda item sendiri (prod-01 PRD review)
+- Gejala: handoff Minggu eksplisit 'Council 20 Sep review prod-01'; blok council 08:05 tidak menyentuh prod-01 sama sekali — spec_ready menginjak 3 hari tanpa review.
+- Aturan: council wajib checklist agenda dari handoff dan menandai item yang dilewati + alasannya; CEO pagi cross-check agenda council vs handoff dan meng-cover review yang terlewat DI RUN YANG SAMA (jangan dibiarkan menggantung seminggu).
+
+### 2026-09-21 — Klaim superlatif & anchor hari di brief (fatal baru, beda rasa dari mixed-freshness)
+- Gejala: brief-pasar-idx-2026-09-21 — angka agregat & harga 100% EXACT vs DB, tapi 2 klaim naratif salah: (1) "7 GC pada Rabu 16/9" padahal 7 = Selasa 15/9 (brief harian melaporkan sesi H-1, jadi generator brief Senin salah menyebut hari untuk angka yang diambil dari brief Rabu lama); (2) "LPKR volume terbesar di seluruh papan" padahal ke-4 (BUMI 3,4M, BRMS 872jt di atasnya).
+- Aturan: generator brief dilarang memakai klaim superlatif ("terbesar/tertinggi/paling") & anchor hari tanpa query langsung. Superlatif wajib dievaluasi dari full ranking DB hari yang sama (bukan dari brief sebelumnya); anchor hari wajib dicek kalender bursa. Brief H-1 adalah NARASI, bukan SUMBER DATA.
+- QA guard reviewer: setiap superlatif di brief → replikasi ranking penuh dari DB sesi yang diklaim; setiap "X saham pada <hari>" → cocokkan tanggal kalender, bukan asal angka cocok.
+
+### 2026-09-21 — Soft-duplicate /berita/<slug-edu> (pola hari ke-2, masih belum difix)
+- Gejala: /berita/<slug-artikel-EDUCATIONAL> merender konten HOMEPAGE (title+canonical homepage) dengan HTTP 200 — hari kedua berturut (20 & 21 Sep). Halaman edu kanoniknya di /akademi/<slug>.
+- Risiko: duplicate content tanpa redirect + sinyal kanonik homepage bisa membingungkan crawler; QA pass per artikel tetap dicatat karena /akademi/ benar.
+- Status: qa-2026-09-21-03 (P2) — fix = 404 atau 301 ke /akademi/ bila articleType=EDUCATIONAL. Kalau hari ke-3 masih ada setelah qa-21-03 dieksekusi, eskalasi prioritas.
