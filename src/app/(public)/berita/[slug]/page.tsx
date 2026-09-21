@@ -82,6 +82,11 @@ export default async function BeritaArticlePage({
     },
   });
 
+  // EDUCATIONAL articles are canonical at /akademi/<slug> — never renderable here
+  // (soft-duplicate with homepage-fallback meta). Explicit check so future edits to
+  // BERITA_TYPES can't silently re-expose them. qa-2026-09-21-03
+  if (article && article.articleType === ArticleType.EDUCATIONAL) notFound();
+
   if (!article || article.status !== "PUBLISHED" || !BERITA_TYPES.includes(article.articleType)) notFound();
 
   const headings = extractHeadings(article.content);
