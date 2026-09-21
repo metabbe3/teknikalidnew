@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PageHero } from "@/components/layout/page-hero";
 import { RegisterCta } from "@/components/signal/register-cta";
 import Link from "next/link";
-import { technicalAnalysisService } from "@/domains/stock/technical-analysis.service";
+import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { SITE_URL } from "@/lib/constants";
 
@@ -32,15 +32,7 @@ export const metadata: Metadata = {
 };
 
 export default async function SahamGoldenCrossPage() {
-  let stocks: Record<string, unknown>[] = [];
-  try {
-    const result = await technicalAnalysisService.screenerQuery("golden_cross");
-    if (result && !("error" in result)) {
-      stocks = Array.isArray(result) ? result.slice(0, 30) : [];
-    }
-  } catch {
-    // Non-critical
-  }
+  const { stocks, failed } = await fetchScreenerRows("golden_cross");
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -102,7 +94,13 @@ export default async function SahamGoldenCrossPage() {
               </tr>
             </thead>
             <tbody>
-              {stocks.length === 0 ? (
+              {failed ? (
+                <tr>
+                  <td colSpan={4} className="py-8 text-center text-muted-foreground">
+                    Data sinyal sementara tidak dapat dimuat — sedang diperbarui. Mohon muat ulang dalam beberapa menit.
+                  </td>
+                </tr>
+              ) : stocks.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="py-8 text-center text-muted-foreground">
                     Belum ada saham golden cross saat ini. Cek lagi nanti.

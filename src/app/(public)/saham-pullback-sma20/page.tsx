@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/layout/page-hero";
 import Link from "next/link";
-import { technicalAnalysisService } from "@/domains/stock/technical-analysis.service";
+import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { SITE_URL } from "@/lib/constants";
 
@@ -29,15 +29,7 @@ export const metadata: Metadata = {
 };
 
 export default async function SahamPullbackSma20Page() {
-  let stocks: Record<string, unknown>[] = [];
-  try {
-    const result = await technicalAnalysisService.screenerQuery("pullback_sma20");
-    if (result && !("error" in result)) {
-      stocks = Array.isArray(result) ? result.slice(0, 30) : [];
-    }
-  } catch {
-    // Non-critical
-  }
+  const { stocks, failed } = await fetchScreenerRows("pullback_sma20");
 
   // Static schema markup (no user input), rendered as a plain script child.
   const jsonLd = JSON.stringify({
@@ -99,7 +91,13 @@ export default async function SahamPullbackSma20Page() {
               </tr>
             </thead>
             <tbody>
-              {stocks.length === 0 ? (
+              {failed ? (
+                <tr>
+                  <td colSpan={4} className="py-8 text-center text-text-tertiary">
+                    Data sinyal sementara tidak dapat dimuat — sedang diperbarui. Mohon muat ulang dalam beberapa menit.
+                  </td>
+                </tr>
+              ) : stocks.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="py-8 text-center text-text-tertiary">
                     Belum ada saham pullback SMA20 saat ini. Cek lagi nanti.

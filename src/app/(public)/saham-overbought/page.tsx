@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/layout/page-hero";
 import Link from "next/link";
-import { technicalAnalysisService } from "@/domains/stock/technical-analysis.service";
+import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { formatPrice, formatPercent, stripJk, changeColor, rsiColor } from "@/lib/utils";
 import { SITE_URL } from "@/lib/constants";
 
@@ -29,15 +29,7 @@ export const metadata: Metadata = {
 };
 
 export default async function SahamOverboughtPage() {
-  let stocks: Record<string, unknown>[] = [];
-  try {
-    const result = await technicalAnalysisService.screenerQuery("rsi_overbought");
-    if (result && !("error" in result)) {
-      stocks = Array.isArray(result) ? result.slice(0, 30) : [];
-    }
-  } catch {
-    // Non-critical
-  }
+  const { stocks, failed } = await fetchScreenerRows("rsi_overbought");
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -97,7 +89,9 @@ export default async function SahamOverboughtPage() {
               </tr>
             </thead>
             <tbody>
-              {stocks.length === 0 ? (
+              {failed ? (
+                <tr><td colSpan={5} className="py-8 text-center text-muted-foreground">Data sinyal sementara tidak dapat dimuat — sedang diperbarui. Mohon muat ulang dalam beberapa menit.</td></tr>
+              ) : stocks.length === 0 ? (
                 <tr><td colSpan={5} className="py-8 text-center text-muted-foreground">Belum ada saham overbought saat ini.</td></tr>
               ) : (
                 stocks.map((stock) => {
