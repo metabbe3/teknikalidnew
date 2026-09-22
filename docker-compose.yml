@@ -80,11 +80,14 @@ services:
     # Event-loop liveness probe (ops-2026-09-22-01): worker heartbeats to
     # /tmp/worker-heartbeat every 60s while its event loop runs — long async/await
     # LLM jobs never pause it. A frozen loop (SIGSTOP, sync hang) lets the file go
-    # stale >180s, so the probe kills PID 1: container exits and restart:
-    # unless-stopped revives it. Plain restart policy alone never restarts an
-    # unhealthy container — the kill is what makes this self-heal real.
+    # stale >180s. On stale the probe pkills the real worker processes, NOT PID 1:
+    # SIGKILL to PID 1 from inside the PID namespace is silently IGNORED by the
+    # kernel (verified 22 Sep), and `restart: unless-stopped` only reacts to
+    # container EXIT, not an unhealthy label. `agent-worke[r]` (bracket =
+    # self-exclusion) ends npm's child → npm exits → container exits → restart
+    # policy revives it.
     healthcheck:
-      test: ["CMD-SHELL", "node -e \"const fs=require('fs');let stale=true;try{stale=Date.now()-fs.statSync('/tmp/worker-heartbeat').mtimeMs>180000}catch(e){};if(stale){try{process.kill(1,'SIGKILL')}catch(e){}}process.exit(stale?1:0)\""]
+      test: ["CMD-SHELL", "node -e \"const fs=require('fs');let stale=true;try{stale=Date.now()-fs.statSync('/tmp/worker-heartbeat').mtimeMs>180000}catch(e){};if(stale){try{require('child_process').execSync(\\\"pkill -9 -f 'agent-worke[r]'\\\")}catch(e){}}process.exit(stale?1:0)\""]
       interval: 45s
       timeout: 10s
       retries: 3
