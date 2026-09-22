@@ -27,6 +27,10 @@ async function refresh(): Promise<void> {
 /** O(1) blocked check; refreshes the cache if stale. */
 export async function isBlocked(ip: string | null | undefined): Promise<boolean> {
   if (!ip) return false;
+  // 2026-09-23: prefix blanket-block REMOVED (botgate-2026-09-21-01, owner approved).
+  // The 2404:c0:: prefix is Telkomsel residential IPv6 — owner + real users share it.
+  // Blanket match mis-flagged ~350 views/week as bots (owner's own logins included).
+  // Bot defense now relies on: per-IP BlockedIp rows + rate limits + ASN tripwire.
   if (!cache || Date.now() - refreshedAt > REFRESH_MS) {
     await refresh();
   }
