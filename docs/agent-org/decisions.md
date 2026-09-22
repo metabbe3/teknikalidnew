@@ -500,3 +500,9 @@ Owner: "Gas semua agent bisa paralel kalau tidak saling ganggu"
 - COUNCIL-01 VERDICT: IP 2404:c0:* = owner (Telkomsel v6 AS23693) — BUKAN bot; blanket prefix-block di ip-blocklist.ts (uncommitted L31-35) memaksa isBot. Re-class impact: nobot 457->807 (+76%) pekan 14-20 Sep. -> botgate-2026-09-21-01 blocked_for_owner (owner_brief terisi).
 - COUNCIL-02: ceo-decisions.md merge 9 entri + symlink restored -> repo kanonik tunggal.
 - IMPACT CHECK 21 Sep (gabungan jkse-17-01/18-02): ^JKSE row 21 Sep ADA (C=6384.73 H=6451.33) via launchd sync tanpa manual — PASS.
+
+## [CTO pagi 2026-09-22 08:0x] soft404-2026-09-21-01 DONE
+- DEPLOY pagi 07:48 (pre-market): commits b94d8de (hapus 6 loading.tsx — root + 5 segment leluhur route notFound) + b507823 (admin/login Suspense wrap, fix build prerender useSearchParams). Image 17c0d2e3361f. Rollback anchor: 264a67f61480 / 41cbdd2b.
+- BASELINE-THEN-DEPLOY: bogus before 200×8 → after 404×7 + profile 307 auth-gate; valid 7/7 200; TTFB tanpa regresi (/ 0.130→0.164s, /stocks 0.140→0.124s).
+- INCIDENT minor build-1: docker compose build app GAGAL prerender /admin/login (useSearchParams tanpa boundary setelah root loading.tsx dihapus) — fix minimal wrap Suspense lokal, build-2 sukses; bukan rollback, site tidak pernah down (container lama jalan terus selama build).
+- BONUS: guard edu qa-21-03 kini end-to-end (/berita/<slug-edu> = 404 asli); CAVEAT changelog 21 Sep tertutup.

@@ -84,3 +84,15 @@
 
 ## [2026-09-21 18:39] council-2026-09-20-02 — konsolidasi ceo-decisions.md [docs]
 - Merge 9 entri + symlink data-dir -> repo restored; jalur tunggal kanonik.
+
+## [2026-09-22 07:2x] qa-reviewer-2026-09-22 — QA 42 artikel + verifikasi deploy semalam [read-only]
+- QA: 41/42 bersih, 0 fatal; 1 minor typo 'saam' (pola ke-3 → task P2 reviewer-qa-2026-09-22-01: SQL patch 3 slug). Brief 21 & 22 Sep: semua klaim exact vs DB (detail di decisions.md [REVIEWER]).
+- Verify deploy: image 264a67f61480 live; isr-01 signal pages 4/4 terisi tanpa empty-state → qa_pass; qa-21-02 title single-brand ✓; qa-21-03 guard aktif (soft-404 residual = tracked soft404-01); sitemap bersih.
+- Buku: isr-01 done→qa_pass di cto-queue.json; lessons typo berulang; 42/42 live 200.
+
+## [2026-09-22 08:0x] soft404-2026-09-21-01 — sitewide soft-404 fix [deploy pagi 1/1]
+- Type: ops  |  PRD: -
+- Deploy: image 17c0d2e3361f, commits b94d8de (hapus 6 loading.tsx: root + stocks/ + stocks/[ticker]/ + profile/[username]/ + community/ + community/post/[id]/) + b507823 (admin/login Suspense wrap)  |  Rollback: git revert b507823 b94d8de + rebuild (anchor lama 264a67f61480 / 41cbdd2b)
+- Verify: tsc clean; bogus slug before 200×8 → after 404×7 + 1×307 auth-gate (profile — middleware redirect, bukan soft-404); valid 7/7 tetap 200; TTFB / 0.130→0.164s, /stocks 0.140→0.124s (tanpa regresi); /admin/login 200 (prerender fix).
+- Lesson: root loading.tsx = boundary untuk useSearchParams() di /admin/login — build-1 gagal prerender; dependency tersembunyi boundary root, grep pemakai useSearchParams WAJIB sebelum hapus boundary.
+- Impact check: 2026-09-25 — GSC mulai baca 404 asli (crawl budget pulih); spot-check slug ngaco tetap 404.

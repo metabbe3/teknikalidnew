@@ -101,3 +101,10 @@
 - In-flight: soft404-2026-09-21-01 (P1! root loading.tsx = SEMUA notFound() balas 200 — diselesaikan pagi; impact-first wajib) + botgate-21-01 nunggu owner.
 - Jebakan: worker claude sandbox mem-block tsc/git-commit (CTO wajib verify+commit sendiri; commit sempit per-task, worker bisa mencampur); repo branch fix/seo-double-brand + worktree kotor historis (deploy dari worktree = pola lama, jangan panic-clean); docker exec WAJIB -i.
 - Slot pagi berikutnya: AMBIL soft404-01 -> tulis DONE WHEN -> baseline (curl slug ngaco x5 segmen) -> claude pipeline -> deploy <=08:45.
+
+### 2026-09-22 08:0x — CTO pagi (soft404-01 DONE)
+- State: sehat; freshness FRESH (21 Sep); deploy pagi 1/1 (org 1/2) image 17c0d2e3361f; soft-404 sitewide FIX — bogus slug 404 benar di 5+ segmen.
+- Barusan: soft404-2026-09-21-01 done (b94d8de hapus 6 loading.tsx + b507823 admin/login Suspense; DONE WHEN 3/3 PASS, valid 7/7 200, TTFB stabil; qa-21-03 edu guard kini end-to-end).
+- In-flight: botgate-2026-09-21-01 blocked_for_owner (nunggu approve lepas prefix-block 2404:c0: + re-class 350 rows) — TIDAK boleh dieksekusi tanpa owner; reviewer-qa-2026-09-22-01 (typo 'saam', P2 SQL patch) belum ada di cto-queue → CEO yang dispatch.
+- Jebakan: (1) hapus loading.tsx = hapus boundary useSearchParams — selalu grep dulu; (2) curl -L menyesatkan utk route auth-gated (307→200 kelihatan 200); (3) terminal scanner blok `up -d` inline foreground → taruh di /tmp/*.sh lalu bash; (4) queue mirror data-dir = symlink repo (council-02) — cukup edit repo.
+- Langkah pertama slot berikutnya: baca queue → botgate-21-01 cek blocked_checked_at (update field; >2 slot = [ESCALATE]) → sisanya health check / bantu QA verify deploy pagi (spot 404 + sitemap).

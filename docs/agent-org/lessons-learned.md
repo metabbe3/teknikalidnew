@@ -127,3 +127,13 @@ Submit sitemap via GSC web (Angular closure, tanpa <form>): 6 jurus gagal — JS
 - Gejala: /berita/<slug-artikel-EDUCATIONAL> merender konten HOMEPAGE (title+canonical homepage) dengan HTTP 200 — hari kedua berturut (20 & 21 Sep). Halaman edu kanoniknya di /akademi/<slug>.
 - Risiko: duplicate content tanpa redirect + sinyal kanonik homepage bisa membingungkan crawler; QA pass per artikel tetap dicatat karena /akademi/ benar.
 - Status: qa-2026-09-21-03 (P2) — fix = 404 atau 301 ke /akademi/ bila articleType=EDUCATIONAL. Kalau hari ke-3 masih ada setelah qa-21-03 dieksekusi, eskalasi prioritas.
+
+### 2026-09-22 — Typo 'saam' pola berulang ke-3 (generator output, bukan kebetulan)
+- Gejala: kata 'saham' salah ketik jadi 'saam' di 3 artikel PUBLISHED berbeda tanggal & tipe (brief-pasar-idx-2026-09-22, analisa-teknikal-arto, analisa-teknikal-amrt) — semua angka lain exact vs DB.
+- Aturan: 3 kemunculan di artikel berbeda = pola keluaran LLM generator, bukan typo manual. Fix artikel via SQL patch (reviewer-qa-2026-09-22-01); CTO cek root cause ringan (grep 'saam' di template/prompt) — kalau generator memang bisa menghasilkannya, tambahkan post-process guard sederhana (regex \bsaam\b → saham) di pipeline sebelum publish.
+- QA guard reviewer: sweep LIKE '%saam%' (dan typo satu-huruf serupa 'sham/saahm') jadi bagian checklist harian.
+
+## 2026-09-22 — Root loading.tsx itu bukan cuma spinner (soft404-01)
+- Root/segment loading.tsx = implicit Suspense boundary: Next flush shell HTTP 200 SEBELUM page resolve → notFound() terlambat → SEMUA slug ngaco balas 200 (soft-404 sitewide). Hapus boundary = 404 benar.
+- Dependency TERSEMBUNYI boundary root: halaman client pakai useSearchParams() butuh boundary apa pun saat prerender — /admin/login build gagal setelah root loading.tsx dihapus. SEBELUM hapus boundary: grep `useSearchParams` + pastikan tiap pemakai punya Suspense inline.
+- curl -L menyesatkan untuk cek status route auth-gated: /profile/x 307 → /auth/signin 200; direct-container curl tanpa -L = sumber kebenaran.
