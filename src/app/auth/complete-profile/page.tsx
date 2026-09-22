@@ -37,7 +37,37 @@ export default function CompleteProfilePage() {
       }
 
       await update();
-      router.push("/");
+
+      // Register hook: fulfill guest save-intent (pending_post_register), then return to where they came from
+      let next = "/";
+      try {
+        const raw = sessionStorage.getItem("pending_post_register");
+        if (raw && raw.length <= 8192) {
+          const pending = JSON.parse(raw);
+          if (pending?.type === "save_screen" && pending.filters && typeof pending.filters === "object") {
+            await fetch("/api/screener/saved", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ name: "Screen pertama saya", filters: pending.filters }),
+            }).catch(() => {});
+          } else if (pending?.type === "watchlist" && typeof pending.ticker === "string" && pending.ticker) {
+            await fetch("/api/watchlist", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ ticker: pending.ticker }),
+            }).catch(() => {});
+          }
+          // same-origin relative only — reject '//evil.com' and absolute/scheme URLs
+          if (typeof pending?.next === "string" && pending.next.startsWith("/") && !pending.next.startsWith("//")) {
+            next = pending.next;
+          }
+          sessionStorage.removeItem("pending_post_register");
+        }
+      } catch {
+        sessionStorage.removeItem("pending_post_register");
+      }
+
+      router.push(next);
       router.refresh();
     } catch {
       setError("Terjadi kesalahan");

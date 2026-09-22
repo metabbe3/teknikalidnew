@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
 import { BottomFishingRadar } from "@/components/stock/bottom-fishing-radar";
 import { SavedScreenerBar } from "@/components/screener/saved-screener-bar";
+import { SaveScreenPrompt } from "@/components/screener/save-screen-prompt";
 import { useWatchlist, useToggleWatchlist, useBatchAddToWatchlist, useBatchRemoveFromWatchlist } from "@/hooks/use-watchlist";
 
 // Import types
@@ -154,6 +155,21 @@ function ScreenerPageContent({ assetClass, linkBase = "/stocks" }: { assetClass?
     if (tickers.length > 0) batchRemove.mutate(tickers);
   }, [stocks, watchlistTickers, batchRemove]);
 
+  // Guest save-intent: representation of the active screen, matching the query fetchUrl builds
+  const guestSaveFilters = useMemo(() => {
+    if (activeStyle === "custom") return customParams;
+    if (!activePreset || activePreset === "radar") return {};
+    const presetDef = styles.flatMap((s) => s.presets).find((p) => p.key === activePreset);
+    const filters: Record<string, string> = { preset: activePreset };
+    for (const slider of presetDef?.sliders ?? []) {
+      const val = sliderValues[slider.key] ?? slider.default;
+      if (val !== slider.default) filters[slider.param] = String(val);
+    }
+    return filters;
+  }, [activeStyle, activePreset, customParams, sliderValues, styles]);
+
+  const currentUrl = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
+
   return (
     <div className="fade-in">
       {/* Trading-style tabs (the page <PageHero> provides the title/description) */}
@@ -168,8 +184,8 @@ function ScreenerPageContent({ assetClass, linkBase = "/stocks" }: { assetClass?
 
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
-        {/* Saved Screener Bar — authenticated users only */}
-        {session?.user && (
+        {/* Saved Screener Bar — authenticated; guests get the save-intent prompt */}
+        {session?.user ? (
           <SavedScreenerBar
             currentFilters={activeStyle === "custom" ? customParams : {}}
             onLoadScreener={(filters) => {
@@ -178,6 +194,8 @@ function ScreenerPageContent({ assetClass, linkBase = "/stocks" }: { assetClass?
             }}
             tradingStyle={activeStyle}
           />
+        ) : (
+          <SaveScreenPrompt filters={guestSaveFilters} next={currentUrl} />
         )}
 
         {/* Preset Cards */}
