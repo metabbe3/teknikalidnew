@@ -31,6 +31,15 @@ const AGENT_TIMEOUTS: Record<string, number> = {
   gen_movement_analysis: 18,
 };
 
+// Liveness heartbeat for the docker healthcheck (ops-2026-09-22-01).
+// setInterval keeps firing while the event loop is healthy — agent jobs are
+// async/await, so even a long LLM run never blocks it (no false kills).
+function touchHeartbeat() {
+  try {
+    require("fs").writeFileSync("/tmp/worker-heartbeat", String(Date.now()));
+  } catch {}
+}
+
 async function recoverStuckJobs() {
   try {
     await agentHubRepository.recoverStuckJobs(STUCK_JOB_TIMEOUT_MIN);
@@ -126,6 +135,11 @@ async function main() {
   // Periodic stuck job recovery
   const recoveryTimer = setInterval(recoverStuckJobs, RECOVERY_INTERVAL_MS);
   recoveryTimer.unref(); // Don't prevent process exit
+
+  // Liveness heartbeat — see touchHeartbeat
+  touchHeartbeat();
+  const hbTimer = setInterval(touchHeartbeat, 60_000);
+  hbTimer.unref(); // Don't prevent process exit
 
   // Main polling loop
   while (true) {
