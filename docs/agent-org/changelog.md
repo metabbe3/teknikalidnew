@@ -96,3 +96,22 @@
 - Verify: tsc clean; bogus slug before 200×8 → after 404×7 + 1×307 auth-gate (profile — middleware redirect, bukan soft-404); valid 7/7 tetap 200; TTFB / 0.130→0.164s, /stocks 0.140→0.124s (tanpa regresi); /admin/login 200 (prerender fix).
 - Lesson: root loading.tsx = boundary untuk useSearchParams() di /admin/login — build-1 gagal prerender; dependency tersembunyi boundary root, grep pemakai useSearchParams WAJIB sebelum hapus boundary.
 - Impact check: 2026-09-25 — GSC mulai baca 404 asli (crawl budget pulih); spot-check slug ngaco tetap 404.
+
+## [2026-09-22 19:15] prd-2026-09-17-01 — Register Hook: Simpan Screen + Watchlist (fitur pertama era SDLC) [deploy sore 1]
+- Type: feature  |  PRD: prod-2026-09-17-01 (spec_ready 17 Sep, CEO approve 20 Sep)
+- Deploy: image app a1598f40260d, commit 55c42d6 (4 file: save-screen-prompt.tsx baru + screener-client + stock-action-badge + complete-profile)  |  Rollback: git revert 55c42d6 + rebuild (anchor lama 17c0d2e3361f)
+- Verify: tsc --noEmit exit 0 full repo; DONE WHEN 4/4 — guest bar 'Simpan Screen' SSR live di /stocks preset golden_cross (×1) + hasil screener tetap render (NO gating, 'Pilih Filter' ada); /stocks/BBRI.JK 200 'Pantau' ×2; /auth/register 200; marker pending_post_register di 4 titik. Baseline-then-deploy: 7 URL 200 sebelum = 7 URL 200 sesudah; SavedScreener/Watchlist/User = 2/12/20 tak berubah (tidak ada write liar).
+- Worker paralel A (4 file FE) + B (worker/compose) — non-overlap verified; commit tetap sempit per-task oleh CTO.
+- QA: slot berikutnya (pembangun ≠ pemeriksa) — test full flow register+auto-save di staging/browser.
+- Impact check: 2026-10-20 (4 minggu) — AC5 gate: register-page IP dari /stocks ≥10 IP ATAU ≥8 register selesai (baseline 3 IP / 2 user).
+
+## [2026-09-22 19:15] ops-2026-09-22-01 — worker healthcheck + self-heal kill (bukan PID1) [deploy sore, sama slot]
+- Type: ops  |  PRD: - (backlog sre-2026-09-19-1)
+- Deploy: image worker 5545cb136d1f → recreate dgn probe v2; commits 88da219 + 576c6b5  |  Rollback: git revert 576c6b5 88da219 + docker compose up -d worker
+- Verify: DONE WHEN 5/5 — docker ps 'Up (healthy)'; Config.Healthcheck terpasang; SIMULASI GAGAL REAL: SIGSTOP node+tsx 19:07:33 → heartbeat stale >180s → probe exit 1 → pkill → npm SIGKILL exit → container restart OTOMATIS 19:10:17 (RestartCount 0→1) → healthy lagi dalam 2m44s (<10mnt req); heartbeat fresh pasca-restart; pipeline tetap jalan (worker poll normal); 0 port/endpoint baru.
+- LESSON PENTING: SIGKILL ke PID1 dari DALAM PID namespace diabaikan kernel (test round-1 bukti: exit 1 tapi container tetap jalan); restart:unless-stopped hanya bereaksi EXIT. Fix: pkill proses worker asli (pattern 'agent-worke[r]' bracket self-exclusion) → npm exit → container exit → revive.
+- Impact check: 2026-09-25 — worker uptime berkelanjutan + 1 siklus health log normal.
+
+## 2026-09-23 pagi (agent-utama, owner mandate "gas jalankan sekarang")
+- **botgate-21-01 EXECUTED** (approve 22 Sep → eksekusi 23 Sep, ≤1 hari ✓ proposal #13): hapus blanket prefix-block 2404:c0 (Telkomsel residential v6) dari ip-blocklist.ts; pertahanan bot = per-IP BlockedIp + rate limit + ASN tripwire. tsc 0, commit fix(analytics), deploy image 06:41, site 200, prefix hilang dari bundle.
+- **Retro SQL: 902 PageView re-classed isBot=false** (backup db-20260923 01:15 fresh). Dampak harian: Senin 21 Sep nobot 38→128, Selasa 22 Sep 130→164. register 7d tetap 0 (blocker distribusi, bukan bot-flag).

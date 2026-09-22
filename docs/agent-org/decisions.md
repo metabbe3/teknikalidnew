@@ -506,3 +506,6 @@ Owner: "Gas semua agent bisa paralel kalau tidak saling ganggu"
 - BASELINE-THEN-DEPLOY: bogus before 200×8 → after 404×7 + profile 307 auth-gate; valid 7/7 200; TTFB tanpa regresi (/ 0.130→0.164s, /stocks 0.140→0.124s).
 - INCIDENT minor build-1: docker compose build app GAGAL prerender /admin/login (useSearchParams tanpa boundary setelah root loading.tsx dihapus) — fix minimal wrap Suspense lokal, build-2 sukses; bukan rollback, site tidak pernah down (container lama jalan terus selama build).
 - BONUS: guard edu qa-21-03 kini end-to-end (/berita/<slug-edu> = 404 asli); CAVEAT changelog 21 Sep tertutup.
+
+### 2026-09-23 — botgate-21-01 executed: prefix-block OFF, data jujur
+Blanket 2404:c0 prefix-block dihapus (owner approved 22 Sep). Prefix = Telkomsel residential v6 yang dipakai owner + user asli; 902 view salah-flag dire-class. Lesson: jangan pernah block berdasarkan prefix residential besar tanpa bukti per-IP; ASN datacenter + burst-rate yang membedakan bot, bukan prefix.
