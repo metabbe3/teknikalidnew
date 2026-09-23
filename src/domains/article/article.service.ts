@@ -14,6 +14,7 @@ import { gatherMarketContext, formatMarketContextForPrompt, factCheckArticle, ex
 import type { MarketContext } from "./article-fact-check";
 import { validateArticle } from "./quality-validator";
 import { resolveTitle } from "./title-guard";
+import { sanitizeGeneratedContent } from "./content-sanitizer";
 
 export const articleService = {
   async generateStockAnalysis(ticker: string): Promise<{ id: string; title: string; slug: string }> {
@@ -91,6 +92,7 @@ export const articleService = {
     const result = await provider.generateArticle(system, user).catch((err) => {
       throw new ArticleGenerationError(err instanceof Error ? err.message : "AI generation failed");
     });
+    const cleanContent = sanitizeGeneratedContent(result.content);
 
     const t = ticker.replace(".JK", "").toLowerCase();
     const month = new Date().toLocaleDateString("id-ID", { month: "long", year: "numeric" });
@@ -113,7 +115,7 @@ export const articleService = {
       await articleRepository.update(existing.id, {
         title,
         excerpt: result.excerpt?.slice(0, 500) || "",
-        content: result.content,
+        content: cleanContent,
         tags,
         status: ArticleStatus.PUBLISHED,
         publishedAt: new Date(),
@@ -131,7 +133,7 @@ export const articleService = {
       slug,
       title,
       excerpt: result.excerpt?.slice(0, 500) || "",
-      content: result.content,
+      content: cleanContent,
       authorId: adminUser.id,
       tags,
       status: ArticleStatus.PUBLISHED,
@@ -247,6 +249,7 @@ export const articleService = {
     const result = await provider.generateArticle(system, user).catch((err) => {
       throw new ArticleGenerationError(err instanceof Error ? err.message : "AI generation failed");
     });
+    const cleanContent = sanitizeGeneratedContent(result.content);
 
     const slug = result.slug || `edukasi-${topic.id}`;
 
@@ -260,7 +263,7 @@ export const articleService = {
       slug,
       title: resolveTitle(result.title, result.content, topic.title),
       excerpt: result.excerpt?.slice(0, 500) || "",
-      content: result.content,
+      content: cleanContent,
       authorId: adminUser.id,
       tags: result.tags.length > 0 ? result.tags : topic.keywords,
       status: ArticleStatus.DRAFT,
@@ -313,9 +316,10 @@ export const articleService = {
     const result = await provider.generateArticle(system, user).catch((err) => {
       throw new ArticleGenerationError(err instanceof Error ? err.message : "AI generation failed");
     });
+    const cleanContent = sanitizeGeneratedContent(result.content);
 
     // ── Gate 1: Quality validation (instant, deterministic, zero tokens) ──
-    const quality = validateArticle(result.content, result.title || topic, keywords, opts);
+    const quality = validateArticle(cleanContent, result.title || topic, keywords, opts);
     console.info(`[QualityGate] Score: ${quality.score}/100 | Passed: ${quality.passed} | Words: ${quality.meta.wordCount} | H2: ${quality.meta.h2Count} | Tickers: ${quality.meta.tickerCount}`);
     if (!quality.passed) {
       const errorIssues = quality.issues.filter((i) => i.severity === "error");
@@ -342,13 +346,13 @@ export const articleService = {
     if (!adminUser) throw new ArticleGenerationError("No admin user found");
 
     // Fact-check if market context is available
-    let finalContent = result.content;
+    let finalContent = cleanContent;
     let finalTitle = resolveTitle(result.title, result.content, topic);
     let factCheckMeta: Record<string, string> = {};
     if (marketCtx) {
-      const factCheck = await factCheckArticle(result.content, marketCtx, finalTitle);
+      const factCheck = await factCheckArticle(cleanContent, marketCtx, finalTitle);
       if (!factCheck.passed && factCheck.correctedContent) {
-        finalContent = factCheck.correctedContent;
+        finalContent = sanitizeGeneratedContent(factCheck.correctedContent);
         if (factCheck.correctedTitle) {
           finalTitle = factCheck.correctedTitle;
         }
@@ -392,6 +396,7 @@ export const articleService = {
     const result = await provider.generateArticle(system, user).catch((err) => {
       throw new ArticleGenerationError(err instanceof Error ? err.message : "AI generation failed");
     });
+    const cleanContent = sanitizeGeneratedContent(result.content);
 
     const slug = result.slug || `artikel-${topic.toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").slice(0, 80)}`;
 
@@ -405,7 +410,7 @@ export const articleService = {
       slug,
       title: resolveTitle(result.title, result.content, topic),
       excerpt: result.excerpt?.slice(0, 500) || "",
-      content: result.content,
+      content: cleanContent,
       authorId: adminUser.id,
       tags: result.tags.length > 0 ? result.tags : keywords.slice(0, 5),
       status: ArticleStatus.DRAFT,
@@ -672,6 +677,7 @@ export const articleService = {
       "(3) sinyal teknikal yang menonjol — golden cross / death cross / oversold baru — sebut ticker spesifik,",
       "(4) apa yang perlu dipantau besok.",
       "WAJIB menyebut ticker spesifik (format 4 huruf, mis. BBCA, TLKM) agar ter-link otomatis ke chart sahamnya.",
+      "Volume di data dalam SATUAN SAHAM — tulis 'juta saham'/'ribu saham', JANGAN pernah 'lot'.",
       "Gunakan HANYA data pasar pada context yang diberikan — jangan mengarang angka. Ringkas, padat, maksimal 500 kata.",
     ].join(" ");
 
