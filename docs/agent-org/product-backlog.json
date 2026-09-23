@@ -13,7 +13,7 @@
    "hypothesis": "Fitur cek-sinyal gratis per-ticker (widget embed + /sinyal/TICKER) bisa jadi lead magnet: /stocks 156 views/7d adalah permintaan terbesar kita tapi CTA register cuma konversi 2/9. Perkuat intent sebelum minta register.",
    "first_step": "ANALISIS DATA (no code): PageView 30d utk /stocks & /stocks/*.JK — dari mana (referer), bounce (1 vs 2+ pageviews), berapa % klik CTA screener; bandingkan pola visitor yang register vs tidak. Spec hanya kalau data mendukung.",
    "north_star": "growth traffic + register",
-   "insight": "CEO 17 Sep: HOLD, council 20 Sep. DATA LENGKAP 17 Sep (30d, nobot): 118 IP pakai area /stocks; 77% multi-visit (91 IP >=2 views, 66 IP >=5 views, total 2.394 views); 101 IP buka detail ticker. BOUNCE RENDAH: 1-hit cuma 23%. BUKTI SAVED-SCREEN MANUAL: referer deep-link preset golden_cross 388v/12IP + tab momentum 343v/17IP — user bookmark URL screener bertparameter. FUNNEL REGISTER PATAH: dari 91 heavy user cuma 4 (4,4%) sentuh auth, 3 buka /auth/register, 1 selesai (~0,8% dari 118 IP); pendaftar = user berat 12 hari (bukan konversi cepat). 2 User baru/30d. KESIMPULAN PRODUK: bukan masalah traffic/engagement (tool usage kuat), masalah VALUE-PROP register. Arah spec utk council: JANGAN gate screener (bunuh 2.4rb views/bln); register hook = 'simpan screen/preset + watchlist ticker' (cocok dgn perilaku bookmark manual yang sudah terjadi), widget /sinyal/TICKER jadi top-of-funnel terpisah.",
+   "insight": "CEO 17 Sep: HOLD, council 20 Sep. DATA LENGKAP 17 Sep (30d, nobot): 118 IP pakai area /stocks; 77% multi-visit (91 IP >=2 views, 66 IP >=5 views, total 2.394 views); 101 IP buka detail ticker. BOUNCE RENDAH: 1-hit cuma 23%. BUKTI SAVED-SCREEN MANUAL: referer deep-link preset golden_cross 388v/12IP + tab momentum 343v/17IP — user bookmark URL screener bertparameter. FUNNEL REGISTER PATAH: dari 91 heavy user cuma 4 (4,4%) sentuh auth, 3 buka /auth/register, 1 selesai (~0,8% dari 118 IP); pendaftar = user berat 12 hari (bukan konversi cepat). 2 User baru/30d. KESIMPULAN PRODUK: bukan masalah traffic/engagement (tool usage kuat), masalah VALUE-PROP register. Arah spec utk council: JANGAN gate screener (bunuh 2.4rb views/bln); register hook = 'simpan screen/preset + watchlist ticker' (cocok dgn perilaku bookmark manual yang sudah terjadi), widget /sinyal/TICKER jadi top-of-funnel terpisah. || CEO 20 Sep 08:20: Council 08:05 SKIP review PRD (agenda handoff tidak dieksekusi) — CEO review pengganti: PRD KONSISTEN verdict 17 Sep (no gating screener; save-screen intent capture; scope register-hook only) → APPROVE konten. Build queue minggu 22 Sep SETELAH task data-reliability (isr-01 + council-01). FYI owner: fitur menyentuh UI flow register (bukan core auth/security) — bukan blocked_for_owner, cukup aware.",
    "data_evidence": {
     "window": "30d ending 2026-09-17, isBot=false",
     "stocks_area": {
@@ -59,7 +59,7 @@
     "keputusan": "SETUJU rekomendasi Product: (1) JANGAN gate screener — 2.394 views/30d = mesin time-spent; (2) register hook = 'Simpan Screen/Preset + Watchlist Ticker' — LANJUT KE PRD (spec_ready) oleh Product Agent Kamis 17 Sep 10:15. Widget /sinyal/TICKER DIPISAH jadi mandate top-of-funnel (prod-2026-09-17-04).",
     "gate": "SDLC: engineering dispatch HANYA setelah status spec_ready (prd_id wajib). Council 20 Sep review PRD sebelum CTO build."
    },
-   "note": "PRD spec_ready ditulis Product Agent 17 Sep 10:15 sesuai verdict CEO 08:17. Scope = register hook only, screener TIDAK di-gate. Council 20 Sep review sebelum dispatch ke CTO.",
+   "note": "PRD spec_ready 17 Sep; council review skip 20 Sep → CEO approve konten 20 Sep 08:20; build w/c 22 Sep pasca data-reliability; owner FYI auth-adjacent.",
    "prd": {
     "title": "Register Hook: Simpan Screen/Preset + Watchlist Ticker (guest-visible save intent)",
     "date": "2026-09-17",
@@ -108,11 +108,12 @@
    "id": "prod-2026-09-17-03",
    "date": "2026-09-17",
    "priority": "P3",
-   "status": "dispatched",
+   "status": "owner_approved",
    "hypothesis": "Edu content gaps: /saham-pullback-sma20 13 views/7d belum punya halaman edu — 5 signal page lain juga cek. Edu = SEO long-tail entry point.",
    "first_step": "ANALISIS DATA (no code): semua /saham-* views 30d + GSC queries containing kata signal; list gap page edu vs signal page. Dispatch ke Mandor kalau jelas.",
    "north_star": "growth traffic",
-   "insight": "CEO 17 Sep: DISPATCH ke Mandor — 2 artikel edu (pullback-SMA20 25v/30d, volume-spike 11v) link 2 arah. || CEO 19 Sep 08:15 NUDGE #1: 0/2 edu s/d 19 Sep (EDUCATIONAL sejak 17 Sep = 0; Sabtu cap 2 post terpakai rekap+listicle; Mandor rencana edu Minggu). DEADLINE FINAL Senin 21 Sep 06:30 — kalau tetap 0 → eskalasi owner (aturan dispatched>2hari, nudge max 2x)."
+   "insight": "CEO 17 Sep: DISPATCH ke Mandor — 2 artikel edu (pullback-SMA20 25v/30d, volume-spike 11v) link 2 arah. || CEO 19 Sep 08:15 NUDGE #1: 0/2 edu s/d 19 Sep (EDUCATIONAL sejak 17 Sep = 0; Sabtu cap 2 post terpakai rekap+listicle; Mandor rencana edu Minggu). DEADLINE FINAL Senin 21 Sep 06:30 — kalau tetap 0 → eskalasi owner (aturan dispatched>2hari, nudge max 2x). || CEO 21 Sep 21:00 NUDGE #2 (FINAL): PRODUCT AGENT MISS slot Senin 10:15 (0 backlog entry 21 Sep, 0 EDUCATIONAL 21 Sep — verified DB+log). Deadline BARU: Selasa 22 Sep 06:30. Gagal lagi = ESCALATE ke owner (nudge max 2x tercapai).",
+   "owner_verdict": "23 Sep 08:05: APPROVED via digest — dispatch 1 artikel edu tersisa (volume-spike) ke Mandor HARI INI; pullback-sma20 sudah QA PASS = closed."
   },
   {
    "id": "prod-2026-09-17-04",
@@ -129,7 +130,12 @@
    "date": "2026-09-18",
    "priority": "P3",
    "status": "candidate",
-   "ceo_verdict": {"verdict": "approve_defer", "decided_at": "2026-09-19 08:15 WIB", "review_date": "2026-09-22", "alasan": "Mystery restart 18 Sep ±18:57 TERJAWAB = deploy jkse-02 CTO (up -d 18:35, selesai 18:50) — bukan insiden. Sisa nilai = instrumentasi: sre_brief.py baca run/deploy-ledger utk korrelasi restart-vs-deploy + exit code/OOM grep. Dispatch saat slot ops longgar."},
+   "ceo_verdict": {
+    "verdict": "approve_defer",
+    "decided_at": "2026-09-19 08:15 WIB",
+    "review_date": "2026-09-22",
+    "alasan": "Mystery restart 18 Sep ±18:57 TERJAWAB = deploy jkse-02 CTO (up -d 18:35, selesai 18:50) — bukan insiden. Sisa nilai = instrumentasi: sre_brief.py baca run/deploy-ledger utk korrelasi restart-vs-deploy + exit code/OOM grep. Dispatch saat slot ops longgar."
+   },
    "source": "sre",
    "type": "ops",
    "title": "Tangkap root-cause restart container: teknikalidnew-app-1 Up 4h vs peers 22j-8hari, tanpa jejak kenapa",
@@ -154,7 +160,23 @@
    "source": "sre",
    "type": "ops",
    "title": "HEALTHCHECK teknikalidnew-worker-1 — satu-satunya container teknikal tanpa health status; worker hang = data basi senyap",
-   "data": "SRE brief 18+19 Sep: teknikalidnew-worker-1 'Up 2 days' TANPA label (healthy) = satu-satunya container teknikal.id tanpa HEALTHCHECK (app-1 & db-1 punya). Worker = pipeline StockIndicator/queue — kalau hang, docker tetap 'Up' selamanya, gejala pertama baru terlihat sebagai data basi di site. Risiko bukan teoretis: lessons commit fba97c9 (19 Sep) mendokumentasikan class bug signal.alarm-di-thread → ValueError ditelan try/except = hasil kosong SENYAP (board '0 tasks' padahal queue 16) — persis pola yang healthcheck tangkap. Pattern fix sudah terbukti produksi di hivePOS 19 Sep 02:44 (commit 82e9952: HEALTHCHECK whatsapp-gateway via probe internal + self-heal auto-restart, 0 endpoint publik baru, sekarang healthy). Usulan sama utk worker: probe ringan (heartbeat file mtime / freshness log poll / process check) di docker-compose + autoheal. North star: DATA RELIABLE — uptime palsu lebih berbahaya daripada downtime yang terlihat."
+   "data": "SRE brief 18+19 Sep: teknikalidnew-worker-1 'Up 2 days' TANPA label (healthy) = satu-satunya container teknikal.id tanpa HEALTHCHECK (app-1 & db-1 punya). Worker = pipeline StockIndicator/queue — kalau hang, docker tetap 'Up' selamanya, gejala pertama baru terlihat sebagai data basi di site. Risiko bukan teoretis: lessons commit fba97c9 (19 Sep) mendokumentasikan class bug signal.alarm-di-thread → ValueError ditelan try/except = hasil kosong SENYAP (board '0 tasks' padahal queue 16) — persis pola yang healthcheck tangkap. Pattern fix sudah terbukti produksi di hivePOS 19 Sep 02:44 (commit 82e9952: HEALTHCHECK whatsapp-gateway via probe internal + self-heal auto-restart, 0 endpoint publik baru, sekarang healthy). Usulan sama utk worker: probe ringan (heartbeat file mtime / freshness log poll / process check) di docker-compose + autoheal. North star: DATA RELIABLE — uptime palsu lebih berbahaya daripada downtime yang terlihat.",
+   "ceo_verdict": {
+    "verdict": "promote_ops",
+    "decided_at": "2026-09-20 08:20 WIB",
+    "alasan": "Lensa north star data-reliable: worker = satu-satunya container tanpa health status; worker hang = data basi SENYAP = pelanggaran trust (owner 17 Sep). Type ops → bebas dispatch CTO tanpa PRD.",
+    "dispatch_plan": "CEO Selasa 22 Sep pagi dispatch ke cto-queue setelah isr-01 + council-01 clear (budget 2 aktif/hari penuh sampai Senin)."
+   }
+  },
+  {
+   "id": "sec-2026-09-21-04",
+   "date": "2026-09-21",
+   "status": "candidate",
+   "source": "itsec-red",
+   "exploitability": "rendah",
+   "title": "REVIEW BERSIH fix(signal) fail-open screener (2cebf97): tidak ada celah — fail-closed ke UI 'sedang diperbarui', signal param internal (screenerQuery service), bukan input user/raw SQL",
+   "data": "Diff 9 halaman signal + screener-data.ts: fetchScreenerRows(signal)->technicalAnalysisService.screenerQuery (param string internal, query terdefinisi). Retry 2x@700ms + console.error; failed=true -> render honest 'sedang diperbarui' (perbaiki data-lie lama 'Belum ada saham'). Tidak menyentuh auth/input user/db-write.",
+   "fix_arah": "Tidak ada aksi security. Opsional: alert jika state 'sedang diperbarui' >5% render. Catatan availability minor: retry paralel 9 page saat ISR bake menambah DB load."
   }
  ]
 }
