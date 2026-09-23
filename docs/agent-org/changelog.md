@@ -12,6 +12,12 @@
 - Impact check: <tanggal YYYY-MM-DD — apa yang diukur utk north star>
 ```
 
+## [2026-09-23 07:2x] reviewer — QA konten 24 jam: 43 live 200, 40/40 angka EXACT; brief 23 Sep 2 FATAL → qa-23-01; 'saam' hari ke-3 → reviewer-23-01; botgate-21-01 & ops-22-01 qa_verified
+- Type: QA/ops  |  PRD: -
+- Deploy: tanpa deploy — QA + bookkeeping + 2 task ke queue  |  Rollback: -
+- Verify: 43 artikel 24 jam live 200 (curl semua slug). **40 artikel saham**: close/%% di title EXACT vs StockPrice 22 Sep (0 mismatch); high/low/body/volume cocok; disclaimer+meta desc 40/40; judul bebas double-brand; link /stocks/TICKER.JK kanonik. **Brief 23 Sep**: breadth 552/144/170 EXACT (SQL lag-window); 12 harga+RSI+cross-date EXACT (BSSR +11,28% vol 11,5M saham vs 0,7M kemarin; ISAT 114,4M vs 47,9M; BRIS RSI 23,73 oversold-claim valid; ULTJ cross 17 Sep ✓). TEMUAN FATAL → qa-2026-09-23-01: (1) "tiga golden cross baru (22 Sep)" SALAH — DB non-gorengan smaCrossDate 22 Sep = 5 (AMAN/ARII/BOBA/LUCK/MAPA), INAI cross-nya 21 Sep; (2) unit "lot" 4x padahal StockPrice.volume = SAHAM → magnitudo 100x (regresi pertama brief dalam 30 hari); minor: link brief kemarin 404 (tanpa /berita/), "dua hari hijau post-sinyal" INAI off-by-one. TEMUAN → reviewer-2026-09-23-01: typo "saam" masih live di 3 PUBLISHED — task kemarin reviewer-qa-2026-09-22-01 TIDAK PERNAH tertulis di queue (gagal persist, lessons 23 Sep).
+- QA: reviewer — konten 41/43 PASS (2 fatal terkonsentrasi di 1 brief), **botgate-2026-09-21-01 qa_verified=true** (grep 2404:c0 di .next = 0 hit; app restart 06:42 dgn image baru; retro PageView prefix = 474 rows semua isBot=false, 0 tersisa; nobot 128/164 exact), **ops-2026-09-22-01 qa_verified=true** (healthcheck+probe pkill bracket ada di Config.Healthcheck; worker Up 12h healthy; RestartCount=1 konsisten simulasi kemarin), **prd-2026-09-17-01 partial**: AC1 'Simpan Screen' SSR guest di /stocks?view=screener ✓, AC3 'Pantau' di BBRI ✓, AC4 no-gating ✓, /auth/register 200 — flow register→auto-save (AC2/AC3 interaktif) menunggu QA browser.
+- Impact check: 2026-09-24 — brief 24 Sep bebas unit-lot & hitungan GC baru benar; sweep 'saam' PUBLISHED = 0.
 ## [2026-09-21 07:25] reviewer — QA konten 24 jam: brief 21 Sep 2 FATAL naratif + title /akademi/ double-brand; qa-20-01 & jkse-17-01 dibuku
 - Type: QA/ops  |  PRD: -
 - Deploy: tanpa deploy — QA + bookkeeping + 3 task ke queue  |  Rollback: -
@@ -115,3 +121,12 @@
 ## 2026-09-23 pagi (agent-utama, owner mandate "gas jalankan sekarang")
 - **botgate-21-01 EXECUTED** (approve 22 Sep → eksekusi 23 Sep, ≤1 hari ✓ proposal #13): hapus blanket prefix-block 2404:c0 (Telkomsel residential v6) dari ip-blocklist.ts; pertahanan bot = per-IP BlockedIp + rate limit + ASN tripwire. tsc 0, commit fix(analytics), deploy image 06:41, site 200, prefix hilang dari bundle.
 - **Retro SQL: 902 PageView re-classed isBot=false** (backup db-20260923 01:15 fresh). Dampak harian: Senin 21 Sep nobot 38→128, Selasa 22 Sep 130→164. register 7d tetap 0 (blocker distribusi, bukan bot-flag).
+
+## [2026-09-23 07:57] qa-2026-09-23-01 + reviewer-2026-09-23-01 — brief 23 Sep fix + typo sweep + sanitizer pipeline [deploy pagi 1/1]
+- Type: ops  |  PRD: - (QA reviewer dispatch)
+- Deploy: image app baru (build 07:5x), commit 080daf4 (2 file: content-sanitizer.ts BARU + article.service.ts wiring+prompt)  |  Rollback: git revert 080daf4 + rebuild (anchor lama 9e4c839f2830)
+- qa-23-01 SQL patch (backup 23 Sep 01:15 valid): brief-pasar-idx-2026-09-23 — tiga→lima golden cross + bullets AMAN/BOBA/LUCK (data DB verif: cross 22 Sep, RSI 32,9/38,4/52,4) + INAI reword; 4 unit 'lot'→'saham' (11,5 jt/1 jt/692 rb/114,4 jt); link kemarin +prefix /berita/ (sebelumnya 404); frasa 'dua hari berturut-turut' dikoreksi (post-sinyal hanya 1 hari). Post-check DB: tiga_gc=0, lot=0, link_lama=0, breadth 552/144 utuh; live 'lima golden cross' ×2.
+- reviewer-23-01 SQL patch: 3 artikel 'saam'→'saham' (UPDATE 3, residual ILIKE saam=0, sham/saahm=0); brief-22 live saam=0/saham=4; amrt+arto kini stale-308 by design (bukti DB-level).
+- Root cause + guard: brief prompt tanpa baris satuan volume; LLM stochastic slip. Fix pipeline: sanitizeGeneratedContent() di 4 call-site provider.generateArticle + re-sanitize fact-check correctedContent (bug $3→$2 diperbaiki manual — magnitude word hampir hilang); brief prompt + 'Volume di data dalam SATUAN SAHAM — juta/ribu saham, JANGAN lot'. Unit-test regex 8/8 PASS (node), tsc --noEmit exit 0.
+- Baseline-then-deploy: 4 URL 200 sebelum = 4 URL 200 sesudah (/, /stocks, brief-23, golden-cross); TTFB 0,13-2,1s noise-level; marker sanitizer live di chunks/7977.js.
+- Impact check: 2026-09-26 — brief 24-26 Sep: grep ' lot' residual=0 (sanitizer kerja) + review QA reguler.

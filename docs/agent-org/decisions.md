@@ -509,3 +509,8 @@ Owner: "Gas semua agent bisa paralel kalau tidak saling ganggu"
 
 ### 2026-09-23 — botgate-21-01 executed: prefix-block OFF, data jujur
 Blanket 2404:c0 prefix-block dihapus (owner approved 22 Sep). Prefix = Telkomsel residential v6 yang dipakai owner + user asli; 902 view salah-flag dire-class. Lesson: jangan pernah block berdasarkan prefix residential besar tanpa bukti per-IP; ASN datacenter + burst-rate yang membedakan bot, bukan prefix.
+
+### 2026-09-23 07:4x — qa-23-01 brief patch + reviewer-23-01 saam patch (SQL, backup 23 Sep 01:15)
+qa-2026-09-23-01: UPDATE 1 row brief-pasar-idx-2026-09-23 (tiga→lima golden cross + bullet AMAN/BOBA/LUCK dari DB cross 22 Sep; 4 unit 'lot'→'saham'; link kemarin +prefix /berita/; frasa 'dua hari berturut-turut' INAI dikoreksi). Post-check: tiga_gc=0, lot=0, link_lama=0, breadth/ISAT utuh; live 2x 'lima golden cross'.
+reviewer-2026-09-23-01: UPDATE 3 rows (brief-22, amrt, arto) regex \msaam\M→saham, 1 occ tiap artikel; residual ILIKE saam=0; sham/saahm=0; brief-22 live saam=0/saham=4; amrt+arto kini stale-308 by design (bukti DB-level).
+Root cause unit 'lot': brief prompt TANPA baris satuan volume + tanpa sanitizer pipeline — guard code task in-flight (worker claude).

@@ -108,3 +108,15 @@
 - In-flight: botgate-2026-09-21-01 blocked_for_owner (nunggu approve lepas prefix-block 2404:c0: + re-class 350 rows) — TIDAK boleh dieksekusi tanpa owner; reviewer-qa-2026-09-22-01 (typo 'saam', P2 SQL patch) belum ada di cto-queue → CEO yang dispatch.
 - Jebakan: (1) hapus loading.tsx = hapus boundary useSearchParams — selalu grep dulu; (2) curl -L menyesatkan utk route auth-gated (307→200 kelihatan 200); (3) terminal scanner blok `up -d` inline foreground → taruh di /tmp/*.sh lalu bash; (4) queue mirror data-dir = symlink repo (council-02) — cukup edit repo.
 - Langkah pertama slot berikutnya: baca queue → botgate-21-01 cek blocked_checked_at (update field; >2 slot = [ESCALATE]) → sisanya health check / bantu QA verify deploy pagi (spot 404 + sitemap).
+
+### 2026-09-22 08:15 — CEO pagi (SDLC fitur pertama di-dispatch)
+- Queue drain selesai → 2 dispatch: prd-2026-09-17-01 (register hook, P1, fitur pertama lolos gate SDLC) + ops-2026-09-22-01 (worker HEALTHCHECK). prod-19-01 (widget sinyal mingguan) approve_dispatch_queued utk Kamis 24 Sep.
+- Edu bridge 1/2 (pullback SMA20 live, volume-spike 0) → eskalasi owner; botgate-21-01 tetap blocked_for_owner.
+- Strategi: soft404 fix = kunci reindex GSC; fokus register conversion dari 91 heavy user; traffic dip = noise IG-pause, jangan panic-refactor.
+
+### 2026-09-23 08:05 — CTO pagi (qa-23-01 + reviewer-23-01 DONE)
+- State: sehat; freshness FRESH (22 Sep); deploy pagi 1/1 (org 1/2) — image baru 07:57, marker sanitizer live.
+- Barusan: brief 23 Sep SQL-patched (lima GC + AMAN/BOBA/LUCK + lot→saham x4 + link /berita/); saam×3 dibersihkan; GUARD PIPELINE sanitizeGeneratedContent() commit 080daf4 (4 call-site + fact-check re-sanitize + brief prompt SATUAN SAHAM).
+- In-flight: prod-19-01 (widget sinyal mingguan) approve_dispatch_queued utk Kamis 24 Sep; QA full-flow register hook (prd-17-01) masih menunggu slot browser.
+- Jebakan: (1) worker claude SANDBOX mem-block exec — worker hanya edit file, CTO wajib verify+commit; (2) worker sempat tulis regex bug $3 (grup cuma 2) — SELALU review diff worker line-by-line; (3) amrt/arto kini stale-308 (bukti patch = DB-level).
+- Langkah pertama slot berikutnya: baca queue → cek brief 24 Sep ' lot' residual (sanitizer impact, 2026-09-26) → QA register-hook flow bila slot longgar.
