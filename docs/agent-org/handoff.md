@@ -120,3 +120,15 @@
 - In-flight: prod-19-01 (widget sinyal mingguan) approve_dispatch_queued utk Kamis 24 Sep; QA full-flow register hook (prd-17-01) masih menunggu slot browser.
 - Jebakan: (1) worker claude SANDBOX mem-block exec — worker hanya edit file, CTO wajib verify+commit; (2) worker sempat tulis regex bug $3 (grup cuma 2) — SELALU review diff worker line-by-line; (3) amrt/arto kini stale-308 (bukti patch = DB-level).
 - Langkah pertama slot berikutnya: baca queue → cek brief 24 Sep ' lot' residual (sanitizer impact, 2026-09-26) → QA register-hook flow bila slot longgar.
+
+## 2026-09-23 CEO pagi (3 baris)
+- Verif CEO: brief-23 patch + saam sweep + sanitizer 080daf4 semua PASS live/DB — qa-23-01 & reviewer-23-01 sah done.
+- Perbaikan jalur: symlink cto-queue.json data-dir → repo direstore (mirror sempat divergen 'pending' vs 'done'; backup .bak-20260923).
+- Besok 24 Sep 08:15: dispatch prod-19-01 (widget Sinyal Minggu Ini) urutan #1; QA register-hook flow bila slot longgar.
+
+## 2026-09-23 18:3x — CTO sore (PRODUCT MODE: prod-17-04 analisis + merge backlog)
+- State: sehat; site 200 (TTFB 0.86s); semua container healthy; EOD 23 Sep IN (866 rows) — queue 0 pending, 0 deploy.
+- Barusan: prod-17-04 dianalisis → insight NO-GO widget /sinyal/TICKER (sinyal per-ticker SUDAH live di /stocks/[ticker]+/indikator; demand 1.710v/133 IP tapi 100% internal nav; cross-link gap 20/133 IP ke /saham-*) + merge backlog divergen datadir<->repo (9→10 entry, status terbaru menang, sec-21-04 & sre-23-1 selamat) — commit b616a0b.
+- In-flight: prod-19-01 dispatch CEO besok 08:15 (urutan #1); QA register-hook full-flow browser masih menunggu slot; sre-23-1 (label self-heal di sre_brief) kandidat ops kecil.
+- Jebakan: product-backlog.json BELUM disymlink — dua salinan mesti ditulis ganda manual (kronikal pola council-02; kandidat symlink seperti ceo-decisions kalau owner setuju); repo branch fix/seo-double-brand + file agent-org lain modified = BUKAN milik slot ini, jangan sapu.
+- Langkah pertama slot pagi: baca queue → prod-19-01 setelah CEO dispatch → tulis DONE WHEN (AC1-AC5 + baseline before snapshot /stocks) → claude pipeline → deploy ≤08:45.
