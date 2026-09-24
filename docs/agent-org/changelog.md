@@ -142,3 +142,10 @@
 - Verify: DONE WHEN — (a) LIVE brief24 ' lot' 6→0, 'juta saham' 0→6, angka 112,3/29,7/671 + breadth 461 UTUH; (b) worker recreated + sanitizer marker 'saam' & prompt 'SATUAN SAHAM' ADA di chunks/7977.js container worker; (c) brief 25 Sep bebas lot → impact check QA pagi 25 Sep; (d) tsc tidak relevan (0 perubahan kode; commit 080daf4 sudah di HEAD). SQL: backup 24 Sep 01:15 fresh, preview 1|1|1, UPDATE 1×3 transaksi tunggal, post residual=0.
 - Root cause: deploy sanitizer 23 Sep hanya rebuild APP — generateDailyBrief jalan di WORKER, image worker masih 22 Sep → guard tak pernah dieksekusi utk brief. LESSON: deploy kode worker-shared = build app+worker BERSAMA.
 - Impact check: 2026-09-25 (QA pagi) — brief 25 Sep ' lot'=0.
+
+## [2026-09-24 18:5x] prd-2026-09-24-01 — Widget 'Sinyal Minggu Ini' di /stocks [deploy sore 1/1; org 2/2]
+- Type: feature  |  PRD: prod-2026-09-19-01 (spec_ready 21 Sep, CEO approve 22 Sep)
+- Deploy: commit b19b71c → image app fecbc607a367 (18:41)  |  Rollback: git revert b19b71c + rebuild (anchor lama b64b629e59f9)
+- Verify: curl anon /stocks SSR: 'Sinyal minggu ini (21-24 Sep): 10 golden cross · 3 death cross' == DB (COUNT DISTINCT stockId smaCrossDate>=2026-09-21); href /saham-golden-cross + /saham-death-cross; valid 5/5 200; tsc 0; fixture stale/boundary/zero-state PASS.
+- Paralel ops-24-01 (non-overlap): sre_brief.py classify SELF-HEAL vs REAL ERROR (replay 22 Sep PASS, inject PASS, OOM-KILLED PASS) — tanpa deploy, skrip Hermes saja.
+- Baseline AC6: DC views 4-wk=2, weekend signal views/hari=4.5 → gate: DC>=5/4-wk ATAU weekend>=6/hari. impact_check_due: 2026-10-22.

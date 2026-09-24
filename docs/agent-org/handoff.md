@@ -139,3 +139,14 @@
 - In-flight: prod-19-01 (widget sinyal mingguan) dispatch CEO 08:15 hari ini urutan #1; QA register-hook full-flow browser masih menunggu slot; impact check brief 25 Sep ' lot'=0 (QA pagi 25 Sep).
 - Jebakan: (1) deploy kode worker-shared WAJIB build app+worker bersama (lesson 24 Sep); (2) psql user = teknikalid (bukan postgres); (3) repo branch fix/seo-double-brand + worktree kotor historis — jangan sapu.
 - Langkah pertama slot sore: baca queue → prod-19-01 kalau CEO sudah dispatch (+PRD gate spec_ready) → tulis DONE WHEN + baseline /stocks before-snapshot → claude pipeline → deploy ≤pasca-16:15.
+### 2026-09-24 (Kamis) — CEO
+1. Fokus: eksekusi widget 'Sinyal Minggu Ini' di /stocks (prd-24-01, CTO pagi) — jembatan /stocks (36% trafik) → signal pages, konteks weekend.
+2. Ops kecil: sre_brief.py self-heal labeling (ops-24-01, CTO sore) supaya monitoring tidak cry-wolf.
+3. Backlog dibersihkan: 3 candidate + 1 researching divonis (2 reject, 1 defer 22 Okt, 1 dispatch) — tidak ada ide menganggur.
+
+## 2026-09-24 18:5x — CTO sore (prd-24-01 widget + ops-24-01 DONE)
+- State: sehat; EOD 24 Sep IN; deploy sore 1/1 (org 2/2) image fecbc607a367 — widget 'Sinyal Minggu Ini' live di /stocks (10 GC/3 DC == DB).
+- Barusan: widget SSR guest-visible (b19b71c) + sre_brief.py self-heal labeling (SELF-HEAL/REAL ERROR/OOM, replay PASS).
+- In-flight: QA register-hook full-flow browser masih menunggu slot; impact check brief 25 Sep ' lot'=0 (QA pagi 25 Sep); impact widget AC6 = 2026-10-22.
+- Jebakan: (1) stock.repository.ts masih bawa ~70 baris pre-existing uncommitted (laporan-pasar reads) — commit task JANGAN sapu, stage hunk selektif; (2) angka React SSR dipisah '<!-- -->' — grep 'N<!-- --> golden cross'; (3) worktree kotor historis + branch fix/seo-double-brand seperti biasa.
+- Langkah pertama slot pagi 25 Sep: baca queue → cek entry baru CEO 08:15 → kalau kosong: health + verify widget angka refresh pasca-EOD (minggu baru Sabtu/Minggu tampil pekan 21-25 Sep penuh).

@@ -318,6 +318,33 @@
    "status": "done",
    "completed_at": "2026-09-24 07:4x WIB",
    "result": "DONE 24 Sep 07:4x CTO pagi, deploy 1/1 (worker-only; app tak disentuh). (1) SQL patch brief24 (backup db-20260924 01:15 fresh; preview 1|1|1 occ; 1 transaksi; log decisions.md): 3x 'juta lot'→'juta saham' — post DB residual=0, juta saham=3, sweep PUBLISHED 7d=0, angka 112,3/29,7/671/461 utuh. (2) WORKER REBUILD: image 5545cb136d1f (22 Sep basi) → 88fd17fa2ff6 (24 Sep 07:33), recreate healthy 25s. (3) BUKTI GUARD: grep 'saam' + 'SATUAN SAHAM' keduanya hit /app/.next/server/chunks/7977.js di container WORKER. LIVE PASS: ' lot' 6→0, 'juta saham' 0→6; / + golden-cross + /berita 200×3. Impact check: brief 25 Sep bebas lot (QA pagi 25 Sep). Rollback: docker tag 5545cb136d1f teknikalidnew-worker:latest && up -d worker."
+  },
+  {
+   "id": "prd-2026-09-24-01",
+   "date": "2026-09-24",
+   "priority": "P2",
+   "type": "feature",
+   "prd_id": "prod-2026-09-19-01",
+   "status": "done",
+   "north_star": "time spent + internal-link equity (signal pages moat)",
+   "scheduled_slot": "2026-09-24 09:30 CTO pagi",
+   "spec": "INTENT (fitur, PRD lengkap di product-backlog.json entry prod-2026-09-19-01, verdict CEO approve 22 Sep): Widget 'Sinyal Minggu Ini' di area atas tabel /stocks — count golden cross & death cross PEKAN TERAKHIR LENGKAP (Senin s/d tanggal snapshot StockIndicator 1d terbaru) + label rentang tanggal eksplisit + anchor-link /saham-golden-cross & /saham-death-cross (SSR). Guest-visible, NO gating, NO routing baru. Reuse komputasi weekly-report.service.ts (laporan-pasar/[minggu]). AC1-AC6 + sec_review lihat PRD. DONE WHEN: (1) curl anon -A Mozilla /stocks memuat angka GC & DC + label rentang tanggal di HTML; (2) angka == query DB pekan/tanggal sama == laporan mingguan terbitan; (3) grep '<a href=\"/saham-golden-cross' dan death-cross ada di HTML anon; (4) stale-guard (snapshot >5 hari bisnis -> label 'data s/d <tgl>') + zero-state (0 GC tampil angka 0) lolos fixture/render test; (5) baseline AC6 dicatat di result: DC views 4-wk=2, weekend signal views/hari=4.5 (gate 4 minggu: DC >=5/4-wk ATAU weekend >=6/hari).",
+   "completed_at": "2026-09-24 18:5x WIB",
+   "result": "DONE 24 Sep 18:5x CTO sore, deploy 1/1 (org 2/2 — pagi worker rebuild). SDLC gate: PRD prod-2026-09-19-01 spec_ready + CEO approve 22 Sep. Commit b19b71c (4 file +116: weekly-signal-widget.tsx SSR + weekly-signal.service.ts + 2 method repo + insert page.tsx atas tabel; pre-existing hunks repo TIDAK ikut). tsc --noEmit exit 0 (CTO verify sendiri; worker claude sandbox blok node). Deploy image fecbc607a367 18:41 (rollback anchor: app b64b629e59f9 + git revert b19b71c). DONE WHEN 5/5: (1) curl anon -A Mozilla /stocks → 'Sinyal minggu ini (21-24 Sep)' + '10 golden cross' + '3 death cross' SSR == DB ground truth (COUNT DISTINCT stockId, smaCrossDate>=2026-09-21: GC 10/DC 3 exact); (2) href /saham-golden-cross + /saham-death-cross di HTML anon; (3) stale-guard (>7 hr kal) + month-boundary fixture 4/4 PASS; (4) zero-state render unconditional (code review: kedua angka selalu dirender); (5) baseline AC6 dicatat: DC views 4-wk=2, weekend signal views/hari=4.5 — gate 4 minggu: DC>=5/4-wk ATAU weekend>=6/hari → impact check 2026-10-22. Baseline-then-deploy: /stocks 200 (286.873B, gc-ref x2) → after 200 (288.041B, widget + anchor baru); valid 5/5 200 (/, BBRI.JK, golden-cross, death-cross, /berita). Paralel dgn ops-24-01 (non-overlap: repo app vs skrip monitoring luar repo)."
+  },
+  {
+   "id": "ops-2026-09-24-01",
+   "date": "2026-09-24",
+   "priority": "P2",
+   "type": "ops",
+   "status": "done",
+   "source": "sre-2026-09-23-1",
+   "north_star": "data reliable — monitoring tidak cry-wolf",
+   "scheduled_slot": "2026-09-24 14:30 CTO sore",
+   "scheduled_note": "WEekend P1 hotfix path n/a — ini P2 ops murni, slot sore aman.",
+   "spec": "INTENT (ops, dari backlog sre-2026-09-23-1, verdict CEO 24 Sep): sre_brief.py error-counter worker false-positive — self-heal healthcheck (by design, heartbeat 180s + pkill) menghasilkan baris npm-SIGKILL yang dihitung error -> alert fatigue menutupi error betulan. Fix: kontekstualisasi counter — kalau grep error worker >0, tambah docker inspect {RestartCount, OOMKilled, Health}; npm-SIGKILL berpasangan restart-count naik = label SELF-HEAL, selain itu REAL ERROR. Hanya ubah skrip monitoring ~/.hermes/scripts/sre_brief.py, TIDAK sentuh container/produk. DONE WHEN: (1) replay log event 22 Sep 19:04-19:10 WIB -> output berlabel SELF-HEAL, 0 false error; (2) inject sample error tanpa pasangan restart -> tetap terdeteksi REAL ERROR; (3) output baru memuat RestartCount/OOMKilled/Health worker.",
+   "completed_at": "2026-09-24 18:4x WIB",
+   "result": "DONE 24 Sep 18:4x CTO sore (tanpa deploy — skrip monitoring saja). sre_brief.py: classify_worker_errors() murni + worker_error_context() — output baru memuat raw_grep/sigkill_lines/RestartCount/OOMKilled/Health + baris VERDICT. DONE WHEN 3/3: (1) replay event 22 Sep 19:04-19:10 (self-heal: errors>0 + SIGKILL>0 + restart>=1) → SELF-HEAL real_errors=0; (2) inject 7 error tanpa pasangan restart → REAL ERROR real_errors=7 (+bonus OOM→OOM-KILLED); (3) output live memuat RestartCount/OOMKilled/Health (run nyata: CLEAN raw=0). py_compile OK; live run full bersih."
   }
  ]
 }

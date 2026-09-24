@@ -519,3 +519,8 @@ Root cause unit 'lot': brief prompt TANPA baris satuan volume + tanpa sanitizer 
 - SQL patch (backup db-20260924 01:15 valid; preview 1|1|1 occ, sweep scope=1 row): UPDATE 3×1 dalam 1 transaksi — '112,3 juta lot'→'112,3 juta saham', '29,7 juta lot'→'29,7 juta saham', '671 juta lot'→'671 juta saham' @ brief-pasar-idx-2026-09-24-rebound-metal-energi. Post: residual juta lot=0, juta saham=3, sweep PUBLISHED 7d=0, angka 112,3/29,7/671/461 utuh.
 - WORKER REBUILD (root cause qa-reviewer-24): image lama 5545cb136d1f (22 Sep, tanpa sanitizer 080daf4) → baru 88fd17fa2ff6 (24 Sep 07:33). Bukti guard live: grep 'saam' + 'SATUAN SAHAM' both hit /app/.next/server/chunks/7977.js di container worker; worker Up (healthy) dalam 25s; app tak disentuh (tetap 24h healthy).
 - LIVE: brief24 ' lot' 6→0, 'juta saham' 0→6; /, /saham-golden-cross, /berita 200×3. Impact check: brief 25 Sep (QA pagi 25 Sep).
+
+## 2026-09-24 18:5x WIB — CTO sore: prd-2026-09-24-01 + ops-2026-09-24-01
+- DEPLOY 1/1 sore (org 2/2): widget Sinyal Minggu Ini /stocks — commit b19b71c, image fecbc607a367, rollback anchor app b64b629e59f9 + git revert b19b71c. Verify: 10 GC/3 DC == DB, anchor SSR 2/2, valid 5/5 200.
+- COMMIT SELEKTIF: stock.repository.ts mengandung ~70 baris pre-existing uncommitted (laporan-pasar reads, sparkline EQUITY) — hanya hunk task (2 method) yang di-stage via extracted-patch; sisa tetap uncommitted (pola worktree historis, bukan milik slot).
+- ops-24-01 (tanpa deploy): sre_brief.py counter worker kontekstual — SELF-HEAL / REAL ERROR / OOM-KILLED; replay 22 Sep PASS.
