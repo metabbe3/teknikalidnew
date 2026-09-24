@@ -13,6 +13,7 @@ import { SectionHeading } from "@/components/ui/section-heading";
 import { ArrowUpRight } from "lucide-react";
 import { SahamStrategyLinks } from "@/components/seo/saham-strategy-links";
 import { LoginGate } from "@/components/auth/login-gate";
+import { WeeklySignalWidget } from "@/components/signal/weekly-signal-widget";
 
 export const dynamic = "force-dynamic";
 
@@ -235,6 +236,8 @@ export default async function StocksPage() {
             title="Semua Saham IDX"
             description="Cari, saring per sektor, urutkan 900+ saham — atau gunakan Screener untuk filter sinyal teknikal."
           />
+          {/* Weekly SMA-cross signals — SSR, guest-visible */}
+          <WeeklySignalWidget />
           <Suspense fallback={<div className="p-8 text-center text-text-secondary">Memuat…</div>}>
             <SahamView stocks={rows} sectors={sectors} assetClass="EQUITY" linkBase="/stocks" />
           </Suspense>

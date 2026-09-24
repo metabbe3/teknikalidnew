@@ -334,6 +334,25 @@ export const stockRepository = {
     });
   },
 
+  // MAX(smaCrossDate) over daily rows — SQL MAX semantics (NULLs ignored via not-null filter).
+  getLatestSmaCrossDate(interval: string = INTERVAL.DAY) {
+    return prisma.stockIndicator.findFirst({
+      where: { interval, smaCrossDate: { not: null } },
+      orderBy: { smaCrossDate: "desc" },
+      select: { smaCrossDate: true },
+    });
+  },
+
+  // COUNT(DISTINCT stockId) for a cross signal since `since` — Prisma count() has no
+  // distinct, so fetch distinct ids and let the caller take .length (≤ stock count rows).
+  findStockIdsWithCrossSignal(signal: string, since: Date, interval: string = INTERVAL.DAY) {
+    return prisma.stockIndicator.findMany({
+      where: { interval, smaCrossSignal: signal, smaCrossDate: { gte: since } },
+      select: { stockId: true },
+      distinct: ["stockId"],
+    });
+  },
+
   // ── StockIndicator writes ──
 
   upsertStockIndicator(stockId: number, date: Date, interval: string, data: Record<string, unknown>) {
