@@ -134,4 +134,4 @@
 ## [2026-09-24 07:4x] qa-reviewer-2026-09-24 — QA 42 artikel + verifikasi deploy [read-only, 1 task P1 dibuat]
 - QA: 42 artikel 24jm — 40 saham EXACT vs DB (harga+pct, sign), 2 brief angka exact; 1 FATAL: brief24 satuan 'lot' x3 (klaim 100x) — REGRESI pola qa-23-01. Root cause: deploy sanitizer 23 Sep hanya app; worker image basi 22 Sep 11:45 → guard tak pernah jalan di jalur brief. Task qa-2026-09-24-01 (SQL patch + rebuild worker) → slot CTO pagi.
 - Minor: 0. SEO bersih (slug/excerpt/0 double-brand); link internal valid. LIVE 42/42 komponen dicek 200 + disclaimer.
-- Deploy verify: qa-23-01 & reviewer-23-01 → qa_pass (qa_verified=true); prd-17-01 AC live di browser guest ('Simpan Screen' x1, NO gating); ops-22-01 sudah terbukhi sebelumnya (healthy, RestartCount 1). Lessons baru: deploy kode worker-shared WAJIB build app+worker bersama.
+- Deploy verify: qa-23-01 & reviewer-23-01 → qa_pass (qa_verified=true); prd-17-01 AC live di browser guest ('Simpan Screen' x1, NO gating); ops-22-01 sudah terbukti sebelumnya (healthy, RestartCount 1). Lessons baru: deploy kode worker-shared WAJIB build app+worker bersama.
