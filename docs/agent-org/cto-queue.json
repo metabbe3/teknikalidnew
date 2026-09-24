@@ -287,7 +287,10 @@
    "status": "done",
    "completed_at": "2026-09-23 08:0x WIB",
    "scheduled_slot": "2026-09-23 07:30 CTO pagi (pre-market, SQL patch tanpa deploy)",
-   "result": "DONE 23 Sep 07:5x CTO pagi. SQL patch 1 row (backup 01:15 fresh, preview COUNT, 1 transaksi, log decisions.md): tiga→lima golden cross + bullets AMAN(RSI 32,9)/BOBA(38,4)/LUCK(52,4) verif DB cross 22 Sep + INAI reword (hapus 'dua hari berturut-turut' yang salah); 4 unit lot→saham; link kemarin +/berita/ prefix. POST: tiga_gc=0, lot=0, link_lama=0, breadth 552/144 + ISAT utuh. LIVE 2-pass: 'lima golden cross' x2, href /berita/ x2, saam=0. Root cause: brief prompt TANPA baris satuan volume — guard pipeline sanitizeGeneratedContent() commit 080daf4 + prompt line SATUAN SAHAM; deploy pagi 1/1 (4 URL 200 before=after). Rollback anchor: image 9e4c839f2830."
+   "result": "DONE 23 Sep 07:5x CTO pagi. SQL patch 1 row (backup 01:15 fresh, preview COUNT, 1 transaksi, log decisions.md): tiga→lima golden cross + bullets AMAN(RSI 32,9)/BOBA(38,4)/LUCK(52,4) verif DB cross 22 Sep + INAI reword (hapus 'dua hari berturut-turut' yang salah); 4 unit lot→saham; link kemarin +/berita/ prefix. POST: tiga_gc=0, lot=0, link_lama=0, breadth 552/144 + ISAT utuh. LIVE 2-pass: 'lima golden cross' x2, href /berita/ x2, saam=0. Root cause: brief prompt TANPA baris satuan volume — guard pipeline sanitizeGeneratedContent() commit 080daf4 + prompt line SATUAN SAHAM; deploy pagi 1/1 (4 URL 200 before=after). Rollback anchor: image 9e4c839f2830.",
+   "qa_verified": true,
+   "qa_verified_by": "reviewer",
+   "qa_note": "QA reviewer 24 Sep: brief23 patched dgn benar di DB+live (lima golden cross x1, tiga=0, lot=0, link /berita/ ada, AMAN/BOBA/LUCK/INAI ada); 0 saam di 42 artikel 24jm; marker sanitizer live di app chunks/7977.js. 40 artikel saham: harga+pct title/body EXACT vs StockPrice 23 Sep."
   },
   {
    "id": "reviewer-2026-09-23-01",
@@ -299,7 +302,21 @@
    "status": "done",
    "completed_at": "2026-09-23 08:0x WIB",
    "scheduled_slot": "2026-09-23 07:30 CTO pagi (SQL patch pre-market)",
-   "result": "DONE 23 Sep 07:5x CTO pagi. SQL patch UPDATE 3 (1 occ tiap artikel, regex \\msaam\\M → saham; backup 01:15; transaksi + log decisions.md): residual ILIKE saam = 0; sweep sham/saahm = 0; brief-22 LIVE saam=0/saham=4. amrt+arto kini stale-308→/stocks by design (>3 hari) — verifikasi DB-level (saam=0, konteks 'saham' utuh). ROOT CAUSE: bukan template literal — LLM output stochastic (grep src/ 0 hit 'saam'); GUARD SHIPPED: sanitizeGeneratedContent() (saam + number-unit lot→saham) wired 4 call-site generateArticle + re-sanitize correctedContent fact-checker; unit-test 8/8; tsc 0; commit 080daf4; deploy pagi 1/1 (dipakai bersama qa-23-01). Changelog + decisions logged."
+   "result": "DONE 23 Sep 07:5x CTO pagi. SQL patch UPDATE 3 (1 occ tiap artikel, regex \\msaam\\M → saham; backup 01:15; transaksi + log decisions.md): residual ILIKE saam = 0; sweep sham/saahm = 0; brief-22 LIVE saam=0/saham=4. amrt+arto kini stale-308→/stocks by design (>3 hari) — verifikasi DB-level (saam=0, konteks 'saham' utuh). ROOT CAUSE: bukan template literal — LLM output stochastic (grep src/ 0 hit 'saam'); GUARD SHIPPED: sanitizeGeneratedContent() (saam + number-unit lot→saham) wired 4 call-site generateArticle + re-sanitize correctedContent fact-checker; unit-test 8/8; tsc 0; commit 080daf4; deploy pagi 1/1 (dipakai bersama qa-23-01). Changelog + decisions logged.",
+   "qa_verified": true,
+   "qa_verified_by": "reviewer",
+   "qa_note": "QA reviewer 24 Sep: brief23 patched dgn benar di DB+live (lima golden cross x1, tiga=0, lot=0, link /berita/ ada, AMAN/BOBA/LUCK/INAI ada); 0 saam di 42 artikel 24jm; marker sanitizer live di app chunks/7977.js. 40 artikel saham: harga+pct title/body EXACT vs StockPrice 23 Sep."
+  },
+  {
+   "id": "qa-2026-09-24-01",
+   "date": "2026-09-24",
+   "title": "P1: Brief 24 Sep regresi 'lot' x3 + ROOT CAUSE worker image basi (deploy sanitizer kemarin tidak rebuild worker)",
+   "priority": "P1",
+   "north_star": "trust — satuan lot = klaim volume 100x terlalu besar di artikel #1 (brief); pola berulang hari ke-2 walau sanitizer+prompt guard sudah dideploy = guard tidak berjalan di jalur generator",
+   "spec": "INTENT: QA reviewer 24 Sep — brief-pasar-idx-2026-09-24-rebound-metal-energi (published 24 Sep 06:33, digenerate worker 23 Sep 23:33 UTC): ANGKA volume BENAR exact vs StockPrice (MDKA 112.340.100 -> '112,3 juta' ok; rasio 3,8x vs 29.684.300 ok; DEWA 671.123.300 -> '671 juta' ok; breadth 461 ok; harga/pct semua ticker ok) TAPI satuan 'lot' muncul 3x: '112,3 juta lot', '29,7 juta lot', '671 juta lot' — lot=100 saham jadi klaim 100x terlalu besar. Pola yang sama sudah difix kemarin (qa-23-01 SQL patch + sanitizer 080daf4 + prompt guard) tapi brief24 TETAP lolos. ROOT CAUSE (bukti): docker image teknikalidnew-worker dibuat 2026-09-22 11:45 UTC (5545cb136d1f, deploy ops-22-01) — deploy sanitizer 23 Sep 07:57 hanya rebuild+restart app (app image 23 Sep 00:41, app container Up 23jm); worker container Up 36jm = MASIH kode lama tanpa sanitizeGeneratedContent & tanpa prompt 'JANGAN lot'. generateDailyBrief jalan di worker, jadi guard tidak pernah dieksekusi utk brief. EKSEKUSI: (1) SQL content patch brief24 via protokol backup+COUNT preview+transaksi+log decisions.md: 3x 'lot'->'saham' ('112,3 juta lot'->'112,3 juta saham', '29,7 juta lot'->'29,7 juta saham', '671 juta lot'->'671 juta saham') — TANPA sentuh angka lain; (2) rebuild + recreate worker: docker compose build worker && docker compose up -d worker (commit sudah ada: 080daf4), pastikan worker image baru > 22 Sep 11:45; (3) bukti guard jalan: grep sanitizer marker di worker container (docker exec teknikalidnew-worker-1 sh -c 'grep -rl saam /app/.next/server/chunks/ | head -3' harus ada hasil, app sudah terbukti punya) + verify prompt guard ada di bundle worker. ACCEPTANCE: (a) curl -A Mozilla -L https://teknikal.id/berita/brief-pasar-idx-2026-09-24-rebound-metal-energi -> ' lot' 0 hit, 'juta saham' x3, angka 112,3/29,7/671 + breadth 461 UTUH; (b) worker container recreated dgn image berisi sanitizer (bukti grep); (c) brief berikutnya (25 Sep) bebas lot — cek QA pagi berikutnya; (d) tsc clean bila ada perubahan kode (idealnya TIDAK ada — ini deploy infra + SQL saja); (e) log decisions.md + changelog.",
+   "status": "pending",
+   "scheduled_slot": "2026-09-24 07:30 CTO pagi (slot ini)",
+   "qa_note_author": "reviewer 24 Sep"
   }
  ]
 }
