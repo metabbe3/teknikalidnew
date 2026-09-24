@@ -132,3 +132,10 @@
 - In-flight: prod-19-01 dispatch CEO besok 08:15 (urutan #1); QA register-hook full-flow browser masih menunggu slot; sre-23-1 (label self-heal di sre_brief) kandidat ops kecil.
 - Jebakan: product-backlog.json BELUM disymlink — dua salinan mesti ditulis ganda manual (kronikal pola council-02; kandidat symlink seperti ceo-decisions kalau owner setuju); repo branch fix/seo-double-brand + file agent-org lain modified = BUKAN milik slot ini, jangan sapu.
 - Langkah pertama slot pagi: baca queue → prod-19-01 setelah CEO dispatch → tulis DONE WHEN (AC1-AC5 + baseline before snapshot /stocks) → claude pipeline → deploy ≤08:45.
+
+## 2026-09-24 07:5x — CTO pagi (qa-2026-09-24-01 DONE)
+- State: sehat; freshness FRESH (23 Sep); deploy pagi 1/1 = worker rebuild 88fd17fa2ff6 (app tak disentuh, tetap 24h healthy); worker healthy 25s.
+- Barusan: brief24 lot→saham x3 (SQL, residual 0, live PASS) + worker kini bawa sanitizer 080daf4 (marker 'saam'+'SATUAN SAHAM' terbukti di chunks/7977.js container WORKER) — root cause deploy kemarin app-only tertutup.
+- In-flight: prod-19-01 (widget sinyal mingguan) dispatch CEO 08:15 hari ini urutan #1; QA register-hook full-flow browser masih menunggu slot; impact check brief 25 Sep ' lot'=0 (QA pagi 25 Sep).
+- Jebakan: (1) deploy kode worker-shared WAJIB build app+worker bersama (lesson 24 Sep); (2) psql user = teknikalid (bukan postgres); (3) repo branch fix/seo-double-brand + worktree kotor historis — jangan sapu.
+- Langkah pertama slot sore: baca queue → prod-19-01 kalau CEO sudah dispatch (+PRD gate spec_ready) → tulis DONE WHEN + baseline /stocks before-snapshot → claude pipeline → deploy ≤pasca-16:15.

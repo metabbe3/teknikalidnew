@@ -514,3 +514,8 @@ Blanket 2404:c0 prefix-block dihapus (owner approved 22 Sep). Prefix = Telkomsel
 qa-2026-09-23-01: UPDATE 1 row brief-pasar-idx-2026-09-23 (tiga→lima golden cross + bullet AMAN/BOBA/LUCK dari DB cross 22 Sep; 4 unit 'lot'→'saham'; link kemarin +prefix /berita/; frasa 'dua hari berturut-turut' INAI dikoreksi). Post-check: tiga_gc=0, lot=0, link_lama=0, breadth/ISAT utuh; live 2x 'lima golden cross'.
 reviewer-2026-09-23-01: UPDATE 3 rows (brief-22, amrt, arto) regex \msaam\M→saham, 1 occ tiap artikel; residual ILIKE saam=0; sham/saahm=0; brief-22 live saam=0/saham=4; amrt+arto kini stale-308 by design (bukti DB-level).
 Root cause unit 'lot': brief prompt TANPA baris satuan volume + tanpa sanitizer pipeline — guard code task in-flight (worker claude).
+
+### 2026-09-24 07:4x — qa-2026-09-24-01: brief24 lot→saham x3 (SQL) + worker rebuild (root cause guard tak live)
+- SQL patch (backup db-20260924 01:15 valid; preview 1|1|1 occ, sweep scope=1 row): UPDATE 3×1 dalam 1 transaksi — '112,3 juta lot'→'112,3 juta saham', '29,7 juta lot'→'29,7 juta saham', '671 juta lot'→'671 juta saham' @ brief-pasar-idx-2026-09-24-rebound-metal-energi. Post: residual juta lot=0, juta saham=3, sweep PUBLISHED 7d=0, angka 112,3/29,7/671/461 utuh.
+- WORKER REBUILD (root cause qa-reviewer-24): image lama 5545cb136d1f (22 Sep, tanpa sanitizer 080daf4) → baru 88fd17fa2ff6 (24 Sep 07:33). Bukti guard live: grep 'saam' + 'SATUAN SAHAM' both hit /app/.next/server/chunks/7977.js di container worker; worker Up (healthy) dalam 25s; app tak disentuh (tetap 24h healthy).
+- LIVE: brief24 ' lot' 6→0, 'juta saham' 0→6; /, /saham-golden-cross, /berita 200×3. Impact check: brief 25 Sep (QA pagi 25 Sep).

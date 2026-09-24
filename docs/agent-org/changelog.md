@@ -135,3 +135,10 @@
 - QA: 42 artikel 24jm — 40 saham EXACT vs DB (harga+pct, sign), 2 brief angka exact; 1 FATAL: brief24 satuan 'lot' x3 (klaim 100x) — REGRESI pola qa-23-01. Root cause: deploy sanitizer 23 Sep hanya app; worker image basi 22 Sep 11:45 → guard tak pernah jalan di jalur brief. Task qa-2026-09-24-01 (SQL patch + rebuild worker) → slot CTO pagi.
 - Minor: 0. SEO bersih (slug/excerpt/0 double-brand); link internal valid. LIVE 42/42 komponen dicek 200 + disclaimer.
 - Deploy verify: qa-23-01 & reviewer-23-01 → qa_pass (qa_verified=true); prd-17-01 AC live di browser guest ('Simpan Screen' x1, NO gating); ops-22-01 sudah terbukti sebelumnya (healthy, RestartCount 1). Lessons baru: deploy kode worker-shared WAJIB build app+worker bersama.
+
+## [2026-09-24 07:4x] qa-2026-09-24-01 — brief24 'lot'→'saham' x3 (SQL patch) + worker rebuild sanitizer [deploy pagi 1/1, worker-only]
+- Type: ops  |  PRD: - (QA reviewer dispatch 24 Sep)
+- Deploy: worker image 5545cb136d1f (22 Sep, basi) → 88fd17fa2ff6 (24 Sep 07:33); commit sudah ada 080daf4 (ancestor HEAD)  |  Rollback: docker tag 5545cb136d1f teknikalidnew-worker:latest && docker compose up -d worker
+- Verify: DONE WHEN — (a) LIVE brief24 ' lot' 6→0, 'juta saham' 0→6, angka 112,3/29,7/671 + breadth 461 UTUH; (b) worker recreated + sanitizer marker 'saam' & prompt 'SATUAN SAHAM' ADA di chunks/7977.js container worker; (c) brief 25 Sep bebas lot → impact check QA pagi 25 Sep; (d) tsc tidak relevan (0 perubahan kode; commit 080daf4 sudah di HEAD). SQL: backup 24 Sep 01:15 fresh, preview 1|1|1, UPDATE 1×3 transaksi tunggal, post residual=0.
+- Root cause: deploy sanitizer 23 Sep hanya rebuild APP — generateDailyBrief jalan di WORKER, image worker masih 22 Sep → guard tak pernah dieksekusi utk brief. LESSON: deploy kode worker-shared = build app+worker BERSAMA.
+- Impact check: 2026-09-25 (QA pagi) — brief 25 Sep ' lot'=0.
