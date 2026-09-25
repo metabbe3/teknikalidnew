@@ -9,7 +9,7 @@
    "id": "prod-2026-09-17-01",
    "date": "2026-09-17",
    "priority": "P1",
-   "status": "dispatched",
+   "status": "live_monitoring",
    "hypothesis": "Fitur cek-sinyal gratis per-ticker (widget embed + /sinyal/TICKER) bisa jadi lead magnet: /stocks 156 views/7d adalah permintaan terbesar kita tapi CTA register cuma konversi 2/9. Perkuat intent sebelum minta register.",
    "first_step": "ANALISIS DATA (no code): PageView 30d utk /stocks & /stocks/*.JK — dari mana (referer), bounce (1 vs 2+ pageviews), berapa % klik CTA screener; bandingkan pola visitor yang register vs tidak. Spec hanya kalau data mendukung.",
    "north_star": "growth traffic + register",
@@ -59,7 +59,7 @@
     "keputusan": "SETUJU rekomendasi Product: (1) JANGAN gate screener — 2.394 views/30d = mesin time-spent; (2) register hook = 'Simpan Screen/Preset + Watchlist Ticker' — LANJUT KE PRD (spec_ready) oleh Product Agent Kamis 17 Sep 10:15. Widget /sinyal/TICKER DIPISAH jadi mandate top-of-funnel (prod-2026-09-17-04).",
     "gate": "SDLC: engineering dispatch HANYA setelah status spec_ready (prd_id wajib). Council 20 Sep review PRD sebelum CTO build."
    },
-   "note": "CEO 22 Sep 08:15: dispatch engineering -> cto-queue prd-2026-09-17-01 (queue kosong 0 pending, budget 2/hari terpakai 1). Gate lolos: spec_ready + council substitute (CEO approve 20 Sep) + owner FYI auth-adjacent.",
+   "note": "CEO 22 Sep 08:15: dispatch engineering -> cto-queue prd-2026-09-17-01 (queue kosong 0 pending, budget 2/hari terpakai 1). Gate lolos: spec_ready + council substitute (CEO approve 20 Sep) + owner FYI auth-adjacent. || PRODUCT VERIFY 24 Sep 10:1x WIB (curl anon -A Mozilla): AC1 'Simpan Screen' SSR live di /stocks?view=screener; AC3 'Pantau' x2 render di /stocks/BBRI.JK; AC4 NO gating — screener tetap render guest; /auth/register 200. LIVE CONFIRMED sejak 22 Sep 19:1x. DATA DAY-2 (22 Sep 19:00-24 Sep): 1 IP sentuh /auth/register+complete-profile -> register BERHASIL 22 Sep 21:02 (user 'Khresna' via Google OAuth) TAPI referrer chain google.com -> BUKAN dari /stocks hook, tidak diatribusikan. Funnel hook sendiri: 0 IP dari area /stocks klik register sejauh ini. AC5 gate tetap 4 minggu (impact check 2026-10-20): baseline 3 IP register-page dari /stocks; target >=10 IP ATAU >=8 register selesai. CTO baseline note konsisten.",
    "prd": {
     "title": "Register Hook: Simpan Screen/Preset + Watchlist Ticker (guest-visible save intent)",
     "date": "2026-09-17",
@@ -119,11 +119,11 @@
    "id": "prod-2026-09-17-04",
    "date": "2026-09-17",
    "priority": "P2",
-   "status": "researching",
+   "status": "rejected",
    "hypothesis": "Widget cek-sinyal gratis per-ticker (/sinyal/TICKER, render sinyal hari ini dari DB kita) = lead magnet top-of-funnel yang embeddable. Dipisahkan dari register hook (prod-01) karena beda pekerjaan funnel: top-of-funnel acquisition vs conversion. Bukti awal: 101/118 IP area /stocks buka detail ticker; GSC intent 'sinyal saham'.",
    "first_step": "ANALISIS DATA (no code): (1) GSC keyword history — volume & posisi query pattern 'sinyal|golden cross|oversold saham <ticker>'; (2) PageView 30d /stocks/*.JK vs konversi ke signal pages — ada tidaknya permintaan cek-sinyal cepat; (3) competitor scan singkat (apakah ada yang kasih widget sinyal IDX gratis). Spec hanya kalau data support.",
    "north_star": "growth traffic (top-of-funnel) — target utk diuji Product Agent",
-   "note": "Mandate CEO 17 Sep 08:17. UNTUK PRODUCT AGENT Senin 20 Sep 10:15 (setelah council Minggu). TIDAK boleh dispatch engineering sebelum spec_ready.",
+   "note": "Mandate CEO 17 Sep 08:17. UNTUK PRODUCT AGENT Senin 20 Sep 10:15 (setelah council Minggu). TIDAK boleh dispatch engineering sebelum spec_ready. || CEO  verdict 24 Sep 08:15: NO-GO widget /sinyal/TICKER — redundan dgn /stocks/[ticker] existing (data CTO 23 Sep); sinyal berharga (cross-link gap 15%) sudah ditangkap idea-2026-09-23-1 (deferred).",
    "insight": "CTO sore 23 Sep (PRODUCT MODE, SQL read-only 30d isBot=false): DATA TIDAK MENDUKUNG BUILD WIDGET BARU. (1) KOMPONEN INTI SUDAH LIVE: /stocks/[ticker] SUDAH render sinyal per-ticker lengkap (live-check HOPE.JK: label Bullish x11, 'golden cross' x4, signalScore; + sub-route /indikator) — hipotesis 'perlu widget /sinyal/TICKER' redundan dgn halaman existing. (2) DEMAND NYATA TAPI INTERNAL: ticker-detail 1.710 views/30d / 133 IP / 389 ticker unik (naik dari 101 IP snapshot 17 Sep); referrer top = nav internal /stocks 737v + direct/bookmark 225v (42 IP) + preset deep-link GC 218v — BUKAN landing organik, jadi bukan lead-magnet top-of-funnel baru. (3) REPEAT HABIT KUAT: 335 pasangan (ticker,IP) re-view >=2x; 21 IP >=20 views — user memang balik cek saham spesifik (top: HOPE 33v, MSIN 31v, RGAS 26v, semua small-cap & indikatornya terisi). (4) CROSS-LINK GAP = TEMUAN YANG BISA DIPAKAI: hanya 20/133 IP (15%) lanjut ke /saham-* — detail ticker hampir tidak mengalirkan link equity ke signal pages. (5) LIMITASI: GSC query-level tak tersedia (klik 6/mgg, menunggu reindex) — verdict murni dari PageView. REKOMENDASI CTO: NO-GO widget /sinyal/TICKER sbg build terpisah (redundan); alternatif murah = perkuat link ticker-detail -> signal pages (kandidat idea-2026-09-23-1), ukur SETELAH prod-19-01 (widget mingguan, live 24 Sep) supaya efek tak tercampur. Keputusan final milik CEO/Product.",
    "data_evidence": {
     "window": "30d ending 2026-09-23, isBot=false",
@@ -183,7 +183,7 @@
    "hypothesis": "Widget 'Sinyal Minggu Ini' di atas tabel /stocks: jumlah golden cross & death cross baru pekan ini (angka sudah dihitung pipeline StockIndicator) + link ke /saham-golden-cross & /saham-death-cross. /stocks = 202v/7d (36% trafik) tapi weekend mendarat di data Jumat beku; pola internal-link page#1 → signal pages sudah tervalidasi (related-signals brief).",
    "first_step": "ANALISIS DATA (no code): (1) pola views /stocks weekend vs weekday — berapa sesi butuh konteks mingguan; (2) CTR proxy link/tab sinyal dari /stocks (referer data); (3) stabilitas angka GC/DC mingguan (fluktuasi antar-pekan). Spec hanya kalau data mendukung.",
    "north_star": "growth traffic + time spent (internal-link equity dari halaman terpopuler)",
-   "note": "PROMOTED 19 Sep; PRD spec_ready 21 Sep; CEO verdict 22 Sep approve_dispatch_queued (budget penuh hari ini, jadwal Kamis 24 Sep). || PROMOTED CEO 19 Sep 08:15 dari [WEEKEND-IDEA] Mandor (weekend-ideas.md). UNTUK PRODUCT AGENT Senin 20 Sep 10:15. FITUR → wajib PRD spec_ready sebelum dispatch engineering. || SHIPPED 24 Sep 18:41 — prd-2026-09-24-01 done (commit b19b71c, image fecbc607a367); AC6 impact check 2026-10-22.",
+   "note": "PROMOTED 19 Sep; PRD spec_ready 21 Sep; CEO verdict 22 Sep approve_dispatch_queued (budget penuh hari ini, jadwal Kamis 24 Sep). || PROMOTED CEO 19 Sep 08:15 dari [WEEKEND-IDEA] Mandor (weekend-ideas.md). UNTUK PRODUCT AGENT Senin 20 Sep 10:15. FITUR → wajib PRD spec_ready sebelum dispatch engineering. || CEO 24 Sep 08:15: DISPATCH prd-2026-09-24-01 (CTO pagi 09:30). Budget dispatch 1/2 hari ini. || SHIPPED 24 Sep 18:41 — prd-2026-09-24-01 done (commit b19b71c, image fecbc607a367); AC6 impact check 2026-10-22.",
    "insight": "SURVEY Product Agent 21 Sep 10:15 (SQL 8 pekan 26 Jul-20 Sep, isBot=false). (1) WEEKEND GAP REAL: /stocks weekend 28,9 views/hari vs weekday 56,5 (-49%); halaman sinyal weekend 4,5/hari vs 14,9 (-70%) — pengunjung weekend MASIH DATANG (44 IP/15 hari, 433 views) tapi baca jauh lebih sedikit halaman sinyal = konteks mingguan hilang saat data beku. (2) INTERNAL-LINK EQUITY TERKUAT DI GC: /saham-golden-cross 89/102 views 4-wk (87%) berasal dari referrer /stocks — halaman GC praktis HIDUP dari /stocks; SEBALIKNYA /saham-death-cross cuma 2 views/4-wk (1 dari /stocks) = halaman mati kelaparan link. (3) ANKAH STABIL NON-KOSONG: GC baru/pekan 9 pekan beruntun min 2, max 25 (14-18 Sep, tren naik 13->11->17->25); DC 1-4/pekan. Widget tidak pernah tampil kosong. KESIMPULAN: data mendukung spec — widget kecil di atas tabel /stocks memakai angka pipeline StockIndicator (sama dgn laporan-pasar/[minggu]), guest-visible, tanpa gating.",
    "data_evidence": {
     "window": "26 Jul - 20 Sep 2026 (8 pekan), isBot=false; snapshot StockIndicator 1d s/d 2026-09-18",
@@ -271,33 +271,52 @@
   {
    "id": "sec-2026-09-21-04",
    "date": "2026-09-21",
-   "status": "candidate",
+   "status": "rejected",
    "source": "itsec-red",
    "exploitability": "rendah",
    "title": "REVIEW BERSIH fix(signal) fail-open screener (2cebf97): tidak ada celah — fail-closed ke UI 'sedang diperbarui', signal param internal (screenerQuery service), bukan input user/raw SQL",
    "data": "Diff 9 halaman signal + screener-data.ts: fetchScreenerRows(signal)->technicalAnalysisService.screenerQuery (param string internal, query terdefinisi). Retry 2x@700ms + console.error; failed=true -> render honest 'sedang diperbarui' (perbaiki data-lie lama 'Belum ada saham'). Tidak menyentuh auth/input user/db-write.",
    "fix_arah": "Tidak ada aksi security. Opsional: alert jika state 'sedang diperbarui' >5% render. Catatan availability minor: retry paralel 9 page saat ISR bake menambah DB load.",
-   "priority": "P4"
+   "priority": "P4",
+   "note": " || CEO 24 Sep 08:15: verdict REJECT/no-action — review BERSIH tanpa celah; catatan opsional alert >5% render disimpan di field fix_arah, bukan kerjaan."
   },
   {
    "id": "sre-2026-09-23-1",
    "date": "2026-09-23",
    "priority": "P2",
-   "status": "candidate",
+   "status": "shipped",
    "source": "sre",
    "type": "ops",
    "title": "sre_brief.py error-counter worker false-positive: self-heal healthcheck (by design) terhitung 5 error",
-   "data": "SRE brief 23 Sep 09:30 laporkan WORKER ERRORS 24h=5. Investigasi read-only: kelima baris = SATU event 19:04-19:10 WIB 22 Sep = uji simulasi healthcheck CTO sendiri (ops-2026-09-22-01: SIGSTOP 19:07 -> probe stale -> pkill -> npm SIGKILL -> restart otomatis 19:10:17, RestartCount 0->1, docker inspect OOMKilled=false, container healthy sejak). BUKAN insiden. MASALAH STRUKTURAL: healthcheck self-heal worker kini LIVE (heartbeat 180s + pkill, commits 88da219+576c6b5) — setiap self-heal NYATA mendatang akan menghasilkan baris npm-SIGKILL yang sama = brief akan selalu menanggap kill INTENSIONAL sebagai error -> alert fatigue menutupi error betulan. Usulan kecil (ops): di sre_brief.py, kontekstualisasikan counter worker — kalau grep error >0, tambah docker inspect {RestartCount, OOMKilled, Health} + cek apakah npm-SIGKILL berpasangan dengan restart-count naik; label SELF-HEAL vs REAL ERROR. North star: DATA RELIABLE — monitoring yang cry wolf lebih bahaya dari tidak ada monitoring."
+   "data": "SRE brief 23 Sep 09:30 laporkan WORKER ERRORS 24h=5. Investigasi read-only: kelima baris = SATU event 19:04-19:10 WIB 22 Sep = uji simulasi healthcheck CTO sendiri (ops-2026-09-22-01: SIGSTOP 19:07 -> probe stale -> pkill -> npm SIGKILL -> restart otomatis 19:10:17, RestartCount 0->1, docker inspect OOMKilled=false, container healthy sejak). BUKAN insiden. MASALAH STRUKTURAL: healthcheck self-heal worker kini LIVE (heartbeat 180s + pkill, commits 88da219+576c6b5) — setiap self-heal NYATA mendatang akan menghasilkan baris npm-SIGKILL yang sama = brief akan selalu menanggap kill INTENSIONAL sebagai error -> alert fatigue menutupi error betulan. Usulan kecil (ops): di sre_brief.py, kontekstualisasikan counter worker — kalau grep error >0, tambah docker inspect {RestartCount, OOMKilled, Health} + cek apakah npm-SIGKILL berpasangan dengan restart-count naik; label SELF-HEAL vs REAL ERROR. North star: DATA RELIABLE — monitoring yang cry wolf lebih bahaya dari tidak ada monitoring.",
+   "note": "CEO 24 Sep 08:15: verdict PROMOTE ops (lensa data-reliable) -> ops-2026-09-24-01 CTO sore 14:30. Budget 2/2. || CTO pagi 25 Sep: SHIPPED sebagai ops-2026-09-24-01 (qa_pass 25 Sep — replay 22 Sep event SELF-HEAL real_errors=0, inject REAL ERROR 7/7, RestartCount/OOM/Health di output). Backlog sync repo<-datadir + status flip = hygiene anti re-dispatch."
   },
   {
    "id": "idea-2026-09-23-1",
    "date": "2026-09-23",
    "priority": "P3",
-   "status": "candidate",
+   "status": "deferred",
    "source": "cto-idle",
    "title": "Cross-link ticker-detail -> signal pages (related-signals di /stocks/[ticker])",
    "hypothesis": "133 IP/30d baca detail ticker tapi cuma 15% sampai /saham-* — pola related-signals (komponen SUDAH ADA di artikel, council-13-02) tinggal dipasang di detail ticker utk ticker yg punya smaCrossSignal aktif. Effort 1 (reuse), menunggu prod-19-01 terukur dulu biar efek link-equity tak tercampur.",
-   "data": "CTO sore 23 Sep: ticker-detail 1.710v/133 IP, cross 20 IP (15%); 87% views GC berasal dari /stocks (21 Sep survey) = link equity dari nav proven; komponen related-signals.tsx existing (commit f75dd7d)."
+   "data": "CTO sore 23 Sep: ticker-detail 1.710v/133 IP, cross 20 IP (15%); 87% views GC berasal dari /stocks (21 Sep survey) = link equity dari nav proven; komponen related-signals.tsx existing (commit f75dd7d).",
+   "note": " || CEO 24 Sep 08:15: DEFER — jangan campur atribusi link-equity saat widget mingguan (prod-19-01) baru live; review pasca gate AC6 2026-10-22.",
+   "review_date": "2026-10-22"
+  },
+  {
+   "id": "prod-2026-09-24-01",
+   "date": "2026-09-24",
+   "priority": "P3",
+   "status": "candidate",
+   "source": "product-idle",
+   "type": "feature",
+   "title": "Title halaman ticker terpotong di tengah kata — 'Bank Rakyat Indonesia (Pe…' (144/1.353 stok, 15% views ticker-detail)",
+   "problem": "Meta title + og:title halaman /stocks/[ticker] memotong nama perusahaan di 25 char TANPA word-boundary dan TANPA strip suffix formal: BBRI.JK (35 char 'Bank Rakyat Indonesia (Persero) Tbk') dirender 'Bank Rakyat Indonesia (Pe…' — mid-word cut terlihat di tab browser, hasil pencarian (SERP), dan preview share. Root cause code (read-only, BLUM diubah): src/app/(public)/stocks/[ticker]/page.tsx baris ~90: `fullName.length > 25 ? fullName.substring(0,25).trimEnd()+'…'`. Komentar code bilang budget 47 char — tapi potongan 25 char jauh di bawah budget itu, jadi space SEO terbuang percuma.",
+   "data": "PageView 30d isBot=false: 389 ticker unik dilihat, 61 di antaranya (15,7%) punya nama >25 char = 267/1.732 views ticker-detail (15,4%) mendarat di halaman ber-title terpotong. DB: 144/1.353 stok aktif (10,7%) nama >25 char. Top affected view: BBRI (bank terbesar, brand search tinggi). Konteks funnel: organic search cuma 3% views 7d (28/873) dan GSC reindex pending — title = wajah CTR saat 389 halaman ticker mulai terindex.",
+   "hypothesis": "Fix kecil high-trust: strip suffix '(Persero)' & 'Tbk' SEBELUM cut, potong di word-boundary, budget naik ke ~35 char (masih aman <60 total dgn '| TeknikalID'). Effort 1 (satu fungsi helper + test). Lensa owner: consistency + trust + easy — 'Pe…' di tab browser = polish yang bolong; nyaris mustahil diukur dari PageView (gate: QA visual + GSC CTR pasca reindex, review 2026-10-22 sejajar idea-2026-09-23-1).",
+   "north_star": "trust/consistency (lensa owner 17 Sep) + growth traffic (CTR SERP pasca reindex)",
+   "note": "ID-NOTE: entry ini (backlog prod-2026-09-24-01 = title terpotong) TIDAK BERHUBUNGAN dgn task cto-queue 'prd-2026-09-24-01' (widget Sinyal Minggu Ini dari prod-2026-09-19-01, dispatched CEO 24 Sep 08:15). Namespace beda file — jangan campur saat grep.",
+   "sec_preview": "Saat dipromote jadi PRD, SEC-REVIEW minimal: (1) input: ticker param sudah tervalidasi route existing — helper string murni, tanpa input user baru; (2) injection: n/a (tanpa query baru); (3) logic: strip suffix jangan sampai nama jadi kosong utk stok bernama pendek/simbol; (4) perf: generateMetadata sudah existing, no new query; (5) privilege/IDOR: n/a read-only SSR."
   }
  ]
 }

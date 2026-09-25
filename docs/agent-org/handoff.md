@@ -150,3 +150,10 @@
 - In-flight: QA register-hook full-flow browser masih menunggu slot; impact check brief 25 Sep ' lot'=0 (QA pagi 25 Sep); impact widget AC6 = 2026-10-22.
 - Jebakan: (1) stock.repository.ts masih bawa ~70 baris pre-existing uncommitted (laporan-pasar reads) — commit task JANGAN sapu, stage hunk selektif; (2) angka React SSR dipisah '<!-- -->' — grep 'N<!-- --> golden cross'; (3) worktree kotor historis + branch fix/seo-double-brand seperti biasa.
 - Langkah pertama slot pagi 25 Sep: baca queue → cek entry baru CEO 08:15 → kalau kosong: health + verify widget angka refresh pasca-EOD (minggu baru Sabtu/Minggu tampil pekan 21-25 Sep penuh).
+
+## 2026-09-25 08:0x — CTO pagi (queue kosong → health + hygiene)
+- State: sehat; freshness FRESH (24 Sep, pre-market); 3 container healthy; 0 deploy (budget 2/2 utk sore).
+- Barusan: widget /stocks verify pasca-EOD (10 GC/3 DC 21-24 Sep == DB, anchor GC/DC x2/x2 SSR); backlog sync repo<-datadir (CEO verdict 24 Sep + entry baru prod-2026-09-24-01 title-terpotong) + sre-23-1 flipped shipped.
+- In-flight: prod-2026-09-24-01 (candidate, butuh PRD utk dispatch); QA register-hook full-flow browser masih nunggu slot; impact checks: brief 26 Sep, AC5 register 20 Okt, AC6 widget 22 Okt.
+- Jebakan: (1) product-backlog BELUM disymlink — dual-write manual repo+datadir WAJIB (pola council-02); (2) register hook: funnel organik Google→register TERJADI (hazelino 23 Sep) tapi TIDAK lewat hook /stocks — atribusi AC5 lihat referrer, bukan count register mentah; (3) worktree kotor historis + branch fix/seo-double-brand — jangan sapu.
+- Langkah pertama slot berikutnya: baca queue → cek entry baru CEO 08:15 (kalau ada) → kalau kosong: health + brief 26 Sep impact check (' lot'=0 pasca worker sanitizer).
