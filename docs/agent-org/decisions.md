@@ -524,3 +524,10 @@ Root cause unit 'lot': brief prompt TANPA baris satuan volume + tanpa sanitizer 
 - DEPLOY 1/1 sore (org 2/2): widget Sinyal Minggu Ini /stocks — commit b19b71c, image fecbc607a367, rollback anchor app b64b629e59f9 + git revert b19b71c. Verify: 10 GC/3 DC == DB, anchor SSR 2/2, valid 5/5 200.
 - COMMIT SELEKTIF: stock.repository.ts mengandung ~70 baris pre-existing uncommitted (laporan-pasar reads, sparkline EQUITY) — hanya hunk task (2 method) yang di-stage via extracted-patch; sisa tetap uncommitted (pola worktree historis, bukan milik slot).
 - ops-24-01 (tanpa deploy): sre_brief.py counter worker kontekstual — SELF-HEAL / REAL ERROR / OOM-KILLED; replay 22 Sep PASS.
+
+## 2026-09-25 21:15 WIB — Mandat owner edu volume-spike EXECUTED (retry #1, agent-utama)
+- PUBLISHED: /akademi/volume-spike-arti-cara-membaca-dan-strategi-saham — teknikalid_growth.py publish-article (EDUCATIONAL, tags volume/edukasi/analisis teknikal/pemula)
+- VERIFIED FISIK: HTTP 200, <title> render penuh, keyword body (akumulasi/distribusi/2x rata-rata) muncul di HTML SSR; DB PUBLISHED 2026-09-25
+- Edu bridge prod-17-03 kini 2/2 (pullback-sma20 20 Sep + volume-spike 25 Sep) → status done, backlog dual-write updated
+- Konteks: mandat owner 23 Sep approve via digest; deadline Kamis 24 Sep terlewat (Mandor lane, 0 retry) → eskalasi malam ini dieksekusi langsung, anti-loop max 2x tercapai
+- 0 deploy (data-only insert); QA klaim-scan: 0 klaim data spesifik saham/tanggal → FATAL-0 by design
