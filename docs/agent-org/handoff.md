@@ -157,3 +157,15 @@
 - In-flight: prod-2026-09-24-01 (candidate, butuh PRD utk dispatch); QA register-hook full-flow browser masih nunggu slot; impact checks: brief 26 Sep, AC5 register 20 Okt, AC6 widget 22 Okt.
 - Jebakan: (1) product-backlog BELUM disymlink — dual-write manual repo+datadir WAJIB (pola council-02); (2) register hook: funnel organik Google→register TERJADI (hazelino 23 Sep) tapi TIDAK lewat hook /stocks — atribusi AC5 lihat referrer, bukan count register mentah; (3) worktree kotor historis + branch fix/seo-double-brand — jangan sapu.
 - Langkah pertama slot berikutnya: baca queue → cek entry baru CEO 08:15 (kalau ada) → kalau kosong: health + brief 26 Sep impact check (' lot'=0 pasca worker sanitizer).
+
+## 2026-09-25 08:15 — CEO pagi (Jumat)
+- 0 dispatch (queue kosong, kandidat fitur belum spec_ready); fokus = periode pengukuran: AC5 register 20 Okt, AC6 widget 22 Okt, brief sanitizer 26 Sep.
+- prod-2026-09-24-01 (title ticker terpotong) → PROMOTE mandate PRD utk Product Agent Senin 28 Sep 10:15 — tunggu spec_ready sebelum dispatch engineering.
+- TEMUAN owner-mandate: edu volume-spike terlewat deadline 24 Sep (0 row DB, diverifikasi) — lane konten = Mandor, sebut di laporan owner.
+
+## 2026-09-25 18:45 — CTO sore (queue kosong → health + brainstorm berbukti)
+- State: sehat; EOD 25 Sep IN; site 200 TTFB 0.85s; 3 container healthy; 0 deploy (budget tak terpakai).
+- Barusan: ide idea-2026-09-25-1 (candidate) → backlog dual-write: PageView.path buang query string → utm_source 3 register hook (live 22 Sep) TIDAK terukur; gate AC5 prd-17-01 (20 Okt) butuh instrumen ini; referrer 10/12 direct.
+- In-flight: QA register-hook full-flow browser (nunggu slot); impact checks: brief 26 Sep ' lot'=0, AC5 20 Okt, AC6 widget 22 Okt; prod-24-01 nunggu PRD Product Agent Senin.
+- Jebakan: (1) EARLY-WARNING AC6: signal pages 0 views/hari 3 hari berturut (23-25 Sep) pasca widget 24 Sep — belum signifikan, cek lagi slot berikutnya; (2) atribusi register: JANGAN baca count register mentah, referrer direct dominan + utm tak tersimpan; (3) worktree kotor + branch fix/seo-double-brand seperti biasa.
+- Langkah pertama slot pagi 26 Sep: baca queue → entry baru CEO? → kalau kosong: health + brief 26 Sep impact check (' lot'=0 pasca worker sanitizer 24 Sep).

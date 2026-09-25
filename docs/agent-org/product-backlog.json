@@ -307,7 +307,7 @@
    "id": "prod-2026-09-24-01",
    "date": "2026-09-24",
    "priority": "P3",
-   "status": "candidate",
+   "status": "promoted_prd",
    "source": "product-idle",
    "type": "feature",
    "title": "Title halaman ticker terpotong di tengah kata — 'Bank Rakyat Indonesia (Pe…' (144/1.353 stok, 15% views ticker-detail)",
@@ -315,8 +315,18 @@
    "data": "PageView 30d isBot=false: 389 ticker unik dilihat, 61 di antaranya (15,7%) punya nama >25 char = 267/1.732 views ticker-detail (15,4%) mendarat di halaman ber-title terpotong. DB: 144/1.353 stok aktif (10,7%) nama >25 char. Top affected view: BBRI (bank terbesar, brand search tinggi). Konteks funnel: organic search cuma 3% views 7d (28/873) dan GSC reindex pending — title = wajah CTR saat 389 halaman ticker mulai terindex.",
    "hypothesis": "Fix kecil high-trust: strip suffix '(Persero)' & 'Tbk' SEBELUM cut, potong di word-boundary, budget naik ke ~35 char (masih aman <60 total dgn '| TeknikalID'). Effort 1 (satu fungsi helper + test). Lensa owner: consistency + trust + easy — 'Pe…' di tab browser = polish yang bolong; nyaris mustahil diukur dari PageView (gate: QA visual + GSC CTR pasca reindex, review 2026-10-22 sejajar idea-2026-09-23-1).",
    "north_star": "trust/consistency (lensa owner 17 Sep) + growth traffic (CTR SERP pasca reindex)",
-   "note": "ID-NOTE: entry ini (backlog prod-2026-09-24-01 = title terpotong) TIDAK BERHUBUNGAN dgn task cto-queue 'prd-2026-09-24-01' (widget Sinyal Minggu Ini dari prod-2026-09-19-01, dispatched CEO 24 Sep 08:15). Namespace beda file — jangan campur saat grep.",
+   "note": "ID-NOTE: entry ini (backlog prod-2026-09-24-01 = title terpotong) TIDAK BERHUBUNGAN dgn task cto-queue 'prd-2026-09-24-01' (widget Sinyal Minggu Ini dari prod-2026-09-19-01, dispatched CEO 24 Sep 08:15). Namespace beda file — jangan campur saat grep. || CEO 25 Sep 08:15: verdict PROMOTE -> mandate PRD utk Product Agent Senin 28 Sep 10:15 (lensa owner consistency/trust/polish; effort 1; review GSC-CTR 2026-10-22 sejajar idea-23-1). TIDAK dispatch engineering sampai spec_ready (SDLC).",
    "sec_preview": "Saat dipromote jadi PRD, SEC-REVIEW minimal: (1) input: ticker param sudah tervalidasi route existing — helper string murni, tanpa input user baru; (2) injection: n/a (tanpa query baru); (3) logic: strip suffix jangan sampai nama jadi kosong utk stok bernama pendek/simbol; (4) perf: generateMetadata sudah existing, no new query; (5) privilege/IDOR: n/a read-only SSR."
+  },
+  {
+   "id": "idea-2026-09-25-1",
+   "status": "candidate",
+   "source": "cto-idle",
+   "priority": "P2",
+   "date": "2026-09-25",
+   "title": "Atribusi register hook hilang: PageView.path tidak simpan query string — utm_source 3 hook (signal_page/stocks_screener/stocks_ticker) tak terukur",
+   "data": "Bukti 25 Sep (DB read-only): (1) 12/12 PageView nobot 30d path='/auth/register' persis — query string dibuang sebelum insert (kolom PageView: path/referrer/userId/ip/userAgent/createdAt/isBot, tanpa utm); (2) referrer register 30d: 10 direct + 1 google + 1 teknikal.id root — JS redirect window.location = direct, hook tak terlihat; (3) 3 hook live sejak 22 Sep 19:1x semuanya bawa utm_source di URL (register-cta.tsx signal_page, save-screen-prompt.tsx stocks_screener, stock-action-badge.tsx stocks_ticker) tapi 0 tercatat; (4) DAMPAK: gate AC5 prd-17-01 (register-page IP area /stocks >=10 IP ATAU >=8 register, impact check 2026-10-20) tidak bisa membedakan register via hook vs organik — verifikasi fitur 400rb rupiah terancam tak terukur; (5) komposisi views 14d: /stocks/[ticker] 683 + /stocks 567 = 78% trafik nobot — area hook mempunyai exposure besar. Usulan arah: simpan utm_source/utm_medium (whitelist + length cap) saat track pageview register, atau kolom additive — murni instrumen, no UI change. SEC-REVIEW (utk PRD): param whitelist+cap panjang (bukan raw query string — cegah log injection), tanpa PII baru, tanpa endpoint baru, additive column via prisma migrate = koordinasi owner (bukan silent).",
+   "north_star": "growth register (NS#1) — pengukuran funnel, bukan UI"
   }
  ]
 }
