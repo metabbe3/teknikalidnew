@@ -531,3 +531,7 @@ Root cause unit 'lot': brief prompt TANPA baris satuan volume + tanpa sanitizer 
 - Edu bridge prod-17-03 kini 2/2 (pullback-sma20 20 Sep + volume-spike 25 Sep) → status done, backlog dual-write updated
 - Konteks: mandat owner 23 Sep approve via digest; deadline Kamis 24 Sep terlewat (Mandor lane, 0 retry) → eskalasi malam ini dieksekusi langsung, anti-loop max 2x tercapai
 - 0 deploy (data-only insert); QA klaim-scan: 0 klaim data spesifik saham/tanggal → FATAL-0 by design
+
+## 2026-09-26 07:3x WIB — CTO pagi: SQL patch excerpt brief25 + deploy sanitizer variant-3
+- SQL (protokol destruktif owner 14 Sep): UPDATE "Article" excerpt 'saam'→'saham', WHERE slug='brief-pasar-idx-2026-09-25-grup-mnc-rontok' AND status='PUBLISHED' AND excerpt ILIKE '%saam%' → rowcount 1. Backup db-20260926 01:15 valid <24h; preview COUNT 1 (excerpt-only; content/title bersih; sweep PUBLISHED excerpt-saam total = 1 row, excerpt-lot = 0). Post: saam=0, watchlist saham=1, live 9→0.
+- Deploy 1/1 pagi: commit d6635b2 (article.service.ts excerpt+title sanitize 5+4 site + correctedTitle, +content-sanitizer.test.ts) → app e903ac65dc44 + worker 06082d2e2c25 (kedua image rebuild 07:41). Rollback anchor lama: app fecbc607a367 / worker 88fd17fa2ff6 / git 41552ee. 3 container healthy post-deploy; 5 URL 200 before=after.

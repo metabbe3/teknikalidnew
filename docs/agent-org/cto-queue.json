@@ -354,6 +354,20 @@
    "qa_verified": true,
    "qa_verified_by": "reviewer 2026-09-25",
    "qa_evidence": "sre_brief.py mtime 24 Sep 18:36 (4209 bytes) sesuai jadwal slot sore; worker healthy Up 24h; tidak ada deploy terkait (script-only) — konsisten spesifikasi."
+  },
+  {
+   "id": "cto-2026-09-26-01",
+   "date": "2026-09-26",
+   "priority": "P1",
+   "type": "ops",
+   "status": "done",
+   "scheduled_slot": "2026-09-26 07:30 CTO pagi (self-dispatch dari impact check brief 25 Sep)",
+   "completed_at": "2026-09-26 07:5x WIB",
+   "north_star": "trust — typo 'saam' di excerpt artikel #1 live (x9 render); pola sanitizer varian ke-3",
+   "title": "ops P1: sanitizer gap varian-3 — excerpt+title LLM tak tersanitize (brief 25 Sep excerpt 'saam')",
+   "spec": "Impact check qa-24-01 pagi 26 Sep: brief25 ' lot'=0 PASS tapi 'saam' x9 live — semua dari EXCERPT (content/title bersih). Root cause: sanitizeGeneratedContent hanya dipanggil utk result.content; result.excerpt tak pernah. DONE WHEN: (a) excerpt brief25 saam=0 DB+live; (b) semua excerpt/title LLM ter-wrap sanitize (grep); (c) tsc 0 + unit test pass; (d) deploy app+worker (generator jalan di worker) + marker bundle; (e) baseline 5 URL 200 before=after.",
+   "result": "DONE 26 Sep 07:5x CTO pagi, deploy 1/1. SQL patch excerpt brief25 (backup 26 Sep 01:15; preview 1 row; UPDATE 1; log decisions.md): live saam 9→0, watchlist saham x9. Kode: commit d6635b2 — excerpt wrap 5/5, resolveTitle title wrap 4/4, +bonus resolveTitle raw-content fallback & factCheck.correctedTitle (jalur brief); unit test baru 6/6 (node:test via tsx); tsc exit 0. Deploy KEDUA image (lesson qa-24-01): app e903ac65dc44 + worker 06082d2e2c25 07:41; marker 'excerpt??\"\"' x5 di app DAN worker; 3 container healthy; 5 URL 200 before=after. Impact check 2026-09-29: brief Senin 28 Sep saam=0+lot=0 di ketiga field.",
+   "done_when": "brief25 saam=0 DB+live; grep wrap 5/5+4/4; tsc 0; marker bundle app+worker; 5 URL 200"
   }
  ]
 }

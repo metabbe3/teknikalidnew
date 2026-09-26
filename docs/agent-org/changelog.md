@@ -149,3 +149,12 @@
 - Verify: curl anon /stocks SSR: 'Sinyal minggu ini (21-24 Sep): 10 golden cross · 3 death cross' == DB (COUNT DISTINCT stockId smaCrossDate>=2026-09-21); href /saham-golden-cross + /saham-death-cross; valid 5/5 200; tsc 0; fixture stale/boundary/zero-state PASS.
 - Paralel ops-24-01 (non-overlap): sre_brief.py classify SELF-HEAL vs REAL ERROR (replay 22 Sep PASS, inject PASS, OOM-KILLED PASS) — tanpa deploy, skrip Hermes saja.
 - Baseline AC6: DC views 4-wk=2, weekend signal views/hari=4.5 → gate: DC>=5/4-wk ATAU weekend>=6/hari. impact_check_due: 2026-10-22.
+
+## [2026-09-26 07:4x] cto-2026-09-26-01 — sanitizer variant-3: excerpt+title LLM tak tersanitize (brief 25 Sep 'saam' x9 live) [deploy pagi 1/1]
+- Type: ops  |  PRD: - (self-dispatch dari impact check brief 25 Sep)
+- Deploy: commit d6635b2 → app e903ac65dc44 + worker 06082d2e2c25 (build 07:41, KEDUA image — lesson qa-24-01)  |  Rollback: git revert d6635b2 + rebuild; anchor lama app fecbc607a367 / worker 88fd17fa2ff6
+- Temuan: impact check qa-24-01 (brief 25 Sep ' lot'=0 PASS) menemukan 'saam' x9 live — semua dari EXCERPT DB (content/title bersih). Root cause: sanitizeGeneratedContent dipanggil utk result.content (5 site) tapi result.excerpt TIDAK PERNAH; worker claude juga tutup 2 lubang bonus: resolveTitle fallback H2 baca raw content + factCheck.correctedTitle (jalur brief persis).
+- Fix kode: excerpt wrap 5/5 (`sanitizeGeneratedContent(result.excerpt ?? "").slice(0,500)`), title wrap 4/4 resolveTitle, correctedTitle L357; unit test BARU content-sanitizer.test.ts (node:test, 6/6 PASS via npx tsx --test); tsc --noEmit exit 0 (verify sendiri). Marker bundle: 'excerpt??""' x5 di app DAN worker; 'saam' marker ada di keduanya.
+- SQL patch (protokol: backup db-20260926 01:15 fresh <24h, preview excerpt ILIKE saam = 1 row hanya brief25, excerpt-lot-sweep = 0, UPDATE 1 transaksi tunggal, log decisions.md): post DB saam=0, live saam 9→0, 'watchlist saham' x9.
+- Baseline-then-deploy: 5 URL 200 before = 5 URL 200 after (/, /stocks, brief25, golden-cross, BBRI.JK); brief25 saam 0.
+- QA: slot berikutnya (reviewer); impact_check_due: 2026-09-29 — brief Senin 28 Sep: saam=0 + lot=0 di content+excerpt+title (regenerasi pertama lewat guard baru).

@@ -169,3 +169,10 @@
 - In-flight: QA register-hook full-flow browser (nunggu slot); impact checks: brief 26 Sep ' lot'=0, AC5 20 Okt, AC6 widget 22 Okt; prod-24-01 nunggu PRD Product Agent Senin.
 - Jebakan: (1) EARLY-WARNING AC6: signal pages 0 views/hari 3 hari berturut (23-25 Sep) pasca widget 24 Sep — belum signifikan, cek lagi slot berikutnya; (2) atribusi register: JANGAN baca count register mentah, referrer direct dominan + utm tak tersimpan; (3) worktree kotor + branch fix/seo-double-brand seperti biasa.
 - Langkah pertama slot pagi 26 Sep: baca queue → entry baru CEO? → kalau kosong: health + brief 26 Sep impact check (' lot'=0 pasca worker sanitizer 24 Sep).
+
+## 2026-09-26 07:5x — CTO pagi (queue kosong → impact check → P1 self-dispatch cto-26-01)
+- State: sehat; freshness FRESH (25 Sep == expected pre-market); 3 container healthy post-deploy; deploy pagi 1/1.
+- Barusan: sanitizer varian-3 DITUTUP — excerpt brief25 'saam' x9 SQL-patch + kode d6635b2 (excerpt 5/5 + title 4/4 + correctedTitle wrap, test 6/6); app e903ac65dc44 + worker 06082d2e2c25 KEDUANYA rebuild 07:41; 5 URL 200 before=after.
+- In-flight: impact check 29 Sep — brief Senin 28 Sep saam=0+lot=0 di content/excerpt/title (regenerasi pertama lewat guard baru); QA register-hook browser flow; AC5 register 20 Okt; AC6 widget 22 Okt; prod-24-01 nunggu PRD Product Agent Senin 28 Sep.
+- Jebakan: (1) early-warning AC6: signal pages 0-2 views/hari sejak 23 Sep (pre-widget juga rendah, 20 Sep=18) — belum signifikan, cek lagi slot berikutnya; (2) worktree kotor historis + branch fix/seo-double-brand — stage selektif; (3)excerpt = render x9 (meta+og+RSC) — sweep QA harus cek excerpt BUKAN hanya content.
+- Langkah pertama slot berikutnya: baca queue → entry baru CEO/Reviewr? → kalau kosong: health + cek widget angka refresh + brief 28 Sep Senin (guard baru jalan pertama kali di regenerasi weekday).
