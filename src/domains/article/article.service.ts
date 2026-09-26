@@ -107,14 +107,14 @@ export const articleService = {
       : null;
     const signalStr = signalLabel ? ` — Sinyal ${signalLabel}` : "";
     const defaultTitle = `Analisa Teknikal ${stock.name} (${t.toUpperCase()}) Hari Ini ${priceStr}${changeStr}${signalStr}`;
-    const title = resolveTitle(result.title, result.content, defaultTitle);
+    const title = resolveTitle(sanitizeGeneratedContent(result.title), cleanContent, defaultTitle);
     const tags = result.tags.length > 0 ? result.tags : [stock.sector, t.toUpperCase(), "analisa teknikal"];
     const meta = { provider: provider.name, model: process.env.ANTHROPIC_MODEL, timestamp: new Date().toISOString() } as Record<string, string>;
 
     if (existing) {
       await articleRepository.update(existing.id, {
         title,
-        excerpt: result.excerpt?.slice(0, 500) || "",
+        excerpt: sanitizeGeneratedContent(result.excerpt ?? "").slice(0, 500),
         content: cleanContent,
         tags,
         status: ArticleStatus.PUBLISHED,
@@ -132,7 +132,7 @@ export const articleService = {
     const article = await articleRepository.create({
       slug,
       title,
-      excerpt: result.excerpt?.slice(0, 500) || "",
+      excerpt: sanitizeGeneratedContent(result.excerpt ?? "").slice(0, 500),
       content: cleanContent,
       authorId: adminUser.id,
       tags,
@@ -261,8 +261,8 @@ export const articleService = {
 
     const article = await articleRepository.create({
       slug,
-      title: resolveTitle(result.title, result.content, topic.title),
-      excerpt: result.excerpt?.slice(0, 500) || "",
+      title: resolveTitle(sanitizeGeneratedContent(result.title), cleanContent, topic.title),
+      excerpt: sanitizeGeneratedContent(result.excerpt ?? "").slice(0, 500),
       content: cleanContent,
       authorId: adminUser.id,
       tags: result.tags.length > 0 ? result.tags : topic.keywords,
@@ -347,14 +347,14 @@ export const articleService = {
 
     // Fact-check if market context is available
     let finalContent = cleanContent;
-    let finalTitle = resolveTitle(result.title, result.content, topic);
+    let finalTitle = resolveTitle(sanitizeGeneratedContent(result.title), cleanContent, topic);
     let factCheckMeta: Record<string, string> = {};
     if (marketCtx) {
       const factCheck = await factCheckArticle(cleanContent, marketCtx, finalTitle);
       if (!factCheck.passed && factCheck.correctedContent) {
         finalContent = sanitizeGeneratedContent(factCheck.correctedContent);
         if (factCheck.correctedTitle) {
-          finalTitle = factCheck.correctedTitle;
+          finalTitle = sanitizeGeneratedContent(factCheck.correctedTitle);
         }
       }
       factCheckMeta = {
@@ -369,7 +369,7 @@ export const articleService = {
     const article = await articleRepository.create({
       slug,
       title: finalTitle,
-      excerpt: result.excerpt?.slice(0, 500) || "",
+      excerpt: sanitizeGeneratedContent(result.excerpt ?? "").slice(0, 500),
       content: finalContent,
       authorId: adminUser.id,
       tags: result.tags.length > 0 ? result.tags : keywords.slice(0, 5),
@@ -408,8 +408,8 @@ export const articleService = {
 
     const article = await articleRepository.create({
       slug,
-      title: resolveTitle(result.title, result.content, topic),
-      excerpt: result.excerpt?.slice(0, 500) || "",
+      title: resolveTitle(sanitizeGeneratedContent(result.title), cleanContent, topic),
+      excerpt: sanitizeGeneratedContent(result.excerpt ?? "").slice(0, 500),
       content: cleanContent,
       authorId: adminUser.id,
       tags: result.tags.length > 0 ? result.tags : keywords.slice(0, 5),
