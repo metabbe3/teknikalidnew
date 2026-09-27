@@ -153,3 +153,13 @@ Submit sitemap via GSC web (Angular closure, tanpa <form>): 6 jurus gagal — JS
 - Aturan: perubahan kode yang dipakai worker (article.service, prompt builder, sanitizer, dsb.) WAJIB rebuild KEDUA image: `docker compose build app worker && docker compose up -d app worker`. Cek cepat pra-selesai deploy: `docker images --format '{{.Repository}} {{.CreatedAt}}' | grep teknikalid` — kedua image harus sama umurnya dgn commit head.
 - Deteksi dini (QA): brief regresi typo/satuan yg sudah 'difix' = cek dulu IMAGE umur berapa, bukan langsung salahkan prompt/LLM. Buktikan dgn `docker exec teknikalidnew-worker-1 sh -c 'grep -rl <marker> /app/.next/server/chunks/ | head -3'`.
 - Terkait: guard SSR-only tidak terlihat curl (SaveScreenPrompt client component) — verifikasi fitur FE interaktif pakai browser sungguhan, curl hanya utk SSR/SEO.
+
+
+## 2026-09-27 — Sunday Strategy Council
+- **Heartbeat ledger same-day-only = undercount sistematis**: run_ledger.py hanya menulis job dengan last_run_at == hari-ini SAAT script jalan (05:45) → semua job siang/malam (CEO Evening, CTO malam, pagi >05:45) jarang tercatat. Undercount ≠ silent-skip — selalu cross-check bukti kerja nyata (entry decisions.md, git, queue) sebelum menyatakan job mati. Fix: catch-up per (job_id,date) → council-2026-09-27-02.
+- **Produksi konten ≠ konsumsi**: 47 artikel/pekan (40 snapshot + 7 NEWS) mayoritas 0-3 views; satu-satunya saluran discovery internal yang terbukti = widget /stocks (87% views halaman GC darinya). Halaman tanpa link internal = halaman mati, berapa pun kontennya bagus.
+
+## [2026-09-28] Verifier Gate masuk SDLC (owner directive)
+**Konteks:** Decision Engine ala JEV live (~/.hermes/scripts/verifier/verify.py, GLM z.ai flash/5.3). Owner: pakai untuk high-stakes + task coding 3 org.
+**Aturan:** CTO WAJIB verifier-gate klaim DONE-WHEN sebelum tulis changelog (klaim verify dinilai konsistensinya); QA boleh bungkus verdict naratif; ANGKA tetap SQL/curl/tsc — verifier BUKAN pengganti bukti fisik, ia pemeriksa klaim kedua. Fail-open. Log: ~/.hermes/data/verifier-log.jsonl. Skill: verifier-gate. Rollout: teknikal dulu, hivePOS+AegisGo menyusul setelah ≥3 koreksi nyata.
+**Pencegahan:** klaim "semua 200 / 44 file / tsc=0" yang TIDAK didukung output fisik akan ditangkap gate — tulis klaim hanya sebesar bukti.
