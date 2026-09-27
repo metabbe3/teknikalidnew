@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ ticker: s
   return {
     // ponytail: crypto detail noindex — logged-in tool, not SEO inventory (see /crypto listing).
     robots: { index: false, follow: true },
-    title: `Harga ${name} (${detail.stock.name}) Hari Ini — Analisa Teknikal Crypto | TeknikalID`,
+    title: `Harga ${name} (${detail.stock.name}) Hari Ini — Chart Teknikal`,
     description: `Harga ${name} hari ini ${close !== null ? formatPrice(close) : ""}. Chart interaktif, indikator teknikal RSI/MACD/SMA, dan sinyal trading crypto (data Indodax, IDR).`,
     alternates: { canonical: `/crypto/${ticker.toUpperCase()}` },
   };
