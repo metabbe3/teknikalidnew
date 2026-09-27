@@ -41,7 +41,7 @@ export function StockActionBadge({ ticker }: StockActionBadgeProps) {
     <button
       onClick={handleClick}
       disabled={isPending}
-      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-all press-scale disabled:opacity-50 ${
+      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium transition-all press-scale disabled:opacity-50 ${
         isActive
           ? "bg-accent/10 text-accent border border-accent/20"
           : "border border-border text-text-secondary hover:bg-bg-hover hover:text-text-primary"

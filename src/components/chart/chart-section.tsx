@@ -159,7 +159,7 @@ export function ChartSection({ ticker }: ChartSectionProps) {
                 onClick={() => setRange(r)}
                 aria-pressed={effectiveRange === r}
                 aria-label={`Show ${r} chart`}
-                className={`px-3 py-1 text-xs font-medium rounded-md transition-all duration-150 ${
+                className={`px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium rounded-md transition-all duration-150 ${
                   effectiveRange === r
                     ? "bg-text-primary text-white shadow-sm"
                     : "text-text-secondary hover:text-text-primary"
@@ -172,7 +172,7 @@ export function ChartSection({ ticker }: ChartSectionProps) {
           {!isAuthed && (
             <Link
               href="/auth/register"
-              className="text-xs px-2 py-1 rounded-md border border-accent/40 bg-accent/10 text-accent hover:bg-accent/20 transition-colors font-medium whitespace-nowrap"
+              className="inline-flex items-center text-xs px-2 py-1 min-h-11 sm:min-h-0 rounded-md border border-accent/40 bg-accent/10 text-accent hover:bg-accent/20 transition-colors font-medium whitespace-nowrap"
               title="Rentang lebih panjang untuk member"
             >
               🔒 Buka 6mo+
@@ -191,7 +191,7 @@ export function ChartSection({ ticker }: ChartSectionProps) {
               key={t.key}
               onClick={() => setChartType(t.key)}
               aria-pressed={chartType === t.key}
-              className={`px-3 py-1 text-xs font-medium rounded-md transition-all duration-150 ${
+              className={`px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium rounded-md transition-all duration-150 ${
                 chartType === t.key
                   ? "bg-text-primary text-white shadow-sm"
                   : "text-text-secondary hover:text-text-primary"
@@ -253,7 +253,7 @@ export function ChartSection({ ticker }: ChartSectionProps) {
                     setCompareQuery("");
                     setShowDropdown(false);
                   }}
-                  className="w-full text-left px-3 py-1.5 text-xs text-text-primary hover:bg-bg-hover transition-colors"
+                  className="w-full text-left px-3 py-1.5 min-h-11 sm:min-h-0 text-xs text-text-primary hover:bg-bg-hover transition-colors"
                 >
                   <span className="font-mono font-semibold">{s.ticker.replace(/\.JK$/, "")}</span>{" "}
                   <span className="text-text-tertiary">{s.name}</span>
@@ -272,7 +272,7 @@ export function ChartSection({ ticker }: ChartSectionProps) {
                 onClick={() => setShowOverlays((v) => !v)}
                 aria-expanded={showOverlays}
                 aria-haspopup="menu"
-                className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md border border-border bg-bg-card text-text-secondary hover:text-text-primary transition-colors"
+                className="flex items-center gap-1.5 px-2.5 py-1 min-h-11 sm:min-h-0 text-xs font-medium rounded-md border border-border bg-bg-card text-text-secondary hover:text-text-primary transition-colors"
               >
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" /></svg>
                 Indikator
@@ -302,7 +302,7 @@ export function ChartSection({ ticker }: ChartSectionProps) {
                             role="menuitemcheckbox"
                             aria-checked={it.value}
                             onClick={it.toggle}
-                            className="w-full flex items-center gap-2 px-2 py-1.5 text-xs rounded-md text-text-primary hover:bg-bg-hover transition-colors text-left"
+                            className="w-full flex items-center gap-2 px-2 py-1.5 min-h-11 sm:min-h-0 text-xs rounded-md text-text-primary hover:bg-bg-hover transition-colors text-left"
                           >
                             <span className={`flex items-center justify-center w-4 h-4 rounded border ${it.value ? "bg-text-primary border-text-primary" : "border-border"}`} aria-hidden="true">
                               {it.value && <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>}

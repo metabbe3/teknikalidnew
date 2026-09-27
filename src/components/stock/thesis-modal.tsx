@@ -148,7 +148,7 @@ export function ThesisButton({ ticker }: { ticker: string }) {
     return (
       <Link
         href="/auth/signin"
-        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium border border-border text-text-tertiary hover:bg-bg-hover hover:text-text-primary transition-all press-scale"
+        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium border border-border text-text-tertiary hover:bg-bg-hover hover:text-text-primary transition-all press-scale"
       >
         🎯 Kunci tesis
       </Link>
@@ -159,7 +159,7 @@ export function ThesisButton({ ticker }: { ticker: string }) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium border border-border text-text-tertiary hover:bg-bg-hover hover:text-text-primary transition-all press-scale"
+        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium border border-border text-text-tertiary hover:bg-bg-hover hover:text-text-primary transition-all press-scale"
       >
         🎯 Kunci tesis
       </button>

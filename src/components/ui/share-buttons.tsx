@@ -156,7 +156,7 @@ export function ShareButtons({ url, title, text, className, imageUrl, storyImage
         <button
           onClick={handleStoryShare}
           disabled={storyState === "loading"}
-          className={`inline-flex items-center gap-1 px-2.5 h-8 rounded-full text-white text-xs font-semibold transition-colors press-scale focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500 ${
+          className={`inline-flex items-center gap-1 px-2.5 h-11 sm:h-8 rounded-full text-white text-xs font-semibold transition-colors press-scale focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500 ${
             storyState === "error"
               ? "bg-red-500"
               : storyState === "success"
@@ -180,7 +180,7 @@ export function ShareButtons({ url, title, text, className, imageUrl, storyImage
 
       <button
         onClick={handleWhatsApp}
-        className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#25D366] text-white hover:brightness-110 transition-colors press-scale focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500"
+        className="inline-flex items-center justify-center w-11 h-11 sm:w-8 sm:h-8 rounded-full bg-[#25D366] text-white hover:brightness-110 transition-colors press-scale focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500"
         aria-label="Bagikan ke WhatsApp"
       >
         <WhatsAppIcon />
@@ -188,7 +188,7 @@ export function ShareButtons({ url, title, text, className, imageUrl, storyImage
 
       <button
         onClick={handleX}
-        className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-black text-white hover:bg-gray-800 transition-colors press-scale focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500"
+        className="inline-flex items-center justify-center w-11 h-11 sm:w-8 sm:h-8 rounded-full bg-black text-white hover:bg-gray-800 transition-colors press-scale focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500"
         aria-label="Bagikan ke X"
       >
         <XIcon />
@@ -196,7 +196,7 @@ export function ShareButtons({ url, title, text, className, imageUrl, storyImage
 
       <button
         onClick={handleTelegram}
-        className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#0088cc] text-white hover:brightness-110 transition-colors press-scale focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500"
+        className="inline-flex items-center justify-center w-11 h-11 sm:w-8 sm:h-8 rounded-full bg-[#0088cc] text-white hover:brightness-110 transition-colors press-scale focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500"
         aria-label="Bagikan ke Telegram"
       >
         <TelegramIcon />
@@ -204,7 +204,7 @@ export function ShareButtons({ url, title, text, className, imageUrl, storyImage
 
       <button
         onClick={handleCopy}
-        className={`inline-flex items-center justify-center w-8 h-8 rounded-full transition-colors press-scale focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500 ${
+        className={`inline-flex items-center justify-center w-11 h-11 sm:w-8 sm:h-8 rounded-full transition-colors press-scale focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500 ${
           copied
             ? "bg-emerald-100 text-emerald-700"
             : "bg-bg-card text-text-tertiary border border-border hover:text-text-primary hover:bg-bg-hover"
@@ -247,7 +247,7 @@ export function ShareToggleButton({ url, title, text }: Omit<ShareButtonsProps, 
   return (
     <button
       onClick={handleShare}
-      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium border border-border transition-colors press-scale focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500 ${
+      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium border border-border transition-colors press-scale focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500 ${
         copied
           ? "bg-emerald-50 text-emerald-700 border-emerald-200"
           : "bg-bg-card text-text-tertiary hover:text-text-primary hover:bg-bg-hover"

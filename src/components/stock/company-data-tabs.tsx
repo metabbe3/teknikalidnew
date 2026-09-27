@@ -110,7 +110,7 @@ export function CompanyDataTabs({ profile, commissioners, directors, shareholder
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(activeTab === tab.key ? null : tab.key)}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[13px] font-medium transition-all whitespace-nowrap press-scale ${
+                className={`flex items-center gap-1.5 px-3.5 py-2 min-h-11 sm:min-h-0 rounded-lg text-[13px] font-medium transition-all whitespace-nowrap press-scale ${
                   activeTab === tab.key
                     ? "bg-accent/10 text-accent border border-accent/20"
                     : "bg-white/[0.04] text-text-secondary border border-white/[0.06] hover:bg-white/[0.08] hover:text-text-primary"

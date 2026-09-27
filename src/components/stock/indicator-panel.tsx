@@ -160,7 +160,7 @@ export function IndicatorPanel({
         <h2 className="text-sm font-semibold text-text-primary">Indikator Teknikal</h2>
         <button
           onClick={() => setPlainMode(!plainMode)}
-          className={`text-[11px] font-medium px-3 py-1.5 rounded-full transition-colors ${
+          className={`text-[11px] font-medium px-3 py-1.5 min-h-11 sm:min-h-0 rounded-full transition-colors ${
             plainMode
               ? "bg-accent/10 text-accent"
               : "bg-bg-hover text-text-secondary hover:text-text-primary"

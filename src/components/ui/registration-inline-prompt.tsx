@@ -33,14 +33,14 @@ export function RegistrationInlinePrompt({
         Pantau dengan daftar pantauan gratis.
       </p>
       <Link
-        href="/auth/signin"
+        href="/auth/register"
         className="shrink-0 text-xs font-semibold text-accent hover:text-accent/80 transition-colors"
       >
         Daftar Gratis
       </Link>
       <button
         onClick={handleDismiss}
-        className="shrink-0 flex h-5 w-5 items-center justify-center rounded-full text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-colors"
+        className="shrink-0 flex h-5 w-5 items-center justify-center rounded-full text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-colors p-2 box-content"
         aria-label="Tutup"
       >
         <svg

@@ -56,7 +56,7 @@ export function MiniScreenerPreview() {
             <button
               key={p.key}
               onClick={() => handlePreset(p.key)}
-              className={`px-3 py-1.5 rounded-full text-[11px] font-medium transition-all duration-150 cursor-pointer ${
+              className={`px-3 py-1.5 min-h-11 sm:min-h-0 rounded-full text-[11px] font-medium transition-all duration-150 cursor-pointer ${
                 active === p.key
                   ? "bg-text-primary text-white shadow-sm"
                   : "bg-bg-card text-text-secondary border border-border hover:border-accent/40 hover:text-accent"

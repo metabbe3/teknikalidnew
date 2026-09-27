@@ -512,7 +512,7 @@ export default async function StockDetailPage({
                 : "bg-gradient-to-r from-accent via-accent/40 to-transparent"
             }`} aria-hidden="true" />
 
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
               <div className="min-w-0">
                 <div className="flex items-center gap-2.5 flex-wrap">
                   <StockLogo src={stock.logo} name={stock.name} ticker={ticker} />
@@ -545,12 +545,12 @@ export default async function StockDetailPage({
                       )}
                     </p>
                   )}
-                  <div className="mt-3 flex items-center gap-2 opacity-90">
+                  <div className="mt-3 flex flex-wrap items-center justify-end gap-2 opacity-90">
                     <StockActionBadge ticker={ticker} />
                     <ThesisButton ticker={ticker} />
                     <Link
                       href={`/compare?s=${ticker}`}
-                      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium border border-border text-text-tertiary hover:bg-bg-hover hover:text-text-primary transition-all press-scale"
+                      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium border border-border text-text-tertiary hover:bg-bg-hover hover:text-text-primary transition-all press-scale"
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                         <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />

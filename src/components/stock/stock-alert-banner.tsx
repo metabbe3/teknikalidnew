@@ -35,7 +35,7 @@ export function StockAlertBanner({ ticker }: { ticker: string }) {
         </div>
         <button
           onClick={() => setVisible(false)}
-          className="text-text-tertiary hover:text-text-primary shrink-0"
+          className="text-text-tertiary hover:text-text-primary shrink-0 p-2 -m-2"
           aria-label="Tutup"
         >
           <X className="w-[14px] h-[14px]" />

@@ -39,13 +39,13 @@ export function CtaSection() {
         <div className="flex flex-wrap gap-3 pt-2">
           <Link
             href={primaryHref}
-            className="bg-white text-text-primary hover:bg-white/90 px-5 py-2.5 rounded-lg font-medium text-sm transition-colors press-scale"
+            className="bg-white text-text-primary hover:bg-white/90 px-5 py-2.5 min-h-11 sm:min-h-0 rounded-lg font-medium text-sm transition-colors press-scale"
           >
             {primaryLabel}
           </Link>
           <Link
             href={secondaryHref}
-            className="border border-white/20 text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-white/10 transition-all press-scale"
+            className="border border-white/20 text-white px-5 py-2.5 min-h-11 sm:min-h-0 rounded-lg font-medium text-sm hover:bg-white/10 transition-all press-scale"
           >
             {secondaryLabel}
           </Link>
