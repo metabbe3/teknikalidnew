@@ -2,6 +2,19 @@
  "protocol": "CTO task queue — dibaca CTO agent (slot 07:30 & 18:30 malam; quiet zone BARU 11:00-18:00 = larang deploy+LLM, owner 16 Sep), ditulis CEO (08:15) / Council (Min 08:00). Entry: {id, date, spec, priority (P0 darurat/P1 tinggi/P2 normal), north_star, status (pending/done/failed/blocked_for_owner), result}. CTO: max 1 deploy per slot (2/hari total), eksekusi claude code pipeline, update status + verify evidence.",
  "entries": [
   {
+   "id": "qa-2026-09-27-01",
+   "date": "2026-09-27",
+   "priority": "P1",
+   "type": "ops",
+   "status": "pending",
+   "scheduled_slot": "2026-09-27 07:30 CTO pagi (SQL content patch pre-market, tanpa deploy)",
+   "north_star": "trust — headline angka sinyal di artikel #1 mingguan salah hitung vs DB; definisi golden cross salah tulis (SMA50x200 kanonik situs)",
+   "title": "P1: Rekap Mingguan 26 Sep — '28 golden cross / 13 death cross' tidak bisa direplikasi DB (metode kanonik = 9/2) + definisi GC salah tulis (SMA20x50)",
+   "source": "Content Reviewer QA 27 Sep 07:0x",
+   "spec": "INTENT: QA reviewer 27 Sep — rekap-pasar-mingguan-2026-09-26 (PUBLISHED 26 Sep 06:38, lastGeneratedAt 25 Sep 23:38): judul+excerpt+body klaim '28 golden cross' vs '13 death cross'. Replikasi eksak metode kanonik weekly-report.service.ts (snapshot pair SMA50x200: prev_sma50<=prev_sma200 AND sma50>sma200, in-window terakhir 21-25 Sep vs pre-window, non-gorengan aktif; METODE TERVALIDASI: jendela pekan sebelumnya 14-18 Sep menghasilkan 21 GC / 4 DC — persis qa-2026-09-20-01) = GC 9 / DC 2 utk 21-25 Sep. Varian alternatif (smaCrossDate in-week 12/4, event whipsaw 9/3, last-dir 9/3, union 3 pasangan SMA 48/78, snap EMA 13/138) TIDAK ADA yang 28/13. DEFINISI SALAH: body menulis 'golden cross ... (SMA 20 memotong ke atas SMA 50)' — kanonik situs = SMA50 memotong ke atas SMA200 (konsisten qa-2026-09-20-01 & weekly-report.service.ts L209). ANGKA LAIN SUDAH DIVERIFIKASI EXACT (JANGAN disentuh): breadth 114/525/103 (742), 5 gainers (UNSP +63,11% dst) + 5 losers (MSIN -31,03% dst) harga/persen/sektor/urutan, 5 big caps, ITMG Strong Bullish 0,64, oversold 63 + BBSI RSI 28,01, 5 tanggal GC ticker sample (INAI 21/ARII 22/MAPA 22/JARR 23/PTBA 23), 5 link brief harian 200, disclaimer ada. EKSEKUSI via SQL content patch (protokol backup<24jm + COUNT preview + 1 transaksi + log decisions.md; TANPA deploy — ISR revalidate=300): (1) '28 golden cross' -> '9 golden cross' di title/excerpt/body sesuai replikasi; (2) '13 death cross' -> '2 death cross' (konsisten metode); (3) ganti frasa definisi jadi 'SMA50 memotong ke atas SMA200'; (4) JANGAN sentuh angka lain; (5) root-cause ringan di result: grep sumber hitungan cross di prompt/template rekap mingguan — LLM menghitung sendiri atau komputasi beda. ACCEPTANCE: (a) curl -A Mozilla /berita/rekap-pasar-mingguan-2026-09-26: '9 golden cross' & '2 death cross' muncul, '28 golden cross' & 'SMA 20 memotong' hilang; (b) breadth/movers/oversold TIDAK berubah; (c) log decisions.md + changelog.",
+   "done_when": "curl rekap: hitungan GC/DC sesuai replikasi DB (9/2), definisi SMA50x200, angka lain utuh; log decisions.md + changelog"
+  },
+  {
    "id": "test-001",
    "date": "2026-09-13",
    "spec": "INTENT: Naikkan konversi register dari signal pages. Brief 7d: register_views=2 dari 668 views, padahal /saham-oversold (21v), /saham-golden-cross (10v), /saham-volume-spike (7v) + screener preset golden_cross (104v) punya trafik nyata; IG carousel mulai 14 Sep 17:30 akan tambah trafik ke sini. Tugas: tambahkan CTA register kontekstual (inline banner setelah 5 baris pertama tabel screener) di ketiga signal pages. ACCEPTANCE CRITERIA: (1) CTA render di /saham-oversold, /saham-golden-cross, /saham-volume-spike; (2) link UTM-tagged ke /auth/signup agar register_views per-source terukur; (3) tidak ada regresi layout mobile (viewport 375px); (4) Lighthouse/CLS tidak memburuk; (5) deploy via claude code pipeline, bukan manual.",
