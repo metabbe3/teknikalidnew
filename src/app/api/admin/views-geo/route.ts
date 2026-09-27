@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { geoLookup } from "@/lib/geo-prefixes";
+import { requireAdmin } from "@/lib/auth-guard";
+
+export const dynamic = "force-dynamic";
 
 /**
  * GET /api/admin/views-geo?days=7 — country breakdown of human pageviews.
@@ -8,6 +11,7 @@ import { geoLookup } from "@/lib/geo-prefixes";
  * unknown stays "??" — data reliability over guessing (NORTH STAR).
  */
 export async function GET(request: NextRequest) {
+  await requireAdmin();
   const days = Math.min(Math.max(Number(request.nextUrl.searchParams.get("days")) || 7, 1), 90);
   const rows = await prisma.$queryRaw<{ ip: string; n: bigint }[]>`
     SELECT ip, count(*) AS n
