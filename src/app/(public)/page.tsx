@@ -34,9 +34,9 @@ const RadarPreview = dynamicImport(
 );
 
 export const metadata: Metadata = {
-  title: "Analisa Teknikal Saham, Crypto & Chart Real-Time",
+  title: "Analisa Teknikal Saham IDX & Chart Real-Time",
   description:
-    "Platform analisa teknikal untuk trader Indonesia — saham IDX dan aset lainnya. Chart interaktif real-time, indikator RSI MACD Bollinger Bands, screener saham gratis, dan komunitas trader Indonesia. Pantau 956+ saham IDX.",
+    "Platform analisa teknikal saham untuk trader Indonesia — chart interaktif real-time, indikator RSI MACD Bollinger Bands, screener saham gratis, dan komunitas trader Indonesia. Pantau 956+ saham IDX.",
   alternates: { canonical: "/" },
 };
 
