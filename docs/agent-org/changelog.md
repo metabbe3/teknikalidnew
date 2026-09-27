@@ -167,3 +167,10 @@
 - Geo: label-only breakdown (bukan filter — jangan buang data), prefix map coverage 688/716=96,1%, unknown='??' honest.
 - QA: slot Senin 28 Sep (mobile UX spot-check + geo dashboard); impact_check_due: 2026-10-25 (retention mobile vs baseline).
 - Lesson: className-only waves di-commit SELEKTIF dari working tree bercampur WIP; claude menulis, agent-utama verify+commit+build+deploy.
+
+## [2026-09-28 06:50] SEO de-emphasis crypto + double-brand fix — owner direct
+- Type: SEO/UX | commits: ce60ee2 + 17eb15f | deploys: 2 (docker image rebuild)
+- Owner ask: "crypto hapus dari title, fokus saham dulu"
+- Changes: (1) homepage title → "Analisa Teknikal Saham IDX & Chart Real-Time" (page-level metadata menimpa layout — dua-duanya di-fix); (2) OG/Twitter title root → IDX-only; (3) /crypto/* title tanpa kata "Crypto" + FIX double-brand "| TeknikalID | TeknikalID" (suffix manual + template); (4) crypto pages memang sudah noindex + nav hidden + CRYPTO_ENABLED=false — tinggal URL langsung yang hidup (by design, redirect /crypto → /stocks).
+- Verify live: homepage + /crypto/BTC title baru ter-serve, /stocks 200, berita today 200.
+- Catatan SEO: GSC resubmit 13 Sep; sitemap 0 crypto. Expect: Google recrawl homepage dalam 1-7 hari → title SERP update.
