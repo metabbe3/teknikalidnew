@@ -352,9 +352,17 @@
       "title": "Audit mobile-friendly seluruh halaman (93.4% traffic mobile)",
       "source": "owner 27 Sep, assessed by agent-utama (SQL+curl)",
       "priority": "P2",
-      "status": "in_progress_wave2",
+      "status": "done_waves_1_2",
       "assessment": "93.4% views 7d mobile (669/716). Quick audit: viewport OK di 4 top pages; artikel punya overflow-x; /stocks = 288KB TTFB 1.5s + 2 elemen min-width 900px + tanpa scroll-wrapper UX; charts/tabel signal perlu audit real-device.",
       "verdict": "approve — kandidat Product Agent Senin 10:15 setelah 2 PRD mandate"
+    },
+    {
+      "task_id": "idea-2026-09-27-community-mobile",
+      "title": "Community sidebar mobile fallback (data sosial hilang di mobile 93%)",
+      "source": "claude wave-2 audit 27 Sep",
+      "priority": "P2",
+      "status": "candidate",
+      "verdict": "Product Agent Senin"
     }
   ]
 }
