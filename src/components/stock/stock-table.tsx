@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { formatPrice, formatPercent, formatVolume, stripJk, changeColor, rsiColor, rsiBgColor } from "@/lib/utils";
 import { Sparkline } from "@/components/stock/sparkline";
+import { StockCardList } from "@/components/stock/stock-card";
 
 export interface StockRow {
   ticker: string;
@@ -187,101 +188,108 @@ export function StockTable({ stocks, sectors, linkBase = "/stocks" }: StockTable
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto rounded-xl depth-shadow relative border border-border/60">
-        <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-bg-primary to-transparent md:hidden z-10" />
-        <div ref={scrollRef} className="max-h-[70vh] overflow-y-auto overflow-x-hidden">
-          {/* Header */}
-          <div className={`glass-header sticky top-0 z-20 grid ${gridCols} min-w-[900px] border-b border-border/80`}>
-            <SortHeader label="Ticker" colKey="ticker" />
-            <SortHeader label="Name" colKey="name" />
-            <SortHeader label="Sector" colKey="sector" />
-            <div className="px-4 py-3 text-right text-xs uppercase tracking-wide text-text-secondary">Price</div>
-            <div className="px-4 py-3 text-right text-xs uppercase tracking-wide text-text-secondary">7D</div>
-            <SortHeader label="Change" colKey="changePercent" />
-            <SortHeader label="Volume" colKey="volume" />
-            <SortHeader label="RSI" colKey="rsi14" />
-          </div>
+      {/* Table (md+) */}
+      <div className="hidden md:block">
+        <div className="overflow-x-auto rounded-xl depth-shadow relative border border-border/60">
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-bg-primary to-transparent md:hidden z-10" />
+          <div ref={scrollRef} className="max-h-[70vh] overflow-y-auto overflow-x-hidden">
+            {/* Header */}
+            <div className={`glass-header sticky top-0 z-20 grid ${gridCols} min-w-[900px] border-b border-border/80`}>
+              <SortHeader label="Ticker" colKey="ticker" />
+              <SortHeader label="Name" colKey="name" />
+              <SortHeader label="Sector" colKey="sector" />
+              <div className="px-4 py-3 text-right text-xs uppercase tracking-wide text-text-secondary">Price</div>
+              <div className="px-4 py-3 text-right text-xs uppercase tracking-wide text-text-secondary">7D</div>
+              <SortHeader label="Change" colKey="changePercent" />
+              <SortHeader label="Volume" colKey="volume" />
+              <SortHeader label="RSI" colKey="rsi14" />
+            </div>
 
-          {/* Virtual rows */}
-          <div
-            className="relative min-w-[900px]"
-            style={{ height: `${virtualizer.getTotalSize()}px` }}
-          >
-            {virtualizer.getVirtualItems().map((virtualRow) => {
-              const stock = filtered[virtualRow.index];
-              const bigMove = stock.changePercent !== null && Math.abs(stock.changePercent) > 2;
-              return (
-                <div
-                  key={stock.ticker}
-                  data-index={virtualRow.index}
-                  className={`absolute top-0 left-0 w-full grid ${gridCols} items-center border-b border-border/50 cursor-pointer transition-all duration-100 ${
-                    virtualRow.index % 2 === 0 ? "bg-bg-card/30" : ""
-                  } hover:bg-accent/[0.04]`}
-                  style={{
-                    height: `${virtualRow.size}px`,
-                    transform: `translateY(${virtualRow.start}px)`,
-                  }}
-                  onClick={() => router.push(`${linkBase}/${stock.ticker}`)}
-                >
-                  <div className="px-4 py-3">
-                    <Link href={`${linkBase}/${stock.ticker}`} className="font-semibold text-accent hover:underline" onClick={(e) => e.stopPropagation()}>
-                      {stripJk(stock.ticker)}
-                    </Link>
-                  </div>
-                  <div className="px-4 py-3 text-text-secondary truncate">
-                    <Link href={`${linkBase}/${stock.ticker}`} onClick={(e) => e.stopPropagation()}>{stock.name}</Link>
-                    {stock.listingBoard && stock.listingBoard !== "Utama" && (
-                      <ListingBoardBadge board={stock.listingBoard} />
-                    )}
-                  </div>
-                  <div className="px-4 py-3 text-text-secondary text-xs">{stock.sector}</div>
-                  <div className="px-4 py-3 text-right font-mono tabular-nums font-medium">
-                    {stock.close !== null ? formatPrice(stock.close) : "—"}
-                  </div>
-                  <div className="px-4 py-3 text-right">
-                    {sparklines?.[stock.ticker] && sparklines[stock.ticker].length >= 2 && (
-                      <Sparkline
-                        data={sparklines[stock.ticker]}
-                        positive={(stock.changePercent ?? 0) >= 0}
-                      />
-                    )}
-                  </div>
-                  <div className={`px-4 py-3 text-right font-mono tabular-nums font-medium ${changeColor(stock.changePercent)} ${bigMove ? (stock.changePercent! > 0 ? "bg-bullish/[0.06]" : "bg-bearish/[0.06]") : ""}`}>
-                    {stock.changePercent !== null ? formatPercent(stock.changePercent) : "—"}
-                  </div>
-                  <div className="px-4 py-3 text-right font-mono tabular-nums text-text-secondary">
-                    {stock.volume !== null ? formatVolume(stock.volume) : "—"}
-                  </div>
-                  <div className="px-4 py-3 text-right font-mono tabular-nums">
-                    {stock.rsi14 !== null ? (
-                      <div className="flex items-center justify-end gap-2">
-                        <span className={`font-medium ${rsiColor(stock.rsi14)}`}>{stock.rsi14.toFixed(1)}</span>
-                        <div className="w-14 h-1.5 bg-bg-hover rounded-full overflow-hidden relative">
-                          <div className="absolute inset-0 flex">
-                            <div className="w-[30%] bg-bullish/[0.08]" />
-                            <div className="flex-1" />
-                            <div className="w-[30%] bg-bearish/[0.08]" />
+            {/* Virtual rows */}
+            <div
+              className="relative min-w-[900px]"
+              style={{ height: `${virtualizer.getTotalSize()}px` }}
+            >
+              {virtualizer.getVirtualItems().map((virtualRow) => {
+                const stock = filtered[virtualRow.index];
+                const bigMove = stock.changePercent !== null && Math.abs(stock.changePercent) > 2;
+                return (
+                  <div
+                    key={stock.ticker}
+                    data-index={virtualRow.index}
+                    className={`absolute top-0 left-0 w-full grid ${gridCols} items-center border-b border-border/50 cursor-pointer transition-all duration-100 ${
+                      virtualRow.index % 2 === 0 ? "bg-bg-card/30" : ""
+                    } hover:bg-accent/[0.04]`}
+                    style={{
+                      height: `${virtualRow.size}px`,
+                      transform: `translateY(${virtualRow.start}px)`,
+                    }}
+                    onClick={() => router.push(`${linkBase}/${stock.ticker}`)}
+                  >
+                    <div className="px-4 py-3">
+                      <Link href={`${linkBase}/${stock.ticker}`} className="font-semibold text-accent hover:underline" onClick={(e) => e.stopPropagation()}>
+                        {stripJk(stock.ticker)}
+                      </Link>
+                    </div>
+                    <div className="px-4 py-3 text-text-secondary truncate">
+                      <Link href={`${linkBase}/${stock.ticker}`} onClick={(e) => e.stopPropagation()}>{stock.name}</Link>
+                      {stock.listingBoard && stock.listingBoard !== "Utama" && (
+                        <ListingBoardBadge board={stock.listingBoard} />
+                      )}
+                    </div>
+                    <div className="px-4 py-3 text-text-secondary text-xs">{stock.sector}</div>
+                    <div className="px-4 py-3 text-right font-mono tabular-nums font-medium">
+                      {stock.close !== null ? formatPrice(stock.close) : "—"}
+                    </div>
+                    <div className="px-4 py-3 text-right">
+                      {sparklines?.[stock.ticker] && sparklines[stock.ticker].length >= 2 && (
+                        <Sparkline
+                          data={sparklines[stock.ticker]}
+                          positive={(stock.changePercent ?? 0) >= 0}
+                        />
+                      )}
+                    </div>
+                    <div className={`px-4 py-3 text-right font-mono tabular-nums font-medium ${changeColor(stock.changePercent)} ${bigMove ? (stock.changePercent! > 0 ? "bg-bullish/[0.06]" : "bg-bearish/[0.06]") : ""}`}>
+                      {stock.changePercent !== null ? formatPercent(stock.changePercent) : "—"}
+                    </div>
+                    <div className="px-4 py-3 text-right font-mono tabular-nums text-text-secondary">
+                      {stock.volume !== null ? formatVolume(stock.volume) : "—"}
+                    </div>
+                    <div className="px-4 py-3 text-right font-mono tabular-nums">
+                      {stock.rsi14 !== null ? (
+                        <div className="flex items-center justify-end gap-2">
+                          <span className={`font-medium ${rsiColor(stock.rsi14)}`}>{stock.rsi14.toFixed(1)}</span>
+                          <div className="w-14 h-1.5 bg-bg-hover rounded-full overflow-hidden relative">
+                            <div className="absolute inset-0 flex">
+                              <div className="w-[30%] bg-bullish/[0.08]" />
+                              <div className="flex-1" />
+                              <div className="w-[30%] bg-bearish/[0.08]" />
+                            </div>
+                            <div
+                              className={`absolute top-0 h-full rounded-full ${rsiBgColor(stock.rsi14)} transition-all duration-300`}
+                              style={{ width: "6px", left: `calc(${Math.min(Math.max(stock.rsi14, 4), 92)}% - 3px)` }}
+                            />
                           </div>
-                          <div
-                            className={`absolute top-0 h-full rounded-full ${rsiBgColor(stock.rsi14)} transition-all duration-300`}
-                            style={{ width: "6px", left: `calc(${Math.min(Math.max(stock.rsi14, 4), 92)}% - 3px)` }}
-                          />
                         </div>
-                      </div>
-                    ) : "—"}
+                      ) : "—"}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
 
-            {filtered.length === 0 && (
-              <div className="absolute inset-0 flex items-center justify-center text-text-tertiary py-20">
-                Tidak ada saham ditemukan
-              </div>
-            )}
+              {filtered.length === 0 && (
+                <div className="absolute inset-0 flex items-center justify-center text-text-tertiary py-20">
+                  Tidak ada saham ditemukan
+                </div>
+              )}
+            </div>
           </div>
         </div>
+      </div>
+
+      {/* Card list (mobile) */}
+      <div className="md:hidden">
+        <StockCardList stocks={filtered} linkBase={linkBase} />
       </div>
     </div>
   );
