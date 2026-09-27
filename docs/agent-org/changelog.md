@@ -158,3 +158,12 @@
 - SQL patch (protokol: backup db-20260926 01:15 fresh <24h, preview excerpt ILIKE saam = 1 row hanya brief25, excerpt-lot-sweep = 0, UPDATE 1 transaksi tunggal, log decisions.md): post DB saam=0, live saam 9→0, 'watchlist saham' x9.
 - Baseline-then-deploy: 5 URL 200 before = 5 URL 200 after (/, /stocks, brief25, golden-cross, BBRI.JK); brief25 saam 0.
 - QA: slot berikutnya (reviewer); impact_check_due: 2026-09-29 — brief Senin 28 Sep: saam=0 + lot=0 di content+excerpt+title (regenerasi pertama lewat guard baru).
+
+## [2026-09-27 22:00-23:12] mobile-all-pages + admin geo breakdown — 3 waves, 4 deploys [owner-directed night sprint]
+- Type: feature/UX  |  PRD: idea-2026-09-27-geo (breakdown-not-filter) + owner direct ("mobile friendly all pages")
+- Deploys: wave-1 4ad1b0d /stocks card-list (22:10) · geo 6e32d15+dd800d6 views-geo API · wave-2 27d9f65 tap-target 44px (22:32) · wave-3 d10e835 44 file community/screener/compare/paper-trading/akademi/berita/home-login (23:12). Commits pendukung: 7654413, fc862c6, 7109371, 65444fd (backlog).
+- Konteks: mobile = 93.4% traffic; community sidebar dulunya hidden lg:flex = data sosial HILANG total di mobile → stacked-below-feed (NORTH STAR easy-to-use).
+- Verify (agent-utama): tsc --noEmit 0 TIAP wave; live 11/11 URL 200; 433 card rows SSR /stocks mobile-UA; md:hidden + lg:hidden terlihat di HTML; proxy.ts:300 auth-mask 404 utk /api/admin unauth = BY DESIGN (parity funnel) — data geo via dashboard admin login.
+- Geo: label-only breakdown (bukan filter — jangan buang data), prefix map coverage 688/716=96,1%, unknown='??' honest.
+- QA: slot Senin 28 Sep (mobile UX spot-check + geo dashboard); impact_check_due: 2026-10-25 (retention mobile vs baseline).
+- Lesson: className-only waves di-commit SELEKTIF dari working tree bercampur WIP; claude menulis, agent-utama verify+commit+build+deploy.
