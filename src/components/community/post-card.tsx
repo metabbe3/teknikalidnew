@@ -103,7 +103,7 @@ function PostMenu({
       <button
         onClick={() => setOpen(!open)}
         aria-label="Opsi lainnya"
-        className="p-1.5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+        className="p-2.5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <circle cx="12" cy="12" r="1" /><circle cx="12" cy="5" r="1" /><circle cx="12" cy="19" r="1" />
@@ -416,14 +416,14 @@ export function PostCard({ post, repostedBy }: PostCardProps) {
             )}
 
             {/* Action bar */}
-            <div className="flex items-center justify-between mt-2 -ml-2 max-w-[300px]">
+            <div className="flex items-center justify-between mt-2 -ml-2 max-w-full sm:max-w-[300px]">
               {/* Reactions */}
               <ReactionBar postId={post.id} reactions={post.reactions} myReaction={post.myReaction} />
 
               {/* Comment */}
               <Link
                 href={`/community/post/${post.id}`}
-                className="flex items-center gap-1 text-[12px] text-gray-400 hover:text-blue-500 hover:bg-blue-50 transition-colors px-2 py-1 rounded-full"
+                className="flex items-center gap-1 text-[12px] text-gray-400 hover:text-blue-500 hover:bg-blue-50 transition-colors px-2 py-2 rounded-full"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" />
@@ -435,7 +435,7 @@ export function PostCard({ post, repostedBy }: PostCardProps) {
               <button
                 onClick={handleRepost}
                 disabled={repostMutation.isPending}
-                className={`flex items-center gap-1 text-[12px] transition-colors px-2 py-1 rounded-full ${
+                className={`flex items-center gap-1 text-[12px] transition-colors px-2 py-2 rounded-full ${
                   reposted
                     ? "text-green-500"
                     : "text-gray-400 hover:text-green-500 hover:bg-green-50"
@@ -451,7 +451,7 @@ export function PostCard({ post, repostedBy }: PostCardProps) {
               {/* Share */}
               <button
                 onClick={() => setShowShare(true)}
-                className="flex items-center gap-1 text-[12px] text-gray-400 hover:text-teal-500 hover:bg-teal-50 transition-colors px-2 py-1 rounded-full"
+                className="flex items-center gap-1 text-[12px] text-gray-400 hover:text-teal-500 hover:bg-teal-50 transition-colors px-2 py-2 rounded-full"
                 aria-label="Bagikan"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

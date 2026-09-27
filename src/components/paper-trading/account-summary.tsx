@@ -47,14 +47,14 @@ export function AccountSummary({ account }: { account: PaperAccountSummary }) {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowTopUp(true)}
-                className="press-scale text-[11px] text-teal-300 bg-white/5 backdrop-blur border border-white/10 px-3 py-1 rounded-full hover:bg-white/10 transition-all"
+                className="press-scale text-[11px] text-teal-300 bg-white/5 backdrop-blur border border-white/10 px-3 py-2 min-h-11 rounded-full hover:bg-white/10 transition-all"
               >
                 + Top Up
               </button>
               <button
                 onClick={handleToggle}
                 disabled={togglePublic.isPending}
-                className={`press-scale text-[11px] px-3 py-1 rounded-full border transition-all ${
+                className={`press-scale text-[11px] px-3 py-2 min-h-11 rounded-full border transition-all ${
                   account.isPublic
                     ? "text-teal-300 bg-teal-500/10 border-teal-500/20"
                     : "text-slate-500 bg-white/5 border-white/10 hover:bg-white/10"

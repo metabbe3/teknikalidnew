@@ -136,7 +136,7 @@ export default async function AkademiPage({
           <div className="flex items-center gap-1 mb-8 border-b border-border">
             <Link
               href="/akademi"
-              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors -mb-px ${
                 activeTab === "artikel"
                   ? "border-accent text-accent"
                   : "border-transparent text-text-tertiary hover:text-text-secondary"
@@ -147,7 +147,7 @@ export default async function AkademiPage({
             </Link>
             <Link
               href="/akademi?tab=faq"
-              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors -mb-px ${
                 activeTab === "faq"
                   ? "border-accent text-accent"
                   : "border-transparent text-text-tertiary hover:text-text-secondary"

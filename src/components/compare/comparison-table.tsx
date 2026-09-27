@@ -26,13 +26,13 @@ export function ComparisonTable({ stocks }: Props) {
   return (
     <div className="space-y-3">
       {/* Underline tab bar */}
-      <div className="flex border-b border-border overflow-x-auto">
+      <div className="flex border-b border-border overflow-x-auto scrollbar-none">
         {TABS.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
             aria-pressed={activeTab === tab.key}
-            className={`px-4 py-2 text-xs font-medium whitespace-nowrap transition-all duration-200 border-b-2 -mb-px cursor-pointer ${
+            className={`px-4 py-2.5 text-xs min-h-11 font-medium whitespace-nowrap transition-all duration-200 border-b-2 -mb-px cursor-pointer ${
               activeTab === tab.key
                 ? "border-cyan-500 text-text-primary font-semibold"
                 : "border-transparent text-text-secondary hover:text-text-primary hover:border-border"

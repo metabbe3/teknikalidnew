@@ -131,7 +131,7 @@ export function NormalizedOverlayChart({ series }: NormalizedOverlayChartProps) 
       {/* Crosshair-following tooltip */}
       {tooltip && tooltip.values.some((v) => v.value !== null) && (
         <div
-          className="absolute top-1/2 -translate-y-1/2 bg-bg-surface/95 backdrop-blur-sm depth-shadow rounded-lg border border-border/50 px-3 py-2.5 pointer-events-none z-10 min-w-[150px]"
+          className="absolute top-1/2 -translate-y-1/2 bg-bg-surface/95 backdrop-blur-sm depth-shadow rounded-lg border border-border/50 px-3 py-2.5 pointer-events-none z-10 min-w-[150px] max-w-[180px]"
           style={{
             left: tooltipOnLeft ? tooltip.x - 170 : tooltip.x + 16,
             transition: "left 80ms ease-out",

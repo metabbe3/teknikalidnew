@@ -170,7 +170,7 @@ export function TradeModal({ onClose, initialTicker, initialSide }: TradeModalPr
                 <button
                   type="button"
                   onClick={() => { setTicker(""); setTickerName(""); setShowSearch(true); }}
-                  className="press-scale text-[10px] font-semibold text-teal-600 px-2 py-1 rounded-md hover:bg-teal-100 transition-colors"
+                  className="press-scale text-[10px] font-semibold text-teal-600 px-2.5 py-2 min-h-11 min-w-11 rounded-md hover:bg-teal-100 transition-colors"
                 >
                   Ganti
                 </button>
@@ -328,7 +328,7 @@ export function TradeModal({ onClose, initialTicker, initialSide }: TradeModalPr
                           prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
                         )
                       }
-                      className={`text-[11px] px-2.5 py-1 rounded-full transition-all duration-150 font-medium ${
+                      className={`text-[11px] px-3 py-2 min-h-11 rounded-full transition-all duration-150 font-medium ${
                         selectedTags.includes(tag)
                           ? "bg-teal-50 text-teal-700 border border-teal-200"
                           : "bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100"

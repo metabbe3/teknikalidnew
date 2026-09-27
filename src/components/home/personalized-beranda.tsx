@@ -92,7 +92,7 @@ export function PersonalizedBeranda() {
                 );
               })()}
             </div>
-            <Link href="/portfolio" className="text-[10px] text-accent hover:underline font-mono inline-flex items-center gap-1">
+            <Link href="/portfolio" className="text-[10px] text-accent hover:underline font-mono inline-flex items-center gap-1 py-2 px-1 -my-2">
               Detail <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
@@ -208,7 +208,7 @@ export function PersonalizedBeranda() {
               <Bookmark className="h-4 w-4 text-text-tertiary" />
               <h3 className="text-sm font-semibold text-text-primary">Watchlist Movers</h3>
             </div>
-            <Link href="/watchlist" className="text-[10px] text-accent hover:underline font-mono inline-flex items-center gap-1">
+            <Link href="/watchlist" className="text-[10px] text-accent hover:underline font-mono inline-flex items-center gap-1 py-2 -my-2">
               Semua <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
@@ -272,7 +272,7 @@ export function PersonalizedBeranda() {
                 <p className="text-[10px] text-text-tertiary font-mono uppercase tracking-wider">Saldo</p>
                 <p className="text-2xl font-bold text-text-primary font-mono tabular-nums">{formatRp(data.paperTrading.balance)}</p>
               </div>
-              <div className="flex items-center gap-6">
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
                 <div>
                   <p className="text-[10px] text-text-tertiary font-mono uppercase tracking-wider">Total Nilai</p>
                   <p className="text-sm font-medium text-text-secondary font-mono tabular-nums">{formatRp(data.paperTrading.totalValue)}</p>
@@ -317,16 +317,16 @@ export function PersonalizedBeranda() {
             </div>
           </div>
           <div className="flex items-center gap-2 mt-3 flex-wrap">
-            <Link href="/bottom-fishing" className="px-3 py-1.5 rounded-lg text-[11px] font-medium bg-bg-hover border border-border text-text-secondary hover:text-text-primary hover:bg-bg-card transition-all press-scale">
+            <Link href="/bottom-fishing" className="px-3 py-2.5 sm:py-1.5 rounded-lg text-[11px] font-medium bg-bg-hover border border-border text-text-secondary hover:text-text-primary hover:bg-bg-card transition-all press-scale">
               Bottom Fishing Radar
             </Link>
-            <Link href="/market-structure" className="px-3 py-1.5 rounded-lg text-[11px] font-medium bg-bg-hover border border-border text-text-secondary hover:text-text-primary hover:bg-bg-card transition-all press-scale">
+            <Link href="/market-structure" className="px-3 py-2.5 sm:py-1.5 rounded-lg text-[11px] font-medium bg-bg-hover border border-border text-text-secondary hover:text-text-primary hover:bg-bg-card transition-all press-scale">
               Market Structure
             </Link>
-            <Link href="/trading-plan" className="px-3 py-1.5 rounded-lg text-[11px] font-medium bg-bg-hover border border-border text-text-secondary hover:text-text-primary hover:bg-bg-card transition-all press-scale">
+            <Link href="/trading-plan" className="px-3 py-2.5 sm:py-1.5 rounded-lg text-[11px] font-medium bg-bg-hover border border-border text-text-secondary hover:text-text-primary hover:bg-bg-card transition-all press-scale">
               Trading Plan
             </Link>
-            <Link href="/screener" className="px-3 py-1.5 rounded-lg text-[11px] font-medium bg-bg-hover border border-border text-text-secondary hover:text-text-primary hover:bg-bg-card transition-all press-scale">
+            <Link href="/screener" className="px-3 py-2.5 sm:py-1.5 rounded-lg text-[11px] font-medium bg-bg-hover border border-border text-text-secondary hover:text-text-primary hover:bg-bg-card transition-all press-scale">
               Screener
             </Link>
           </div>
@@ -339,7 +339,7 @@ export function PersonalizedBeranda() {
               <MessageSquare className="h-4 w-4 text-text-tertiary" />
               <h3 className="text-sm font-semibold text-text-primary">Diskusi Terbaru</h3>
             </div>
-            <Link href="/community" className="text-[10px] text-accent hover:underline font-mono inline-flex items-center gap-1">
+            <Link href="/community" className="text-[10px] text-accent hover:underline font-mono inline-flex items-center gap-1 py-2 -my-2">
               Semua <ArrowRight className="h-3 w-3" />
             </Link>
           </div>

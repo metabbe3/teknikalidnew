@@ -208,7 +208,7 @@ export function CustomBuilder({
             <div className="flex items-center justify-between">
               <button
                 onClick={() => toggleFilter(filter.id)}
-                className={`flex items-center gap-2 cursor-pointer ${filter.enabled ? "text-text-primary" : "text-text-secondary"}`}
+                className={`flex items-center gap-2 cursor-pointer min-h-11 ${filter.enabled ? "text-text-primary" : "text-text-secondary"}`}
                 aria-pressed={filter.enabled}
               >
                 <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${

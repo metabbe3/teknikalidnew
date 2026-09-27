@@ -27,6 +27,26 @@ const STRATEGY_PAGES = [
     desc: "SMA50 menembus SMA200 — sinyal bullish.",
   },
   {
+    href: "/saham-volume-spike",
+    title: "Saham Volume Spike Hari Ini",
+    desc: "Volume melonjak — uang besar masuk.",
+  },
+  {
+    href: "/saham-pullback-sma20",
+    title: "Saham Pullback ke SMA20",
+    desc: "Tren naik yang koreksi — momen entry.",
+  },
+  {
+    href: "/saham-death-cross",
+    title: "Saham Death Cross Hari Ini",
+    desc: "SMA50 di bawah SMA200 — waspadai bearish.",
+  },
+  {
+    href: "/saham-ema-cross",
+    title: "Saham EMA Cross Hari Ini",
+    desc: "EMA12/EMA26 crossover — momentum cepat.",
+  },
+  {
     href: "/saham-blue-chip",
     title: "Saham Blue Chip IDX",
     desc: "Large-cap likuid untuk portofolio inti.",
@@ -35,6 +55,11 @@ const STRATEGY_PAGES = [
     href: "/broker-saham-terbaik",
     title: "Broker Saham Terbaik",
     desc: "Perbandingan broker BEI terpercaya.",
+  },
+  {
+    href: "/laporan-pasar",
+    title: "Laporan Pasar Mingguan",
+    desc: "Ringkasan IHSG, breadth & sinyal dari data asli.",
   },
 ] as const;
 

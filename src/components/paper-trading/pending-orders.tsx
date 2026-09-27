@@ -73,7 +73,7 @@ export function PendingOrders({ orders }: { orders: PendingOrder[] }) {
                   <button
                     onClick={() => handleCancel(order.id)}
                     disabled={cancelOrder.isPending}
-                    className="press-scale text-xs font-bold bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 disabled:opacity-50"
+                    className="press-scale text-xs font-bold bg-red-600 text-white px-3 py-2.5 min-h-11 rounded-lg hover:bg-red-700 disabled:opacity-50"
                   >
                     {cancelOrder.isPending ? "..." : "Ya"}
                   </button>
@@ -87,7 +87,7 @@ export function PendingOrders({ orders }: { orders: PendingOrder[] }) {
               ) : (
                 <button
                   onClick={() => setConfirmId(order.id)}
-                  className="press-scale text-xs font-semibold text-red-500 bg-red-50 px-3 py-1.5 rounded-lg hover:bg-red-100 transition-colors shrink-0 border border-red-100"
+                  className="press-scale text-xs font-semibold text-red-500 bg-red-50 px-3 py-2.5 min-h-11 rounded-lg hover:bg-red-100 transition-colors shrink-0 border border-red-100"
                 >
                   Batalkan
                 </button>

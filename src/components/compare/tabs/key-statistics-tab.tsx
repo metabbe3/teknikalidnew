@@ -71,7 +71,7 @@ function Range52WRow({ stocks }: { stocks: CompareStock[] }) {
 
 export function KeyStatisticsTab({ stocks }: Props) {
   return (
-    <table className="w-full">
+    <table className="w-full min-w-[420px]">
       <thead>
         <tr className="border-b border-border">
           <th className="py-2 pr-3 text-left text-[10px] text-text-tertiary font-medium sticky left-0 bg-bg-primary">Metric</th>

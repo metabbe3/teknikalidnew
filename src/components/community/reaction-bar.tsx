@@ -46,7 +46,7 @@ export function ReactionBar({
     <div className="relative">
       <button
         onClick={() => setShowPicker(!showPicker)}
-        className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all"
+        className="flex items-center gap-1 px-2 py-2.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all"
       >
         {myReaction ? (
           <>
@@ -81,7 +81,7 @@ export function ReactionBar({
             <button
               key={option.type}
               onClick={() => handleReact(option.type)}
-              className={`w-8 h-8 flex items-center justify-center rounded-full text-base transition-all hover:scale-125 ${
+              className={`w-11 h-11 flex items-center justify-center rounded-full text-base transition-all hover:scale-125 ${
                 myReaction === option.type
                   ? "bg-gray-100 scale-110"
                   : "hover:bg-gray-50"

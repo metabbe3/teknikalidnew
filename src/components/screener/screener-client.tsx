@@ -281,7 +281,7 @@ function ScreenerPageContent({ assetClass, linkBase = "/stocks" }: { assetClass?
             ) : isError ? (
               <div className="card-gradient depth-shadow rounded-xl p-8 text-center border border-border">
                 <p className="text-text-secondary text-sm">Gagal memuat hasil.</p>
-                <button onClick={() => refetch()} className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-text-primary text-white text-xs font-semibold hover:bg-text-primary/80 transition-colors press-scale cursor-pointer">
+                <button onClick={() => refetch()} className="mt-3 inline-flex items-center gap-1.5 px-4 py-2.5 min-h-11 rounded-lg bg-text-primary text-white text-xs font-semibold hover:bg-text-primary/80 transition-colors press-scale cursor-pointer">
                   Coba lagi
                 </button>
               </div>
@@ -303,7 +303,7 @@ function ScreenerPageSkeleton() {
       <div className="border-b border-border">
         <div className="max-w-6xl mx-auto px-4 py-8 sm:py-10 space-y-5">
           <div className="h-8 w-64 bg-bg-hover rounded-lg" />
-          <div className="h-4 w-96 bg-bg-hover rounded" />
+          <div className="h-4 w-96 max-w-full bg-bg-hover rounded" />
           <div className="flex gap-2">
             {[1, 2, 3, 4, 5].map((i) => (
               <div key={i} className="h-10 w-24 bg-bg-hover rounded-lg" />

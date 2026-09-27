@@ -214,7 +214,7 @@ export function AkademiGrid({
           <button
             onClick={() => setPage(1)}
             disabled={safePage === 1}
-            className="p-2 rounded-lg text-text-tertiary hover:text-text-primary hover:bg-gray-100 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+            className="h-11 w-11 p-2.5 rounded-lg text-text-tertiary hover:text-text-primary hover:bg-gray-100 disabled:opacity-30 disabled:pointer-events-none transition-colors"
             aria-label="Halaman pertama"
           >
             <ChevronsLeft className="h-4 w-4" />
@@ -222,7 +222,7 @@ export function AkademiGrid({
           <button
             onClick={() => setPage(safePage - 1)}
             disabled={safePage === 1}
-            className="p-2 rounded-lg text-text-tertiary hover:text-text-primary hover:bg-gray-100 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+            className="h-11 w-11 p-2.5 rounded-lg text-text-tertiary hover:text-text-primary hover:bg-gray-100 disabled:opacity-30 disabled:pointer-events-none transition-colors"
             aria-label="Halaman sebelumnya"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -240,7 +240,7 @@ export function AkademiGrid({
               <button
                 key={p}
                 onClick={() => setPage(p as number)}
-                className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${
+                className={`w-11 h-11 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${
                   safePage === p
                     ? "bg-accent text-white"
                     : "text-text-secondary hover:bg-gray-100"
@@ -254,7 +254,7 @@ export function AkademiGrid({
           <button
             onClick={() => setPage(safePage + 1)}
             disabled={safePage === totalPages}
-            className="p-2 rounded-lg text-text-tertiary hover:text-text-primary hover:bg-gray-100 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+            className="h-11 w-11 p-2.5 rounded-lg text-text-tertiary hover:text-text-primary hover:bg-gray-100 disabled:opacity-30 disabled:pointer-events-none transition-colors"
             aria-label="Halaman selanjutnya"
           >
             <ChevronRight className="h-4 w-4" />
@@ -262,7 +262,7 @@ export function AkademiGrid({
           <button
             onClick={() => setPage(totalPages)}
             disabled={safePage === totalPages}
-            className="p-2 rounded-lg text-text-tertiary hover:text-text-primary hover:bg-gray-100 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+            className="h-11 w-11 p-2.5 rounded-lg text-text-tertiary hover:text-text-primary hover:bg-gray-100 disabled:opacity-30 disabled:pointer-events-none transition-colors"
             aria-label="Halaman terakhir"
           >
             <ChevronsRight className="h-4 w-4" />

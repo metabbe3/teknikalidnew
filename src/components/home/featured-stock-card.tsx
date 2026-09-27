@@ -84,7 +84,7 @@ export function FeaturedStockCard({
         </span>
         {changePercent !== null && (
           <span
-            className={`flex items-center justify-center w-5 h-5 rounded-full text-white text-[9px] font-bold ${
+            className={`flex items-center justify-center w-8 h-8 sm:w-5 sm:h-5 rounded-full text-white text-[9px] font-bold ${
               isPositive ? "bg-bullish" : "bg-bearish"
             }`}
             aria-hidden="true"

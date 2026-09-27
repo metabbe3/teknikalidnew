@@ -43,7 +43,7 @@ export function ResultsHeader({
   const isAuthenticated = !!session?.user;
 
   return (
-    <div className="flex items-center justify-between flex-1 flex-wrap gap-2">
+    <div className="flex flex-wrap items-center justify-between flex-1 gap-2 gap-y-3">
       <div className="flex items-center gap-2.5">
         <h3 className="text-lg font-semibold tracking-tight">Hasil</h3>
         <span className="text-xs text-text-tertiary tabular-nums font-mono">{count} saham</span>
@@ -54,7 +54,7 @@ export function ResultsHeader({
             <button
               onClick={onBatchAdd}
               disabled={isBatchAdding}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-bg-card hover:bg-bg-hover transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-1.5 px-3 py-2.5 text-xs min-h-11 font-medium rounded-lg border border-border bg-bg-card hover:bg-bg-hover transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Tambahkan semua ke watchlist"
             >
               <BookmarkIcon filled={false} className="w-3.5 h-3.5" />
@@ -64,7 +64,7 @@ export function ResultsHeader({
               <button
                 onClick={onBatchRemove}
                 disabled={isBatchRemoving}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-1.5 px-3 py-2.5 text-xs min-h-11 font-medium rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label={`Hapus ${watchedCount} saham dari watchlist`}
               >
                 <BookmarkIcon filled={true} className="w-3.5 h-3.5" />
@@ -79,7 +79,7 @@ export function ResultsHeader({
           <select
             value={sortBy}
             onChange={(e) => onSortChange(e.target.value as SortField, sortBy === e.target.value && sortOrder === "desc" ? "asc" : "desc")}
-            className="text-xs bg-transparent text-text-primary border-none outline-none cursor-pointer pr-1"
+            className="text-xs bg-transparent text-text-primary border-none outline-none cursor-pointer pr-1 min-h-11"
             aria-label="Sort by"
           >
             {SORT_OPTIONS.map((opt) => (
@@ -101,7 +101,7 @@ export function ResultsHeader({
         <div className="flex items-center gap-1 bg-bg-card border border-border rounded-lg p-0.5">
           <button
             onClick={() => onViewChange("table")}
-            className={`p-1.5 rounded-md transition-colors cursor-pointer ${viewMode === "table" ? "bg-bg-hover text-text-primary" : "text-text-tertiary hover:text-text-secondary"}`}
+            className={`p-2.5 rounded-md transition-colors cursor-pointer ${viewMode === "table" ? "bg-bg-hover text-text-primary" : "text-text-tertiary hover:text-text-secondary"}`}
             aria-label="Table view"
             aria-pressed={viewMode === "table"}
           >
@@ -111,7 +111,7 @@ export function ResultsHeader({
           </button>
           <button
             onClick={() => onViewChange("cards")}
-            className={`p-1.5 rounded-md transition-colors cursor-pointer ${viewMode === "cards" ? "bg-bg-hover text-text-primary" : "text-text-tertiary hover:text-text-secondary"}`}
+            className={`p-2.5 rounded-md transition-colors cursor-pointer ${viewMode === "cards" ? "bg-bg-hover text-text-primary" : "text-text-tertiary hover:text-text-secondary"}`}
             aria-label="Card view"
             aria-pressed={viewMode === "cards"}
           >
@@ -155,7 +155,7 @@ export function ResultsTable({ stocks, watchlistTickers, onToggleWatchlist, link
 
   return (
     <div className="overflow-x-auto rounded-xl depth-shadow-strong bg-bg-card relative">
-      <div ref={scrollRef} className="max-h-[60vh] overflow-y-auto overflow-x-hidden">
+      <div ref={scrollRef} className="max-h-[60vh] overflow-auto">
         <div className={`glass-header sticky top-0 z-10 grid ${gridCols} text-text-tertiary text-[11px] uppercase tracking-wider min-w-[986px]`}>
           <div className="px-2 py-3 font-medium"></div>
           <div className="px-4 py-3 font-medium">Ticker</div>
@@ -200,7 +200,7 @@ export function ResultsTable({ stocks, watchlistTickers, onToggleWatchlist, link
                         onToggleWatchlist(stock.ticker);
                       }
                     }}
-                    className={`p-0.5 rounded transition-colors ${
+                    className={`p-2.5 rounded transition-colors ${
                       isAuthenticated ? "cursor-pointer hover:text-accent" : "cursor-default text-text-tertiary/70"
                     } ${inWatchlist ? "text-accent" : "text-text-tertiary"}`}
                     aria-label={isAuthenticated ? (inWatchlist ? "Hapus dari watchlist" : "Tambah ke watchlist") : "Daftar untuk menggunakan watchlist"}
@@ -276,7 +276,7 @@ export function ResultsCards({ stocks, styleDef, watchlistTickers, onToggleWatch
                   onToggleWatchlist(stock.ticker);
                 }
               }}
-              className={`absolute top-3 right-3 p-1 rounded transition-colors z-10 ${
+              className={`absolute top-2 right-2 p-2.5 rounded transition-colors z-10 ${
                 isAuthenticated ? "cursor-pointer hover:text-accent" : "cursor-default text-text-tertiary/70"
               } ${inWatchlist ? "text-accent" : "text-text-tertiary"}`}
               aria-label={isAuthenticated ? (inWatchlist ? "Hapus dari watchlist" : "Tambah ke watchlist") : "Daftar untuk menggunakan watchlist"}

@@ -109,9 +109,9 @@ export default function SahamBlueChipPage() {
         </div>
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/screener" className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">🔍 Screener Lengkap</Link>
-          <Link href="/saham-oversold" className="rounded-lg border px-4 py-2 text-sm font-semibold hover:bg-muted">💎 Saham Oversold</Link>
-          <Link href="/broker-saham-terbaik" className="rounded-lg border px-4 py-2 text-sm font-semibold hover:bg-muted">🏦 Broker Saham Terbaik</Link>
+          <Link href="/screener" className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">🔍 Screener Lengkap</Link>
+          <Link href="/saham-oversold" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">💎 Saham Oversold</Link>
+          <Link href="/broker-saham-terbaik" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">🏦 Broker Saham Terbaik</Link>
         </div>
       </div>
     </>

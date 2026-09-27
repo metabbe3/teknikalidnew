@@ -112,7 +112,7 @@ export default async function SahamGoldenCrossPage() {
                   return (
                     <tr key={s.ticker} className="border-b hover:bg-muted/50">
                       <td className="py-2 pr-4">
-                        <Link href={`/stocks/${s.ticker}`} className="font-semibold text-blue-600 hover:underline">
+                        <Link href={`/stocks/${s.ticker}`} className="font-semibold text-blue-600 hover:underline inline-block py-1.5">
                           {stripJk(s.ticker)}
                         </Link>
                       </td>
@@ -132,13 +132,13 @@ export default async function SahamGoldenCrossPage() {
         </div>
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/screener" className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+          <Link href="/screener" className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">
             🔍 Screener Lengkap
           </Link>
-          <Link href="/saham-oversold" className="rounded-lg border px-4 py-2 text-sm font-semibold hover:bg-muted">
+          <Link href="/saham-oversold" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">
             💎 Saham Oversold
           </Link>
-          <Link href="/saham-overbought" className="rounded-lg border px-4 py-2 text-sm font-semibold hover:bg-muted">
+          <Link href="/saham-overbought" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">
             ⚠️ Saham Overbought
           </Link>
         </div>

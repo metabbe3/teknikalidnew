@@ -80,7 +80,7 @@ function CompareContent() {
             <button
               key={p.label}
               onClick={() => loadPreset(p.tickers)}
-              className={`px-3 py-1.5 text-[11px] font-semibold rounded-full border transition-all duration-200 cursor-pointer ${
+              className={`px-3.5 py-2.5 text-[11px] min-h-11 font-semibold rounded-full border transition-all duration-200 cursor-pointer ${
                 isPresetActive(p.tickers)
                   ? "bg-cyan-500 text-white border-cyan-500 shadow-sm shadow-cyan-500/20"
                   : "bg-bg-card text-text-secondary border-border hover:border-cyan-400/40 hover:text-cyan-600 depth-shadow"
@@ -105,7 +105,7 @@ function CompareContent() {
                 <p className="text-sm text-bearish font-medium">Gagal memuat data perbandingan</p>
                 <p className="text-xs text-text-tertiary mt-0.5">Periksa koneksi internet dan coba lagi</p>
               </div>
-              <button onClick={() => refetch()} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-bg-card border border-border hover:bg-bg-hover transition-colors">
+              <button onClick={() => refetch()} className="px-3 py-2.5 text-xs min-h-11 font-medium rounded-lg bg-bg-card border border-border hover:bg-bg-hover transition-colors">
                 Coba Lagi
               </button>
             </div>
@@ -119,7 +119,7 @@ function CompareContent() {
                   key={r}
                   onClick={() => setRange(r)}
                   aria-pressed={range === r}
-                  className={`px-3 py-1 text-xs font-medium rounded-md transition-all duration-150 ${
+                  className={`px-3 py-2.5 text-xs min-h-11 font-medium rounded-md transition-all duration-150 ${
                     range === r
                       ? "bg-text-primary text-white shadow-sm"
                       : "text-text-secondary hover:text-text-primary"
@@ -202,7 +202,7 @@ function CompareContent() {
                   <button
                     key={p.label}
                     onClick={() => loadPreset(p.tickers)}
-                    className="px-3 py-1.5 text-xs font-semibold rounded-full bg-bg-hover border border-border text-text-secondary hover:text-cyan-600 hover:border-cyan-400/40 transition-all duration-200 press-scale cursor-pointer"
+                    className="px-3 py-2.5 text-xs min-h-11 font-semibold rounded-full bg-bg-hover border border-border text-text-secondary hover:text-cyan-600 hover:border-cyan-400/40 transition-all duration-200 press-scale cursor-pointer"
                   >
                     {p.label}
                   </button>

@@ -60,7 +60,7 @@ export function SnapshotCard({
           <span className="font-mono text-sm font-bold text-text-primary tabular-nums">
             {stripJk(ticker)}
           </span>
-          <p className="text-[11px] text-text-tertiary leading-tight line-clamp-1 mt-0.5">
+          <p className="text-[11px] text-text-tertiary leading-tight line-clamp-2 mt-0.5">
             {name}
           </p>
         </div>
@@ -82,10 +82,12 @@ export function SnapshotCard({
           <span className="font-mono text-lg font-bold tabular-nums text-text-primary">
             {close !== null ? formatPrice(close) : "—"}
           </span>
-          <div className={`flex items-center gap-1 font-mono text-xs font-semibold tabular-nums ${changeColor}`}>
-            <span aria-hidden>{up ? "▲" : "▼"}</span>
-            <span>{chgPct ?? "—"}</span>
-          </div>
+          {changePercent !== null && (
+            <div className={`flex items-center gap-1 font-mono text-xs font-semibold tabular-nums ${changeColor}`}>
+              <span aria-hidden>{up ? "▲" : "▼"}</span>
+              <span>{chgPct}</span>
+            </div>
+          )}
         </div>
         {sparkline.length >= 2 && (
           <div className="shrink-0" aria-hidden>
@@ -113,7 +115,7 @@ export function SnapshotCard({
             </span>
           )}
           {sector && (
-            <span className="text-text-tertiary truncate max-w-[96px]" title={sector}>
+            <span className="text-text-tertiary truncate" title={sector}>
               {sector}
             </span>
           )}

@@ -15,7 +15,7 @@ function Bullet({ b }: { b: DeltaBullet }) {
   return (
     <Link
       href={`/stocks/${b.ticker}`}
-      className="flex items-center justify-between gap-3 py-2.5 group hover:bg-accent/5 -mx-2 px-2 rounded-lg transition-colors"
+      className="flex items-center justify-between gap-3 py-3 group hover:bg-accent/5 -mx-2 px-2 rounded-lg transition-colors"
     >
       <div className="min-w-0">
         <div className="flex items-center gap-2">

@@ -13,7 +13,7 @@ export function FollowButton({ userId, size = "sm", initialFollowing }: { userId
   if (!isLoggedIn || isSelf) return null;
 
   const following = data?.following ?? initialFollowing ?? false;
-  const sizeClass = size === "sm" ? "px-2.5 py-0.5 text-[10px]" : "px-4 py-1.5 text-sm";
+  const sizeClass = size === "sm" ? "px-3 py-1.5 text-[11px]" : "px-4 py-1.5 text-sm";
 
   return (
     <button

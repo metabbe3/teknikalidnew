@@ -22,7 +22,7 @@ export function BookmarkButton({ postId, initialBookmarked }: { postId: string; 
         toggle.mutate(postId);
       }}
       disabled={toggle.isPending || !isLoggedIn}
-      className={`p-2.5 text-text-tertiary hover:text-accent transition-colors rounded-md hover:bg-bg-hover shrink-0 ${!isLoggedIn ? "invisible" : ""}`}
+      className={`p-3 text-text-tertiary hover:text-accent transition-colors rounded-md hover:bg-bg-hover shrink-0 ${!isLoggedIn ? "invisible" : ""}`}
       aria-label={bookmarked ? "Hapus bookmark" : "Simpan bookmark"}
     >
       <svg

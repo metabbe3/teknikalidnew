@@ -98,7 +98,7 @@ export default async function SahamOverboughtPage() {
                   const s = stock as { ticker: string; name: string; close: number | null; changePercent: number | null; rsi14: number | null };
                   return (
                     <tr key={s.ticker} className="border-b hover:bg-muted/50">
-                      <td className="py-2 pr-4"><Link href={`/stocks/${s.ticker}`} className="font-semibold text-blue-600 hover:underline">{stripJk(s.ticker)}</Link></td>
+                      <td className="py-2 pr-4"><Link href={`/stocks/${s.ticker}`} className="font-semibold text-blue-600 hover:underline inline-block py-1.5">{stripJk(s.ticker)}</Link></td>
                       <td className="py-2 pr-4 text-muted-foreground">{s.name}</td>
                       <td className="py-2 pr-4">{s.close !== null ? formatPrice(s.close) : "—"}</td>
                       <td className={`py-2 pr-4 ${s.changePercent !== null ? changeColor(s.changePercent) : ""}`}>{s.changePercent !== null ? formatPercent(s.changePercent) : "—"}</td>
@@ -111,9 +111,9 @@ export default async function SahamOverboughtPage() {
           </table>
         </div>
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/saham-oversold" className="rounded-lg border px-4 py-2 text-sm font-semibold hover:bg-muted">💎 Saham Oversold</Link>
-          <Link href="/saham-golden-cross" className="rounded-lg border px-4 py-2 text-sm font-semibold hover:bg-muted">📈 Saham Golden Cross</Link>
-          <Link href="/screener" className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">🔍 Screener Lengkap</Link>
+          <Link href="/saham-oversold" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">💎 Saham Oversold</Link>
+          <Link href="/saham-golden-cross" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">📈 Saham Golden Cross</Link>
+          <Link href="/screener" className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">🔍 Screener Lengkap</Link>
         </div>
       </div>
     </>

@@ -168,9 +168,9 @@ export default async function LaporanMingguPage({
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border text-left">
-                  <th className="py-2 pr-4 font-semibold text-text-primary">Sektor</th>
-                  <th className="py-2 pr-4 font-semibold text-text-primary">Rata-rata Mingguan</th>
-                  <th className="py-2 pr-4 font-semibold text-text-primary">Saham</th>
+                  <th className="py-2 pr-4 font-semibold text-text-primary whitespace-nowrap">Sektor</th>
+                  <th className="py-2 pr-4 font-semibold text-text-primary whitespace-nowrap">Rata-rata Mingguan</th>
+                  <th className="py-2 pr-4 font-semibold text-text-primary whitespace-nowrap">Saham</th>
                 </tr>
               </thead>
               <tbody>
@@ -203,7 +203,7 @@ export default async function LaporanMingguPage({
                     <Link
                       key={r.ticker}
                       href={`/stocks/${r.ticker}`}
-                      className="flex items-center justify-between gap-2 rounded px-1 py-1 hover:bg-bg-hover transition-colors"
+                      className="flex items-center justify-between gap-2 rounded px-1 py-2 hover:bg-bg-hover transition-colors"
                     >
                       <span className="min-w-0">
                         <span className="font-mono text-sm font-semibold text-text-primary">{stripJk(r.ticker)}</span>
@@ -232,7 +232,7 @@ export default async function LaporanMingguPage({
               ) : (
                 <div className="flex flex-wrap gap-1.5">
                   {report.goldenCrosses.map((g) => (
-                    <Link key={g.ticker} href={`/stocks/${g.ticker}`} className="rounded-full bg-bullish/10 px-2.5 py-1 text-xs font-mono font-semibold text-bullish hover:bg-bullish/20 transition-colors">
+                    <Link key={g.ticker} href={`/stocks/${g.ticker}`} className="rounded-full bg-bullish/10 px-3 py-2 min-h-11 text-xs font-mono font-semibold text-bullish hover:bg-bullish/20 transition-colors">
                       {stripJk(g.ticker)}
                     </Link>
                   ))}
@@ -246,7 +246,7 @@ export default async function LaporanMingguPage({
               ) : (
                 <div className="flex flex-wrap gap-1.5">
                   {report.deathCrosses.map((g) => (
-                    <Link key={g.ticker} href={`/stocks/${g.ticker}`} className="rounded-full bg-bearish/10 px-2.5 py-1 text-xs font-mono font-semibold text-bearish hover:bg-bearish/20 transition-colors">
+                    <Link key={g.ticker} href={`/stocks/${g.ticker}`} className="rounded-full bg-bearish/10 px-3 py-2 min-h-11 text-xs font-mono font-semibold text-bearish hover:bg-bearish/20 transition-colors">
                       {stripJk(g.ticker)}
                     </Link>
                   ))}
@@ -258,13 +258,13 @@ export default async function LaporanMingguPage({
 
         {/* Cross-links + prev week */}
         <div className="flex flex-wrap gap-3 border-t border-border pt-6">
-          <Link href="/saham-golden-cross" className="rounded-lg border border-border px-4 py-2 text-sm font-semibold hover:bg-bg-hover">
+          <Link href="/saham-golden-cross" className="rounded-lg border border-border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
             📈 Saham Golden Cross Hari Ini
           </Link>
-          <Link href="/saham-oversold" className="rounded-lg border border-border px-4 py-2 text-sm font-semibold hover:bg-bg-hover">
+          <Link href="/saham-oversold" className="rounded-lg border border-border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
             💎 Saham Oversold
           </Link>
-          <Link href={`/laporan-pasar/${prevSlug}`} className="rounded-lg border border-border px-4 py-2 text-sm font-semibold hover:bg-bg-hover">
+          <Link href={`/laporan-pasar/${prevSlug}`} className="rounded-lg border border-border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
             ← Laporan minggu sebelumnya
           </Link>
         </div>

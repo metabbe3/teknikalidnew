@@ -69,10 +69,10 @@ export default async function LaporanPasarHubPage() {
         </div>
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/stocks?view=screener" className="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent/90">
+          <Link href="/stocks?view=screener" className="rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-accent/90">
             🔍 Screener Saham
           </Link>
-          <Link href="/saham-golden-cross" className="rounded-lg border border-border px-4 py-2 text-sm font-semibold hover:bg-bg-hover">
+          <Link href="/saham-golden-cross" className="rounded-lg border border-border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
             📈 Saham Golden Cross
           </Link>
         </div>

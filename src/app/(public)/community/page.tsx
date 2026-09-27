@@ -467,6 +467,13 @@ export default async function CommunityPage({
                 )}
               </nav>
             )}
+
+            {/* Sidebar fallback mobile — same lists, stacked below feed */}
+            <div className="lg:hidden mt-8 flex flex-col gap-4">
+              <TopKontributorSidebar users={topContributors} />
+              {topPredictors.length > 0 && <TopPredictorList users={topPredictors} />}
+              <TrendingSidebar tags={trendingTags} />
+            </div>
           </div>
 
           {/* Right sidebar — desktop only */}

@@ -39,7 +39,7 @@ export function ThesisCard() {
             <Link
               key={t.id}
               href={`/stocks/${t.ticker}`}
-              className="flex items-center justify-between gap-3 py-2.5 -mx-2 px-2 rounded-lg hover:bg-accent/5 transition-colors"
+              className="flex items-center justify-between gap-3 py-3 -mx-2 px-2 rounded-lg hover:bg-accent/5 transition-colors"
             >
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">

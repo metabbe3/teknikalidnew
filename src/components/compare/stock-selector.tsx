@@ -67,7 +67,7 @@ export function StockSelector({ selected, onAdd, onRemove, stocks, maxStocks = 4
                 <button
                   onClick={() => onRemove(ticker)}
                   aria-label={`Hapus ${ticker}`}
-                  className="ml-0.5 p-1 rounded-lg text-text-tertiary hover:text-bearish hover:bg-bearish/10 transition-colors cursor-pointer"
+                  className="ml-0.5 p-2.5 rounded-lg text-text-tertiary hover:text-bearish hover:bg-bearish/10 transition-colors cursor-pointer"
                 >
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                 </button>

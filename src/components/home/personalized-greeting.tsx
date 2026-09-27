@@ -99,7 +99,7 @@ export function PersonalizedGreeting({
             <Link
               key={link.href}
               href={link.href}
-              className="px-4 py-2 rounded-lg text-xs font-medium bg-bg-hover border border-border text-text-secondary hover:text-text-primary hover:bg-bg-card transition-all press-scale"
+              className="px-4 py-2.5 rounded-lg text-xs font-medium bg-bg-hover border border-border text-text-secondary hover:text-text-primary hover:bg-bg-card transition-all press-scale"
             >
               {link.label}
             </Link>
