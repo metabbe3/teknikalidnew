@@ -343,7 +343,7 @@
       "title": "Admin views geo: breakdown negara YA, filter luar-Indonesia TIDAK",
       "source": "owner 27 Sep, assessed by agent-utama (SQL)",
       "priority": "P3",
-      "status": "idea",
+      "status": "done_api_live",
       "assessment": "90%+ views = Indonesia (Telkomsel 180.247+2404:c0: 600+ pv/7d; Telkom/Jakarta sisanya). Filter = buang data + risiko salah buang WNI luar negeri/VPN (NORTH STAR: data reliable). Implementasi: breakdown negara di admin (IP->country saat insert atau batch harian).",
       "verdict": "half-approve"
     },
@@ -352,7 +352,7 @@
       "title": "Audit mobile-friendly seluruh halaman (93.4% traffic mobile)",
       "source": "owner 27 Sep, assessed by agent-utama (SQL+curl)",
       "priority": "P2",
-      "status": "idea",
+      "status": "in_progress_wave2",
       "assessment": "93.4% views 7d mobile (669/716). Quick audit: viewport OK di 4 top pages; artikel punya overflow-x; /stocks = 288KB TTFB 1.5s + 2 elemen min-width 900px + tanpa scroll-wrapper UX; charts/tabel signal perlu audit real-device.",
       "verdict": "approve — kandidat Product Agent Senin 10:15 setelah 2 PRD mandate"
     }
