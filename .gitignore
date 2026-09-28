@@ -58,3 +58,10 @@ next-env.d.ts
 
 # comfyui image cache
 /comfyui-cache/
+
+# repo-hygiene (evolution #14, approved 28 Sep)
+*.log
+logs/
+.playwright-mcp/
+community-agent.log
+idx-sync.log
