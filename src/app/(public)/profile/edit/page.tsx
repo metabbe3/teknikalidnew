@@ -59,7 +59,7 @@ export default function ProfileEditPage() {
         const data = await res.json();
         setUsernameError(data.available ? "" : "Username sudah digunakan");
       }
-    } catch {}
+    } catch { /* best-effort, non-critical */ }
   }
 
   function updateSocialLink(key: string, value: string) {

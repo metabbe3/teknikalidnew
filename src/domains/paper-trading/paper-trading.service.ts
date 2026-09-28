@@ -258,7 +258,7 @@ export const paperTradingService = {
             change = currentPrice - entryPrice;
             changePercent = entryPrice > 0 ? (change / entryPrice) * 100 : 0;
           }
-        } catch {}
+        } catch { /* best-effort, non-critical */ }
 
         return {
           id: p.id,

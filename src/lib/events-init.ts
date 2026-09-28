@@ -5,5 +5,5 @@ import { initSocketBridge } from "@/domains/notification/socket-bridge";
 if (process.env.NEXT_RUNTIME === "nodejs") {
   try {
     initSocketBridge();
-  } catch {}
+  } catch { /* best-effort, non-critical */ }
 }

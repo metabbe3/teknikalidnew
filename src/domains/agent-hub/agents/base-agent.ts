@@ -84,7 +84,7 @@ export abstract class BaseAgent {
     if (codeBlockMatch) {
       try {
         return JSON.parse(codeBlockMatch[1].trim());
-      } catch {}
+      } catch { /* best-effort, non-critical */ }
     }
     // 2. Try first balanced { ... } using brace counting
     const firstBrace = text.indexOf("{");
@@ -96,7 +96,7 @@ export abstract class BaseAgent {
         if (depth === 0) {
           try {
             return JSON.parse(text.slice(firstBrace, i + 1));
-          } catch {}
+          } catch { /* best-effort, non-critical */ }
           break;
         }
       }
@@ -104,7 +104,7 @@ export abstract class BaseAgent {
     // 3. Try the whole text trimmed
     try {
       return JSON.parse(text.trim());
-    } catch {}
+    } catch { /* best-effort, non-critical */ }
     return null;
   }
 }

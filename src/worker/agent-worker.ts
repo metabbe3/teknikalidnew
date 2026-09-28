@@ -37,7 +37,7 @@ const AGENT_TIMEOUTS: Record<string, number> = {
 function touchHeartbeat() {
   try {
     require("fs").writeFileSync("/tmp/worker-heartbeat", String(Date.now()));
-  } catch {}
+  } catch { /* best-effort, non-critical */ }
 }
 
 async function recoverStuckJobs() {
