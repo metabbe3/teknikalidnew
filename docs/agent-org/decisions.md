@@ -544,3 +544,6 @@ Root cause unit 'lot': brief prompt TANPA baris satuan volume + tanpa sanitizer 
 - ROOT CAUSE '28/13': market-brief-data (teknikalid_growth.py) TIDAK memuat cross-count; AgentJob kosong sejak 25 Sep → rekap & brief digenerate Mandor cron agent (714dbdc87f54 output 28 Sep 06:37) dan angka dihitung LLM — 28 tak cocok metode DB mana pun (92/111/63/11/10).
 - FIX SISTEMIK (script-only, no deploy): teknikalid_growth.py insert_article kini _sanitize_llm() (mirror content-sanitizer.ts: saam + scaled-lot + bare-number-lot utk NEWS/STOCK_ANALYSIS saja); unit test 3/3 PASS; py_compile OK.
 - 0 deploy (SQL + skrip lokal Hermes).
+
+## 2026-09-28 16:05 — [OWNER] Approve eksekusi code audit
+- Approve: 7 empty-catch dianotasi intent (183f0a8, tsc 0) + kebijakan refactor-on-touch utk file >1000 baris. Verify: commit hash + tsc 0 error.
