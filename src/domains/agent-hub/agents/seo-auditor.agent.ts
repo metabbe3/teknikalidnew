@@ -1,6 +1,7 @@
 import { BaseAgent, type ChainedJobSpec } from "./base-agent";
 import type { AgentType, AgentJobPayload, AgentJobResult } from "../agent-hub.types";
 import { prisma } from "@/lib/prisma";
+import { isStaleArticle } from "@/domains/article/article-freshness";
 
 /**
  * SEO Auditor
@@ -59,7 +60,16 @@ export class SeoAuditorAgent extends BaseAgent {
       ORDER BY cnt DESC LIMIT 20
     `;
 
-    // 5. Auto-fix: Generate meta descriptions for missing excerpts
+    // 5. Stale articles (E-E-A-T freshness — auto-noindexed at render time; reported for visibility)
+    const staleCandidates = await prisma.article.findMany({
+      where: { status: "PUBLISHED" },
+      select: { id: true, articleType: true, updatedAt: true },
+      orderBy: { updatedAt: "asc" },
+      take: 500,
+    });
+    const staleCount = staleCandidates.filter((a) => isStaleArticle(a)).length;
+
+    // 6. Auto-fix: Generate meta descriptions for missing excerpts
     let fixed = 0;
     if (fixMeta && missingExcerpt.length > 0) {
       const articlesToFix = missingExcerpt.slice(0, 10);
@@ -90,11 +100,12 @@ export class SeoAuditorAgent extends BaseAgent {
     }
 
     return {
-      summary: `SEO audit: ${missingExcerpt.length} missing meta, ${missingTags.length} missing tags, ${thinArticles.length} thin, ${duplicateTitles.length} duplicates. Fixed ${fixed} meta descriptions.`,
+      summary: `SEO audit: ${missingExcerpt.length} missing meta, ${missingTags.length} missing tags, ${thinArticles.length} thin, ${duplicateTitles.length} duplicates, ${staleCount} stale (auto-noindexed). Fixed ${fixed} meta descriptions.`,
       missingExcerpt: missingExcerpt.length,
       missingTags: missingTags.length,
       thinContent: thinArticles.length,
       duplicateTitles: duplicateTitles.length,
+      staleArticles: staleCount,
       fixedMeta: fixed,
       details: {
         thinArticles: thinArticles.slice(0, 10),

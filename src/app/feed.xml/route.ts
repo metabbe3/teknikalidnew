@@ -15,13 +15,14 @@ function escapeXml(s: string): string {
 }
 
 export async function GET() {
-  // Fetch latest 50 published articles (news + analysis + daily snapshots)
+  // Briefs + general articles only — per-ticker types (DAILY_SNAPSHOT,
+  // STOCK_ANALYSIS) 308 to /stocks pages, so the feed must not advertise them
   const articles = await prisma.article.findMany({
     where: {
       status: ArticleStatus.PUBLISHED,
       isListed: true,
       articleType: {
-        in: [ArticleType.NEWS, ArticleType.STOCK_ANALYSIS, ArticleType.GENERAL, "DAILY_SNAPSHOT" as ArticleType],
+        in: [ArticleType.NEWS, ArticleType.GENERAL],
       },
     },
     orderBy: { publishedAt: "desc" },

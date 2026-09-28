@@ -12,7 +12,7 @@ interface AuthHealthData {
   overview: {
     activeSessions: number;
     totalAccounts: number;
-    sessionsToday: number;
+    signups14d: number;
     bannedUsers: number;
   };
   providers: Array<{ provider: string; count: number }>;
@@ -43,7 +43,7 @@ export function AuthTab() {
   const kpis = [
     { title: "Active Sessions", icon: Key, value: formatVolume(data?.overview.activeSessions ?? 0), gradient: "blue" as const },
     { title: "Total Accounts", icon: Users, value: formatVolume(data?.overview.totalAccounts ?? 0), gradient: "emerald" as const },
-    { title: "Sessions Today", icon: Shield, value: formatVolume(data?.overview.sessionsToday ?? 0), gradient: "amber" as const },
+    { title: "Signups (14d)", icon: Shield, value: formatVolume(data?.overview.signups14d ?? 0), gradient: "amber" as const },
     { title: "Banned Users", icon: UserX, value: formatVolume(data?.overview.bannedUsers ?? 0), gradient: "rose" as const },
   ];
 

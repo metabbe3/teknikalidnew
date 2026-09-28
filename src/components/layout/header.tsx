@@ -8,13 +8,12 @@ import { NotificationBell } from "@/components/community/notification-bell";
 import { UserMenu } from "@/components/layout/user-menu";
 import { useIhsg } from "@/hooks/use-ihsg";
 
+// Focused nav (2026-09-07 data cut): users only touch Saham + Berita. Crypto hidden
+// behind NEXT_PUBLIC_CRYPTO_ENABLED=false; Komunitas reachable via footer + stock
+// discussion tabs (needs user critical mass before it earns a nav slot).
 const navLinks = [
   { href: "/", label: "Beranda" },
   { href: "/stocks", label: "Saham" },
-  ...(process.env.NEXT_PUBLIC_CRYPTO_ENABLED === "true"
-    ? [{ href: "/crypto", label: "Crypto" }]
-    : []),
-  { href: "/community", label: "Komunitas" },
   { href: "/berita", label: "Berita" },
   { href: "/akademi", label: "Akademi" },
 ];
@@ -148,6 +147,16 @@ export function Header() {
             <UserMenu user={session?.user} />
           </div>
 
+          {/* Mobile: always-visible sign-in entry (menu dropdown used to clip it away) */}
+          {!session?.user && (
+            <Link
+              href="/auth/signin"
+              className="sm:hidden inline-flex items-center bg-text-primary text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-text-primary/90 transition-colors press-scale"
+            >
+              Masuk
+            </Link>
+          )}
+
           {/* Mobile hamburger */}
           <button
             className="sm:hidden p-2 -mr-2 text-text-secondary hover:text-text-primary transition-colors"
@@ -170,8 +179,8 @@ export function Header() {
 
       {/* Mobile dropdown */}
       <nav
-        className={`sm:hidden border-t border-border bg-bg-surface overflow-hidden transition-all duration-200 ease-out ${
-          menuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0 border-t-0"
+        className={`sm:hidden border-t border-border bg-bg-surface overflow-y-auto transition-all duration-200 ease-out ${
+          menuOpen ? "max-h-[calc(100dvh-3.5rem)] opacity-100" : "max-h-0 opacity-0 border-t-0"
         }`}
         aria-label="Main navigation"
       >
@@ -193,21 +202,6 @@ export function Header() {
               </Link>
             );
           })}
-          <p className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-text-tertiary">Tools</p>
-          {toolLinks.map((t) => (
-            <Link
-              key={t.href}
-              href={t.href}
-              onClick={() => setMenuOpen(false)}
-              className={`block py-2.5 px-3 rounded-lg text-sm font-medium transition-colors ${
-                pathname.startsWith(t.href)
-                  ? "text-text-primary bg-bg-hover"
-                  : "text-text-secondary hover:text-text-primary hover:bg-bg-hover"
-              }`}
-            >
-              {t.label}
-            </Link>
-          ))}
           {session?.user ? (
             <>
               <Link
@@ -253,13 +247,22 @@ export function Header() {
               </button>
             </>
           ) : (
-            <Link
-              href="/auth/signin"
-              onClick={() => setMenuOpen(false)}
-              className="block py-2.5 px-3 rounded-lg text-sm font-medium text-text-primary bg-bg-hover transition-colors"
-            >
-              Masuk
-            </Link>
+            <div className="pt-2 mt-1 border-t border-border grid grid-cols-2 gap-2">
+              <Link
+                href="/auth/signin"
+                onClick={() => setMenuOpen(false)}
+                className="text-center py-2.5 px-3 rounded-lg text-sm font-medium text-text-primary bg-bg-hover transition-colors"
+              >
+                Masuk
+              </Link>
+              <Link
+                href="/auth/register"
+                onClick={() => setMenuOpen(false)}
+                className="text-center py-2.5 px-3 rounded-lg text-sm font-medium text-white bg-accent hover:bg-accent/90 transition-colors"
+              >
+                Daftar
+              </Link>
+            </div>
           )}
         </div>
       </nav>

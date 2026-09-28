@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { wibDayKey } from "@/lib/datetime-wib"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -146,10 +147,10 @@ export function aggregateDaily(
   const days: Record<string, number> = {};
   for (let i = 0; i < 14; i++) {
     const d = new Date(since.getTime() + i * 24 * 60 * 60 * 1000);
-    days[d.toISOString().slice(0, 10)] = 0;
+    days[wibDayKey(d)] = 0;
   }
   for (const entry of groups) {
-    const date = new Date(entry.createdAt).toISOString().slice(0, 10);
+    const date = wibDayKey(new Date(entry.createdAt));
     if (date in days) days[date] += entry._count;
   }
   return Object.entries(days)

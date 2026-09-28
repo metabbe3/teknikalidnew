@@ -23,7 +23,7 @@ export function MarketBreathStrip({ data, className }: { data: BreathData; class
   return (
     <div className={cn("flex flex-wrap items-center gap-x-5 gap-y-2 text-sm", className)}>
       {ihsg && ihsg.close !== null && (
-        <span className="inline-flex items-center gap-1.5 font-mono">
+        <span className="inline-flex items-center gap-1.5 font-mono w-full sm:w-auto">
           <span className="text-text-tertiary text-xs">IHSG</span>
           <span className="font-bold tabular-nums text-text-primary">{formatPrice(ihsg.close)}</span>
           {ihsg.changePercent !== null && (
@@ -48,7 +48,7 @@ export function MarketBreathStrip({ data, className }: { data: BreathData; class
       </span>
       {topGainer && (
         <Link
-          href={`/berita/saham-${topGainer.ticker.replace(/\.JK$/i, "").toLowerCase()}`}
+          href={`/stocks/${topGainer.ticker}`}
           className="hidden md:inline-flex items-center gap-1 text-text-secondary hover:text-bullish transition-colors ml-auto"
         >
           Top Gainer
@@ -58,7 +58,7 @@ export function MarketBreathStrip({ data, className }: { data: BreathData; class
       )}
       {topLoser && (
         <Link
-          href={`/berita/saham-${topLoser.ticker.replace(/\.JK$/i, "").toLowerCase()}`}
+          href={`/stocks/${topLoser.ticker}`}
           className="hidden md:inline-flex items-center gap-1 text-text-secondary hover:text-bearish transition-colors"
         >
           Top Loser

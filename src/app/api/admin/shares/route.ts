@@ -32,6 +32,12 @@ export async function GET(request: NextRequest) {
         { status: 400 },
       );
     }
+    // new Date("garbage") returns NaN-date without throwing — the try/catch above
+    // never fires. Reject explicitly before the range checks (NaN comparisons are
+    // all false, so invalid dates would otherwise sail through to Prisma → 500).
+    if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+      return NextResponse.json({ error: "Invalid date format. Use ISO 8601." }, { status: 400 });
+    }
 
     if (startDate >= endDate) {
       return NextResponse.json({ error: "start date must be before end date" }, { status: 400 });

@@ -52,7 +52,7 @@ export function GatedContent({
         <div className="text-center px-6 py-4 max-w-xs">
           <p className="text-sm text-text-secondary mb-3">{message}</p>
           <Link
-            href="/auth/signin"
+            href="/auth/register"
             className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-bold bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors press-scale"
           >
             {ctaText}

@@ -3,13 +3,14 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getClientIp, lookupAsn, isDatacenter } from "@/lib/ip-asn";
 import { detectBot } from "@/lib/bot-detect";
-import { block as blockIp } from "@/lib/ip-blocklist";
+import { isBlocked } from "@/lib/ip-blocklist";
 import { moderationService } from "@/domains/moderation/moderation.service";
 import { parseBody, schemas } from "@/lib/validation";
 
 export const dynamic = "force-dynamic";
 
-const SKIP_PREFIXES = ["/admin", "/api", "/_next", "/auth"];
+// /auth is tracked (signin/register/complete-profile) so the conversion funnel is measurable.
+const SKIP_PREFIXES = ["/admin", "/api", "/_next"];
 
 // ─── Bot Detection ───────────────────────────────────────────────────────────
 
@@ -35,8 +36,9 @@ async function distinctStockPaths(
   return new Set(rows.map((r) => r.path)).size;
 }
 
-// Scraping thresholds shared by the logged-in auto-suspend and the anon auto-block.
-// >6 distinct stocks in 5min OR >15 distinct in 24h.
+// Scraping thresholds for the logged-in auto-suspend only.
+// >6 distinct stocks in 5min OR (datacenter-flagged AND >15 distinct in 24h).
+// Anonymous browsing is no longer auto-blocklisted — see POST() below.
 const SCRAPE_BURST_LIMIT = 6;
 const SCRAPE_DAILY_LIMIT = 15;
 
@@ -63,40 +65,23 @@ async function enrichSignupOrigin(userId: string, ip: string, path: string) {
     });
   }
 
-  // Auto-suspend: flagged account scraping stock pages.
-  if (flagged && path.startsWith("/stocks/")) {
+  // Auto-suspend scrapers. A fast stock-page sweep (burst) bans ANY account
+  // regardless of signup ASN — catches residential-proxy fleets that register with
+  // clean IPs (e.g. the 2404:c0 accounts). The daily threshold stays datacenter-
+  // gated: legit engaged users browse ~10 distinct tickers/day, so banning on daily
+  // breadth alone risks false positives without the datacenter corroboration.
+  if (path.startsWith("/stocks/")) {
     const [burst, daily] = await Promise.all([
       distinctStockPaths({ userId }, 5 * 60_000),
       distinctStockPaths({ userId }, 24 * 60 * 60_000),
     ]);
-    if (burst > SCRAPE_BURST_LIMIT || daily > SCRAPE_DAILY_LIMIT) {
+    if (burst > SCRAPE_BURST_LIMIT || (flagged && daily > SCRAPE_DAILY_LIMIT)) {
       await moderationService.banUser(
         userId,
         `auto: scraping (${burst} distinct stocks/5min, ${daily}/24h)`,
         ip,
       );
     }
-  }
-}
-
-/**
- * Anonymous datacenter IP scraping stock pages → blocklist. Same thresholds as the
- * logged-in auto-suspend. The proxy already enforces isBlocked on /stocks/ +
- * /api/stocks/ + /api/screener, so the next request from this IP is 403'd. Catches
- * slow anonymous cloud crawlers (e.g. the Hetzner stock scraper) that stay under
- * the proxy's per-minute rate limit. Fire-and-forget, fail-soft.
- */
-async function blockAnonDatacenterScraper(ip: string, path: string) {
-  if (!path.startsWith("/stocks/")) return;
-  const [burst, daily] = await Promise.all([
-    distinctStockPaths({ ip }, 5 * 60_000),
-    distinctStockPaths({ ip }, 24 * 60 * 60_000),
-  ]);
-  if (burst > SCRAPE_BURST_LIMIT || daily > SCRAPE_DAILY_LIMIT) {
-    await blockIp(
-      ip,
-      `auto: anon datacenter scrape (${burst} distinct stocks/5min, ${daily}/24h)`,
-    );
   }
 }
 
@@ -120,8 +105,13 @@ export async function POST(request: NextRequest) {
     // Extract user agent
     const userAgent = request.headers.get("user-agent") ?? null;
 
-    // Detect bot (async: includes a cached ASN lookup for datacenter detection)
-    const { isBot, datacenter } = await detectBot(userAgent, ip);
+    // Detect bot (async: includes a cached ASN lookup). Blocklisted IPs (e.g. the
+    // 2404:c0 fleet) are tagged too — their beacons still fire on client-side nav
+    // even when the data requests 403, which used to pollute human stats.
+    const [{ isBot }, blocked] = await Promise.all([
+      detectBot(userAgent, ip),
+      ip ? isBlocked(ip) : Promise.resolve(false),
+    ]);
 
     await prisma.pageView.create({
       data: {
@@ -130,16 +120,16 @@ export async function POST(request: NextRequest) {
         userId,
         ip,
         userAgent,
-        isBot,
+        isBot: isBot || blocked,
       },
     });
 
-    // Capture signup origin + auto-suspend datacenter-flagged scrapers (fire-and-forget).
-    // For anonymous datacenter IPs, auto-blocklist on stock-page enumeration.
+    // Auto-suspend scrapers (fire-and-forget). Only logged-in fast-sweepers are
+    // banned; anonymous stock-page browsing is left alone to avoid false-positive
+    // locks on real visitors. Residual bot protection: proxy rate limits + the
+    // 2404:c0 prefix block in ip-blocklist.ts.
     if (userId && ip) {
       enrichSignupOrigin(userId, ip, data.path).catch(() => {});
-    } else if (!userId && ip && datacenter) {
-      blockAnonDatacenterScraper(ip, data.path).catch(() => {});
     }
   } catch {
     // Fire-and-forget: never expose errors to the client

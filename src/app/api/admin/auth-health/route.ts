@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth-guard";
 import { handleApiError } from "@/lib/api-error";
 import { prisma } from "@/lib/prisma";
+import { wibDayStart } from "@/lib/datetime-wib";
 
 export const dynamic = "force-dynamic";
 
@@ -9,22 +10,25 @@ export async function GET() {
   try {
     await requireAdmin();
   const now = new Date();
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  // WIB calendar day (00:00 WIB) — was server-local midnight, i.e. 07:00 WIB on the UTC container.
+  const todayStart = wibDayStart();
   const fourteenDaysAgo = new Date(todayStart.getTime() - 14 * 24 * 60 * 60 * 1000);
 
   const [
     activeSessions,
     totalAccounts,
-    sessionsToday,
+    signups7d,
     bannedUsers,
     accountProviders,
-    dailySessions,
+    dailySignups,
     recentBans,
     cacheStats,
   ] = await Promise.all([
     prisma.session.count({ where: { expires: { gt: now } } }),
     prisma.account.count(),
-    prisma.session.count(), // total sessions as proxy for "today"
+    // Was "sessionsToday" (actually total sessions — JWT strategy keeps the Session
+    // table near-empty, so the number was meaningless). Real signal: weekly signups.
+    prisma.user.count({ where: { createdAt: { gte: fourteenDaysAgo } } }),
     prisma.user.count({ where: { bannedAt: { not: null } } }),
 
     prisma.account.groupBy({
@@ -32,9 +36,15 @@ export async function GET() {
       _count: { provider: true },
     }),
 
-    // Daily sessions (14 days) — Session has no createdAt, use expires as proxy
-    // Skip if no createdAt field; return empty
-    Promise.resolve([] as { date: string; count: number }[]),
+    // Daily signups (14 days) — grouped in SQL by calendar day.
+    prisma.$queryRaw<{ day: Date; count: bigint }[]>`
+      SELECT ("createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Jakarta')::date AS day,
+             count(*) AS count
+      FROM "User"
+      WHERE "createdAt" >= ${fourteenDaysAgo}
+      GROUP BY 1
+      ORDER BY 1
+    `,
 
     prisma.user.findMany({
       where: { bannedAt: { not: null } },
@@ -73,14 +83,17 @@ export async function GET() {
     overview: {
       activeSessions,
       totalAccounts,
-      sessionsToday,
+      signups14d: signups7d,
       bannedUsers,
     },
     providers: accountProviders.map((p) => ({
       provider: p.provider,
       count: p._count.provider,
     })),
-    dailySessions,
+    dailySessions: dailySignups.map((d) => ({
+      date: new Date(d.day).toISOString().slice(0, 10),
+      count: Number(d.count),
+    })),
     recentBans,
     cacheUsage: Array.from(cacheByKey.entries())
       .sort(([, a], [, b]) => b.count - a.count)

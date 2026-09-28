@@ -21,6 +21,7 @@ import { InternalLinkerAgent } from "./internal-linker.agent";
 import { SchemaBuilderAgent } from "./schema-builder.agent";
 import { GrowthMonitorAgent } from "./growth-monitor.agent";
 import { GenMovementAnalysisAgent } from "./gen-movement-analysis.agent";
+import { GenDailyBriefAgent } from "./gen-daily-brief.agent";
 
 const agents: Record<AgentType, BaseAgent> = {
   site_health: new SiteHealthAgent(),
@@ -44,6 +45,7 @@ const agents: Record<AgentType, BaseAgent> = {
   schema_builder: new SchemaBuilderAgent(),
   growth_monitor: new GrowthMonitorAgent(),
   gen_movement_analysis: new GenMovementAnalysisAgent(),
+  gen_daily_brief: new GenDailyBriefAgent(),
 };
 
 export function getAgent(type: AgentType): BaseAgent {

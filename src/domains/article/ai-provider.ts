@@ -1,5 +1,4 @@
-import OpenAI from "openai";
-import { createAIClient } from "@/lib/ai-client";
+import { createAIClient, type AIClient } from "@/lib/ai-client";
 import { extractFirstH2, passesTitleGuard, findTitleViolation } from "./title-guard";
 
 export interface ArticleGenerationResult {
@@ -196,7 +195,7 @@ export function parseAIResponse(text: string): ArticleGenerationResult {
 
 export class ClaudeProvider implements AIProvider {
   readonly name = "claude";
-  private client: OpenAI;
+  private client: AIClient;
   private model: string;
 
   constructor() {
@@ -218,6 +217,11 @@ export class ClaudeProvider implements AIProvider {
       ],
     });
 
+    if (!response.choices || response.choices.length === 0) {
+      // Router returned an error body (e.g. no credentials / model_not_found) instead
+      // of a completion. Surface it clearly instead of crashing on choices[0].
+      throw new Error(`AI returned no choices (check router credentials/model): ${JSON.stringify(response).slice(0, 300)}`);
+    }
     const text = response.choices[0]?.message?.content ?? "";
 
     return parseAIResponse(text);

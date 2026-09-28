@@ -6,6 +6,11 @@ const footerLinks = [
   { href: "/stocks?view=screener", label: "Screener" },
   { href: "/berita", label: "Berita" },
   { href: "/akademi", label: "Akademi" },
+  // Demoted from nav 2026-09-07 (27 views all-time) — still reachable here.
+  { href: "/community", label: "Komunitas" },
+  { href: "/compare", label: "Bandingkan Saham" },
+  { href: "/paper-trading", label: "Latihan Trading" },
+  { href: "/laporan-pasar", label: "Laporan Pasar Mingguan" },
 ];
 
 const legalLinks = [
@@ -28,7 +33,7 @@ export function Footer() {
               <span className="text-sm font-bold text-text-primary">TeknikalID</span>
             </div>
             <p className="text-xs text-text-secondary max-w-xs leading-relaxed">
-              Analisa teknikal untuk trader Indonesia — saham, crypto, dan aset lainnya. Data bersumber dari Yahoo Finance dengan jeda ~5-10 menit. Bukan rekomendasi investasi.
+              Analisa teknikal untuk trader Indonesia — saham IDX dan aset lainnya. Data bersumber dari Yahoo Finance dengan jeda ~5-10 menit. Bukan rekomendasi investasi.
             </p>
             <div className="flex items-center gap-3 pt-1">
               <span className="text-[10px] text-text-tertiary font-mono uppercase tracking-wider">Bahasa chart untuk trader Indonesia</span>

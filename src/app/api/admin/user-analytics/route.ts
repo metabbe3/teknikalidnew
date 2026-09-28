@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth-guard";
 import { handleApiError } from "@/lib/api-error";
 import { prisma } from "@/lib/prisma";
+import { wibDayStart } from "@/lib/datetime-wib";
 import { aggregateDaily } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -10,7 +11,8 @@ export async function GET() {
   try {
     await requireAdmin();
   const now = new Date();
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  // WIB calendar day (00:00 WIB) — was server-local midnight, i.e. 07:00 WIB on the UTC container.
+  const todayStart = wibDayStart();
   const weekStart = new Date(todayStart.getTime() - 7 * 24 * 60 * 60 * 1000);
   const monthStart = new Date(todayStart.getTime() - 30 * 24 * 60 * 60 * 1000);
   const fourteenDaysAgo = new Date(todayStart.getTime() - 14 * 24 * 60 * 60 * 1000);

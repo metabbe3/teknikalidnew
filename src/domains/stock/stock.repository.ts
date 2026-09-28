@@ -227,7 +227,8 @@ export const stockRepository = {
 
   getSparklineData(since: Date) {
     return prisma.stockPrice.findMany({
-      where: { stock: { isActive: true }, date: { gte: since } },
+      // EQUITY only — dormant crypto rows must not feed homepage sparklines.
+      where: { stock: { isActive: true, assetClass: "EQUITY" }, date: { gte: since } },
       select: { stock: { select: { ticker: true } }, close: true },
       orderBy: { date: "asc" },
     });
@@ -669,6 +670,76 @@ export const stockRepository = {
       ) avg ON avg."stockId" = s.id
       WHERE si.interval = '1d' AND si.date = $2 AND s."isActive" = true AND si.rsi14 > 70${assetClass ? ` AND s."assetClass" = $3` : ""}
     `, ...params);
+  },
+
+  // ── Weekly market report (/laporan-pasar) reads ──
+  // Window = [weekStart, weekEnd) calendar days. All equity-only.
+
+  /** Per-stock weekly change: last traded close in window vs last close before it. */
+  findWeeklyWindowChanges(weekStart: Date, weekEnd: Date) {
+    return prisma.$queryRawUnsafe<
+      { ticker: string; name: string; sector: string; week_close: number; prev_close: number | null }[]
+    >(`
+      SELECT s.ticker, s.name, s.sector, sw.close AS week_close, sp.close AS prev_close
+      FROM "Stock" s
+      JOIN LATERAL (
+        SELECT close FROM "StockPrice"
+        WHERE "stockId" = s.id AND date >= $1 AND date < $2 AND volume > 0
+        ORDER BY date DESC LIMIT 1
+      ) sw ON true
+      LEFT JOIN LATERAL (
+        SELECT close FROM "StockPrice"
+        WHERE "stockId" = s.id AND date < $1
+        ORDER BY date DESC LIMIT 1
+      ) sp ON true
+      WHERE s."isActive" = true AND s."assetClass" = 'EQUITY'
+    `, weekStart, weekEnd);
+  },
+
+  /** Index (^JKSE) weekly closes: last in window + last before window. */
+  findWeeklyIndexClose(weekStart: Date, weekEnd: Date) {
+    return prisma.$queryRaw<
+      { close_in_week: number | null; close_prev: number | null; last_date: Date | null }[]
+    >`
+      SELECT
+        (SELECT close FROM "StockPrice" sp JOIN "Stock" s ON s.id = sp."stockId"
+          WHERE s.ticker = '^JKSE' AND sp.date >= ${weekStart} AND sp.date < ${weekEnd}
+          ORDER BY sp.date DESC LIMIT 1) AS close_in_week,
+        (SELECT close FROM "StockPrice" sp JOIN "Stock" s ON s.id = sp."stockId"
+          WHERE s.ticker = '^JKSE' AND sp.date < ${weekStart}
+          ORDER BY sp.date DESC LIMIT 1) AS close_prev,
+        (SELECT MAX(sp.date) FROM "StockPrice" sp JOIN "Stock" s ON s.id = sp."stockId"
+          WHERE s.ticker = '^JKSE' AND sp.date >= ${weekStart} AND sp.date < ${weekEnd}) AS last_date
+    `;
+  },
+
+  /** Per-stock indicator snapshot pair (in-window vs pre-window) for cross/oversold detection. */
+  findWeeklyIndicatorSnapshots(weekStart: Date, weekEnd: Date) {
+    return prisma.$queryRawUnsafe<
+      {
+        ticker: string; name: string;
+        sma50: number | null; sma200: number | null; rsi14: number | null;
+        prev_sma50: number | null; prev_sma200: number | null; prev_rsi14: number | null;
+      }[]
+    >(`
+      SELECT s.ticker, s.name,
+             si_curr.sma50, si_curr.sma200, si_curr.rsi14,
+             si_prev.sma50 AS prev_sma50, si_prev.sma200 AS prev_sma200, si_prev.rsi14 AS prev_rsi14
+      FROM "Stock" s
+      JOIN LATERAL (
+        SELECT sma50, sma200, rsi14 FROM "StockIndicator"
+        WHERE "stockId" = s.id AND interval = '1d' AND date >= $1 AND date < $2
+        ORDER BY date DESC LIMIT 1
+      ) si_curr ON true
+      JOIN LATERAL (
+        SELECT sma50, sma200, rsi14 FROM "StockIndicator"
+        WHERE "stockId" = s.id AND interval = '1d' AND date < $1
+        ORDER BY date DESC LIMIT 1
+      ) si_prev ON true
+      WHERE s."isActive" = true AND s."assetClass" = 'EQUITY'
+        AND si_curr.sma50 IS NOT NULL AND si_curr.sma200 IS NOT NULL
+        AND si_prev.sma50 IS NOT NULL AND si_prev.sma200 IS NOT NULL
+    `, weekStart, weekEnd);
   },
 
   // ── StockFundamental reads ──

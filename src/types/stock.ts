@@ -4,6 +4,8 @@ export interface StockQuote {
   regularMarketChange: number | null;
   regularMarketChangePercent: number | null;
   regularMarketVolume: number | null;
+  /** Unix seconds of the quote's last trade — used to date price rows by market time, not wall clock. */
+  regularMarketTime: number | null;
   regularMarketDayHigh: number | null;
   regularMarketDayLow: number | null;
   regularMarketOpen: number | null;

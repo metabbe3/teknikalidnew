@@ -349,12 +349,15 @@ async function generateForStock(mover: StockMover, marketContextStr: string): Pr
     };
   }
 
+  const adminUser = await articleRepository.findAdminUserId();
+  if (!adminUser) throw new Error("No admin user found");
+
   const article = await articleRepository.create({
     slug,
     title,
     excerpt,
     content,
-    authorId: "system",
+    authorId: adminUser.id,
     articleType: ArticleType.MOVEMENT_ANALYSIS,
     status: ArticleStatus.PUBLISHED,
     tickerTag: mover.ticker,

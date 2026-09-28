@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth-guard";
 import { handleApiError } from "@/lib/api-error";
 import { prisma } from "@/lib/prisma";
+import { wibDayStart } from "@/lib/datetime-wib";
 import { aggregateDaily } from "@/lib/utils";
 import { PREDICTION_OUTCOME } from "@/lib/constants";
 
@@ -11,7 +12,8 @@ export async function GET() {
   try {
     await requireAdmin();
   const now = new Date();
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  // WIB calendar day (00:00 WIB) — was server-local midnight, i.e. 07:00 WIB on the UTC container.
+  const todayStart = wibDayStart();
   const fourteenDaysAgo = new Date(todayStart.getTime() - 14 * 24 * 60 * 60 * 1000);
 
   const [outcomeGroups, directionGroups, stockGroups, dailyVolume, recentPredictions] = await Promise.all([
@@ -104,40 +106,45 @@ export async function GET() {
 }
 
 async function getTopPredictors() {
-  const users = await prisma.user.findMany({
-    where: {
-      posts: { some: { predictionOutcome: { not: null } } },
-    },
-    select: {
-      id: true,
-      username: true,
-      name: true,
-      image: true,
-      _count: {
-        select: { posts: { where: { predictionOutcome: { not: null } } } },
-      },
-      posts: {
-        where: { predictionOutcome: { not: null } },
-        select: { predictionOutcome: true },
-      },
-    },
+  // Aggregated in SQL — was loading every user's full prediction-post relation
+  // into JS just to count CORRECT outcomes.
+  const groups = await prisma.post.groupBy({
+    by: ["authorId", "predictionOutcome"],
+    where: { predictionOutcome: { not: null } },
+    _count: { _all: true },
   });
 
-  return users
-    .map((u) => {
-      const total = u._count.posts;
-      const correct = u.posts.filter((p) => p.predictionOutcome === PREDICTION_OUTCOME.CORRECT).length;
-      return {
-        id: u.id,
-        username: u.username,
-        name: u.name,
-        image: u.image,
-        total,
-        correct,
-        accuracyPct: total >= 5 ? Math.round((correct / total) * 100) : null,
-      };
-    })
-    .filter((u) => u.total >= 5)
-    .sort((a, b) => (b.accuracyPct ?? 0) - (a.accuracyPct ?? 0))
+  const byUser = new Map<string, { total: number; correct: number }>();
+  for (const g of groups) {
+    const e = byUser.get(g.authorId) ?? { total: 0, correct: 0 };
+    e.total += g._count._all;
+    if (g.predictionOutcome === PREDICTION_OUTCOME.CORRECT) e.correct += g._count._all;
+    byUser.set(g.authorId, e);
+  }
+
+  const eligible = [...byUser.entries()]
+    .filter(([, s]) => s.total >= 5)
+    .sort((a, b) => b[1].correct / b[1].total - a[1].correct / a[1].total)
     .slice(0, 10);
+  if (eligible.length === 0) return [];
+
+  const users = await prisma.user.findMany({
+    where: { id: { in: eligible.map(([id]) => id) } },
+    select: { id: true, username: true, name: true, image: true },
+  });
+  const userMap = new Map(users.map((u) => [u.id, u]));
+
+  return eligible
+    .map(([id, s]) => {
+      const u = userMap.get(id);
+      return {
+        id,
+        username: u?.username ?? "?",
+        name: u?.name ?? null,
+        image: u?.image ?? null,
+        total: s.total,
+        correct: s.correct,
+        accuracyPct: Math.round((s.correct / s.total) * 100),
+      };
+    });
 }

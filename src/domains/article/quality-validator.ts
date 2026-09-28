@@ -34,7 +34,9 @@ export function validateArticle(
   content: string,
   title: string,
   keywords: string[],
+  opts?: { minWords?: number },
 ): QualityResult {
+  const minWords = opts?.minWords ?? 1200;
   const issues: QualityIssue[] = [];
 
   // ── AI prompt leakage detection (HARD BLOCK) ──
@@ -84,13 +86,13 @@ export function validateArticle(
 
   // ── Word count ──
   const wordCount = content.split(/\s+/).filter(Boolean).length;
-  if (wordCount < 1200) {
+  if (wordCount < minWords) {
     issues.push({
       rule: "word_count",
       severity: "error",
-      message: `Artikel hanya ${wordCount} kata, minimum 1200 kata.`,
+      message: `Artikel hanya ${wordCount} kata, minimum ${minWords} kata.`,
     });
-  } else if (wordCount < 1500) {
+  } else if (wordCount < minWords * 1.25) {
     issues.push({
       rule: "word_count",
       severity: "warning",

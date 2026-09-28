@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AdminKpiCard } from "@/components/admin/admin-kpi-card";
+import { FunnelSection } from "./funnel-section";
 import {
   Eye, Users, TrendingUp, Clock, Search, Share2, Globe2,
   ArrowUpRight, ArrowDownRight, Monitor, Smartphone, Tablet,
@@ -135,7 +136,10 @@ export function AnalyticsTab() {
     queryKey: ["admin-analytics", rangeDays, pathFilter, sourceFilter],
     queryFn: async () => {
       const r = await fetch(buildUrl());
-      if (!r.ok) return undefined;
+      // Throw (don't return undefined): a silent undefined cached by React Query
+      // rendered as "No data" during API outages — the chart looked permanently
+      // empty with no error hint. Throwing lets RQ retry + surface isError.
+      if (!r.ok) throw new Error(`Analytics API ${r.status}`);
       const json = await r.json();
       return json.data;
     },
@@ -250,6 +254,9 @@ export function AnalyticsTab() {
           <strong className="text-gray-500">{formatVolume(data.overview.botViews)}</strong> flagged-bot views.
         </p>
       )}
+
+      {/* Conversion funnel — views → /auth → signups (auth tracking 2026-09-07+) */}
+      <FunnelSection />
 
       {/* Traffic by Section — which content drives visits (news vs stocks vs home) */}
       <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">

@@ -57,7 +57,7 @@ export function FAQTabSection({ initialFAQs }: FAQTabSectionProps) {
           <button
             key={cat.value}
             onClick={() => setCategory(cat.value)}
-            className={`text-xs font-medium px-3 py-1.5 rounded-full border whitespace-nowrap transition-colors ${
+            className={`text-xs font-medium px-3.5 py-2.5 rounded-full border whitespace-nowrap transition-colors ${
               category === cat.value
                 ? "bg-accent text-white border-accent"
                 : "bg-bg-card text-text-secondary border-border hover:border-accent/30 hover:text-accent"

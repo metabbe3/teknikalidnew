@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/auth-guard";
+import { handleApiError } from "@/lib/api-error";
 import { prisma } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
+    await requireAdmin();
+
     const articles = await prisma.article.findMany({
       where: {
         articleType: "NEWS",
@@ -21,10 +27,6 @@ export async function GET() {
 
     return NextResponse.json(articles);
   } catch (error) {
-    console.error("Failed to fetch articles:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch articles" },
-      { status: 500 }
-    );
+    return handleApiError(error, "fetch social-card articles");
   }
 }

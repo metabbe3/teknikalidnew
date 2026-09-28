@@ -3,6 +3,41 @@ import { ArticleStatus, ArticleType, Prisma } from "@/generated/prisma/client";
 import { passesTitleGuard } from "./title-guard";
 
 export const articleRepository = {
+  /**
+   * The daily market-brief series: listed NEWS articles with no single ticker
+   * (tickerTag null = market-wide brief, not a per-stock piece). Featured on
+   * /berita; stock pages link the latest brief mentioning their ticker.
+   */
+  findLatestDailyBrief() {
+    return prisma.article.findFirst({
+      where: {
+        status: ArticleStatus.PUBLISHED,
+        isListed: true,
+        articleType: ArticleType.NEWS,
+        tickerTag: null,
+      },
+      orderBy: { publishedAt: "desc" },
+      select: { slug: true, title: true, excerpt: true, publishedAt: true, content: true },
+    });
+  },
+
+  /** Latest brief (≤3 days old) whose body mentions the ticker — powers the stock-page brief card. */
+  findLatestBriefMentioning(ticker: string) {
+    const stripped = ticker.replace(/\.JK$/i, "");
+    return prisma.article.findFirst({
+      where: {
+        status: ArticleStatus.PUBLISHED,
+        isListed: true,
+        articleType: ArticleType.NEWS,
+        tickerTag: null,
+        content: { contains: stripped },
+        publishedAt: { gte: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) },
+      },
+      orderBy: { publishedAt: "desc" },
+      select: { slug: true, title: true, excerpt: true, publishedAt: true },
+    });
+  },
+
   findPublished(tags?: string[], articleType?: ArticleType) {
     return prisma.article.findMany({
       where: {
@@ -83,6 +118,9 @@ export const articleRepository = {
         ...(opts?.type ? { articleType: opts.type } : {}),
       },
       orderBy: { createdAt: "desc" },
+      // Cap: table was ~1384 rows growing 108/wk — newest 500 (~5 weeks) is the
+      // admin working set; older articles stay reachable via preview URLs.
+      take: 500,
       include: {
         author: { select: { id: true, username: true, name: true, image: true } },
       },
@@ -178,6 +216,43 @@ export const articleRepository = {
     return prisma.article.update({
       where: { id },
       data: { version: { increment: 1 }, lastGeneratedAt: new Date() },
+    });
+  },
+
+  // E-E-A-T review queue — PUBLISHED system-produced articles awaiting editor sign-off.
+  listPendingReview() {
+    return prisma.article.findMany({
+      where: { status: ArticleStatus.PUBLISHED, reviewedById: null },
+      orderBy: { updatedAt: "desc" },
+      select: {
+        id: true, slug: true, title: true, excerpt: true,
+        articleType: true, tickerTag: true, updatedAt: true,
+      },
+      take: 100,
+    });
+  },
+
+  // Append an honest, append-only review event, then connect the editor.
+  // reviewedById != null is the single signal the byline reads: "ditinjau oleh [editor]".
+  async markReviewed(id: string, editorId: string): Promise<void> {
+    const existing = await prisma.article.findUnique({
+      where: { id },
+      select: { generationMeta: true },
+    });
+    const meta = (existing?.generationMeta as Record<string, unknown> | null) ?? {};
+    const reviewLog = Array.isArray(meta.reviewLog) ? [...(meta.reviewLog as unknown[])] : [];
+    reviewLog.push({ at: new Date().toISOString(), by: editorId, action: "approved" });
+    await prisma.article.update({
+      where: { id },
+      data: {
+        reviewedBy: { connect: { id: editorId } },
+        generationMeta: { ...meta, reviewLog } as Prisma.InputJsonValue,
+      },
+    });
+    // Phase 3: editor approval of a wave landing promotes it into the sitemap.
+    await prisma.waveAssignment.updateMany({
+      where: { landingArticleId: id },
+      data: { status: "PROMOTED", promotedAt: new Date() },
     });
   },
 

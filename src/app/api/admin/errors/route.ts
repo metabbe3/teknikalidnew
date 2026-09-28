@@ -27,7 +27,9 @@ export async function GET(request: NextRequest) {
       since.setDate(since.getDate() - 1);
     }
 
-    // Query CronLog and AgentJob in parallel
+    // Query CronLog and AgentJob in parallel.
+    // take caps the fetch — an incident burst must not pull the whole table
+    // before the in-JS filter/slice below runs.
     const [cronLogs, agentJobs] = await Promise.all([
       prisma.cronLog.findMany({
         where: {
@@ -35,6 +37,7 @@ export async function GET(request: NextRequest) {
           startedAt: { gte: since },
         },
         orderBy: { startedAt: "desc" },
+        take: 500,
       }),
       prisma.agentJob.findMany({
         where: {
@@ -42,6 +45,7 @@ export async function GET(request: NextRequest) {
           createdAt: { gte: since },
         },
         orderBy: { createdAt: "desc" },
+        take: 500,
       }),
     ]);
 

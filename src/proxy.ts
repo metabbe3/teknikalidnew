@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
+import { ALL_TICKERS } from "@/lib/constants";
 import { isBlocked, block as blockIp } from "@/lib/ip-blocklist";
 import { recordApiRequest } from "@/lib/api-traffic-log";
 
@@ -13,7 +14,8 @@ const securityHeaders = {
     "default-src 'self'",
     cspScriptSrc,
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob:",
+    // lh3.googleusercontent.com = Google account avatars (NextAuth profile images).
+    "img-src 'self' data: blob: https://lh3.googleusercontent.com",
     "font-src 'self'",
     "connect-src 'self' ws: wss:",
     "object-src 'none'",
@@ -69,6 +71,9 @@ const WHITELIST_IPS = new Set(
 const PROTECTED_PREFIXES = ["/watchlist", "/profile"];
 const ADMIN_LOGIN_ROUTE = "/admin/login";
 
+// Known tickers for the /berita/saham-<ticker> → /stocks/<TICKER>.JK redirect.
+const KNOWN_TICKERS = new Set(ALL_TICKERS);
+
 // Old dashboard routes → new public routes
 const DASHBOARD_REDIRECTS: Record<string, string> = {
   "/dashboard/billing": "/billing",
@@ -112,7 +117,7 @@ function isAuthRoute(pathname: string): boolean {
 const CANONICAL_HOST = "teknikal.id";
 
 function buildCanonicalUrl(request: NextRequest): URL | null {
-  const { hostname, pathname, search, port } = request.nextUrl;
+  const { hostname, pathname, search } = request.nextUrl;
   // Use x-forwarded-host (set by Cloudflare) — falls back to request hostname
   const forwardedHost = request.headers.get("x-forwarded-host");
   const effectiveHost = forwardedHost ?? hostname;
@@ -218,8 +223,13 @@ export async function proxy(request: NextRequest) {
   }
 
   // Blocked-IP gate (DB-backed cache) — banned scrapers + escalated HTML violators.
-  const isStockRoute = pathname.startsWith("/stocks/") || pathname.startsWith("/api/stocks/") || pathname.startsWith("/api/screener");
-  if (isStockRoute && (await isBlocked(ip))) {
+  // Covers the whole data-scrape surface: stock/crypto/screener pages + their APIs.
+  const isDataRoute =
+    pathname === "/stocks" || pathname.startsWith("/stocks/") ||
+    pathname.startsWith("/screener") || pathname.startsWith("/crypto") ||
+    pathname.startsWith("/api/stocks/") || pathname.startsWith("/api/screener") ||
+    pathname.startsWith("/api/crypto");
+  if (isDataRoute && (await isBlocked(ip))) {
     // Dev/member whitelist: forgive a blocked IP if it's allowlisted (anon dev scripts)
     // or the request is authenticated (devs/members). Authed scrapers are still caught
     // by the pageview route's account-ban; the session revalidates from DB within ~60s.
@@ -360,12 +370,60 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/", request.url), 308);
   }
 
-  // Redirect old date-based snapshot URLs → evergreen (301 permanent)
-  const redirectMatch = request.nextUrl.pathname.match(/^\/berita\/saham-([a-z]+)-\d+-[a-z]+-\d{4}$/);
-  if (redirectMatch) {
+  // Redirect snapshot article URLs → stock pages (301/308 permanent).
+  // The daily snapshot prose now renders ON /stocks/{TICKER}.JK, so the per-ticker
+  // signals consolidate on the money page instead of cannibalizing it. All 824
+  // stale non-IDX40 snapshot rows were purged (2026-09-12) — their URLs land here too.
+  // Old dated form (/berita/saham-bbca-5-september-2026) skips the evergreen hop.
+  const datedSnapshotMatch = pathname.match(/^\/berita\/saham-([a-z0-9]+)-\d+-[a-z]+-\d{4}$/);
+  const snapshotMatch = datedSnapshotMatch ? null : pathname.match(/^\/berita\/saham-([a-z0-9]+)$/);
+  const snapshotTicker = (datedSnapshotMatch ?? snapshotMatch)?.[1];
+  if (snapshotTicker) {
+    const ticker = `${snapshotTicker.toUpperCase()}.JK`;
+    if (KNOWN_TICKERS.has(ticker)) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/stocks/${ticker}`;
+      return NextResponse.redirect(url, datedSnapshotMatch ? 301 : 308);
+    }
+  }
+
+  // Movement-analysis articles (gen retired 2026-09-10, rows purged) → the live
+  // deterministic page serving the same "kenapa naik/turun" intent.
+  const movementMatch = pathname.match(/^\/berita\/kenapa-saham-([a-z0-9]+)-(naik|turun)-hari-ini$/);
+  if (movementMatch) {
     const url = request.nextUrl.clone();
-    url.pathname = `/berita/saham-${redirectMatch[1]}`;
-    return NextResponse.redirect(url, 301);
+    url.pathname = `/saham/${movementMatch[1]}/kenapa-naik-hari-ini`;
+    return NextResponse.redirect(url, 308);
+  }
+
+  // Stock-analysis articles (stale ones purged 2026-09-12) → the stock page.
+  // Surviving fresh articles render normally; purged slugs land here.
+  const analysisMatch = pathname.match(/^\/berita\/analisa-teknikal-([a-z0-9]+)$/i);
+  if (analysisMatch) {
+    const ticker = `${analysisMatch[1].toUpperCase()}.JK`;
+    if (KNOWN_TICKERS.has(ticker)) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/stocks/${ticker}`;
+      return NextResponse.redirect(url, 308);
+    }
+  }
+
+  // /laporan-pasar week URLs are keyed by Monday — normalize mid-week dates to
+  // the Monday slug with a real 308 (the page component can only emit an in-band
+  // meta-refresh once streaming has started).
+  const weekMatch = pathname.match(/^\/laporan-pasar\/minggu-(\d{4})-(\d{2})-(\d{2})$/);
+  if (weekMatch) {
+    const d = new Date(`${weekMatch[1]}-${weekMatch[2]}-${weekMatch[3]}T00:00:00Z`);
+    if (!Number.isNaN(d.getTime())) {
+      const day = d.getUTCDay(); // 0=Sun
+      if (day !== 1) {
+        const mon = new Date(d);
+        mon.setUTCDate(mon.getUTCDate() + (day === 0 ? -6 : 1 - day));
+        const url = request.nextUrl.clone();
+        url.pathname = `/laporan-pasar/minggu-${mon.toISOString().slice(0, 10)}`;
+        return NextResponse.redirect(url, 308);
+      }
+    }
   }
 
   return response;

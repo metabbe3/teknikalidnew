@@ -33,9 +33,11 @@ export class SchemaBuilderAgent extends BaseAgent {
         excerpt: true,
         slug: true,
         publishedAt: true,
+        lastGeneratedAt: true,
         articleType: true,
         tickerTag: true,
         generationMeta: true,
+        reviewedBy: { select: { name: true } },
       },
       take: maxArticles,
       orderBy: { publishedAt: "desc" },
@@ -62,12 +64,15 @@ export class SchemaBuilderAgent extends BaseAgent {
           description: article.excerpt || article.title,
           url: articleUrl,
           datePublished: article.publishedAt.toISOString(),
-          dateModified: article.publishedAt.toISOString(),
+          dateModified: article.lastGeneratedAt.toISOString(),
           author: {
             "@type": "Organization",
             name: "TeknikalID",
             url: baseUrl,
           },
+          ...(article.reviewedBy
+            ? { editor: { "@type": "Person", name: article.reviewedBy.name } }
+            : {}),
           publisher: {
             "@type": "Organization",
             name: "TeknikalID",

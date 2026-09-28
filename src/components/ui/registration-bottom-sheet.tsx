@@ -92,7 +92,7 @@ export function RegistrationBottomSheet() {
 
             {/* Google OAuth button */}
             <Link
-              href="/auth/signin"
+              href="/auth/register"
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-accent px-5 py-3 text-sm font-bold text-white hover:bg-accent/90 transition-colors press-scale"
             >
               <svg
@@ -123,7 +123,7 @@ export function RegistrationBottomSheet() {
 
             {/* Email link */}
             <Link
-              href="/auth/signin"
+              href="/auth/register"
               className="mt-3 inline-block text-xs text-text-secondary hover:text-accent transition-colors"
             >
               Daftar dengan email

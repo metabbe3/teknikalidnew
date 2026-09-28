@@ -87,7 +87,7 @@ export function WelcomeBackBanner() {
           Lihat {displayTicker}
         </Link>
         <Link
-          href="/auth/signin"
+          href="/auth/register"
           className="text-xs font-medium text-text-tertiary hover:text-text-secondary whitespace-nowrap"
         >
           Daftar untuk menyimpan pantauan

@@ -13,7 +13,7 @@ const eodLogsSchema = z.object({
   to: z.string().optional(),
 });
 
-// GET /api/admin/users — List all users with pagination, search, filters
+// GET /api/admin/eod-logs — List all users with pagination, search, filters
 export async function GET(request: NextRequest) {
   try {
     await requireAdmin();

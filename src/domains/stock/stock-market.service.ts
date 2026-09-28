@@ -2,14 +2,14 @@ import { subDays } from "date-fns";
 import { fetchHistorical, fetchQuote, fetchChart } from "@/lib/yahoo-finance";
 import { cryptoPair, fetchCryptoIdrOHLC } from "@/lib/indodax";
 import { computeChange, bigIntToNumber, decimalToNumber, serializePriceRow, serializeIndicator } from "@/lib/serialize";
-import { INTERVAL, RANGE_DAYS, type DateRange, type IntradayInterval, INTRADAY_CONFIG } from "@/lib/constants";
+import { INTERVAL, RANGE_DAYS, type DateRange, type IntradayInterval } from "@/lib/constants";
 import { toDateKey } from "@/lib/utils";
 import { getCompareColor } from "@/lib/compare-colors";
 import { stockRepository } from "./stock.repository";
 import { technicalAnalysisService } from "./technical-analysis.service";
 import { StockNotFoundError } from "./stock.errors";
 import { stockCache } from "@/lib/cache";
-import { getMarketStatusWithFallback, type MarketStatusResult } from "@/lib/market-hours";
+import { getMarketStatusWithFallback } from "@/lib/market-hours";
 import pLimit from "p-limit";
 import type { Prisma } from "@/generated/prisma/client";
 
@@ -430,7 +430,8 @@ export const stockMarketService = {
     const cached = stockCache.get("market-overview");
     if (cached) return cached as Awaited<ReturnType<typeof this.getMarketOverview>>;
 
-    const stocks = await stockRepository.findActiveStocksWithPrices(undefined, false);
+    // EQUITY only — IHSG breadth/gainers must not mix the dormant crypto rows.
+    const stocks = await stockRepository.findActiveStocksWithPrices({ assetClass: "EQUITY" }, false);
 
     type StockChange = { ticker: string; name: string; sector: string; close: number | null; changePercent: number | null; volume: number | null };
     const stockChanges: StockChange[] = stocks.map((stock) => {
@@ -542,8 +543,11 @@ export const stockMarketService = {
       return;
     }
 
-    const today = new Date();
-    await stockRepository.upsertStockPrice(stock.id, today, {
+    // Quote-time stamping — a wall-clock date mints exact-duplicate weekend rows
+    // when the market is closed (Yahoo re-serves Friday's quote).
+    const marketTime = quote.regularMarketTime;
+    const date = marketTime && marketTime > 0 ? new Date(marketTime * 1000) : new Date();
+    await stockRepository.upsertStockPrice(stock.id, date, {
       open: quote.regularMarketOpen ?? quote.regularMarketPreviousClose ?? price,
       high: quote.regularMarketDayHigh ?? price,
       low: quote.regularMarketDayLow ?? price,

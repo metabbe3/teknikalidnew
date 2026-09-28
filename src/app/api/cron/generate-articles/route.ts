@@ -53,6 +53,26 @@ export async function POST(request: NextRequest) {
       //    is also false. To re-enable: restore the dispatch below + flip isEnabled to true.
       skipped.push("gen_trending_news: disabled (low-ROI AI content)");
 
+      // 3. gen_movement_analysis DISABLED 2026-09-10 — 490 AI-generated articles
+      //    earned 1 human view all-time (PageView data) while eating the worker
+      //    queue for ~15 min/day. The daily brief + free templates cover it.
+      //    To re-enable: restore dispatch + AgentConfig row.
+      skipped.push("gen_movement_analysis: disabled (1 view / 490 articles)");
+
+      // 4. Dispatch gen_daily_brief — market-wide brief featured on /berita.
+      //    generateDailyBrief self-dedupes per WIB day, so double dispatch is safe.
+      const isBriefRunning = await agentHubRepository.hasRunningJob("gen_daily_brief" as AgentType);
+      if (isBriefRunning) {
+        skipped.push("gen_daily_brief: already running");
+      } else {
+        const briefJob = await agentHubService.createJob({
+          agentType: "gen_daily_brief" as AgentType,
+          payload: {},
+          priority: 4,
+        });
+        dispatched.push(`gen_daily_brief: ${briefJob.id}`);
+      }
+
       return {
         status: 200,
         body: {
@@ -61,7 +81,7 @@ export async function POST(request: NextRequest) {
             dispatched: dispatched.length,
             jobs: dispatched,
             skipped,
-            note: "DAILY_SNAPSHOT + Trending News (3 articles). Old snapshots auto-deleted at 01:30.",
+            note: "DAILY_SNAPSHOT + Movement Analysis. Old snapshots auto-deleted at 01:30.",
           },
         } as Record<string, unknown>,
       };

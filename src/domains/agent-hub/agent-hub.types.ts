@@ -20,6 +20,7 @@ export const AGENT_TYPES = [
   "schema_builder",
   "growth_monitor",
   "gen_movement_analysis",
+  "gen_daily_brief",
 ] as const;
 
 export type AgentType = (typeof AGENT_TYPES)[number];
@@ -228,6 +229,14 @@ export const AGENT_META: Record<AgentType, AgentMeta> = {
     icon: "TrendingUp",
     defaultSchedule: "Daily 16:30 WIB (after market close)",
     estimatedAiCalls: 40,
+  },
+  gen_daily_brief: {
+    type: "gen_daily_brief",
+    label: "Generate Daily Brief",
+    description: "Market-wide daily brief (featured on /berita): IHSG, top movers, standout signals — grounded in live market data and fact-checked. Tickers auto-link to stock pages; stock pages surface the brief when mentioned. One per WIB day.",
+    icon: "Newspaper",
+    defaultSchedule: "Daily 16:10 WIB (after market close)",
+    estimatedAiCalls: 1,
   },
 };
 
