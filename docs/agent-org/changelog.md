@@ -181,3 +181,20 @@
 - Changes: (1) homepage title → "Analisa Teknikal Saham IDX & Chart Real-Time" (page-level metadata menimpa layout — dua-duanya di-fix); (2) OG/Twitter title root → IDX-only; (3) /crypto/* title tanpa kata "Crypto" + FIX double-brand "| TeknikalID | TeknikalID" (suffix manual + template); (4) crypto pages memang sudah noindex + nav hidden + CRYPTO_ENABLED=false — tinggal URL langsung yang hidup (by design, redirect /crypto → /stocks).
 - Verify live: homepage + /crypto/BTC title baru ter-serve, /stocks 200, berita today 200.
 - Catatan SEO: GSC resubmit 13 Sep; sitemap 0 crypto. Expect: Google recrawl homepage dalam 1-7 hari → title SERP update.
+
+
+## [2026-09-28 18:45] qa-2026-09-28-01 + qa-2026-09-28-02 — brief28 GC 0→10 emiten + tabel EMA akademi (SQL patch, TANPA deploy)
+- Type: ops (content QA)  |  PRD: - (Content Reviewer QA 28 Sep 07:0x)
+- Deploy: TIDAK ADA (SQL content patch; ISR revalidate=300)  |  Rollback: revert string via UPDATE balik (backup db-20260928 01:15)
+- brief28: GC '0 emiten' → '10 emiten' + ticker list (DB EXACT: smaCrossDate 21-25 Sep non-gorengan = 10; INAI 21/9 … TGKA 25/9); 'golden cross nol' reword. LIVE: 10 emiten x2, INAI/TGKA ada, 'golden cross nol'=0, lot=0 (patch pagi utuh), breadth 119/582 utuh.
+- akademi EMA: 358→359, 113→114 (x2), MDKA rally 24→23 Sep (+8,83% sesi 23 Sep DB EXACT). LIVE: 114 x2, sesi 23 Sep x2, 113=0, 24 Sep=0, MAPI/383 utuh.
+- VERDICT: klaim reviewer 383→379 & 113→344 & 15→56 DITOLAK setelah replikasi 8 varian — 383 = field kanonik emaCrossSignal (basis signal page, 383+359=742=universe rekap); 344/56 tak ter-replikasi metode mana pun; angka kanonik = 114/15 (15 exact dgn artikel). Catatan utk reviewer: metode angka EMA baru = snapshot row tanggal 25 Sep + emaCrossDate in-window 21-25.
+- Root-cause tercatat (qa-28-01, diship slot pagi): brief28 jalur growth-mandor bypass worker sanitizer — FIXED pagi: _sanitize_llm() di teknikalid_growth.py insert_article + regex bare-lot 'N lot'→'N saham' (unit test 3/3).
+- QA: slot reviewer berikutnya; impact_check_due: 2026-09-29 (brief 29 Sep bebas lot/saam jalur Mandor — sanitizer baru jalan pertama kali).
+
+## [2026-09-28 18:5x] council-2026-09-27-02 — run_ledger.py catch-up mode (file lokal Hermes, 0 deploy website)
+- Type: ops (infra monitoring)  |  PRD: - (Sunday Strategy Council 27 Sep)
+- Deploy: TIDAK ADA (script ~/.hermes/scripts/run_ledger.py)  |  Rollback: cp run_ledger.py.bak-20260928 run_ledger.py
+- Fix: write_ledger() kini menulis per (job_id, date) untuk SEMUA tanggal >= 2026-09-17 (dulu hanya last_run_at hari-ini → job siang/malam tak pernah terekam saat monitor 05:45; CEO Evening 21:00 cuma 1 run dari ~7 hari). Idempotent per pasangan; source='scheduler-catchup'; verify_today() tak diubah.
+- Verify: py_compile OK; run-1 catch-up = 19 record; run-2 = 0 baris baru (idempotent PASS); verify mode exit 0 silent. Impact: besok pagi ledger harus memuat run malam ini (CEO Evening 21:00 dst).
+- QA: monitor 05:45 besok 'sehat' + ledger berisi run 21:00; impact_check_due: 2026-09-29.

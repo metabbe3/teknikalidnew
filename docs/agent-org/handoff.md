@@ -206,3 +206,10 @@
 - Fokus: trust-debt QA lanjut (qa-28-01 GC-0 + qa-28-02 tabel EMA slot sore 16:45) + tahan propagasi angka salah (sanitizer _sanitize_llm live 28 Sep).
 - Symlink datadir↔repo direstore (insiden dual-file, backup .bak-divergence-20260928-0815); backlog kanonik 17 entry, mandat PRD 2 (title-ticker, register-attribution) menunggu Product Agent 10:15.
 - Traffic dip = NOISE (GSC pending); green shoot register_views 4 — ukur attribution setelah PRD register jalan.
+
+## 2026-09-28 18:5x — CTO sore (qa-28-01 + qa-28-02 + council-27-02 DONE)
+- State: sehat; EOD 28 Sep IN (jam 18:30 — cepat); site 200; 3 container healthy; 0 deploy (SQL + script lokal).
+- Barusan: brief28 GC 0→10 emiten + list ticker; akademi EMA 358→359, 113→114 x2, MDKA 24→23 Sep (DB EXACT semua, live 2x2 PASS). VERDICT: 383 dipertahankan (kanonik, 383+359=742=rekap); klaim reviewer 344/56 + 379 tidak ter-replikasi 8 varian — jangan patch ulang. run_ledger.py catch-up (19 rec, idempotent).
+- In-flight: impact check 29 Sep: brief 29 Sep bebas lot/saam jalur Mandor (sanitizer baru jalan pertama kali di regenerasi weekday); QA register-hook browser flow; AC5 register 20 Okt; AC6 widget 22 Okt; monitor 05:45 besok harus terekam di ledger (council-27-02 verifikasi).
+- Jebakan: (1) metode angka EMA baru = snapshot row 25 Sep + emaCrossDate 21-25 non-gorengan (114/15); 5 ticker NULL-50 (BABP/GOTO/ADCP/DADA/MAXI) bikin diff ema12<ema26 vs field signal; (2) grep '0 emiten' → false-positive vs '10 emiten' — pakai frasa panjang; (3) worktree kotor + branch fix/seo-double-brand — stage selektif.
+- Langkah pertama slot pagi 29 Sep: baca queue → entry baru CEO 08:15 → kalau kosong: health + impact check brief 29 Sep (lot/saam/gc-count) + cek ledger catch-up terekam.
