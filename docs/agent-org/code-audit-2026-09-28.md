@@ -47,3 +47,11 @@ Kedua repo STANDARNYA SUDAH TINGGI (tsc/vet/test hijau semua, console.log 0, ts-
 2. hivepos-web 41 any → typed (P2, bertahap saat sentuh file — jangan churn)
 3. Refactor file >1000 baris SATU PER SATU saat ada feature yang menyentuhnya (avoid cold refactor = regression risk tanpa nilai user)
 4. TIDAK perlu: rewrite, framework change, mass-rename — return rendah, risiko tinggi
+
+
+## EKSEKUSI 28 Sep malam (post-audit)
+1. DONE P1 hivepos-api runrec.go — exec errors kini slog.Warn (e2147d5)
+2. DONE hivepos-web typed refactor — 41 to 35 any (d6dab45): SessionUser dari call-site audit, signIn opts, SnapInstance+guard, LucideIcon. Gates: tsc 0 / vitest 189/189 / build OK
+3. DONE teknikal.id 7 empty-catch dianotasi intent (183f0a8), tsc 0
+4. Sisa 35 any = ponytail stub files (telemetry/billing/tenant-performance/permissions/billing-analytics/user-admin/web-printer.d.ts/ocr-internal) — DEBT TERDOKUMENTASI, ganti saat backend masing-masing landing (jangan churn stub)
+5. Cold-refactor file >1000 baris = TIDAK DILAKUKAN (sesuai rekomendasi 3: refactor saat feature menyentuh)
