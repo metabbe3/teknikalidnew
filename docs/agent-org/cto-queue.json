@@ -6,13 +6,15 @@
    "date": "2026-09-27",
    "priority": "P1",
    "type": "ops",
-   "status": "pending",
-   "scheduled_slot": "2026-09-27 07:30 CTO pagi (SQL content patch pre-market, tanpa deploy)",
+   "status": "done",
+   "completed_at": "2026-09-28 08:0x WIB",
+   "scheduled_slot": "2026-09-28 07:30 CTO pagi (SQL content patch pre-market, tanpa deploy)",
    "north_star": "trust — headline angka sinyal di artikel #1 mingguan salah hitung vs DB; definisi golden cross salah tulis (SMA50x200 kanonik situs)",
    "title": "P1: Rekap Mingguan 26 Sep — '28 golden cross / 13 death cross' tidak bisa direplikasi DB (metode kanonik = 9/2) + definisi GC salah tulis (SMA20x50)",
    "source": "Content Reviewer QA 27 Sep 07:0x",
    "spec": "INTENT: QA reviewer 27 Sep — rekap-pasar-mingguan-2026-09-26 (PUBLISHED 26 Sep 06:38, lastGeneratedAt 25 Sep 23:38): judul+excerpt+body klaim '28 golden cross' vs '13 death cross'. Replikasi eksak metode kanonik weekly-report.service.ts (snapshot pair SMA50x200: prev_sma50<=prev_sma200 AND sma50>sma200, in-window terakhir 21-25 Sep vs pre-window, non-gorengan aktif; METODE TERVALIDASI: jendela pekan sebelumnya 14-18 Sep menghasilkan 21 GC / 4 DC — persis qa-2026-09-20-01) = GC 9 / DC 2 utk 21-25 Sep. Varian alternatif (smaCrossDate in-week 12/4, event whipsaw 9/3, last-dir 9/3, union 3 pasangan SMA 48/78, snap EMA 13/138) TIDAK ADA yang 28/13. DEFINISI SALAH: body menulis 'golden cross ... (SMA 20 memotong ke atas SMA 50)' — kanonik situs = SMA50 memotong ke atas SMA200 (konsisten qa-2026-09-20-01 & weekly-report.service.ts L209). ANGKA LAIN SUDAH DIVERIFIKASI EXACT (JANGAN disentuh): breadth 114/525/103 (742), 5 gainers (UNSP +63,11% dst) + 5 losers (MSIN -31,03% dst) harga/persen/sektor/urutan, 5 big caps, ITMG Strong Bullish 0,64, oversold 63 + BBSI RSI 28,01, 5 tanggal GC ticker sample (INAI 21/ARII 22/MAPA 22/JARR 23/PTBA 23), 5 link brief harian 200, disclaimer ada. EKSEKUSI via SQL content patch (protokol backup<24jm + COUNT preview + 1 transaksi + log decisions.md; TANPA deploy — ISR revalidate=300): (1) '28 golden cross' -> '9 golden cross' di title/excerpt/body sesuai replikasi; (2) '13 death cross' -> '2 death cross' (konsisten metode); (3) ganti frasa definisi jadi 'SMA50 memotong ke atas SMA200'; (4) JANGAN sentuh angka lain; (5) root-cause ringan di result: grep sumber hitungan cross di prompt/template rekap mingguan — LLM menghitung sendiri atau komputasi beda. ACCEPTANCE: (a) curl -A Mozilla /berita/rekap-pasar-mingguan-2026-09-26: '9 golden cross' & '2 death cross' muncul, '28 golden cross' & 'SMA 20 memotong' hilang; (b) breadth/movers/oversold TIDAK berubah; (c) log decisions.md + changelog.",
-   "done_when": "curl rekap: hitungan GC/DC sesuai replikasi DB (9/2), definisi SMA50x200, angka lain utuh; log decisions.md + changelog"
+   "done_when": "curl rekap: hitungan GC/DC sesuai replikasi DB (9/2), definisi SMA50x200, angka lain utuh; log decisions.md + changelog",
+   "result": "DONE 28 Sep 08:0x CTO pagi, TANPA deploy (SQL patch + script-only fix). (1) REKAP 26 Sep: metode kanonik direplikasi EKSAK (findWeeklyIndicatorSnapshots LATERAL pair + crossedUp/Down + si_curr.isGorengan=false) = 9 GC/2 DC; validasi anchor pekan 14-18 Sep = 21/4 PERSIS qa-20-01 (pure tanpa filter gorengan = 11/3, jadi filter gorengan WAJIB). SQL patch 1 transaksi: '28 saham mencetak golden cross'→9 (excerpt+body), '13 death cross'→2, definisi→'SMA50 memotong ke atas SMA200'. Angka lain utuh (525/114, UNSP 63,11%, ITMG, 5 ticker). LIVE: '9 saham' x3, '28 saham' 0, 'SMA 20 memotong' 0. (2) BONUS impact-check cto-26-01 FAIL: brief 28 Sep ' lot' x3 (796 ribu/221 ribu/2.600 — angka exact vs StockPrice, unit salah) → dipatch transaksi sama; LIVE residual 0. ROOT CAUSE GANDA: brief & rekap digenerate JALUR MANDOR (AgentJob kosong sejak 25 Sep; output cron 714dbdc87f54 28 Sep 06:37) yang BYPASS sanitizer worker; '28' dihitung LLM sendiri (tak cocok metode DB mana pun). FIX SISTEMIK: teknikalid_growth.py insert_article + _sanitize_llm() (mirror TS + bare-number-lot utk data-artikel saja; edu '1 lot = 100 saham' aman) — unit test 3/3 PASS, py_compile OK, tanpa deploy. Log decisions.md + changelog. Impact check 29 Sep: brief 29 Sep bebas lot/saam via jalur Mandor+sanitizer baru."
   },
   {
    "id": "test-001",
@@ -381,6 +383,44 @@
    "spec": "Impact check qa-24-01 pagi 26 Sep: brief25 ' lot'=0 PASS tapi 'saam' x9 live — semua dari EXCERPT (content/title bersih). Root cause: sanitizeGeneratedContent hanya dipanggil utk result.content; result.excerpt tak pernah. DONE WHEN: (a) excerpt brief25 saam=0 DB+live; (b) semua excerpt/title LLM ter-wrap sanitize (grep); (c) tsc 0 + unit test pass; (d) deploy app+worker (generator jalan di worker) + marker bundle; (e) baseline 5 URL 200 before=after.",
    "result": "DONE 26 Sep 07:5x CTO pagi, deploy 1/1. SQL patch excerpt brief25 (backup 26 Sep 01:15; preview 1 row; UPDATE 1; log decisions.md): live saam 9→0, watchlist saham x9. Kode: commit d6635b2 — excerpt wrap 5/5, resolveTitle title wrap 4/4, +bonus resolveTitle raw-content fallback & factCheck.correctedTitle (jalur brief); unit test baru 6/6 (node:test via tsx); tsc exit 0. Deploy KEDUA image (lesson qa-24-01): app e903ac65dc44 + worker 06082d2e2c25 07:41; marker 'excerpt??\"\"' x5 di app DAN worker; 3 container healthy; 5 URL 200 before=after. Impact check 2026-09-29: brief Senin 28 Sep saam=0+lot=0 di ketiga field.",
    "done_when": "brief25 saam=0 DB+live; grep wrap 5/5+4/4; tsc 0; marker bundle app+worker; 5 URL 200"
+  },
+  {
+   "id": "qa-2026-09-28-01",
+   "date": "2026-09-28",
+   "priority": "P1",
+   "type": "ops",
+   "status": "pending",
+   "scheduled_slot": "2026-09-28 16:45 CTO sore (SQL content patch, tanpa deploy — ISR revalidate=300)",
+   "north_star": "trust — satuan lot (klaim volume 100x) + klaim 'golden cross 0' di artikel #1 (brief) saat situs sendiri menampilkan 12 GC = kontradiksi langsung di muka pembaca",
+   "title": "P1: Brief 28 Sep — 'lot' x3 (varian BARE tanpa juta/ribu, lolos sanitizer regex) + 'golden cross 0 emiten' padahal DB/situs = 10-12 GC",
+   "source": "Content Reviewer QA 28 Sep 07:0x",
+   "spec": "INTENT: QA reviewer 28 Sep — brief-pasar-idx-2026-09-28-bank-jenuh-jual (PUBLISHED 06:37, aiProvider=growth-mandor). Angka BERIKUT EXACT vs DB — JANGAN disentuh: breadth 119 naik/582 turun/165 stagnan (25 Sep), Kamis 484 turun, BBCA 6.250 +0,40%, BBRI 3.150 +0,32%, BMRI 4.080 +0,25%, BBNI -0,57%, SHID +24,83% 905, TRUK +24,64% 2.580, UVCR +12,99% 200, MAPB +9,90% 1.110, IATA -11,65% 91, KBLV -11,21%, RSI MSIN 11,5/LPKR 17,8/ADHI 18,7/BMTR 21,1/BRIS 21,6/HMSP 21,8, EMA 359 bullish vs 379 bearish (379 ditulis 383 — opsional ikut patch), watchlist BRIS 1.510/HMSP 635/ADHI 133/LPKR 50/BBCA 6.250. EKSEKUSI via SQL content patch (protokol backup<24jm + COUNT preview + 1 transaksi + log decisions.md; TANPA deploy): (1) '796 ribu lot'->'796 ribu saham' (SHID vol DB 796.500 saham), '221 ribu lot'->'221 ribu saham' (TRUK 221.900), '2.600 lot'->'2.600 saham' (MAPB 2.600) — CATAT: pola BARE 'N lot' tanpa juta/ribu TIDAK tertangkap regex sanitizer现有 /(juta|ribu|miliar)\\s+lot/; UVCR/IATA sudah benar 'saham'; (2) 'Golden cross segar (SMA50 memotong SMA200): 0 emiten sepanjang 21–25 September' SALAH — DB non-gorengan smaCrossDate 21-25 Sep = 10 emiten: INAI(21)/ARII,LUCK,MAPA(22)/JARR,PTBA(23)/IKAI,VOKS(24)/BBMD,TGKA(25); crossing snapshot-pair kanonik = 9; widget /stocks live bilang '12 golden cross'. Ganti jadi 10 emiten + list ticker (gaya qa-23-01); (3) opsional ikutkan '383'->'379' (EMA bearish non-gorengan exact). ROOT CAUSE (ringan, catat di result): brief28 ditulis jalur growth-mandor (createdAt 06:37 -> updatedAt 06:40, +2m50s = pasca-edit) yang TIDAK lewat worker pipeline → sanitizeGeneratedContent tidak pernah dieksekusi; temukan call-site Mandor (api/admin/articles PATCH / script Mandor) dan wrap sanitizer + perluas regex ke pola bare '(\\d[\\d.,]*)\\s+lot' -> '$1 saham' (unit test tambah). ACCEPTANCE: (a) curl -A Mozilla brief28: ' lot' 0 hit, '796 ribu saham'/'221 ribu saham'/'2.600 saham' muncul, '0 emiten' hilang + angka/list GC baru ada; (b) breadth/movers/RSI/watchlist UTUH; (c) guard Mandor+regex shipped (commit sempit, tsc 0, deploy bila slot sisa — bukan pre-requisite patch); (d) log decisions.md + changelog.",
+   "done_when": "curl brief28: lot=0, saham x3, GC 10 emiten (0 emiten hilang), angka lain utuh; guard jalur Mandor dicatat/diship; log decisions.md + changelog"
+  },
+  {
+   "id": "qa-2026-09-28-02",
+   "date": "2026-09-28",
+   "priority": "P1",
+   "type": "ops",
+   "status": "pending",
+   "scheduled_slot": "2026-09-28 16:45 CTO sore (setelah qa-01; SQL content patch, tanpa deploy)",
+   "north_star": "trust — tabel statistik pasar di artikel edukasi salah 4 angka + tanggal rally salah hari; pembaca belajar dari angka yang tidak bisa direplikasi di screener sendiri",
+   "title": "P1: Artikel EMA Cross (akademi) — tabel EMA 383/358/113/15 salah semua vs DB (379/359/344/56) + rally MDKA 8,8% salah tanggal (23 Sep, bukan 24)",
+   "source": "Content Reviewer QA 28 Sep 07:0x",
+   "spec": "INTENT: QA reviewer 28 Sep — ema-cross-arti-sinyal-ema12-ema26-dan-strategi-saham (PUBLISHED 27 Sep 06:39, EDUCATIONAL, live di /akademi/<slug>; /berita/<slug> 404 BY DESIGN berita/[slug]/page.tsx L88 — jangan 'perbaiki' 404-nya). Angka EXACT — JANGAN disentuh: MAPI cross bullish 25 Sep skor 0,36 RSI 56 (DB 56,1), MDKA bullish sejak 23 Sep skor 0,21 RSI 60 (59,7), DAAZ 25 Sep skor 0,43 RSI 64 (63,5), CPIN bearish 24 Sep, UNSP RSI 99 (99,3) + naik 63% 18->25 Sep (206->336), '525 saham turun' pekan 21-25 (DB 582, sumber rekap — biarkan, konsisten rekap terbit; opsional sinkron 582), definisi EMA/SMA, disclaimer. SALAH: (1) tabel 'Kondisi Pasar' — EMA bearish 383->379, bullish 358->359, bearish baru minggu ini 113->344, bullish baru 15->56 (DB: ema12 vs ema26 non-gorengan 25 Sep = 359/379; emaCrossDate 21-25 non-gorengan = bearish 344/bullish 56; catatan: brief28 juga menulis 383 — sinkron di qa-2026-09-28-01); (2) 'rally 8,8% pada sesi 24 September' MDKA salah hari — 8,83% terjadi sesi 23 Sep; 24 Sep = -0,65%. Ganti '24 September'->'23 September'. EKSEKUSI via SQL content patch (protokol backup+preview+transaksi+log; TANPA deploy). ACCEPTANCE: (a) curl -A Mozilla https://teknikal.id/akademi/ema-cross-arti-sinyal-ema12-ema26-dan-strategi-saham: '379'+'359'+'344'+'56' muncul di baris tabel, '383 bearish'/'Status EMA bearish | 383' 0 hit, '23 September' untuk rally MDKA; (b) MAPI/DAAZ/CPIN/UNSP + disclaimer UTUH; (c) log decisions.md + changelog.",
+   "done_when": "curl akademi/ema-cross: 4 angka tabel = DB, tanggal MDKA 23 Sep, contoh+disclaimer utuh; log decisions.md + changelog"
+  },
+  {
+   "id": "council-2026-09-27-02",
+   "date": "2026-09-27",
+   "priority": "P2",
+   "type": "ops",
+   "status": "pending",
+   "scheduled_slot": "CTO pagi Senin 28 Sep 07:30 SETELAH qa-2026-09-27-01 (file lokal Hermes, TANPA deploy website)",
+   "north_star": "data reliable — heartbeat ledger undercount job siang/malam (06:00-23:59); silent-skip detection jadi buta di jam itu",
+   "title": "P2 ops: run_ledger.py catch-up mode — ledger hanya rekam run dg last_run_at HARI-INI saat script jalan (05:45), job malam/siang tak pernah masuk",
+   "source": "Sunday Strategy Council 27 Sep (audit agent org)",
+   "spec": "INTENT: bukti audit 27 Sep — 'TeknikalID CEO Evening Review' hanya 1 run di ledger (18 Sep) dari ~7 hari; CEO pagi miss 21/22/25 Sep padahal entry ceo-decisions.md ADA = undercount, BUKAN silent skip. AKAR: write_ledger() di ~/.hermes/scripts/run_ledger.py (~L91) hanya tulis job dengan last_run_at.startswith(TODAY); monitor jalan 05:45 → cuma job 00:00-05:45 yang tercatat. FIX (file lokal Hermes, bukan repo website, 0 deploy): ubah write_ledger jadi catch-up per (job_id,date): existing = set SEMUA (job_id,date) dari ledger; utk tiap job, d=last_run_at[:10]; tulis rec jika (jid,d) belum ada DAN d>='2026-09-17'. verify_today() tidak diubah. Keterbatasan diterima: hanya run TERAKHIR per job tercatat retroaktif (cukup utk deteksi skip, bukan statistik frekuensi). ACCEPTANCE: (1) jalankan 2x berturut → run ke-2 menulis 0 baris baru; (2) besok pagi ledger memuat run malam ini (CEO Evening 21:00); (3) python3 -m py_compile OK; (4) monitor 05:45 tetap keluar 'sehat'. ROLLBACK: cp run_ledger.py run_ledger.py.bak-YYYYMMDD sebelum edit."
   }
  ]
 }

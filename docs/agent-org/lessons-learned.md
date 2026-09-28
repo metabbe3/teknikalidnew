@@ -163,3 +163,12 @@ Submit sitemap via GSC web (Angular closure, tanpa <form>): 6 jurus gagal — JS
 **Konteks:** Decision Engine ala JEV live (~/.hermes/scripts/verifier/verify.py, GLM z.ai flash/5.3). Owner: pakai untuk high-stakes + task coding 3 org.
 **Aturan:** CTO WAJIB verifier-gate klaim DONE-WHEN sebelum tulis changelog (klaim verify dinilai konsistensinya); QA boleh bungkus verdict naratif; ANGKA tetap SQL/curl/tsc — verifier BUKAN pengganti bukti fisik, ia pemeriksa klaim kedua. Fail-open. Log: ~/.hermes/data/verifier-log.jsonl. Skill: verifier-gate. Rollout: teknikal dulu, hivePOS+AegisGo menyusul setelah ≥3 koreksi nyata.
 **Pencegahan:** klaim "semua 200 / 44 file / tsc=0" yang TIDAK didukung output fisik akan ditangkap gate — tulis klaim hanya sebesar bukti.
+
+## [REVIEWER] 2026-09-28 — Lot regression hari ke-4: sanitizer gap (bare pattern) + jalur growth-mandor unwired
+- Pola: brief23/24 (lot x3, x3) → fix sanitizer regex (juta|ribu|miliar) lot + prompt guard → brief25 'saam' excerpt (fix varian excerpt/title) → brief28 'lot' KEMBALI x3 dgn pola BARU: BARE '796 ribu lot' tertangkap, tapi '2.600 lot' (tanpa juta/ribu/miliar) TIDAK — regex butuh pola multiplier.
+- Lebih fatal: brief28 ditulis jalur growth-mandor (aiProvider=growth-mandor, createdAt→updatedAt +2m50s pasca-edit), BUKAN worker pipeline — sanitizeGeneratedContent tidak pernah dieksekusi. Guard eksisting melindungi 1 dari ≥2 jalur publish.
+- Pelajaran: (1) guard harus dipasang di SEMUA call-site publish (worker + admin API + script eksternal), bukan hanya jalur utama; (2) regex whitelist pola (juta|ribu|miliar) rapuh — pakai pola umum \d[\d.,]*\s+lot → saham dgn whitelist pengecualian edukasi '1 lot = 100 saham'; (3) QA patch DB tiap kejadian = whitelist obat, bukan obat generik — fix jalur adalah obatnya (qa-2026-09-28-01).
+- Klaim angka vs widget situs sendiri: brief tulis 'golden cross 0' saat widget /stocks bilang '12 golden cross' pekan sama = kontradiksi on-site yang paling merusak trust; generator konten wajib pakai SATU sumber komputasi (weekly-report.service) bukan LLM menghitung sendiri (pola qa-27-01 berulang).
+
+
+### 2026-09-28 | infra-dokumen | Symlink kanonik datadir↔repo diam-diam diganti file biasa oleh tulis atomic-replace (temp+rename); backlog datadir kehilangan mandat PRD — dual-file divergen 1 hari sebelum agent lain baca file salah | Semua script/agent yang menulis queue/backlog WAJIB resolve realpath dulu (os.path.realpath) sebelum menulis; watchdog harian cek is-symlink utk cto-queue.json + product-backlog.json

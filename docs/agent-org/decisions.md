@@ -313,7 +313,7 @@ Rollback: llm_backup field di jobs.json tiap job.
 - Guardrail check: 1 dispatch engineering/malam ini (≤2 OK); 0 deploy pagi ini oleh CEO; anti-loop OK (topik baru, bukan retry); duplikat OK (queue bersih).
 
 
-## [PRODUCT] Mandat keputusan CEO — 2026-09-17 (owner routed via agent-utama)
+## 2026-09-17 (PRODUCT)
 Product Agent run 17 Sep 08:15 selesai (survey funnel 30d nobot). DATA SIAP, MENUNGGU VERDICT ANDA
 pada entry prod-2026-09-17-01 (product-backlog.json, field product_recs + ceo_decision_pending=true):
 
@@ -371,23 +371,23 @@ dispatch engineering sebelum status spec_ready (SDLC).
   identical, ^JKSE 17 kosong) — masuk task CTO jkse-2026-09-17-01.
 - Stat post = preview ke owner dulu; carousel utama tetap autopost 17:30.
 
-## [OWNER DECISION] 17 Sep 19:20 WIB — IG CONTENT STOPPED
+## 2026-09-17 19:20 (OWNER DECISION)
 Owner: "Stop ig content I think its bad we focus on our website first then social media"
 - Job IG Carousel c3617c4b58db PAUSED (enabled=false, verified). Tidak ada konten IG baru (carousel + stat post) sampai notice owner.
 - IG monitoring metrics (engagement stats existing posts) TETAP jalan — data utk evaluasi.
 - Rerouting energi growth: WEBSITE FIRST (SEO/GSC reindex, funnel value-prop 4/91, register preset+watchlist hook prod-01, widget prod-04). Social media menyusul setelah fondasi website sehat.
 - Aset dipreserve: ig_carousel.py stat mode + gemini_image.py + ig_stat_gemini.py + autopost pipeline — siap re-activate kapan pun (unpause + prompt utuh).
 
-## [OWNER] 17 Sep — IG content STOP (website first). CEO pagi: jangan dispatch task IG; fokus = funnel website + prod-01 + prod-04. IG metrics monitoring tetap.
+## 2026-09-17 (OWNER)
 
-## [OWNER NORTH STAR] 17 Sep 19:26 WIB — Prioritas perusahaan
+## 2026-09-17 19:26 (OWNER NORTH STAR)
 "Fokus teknikal dan hivepos aplikasi consistency, trust, dan easy to use. Focus on customer! Data need to one reliable."
 - SEMUA keputusan produk & dispatch dinilai lewat 4 lensa: (1) CONSISTENCY, (2) TRUST, (3) EASY TO USE, (4) DATA RELIABLE (satu sumber kebenaran).
 - CUSTOMER FIRST: apa yang bikin user bingung/frustrasi/balik lagi = P0. Fitur baru yang tidak memperkuat 4 lensa = HOLD.
 - Untuk teknikal.id artinya: brief pasar akurat tiap pagi (data EOD benar — jkse-01 selesai pagi), funnel register mulus, error message jelas bahasa Indonesia, widget ticker (prod-04) selaras.
 - Untuk hivePOS: onboarding mulus (Umalas stuck di delete-customer = P0 kontinu), konsistensi UI, data order/revenue reliable.
 
-## [OWNER MANDATE] 17 Sep 20:30 WIB — PARALLEL EXECUTION PROTOCOL
+## 2026-09-17 20:30 (OWNER MANDATE)
 Owner: "Gas semua agent bisa paralel kalau tidak saling ganggu"
 - CTO builders (teknikal pagi+malam, hivePOS slot1) kini BOLEH 2+ claude code paralel dalam slot.
 - Gate: NON-OVERLAP file/area wajib (BE+FE ok; sama file/prisma/config = sequential).
@@ -501,7 +501,7 @@ Owner: "Gas semua agent bisa paralel kalau tidak saling ganggu"
 - COUNCIL-02: ceo-decisions.md merge 9 entri + symlink restored -> repo kanonik tunggal.
 - IMPACT CHECK 21 Sep (gabungan jkse-17-01/18-02): ^JKSE row 21 Sep ADA (C=6384.73 H=6451.33) via launchd sync tanpa manual — PASS.
 
-## [CTO pagi 2026-09-22 08:0x] soft404-2026-09-21-01 DONE
+## 2026-09-22
 - DEPLOY pagi 07:48 (pre-market): commits b94d8de (hapus 6 loading.tsx — root + 5 segment leluhur route notFound) + b507823 (admin/login Suspense wrap, fix build prerender useSearchParams). Image 17c0d2e3361f. Rollback anchor: 264a67f61480 / 41cbdd2b.
 - BASELINE-THEN-DEPLOY: bogus before 200×8 → after 404×7 + profile 307 auth-gate; valid 7/7 200; TTFB tanpa regresi (/ 0.130→0.164s, /stocks 0.140→0.124s).
 - INCIDENT minor build-1: docker compose build app GAGAL prerender /admin/login (useSearchParams tanpa boundary setelah root loading.tsx dihapus) — fix minimal wrap Suspense lokal, build-2 sukses; bukan rollback, site tidak pernah down (container lama jalan terus selama build).
@@ -535,3 +535,12 @@ Root cause unit 'lot': brief prompt TANPA baris satuan volume + tanpa sanitizer 
 ## 2026-09-26 07:3x WIB — CTO pagi: SQL patch excerpt brief25 + deploy sanitizer variant-3
 - SQL (protokol destruktif owner 14 Sep): UPDATE "Article" excerpt 'saam'→'saham', WHERE slug='brief-pasar-idx-2026-09-25-grup-mnc-rontok' AND status='PUBLISHED' AND excerpt ILIKE '%saam%' → rowcount 1. Backup db-20260926 01:15 valid <24h; preview COUNT 1 (excerpt-only; content/title bersih; sweep PUBLISHED excerpt-saam total = 1 row, excerpt-lot = 0). Post: saam=0, watchlist saham=1, live 9→0.
 - Deploy 1/1 pagi: commit d6635b2 (article.service.ts excerpt+title sanitize 5+4 site + correctedTitle, +content-sanitizer.test.ts) → app e903ac65dc44 + worker 06082d2e2c25 (kedua image rebuild 07:41). Rollback anchor lama: app fecbc607a367 / worker 88fd17fa2ff6 / git 41552ee. 3 container healthy post-deploy; 5 URL 200 before=after.
+
+## 2026-09-28 07:5x WIB — CTO pagi: SQL patch rekap mingguan 26 Sep (qa-27-01) + brief 28 lot (impact check cto-26-01 FAIL)
+- SQL (protokol destruktif owner 14 Sep): SATU transaksi, 2 UPDATE, rowcount masing-masing 1. Backup db-20260928 01:15 valid <24h. Preview COUNT eksak per frasa (28/13/SMA-20 masing 1 di field yang benar; lot 3).
+- Rekap-pasar-mingguan-2026-09-26: '28 saham mencetak golden cross'→'9' (excerpt+body), 'melawan 13 death cross'→'2', '(SMA 20 memotong ke atas SMA 50)'→'(SMA50 memotong ke atas SMA200)'. Post: residual 0/0/0, angka lain utuh (breadth 525/114, UNSP 63,11%, ITMG, 5 ticker sample).
+- Brief-pasar-idx-2026-09-28-bank-jenuh-jual: 3 unit 'lot'→'saham' (796 ribu/221 ribu/2.600 — angka EXACT vs StockPrice 25 Sep: SHID 796.500, TRUK 221.900, MAPB 2.600). Post: residual lot=0.
+- METODE VERIFIKASI 9/2: replikasi eksak findWeeklyIndicatorSnapshots (snapshot-pair LATERAL, crossedUp/crossedDown) + si_curr.isGorengan=false = 9 GC/2 DC pekan 21-25 Sep; VALIDASI anchor pekan 14-18 Sep = 21/4 PERSIS (qa-20-01). Pure tanpa gorengan-filter = 11/3. GC ticker non-gorengan: ARII BBMD INAI JARR LUCK MAPA PTBA TGKA VOKS (+SMLE WAPO gorengan); DC: AMAN BOBA (+MTLA gorengan).
+- ROOT CAUSE '28/13': market-brief-data (teknikalid_growth.py) TIDAK memuat cross-count; AgentJob kosong sejak 25 Sep → rekap & brief digenerate Mandor cron agent (714dbdc87f54 output 28 Sep 06:37) dan angka dihitung LLM — 28 tak cocok metode DB mana pun (92/111/63/11/10).
+- FIX SISTEMIK (script-only, no deploy): teknikalid_growth.py insert_article kini _sanitize_llm() (mirror content-sanitizer.ts: saam + scaled-lot + bare-number-lot utk NEWS/STOCK_ANALYSIS saja); unit test 3/3 PASS; py_compile OK.
+- 0 deploy (SQL + skrip lokal Hermes).

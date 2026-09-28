@@ -1,3 +1,10 @@
+## [2026-09-28 07:5x] qa-2026-09-27-01 — Rekap Mingguan 26 Sep: 28→9 GC / 13→2 DC + definisi SMA50×SMA200; + bonus brief-28 lot×3 (impact check cto-26-01 FAIL→patched)
+- Type: ops/QA-fix  |  PRD: -
+- Deploy: tanpa deploy — SQL content patch + sanitizer jalur Mandor (teknikalid_growth.py, script-only)  |  Rollback: restore db-20260928.sql.gz (01:15)
+- Verify: DB post-check residual 0 (28/13dc/SMA-20/lot); angka lain utuh (breadth 525/114, UNSP 63,11%, 5 ticker cross-date, SHID/TRUK/MAPB volume exact vs StockPrice 25 Sep). LIVE 2 URL 200 + grep: '9 saham' x3 / '28 saham' 0 / 'SMA 20 memotong' 0 / lot residual 0. METODE 9/2 tervalidasi anchor 21/4 (qa-20-01) — replicasi eksak LATERAL + isGorengan=false. ROOT CAUSE: cross-count dihitung LLM Mandor (market-brief-data tanpa angka cross; AgentJob kosong sejak 25 Sep) — bukan pipeline repo. Sanitizer jalur Mandor di-ship + unit test 3/3.
+- QA: reviewer 29 Sep pagi — cek brief 29 Sep bebas lot/saam (jalur Mandor + sanitizer baru) & rekap live.
+- Impact check: 2026-09-29 — brief/rekap berikutnya (29 Sep & 3 Okt) bebas unit-lot & hitungan cross LLM; generator gap → kandidat task Mandor-prompt (cross-count harus dari DB, bukan hitung LLM).
+
 # Changelog — teknikal.id Agent Org
 
 > Format: satu entri per deploy/task selesai. Ditulis CTO di slot yang sama (bagian dari

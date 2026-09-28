@@ -25,10 +25,10 @@
 - PRASYARAT dipenuhi: backup harian 19 Sep 01:15 (last-success verified) < 24h ✓; SQL UPDATE narrow WHERE by id ✓; preview angka di laporan ✓.
 - Root cause QA: writer pakai data Kamis utk narasi Jumat (kronologi off-by-one seragam) — perlu gate generator "breadth query by trade-date" di brief source.
 
-## [2026-09-20 07:2x] [REVIEWER] QA 24 jam + verifikasi deploy semalam
+## 2026-09-20 (REVIEWER)
 3 artikel 24 jam live 200. Listicle basic materials & akademi pullback: EXACT vs DB (skor/RSI/close/cross-date; qa-19-02 verified). Rekap mingguan: breadth 5/5 hari + 10 movers + proxy BBCA/BBRI + TOWR exact — FATAL-kecil: headline '20 golden cross baru' = snapshot basi s.d. 17 Sep (full-week non-gorengan = 21) + definisi tertulis 'SMA20×SMA50' (salah; harus SMA50×SMA200) -> P1 qa-2026-09-20-01 (SQL content patch, tanpa deploy). ADMIN DEBT DIBAYAR: qa-19-01/02 flip done+qa_verified dari bukti live (dieksekusi CTO 19 Sep sore tanpa buku changelog — diingatkan). Pola mixed-freshness rekap hari ke-2 -> lessons-learned.md.
 
-## [COUNCIL] 2026-09-20 08:05 WIB — Sunday Strategy Council (pekan 14–20 Sep)
+## 2026-09-20 08:05 (COUNCIL)
 DATA (isBot=false): views 385 vs 617 (-38% WoW) · register 0 vs 2 · user baru 1 · returning IP 19,4% (7/36) vs 10%.
 - ✅ WORKS: brief dgn judul 1-mover spesifik (Tugu 17/9: 18 views; brief generik 0–3 dua pekan) · /stocks 138 = 36% trafik, halaman inti stabil · evergreen sinyal persisten (pullback-sma20 11, golden-cross 10 views) · CTA register live di signal pages (curl verify 20/9: 2 hit/page).
 - ❌ DOESN'T: trafik -38% WoW — base anonim menyusut, bukan failure konten baru · register views 0 (CTA tampil, tak ada klik) · /saham-oversold 21→1.
@@ -75,7 +75,7 @@ DATA (isBot=false): views 385 vs 617 (-38% WoW) · register 0 vs 2 · user baru 
 - ✅ Verifikasi deploy semalam (image 264a67f61480 = build HEAD 41cbdd2): isr-01 fungsional 4/4 signal pages terisi tanpa empty-state (GC 30 ticker unik), logs bersih → status qa_pass di queue; qa-21-02 single-brand title ✓ live; qa-21-03 guard edu aktif (soft-404 /berita/<edu> masih 200 = caveat tercatat, lanjut soft404-2026-09-21-01 slot pagi ini); sitemap 718 URL, slug edu hanya lewat /akademi/ ✓.
 - 📝 Tidak ada fatal baru. Utang dibayar: flip isr-01 done→qa_pass (bukti di qa_note). Queue kini: soft404-01 (P1, slot 07:30 hari ini) + reviewer-qa-22-01 (P2) + botgate-01 (blocked_for_owner).
 
-## [KEYWORD-RESEARCH] 2026-09-22 08:00 WIB — brief SEO mingguan (diff GSC 15→22 Sep, read-only)
+## 2026-09-22 08:00 (KEYWORD-RESEARCH)
 Konteks: GSC terus merosot (klik 28→6/minggu, tayang 4,93rb→1,71rb) — korelasi kuat dgn soft-404 P1 (peringatan CEO 21 Sep); 3 brief di bawah = penguat konten sambil menunggu reindex.
 - BRIEF 1 · keyword: idx smc liquid · intent: info "apa itu idx smc liquid" (tayang 13–17/hari stabil, pos 76–90, NOL konten internal) · judul usulan: "IDX SMC Liquid Adalah: Daftar Konstituen & Sinyal Teknikal Terbarunya" · internal link: /stocks, /saham-golden-cross, /saham-oversold · P1 (satu2nya keyword tayang stabil 2-digit tanpa halaman apapun; kompetitor = artikel definisi Cermati/BigAlpha/Liputan6 — angle beda kita: konstituen live dari DB + sinyal per saham).
 - BRIEF 2 · keyword: ultj (saham ultj) · intent: cari harga+analisis Ultrajaya (tayang 10/hari stabil, pos 72,7, hanya ada halaman /stocks/ULTJ.JK tanpa artikel) · judul usulan: "Analisa Teknikal ULTJ Hari Ini — Sinyal, Support-Resistance & Skor" (pakai template analisa-teknikal yang sudah terbukti di BBRI) · internal link: /stocks/ULTJ.JK, /saham-golden-cross, /akademi/strategi-pullback-sma20-untuk-pemula · P2 (SERP didominasi quote page statis; kita menang lewat analisis ber-update harian).
@@ -121,7 +121,7 @@ Konteks: GSC terus merosot (klik 28→6/minggu, tayang 4,93rb→1,71rb) — kore
 - 🔥 BESOK PAGI (lempar CEO 08:15): dispatch prod-19-01 widget sinyal mingguan (approved 22 Sep, slot #1) + first-read efek register hook 24j penuh — jika masih 0 register → eskalasi owner dgn data AC5.
 - STATUS: warn — ops sehat & queue bersih, register 0/7d + daily traffic turun; tidak kritis.
 
-## [2026-09-24 07:4x] qa-reviewer-2026-09-24 — QA 42 artikel + verifikasi deploy [REVIEWER] — 1 FATAL (regresi + root cause baru)
+## 2026-09-24 (REVIEWER)
 - QA konten 24jm: 42 artikel (40 saham + 2 brief). 40 saham: title & body EXACT vs StockPrice 23 Sep (close+pct, sign benar, GOTO/INDF 0,00 ok). LIVE 5/5 200 + disclaimer. SEO bersih: slug kebab, meta/excerpt 42/42, 0 double-brand, 0 saam, link internal valid (3 'odd' = route nyata: /stocks?view=screener, /saham-oversold, /auth/register).
 - Brief 23: patch qa-23-01 terbukti hidup — 'lima golden cross' x1, tiga=0, lot=0, AMAN/BOBA/LUCK/INAI ada, link /berita/ ada, breadth 552 exact, BSSR +11,28% exact.
 - Brief 24: SEMUA ANGKA exact vs DB (461 breadth; MDKA 112,3jt=112.340.100, 3,8x; DEWA 671jt=671.123.300; DEWA +9,20/DSSA +9,18/INDY +10,04) TAPI regresi satuan 'lot' x3 ('112,3 juta lot' dkk = klaim 100x). FATAL -> task qa-2026-09-24-01 (SQL patch 3 unit + worker rebuild).
@@ -145,11 +145,118 @@ Konteks: GSC terus merosot (klik 28→6/minggu, tayang 4,93rb→1,71rb) — kore
 - TEMUAN 2: 4 status backlog basi vs verdict pagi: prod-17-01 dispatched→(shipped), sec-21-04 candidate→(rejected), sre-23-1 candidate→(done via ops-24-01), prod-17-04 researching→(rejected). Semua priority P1-P4 lengkap ✓.
 - 🔥 BESOK PAGI: (1) sinkron 4 status backlog basi + follow-up Product Agent miss ke owner digest; (2) cek register 48j pasca-hook (saat ini 1/7d — jika <2 → eskalasi owner dgn data AC5). Queue CTO 0 pending, budget besok kosong.
 
-## [OWNER-AGENT] 25 Sep — Fix anomali stock analysis 0/2 (2 minggu beruntun)
+## 2026-09-25 (OWNER-AGENT)
 Root cause: konflik config — max_posts_per_day=1 vs brief harian 5/minggu memakan semua slot; guardrail pre-post memotong analysis Selasa/Kamis sebelum jalan. FIX: max_posts_per_day=2 + second_post_rule (slot ke-2 HANYA stock_analysis Selasa/Kamis). Expectation: stock analysis 2/2 minggu depan; kalau masih 0 → eskalasi worker scheduling. Register 1/7d = issue distribusi+GSC (verifikasi DB: 1 IP), bukan bug — sudah di list blocker GSC.
 
 
-## [2026-09-25 07:xx] [REVIEWER] qa-reviewer-2026-09-25 — QA 42 artikel + verifikasi deploy [read-only, 0 task]
+## 2026-09-25 (REVIEWER)
 - QA: 42 artikel 24jm — 40 saham EXACT vs DB (close+%-chg 23→24 Sep, sign), brief24 breadth 461/197 + MDKA +8,83% (3.080, DB exact) & rekap 552 turun = Selasa 22 Sep (DB 552 exact, bukan klaim hari-H), brief25 484/192 exact. FATAL: 0. Minor: 0. lot=0 (sanitizer bertahan, brief25 bebas). Disclaimer 42/42, excerpt/meta ada, 0 double-brand, link internal /stocks/TICKER.JK + /berita/ valid. LIVE: 7/7 URL dicek 200 + render angka (brief25, cpin, bbca, goto, untr, /stocks, /).
 - Deploy verify (independen): qa-24-01 → lot=0 + angka utuh live + worker chunks/7977.js marker ADA; prd-24-01 → widget /stocks 10 golden cross · 3 death cross (21-24 Sep) == DB query; ops-24-01 → sre_brief.py mtime 24 Sep 18:36, worker healthy. 3 entry flipped done→qa_pass (qa_verified=true, evidence di queue). Queue: 0 pending.
 - Commit check: HEAD 3efe7ec (docs) — b19b71c (widget) di history; app+worker Up healthy (12h/24h).
+
+## 2026-09-25 08:15 — CEO pagi (Jumat)
+- RITUAL [PRODUCT]: 0 entry pending. VERDICT BACKLOG: prod-2026-09-24-01 (title ticker terpotong 25-char mid-word, 144/1.353 stok, 15,4% views detail) → PROMOTE jadi mandate PRD utk Product Agent Senin 28 Sep 10:15. Alasan-data: lensa owner consistency/trust/polish — 'Bank Rakyat Indonesia (Pe…' = wajah CTR SERP pasca GSC reindex; effort 1 (helper+test). Bukan dispatch engineering — tunggu spec_ready (SDLC). Dual-write repo+datadir OK.
+- METRIK 7d: views 753 (-15% w/w vs baseline bersih pasca bot-fix; 24 Sep anjlok krn 3 IP scraper/power-user kemarin tidak balik = volatilitas komposisi, tracking verified end-to-end 24 Sep), register_views 1, new users 1/7d, returning IP 10,2%, signal pages 29v (GC 21 + oversold 8). EOD+indicators fresh 24 Sep, 1353 saham aktif — pipeline sehat = on track, NOISE jangan panic-refactor.
+- KEPUTUSAN: 0 dispatch (queue 0 pending; tidak ada P1 ops; kandidat fitur tunggal belum spec_ready). Budget CTO 2/2 kosong — org mode pengukuran: impact check AC5 register 20 Okt, AC6 widget 22 Okt, brief sanitizer 26 Sep.
+- TEMUAN: edu volume-spike (mandat owner 23 Sep via digest, dispatch ke Mandor HARI ITU) TIDAK terbit di deadline Kamis 24 Sep — EDUCATIONAL 0 sejak 22 Sep, slug 0 row di DB (diverifikasi SQL pagi ini). Owner mandate terlewat 1 hari → sebut di laporan owner; lane konten = Mandor, bukan CTO. Edu bridge tetap 1/2 (pullback-sma20 closed); volume-spike OPEN lewat deadline.
+- STATUS: ok — sehat & on track; dispatch kosong by design (periode pengukuran).
+
+- 25 Sep 21:15 — MANDAT OWNER EDU VOLUME-SPIKE EXECUTED (eskalasi retry #1): artikel 'volume-spike-arti-cara-membaca-dan-strategi-saham' PUBLISHED (teknikalid_growth.py publish-article; admin author growth-mandor). VERIFIED: HTTP 200 + title render + keywords (akumulasi/distribusi/2x rata-rata) muncul di HTML; DB row PUBLISHED 2026-09-25. Edu bridge 17 Sep kini 2/2 lengkap. 0 deploy (data-only). prod-17-03 → done.
+
+## 2026-09-27 (WEEKEND-IDEA)
+**wid-2026-09-27-1 — Signal Page Discovery: halaman sinyal non-GC kelaparan link**
+- DATA: 10 dari 12 halaman /saham-* di sitemap 0 views/7d non-bot (ema-cross, death-cross, volume-spike, oversold, macd-bullish, stochastic-oversold, overbought, blue-chip, dsb — diverifikasi PageView 7d). Yang hidup hanya /saham-golden-cross (19v, top-3 non-screener) + /saham-pullback-sma20 (2v). GC = satu-satunya yang dapat eksposur widget 'Sinyal Minggu Ini' /stocks (87% views GC dari /stocks, catatan CEO 24 Sep; DC 2v/4wk).
+- PROPOSAL (effort kecil): (a) widget Sinyal Mingguan /stocks tambah baris death cross + EMA cross count, masing-masing link ke halaman sinyalnya; (b) template brief harian: bagian sinyal wajib link 1-2 halaman sinyal paling relevan minggu itu (minggu ini: /saham-death-cross — 113 EMA-bearish baru vs 15 bullish per 25 Sep).
+- KONTEKS: edu pendamping kini lengkap (GC, oversold, overbought, pullback, volume-spike 26 Sep, ema-cross 27 Sep — 2/2 target weekend tercapai, semuanya interlink ke halaman sinyal). Sisi konten siap; tinggal saluran distribusi internal.
+- Verdict: CEO Senin 28 Sep.
+
+## 2026-09-26 08:15 — CEO pagi (Sabtu)
+- RITUAL [PRODUCT]: 0 entry pending. Backlog audit: semua entry aktif punya priority; tidak ada >7 hari tanpa verdict.
+- VERDICT BACKLOG: idea-2026-09-25-1 (atribusi register utm hilang, kandidat CTO 25 Sep) → PROMOTE jadi mandate PRD Product Agent Senin 28 Sep 10:15. Alasan-data: gate AC5 prd-17-01 (impact check 20 Okt) tidak bisa membedakan register via hook vs organik; 3 hook live 22 Sep semuanya bawa utm tapi 0 tercatat. Syarat PRD: whitelist utm + cap panjang, kolom additive, no UI. Bukan dispatch engineering — belum spec_ready (SDLC).
+- REKONSILIASI: sre-2026-09-19-1 (worker HEALTHCHECK) → shipped; docker ps 26 Sep verifikasi worker-1 (healthy) post-deploy CTO pagi.
+- METRIK 7d: views 717 (-22% w/w, komposisi weekday/weekend + GSC reindex pending = noise jangan panic-refactor), register_views 4 (naik dari 0-1, masih < baseline 9), new users 2, returning IP 11,9% (up dari 10,2%). EOD+indicators fresh 25 Sep (Jumat, pasar tutup — expected), 1.353 saham aktif. Site 200 (0,25s), 3 container healthy. Pipeline sehat = on track.
+- KEPUTUSAN: 0 dispatch engineering (queue 0 pending, tidak ada P1 ops, kandidat fitur belum spec_ready). Weekend tenang — tidak ada P1 hotfix path yang terpicu. Org mode pengukuran: impact check 29 Sep (brief Senin regenerasi pertama lewat guard excerpt), AC5 20 Okt, AC6 22 Okt.
+- STATUS: ok — sehat & on track; 0 dispatch by design (periode pengukuran), verdict backlog tuntas.
+
+
+## 2026-09-27 08:05 (COUNCIL)
+**RETRO 4 KOLOM** (teknikalid_weekly_retro.py; views non-bot):
+- WORKS: retention naik 3 pekan beruntun (returning IP 10,2% → 11,9% → 15,8%); funnel hidup — register 1→4, new users 1→2, /auth/complete-profile 7v; screener /stocks stabil 262→268 (42% total views) = core tool tahan; QA konten 0 FATAL + angka EXACT vs DB (trust infra jalan); edu weekend 2/2 (volume-spike 25 Sep, ema-cross 27 Sep).
+- DOESN'T WORK: halaman sinyal kelaparan link internal — /saham-golden-cross 44→4 (−91%), oversold 18→0, volume-spike 0; hanya GC dapat eksposur widget /stocks. Produksi ≠ konsumsi: 40 snapshot + 7 NEWS pekan ini mayoritas 0-3v (top: Tugu 17 Sep 18v kumulatif). Traffic 642 vs 807 (−20% WoW) = komposisi (3 IP scraper/power-user kemarin tidak balik + GSC reindex pending, impresi GSC stabil ~1,6rb) — BUKAN verdict konten buruk.
+- CONFUSING: register naik justru saat traffic turun (n kecil — tunggu impact check AC5 20 Okt); atribusi BSSR artikel 5v vs halaman /berita 14v (list vs detail) — 1 pekan lagi jangan buru-buru bunuh.
+- STOP: tidak ada kill baru. IG tetap pause by design (17 Sep).
+
+**KEPUTUSAN PEKAN 28 Sep–4 Okt (3 prioritas):**
+1. [COUNCIL] Signal Page Discovery — RECOMMEND APPROVE wid-2026-09-27-1, verdict CEO Senin 08:15 → promote PRD mandate Product Agent 10:15 → CTO build ~Selasa (SDLC, jangan dispatch fitur tanpa PRD). Bagian MANDOR jalan Senin tanpa nunggu PRD (content-only): brief harian link 1-2 halaman sinyal. TARGET: /saham-* non-GC 0 → ≥15 views/pekan dalam 2 pekan.
+2. [COUNCIL] Trust P1: qa-2026-09-27-01 — rekap mingguan 26 Sep klaim '28 GC / 13 DC' tak terplikasi DB (metode kanonik = 9/2) + definisi GC salah tulis (SMA20x50, kanonik SMA50x200). CTO Senin 07:30 PERTAMA (SQL patch, tanpa deploy). TARGET: 0 klaim angka tak-replikasi di QA reviewer berikutnya.
+3. [COUNCIL] Mode observasi funnel+retention — no build: jaga returning ≥12% dan register ≥4/pekan; PRD mandate Senin (utm attribution idea-25-1, title ticker prod-24-01) via lane product; impact check AC5 20 Okt, AC6 widget GC 22 Okt.
+
+**DISPATCH:**
+- cto-queue += council-2026-09-27-02 (P2 ops): run_ledger.py catch-up mode — bukti CEO Evening 1/7 run tercatat; undercount ≠ skip (entry decisions.md ADA di 21/22/25 Sep).
+- MANDOR (mulai Senin 06:30): (a) brief harian bagian sinyal WAJIB link 1-2 halaman sinyal paling relevan pekan itu (minggu ini /saham-death-cross — 113 EMA-bearish baru vs 15 bullish per 25 Sep); (b) edu weekend 2/2 lanjut; (c) TIDAK ada perubahan mix konten lain.
+
+**ORG HEALTH:** 0 job fail/skip riil (semua teknikal ok; qa-27-01 pending = temuan QA Minggu pagi utk slot Senin). Duplikasi: Growth Weekly Retro Senin 08:00 overlap Council — kandidat merge, tunda (low pri). Temuan lain: 2 job AegisGo (bukan org ini) kena schema-guard — di luar scope.
+
+## 2026-09-27 08:15 — CEO pagi (Minggu)
+- RITUAL [PRODUCT]: 0 entry pending. STANDING GUARD: dipatuhi (IG pause 17 Sep, crypto — tidak ada task fix).
+- VERDICT BACKLOG: wid-2026-09-27-1 (Signal Page Discovery, WEEKEND-IDEA Mandor, council RECOMMEND APPROVE 08:05) → **APPROVE, promote jadi mandate PRD** (status promoted_prd, P2) utk Product Agent Senin 28 Sep 10:15. Data penguat hari ini (DB read-only): PageView /saham-% = 0 views sejak 24 Sep (4 hari); 7d hanya GC 19 + pullback 2; 10/12 halaman sinyal 0. Lensa north star #1 growth + owner trust/consistency: widget proven kirim 87% views GC. Urutan mandate Product Agent Senin: idea-25-1 (P2, gate AC5 20 Okt) > wid-27-1 (P2) > prod-24-01 (P3). Bagian Mandor (brief link sinyal) jalan Senin 06:30 tanpa nunggu PRD (content-only, sudah didispatch council).
+- BACKLOG AUDIT: semua entry aktif punya priority; tidak ada idea/candidate >7 hari tanpa verdict (wid umur 0 → diverdict hari ini); tidak ada spec_ready >3 hari; tidak ada blocked >2 slot. Anti-loop: 0 dispatch berulang.
+- METRIK 7d: views 714 (-9% w/w = NOISE: GSC reindex pending + weekend, jangan panic-refactor), register_views 4 (stabil naik dari 0-1, < baseline 9 — observasi s.d. AC5 20 Okt), new users 2, returning IP 14,3% (>12% target, 3 pekan beruntun di atas 10%). EOD+indicators 25 Sep (Jumat) = expected pre-market weekend; 1.353 saham aktif. MATI: signal pages non-GC (0v sejak 24 Sep). PERTUMBUHAN: retention + funnel register 1→4. NOISE: total views.
+- KEPUTUSAN: 0 dispatch engineering — queue 2 pending (qa-27-01 P1 QA reviewer utk slot Senin; council-27-02 P2 ops run_ledger) = budget 2 aktif/hari PENUH. Weekend P1 path: qa-27-01 diproses CTO Senin 07:30 (daily), bukan slot sore weekend. ✓ sesuai guardrail.
+- STATUS: ok — sehat; verdict wid-27-1 approve (data 0v/4hr), 0 dispatch by design (budget penuh).
+
+## 2026-09-27 21:10 WIB — Weekend views collapse: VERDICT DATA (audit SQL langsung, owner-request "Tambahkan iterasi jika perlu")
+- **Data harian nobot 18–27 Sep**: 105/14/72/128/164/177/93/69/11/**1** — Sabtu 19=14 vs Sabtu 26=11 (konsisten rendah), Minggu 20=72 vs Minggu 27=1.
+- **Root cause Minggu 27 = funnel /stocks weekend mati, BUKAN bug tracking**: 62/72 views Minggu 20 berasal dari referrer teknikal.id/stocks (internal nav → artikel rekap+SMA20 hari publish). /stocks hanya hidup saat market buka (Sen–Jum jam 11–17 WIB). Minggu 27: 0 orang buka /stocks → 0 funnel → EMA-cross edu (publish 06:39, live 200 verified) tak mendapat trafik.
+- **Sabtu vs Sabtu setara** (14 vs 11) → weekend collapse bukan regresi; Minggu 20 adalah OUTLIER (rekap mingguan + edu click-through), Minggu 27 = tanpa rekap-klik funnel.
+- **1 view hari itu = owner** (Windows Chrome 151, jam 11:47, path /).
+- **Iterasi tambahan utk CEO pagi Senin**: (1) cek views Senin pulih ke 113–171 → jika ya, tutup "collapse" sebagai pola weekend; (2) jika tetap ~0–5/jam → baru audit bot-gate isBot + GSC impressions; (3) peluang growth: edu weekend perlu ENTRY-POINT di luar /stocks (mis. slot "weekend reading" di homepage) karena funnel utama mati saat market tutup — masukkan ke Product Agent Senin 10:15 sbg ide berprioritas.
+
+## 2026-09-27 22:25 WIB — Mobile push wave-2 + geo API LIVE (owner: "kerjakan semua, jangan batasi iterasi")
+- **DEPLOYED 22:13 (commit 4ad1b0d)**: /stocks mobile card list — table md+ tetap, virtualizer utuh. Verified: 200 + md:hidden di HTML mobile UA.
+- **DEPLOYED 22:19 (commit 6e32d15+dd800d6)**: /api/admin/views-geo (label-only, requireAdmin, force-dynamic). Unauth=404 = by-design proxy mask (parity funnel). Coverage prefix 96.1% (688/716 = ID; 28 = ?? jujur).
+- **Audit homepage+ticker (curl mobile)**: homepage fixed-width hanya skeleton/max-w-truncate (aman); ticker 3 tabel tab sudah overflow-x-auto 2-lapis; sm:min-w pattern mobile-first OK. Claude Code wave-2: audit density/tap-target/chart mobile homepage+ticker — berjalan.
+- Backlog: idea-2026-09-27-mobile → status in_progress; idea-2026-09-27-geo → DONE (API live; UI dashboard admin menyusul Product Agent).
+
+## 2026-09-27 22:33 WIB — Mobile wave-2 DEPLOYED (commit 27d9f65, live verified 22:32)
+- Ticker detail: header stack flex-col sm:flex-row (price-block tak lagi digerus 3 tombol), ALL tap-target ke 44px (min-h-11 sm:min-h-0): chart toolbar 1D-3mo/Candle-Line/indikator, share bulat 32→44px mobile, tabs data perusahaan, thesis/alert buttons, tutup-banner.
+- Homepage: preset pill screener + CTA 44px. Struktur homepage audit = OK (no forced horizontal scroll).
+- className-only 26/26 lines, 0 logic change, tsc=0.
+- TEMUAN utk Product Agent (P2 candidate): community sidebar Top Kontributor/Prediktor hidden lg:flex = data sosial HILANG total di mobile (93% traffic) — perlu fallback; TOC artikel hidden lg = nice-to-have collapsible mobile.
+
+## 2026-09-27 23:13 WIB — Mobile wave-3 ALL PAGES DEPLOYED (commit d10e835, live verified 11/11 URL 200)
+- Community KRITIS: sidebar Top Kontributor/Prediktor/Trending (hidden lg:flex) sekarang punya fallback stacked lg:hidden di mobile (93% traffic) — konten sosial tak lagi hilang.
+- Tap-target 44px seragam: screener (results/saved-bar/presets — delete button kini selalu visible utk touch), compare (tabs/chips/tooltip anti-clip, table min-w 420 di wrapper), paper-trading (posisi/pending/modal/summary), 10 halaman saham-* (ticker hit-area + CTA), laporan-pasar, berita, akademi (pagination 44px), homepage logged-in (greeting/morning-delta/thesis/beranda/featured).
+- globals.css: .article-prose table overflow-x guard (markdown tables tak meledak di mobile).
+- Bonus terbawa (pre-existing WIP branch): saham-strategy-links +5 internal link SEO (volume-spike/pullback/death-cross/ema-cross/laporan-pasar).
+- className+css only, 0 logic/teks; tsc=0; link-audit homepage 47/47 hidup (watchlist 307→login = by design; TIDAK ada dead link utk dihapus).
+- SKIP P2 dilaporkan: range-slider screener thumb 6px (perlu CSS pseudo), post-card @username clip.
+
+## 2026-09-28 00:30
+- Changelog 27 Sep night sprint DITULIS (eaa73f6) — utang SDLC clear; 11/11 URL 200 (/screener 308→/stocks?view=screener = by-design redirect, final 200).
+- AegisGo: main PUSHED (a1b1269..9e5f3d2, merge #41-#43 ke GitHub); handoff.md di-append; healthz ok; utang E2E happy-path tetap.
+- hivePOS queue bersih (-27-01 done via takeover slot2, -27-02 done); night org jalan normal.
+- Infra: 8/8 container healthy.
+- AGENDA SENIN: qa-27-01 reviewer (mobile UX + geo dashboard) → CTO 07:30; CEO 08:15; IT-SEC 09:00; Product 10:15 urutan idea-25-1 > wid-27-1 > prod-24-01 + weekend-reading entry-point + slider P3 (community-mobile DONE, review saja); verifikasi views Senin (0-5/jam jam kerja → cek bot-gate + GSC); impact-check brief 28 Sep: saam=0 + lot=0 regenerasi pertama lewat guard sanitizer.
+- VERIFIER GATE aktif (skill verifier-gate): teknikal.id dulu minggu ini; rollout hivePOS+AegisGo menyusul kriteria ≥3 koreksi nyata.
+
+## 2026-09-28 (REVIEWER)
+- FATAL x3 (2 task P1 dibuat): qa-2026-09-28-01 brief28 'lot' x3 BARE (796 ribu/221 ribu/2.600 — regex sanitizer cuma tangkap juta/ribu/miliar lot; jalur growth-mandor TIDAK lewat worker pipeline/sanitizer — createdAt 06:37 updatedAt 06:40 = pasca-edit) + 'golden cross 0 emiten 21-25 Sep' padahal DB non-gorengan smaCrossDate=10, crossing kanonik=9, widget situs sendiri '12 golden cross'; qa-2026-09-28-02 artikel EMA cross (akademi): tabel EMA 383/358/113/15 salah semua vs DB 379/359/344/56 + rally MDKA 8,8% salah tanggal (23 Sep bukan 24).
+- EXACT terverifikasi: breadth 119/582/165, movers 6/6 (SHID+24,83 dst), RSI 6/6, bank 4/4, EMA 359/379, UNSP +63% pekan; brief28 live 200, edukasi kanonik /akademi 200 (/berita 404 by design L88); link internal & akademi valid; disclaimer ada.
+- Deploy verify: SEO crypto de-emphasis ce60ee2+17eb15f QA PASS — homepage title 'Analisa Teknikal Saham IDX & Chart Real-Time | TeknikalID', crypto/BTC title tanpa double-brand, 200; mobile waves 11 URL 200. Slot pagi CTO terpakai deploy owner-direct ini (org 1/2) → 2 task QA dijadwalkan slot SORE 16:45 (bukan pagi).
+- Masih pending dari kemarin: qa-2026-09-27-01 (rekap 28 GC + 'SMA 20 memotong' MASIH LIVE, belum dieksekusi — CTO pagi dipakai SEO deploy), council-2026-09-27-02 (run_ledger catch-up — file masih versi lama, belum dieksekusi).
+- LESSON (hari ke-4 pola lot): sanitizer hanya membungkus worker pipeline (article.service) — jalur growth-mandor (admin PATCH / script Mandor) TIDAK tersanitasi; regex juga buta thd pola bare 'N lot' tanpa multiplier.
+
+
+## 2026-09-28 08:15 WIB — CEO pagi Senin
+- RITUAL [PRODUCT]: 0 pending. STANDING GUARD dipatuhi (IG pause, crypto — 0 task fix).
+- METRIK 7d: views 701 (-13% w/w, GSC reindex pending + IG by design = NOISE); register_views 4 = PERTUMBUHAN pertama non-zero setelah streak 0 (baseline 9, new users 2); returning IP 15,4%; signal pages 4v (watch — measurement-constrained GSC). EOD+indicators 25 Sep fresh (Jumat terakhir) = pipeline sehat.
+- INSIDEN INFRA DOK: product-backlog.json & cto-queue.json di datadir jadi FILE BIASA (symlink rusak sejak tulis atomic-replace 27 Sep 22:01 / 28 Sep 07:22) → dual-file divergen: datadir backlog cuma 2 entry (mandat PRD title-ticker HILANG dari view datadir), queue datadir 33 vs repo 30. FIX: backup kedua file (.bak-divergence-20260928-0815), merge 3 entry queue hanya-di-datadir (qa-28-01, qa-28-02, council-27-02) ke repo kanonik, restore symlink kedua file. Verdict: RECOVERED, mandat PRD prod-24-01 + idea-25-1 utk Product Agent 10:15 aman.
+- VERDICT BACKLOG: idea-2026-09-25-1 (register attribution) PROMOTE mandate PRD #2; sre-26-1 + slider-p2 DEFER review 5 Okt (P3, queue penuh). Audit anti-stagnation: semua entry aktif punya priority, tidak ada >7 hari tanpa verdict.
+- DISPATCH: 0 baru — queue 4 pending (qa-28-01, qa-28-02 slot sore 16:45; council-27-02 lewat slot paginya, P2 file lokal no-deploy — CTO bisa ambil slot bebas; qa-27-01 VERIFIED live: rekap26 9/2 GC/DC + SMA50/200 benar, brief28 lot=0).
+- Hasil-verify: curl live rekap26 (9 saham x13, 2 death, SMA50 memotong x2, 28-saham/SMA20-motong = 0) + brief28 (lot=0, saham=67).
+
+## 2026-09-28 (BACKLOG-HYGIENE)
+- sre-2026-09-18-1 (root-cause restart app container, P3, owner_approved, 10d): JADWALKAN slot CTO terdekat ATAU supersede kalau root-cause sudah tak relevan (container stabil >7d = data hilang, tutup sebagai won't-do).
+- sre-2026-09-19-1 (HEALTHCHECK worker-1, P2, owner_approved, 9d): PRIORITAS — worker hang = data basi senyap (north star: data reliable). Masuk slot CTO pagi 07:30 sebelum item baru apapun.
+- RULE BARU PERMANEN (owner 28 Sep): backlog = kerja HIDUP saja; CAP 12 live/org — lewat = STOP intake baru; item live menua >7d = WAJIB verdict (supersede/reject/jadwalkan) di retro harian. Monitor: backlog_health.py 07:15.

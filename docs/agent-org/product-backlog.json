@@ -320,13 +320,14 @@
     },
     {
       "id": "idea-2026-09-25-1",
-      "status": "candidate",
+      "status": "promoted_prd",
       "source": "cto-idle",
       "priority": "P2",
       "date": "2026-09-25",
       "title": "Atribusi register hook hilang: PageView.path tidak simpan query string — utm_source 3 hook (signal_page/stocks_screener/stocks_ticker) tak terukur",
       "data": "Bukti 25 Sep (DB read-only): (1) 12/12 PageView nobot 30d path='/auth/register' persis — query string dibuang sebelum insert (kolom PageView: path/referrer/userId/ip/userAgent/createdAt/isBot, tanpa utm); (2) referrer register 30d: 10 direct + 1 google + 1 teknikal.id root — JS redirect window.location = direct, hook tak terlihat; (3) 3 hook live sejak 22 Sep 19:1x semuanya bawa utm_source di URL (register-cta.tsx signal_page, save-screen-prompt.tsx stocks_screener, stock-action-badge.tsx stocks_ticker) tapi 0 tercatat; (4) DAMPAK: gate AC5 prd-17-01 (register-page IP area /stocks >=10 IP ATAU >=8 register, impact check 2026-10-20) tidak bisa membedakan register via hook vs organik — verifikasi fitur 400rb rupiah terancam tak terukur; (5) komposisi views 14d: /stocks/[ticker] 683 + /stocks 567 = 78% trafik nobot — area hook mempunyai exposure besar. Usulan arah: simpan utm_source/utm_medium (whitelist + length cap) saat track pageview register, atau kolom additive — murni instrumen, no UI change. SEC-REVIEW (utk PRD): param whitelist+cap panjang (bukan raw query string — cegah log injection), tanpa PII baru, tanpa endpoint baru, additive column via prisma migrate = koordinasi owner (bukan silent).",
-      "north_star": "growth register (NS#1) — pengukuran funnel, bukan UI"
+      "north_star": "growth register (NS#1) — pengukuran funnel, bukan UI",
+      "note": " || CEO 28 Sep 08:15: PROMOTE mandate PRD #2 utk Product Agent Senin 28 Sep 10:15 (setelah prod-24-01 title-ticker). Alasan: north star #1 langsung — register_views 4/7d pertama non-zero tapi hook tak bisa di-attribusi tanpa query-param persistence; effort kecil (PageView simpan UTM/ref). Lensa data-reliable owner."
     },
     {
       "id": "sre-2026-09-26-1",
@@ -336,7 +337,9 @@
       "source": "sre",
       "type": "ops",
       "title": "sre_brief.py error-counter APP belum kontekstual: 1 'error' hari ini = auth.js InvalidCheck one-off 22mnt pasca-deploy",
-      "data": "SRE brief 26 Sep 09:30: APP ERRORS 24h=1. Investigasi read-only: baris tunggal 08:04 WIB '[auth][error] InvalidCheck: pkceCodeVerifier could not be parsed' = user dgn cookie/code-verifier lama login saat container baru saja recreate (deploy cto-2026-09-26-01 07:42, RestartCount=0, OOMKilled=false, site 200, 0 keluhan). KELAS SAMA dgn worker counter yg sudah difix (ops-2026-09-24-01 shipped 25 Sep): raw grep 'error|fatal|panic' akan menghitung setiap auth one-off pasca-deploy sebagai error -> alert fatigue. Usulan kecil (ops): di sre_brief.py, kalau app grep=1-3 DAN baris match InvalidCheck/pkce/CSRF DAN timestamp dalam ±60mnt container StartedAt -> label DEPLOY-NOISE vs REAL ERROR (mirror logika worker verdict). North star: DATA RELIABLE."
+      "data": "SRE brief 26 Sep 09:30: APP ERRORS 24h=1. Investigasi read-only: baris tunggal 08:04 WIB '[auth][error] InvalidCheck: pkceCodeVerifier could not be parsed' = user dgn cookie/code-verifier lama login saat container baru saja recreate (deploy cto-2026-09-26-01 07:42, RestartCount=0, OOMKilled=false, site 200, 0 keluhan). KELAS SAMA dgn worker counter yg sudah difix (ops-2026-09-24-01 shipped 25 Sep): raw grep 'error|fatal|panic' akan menghitung setiap auth one-off pasca-deploy sebagai error -> alert fatigue. Usulan kecil (ops): di sre_brief.py, kalau app grep=1-3 DAN baris match InvalidCheck/pkce/CSRF DAN timestamp dalam ±60mnt container StartedAt -> label DEPLOY-NOISE vs REAL ERROR (mirror logika worker verdict). North star: DATA RELIABLE.",
+      "note": " || CEO 28 Sep: DEFER — P3 ops monitoring, CTO queue penuh (4 pending vs budget 2/hari); review 5 Okt.",
+      "review_date": "2026-10-05"
     },
     {
       "task_id": "idea-2026-09-27-geo",
@@ -370,6 +373,24 @@
       "source": "claude wave-3 report",
       "priority": "P3",
       "status": "candidate"
+    },
+    {
+      "id": "sec-2026-09-28-01",
+      "date": "2026-09-28",
+      "status": "candidate",
+      "source": "itsec-red",
+      "exploitability": "rendah",
+      "title": "[RED][BERSIH] Baseline snapshot 46 file (4f80997): admin API routes semua requireAdmin() (session+role DB re-verify), proxy.ts guard /api/admin 404-mask + re-verify role dari DB (JWT stale protected), /api/cron/* Bearer CRON_SECRET, /api/stocks/[ticker] zod rangeSchema, feed.xml escapeXml lengkap. Tidak ada celah baru.",
+      "sec_review": "audit 28 Sep: spot-check errors/route.ts, auth-health, stocks history/indicators, feed.xml, proxy.ts. Prisma parameterized semua."
+    },
+    {
+      "id": "sec-2026-09-28-02",
+      "date": "2026-09-28",
+      "status": "candidate",
+      "source": "itsec-blue",
+      "exploitability": "sedang",
+      "title": "[BLUE] ErrorLog auth-err query pre-run script GAGAL 2 minggu berturut (column \"httpStatus\" does not exist) — monitoring password-spray/spike 401-403 teknikal.id BUTA. DB teknikalid tidak punya tabel ErrorLog (ada AuditLog/CronLog) — script perlu query ke tabel yang benar atau ke ErrorLog hivePOS saja.",
+      "sec_review": "audit 28 Sep: docker exec teknikalidnew-db-1 psql \\dt → tidak ada ErrorLog. Blind-spot monitoring, bukan vuln aplikasi."
     }
   ]
 }
