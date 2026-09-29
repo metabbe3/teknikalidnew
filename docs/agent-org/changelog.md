@@ -1,3 +1,9 @@
+## [2026-09-29 18:5x] ops-2026-09-29-01 — fix itsec_brief.py auth-err query (bug quoting httpStatus) + finding monitoring gap 401/403 teknikalid
+- Type: ops  |  PRD: sec-2026-09-28-02 (owner-approved 07:42)
+- Deploy: tanpa deploy — script lokal ~/.hermes/scripts/itsec_brief.py saja  |  Rollback: itsec_brief.py.bak-20260929
+- Verify: DONE WHEN 4/4 — 2 run berturut exit 0; hivePOS ErrorLog 7d tampil (500×5, 401/403=0); teknikalid baris eksplisit via to_regclass(\"ErrorLog\")=f ('0 events / tidak tersedia di DB teknikalid'); grep 'does not exist' = 0; py_compile OK. ROOT CAUSE: kolom mixed-case httpStatus unquoted → postgres fold httpstatus; query memang men-target hivePOS (label backlog menyesatkan, verifikasi spec ke repo/env aktual).  |  QA: reviewer 30 Sep — 2 run script + grep output
+- Impact check: 2026-10-06 — pre-run IT-SEC Senin berikutnya jalan tanpa 'column does not exist'; FINDING terbuka: 401/403 anonim teknikalid tak tercatat di DB (AuditLog authed-only, FK userId NOT NULL) → kandidat instrumentasi app-layer (council/owner, area security).
+
 ## [2026-09-28 07:5x] qa-2026-09-27-01 — Rekap Mingguan 26 Sep: 28→9 GC / 13→2 DC + definisi SMA50×SMA200; + bonus brief-28 lot×3 (impact check cto-26-01 FAIL→patched)
 - Type: ops/QA-fix  |  PRD: -
 - Deploy: tanpa deploy — SQL content patch + sanitizer jalur Mandor (teknikalid_growth.py, script-only)  |  Rollback: restore db-20260928.sql.gz (01:15)

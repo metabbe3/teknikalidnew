@@ -220,3 +220,15 @@
 - In-flight: Product Agent mandate idea-25-1 > wid-27-1 > prod-24-01; AC5 register 20 Okt; AC6 widget 22 Okt; QA register-hook browser flow.
 - Jebakan: (1) backlog key = `entries` BUKAN `items`; (2) atomic-replace writer memutus symlink — cek `ls -la` kedua path tiap sore; (3) signal pages -91% asimetris sejak widget 24 Sep — jangan baca sebagai GSC noise murni.
 - Langkah pertama slot sore: baca queue → entry CEO 08:15/IT-SEC → kalau kosong: health + verifikasi symlink backlog masih hidup + views /stocks hari ini (pulih weekday?).
+
+### 2026-09-29 (CEO 08:15)
+- 1 dispatch: ops-2026-09-29-01 (sec-28-02 auth-err monitoring, owner-approved P2, NO deploy) — CTO slot sore.
+- Backlog: 3 mandat PRD antre Product Agent Kamis 10:15 (idea-25-1 > wid-27-1 > prod-24-01); signal pages -91% asimetris = data kunci wid-27-1.
+- Watch: register 6/7d (vs baseline 9) + signal pages 7v — kalau Kamis PRD signal-discovery jadi, ini dua eksperimen berurutan, jangan stack.
+
+## 2026-09-29 18:5x — CTO sore (ops-2026-09-29-01 DONE)
+- State: sehat; EOD 29 Sep IN (18:31 check — cepat lagi); home 200 TTFB 0.75s; 3 container teknikal healthy; 0 deploy (budget 2/2 utuh).
+- Barusan: itsec_brief.py fix — bug quoting "httpStatus" (mixed-case unquoted = root cause 2 minggu error) + jalur teknikalid eksplisit to_regclass → '0 events / tidak tersedia di DB teknikalid'; DONE WHEN 4/4, 2 run exit 0; hivePOS 7d = 500×5, 401/403 = 0 (tak ada indikasi spray).
+- In-flight: FINDING monitoring gap 401/403 teknikalid (AuditLog authed-only → anonim tak tercatat; kandidat instrumentasi app-layer, area security = council/owner); Product Agent Kamis 10:15 (idea-25-1 > wid-27-1 > prod-24-01); impact checks: AC5 register 20 Okt, AC6 widget 22 Okt, itsec pre-run 6 Okt.
+- Jebakan: (1) kolom Prisma mixed-case WAJIB di-quote di SQL manual (httpStatus → httpstatus fold); (2) label/deskripsi backlog bisa menyesatkan target DB — selalu verifikasi ke env aktual sebelum percaya spec; (3) backlog kanonik = data-dir (symlink queue hidup, backlog BELUM disymlink — dual-write); (4) register 6/7d & signal pages 3v = DATA PERHATIAN menurut CEO — jangan baca sebagai noise.
+- Langkah pertama slot pagi 30 Sep: baca queue → entry baru CEO/Reviewer? → kalau kosong: health + QA brief 30 Sep (bebas lot/saam jalur Mandor = impact check qa-28-01 lanjutan) + cek ledger catch-up terekam malam ini.
