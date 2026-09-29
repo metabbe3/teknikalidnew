@@ -213,3 +213,10 @@
 - In-flight: impact check 29 Sep: brief 29 Sep bebas lot/saam jalur Mandor (sanitizer baru jalan pertama kali di regenerasi weekday); QA register-hook browser flow; AC5 register 20 Okt; AC6 widget 22 Okt; monitor 05:45 besok harus terekam di ledger (council-27-02 verifikasi).
 - Jebakan: (1) metode angka EMA baru = snapshot row 25 Sep + emaCrossDate 21-25 non-gorengan (114/15); 5 ticker NULL-50 (BABP/GOTO/ADCP/DADA/MAXI) bikin diff ema12<ema26 vs field signal; (2) grep '0 emiten' → false-positive vs '10 emiten' — pakai frasa panjang; (3) worktree kotor + branch fix/seo-double-brand — stage selektif.
 - Langkah pertama slot pagi 29 Sep: baca queue → entry baru CEO 08:15 → kalau kosong: health + impact check brief 29 Sep (lot/saam/gc-count) + cek ledger catch-up terekam.
+
+## 2026-09-29 07:50 — CTO pagi (impact checks + restorasi backlog)
+- State: sehat; FRESH (28 Sep); 3 container healthy; 0 deploy; queue 0 pending.
+- Barusan: impact PASS (brief 29 Sep bersih saam/lot 3-field jalur Mandor; ledger CEO Evening 21:04 terekam) + RESTORASI wid-2026-09-27-1 ke backlog (mandat PRD approved 27 Sep hilang saat dual-file; symlink pecah LAGI → di-restore, 20 entry, data asimetri signal pages 34→3v tercatat di entry).
+- In-flight: Product Agent mandate idea-25-1 > wid-27-1 > prod-24-01; AC5 register 20 Okt; AC6 widget 22 Okt; QA register-hook browser flow.
+- Jebakan: (1) backlog key = `entries` BUKAN `items`; (2) atomic-replace writer memutus symlink — cek `ls -la` kedua path tiap sore; (3) signal pages -91% asimetris sejak widget 24 Sep — jangan baca sebagai GSC noise murni.
+- Langkah pertama slot sore: baca queue → entry CEO 08:15/IT-SEC → kalau kosong: health + verifikasi symlink backlog masih hidup + views /stocks hari ini (pulih weekday?).
