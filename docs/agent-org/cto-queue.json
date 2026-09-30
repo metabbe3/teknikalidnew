@@ -464,6 +464,16 @@
       "spec": "INTENT: QA reviewer 30 Sep — brief-pasar-idx-2026-09-30-goto-kapitulasi (PUBLISHED 30 Sep 06:37). ANGKA EXACT — JANGAN disentuh: GOTO 37/-13,95% vol 186,2jt + 132,9jt Senin + 2 hari -26% dari 50; breadth Selasa 312 naik/387 turun/167 stagnan; BBRI +0,96% 3.170; BBCA -1,20% 6.150; movers SOFA 322 +9,52%, BMTR 80 +8,11% vol 288,8jt, LPKR 46 +6,98% vol 373,6jt, UNTR 25.175 +3,28%, ANTM +1,94%; MBTO/SAFE -14,77%, FORU -14,38%; DSNG GC 29 Sep harga 1.500 -4,15%; IKAI death cross -12,5%; RSI BBSI 11,7/ARTO 25/PTPP 27/LPKR 24; GOTO harian 3-4jt. SALAH (3 titik): (1) paragraf pembuka 'jauh lebih sehat dibanding Senin saat 582 saham turun' — 582 = sesi JUMAT 25 Sep (582 turun/119 naik/165 stagnan); Senin 28 Sep = 550 turun/189 naik/127 stagnan. Ganti '582' -> '550'. (2) 'SOFA +9,52% ... penguatan terbesar non-gorengan' SALAH — DB 29 Sep non-gorengan: IFSH +24,80% (1.560, vol 243.900) di atas SOFA; SOFA peringkat #2. Reword, mis: 'penguatan terbesar kedua di antara large/mid-cap non-gorengan' ATAU sebut IFSH sebagai penguat utama. (3) 'LPKR ... volume 373,6 juta lembar — terbesar di bursa' SALAH — top volume 29 Sep: BUMI 2,43 miliar, BTEK 2,24 miliar, KPIG 1,49 miliar, BNBR 1,24 miliar, PADI 1,11 miliar lot. Reword, mis: 'terbesar di antara saham blue-chip/lapis pertama' ATAU hapus superlatif. EKSEKUSI via SQL content patch (protokol backup<24jm + COUNT preview + 1 transaksi + log decisions.md; TANPA deploy — ISR revalidate=300): patch '582 saham turun'->'550 saham turun' (1 occ, paragraf 1); reword 2 superlatif di bagian Movers Selasa (minimal-edit, frasa bebas asal makna akurat vs DB); JANGAN sentuh angka lain. ACCEPTANCE: (a) curl -A Mozilla https://teknikal.id/berita/brief-pasar-idx-2026-09-30-goto-kapitulasi -> '582 saham turun' = 0, '550 saham turun' muncul, 'terbesar non-gorengan' SOFA hilang/direword akurat, 'terbesar di bursa' LPKR hilang/direword akurat; (b) seluruh angka GOTO/breadth/movers/RSI di atas UTUH (diff minimal); (c) root-cause ringan di result: brief30 jalur growth-mandor — generator brief dilarang menghitung sendiri angka agregat/hari (pola qa-27-01 berulang): angka breadth/leaderboard WAJIB dari query DB atau weekly-report.service, superlatif ('terbesar/terkuat') WAJIB diverifikasi ranking sebelum ditulis; (d) log decisions.md + changelog.",
       "done_when": "curl brief30: '582 saham turun'=0 & '550 saham turun' ada; superlatif SOFA/LPKR direword akurat vs ranking DB; angka GOTO/breadth/movers lain utuh; log decisions.md + changelog",
       "result": "EXECUTED by main agent 07:5x (owner directive) — 3 SQL patch live-verified: 582→550 (salah hari), SOFA reword kedua+IFSH, LPKR reword lapis satu; backup /tmp/article_backup_20260930.sql; root-cause logged decisions.md; recurrence qa-27-01 rule ditulis."
+    },
+    {
+      "id": "ops-2026-09-30-01",
+      "type": "ops",
+      "priority": "P2",
+      "status": "pending",
+      "title": "ops P2: backlog_health.py exit-1 alert-by-design -> scheduler mencatat ERROR; ubah jadi exit 0 + alert text (run-ledger bersih)",
+      "created_at": "2026-09-30T21:05+07:00",
+      "origin": "ceo-evening-30sep",
+      "constraints": "script-only, NO deploy, py_compile + 1 run verify"
     }
   ]
 }

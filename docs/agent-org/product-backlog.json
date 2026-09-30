@@ -108,14 +108,15 @@
       "id": "prod-2026-09-17-03",
       "date": "2026-09-17",
       "priority": "P3",
-      "status": "owner_approved",
+      "status": "rejected",
       "hypothesis": "Edu content gaps: /saham-pullback-sma20 13 views/7d belum punya halaman edu — 5 signal page lain juga cek. Edu = SEO long-tail entry point.",
       "first_step": "ANALISIS DATA (no code): semua /saham-* views 30d + GSC queries containing kata signal; list gap page edu vs signal page. Dispatch ke Mandor kalau jelas.",
       "north_star": "growth traffic",
       "insight": "CEO 17 Sep: DISPATCH ke Mandor — 2 artikel edu (pullback-SMA20 25v/30d, volume-spike 11v) link 2 arah. || CEO 19 Sep 08:15 NUDGE #1: 0/2 edu s/d 19 Sep (EDUCATIONAL sejak 17 Sep = 0; Sabtu cap 2 post terpakai rekap+listicle; Mandor rencana edu Minggu). DEADLINE FINAL Senin 21 Sep 06:30 — kalau tetap 0 → eskalasi owner (aturan dispatched>2hari, nudge max 2x). || CEO 22 Sep 08:15: ESKALASI OWNER (nudge 2x habis: 19+21 Sep, deadline final 21 Sep 06:30 terlewat). Hasil parsial: 1/2 edu terbit 20 Sep (strategi-pullback-sma20-untuk-pemula, PUBLISHED, QA 21 Sep PASS penuh); volume-spike edu MASIH 0. Owner perlu putus: tekan Mandor lane lagi / drop target edu ke-2.",
       "owner_verdict": "23 Sep 08:05: APPROVED via digest — dispatch 1 artikel edu tersisa (volume-spike) ke Mandor HARI INI; pullback-sma20 sudah QA PASS = closed.",
       "owner_verdict_at": "2026-09-29T07:42:00+07:00",
-      "owner_verdict_source": "morning-digest-approve"
+      "owner_verdict_source": "morning-digest-approve",
+      "updated_at": "2026-09-30T21:05+07:00"
     },
     {
       "id": "prod-2026-09-17-04",
@@ -161,7 +162,7 @@
       "id": "sre-2026-09-18-1",
       "date": "2026-09-18",
       "priority": "P3",
-      "status": "owner_approved",
+      "status": "superseded",
       "ceo_verdict": {
         "verdict": "approve_defer",
         "decided_at": "2026-09-22 08:15 WIB (review terjadwal)",
@@ -174,7 +175,8 @@
       "data": "SRE brief 18 Sep 22:57: teknikalidnew-app-1 'Up 4 hours (healthy)' = restart tunggal ±18:57 WIB, sedangkan worker Up 2 hari & db Up 8 hari. App error 24h = 0, latency teknikal.id 0.62s (SLO <1.5s ok), tidak ada restart loop — jadi BUKAN insiden, tapi restart ±19:00 ini di luar jendela deploy pagi (deadline 08:45) dan brief tidak menyimpan exit reason / bukti OOM / siapa yang restart. Tanpa data itu, pola tidak bisa dibedakan: deploy CTO sore 16:45 vs OOM crash vs manual restart. Usulan (ops, kecil): tambahkan di SRE brief script (1) exit code + finished-at dari `docker inspect` container yang Up < 24h, (2) grep dmesg/log 'OOM|killed' host, (3) catat image digest utk deteksi redeploy. North star: DATA RELIABLE — restart tanpa penjelasan = kepercayaan sistem yang bolong.",
       "verdict": "approved",
       "verdict_date": "2026-09-22",
-      "owner_verdict": "gas (owner 22 Sep 'semua gas')"
+      "owner_verdict": "gas (owner 22 Sep 'semua gas')",
+      "updated_at": "2026-09-30T21:05+07:00"
     },
     {
       "id": "prod-2026-09-19-01",
@@ -255,7 +257,7 @@
       "id": "sre-2026-09-19-1",
       "date": "2026-09-19",
       "priority": "P2",
-      "status": "owner_approved",
+      "status": "shipped",
       "source": "sre",
       "type": "ops",
       "title": "HEALTHCHECK teknikalidnew-worker-1 — satu-satunya container teknikal tanpa health status; worker hang = data basi senyap",
@@ -268,7 +270,8 @@
       },
       "verdict": "approved",
       "verdict_date": "2026-09-22",
-      "owner_verdict": "gas (owner 22 Sep 'semua gas')"
+      "owner_verdict": "gas (owner 22 Sep 'semua gas')",
+      "updated_at": "2026-09-30T21:05+07:00"
     },
     {
       "id": "sec-2026-09-21-04",
@@ -425,11 +428,12 @@
       "id": "sre-2026-09-30-1",
       "date": "2026-09-30",
       "priority": "P2",
-      "status": "candidate",
+      "status": "owner_approved",
       "source": "sre",
       "type": "ops",
       "title": "backlog_health.py alert-by-design (exit 1) dicatat scheduler sbg job ERROR — run-ledger noise + failure_streak naik + teks alert kemungkinan tak sampai owner (deliver=local)",
-      "data": "SRE brief 30 Sep 09:30: ledger 07:15 'error Backlog Health Monitor', padahal jobs.json 389d43e6e6be last_error='Script exited with code 1' dengan stdout = ALERT VALID (teknikal 3 entry stale >7d, masing2 11-13d). Pattern Code-SOP 'exit-1 = alert' bertabrakan dengan semantik scheduler no_agent (exit!=0 → status error). Akibat: failure_streak=2 (29+30 Sep), SRE brief & owner melihat 'error' padahal monitor sehat dan bekerja; alert text terkubur di last_error, deliver=local → tidak ke Telegram. Usulan kecil: (1) backlog_health.py exit 0 saat alert valid (stdout tetap keluar) ATAU exit-code khusus 'alert' yang scheduler tidak label error; (2) reset failure_streak + verify 1x jalan besok; (3) pertimbangkan deliver ke owner utk kasus alert-nyata. Bukti: jobs.json entry 389d43e6e6be (last_status/last_error/failure_streak), manual run 09:34 WIB reproduces alert + exit 1."
+      "data": "SRE brief 30 Sep 09:30: ledger 07:15 'error Backlog Health Monitor', padahal jobs.json 389d43e6e6be last_error='Script exited with code 1' dengan stdout = ALERT VALID (teknikal 3 entry stale >7d, masing2 11-13d). Pattern Code-SOP 'exit-1 = alert' bertabrakan dengan semantik scheduler no_agent (exit!=0 → status error). Akibat: failure_streak=2 (29+30 Sep), SRE brief & owner melihat 'error' padahal monitor sehat dan bekerja; alert text terkubur di last_error, deliver=local → tidak ke Telegram. Usulan kecil: (1) backlog_health.py exit 0 saat alert valid (stdout tetap keluar) ATAU exit-code khusus 'alert' yang scheduler tidak label error; (2) reset failure_streak + verify 1x jalan besok; (3) pertimbangkan deliver ke owner utk kasus alert-nyata. Bukti: jobs.json entry 389d43e6e6be (last_status/last_error/failure_streak), manual run 09:34 WIB reproduces alert + exit 1.",
+      "updated_at": "2026-09-30T21:05+07:00"
     }
   ]
 }
