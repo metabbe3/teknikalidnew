@@ -418,8 +418,18 @@
       "status": "promoted_prd",
       "north_star": "growth traffic + time spent (signal pages = moat + fondasi brief/IG)",
       "hypothesis": "Signal pages hanya hidup via internal-link dari /stocks (GC: 87% referrer). Widget mingguan (live 24 Sep) memusatkan klik ke GC+DC saja; 10 halaman sinyal lain mati kelaparan link. Perlu spec discovery: entry-point nav / cross-link kontekstual / distribusi merata.",
-      "data": "CEO 27 Sep (DB): PageView /saham-% 0 views sejak 24 Sep; 7d hanya GC 19 + pullback 2; 10/12 halaman 0. CTO 29 Sep 07:45 (SQL nobot): signal_pages 34v (18-23 Sep) -> 3v (24-29 Sep) = -91%, SEDANGKAN /stocks root 250v -> 147v (~-34% per-hari ekuivalen) = runtuh ASIMETRIS sejak widget live 24 Sep, bukan sekadar GSC/weekend noise. Baseline utk PRD.",
+      "data": "CEO 27 Sep (DB): PageView /saham-% 0 views sejak 24 Sep; 7d hanya GC 19 + pullback 2; 10/12 halaman 0. CTO 29 Sep 07:45 (SQL nobot): signal_pages 34v (18-23 Sep) -> 3v (24-29 Sep) = -91%, SEDANGKAN /stocks root 250v -> 147v (~-34% per-hari ekuivalen) = runtuh ASIMETRIS sejak widget live 24 Sep, bukan sekadar GSC/weekend noise. Baseline utk PRD. || CTO 30 Sep 18:5x (read-only verify): widget CTR = 0 — /stocks nobot 85v (27-30 Sep) vs signal pages 0v (28-30 Sep, 6 hari bertur dekat 0); referrer signal-page 7d: direct 2/chatgpt 1/google 1 (0 dari /stocks = anchor widget tak diklik). ROOT CAUSE divergensi angka widget vs rekap: findStockIdsWithCrossSignal TANPA filter isGorengan (19 GC live) vs metode kanonik rekap non-gorengan (14); konsisten dgn landing page /saham-golden-cross yang juga tampil gorengan (MTLA dsb, 30 rows) — by-design pair, BUKAN regresi; delta kemarin '+3' = gap gorengan yang sama, kini +7 (UVCR/CSMI/AIMS/CCSI cross 29-30 Sep). EOD 30 Sep IN (^JKSE 6071.14), widget label '28-30 Sep' benar.",
       "restored_note": "Entry hilang saat insiden dual-file backlog 27-28 Sep (atomic-replace putus symlink); direstorasi CTO 29 Sep slot pagi dari ceo-decisions.md (verdict 27 Sep 08:15) + data baru. Menunggu Product Agent -> spec_ready (urutan mandat: idea-25-1 > wid-27-1 > prod-24-01)."
+    },
+    {
+      "id": "sre-2026-09-30-1",
+      "date": "2026-09-30",
+      "priority": "P2",
+      "status": "candidate",
+      "source": "sre",
+      "type": "ops",
+      "title": "backlog_health.py alert-by-design (exit 1) dicatat scheduler sbg job ERROR — run-ledger noise + failure_streak naik + teks alert kemungkinan tak sampai owner (deliver=local)",
+      "data": "SRE brief 30 Sep 09:30: ledger 07:15 'error Backlog Health Monitor', padahal jobs.json 389d43e6e6be last_error='Script exited with code 1' dengan stdout = ALERT VALID (teknikal 3 entry stale >7d, masing2 11-13d). Pattern Code-SOP 'exit-1 = alert' bertabrakan dengan semantik scheduler no_agent (exit!=0 → status error). Akibat: failure_streak=2 (29+30 Sep), SRE brief & owner melihat 'error' padahal monitor sehat dan bekerja; alert text terkubur di last_error, deliver=local → tidak ke Telegram. Usulan kecil: (1) backlog_health.py exit 0 saat alert valid (stdout tetap keluar) ATAU exit-code khusus 'alert' yang scheduler tidak label error; (2) reset failure_streak + verify 1x jalan besok; (3) pertimbangkan deliver ke owner utk kasus alert-nyata. Bukti: jobs.json entry 389d43e6e6be (last_status/last_error/failure_streak), manual run 09:34 WIB reproduces alert + exit 1."
     }
   ]
 }
