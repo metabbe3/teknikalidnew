@@ -2,6 +2,20 @@
   "protocol": "CTO task queue — dibaca CTO agent (slot 07:30 pagi & 16:45 sore; quiet zone BARU 11:00-18:00 = larang deploy+LLM, owner 16 Sep), ditulis CEO (08:15) / Council (Min 08:00). Entry: {id, date, spec, priority (P0 darurat/P1 tinggi/P2 normal), north_star, status (pending/done/failed/blocked_for_owner), result}. CTO: max 1 deploy per slot (2/hari total), eksekusi claude code pipeline, update status + verify evidence.",
   "entries": [
     {
+      "id": "wid-2026-09-27-1",
+      "type": "feature",
+      "priority": "P2",
+      "status": "night_ready",
+      "title": "Signal Page Discovery — section 'Jelajahi sinyal lain' (10 chip) di /stocks bawah widget mingguan",
+      "created_at": "2026-09-30T23:25+07:00",
+      "origin": "cto-night-30sep (PRD spec_ready product-backlog.json wid-2026-09-27-1)",
+      "branch": "night/wid-2026-09-27-1",
+      "spec": "CTO pagi 07:30: review diff (2 file: signal-links.tsx baru 46 baris + page.tsx +2 baris), merge ke main, deploy app. Widget mingguan JANGAN disentuh. Deviation: hub /saham 404 -> tidak di-link (detail di result backlog). Deploy = catat baseline gate: signal-pages 7d = 3v; sukses 4 minggu = non-GC/DC page >=5 views/7d ATAU total >=20 views/7d; review 2026-10-28.",
+      "constraints": "NO new query; SSR static; guest-visible",
+      "verify_evidence": "tsc EXIT 0; eslint EXIT 0; curl anon /stocks 200 + 10 href /saham-* render + widget di atas chips; flex-wrap mobile",
+      "estimate_review_min": 10
+    },
+    {
       "id": "qa-2026-09-27-01",
       "date": "2026-09-27",
       "priority": "P1",

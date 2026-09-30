@@ -325,14 +325,35 @@
     },
     {
       "id": "idea-2026-09-25-1",
-      "status": "promoted_prd",
+      "status": "spec_ready",
       "source": "cto-idle",
       "priority": "P2",
       "date": "2026-09-25",
       "title": "Atribusi register hook hilang: PageView.path tidak simpan query string — utm_source 3 hook (signal_page/stocks_screener/stocks_ticker) tak terukur",
       "data": "Bukti 25 Sep (DB read-only): (1) 12/12 PageView nobot 30d path='/auth/register' persis — query string dibuang sebelum insert (kolom PageView: path/referrer/userId/ip/userAgent/createdAt/isBot, tanpa utm); (2) referrer register 30d: 10 direct + 1 google + 1 teknikal.id root — JS redirect window.location = direct, hook tak terlihat; (3) 3 hook live sejak 22 Sep 19:1x semuanya bawa utm_source di URL (register-cta.tsx signal_page, save-screen-prompt.tsx stocks_screener, stock-action-badge.tsx stocks_ticker) tapi 0 tercatat; (4) DAMPAK: gate AC5 prd-17-01 (register-page IP area /stocks >=10 IP ATAU >=8 register, impact check 2026-10-20) tidak bisa membedakan register via hook vs organik — verifikasi fitur 400rb rupiah terancam tak terukur; (5) komposisi views 14d: /stocks/[ticker] 683 + /stocks 567 = 78% trafik nobot — area hook mempunyai exposure besar. Usulan arah: simpan utm_source/utm_medium (whitelist + length cap) saat track pageview register, atau kolom additive — murni instrumen, no UI change. SEC-REVIEW (utk PRD): param whitelist+cap panjang (bukan raw query string — cegah log injection), tanpa PII baru, tanpa endpoint baru, additive column via prisma migrate = koordinasi owner (bukan silent).",
       "north_star": "growth register (NS#1) — pengukuran funnel, bukan UI",
-      "note": " || CEO 28 Sep 08:15: PROMOTE mandate PRD #2 utk Product Agent Senin 28 Sep 10:15 (setelah prod-24-01 title-ticker). Alasan: north star #1 langsung — register_views 4/7d pertama non-zero tapi hook tak bisa di-attribusi tanpa query-param persistence; effort kecil (PageView simpan UTM/ref). Lensa data-reliable owner."
+      "note": " || CEO 28 Sep 08:15: PROMOTE mandate PRD #2 utk Product Agent Senin 28 Sep 10:15 (setelah prod-24-01 title-ticker). Alasan: north star #1 langsung — register_views 4/7d pertama non-zero tapi hook tak bisa di-attribusi tanpa query-param persistence; effort kecil (PageView simpan UTM/ref). Lensa data-reliable owner.",
+      "prd_id": "idea-2026-09-25-1",
+      "prd_written_at": "2026-09-30 22:1x WIB",
+      "user_story": "Sebagai pemilik produk, saya perlu tahu dari mana register berasal (3 hook in-product vs organik vs direct) supaya keputusan investsi fitur register-hook (live 22 Sep, gate AC5 prd-17-01 impact-check 2026-10-20) berbasis data — hari ini 16 register-view/30d TAK BISA di-atribusi karena query string dibuang sebelum insert PageView.",
+      "acceptance_criteria": "1) ADDITIVE: kolom PageView.utmSource VARCHAR(32) NULL + PageView.utmMedium VARCHAR(32) NULL via prisma migrate (nullable, 0 baris lama berubah; deploy app+worker bareng — koordinasi owner, bukan silent). 2) WHITELIST: track endpoint parse utm_source/utm_medium dari searchParams HANYA jika match ^[a-z0-9_-]{1,32}$ (lowercase); selain itu dibuang (anti log-injection; unit test: 'signup hero!' -> null, 'stocks_screener' -> lolos). 3) SCOPE: utm hanya disimpan utk path prefix /auth/* (register/login/complete-profile), pageview lain tetap NULL. 4) E2E: beacon POST /api/track/pageview path=/auth/register?utm_source=stocks_screener -> SQL verify row terbaru utmSource='stocks_screener'. 5) FUNNEL: admin funnel memecah register 30d per utm_source (hook vs organic vs direct) — angka == query DB. 6) REGRESSION: tsc --noEmit clean; beacon non-auth & bot-path behavior unchanged.",
+      "data_evidence": "QUERY ASLI 30 Sep 22:0x (DB teknikalid, nobot): /auth/register 30d = 16 views / 8 IP / 0 baris path mengandung '?' (query string dibuang pre-insert); /auth/complete-profile 30d = 15; area hook 14d: /stocks/* ticker-detail 598v + /stocks 509v (78% trafik nobot). 3 hook live 22 Sep bawa utm_source: signal_page / stocks_screener / stocks_ticker — 0 tercatat (data entry 25 Sep). Referrer register 30d: 10 direct + 1 google + 1 root (JS redirect = direct).",
+      "impact": 3,
+      "effort": 2,
+      "target_files": [
+        "prisma/schema.prisma",
+        "src/app/api/track/pageview/route.ts",
+        "src/lib/validation.ts",
+        "src/app/api/admin/funnel/route.ts (estimasi)"
+      ],
+      "db_migrations": true,
+      "dependencies": [
+        "prisma migrate (additive nullable — koordinasi owner)"
+      ],
+      "risk": "low",
+      "estimate_tool_calls": 7,
+      "sec_review": "Input: utm = string dari URL sendiri (bukan user-generated stored-XSS surface); whitelist regex + cap 32 = anti log-injection. Tanpa PII baru, tanpa endpoint baru, tanpaubah bot-gate. Additive nullable column = rollback-safe (drop column).",
+      "first_step": "Prisma schema additive + helper parseUtm(searchParams) + unit test; wire di track route (branch /auth/*); migrate dev verify; deploy app+worker; verify e2e beacon+SQL; expose split di admin funnel."
     },
     {
       "id": "sre-2026-09-26-1",
@@ -418,11 +439,30 @@
       "source": "weekend-idea Mandor 27 Sep; council RECOMMEND APPROVE 08:05; CEO verdict 27 Sep 08:15 APPROVE -> promoted_prd",
       "title": "Signal Page Discovery — halaman sinyal (moat SEO) kehilangan trafik: 10/12 halaman 0 views, kini GC ikut runtuh",
       "priority": "P2",
-      "status": "promoted_prd",
+      "status": "night_ready",
       "north_star": "growth traffic + time spent (signal pages = moat + fondasi brief/IG)",
       "hypothesis": "Signal pages hanya hidup via internal-link dari /stocks (GC: 87% referrer). Widget mingguan (live 24 Sep) memusatkan klik ke GC+DC saja; 10 halaman sinyal lain mati kelaparan link. Perlu spec discovery: entry-point nav / cross-link kontekstual / distribusi merata.",
       "data": "CEO 27 Sep (DB): PageView /saham-% 0 views sejak 24 Sep; 7d hanya GC 19 + pullback 2; 10/12 halaman 0. CTO 29 Sep 07:45 (SQL nobot): signal_pages 34v (18-23 Sep) -> 3v (24-29 Sep) = -91%, SEDANGKAN /stocks root 250v -> 147v (~-34% per-hari ekuivalen) = runtuh ASIMETRIS sejak widget live 24 Sep, bukan sekadar GSC/weekend noise. Baseline utk PRD. || CTO 30 Sep 18:5x (read-only verify): widget CTR = 0 — /stocks nobot 85v (27-30 Sep) vs signal pages 0v (28-30 Sep, 6 hari bertur dekat 0); referrer signal-page 7d: direct 2/chatgpt 1/google 1 (0 dari /stocks = anchor widget tak diklik). ROOT CAUSE divergensi angka widget vs rekap: findStockIdsWithCrossSignal TANPA filter isGorengan (19 GC live) vs metode kanonik rekap non-gorengan (14); konsisten dgn landing page /saham-golden-cross yang juga tampil gorengan (MTLA dsb, 30 rows) — by-design pair, BUKAN regresi; delta kemarin '+3' = gap gorengan yang sama, kini +7 (UVCR/CSMI/AIMS/CCSI cross 29-30 Sep). EOD 30 Sep IN (^JKSE 6071.14), widget label '28-30 Sep' benar.",
-      "restored_note": "Entry hilang saat insiden dual-file backlog 27-28 Sep (atomic-replace putus symlink); direstorasi CTO 29 Sep slot pagi dari ceo-decisions.md (verdict 27 Sep 08:15) + data baru. Menunggu Product Agent -> spec_ready (urutan mandat: idea-25-1 > wid-27-1 > prod-24-01)."
+      "restored_note": "Entry hilang saat insiden dual-file backlog 27-28 Sep (atomic-replace putus symlink); direstorasi CTO 29 Sep slot pagi dari ceo-decisions.md (verdict 27 Sep 08:15) + data baru. Menunggu Product Agent -> spec_ready (urutan mandat: idea-25-1 > wid-27-1 > prod-24-01).",
+      "prd_id": "wid-2026-09-27-1",
+      "prd_written_at": "2026-09-30 22:1x WIB",
+      "user_story": "Sebagai trader pencari sinyal, saya ingin menemukan SEMUA halaman sinyal dari /stocks (bukan cuma golden/death cross), supaya saya bisa pakai sinyal oversold/pullback/volume-spike sesuai strategi — hari ini 10/12 halaman sinyal 0-3 views karena satu-satunya entry-point live adalah anchor widget GC/DC (CTR 0).",
+      "acceptance_criteria": "1) SECTION SSR 'Jelajahi sinyal lain' di /stocks (di bawah widget mingguan): chip-link ke 10 halaman sinyal topikal (/saham-golden-cross, -death-cross, -oversold, -overbought, -pullback-sma20, -ema-cross, -macd-bullish, -stochastic-oversold, -volume-spike, -blue-chip) + hub /saham; label manusiawi; guest-visible NO gating NO routing baru. 2) Chip count sinyal aktif OPSIONAL — hanya via reuse query existing halaman tsb; kalau butuh query tambahan >1 atau N+1 -> render tanpa count (link wajib, count boleh absen). 3) curl anon -A Mozilla /stocks: grep 11 href '/saham-' ada di HTML. 4) Widget mingguan prod-19-01 TIDAK berubah posisi/angka. 5) Mobile 375px chips wrap, 0 overflow horizontal. 6) GATE (dicatat di result saat deploy): baseline signal-pages 7d = 3v (24-29 Sep); sukses 4 minggu = salah satu halaman non-GC/DC >=5 views/7d ATAU total signal-pages >=20 views/7d; review 2026-10-28. 7) tsc --noEmit clean.",
+      "data_evidence": "QUERY ASLI 30 Sep 22:0x (nobot): signal-pages 14d total 49v — golden-cross 27v/7IP, oversold 17v/2IP, pullback 3v, death-cross 1v, ema-cross 1v, 7 halaman lain 0v; harian 24-30 Sep = 0,0,0,0,3,0,0. Referrer signal-pages 14d: /stocks 18 (era pre-widget), brief-artikel 11, screener-preset URL 10, direct 6. Pasca-widget: CTR anchor = 0 (CTO 30 Sep: /stocks nobot 85v 27-30 Sep vs 0 referrer dari /stocks 7d terakhir). Komponen existing reusable: link-card/chip pattern di repo.",
+      "impact": 3,
+      "effort": 2,
+      "target_files": [
+        "src/app/(public)/stocks/page.tsx",
+        "src/components/stock/signal-links.tsx (komponen baru)",
+        "src/components/signal/* (reuse, estimasi)"
+      ],
+      "db_migrations": false,
+      "dependencies": [],
+      "risk": "low",
+      "estimate_tool_calls": 6,
+      "sec_review": "SSR read-only, link statis dari konstanta (bukan input user); tanpa query baru wajib; injection/IDOR n/a; privasi n/a.",
+      "first_step": "Konstanta SIGNAL_PAGES (slug+label) -> komponen signal-links.tsx SSR -> insert page /stocks bawah widget -> curl grep verify -> catat baseline gate di result.",
+      "result": "NIGHT CTO 30 Sep 23:2x WIB — implementasi PENUH di branch night/wid-2026-09-27-1 (pushed), siap review+merge+deploy pagi. FILES: src/components/stock/signal-links.tsx (BARU, SSR pure static, 10 chip) + insert di stocks/page.tsx L243 tepat di bawah WeeklySignalWidget. VERIFY (bukti nyata, dev server :3100 + DB read-only): tsc --noEmit EXIT 0; eslint kedua file EXIT 0; curl anon -A Mozilla /stocks HTTP 200 (918KB) — grep 10 href /saham-* unik semua render (golden-cross/death-cross/oversold/overbought/pullback-sma20/ema-cross/macd-bullish/stochastic-oversold/volume-spike/blue-chip); label 'Jelajahi sinyal lain' ada; POSISI widget (19133) < chips (19500) = widget tetap di atas AC4 terpenuhi; chips flex-wrap pola identik quick-pills existing AC5. DEVIATION AC1: hub /saham TIDAK di-link — route 404 nyata (curl 200 hanya utk /saham-golden-cross; /saham tanpa page.tsx), link ke 404 dari moat SEO = soft-404 baru; opsi: bikin hub page di task terpisah. AC2 skip by-design (link wajib, count opsional — 0 query tambahan, seringkas mungkin). GATE AC6 utk CTO pagi dicatat: baseline signal-pages 7d = 3v (24-29 Sep); sukses 4 minggu = salah satu halaman non-GC/DC >=5 views/7d ATAU total signal-pages >=20 views/7d; review 2026-10-28. Estimasi review CTO pagi: 5-10mnt (2 file, diff kecil, verify sudah jalan)."
     },
     {
       "id": "sre-2026-09-30-1",
