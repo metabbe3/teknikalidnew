@@ -1,3 +1,13 @@
+
+## [LESSON] Generator brief: superlatif tanpa ranking-cek + angka lintas-hari (RECURRENCE 2×)
+**Kejadian**: qa-2026-09-27-01 (breadth salah) & qa-2026-09-30-01 ("582 saham turun" = angka Jumat dipakai utk kalimat Senin; SOFA "terbesar non-gorengan" padahal IFSH +24,80%; LPKR "terbesar di bursa" padahal #6, top-5 = BUMI/BTEK/KPIG/BNBR/PADI).
+**Root cause**: LLM generator menghitung angka agregat dari konteks/ingatan + menulis superlatif tanpa query ranking. Angka per-ticker aman (dari market-brief-data), tapi agregat (breadth) & superlatif = dibuat sendiri.
+**Rule permanen (sudah dipatch ke prompt Mandor 714dbdc87f54 + Reviewer 4ae85965a258, 30 Sep)**:
+1. Superlatif ("terbesar/terkuat/terbanyak") WAJIB didahului SQL `ORDER BY ... DESC LIMIT 5` hari sama; bukan #1 → tulis peringkat exact.
+2. Breadth (X naik vs Y turun) WAJIB dari query snapshot hari yang DIMAKSUD — dilarang hitung sendiri lintas-hari.
+3. Membandingkan sesi → sebut hari+tanggal eksplisit dan cocokkan angka vs hari itu (Jumat≠Senin≠Selasa).
+4. Reviewer: superlatif & cross-day = checklist deterministik harian (a2), bukan sampling.
+**Verifikasi kejenuhan**: Evolution Coordinator 04:00 review apakah recurrence berhenti; kalau kejadian ke-3 → generator angka agregat harus dipindah ke script deterministik (bukan LLM).
 # TeknikalID Agent Org — Lessons Learned
 
 Format: tanggal | area | pelajaran | aksi pencegahan. Append-only, tidak rewrite sejarah.
