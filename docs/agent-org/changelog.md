@@ -1,3 +1,6 @@
+## 2026-09-30 — qa-2026-09-30-01: brief 30 Sep content patch (3 klaim fatal)
+- `582 saham turun` → `550` (582=Jumat 25/9; Senin=550) · SOFA `terbesar non-gorengan` → `kedua, di bawah IFSH +24,80%` · LPKR `terbesar di bursa` → `di antara saham lapis satu`. SQL patch tanpa deploy (ISR 300s), backup /tmp/article_backup_20260930.sql, live-verified curl. Angka GOTO/breadth/movers utuh. Root-cause + rule anti-recurrence di decisions.md. Utang reviewer (qa-27-01, cto-26-01) → qa_pass.
+
 ## [2026-09-29 18:5x] ops-2026-09-29-01 — fix itsec_brief.py auth-err query (bug quoting httpStatus) + finding monitoring gap 401/403 teknikalid
 - Type: ops  |  PRD: sec-2026-09-28-02 (owner-approved 07:42)
 - Deploy: tanpa deploy — script lokal ~/.hermes/scripts/itsec_brief.py saja  |  Rollback: itsec_brief.py.bak-20260929

@@ -555,3 +555,12 @@ Root cause unit 'lot': brief prompt TANPA baris satuan volume + tanpa sanitizer 
 - VERDICT REKONSILIASI (klaim reviewer ≠ dogma — lesson qa-27-01): reviewer minta EMA status 383→379, 358→359, baru 113→344, 15→56. Replikasi 8 varian SQL: 379 = perbandingan ema12<ema26 raw (5 ticker NULL-50 anomali ekskl.); 383 = field emaCrossSignal snapshot 25 Sep (basis /saham-ema-cross) DAN 383+359=742 = universe rekap 26 Sep PERSIS → 383 KANONIK, DIPERTAHANKAN di kedua artikel. '344/56' TIDAK TER-REPLIKASI metode mana pun (pair 18→25 = 109/10; window smaCross-style 21-25 = 114/15; Sep penuh 317/159; window 21-28 = 183/29). Angka baru = 114 bear/15 bull (snapshot 25 Sep + emaCrossDate 21-25, non-gorengan) — 15 EXACT dgn artikel, 113 off-by-one → 114.
 - Rowcount: 6 UPDATE (2 brief28 + 4 akademi) dalam 1 transaksi COMMIT; post-verify residual 0 (b28 'golden cross nol'=0 live, akd 358/113/24-Sep=0); live 200 x2, breadth/movers/MAPI utuh.
 - council-2026-09-27-02: run_ledger.py catch-up (file lokal Hermes, 0 deploy website) — backup run_ledger.py.bak-20260928; write_ledger kini per (job_id,date) semua tanggal >= 2026-09-17, idempotent (run-2 = 0 baris), verify_today tak diubah, verify mode exit 0; catch-up run-1 = 19 record retro.
+
+## 2026-09-30 — qa-2026-09-30-01 EXECUTED (owner: "Fix yang fatal dan salah jika perlu")
+- **Apa**: brief-pasar-idx-2026-09-30-goto-kapitulasi — 3 klaim fatal dipatch via SQL content patch (backup /tmp/article_backup_20260930.sql 246 baris, tanpa deploy, ISR revalidate=300):
+  1. `582 saham turun` → `550 saham turun` (582 = Jumat 25/9; Senin 28/9 = 550 — QA reviewer benar)
+  2. SOFA `terbesar non-gorengan` → `terbesar kedua non-gorengan, di bawah IFSH +24,80%` (IFSH 1.560 +24,80% > SOFA)
+  3. LPKR `terbesar di bursa` → `terbesar di antara saham lapis satu` (BUMI 2,43M/BTEK/KPIG/BNBR/PADI di atasnya — semua lapis dua)
+- **Verify LIVE**: curl → '550 saham turun'=2 (rendered+payload), '582'=0, 2 reword muncul, superlatif lama=0. Angka GOTO/breadth/movers utuh.
+- **Root-cause (recurrence qa-27-01)**: generator brief (jalur growth-mandor) menghitung angka agregat lintas-hari sendiri + superlatif tanpa ranking-cek. Rule: breadth/leaderboard WAJIB dari query DB, superlatif WAJIB diverifikasi ranking sebelum publish.
+- **Queue**: qa-2026-09-30-01 ditulis + flip qa-2026-09-27-01 & cto-2026-09-26-01 → qa_pass (utang reviewer dibayar).
