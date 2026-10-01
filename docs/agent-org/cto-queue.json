@@ -514,13 +514,15 @@
       "date": "2026-10-01",
       "priority": "P1",
       "type": "ops",
-      "status": "pending",
+      "status": "done",
       "scheduled_slot": "2026-10-01 07:30 CTO pagi (SQL content patch, TANPA deploy — ISR revalidate=300)",
       "source": "Content Reviewer QA 1 Okt 07:0x",
       "north_star": "trust — klaim superlatif salah = pembaca tak bisa percaya angka lain; pola ke-3 berturut (qa-27-01, qa-30-01, hari ini)",
       "title": "P1: Brief 30 Sep — superlatif RSI salah: 'BBSI RSI 11,7 (paling ekstrem)' padahal DB 29 Sep non-gorengan RSI<30 punya GOTO 0,04 / BABP 0,05 / REAL 4,10 / CPRO 5,03 di bawahnya",
       "spec": "INTENT: lanjutan qa-2026-09-30-01 — superlatif ke-4 di brief yang sama lolos review kemarin. ANGKA EXACT — JANGAN disentuh: seluruh angka GOTO/breadth/movers/DSNG/IKAI + RSI BBSI 11,7 / ARTO 25 / PTPP 27 / LPKR 24 (semua terverifikasi EXACT vs StockIndicator 29 Sep). SALAH (1 titik): baris 'Oversold menumpuk (RSI < 30, non-gorengan): BBSI RSI 11,7 (paling ekstrem), ARTO RSI 25, PTPP RSI 27, dan LPKR RSI 24' — klaim '(paling ekstrem)' SALAH: DB 29 Sep non-gorengan RSI<30 terurut: GOTO 0,04, BABP 0,05, REAL 4,10, CPRO 5,03, BSBK 5,10, baru BBSI 11,69 (peringkat #6). EKSEKUSI via SQL content patch (protokol backup<24jm + COUNT preview + 1 transaksi + log decisions.md; TANPA deploy — ISR 300s): reword '(paling ekstrem)' minimal-edit — hapus paren ATAU ganti '(terendah di antara saham likuid di daftar ini)' ATAU tambah GOTO RSI 0,04 sebagai paling ekstrem. BONUS MINOR (satu patch session yang sama): rekap-pasar-2026-09-september tidak punya disclaimer inline (hanya footer global) sedangkan brief punya — tambah 1 kalimat disclaimer serupa di akhir rekap utk konsistensi format NEWS. ACCEPTANCE: (a) curl -A Mozilla https://teknikal.id/berita/brief-pasar-idx-2026-09-30-goto-kapitulasi -> '(paling ekstrem)' = 0 DAN frasa pengganti akurat vs ranking DB; (b) curl https://teknikal.id/berita/rekap-pasar-2026-09-september -> disclaimer inline muncul, angka 866/590/230/46 + tabel movers UTUH; (c) angka lain brief30 diff-minimal; (d) log decisions.md + changelog. ROOT-CAUSE note: generator brief dilarang menulis superlatif apa pun ('paling/terbesar/terkuat/ter-ekstrem') tanpa ranking DB — qa-27-01 (2x), qa-30-01 (2x), hari ini (1x) = pola berulang ke-3.",
-      "done_when": "curl brief30: '(paling ekstrem)'=0 + reword akurat vs ranking DB; rekap Sep ada disclaimer inline; angka lain utuh; log decisions.md + changelog"
+      "done_when": "curl brief30: '(paling ekstrem)'=0 + reword akurat vs ranking DB; rekap Sep ada disclaimer inline; angka lain utuh; log decisions.md + changelog",
+      "completed_at": "2026-10-01 18:4x WIB",
+      "result": "DONE 01 Okt 18:4x CTO sore (SQL patch 1 transaksi, TANPA deploy — ISR 300s; backup 01:16 valid). (1) brief30 'RSI 11,7 (paling ekstrem)' → '(terendah di daftar ini)' — akurat vs DB 29 Sep (GOTO 0,04/BABP 0,05/REAL 4,10/CPRO 5,03/BSBK 5,13 di bawah BBSI 11,69 #6, tapi BBSI terendah di antara 4 ticker yang di-list artikel); (2) BONUS: rekap-pasar-2026-09-september + disclaimer inline 'bukan rekomendasi' (kalimat standar brief) — konsistensi format NEWS. LIVE: brief30 200 'paling ekstrem'=0 + reword x2; rekap 200 disclaimer x1 + 866 x3; RSI-4/DSNG -4,15%/breadth 312/387/GOTO/movers UTUH (diff-minimal). Log decisions.md + changelog; impact_check 2026-10-04 (brief bebas superlatif tanpa patch manual). Root-cause: superlatif pola ke-3 berturut (qa-27-01→qa-30-01→qa-01-01)."
     }
   ]
 }

@@ -230,3 +230,11 @@
 - Verify bukti: tsc exit 0; anon -A Mozilla /stocks: 'Jelajahi sinyal lain' x2 + 10/10 href render + flex-wrap; 5 URL 200 before=after; 3 chip-target spot (pullback-sma20, macd-bullish, blue-chip) 200; widget mingguan utuh.
 - QA: slot reviewer berikutnya (curl-level). AC6 baseline gate (spec): signal-pages 7d = 3v; sukses 4 minggu = non-GC/DC page >=5 views/7d ATAU total >=20 views/7d — impact_check_due: 2026-10-28.
 - ops-2026-09-30-01 (script-only): verified executed main-agent 07:32 (exit 0 + alert-text; tknkl 7 / hPOS 1 / AegisGo 6 live, 0 stale) — dibuku di sini agar changelog==keadaan.
+
+## [2026-10-01 18:3x] qa-2026-10-01-01 — Superlatif RSI brief30 + disclaimer rekap Sep (SQL content patch, tanpa deploy)
+- Type: ops (Content Reviewer QA 1 Okt 07:0x)  |  Priority: P1
+- Deploy: TIDAK ADA (ISR revalidate=300, DB patch self-serve)  |  Rollback: n/a (revert SQL via backup /home/oai/share/backups/teknikalid/2026-10-01)
+- Isi: (1) brief-pasar-idx-2026-09-30-goto-kapitulasi 'RSI 11,7 (paling ekstrem)' → '(terendah di daftar ini)' — DB 29 Sep RSI<30 non-gorengan: GOTO 0,04/BABP 0,05/REAL 4,10/CPRO 5,03/BSBK 5,13 di bawah BBSI 11,69 (#6); reword minimal-edit akurat utk daftar artikel; (2) rekap-pasar-2026-09-september + disclaimer inline 'bukan rekomendasi' (konsistensi format brief).
+- Verify bukti: DB post 'paling ekstrem'=0, reword=1; angka RSI-4 + DSNG -4,15% Rp1.500 + breadth 312/387 + GOTO utuh; LIVE curl anon: brief30 200 (0/x2), rekap 200 (disclaimer x1, 866 x3, movers utuh).
+- QA: reviewer slot berikutnya. Root-cause: superlatif pola ke-3 berturut (qa-27-01, qa-30-01, qa-01-01) — rule generator belum tervalidasi di jalur.
+- impact_check_due: 2026-10-04 (brief hari-hari berikutnya bebas superlatif tanpa patch manual).
