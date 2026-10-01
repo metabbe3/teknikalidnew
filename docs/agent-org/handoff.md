@@ -232,3 +232,18 @@
 - In-flight: FINDING monitoring gap 401/403 teknikalid (AuditLog authed-only → anonim tak tercatat; kandidat instrumentasi app-layer, area security = council/owner); Product Agent Kamis 10:15 (idea-25-1 > wid-27-1 > prod-24-01); impact checks: AC5 register 20 Okt, AC6 widget 22 Okt, itsec pre-run 6 Okt.
 - Jebakan: (1) kolom Prisma mixed-case WAJIB di-quote di SQL manual (httpStatus → httpstatus fold); (2) label/deskripsi backlog bisa menyesatkan target DB — selalu verifikasi ke env aktual sebelum percaya spec; (3) backlog kanonik = data-dir (symlink queue hidup, backlog BELUM disymlink — dual-write); (4) register 6/7d & signal pages 3v = DATA PERHATIAN menurut CEO — jangan baca sebagai noise.
 - Langkah pertama slot pagi 30 Sep: baca queue → entry baru CEO/Reviewer? → kalau kosong: health + QA brief 30 Sep (bebas lot/saam jalur Mandor = impact check qa-28-01 lanjutan) + cek ledger catch-up terekam malam ini.
+
+## 2026-09-30 07:5x — CTO pagi (queue kosong → health + impact checks)
+- State: sehat; FRESH (29 Sep pre-market); site 200 TTFB 0.77s; app 2d/worker 4d/db 2w semua healthy; 0 deploy (budget 2/2 utuh).
+- Barusan: brief 30 Sep BERSIH (0 lot/0 saam 3-field jalur growth-mandor — guard hari kerja ke-2, impact qa-28-01 PASS); ledger catch-up terekam (run 29-30 Sep + CEO Evening masuk, council-27-02 verified); widget 11 GC/2 DC — DC exact, GC delta +3 = divergensi snapshot-pair terdokumentasi (bukan regresi).
+- Temuan trafik: 29 Sep nobot 110→16 BUKAN regresi botgate — 66 views di-flag benar (65 dari 104.28.245.128 datacenter UA 'Android 10; K' burst 07-09 + 1 meta-externalagent); human asli memang tipis (16 views IP residential tersebar). 26 Sep nobot=0 (2 bot saja) — hari Sabtu sepi total.
+- In-flight: Product Agent Kamis 10:15 (idea-25-1 > wid-27-1 > prod-24-01); AC5 register 20 Okt; AC6 widget 22 Okt (signal pages masih rendah — cek tren); QA register-hook browser flow.
+- Langkah pertama slot sore: baca queue → entry CEO 08:15/IT-SEC → kalau kosong: health + cek EOD 30 Sep masuk ~18:30 + views weekday pulih?
+
+## 2026-09-30 18:4x — CTO sore (queue kosong → health + PRODUCT MODE analisis AC6/wid-27-1)
+- State: sehat; EOD 30 Sep IN (^JKSE C 6071.14, MAX(date)=today); site 200 TTFB 0.94s; 3 container healthy; 0 deploy.
+- Barusan: insight wid-27-1 dibukukan dual-write (commit c425f7b): widget CTR = 0 — /stocks 85v nobot (27-30 Sep) vs signal pages 0v 6 hari bertur; referrer signal 7d direct 2/chatgpt 1/google 1, 0 dari /stocks.
+- TEMUAN angka: widget 19 GC live TANPA filter isGorengan (findStockIdsWithCrossSignal) vs kanonik rekap non-gorengan = 14 — landing /saham-golden-cross juga tampil gorengan (30 rows, MTLA dsb) = by-design pair BUKAN regresi; delta '+3' kemarin = gap gorengan yang sama (kini +7).
+- In-flight: Product Agent Kamis 10:15 (idea-25-1 > wid-27-1 > prod-24-01); AC5 register 20 Okt; AC6 widget 22 Okt (CTR 0 = data verdict); QA register-hook browser flow.
+- Jebakan: (1) timezone SQL: "createdAt" AT TIME ZONE 'Asia/Jakarta' pada timestamp naive = konversi TERBALIK — pakai + interval '7 hours' untuk WIB; (2) backlog data-dir 21 entries > repo 20 (sre-30-1 candidate belum sync) — sync sebelum commit; (3) kolom gorengan/assetClass ada di StockIndicator BUKAN Stock (s.isGorengan error).
+- Langkah pertama slot pagi 1 Okt: baca queue → entry CEO 08:15/IT-SEC? → kalau kosong: health + QA brief 1 Okt (lot/saam 3-field) + cek sre-30-1 (backlog_health.py alert-by-design) kalau sudah masuk queue.

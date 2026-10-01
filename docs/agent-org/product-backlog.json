@@ -108,14 +108,15 @@
       "id": "prod-2026-09-17-03",
       "date": "2026-09-17",
       "priority": "P3",
-      "status": "owner_approved",
+      "status": "rejected",
       "hypothesis": "Edu content gaps: /saham-pullback-sma20 13 views/7d belum punya halaman edu — 5 signal page lain juga cek. Edu = SEO long-tail entry point.",
       "first_step": "ANALISIS DATA (no code): semua /saham-* views 30d + GSC queries containing kata signal; list gap page edu vs signal page. Dispatch ke Mandor kalau jelas.",
       "north_star": "growth traffic",
       "insight": "CEO 17 Sep: DISPATCH ke Mandor — 2 artikel edu (pullback-SMA20 25v/30d, volume-spike 11v) link 2 arah. || CEO 19 Sep 08:15 NUDGE #1: 0/2 edu s/d 19 Sep (EDUCATIONAL sejak 17 Sep = 0; Sabtu cap 2 post terpakai rekap+listicle; Mandor rencana edu Minggu). DEADLINE FINAL Senin 21 Sep 06:30 — kalau tetap 0 → eskalasi owner (aturan dispatched>2hari, nudge max 2x). || CEO 22 Sep 08:15: ESKALASI OWNER (nudge 2x habis: 19+21 Sep, deadline final 21 Sep 06:30 terlewat). Hasil parsial: 1/2 edu terbit 20 Sep (strategi-pullback-sma20-untuk-pemula, PUBLISHED, QA 21 Sep PASS penuh); volume-spike edu MASIH 0. Owner perlu putus: tekan Mandor lane lagi / drop target edu ke-2.",
       "owner_verdict": "23 Sep 08:05: APPROVED via digest — dispatch 1 artikel edu tersisa (volume-spike) ke Mandor HARI INI; pullback-sma20 sudah QA PASS = closed.",
       "owner_verdict_at": "2026-09-29T07:42:00+07:00",
-      "owner_verdict_source": "morning-digest-approve"
+      "owner_verdict_source": "morning-digest-approve",
+      "updated_at": "2026-09-30T21:05+07:00"
     },
     {
       "id": "prod-2026-09-17-04",
@@ -161,7 +162,7 @@
       "id": "sre-2026-09-18-1",
       "date": "2026-09-18",
       "priority": "P3",
-      "status": "owner_approved",
+      "status": "superseded",
       "ceo_verdict": {
         "verdict": "approve_defer",
         "decided_at": "2026-09-22 08:15 WIB (review terjadwal)",
@@ -174,7 +175,8 @@
       "data": "SRE brief 18 Sep 22:57: teknikalidnew-app-1 'Up 4 hours (healthy)' = restart tunggal ±18:57 WIB, sedangkan worker Up 2 hari & db Up 8 hari. App error 24h = 0, latency teknikal.id 0.62s (SLO <1.5s ok), tidak ada restart loop — jadi BUKAN insiden, tapi restart ±19:00 ini di luar jendela deploy pagi (deadline 08:45) dan brief tidak menyimpan exit reason / bukti OOM / siapa yang restart. Tanpa data itu, pola tidak bisa dibedakan: deploy CTO sore 16:45 vs OOM crash vs manual restart. Usulan (ops, kecil): tambahkan di SRE brief script (1) exit code + finished-at dari `docker inspect` container yang Up < 24h, (2) grep dmesg/log 'OOM|killed' host, (3) catat image digest utk deteksi redeploy. North star: DATA RELIABLE — restart tanpa penjelasan = kepercayaan sistem yang bolong.",
       "verdict": "approved",
       "verdict_date": "2026-09-22",
-      "owner_verdict": "gas (owner 22 Sep 'semua gas')"
+      "owner_verdict": "gas (owner 22 Sep 'semua gas')",
+      "updated_at": "2026-09-30T21:05+07:00"
     },
     {
       "id": "prod-2026-09-19-01",
@@ -255,7 +257,7 @@
       "id": "sre-2026-09-19-1",
       "date": "2026-09-19",
       "priority": "P2",
-      "status": "owner_approved",
+      "status": "shipped",
       "source": "sre",
       "type": "ops",
       "title": "HEALTHCHECK teknikalidnew-worker-1 — satu-satunya container teknikal tanpa health status; worker hang = data basi senyap",
@@ -268,7 +270,8 @@
       },
       "verdict": "approved",
       "verdict_date": "2026-09-22",
-      "owner_verdict": "gas (owner 22 Sep 'semua gas')"
+      "owner_verdict": "gas (owner 22 Sep 'semua gas')",
+      "updated_at": "2026-09-30T21:05+07:00"
     },
     {
       "id": "sec-2026-09-21-04",
@@ -322,14 +325,35 @@
     },
     {
       "id": "idea-2026-09-25-1",
-      "status": "promoted_prd",
+      "status": "spec_ready",
       "source": "cto-idle",
       "priority": "P2",
       "date": "2026-09-25",
       "title": "Atribusi register hook hilang: PageView.path tidak simpan query string — utm_source 3 hook (signal_page/stocks_screener/stocks_ticker) tak terukur",
       "data": "Bukti 25 Sep (DB read-only): (1) 12/12 PageView nobot 30d path='/auth/register' persis — query string dibuang sebelum insert (kolom PageView: path/referrer/userId/ip/userAgent/createdAt/isBot, tanpa utm); (2) referrer register 30d: 10 direct + 1 google + 1 teknikal.id root — JS redirect window.location = direct, hook tak terlihat; (3) 3 hook live sejak 22 Sep 19:1x semuanya bawa utm_source di URL (register-cta.tsx signal_page, save-screen-prompt.tsx stocks_screener, stock-action-badge.tsx stocks_ticker) tapi 0 tercatat; (4) DAMPAK: gate AC5 prd-17-01 (register-page IP area /stocks >=10 IP ATAU >=8 register, impact check 2026-10-20) tidak bisa membedakan register via hook vs organik — verifikasi fitur 400rb rupiah terancam tak terukur; (5) komposisi views 14d: /stocks/[ticker] 683 + /stocks 567 = 78% trafik nobot — area hook mempunyai exposure besar. Usulan arah: simpan utm_source/utm_medium (whitelist + length cap) saat track pageview register, atau kolom additive — murni instrumen, no UI change. SEC-REVIEW (utk PRD): param whitelist+cap panjang (bukan raw query string — cegah log injection), tanpa PII baru, tanpa endpoint baru, additive column via prisma migrate = koordinasi owner (bukan silent).",
       "north_star": "growth register (NS#1) — pengukuran funnel, bukan UI",
-      "note": " || CEO 28 Sep 08:15: PROMOTE mandate PRD #2 utk Product Agent Senin 28 Sep 10:15 (setelah prod-24-01 title-ticker). Alasan: north star #1 langsung — register_views 4/7d pertama non-zero tapi hook tak bisa di-attribusi tanpa query-param persistence; effort kecil (PageView simpan UTM/ref). Lensa data-reliable owner."
+      "note": " || CEO 28 Sep 08:15: PROMOTE mandate PRD #2 utk Product Agent Senin 28 Sep 10:15 (setelah prod-24-01 title-ticker). Alasan: north star #1 langsung — register_views 4/7d pertama non-zero tapi hook tak bisa di-attribusi tanpa query-param persistence; effort kecil (PageView simpan UTM/ref). Lensa data-reliable owner.",
+      "prd_id": "idea-2026-09-25-1",
+      "prd_written_at": "2026-09-30 22:1x WIB",
+      "user_story": "Sebagai pemilik produk, saya perlu tahu dari mana register berasal (3 hook in-product vs organik vs direct) supaya keputusan investsi fitur register-hook (live 22 Sep, gate AC5 prd-17-01 impact-check 2026-10-20) berbasis data — hari ini 16 register-view/30d TAK BISA di-atribusi karena query string dibuang sebelum insert PageView.",
+      "acceptance_criteria": "1) ADDITIVE: kolom PageView.utmSource VARCHAR(32) NULL + PageView.utmMedium VARCHAR(32) NULL via prisma migrate (nullable, 0 baris lama berubah; deploy app+worker bareng — koordinasi owner, bukan silent). 2) WHITELIST: track endpoint parse utm_source/utm_medium dari searchParams HANYA jika match ^[a-z0-9_-]{1,32}$ (lowercase); selain itu dibuang (anti log-injection; unit test: 'signup hero!' -> null, 'stocks_screener' -> lolos). 3) SCOPE: utm hanya disimpan utk path prefix /auth/* (register/login/complete-profile), pageview lain tetap NULL. 4) E2E: beacon POST /api/track/pageview path=/auth/register?utm_source=stocks_screener -> SQL verify row terbaru utmSource='stocks_screener'. 5) FUNNEL: admin funnel memecah register 30d per utm_source (hook vs organic vs direct) — angka == query DB. 6) REGRESSION: tsc --noEmit clean; beacon non-auth & bot-path behavior unchanged.",
+      "data_evidence": "QUERY ASLI 30 Sep 22:0x (DB teknikalid, nobot): /auth/register 30d = 16 views / 8 IP / 0 baris path mengandung '?' (query string dibuang pre-insert); /auth/complete-profile 30d = 15; area hook 14d: /stocks/* ticker-detail 598v + /stocks 509v (78% trafik nobot). 3 hook live 22 Sep bawa utm_source: signal_page / stocks_screener / stocks_ticker — 0 tercatat (data entry 25 Sep). Referrer register 30d: 10 direct + 1 google + 1 root (JS redirect = direct).",
+      "impact": 3,
+      "effort": 2,
+      "target_files": [
+        "prisma/schema.prisma",
+        "src/app/api/track/pageview/route.ts",
+        "src/lib/validation.ts",
+        "src/app/api/admin/funnel/route.ts (estimasi)"
+      ],
+      "db_migrations": true,
+      "dependencies": [
+        "prisma migrate (additive nullable — koordinasi owner)"
+      ],
+      "risk": "low",
+      "estimate_tool_calls": 7,
+      "sec_review": "Input: utm = string dari URL sendiri (bukan user-generated stored-XSS surface); whitelist regex + cap 32 = anti log-injection. Tanpa PII baru, tanpa endpoint baru, tanpaubah bot-gate. Additive nullable column = rollback-safe (drop column).",
+      "first_step": "Prisma schema additive + helper parseUtm(searchParams) + unit test; wire di track route (branch /auth/*); migrate dev verify; deploy app+worker; verify e2e beacon+SQL; expose split di admin funnel."
     },
     {
       "id": "sre-2026-09-26-1",
@@ -415,11 +439,41 @@
       "source": "weekend-idea Mandor 27 Sep; council RECOMMEND APPROVE 08:05; CEO verdict 27 Sep 08:15 APPROVE -> promoted_prd",
       "title": "Signal Page Discovery — halaman sinyal (moat SEO) kehilangan trafik: 10/12 halaman 0 views, kini GC ikut runtuh",
       "priority": "P2",
-      "status": "promoted_prd",
+      "status": "night_ready",
       "north_star": "growth traffic + time spent (signal pages = moat + fondasi brief/IG)",
       "hypothesis": "Signal pages hanya hidup via internal-link dari /stocks (GC: 87% referrer). Widget mingguan (live 24 Sep) memusatkan klik ke GC+DC saja; 10 halaman sinyal lain mati kelaparan link. Perlu spec discovery: entry-point nav / cross-link kontekstual / distribusi merata.",
-      "data": "CEO 27 Sep (DB): PageView /saham-% 0 views sejak 24 Sep; 7d hanya GC 19 + pullback 2; 10/12 halaman 0. CTO 29 Sep 07:45 (SQL nobot): signal_pages 34v (18-23 Sep) -> 3v (24-29 Sep) = -91%, SEDANGKAN /stocks root 250v -> 147v (~-34% per-hari ekuivalen) = runtuh ASIMETRIS sejak widget live 24 Sep, bukan sekadar GSC/weekend noise. Baseline utk PRD.",
-      "restored_note": "Entry hilang saat insiden dual-file backlog 27-28 Sep (atomic-replace putus symlink); direstorasi CTO 29 Sep slot pagi dari ceo-decisions.md (verdict 27 Sep 08:15) + data baru. Menunggu Product Agent -> spec_ready (urutan mandat: idea-25-1 > wid-27-1 > prod-24-01)."
+      "data": "CEO 27 Sep (DB): PageView /saham-% 0 views sejak 24 Sep; 7d hanya GC 19 + pullback 2; 10/12 halaman 0. CTO 29 Sep 07:45 (SQL nobot): signal_pages 34v (18-23 Sep) -> 3v (24-29 Sep) = -91%, SEDANGKAN /stocks root 250v -> 147v (~-34% per-hari ekuivalen) = runtuh ASIMETRIS sejak widget live 24 Sep, bukan sekadar GSC/weekend noise. Baseline utk PRD. || CTO 30 Sep 18:5x (read-only verify): widget CTR = 0 — /stocks nobot 85v (27-30 Sep) vs signal pages 0v (28-30 Sep, 6 hari bertur dekat 0); referrer signal-page 7d: direct 2/chatgpt 1/google 1 (0 dari /stocks = anchor widget tak diklik). ROOT CAUSE divergensi angka widget vs rekap: findStockIdsWithCrossSignal TANPA filter isGorengan (19 GC live) vs metode kanonik rekap non-gorengan (14); konsisten dgn landing page /saham-golden-cross yang juga tampil gorengan (MTLA dsb, 30 rows) — by-design pair, BUKAN regresi; delta kemarin '+3' = gap gorengan yang sama, kini +7 (UVCR/CSMI/AIMS/CCSI cross 29-30 Sep). EOD 30 Sep IN (^JKSE 6071.14), widget label '28-30 Sep' benar.",
+      "restored_note": "Entry hilang saat insiden dual-file backlog 27-28 Sep (atomic-replace putus symlink); direstorasi CTO 29 Sep slot pagi dari ceo-decisions.md (verdict 27 Sep 08:15) + data baru. Menunggu Product Agent -> spec_ready (urutan mandat: idea-25-1 > wid-27-1 > prod-24-01).",
+      "prd_id": "wid-2026-09-27-1",
+      "prd_written_at": "2026-09-30 22:1x WIB",
+      "user_story": "Sebagai trader pencari sinyal, saya ingin menemukan SEMUA halaman sinyal dari /stocks (bukan cuma golden/death cross), supaya saya bisa pakai sinyal oversold/pullback/volume-spike sesuai strategi — hari ini 10/12 halaman sinyal 0-3 views karena satu-satunya entry-point live adalah anchor widget GC/DC (CTR 0).",
+      "acceptance_criteria": "1) SECTION SSR 'Jelajahi sinyal lain' di /stocks (di bawah widget mingguan): chip-link ke 10 halaman sinyal topikal (/saham-golden-cross, -death-cross, -oversold, -overbought, -pullback-sma20, -ema-cross, -macd-bullish, -stochastic-oversold, -volume-spike, -blue-chip) + hub /saham; label manusiawi; guest-visible NO gating NO routing baru. 2) Chip count sinyal aktif OPSIONAL — hanya via reuse query existing halaman tsb; kalau butuh query tambahan >1 atau N+1 -> render tanpa count (link wajib, count boleh absen). 3) curl anon -A Mozilla /stocks: grep 11 href '/saham-' ada di HTML. 4) Widget mingguan prod-19-01 TIDAK berubah posisi/angka. 5) Mobile 375px chips wrap, 0 overflow horizontal. 6) GATE (dicatat di result saat deploy): baseline signal-pages 7d = 3v (24-29 Sep); sukses 4 minggu = salah satu halaman non-GC/DC >=5 views/7d ATAU total signal-pages >=20 views/7d; review 2026-10-28. 7) tsc --noEmit clean.",
+      "data_evidence": "QUERY ASLI 30 Sep 22:0x (nobot): signal-pages 14d total 49v — golden-cross 27v/7IP, oversold 17v/2IP, pullback 3v, death-cross 1v, ema-cross 1v, 7 halaman lain 0v; harian 24-30 Sep = 0,0,0,0,3,0,0. Referrer signal-pages 14d: /stocks 18 (era pre-widget), brief-artikel 11, screener-preset URL 10, direct 6. Pasca-widget: CTR anchor = 0 (CTO 30 Sep: /stocks nobot 85v 27-30 Sep vs 0 referrer dari /stocks 7d terakhir). Komponen existing reusable: link-card/chip pattern di repo.",
+      "impact": 3,
+      "effort": 2,
+      "target_files": [
+        "src/app/(public)/stocks/page.tsx",
+        "src/components/stock/signal-links.tsx (komponen baru)",
+        "src/components/signal/* (reuse, estimasi)"
+      ],
+      "db_migrations": false,
+      "dependencies": [],
+      "risk": "low",
+      "estimate_tool_calls": 6,
+      "sec_review": "SSR read-only, link statis dari konstanta (bukan input user); tanpa query baru wajib; injection/IDOR n/a; privasi n/a.",
+      "first_step": "Konstanta SIGNAL_PAGES (slug+label) -> komponen signal-links.tsx SSR -> insert page /stocks bawah widget -> curl grep verify -> catat baseline gate di result.",
+      "result": "NIGHT CTO 30 Sep 23:2x WIB — implementasi PENUH di branch night/wid-2026-09-27-1 (pushed), siap review+merge+deploy pagi. FILES: src/components/stock/signal-links.tsx (BARU, SSR pure static, 10 chip) + insert di stocks/page.tsx L243 tepat di bawah WeeklySignalWidget. VERIFY (bukti nyata, dev server :3100 + DB read-only): tsc --noEmit EXIT 0; eslint kedua file EXIT 0; curl anon -A Mozilla /stocks HTTP 200 (918KB) — grep 10 href /saham-* unik semua render (golden-cross/death-cross/oversold/overbought/pullback-sma20/ema-cross/macd-bullish/stochastic-oversold/volume-spike/blue-chip); label 'Jelajahi sinyal lain' ada; POSISI widget (19133) < chips (19500) = widget tetap di atas AC4 terpenuhi; chips flex-wrap pola identik quick-pills existing AC5. DEVIATION AC1: hub /saham TIDAK di-link — route 404 nyata (curl 200 hanya utk /saham-golden-cross; /saham tanpa page.tsx), link ke 404 dari moat SEO = soft-404 baru; opsi: bikin hub page di task terpisah. AC2 skip by-design (link wajib, count opsional — 0 query tambahan, seringkas mungkin). GATE AC6 utk CTO pagi dicatat: baseline signal-pages 7d = 3v (24-29 Sep); sukses 4 minggu = salah satu halaman non-GC/DC >=5 views/7d ATAU total signal-pages >=20 views/7d; review 2026-10-28. Estimasi review CTO pagi: 5-10mnt (2 file, diff kecil, verify sudah jalan)."
+    },
+    {
+      "id": "sre-2026-09-30-1",
+      "date": "2026-09-30",
+      "priority": "P2",
+      "status": "owner_approved",
+      "source": "sre",
+      "type": "ops",
+      "title": "backlog_health.py alert-by-design (exit 1) dicatat scheduler sbg job ERROR — run-ledger noise + failure_streak naik + teks alert kemungkinan tak sampai owner (deliver=local)",
+      "data": "SRE brief 30 Sep 09:30: ledger 07:15 'error Backlog Health Monitor', padahal jobs.json 389d43e6e6be last_error='Script exited with code 1' dengan stdout = ALERT VALID (teknikal 3 entry stale >7d, masing2 11-13d). Pattern Code-SOP 'exit-1 = alert' bertabrakan dengan semantik scheduler no_agent (exit!=0 → status error). Akibat: failure_streak=2 (29+30 Sep), SRE brief & owner melihat 'error' padahal monitor sehat dan bekerja; alert text terkubur di last_error, deliver=local → tidak ke Telegram. Usulan kecil: (1) backlog_health.py exit 0 saat alert valid (stdout tetap keluar) ATAU exit-code khusus 'alert' yang scheduler tidak label error; (2) reset failure_streak + verify 1x jalan besok; (3) pertimbangkan deliver ke owner utk kasus alert-nyata. Bukti: jobs.json entry 389d43e6e6be (last_status/last_error/failure_streak), manual run 09:34 WIB reproduces alert + exit 1.",
+      "updated_at": "2026-09-30T21:05+07:00"
     }
   ]
 }
