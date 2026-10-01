@@ -407,7 +407,7 @@
     {
       "id": "sec-2026-09-28-01",
       "date": "2026-09-28",
-      "status": "owner_approved",
+      "status": "shipped",
       "source": "itsec-red",
       "exploitability": "rendah",
       "title": "[RED][BERSIH] Baseline snapshot 46 file (4f80997): admin API routes semua requireAdmin() (session+role DB re-verify), proxy.ts guard /api/admin 404-mask + re-verify role dari DB (JWT stale protected), /api/cron/* Bearer CRON_SECRET, /api/stocks/[ticker] zod rangeSchema, feed.xml escapeXml lengkap. Tidak ada celah baru.",
@@ -415,7 +415,9 @@
       "priority": "P3",
       "priorityNote": "security baseline snapshot bersih — dokumentasi, bukan customer-facing",
       "owner_verdict_at": "2026-09-29T07:42:00+07:00",
-      "owner_verdict_source": "morning-digest-approve"
+      "owner_verdict_source": "morning-digest-approve",
+      "insight": "CEO 1 Okt: no-action close — audit RED hasil BERSIH = dokumentasi baseline (priorityNote: bukan customer-facing); tidak ada spec engineering, badge dispatch-CTO dilepas.",
+      "updated_at": "2026-10-01T07:30:00+07:00"
     },
     {
       "id": "sec-2026-09-28-02",

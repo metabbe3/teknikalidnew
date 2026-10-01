@@ -564,3 +564,13 @@ Root cause unit 'lot': brief prompt TANPA baris satuan volume + tanpa sanitizer 
 - **Verify LIVE**: curl → '550 saham turun'=2 (rendered+payload), '582'=0, 2 reword muncul, superlatif lama=0. Angka GOTO/breadth/movers utuh.
 - **Root-cause (recurrence qa-27-01)**: generator brief (jalur growth-mandor) menghitung angka agregat lintas-hari sendiri + superlatif tanpa ranking-cek. Rule: breadth/leaderboard WAJIB dari query DB, superlatif WAJIB diverifikasi ranking sebelum publish.
 - **Queue**: qa-2026-09-30-01 ditulis + flip qa-2026-09-27-01 & cto-2026-09-26-01 → qa_pass (utang reviewer dibayar).
+teknikalidnew-app 4de0935e36de 2026-09-28 06:48:44 +0700 WIB
+teknikalidnew-worker 06082d2e2c25 2026-09-26 07:41:38 +0700 WIB
+commit pre-deploy live-unknown; merge HEAD: 1e4d517
+
+## 2026-10-01 07:35 — CTO pagi: merge+deploy wid-2026-09-27-1 (night_ready → main)
+- MERGE PROTOCOL dry-run bersih (exit 0, 0 konflik); schema-shield PASS (0 file migrations/prisma/sql di --cached). Merge commit 1e4d517 (--no-ff, preserve history malam), push origin/main 827952a..1e4d517.
+- Rollback anchor pre-deploy: app 4de0935e36de (28 Sep) / worker 06082d2e2c25 — `docker tag 4de0935e36de teknikalidnew-app:latest && docker compose up -d app` + `git revert 1e4d517`.
+- BASELINE-THEN-DEPLOY: 5 URL 200 before=after; chips 'Jelajahi sinyal lain' 0→2 (SSR anon), 10/10 href render (golden-cross, death-cross, oversold, overbought, pullback-sma20, ema-cross, macd-bullish, stochastic-oversold, volume-spike, blue-chip), flex-wrap ada, widget mingguan utuh di atas chips. Deploy 1/1 (07:35, pre-market). tsc --noEmit exit 0.
+- Worktree drift (next.config.ts, prisma/schema.prisma, setup-launchagents.sh uncommitted) = sudah ship di image-image sebelumnya, tidak tersentuh task ini — hanya dicatat, tidak di-commit (bukan milik task).
+- ops-2026-09-30-01: VERIFIED sudah dieksekusi main agent 07:32 (owner directive proposal #27) — backlog_health.py exit 0 + alert-text, 2 run deterministik, py_compile OK, backlog sehat (tknkl 7/hPOS 1/AegisGo 6, 0 stale). CTO verifikasi saja, tanpa eksekusi ganda.

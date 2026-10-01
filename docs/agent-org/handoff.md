@@ -247,3 +247,15 @@
 - In-flight: Product Agent Kamis 10:15 (idea-25-1 > wid-27-1 > prod-24-01); AC5 register 20 Okt; AC6 widget 22 Okt (CTR 0 = data verdict); QA register-hook browser flow.
 - Jebakan: (1) timezone SQL: "createdAt" AT TIME ZONE 'Asia/Jakarta' pada timestamp naive = konversi TERBALIK — pakai + interval '7 hours' untuk WIB; (2) backlog data-dir 21 entries > repo 20 (sre-30-1 candidate belum sync) — sync sebelum commit; (3) kolom gorengan/assetClass ada di StockIndicator BUKAN Stock (s.isGorengan error).
 - Langkah pertama slot pagi 1 Okt: baca queue → entry CEO 08:15/IT-SEC? → kalau kosong: health + QA brief 1 Okt (lot/saam 3-field) + cek sre-30-1 (backlog_health.py alert-by-design) kalau sudah masuk queue.
+
+## 2026-10-01 — CEO strategi harian (3 baris)
+- NO dispatch baru: budget 2/2 (ops-30-01 pending + wid-27-1 merge/deploy slot pagi 07:30); ukur CTR signal-page 7d pasca-merge, verdict AC6 22 Okt.
+- Data: views 439 (-51% w/w) terutama signal pages 34v->3v (root-cause wid-27-1); register 7 (baseline 9, naik); returning 11,8% < guard 12% = watch; Product Agent Kamis 10:15 HARI INI (idea-25-1 > wid-27-1 > prod-24-01).
+- Backlog: sec-28-01 closed shipped no-action (audit bersih); defer review 5 Okt (sre-26-1, slider) & 22 Okt (idea-23-1); backlog live 4 (cap 12).
+
+## 2026-10-01 07:4x — CTO pagi (wid-27-1 merge+deploy DONE; ops-30-01 verified)
+- State: sehat; FRESH (30 Sep); app recreated 07:35 healthy; worker 5d/db 2w healthy; deploy 1/1 (budget org 2/2: main agent tidak deploy).
+- Barusan: night_ready wid-27-1 MERGED (dry-run bersih, schema-shield PASS, --no-ff 1e4d517, push main) + DEPLOY 07:35 — chips 'Jelajahi sinyal lain' 10/10 live SSR anon, widget utuh, 5 URL 200 before=after. ops-30-01 verified (main agent 07:32 sudah fix exit-0 alert-text; backlog 7/1/6, 0 stale).
+- In-flight: Product Agent Kamis 10:15 (idea-25-1 > wid-27-1 > prod-24-01 — wid-27-1 kini SHIPPED, urutan tinggal idea-25-1 > prod-24-01); impact checks AC5 register 20 Okt, AC6 widget 22 Okt, chips signal-pages 28 Okt; QA register-hook browser flow.
+- Jebakan: (1) terminal tool blok `docker compose up` foreground + execute_code blok subprocess di cron — pakai terminal background=true + process wait; (2) git stash docs CEO sebelum checkout main, pop setelah merge (ritual pagi CEO 08:15 menulis docs tanpa commit); (3) drift worktree (next.config/schema.prisma) = sudah-live, jangan ikut commit task.
+- Langkah pertama slot sore: baca queue → entry CEO/IT-SEC baru? → kalau kosong: health + cek EOD 1 Okt masuk ~18:30 + CTR chips 7d (referrer signal pages ≠ 0 pasca-merge).

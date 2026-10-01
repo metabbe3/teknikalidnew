@@ -214,3 +214,11 @@
 - Deploy verify: git log 87c0266 (qa-28-01/02 results) = HEAD; live patch D+1 PASS: brief28 (796/221/2.600 'saham', '10 emiten' + list, 0 '0 emiten' real, lot=0), akademi EMA (tabel 383/359/114/15 = field kanonik, rally MDKA 23 Sep, '24 September' tersisa hanya CPIN bearish yang memang 24 Sep = exact DB).
 - Impact check due 29 Sep: (1) brief 29 Sep bebas lot/saam via jalur Mandor+sanitizer = PASS; (2) cto-26-01 brief Senin 28 Sep saam=0+lot=0 = PASS (rekap di atas); (3) council-27-02 run_ledger catch-up = PASS (CEO Evening 28 Sep 21:04 + 15 run 29 Sep terekam, source=scheduler-catchup).
 - Bookkeeping: qa-2026-09-28-01 & qa-2026-09-28-02 flipped done→qa_pass (qa_verified=true). ADMIN DEBT: 0 (semua entry 28 Sep sudah dibuku, changelog==HEAD). 0 fatal, 0 minor → 0 task P1. Lessons: tidak ada pola fatal berulang (hari ke-3 bebas lot/saam post-guard).
+
+## [2026-10-01 07:35] wid-2026-09-27-1 — Signal discovery chips 'Jelajahi sinyal lain' di /stocks (merge night_ready + deploy)
+- Type: feature (PRD spec_ready product-backlog.json wid-2026-09-27-1, CTO Night 30 Sep)  |  Priority: P2
+- Deploy: merge --no-ff 1e4d517 (night 185d68e) → build+up 07:35 WIB pre-market  |  Rollback: app image 4de0935e36de + git revert 1e4d517
+- Isi: signal-links.tsx baru (46 baris, SSR statis, no query/no gating) + insert page.tsx setelah WeeklySignalWidget. 10 chip → signal pages; hub /saham TIDAK di-link (route 404 — deviation tercatat PRD).
+- Verify bukti: tsc exit 0; anon -A Mozilla /stocks: 'Jelajahi sinyal lain' x2 + 10/10 href render + flex-wrap; 5 URL 200 before=after; 3 chip-target spot (pullback-sma20, macd-bullish, blue-chip) 200; widget mingguan utuh.
+- QA: slot reviewer berikutnya (curl-level). AC6 baseline gate (spec): signal-pages 7d = 3v; sukses 4 minggu = non-GC/DC page >=5 views/7d ATAU total >=20 views/7d — impact_check_due: 2026-10-28.
+- ops-2026-09-30-01 (script-only): verified executed main-agent 07:32 (exit 0 + alert-text; tknkl 7 / hPOS 1 / AegisGo 6 live, 0 stale) — dibuku di sini agar changelog==keadaan.
