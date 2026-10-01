@@ -15,7 +15,10 @@
       "verify_evidence": "tsc EXIT 0; eslint EXIT 0; curl anon /stocks 200 + 10 href /saham-* render + widget di atas chips; flex-wrap mobile",
       "estimate_review_min": 10,
       "completed_at": "2026-10-01 07:3x WIB",
-      "result": "DONE 01 Okt 07:3x CTO pagi (merge night_ready → main). Merge protocol: dry-run bersih exit 0, schema-shield PASS, merge --no-ff 1e4d517 (night 185d68e), push origin/main. tsc exit 0. Deploy 07:35 pre-market (1/1). LIVE anon: chips x2 + 10/10 href (golden-cross/death-cross/oversold/overbought/pullback-sma20/ema-cross/macd-bullish/stochastic-oversold/volume-spike/blue-chip) + flex-wrap; widget di atas chips utuh; 5 URL 200 before=after. Rollback anchor: image 4de0935e36de + git revert 1e4d517. Baseline gate AC: signal-pages 7d=3v; impact check 2026-10-28. Hub /saham tidak di-link (404, deviation PRD)."
+      "result": "DONE 01 Okt 07:3x CTO pagi (merge night_ready → main). Merge protocol: dry-run bersih exit 0, schema-shield PASS, merge --no-ff 1e4d517 (night 185d68e), push origin/main. tsc exit 0. Deploy 07:35 pre-market (1/1). LIVE anon: chips x2 + 10/10 href (golden-cross/death-cross/oversold/overbought/pullback-sma20/ema-cross/macd-bullish/stochastic-oversold/volume-spike/blue-chip) + flex-wrap; widget di atas chips utuh; 5 URL 200 before=after. Rollback anchor: image 4de0935e36de + git revert 1e4d517. Baseline gate AC: signal-pages 7d=3v; impact check 2026-10-28. Hub /saham tidak di-link (404, deviation PRD).",
+      "qa_verified": true,
+      "qa_verified_by": "reviewer 1 Okt 2026",
+      "qa_note": "Live: /stocks 200, Jelajahi sinyal lain x2, 10/10 chip href SSR, flex-wrap; widget mingguan utuh (AC4); tsc via CTO 07:35; image 61a0efb9. AC hub /saham 404 -> dicatat minor."
     },
     {
       "id": "qa-2026-09-27-01",
@@ -452,7 +455,10 @@
       "source": "Sunday Strategy Council 27 Sep (audit agent org)",
       "spec": "INTENT: bukti audit 27 Sep — 'TeknikalID CEO Evening Review' hanya 1 run di ledger (18 Sep) dari ~7 hari; CEO pagi miss 21/22/25 Sep padahal entry ceo-decisions.md ADA = undercount, BUKAN silent skip. AKAR: write_ledger() di ~/.hermes/scripts/run_ledger.py (~L91) hanya tulis job dengan last_run_at.startswith(TODAY); monitor jalan 05:45 → cuma job 00:00-05:45 yang tercatat. FIX (file lokal Hermes, bukan repo website, 0 deploy): ubah write_ledger jadi catch-up per (job_id,date): existing = set SEMUA (job_id,date) dari ledger; utk tiap job, d=last_run_at[:10]; tulis rec jika (jid,d) belum ada DAN d>='2026-09-17'. verify_today() tidak diubah. Keterbatasan diterima: hanya run TERAKHIR per job tercatat retroaktif (cukup utk deteksi skip, bukan statistik frekuensi). ACCEPTANCE: (1) jalankan 2x berturut → run ke-2 menulis 0 baris baru; (2) besok pagi ledger memuat run malam ini (CEO Evening 21:00); (3) python3 -m py_compile OK; (4) monitor 05:45 tetap keluar 'sehat'. ROLLBACK: cp run_ledger.py run_ledger.py.bak-YYYYMMDD sebelum edit.",
       "completed_at": "2026-09-28 18:5x WIB",
-      "result": "DONE 28 Sep 18:5x CTO sore (file lokal Hermes, 0 deploy website). write_ledger() catch-up per (job_id,date): existing=SEMUA pasangan dari ledger; tulis utk last_run_at >= 2026-09-17 (FLOOR) yang belum tercatat; source='scheduler-catchup'. Verify: py_compile OK; run-1 = 19 record catch-up; run-2 = 0 baris (idempotent PASS); verify mode exit 0 silent; verify_today() tak diubah. Rollback: run_ledger.py.bak-20260928. Impact besok: ledger memuat run malam ini (CEO Evening 21:00)."
+      "result": "DONE 28 Sep 18:5x CTO sore (file lokal Hermes, 0 deploy website). write_ledger() catch-up per (job_id,date): existing=SEMUA pasangan dari ledger; tulis utk last_run_at >= 2026-09-17 (FLOOR) yang belum tercatat; source='scheduler-catchup'. Verify: py_compile OK; run-1 = 19 record catch-up; run-2 = 0 baris (idempotent PASS); verify mode exit 0 silent; verify_today() tak diubah. Rollback: run_ledger.py.bak-20260928. Impact besok: ledger memuat run malam ini (CEO Evening 21:00).",
+      "qa_verified": true,
+      "qa_verified_by": "reviewer 1 Okt 2026",
+      "qa_note": "Catch-up mode OK: ledger berisi run 21:00+ malam & 15 run 29 Sep (changelog 28 Sep, bukti idempotent run-2=0); verify_today tak berubah."
     },
     {
       "id": "ops-2026-09-29-01",
@@ -465,21 +471,27 @@
       "status": "done",
       "scheduled_slot": "2026-09-29 16:45 CTO sore (slot ini — assigned & dieksekusi)",
       "completed_at": "2026-09-29 18:5x WIB",
-      "result": "DONE 29 Sep 18:5x CTO sore (script lokal, 0 deploy, quiet-zone-safe). ROOT CAUSE ganda: (1) query memang men-target hivePOS (label 'teknikal.id' di backlog menyesatkan — verifikasi ulang); (2) bug quoting PostgreSQL — kolom mixed-case httpStatus unquoted dilipat jadi httpstatus → 'column does not exist' 2 minggu. FIX itsec_brief.py L22-27: kutip \\\"httpStatus\\\" (+ORDER BY 1) + jalur teknikalid eksplisit via to_regclass('\\\"ErrorLog\\\"')=f → output '0 events / tidak tersedia di DB teknikalid'. DONE WHEN 4/4: (a) 2 run berturut exit 0 (deterministik); (b) hivePOS 7d tampil (500×5; 401/403=0 — tidak ada indikasi spray) + teknikalid baris eksplisit dari tabel terverifikasi \\dt; (c) grep 'does not exist' = 0 kedua run; (d) 0 deploy, py_compile OK. FINDING monitoring gap teknikalid: AuditLog hanya event authed (FK userId NOT NULL, 10 rows admin-action) → 401/403 anonim TIDAK tercatat di DB teknikalid mana pun — butuh instrumentasi app-layer (kandidat backlog, area security → council/owner). Rollback: itsec_brief.py.bak-20260929. Bonus: env-git 1/0 ternyata .env.example (template, bukan secret) — false alarm."
+      "result": "DONE 29 Sep 18:5x CTO sore (script lokal, 0 deploy, quiet-zone-safe). ROOT CAUSE ganda: (1) query memang men-target hivePOS (label 'teknikal.id' di backlog menyesatkan — verifikasi ulang); (2) bug quoting PostgreSQL — kolom mixed-case httpStatus unquoted dilipat jadi httpstatus → 'column does not exist' 2 minggu. FIX itsec_brief.py L22-27: kutip \\\"httpStatus\\\" (+ORDER BY 1) + jalur teknikalid eksplisit via to_regclass('\\\"ErrorLog\\\"')=f → output '0 events / tidak tersedia di DB teknikalid'. DONE WHEN 4/4: (a) 2 run berturut exit 0 (deterministik); (b) hivePOS 7d tampil (500×5; 401/403=0 — tidak ada indikasi spray) + teknikalid baris eksplisit dari tabel terverifikasi \\dt; (c) grep 'does not exist' = 0 kedua run; (d) 0 deploy, py_compile OK. FINDING monitoring gap teknikalid: AuditLog hanya event authed (FK userId NOT NULL, 10 rows admin-action) → 401/403 anonim TIDAK tercatat di DB teknikalid mana pun — butuh instrumentasi app-layer (kandidat backlog, area security → council/owner). Rollback: itsec_brief.py.bak-20260929. Bonus: env-git 1/0 ternyata .env.example (template, bukan secret) — false alarm.",
+      "qa_verified": true,
+      "qa_verified_by": "reviewer 1 Okt 2026",
+      "qa_note": "2 run berturut exit 0, grep does-not-exist=0, baris eksplisit teknikalid 0-events tampil; hivePOS ErrorLog 7d OK."
     },
     {
       "id": "qa-2026-09-30-01",
       "date": "2026-09-30",
       "priority": "P1",
       "type": "ops",
-      "status": "done",
+      "status": "qa_pass",
       "scheduled_slot": "2026-09-30 07:30 CTO pagi (SQL content patch, TANPA deploy — ISR revalidate=300)",
       "source": "Content Reviewer QA 30 Sep 07:0x",
       "north_star": "trust — brief = artikel #1; 3 klaim salah di satu paragraf (angka breadth salah hari + 2 superlatif tak-berdasar) membuat pembaca tak bisa memercayai angka lain yang benar",
       "title": "P1: Brief 30 Sep — '582 saham turun' salah hari (itu Jumat 25 Sep; Senin = 550) + 'SOFA terkuat non-gorengan' & 'LPKR volume terbesar bursa' superlatif salah vs DB",
       "spec": "INTENT: QA reviewer 30 Sep — brief-pasar-idx-2026-09-30-goto-kapitulasi (PUBLISHED 30 Sep 06:37). ANGKA EXACT — JANGAN disentuh: GOTO 37/-13,95% vol 186,2jt + 132,9jt Senin + 2 hari -26% dari 50; breadth Selasa 312 naik/387 turun/167 stagnan; BBRI +0,96% 3.170; BBCA -1,20% 6.150; movers SOFA 322 +9,52%, BMTR 80 +8,11% vol 288,8jt, LPKR 46 +6,98% vol 373,6jt, UNTR 25.175 +3,28%, ANTM +1,94%; MBTO/SAFE -14,77%, FORU -14,38%; DSNG GC 29 Sep harga 1.500 -4,15%; IKAI death cross -12,5%; RSI BBSI 11,7/ARTO 25/PTPP 27/LPKR 24; GOTO harian 3-4jt. SALAH (3 titik): (1) paragraf pembuka 'jauh lebih sehat dibanding Senin saat 582 saham turun' — 582 = sesi JUMAT 25 Sep (582 turun/119 naik/165 stagnan); Senin 28 Sep = 550 turun/189 naik/127 stagnan. Ganti '582' -> '550'. (2) 'SOFA +9,52% ... penguatan terbesar non-gorengan' SALAH — DB 29 Sep non-gorengan: IFSH +24,80% (1.560, vol 243.900) di atas SOFA; SOFA peringkat #2. Reword, mis: 'penguatan terbesar kedua di antara large/mid-cap non-gorengan' ATAU sebut IFSH sebagai penguat utama. (3) 'LPKR ... volume 373,6 juta lembar — terbesar di bursa' SALAH — top volume 29 Sep: BUMI 2,43 miliar, BTEK 2,24 miliar, KPIG 1,49 miliar, BNBR 1,24 miliar, PADI 1,11 miliar lot. Reword, mis: 'terbesar di antara saham blue-chip/lapis pertama' ATAU hapus superlatif. EKSEKUSI via SQL content patch (protokol backup<24jm + COUNT preview + 1 transaksi + log decisions.md; TANPA deploy — ISR revalidate=300): patch '582 saham turun'->'550 saham turun' (1 occ, paragraf 1); reword 2 superlatif di bagian Movers Selasa (minimal-edit, frasa bebas asal makna akurat vs DB); JANGAN sentuh angka lain. ACCEPTANCE: (a) curl -A Mozilla https://teknikal.id/berita/brief-pasar-idx-2026-09-30-goto-kapitulasi -> '582 saham turun' = 0, '550 saham turun' muncul, 'terbesar non-gorengan' SOFA hilang/direword akurat, 'terbesar di bursa' LPKR hilang/direword akurat; (b) seluruh angka GOTO/breadth/movers/RSI di atas UTUH (diff minimal); (c) root-cause ringan di result: brief30 jalur growth-mandor — generator brief dilarang menghitung sendiri angka agregat/hari (pola qa-27-01 berulang): angka breadth/leaderboard WAJIB dari query DB atau weekly-report.service, superlatif ('terbesar/terkuat') WAJIB diverifikasi ranking sebelum ditulis; (d) log decisions.md + changelog.",
       "done_when": "curl brief30: '582 saham turun'=0 & '550 saham turun' ada; superlatif SOFA/LPKR direword akurat vs ranking DB; angka GOTO/breadth/movers lain utuh; log decisions.md + changelog",
-      "result": "EXECUTED by main agent 07:5x (owner directive) — 3 SQL patch live-verified: 582→550 (salah hari), SOFA reword kedua+IFSH, LPKR reword lapis satu; backup /tmp/article_backup_20260930.sql; root-cause logged decisions.md; recurrence qa-27-01 rule ditulis."
+      "result": "EXECUTED by main agent 07:5x (owner directive) — 3 SQL patch live-verified: 582→550 (salah hari), SOFA reword kedua+IFSH, LPKR reword lapis satu; backup /tmp/article_backup_20260930.sql; root-cause logged decisions.md; recurrence qa-27-01 rule ditulis.",
+      "qa_verified": true,
+      "qa_verified_by": "reviewer 1 Okt 2026",
+      "qa_note": "Live+DB verified 1 Okt: DB brief30 = '550 saham turun' (582=0), SOFA reword + IFSH +24,80% ada, LPKR 'di antara saham lapis satu', angka GOTO/breadth/movers/DSNG/IKAI utuh. 1 superlatif tersisa (RSI 'paling ekstrem') -> qa-2026-10-01-01."
     },
     {
       "id": "ops-2026-09-30-01",
@@ -492,7 +504,23 @@
       "constraints": "script-only, NO deploy, py_compile + 1 run verify",
       "completed_at": "2026-10-01 07:3x WIB",
       "scheduled_slot": "2026-10-01 07:30 CTO pagi (verifikasi — dieksekusi main agent 07:32 owner directive proposal #27)",
-      "result": "VERIFIED DONE 01 Okt: dieksekusi main agent 07:32 (owner directive) — backlog_health.py alert-by-design fix: alert via stdout + exit 0 (exit 1 = crash sungguhan saja; parity run_ledger/script_doctor). CTO verifikasi: 2 run berturut exit 0, output backlog sehat (teknikal 7 / hivePOS 1 / AegisGo 6 live, cap 12, 0 stale >7d), py_compile OK. DONE WHEN 4/4 terpenuhi."
+      "result": "VERIFIED DONE 01 Okt: dieksekusi main agent 07:32 (owner directive) — backlog_health.py alert-by-design fix: alert via stdout + exit 0 (exit 1 = crash sungguhan saja; parity run_ledger/script_doctor). CTO verifikasi: 2 run berturut exit 0, output backlog sehat (teknikal 7 / hivePOS 1 / AegisGo 6 live, cap 12, 0 stale >7d), py_compile OK. DONE WHEN 4/4 terpenuhi.",
+      "qa_verified": true,
+      "qa_verified_by": "reviewer 1 Okt 2026",
+      "qa_note": "Indep. verify: backlog_health.py 2 run exit 0 (teknikal 6 / hivePOS 1 / AegisGo 6 live, 0 stale); alert via stdout, exit-1 hanya crash."
+    },
+    {
+      "id": "qa-2026-10-01-01",
+      "date": "2026-10-01",
+      "priority": "P1",
+      "type": "ops",
+      "status": "pending",
+      "scheduled_slot": "2026-10-01 07:30 CTO pagi (SQL content patch, TANPA deploy — ISR revalidate=300)",
+      "source": "Content Reviewer QA 1 Okt 07:0x",
+      "north_star": "trust — klaim superlatif salah = pembaca tak bisa percaya angka lain; pola ke-3 berturut (qa-27-01, qa-30-01, hari ini)",
+      "title": "P1: Brief 30 Sep — superlatif RSI salah: 'BBSI RSI 11,7 (paling ekstrem)' padahal DB 29 Sep non-gorengan RSI<30 punya GOTO 0,04 / BABP 0,05 / REAL 4,10 / CPRO 5,03 di bawahnya",
+      "spec": "INTENT: lanjutan qa-2026-09-30-01 — superlatif ke-4 di brief yang sama lolos review kemarin. ANGKA EXACT — JANGAN disentuh: seluruh angka GOTO/breadth/movers/DSNG/IKAI + RSI BBSI 11,7 / ARTO 25 / PTPP 27 / LPKR 24 (semua terverifikasi EXACT vs StockIndicator 29 Sep). SALAH (1 titik): baris 'Oversold menumpuk (RSI < 30, non-gorengan): BBSI RSI 11,7 (paling ekstrem), ARTO RSI 25, PTPP RSI 27, dan LPKR RSI 24' — klaim '(paling ekstrem)' SALAH: DB 29 Sep non-gorengan RSI<30 terurut: GOTO 0,04, BABP 0,05, REAL 4,10, CPRO 5,03, BSBK 5,10, baru BBSI 11,69 (peringkat #6). EKSEKUSI via SQL content patch (protokol backup<24jm + COUNT preview + 1 transaksi + log decisions.md; TANPA deploy — ISR 300s): reword '(paling ekstrem)' minimal-edit — hapus paren ATAU ganti '(terendah di antara saham likuid di daftar ini)' ATAU tambah GOTO RSI 0,04 sebagai paling ekstrem. BONUS MINOR (satu patch session yang sama): rekap-pasar-2026-09-september tidak punya disclaimer inline (hanya footer global) sedangkan brief punya — tambah 1 kalimat disclaimer serupa di akhir rekap utk konsistensi format NEWS. ACCEPTANCE: (a) curl -A Mozilla https://teknikal.id/berita/brief-pasar-idx-2026-09-30-goto-kapitulasi -> '(paling ekstrem)' = 0 DAN frasa pengganti akurat vs ranking DB; (b) curl https://teknikal.id/berita/rekap-pasar-2026-09-september -> disclaimer inline muncul, angka 866/590/230/46 + tabel movers UTUH; (c) angka lain brief30 diff-minimal; (d) log decisions.md + changelog. ROOT-CAUSE note: generator brief dilarang menulis superlatif apa pun ('paling/terbesar/terkuat/ter-ekstrem') tanpa ranking DB — qa-27-01 (2x), qa-30-01 (2x), hari ini (1x) = pola berulang ke-3.",
+      "done_when": "curl brief30: '(paling ekstrem)'=0 + reword akurat vs ranking DB; rekap Sep ada disclaimer inline; angka lain utuh; log decisions.md + changelog"
     }
   ]
 }

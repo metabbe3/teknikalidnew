@@ -1,3 +1,11 @@
+## [2026-10-01 07:5x] reviewer — QA 1 Okt: 42 artikel + deploy verify wid-27-1 + bookkeeping [read-only + 1 task P1]
+- Type: QA/ops  |  PRD: -
+- Deploy: TIDAK ADA (QA + bookkeeping; 1 task ke queue)  |  Rollback: -
+- QA konten: 42 artikel 24jm — 40 snapshot DAILY_SNAPSHOT: harga+pct title EXACT vs StockPrice 30 Sep (40/40, pct=prev-close). Brief30: GOTO 32/-13,51% (prev 37), vol 857,2jt, breadth Selasa 312/387/167 vs Senin 550, BBRI/BBCA, movers SOFA/BMTR/LPKR/UNTR/ANTM + vol 288,8jt/373,6jt, DSNG GC 29 Sep, IKAI DC, RSI BBSI/ARTO/PTPP/LPKR — SEMUA EXACT. Rekap September: breadth 866/590/230/46 (close 1 vs 30 Sep, 22 hari), movers SEMA+323/FORU-91,5 (basis close 1 Sep), bank dua-digit 13 emiten, GC 81/DC 13 vs Agustus 47/25, EMA 171/430 — EXACT; judul 'Bank Rontok Dua Digit' valid (13 bank ≤-10%). TEMUAN FATAL 1 → qa-2026-10-01-01: brief30 "BBSI RSI 11,7 (paling ekstrem)" — DB 29 Sep non-gorengan RSI<30: GOTO 0,04/BABP 0,05/REAL 4,10/CPRO 5,03/BSBK 5,10 di bawahnya (BBSI #6); superlatif ke-4 di brief sama, lolos QA kemarin → pola ke-3, lessons dicatat. MINOR 2: rekap tanpa disclaimer inline (dibundel task); wid-27-1 AC hub /saham 404 (10/10 chip topikal OK).
+- Deploy verify: wid-2026-09-27-1 → qa_verified: live /stocks 200, 'Jelajahi sinyal lain' x2, 10/10 href chip SSR, flex-wrap; widget mingguan utuh; app image 61a0efb9 (07:35, commit merge 1e4d517). ops-2026-09-30-01 → qa_verified: backlog_health.py 2 run exit 0 (tknkl 6/hPOS 1/AegisGo 6 live, 0 stale), alert via stdout. Bookkeeping lain: qa-2026-09-30-01 qa_pass (patch D-1 live+DB), ops-2026-09-29-01 qa_verified (itsec 2 run exit 0), council-2026-09-27-02 qa_verified. Queue dual-file disinkronkan (38 entry, IDs identik kedua path).
+- Impact check: 2026-10-02 — brief 1 Okt bebas superlatif-tanpa-ranking; patch qa-2026-10-01-01 live ('(paling ekstrem)'=0 + disclaimer rekap).
+
+
 ## 2026-09-30 — qa-2026-09-30-01: brief 30 Sep content patch (3 klaim fatal)
 - `582 saham turun` → `550` (582=Jumat 25/9; Senin=550) · SOFA `terbesar non-gorengan` → `kedua, di bawah IFSH +24,80%` · LPKR `terbesar di bursa` → `di antara saham lapis satu`. SQL patch tanpa deploy (ISR 300s), backup /tmp/article_backup_20260930.sql, live-verified curl. Angka GOTO/breadth/movers utuh. Root-cause + rule anti-recurrence di decisions.md. Utang reviewer (qa-27-01, cto-26-01) → qa_pass.
 
