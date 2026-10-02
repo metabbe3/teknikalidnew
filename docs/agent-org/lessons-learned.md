@@ -191,3 +191,10 @@ Submit sitemap via GSC web (Angular closure, tanpa <form>): 6 jurus gagal — JS
 - Pola: qa-27-01 ('terbesar bursa' LPKR, 'penguat terbesar' SOFA — 2 klaim) → qa-30-01 (superlatif sama di brief berikutnya, 2 klaim, terlambat 1 hari) → 1 Okt (sisa 'BBSI RSI 11,7 (paling ekstrem)' di brief yang SAMA, lolos review 30 Sep karena QA fokus 3 temuan pertama).
 - Bukti selalu sama: superlatif ditulis LLM tanpa query ranking; DB selalu punya kandidat lebih ekstrem yang tak disebut (RSI GOTO 0,04 vs BBSI 11,7).
 - Pelajaran: (1) generator brief: superlatif apa pun ('paling/terbesar/terkuat/ter-ekstrem/terbanyak') = WAJIB ada angka ranking di prompt-input, kalau tidak ada → tulis deskriptif saja; (2) QA checklist artikel long-form: SATU pass khusus hunt-superlatif (grep 'paling|terbesar|terkuat|ter-ekstrem|terbanyak|rekor') lalu verifikasi ranking SQL per klaim — jangan berhenti di temuan pertama; (3) disclaimer inline = kontrak format NEWS (brief punya, rekap bulanan tidak → minor yang mudah lolos).
+
+## 2026-10-02 — main tidak-bisa-clean-build tersembunyi oleh cache Docker + worktree drift
+- Gejala: BUILD-1/2 dari main gagal typecheck, padahal tsc lokal + selftest Night PASS.
+- Akar ganda: (1) untracked dead scripts (generate-wave/rank-wave.ts, eksperimen Aug-4) ikut build-context; (2) 6 file src committed di main pakai relasi reviewedBy yang tak pernah ada di schema committed — schema worktree (live di DB) lebih akurat dari main.
+- Pola umum: deploy dari worktree kotor + cache layer Docker = typecheck bisa lolos bertahun-tahun; merge/commit yang mengubah COPY layer membongkar semuanya sekaligus (2 error berurutan).
+- Rule: image baru WAJIB verifikasi (docker images CreatedAt + container image hash ≠ sebelumnya) —  exit 0 dengan image lama = deploy ilusi (kejadian hari ini: build pertama tidak menghasilkan image, container tetap up 24h).
+- Rule: merge night_ready ≠ hanya diff review — main harus bisa build; simpan status \"main clean-buildable\" sebagai invariant, bukan asumsi.

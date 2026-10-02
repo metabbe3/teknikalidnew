@@ -47,6 +47,22 @@ const nextConfig: NextConfig = {
         destination: "/community/post/:id",
         permanent: true,
       },
+      // Dated indicator archive collapsed into the per-ticker history TABLE page
+      // (anti-spam: ~47k dated URLs → ~190 table pages). 308 passes link equity +
+      // consolidates the dated URL into the canonical table page. See SEO plan.
+      {
+        source: "/stocks/:ticker/indikator/:date",
+        destination: "/stocks/:ticker/indikator",
+        permanent: true,
+      },
+      // Crypto deprioritized (83 views all-time, junk listing data): listing goes to
+      // Saham. /crypto/[ticker] detail pages stay orphaned + noindex — avoids a loop
+      // with the stocks→crypto ticker redirect.
+      {
+        source: "/crypto",
+        destination: "/stocks",
+        permanent: true,
+      },
     ];
   },
   async headers() {

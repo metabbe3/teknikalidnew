@@ -53,6 +53,7 @@ PLISTS=(
   com.teknikalid.articles-lunch
   com.teknikalid.articles-afternoon
   com.teknikalid.community-agent
+  com.teknikalid.wave-gen
   com.teknikalidnew.watcher
 )
 

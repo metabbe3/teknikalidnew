@@ -238,3 +238,11 @@
 - Verify bukti: DB post 'paling ekstrem'=0, reword=1; angka RSI-4 + DSNG -4,15% Rp1.500 + breadth 312/387 + GOTO utuh; LIVE curl anon: brief30 200 (0/x2), rekap 200 (disclaimer x1, 866 x3, movers utuh).
 - QA: reviewer slot berikutnya. Root-cause: superlatif pola ke-3 berturut (qa-27-01, qa-30-01, qa-01-01) — rule generator belum tervalidasi di jalur.
 - impact_check_due: 2026-10-04 (brief hari-hari berikutnya bebas superlatif tanpa patch manual).
+
+## 2026-10-02 — prd-2026-10-01-03 (Admin Retention Panel, night_ready merge)
+- task-id: prd-2026-10-01-03 · type: feature · PRD: idea-2026-10-01-1
+- deploy: merge 4153671 (night 8b5a062) + efad7a8 + dbf2367 → image 0047de90a08b (07:40 WIB, 1/1 deploy)
+- verify: 5/5 URL 200 before=after; /admin/retention 307 auth-gate; anon /api 404 == pola funnel; tsc via clean docker BUILD-3; selftest 11/11 + parity SQL (night)
+- QA: reviewer slot berikutnya (D+1 live admin panel)
+- impact_check_due: 2026-10-05
+- INSIDEN: main tidak-bisa-clean-build sejak Aug-4 drift (reviewedBy/WaveAssignment tidak pernah di-commit) — ditutup dbf2367 schema-sync ke DB live; dead scripts di-dockerignore efad7a8. deploy berikutnya mungkin cache-miss lagi → normal.
