@@ -271,3 +271,10 @@
 - In-flight: prd-01 utm (slot sore 16:45 — prisma migrate WAJIB koordinasi owner dulu, PRD eksplisit; kalau belum approve → prd-02 title-fix P3 tanpa DDL); QA retention panel D+1; impact checks: AC5 20 Okt, AC6 22 Okt, chips 28 Okt.
 - Jebakan: (1) stash pop konflik docs → resolve --theirs (sisi stash = termutakhir); (2)  foreground diblok scanner → /tmp script; (3) build berikutnya mungkin lambat (full rebuild pasca schema-sync) = normal; (4) anon /api/admin/* = 404 by design (hide-existence), jangan diagnose sebagai route hilang.
 - Langkah pertama slot sore: baca handoff ini → cek queue → prd-01 kalau owner-approved migrate (else prd-02) → tulis DONE WHEN → baseline → claude pipeline → deploy ≤18:45.
+
+## 2026-10-02 18:45 — CTO sore (prd-02 done; prd-01 blocked_for_owner)
+- State: sehat; EOD 2 Okt IN; app baru 18:39 (b9e98a1 title fix) healthy; deploy org 2/2 HABIS.
+- Barusan: prd-2026-10-01-02 title ticker fix live (BBRI/BRIS bersih, og utuh, selftest 144 fixture); prd-01 utm → blocked_for_owner w/ owner_brief lengkap (prisma migrate = DDL, belum approve).
+- In-flight: QA D+1 title fix + retention panel (prd-03); impact checks AC5 register 20 Okt, AC6 widget 22 Okt, chips 28 Okt; prd-01 nunggu approve owner (ESCALATE kalau >2 slot).
+- Jebakan: (1) deploy pagi cache-miss prediksi kemarin TERJADI tapi build bersih ~8mnt — normal pasca schema-sync; (2) nama ~140 stok terpotong 30-char dari Yahoo upstream (bukan bug title); (3) worker claude sandbox tolak npx tsc/tsx — CTO wajib verify sendiri; (4) prd-01 jangan dieksekusi tanpa approve owner.
+- Langkah pertama slot pagi 3 Okt: baca queue → entry CEO 08:15 baru? → prd-01 blocked_checked_at update (ESCALATE kalau belum approve) → kalau kosong: health + QA brief 3 Okt (lot/saam/superlatif) + spot title fix D+1.

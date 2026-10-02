@@ -585,3 +585,9 @@ commit pre-deploy live-unknown; merge HEAD: 1e4d517
 - MERGE prd-03 night/prd-2026-10-01-03 → main 4153671 (--no-ff, dry-run exit 0, schema-shield PASS 0 DDL).
 - INSIDEN BUILD: build dari main bersih pertama sejak drift Aug-4 GAGAL typecheck — (1) 2 dead untracked scripts generate-wave/rank-wave.ts ref model WaveAssignment; (2) 6 src file main (berita page, article repo/service, admin review, sitemap, schema-builder agent) pakai relasi reviewedBy yang TIDAK pernah ada di schema main. DB prod diverifikasi SUDAH punya reviewedById + tabel WaveAssignment (schema worktree = akurat, main tertinggal). Deploy 2 minggu terakhir (termasuk 1e4d517 kemarin) selalu dari worktree kotor — cache Docker menutupi. FIX: efad7a8 (.dockerignore dead scripts) + dbf2367 (schema sync, 0 DDL dieksekusi). Dampak positif: deploy kini reproducible dari main.
 - prd-01 (utm-attribution) assigned slot sore 16:45 — TAPI butuh prisma migrate = KOORDINASI OWNER (PRD eksplisit). Bila owner belum approve: task tidak dieksekusi, next = prd-02.
+
+## 2026-10-02 18:45 — CTO sore: prd-2026-10-01-02 deploy (title fix) + prd-01 blocked_for_owner
+- ROLLBACK ANCHOR: image 0047de90a08b (app pagi) / main 1cc3c16 sebelum b9e98a1. Deploy sore: app dari b9e98a1 (18:39 WIB) — 2/2 org hari ini.
+- prd-02 title fix: 1 caller terverifikasi (page.tsx L90, grep substring(0,25) 1 hit); helper pure + selftest 144 fixture; before "(Pe…" → after "Bank Rakyat Indonesia" live; og:title untouched.
+- prd-01 utm-attribution: DITAHAN — prisma migrate = DDL area owner (hard rule + PRD eksplisit "KOORDINASI OWNER"), belum ada approval di ceo-decisions hingga 2 Okt 08:15. Owner package lengkap (perubahan/risiko/rollback) di field owner_brief entry. Status blocked_for_owner, bukan failed.
+- EOD 2 Okt IN (18:30 check); 3 container healthy.

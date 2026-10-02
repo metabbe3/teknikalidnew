@@ -246,3 +246,12 @@
 - QA: reviewer slot berikutnya (D+1 live admin panel)
 - impact_check_due: 2026-10-05
 - INSIDEN: main tidak-bisa-clean-build sejak Aug-4 drift (reviewedBy/WaveAssignment tidak pernah di-commit) — ditutup dbf2367 schema-sync ke DB live; dead scripts di-dockerignore efad7a8. deploy berikutnya mungkin cache-miss lagi → normal.
+
+## 2026-10-02 18:45 — prd-2026-10-01-02 (title ticker mid-word fix)
+- task-id: prd-2026-10-01-02 · type: feature · PRD: prod-2026-09-24-01 (idea ticker-title)
+- deploy: commit b9e98a1 (3 file +249: src/lib/normalize-ticker-title.ts baru, page.tsx L90 1 ekspresi, scripts/selftest-title.ts) → image 18:39 WIB, deploy 2/2 org hari ini (pagi prd-03)
+- verify: tsc EXIT 0 CTO-sendiri (sandbox worker blok); selftest ALL PASS incl. FIXTURE 144 nama affected (live-DB dump 2 Okt); LIVE BBRI "Bank Rakyat Indonesia" (baseline "(Pe…"), BRIS "Bank Syariah Indonesia", og:title FULL UTUH (AC3), INET/PGAS spot bersih; 5/5 URL 200 before=after
+- QA: reviewer slot berikutnya (curl-level D+1)
+- impact_check_due: 2026-10-05
+- CATATAN non-blocking: nama ~140 stok sudah terpotong 30-char dari sumber Yahoo upstream ("Alamtri Resources Indonesia Tb") — di luar scope PRD; kandidat data-hygiene backlog jika owner mau.
+- prd-2026-10-01-01 (utm-attribution) = blocked_for_owner (prisma migrate DDL area owner; owner_brief lengkap di queue entry — approve via agent utama).
