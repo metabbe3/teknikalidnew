@@ -279,6 +279,7 @@ model User {
   reactions          Reaction[]
   pollVotes          PollVote[]
   articles           Article[]
+  reviewedArticles  Article[]      @relation("ReviewedArticles")
   auditLogs          AuditLog[]
   imageGenJobs       ImageGenerationJob[]
   portfolioHoldings  PortfolioHolding[]
@@ -715,6 +716,16 @@ enum ArticleType {
   MOVEMENT_ANALYSIS
 }
 
+// Phase 3 SEO: staged rollout of the 766 unpromoted stocks. A WaveAssignment
+// tracks each ticker from PENDING (ranked) → GENERATED (landing article exists,
+// NOT yet indexed) → PROMOTED (human-reviewed, enters sitemap) / REJECTED.
+enum WaveStatus {
+  PENDING
+  GENERATED
+  PROMOTED
+  REJECTED
+}
+
 model Article {
   id             String        @id @default(cuid())
   slug           String        @unique @db.VarChar(255)
@@ -723,6 +734,7 @@ model Article {
   coverImageUrl  String?       @db.VarChar(1000)
   content        String        @db.Text
   authorId       String
+  reviewedById   String?
   tags           String[]      @default([])
   status         ArticleStatus @default(DRAFT)
   articleType    ArticleType   @default(STOCK_ANALYSIS)
@@ -737,11 +749,27 @@ model Article {
   updatedAt      DateTime      @updatedAt
 
   author         User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  reviewedBy     User?         @relation("ReviewedArticles", fields: [reviewedById], references: [id], onDelete: NoAction)
 
+  @@index([reviewedById])
   @@index([publishedAt])
   @@index([status, articleType])
   @@index([tickerTag])
   @@index([articleType, tickerTag, lastGeneratedAt])
+}
+
+model WaveAssignment {
+  id               String      @id @default(cuid())
+  ticker           String      @unique @db.VarChar(20)
+  waveNumber       Int
+  status           WaveStatus  @default(PENDING)
+  archetype        String      @db.VarChar(30)
+  landingArticleId String?     @unique
+  rankedAt         DateTime    @default(now())
+  promotedAt       DateTime?
+
+  @@index([waveNumber, status])
+  @@index([status])
 }
 
 model AuditLog {
