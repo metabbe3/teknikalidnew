@@ -5,6 +5,7 @@ import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { StockNotFoundError } from "@/domains/stock/stock.errors";
 import { bigIntToNumber, decimalToNumber } from "@/lib/serialize";
 import { formatPrice, formatPercent, stripJk, changeColor, rsiColor } from "@/lib/utils";
+import { normalizeTickerTitle } from "@/lib/normalize-ticker-title";
 import { ChartSection } from "@/components/chart/chart-section";
 import { IndicatorPanel } from "@/components/stock/indicator-panel";
 import { KeyStatistics } from "@/components/stock/key-statistics";
@@ -85,9 +86,9 @@ export async function generateMetadata({
   const canonicalPath = `/stocks/${canonicalTicker}`;
   const ogImage = `${SITE_URL}/api/og/stock?ticker=${encodeURIComponent(canonicalTicker)}`;
 
-  // SEO-optimized title — keep under 47 chars (root template adds "| TeknikalID" = ~13 chars → total < 60)
+  // SEO-optimized title — shortName ≤ 35 chars (suffix stripped, word-boundary cut; root template adds "| TeknikalID" = ~13 chars → total < 60)
   // Price lives in meta description, not title (title stays stable for SERP consistency)
-  const shortName = fullName.length > 25 ? fullName.substring(0, 25).trimEnd() + "…" : fullName;
+  const shortName = normalizeTickerTitle(fullName, name);
   const title = `${name} — ${shortName}`;
   const description = price
     ? `Harga saham ${name} (${fullName}) hari ini ${price}${changeStr}. Analisa teknikal lengkap: chart interaktif, RSI, MACD, Bollinger Bands, support/resistance, dan sinyal trading.`
