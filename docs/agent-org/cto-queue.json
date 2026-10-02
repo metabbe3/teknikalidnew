@@ -531,24 +531,30 @@
    "created_by": "Product Agent nightly buffer-keeper 1 Okt 22:1x (PRD idea-2026-09-25-1 ditulis 30 Sep 22:1x; CEO mandate promote 28 Sep 08:15)",
    "scheduled_slot": "2026-10-02 16:45 CTO sore (deploy app+worker — prisma migrate KOORDINASI OWNER dulu)",
    "priority": "P2",
-   "status": "spec_ready",
+   "status": "blocked_for_owner",
    "prd_id": "idea-2026-09-25-1",
    "north_star": "growth register (NS#1) — atribusi 3 register-hook live 22 Sep; gate AC5 prd-17-01 impact-check 20 Okt TIDAK bisa dievaluasi tanpa ini (16 register-view/30d tak ter-atribusi)",
    "title": "P2 FITUR (PRD idea-2026-09-25-1): atribusi register hook — PageView simpan utm_source/utm_medium (whitelist ^[a-z0-9_-]{1,32}$, scope /auth/* only, additive nullable via prisma migrate KOORDINASI OWNER)",
-   "spec": "INTENT (feature, PRD LENGKAP di product-backlog.json entry idea-2026-09-25-1 — semua AC + sec_review + data_evidence ada di sana; jangan narasi, baca PRD). Ringkas: kolom additive PageView.utmSource/utmMedium VARCHAR(32) NULL (prisma migrate — koordinasi owner, deploy app+worker bareng, BUKAN silent) + track endpoint parse utm utk path /auth/* saja (anti log-injection: whitelist+cap, non-match -> NULL) + admin funnel pecah register per utm_source (hook vs organic vs direct). Metadata v2 untuk planning: lihat field backlog target_files/db_migrations/dependencies/risk/estimate_tool_calls. DONE WHEN: AC PRD terpenuhi + verify live (bukti curl/SQL) + changelog == merge."
+   "spec": "INTENT (feature, PRD LENGKAP di product-backlog.json entry idea-2026-09-25-1 — semua AC + sec_review + data_evidence ada di sana; jangan narasi, baca PRD). Ringkas: kolom additive PageView.utmSource/utmMedium VARCHAR(32) NULL (prisma migrate — koordinasi owner, deploy app+worker bareng, BUKAN silent) + track endpoint parse utm utk path /auth/* saja (anti log-injection: whitelist+cap, non-match -> NULL) + admin funnel pecah register per utm_source (hook vs organic vs direct). Metadata v2 untuk planning: lihat field backlog target_files/db_migrations/dependencies/risk/estimate_tool_calls. DONE WHEN: AC PRD terpenuhi + verify live (bukti curl/SQL) + changelog == merge.",
+   "blocked_checked_at": "2026-10-02 18:35 WIB (CTO sore — belum ada approve owner; prisma migrate = area owner per PRD & hard rule)",
+   "owner_brief": "OWNER PACKAGE (CTO sore 2 Okt): PRD idea-2026-09-25-1 atribusi utm register-hook. YANG DIBUTUHKAN: prisma migrate = DDL di DB prod (area owner). PERUBAHAN: (1) prisma/schema.prisma PageView +2 kolom nullable utmSource/utmMedium VARCHAR(32) — ADDITIVE, rollback-safe (DROP COLUMN); (2) src/app/api/track/pageview/route.ts parse utm utk path /auth/* saja, whitelist ^[a-z0-9_-]{1,32}$ cap 32, non-match→NULL (anti log-injection); (3) src/lib/validation.ts helper whitelist; (4) admin funnel pecah register per utm_source. 0 endpoint publik baru, 0 PII. RISIKO: LOW (kolom additive nullable; track endpoint tetap jalan kalau kolom NULL; tanpa ubah bot-gate). RENCANA ROLLBACK: git revert + prisma migrate drop columns (atau biarkan kolom idle — harmless). DEPLOY: app+worker BARENG sekali build (kapasitas ada). APPROVE via agent utama → status pending + approved_by_owner."
   },
   {
    "id": "prd-2026-10-01-02",
    "type": "feature",
    "date": "2026-10-01",
    "created_by": "Product Agent nightly buffer-keeper 1 Okt 22:1x (PRD object prod-24-01 ditulis Product Agent pagi 1 Okt 10:2x — drift dual-copy di-sync run ini)",
-   "scheduled_slot": "CTO sesudah prd-2026-10-01-01 (urutan CEO: idea-25-1 > prod-24-01)",
+   "scheduled_slot": "2026-10-02 16:45 CTO sore (slot ini — dieksekusi, prd-01 blocked_for_owner)",
    "priority": "P3",
-   "status": "spec_ready",
+   "status": "done",
    "prd_id": "prod-2026-09-24-01",
    "north_star": "easy to use + trust (owner lens 17 Sep) — title tab/SERP mid-word cut '(Pe…' terlihat rusak di 268/1.586 views ticker-detail 30d (16,9%); BBRI = brand-search terbesar",
    "title": "P3 FITUR (PRD prod-2026-09-24-01): fix title ticker terpotong mid-word — strip suffix formal (' (Persero)', ' Tbk') + word-boundary cut 35 char (144/1.353 stok; live bug BBRI '<title>…Bank Rakyat Indonesia (Pe…')",
-   "spec": "INTENT (feature, PRD LENGKAP di product-backlog.json entry prod-2026-09-24-01 — semua AC + sec_review + data_evidence ada di sana; jangan narasi, baca PRD). Ringkas: helper normalizeTickerTitle (unit-test: strip case-insensitive suffix SEBELUM cut, cut di word-boundary budget 35, fallback ticker; og:title FULL unchanged AC3) dipakai generateMetadata <title> ticker-detail. 0 query DB baru. Metadata v2 untuk planning: lihat field backlog target_files/db_migrations/dependencies/risk/estimate_tool_calls. DONE WHEN: AC PRD terpenuhi + verify live (bukti curl/SQL) + changelog == merge."
+   "spec": "INTENT (feature, PRD LENGKAP di product-backlog.json entry prod-2026-09-24-01 — semua AC + sec_review + data_evidence ada di sana; jangan narasi, baca PRD). Ringkas: helper normalizeTickerTitle (unit-test: strip case-insensitive suffix SEBELUM cut, cut di word-boundary budget 35, fallback ticker; og:title FULL unchanged AC3) dipakai generateMetadata <title> ticker-detail. 0 query DB baru. Metadata v2 untuk planning: lihat field backlog target_files/db_migrations/dependencies/risk/estimate_tool_calls. DONE WHEN: AC PRD terpenuhi + verify live (bukti curl/SQL) + changelog == merge.",
+   "completed_at": "2026-10-02 18:45 WIB",
+   "branch": "main langsung (commit b9e98a1)",
+   "verify_evidence": "tsc --noEmit EXIT 0 (CTO sendiri); selftest-title.ts 144-fixture + unit a-g ALL PASS via npx tsx; LIVE after: BBRI.JK <title>BBRI — Bank Rakyat Indonesia | TeknikalID</title> (baseline \"(Pe…\" hilang), BRIS.JK \"Bank Syariah Indonesia\" (baseline \"(P…\"), og:title FULL (Persero) Tbk UTUH kedua ticker (AC3), INET/PGAS spot bersih; 5/5 URL 200 before=after",
+   "result": "DONE 02 Okt 18:45 CTO sore, deploy 2/2 org hari ini (1/1 slot ini). Spec diverifikasi ke PRD asli prod-2026-09-24-01 (status promoted_prd/spec_ready gate 1 Okt). Claude pipeline EXIT=0 (tsc/tsx diblok sandbox worker — CTO verify sendiri). Commit b9e98a1 (3 file, +249): lib/normalize-ticker-title.ts baru (strip suffix \"(Persero)\"/\"Tbk\"/\"Tbk.\" case-insensitive loop + word-boundary cut budget 35 + fallback ticker) + page.tsx L90 1 ekspresi + scripts/selftest-title.ts (unit a-g + FIXTURE 144 nama live-DB dump 2 Okt). BASELINE→AFTER: BBRI \"(Pe…\"→\"Bank Rakyat Indonesia\"; BRIS \"(P…\"→\"Bank Syariah Indonesia\"; og:title/description/twitter UNCHANGED (AC3 PASS); 5 URL 200 before=after; spot INET \"Sinergi Inti Andalan Prima\"/PGAS \"Perusahaan Gas Negara\" bersih. Rollback anchor: image 0047de90a08b + git revert b9e98a1. TEMUAN worker (non-blocking): banyak nama DB sudah terpotong 30-char dari sumber Yahoo upstream (mis. \"Alamtri Resources Indonesia Tb\") — bukan bug title ini, data upstream; dicatat di changelog."
   },
   {
    "id": "prd-2026-10-01-03",
