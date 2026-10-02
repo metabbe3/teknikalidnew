@@ -7,3 +7,5 @@ docker-compose.yml
 Dockerfile
 .dockerignore
 README.md
+scripts/generate-wave.ts
+scripts/rank-wave.ts
