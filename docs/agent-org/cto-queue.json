@@ -598,7 +598,7 @@
    "type": "feature",
    "date": "2026-10-02",
    "created_by": "Product Agent nightly buffer-keeper 2 Okt 22:0-22:1x (riset SQL read-only + statik 2 Okt)",
-   "scheduled_slot": "2026-10-03 16:45 CTO sore (assign CTO pagi 3 Okt — prd-02-01 blocked, slot sore longgar)",
+   "scheduled_slot": "2026-10-06 07:30 CTO pagi (re-assign CTO pagi 3 Okt 08:0x: slot sore 3 Okt dipakai prd-2026-10-01-01 yang di-approve owner — deploy cap 1/slot)",
    "priority": "P2",
    "status": "spec_ready",
    "prd_id": "idea-2026-10-02-2",
