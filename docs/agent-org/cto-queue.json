@@ -529,15 +529,16 @@
    "type": "feature",
    "date": "2026-10-01",
    "created_by": "Product Agent nightly buffer-keeper 1 Okt 22:1x (PRD idea-2026-09-25-1 ditulis 30 Sep 22:1x; CEO mandate promote 28 Sep 08:15)",
-   "scheduled_slot": "2026-10-02 16:45 CTO sore (deploy app+worker — prisma migrate KOORDINASI OWNER dulu)",
+   "scheduled_slot": "2026-10-03 16:45 CTO sore (approve owner 3 Okt 07:2x via DM 24769; prisma migrate DDL diizinkan — backup fresh <24h WAJIB, deploy app+worker bareng)",
    "priority": "P2",
-   "status": "blocked_for_owner",
+   "status": "approved_by_owner",
    "prd_id": "idea-2026-09-25-1",
    "north_star": "growth register (NS#1) — atribusi 3 register-hook live 22 Sep; gate AC5 prd-17-01 impact-check 20 Okt TIDAK bisa dievaluasi tanpa ini (16 register-view/30d tak ter-atribusi)",
    "title": "P2 FITUR (PRD idea-2026-09-25-1): atribusi register hook — PageView simpan utm_source/utm_medium (whitelist ^[a-z0-9_-]{1,32}$, scope /auth/* only, additive nullable via prisma migrate KOORDINASI OWNER)",
    "spec": "INTENT (feature, PRD LENGKAP di product-backlog.json entry idea-2026-09-25-1 — semua AC + sec_review + data_evidence ada di sana; jangan narasi, baca PRD). Ringkas: kolom additive PageView.utmSource/utmMedium VARCHAR(32) NULL (prisma migrate — koordinasi owner, deploy app+worker bareng, BUKAN silent) + track endpoint parse utm utk path /auth/* saja (anti log-injection: whitelist+cap, non-match -> NULL) + admin funnel pecah register per utm_source (hook vs organic vs direct). Metadata v2 untuk planning: lihat field backlog target_files/db_migrations/dependencies/risk/estimate_tool_calls. DONE WHEN: AC PRD terpenuhi + verify live (bukti curl/SQL) + changelog == merge.",
    "blocked_checked_at": "2026-10-02 18:35 WIB (CTO sore — belum ada approve owner; prisma migrate = area owner per PRD & hard rule)",
-   "owner_brief": "OWNER PACKAGE (CTO sore 2 Okt): PRD idea-2026-09-25-1 atribusi utm register-hook. YANG DIBUTUHKAN: prisma migrate = DDL di DB prod (area owner). PERUBAHAN: (1) prisma/schema.prisma PageView +2 kolom nullable utmSource/utmMedium VARCHAR(32) — ADDITIVE, rollback-safe (DROP COLUMN); (2) src/app/api/track/pageview/route.ts parse utm utk path /auth/* saja, whitelist ^[a-z0-9_-]{1,32}$ cap 32, non-match→NULL (anti log-injection); (3) src/lib/validation.ts helper whitelist; (4) admin funnel pecah register per utm_source. 0 endpoint publik baru, 0 PII. RISIKO: LOW (kolom additive nullable; track endpoint tetap jalan kalau kolom NULL; tanpa ubah bot-gate). RENCANA ROLLBACK: git revert + prisma migrate drop columns (atau biarkan kolom idle — harmless). DEPLOY: app+worker BARENG sekali build (kapasitas ada). APPROVE via agent utama → status pending + approved_by_owner."
+   "owner_brief": "OWNER PACKAGE (CTO sore 2 Okt): PRD idea-2026-09-25-1 atribusi utm register-hook. YANG DIBUTUHKAN: prisma migrate = DDL di DB prod (area owner). PERUBAHAN: (1) prisma/schema.prisma PageView +2 kolom nullable utmSource/utmMedium VARCHAR(32) — ADDITIVE, rollback-safe (DROP COLUMN); (2) src/app/api/track/pageview/route.ts parse utm utk path /auth/* saja, whitelist ^[a-z0-9_-]{1,32}$ cap 32, non-match→NULL (anti log-injection); (3) src/lib/validation.ts helper whitelist; (4) admin funnel pecah register per utm_source. 0 endpoint publik baru, 0 PII. RISIKO: LOW (kolom additive nullable; track endpoint tetap jalan kalau kolom NULL; tanpa ubah bot-gate). RENCANA ROLLBACK: git revert + prisma migrate drop columns (atau biarkan kolom idle — harmless). DEPLOY: app+worker BARENG sekali build (kapasitas ada). APPROVE via agent utama → status pending + approved_by_owner.",
+   "owner_approved_at": "2026-10-03 07:2x WIB (DM message_id 24769)"
   },
   {
    "id": "prd-2026-10-01-02",
@@ -575,6 +576,32 @@
    "night_result_note": "Implementasi PENUH di night/prd-2026-10-01-03 commit 8b5a062 (5 file, +438): src/lib/retention.service.ts (query raw + TtlCache 5m + wibWeekStart pure fn), api/admin/retention/route.ts (requireAdmin), admin/retention/page.tsx (guard badge + SVG sparkline SSR + tabel cohort + dead-letter), layout.tsx sidebar + PAGE_NAMES, scripts/selftest-retention.ts. Catatan definisi: 'minggu ini' = Senin 28 Sep-WIB berjalan (10,5%), BUKAN window 7d rolling 11,8% yang dikutip CEO 1 Okt — panel justru menyelesaikan dual-definisi ini (kanon = minggu kalender WIB). Verify live anon 403/redirect menunggu deploy pagi (AC5 sebagian; anon-guard pattern = community-stats).",
    "completed_at": "2026-10-02 07:4x WIB",
    "result": "DONE 02 Okt 07:4x CTO pagi (night_ready merge). Merge protocol: dry-run exit 0, SCHEMA-SHIELD PASS, merge --no-ff 4153671 (night 8b5a062) + push main. INSIDEN BUILD: main TIDAK BISA CLEAN-BUILD sejak drift Aug-4 (6 src file main pakai relasi reviewedBy yang tak pernah di-commit ke schema; deploy 2 minggu terakhir selalu dari worktree kotor — cache Docker menutupi). Fix evidence-backed: efad7a8 (.dockerignore 2 dead wave scripts) + dbf2367 (schema sync ke DB live — VERIFIED DB sudah punya reviewedById + WaveAssignment, 0 DDL dieksekusi). BUILD-3 sukses → deploy 07:40 image 0047de90a08b healthy. LIVE: 5/5 URL 200 before=after; /admin/retention 307 auth-gate; anon /api/admin/retention 404 == pola funnel (route.js ada di container). Rollback anchor: image 61a0efb965a5 + git revert 4153671. Angka panel (parity SQL night): returning minggu berjalan 10,5% (guard MERAH -1,5pp), cohort D1/D7=0/0, dead-letter 52,1%."
+  },
+  {
+   "id": "prd-2026-10-02-01",
+   "type": "ops",
+   "date": "2026-10-02",
+   "created_by": "Product Agent nightly buffer-keeper 2 Okt 22:0-22:1x (riset SQL read-only + statik 2 Okt)",
+   "scheduled_slot": "CTO slot berikutnya (ops host — bukan deploy aplikasi; hindari quiet zone 11:00-18:00)",
+   "priority": "P1",
+   "status": "spec_ready",
+   "prd_id": "idea-2026-10-02-1",
+   "north_star": "data reliable — 13 agent 'enabled' diam senyap 16 hari (CronLog agent-hub-scheduler terakhir 16 Sep); returning users (ScreenerAlert user berat terakhir trigger 16 Sep)",
+   "title": "P1 OPS (PRD idea-2026-10-02-1): restore pemanggil agent-hub-scheduler — LaunchAgent arsip 16 Sep tanpa pengganti; plist BARU pattern KEEP (https+CRON_SECRET, BUKAN localhost:3000 arsip), fire-test CronLog+AgentJob bukti",
+   "spec": "INTENT (ops, PRD LENGKAP di product-backlog.json idea-2026-10-02-1 — AC+data_evidence di sana; baca PRD, jangan narasi). Ringkas: 1 plist host + fire-test + dokumentasi; 0 kode aplikasi, 0 DB. DONE WHEN: AC2 SQL bukti (CronLog success + >=1 AgentJob baru) + AC4 negative 401 + decisions/changelog update."
+  },
+  {
+   "id": "prd-2026-10-02-02",
+   "type": "feature",
+   "date": "2026-10-02",
+   "created_by": "Product Agent nightly buffer-keeper 2 Okt 22:0-22:1x (riset SQL read-only + statik 2 Okt)",
+   "scheduled_slot": "CTO slot setelah prd-2026-10-02-01 (buffer — tidak urgent hari ini)",
+   "priority": "P2",
+   "status": "spec_ready",
+   "prd_id": "idea-2026-10-02-2",
+   "north_star": "returning users — 6/6 register Sep single-session, D1/D7=0/0; loop on-site (checklist derive-only + streak reuse + sinyal watchlist), 0 migrasi 0 kanal outbound",
+   "title": "P2 FITUR (PRD idea-2026-10-02-2): First-Session Welcome Loop — checklist 3 langkah home login (derive PageView/Watchlist existing) + claim streak (reputation.service) + 'Sinyal untukmu' day-2+; baseline D1/D7=0/0 wajib di changelog",
+   "spec": "INTENT (feature, PRD LENGKAP di product-backlog.json idea-2026-10-02-2 — AC+data_evidence+metadata v2 di sana; baca PRD, jangan narasi). DONE WHEN: AC terpenuhi + bukti live (curl/SQL) + changelog == merge + panel retensi jadi instrumen impact (baseline dicatat)."
   }
  ]
 }
