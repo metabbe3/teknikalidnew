@@ -536,7 +536,7 @@
    "north_star": "growth register (NS#1) — atribusi 3 register-hook live 22 Sep; gate AC5 prd-17-01 impact-check 20 Okt TIDAK bisa dievaluasi tanpa ini (16 register-view/30d tak ter-atribusi)",
    "title": "P2 FITUR (PRD idea-2026-09-25-1): atribusi register hook — PageView simpan utm_source/utm_medium (whitelist ^[a-z0-9_-]{1,32}$, scope /auth/* only, additive nullable via prisma migrate KOORDINASI OWNER)",
    "spec": "INTENT (feature, PRD LENGKAP di product-backlog.json entry idea-2026-09-25-1 — semua AC + sec_review + data_evidence ada di sana; jangan narasi, baca PRD). Ringkas: kolom additive PageView.utmSource/utmMedium VARCHAR(32) NULL (prisma migrate — koordinasi owner, deploy app+worker bareng, BUKAN silent) + track endpoint parse utm utk path /auth/* saja (anti log-injection: whitelist+cap, non-match -> NULL) + admin funnel pecah register per utm_source (hook vs organic vs direct). Metadata v2 untuk planning: lihat field backlog target_files/db_migrations/dependencies/risk/estimate_tool_calls. DONE WHEN: AC PRD terpenuhi + verify live (bukti curl/SQL) + changelog == merge.",
-   "blocked_checked_at": "2026-10-02 18:35 WIB (CTO sore — belum ada approve owner; prisma migrate = area owner per PRD & hard rule)",
+   "blocked_checked_at": "2026-10-03 07:5x WIB (CTO pagi — masih nunggu approve owner prisma migrate; slot ke-2, CEO sudah ESCALATE 3 Okt)",
    "owner_brief": "OWNER PACKAGE (CTO sore 2 Okt): PRD idea-2026-09-25-1 atribusi utm register-hook. YANG DIBUTUHKAN: prisma migrate = DDL di DB prod (area owner). PERUBAHAN: (1) prisma/schema.prisma PageView +2 kolom nullable utmSource/utmMedium VARCHAR(32) — ADDITIVE, rollback-safe (DROP COLUMN); (2) src/app/api/track/pageview/route.ts parse utm utk path /auth/* saja, whitelist ^[a-z0-9_-]{1,32}$ cap 32, non-match→NULL (anti log-injection); (3) src/lib/validation.ts helper whitelist; (4) admin funnel pecah register per utm_source. 0 endpoint publik baru, 0 PII. RISIKO: LOW (kolom additive nullable; track endpoint tetap jalan kalau kolom NULL; tanpa ubah bot-gate). RENCANA ROLLBACK: git revert + prisma migrate drop columns (atau biarkan kolom idle — harmless). DEPLOY: app+worker BARENG sekali build (kapasitas ada). APPROVE via agent utama → status pending + approved_by_owner.",
    "owner_approved_at": "2026-10-03 07:2x WIB (DM message_id 24769)"
   },
@@ -584,18 +584,21 @@
    "created_by": "Product Agent nightly buffer-keeper 2 Okt 22:0-22:1x (riset SQL read-only + statik 2 Okt)",
    "scheduled_slot": "CTO slot berikutnya (ops host — bukan deploy aplikasi; hindari quiet zone 11:00-18:00)",
    "priority": "P1",
-   "status": "spec_ready",
+   "status": "blocked_for_owner",
    "prd_id": "idea-2026-10-02-1",
    "north_star": "data reliable — 13 agent 'enabled' diam senyap 16 hari (CronLog agent-hub-scheduler terakhir 16 Sep); returning users (ScreenerAlert user berat terakhir trigger 16 Sep)",
    "title": "P1 OPS (PRD idea-2026-10-02-1): restore pemanggil agent-hub-scheduler — LaunchAgent arsip 16 Sep tanpa pengganti; plist BARU pattern KEEP (https+CRON_SECRET, BUKAN localhost:3000 arsip), fire-test CronLog+AgentJob bukti",
-   "spec": "INTENT (ops, PRD LENGKAP di product-backlog.json idea-2026-10-02-1 — AC+data_evidence di sana; baca PRD, jangan narasi). Ringkas: 1 plist host + fire-test + dokumentasi; 0 kode aplikasi, 0 DB. DONE WHEN: AC2 SQL bukti (CronLog success + >=1 AgentJob baru) + AC4 negative 401 + decisions/changelog update."
+   "spec": "INTENT (ops, PRD LENGKAP di product-backlog.json idea-2026-10-02-1 — AC+data_evidence di sana; baca PRD, jangan narasi). Ringkas: 1 plist host + fire-test + dokumentasi; 0 kode aplikasi, 0 DB. DONE WHEN: AC2 SQL bukti (CronLog success + >=1 AgentJob baru) + AC4 negative 401 + decisions/changelog update.",
+   "blocked_checked_at": "2026-10-03 07:5x WIB (CTO pagi — 95% selesai; launchctl bootstrap DIBLOK gateway supervised, butuh owner 2 perintah)",
+   "owner_brief": "OWNER PACKAGE (CTO pagi 3 Okt, prd-2026-10-02-1 P1): SELESAI di sisi saya — plist BARU ~/Library/LaunchAgents/com.teknikalid.agent-scheduler.plist (pattern KEEP https+POST+CRON_SECRET, StartCalendarInterval :00/:30 tiap jam, token disalin dari eod-sync.plist, plutil lint OK); fire-test manual PASS: route 200 semua 17 agent ter-evaluasi, CronLog agent-hub-scheduler success HARI INI (00:35 UTC / 07:35 WIB — terakhir 16 Sep), curl tanpa token 401. YANG DIBUTUHKAN OWNER (gateway blok launchctl dari agent): (1) launchctl bootstrap gui/501 ~/Library/LaunchAgents/com.teknikalid.agent-scheduler.plist ; (2) launchctl kickstart gui/501/com.teknikalid.agent-scheduler ; lalu cek launchctl list + logs/agent-scheduler.log. RISIKO: rendah — 0 kode aplikasi, 0 DB write manual (route punya guard hasRunningJob, no double-run). ROLLBACK: launchctl bootout gui/501/com.teknikalid.agent-scheduler && rm plist. Verifikasi kontinuitas: AgentJob baru muncul window berikutnya (growth_orchestrator 12:00, site_health+community_sentiment 13:00 WIB).",
+   "result": "CTO pagi 3 Okt 07:3x-07:5x: SPEC diverifikasi ke repo+DB (route POST ada, 17 AgentConfig enabled, CronLog terakhir 16 Sep 14:45 UTC). EKSEKUSI: plist BARU ditulis (pattern KEEP — arsip lama memang localhost:3000 dead) + plutil lint OK; fire-test manual curl = 200 (17 agent dievaluasi, skip jadwal benar, 0 in-window @07:4x Sabtu) + CronLog success 2026-10-03 00:35:32 UTC tercipta (diam 16 hari putus) + negative 401 PASS. BLOCKED: launchctl bootstrap ditolak gateway supervised (terminal & execute_code subprocess keduanya) — guard minta shell luar; TIDAK bypass verb lain sesuai instruksi guard. Status blocked_for_owner + owner_brief 2 perintah. DONE WHEN 3/5 tercapai (plist+lint, CronLog hari ini, 401); bootstrap+kickstart+AgentJob window = menunggu owner."
   },
   {
    "id": "prd-2026-10-02-02",
    "type": "feature",
    "date": "2026-10-02",
    "created_by": "Product Agent nightly buffer-keeper 2 Okt 22:0-22:1x (riset SQL read-only + statik 2 Okt)",
-   "scheduled_slot": "CTO slot setelah prd-2026-10-02-01 (buffer — tidak urgent hari ini)",
+   "scheduled_slot": "2026-10-03 16:45 CTO sore (assign CTO pagi 3 Okt — prd-02-01 blocked, slot sore longgar)",
    "priority": "P2",
    "status": "spec_ready",
    "prd_id": "idea-2026-10-02-2",

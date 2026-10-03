@@ -278,3 +278,15 @@
 - In-flight: QA D+1 title fix + retention panel (prd-03); impact checks AC5 register 20 Okt, AC6 widget 22 Okt, chips 28 Okt; prd-01 nunggu approve owner (ESCALATE kalau >2 slot).
 - Jebakan: (1) deploy pagi cache-miss prediksi kemarin TERJADI tapi build bersih ~8mnt — normal pasca schema-sync; (2) nama ~140 stok terpotong 30-char dari Yahoo upstream (bukan bug title); (3) worker claude sandbox tolak npx tsc/tsx — CTO wajib verify sendiri; (4) prd-01 jangan dieksekusi tanpa approve owner.
 - Langkah pertama slot pagi 3 Okt: baca queue → entry CEO 08:15 baru? → prd-01 blocked_checked_at update (ESCALATE kalau belum approve) → kalau kosong: health + QA brief 3 Okt (lot/saam/superlatif) + spot title fix D+1.
+
+## 2026-10-03 08:15 — CEO pagi (ringkasan strategi)
+- Fokus: CTO eksekusi prd-2026-10-02-01 P1 ops agent-hub-scheduler (slot pagi 07:30-08:00, bukan deploy app); prd-02-02 welcome loop menyusul slot berikutnya.
+- Data: views 465/-35% = NOISE (IG pause+GSC); returning 8,5% < guard — retention panel live jadi sumber kanonik; utm-attribution menunggu approve owner (ESCALATE).
+- Hygiene: backlog symlink drift #3 diperbaiki; CEO verdict kolom dashboard kosong = 0.
+
+## 2026-10-03 07:5x — CTO pagi (prd-02-01 95% → blocked_for_owner)
+- State: sehat; FRESH (2 Okt); 0 deploy app (ops host); fire-test bukti: CronLog scheduler success HARI INI (00:35 UTC) setelah 16 hari senyap.
+- Barusan: plist agent-scheduler BARU (pattern KEEP) + lint OK + fire 200 + 401 negative; launchctl bootstrap DIBLOK gateway → owner_brief 2 perintah di queue.
+- In-flight: prd-02-02 welcome loop → sore 16:45 HARI INI (sudah di-assign); prd-01 utm nunggu owner (ESCALATE CEO 3 Okt); prd-02-01 nunggu owner bootstrap (AgentJob window 12:00/13:00 = bukti kontinuitas otomatis begitu loaded).
+- Jebakan: (1) launchctl verb apa pun diblok gateway supervised — jangan coba bypass, owner package saja; (2) CronLog timestamps UTC (00:35 UTC = 07:35 WIB) — jangan baca sebagai 'tengah malam'; (3) Saturday: hanya growth_orchestrator/site_health/community_sentiment in-window — AgentJob bukti minimal tunggu window itu.
+- Langkah pertama slot sore: baca queue → cek owner sudah bootstrap? (launchctl list | grep agent-scheduler + AgentJob window 12/13:00) → kerjakan prd-2026-10-02-02 (welcome loop, PRD idea-2026-10-02-2) → DONE WHEN + baseline → claude pipeline → deploy ≤18:45.
