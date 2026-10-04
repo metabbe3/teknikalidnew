@@ -5,7 +5,7 @@ import { getClientIp, lookupAsn, isDatacenter } from "@/lib/ip-asn";
 import { detectBot } from "@/lib/bot-detect";
 import { isBlocked } from "@/lib/ip-blocklist";
 import { moderationService } from "@/domains/moderation/moderation.service";
-import { parseBody, schemas } from "@/lib/validation";
+import { parseBody, schemas, extractPageviewAttribution } from "@/lib/validation";
 
 export const dynamic = "force-dynamic";
 
@@ -90,6 +90,10 @@ export async function POST(request: NextRequest) {
     const [data, error] = await parseBody(request, schemas.pageview);
     if (error) return error;
 
+    // Path is stored query-free (old behavior); UTM attribution is only kept
+    // for /auth/ pages. See extractPageviewAttribution in @/lib/validation.
+    const { path, utmSource, utmMedium } = extractPageviewAttribution(data.path);
+
     // Skip internal / admin paths
     if (SKIP_PREFIXES.some((prefix) => data.path.startsWith(prefix))) {
       return new NextResponse(null, { status: 204 });
@@ -115,11 +119,13 @@ export async function POST(request: NextRequest) {
 
     await prisma.pageView.create({
       data: {
-        path: data.path,
+        path,
         referrer: data.referrer ?? null,
         userId,
         ip,
         userAgent,
+        utmSource,
+        utmMedium,
         isBot: isBot || blocked,
       },
     });
@@ -129,7 +135,7 @@ export async function POST(request: NextRequest) {
     // locks on real visitors. Residual bot protection: proxy rate limits + the
     // 2404:c0 prefix block in ip-blocklist.ts.
     if (userId && ip) {
-      enrichSignupOrigin(userId, ip, data.path).catch(() => {});
+      enrichSignupOrigin(userId, ip, path).catch(() => {});
     }
   } catch {
     // Fire-and-forget: never expose errors to the client

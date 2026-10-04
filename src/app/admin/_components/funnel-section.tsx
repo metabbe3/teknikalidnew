@@ -17,6 +17,7 @@ interface FunnelDay {
 interface FunnelData {
   series: FunnelDay[];
   totals: { views: number; signin: number; register: number; complete: number; signups: number };
+  registerByUtm?: { utmSource: string | null; views: number }[];
 }
 
 /**
@@ -112,6 +113,19 @@ export function FunnelSection() {
                 </strong>
               </span>
             </div>
+
+            {/* Register views per UTM source (attribution of the signup hook) */}
+            {data.registerByUtm && data.registerByUtm.length > 0 && (
+              <div className="flex flex-wrap gap-x-4 gap-y-1 border-t border-gray-100 pt-3 text-xs">
+                <span className="text-gray-500">Register views per sumber:</span>
+                {data.registerByUtm.map((u) => (
+                  <span key={u.utmSource ?? "direct"} className="font-mono text-gray-700">
+                    {u.utmSource ?? "organic/direct"}:{" "}
+                    <strong className="text-gray-800">{u.views.toLocaleString("id-ID")}</strong>
+                  </span>
+                ))}
+              </div>
+            )}
 
             {/* Recent days table */}
             {recent.length > 0 && (

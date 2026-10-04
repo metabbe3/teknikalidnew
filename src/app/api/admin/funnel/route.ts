@@ -75,7 +75,24 @@ export async function GET(request: NextRequest) {
       { views: 0, signin: 0, register: 0, complete: 0, signups: 0 },
     );
 
-    return NextResponse.json({ data: { series, totals } });
+    // Register-page views per utmSource over the same window — attribution of
+    // the signup hook (e.g. signal_page / stocks_screener vs null = organic/direct).
+    // UTM tracking shipped 2026-10-04; earlier rows are all null by design.
+    const utmRows = await prisma.$queryRaw<{ utmSource: string | null; views: bigint }[]>`
+      SELECT "utmSource", count(*) AS views
+      FROM "PageView"
+      WHERE "isBot" = false
+        AND path = '/auth/register'
+        AND "createdAt" >= (now() - (${days} || ' days')::interval)
+      GROUP BY "utmSource"
+      ORDER BY views DESC
+    `;
+    const registerByUtm = utmRows.map((r) => ({
+      utmSource: r.utmSource,
+      views: Number(r.views),
+    }));
+
+    return NextResponse.json({ data: { series, totals, registerByUtm } });
   } catch (error) {
     return handleApiError(error, "fetch funnel analytics");
   }

@@ -1048,6 +1048,8 @@ model PageView {
   userId    String?
   ip        String?  @db.VarChar(45)
   userAgent String?  @db.VarChar(500)
+  utmSource String?  @db.VarChar(32)
+  utmMedium String?  @db.VarChar(32)
   isBot     Boolean  @default(false)
   createdAt DateTime @default(now())
 

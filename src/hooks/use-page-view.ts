@@ -8,6 +8,9 @@ import { usePathname } from "next/navigation";
  */
 function getTrackingData(pathname: string) {
   const referrer = typeof document !== "undefined" ? document.referrer : undefined;
+  // Append the query string (utm_source etc.) — the API strips it before insert
+  // and reads UTM attribution off it for /auth/ pages only.
+  const search = typeof window !== "undefined" ? window.location.search : "";
 
   // Extract UTM params from URL
   let utmSource: string | undefined;
@@ -28,7 +31,7 @@ function getTrackingData(pathname: string) {
   }
 
   return {
-    path: pathname,
+    path: pathname + search,
     referrer: referrer || undefined,
     // Only include UTM if present (keeps payload small for non-UTM traffic)
     ...(utmSource && { utmSource }),

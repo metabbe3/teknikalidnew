@@ -88,6 +88,41 @@ export function parseQuery<T>(
 export type ParseQueryResult<T> = [T, null] | [null, NextResponse];
 
 /**
+ * Normalize a UTM param value: trim + lowercase, keep only if it matches
+ * /^[a-z0-9_-]{1,32}$/ (fits the PageView VarChar(32) columns). Anything
+ * else (empty, spaces, punctuation, too long) → null.
+ */
+export function parseUtmParam(raw: string | null | undefined): string | null {
+  const value = raw?.trim().toLowerCase();
+  return value && /^[a-z0-9_-]{1,32}$/.test(value) ? value : null;
+}
+
+/**
+ * Split the query string off a beacon path and extract UTM attribution.
+ * UTM is kept ONLY for /auth/ pages (register-hook attribution: where the
+ * signup-intent view came from); non-auth paths get both fields nulled so
+ * UTM spam on content pages can't inflate the column. The returned path is
+ * always query-free (stored shape unchanged).
+ */
+export function extractPageviewAttribution(path: string): {
+  path: string;
+  utmSource: string | null;
+  utmMedium: string | null;
+} {
+  const q = path.indexOf("?");
+  const pathOnly = q === -1 ? path : path.slice(0, q);
+  if (q === -1 || !pathOnly.startsWith("/auth/")) {
+    return { path: pathOnly, utmSource: null, utmMedium: null };
+  }
+  const params = new URLSearchParams(path.slice(q + 1));
+  return {
+    path: pathOnly,
+    utmSource: parseUtmParam(params.get("utm_source")),
+    utmMedium: parseUtmParam(params.get("utm_medium")),
+  };
+}
+
+/**
  * Common reusable validation schemas for TeknikalID API routes.
  */
 export const schemas = {
