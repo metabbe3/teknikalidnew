@@ -75,7 +75,7 @@ Deploy limit: 2/hari. DB read-only. auth/payment/security/monetisasi = owner-onl
   5. Log eksekusi + rowcount ke decisions.md.
 - Tetap `blocked_for_owner`: auth/payments/security/env vars/drop database/drop schema.
 
-## 2026-09-14 17:30 WIB — CTO sore: cleanup baris fantasi 13 Sep (ceo-2026-09-14-01)
+## 2026-09-14 — CTO sore: cleanup baris fantasi 13 Sep (ceo-2026-09-14-01) (17:30 WIB)
 
 - Konteks: root cause + fix write-guard isWibWriteWindow() (commit d29f24d, deploy 17:17 WIB) — lihat lessons-learned.md 14 Sep.
 - Backup: ~/backups/teknikalid/last-success = 2026-09-14T08:30 (valid <24 jam).
@@ -110,13 +110,13 @@ Verifikasi: jobs.json valid 33 job, 25 LLM pinned, semua enabled, next_run utuh.
 - Verified end-to-end: regen 06:43 exit 0 (47MB/52 tabel) + run#2 idempotent 2.4s exit 0.
 - hivePOS backup sidecar sehat: pos_saas_20260914_223537 37 tabel, umur 1.1 jam.
 
-## 2026-09-15 07:41 — CTO pagi: reviewer-2026-09-15-01 (volume label lot→saham, P1)
+## 2026-09-15 — CTO pagi: reviewer-2026-09-15-01 (volume label lot→saham, P1) (07:41)
 - Rollback anchor: image app f705987548db / worker 4b3414f9b5e7, commit 4228de481c.
 - Commit 90225ca (2 files +8/-8: fmtVol + formatVolumeHuman unit word only; hunk authorId pre-existing TIDAK ikut).
 - DB patch plan (owner-approved SQL protocol, backup 06:44 valid <24jm): UPDATE "Article" SET content=replace(content,' lot',' saham') WHERE status='PUBLISHED' AND content LIKE '%juta lot%'; — preview COUNT=41, WHERE sempit (hanya string ' lot' → ' saham' di baris yang mengandung 'juta lot'; pola label formatter selalu '<num> lot'). Eksekusi + rowcount dicatat di bawah.
 - SQL EXECUTED 07:44: UPDATE "Article" SET content=replace(content,' lot',' saham') WHERE status='PUBLISHED' AND content LIKE '%juta lot%' → **41 rows** (transaksi tunggal). Residual 'juta lot'=0; 'juta saham'=42 (41 patched + 1 pre-existing benar). Pre-checks: max per-article ' lot' count == 'juta lot' count (3=3); 5 artikel edukasi luar scope ('1 lot = 100 lembar') terverifikasi TIDAK tersentuh WHERE.
 
-## 2026-09-15 07:30 CTO pagi — reviewer-2026-09-15-01 DONE (volume label 100x)
+## 2026-09-15 — CTO pagi: reviewer-2026-09-15-01 DONE (volume label 100x) (07:30)
 Trust fix: artikel bilang '278.5 juta lot' padahal DB = saham (2.78 juta lot) -> 100x inflated. Fix generator commit 90225ca (label lot->saham, 2 formatter), deploy app+worker 07:46 pre-market, patch SQL 41 artikel (protokol owner-approved, backup 06:44, residual=0). Live: BBRI '278.5 juta saham', MDKA '77.7 juta saham'. Bonus: mandor-01 (log --json IndexError) fixed tanpa deploy. Deploy 1/2. Next: council-02 16:45.
 
 ## 2026-09-15 — [KEYWORD-RESEARCH] Mingguan (baseline hari-2 snapshot GSC baru; <7 hari → belum ada diff mingguan). 3 brief ke pipeline Mandor:
@@ -138,7 +138,7 @@ Trust fix: artikel bilang '278.5 juta lot' padahal DB = saham (2.78 juta lot) ->
 - Intent: navigasional — chart/harga HRTA (Hartadinata Abadi)
 - Bukan artikel baru: optimasi title + meta description /stocks/HRTA.JK agar menang klik di pos 5 (0 klik dari 24 impr, 14 Sep). Tambah blok "analisa teknikal HRTA" di atas fold. Internal link: /stocks/HRTA.JK dari artikel analisa-teknikal & brief pasar berikutnya.
 
-## 2026-09-15 08:15 — CEO pagi: council-02 tetap slot sore + dispatch analisa utang weekend-rows (P2, read-only)
+## 2026-09-15 — CEO pagi: council-02 tetap slot sore + dispatch analisa utang weekend-rows (P2, read-only) (08:15)
 - Baca data: views 7d 599 vs 566 minggu lalu (+6%, stabil pasca-jatuh; prev 1187 = 2 pekan lalu) → GSC reindex window, NOISE — tidak panic-refactor.
 - Signal pages 51v/7d vs baseline 38 (+34%, target 60) = PERTUMBUHAN → council-2026-09-13-02 (Sinyal Terkait) tepat sasaran, jadwal tetap 16:45 hari ini.
 - Register 2/7d (baseline 9) = MATI tapi CTA register baru live 14 Sep (hari-1) → beri 2 pekan sesuai acceptance criteria; DILARANG stacking hipotesis baru di metrik yang sama (attribution).
@@ -172,7 +172,7 @@ Parity-tested sebelum switch (angka identik vs output LLM kemarin):
 Schema lesson: Article (bukan BlogPost), createdAt camelCase, StockPrice.date — mandor_brief verified live.
 Rollback: llm_backup field di jobs.json tiap job.
 
-## 2026-09-15 16:55 — CTO sore: ROLLBACK ANCHOR council-2026-09-13-02
+## 2026-09-15 — CTO sore: ROLLBACK ANCHOR council-2026-09-13-02 (16:55)
 - Pre-deploy: HEAD d449b58, image app 5c89d6ac9964 / worker 741f4aa97254
 - Task commit: f75dd7d (related-signals.tsx + berita/[slug]/page.tsx + spec)
 - Rollback: git revert f75dd7d && docker compose build app && docker compose up -d
@@ -194,7 +194,7 @@ Rollback: llm_backup field di jobs.json tiap job.
 - FOLLOW-UP CTO: tambah deteksi runtime "Android 10; K" + AS-datacenter IP ke bot gate middleware
   (biar gak perlu manual lagi). Masuk antreanjkse-2026-09-16-01 detail.
 
-## 2026-09-16 07:30–08:15 — CTO pagi (slot 07:30)
+## 2026-09-16 — CTO pagi (slot 07:30) (07:30–08:15)
 - freshness FRESH (price/indicator 15 Sep — sesi terakhir, normal pre-market).
 - seo-2026-09-15-01 DONE tanpa deploy: exclusion sitemap sudah live; commit eb45117 menutup utang uncommitted (sitemap.ts + article-freshness.ts). Sitemap 708 URL, 0 stale.
 - ceo-2026-09-15-01 DONE read-only: diff sinyal = 0 (83/102/29 stabil); "60k weekend rows" = crypto valid, equity bersih; TANPA SQL DELETE. Detail di cto-queue.json result.
@@ -206,7 +206,7 @@ Rollback: llm_backup field di jobs.json tiap job.
 - JANGAN buat task fix crypto ingest / jangan re-escalate flag ini sampai owner minta.
 - Kalau CEO/CTO lihat max date crypto < 30 hari: cukup sebut "by design (owner 16 Sep)", bukan anomaly.
 
-## 2026-09-16 08:15 — CEO pagi
+## 2026-09-16 — CEO pagi (08:15)
 - Keputusan: dispatch botgate-2026-09-16-01 (P2, bot gate runtime: UA 'Android 10; K' + IP datacenter AS) ke CTO slot 17 Sep 07:30 | Alasan-data: insiden 15 Sep — 26/30 "human" views = 7 IP datacenter AS UA identik, cleanup manual 26 rows; tanpa flag runtime akan berulang & metrik north star tercemar | Hasil-verify: pending — DONE WHEN 0 human views pola tsb di brief 17/18 Sep tanpa intervensi manual + nobot daily tidak drop >50% vs rerata 3d.
 - Keputusan: TIDAK dispatch eksperimen growth baru | Alasan-data: register_views 2/7d & views 515 vs 1114 = konsisten masa tunggu GSC reindex (submitted 12 Sep); CTA register (14 Sep) + Sinyal Terkait (15 Sep) baru masuk window ukur 2 pekan — stacking hipotesis melanggar aturan attribution | Hasil-verify: council retro 20 Sep menilai signal views 38→≥60 & register 2→≥9.
 - Catatan: crypto stale = by design (owner 16 Sep) — jangan re-escalate.
@@ -295,7 +295,7 @@ Rollback: llm_backup field di jobs.json tiap job.
   macOS quarantine attr — sync tetap sukses via jalur lain, tapi cron-curl.sh perlu
   xattr -d com.apple.quarantine. Low priority.
 
-## 2026-09-17 07:30 — CTO pagi: botgate-2026-09-16-01 DONE (deploy 1/2)
+## 2026-09-17 — CTO pagi: botgate-2026-09-16-01 DONE (deploy 1/2) (07:30)
 - ROLLBACK ANCHOR pre-deploy: image app e5b191a7c678, commit 73ff992. Deploy 07:5x → image baru e612d03a92cf, commit eacc225 (1 file src/lib/ip-asn.ts, +5/-1). tsc clean.
 - ROUTE VERIFIED KE REPO: task minta "UA Android 10; K → isBot saat insert" — DITOLAK kontra-bukti DB: mayoritas IP pemakai UA itu = Telkomsel AS7713 (180.247.x ribuan views; 35 views kemarin 16 Sep UA identik). UA-flag polos akan memusnahkan user mobile Indonesia. Diganti: ekspansi datacenter-ASN list dgn 4 ASN insiden 15 Sep (terverifikasi ip-api 17 Sep masih lolos dari list lama): AS36352 ColoCrossing/HostPapa, AS31898 Oracle Cloud, AS200373 3xK Tech, AS21743 Atlas Networks + org-RE fallback (oracle|colocrossing|atlas networks|3xk).
 - LOGIC URAI: step-4 ASN di detectBot() (bot-detect.ts, sudah live sejak image 16 Sep 18:54) kini menangkap ke-4 ASN tsb → request spoof-Chrome dari datacenter tsb auto isBot saat INSERT; user Telkomsel/residential tak tersentuh (UA tak pernah dilihat utk step ini).
@@ -304,7 +304,7 @@ Rollback: llm_backup field di jobs.json tiap job.
 - PENTING utk verifikasi besok: XFF header DARI LUAR ditimpa edge proxy → baris tercatat dgn IP socket, bukan XFF spoof — live-test beacon harus dari dalam container (docker exec node fetch X-Forwarded-For).
 - OBSERVASI 24h (DONE WHEN task): 0 views 'human' dari 4 ASN tsb tanpa intervensi manual + nobot daily tidak drop >50% vs rerata 3d.
 
-## 2026-09-17 08:15 — CEO pagi: queue kosong → PRODUCT MODE (backlog run)
+## 2026-09-17 — CEO pagi: queue kosong → PRODUCT MODE (backlog run) (08:15)
 
 - 08:15 | Brief 7d: views 540 (vs 889 prd lalu — sesuai ekspektasi GSC reindex pending, bukan alarm); register 2, returning IP 21,2% (naik dari ~10%, tapi basis absolut kecil); bot-gate observasi: 0 views UA 'Android 10; K' sejak deploy 07:50 → clean. | data ceo_brief + SQL | on track, no panic-refactor s/d reindex terlihat (council 20 Sep).
 - 08:2x | QUEUE KOSONG → jalankan PRODUCT MODE: 3 entry backlog dianalisis READ-ONLY (SQL 30d, nobot). Hasil: (1) prod-01 widget sinyal — INTENT kuat (118 IP /stocks, 78 pakai-dalam ≥2x) tapi register NOL value-proposition → HOLD, bawa council 20 Sep; (2) prod-02 notifikasi watchlist — returning cuma 14 IP < threshold 30 → NO-GO, re-ukur pasca-reindex; (3) prod-03 edu gap — data dukung → DISPATCH. | SQL insight di product-backlog.json | entries status=analyzed/analyzed-dispatched.
@@ -330,7 +330,7 @@ Tindakan CEO: tulis verdict di ceo-decisions.md + set backlog entry (approve->la
 spec_ready / reject->status rejected + alasan / hold->tunda ke Council 20 Sep). JANGAN
 dispatch engineering sebelum status spec_ready (SDLC).
 
-## 2026-09-17 08:17 — CEO pagi: VERDICT product mandate prod-01 + mandate baru
+## 2026-09-17 — CEO pagi: VERDICT product mandate prod-01 + mandate baru (08:17)
 - 08:17 | VERDICT prod-2026-09-17-01 = approve_prd (bukan deploy): lanjut ke PRD register hook 'simpan preset + watchlist'; screener TIDAK di-gate; widget /sinyal/TICKER dipisah jadi mandate top-of-funnel (prod-04). | data: funnel 30d nobot 118 IP /stocks, 91 heavy, bounce 23%, hanya 4/91 sentuh auth → patah di value-prop, bukan akses/traffic | verify: product-backlog.json ceo_decision_pending=false + Product Agent 10:15 hasil PRD entry status spec_ready.
 - 08:17 | MANDATE BARU (backlog, status idea): prod-2026-09-17-04 widget sinyal per-ticker /sinyal/TICKER sebagai lead magnet top-of-funnel — utk Product Agent Senin 20 Sep 10:15 (setelah council). | data: 101/118 IP buka detail ticker + GSC intent 'sinyal saham' | verify: entry idea ada di backlog, diriset Senin, bukan spekulasi.
 - Guardrail: 0 dispatch engineering baru pagi ini (queue 1 pending jkse-17-01 ≤2 OK); verdict = prose product, bukan deploy; anti-loop OK.
@@ -371,7 +371,7 @@ dispatch engineering sebelum status spec_ready (SDLC).
   identical, ^JKSE 17 kosong) — masuk task CTO jkse-2026-09-17-01.
 - Stat post = preview ke owner dulu; carousel utama tetap autopost 17:30.
 
-## 2026-09-17 19:20 (OWNER DECISION)
+## 2026-09-17 — OWNER (OWNER DECISION) (19:20)
 Owner: "Stop ig content I think its bad we focus on our website first then social media"
 - Job IG Carousel c3617c4b58db PAUSED (enabled=false, verified). Tidak ada konten IG baru (carousel + stat post) sampai notice owner.
 - IG monitoring metrics (engagement stats existing posts) TETAP jalan — data utk evaluasi.
@@ -380,14 +380,14 @@ Owner: "Stop ig content I think its bad we focus on our website first then socia
 
 ## 2026-09-17 (OWNER)
 
-## 2026-09-17 19:26 (OWNER NORTH STAR)
+## 2026-09-17 — OWNER (OWNER NORTH STAR) (19:26)
 "Fokus teknikal dan hivepos aplikasi consistency, trust, dan easy to use. Focus on customer! Data need to one reliable."
 - SEMUA keputusan produk & dispatch dinilai lewat 4 lensa: (1) CONSISTENCY, (2) TRUST, (3) EASY TO USE, (4) DATA RELIABLE (satu sumber kebenaran).
 - CUSTOMER FIRST: apa yang bikin user bingung/frustrasi/balik lagi = P0. Fitur baru yang tidak memperkuat 4 lensa = HOLD.
 - Untuk teknikal.id artinya: brief pasar akurat tiap pagi (data EOD benar — jkse-01 selesai pagi), funnel register mulus, error message jelas bahasa Indonesia, widget ticker (prod-04) selaras.
 - Untuk hivePOS: onboarding mulus (Umalas stuck di delete-customer = P0 kontinu), konsistensi UI, data order/revenue reliable.
 
-## 2026-09-17 20:30 (OWNER MANDATE)
+## 2026-09-17 — OWNER (OWNER MANDATE) (20:30)
 Owner: "Gas semua agent bisa paralel kalau tidak saling ganggu"
 - CTO builders (teknikal pagi+malam, hivePOS slot1) kini BOLEH 2+ claude code paralel dalam slot.
 - Gate: NON-OVERLAP file/area wajib (BE+FE ok; sama file/prisma/config = sequential).
@@ -395,13 +395,13 @@ Owner: "Gas semua agent bisa paralel kalau tidak saling ganggu"
 - Laporan wajib sebut task paralel + bukti non-overlap (daftar file).
 - Patched ke jobs.json 3 prompt CTO. Eksperimen pertama: malam ini hivePOS P0 delete-customer (BE) ∥ P1 onboarding checklist (FE).
 
-## 2026-09-17 21:25 - CEO sore (review eksekusi)
+## 2026-09-17 — CEO sore (review eksekusi) (21:25)
 - DONE: Site 200 (0.38s), app/worker/db healthy, 0 error app 12h. Botgate deploy 1/2 verified. IG carousel terakhir terkirim 19:11 (DdY0PIXn6i7 Volume Spike) lalu job PAUSED per owner 19:20. prod-01 PRD spec_ready + verdict approve. Tracking pipeline TERVERIFIKASI sehat: beacon->204->DB (SSR initial-load & client-nav, live browser test 21:1x).
 - WARNING: Views 17 Sep 150 = ilusi: hanya 4 IP uniq (108 burst dari 1 IP jam 12:00 = bot/crawler, sisanya testing deploy jam 07:00). Human real ~4 IP vs 16 kemarin. Pagi: putuskan apakah botgate berhasil filter bot (metrik bersih = bagus) ATAU memblokir manusia/crawler sehat (Bing referrer muncul kemarin).
 - WARNING: jkse-2026-09-17-01 MASIH pending; CTO malam 18:57 run ok tapi TIDAK eksekusi task itu (tidak ada entry di log). Brief 18 Sep (generate ~23:30) berisiko stale-session lagi.
 - PAGI 18 Sep (1 fokus): re-dispatch jkse-01 (ke-2, batas anti-loop) -> verifikasi brief 18 Sep "sesi 17 September" + close asli; sekalian verdict botgate vs traffic-drop. Plus cek prod-03 (2 artikel edu Mandor) belum ada output.
 
-## 2026-09-18 08:15 - CEO pagi (SDLC mode bisnis)
+## 2026-09-18 — CEO pagi (SDLC mode bisnis) (08:15)
 - VERDICT BOTGATE (insiden 15 Sep, qa 18 Sep): PASS, NO rollback. Bukti DB: views 17 Sep ter-flag bot 118 otomatis (burst 108/1 IP jam 12:00) tanpa cleanup manual; nobot 17 Sep = 129 vs 16 Sep = 39 → TIDAK drop (DONE WHEN-2 pass). Trade-off jujur: pendekatan ASN-only (CTO menolak UA-flag karena 35 views 16 Sep UA identik = Telkomsel ASLI) membuat sebagian besar burst bot non-datacenter lolos sebagai nobot — makanya nobot 17 Sep (129) masih terkontaminasi burst. Terima untuk sekarang (over-block user mobile RI lebih mahal); revisit hanya kalau keputusan CEO bias oleh burst berulang.
 - VERDICT BRIEF 18 SEP (jkse-01): BUKAN masalah — generator 18 Sep ganti format: tidak lagi pakai frasa "snapshot IHSG ... sesi X"; body menyebut "sesi Kamis 17 September" + breadth/sinyal data 17 Sep (verified DB). Baris IHSG hilang tapi body konsisten sesi kemarin — trade-off diterima, root-cause fixed. ^JKSE DB: 17 Sep C=6462.43 INSERTED (d83848f kerja). Impact gabung cek 21 Sep.
 - VERDICT PROD-03 (edu Mandor): BELUM ADA output (0 EDUCATIONAL sejak 17 Sep) → nudge via decision log, bukan task engineering. Mandor pagi 06:30 sudah lewat hari ini; window kepatuhan = artikel edu live ≤ 19 Sep. Kalau 19 Sep masih 0 → eskalasi owner (bukan dispatch ulang teknis).
@@ -409,13 +409,13 @@ Owner: "Gas semua agent bisa paralel kalau tidak saling ganggu"
 - DATA PAGI (jujur soal noise): views 7d 554 vs 791 periode lalu — PENURUNAN tapi jangan panic-refactor: komposisi = periode lalu masih tercemar bot pra-botgate (4 Sep: 164 bot-flag manual cleanup; burst 15-17 Sep), GSC reindex belum keluar (submitted 12 Sep), IG stopped per owner 17 Sep 19:20 (expected traffic IG = 0 ke depan). Register views 7d = 2 (baseline 9). Signal pages 20v/7d. Returning IP 17,1%. Bacaan CEO: periode transisi pengukuran, BUKAN sinyal produk mati — verifikator = tren 7-14 hari ke depan dengan data bersih.
 - RITUAL [PRODUCT]: grep '\[PRODUCT\]' = 0 entry → tidak ada verdict pending. prod-01 spec_ready (PRD register hook) menunggu council 20 Sep; prod-04 (widget /sinyal/TICKER) menunggu Product Agent Senin 20 Sep 10:15. CEO tidak bikin spec fitur baru (SDLC 17 Sep).
 
-## 2026-09-18 18:50 - CTO malam (jkse-2026-09-18-02 DONE)
+## 2026-09-18 — CTO malam (jkse-2026-09-18-02 DONE) (18:50)
 - ROLLBACK ANCHOR pre-deploy: image 11ef0d8c86bc, commit b2ed2fe (deploy pagi). Post-deploy image: 0ed98e5ed73a.
 - DEPLOY 1/1 slot malam (org 2/2 hari ini): docker compose build app + up -d app, 18:35 WIB (pasca-quiet-zone 11:00-18:00). Deploy cap aman.
 - VERIFY: SafetyNet live di container (grep 0→1); 3 halaman kunci 200; tsc clean; brief HTML identik (buildId saja). DONE WHEN-1 PASS, DONE WHEN-2 PASS; DONE WHEN-3 (row ^JKSE 18 Sep via launchd) SUDAH terpenuhi jam 16:30 sebelum deploy — C=6441.16 OHLC lengkap; safety net mulai berlaku EOD berikutnya.
 - TEMUAN (bukan regresi deploy, terjadi pasca-restart): golden-cross page empty-state ~10 menit — ISR bake + catch{} swallow; self-heal. Kandidat task P3: fail-open jangan render empty-state stale. Tidak dibuat task baru malam ini (queue discipline: max 2 pending; catat di lessons).
 
-## 2026-09-18 21:09 (owner) — CANCEL crypto-2026-09-19-01; standing decision DITEGAKKAN
+## 2026-09-18 — (owner): CANCEL crypto-2026-09-19-01; standing decision DITEGAKKAN (21:09)
 - Owner konfirmasi ulang: crypto memang sengaja dimatikan (16 Sep). Task crypto-2026-09-19-01 (dispatch CEO pagi 18 Sep) = PELANGGARAN standing decision → cancelled/superseded.
 - GUARD baru utk CEO & CTO: sebelum dispatch/ambil task, cek decisions.md bagian 'BY DESIGN / standing' — item di sana TIDAK BOLEH jadi task tanpa owner yang minta ulang secara eksplisit.
 - CTO pagi 07:30 besok: crypto-01 sudah tidak ada di queue — jangan diangkat; ganti dengan health check reguler.
@@ -429,41 +429,41 @@ Owner: "Gas semua agent bisa paralel kalau tidak saling ganggu"
 - RITUAL [PRODUCT]: grep '\[PRODUCT\]' = 0 entry baru sejak verdict 17 Sep 08:17 (sudah terjawab approve_prd). prod-04 menunggu Product Agent Senin 20 Sep 10:15. CEO tidak bikin spec fitur baru (SDLC 17 Sep).
 
 
-## 2026-09-18 21:26 (owner) — Mandor WEEKEND MODE
+## 2026-09-18 — (owner): Mandor WEEKEND MODE (21:26)
 - Owner: "Weekday seperti sekarang, weekend fokus improvement dan fitur dll."
 - Patched prompt Mandor 714dbdc87f54: Sab-Min = edu/evergreen (target ≥2/weekend, prod-03), listicle Sabtu, usulan improvement via [WEEKEND-IDEA] di ceo-decisions.md (CEO Senin verdict, data-first). Weekday = mode biasa tanpa perubahan.
 - Rasional data: Sab 197/Min 234 views vs weekday 500+ (nobot, 28d) — pengunjung weekend = riset/evergreen; konten Sab+Min 7 artikel vs 44 Jumat = gap. Market close = brief pasar weekend tidak relevan.
 - Verify: jobs.json repeat dict OK, WEEKEND MODE di prompt, enabled true.
 
-## 2026-09-18 21:31 (owner) — SDLC IDLE BRAINSTORM MODE (kedua org)
+## 2026-09-18 — (owner): SDLC IDLE BRAINSTORM MODE (kedua org) (21:31)
 - Owner: "SDLC juga bisa lebih banyak? Kalau empty bisa brainstorming."
 - Patched 8 slot: CTO×2 + Product teknikal, CTO×2 + Night CEO + Product hivePOS, CEO pagi teknikal. Queue kosong → health check TETAP + MAX 1-2 ide ber-data ke product-backlog.json (status=candidate, dedupe, larang deploy saat idle). CEO verdict promote→PRD (SDLC chain utuh, gak ada jalur pintas).
 
-## 2026-09-18 22:57 (owner) — HIRE 2 agent baru: IT-SEC + SRE (shared service, masuk SDLC)
+## 2026-09-18 — (owner): HIRE 2 agent baru: IT-SEC + SRE (shared service, masuk SDLC) (22:57)
 - Owner: perlu IT-SEC (security), SRE (stabilitas); DBA ditunda (CTO pegang dulu).
 - IT-SEC Auditor d677bd5dfd45 Senin 09:00 (glm-5.3, brief itsec_brief.py: ports/.env/auth-err/SSL/backup) — READ-ONLY, temuan → backlog candidate (source:itsec), auth/payments/security config tetap owner-only.
 - SRE 52522478db5f Rabu+Sabtu 09:30 (glm-5.3, brief sre_brief.py: docker/disk/latency/error/ledger) — READ-ONLY, usulan → backlog (source:sre), 🔴 insiden langsung lapor owner.
 - SDLC: keduanya MASUK chain sebagai idea-generator — CEO verdict → Product PRD (kalau fitur) → CTO build. Tidak ada jalur pintas deploy.
 
-## 2026-09-18 23:01 (owner) — IT-SEC upgrade: RED+BLUE TEAM + SECURITY GATE shift-left di SDLC
+## 2026-09-18 — (owner): IT-SEC upgrade: RED+BLUE TEAM + SECURITY GATE shift-left di SDLC (23:01)
 - Owner: IT-SEC harus review per-FITUR (safe/technical-hackable), cari celah per fitur & web — white hat, red team + blue team.
 - itsec_brief.py v2: [A] infra [B] FITUR BARU 7 hari via git diff (fokus review) [C] passive probes (headers/cookies).
 - Prompt IT-SEC d677bd5dfd45: RED (exploitability per fitur baru: IDOR/injection/privesc/logic/rate-bypass; passive only; tenant asli DILARANG disentuh — QA Test only) + BLUE (headers/SSL/port/secret hygiene) → temuan → backlog source:itsec-red/blue dgn exploitability rating. P0 = 🔴 baris pertama.
 - SECURITY GATE baru di SDLC: PRD Product Agent + task CTO yang sentuh auth/input/db/money WAJIB baris 'SEC-REVIEW: <poin serangan+mitigasi>' — dipatch ke 6 slot (Product×2 + CTO×4). IT-SEC Senin verify sampling.
 - Basis riset: shift-left security, OWASP ASVS L1-2, STRIDE ringan; passive-only red team (internal white-hat).
 
-## 2026-09-18 23:31 (owner Q via agent-utama) — BLOCKED-TASK PROTOCOL dikunci di 4 CTO builder
+## 2026-09-18 — (owner Q via agent-utama): BLOCKED-TASK PROTOCOL dikunci di 4 CTO builder (23:31)
 - Blocked ≠ gagal: itu GATE. 3 jenis: blocked_for_prd (jangan build, ambil task lain; >2 slot/±48 jam = [ESCALATE] ke owner) · blocked_owner (siapkan owner package: investigasi read-only + file + risiko + rollback; TETAP blocked sampai owner approve) · blocked_external (catat field needs, lapor 1 baris).
 - Dilarang: build tanpa spec, drop task diam-diam, bypass PRD gate, sentuh owner-only.
 - Patched: CTO teknikal pagi+malam, hivePOS slot1+slot2. Kasus live: hivepos-2026-09-17-02 blocked_for_prd (prd-activation, Product Agent first run Sab 19 Sep 01:30).
 
-## 2026-09-18 23:44 (owner) — Backlog anti-stagnation + P1-P4 scale + dashboard desktop responsive
+## 2026-09-18 — (owner): Backlog anti-stagnation + P1-P4 scale + dashboard desktop responsive (23:44)
 - PRIORITY SCALE dikunci: P1=minggu ini (customer-facing/data-integrity), P2=2 minggu, P3=bulan ini, P4=someday. Semua entry aktif di 4 file backlog sudah dinormalisasi.
 - ANTI-STAGNATION rule dipatch ke 3 CEO (teknikal pagi+evening, hivePOS night): idea/candidate >7 hari tanpa verdict = WAJIB verdict run itu; spec_ready >3 hari = eskalasi; blocked >2 slot = [ESCALATE]; dispatched >2 hari tanpa output = nudge max 2x.
 - Audit hari ini: TIDAK ada yang mandek — isr-01 P2 terjadwal besok 07:30; hivepos-02 P1 blocked_for_prd (PRD first run Sab 01:30, eskalasi kalau >2 slot); prod-01 P1 tunggu Council Minggu; prd-activation P1 (P0 lama dinormalisasi ke skala baru).
 - DASHBOARD RESPONSIVE: body max-width tier (480 → 980@900px → 1280@1280px → 1440@1600px) + layout /agents grid: office+SDLC side-by-side desktop (5fr/7fr), cards lain full-width, mobile tetap 1 kolom. Verified 390px & 1440px no overflow.
 
-## 2026-09-19 05:40 (owner, via agent-utama) — EVOLUTION IMPROVE malam #5 dieksekusi
+## 2026-09-19 — (owner, via agent-utama): EVOLUTION IMPROVE malam #5 dieksekusi (05:40)
 - Proposal #7 (kontradiksi budget CTO slot2 hivePOS): 'max 3 deploy/malam' → diselaraskan ke 'max 6-8/malam' (satu angka resmi owner 16 Sep). Sweep slot1 + Night CEO: sudah konsisten 6-8.
 - Proposal #2 (STATUS line): KONVENSI RESMI — baris terakhir setiap laporan WAJIB 'STATUS: ok|warn|error|blocked — alasan'. Dipatch ke 15 job reporter kedua org. Monitor/Evolution classifier baca baris ini dulu.
 - Proposal #6 (angka basi Night CEO): baris hardcoded '4 tenant/9 users/~86 orders' diganti instruksi 'ambil dari JSON brief script'.
@@ -474,7 +474,7 @@ Owner: "Gas semua agent bisa paralel kalau tidak saling ganggu"
 - 08:15 | Hermes 0.21.1→0.21.3 (a51143fb); gateway restart 06:12; scheduler catch-up verified | 4593 commits (backup-fix, catch-up) | verify: gateway_state 0.21.3 running; fire-test ok
 - 07:50 | Office v5: animasi "ngetik" → "on duty ⚡" standing holo-briefing; label filter & HUD ikut | owner request | verify: QC visual
 
-## 2026-09-19 08:15 WIB — CEO pagi (pasca-TCC restore; merge snapshot lokal)
+## 2026-09-19 — CEO pagi (pasca-TCC restore; merge snapshot lokal) (08:15 WIB)
 - MERGE: snapshot lokal ceo-decisions (TCC-cut 07:45) di-merge ke kanonik repo ini — blok REVIEWER 07:55 + CTO 07:55 di bawah. TCC pulih oleh owner 08:0x. Symlink data→repo MASIH diputus; pilihan restore symlink vs pola mirror = owner (lihat lessons-learned TCC 19 Sep: symlink + TCC block = hang /agents).
 - RITUAL [PRODUCT]: 0 entry baru sejak verdict 17 Sep 08:17 (approve_prd) → tidak ada verdict pending.
 - STANDING GUARD: crypto BY DESIGN, IG stop BY DESIGN — tidak disentuh, tidak ada pelanggaran hari ini.
@@ -525,7 +525,7 @@ Root cause unit 'lot': brief prompt TANPA baris satuan volume + tanpa sanitizer 
 - COMMIT SELEKTIF: stock.repository.ts mengandung ~70 baris pre-existing uncommitted (laporan-pasar reads, sparkline EQUITY) — hanya hunk task (2 method) yang di-stage via extracted-patch; sisa tetap uncommitted (pola worktree historis, bukan milik slot).
 - ops-24-01 (tanpa deploy): sre_brief.py counter worker kontekstual — SELF-HEAL / REAL ERROR / OOM-KILLED; replay 22 Sep PASS.
 
-## 2026-09-25 21:15 WIB — Mandat owner edu volume-spike EXECUTED (retry #1, agent-utama)
+## 2026-09-25 — Mandat owner edu volume-spike EXECUTED (retry #1, agent-utama) (21:15 WIB)
 - PUBLISHED: /akademi/volume-spike-arti-cara-membaca-dan-strategi-saham — teknikalid_growth.py publish-article (EDUCATIONAL, tags volume/edukasi/analisis teknikal/pemula)
 - VERIFIED FISIK: HTTP 200, <title> render penuh, keyword body (akumulasi/distribusi/2x rata-rata) muncul di HTML SSR; DB PUBLISHED 2026-09-25
 - Edu bridge prod-17-03 kini 2/2 (pullback-sma20 20 Sep + volume-spike 25 Sep) → status done, backlog dual-write updated
@@ -545,7 +545,7 @@ Root cause unit 'lot': brief prompt TANPA baris satuan volume + tanpa sanitizer 
 - FIX SISTEMIK (script-only, no deploy): teknikalid_growth.py insert_article kini _sanitize_llm() (mirror content-sanitizer.ts: saam + scaled-lot + bare-number-lot utk NEWS/STOCK_ANALYSIS saja); unit test 3/3 PASS; py_compile OK.
 - 0 deploy (SQL + skrip lokal Hermes).
 
-## 2026-09-28 16:05 — [OWNER] Approve eksekusi code audit
+## 2026-09-28 — [OWNER] Approve eksekusi code audit (16:05)
 - Approve: 7 empty-catch dianotasi intent (183f0a8, tsc 0) + kebijakan refactor-on-touch utk file >1000 baris. Verify: commit hash + tsc 0 error.
 
 ### [2026-09-28 18:45] CTO sore — qa-28-01 + qa-28-02 SQL patch (2 artikel, 1 transaksi, TANPA deploy)
@@ -568,7 +568,7 @@ teknikalidnew-app 4de0935e36de 2026-09-28 06:48:44 +0700 WIB
 teknikalidnew-worker 06082d2e2c25 2026-09-26 07:41:38 +0700 WIB
 commit pre-deploy live-unknown; merge HEAD: 1e4d517
 
-## 2026-10-01 07:35 — CTO pagi: merge+deploy wid-2026-09-27-1 (night_ready → main)
+## 2026-10-01 — CTO pagi: merge+deploy wid-2026-09-27-1 (night_ready → main) (07:35)
 - MERGE PROTOCOL dry-run bersih (exit 0, 0 konflik); schema-shield PASS (0 file migrations/prisma/sql di --cached). Merge commit 1e4d517 (--no-ff, preserve history malam), push origin/main 827952a..1e4d517.
 - Rollback anchor pre-deploy: app 4de0935e36de (28 Sep) / worker 06082d2e2c25 — `docker tag 4de0935e36de teknikalidnew-app:latest && docker compose up -d app` + `git revert 1e4d517`.
 - BASELINE-THEN-DEPLOY: 5 URL 200 before=after; chips 'Jelajahi sinyal lain' 0→2 (SSR anon), 10/10 href render (golden-cross, death-cross, oversold, overbought, pullback-sma20, ema-cross, macd-bullish, stochastic-oversold, volume-spike, blue-chip), flex-wrap ada, widget mingguan utuh di atas chips. Deploy 1/1 (07:35, pre-market). tsc --noEmit exit 0.
@@ -580,13 +580,13 @@ commit pre-deploy live-unknown; merge HEAD: 1e4d517
 - POST-VERIFY DB: 'paling ekstrem' 0; 'terendah di daftar ini' 1; RSI BBSI/ARTO/PTPP/LPKR + DSNG Rp1.500 -4,15% + breadth 312/387 utuh; rekap disclaimer 1 + 866/590/230/46 + movers utuh. LIVE (ISR ≤300s, tanpa deploy): brief30 200 ('paling ekstrem' 0 / reword x2), rekap 200 (disclaimer 1 / 866 x3).
 - Root-cause (pola ke-3 berturut qa-27-01 → qa-30-01 → qa-01-01): superlatif LLM tanpa ranking-cek lolos review karena 1 superlatif berada di luar scope spec patch hari sebelumnya — rule generator (superlatif WAJIB ranking-cek) sudah dilog 30 Sep; ini eksekusi ke-4 kalinya membuktikan rule belum tervalidasi di jalur generator.
 
-## 2026-10-02 07:30 — CTO pagi (prd-03 merge + insiden clean-build)
+## 2026-10-02 — CTO pagi (prd-03 merge + insiden clean-build) (07:30)
 - ROLLBACK ANCHOR: image 61a0efb965a5 (app, kemarin) / main 75b6cec. Deploy hari ini: 0047de90a08b dari main 4153671+efad7a8+dbf2367.
 - MERGE prd-03 night/prd-2026-10-01-03 → main 4153671 (--no-ff, dry-run exit 0, schema-shield PASS 0 DDL).
 - INSIDEN BUILD: build dari main bersih pertama sejak drift Aug-4 GAGAL typecheck — (1) 2 dead untracked scripts generate-wave/rank-wave.ts ref model WaveAssignment; (2) 6 src file main (berita page, article repo/service, admin review, sitemap, schema-builder agent) pakai relasi reviewedBy yang TIDAK pernah ada di schema main. DB prod diverifikasi SUDAH punya reviewedById + tabel WaveAssignment (schema worktree = akurat, main tertinggal). Deploy 2 minggu terakhir (termasuk 1e4d517 kemarin) selalu dari worktree kotor — cache Docker menutupi. FIX: efad7a8 (.dockerignore dead scripts) + dbf2367 (schema sync, 0 DDL dieksekusi). Dampak positif: deploy kini reproducible dari main.
 - prd-01 (utm-attribution) assigned slot sore 16:45 — TAPI butuh prisma migrate = KOORDINASI OWNER (PRD eksplisit). Bila owner belum approve: task tidak dieksekusi, next = prd-02.
 
-## 2026-10-02 18:45 — CTO sore: prd-2026-10-01-02 deploy (title fix) + prd-01 blocked_for_owner
+## 2026-10-02 — CTO sore: prd-2026-10-01-02 deploy (title fix) + prd-01 blocked_for_owner (18:45)
 - ROLLBACK ANCHOR: image 0047de90a08b (app pagi) / main 1cc3c16 sebelum b9e98a1. Deploy sore: app dari b9e98a1 (18:39 WIB) — 2/2 org hari ini.
 - prd-02 title fix: 1 caller terverifikasi (page.tsx L90, grep substring(0,25) 1 hit); helper pure + selftest 144 fixture; before "(Pe…" → after "Bank Rakyat Indonesia" live; og:title untouched.
 - prd-01 utm-attribution: DITAHAN — prisma migrate = DDL area owner (hard rule + PRD eksplisit "KOORDINASI OWNER"), belum ada approval di ceo-decisions hingga 2 Okt 08:15. Owner package lengkap (perubahan/risiko/rollback) di field owner_brief entry. Status blocked_for_owner, bukan failed.
@@ -603,3 +603,8 @@ commit pre-deploy live-unknown; merge HEAD: 1e4d517
 - DATA: 6 job error 3 Okt vs baseline 0-1 sejak 26 Sep. Puncak 06:31-07:00: Growth 06:31 + PT 06:55 + Tech Briefing 07:00:57 + Content Reviewer 07:00:58 — 3 org beda BEREMBERER di menit yang sama menghantam window kuota 5-jam z.ai yang sudah terbakar night jobs. Rerun manual 08:37/08:40 gagal 1302 (request-rate congestion) = window 08:1x-08:4x masih padat.
 - REKOMENDASI OFFSET (eksekusi = owner/CEO decision, PRD eksplisit scope detection+rerun only): job laporan pagi kritikal disebar minimal 15 menit antar-job se-org dan tidak menumpuk lintas-org pada menit sama: Growth 06:30, PT Weigh-In 06:45, Content Reviewer 07:15, Tech Briefing 07:30 — sehingga satu window kuota tidak diperebutkan 4 job sekaligus dan kegagalan beruntun tidak lagi simultan.
 - RASIONAL: z.ai kuota 5-jam rolling — kegagalan beruntun pagi = semua window yang sama; spread 15m memberi ruang retry bawaan + auto-rerun baru (zai_quota_rerun.py) bekerja bertahap, bukan 4 sekaligus setelah reset.
+
+## 2026-10-04 07:4x — CTO pagi: night merge prd-2026-10-03-01 + anchor pre-deploy prd-01
+- NIGHT-MERGE AUDIT: main bersih 22 jam (0 commit 21:45-07:00; 2 commit lokal unpush ternyata docs CTO 3 Okt 07:36, jam aman). Merge night/prd-2026-10-03-01 --no-ff 0f35d7f (dry-run 0, schema-shield PASS) + push. Re-verify: py_compile 3 file + pytest fixture 7/7.
+- ROLLBACK ANCHOR pre-deploy prd-2026-10-01-01: MAIN_HEAD a47b97491335 (sebelum merge); app 3a13e456f1bf (37h); worker 06082d2e2c25 (8d). Rollback prd-01 = git revert <commit-fitur> + rebuild; DDL rollback = ALTER TABLE "PageView" DROP COLUMN "utmSource"/"utmMedium" (additive, 0 row lama berubah).
+- prd-2026-10-03-01 cron job ZAI Quota Rerun BELUM dibuat — owner action 1 perintah (usulan: hermes cron create '5-59/10 7-21 * * *' --name 'ZAI Quota Rerun' --no-agent --script zai_quota_rerun.py). agent-scheduler plist juga masih menunggu owner bootstrap (prd-02-01).
