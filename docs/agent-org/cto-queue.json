@@ -529,7 +529,7 @@
    "type": "feature",
    "date": "2026-10-01",
    "created_by": "Product Agent nightly buffer-keeper 1 Okt 22:1x (PRD idea-2026-09-25-1 ditulis 30 Sep 22:1x; CEO mandate promote 28 Sep 08:15)",
-   "scheduled_slot": "2026-10-03 16:45 CTO sore (approve owner 3 Okt 07:2x via DM 24769; prisma migrate DDL diizinkan — backup fresh <24h WAJIB, deploy app+worker bareng)",
+   "scheduled_slot": "2026-10-04 07:30 CTO pagi (owner-approved 3 Okt DM 24769 — prisma migrate additive diizinkan; deploy app+worker bareng ≤08:45)",
    "priority": "P2",
    "status": "approved_by_owner",
    "prd_id": "idea-2026-09-25-1",
@@ -613,7 +613,7 @@
    "created_by": "Product Agent nightly buffer-keeper 3 Okt 22:1x WIB",
    "scheduled_slot": "CTO slot berikutnya (ops host -- bukan deploy aplikasi; hindari quiet zone 11:00-18:00)",
    "priority": "P2",
-   "status": "night_ready",
+   "status": "done",
    "prd_id": "sre-2026-10-03-2",
    "north_star": "consistency/data reliable -- laporan pagi = janji harian ke owner; 4 laporan gagal beruntun 3 Okt 06:31-07:00 (429-1308 kuota 5-jam) tanpa deteksi/rerun = silent gap",
    "title": "P2 OPS (PRD sre-2026-10-03-2): auto-rerun laporan pagi pasca-reset kuota 5-jam z.ai -- parse 429-1308 'reset at HH:MM' dari errors.log, antri hermes cron run +5mnt, gagal-masuk-digest; 0 kode aplikasi teknikal.id, 0 DB",
@@ -622,7 +622,8 @@
    "verify_evidence": "NIGHT 3 Okt 23:0x: fixture-test 25/25 PASS (test_zai_quota_rerun.py, fixture = baris errors.log NYATA insiden pagi); AST parse OK semua; LIVE run zai_quota_rerun.py: 4 insiden 1308 terdeteksi eksak, PT+Tech pulih via jobs.json, Growth+Reviewer giveup (rerun manual 08:37/08:40 gagal 1302 = bukti attempt-2 +35m benar); cron-mode idempotent silent exit 0 (3x run); digest dry-run: 7 baris gagal ter-render (4 kuota + 3 hivePOS non-kuota tertangkap bonus); 0 kode aplikasi teknikal.id, 0 DB, 0 deploy, run_ledger.py TIDAK disentuh (AC5).",
    "estimate_review_min": 10,
    "night_result": "Script BARU ~/.hermes/scripts/zai_quota_rerun.py (dipasang live 23:14 + snapshot di repo utk review): deteksi 429-1308 'reset at' dari errors.log → auto `hermes cron run <id>` bg pada reset+5m, attempt-2 +35m (bukti live 1302), giveup t2+60m sekali-lapor; window 07:05-21:45 dgn DEADLINE-SHIFT (quiet zone = geser bukan batal — laporan=janji); idempotent state.json atomic; pruning 7d. owner_morning_digest.py +section 'Laporan pagi gagal' (kuota + non-kuota apa-pun-penyebab <24h, dedupe). ACTION CTO PAGI (ops host, BUKAN deploy): (1) review diff docs/agent-org/ops/ (3 file); (2) cek `hermes cron list` utk job 'ZAI Quota Rerun' — BELUM dibuatkan cron job (butuh persetujuan interval; usul */10 07:05-21:45 = expr '5-59/10 7-21 * * *'; buat via `hermes cron create '5-59/10 7-21 * * *' --name 'ZAI Quota Rerun' --no-agent --deliver telegram:500212724 --script zai_quota_rerun.py`); (3) opsional: re-run manual Growth+Reviewer (last_status masih error 3 Okt). 1302-only malam (hivePOS 01:04-02:35) sengaja TIDAK auto-rerun (bukan kuota-window; provider congestion) — visible via digest.",
-   "completed_at": "2026-10-03 23:2x WIB (night)"
+   "completed_at": "2026-10-04 07:4x WIB (CTO pagi — night_ready merge)",
+   "result": "DONE 04 Okt 07:4x CTO pagi (night_ready merge, TANPA deploy aplikasi — ops host). Merge protocol: dry-run exit 0, SCHEMA-SHIELD PASS (6 file docs/agent-org/ops/ + changelog/queue/decisions), merge --no-ff 0f35d7f, push origin/main (ikut bawa 2 commit docs CTO 3 Okt 07:36 yang belum ter-push — jam aman, bukan bypass hard-gate). Re-verify independen: py_compile 3 script OK + fixture-test pytest 7/7 PASS (test_zai_quota_rerun.py). Script zai_quota_rerun.py live di ~/.hermes/scripts (night pasang 23:14, snapshot repo). CRON JOB BELUM dibuat (guard: butuh persetujuan interval; usulan expr 5-59/10 7-21 * * * — owner 1x hermes cron create). Bonus merge: laporan pagi 4 Okt sukses (run ini) = kuota window lewat tanpa insiden."
   },
   {
    "id": "prd-2026-10-03-02",
@@ -636,6 +637,30 @@
    "north_star": "growth register -- funnel patah di value-prop (4/91 heavy user sentuh auth); saved-screen = hook register terkuat (perilaku bookmark manual 388v/12IP sudah terbukti di data)",
    "title": "P2 FITUR (PRD idea-2026-10-03-1): Saved Screen screener -- simpan preset + quick-add watchlist; guest -> register utm_source=save_screen; prisma migrate KOORDINASI OWNER (model additive)",
    "spec": "INTENT (feature, PRD LENGKAP di product-backlog.json idea-2026-10-03-1 -- AC+data_evidence+metadata v2 di sana; baca PRD, jangan narasi). DONE WHEN: AC terpenuhi + bukti live (SQL+curl) + changelog == merge + panel funnel mencatat utm_source=save_screen."
+  },
+  {
+   "id": "diag-2026-10-04-01",
+   "type": "diagnostic",
+   "date": "2026-10-04",
+   "created_by": "Sunday Strategy Council 4 Okt 08:00 (retro: briefs 28 Sep+ 0-1v vs briefs 14-23 Sep 3-19v/wk)",
+   "priority": "P2",
+   "status": "pending",
+   "north_star": "growth — distribusi konten baru; konten baik tanpa index = tidak ada",
+   "title": "P2 DIAGNOSTIK: GSC index-coverage audit konten publish ≥28 Sep — berapa indexed/pending/excluded, sitemap freshness; read-only",
+   "spec": "Baca GSC (API/credential yang dipakai GSC Snapshot Harian) untuk 12 artikel publish 28 Sep–4 Okt: status index (indexed/pending/excluded+alasan), last crawled. Cek sitemap.xml freshness (curl). LAPORAN ANGKA ke ceo-decisions.md + rekomendasi (request indexing manual vs tunggu reindex). HARD: read-only, NO config change website, NO deploy. DONE WHEN: tabel coverage 12 artikel + 1 rekomendasi tertulis.",
+   "scheduled_slot": "CTO pagi Senin 5 Okt 07:30 (read-only NO deploy; sore 4 Okt = prd-01 utm deploy, jangan diganggu)"
+  },
+  {
+   "id": "ops-2026-10-04-01",
+   "date": "2026-10-04",
+   "type": "ops",
+   "priority": "P3",
+   "status": "pending",
+   "created_by": "CEO pagi 4 Okt 08:15 (backlog sre-2026-09-26-1 owner-approved 29 Sep via morning-digest; DEFER 28 Sep selesai, review date 5 Okt)",
+   "scheduled_slot": "2026-10-05 07:30 CTO pagi (script-only host, NO deploy aplikasi)",
+   "north_star": "data reliable — alert fatigue: raw error-counter menandai auth one-off pasca-deploy sebagai APP ERROR (1 baris InvalidCheck 26 Sep)",
+   "title": "P3 OPS: sre_brief.py app error-counter kontekstual — grep app 1-3 + match InvalidCheck/pkce/CSRF + timestamp ±60mnt dari container StartedAt -> label DEPLOY-NOISE (mirror logika worker ops-2026-09-24-01)",
+   "spec": "INTENT (ops script-only; data lengkap di product-backlog.json sre-2026-09-26-1): mirror verdict worker yang sudah shipped. Rule: kalau app grep 1-3 DAN baris match InvalidCheck/pkce/CSRF DAN timestamp dalam ±60mnt container app StartedAt -> label DEPLOY-NOISE vs REAL ERROR. DONE WHEN: (1) fixture self-test: baris InvalidCheck dlm 60mnt StartedAt ter-label DEPLOY-NOISE; (2) error real di luar window TETAP dihitung (0 false-negative); (3) laporan pagi berikutnya render label baru. HARD: 0 kode aplikasi, 0 DB, 0 deploy."
   }
  ]
 }

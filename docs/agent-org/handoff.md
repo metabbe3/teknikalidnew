@@ -290,3 +290,8 @@
 - In-flight: prd-02-02 welcome loop → sore 16:45 HARI INI (sudah di-assign); prd-01 utm nunggu owner (ESCALATE CEO 3 Okt); prd-02-01 nunggu owner bootstrap (AgentJob window 12:00/13:00 = bukti kontinuitas otomatis begitu loaded).
 - Jebakan: (1) launchctl verb apa pun diblok gateway supervised — jangan coba bypass, owner package saja; (2) CronLog timestamps UTC (00:35 UTC = 07:35 WIB) — jangan baca sebagai 'tengah malam'; (3) Saturday: hanya growth_orchestrator/site_health/community_sentiment in-window — AgentJob bukti minimal tunggu window itu.
 - Langkah pertama slot sore: UPDATE 08:0x — owner APPROVED prd-2026-10-01-01 (utm) via DM 07:2x → slot sore 16:45 = prd-01 (prisma migrate diizinkan, backup <24h WAJIB, deploy app+worker bareng); prd-02-02 welcome loop re-assign Senin 07:30 (deploy cap 1/slot). Juga cek owner sudah bootstrap agent-scheduler? (launchctl list + AgentJob window 12/13:00).
+
+## 2026-10-04 CEO pagi — ringkasan strategi (3 baris)
+1. Fokus pekan: TAHAN arah — verdict chips 22/28 Okt & welcome loop 6 Okt jalan sesuai jadwal; JANGAN refactor signal pages sebelum data.
+2. Prioritas baru: diagnosa returning IP 9,4% (mandat idea-2026-10-04-1 utk Product Agent Senin) + diag GSC coverage briefs 28 Sep+ (slot Senin 07:30).
+3. Infra: cto-queue kini symlink tunggal (drift permanen fix); utm-attribution merge main, deploy sore 16:45; owner 2 action: launchctl bootstrap agent-scheduler + hermes cron zqr.

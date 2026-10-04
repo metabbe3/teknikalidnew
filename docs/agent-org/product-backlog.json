@@ -397,12 +397,12 @@
    "id": "sre-2026-09-26-1",
    "date": "2026-09-26",
    "priority": "P3",
-   "status": "owner_approved",
+   "status": "dispatched",
    "source": "sre",
    "type": "ops",
    "title": "sre_brief.py error-counter APP belum kontekstual: 1 'error' hari ini = auth.js InvalidCheck one-off 22mnt pasca-deploy",
    "data": "SRE brief 26 Sep 09:30: APP ERRORS 24h=1. Investigasi read-only: baris tunggal 08:04 WIB '[auth][error] InvalidCheck: pkceCodeVerifier could not be parsed' = user dgn cookie/code-verifier lama login saat container baru saja recreate (deploy cto-2026-09-26-01 07:42, RestartCount=0, OOMKilled=false, site 200, 0 keluhan). KELAS SAMA dgn worker counter yg sudah difix (ops-2026-09-24-01 shipped 25 Sep): raw grep 'error|fatal|panic' akan menghitung setiap auth one-off pasca-deploy sebagai error -> alert fatigue. Usulan kecil (ops): di sre_brief.py, kalau app grep=1-3 DAN baris match InvalidCheck/pkce/CSRF DAN timestamp dalam ±60mnt container StartedAt -> label DEPLOY-NOISE vs REAL ERROR (mirror logika worker verdict). North star: DATA RELIABLE.",
-   "note": " || CEO 28 Sep: DEFER — P3 ops monitoring, CTO queue penuh (4 pending vs budget 2/hari); review 5 Okt.",
+   "note": " || CEO 28 Sep: DEFER — P3 ops monitoring, CTO queue penuh (4 pending vs budget 2/hari); review 5 Okt. || CEO 4 Okt 08:15: DISPATCH -> queue ops-2026-10-04-01, slot Senin 5 Okt 07:30 (script-only).",
    "review_date": "2026-10-05",
    "owner_verdict_at": "2026-09-29T07:42:00+07:00",
    "owner_verdict_source": "morning-digest-approve"
@@ -479,7 +479,7 @@
    "source": "weekend-idea Mandor 27 Sep; council RECOMMEND APPROVE 08:05; CEO verdict 27 Sep 08:15 APPROVE -> promoted_prd",
    "title": "Signal Page Discovery — halaman sinyal (moat SEO) kehilangan trafik: 10/12 halaman 0 views, kini GC ikut runtuh",
    "priority": "P2",
-   "status": "night_ready",
+   "status": "shipped",
    "north_star": "growth traffic + time spent (signal pages = moat + fondasi brief/IG)",
    "hypothesis": "Signal pages hanya hidup via internal-link dari /stocks (GC: 87% referrer). Widget mingguan (live 24 Sep) memusatkan klik ke GC+DC saja; 10 halaman sinyal lain mati kelaparan link. Perlu spec discovery: entry-point nav / cross-link kontekstual / distribusi merata.",
    "data": "CEO 27 Sep (DB): PageView /saham-% 0 views sejak 24 Sep; 7d hanya GC 19 + pullback 2; 10/12 halaman 0. CTO 29 Sep 07:45 (SQL nobot): signal_pages 34v (18-23 Sep) -> 3v (24-29 Sep) = -91%, SEDANGKAN /stocks root 250v -> 147v (~-34% per-hari ekuivalen) = runtuh ASIMETRIS sejak widget live 24 Sep, bukan sekadar GSC/weekend noise. Baseline utk PRD. || CTO 30 Sep 18:5x (read-only verify): widget CTR = 0 — /stocks nobot 85v (27-30 Sep) vs signal pages 0v (28-30 Sep, 6 hari bertur dekat 0); referrer signal-page 7d: direct 2/chatgpt 1/google 1 (0 dari /stocks = anchor widget tak diklik). ROOT CAUSE divergensi angka widget vs rekap: findStockIdsWithCrossSignal TANPA filter isGorengan (19 GC live) vs metode kanonik rekap non-gorengan (14); konsisten dgn landing page /saham-golden-cross yang juga tampil gorengan (MTLA dsb, 30 rows) — by-design pair, BUKAN regresi; delta kemarin '+3' = gap gorengan yang sama, kini +7 (UVCR/CSMI/AIMS/CCSI cross 29-30 Sep). EOD 30 Sep IN (^JKSE 6071.14), widget label '28-30 Sep' benar.",
@@ -502,7 +502,8 @@
    "estimate_tool_calls": 6,
    "sec_review": "SSR read-only, link statis dari konstanta (bukan input user); tanpa query baru wajib; injection/IDOR n/a; privasi n/a.",
    "first_step": "Konstanta SIGNAL_PAGES (slug+label) -> komponen signal-links.tsx SSR -> insert page /stocks bawah widget -> curl grep verify -> catat baseline gate di result.",
-   "result": "NIGHT CTO 30 Sep 23:2x WIB — implementasi PENUH di branch night/wid-2026-09-27-1 (pushed), siap review+merge+deploy pagi. FILES: src/components/stock/signal-links.tsx (BARU, SSR pure static, 10 chip) + insert di stocks/page.tsx L243 tepat di bawah WeeklySignalWidget. VERIFY (bukti nyata, dev server :3100 + DB read-only): tsc --noEmit EXIT 0; eslint kedua file EXIT 0; curl anon -A Mozilla /stocks HTTP 200 (918KB) — grep 10 href /saham-* unik semua render (golden-cross/death-cross/oversold/overbought/pullback-sma20/ema-cross/macd-bullish/stochastic-oversold/volume-spike/blue-chip); label 'Jelajahi sinyal lain' ada; POSISI widget (19133) < chips (19500) = widget tetap di atas AC4 terpenuhi; chips flex-wrap pola identik quick-pills existing AC5. DEVIATION AC1: hub /saham TIDAK di-link — route 404 nyata (curl 200 hanya utk /saham-golden-cross; /saham tanpa page.tsx), link ke 404 dari moat SEO = soft-404 baru; opsi: bikin hub page di task terpisah. AC2 skip by-design (link wajib, count opsional — 0 query tambahan, seringkas mungkin). GATE AC6 utk CTO pagi dicatat: baseline signal-pages 7d = 3v (24-29 Sep); sukses 4 minggu = salah satu halaman non-GC/DC >=5 views/7d ATAU total signal-pages >=20 views/7d; review 2026-10-28. Estimasi review CTO pagi: 5-10mnt (2 file, diff kecil, verify sudah jalan)."
+   "result": "NIGHT CTO 30 Sep 23:2x WIB — implementasi PENUH di branch night/wid-2026-09-27-1 (pushed), siap review+merge+deploy pagi. FILES: src/components/stock/signal-links.tsx (BARU, SSR pure static, 10 chip) + insert di stocks/page.tsx L243 tepat di bawah WeeklySignalWidget. VERIFY (bukti nyata, dev server :3100 + DB read-only): tsc --noEmit EXIT 0; eslint kedua file EXIT 0; curl anon -A Mozilla /stocks HTTP 200 (918KB) — grep 10 href /saham-* unik semua render (golden-cross/death-cross/oversold/overbought/pullback-sma20/ema-cross/macd-bullish/stochastic-oversold/volume-spike/blue-chip); label 'Jelajahi sinyal lain' ada; POSISI widget (19133) < chips (19500) = widget tetap di atas AC4 terpenuhi; chips flex-wrap pola identik quick-pills existing AC5. DEVIATION AC1: hub /saham TIDAK di-link — route 404 nyata (curl 200 hanya utk /saham-golden-cross; /saham tanpa page.tsx), link ke 404 dari moat SEO = soft-404 baru; opsi: bikin hub page di task terpisah. AC2 skip by-design (link wajib, count opsional — 0 query tambahan, seringkas mungkin). GATE AC6 utk CTO pagi dicatat: baseline signal-pages 7d = 3v (24-29 Sep); sukses 4 minggu = salah satu halaman non-GC/DC >=5 views/7d ATAU total signal-pages >=20 views/7d; review 2026-10-28. Estimasi review CTO pagi: 5-10mnt (2 file, diff kecil, verify sudah jalan).",
+   "note": " || CEO 4 Okt: sync status — deploy live 1 Okt 07:35 (queue wid-2026-09-27-1 done, QA pass); verdict data chips tetap 28 Okt."
   },
   {
    "id": "sre-2026-09-30-1",
@@ -521,7 +522,7 @@
    "id": "idea-2026-10-01-1",
    "date": "2026-10-01",
    "priority": "P2",
-   "status": "spec_ready",
+   "status": "shipped",
    "source": "product-agent nightly buffer-keeper (riset SQL read-only 1 Okt 22:0x)",
    "title": "Admin Retention Panel — satu sumber kebenaran retensi: weekly returning IP % (guard 12% auto-flag) + user cohort D1/D7 + dead-letter notif metric (CEO menghitung manual tiap pagi via SQL)",
    "north_star": "returning users (NS#3) + data reliable (owner lens 17 Sep: satu sumber kebenaran, akurat)",
@@ -546,7 +547,20 @@
    "risk": "low",
    "risk_note": "low: area admin existing (requireAdmin preseden sec-28-01 baseline), read-only compute, 0 migrasi; jebakan TZ WIB wajib +interval '7 hours' (handoff teknikal).",
    "estimate_tool_calls": 6,
-   "first_step": "Kontrak dulu: response shape GET /api/admin/retention (fixture 2 minggu dari data asli) -> service query (TZ guard unit test) -> panel -> curl verify + SQL parity."
+   "first_step": "Kontrak dulu: response shape GET /api/admin/retention (fixture 2 minggu dari data asli) -> service query (TZ guard unit test) -> panel -> curl verify + SQL parity.",
+   "note": " || CEO 4 Okt: sync status — live 2 Okt (queue prd-2026-10-01-03 done); /admin/retention = sumber kanonik retensi, CEO stop hitung manual."
+  },
+  {
+   "id": "idea-2026-10-04-1",
+   "date": "2026-10-04",
+   "priority": "P2",
+   "status": "idea",
+   "source": "CEO Sunday 4 Okt 08:15 (mandat Product Agent Senin 10:15)",
+   "title": "Diagnosa returning IP 19,5% -> 9,4% dalam 2 pekan — segmentasi /stocks heavy users: churn nyata vs artefak window collapse signal pages",
+   "north_star": "returning users (NS#3) — guard 12% dilanggar 2 pekan beruntun (12,5% -> 9,6% weekly; 7d rolling 9,4%)",
+   "hypothesis": "Returning IP jatuh bukan karena user pergi, tapi karena window signal-pages collapse + IG pause memotong kunjungan berulang. Kalau heavy users /stocks (91 IP >=2 views pada data 17 Sep) masih aktif, masalah = kurang alasan kembali (fitur welcome loop/save-screen sedang in-flight); kalau mereka juga hilang, ada regresi produk lain.",
+   "first_step": "ANALISIS DATA (read-only SQL, no code): returning IP % mingguan 8 pekan; segment IP /stocks berat (>=5 views/30d per data 17 Sep) — berapa yang masih aktif pekan ini vs drop-off; overlap heavy-user vs register. Output = insight di entry ini + keputusan PRD/no-PRD. JANGAN dispatch engineering sebelum data.",
+   "anti_stagnation_due": "verdict Product Agent Senin 5 Okt 10:15"
   }
  ]
 }

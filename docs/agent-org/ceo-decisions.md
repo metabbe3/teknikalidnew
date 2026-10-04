@@ -310,3 +310,28 @@ Root cause: konflik config — max_posts_per_day=1 vs brief harian 5/minggu mema
 - DISPATCH: 0 task baru — queue sudah punya 3 spec_ready feature (prd-01 utm-attribution P2, prd-03 retention-panel night_ready branch menunggu merge, prd-02 title-fix P3) = > budget 2/hari; CTO punya 2 slot untuk ini. ANTI-LOOP + duplikat check: 0 overlap.
 - RETENTION GUARD: ret7d SQL hari ini 8,3% (< guard 12%) — singkat window pasca-collapse; keep watch. Retention panel (prd-03) begitu live = satu sumber kebenaran, CEO stop hitung manual.
 - STATUS: ok — sehat; 0 dispatch by design (queue penuh spec_ready > budget), sync drift diperbaiki.
+
+## 2026-10-04 08:00 — SUNDAY STRATEGY COUNCIL (pekan 28 Sep–4 Okt)
+📊 Views 456 (-35% WoW, pekan ke-2 turun) · register 4 (7) · new users 2 (1) · returning IP 9,6% (< guard 12%).
+
+[COUNCIL] KEPUTUSAN PEKAN 5–11 OKT (max 3):
+1. TAHAN ARAH signal pages — verdict chips wid-27-1 TETAP 22 Okt (pasca-deploy 1 Okt baru 5 signal-page PV; dilarang refactor sebelum data). Target: signal-page views ≥50/wk (baseline 3).
+2. EKSEKUSI prd-2026-10-02-02 First-Session Welcome Loop sesuai jadwal slot CTO 6 Okt 07:30 — jangan digeser. Target: D1 retention ≥5% registrasi baru dalam 2 pekan (baseline D1/D7=0/0).
+3. DISTRIBUSI KONTEN BARU MATI — briefs 28 Sep+ dapat 0–1v padahal briefs 14–23 Sep masih tarik 3–19v/wk: dispatch CTO audit GSC index coverage (diag-2026-10-04-01). Target: brief baru terindeks ≤3 hari pasca-publish; BUKAN menambah volume konten.
+
+MANDOR (mix konten, mulai Senin 5 Okt): tetap 1 brief/hari + rekap mingguan — jangan nambah frekuensi saat distribusi macet; prioritas stock-detail pages (DAILY_SNAPSHOT 40v/wk, MEJA/DYAN/GOTO) dijadikan rujukan internal link dari briefs.
+
+CONFUSING (jangan bunuh): peak 1 Okt 114v vs 29 Sep 24v — belum jelas pemulihan atau noise; register 7→4 tapi new users 1→2 — n kecil, watch 1 pekan. STOP: IG tetap stop (owner 17 Sep); oversold/volume-spike 0v 2 pekan — hold sampai verdict chips 22 Okt, baru pertimbangkan merge/redirect.
+
+ORG HEALTH: Content Reviewer FAIL 2x (3 Okt, z.ai 429 06:30–08:40 — rate limit, bukan bug kode; Growth Daily Check kena sama & sudah pulih 4 Okt). Watch run 08:40 hari ini; fail lagi → re-run manual + usul stagger jadwal pagi.
+
+## 2026-10-04 08:15 — CEO pagi (ritual [PRODUCT] 0 pending; queue drift sync; 1 dispatch ops; mandate returning)
+- RITUAL [PRODUCT]: 0 entry pending. STANDING GUARD dipatuhi (IG pause 17 Sep, crypto — 0 task fix). Council 08:00 sudah jalan 30 mnt sebelum CEO pagi (summari di blok atas) — CEO pagi eksekusi lanjutannya.
+- QUEUE SYNC + STRUCTURAL FIX: drift ke-2 cto-queue data-dir(44: +diag-04-01) vs repo(45: +prd-03-01 done, prd-03-02 spec_ready) — data-dir CTO-pagi mungkin tulis ke file ter-symlink? bukan: file masih regular, mtime 08:03 > merge CTO 07:33. UNION merge 46 + dispatch baru = 47; data-dir cto-queue.json kini SYMLINK ke repo (preseden product-backlog 3 Okt) — drift struktural selesai permanen. Backup .bak-20261004-drift.
+- VERDICT CANDIDATE/AUDIT: 0 candidate tanpa verdict. STALE-STATUS FIX: wid-2026-09-27-1 night_ready->shipped (queue done 1 Okt; verdict data chips tetap 28 Okt); idea-2026-10-01-1 spec_ready->shipped (prd-2026-10-01-03 done 2 Okt — /admin/retention = sumber kanonik retensi; CEO STOP hitung manual). Semua entry aktif ber-priority.
+- DISPATCH ops-2026-10-04-01 P3 (backlog sre-2026-09-26-1 owner-approved 29 Sep, review date HARI INI): sre_brief.py app error-counter kontekstual DEPLOY-NOISE mirror worker ops-24-01 — slot Senin 5 Okt 07:30, script-only NO deploy. ANTI-LOOP ok (topik beda dari QA-sanitizer), duplikat check ok (0 task error-counter APP existing). DONE WHEN: fixture self-test DEPLOY-NOISE + 0 false-negative + laporan pagi render label.
+- MANDATE PRODUCT: +idea-2026-10-04-1 (P2 idea) — diagnosa returning IP 19,5%->9,4% 2 pekan (guard 12% dilanggar 2 pekan beruntun): segmentasi heavy /stocks (91 IP >=2 views baseline 17 Sep) churn nyata vs artefak collapse signal pages. Verdict PRD Product Agent Senin 5 Okt 10:15. Bukan dispatch engineering — SDLC.
+- METRIK 7d: views 515 (-28% vs 714; kelanjutan collapse signal-pages pasca-fix + IG pause + GSC reindex = NOISE, verdict chips 28 Okt). register_views 7/7d (naik 4->7, baseline 9) = PEMULIHAN. returning IP 9,4% < guard 12% = DATA PERHATIAN (dua pekan; mandat diagnosa di atas). EOD 2 Okt + indicators 2 Okt = Jumat terakhir, fresh benar — pipeline sehat.
+- Klasifikasi: MATI = distribusi konten baru (briefs 28 Sep+ 0-1v; diag-2026-10-04-01 GSC coverage slot Senin). PERTUMBUHAN = register 4->7 + utm-attribution merge main ed07aa7 07:56 (deploy sore, atribusi hook mulai terukur). NOISE = delta w/w views.
+- UTM DEPLOY NOTE: commit ed07aa7 merge ke main 07:56; deploy app+worker = slot CTO sore 16:45 (cap 1/slot) — prisma migrate owner-approved DM 24769, backup <24h WAJIB.
+- STATUS: ok — sehat; ritual tuntas, queue sync permanen, 1 dispatch dalam budget, 2 menunggu owner (plist bootstrap, cron zqr).
