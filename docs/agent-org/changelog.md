@@ -255,3 +255,11 @@
 - impact_check_due: 2026-10-05
 - CATATAN non-blocking: nama ~140 stok sudah terpotong 30-char dari sumber Yahoo upstream ("Alamtri Resources Indonesia Tb") — di luar scope PRD; kandidat data-hygiene backlog jika owner mau.
 - prd-2026-10-01-01 (utm-attribution) = blocked_for_owner (prisma migrate DDL area owner; owner_brief lengkap di queue entry — approve via agent utama).
+
+## 2026-10-03 23:2x — prd-2026-10-03-01 / sre-2026-10-03-2 (z.ai 429-1308 auto-rerun, night_ready)
+- task-id: prd-2026-10-03-01 · type: ops host · PRD: sre-2026-10-03-2 · branch: night/prd-2026-10-03-01
+- deploy: TIDAK ADA (ops host — 0 kode aplikasi, 0 DB; hard-gate 21:45 dipatuhi)
+- Isi: script BARU zai_quota_rerun.py (live ~/.hermes/scripts/ + snapshot repo docs/agent-org/ops/): scan errors.log pola `cron.scheduler: Job '<name>' failed ... [1308] ... reset at <ts>` → state.json atomic → `hermes cron run <id>` bg pada reset+5m (playbook 529), attempt-2 +35m (bukti: rerun manual 08:37/08:40 kena 1302 congestion), giveup t2+60m sekali-lapor anti-spam; window eksekusi 07:05-21:45 dgn deadline-SHIFT (quiet zone 11-18 + pra-07:05 + >21:45 = geser attempt, TIDAK batal); idempotent per (date, job); pruning 7 hari. owner_morning_digest.py +section "Laporan pagi gagal" (AC3: kuota via state + non-kuota apa pun penyebab via jobs.json last_status<24h, dedupe by name).
+- Verify: fixture-test 25/25 PASS (fixture = baris log NYATA 3 Okt 06:31/06:55/07:00x2; noise WARNING-attempt & 1302 diabaikan); LIVE: 4/4 insiden terdeteksi, PT+Tech=pulih, Growth+Reviewer=giveup (fakta: rerun manual mereka gagal 1302); cron-mode 3x run idempotent silent exit 0; digest dry-run 7 baris. AC5: run_ledger.py TIDAK disentuh, monitor 05:45 tetap silent-when-healthy.
+- QA: CTO pagi review 3 file ops/ + KEPUTUSAN cron registration (usul '5-59/10 7-21 * * *' no-agent telegram; script jalan tiap 10 mnt = tanpa LLM call, murah). AC4 spread-offset tercatat di decisions.md (eksekusi reschedule = owner/CEO, bukan agent).
+- Root-cause data bonus: insiden malam hivePOS (01:04/01:32/02:35) = 1302 request-rate BUKAN 1308 kuota → sengaja di luar auto-rerun (provider congestion; retry menit-menit = cukup dgn rerun manual/playbook 529); visible via digest baru.
