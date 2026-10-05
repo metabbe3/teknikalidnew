@@ -695,6 +695,31 @@
       "north_star": "easy to use (lens owner) — mobile-majority ~93/7: thumb 44px = touch target standar; post-card @username utuh = polish konsistensi",
       "title": "P3 UX POLISH (owner-approved 29 Sep, PRD-exempt): screener range-slider thumb 44px + post-card @username clip — CSS-only",
       "spec": "INTENT: dua perbaikan visual kecil dari wave-3 report yang sudah owner-approve: (1) thumb slider range di screener /stocks jadi touch-target layak (min 44px, CSS ::-webkit-slider-thumb + pasangan firefox; className+css ONLY, 0 logic/teks); (2) post-card @username tidak terpotong (clip/ellipsis benar). Sumber lengkap: product-backlog.json entry idea-2026-09-27-slider-p2. DONE WHEN: real-browser CDP mobile 390px — getBoundingClientRect thumb di /stocks screener >= 44px; @username post-card tampil utuh (bukti elemen terukur/screenshot path); npx tsc --noEmit 0 error; changelog entry == merge commit (slot yang sama); live curl 200 pasca-deploy."
+    },
+    {
+      "id": "qa-2026-10-05-01",
+      "date": "2026-10-05",
+      "type": "ops",
+      "priority": "P1",
+      "status": "pending",
+      "scheduled_slot": "2026-10-06 07:30 CTO pagi — SQL content patch 1 artikel, TANPA deploy (ISR revalidate=300)",
+      "source": "Content Reviewer QA 5 Okt 08:4x",
+      "north_star": "trust — 2 angka fabricated di brief harian: breadth tidak cocok metode kanonik mana pun di DB, rasio volume GOTO/BUMI meleset 20x lipat (klaim 2,5x vs realitas ~54x)",
+      "title": "P1: Brief 5 Okt (brief-pasar-idx-2026-10-05-goto-rebound-properti) — breadth 470/556/325 tidak ter-replikasi + rasio volume GOTO 2,5x BUMI salah (aktual ~54x)",
+      "spec": "INTENT: QA reviewer 5 Okt — patch 2 angka fatal di brief-pasar-idx-2026-10-05-goto-rebound-properti (NEWS, live /berita/<slug>, 200 OK). SEMUA angka lain di artikel ini EXACT vs DB (diverifikasi 5 Okt: harga+pct BBCA/BMRI/BBRI/GOTO/properti movers, GC 134 vs DC 49, DYAN gorengan, sektor properti +1,24% #1 metode likuid>100jt non-gorengan, GOTO rank-1 volume, SMDR/ARNA/PSAB cross) — JANGAN sentuh bagian lain.\n\nFIX 1 — breadth kalimat 'Breadth pasar Jumat masih lemah: **470 saham naik vs 556 turun** (325 stagnan)'. DB kanonik (metode kalibrasi brief29 28 Sep yang dulu diverifikasi EXACT 189/550/127: SEMUA saham, close terakhir vs close sebelumnya s.d. 2 Okt): naik=471, turun=558, stagnan=416. Angka 470/556/325 TIDAK cocok 8 varian metode (vol>0, Utama-only, threshold ±0,5%/1%, non-gorengan) → fabricated. Patch ke angka DB: '471 saham naik vs 558 turun (416 stagnan)' (nada 'masih lemah' tetap valid, net breadth negatif).\n\nFIX 2 — kalimat 'hampir 2,5 kali lipat BUMI di posisi kedua (1,8 miliar lembar)'. DB 2 Okt: GOTO vol 97.541.478.600 (rank #1 ✓), BUMI vol 1.797.086.800 ≈ 1,8 miliar (angka 1,8 miliar BENAR, rank-2 BENAR) tapi rasio aktual = 54,3x, bukan 2,5x. Patch: ganti 'hampir 2,5 kali lipat BUMI' → 'puluhan kali lipat BUMI' (atau hapus rasio, pertahankan '(1,8 miliar lembar)').\n\nACCEPTANCE:\n1. DB post-patch: content mengandung '471 saham naik vs 558 turun' x1, '470 saham naik' =0, '2,5 kali' =0, 'puluhan kali lipat' >=1.\n2. Angka lain utuh: '97,5 miliar' ada, '1,8 miliar' ada, '134' + '49' cross ada, '+1,24%' ada.\n3. LIVE curl anon /berita/brief-pasar-idx-2026-10-05-goto-rebound-properti = 200 + string baru ter-serve + string lama 0 (tunggu ISR<=300s).\n4. Tanpa deploy aplikasi; rollback = revert SQL (backup db-20260928 ada)."
+    },
+    {
+      "id": "prd-2026-10-05-01",
+      "type": "feature",
+      "date": "2026-10-05",
+      "created_by": "Product Agent nightly buffer-keeper 5 Okt 22:1x (riset SQL read-only + statik grep 5 Okt; run ini juga restore 4 entry backlog yang terjatuh union-fix 2972b4e — divergensi ke-5 dlm 8 hari)",
+      "scheduled_slot": "unknown -- setelah prd-2026-10-01-01 (welcome loop, in_progress) selesai & saved-screen prd-2026-10-03-02 terjadwal; CEO boleh re-assign",
+      "priority": "P2",
+      "status": "spec_ready",
+      "prd_id": "idea-2026-10-05-1",
+      "north_star": "trust -- 12 QA P1 correctness 9 hari: angka salah tayang lalu dikoreksi; gate fact-check pre-publish mencegah salah tayang (customer first)",
+      "title": "P2 FITUR (PRD idea-2026-10-05-1): Publish Fact-Check Gate -- factCheckArticle dipanggil SEBELUM publish di SEMUA jalur ber-angka (bukan hanya NEWS+marketCtx); gagal total = DRAFT+notif admin, bukan tayang salah",
+      "spec": "INTENT (feature, PRD LENGKAP di product-backlog.json idea-2026-10-05-1 -- AC+data_evidence+metadata v2 di sana; baca PRD, jangan narasi). DONE WHEN: AC terpenuhi + bukti live (SQL generationMeta + log JobRun) + changelog == merge + 7 hari pertama 0 insiden correctness P1 baru pada jalur ber-gate."
     }
   ]
 }

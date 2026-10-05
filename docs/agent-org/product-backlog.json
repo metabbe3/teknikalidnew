@@ -556,13 +556,222 @@
       "id": "idea-2026-10-04-1",
       "date": "2026-10-04",
       "priority": "P2",
-      "status": "idea",
+      "status": "researched",
       "source": "CEO Sunday 4 Okt 08:15 (mandat Product Agent Senin 10:15)",
       "title": "Diagnosa returning IP 19,5% -> 9,4% dalam 2 pekan — segmentasi /stocks heavy users: churn nyata vs artefak window collapse signal pages",
       "north_star": "returning users (NS#3) — guard 12% dilanggar 2 pekan beruntun (12,5% -> 9,6% weekly; 7d rolling 9,4%)",
       "hypothesis": "Returning IP jatuh bukan karena user pergi, tapi karena window signal-pages collapse + IG pause memotong kunjungan berulang. Kalau heavy users /stocks (91 IP >=2 views pada data 17 Sep) masih aktif, masalah = kurang alasan kembali (fitur welcome loop/save-screen sedang in-flight); kalau mereka juga hilang, ada regresi produk lain.",
       "first_step": "ANALISIS DATA (read-only SQL, no code): returning IP % mingguan 8 pekan; segment IP /stocks berat (>=5 views/30d per data 17 Sep) — berapa yang masih aktif pekan ini vs drop-off; overlap heavy-user vs register. Output = insight di entry ini + keputusan PRD/no-PRD. JANGAN dispatch engineering sebelum data.",
-      "anti_stagnation_due": "verdict Product Agent Senin 5 Okt 10:15"
+      "anti_stagnation_due": "verdict Product Agent Senin 5 Okt 10:15",
+      "researched_at": "2026-10-05T10:2x+07:00",
+      "verdict": "NO-PRD utk hipotesis artefak-window (terbukti sebagian, tapi bukan masalah utama); angka returning 19,5->9,4 TIDAK reproducible di definisi kanonik manapun (weekly maupun rolling) = masalah definisi, sudah terkanon /admin/retention (live 2 Okt). Rolling-7d hari ini sudah PULIH 13% (di atas guard 12%). Temuan lebih besar: metrik IP-based rapuh utk populasi 93% mobile (CGNAT Telkomsel) — cohort heavy 90 IP tampak churn -96% view-weighted TAPI site /stocks cuma turun 45% dgn IP baru menggantikan, artinya tidak bisa dibedakan user sama ganti IP vs user baru. Follow-up re-engagement = kandidat mandate CEO, TUNGGU gate AC5 prd-17-01 (2026-10-20) supaya intervensi funnel tidak menumpuk.",
+      "insight": "SURVEY Product Agent 5 Okt 10:15 (SQL read-only, nobot, TZ WIB; cohort heavy = IP >=5 views area /stocks 18 Agu-17 Sep = 90 IP, konsisten dgn 91 IP data 17 Sep). (1) ANGKA 19,5->9,4 TIDAK REPRODUCIBLE: weekly same-window (>=2 hari berbeda dlm minggu Sen-Mgg) = 15,2 (3 Agu) lalu range 4,6-10,7 sepanang Sep; rolling-7d per hari = dip 4,5% (25-26 Sep) lalu PULIH 13,0-13,2% (29 Sep-3 Okt), 4-5 Okt 10,7/7,1 (weekend+partial Senin pagi). Definisi beda = angka beda — persis masalah yang diselesaikan retention panel (live 2 Okt). (2) DIP TIMING KONSISTEN DGN COLLAPSE SIGNAL PAGES + IG PAUSE: returning terendah 14-26 Sep = window signal-pages 34v->3v (-91%, CTO 29 Sep) dan IG referrer nobot ~0 sejak 14 Sep (pause owner 17 Sep); kontribusi ke aggregate nyata tapi kecil (-31v/mgg). (3) HEAVY COHORT: 90 IP heavy = 28 IP/1.157v (mgg 31 Agu) -> 25/955 -> 15/593 -> 3/25 (21 Sep) -> 4/41 (28 Sep); hanya 4/90 aktif sejak 28 Sep (2 sejak 1 Okt). SEDANGKAN area /stocks site cuma turun 1.017->555v/mgg (-45%) dgn 34 IP — IP lama digantikan IP baru; 93,4% trafik mobile (CGNAT Telkomsel) = cohort IP TIDAK BISA membedakan churn nyata vs user sama ganti IP. Survivor 4 IP: 2 desktop Mac Chrome power-user (217v+149v, 3 authed user) + 2 mobile Android. (4) POOL REGISTER HILANG BERSAMA COHORT: 86/90 heavy tak pernah auth — register hook (live 22 Sep) kehilangan daya jangkau kalau mereka tak kembali. (5) SITE TOTAL: 1.211v/63 IP (31 Agu) -> 680v/56 IP (28 Sep); direct dominan 441v, google 10-14v/mgg. KESIMPULAN: jangan kerjakan apa pun dari angka returning manual; sinyal jujur tersisa = /stocks -45% dari puncak + register ~0; jawaban pasti 'churn vs ganti IP' hanya lewat share authed (register value-prop), bukan instrumentasi IP tambahan.",
+      "data_evidence": {
+        "query_date": "2026-10-05 10:1x-10:2x WIB (DB teknikalid, read-only, isBot=false)",
+        "weekly_returning_same_window": "15,2 (3 Agu); 7,7; 6,3; 6,3; 6,3; 9,0 (7 Sep); 4,6 (14 Sep); 7,7 (21 Sep); 10,7 (28 Sep, 6/56 IP); 5 Okt partial",
+        "rolling_7d": "dip 4,5% (25-26 Sep) -> 13,0/12,0/12,5/12,5/13,2 (29 Sep-3 Okt) -> 10,7/7,1 (4-5 Okt, weekend+partial)",
+        "heavy_cohort_weekly": "90 IP: 28 IP/1.157v (31 Agu) -> 25/955 -> 15/593 -> 3/25 (21 Sep) -> 4/41 (28 Sep)",
+        "heavy_active": "4/90 sejak 28 Sep; 2/90 sejak 1 Okt",
+        "heavy_vs_auth": "4/90 ever-authed; 5/90 sentuh /auth/*; 86/90 tak pernah register",
+        "stocks_area_weekly": "views 1.017 (31 Agu) -> 755 -> 620 -> 607 -> 555 (28 Sep) = -45% dari puncak",
+        "site_weekly": "1.211v/63 IP (31 Agu) -> 680v/56 IP (28 Sep)",
+        "referrer_weekly": "IG ~0 sejak 14 Sep (pause 17 Sep); google 10-14v/mgg; direct 441v (mgg 28 Sep)",
+        "survivors": "103.85.62.162 (217v Mac Chrome, 1 user), 114.10.43.190 (149v Mac, 2 user), 45.251.72.130 (108v Android), 195.54.170.189 (21v Android)",
+        "caveat": "93,4% trafik mobile -> CGNAT rotasi IP; cohort IP tak bisa membedakan churn vs ganti IP; jawaban butuh share authed"
+      },
+      "product_recs": [
+        {
+          "rec": "Returning metric: SATU kanon /admin/retention (live 2 Okt); CEO stop mengutip angka manual 19,5->9,4 (tidak reproducible). Status aktual rolling-7d: pulih 13% awal Okt, di atas guard 12%.",
+          "alasan": "Definisi window beda = angka beda (weekly 4,6-10,7 vs rolling 4,5-13,2 vs bulan-Sep 5,3) — kerja dari angka manual = kerja dari artefak. Retention panel dibangun persis utk ini (idea-2026-10-01-1)."
+        },
+        {
+          "rec": "Kandidat mandate berikutnya (CEO verdict): loop re-engagement utk heavy scanner (welcome-back screen / nudge saved-screen) — TAPI tunggu impact-check AC5 prd-17-01 (2026-10-20) dulu.",
+          "alasan": "Sinyal jujur tersisa: /stocks -45% dari puncak + 86/90 heavy tak pernah register. Tapi register hook baru live 22 Sep dgn CTR 0 sejauh ini; menumpuk intervensi funnel baru sebelum gate = atribusi rusak (pelajaran defer idea-23-1)."
+        }
+      ],
+      "note": " || Product Agent 5 Okt 10:15: SURVEY SELESAI, verdict NO-PRD (no engineering dispatch). Follow-up re-engagement = kandidat, menunggu gate AC5 prd-17-01 20 Okt."
+    },
+    {
+      "id": "idea-2026-10-02-1",
+      "date": "2026-10-02",
+      "priority": "P1",
+      "status": "shipped",
+      "type": "ops",
+      "source": "Product Agent nightly buffer-keeper 2 Okt 22:0-22:1x (riset SQL read-only + statik 2 Okt)",
+      "title": "OPS-FIX: agent-hub-scheduler MATI 16 hari — 13 agent types (ScreenerAlert user aktif daily terakhir 16 Sep) diam senyap sejak arsip LaunchAgent 16 Sep TANPA pengganti; AgentConfig semua masih isEnabled=true",
+      "north_star": "data reliable (owner 17 Sep: satu sumber kebenaran — sistem yang 'enabled' tapi 16 hari senyap = kepercayaan bolong) + returning users (ScreenerAlert SCREENER_MATCH = reason-to-return satu-satunya yang terhubung fitur register)",
+      "user_story": "Sebagai pemilik produk, saya percaya 13 agen terjadwal (stock_alert, technical_screener, site_health, market_intel, dst) menjalankan sistem tiap hari sesuai AgentConfig isEnabled=true — kenyataannya TIDAK ADA satu pun job yang dibuat sejak 16 Sep karena pemanggil POST /api/cron/agent-hub-scheduler diarsipkan saat rasionalisasi OpenClaw tanpa pengganti; alert screener 'Terbak' (enabled, daily) milik user berat 628 pageview terakhir dipicu 16 Sep lalu diam.",
+      "acceptance_criteria": [
+        "AC1 RESTORE: LaunchAgent com.teknikalid.agent-scheduler.plist BARU di ~/Library/LaunchAgents — WAJIB pola KEEP 16 Sep (curl -sf -X POST -H 'Authorization: Bearer $CRON_SECRET' https://teknikal.id/api/cron/agent-hub-scheduler), BUKAN copy arsip lama (menunjuk localhost:3000 dev dead = alasan arsip); StartCalendarInterval Minute 0+30 tiap jam (route internal shouldFireNow yang filter jadwal per-agent); StandardOut/ErrPath ke ~/Documents/teknikalidnew/logs/agent-scheduler.log.",
+        "AC2 FIRE-TEST: launchctl bootstrap/kickstart -> log 200 -> SQL bukti: CronLog row jobName='agent-hub-scheduler' status=success created hari ini + minimal 1 AgentJob baru terbuat utk tipe yang masuk window jadwalnya (mis. site_health 01/07/13/19, atau market_intel/stock_alert window */30 9-14 WIB).",
+        "AC3 KONTINUITAS: esok hari CronLog agent-hub-scheduler punya run > 0 (cek CEO pagi / cron verifikasi); bila fire-test dilakukan di luar jam kerja WIB, bukti pengganti = job site_health/market_intel muncul di window berikutnya + dokumen caranya di changelog.",
+        "AC4 NO-REGRESSION: curl TANPA token ke route = 401 (negative test); launchctl exit status 0; tidak ada double-run (route guard hasRunningJob sudah ada — verifikasi skipped 'already running' bukan error); crontab TIDAK disentuh.",
+        "AC5 DOKUMENTASI: decisions.md + changelog mencatat restore (arsip 16 Sep -> restored + alasan collateral damage rasionalisasi); catat pula sync-intraday (CronLog terakhir 17 Sep, OUT OF SCOPE PRD ini — keputusan produk terpisah)."
+      ],
+      "data_evidence": "QUERY ASLI 2 Okt 22:0x WIB (teknikalidnew-db-1, read-only): CronLog 'agent-hub-scheduler' success terakhir 2026-09-16 (last7d=0) vs sync-eod/generate-articles success harian s/d 2 Okt; AgentJob 13 agentType non-gen SEMUA terakhir 2026-09-16 (sebelumnya stock_alert 12 job/hari); AgentConfig stock_alertisEnabled=true scheduleCron '*/30 9-14 * * 1-5' (12 config berjadwal lain aktif); ScreenerAlert 'Terbak' isEnabled=true frequency=daily lastTriggeredAt=2026-09-16 07:30 WIB (padahal gen_snapshots jalan tiap hari = data hidup); HOST: ~/Library/LaunchAgents TIDAK memuat com.teknikalid.agent-scheduler — plist ada di docs/agent-org/launchd-archive-2026-09-16/ (diarsipkan 16 Sep ~20:00 saat '7 LaunchAgent MATI+ARSIP ... semua -> localhost:3000 dev dead', decisions.md 2026-09-16; KEEP list hanya eod/articles/resolve/idx) — pengganti TIDAK pernah dibuat utk scheduler agent-hub.",
+      "impact": 4,
+      "effort": 1,
+      "target_files": [
+        "~/Library/LaunchAgents/com.teknikalid.agent-scheduler.plist (BARU — host ops, pola com.teknikalid.eod-sync.plist KEEP)",
+        "~/Documents/teknikalidnew/logs/agent-scheduler.log (BARU, output)",
+        "docs/agent-org/decisions.md + changelog.md (dokumentasi restore)"
+      ],
+      "db_migrations": false,
+      "dependencies": [
+        "CRON_SECRET existing (env aplikasi)"
+      ],
+      "risk": "low",
+      "risk_note": "low: host ops reversible (launchctl bootout), 0 kode aplikasi, 0 DB; jebakan: JANGAN copy arsip lama (localhost:3000 dead) — wajib pattern KEEP https + StartCalendarInterval.",
+      "estimate_tool_calls": 4,
+      "first_step": "Tulis plist pattern KEEP -> bootstrap -> kickstart -> SQL CronLog+AgentJob bukti -> curl negative 401 -> dokumentasi.",
+      "restored_note": "Product Agent 5 Okt 22:1x: entry terjatuh di union-fix 2972b4e (4 Okt); restore dari git e560885. Status dikoreksi shipped — waReady fix sudah dibangun CTO sebagai prd-hivepos-2026-10-02-01 (done 3 Okt)."
+    },
+    {
+      "id": "idea-2026-10-02-2",
+      "date": "2026-10-02",
+      "priority": "P2",
+      "status": "dispatched",
+      "type": "feature",
+      "source": "Product Agent nightly buffer-keeper 2 Okt 22:0-22:1x (riset SQL read-only + statik 2 Okt)",
+      "title": "FITUR: First-Session Welcome Loop — 6/6 user baru Sep single-session (cohort D1/D7=0/0 panel live) : checklist 3 langkah di home login (1 saham+watchlist+1 brief, derive dari data existing) + claim streak harian (reuse reputation.service, 5/23 user saja pernah) + panel 'Sinyal untukmu' hari-2+",
+      "north_star": "returning users (NS#3) — register sehat tapi 100% menguap di hari-1; growth register tanpa retensi = ember bocor",
+      "user_story": "Sebagai user baru pasca-register (Google OAuth -> complete-profile -> home), saya butuh alasan konkret kembali besok — hari ini saya mendarat di home generik, buka 1-2 halaman (paper-trading/portfolio/stocks), lalu tidak pernah kembali. Sebagai pemilik produk, saya ingin loop ringan on-site (checklist -> streak -> sinyal watchlist) supaya 6/6 register Sep tidak lagi berakhir single-session.",
+      "acceptance_criteria": [
+        "AC1 CHECKLIST: user login dengan createdAt < 7 hari melihat card 'Mulai 3 langkah' di home: (1) buka 1 halaman /stocks/*, (2) tambah 1 ticker ke Watchlist, (3) baca 1 brief /berita/brief-*. Progress DIDERIVE dari tabel existing (PageView userId+path, Watchlist row) — 0 tabel baru, 0 migrasi, persist antar-device (server-derived, bukan localStorage).",
+        "AC2 STREAK: tombol 'Claim harian' pada card — reuse reputation.service dailyStreak+lastDailyClaimAt existing (guard no-double-claim sudah ada); claim -> streak+1 ter-render; card hidden utk anon.",
+        "AC3 DAY-2+: visit login hari >= 2 card berganti 'Sinyal untukmu': bila Watchlist user ada -> render sinyal terkini ticker watchlist (pola related-signals.tsx f75dd7d, data smaCrossSignal existing); bila kosong -> fallback 3 link signal page + angka widget mingguan (prod-19-01); empty-state 0 error.",
+        "AC4 OBSERVABILITY: impact diukur via Admin Retention Panel (live 2 Okt, prd-2026-10-01-03): cohort D1/D7 terisi dari perilaku nyata; changelog WAJIB mencatat baseline pra-fitur (D1=0 D7=0, register 4 minggu terakhir 2/1/2/1).",
+        "AC5 REGRESSION: tsc --noEmit clean; card mobile 390px tidak overflow (preseden audit mobile 93,4% traffic); anon = 0 card; 0 PII baru; 0 migrasi; derive max 3 query ter-index (PageView userId+createdAt, Watchlist userId — index existing)."
+      ],
+      "data_evidence": "QUERY ASLI 2 Okt 22:0x (read-only): 6/6 user createdAt>30d-back SEMUA single-session days=1 (user_d8cf 12pv, user_7611 17pv, bangbero321 8pv, danz_gainer 10pv, poyen 8pv; user_14309777 0pv); Admin Retention Panel live 2 Okt: cohort D1=0 D7=0 (4 minggu register 2/1/2/1) — dan instrumentasi userId diverifikasi BENAR di kode (src/app/api/track/pageview/route.ts L98-100 auth()->userId) = 0/0 perilaku NYATA bukan bug; funnel register sehat: complete-profile selesai 55-75 dtk (bangbero321 11:02:13->11:03:09, poyen 13:17:10->13:17:28, double-render 2x harmless); infra reuse terbukti eksis tapi nyaris tak terpakai: dailyStreak aktif hanya 5/23 user (max 2, claimed_30d=2), Watchlist 12 row/4 user, SavedScreener 2/1 user — modal day-2 ada, permukaannya tidak; BEDA dari prod-2026-09-17-02 (REJECTED, notifikasi email/WA outbound, cohort<30): ini loop ON-SITE tanpa kanal outbound.",
+      "impact": 3,
+      "effort": 3,
+      "target_files": [
+        "src/components/home/welcome-card.tsx (BARU — estimasi, pola card home existing)",
+        "src/components/home/for-you-signals.tsx (BARU — estimasi, pola related-signals.tsx existing)",
+        "src/app/page.tsx (mount kondisional session, estimasi)",
+        "src/domains/reputation/reputation.service.ts (reuse claim existing — read-only utk PRD)"
+      ],
+      "db_migrations": false,
+      "dependencies": [
+        "Watchlist+smaCrossSignal data existing",
+        "reputation.service dailyStreak existing"
+      ],
+      "risk": "med",
+      "risk_note": "med: surface UX baru di home (halaman terpopuler ke-2, 44v/7d) — jaga weight render; derive-only = 0 risiko schema; kegagalan empty-state watchlist harus 0-error.",
+      "estimate_tool_calls": 7,
+      "first_step": "Kontrak derive progress (SQL fixture user d8cf/bangbero321 data asli) -> welcome-card -> claim streak -> for-you-signals -> verify mobile+anon+panel baseline.",
+      "restored_note": "Product Agent 5 Okt 22:1x: terjatuh di union-fix 2972b4e; restore utuh dari git e560885 (queue prd-2026-10-02-02 spec_ready TETAP menunjuk sini). Build welcome-loop berjalan di branch night (welcome-card/for-you-signals/claim-streak-button.tsx muncul 2 Okt 23:1x, belum merge main) — dispatched sampai merge+deploy."
+    },
+    {
+      "id": "sre-2026-10-03-2",
+      "date": "2026-10-03",
+      "priority": "P2",
+      "status": "dispatched",
+      "source": "sre",
+      "type": "ops",
+      "title": "z.ai 429 code-1308 kuota-5-jam habis 06:31–07:00: 4 laporan pagi error (Growth Daily Check, PT Weigh-In, Tech Briefing, Content Reviewer) — auto-rerun post-reset",
+      "data": "errors.log 3 Okt: 06:31 'TeknikalID Growth Daily Check' fail HTTP429 code 1308 'Usage limit reached for 5 hour. Your limit will reset at 2026-10-03 08:09:44'; 06:55 PT Weigh-In fail 1308 → OK 07:25 via re-run; 07:00:57 'Daily Tech & AI Briefing' + 07:00:58 'TeknikalID Content Reviewer' error 1308 (ledger 6 error/hari vs baseline 0-1 sejak 26 Sep). Kuota 5-jam window dibakar habis oleh night jobs + pagi padat; retry 3x~15s tidak berguna utk quota-window. Tapi bukan outage: CEO Strategy 07:21 + CTO Builder pagi 07:37 SUKSES (quota rolling, lepas ~30-45mnt kemudian). Usulan CTO: (a) extend run-ledger/watchdog utk parse 'reset at HH:MM' dari 429-1308 → auto `hermes cron run <id>` bg setelah reset+5mnt (playbook 529 sudah terbukti); (b) morning-report kritikal (Growth, Reviewer) jangan berjejer di menit yang sama dgn job lain se-org; (c) laporan pagi yang gagal wajib muncul di Owner Digest supaya silent-gap kelihatan. North Star: consistency — laporan harian = janji ke owner.",
+      "prd_written_at": "3 Okt 22:1x WIB",
+      "user_story": "Sebagai owner, saya menerima laporan pagi (Growth Daily Check, PT Weigh-In, Tech Briefing, Content Reviewer) SETIAP hari tanpa gap -- kenyataannya 3 Okt 06:31-07:00 keempatnya gagal beruntun HTTP 429 code-1308 'Usage limit reached for 5 hour' karena kuota 5-jam z.ai habis sebelum reset 08:09, dan retry 3x~15s bawaan tidak akan pernah menembus quota-window. Laporan = janji harian; gap senyap = owner buta pagi hari.",
+      "acceptance_criteria": [
+        "AC1 DETEKSI: run_ledger.py (atau script watchdog baru ringan) mem-parse errors.log/ledger utk pola 'HTTP 429' + code 1308 'Usage limit reached for 5 hour' DAN mengekstrak timestamp reset 'Your limit will reset at YYYY-MM-DD HH:MM:SS' dari body error.",
+        "AC2 AUTO-RERUN: job yang gagal 429-1308 dijadwalkan re-run otomatis via `hermes cron run <job_id>` background SETELAH reset-time +5 menit buffer (preseden playbook 529 yang terbukti; PT Weigh-In 3 Okt 06:55 fail -> 07:25 manual re-run sukses = re-run adalah penyembuh).",
+        "AC3 DIGEST: laporan pagi yang gagal (apa pun penyebab) WAJIB muncul di Owner Morning Digest (owner_morning_digest.py) hari itu -- silent-gap harus kelihatan; digest kosong = diam (rule existing).",
+        "AC4 SPREAD: rekomendasi schedule-offset di-catat di decisions.md (morning-report kritikal jangan berjejer menit yang sama dengan job lain se-org) -- eksekusi reschedule = owner/CEO decision, BUKAN agent (scope PRD ini detection+rerun only).",
+        "AC5 NO-REGRESSION: run_ledger monitor 05:45 tetap SILENT saat sehat (exit 0 kosong); schema guard + SELF-exclusion tidak rusak; 0 sentuh data customer teknikal.id; smoke test: simulasikan entry 429-1308 lama (fixture JSON) -> re-run terjadwal + digest line muncul.",
+        "AC6 VERIFY LIVE: bukti di changelog: 1 siklus gagal->rerun->sukses tercatat di ledger runs.jsonl (status error lalu ok utk job_id sama, atau fixture-test PASS bila kuota sehat)."
+      ],
+      "data_evidence": "QUERY/LOG ASLI 3 Okt (ledger runs.jsonl + errors.log, read-only): 6 job error/hari vs baseline 0-1 sejak 26 Sep -- pagi: 06:31:21 'TeknikalID Growth Daily Check' (job 714dbdc87f54) error, 06:55 PT Weigh-In error -> OK 07:25 via re-run manual, 07:00:57 'Daily Tech & AI Briefing' (a13ba6d98192) + 07:00:58 'TeknikalID Content Reviewer' (4ae85965a258) error; errors.log 06:31 menempel body 'code 1308 Usage limit reached for 5 hour. Your limit will reset at 2026-10-03 08:09:44'. Malamnya (sre-2026-10-03-1 hivePOS, akar sama beda kode): 01:04 CTO Builder + 01:32 Product Agent + 02:35 CTO Slot2 error 429-1302 rate-limit request. Bukti recovery tanpa intervensi: CEO Strategy 07:21 + CTO Builder 07:37 SUKSES (quota rolling reset). KPI growth 3 Okt 22:02 (teknikalid_growth.py kpis): users_new_7d=1 -- laporan growth yang mati persis di hari data menurun = blind-spot terburuk.",
+      "impact": 4,
+      "effort": 2,
+      "target_files": [
+        "~/.hermes/scripts/run_ledger.py (estimasi: +parse 429-1308 reset-time + antrian re-run)",
+        "~/.hermes/scripts/owner_morning_digest.py (estimasi: +baris job-gagal-hari-ini)"
+      ],
+      "db_migrations": false,
+      "dependencies": [
+        "errors.log path existing",
+        "runs.jsonl schema existing",
+        "hermes CLI cron run (preseden playbook 529)"
+      ],
+      "risk": "low",
+      "estimate_tool_calls": 6,
+      "restored_note": "Product Agent 5 Okt 22:1x: terjatuh di union-fix 2972b4e; restore dari git e560885. Queue prd-2026-10-03-01 sudah qa_pass — flip shipped saat CTO menyentuh backlog berikutnya."
+    },
+    {
+      "id": "idea-2026-10-03-1",
+      "date": "2026-10-03",
+      "priority": "P2",
+      "status": "spec_ready",
+      "type": "feature",
+      "source": "Product Agent nightly buffer-keeper 3 Okt 22:1x WIB (riset SQL read-only + statik repo 3 Okt; turunan insight prod-2026-09-17-01 yang di-approve council 20 Sep tapi belum pernah di-spec)",
+      "title": "FITUR: Saved Screen / Preset screener -- register hook 'simpan hasil screen + watchlist ticker' (funnel register patah 4/91 heavy user; bukti saved-screen MANUAL: preset golden_cross 388v/12IP bookmark URL berparameter)",
+      "north_star": "growth register (NS#1 teknikal.id) -- prod-2026-09-17-01 insight council-approved 20 Sep: masalahnya BUKAN traffic/engagement (77% multi-visit, bounce 1-hit cuma 23%) melainkan VALUE-PROP register; user sudah men-bookmark URL screener bertparameter secara manual = intent 'simpan screen' terbukti di data, cuma belum difasilitasi produk. JANGAN gate screener (2.394 views/30d = mesin).",
+      "user_story": "Sebagai trader pemakai screener berat (91 IP dengan >=2 views/30d), saya menemukan kombinasi filter yang bagus (mis. golden_cross + momentum) dan ingin MENYIMPAN hasilnya agar besok bisa langsung membuka screen yang sama tanpa mengingat parameter -- hari ini satu-satunya cara adalah bookmark manual URL berparameter, yang hilang begitu saya ganti device/browser, dan tidak memberi alasan apa pun untuk register (register = janji kosong).",
+      "acceptance_criteria": [
+        "AC1 MODEL: entity SavedScreen baru via prisma migrate additive (kolom: id, userId FK, name, querystring, createdAt) -- tabel baru standalone, 0 perubahan kolom tabel existing; rollback = revert migrasi (tabel baru, tidak ada data lama yang hilang).",
+        "AC2 API: POST /api/screener/screens (create, auth wajib) + GET /api/screener/screens (list milik user) + endpoint hapus by id (milik user saja, 403 kalau bukan pemilik); validasi querystring whitelist karakter screener-param existing + cap panjang 512.",
+        "AC3 UI: tombol 'Simpan screen' di /stocks screener (lihat param URL existing di screener-client.tsx) -- guest klik -> redirect /auth/register dengan utm_source=save_screen (hook register existing idea-2026-09-25-1); user login -> dialog nama -> tersimpan, muncul di dropdown 'Screen tersimpan' quick-open.",
+        "AC4 WATCHLIST TIE-IN: dari hasil screen tersimpan, quick-action tambah-ticker-ke-watchlist (reuse Watchlist existing 12 item/4 user) -- satu klik, tanpa navigasi ke detail ticker.",
+        "AC5 LIVE VERIFY: e2e manual -- guest path: simpan -> register -> screen muncul di akun baru; owner path: simpan 2 screen -> tampil -> hapus -> hilang; bukti SQL + screenshot/curl di changelog; funnel panel register per-utm_source (prd idea-2026-09-25-1) mencatat utm_source=save_screen mulai hari deploy.",
+        "AC6 NO-REGRESSION: screener guest tetap penuh tanpa gating (regresi fatal kalau views /stocks turun); tsc+build PASS; 0 sentuh data customer; bot-gate + rate-limit track endpoint tidak diubah."
+      ],
+      "data_evidence": "QUERY ASLI 3 Okt 22:0x WIB (teknikalidnew-db-1, read-only, isBot=false): User total 23, baru 30d=6; PageView logged-in aktif 30d=7; Watchlist 12 item / 4 user. FUNNEL (prod-2026-09-17-01 data 17 Sep, nobot 30d): /stocks area 118 IP/2.394v, 91 IP >=2v, 66 IP >=5v, 101 IP buka detail ticker, one-hit cuma 23%; dari 91 heavy user hanya 4 (4,4%) sentuh auth, 3 buka /auth/register, 1 selesai (~0,8% dari 118 IP) = FUNNEL PATAH DI VALUE-PROP; pendaftar = heavy user 12 hari. BUKTI INTENT MANUAL: preset deep-link golden_cross 388v/12IP + tab momentum 343v/17IP (user bookmark URL screener bertparameter -- perilaku 'simpan screen' sudah ada, produk belum memfasilitasi). REPO 3 Okt (grep): TIDAK ADA implementasi save-preset/saved-screen di src/ (hanya SocialCardGenerator admin) = fitur belum pernah dibangun; screener-client.tsx + filter URL-param existing = fondasi reuse. TREND 7d terbaru (kpis 3 Okt 22:02): /stocks 179v masih #1, users_new_7d=1 -- hook register baru urgent.",
+      "impact": 4,
+      "effort": 3,
+      "target_files": [
+        "prisma/schema.prisma (estimasi: +model SavedScreen)",
+        "src/app/api/screener/screens/route.ts (BARU -- estimasi)",
+        "src/app/api/screener/screens/[id]/route.ts (BARU -- estimasi)",
+        "src/components/screener/screener-client.tsx (estimasi: tombol simpan + dropdown)",
+        "komponen watchlist existing (estimasi: quick-action tambah ticker)"
+      ],
+      "db_migrations": true,
+      "dependencies": [
+        "prisma migrate (KOORDINASI OWNER -- preseden prd-2026-10-01-01: DDL = area owner, backup fresh <24h WAJIB)",
+        "utm attribution idea-2026-09-25-1 (deploy 3 Okt sore) untuk funnel utm_source=save_screen",
+        "Watchlist model existing"
+      ],
+      "risk": "med",
+      "estimate_tool_calls": 9,
+      "restored_note": "Product Agent 5 Okt 22:1x: terjatuh di union-fix 2972b4e; restore utuh dari git e560885 (queue prd-2026-10-03-02 spec_ready menunjuk sini)."
+    },
+    {
+      "id": "idea-2026-10-05-1",
+      "date": "2026-10-05",
+      "priority": "P2",
+      "type": "feature",
+      "status": "spec_ready",
+      "source": "product-agent nightly buffer-keeper 5 Okt 22:0x (riset DB read-only + statik grep 5 Okt; run ini juga restore 4 entry backlog yang terjatuh union-fix 2972b4e)",
+      "title": "Publish Fact-Check Gate: factCheckArticle (perbaiki-kalau-gagal) TIDAK PERNAH dipanggil utk konten yang langsung PUBLISH (autoPublish=true) — 12 QA P1 correctness 9 hari terakhir karena angka salah tayang dulu, dibetulkan belakangan",
+      "north_star": "trust — konten salah tayang lalu dikoreksi = korban kepercayaan pembaca; gate pre-publish = mencegah salah tayang, bukan mengejar setelahnya (customer first)",
+      "user_story": "Sebagai pembaca teknikal.id, saya ingin semua angka (harga/EMA/RSI/breadth/lot/golden cross) pada artikel & brief yang saya baca sudah lolos fact-check terhadap DB SEBELUM tayang, sehingga saya tidak perlu menemukan kekeliruan sendiri — karena 12 insiden P1 dalam 9 hari terakhir menunjukkan alur saat ini membenarkan konten HANYA setelah tayang.",
+      "acceptance_criteria": [
+        "AC1 GATE PATH: generateNewsArticle dgn autoPublish=true (path brief/snapshot harian) WAJIB menjalankan factCheckArticle sebelum status PUBLISHED; mismatch yang punya correctedContent WAJIB diterapkan (preseden logic L351-366 article.service.ts); factCheck gagal total (errors>0 atau !passed && !correctedContent) -> artikel jadi DRAFT + notifikasi admin, TIDAK auto-publish.",
+        "AC2 REGRESI GANDA: kasus historis yang dulu lolos padahal salah (qa-2026-09-30-01, qa-2026-10-01-01, qa-2026-10-04-01) kini tertahan di DRAFT atau terkoreksi otomatis saat regen — diverifikasi via unit test dgn fixture mismatch; fact-check-existing-articles.ts jadi backstop sekunder.",
+        "AC3 COVERAGE PATH: jalur pendidikan/akademi (artikel edu & listicle, preseden qa-2026-09-28-02 tabel EMA salah semua) turut tercakup — semua create/publish call-site yang menulis angka market melewati gate (bukan hanya NEWS+marketCtx seperti hari ini).",
+        "AC4 VISIBILITY: generationMeta.factCheckPassed/factCheckErrors/factCheckCorrected terisi 100% konten publish baru (SQL verifikasi 7 hari pasca-deploy: 0 row publish baru tanpa factCheck meta); log JobRun mencatat jumlah mismatch ditahan/dikoreksi per run.",
+        "AC5 LIVE: brief pagi pertama pasca-deploy lolos gate tanpa false-positive massal (gate tidak memblokir >20% run sehat — kalau ya, tuning threshold + lapor); 7 hari pertama 0 insiden correctness P1 baru pada jalur ber-gate."
+      ],
+      "data_evidence": "QUEUE CTO teknikal (docs/agent-org/cto-queue.json dibaca 5 Okt 22:0x): 12 entry QA P1 correctness dalam 9 hari (23 Sep-5 Okt) — qa-2026-09-23-01 (golden cross 3->5 + lot 100x), qa-2026-09-24-01 (lot x3 regresi), qa-2026-09-28-01 (lot x3 varian BARE), qa-2026-09-28-02 (tabel EMA 4 nilai salah vs DB), qa-2026-09-30-01 (582 saham salah hari), qa-2026-10-01-01 (RSI BBSI 11,7 salah), qa-2026-10-04-01 (GOTO RSI 10 salah), qa-2026-10-05-01 (breadth 470/556/325 tak ter-replikasi) + 4 insiden rekap/brief sebelumnya. STATIK (grep 5 Okt): pipeline fact-check ADA (src/domains/article/article-fact-check.ts: gatherMarketContext L83 + factCheckArticle L250; scripts/fact-check-existing-articles.ts hanya scan NEWS PUBLISHED pasca-tayang) TAPI article.service.ts hanya memanggil factCheck di generateNewsArticle ketika marketCtx diberikan (L351-366) — jalur edu/listicle/brief lain tanpa gate, dan correction path mengoreksi konten namun tetap PUBLISHED (tidak ada jalur DRAFT-hold). KPI 5 Okt: gen_daily_brief+gen_snapshots done 24h = pipeline konten aktif harian, eksposur insiden tiap hari; users_new_7d=0.",
+      "impact": 5,
+      "effort": 3,
+      "target_files": [
+        "src/domains/article/article.service.ts (gate di publish call-sites, estimasi)",
+        "src/domains/agent-hub/agents/gen-daily-brief.agent.ts (pas marketCtx ke jalur publish, estimasi)",
+        "src/domains/article/article-fact-check.ts (export threshold bila perlu, estimasi)",
+        "test gate baru + content-sanitizer.test.ts diperluas (estimasi)"
+      ],
+      "db_migrations": false,
+      "dependencies": [
+        "prisma Article.generationMeta (existing)",
+        "agent-hub scheduler gen_daily_brief/gen_snapshots (existing)"
+      ],
+      "risk": "medium",
+      "risk_note": "med: gate bisa false-positive menahan brief pagi (jendela publish kritikal) — mitigasi AC5 threshold tuning + DRAFT-hold bukan drop; 0 migrasi DB; tidak menyentuh data customer.",
+      "estimate_tool_calls": 10,
+      "first_step": "Baca article-fact-check.ts L250-300 (bentuk return factCheck) -> tambahkan gate di publish call-site NEWS -> brief -> edu -> unit test mismatch-hold + regen artikel historis salah (qa-2026-10-04-01) harus tertahan."
     }
   ]
 }

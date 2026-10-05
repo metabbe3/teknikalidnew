@@ -8,6 +8,7 @@
 3. Membandingkan sesi → sebut hari+tanggal eksplisit dan cocokkan angka vs hari itu (Jumat≠Senin≠Selasa).
 4. Reviewer: superlatif & cross-day = checklist deterministik harian (a2), bukan sampling.
 **Verifikasi kejenuhan**: Evolution Coordinator 04:00 review apakah recurrence berhenti; kalau kejadian ke-3 → generator angka agregat harus dipindah ke script deterministik (bukan LLM).
+**[RECURRENCE 3× — 5 Okt, qa-2026-10-05-01] Keluarga sama kambuh di brief harian**: breadth '470/556/325' TIDAK ter-replikasi 8 varian metode (kanonik kalibrasi-brief29: 471/558/416) + varian BARU: rasio lintas-ticker 'hampir 2,5x BUMI' padahal DB 54,3x (97,54M vs 1,797M) — angka absolut per-ticker benar, RASIO dihitung sendiri = fabricated. Kode 28 Sep-4 Okt off-by-1 (weekly 505 vs 504) = pola menumpuk terbukti. Rule tambahan: (5) rasio/pembagian dua angka WAJIB dihitung dari angka final yang ditulis, bukan dari ingatan; (6) breadth kanonik = SEMUA saham close terakhir vs close sebelumnya (metode yang exact vs brief29 189/550/127), bukan universe vol>0/threshold. Ambang kejadian ke-3 tercapai → generator angka agregat (breadth+rasio) kandidat dipindah ke script deterministik.
 # TeknikalID Agent Org — Lessons Learned
 
 Format: tanggal | area | pelajaran | aksi pencegahan. Append-only, tidak rewrite sejarah.
