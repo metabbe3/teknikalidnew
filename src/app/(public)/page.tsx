@@ -20,6 +20,11 @@ import { PersonalizedBeranda } from "@/components/home/personalized-beranda";
 import { MorningDeltaCard } from "@/components/home/morning-delta-card";
 import { ThesisCard } from "@/components/home/thesis-card";
 import { PersonalizedGreeting } from "@/components/home/personalized-greeting";
+import { WelcomeCard } from "@/components/home/welcome-card";
+import { ClaimStreakButton } from "@/components/home/claim-streak-button";
+import { ForYouSignals } from "@/components/home/for-you-signals";
+import { reputationRepository } from "@/domains/reputation/reputation.repository";
+import { articleRepository } from "@/domains/article/article.repository";
 import { SnapshotCard, type SnapshotCardData } from "@/components/berita/snapshot-card";
 import { MarketBreathStrip } from "@/components/ui/market-breath-strip";
 import { SectionHeading } from "@/components/ui/section-heading";
@@ -262,6 +267,49 @@ async function TradingPlanPreview() {
 
 // ── Main Page ───────────────────────────────────────────────────────
 
+// ── First-Session Welcome Loop (PRD idea-2026-10-02-2 / prd-2026-10-02-02) ──
+// Server component: derives checklist progress, streak state and day-2+ signals
+// surface from existing tables. Each piece fails soft (returns null) so the home
+// page never errors. Anonymous users never reach this branch (0 cards, AC5).
+
+type WelcomeLoopUser = { id: string; createdAt: Date };
+
+async function WelcomeLoopSection({ currentUser }: { currentUser: WelcomeLoopUser | null }) {
+  if (!currentUser) return null;
+
+  const userCreatedAt = new Date(currentUser.createdAt);
+  const daysSinceRegister = Math.floor((Date.now() - userCreatedAt.getTime()) / 86_400_000);
+
+  const [reputation, latestBrief] = await Promise.all([
+    reputationRepository.findUserReputation(currentUser.id).catch(() => null),
+    articleRepository.findLatestDailyBrief().catch(() => null),
+  ]);
+
+  const streak = reputation?.dailyStreak ?? 0;
+  const isNewUser = daysSinceRegister < 7;
+
+  // Same-day claim check (server calendar day) so the claim button never renders
+  // in a state where clicking it is guaranteed to fail (DailyAlreadyClaimedError).
+  const lastClaim = reputation?.lastDailyClaimAt ? new Date(reputation.lastDailyClaimAt) : null;
+  const claimedToday = lastClaim !== null && lastClaim.toDateString() === new Date().toDateString();
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      {isNewUser ? (
+        <>
+          <WelcomeCard userId={currentUser.id} userCreatedAt={userCreatedAt} latestBriefSlug={latestBrief?.slug ?? null} />
+          <ClaimStreakButton initialStreak={streak} claimedToday={claimedToday} />
+        </>
+      ) : (
+        <>
+          <ForYouSignals userId={currentUser.id} />
+          <ClaimStreakButton initialStreak={streak} claimedToday={claimedToday} />
+        </>
+      )}
+    </div>
+  );
+}
+
 export default async function HomePage() {
   // TODO(SSR-blocking): getMarketOverview() and getMarketStatusForPage() block the entire
   // page SSR. While force-dynamic + 5-min service cache keeps this fast for now, consider
@@ -312,6 +360,10 @@ export default async function HomePage() {
         <TickerTape items={tickerItems} />
         <PersonalizedGreeting name={userName} marketInfo={marketInfo} overview={overview} ihsg={ihsg} />
         <div className="max-w-7xl mx-auto px-4 py-10 space-y-14">
+          {/* First-Session Welcome Loop (PRD idea-2026-10-02-2): day-1..7 checklist
+              + streak claim; day-2+ (or checklist complete) -> "Sinyal untukmu".
+              All derives are fire-safe (failure hides the card, never errors home). */}
+          <WelcomeLoopSection currentUser={currentUser} />
           <MorningDeltaCard />
           <ThesisCard />
           <PersonalizedBeranda />

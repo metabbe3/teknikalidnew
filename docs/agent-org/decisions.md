@@ -608,3 +608,9 @@ commit pre-deploy live-unknown; merge HEAD: 1e4d517
 - NIGHT-MERGE AUDIT: main bersih 22 jam (0 commit 21:45-07:00; 2 commit lokal unpush ternyata docs CTO 3 Okt 07:36, jam aman). Merge night/prd-2026-10-03-01 --no-ff 0f35d7f (dry-run 0, schema-shield PASS) + push. Re-verify: py_compile 3 file + pytest fixture 7/7.
 - ROLLBACK ANCHOR pre-deploy prd-2026-10-01-01: MAIN_HEAD a47b97491335 (sebelum merge); app 3a13e456f1bf (37h); worker 06082d2e2c25 (8d). Rollback prd-01 = git revert <commit-fitur> + rebuild; DDL rollback = ALTER TABLE "PageView" DROP COLUMN "utmSource"/"utmMedium" (additive, 0 row lama berubah).
 - prd-2026-10-03-01 cron job ZAI Quota Rerun BELUM dibuat — owner action 1 perintah (usulan: hermes cron create '5-59/10 7-21 * * *' --name 'ZAI Quota Rerun' --no-agent --script zai_quota_rerun.py). agent-scheduler plist juga masih menunggu owner bootstrap (prd-02-01).
+
+## 2026-10-05 07:3x — CTO pagi: ROLLBACK ANCHOR sebelum deploy utm ed07aa7 (resume slot 4 Okt yang terputus)
+- Konteks: commit utm ed07aa7 merged ke main 4 Okt 07:56 tapi deploy TIDAK pernah jalan (app image 3a13e456f1bf = 2 Okt 18:38, worker 06082d2e2c25 = 26 Sep; kolom utm* 0 rows; queue masih approved_by_owner tanpa result; changelog/handoff 4 Okt tidak ada).
+- ANCHOR: app 3a13e456f1bf · worker 06082d2e2c25 · git main b6c2f8f · backup valid db-20261005.sql.gz (05:00 hari ini).
+- Deploy: docker compose build app worker && up -d app worker (app entrypoint auto `prisma migrate deploy` = ALTER TABLE PageView ADD utmSource/utmMedium VARCHAR(32) NULL, additive owner-approved DM 24769).
+- Rollback 1-perintah: git revert ed07aa7 + docker tag image anchor + up -d (atau psql ALTER TABLE DROP COLUMN utmSource/utmMedium jika perlu).

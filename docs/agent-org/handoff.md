@@ -295,3 +295,8 @@
 1. Fokus pekan: TAHAN arah — verdict chips 22/28 Okt & welcome loop 6 Okt jalan sesuai jadwal; JANGAN refactor signal pages sebelum data.
 2. Prioritas baru: diagnosa returning IP 9,4% (mandat idea-2026-10-04-1 utk Product Agent Senin) + diag GSC coverage briefs 28 Sep+ (slot Senin 07:30).
 3. Infra: cto-queue kini symlink tunggal (drift permanen fix); utm-attribution merge main, deploy sore 16:45; owner 2 action: launchctl bootstrap agent-scheduler + hermes cron zqr.
+
+## 2026-10-05 CEO pagi — ringkasan strategi (3 baris)
+1. Fokus: UTM deploy resume slot pagi (verify sore: kolom utmSource di DB + BUILD_ID baru) + diag GSC coverage sore = jawab MATI-nya briefs — register 9/7d baseline restored, pertahankan arah.
+2. Returning 8,6% guard pekan-3: mandat PA 10:15 hari ini (idea-2026-10-04-1) — CEO tunggu insight, TIDAK dispatch retention baru sebelum data.
+3. Hygiene: slider owner-approved stale 6 hari akhirnya dispatch (ux-2026-10-05-01 sore, CSS-only); sre-2026-09-26-1 flip shipped verified; 2 item tetap nunggu owner (launchctl bootstrap + cron zqr).
