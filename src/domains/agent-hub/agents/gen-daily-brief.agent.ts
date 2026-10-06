@@ -20,10 +20,14 @@ export class GenDailyBriefAgent extends BaseAgent {
       return { summary: `Daily brief skipped — today's brief already exists (${result.slug})` };
     }
 
+    // AC4 (prd-2026-10-05-01): JobRun logs mismatch counts held/corrected per run
+    const gate = result.factCheckGate;
+    const gateNote = gate ? ` [fact-check: ${gate.action === "hold-draft" ? `HELD ${gate.mismatches} mismatch` : `corrected ${gate.mismatches}`}]` : "";
     return {
-      summary: `Daily brief generated: ${result.title}`,
+      summary: `Daily brief generated: ${result.title}${gateNote}`,
       articleIds: [result.id],
       slug: result.slug,
+      ...(gate ? { factCheckGate: gate } : {}),
     };
   }
 

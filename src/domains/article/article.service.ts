@@ -11,7 +11,9 @@ import { buildStockAnalysisPrompt, buildEducationalPrompt, buildNewsPrompt, buil
 import { buildTemplateArticle, buildDailySnapshot, buildDailySlug } from "./article-template";
 import { ArticleNotFoundError, ArticleGenerationError, DuplicateSlugError } from "./article.errors";
 import { gatherMarketContext, formatMarketContextForPrompt, factCheckArticle, extractTickersFromText } from "./article-fact-check";
-import type { MarketContext } from "./article-fact-check";
+import type { MarketContext, FactCheckResult } from "./article-fact-check";
+import { decidePublish, factCheckMetaFor } from "./publish-gate";
+import { notifyFactCheckHold } from "./fact-check-gate-notify";
 import { validateArticle } from "./quality-validator";
 import { resolveTitle } from "./title-guard";
 import { sanitizeGeneratedContent } from "./content-sanitizer";
@@ -94,6 +96,10 @@ export const articleService = {
     });
     const cleanContent = sanitizeGeneratedContent(result.content);
 
+    // ── Publish Fact-Check Gate (prd-2026-10-05-01, AC3: jalur analisa saham) ──
+    // Evergreen pages publish immediately (isListed: false, but PUBLISHED) — a
+    // wrong close price lives on a top SEO page until the next regen. Gate the
+    // price claims against the same DB rows the prompt was built from.
     const t = ticker.replace(".JK", "").toLowerCase();
     const month = new Date().toLocaleDateString("id-ID", { month: "long", year: "numeric" });
     const slug = `analisa-teknikal-${t}`;
@@ -109,13 +115,36 @@ export const articleService = {
     const defaultTitle = `Analisa Teknikal ${stock.name} (${t.toUpperCase()}) Hari Ini ${priceStr}${changeStr}${signalStr}`;
     const title = resolveTitle(sanitizeGeneratedContent(result.title), cleanContent, defaultTitle);
     const tags = result.tags.length > 0 ? result.tags : [stock.sector, t.toUpperCase(), "analisa teknikal"];
-    const meta = { provider: provider.name, model: process.env.ANTHROPIC_MODEL, timestamp: new Date().toISOString() } as Record<string, string>;
+
+    let gateContent = cleanContent;
+    let gateTitle = title;
+    let factCheck: FactCheckResult | null = null;
+    try {
+      const marketCtx = await gatherMarketContext([ticker]);
+      factCheck = await factCheckArticle(cleanContent, marketCtx, title);
+      if (!factCheck.passed && factCheck.correctedContent) gateContent = sanitizeGeneratedContent(factCheck.correctedContent);
+      if (!factCheck.passed && factCheck.correctedTitle) gateTitle = sanitizeGeneratedContent(factCheck.correctedTitle);
+    } catch (err) {
+      console.error("[FactCheckGate] stock-analysis fact-check threw — fail-open:", err instanceof Error ? err.message : err);
+      factCheck = null;
+    }
+    const gate = decidePublish(factCheck);
+    const held = gate.action === "hold-draft";
+    const meta = { provider: provider.name, model: process.env.ANTHROPIC_MODEL, timestamp: new Date().toISOString(), ...factCheckMetaFor(factCheck, held) } as Record<string, string>;
 
     if (existing) {
+      if (held) {
+        // Wrong numbers detected and not correctable → never overwrite the live
+        // evergreen page with them (qa-2026-09-28-02 pattern). Keep current
+        // content, flag meta, notify admin.
+        await articleRepository.update(existing.id, { generationMeta: meta }).catch(() => {});
+        await notifyFactCheckHold({ articleId: existing.id, title, slug, factCheck });
+        return { id: existing.id, title, slug };
+      }
       await articleRepository.update(existing.id, {
-        title,
+        title: gateTitle,
         excerpt: sanitizeGeneratedContent(result.excerpt ?? "").slice(0, 500),
-        content: cleanContent,
+        content: gateContent,
         tags,
         status: ArticleStatus.PUBLISHED,
         publishedAt: new Date(),
@@ -123,7 +152,7 @@ export const articleService = {
         isListed: false,
       });
       await articleRepository.incrementVersion(existing.id);
-      return { id: existing.id, title, slug };
+      return { id: existing.id, title: gateTitle, slug };
     }
 
     const adminUser = await articleRepository.findAdminUserId();
@@ -131,12 +160,12 @@ export const articleService = {
 
     const article = await articleRepository.create({
       slug,
-      title,
+      title: gateTitle,
       excerpt: sanitizeGeneratedContent(result.excerpt ?? "").slice(0, 500),
-      content: cleanContent,
+      content: gateContent,
       authorId: adminUser.id,
       tags,
-      status: ArticleStatus.PUBLISHED,
+      status: held ? ArticleStatus.DRAFT : ArticleStatus.PUBLISHED,
       articleType: ArticleType.STOCK_ANALYSIS,
       aiProvider: provider.name,
       tickerTag: ticker,
@@ -307,7 +336,7 @@ export const articleService = {
     return provider.researchKeywords(query, context);
   },
 
-  async generateNewsArticle(topic: string, keywords: string[], trendingAngles?: string[], context?: string, autoPublish = false, marketCtx?: MarketContext, opts?: { minWords?: number }): Promise<{ id: string; title: string; slug: string }> {
+  async generateNewsArticle(topic: string, keywords: string[], trendingAngles?: string[], context?: string, autoPublish = false, marketCtx?: MarketContext, opts?: { minWords?: number }): Promise<{ id: string; title: string; slug: string; factCheckGate?: { action: string; mismatches: number; claimsChecked: number } }> {
     const marketDataSection = marketCtx ? formatMarketContextForPrompt(marketCtx) : undefined;
     const recentPromptTitles = await articleRepository.findRecentTitles(5).catch(() => [] as string[]);
     const { system, user } = buildNewsPrompt({ topic, keywords, trendingAngles, context, marketDataSection, recentTitles: recentPromptTitles });
@@ -345,27 +374,35 @@ export const articleService = {
     const adminUser = await articleRepository.findAdminUserId();
     if (!adminUser) throw new ArticleGenerationError("No admin user found");
 
-    // Fact-check if market context is available
+    // ── Publish Fact-Check Gate (prd-2026-10-05-01): no wrong number goes live ──
     let finalContent = cleanContent;
     let finalTitle = resolveTitle(sanitizeGeneratedContent(result.title), cleanContent, topic);
-    let factCheckMeta: Record<string, string> = {};
+    let factCheck: FactCheckResult | null = null;
     if (marketCtx) {
-      const factCheck = await factCheckArticle(cleanContent, marketCtx, finalTitle);
-      if (!factCheck.passed && factCheck.correctedContent) {
-        finalContent = sanitizeGeneratedContent(factCheck.correctedContent);
+      try {
+        factCheck = await factCheckArticle(cleanContent, marketCtx, finalTitle);
+      } catch (err) {
+        // Fail-open: gate must not take down the brief pipeline (AC5)
+        console.error("[FactCheckGate] factCheckArticle threw — fail-open:", err instanceof Error ? err.message : err);
+        factCheck = null;
+      }
+      if (factCheck && !factCheck.passed) {
+        if (factCheck.correctedContent) {
+          finalContent = sanitizeGeneratedContent(factCheck.correctedContent);
+        }
         if (factCheck.correctedTitle) {
           finalTitle = sanitizeGeneratedContent(factCheck.correctedTitle);
         }
       }
-      factCheckMeta = {
-        factCheckPassed: String(factCheck.passed),
-        factCheckClaimsChecked: String(factCheck.meta.claimsChecked),
-        factCheckErrors: String(factCheck.mismatches.length),
-        factCheckCorrected: String(!factCheck.passed && !!factCheck.correctedContent),
-      };
+    }
+    const gate = decidePublish(factCheck);
+    const held = gate.action === "hold-draft";
+    const factCheckMetaWithHold = factCheckMetaFor(factCheck, held);
+    if (gate.action !== "publish") {
+      console.info(`[FactCheckGate] ${gate.action}: ${factCheck?.mismatches.length ?? 0} mismatch (checked ${factCheck?.meta.claimsChecked ?? 0} klaim)`);
     }
 
-    const status = autoPublish ? ArticleStatus.PUBLISHED : ArticleStatus.DRAFT;
+    const status = autoPublish && !held ? ArticleStatus.PUBLISHED : ArticleStatus.DRAFT;
     const article = await articleRepository.create({
       slug,
       title: finalTitle,
@@ -377,7 +414,7 @@ export const articleService = {
       articleType: ArticleType.NEWS,
       aiProvider: provider.name,
       isListed: true,
-      generationMeta: { provider: provider.name, topic, keywords, timestamp: new Date().toISOString(), ...factCheckMeta,
+      generationMeta: { provider: provider.name, topic, keywords, timestamp: new Date().toISOString(), ...factCheckMetaWithHold,
         qualityScore: String(quality.score),
         qualityPassed: String(quality.passed),
         qualityWordCount: String(quality.meta.wordCount),
@@ -386,7 +423,18 @@ export const articleService = {
       } as Record<string, string | string[]>,
     });
 
-    return { id: article.id, title: article.title, slug: article.slug };
+    if (held) {
+      await notifyFactCheckHold({ articleId: article.id, title: article.title, slug: article.slug, factCheck });
+    }
+
+    return {
+      id: article.id,
+      title: article.title,
+      slug: article.slug,
+      ...(factCheck && gate.action !== "publish"
+        ? { factCheckGate: { action: gate.action, mismatches: factCheck.mismatches.length, claimsChecked: factCheck.meta.claimsChecked } }
+        : {}),
+    };
   },
 
   async generateGeneralArticle(topic: string, keywords: string[], trendingAngles?: string[], style?: string, context?: string): Promise<{ id: string; title: string; slug: string }> {
@@ -649,7 +697,7 @@ export const articleService = {
    * on /berita and cross-linked from any stock page whose ticker it mentions
    * (rehype stock linker auto-links tickers at render). One per WIB day.
    */
-  async generateDailyBrief(): Promise<{ id: string; title: string; slug: string; skipped?: boolean }> {
+  async generateDailyBrief(): Promise<{ id: string; title: string; slug: string; skipped?: boolean; factCheckGate?: { action: string; mismatches: number; claimsChecked: number } }> {
     // WIB-day dedupe — never two briefs for the same WIB calendar day (not a
     // rolling 24h window: a brief at 22:00 WIB must not block the next day's
     // 16:10 run, and a 00:30 brief must not double up with a later one).
