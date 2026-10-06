@@ -1,3 +1,12 @@
+## 2026-10-06 (night) — Publish Fact-Check Gate live-ready (prd-2026-10-05-01, branch night/prd-2026-10-05-01)
+
+- **What**: Konten ber-angka dari LLM tidak lagi bisa tayang salah. Gate memutuskan `publish | publish-corrected | hold-draft` (pure fn `publish-gate.ts`); `!passed && !correctedContent` => artikel jadi **DRAFT + AGENT_ALERT ke admin**, bukan PUBLISHED (akar 12 QA P1 correctness 23 Sep–5 Okt).
+- **Coverage (AC3)**: `generateNewsArticle` (brief harian + trending news) DAN `generateStockAnalysis` (evergreen analisa saham — held tidak menimpa artikel live lama). Edu/listicle tetap DRAFT-by-default (manusia yang publish) — jalur publish admin via `publishArticle` tidak digate (out of scope PRD, catat untuk QA).
+- **Visibility (AC4)**: generationMeta `factCheckPassed/ClaimsChecked/Errors/Corrected/Held` di semua jalur ber-gate; `factCheckPassed="unavailable"` bila gate fail-open (dapat dibedakan via SQL). JobRun gen_daily_brief summary mencatat mismatch held/corrected per run.
+- **Fail-open (AC5)**: factCheck throw/null => publish seperti semula — brief pagi tidak mungkin dibunuh gate. Threshold verifyClaim tidak diubah (0.3% harga/index).
+- **Test**: publish-gate.test.ts 11/11 (fixture replika qa-2026-09-30-01 '582 saham turun' & qa-2026-09-28-02 '4 EMA salah'); suite lokal 88/88; tsc 0; eslint 0 error.
+- **Status**: night_ready — merge+deploy CTO pagi 07:30. Pasca-deploy: monitor 7 hari (0 insiden correctness P1 baru jalur ber-gate; gate tidak menahan >20% run sehat).
+
 ## [2026-10-01 07:5x] reviewer — QA 1 Okt: 42 artikel + deploy verify wid-27-1 + bookkeeping [read-only + 1 task P1]
 - Type: QA/ops  |  PRD: -
 - Deploy: TIDAK ADA (QA + bookkeeping; 1 task ke queue)  |  Rollback: -

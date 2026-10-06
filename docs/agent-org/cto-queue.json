@@ -715,11 +715,15 @@
       "created_by": "Product Agent nightly buffer-keeper 5 Okt 22:1x (riset SQL read-only + statik grep 5 Okt; run ini juga restore 4 entry backlog yang terjatuh union-fix 2972b4e — divergensi ke-5 dlm 8 hari)",
       "scheduled_slot": "unknown -- setelah prd-2026-10-01-01 (welcome loop, in_progress) selesai & saved-screen prd-2026-10-03-02 terjadwal; CEO boleh re-assign",
       "priority": "P2",
-      "status": "spec_ready",
+      "status": "night_ready",
       "prd_id": "idea-2026-10-05-1",
       "north_star": "trust -- 12 QA P1 correctness 9 hari: angka salah tayang lalu dikoreksi; gate fact-check pre-publish mencegah salah tayang (customer first)",
       "title": "P2 FITUR (PRD idea-2026-10-05-1): Publish Fact-Check Gate -- factCheckArticle dipanggil SEBELUM publish di SEMUA jalur ber-angka (bukan hanya NEWS+marketCtx); gagal total = DRAFT+notif admin, bukan tayang salah",
-      "spec": "INTENT (feature, PRD LENGKAP di product-backlog.json idea-2026-10-05-1 -- AC+data_evidence+metadata v2 di sana; baca PRD, jangan narasi). DONE WHEN: AC terpenuhi + bukti live (SQL generationMeta + log JobRun) + changelog == merge + 7 hari pertama 0 insiden correctness P1 baru pada jalur ber-gate."
+      "spec": "INTENT (feature, PRD LENGKAP di product-backlog.json idea-2026-10-05-1 -- AC+data_evidence+metadata v2 di sana; baca PRD, jangan narasi). DONE WHEN: AC terpenuhi + bukti live (SQL generationMeta + log JobRun) + changelog == merge + 7 hari pertama 0 insiden correctness P1 baru pada jalur ber-gate.",
+      "branch": "night/prd-2026-10-05-01",
+      "verify_evidence": "tsc --noEmit EXIT 0; unit suite 88/88 PASS (publish-gate 11/11 baru + content-sanitizer 6 + quality-validator 14 + title-guard 44 + parse-ai-response 13, node:test via tsx); eslint 0 error (5 warning pre-existing unused-vars); sdlc_lint 0 error; commit 6159084 di branch night/prd-2026-10-05-01 (base origin/main ae6f0a6)",
+      "estimate_review_min": 10,
+      "night_result": "IMPLEM PENUH AC1+AC3+AC4: (1) publish-gate.ts pure decision — !passed && !correctedContent => hold-draft (preseden logic L351-366 kini jadi gate keras); fail-open bila factCheck null/throw (AC5 guard, brief pipeline tidak mati). (2) generateNewsArticle: autoPublish=true kini status DRAFT saat held + notifyFactCheckHold (AGENT_ALERT ke ADMIN, pola anomaly-detection). (3) generateStockAnalysis AC3: evergreen analisa saham di-gate (gatherMarketContext([ticker]) + factCheckArticle) — held TIDAK menimpa artikel live lama (qa-2026-09-28-02 pattern), artikel baru jadi DRAFT. (4) generationMeta factCheck* 100% jalur ber-gate + factCheckHeld flag; generateDailyBrief return factCheckGate {action,mismatches,claimsChecked} -> JobRun summary tercatat per run. Deviasi plan: NONE. SQL verify 7d pasca-deploy: SELECT count(*) FROM Article WHERE status='PUBLISHED' AND publishedAt > deploy_ts AND (generationMeta->>'factCheckPassed') IS NULL — target 0 di jalur ber-gate (NEWS+STOCK_ANALYSIS AI); template/DAILY_SNAPSHOT deterministic dari DB rows (bukan LLM) tetap tanpa flag — QA pagi perlu tahu ini saat baca angka AC4."
     }
   ]
 }
