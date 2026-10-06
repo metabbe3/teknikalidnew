@@ -91,7 +91,7 @@ export function PresetCard({
                 step={1}
                 value={sliderValues[slider.key] ?? slider.default}
                 onChange={(e) => onSliderChange(slider.key, slider.param, Number(e.target.value))}
-                className="w-full h-1.5 bg-border rounded-full appearance-none cursor-pointer accent-current"
+                className="tk-range w-full appearance-none cursor-pointer"
                 aria-label={slider.label}
               />
               <div className="flex justify-between mt-0.5">
@@ -239,7 +239,7 @@ export function CustomBuilder({
                       step={def.step ?? 1}
                       value={filter.params[def.key] as number}
                       onChange={(e) => updateParam(filter.id, def.key, Number(e.target.value))}
-                      className="w-full h-1.5 bg-border rounded-full appearance-none cursor-pointer"
+                      className="tk-range w-full appearance-none cursor-pointer"
                       aria-label={def.label}
                     />
                     <div className="flex justify-between mt-0.5">

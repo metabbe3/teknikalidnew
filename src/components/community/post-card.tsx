@@ -351,11 +351,11 @@ export function PostCard({ post, repostedBy }: PostCardProps) {
                 {post.author.reputation != null && post.author.reputation > 0 && (
                   <ReputationBadge reputation={post.author.reputation} customTitle={post.author.customTitle} />
                 )}
-                <span className="text-[12px] text-gray-400">
+                <span className="text-[12px] text-gray-400 truncate">
                   @{post.author.username}
                 </span>
-                <span className="text-[12px] text-gray-300">·</span>
-                <span className="text-[12px] text-gray-400">
+                <span className="text-[12px] text-gray-300 shrink-0">·</span>
+                <span className="text-[12px] text-gray-400 shrink-0">
                   {timeAgo(post.createdAt)}
                 </span>
               </div>
