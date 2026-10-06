@@ -614,3 +614,19 @@ commit pre-deploy live-unknown; merge HEAD: 1e4d517
 - ANCHOR: app 3a13e456f1bf · worker 06082d2e2c25 · git main b6c2f8f · backup valid db-20261005.sql.gz (05:00 hari ini).
 - Deploy: docker compose build app worker && up -d app worker (app entrypoint auto `prisma migrate deploy` = ALTER TABLE PageView ADD utmSource/utmMedium VARCHAR(32) NULL, additive owner-approved DM 24769).
 - Rollback 1-perintah: git revert ed07aa7 + docker tag image anchor + up -d (atau psql ALTER TABLE DROP COLUMN utmSource/utmMedium jika perlu).
+
+### 2026-10-06 07:5x WIB — CTO pagi: SQL content patch qa-2026-10-04-01 + qa-2026-10-05-01 (backup db-20261006 01:16 valid; preview 1|1|1 occ; 1 transaksi; ISR 300s)
+- edu cara-membaca: "Contoh paling ekstrem saat ini" -> "Contoh nyata di zona oversold saat ini (di bawahnya masih ada BCAP 0,17 dan NETV 3,57)" — GOTO RSI 10 rank #6, BCAP 0,17 rank #1 (DB 2 Okt non-gorengan).
+- brief5: breadth 470/556/325 -> 471/558/416 (kanonik semua-saham close-vs-prev s.d. 2 Okt); rasio "hampir 2,5 kali lipat BUMI" -> "puluhan kali lipat BUMI" (aktual 54,3x). Angka lain utuh.
+
+## 2026-10-06 18:4x WIB — CTO sore: qa-2026-10-06-01 SQL content patch brief6 (3 frasa, 1 transaksi)
+- Task: P1 QA reviewer 6 Okt. DEVISI SPEC: reviewer tulis BEKS bullet di brief5 — salah; frasa 'Rp374 miliar'/'BEKS' = 0 hit di brief5 SEMUA field, target asli = brief6 (rekap Jumat di artikel Senin 06:36). QA reviewer harap cek slug sumber sebelum dispatch.
+- Patch 1 transaksi (backup last-success 2026-10-06T01:16 <24h VALID): (1) 'dengan volume Rp374 miliar' -> 'dengan volume 374,4 juta saham (sekitar Rp11,2 miliar)' (DB BEKS 5 Okt: vol 374.410.600 lembar x close 30 = Rp11,23 M — satuan uang meleset 33x); (2) 'Oversold terdalam: GOTO' -> 'Oversold terdalam di antara saham likuid: GOTO' (DB RSI non-gorengan 5 Okt: BABP 0,03/BCAP 6,02/ATLA 7,03/BBSI 7,82 < GOTO 9,49; filter likuid -> GOTO #1, NETV 15,72 berikutnya — verified); (3) typo 'bukan sekadar uju tunda' -> 'bukan sekadar kenaikan sesaat'.
+- Bukti: PREVIEW 1|1|1 -> UPDATE 1 -> POST 1|1|1, residual lama = 0. LIVE: frasa baru 2/2/2, frasa lama 0/0/0, kontrol BEKS/RSI 9,5/ENRG/KRAS/breadth 540 utuh. 0 artikel lain tersentuh (WHERE slug exact + LIKE guard).
+
+## 2026-10-06 18:5x WIB — CTO sore: ux-2026-10-05-01 ROLLBACK ANCHOR pre-deploy
+- Pre-deploy: app image 3a13e456f1bf (5 Okt 19:06 run, dibuat 2 Okt), HEAD ae6f0a6, baseline 5 URL 200 (/, /stocks, /community, golden-cross, brief6), tk-range marker live=0.
+- Deploy: docker compose build app && up -d app (1 deploy sore, org 1/2 hari ini).
+
+## 2026-10-06 19:1x WIB — CTO sore: ux-2026-10-05-01 deploy BLOCKED_EXTERNAL (Docker Hub)
+- Kode commit e3b46a1 di main (tsc 0, CSS-only, anchor 3a13e456f1bf/ae6f0a6 logged). Build 2x stall step sama 'load metadata node:24-alpine': buildx 0% CPU, docker pull hang >90s, API registry respon normal (401@0,85s) = blob CDN unreachable dari Docker VM. Anti-loop 2x -> STOP. Site 200 sehat image lama. Retry besok 07:30 (build+up saja).

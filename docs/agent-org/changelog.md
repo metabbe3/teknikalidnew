@@ -263,3 +263,10 @@
 - Verify: fixture-test 25/25 PASS (fixture = baris log NYATA 3 Okt 06:31/06:55/07:00x2; noise WARNING-attempt & 1302 diabaikan); LIVE: 4/4 insiden terdeteksi, PT+Tech=pulih, Growth+Reviewer=giveup (fakta: rerun manual mereka gagal 1302); cron-mode 3x run idempotent silent exit 0; digest dry-run 7 baris. AC5: run_ledger.py TIDAK disentuh, monitor 05:45 tetap silent-when-healthy.
 - QA: CTO pagi review 3 file ops/ + KEPUTUSAN cron registration (usul '5-59/10 7-21 * * *' no-agent telegram; script jalan tiap 10 mnt = tanpa LLM call, murah). AC4 spread-offset tercatat di decisions.md (eksekusi reschedule = owner/CEO, bukan agent).
 - Root-cause data bonus: insiden malam hivePOS (01:04/01:32/02:35) = 1302 request-rate BUKAN 1308 kuota → sengaja di luar auto-rerun (provider congestion; retry menit-menit = cukup dgn rerun manual/playbook 529); visible via digest baru.
+
+### 2026-10-06 18:4x — qa-2026-10-06-01 (ops, SQL patch) — brief6 3 klaim fatal
+- task-id: qa-2026-10-06-01 | type: ops (SQL content patch, TANPA deploy — ISR 300s)
+- PRD: n/a (QA gate) | deploy hash: n/a (no deploy) | commit: docs only
+- verify: DB POST 1|1|1 residual 0; LIVE 200: '374,4 juta saham' x2, 'terdalam di antara saham likuid' x2, 'kenaikan sesaat' x2, frasa lama 0
+- QA: reviewer verify D+1; root-cause: superlatif pola ke-4 + unit-error; slug reviewer salah (brief5 -> brief6)
+- impact_check_due: 2026-10-09 (brief berikut bebas superlatif/unit tanpa patch)
