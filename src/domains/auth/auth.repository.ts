@@ -8,7 +8,7 @@ export const authRepository = {
   findUserById(id: string) {
     return prisma.user.findUnique({
       where: { id },
-      select: { id: true, email: true, name: true, username: true, image: true, role: true, bannedAt: true },
+      select: { id: true, email: true, name: true, username: true, image: true, role: true, bannedAt: true, createdAt: true },
     });
   },
 
