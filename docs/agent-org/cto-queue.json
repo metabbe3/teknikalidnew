@@ -531,14 +531,17 @@
       "created_by": "Product Agent nightly buffer-keeper 1 Okt 22:1x (PRD idea-2026-09-25-1 ditulis 30 Sep 22:1x; CEO mandate promote 28 Sep 08:15)",
       "scheduled_slot": "2026-10-05 07:30 CTO pagi (RESUME deploy slot 4 Okt yang terputus sebelum up -d; tsc 0 anchor committed 87adbcd)",
       "priority": "P2",
-      "status": "in_progress",
+      "status": "deployed",
       "prd_id": "idea-2026-09-25-1",
       "north_star": "growth register (NS#1) — atribusi 3 register-hook live 22 Sep; gate AC5 prd-17-01 impact-check 20 Okt TIDAK bisa dievaluasi tanpa ini (16 register-view/30d tak ter-atribusi)",
       "title": "P2 FITUR (PRD idea-2026-09-25-1): atribusi register hook — PageView simpan utm_source/utm_medium (whitelist ^[a-z0-9_-]{1,32}$, scope /auth/* only, additive nullable via prisma migrate KOORDINASI OWNER)",
       "spec": "INTENT (feature, PRD LENGKAP di product-backlog.json entry idea-2026-09-25-1 — semua AC + sec_review + data_evidence ada di sana; jangan narasi, baca PRD). Ringkas: kolom additive PageView.utmSource/utmMedium VARCHAR(32) NULL (prisma migrate — koordinasi owner, deploy app+worker bareng, BUKAN silent) + track endpoint parse utm utk path /auth/* saja (anti log-injection: whitelist+cap, non-match -> NULL) + admin funnel pecah register per utm_source (hook vs organic vs direct). Metadata v2 untuk planning: lihat field backlog target_files/db_migrations/dependencies/risk/estimate_tool_calls. DONE WHEN: AC PRD terpenuhi + verify live (bukti curl/SQL) + changelog == merge.",
       "blocked_checked_at": "2026-10-03 07:5x WIB (CTO pagi — masih nunggu approve owner prisma migrate; slot ke-2, CEO sudah ESCALATE 3 Okt)",
       "owner_brief": "OWNER PACKAGE (CTO sore 2 Okt): PRD idea-2026-09-25-1 atribusi utm register-hook. YANG DIBUTUHKAN: prisma migrate = DDL di DB prod (area owner). PERUBAHAN: (1) prisma/schema.prisma PageView +2 kolom nullable utmSource/utmMedium VARCHAR(32) — ADDITIVE, rollback-safe (DROP COLUMN); (2) src/app/api/track/pageview/route.ts parse utm utk path /auth/* saja, whitelist ^[a-z0-9_-]{1,32}$ cap 32, non-match→NULL (anti log-injection); (3) src/lib/validation.ts helper whitelist; (4) admin funnel pecah register per utm_source. 0 endpoint publik baru, 0 PII. RISIKO: LOW (kolom additive nullable; track endpoint tetap jalan kalau kolom NULL; tanpa ubah bot-gate). RENCANA ROLLBACK: git revert + prisma migrate drop columns (atau biarkan kolom idle — harmless). DEPLOY: app+worker BARENG sekali build (kapasitas ada). APPROVE via agent utama → status pending + approved_by_owner.",
-      "owner_approved_at": "2026-10-03 07:2x WIB (DM message_id 24769)"
+      "owner_approved_at": "2026-10-03 07:2x WIB (DM message_id 24769)",
+      "qa_verified": true,
+      "qa_verified_by": "Content Reviewer 7 Okt 09:1x (independen)",
+      "result": "UTANG DIBAYAR reviewer 7 Okt 09:1x dari bukti fisik (CTO belum bukukan): migration 20261004075000_add_pageview_utm ada di repo; kolom PageView.utmSource/utmMedium live di DB; app image baru 1b22a31fa4ad (build 07:49, container up 07:50 sehat); E2E PASS: browser guest GET /auth/register?utm_source=qatest0710&utm_medium=cronqa 09:09 -> PageView row (path /auth/register, utmSource=qatest0710, utmMedium=cronqa) — 1/1 exact, scope /auth/*; row lain post-deploy (non /auth) utm tetap NULL (2/2, tidak bocor). Catatan: grep utmSource di spill-over stderr 124KB = 1 hit (noise parser), bukan error build; verifikasi pakai bukti DB+docker langsung."
     },
     {
       "id": "prd-2026-10-01-02",
@@ -653,7 +656,7 @@
       "north_star": "growth — distribusi konten baru; konten baik tanpa index = tidak ada",
       "title": "P2 DIAGNOSTIK: GSC index-coverage audit konten publish ≥28 Sep — berapa indexed/pending/excluded, sitemap freshness; read-only",
       "spec": "Baca GSC (API/credential yang dipakai GSC Snapshot Harian) untuk 12 artikel publish 28 Sep–4 Okt: status index (indexed/pending/excluded+alasan), last crawled. Cek sitemap.xml freshness (curl). LAPORAN ANGKA ke ceo-decisions.md + rekomendasi (request indexing manual vs tunggu reindex). HARD: read-only, NO config change website, NO deploy. DONE WHEN: tabel coverage 12 artikel + 1 rekomendasi tertulis.",
-      "scheduled_slot": "2026-10-05 16:45 CTO sore (SRE diag GSC coverage manual via CDP 9222; tooling coverage-per-URL belum ada — scan manual tab pages)"
+      "scheduled_slot": "2026-10-07 16:45 CTO sore (read-only GSC coverage; slot pagi 7 Okt = deploy retry ux-05-01)"
     },
     {
       "id": "ops-2026-10-04-01",
@@ -692,13 +695,15 @@
       "created_by": "CEO pagi 5 Okt 08:1x (backlog idea-2026-09-27-slider-p2 owner_approved 29 Sep 07:42 morning-digest — dispatch tertunda 6 hari, hygiene fix '0 approved >1 hari kerja')",
       "scheduled_slot": "2026-10-07 07:30 CTO pagi (deploy retry — code SUDAH commit e3b46a1 di main, hanya build+up)",
       "priority": "P3",
-      "status": "deferred",
+      "status": "deployed",
       "prd_id": null,
       "gate_note": "owner_approved via morning-digest 29 Sep 07:42 — owner verdict = gate (supersedes syarat prd_id; task CSS-only 0 logika baru)",
       "north_star": "easy to use (lens owner) — mobile-majority ~93/7: thumb 44px = touch target standar; post-card @username utuh = polish konsistensi",
       "title": "P3 UX POLISH (owner-approved 29 Sep, PRD-exempt): screener range-slider thumb 44px + post-card @username clip — CSS-only",
       "spec": "INTENT: dua perbaikan visual kecil dari wave-3 report yang sudah owner-approve: (1) thumb slider range di screener /stocks jadi touch-target layak (min 44px, CSS ::-webkit-slider-thumb + pasangan firefox; className+css ONLY, 0 logic/teks); (2) post-card @username tidak terpotong (clip/ellipsis benar). Sumber lengkap: product-backlog.json entry idea-2026-09-27-slider-p2. DONE WHEN: real-browser CDP mobile 390px — getBoundingClientRect thumb di /stocks screener >= 44px; @username post-card tampil utuh (bukti elemen terukur/screenshot path); npx tsc --noEmit 0 error; changelog entry == merge commit (slot yang sama); live curl 200 pasca-deploy.",
-      "result": "CTO sore 6 Okt 18:3x-19:1x: CODE SELESAI + COMMIT e3b46a1 (3 file src: .tk-range 44px thumb CSS scoped + post-card @username truncate; tsc exit 0; diff persis spec; anchor logged decisions.md; baseline 5 URL 200). DEPLOY BLOCKED_EXTERNAL: docker build 2x stall di 'load metadata node:24-alpine' (buildx 0% CPU ~8mnt each; docker pull node:24-alpine hang >90s walau API registry-1.docker.io respon 0,8s) = Docker Hub blob fetch tidak jalan dari daemon malam ini. Anti-loop 2x: STOP, site SEHAT (image lama 5 Okt jalan, 200). Retry besok pagi: cukup docker compose build app && up -d app && verify thumb CDP >=44px + curl. TANPA kode baru perlu ditulis."
+      "result": "CTO sore 6 Okt 18:3x-19:1x: CODE SELESAI + COMMIT e3b46a1 (3 file src: .tk-range 44px thumb CSS scoped + post-card @username truncate; tsc exit 0; diff persis spec; anchor logged decisions.md; baseline 5 URL 200). DEPLOY BLOCKED_EXTERNAL: docker build 2x stall di 'load metadata node:24-alpine' (buildx 0% CPU ~8mnt each; docker pull node:24-alpine hang >90s walau API registry-1.docker.io respon 0,8s) = Docker Hub blob fetch tidak jalan dari daemon malam ini. Anti-loop 2x: STOP, site SEHAT (image lama 5 Okt jalan, 200). Retry besok pagi: cukup docker compose build app && up -d app && verify thumb CDP >=44px + curl. TANPA kode baru perlu ditulis. || QA reviewer 7 Okt 09:1x: DEPLOY RETRY BERHASIL — app image baru 1b22a31fa4ad build 07:49 (container healthy 07:50), bukti live: CSS chunk /_next/static/css memuat '.tk-range{...height:44px' dan 'tk-range::-webkit-slider-thumb{...width:44px;height:44px' (curl CSS chunk live 200); site baseline 200. Flip deferred->deployed+qa_verified oleh reviewer dari bukti live.",
+      "qa_verified": true,
+      "qa_verified_by": "Content Reviewer 7 Okt 09:1x (independen)"
     },
     {
       "id": "qa-2026-10-05-01",
@@ -740,6 +745,24 @@
       "created_by": "agent:content-reviewer (QA gate pagi 6 Okt)",
       "completed_at": "2026-10-06 18:4x WIB",
       "result": "DONE 06 Okt 18:4x CTO sore (SQL patch 1 transaksi, TANPA deploy; backup 06 Okt 01:16 valid). DEVISI SPEC: frasa BEKS/'Rp374 miliar' TIDAK ada di brief5 (0 hit semua field) — target asli = brief6 (rekap Jumat di artikel Senin); QA patch 3 frasa semuanya di brief-pasar-idx-2026-10-06-pasar-hijau-lebar: (1) 'volume Rp374 miliar' -> '374,4 juta saham (sekitar Rp11,2 miliar)' (DB: vol 374.410.600 x close 30 = Rp11,23 M); (2) 'Oversold terdalam: GOTO' -> 'Oversold terdalam di antara saham likuid: GOTO' (DB: BABP 0,03/BCAP 6,02/ATLA 7,03/BBSI 7,82 < GOTO 9,49 non-gorengan; NETV 15,72 verified); (3) typo 'uju tunda' -> 'kenaikan sesaat'. PREVIEW 1|1|1 -> UPDATE 1 -> POST 1|1|1 residual 0. LIVE 200: frasa baru 2/2/2, lama 0/0/0, kontrol (BEKS/RSI 9,5/ENRG/KRAS/breadth 540) utuh. Log decisions.md + changelog. brief5 sudah bersih dari kemarin (qa-05-01)."
+    },
+    {
+      "id": "qa-2026-10-07-01",
+      "date": "2026-10-07",
+      "type": "ops",
+      "priority": "P1",
+      "status": "pending",
+      "scheduled_slot": "2026-10-07 16:45 CTO sore — SQL content patch 1 brief, TANPA deploy (ISR revalidate=300)",
+      "source": "Content Reviewer QA 7 Okt 09:0x",
+      "north_star": "trust — 2 klaim ranking/superlatif salah di brief harian: 'termuda' hanya 1 dari 5 GC baru 6 Okt, dan label 'terkuat/terbanyak' IATA vs DB (IATA bukan #1 non-gorengan; BEKS vol 2,3x lebih besar). Pola superlatif ke-6 sejak qa-27-01.",
+      "title": "P1: Brief 7 Okt (brief-pasar-idx-2026-10-07-dua-hari-hijau-beks) — 'Golden cross termuda (6 Okt): DART' salah ranking (5 GC baru 6 Okt) + IATA 'volume terbesar di antara mover' & 'Energi memang sektor terkuat' tidak match DB",
+      "spec": "INTENT: QA reviewer 7 Okt — patch 3 klaim di brief-pasar-idx-2026-10-07-dua-hari-hijau-beks (NEWS, live /berita/<slug>, 200 OK). SEMUA angka lain di artikel ini EXACT vs DB (diverifikasi 7 Okt: breadth 508/193/165 dari 866; BBCA -1,21% 6.100 & BBRI -0,32% 3.110; BEKS +20,00% ke 36 vol 935,5jt & Senin +15,38% ke 30 vol 374,4jt & +38% kumulatif dari 26 Jumat; IATA +22,34% ke 115 vol 1,506 M = #1 gainers non-gorengan 6 Okt; AMMN +6,89% 4.500 vol 68,0jt→88,7jt; GOTO +6,90% 31 vol 18,4 M RSI 18,4 (Senin 9,49); KRAS -0,84% 236 vol 6,66jt→3,28jt; GC 124 vs DC 39 non-gorengan (Senin 140/46); BRIS 17,4/ADHI 18,7/PTPP 20,4; sektor non-gorengan Energy 2,39 > Tech 2,13 > Transport 1,96; SINI/SURI/KBLM cross 5 Okt; DART RSI 50,6; link internal valid) — JANGAN sentuh bagian lain.\n\nFIX 1 — 'Golden cross termuda (6 Okt): DART — Duta Anggada Realty (properti) baru menyilang ke atas Selasa dengan RSI 50,6: sinyal dini, masih banyak ruang.' SALAH: smaCrossDate=2026-10-06 non-gorengan ada 5: DART 50,55 / AMOR 53,90 / APII 47,52 / BAIK 33,34 / ERAL 51,51. DART 1 dari 5, bukan satu-satunya 'termuda'. Ganti jadi: 'Golden cross baru 6 Okt (5 emiten): DART, AMOR, APII, BAIK, ERAL — DART (properti, RSI 50,6) salah satunya: sinyal dini, masih banyak ruang.'\n\nFIX 2 — 'IATA +22,34% ke Rp115 — MNC Energy Investments mencatat volume terbesar di antara mover Selasa: 1,506 miliar saham.' SALAH: GOTO juga ada di daftar mover artikel yang sama dengan volume 18,4 miliar saham (12x IATA) — IATA hanya #2 di antara mover (GOTO 18,4 M > IATA 1,506 M > BEKS 935,5 jt). Ganti frasa 'mencatat volume terbesar di antara mover Selasa' jadi 'mencatat volume terbesar kedua di antara mover Selasa, di belakang GOTO'. (Angka 1,506 miliar tetap; klaim gain +22,34% sudah benar = #1 gainers non-gorengan; kalimat 'Energi memang sektor terkuat sesi ini' VALID per DB — biarkan.)\n\nFIX 3 — tidak ada; patch 2 frasa di atas saja.\n\nMETODE: SQL UPDATE 1 transaksi (backup harian <24h valid dulu), preview WHERE occ=1 per frasa, post-check residual=0, curl live grep frasa baru ≥1 + frasa lama 0. Update status+result, lapor di decisions.md.",
+      "acceptance": [
+        "Frasa 'termuda (6 Okt): DART' hilang; 5 emiten GC baru 6 Okt (DART/AMOR/APII/BAIK/ERAL) tersirat di teks",
+        "Klaim volume IATA terkoreksi jadi 'terbesar kedua di antara mover, di belakang GOTO' (GOTO 18,4 M > IATA 1,506 M)",
+        "Post-check frasa lama 0 hit + frasa baru ≥1 live; diff hanya 2 frasa target",
+        "Backup <24h + preview occ=1 per frasa sebelum UPDATE"
+      ]
     }
   ]
 }
