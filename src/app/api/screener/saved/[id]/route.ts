@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-guard";
 import { handleApiError } from "@/lib/api-error";
 import { screenerService } from "@/domains/screener/screener.service";
+import { savedScreenerFiltersSchema } from "@/lib/validation";
 
 export async function GET(
   _request: NextRequest,
@@ -27,10 +28,29 @@ export async function PUT(
     const body = await request.json();
     const { name, description, filters, tradingStyle } = body;
 
+    // AC2 (PRD idea-2026-10-03-1): same whitelist + cap on the update path
+    let validatedFilters: Record<string, string> | undefined;
+    if (filters !== undefined) {
+      const parsedFilters = savedScreenerFiltersSchema.safeParse(filters);
+      if (!parsedFilters.success) {
+        return NextResponse.json(
+          {
+            error: "Invalid filters",
+            details: parsedFilters.error.issues.map((i) => ({
+              field: i.path.join("."),
+              message: i.message,
+            })),
+          },
+          { status: 400 },
+        );
+      }
+      validatedFilters = parsedFilters.data;
+    }
+
     const data = await screenerService.updateSaved(user.id, id, {
       ...(name !== undefined && { name: name.trim() }),
       ...(description !== undefined && { description: description?.trim() }),
-      ...(filters !== undefined && { filters }),
+      ...(validatedFilters !== undefined && { filters: validatedFilters }),
       ...(tradingStyle !== undefined && { tradingStyle }),
     });
 

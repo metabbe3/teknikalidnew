@@ -125,6 +125,68 @@ export function extractPageviewAttribution(path: string): {
 /**
  * Common reusable validation schemas for TeknikalID API routes.
  */
+// ── Saved-screener filters (POST/PUT /api/screener/saved) ──────────────────
+// AC2 prd-2026-10-03-02 (PRD idea-2026-10-03-1): whitelist of screener-param
+// keys + serialized-length cap, so a crafted filters object can neither inject
+// junk keys nor bloat the SavedScreener.filters JSON column.
+// Keys = union of every shape the client actually emits today:
+//   preset-mode  : screener-client.tsx guestSaveFilters (preset + slider params)
+//   custom-mode  : screener-presets.tsx buildParams (snake_case via apiMap
+//                  + camelCase boolean toggles from CustomBuilder paramDefs)
+//   legacy rows  : camelCase number keys (rsiMax/adxMin/...) re-saved via PUT
+//   sort/context : sort_by/sort_order/assetClass/sector
+export const MAX_SAVED_FILTERS_LENGTH = 512;
+
+const SAVED_SCREENER_FILTER_KEYS = [
+  // preset + slider params (snake_case, from screener-types.ts presets)
+  "preset", "rsi_max", "rsi_min", "stoch_k_max", "stoch_k_min", "adx_min",
+  "vol_multiplier", "signal_score_min", "signal_score_max",
+  // custom-builder booleans (camelCase paramDefs)
+  "macdBullish", "aboveSma200", "belowSma200", "bbSqueeze", "excludeGorengan",
+  // custom-builder numbers via apiMap
+  "rsiMax", "rsiMin", "stochKMax", "stochKMin", "adxMin",
+  "signalScoreMin", "signalScoreMax",
+  // sort + context
+  "sort_by", "sort_order", "assetClass", "sector",
+] as const;
+
+const savedScreenerFilterValue = z
+  .string()
+  .min(1)
+  .max(64)
+  .regex(/^[a-zA-Z0-9_,.\- ]+$/, "value: letters, digits, _ , . - space only");
+
+/**
+ * Record<string,string> whitelist + serialized cap 512.
+ * Non-strict by design: unknown keys fail (reject), known keys pass.
+ */
+const savedScreenerFiltersObject = z
+  .object(
+    Object.fromEntries(
+      SAVED_SCREENER_FILTER_KEYS.map((k) => [k, savedScreenerFilterValue.optional()]),
+    ),
+  )
+  .strict();
+
+export const savedScreenerFiltersSchema = z
+  .unknown()
+  .refine((v) => typeof v === "object" && v !== null && !Array.isArray(v), {
+    message: "filters must be an object",
+  })
+  .pipe(savedScreenerFiltersObject)
+  .transform((v) => {
+    // Drop absent optional keys so callers get Record<string, string>
+    const out: Record<string, string> = {};
+    for (const [k, val] of Object.entries(v)) {
+      if (val !== undefined) out[k] = val;
+    }
+    return out;
+  })
+  .refine(
+    (v) => JSON.stringify(v).length <= MAX_SAVED_FILTERS_LENGTH,
+    { message: `filters too long (max ${MAX_SAVED_FILTERS_LENGTH} serialized)` },
+  );
+
 export const schemas = {
   // Stock
   ticker: z.string().min(1).max(10).toUpperCase(),

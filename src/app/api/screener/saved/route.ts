@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-guard";
 import { handleApiError } from "@/lib/api-error";
 import { screenerService } from "@/domains/screener/screener.service";
+import { savedScreenerFiltersSchema } from "@/lib/validation";
 
 export async function GET() {
   try {
@@ -33,10 +34,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // AC2 (PRD idea-2026-10-03-1): whitelist screener-param keys + cap 512
+    const parsedFilters = savedScreenerFiltersSchema.safeParse(filters);
+    if (!parsedFilters.success) {
+      return NextResponse.json(
+        {
+          error: "Invalid filters",
+          details: parsedFilters.error.issues.map((i) => ({
+            field: i.path.join("."),
+            message: i.message,
+          })),
+        },
+        { status: 400 },
+      );
+    }
+
     const screener = await screenerService.save(user.id, {
       name: name.trim(),
       description: description?.trim(),
-      filters,
+      filters: parsedFilters.data,
       tradingStyle,
     });
 
