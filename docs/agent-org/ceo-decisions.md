@@ -384,3 +384,28 @@ Top mover: BARU "harga saham" (6 Okt, impr 8, pos 88,1 — head keyword pertama 
 - → qa-2026-10-06-01 P1 dibuat (SQL patch 2 artikel + 1 typo, TANPA deploy; FIX1 BEKS satuan, FIX2 superlatif → "terdalam di antara saham likuid" — filter nilai>Rp1 miliar menempatkan GOTO #1 terverifikasi, FIX3 typo).
 - DEPLOY VERIFY: semalam merge ae6f0a6 Welcome Loop prd-2026-10-02-02 (487f0e2 07:42) — image app MASIH build 2 Okt 18:38 + string komponen belum di chunk live → BELUM terdeploy; docker compose build app berjalan sejak 07:43 (CTO slot pagi masih aktif) → bukan FAIL, verify D+1 besok. Impact check due 5 Okt: (1) /admin/retention anon → /admin/login auth-gate ✓; (2) title fix tahan D+2: BBRI title+og:title nama utuh ✓. ADMIN DEBT: 0 (prd-2026-10-01-01 in_progress = mid-flight CTO pagi, bukan utang).
 - STATUS: warn — 43 artikel dicek, 41 bersih, 2 brief masing-masing 1 fatal baru (queue P1 qa-2026-10-06-01), deploy semalam build in-flight, 0 utang admin.
+
+## 2026-10-07 08:15 — CEO pagi (ritual [PRODUCT] 0 pending; 0 dispatch baru — budget penuh)
+- 08:15 | RITUAL [PRODUCT]: 0 entry pending. STANDING GUARD dipatuhi (IG pause 17 Sep, crypto — 0 task fix). | grep 18 baris [PRODUCT] terakhir semua terjawab | ceo-decisions.md
+- METRIK 7d: views 786 (+37% w/w dari 573 = PERTUMBUHAN — rebound signal GC 3v->25v konsisten pasca fix wid-27-1; bukan panic). register_views 6 (< baseline 9, streak non-zero lanjut — tunggu AC5 prd-17-01 20 Okt); new users 0 vs 3 (watch, n kecil); returning IP 5,8% = weekend-bias rolling angka rendah, kanon /admin/retention rolling pulih 13% (survey 5 Okt) — insight by-design. EOD+indicators 6 Okt fresh, 1.353 saham aktif = pipeline sehat. Bing 25 referrer — reindex berjalan.
+- BACKLOG AUDIT: 0 stagnan >7d tanpa verdict; semua aktif ber-priority; 0 ceo_decision_pending=true. idea-2026-09-23-1 defer SAH (review 22 Okt by design). idea-2026-10-04-1 researched + verdict NO-PRD (gated AC5 20 Okt).
+- DISPATCH: 0 task baru — budget penuh: pending diag-2026-10-04-01 (GSC read-only P2, hari ke-3 = klarifikasi ringan di handoff CTO) + ux-2026-10-05-01 P3 'deferred' = deploy-retry pagi ini by design (CTO langkah pertama slot pagi). ANTI-LOOP ok (0 dispatch), duplikat check ok.
+- NUDGE #1 -> welcome-loop prd-2026-10-02-02 (dispatched 5 hari, merge ae6f0a6 di main 6 Okt tapi image masih build 2 Okt — Docker Hub pull stall, bukan miss agent): deadline deploy HARI INI slot 07:30-11:00; Docker masih hang = eskalasi owner (network/VPN), bukan nudge ke-3. Ditulis ke backlog idea-2026-10-02-2.note + handoff CTO.
+- HASIL-VERIFY: product-backlog.json re-parse OK (NUDGE #1 terbaca); queue PENDING=1 (diag) + ux deferred = 2 aktif <= budget.
+- STATUS: ok — ritual tuntas, metrics tumbuh (+37%), 0 dispatch by design (budget penuh), nudge #1 welcome-loop tercatat.
+
+## [CTO] 2026-10-07 18:5x — qa-2026-10-07-01 SQL patch brief 7 Okt (2 frasa, 1 transaksi)
+- Backup: db-2026-10-07 01:16 valid (<24h). Preview occ: 1|1 -> UPDATE 1|1 -> POST residual lama 0|0, baru 1|1.
+- FIX1 'Golden cross termuda (6 Okt): DART' -> 'Golden cross baru 6 Okt (4 emiten): DART, AMOR, APII, ERAL ... salah satu dari 4 sinyal segar'. KOREKSI SPEC: DB non-gorengan GC 6 Okt = 4 (BAIK ternyata death_cross; query reviewer tanpa filter signal).
+- FIX2 IATA 'volume terbesar di antara mover Selasa' -> 'terbesar kedua ... di belakang GOTO' (GOTO 18,44 M > IATA 1,506 M > BEKS 935,5 jt — DB EXACT).
+- LIVE: termuda=0, terbesar-kedua x2, kontrol (935,5 / 1,506 miliar / 508 / RSI 50,6) utuh. TANPA deploy (ISR 300s).
+- Observasi: typo 'Senasa' (BEKS bullet) di luar scope — dilaporkan QA; StockIndicator duplikat row per (stockId,date) — kandidat hygiene task.
+
+## [CTO] 2026-10-07 19:3x — diag-2026-10-04-01 GSC coverage audit (read-only) — TEMUAN KRITIS GROWTH
+- TABEL COVERAGE (inspect per-URL): 10/10 artikel baru (28 Sep-5 Okt: brief x6, rekap x2, akademi x2) = 'Ditemukan - saat ini tidak diindeks', Crawl terakhir T/A = Google BELUM pernah crawl.
+- KONTROL: home diindeks YES; tapi /saham-golden-cross, /akademi, rekap-26-Sep, brief-23 (dulu live + views) = DEINDEXED sekarang.
+- AGREGAT (updated 04/10/26): Terindeks 639 (TURUN dari ~1.100 audit 15 Sep = -42%); tidak diindeks 9.060 — discovered-not-indexed 473, crawled-not-indexed 866, noindex 3.347 (stale saham-* historis), redirect 2.629, robots 1.493.
+- BUKAN SALAH META: 5 halaman diuji 200 + 0 noindex; sitemap fresh 722 URL (459 lastmod today, 28 /berita/).
+- INI JAWABAN MATINYA BRIEF VIEWS (retro 28 Sep+ 0-1v): konten baru tak pernah di-crawl; konten lama ditarik dari index ~23-27 Sep.
+- REKOMENDASI: (1) MINTA PENGINDEKSAN manual 5-8 URL prioritas sebagai test tembus/tidak (owner/CEO via GSC UI — bukan area CTO read-only); (2) sitemap dipecah + lastmod jujur (459 URL di-stamp seragam harian = sinyal lastmod diabaikan Google); (3) jika manual request juga gagal dalam 7 hari = isu kualitas konten massal harian — keputusan strategis owner.
+- LESSON tooling: deep-link search-console/inspect?resource_id=...&id=<url> kini 404 — pakai UI-fill kolom inspeksi via CDP (script /tmp/gsc_diag3.py pattern, disalin ke docs/agent-org/ops/ nanti slot).
