@@ -270,3 +270,10 @@
 - verify: DB POST 1|1|1 residual 0; LIVE 200: '374,4 juta saham' x2, 'terdalam di antara saham likuid' x2, 'kenaikan sesaat' x2, frasa lama 0
 - QA: reviewer verify D+1; root-cause: superlatif pola ke-4 + unit-error; slug reviewer salah (brief5 -> brief6)
 - impact_check_due: 2026-10-09 (brief berikut bebas superlatif/unit tanpa patch)
+
+### 2026-10-07 night prd-2026-10-03-02 (feature P2) — saved-screener AC2 filter whitelist + 512 cap
+- task-id: prd-2026-10-03-02 | type: feature | PRD: idea-2026-10-03-1
+- deploy: TANPA deploy malam (hard-gate 21:45-07:00); merge pagi + deploy app image baru
+- verify: tsc EXIT 0 · tsx --test 91/91 (14 baru failing-first d76599d merah → 2b80e95 hijau) · sdlc_lint 0
+- QA: scope re-based — audit kode membuktikan fitur saved-screener SUDAH live sejak Jun (62e9c49); gap nyata = AC2 validasi filters; whitelist = union bentuk emisi klien nyata (preset/slider/custom/legacy/sort); GET path tidak divalidasi (row lama aman)
+- impact_check_due: 2026-10-14 — funnel registerByUtm utk utm_source=stocks_screener pasca-gate (rename TIDAK dilakukan, kontinuitas funnel dijaga)
