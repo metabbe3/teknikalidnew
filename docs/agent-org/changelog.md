@@ -295,3 +295,17 @@
 - QA: self-dispatch impact check qa-07-01; DB ranking: ALKA 10,62/GRPM 9,93/SQMI 9,28 (96,1M!)/ISAP+NAYZ 9,09/NANO 7,41 > KAEF 7,21 (#7, scope artikel >Rp1M non-gorengan); DISTINCT ON anti-duplikat StockIndicator
 - impact_check_due: 2026-10-11 (brief bebas superlatif tanpa patch; varian ter-scope masuk PRD fact-check gate)
 - BOOKING: prd-2026-10-02-02 welcome loop DEPLOYED via image 1b22a31fa4ad (7 Okt 07:49, terangkat deploy-retry ux-05-01; bukan deploy terpisah) — marker live + AC5 anon PASS; baseline AC4: D1/D7=0/0, register 4wk=2/1/2/1; QA interaktif AC1-AC3 (login flow) diserahkan reviewer
+
+### 2026-10-08 18:4x — CTO sore (ops-2026-10-08-01 done; prd-2026-10-03-02 resolved: already-shipped)
+- task-id: ops-2026-10-08-01 | type: ops (host script-only, 0 kode aplikasi, 0 deploy) | PRD: n/a
+- deploy: n/a (script host) | verify: test_sre_brief_backup.py 4/4 PASS (stale-mtime, small-size, ok-fresh, missing-dir); live run render [BACKUP FRESHNESS] 3 mekanisme + exit 0; py_compile OK
+- QA: fungsi murni terpisah; snapshot repo sync; exit 0 doctrine #27 dipertahankan
+- CATATAN SPEC-KOREKSI: premis spec "host copy hivePOS 2x/hari" KELIRU — verifikasi: host copy = harian 01:25 (owner 4 Okt paritas teknikal), yang 2x/hari = sidecar container → ~/Documents/hivepos/backups. Monitor 3 jalur sesuai kenyataan. Juga: pilih termuda by mtime (sorted alphabetis menangkap file manual_premigration lama).
+- impact_check_due: 2026-10-11 (brief SRE Rabu pertama post-patch harus tampil section backup)
+
+### 2026-10-08 18:4x — prd-2026-10-03-02 (saved-screen) RESOLVED NO-OP: already-shipped
+- task-id: prd-2026-10-03-02 | type: feature (verify-only) | PRD: idea-2026-10-03-1
+- deploy: n/a — TEMUAN: fitur SUDAH LIVE sejak 22 Sep commit 55c42d6 "feat(register-hook): guest-visible 'Simpan Screen' + watchlist prompt with post-register auto-save (prd-2026-09-17-01)". Bukti: (a) SavedScreener model + migration 20260612143354 + tabel live; (b) API /api/screener/saved GET/POST/PUT/DELETE auth-scoped user.id; (c) UI live /stocks?view=screener render "Simpan Screen" guest prompt (curl 200); (d) post-register auto-save pending_post_register; (e) watchlist quick-add di ResultsTable.
+- DELTA vs PRD: utm_source=stocks_screener (bukan save_screen) — nilai kanonik existing di funnel panel + codebase; rename = split series analytics + deploy risk, gain atribusi nol → TIDAK deploy. AC5 funnel utm_source=save_screen TIDAK terpenuhi literal, padanannya stocks_screener.
+- PRD data_evidence claim "TIDAK ADA implementasi save-preset di src/" = FALSE (grep 3 Okt miss) — lesson: verifikasi repo WAJIB sebelum spec_ready.
+- impact_check_due: 2026-10-11 (funnel panel utm stocks_screener: register views vs signups)

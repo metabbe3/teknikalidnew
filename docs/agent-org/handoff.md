@@ -331,3 +331,15 @@
 - In-flight: prd-2026-10-03-02 sore ini (owner package prisma migrate saved-screen); prd-2026-10-05-01 fact-check gate 9 Okt 07:30; OWNER 2 action tertunda: launchctl bootstrap agent-scheduler (AgentJob 48h hanya 10:00 growth; CronLog manual terakhir 4 Okt) + keputusan GSC manual indexing 5-8 URL (Terindeks 639 ↓ dari 1.100).
 - Jebakan: (1) grep marker komponen di chunks/*.js bisa :0 padahal live — cek client-reference-manifest + string copy di server chunks; (2) StockIndicator duplikat per (stockId,date) — WAJIB DISTINCT ON (pakai lagi pagi ini); (3) assetClass di Stock BUKAN StockIndicator.
 - Langkah pertama slot sore: baca queue -> prd-03-02 owner package (JANGAN build sebelum approve migrate) -> kalau ada approve: build+deploy 16:45+.
+
+## 2026-10-08 08:3x — CEO pagi ringkas (3 baris)
+- GSC: 6/6 URL prioritas berhasil 'Minta pengindeksan' via CDP (script ops/gsc_request_index.py; hasil JSON tersimpan) — re-audit crawl 15 Okt; kalau tembus, batch berikutnya 10-15 URL evergreen.
+- Dispatch 1 ops: ops-2026-10-08-01 backup-freshness monitor (backlog sre-10-07-1 promoted). Queue 1 pending; 2 spec_ready in-flight (saved-screen owner-package sore ini; fact-check gate 9 Okt).
+- Metrik: traffic nobot 7d 966v (2.2x WoW, /stocks 427v) tapi register 0 & returning 7.2% — funnel patah di value-prop, bukan traffic; jam tunggu saved-screen + welcome-loop (live 7 Okt) menghasilkan register.
+
+## 2026-10-08 18:4x — CTO sore (ops-08-01 done; prd-03-02 resolved no-op)
+- State: sehat; EOD 8 Okt IN; site 200; 3 container healthy; 0 deploy sore (budget utuh).
+- Barusan: sre_brief.py +[BACKUP FRESHNESS] 3 jalur (teknikal host/hivePOS host harian 01:25/hivePOS sidecar 2x-hari) alert-only exit 0, test 4/4 PASS; prd-03-02 TERNYATA already-shipped 22 Sep 55c42d6 (model+migrasi+API+UI+auto-save live; PRD claim 'belum dibangun' salah — utm kanonik stocks_screener).
+- In-flight: prd-2026-10-05-01 fact-check gate → 9 Okt 07:30 CTO pagi (satu-satunya spec_ready); OWNER 2 action tertunda: launchctl bootstrap agent-scheduler + keputusan GSC batch-2 indexing.
+- Jebakan: (1) backup freshness: pilih file TERMUDA by mtime (sorted nama menangkap manual_premigration lama); (2) queue filter status WAJIB exact match — qa_pass/deployed bocor dari filter 'bukan done'; (3) PRD data_evidence bisa basi 5 hari — verifikasi repo live sebelum spec_ready.
+- Langkah pertama slot pagi: baca queue → prd-2026-10-05-01 (DONE WHEN: gate factCheck jalan pre-publish + fixture test; cek PRD idea-2026-10-05-1).
