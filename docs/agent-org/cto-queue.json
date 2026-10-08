@@ -605,11 +605,14 @@
       "created_by": "Product Agent nightly buffer-keeper 2 Okt 22:0-22:1x (riset SQL read-only + statik 2 Okt)",
       "scheduled_slot": "2026-10-06 07:30 CTO pagi (re-assign CTO pagi 3 Okt 08:0x: slot sore 3 Okt dipakai prd-2026-10-01-01 yang di-approve owner — deploy cap 1/slot)",
       "priority": "P2",
-      "status": "spec_ready",
+      "status": "deployed",
       "prd_id": "idea-2026-10-02-2",
       "north_star": "returning users — 6/6 register Sep single-session, D1/D7=0/0; loop on-site (checklist derive-only + streak reuse + sinyal watchlist), 0 migrasi 0 kanal outbound",
       "title": "P2 FITUR (PRD idea-2026-10-02-2): First-Session Welcome Loop — checklist 3 langkah home login (derive PageView/Watchlist existing) + claim streak (reputation.service) + 'Sinyal untukmu' day-2+; baseline D1/D7=0/0 wajib di changelog",
-      "spec": "INTENT (feature, PRD LENGKAP di product-backlog.json idea-2026-10-02-2 — AC+data_evidence+metadata v2 di sana; baca PRD, jangan narasi). DONE WHEN: AC terpenuhi + bukti live (curl/SQL) + changelog == merge + panel retensi jadi instrumen impact (baseline dicatat)."
+      "spec": "INTENT (feature, PRD LENGKAP di product-backlog.json idea-2026-10-02-2 — AC+data_evidence+metadata v2 di sana; baca PRD, jangan narasi). DONE WHEN: AC terpenuhi + bukti live (curl/SQL) + changelog == merge + panel retensi jadi instrumen impact (baseline dicatat).",
+      "completed_at": "2026-10-08 08:0x WIB (bookkeeping; image live sejak 7 Okt 07:50)",
+      "verify_evidence": "LIVE bundle image 1b22a31fa4ad (build 7 Okt 07:49, deploy-retry ux-05-01 mengangkat main s.d. 94e18c6 ⊃ merge ae6f0a6): marker welcome-card/claim-streak/for-you-signals di client-manifest + 'Sinyal untukmu' x4 + 'checklist' x5 di server chunks. AC5 anon: home anon 151KB = 0 marker (card hidden guest, by design); 5/5 URL 200 (/, /stocks, golden-cross, /berita, /akademi). Chunks grep :0 di chunks/*.js TIDAK berarti absen — komponen ada di app/page-level + manifest (pitfall dicatat).",
+      "result": "BOOKED 8 Okt 08:0x CTO pagi. Deploy TIDAK terpisah: merge ae6f0a6 (6 Okt 07:42) terangkat oleh image 1b22a31fa4ad build 7 Okt 07:49 (deploy-retry ux-05-01 — Docker Hub pulih) — urutan build linear dari main; konfirmasi marker live di bundle + AC5 anon PASS. BUKAN double-deploy (1 build 2 fitur). QA full-flow login (checklist+claim streak render, AC1-AC3 interaktif) diserahkan QA reviewer slot berikutnya. Baseline AC4 dicatat changelog: D1/D7=0/0, register 4wk=2/1/2/1 (panel retensi = instrumen impact). Rollback anchor: app 1b22a31fa4ad + git revert ae6f0a6."
     },
     {
       "id": "prd-2026-10-03-01",
@@ -638,7 +641,7 @@
       "type": "feature",
       "date": "2026-10-03",
       "created_by": "Product Agent nightly buffer-keeper 3 Okt 22:1x WIB",
-      "scheduled_slot": "unknown -- setelah prd-2026-10-02-02 (welcome loop, slot 6 Okt) & koordinasi owner prisma migrate; CEO boleh re-assign",
+      "scheduled_slot": "2026-10-08 16:45 CTO sore (siapkan owner package prisma migrate — model additive SavedScreener; eksekusi build hanya pasca approve owner)",
       "priority": "P2",
       "status": "spec_ready",
       "prd_id": "idea-2026-10-03-1",
@@ -652,11 +655,13 @@
       "date": "2026-10-04",
       "created_by": "Sunday Strategy Council 4 Okt 08:00 (retro: briefs 28 Sep+ 0-1v vs briefs 14-23 Sep 3-19v/wk)",
       "priority": "P2",
-      "status": "pending",
+      "status": "done",
       "north_star": "growth — distribusi konten baru; konten baik tanpa index = tidak ada",
       "title": "P2 DIAGNOSTIK: GSC index-coverage audit konten publish ≥28 Sep — berapa indexed/pending/excluded, sitemap freshness; read-only",
       "spec": "Baca GSC (API/credential yang dipakai GSC Snapshot Harian) untuk 12 artikel publish 28 Sep–4 Okt: status index (indexed/pending/excluded+alasan), last crawled. Cek sitemap.xml freshness (curl). LAPORAN ANGKA ke ceo-decisions.md + rekomendasi (request indexing manual vs tunggu reindex). HARD: read-only, NO config change website, NO deploy. DONE WHEN: tabel coverage 12 artikel + 1 rekomendasi tertulis.",
-      "scheduled_slot": "2026-10-07 16:45 CTO sore (read-only GSC coverage; slot pagi 7 Okt = deploy retry ux-05-01)"
+      "scheduled_slot": "2026-10-07 16:45 CTO sore (read-only GSC coverage; slot pagi 7 Okt = deploy retry ux-05-01)",
+      "completed_at": "2026-10-07 19:3x WIB",
+      "result": "DONE 07 Okt 19:3x CTO sore (read-only; GSC via CDP 9222 UI-fill — deep-link inspect format lama 404 semua, lesson dicatat). DISKREPANSI SPEC: '12 artikel 28 Sep-4 Okt' — DB PUBLISHED di rentang itu = 8; audit diperluas 10 URL (incl. 27 Sep + 5 Okt). HASIL TABEL: 10/10 URL 'Halaman tidak diindeks: Ditemukan - saat ini tidak diindeks', Crawl terakhir T/A (BELUM PERNAH di-crawl). KONTROL: home='Halaman diindeks' YES; /saham-golden-cross + /akademi + rekap-26-Sep + brief-23 (dulu ber-views 3-19/wk) = SEMUA 'tidak diindeks' sekarang → DEINDEXED bukan cuma baru. AGREGAT (report Penyusunan indeks, updated 04/10/26): Terindeks 639 — TURUN dari ~1.100 (audit 15 Sep, seo-15-01); Tidak diindeks 9.060: noindex 3.347, redirect 2.629, robots 1.493, crawled-not-indexed 866, discovered-not-indexed 473, canonical 154, duplikat 85, 404 18. BUKAN META KITA: semua halaman diuji 200 + 0 noindex; sitemap fresh (722 URL, 459 lastmod hari ini, 28 /berita/). KESIMPULAN: kehilangan index sitewide ~pasca 23-27 Sep (co-insiden fix soft-404 22 Sep + konten harian massal). REKOMENDASI: (1) MINTA PENGINDEKSAN manual 5-8 URL prioritas (akademi x2, rekap bulanan, golden-cross + signal pages) — test apakah manual request tembus; kalau gagal = masalah kualitas, eskalasi owner; (2) sitemap 459 URL lastmod di-stamp harian seragam — pecah sitemap + lastmod jujur; (3)laporkan tren 639 ke owner via CEO brief. HARD compliance: read-only, 0 config change, 0 deploy."
     },
     {
       "id": "ops-2026-10-04-01",
@@ -723,7 +728,7 @@
       "type": "feature",
       "date": "2026-10-05",
       "created_by": "Product Agent nightly buffer-keeper 5 Okt 22:1x (riset SQL read-only + statik grep 5 Okt; run ini juga restore 4 entry backlog yang terjatuh union-fix 2972b4e — divergensi ke-5 dlm 8 hari)",
-      "scheduled_slot": "unknown -- setelah prd-2026-10-01-01 (welcome loop, in_progress) selesai & saved-screen prd-2026-10-03-02 terjadwal; CEO boleh re-assign",
+      "scheduled_slot": "2026-10-09 07:30 CTO pagi (setelah welcome-loop booked; fact-check gate pre-publish)",
       "priority": "P2",
       "status": "spec_ready",
       "prd_id": "idea-2026-10-05-1",
@@ -751,7 +756,7 @@
       "date": "2026-10-07",
       "type": "ops",
       "priority": "P1",
-      "status": "pending",
+      "status": "done",
       "scheduled_slot": "2026-10-07 16:45 CTO sore — SQL content patch 1 brief, TANPA deploy (ISR revalidate=300)",
       "source": "Content Reviewer QA 7 Okt 09:0x",
       "north_star": "trust — 2 klaim ranking/superlatif salah di brief harian: 'termuda' hanya 1 dari 5 GC baru 6 Okt, dan label 'terkuat/terbanyak' IATA vs DB (IATA bukan #1 non-gorengan; BEKS vol 2,3x lebih besar). Pola superlatif ke-6 sejak qa-27-01.",
@@ -762,7 +767,24 @@
         "Klaim volume IATA terkoreksi jadi 'terbesar kedua di antara mover, di belakang GOTO' (GOTO 18,4 M > IATA 1,506 M)",
         "Post-check frasa lama 0 hit + frasa baru ≥1 live; diff hanya 2 frasa target",
         "Backup <24h + preview occ=1 per frasa sebelum UPDATE"
-      ]
+      ],
+      "completed_at": "2026-10-07 18:5x WIB",
+      "result": "DONE 07 Okt 18:5x CTO sore (SQL patch 1 transaksi, TANPA deploy; backup 07 Okt 01:16 valid). KOREKSI SPEC ke DB: GC baru 6 Okt non-gorengan (smaCrossSignal='golden_cross' AND smaCrossDate='2026-10-06' AND isGorengan=false) = 4 emiten (DART 50,55 / AMOR 53,90 / APII 47,52 / ERAL 51,51) — BAIK 33,34 ternyata DEATH_CROSS (query reviewer tanpa filter signal; preseden qa-28-01 verifikasi-ke-DB). (1) 'Golden cross termuda (6 Okt): DART...' -> 'Golden cross baru 6 Okt (4 emiten): DART, AMOR, APII, ERAL — ... salah satu dari 4 sinyal segar' (preview 1 -> UPDATE 1); (2) 'mencatat volume terbesar di antara mover Selasa' -> 'mencatat volume terbesar kedua di antara mover Selasa, di belakang GOTO' (DB EXACT: GOTO 18.444.953.300 > IATA 1.505.672.100 > BEKS 935.504.600; preview 1 -> UPDATE 1). POST: frasa lama 0/0, frasa baru 1/1. LIVE 200: 'termuda'=0, 'terbesar kedua' x2, '4 emiten' x2, 'di belakang GOTO' render (ticker auto-linked GOTO), kontrol utuh: BEKS 935,5 x2, IATA 1,506 miliar x2, breadth 508 x3, RSI 50,6 x3, SINI/SURI/KBLM utuh. PITFALL grep: exact-phrase miss karena renderer auto-link ticker jadi <a> — verifikasi live pakai frasa pendek + konteks. OBSERVASI (di luar scope): (a) typo 'Senasa' di bullet BEKS (dilaporkan ke QA reviewer, tidak dipatch — spec FIX 3=tidak ada); (b) StockIndicator punya row duplikat per (stockId,date) interval 1d — kandidat task data-hygiene baru. Log decisions.md + changelog."
+    },
+    {
+      "id": "qa-2026-10-08-01",
+      "date": "2026-10-08",
+      "type": "ops",
+      "priority": "P1",
+      "status": "done",
+      "scheduled_slot": "2026-10-08 07:30 CTO pagi (self-dispatch: impact check qa-07-01; SQL content patch TANPA deploy — ISR 300s)",
+      "source": "CTO pagi 8 Okt (impact check brief pasca qa-07-01; pola superlatif ke-7)",
+      "north_star": "trust — klaim superlatif salah scope sendiri: 'penguatan terbesar di kelompok saham likuid' padahal KAEF #7 pada filter yang artikel definisikan (>Rp1M non-gorengan)",
+      "title": "P1: Brief 8 Okt — KAEF 'penguatan terbesar sesi Rabu di kelompok saham likuid' salah ranking (ALKA +10,62/GRPM +9,93/SQMI +9,28/ISAP+NAYZ +9,09/NANO +7,41 > KAEF +7,21; KAEF #7)",
+      "spec": "INTENT: impact check qa-07-01 di brief-pasar-idx-2026-10-08-pasar-berbalik-merah (PUBLISHED 06:3x). Sweep 3-field: lot=0 saam=0 excerpt bersih (guard berjalan). SATU superlatif lolos: 'KAEF +7,21% — penguatan terbesar sesi Rabu di kelompok saham likuid' dengan heading scope 'nilai transaksi di atas Rp1 miliar'. DB (DISTINCT ON stockId utk duplikat StockIndicator; pitfall 7 Okt): gainers non-gorengan EQUITY nilai>1M 7 Okt = ALKA 10,62/GRPM 9,93/SQMI 9,28 (nilai 96,1M!)/ISAP 9,09/NAYZ 9,09/NANO 7,41 → KAEF #7. EKSEKUSI SQL patch 1 transaksi (backup db-20261008 01:16; preview t|f): 'penguatan terbesar sesi Rabu di kelompok saham likuid' → 'salah satu penguatan terkuat sesi Rabu di kelompok saham likuid'. ACCEPTANCE: live old=0 new>=1; angka KAEF 446/+7,21% + GTRA/BLUE/TOWR/TLKM utuh; log decisions.md + changelog.",
+      "done_when": "curl brief8: 'penguatan terbesar sesi Rabu'=0 + reword muncul; angka KAEF/movers utuh; log decisions.md + changelog",
+      "completed_at": "2026-10-08 08:0x WIB",
+      "result": "DONE 08 Okt 08:0x CTO pagi (SQL patch 1 transaksi, TANPA deploy; backup 08 Okt 01:16 valid). Preview t|f → UPDATE 1 → post old=f new=t. LIVE 200 try-1 (ISR sudah rotasi): 'penguatan terbesar sesi Rabu'=0, 'salah satu penguatan terkuat sesi Rabu' x2, KAEF x2 + GTRA/BLUE utuh. Root-cause: superlatif pola ke-7 sejak qa-27-01 — guard prompt belum melarang 'terbesar di kelompok <scope>' varian ter-scope; kandidat diperkuat di PRD fact-check gate prd-2026-10-05-01 (assign 9 Okt). Rollback: UPDATE reverse terkuat→terbesar / backup db-20261008.sql.gz."
     }
   ]
 }

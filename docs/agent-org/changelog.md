@@ -288,3 +288,10 @@
 - deploy: n/a | verify: 10/10 inspect per-URL + kontrol + report agregat (Terindeks 639, updated 04/10/26)
 - QA: temuan dikonfirmasi ganda (per-URL inspect + halaman kontrol + meta robots live 0 noindex + sitemap fresh)
 - impact_check_due: 2026-10-14 (apakah manual request indexing menembus; tren angka Terindeks)
+
+### 2026-10-08 08:0x — CTO pagi (qa-2026-10-08-01 SQL patch + prd-2026-10-02-02 booked)
+- task-id: qa-2026-10-08-01 | type: ops (SQL content patch, TANPA deploy — ISR 300s) | PRD: n/a (QA gate)
+- deploy: n/a | commit: docs only | verify: preview t|f -> UPDATE 1 -> post old=0; LIVE try-1: 'salah satu penguatan terkuat sesi Rabu' x2, 'penguatan terbesar sesi Rabu' 0, KAEF/GTRA/BLUE/TOWR utuh
+- QA: self-dispatch impact check qa-07-01; DB ranking: ALKA 10,62/GRPM 9,93/SQMI 9,28 (96,1M!)/ISAP+NAYZ 9,09/NANO 7,41 > KAEF 7,21 (#7, scope artikel >Rp1M non-gorengan); DISTINCT ON anti-duplikat StockIndicator
+- impact_check_due: 2026-10-11 (brief bebas superlatif tanpa patch; varian ter-scope masuk PRD fact-check gate)
+- BOOKING: prd-2026-10-02-02 welcome loop DEPLOYED via image 1b22a31fa4ad (7 Okt 07:49, terangkat deploy-retry ux-05-01; bukan deploy terpisah) — marker live + AC5 anon PASS; baseline AC4: D1/D7=0/0, register 4wk=2/1/2/1; QA interaktif AC1-AC3 (login flow) diserahkan reviewer

@@ -630,3 +630,8 @@ commit pre-deploy live-unknown; merge HEAD: 1e4d517
 
 ## 2026-10-06 19:1x WIB — CTO sore: ux-2026-10-05-01 deploy BLOCKED_EXTERNAL (Docker Hub)
 - Kode commit e3b46a1 di main (tsc 0, CSS-only, anchor 3a13e456f1bf/ae6f0a6 logged). Build 2x stall step sama 'load metadata node:24-alpine': buildx 0% CPU, docker pull hang >90s, API registry respon normal (401@0,85s) = blob CDN unreachable dari Docker VM. Anti-loop 2x -> STOP. Site 200 sehat image lama. Retry besok 07:30 (build+up saja).
+
+### 2026-10-08 08:0x — CTO pagi (qa-2026-10-08-01 SQL patch + prd-2026-10-02-02 booked)
+- qa-2026-10-08-01: SQL content patch brief-pasar-idx-2026-10-08-pasar-berbalik-merah (backup db-20260908→db-20261008.sql.gz 01:16 valid; preview 1 row t|f; 1 transaksi; UPDATE 1): 'penguatan terbesar sesi Rabu di kelompok saham likuid'→'salah satu penguatan terkuat sesi Rabu di kelompok saham likuid'. Bukti DB: KAEF #7 gainers non-gorengan EQUITY nilai>1M (ALKA/GRPM/SQMI/ISAP/NAYZ/NANO di atas). Live verify try-1 PASS. Rollback: reverse UPDATE / backup.
+- prd-2026-10-02-02 booked deployed: TANPA deploy baru pagi ini — merge ae6f0a6 sudah terangkat image 1b22a31fa4ad (build 7 Okt 07:49). Rollback anchor tetap: app 1b22a31fa4ad + git revert ae6f0a6.
+- Slot assignment: prd-2026-10-03-02 (saved-screen) → sore 8 Okt owner-package prisma migrate; prd-2026-10-05-01 (fact-check gate) → 9 Okt 07:30.
