@@ -18,19 +18,21 @@ export interface MarketContext {
     name: string;
     close: number | null;
     changePercent: number | null;
+    rsi14: number | null;
   }>;
   relatedStocks: Array<{
     ticker: string;
     name: string;
     close: number | null;
     changePercent: number | null;
+    rsi14: number | null;
     sector: string;
   }>;
 }
 
-interface ExtractedClaim {
+export interface ExtractedClaim {
   claim: string;
-  type: "stock_price" | "index_level" | "exchange_rate" | "percentage" | "other";
+  type: "stock_price" | "stock_rsi" | "index_level" | "exchange_rate" | "percentage" | "other";
   ticker?: string;
   value: number;
 }
@@ -39,6 +41,7 @@ export interface FactCheckResult {
   passed: boolean;
   mismatches: Array<{
     claim: string;
+    claimType: ExtractedClaim["type"];
     statedValue: number;
     actualValue: number;
     description: string;
@@ -155,6 +158,8 @@ export async function gatherMarketContext(tickers?: string[]): Promise<MarketCon
       name: s.name,
       close,
       changePercent,
+      // Latest daily indicator row ships with the same include (take: 1, date desc)
+      rsi14: decimalToNumber(s.indicators[0]?.rsi14),
     };
   });
 
@@ -182,6 +187,7 @@ export async function gatherMarketContext(tickers?: string[]): Promise<MarketCon
           name: s.name,
           close,
           changePercent,
+          rsi14: decimalToNumber(s.indicators[0]?.rsi14),
           sector: s.sector,
         };
       });
@@ -253,13 +259,13 @@ export async function factCheckArticle(
   title?: string,
 ): Promise<FactCheckResult> {
   // Build lookup map from market context
-  const priceLookup = new Map<string, { close: number | null; changePercent: number | null }>();
+  const priceLookup = new Map<string, { close: number | null; changePercent: number | null; rsi14: number | null }>();
 
   for (const s of marketContext.topStocks) {
-    priceLookup.set(s.ticker, { close: s.close, changePercent: s.changePercent });
+    priceLookup.set(s.ticker, { close: s.close, changePercent: s.changePercent, rsi14: s.rsi14 });
   }
   for (const s of marketContext.relatedStocks) {
-    priceLookup.set(s.ticker, { close: s.close, changePercent: s.changePercent });
+    priceLookup.set(s.ticker, { close: s.close, changePercent: s.changePercent, rsi14: s.rsi14 });
   }
 
   const indexLookup: { level: number | null; changePercent: number | null } = marketContext.ihsg;
@@ -361,6 +367,7 @@ Respond ONLY with valid JSON array, no other text.`;
 
     const userPrompt = `Dari artikel berikut, ekstrak SEMUA klaim yang berisi angka spesifik yang bisa diverifikasi:
 - Harga saham (contoh: "BBCA di Rp 9.800", "saham TLKM seharga 3.500")
+- Nilai RSI saham (contoh: "RSI GOTO 10", "RSI-14 BBSI di 11,7")
 - Level IHSG (contoh: "IHSG di 7.200", "indeks menyentuh 6.800 poin")
 - Kurs rupiah (contoh: "rupiah di 15.500", "Rp 16.000 per USD")
 - Persentase perubahan harga saham spesifik (contoh: "BBRI naik 3.5%")
@@ -368,13 +375,14 @@ Respond ONLY with valid JSON array, no other text.`;
 JANGAN ekstrak:
 - Persentase umum tanpa ticker (contoh: "inflasi naik 3%")
 - Angka volume tanpa ticker
-- Angka yang bukan harga/level/nilai tukar
+- Angka yang bukan harga/level/nilai tukar/RSI
 
 ARTIKEL:
 ${content.slice(0, 15000)}
 
 Output JSON array:
 [{"claim": "BBCA di Rp 9.800", "type": "stock_price", "ticker": "BBCA", "value": 9800}]
+[{"claim": "RSI GOTO 10", "type": "stock_rsi", "ticker": "GOTO", "value": 10}]
 [{"claim": "IHSG di 7.200", "type": "index_level", "ticker": null, "value": 7200}]
 [{"claim": "rupiah di 15.500", "type": "exchange_rate", "ticker": null, "value": 15500}]
 
@@ -399,7 +407,7 @@ Jika tidak ada klaim yang bisa diverifikasi, output: []`;
           .filter((c: Record<string, unknown>) => c.claim && c.value != null)
           .map((c: Record<string, unknown>) => ({
             claim: String(c.claim),
-            type: (["stock_price", "index_level", "exchange_rate", "percentage", "other"].includes(c.type as string)
+            type: (["stock_price", "stock_rsi", "index_level", "exchange_rate", "percentage", "other"].includes(c.type as string)
               ? c.type
               : "other") as ExtractedClaim["type"],
             ticker: c.ticker ? String(c.ticker) : undefined,
@@ -416,9 +424,17 @@ Jika tidak ada klaim yang bisa diverifikasi, output: []`;
 
 // ── Claim verification ──
 
-function verifyClaim(
+/** Pure verdict helper for callers: hold uncorrectable failures, apply corrections. */
+export function factCheckVerdict(fc: { passed: boolean; correctedContent: string | null }): { holdAsDraft: boolean; applyCorrection: boolean } {
+  return {
+    holdAsDraft: !fc.passed && !fc.correctedContent,
+    applyCorrection: !fc.passed && !!fc.correctedContent,
+  };
+}
+
+export function verifyClaim(
   claim: ExtractedClaim,
-  priceLookup: Map<string, { close: number | null; changePercent: number | null }>,
+  priceLookup: Map<string, { close: number | null; changePercent: number | null; rsi14?: number | null }>,
   indexLookup: { level: number | null; changePercent: number | null },
   fxLookup: { rate: number | null },
 ): FactCheckResult["mismatches"][number] | null {
@@ -430,9 +446,27 @@ function verifyClaim(
       if (diff > tolerance) {
         return {
           claim: claim.claim,
+          claimType: claim.type,
           statedValue: claim.value,
           actualValue: actual.close,
           description: `${claim.ticker} seharusnya Rp ${actual.close.toLocaleString("id-ID")}, bukan Rp ${claim.value.toLocaleString("id-ID")}`,
+        };
+      }
+    }
+  }
+
+  if (claim.type === "stock_rsi" && claim.ticker) {
+    const actual = priceLookup.get(claim.ticker.toUpperCase());
+    // Null lookup (indicator missing) = skip, never a mismatch
+    if (actual?.rsi14 !== null && actual?.rsi14 !== undefined) {
+      const tolerance = 1.0; // ±1.0 absolute — RSI is a bounded 0-100 oscillator
+      if (Math.abs(claim.value - actual.rsi14) > tolerance) {
+        return {
+          claim: claim.claim,
+          claimType: claim.type,
+          statedValue: claim.value,
+          actualValue: actual.rsi14,
+          description: `RSI ${claim.ticker} seharusnya ${actual.rsi14.toLocaleString("id-ID", { maximumFractionDigits: 1 })}, bukan ${claim.value.toLocaleString("id-ID", { maximumFractionDigits: 1 })}`,
         };
       }
     }
@@ -445,6 +479,7 @@ function verifyClaim(
       if (diff > tolerance) {
         return {
           claim: claim.claim,
+          claimType: claim.type,
           statedValue: claim.value,
           actualValue: indexLookup.level,
           description: `IHSG seharusnya ${indexLookup.level.toLocaleString("id-ID")} poin, bukan ${claim.value.toLocaleString("id-ID")}`,
@@ -460,6 +495,7 @@ function verifyClaim(
       if (diff > tolerance) {
         return {
           claim: claim.claim,
+          claimType: claim.type,
           statedValue: claim.value,
           actualValue: fxLookup.rate,
           description: `Kurs USD/IDR seharusnya Rp ${fxLookup.rate.toLocaleString("id-ID")}, bukan Rp ${claim.value.toLocaleString("id-ID")}`,
@@ -501,11 +537,14 @@ function deterministicCorrectContent(
       const escaped = escapeRegex(stated);
       // Match only when NOT surrounded by other digits (prevents partial matches like "16.400" matching "6.400")
       const regex = new RegExp(`(?<![\\d])${escaped}(?![\\d])`, "g");
-      const matches = corrected.match(regex);
-      if (matches && matches.length > 0) {
-        totalReplacements += matches.length;
-        corrected = corrected.replace(regex, actual);
-      }
+      // RSI values are small (0-100) — replacing every "10" would clobber unrelated
+      // numbers, so only replace occurrences preceded by an RSI mention nearby.
+      const rsiAnchored = m.claimType === "stock_rsi";
+      corrected = corrected.replace(regex, (match, offset: number, str: string) => {
+        if (rsiAnchored && !/rsi/i.test(str.slice(Math.max(0, offset - 25), offset))) return match;
+        totalReplacements++;
+        return actual;
+      });
     }
   }
 

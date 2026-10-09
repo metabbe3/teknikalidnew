@@ -10,7 +10,7 @@ import { createAIProvider } from "./ai-provider";
 import { buildStockAnalysisPrompt, buildEducationalPrompt, buildNewsPrompt, buildGeneralPrompt, pickNextTopic } from "./prompts";
 import { buildTemplateArticle, buildDailySnapshot, buildDailySlug } from "./article-template";
 import { ArticleNotFoundError, ArticleGenerationError, DuplicateSlugError } from "./article.errors";
-import { gatherMarketContext, formatMarketContextForPrompt, factCheckArticle, extractTickersFromText } from "./article-fact-check";
+import { gatherMarketContext, formatMarketContextForPrompt, factCheckArticle, factCheckVerdict, extractTickersFromText } from "./article-fact-check";
 import type { MarketContext } from "./article-fact-check";
 import { validateArticle } from "./quality-validator";
 import { resolveTitle } from "./title-guard";
@@ -345,27 +345,44 @@ export const articleService = {
     const adminUser = await articleRepository.findAdminUserId();
     if (!adminUser) throw new ArticleGenerationError("No admin user found");
 
-    // Fact-check if market context is available
+    // Fact-check gate — runs on every publish path. Callers pass marketCtx when
+    // they already gathered one (brief/trending); otherwise gather from content
+    // tickers. Gate unavailable (gather failed) never blocks publishing.
     let finalContent = cleanContent;
     let finalTitle = resolveTitle(sanitizeGeneratedContent(result.title), cleanContent, topic);
     let factCheckMeta: Record<string, string> = {};
-    if (marketCtx) {
-      const factCheck = await factCheckArticle(cleanContent, marketCtx, finalTitle);
-      if (!factCheck.passed && factCheck.correctedContent) {
-        finalContent = sanitizeGeneratedContent(factCheck.correctedContent);
+    let factCheckHeld = false;
+    const gateCtx = marketCtx ?? await gatherMarketContext(extractTickersFromText(`${topic} ${cleanContent}`)).catch((err) => {
+      console.warn("[FactCheckGate] path=news gatherMarketContext failed, gate skipped:", err instanceof Error ? err.message : err);
+      return null;
+    });
+    if (gateCtx) {
+      const factCheck = await factCheckArticle(cleanContent, gateCtx, finalTitle);
+      const verdict = factCheckVerdict(factCheck);
+      if (verdict.applyCorrection) {
+        finalContent = sanitizeGeneratedContent(factCheck.correctedContent!);
         if (factCheck.correctedTitle) {
           finalTitle = sanitizeGeneratedContent(factCheck.correctedTitle);
         }
       }
+      if (verdict.holdAsDraft) {
+        factCheckHeld = true;
+        console.warn(`[FactCheckGate] HELD AS DRAFT — fact-check failed with no correction. slug=${slug}`);
+      }
+      console.info(`[FactCheckGate] path=news claims=${factCheck.meta.claimsChecked} mismatch=${factCheck.mismatches.length} hold=${verdict.holdAsDraft}`);
       factCheckMeta = {
         factCheckPassed: String(factCheck.passed),
         factCheckClaimsChecked: String(factCheck.meta.claimsChecked),
         factCheckErrors: String(factCheck.mismatches.length),
-        factCheckCorrected: String(!factCheck.passed && !!factCheck.correctedContent),
+        factCheckCorrected: String(verdict.applyCorrection),
+        ...(verdict.holdAsDraft ? { factCheckHeld: "true" } : {}),
       };
+    } else {
+      factCheckMeta = { factCheckPassed: "skipped_no_ctx" };
     }
 
-    const status = autoPublish ? ArticleStatus.PUBLISHED : ArticleStatus.DRAFT;
+    // Gate: fact-check failure with no correction overrides autoPublish — held as DRAFT
+    const status = autoPublish && !factCheckHeld ? ArticleStatus.PUBLISHED : ArticleStatus.DRAFT;
     const article = await articleRepository.create({
       slug,
       title: finalTitle,
@@ -406,17 +423,52 @@ export const articleService = {
     const adminUser = await articleRepository.findAdminUserId();
     if (!adminUser) throw new ArticleGenerationError("No admin user found");
 
+    // Fact-check only when the article names real tickers AND quotes prices/RSI —
+    // pure-concept edu articles have nothing to verify (skip the AI call).
+    let finalContent = cleanContent;
+    let finalTitle = resolveTitle(sanitizeGeneratedContent(result.title), cleanContent, topic);
+    let factCheckMeta: Record<string, string> = {};
+    const mentionedTickers = extractTickersFromText(cleanContent);
+    if (mentionedTickers.length > 0 && /Rp\s?\d|RSI/i.test(cleanContent)) {
+      try {
+        const marketCtx = await gatherMarketContext(mentionedTickers);
+        const factCheck = await factCheckArticle(cleanContent, marketCtx, finalTitle);
+        const verdict = factCheckVerdict(factCheck);
+        if (verdict.applyCorrection) {
+          finalContent = sanitizeGeneratedContent(factCheck.correctedContent!);
+          if (factCheck.correctedTitle) {
+            finalTitle = sanitizeGeneratedContent(factCheck.correctedTitle);
+          }
+        }
+        // General articles are always DRAFT — hold just records why it must stay unpublished
+        if (verdict.holdAsDraft) {
+          console.warn(`[FactCheckGate] HELD AS DRAFT — fact-check failed with no correction. slug=${slug}`);
+        }
+        console.info(`[FactCheckGate] path=general claims=${factCheck.meta.claimsChecked} mismatch=${factCheck.mismatches.length} hold=${verdict.holdAsDraft}`);
+        factCheckMeta = {
+          factCheckPassed: String(factCheck.passed),
+          factCheckClaimsChecked: String(factCheck.meta.claimsChecked),
+          factCheckErrors: String(factCheck.mismatches.length),
+          factCheckCorrected: String(verdict.applyCorrection),
+          ...(verdict.holdAsDraft ? { factCheckHeld: "true" } : {}),
+        };
+      } catch (err) {
+        // Gate must never kill edu generation — a failed check just leaves the draft unverified
+        console.warn("[FactCheckGate] path=general fact-check skipped:", err instanceof Error ? err.message : err);
+      }
+    }
+
     const article = await articleRepository.create({
       slug,
-      title: resolveTitle(sanitizeGeneratedContent(result.title), cleanContent, topic),
+      title: finalTitle,
       excerpt: sanitizeGeneratedContent(result.excerpt ?? "").slice(0, 500),
-      content: cleanContent,
+      content: finalContent,
       authorId: adminUser.id,
       tags: result.tags.length > 0 ? result.tags : keywords.slice(0, 5),
       status: ArticleStatus.DRAFT,
       articleType: ArticleType.GENERAL,
       aiProvider: provider.name,
-      generationMeta: { provider: provider.name, topic, keywords, style, timestamp: new Date().toISOString() } as Record<string, string | string[] | undefined>,
+      generationMeta: { provider: provider.name, topic, keywords, style, timestamp: new Date().toISOString(), ...factCheckMeta } as Record<string, string | string[] | undefined>,
     });
 
     return { id: article.id, title: article.title, slug: article.slug };

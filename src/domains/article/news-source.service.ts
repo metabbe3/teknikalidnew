@@ -3,7 +3,7 @@ import { createAIClient } from "@/lib/ai-client";
 import { ArticleStatus, ArticleType } from "@/generated/prisma/client";
 import { articleRepository } from "./article.repository";
 import { createAIProvider } from "./ai-provider";
-import { gatherMarketContext, formatMarketContextForPrompt, factCheckArticle, extractTickersFromText } from "./article-fact-check";
+import { gatherMarketContext, formatMarketContextForPrompt, factCheckArticle, factCheckVerdict, extractTickersFromText } from "./article-fact-check";
 import { resolveTitle } from "./title-guard";
 
 const RSS_FEEDS = [
@@ -177,12 +177,18 @@ Respond with ONLY the article markdown content. No JSON, no code blocks, no conv
         let finalContent = result.content;
         let finalTitle = resolveTitle(result.title, result.content, item.title);
         const factCheck = await factCheckArticle(result.content, marketCtx, finalTitle);
-        if (!factCheck.passed && factCheck.correctedContent) {
-          finalContent = factCheck.correctedContent;
+        const verdict = factCheckVerdict(factCheck);
+        if (verdict.applyCorrection) {
+          finalContent = factCheck.correctedContent!;
           if (factCheck.correctedTitle) {
             finalTitle = factCheck.correctedTitle;
           }
         }
+        // Gate: fact-check failure with no correction holds the article as DRAFT
+        if (verdict.holdAsDraft) {
+          console.warn(`[FactCheckGate] HELD AS DRAFT — fact-check failed with no correction. slug=${slug}`);
+        }
+        console.info(`[FactCheckGate] path=rss claims=${factCheck.meta.claimsChecked} mismatch=${factCheck.mismatches.length} hold=${verdict.holdAsDraft}`);
 
         const article = await articleRepository.create({
           slug,
@@ -191,7 +197,7 @@ Respond with ONLY the article markdown content. No JSON, no code blocks, no conv
           content: finalContent,
           authorId: adminUser.id,
           tags: result.tags.length > 0 ? result.tags : ["berita", "pasar-saham"],
-          status: ArticleStatus.PUBLISHED,
+          status: verdict.holdAsDraft ? ArticleStatus.DRAFT : ArticleStatus.PUBLISHED,
           articleType: ArticleType.NEWS,
           aiProvider: provider.name,
           generationMeta: {
@@ -203,7 +209,8 @@ Respond with ONLY the article markdown content. No JSON, no code blocks, no conv
             factCheckPassed: String(factCheck.passed),
             factCheckClaimsChecked: String(factCheck.meta.claimsChecked),
             factCheckErrors: String(factCheck.mismatches.length),
-            factCheckCorrected: String(!factCheck.passed && !!factCheck.correctedContent),
+            factCheckCorrected: String(verdict.applyCorrection),
+            ...(verdict.holdAsDraft ? { factCheckHeld: "true" } : {}),
           } as Record<string, string>,
         });
 
