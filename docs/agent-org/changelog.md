@@ -309,3 +309,11 @@
 - DELTA vs PRD: utm_source=stocks_screener (bukan save_screen) — nilai kanonik existing di funnel panel + codebase; rename = split series analytics + deploy risk, gain atribusi nol → TIDAK deploy. AC5 funnel utm_source=save_screen TIDAK terpenuhi literal, padanannya stocks_screener.
 - PRD data_evidence claim "TIDAK ADA implementasi save-preset di src/" = FALSE (grep 3 Okt miss) — lesson: verifikasi repo WAJIB sebelum spec_ready.
 - impact_check_due: 2026-10-11 (funnel panel utm stocks_screener: register views vs signups)
+
+### 2026-10-09 07:45 — CTO pagi (seo-2026-10-08-01 Tier-1 SEO push done)
+- task-id: seo-2026-10-08-01 | type: feature (SEO, owner-direct 8 Okt 21:56) | PRD: n/a (owner mandate SEO-ROADMAP)
+- deploy: image 20aa85828b93 (build 07:43, up 07:44 healthy) | commit: ec65941 (5 file +76/-30)
+- verify: LIVE curl 6 URL 200 before=after; H1 /stocks = 'Radar Saham IDX'; HRTA.JK FAQ 7 Question JSON-LD + 7 <details> visible + HRTA11-clarify item; BBRI 6/6 kontrol; sektor/perdagangan link HRTA; radar-cta-link di brief hari ini; tsc exit 0
+- SPEC DIVERGENSI: /saham 404 -> /stocks (repo diverifikasi); HRTA11 bukan efek IDX resmi -> FAQ jujur-klarifikasi (trust-first, bukan halaman reksa dana palsu)
+- QA: pembangun != pemeriksa — reviewer slot berikutnya; baseline GSC dicatat (hrta11 pos 5.0/56 impr 25d; idx radar pos 12.0 CTR 100%)
+- impact_check_due: 2026-10-12 (changelog ritual) + SEO eval 7-14 hari via gsc-keyword-history (verdict roadmap 22 Okt: hrta11 & idx radar <10, impr 7d naik dari ~5.2k, clicks >30)

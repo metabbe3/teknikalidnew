@@ -641,3 +641,10 @@ commit pre-deploy live-unknown; merge HEAD: 1e4d517
 - prd-2026-10-03-02 RESOLVED no-op: saved-screen sudah live 22 Sep (55c42d6) — model+migration+tabel+API+UI+auto-save semua ada; utm=stocks_screener kanonik (rename save_screen ditolak: split analytics, gain nol). Owner package prisma migrate TIDAK diperlukan (tabel ada sejak 2026-06 migration 20260612143354).
 - Deploy budget sore: 0/1 terpakai (queue tak butuh deploy). Anchor tetap: app 1b22a31fa4ad.
 - Slot assignment berikutnya: prd-2026-10-05-01 (fact-check gate) → 9 Okt 07:30 CTO pagi.
+
+## 2026-10-09 07:45 WIB — CTO pagi: seo-2026-10-08-01 shipped (deploy 1/1)
+- ROLLBACK ANCHOR: app image lama sha256:1b22a31fa4ad (live s.d. 07:43) + git revert ec65941 && rebuild. Baru: 20aa85828b93.
+- SPEC DIVERGENSI (verify-to-repo protocol): (a) spec 'halaman /saham' = 404 nyata (dir tanpa page.tsx) — target kanonik = /stocks; (b) 'HRTA11 halaman reksa dana' — HRTA11 BUKAN kode efek IDX resmi (DB: hanya HRTA.JK = Hartadinata Abadi, saham emas/perhiasan, board Utama) — diputuskan FAQ jujur 'HRTA11 bukan kode resmi, HRTA 4 huruf' di halaman HRTA.JK (trust-first; mencegah konten misleading demi keyword).
+- Anchor internal link: berita (semua artikel + brief harian regenerasi) -> /stocks 'radar saham IDX'; /sektor/perdagangan -> HRTA.JK.
+- Baseline GSC (eval 7-14 hari, verdict 22 Okt): hrta11 pos 5.0 56 impr/25d; idx radar pos 12.0 CTR 100%.
+- Slot sore 9 Okt: prd-2026-10-05-01 fact-check gate (re-assign dari pagi; pagi terpakai seo owner-direct).

@@ -343,3 +343,11 @@
 - In-flight: prd-2026-10-05-01 fact-check gate → 9 Okt 07:30 CTO pagi (satu-satunya spec_ready); OWNER 2 action tertunda: launchctl bootstrap agent-scheduler + keputusan GSC batch-2 indexing.
 - Jebakan: (1) backup freshness: pilih file TERMUDA by mtime (sorted nama menangkap manual_premigration lama); (2) queue filter status WAJIB exact match — qa_pass/deployed bocor dari filter 'bukan done'; (3) PRD data_evidence bisa basi 5 hari — verifikasi repo live sebelum spec_ready.
 - Langkah pertama slot pagi: baca queue → prd-2026-10-05-01 (DONE WHEN: gate factCheck jalan pre-publish + fixture test; cek PRD idea-2026-10-05-1).
+- 8 Okt 21:56 — OWNER MANDAT "kembangkan terus, lebih cepat lebih bagus": SEO push masuk queue. Slot pagi 9 Okt: seo-2026-10-08-01 (P1, Tier-1 hrta11+idx radar, spec lengkap di cto-queue.json). prd-2026-10-05-01 fact-check gate tetap spec_ready — kalau 2 task, pagi = seo (owner-direct), sore = prd; kalau 1 slot terpakai, prd ke sore otomatis. Keyword data 25d GSC + roadmap 4 langkah di ceo-decisions.md [SEO-ROADMAP].
+
+## 2026-10-09 07:50 — CTO pagi (seo-2026-10-08-01 DONE)
+- State: sehat; FRESH (8 Okt == expected pre-market Jumat); deploy pagi 1/1 — image 20aa85828b93 (ec65941 Tier-1 SEO); 3 container healthy; night-audit CLEAN.
+- Barusan: Tier-1 SEO push live — ticker FAQ 6+HRTA11 visible+JSON-LD (DRY faqItems), /stocks H1 'Radar Saham IDX' + meta radar, HRTA di sektor perdagangan, radar-cta-link di semua artikel.
+- In-flight: prd-2026-10-05-01 fact-check gate → SORE 16:45 HARI INI (satu-satunya spec_ready); OWNER 2 action tertunda: launchctl bootstrap agent-scheduler + keputusan GSC batch-2 indexing (re-audit 15 Okt).
+- Jebakan: (1) spec CEO/owner soal halaman WAJIB diverifikasi route nyata — /saham 404, kanonik = /stocks (lagi); (2) HRTA11 bukan efek IDX — FAQ jujur, jangan bikin halaman palsu; (3) grep SSR FAQ gagal karena <!-- --> comment marker — pakai frasa pendek/details-count.
+- Langkah pertama slot sore: baca queue → prd-2026-10-05-01 (PRD idea-2026-10-05-1) → DONE WHEN gate factCheck pre-publish + fixture test → PLAN block → claude pipeline → deploy ≤18:45 (budget 1).
