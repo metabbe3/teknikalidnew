@@ -363,3 +363,9 @@
 - Prioritas P1: prd-2026-10-09-01 Retention Loop v1 (screener save-share, guest watchlist, daily radar).
 - Mandate lens baru: tiap task harus jawab "naikin reach ATAU bikin balik?" (DM 26155).
 - CTO malam 9 Okt kena network blip 18:43 (provider unreachable + telegram DNS) — rerun in-flight.
+
+## 2026-10-09 20:35 — Fact-Check Gate VERIFIED-DEPLOYED (utang slot sore lunas)
+- Build CTO tadi selesai (zombie com.docker.build menipu watcher); trigger ulang 24.7s cached.
+- App image BARU 2efc2b404dbb; gate TS di compiled chunks (stock_rsi x2); worker restart (tsx live-code) heartbeat fresh 20:30 WIB.
+- Route 200: / /berita /stocks /auth/register. /articles & /register 404 = bukan route (baseline salah URL, bukan regresi).
+- Queue prd-2026-10-05-01 → done. AC5 (live Mandor brief besok pagi) tersisa.
