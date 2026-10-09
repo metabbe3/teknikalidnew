@@ -21,17 +21,18 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Harga Saham IDX Hari Ini — Screener Saham Gratis & Chart Live 956+ Saham",
   description:
-    "Cek harga saham IDX hari ini + screener saham gratis: filter sektor, RSI, MACD, golden cross, dan indikator teknikal lainnya. Chart live real-time untuk 956+ saham BEI.",
+    "Cek harga saham IDX hari ini di radar saham IDX gratis: screener filter sektor, RSI, MACD, golden cross, dan indikator teknikal. Chart live real-time untuk 956+ saham BEI.",
   alternates: { canonical: "/stocks" },
   keywords: [
     "daftar harga saham hari ini", "harga saham idx hari ini", "harga saham live",
     "screener saham gratis", "screener saham indonesia", "chart saham gratis",
     "chart saham live", "chart saham realtime",
     "analisa saham online", "saham idx hari ini", "daftar saham BEI",
+    "radar saham idx", "radar saham",
   ],
   openGraph: {
     title: "Daftar Harga Saham IDX Hari Ini — Live Chart & Analisa Teknikal",
-    description: "Cek harga saham IDX hari ini lengkap dengan analisa teknikal. Chart live, RSI, MACD, dan filter indikator untuk 956+ saham BEI.",
+    description: "Cek harga saham IDX hari ini di radar saham IDX gratis: chart live, RSI, MACD, dan filter indikator untuk 956+ saham BEI.",
     url: `${SITE_URL}/stocks`,
     images: [{ url: `${SITE_URL}/api/og?title=Daftar+Harga+Saham+IDX+Hari+Ini&type=berita`, width: 1200, height: 630 }],
   },
@@ -178,10 +179,10 @@ export default async function StocksPage() {
         <div className="max-w-7xl mx-auto px-4 py-10 sm:py-12">
           <MarketStatus marketStatus={marketInfo.marketStatus} latestPrice={latestPrice} />
           <h1 className="mt-5 font-serif text-4xl sm:text-5xl font-semibold tracking-tight text-text-primary leading-[1.05]">
-            Pasar Saham IDX
+            Radar Saham IDX
           </h1>
           <p className="mt-3 text-sm sm:text-base text-text-secondary max-w-2xl leading-relaxed">
-            Harga, sinyal teknikal, dan analisa untuk {IDX_STOCKS.length}+ saham IDX. Mulai dari top mover hari ini, atau saring sesuai strategi Anda.
+            Radar pasar saham IDX hari ini — harga, sinyal teknikal, dan analisa untuk {IDX_STOCKS.length}+ saham IDX. Mulai dari top mover hari ini, atau saring sesuai strategi Anda.
           </p>
           <div className="mt-6">
             <MarketBreathStrip

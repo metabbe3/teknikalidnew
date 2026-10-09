@@ -14,6 +14,7 @@ import { StockArticleCard } from "@/components/stock/stock-article-card";
 import { stripMarkdown } from "@/lib/utils";
 import { SnapshotBriefing, type SnapshotBriefingData } from "@/components/berita/snapshot-briefing";
 import { RelatedSignals } from "@/components/berita/related-signals";
+import RadarCtaLink from "@/components/seo/radar-cta-link";
 import { decimalToNumber, bigIntToNumber } from "@/lib/serialize";
 import { isStaleArticle, DATA_SOURCE_LABEL } from "@/domains/article/article-freshness";
 
@@ -328,6 +329,8 @@ export default async function BeritaArticlePage({
 
               {/* Contextual signal links (server-rendered, SEO/discovery) */}
               <RelatedSignals ticker={relatedSignalTicker} />
+
+              <RadarCtaLink />
 
               {/* Stock cards for mentioned tickers */}
               {stockCards.length > 0 && (

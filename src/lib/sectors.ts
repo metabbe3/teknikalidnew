@@ -71,7 +71,7 @@ export const SECTORS: Sector[] = [
     name: "Perdagangan",
     description:
       "Sektor perdagangan mencakup perusahaan retail, distribusi, dan perdagangan umum di Indonesia. Emiten seperti CPIN dan ERAA memiliki peran penting dalam ekosistem konsumsi dalam negeri. Gunakan analisis teknikal untuk memantau pergerakan harga saham perdagangan secara real-time.",
-    stocks: ["ASRI", "CPIN", "ERAA", "GZCO"],
+    stocks: ["ASRI", "CPIN", "ERAA", "GZCO", "HRTA"],
   },
   {
     slug: "agrikultur",

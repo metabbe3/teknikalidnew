@@ -356,6 +356,39 @@ export default async function StockDetailPage({
 
   const ogImageUrl = `${SITE_URL}/api/og/stock?ticker=${encodeURIComponent(ticker)}`;
 
+  // Single FAQ source — feeds both the FAQPage JSON-LD and the visible section
+  // (Google: schema must represent content visible on the page).
+  const faqItems = [
+    {
+      q: `Berapa harga saham ${stripJk(ticker)} hari ini?`,
+      a: `Harga saham ${stripJk(ticker)} hari ini ${close !== null ? formatPrice(close) : "-"}` + (changePercent !== null ? ` (${formatPercent(changePercent)})` : "") + `. Lihat chart, indikator teknikal, dan analisa lengkap di TeknikalID.`,
+    },
+    {
+      q: `Bagaimana analisis teknikal saham ${stripJk(ticker)}?`,
+      a: `Analisis teknikal ${stripJk(ticker)} termasuk RSI, MACD, Support/Resistance, Bollinger Bands, dan sinyal trading tersedia lengkap di halaman ini.`,
+    },
+    {
+      q: `Apa itu saham ${stripJk(ticker)} (${stock.name})?`,
+      a: `${stripJk(ticker)} (${stock.name}) adalah emiten yang tercatat di Bursa Efek Indonesia${stock.sector ? `, sektor ${sectorToBahasa(stock.sector)}` : ""}. Pantau pergerakan harga, indikator teknikal, dan diskusi komunitas di TeknikalID.`,
+    },
+    {
+      q: `Bagaimana cara membeli saham ${stripJk(ticker)}?`,
+      a: `Untuk membeli saham ${stripJk(ticker)}, Anda membutuhkan rekening efek di sekuritas (perusahaan sekuritas berizin OJK), menyetor dana, lalu melakukan order beli minimum 1 lot = 100 lembar melalui aplikasi broker. Harga live ${stripJk(ticker)} bisa dipantau di halaman ini sebelum eksekusi.`,
+    },
+    {
+      q: `Apa risiko investasi saham ${stripJk(ticker)}?`,
+      a: `Risiko investasi saham ${stripJk(ticker)} mencakup risiko pasar (volatilitas IHSG), risiko likuiditas, dan risiko spesifik emiten. Halaman ini bukan nasihat investasi — pantau indikator RSI, MACD, dan support/resistance di halaman ini untuk manajemen risiko.`,
+    },
+    {
+      q: `Sektor apa saham ${stripJk(ticker)} dan bagaimana kinerjanya?`,
+      a: `Saham ${stripJk(ticker)} (${stock.name}) berada di sektor ${stock.sector ? sectorToBahasa(stock.sector) : "—"}. Pantau harga dan indikator teknikalnya di halaman ini, atau bandingkan dengan saham sektor yang sama melalui halaman sektor di TeknikalID.`,
+    },
+    ...(ticker === "HRTA.JK" ? [{
+      q: "Apa itu HRTA11 dan apa bedanya dengan saham HRTA?",
+      a: "HRTA11 bukan kode efek resmi di Bursa Efek Indonesia — kode saham PT Hartadinata Abadi Tbk adalah HRTA (4 huruf). Jika Anda mencari harga atau analisa saham Hartadinata (produsen perhiasan emas), halaman ini adalah halaman yang tepat.",
+    }] : []),
+  ];
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -444,32 +477,14 @@ export default async function StockDetailPage({
       },
       {
         "@type": "FAQPage",
-        mainEntity: [
-          {
-            "@type": "Question",
-            name: `Berapa harga saham ${stripJk(ticker)} hari ini?`,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: `Harga saham ${stripJk(ticker)} hari ini ${close !== null ? formatPrice(close) : "-"}` + (changePercent !== null ? ` (${formatPercent(changePercent)})` : "") + `. Lihat chart, indikator teknikal, dan analisa lengkap di TeknikalID.`,
-            },
+        mainEntity: faqItems.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: f.a,
           },
-          {
-            "@type": "Question",
-            name: `Bagaimana analisis teknikal saham ${stripJk(ticker)}?`,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: `Analisis teknikal ${stripJk(ticker)} termasuk RSI, MACD, Support/Resistance, Bollinger Bands, dan sinyal trading tersedia lengkap di halaman ini.`,
-            },
-          },
-          {
-            "@type": "Question",
-            name: `Apa itu saham ${stripJk(ticker)} (${stock.name})?`,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: `${stripJk(ticker)} (${stock.name}) adalah emiten yang tercatat di Bursa Efek Indonesia${stock.sector ? `, sektor ${sectorToBahasa(stock.sector)}` : ""}. Pantau pergerakan harga, indikator teknikal, dan diskusi komunitas di TeknikalID.`,
-            },
-          },
-        ],
+        })),
       },
     ],
   };
@@ -948,6 +963,19 @@ export default async function StockDetailPage({
         <SentimentGauge ticker={ticker} />
         <RegistrationInlinePrompt ticker={ticker} />
         <StockDiscussion ticker={ticker} />
+
+        {/* Visible FAQ — must match the FAQPage JSON-LD above (single source: faqItems) */}
+        <section aria-label="Pertanyaan umum" className="bg-bg-card border border-border rounded-xl p-5">
+          <h2 className="text-xl font-bold text-text-primary mt-8 mb-4">Pertanyaan Umum saham {stripJk(ticker)}</h2>
+          <div className="space-y-3">
+            {faqItems.map((f) => (
+              <details key={f.q}>
+                <summary className="text-sm font-semibold text-text-primary">{f.q}</summary>
+                <p className="text-xs text-text-secondary mt-1 leading-relaxed">{f.a}</p>
+              </details>
+            ))}
+          </div>
+        </section>
 
         <StockFAQWidget ticker={ticker} />
 
