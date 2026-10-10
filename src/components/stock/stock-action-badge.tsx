@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useWatchlistStatus, useToggleWatchlist } from "@/hooks/use-watchlist";
 import { useStockFollowStatus, useToggleStockFollow } from "@/hooks/use-follow";
+import { GuestStar } from "@/components/stock/guest-star";
 
 interface StockActionBadgeProps {
   ticker: string;
@@ -11,6 +12,9 @@ interface StockActionBadgeProps {
 export function StockActionBadge({ ticker }: StockActionBadgeProps) {
   const { status } = useSession();
   const isAuthenticated = status === "authenticated";
+  // Guest: bintang localStorage (Retention Loop v1 — PRD idea-2026-10-09-1 AC3);
+  // upgrade-path = migrasi otomatis GuestWatchlistMigrator saat login/register.
+  const isGuest = status === "unauthenticated";
 
   const { data: watchlistData } = useWatchlistStatus(isAuthenticated ? ticker : undefined);
   const toggleWatchlist = useToggleWatchlist();
@@ -22,16 +26,12 @@ export function StockActionBadge({ ticker }: StockActionBadgeProps) {
     : false;
   const isPending = toggleWatchlist.isPending || toggleFollow.isPending;
 
+  if (isGuest) {
+    return <GuestStar ticker={ticker} />;
+  }
+
   const handleClick = () => {
-    if (!isAuthenticated) {
-      try {
-        sessionStorage.setItem("pending_post_register", JSON.stringify({ type: "watchlist", ticker }));
-      } catch {
-        // ignore storage errors
-      }
-      window.location.href = "/auth/register?utm_source=stocks_ticker&utm_medium=watchlist_prompt";
-      return;
-    }
+    if (!isAuthenticated) return;
 
     toggleWatchlist.mutate({ ticker, action: isActive ? "remove" : "add" });
     toggleFollow.mutate(ticker);
@@ -41,7 +41,7 @@ export function StockActionBadge({ ticker }: StockActionBadgeProps) {
     <button
       onClick={handleClick}
       disabled={isPending}
-      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium transition-all press-scale disabled:opacity-50 ${
+      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium transition-all press-scale disabled:opacity-50 cursor-pointer ${
         isActive
           ? "bg-accent/10 text-accent border border-accent/20"
           : "border border-border text-text-secondary hover:bg-bg-hover hover:text-text-primary"

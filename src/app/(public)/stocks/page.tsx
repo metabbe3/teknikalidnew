@@ -15,6 +15,8 @@ import { ArrowUpRight } from "lucide-react";
 import { SahamStrategyLinks } from "@/components/seo/saham-strategy-links";
 import { LoginGate } from "@/components/auth/login-gate";
 import { WeeklySignalWidget } from "@/components/signal/weekly-signal-widget";
+import { DailyRadar } from "@/components/stock/daily-radar";
+import { dailyRadarService } from "@/domains/stock/screener-analysis.service";
 
 export const dynamic = "force-dynamic";
 
@@ -98,10 +100,11 @@ function MarketStatus({ marketStatus, latestPrice }: { marketStatus: MarketStatu
 }
 
 export default async function StocksPage() {
-  const [rows, latestPrice, marketInfo] = await Promise.all([
+  const [rows, latestPrice, marketInfo, radar] = await Promise.all([
     stockMarketService.getStockList(),
     stockMarketService.getLatestPriceDate(),
     stockMarketService.getMarketStatusForPage(),
+    dailyRadarService.getDailyRadar(5),
   ]);
 
   const sectors = [...new Set(rows.map((s) => s.sector))].sort();
@@ -238,6 +241,8 @@ export default async function StocksPage() {
             title="Semua Saham IDX"
             description="Cari, saring per sektor, urutkan 900+ saham — atau gunakan Screener untuk filter sinyal teknikal."
           />
+          {/* Daily Radar — fresh golden cross, alasan balik harian (Retention Loop v1) */}
+          <DailyRadar date={radar.date} items={radar.items} />
           {/* Weekly SMA-cross signals — SSR, guest-visible */}
           <WeeklySignalWidget />
           {/* Discovery chips: feed topical signal pages (wid-2026-09-27-1) */}

@@ -9,6 +9,7 @@ import { formatPrice, formatPercent, formatVolume, stripJk, changeColor, rsiColo
 import type { TradingStyleDef, ScreenerStock, ViewMode, SortField, SortOrder } from "./screener-types";
 import { SORT_OPTIONS, signalLabelColor } from "./screener-types";
 import { BookmarkIcon } from "./screener-icons";
+import { GuestStar } from "@/components/stock/guest-star";
 
 // ── Results Header ──
 
@@ -192,22 +193,19 @@ export function ResultsTable({ stocks, watchlistTickers, onToggleWatchlist, link
                   }
                 }}
               >
-                <div className="px-2 py-3 flex items-center justify-center">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (isAuthenticated) {
-                        onToggleWatchlist(stock.ticker);
-                      }
-                    }}
-                    className={`p-2.5 rounded transition-colors ${
-                      isAuthenticated ? "cursor-pointer hover:text-accent" : "cursor-default text-text-tertiary/70"
-                    } ${inWatchlist ? "text-accent" : "text-text-tertiary"}`}
-                    aria-label={isAuthenticated ? (inWatchlist ? "Hapus dari watchlist" : "Tambah ke watchlist") : "Daftar untuk menggunakan watchlist"}
-                    title={isAuthenticated ? (inWatchlist ? "Hapus dari watchlist" : "Tambah ke watchlist") : "Daftar untuk menggunakan watchlist"}
-                  >
-                    <BookmarkIcon filled={inWatchlist} className="w-3.5 h-3.5" />
-                  </button>
+                <div className="px-2 py-3 flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+                  {isAuthenticated ? (
+                    <button
+                      onClick={() => onToggleWatchlist(stock.ticker)}
+                      className={`p-2.5 rounded transition-colors cursor-pointer hover:text-accent ${inWatchlist ? "text-accent" : "text-text-tertiary"}`}
+                      aria-label={inWatchlist ? "Hapus dari watchlist" : "Tambah ke watchlist"}
+                      title={inWatchlist ? "Hapus dari watchlist" : "Tambah ke watchlist"}
+                    >
+                      <BookmarkIcon filled={inWatchlist} className="w-3.5 h-3.5" />
+                    </button>
+                  ) : (
+                    <GuestStar ticker={stock.ticker} compact />
+                  )}
                 </div>
                 <div className="px-4 py-3">
                   <Link href={`${linkBase}/${stock.ticker}`} className="font-semibold text-accent hover:underline" onClick={(e) => e.stopPropagation()}>
@@ -268,22 +266,24 @@ export function ResultsCards({ stocks, styleDef, watchlistTickers, onToggleWatch
             key={stock.ticker}
             className="card-gradient depth-shadow rounded-xl border border-border p-4 hover:depth-shadow-hover transition-all duration-200 press-scale group relative"
           >
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (isAuthenticated) {
-                  onToggleWatchlist(stock.ticker);
-                }
-              }}
-              className={`absolute top-2 right-2 p-2.5 rounded transition-colors z-10 ${
-                isAuthenticated ? "cursor-pointer hover:text-accent" : "cursor-default text-text-tertiary/70"
-              } ${inWatchlist ? "text-accent" : "text-text-tertiary"}`}
-              aria-label={isAuthenticated ? (inWatchlist ? "Hapus dari watchlist" : "Tambah ke watchlist") : "Daftar untuk menggunakan watchlist"}
-              title={isAuthenticated ? (inWatchlist ? "Hapus dari watchlist" : "Tambah ke watchlist") : "Daftar untuk menggunakan watchlist"}
-            >
-              <BookmarkIcon filled={inWatchlist} className="w-4 h-4" />
-            </button>
+            <div className="absolute top-2 right-2 z-10">
+              {isAuthenticated ? (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onToggleWatchlist(stock.ticker);
+                  }}
+                  className={`p-2.5 rounded transition-colors cursor-pointer hover:text-accent ${inWatchlist ? "text-accent" : "text-text-tertiary"}`}
+                  aria-label={inWatchlist ? "Hapus dari watchlist" : "Tambah ke watchlist"}
+                  title={inWatchlist ? "Hapus dari watchlist" : "Tambah ke watchlist"}
+                >
+                  <BookmarkIcon filled={inWatchlist} className="w-4 h-4" />
+                </button>
+              ) : (
+                <GuestStar ticker={stock.ticker} compact />
+              )}
+            </div>
             <Link
               href={`${linkBase}/${stock.ticker}`}
               className="block"
