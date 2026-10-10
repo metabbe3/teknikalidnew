@@ -83,6 +83,8 @@ function ctaLabel(target: EventTarget | null): string | null {
   // Fallback selectors for existing components (zero-touch, best-effort)
   if (el.closest("[class*='GuestStar']")) return "star_add";
   if (el.closest("button[class*='copy' i], [data-copy]")) return "preset_copy";
+  const cbtn = el.closest("button");
+  if (cbtn && /copy\s*link|salin\s*tautan/i.test(cbtn.textContent ?? "")) return "preset_copy";
   if (el.closest("article a[href='/stocks']")) return "radar_open";
   if (el.closest("[class*='SaveScreen' i]")) return "preset_save";
   const btn = el.closest("button");
