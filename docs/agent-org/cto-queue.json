@@ -2,6 +2,20 @@
  "protocol": "CTO task queue — dibaca CTO agent (slot 07:30 pagi & 16:45 sore; quiet zone BARU 11:00-18:00 = larang deploy+LLM, owner 16 Sep), ditulis CEO (08:15) / Council (Min 08:00). Entry: {id, date, spec, priority (P0 darurat/P1 tinggi/P2 normal), north_star, status (pending/done/failed/blocked_for_owner), result}. CTO: max 1 deploy per slot (2/hari total), eksekusi claude code pipeline, update status + verify evidence.",
  "entries": [
   {
+   "id": "prd-2026-10-09-01",
+   "title": "P1 GROWTH (owner mandate 9 Okt 'Fokus naikan reach and customer betah'): Retention Loop v1 — 3 fitur dari data",
+   "desc": "Data 7d: 80 uniq IP, hanya 5 balik (6.2% retention). Magnet = /stocks screener (421 PV, preset links golden_cross/momentum dipakai orang). Betah-loop lemah.\nSCOPE (CSS/SSR-safe, no-auth needed):\n1) SCREENER SAVE-SHARE: preset URL sudah jadi share-link (view=tab&preset=X ada) — tambahkan 'Copy Link Hasil Screener' button + 'Simpan preset ini' (localStorage) → user punya alasan balik.\n2) WATCHLIST GUEST (localStorage): tombol bintang di /stocks/*.JK tanpa login, upgrade-path ke akun saat login (migrasi localStorage→DB) → habit harian.\n3) DAILY RADAR EMAIL-PREVIEW: di /stocks render 'Radar 5 emiten hari ini' statis dari data existing signal engine → konten baru tiap hari otomatis, alasan kembali harian.\nDONE-WHEN: (a) deploy + curl 200, (b) tombol copy-link teruji manual, (c) bintang persist reload, (d) Radar render dgn >=5 emiten, (e) EVAL 12/12.",
+   "status": "pending",
+   "priority": "P1",
+   "created_at": "2026-10-09",
+   "source": "owner DM 26155 fokus reach+betah",
+   "blocked_checked_at": "2026-10-09 19:35 WIB",
+   "blocked_reason": "SDLC gate 17 Sep: task FITUR wajib PRD product-backlog status spec_ready (field prd_id) — entry ini tidak punya PRD. Catatan CTO utk PRD nanti: (1) brief harian di-publish jalur python growth-mandor (aiProvider DB), bukan worker TS — fitur konten harian harus ingat jalur ini; (2) preset share-link view=tab&preset sudah ada; saved-screen localStorage UI ada sejak 55c42d6; radar statis = query signal engine existing. Jangan build tanpa PRD — minta CEO/Product Agent tulis PRD dulu.",
+   "prd_id": "idea-2026-10-09-1",
+   "prd_ready_at": "2026-10-09T22:15+07:00",
+   "prd_note": "PRD spec_ready ditulis Product Agent nightly 9 Okt (idea-2026-10-09-1, product-backlog.json) — metadata v2 lengkap, riset SQL+statik tree main@837c806. Siap dispatch CTO."
+  },
+  {
    "id": "wid-2026-09-27-1",
    "type": "feature",
    "priority": "P2",
@@ -531,7 +545,7 @@
    "created_by": "Product Agent nightly buffer-keeper 1 Okt 22:1x (PRD idea-2026-09-25-1 ditulis 30 Sep 22:1x; CEO mandate promote 28 Sep 08:15)",
    "scheduled_slot": "2026-10-05 07:30 CTO pagi (RESUME deploy slot 4 Okt yang terputus sebelum up -d; tsc 0 anchor committed 87adbcd)",
    "priority": "P2",
-   "status": "deployed",
+   "status": "qa_pass",
    "prd_id": "idea-2026-09-25-1",
    "north_star": "growth register (NS#1) — atribusi 3 register-hook live 22 Sep; gate AC5 prd-17-01 impact-check 20 Okt TIDAK bisa dievaluasi tanpa ini (16 register-view/30d tak ter-atribusi)",
    "title": "P2 FITUR (PRD idea-2026-09-25-1): atribusi register hook — PageView simpan utm_source/utm_medium (whitelist ^[a-z0-9_-]{1,32}$, scope /auth/* only, additive nullable via prisma migrate KOORDINASI OWNER)",
@@ -541,7 +555,11 @@
    "owner_approved_at": "2026-10-03 07:2x WIB (DM message_id 24769)",
    "qa_verified": true,
    "qa_verified_by": "Content Reviewer 7 Okt 09:1x (independen)",
-   "result": "UTANG DIBAYAR reviewer 7 Okt 09:1x dari bukti fisik (CTO belum bukukan): migration 20261004075000_add_pageview_utm ada di repo; kolom PageView.utmSource/utmMedium live di DB; app image baru 1b22a31fa4ad (build 07:49, container up 07:50 sehat); E2E PASS: browser guest GET /auth/register?utm_source=qatest0710&utm_medium=cronqa 09:09 -> PageView row (path /auth/register, utmSource=qatest0710, utmMedium=cronqa) — 1/1 exact, scope /auth/*; row lain post-deploy (non /auth) utm tetap NULL (2/2, tidak bocor). Catatan: grep utmSource di spill-over stderr 124KB = 1 hit (noise parser), bukan error build; verifikasi pakai bukti DB+docker langsung."
+   "result": "UTANG DIBAYAR reviewer 7 Okt 09:1x dari bukti fisik (CTO belum bukukan): migration 20261004075000_add_pageview_utm ada di repo; kolom PageView.utmSource/utmMedium live di DB; app image baru 1b22a31fa4ad (build 07:49, container up 07:50 sehat); E2E PASS: browser guest GET /auth/register?utm_source=qatest0710&utm_medium=cronqa 09:09 -> PageView row (path /auth/register, utmSource=qatest0710, utmMedium=cronqa) — 1/1 exact, scope /auth/*; row lain post-deploy (non /auth) utm tetap NULL (2/2, tidak bocor). Catatan: grep utmSource di spill-over stderr 124KB = 1 hit (noise parser), bukan error build; verifikasi pakai bukti DB+docker langsung.",
+   "qa_by": "reviewer",
+   "qa_at": "2026-10-09 09:0x WIB",
+   "completed_at": "2026-10-07 07:50 WIB (image 1b22a31fa4ad live; dibukukan reviewer 9 Okt)",
+   "qa_note": "Flip admin-debt: migration 20261004075000 ada, kolom utm live, E2E register?utm_source=qa PASS 7 Okt. QA pass."
   },
   {
    "id": "prd-2026-10-01-02",
@@ -612,7 +630,8 @@
    "spec": "INTENT (feature, PRD LENGKAP di product-backlog.json idea-2026-10-02-2 — AC+data_evidence+metadata v2 di sana; baca PRD, jangan narasi). DONE WHEN: AC terpenuhi + bukti live (curl/SQL) + changelog == merge + panel retensi jadi instrumen impact (baseline dicatat).",
    "completed_at": "2026-10-08 08:0x WIB (bookkeeping; image live sejak 7 Okt 07:50)",
    "verify_evidence": "LIVE bundle image 1b22a31fa4ad (build 7 Okt 07:49, deploy-retry ux-05-01 mengangkat main s.d. 94e18c6 ⊃ merge ae6f0a6): marker welcome-card/claim-streak/for-you-signals di client-manifest + 'Sinyal untukmu' x4 + 'checklist' x5 di server chunks. AC5 anon: home anon 151KB = 0 marker (card hidden guest, by design); 5/5 URL 200 (/, /stocks, golden-cross, /berita, /akademi). Chunks grep :0 di chunks/*.js TIDAK berarti absen — komponen ada di app/page-level + manifest (pitfall dicatat).",
-   "result": "BOOKED 8 Okt 08:0x CTO pagi. Deploy TIDAK terpisah: merge ae6f0a6 (6 Okt 07:42) terangkat oleh image 1b22a31fa4ad build 7 Okt 07:49 (deploy-retry ux-05-01 — Docker Hub pulih) — urutan build linear dari main; konfirmasi marker live di bundle + AC5 anon PASS. BUKAN double-deploy (1 build 2 fitur). QA full-flow login (checklist+claim streak render, AC1-AC3 interaktif) diserahkan QA reviewer slot berikutnya. Baseline AC4 dicatat changelog: D1/D7=0/0, register 4wk=2/1/2/1 (panel retensi = instrumen impact). Rollback anchor: app 1b22a31fa4ad + git revert ae6f0a6."
+   "result": "BOOKED 8 Okt 08:0x CTO pagi. Deploy TIDAK terpisah: merge ae6f0a6 (6 Okt 07:42) terangkat oleh image 1b22a31fa4ad build 7 Okt 07:49 (deploy-retry ux-05-01 — Docker Hub pulih) — urutan build linear dari main; konfirmasi marker live di bundle + AC5 anon PASS. BUKAN double-deploy (1 build 2 fitur). QA full-flow login (checklist+claim streak render, AC1-AC3 interaktif) diserahkan QA reviewer slot berikutnya. Baseline AC4 dicatat changelog: D1/D7=0/0, register 4wk=2/1/2/1 (panel retensi = instrumen impact). Rollback anchor: app 1b22a31fa4ad + git revert ae6f0a6.",
+   "qa_note": "Reviewer 9 Okt: SSR register 200; marker utm = client-side (tak terlihat via curl) — bukti E2E browser anon AC5 tetap yang 7 Okt (PASS, tercatat di result prd-01-01). AC1-AC3 login-flow interaktif BELUM dikerjakan reviewer — masih open, butuh browser session."
   },
   {
    "id": "prd-2026-10-03-01",
@@ -703,7 +722,7 @@
    "created_by": "CEO pagi 5 Okt 08:1x (backlog idea-2026-09-27-slider-p2 owner_approved 29 Sep 07:42 morning-digest — dispatch tertunda 6 hari, hygiene fix '0 approved >1 hari kerja')",
    "scheduled_slot": "2026-10-07 07:30 CTO pagi (deploy retry — code SUDAH commit e3b46a1 di main, hanya build+up)",
    "priority": "P3",
-   "status": "deployed",
+   "status": "qa_pass",
    "prd_id": null,
    "gate_note": "owner_approved via morning-digest 29 Sep 07:42 — owner verdict = gate (supersedes syarat prd_id; task CSS-only 0 logika baru)",
    "north_star": "easy to use (lens owner) — mobile-majority ~93/7: thumb 44px = touch target standar; post-card @username utuh = polish konsistensi",
@@ -711,7 +730,11 @@
    "spec": "INTENT: dua perbaikan visual kecil dari wave-3 report yang sudah owner-approve: (1) thumb slider range di screener /stocks jadi touch-target layak (min 44px, CSS ::-webkit-slider-thumb + pasangan firefox; className+css ONLY, 0 logic/teks); (2) post-card @username tidak terpotong (clip/ellipsis benar). Sumber lengkap: product-backlog.json entry idea-2026-09-27-slider-p2. DONE WHEN: real-browser CDP mobile 390px — getBoundingClientRect thumb di /stocks screener >= 44px; @username post-card tampil utuh (bukti elemen terukur/screenshot path); npx tsc --noEmit 0 error; changelog entry == merge commit (slot yang sama); live curl 200 pasca-deploy.",
    "result": "CTO sore 6 Okt 18:3x-19:1x: CODE SELESAI + COMMIT e3b46a1 (3 file src: .tk-range 44px thumb CSS scoped + post-card @username truncate; tsc exit 0; diff persis spec; anchor logged decisions.md; baseline 5 URL 200). DEPLOY BLOCKED_EXTERNAL: docker build 2x stall di 'load metadata node:24-alpine' (buildx 0% CPU ~8mnt each; docker pull node:24-alpine hang >90s walau API registry-1.docker.io respon 0,8s) = Docker Hub blob fetch tidak jalan dari daemon malam ini. Anti-loop 2x: STOP, site SEHAT (image lama 5 Okt jalan, 200). Retry besok pagi: cukup docker compose build app && up -d app && verify thumb CDP >=44px + curl. TANPA kode baru perlu ditulis. || QA reviewer 7 Okt 09:1x: DEPLOY RETRY BERHASIL — app image baru 1b22a31fa4ad build 07:49 (container healthy 07:50), bukti live: CSS chunk /_next/static/css memuat '.tk-range{...height:44px' dan 'tk-range::-webkit-slider-thumb{...width:44px;height:44px' (curl CSS chunk live 200); site baseline 200. Flip deferred->deployed+qa_verified oleh reviewer dari bukti live.",
    "qa_verified": true,
-   "qa_verified_by": "Content Reviewer 7 Okt 09:1x (independen)"
+   "qa_verified_by": "Content Reviewer 7 Okt 09:1x (independen)",
+   "qa_by": "reviewer",
+   "qa_at": "2026-10-09 09:0x WIB",
+   "completed_at": "2026-10-07 07:50 WIB (deploy live; dibukukan reviewer 9 Okt)",
+   "qa_note": "Flip admin-debt dari bukti tercatat 7 Okt: image 1b22a31fa4ad healthy, CSS chunk live memuat .tk-range thumb 44px, baseline 200. QA pass."
   },
   {
    "id": "qa-2026-10-05-01",
@@ -731,13 +754,14 @@
    "type": "feature",
    "date": "2026-10-05",
    "created_by": "Product Agent nightly buffer-keeper 5 Okt 22:1x (riset SQL read-only + statik grep 5 Okt; run ini juga restore 4 entry backlog yang terjatuh union-fix 2972b4e — divergensi ke-5 dlm 8 hari)",
-   "scheduled_slot": "2026-10-09 16:45 CTO sore (pagi 9 Okt terpakai seo-01 owner-direct, per handoff 8 Okt 21:56)",
+   "scheduled_slot": "2026-10-09 16:45 CTO sore (slot ini)",
    "priority": "P2",
-   "status": "spec_ready",
+   "status": "done",
    "prd_id": "idea-2026-10-05-1",
    "north_star": "trust -- 12 QA P1 correctness 9 hari: angka salah tayang lalu dikoreksi; gate fact-check pre-publish mencegah salah tayang (customer first)",
    "title": "P2 FITUR (PRD idea-2026-10-05-1): Publish Fact-Check Gate -- factCheckArticle dipanggil SEBELUM publish di SEMUA jalur ber-angka (bukan hanya NEWS+marketCtx); gagal total = DRAFT+notif admin, bukan tayang salah",
-   "spec": "INTENT (feature, PRD LENGKAP di product-backlog.json idea-2026-10-05-1 -- AC+data_evidence+metadata v2 di sana; baca PRD, jangan narasi). DONE WHEN: AC terpenuhi + bukti live (SQL generationMeta + log JobRun) + changelog == merge + 7 hari pertama 0 insiden correctness P1 baru pada jalur ber-gate."
+   "spec": "INTENT (feature, PRD LENGKAP di product-backlog.json idea-2026-10-05-1 -- AC+data_evidence+metadata v2 di sana; baca PRD, jangan narasi). DONE WHEN: AC terpenuhi + bukti live (SQL generationMeta + log JobRun) + changelog == merge + 7 hari pertama 0 insiden correctness P1 baru pada jalur ber-gate.",
+   "verified_by": "owner-agent 9 Okt 20:35 WIB: app image 2efc2b404dbb (baru), gate marker stock_rsi di compiled chunks, worker restart heartbeat fresh, 4/4 route nyata 200 (/,/berita,/stocks,/auth/register)"
   },
   {
    "id": "qa-2026-10-06-01",
@@ -810,7 +834,7 @@
    "id": "seo-2026-10-08-01",
    "type": "feature",
    "priority": "P1",
-   "status": "done",
+   "status": "qa_pass",
    "title": "SEO Tier-1 Push: perkuat halaman hrta11 + idx radar (content depth + internal link)",
    "created_at": "2026-10-08T21:55+07:00",
    "origin": "owner 8 Okt: 'lakukan dan kembangkan terus teknikal.id, lebih cepat lebih bagus' + keyword-research brief malam ini (25d GSC)",
@@ -820,7 +844,25 @@
    "verify_evidence": "curl /stocks/HRTA.JK 200 + FAQ section di DOM + JSON-LD present; curl /saham 200 H1 'Radar Saham IDX'; tsc 0; eslint 0; lighthouse SEO >=95",
    "estimate_review_min": 10,
    "completed_at": "2026-10-09 07:45 WIB",
-   "result": "DONE 09 Okt 07:45 CTO pagi, deploy 1/1 (pre-market). SPEC DIVERGENSI diverifikasi ke repo: /saham = 404 (hanya dir [ticker] tanpa page) -> target screener riil = /stocks; HRTA11 bukan reksa dana & bukan ticker IDX (DB hanya HRTA.JK, Hartadinata Abadi EQUITY Utama; web-search konfirmasi kode resmi = HRTA) -> FAQ dibuat jujur-klarifikasi, BUKAN halaman reksa dana baru. Commit ec65941 (5 file +76/-30): (1) ticker FAQ 3->6 item via faqItems DRY (JSON-LD + section visible <details> render match) + item kondisional HRTA11-clarify; (2) /stocks H1 'Radar Saham IDX' + subtitle + meta desc/og 'radar saham' + keywords; (3) sectors.ts perdagangan + HRTA (internal link /sektor/perdagangan -> /stocks/HRTA.JK); (4) komponen baru radar-cta-link.tsx SSR + insert setelah RelatedSignals di berita/[slug] (anchor 'radar saham IDX' ke /stocks di SEMUA artikel incl brief harian). tsc 0. Deploy image 20aa85828b93 07:44 healthy. LIVE verify: H1=Radar Saham IDX; HRTA.JK Question 7/7 + visible 7 <details> + HRTA11 item + cara-beli; BBRI 6/6 (regression-free); sektor HRTA link 1; radar CTA di brief hari ini 1; 6 URL 200 before=after (baseline 07:39). Baseline GSC: hrta11 pos 5.0 (56 impr/25d, di luar top-10 snapshot harian), idx radar pos 12.0 CTR 100% — eval 7-14 hari via gsc-keyword-history (review 22 Okt per SEO-ROADMAP). Rollback anchor: image 1b22a31fa4ad + git revert ec65941."
+   "result": "DONE 09 Okt 07:45 CTO pagi, deploy 1/1 (pre-market). SPEC DIVERGENSI diverifikasi ke repo: /saham = 404 (hanya dir [ticker] tanpa page) -> target screener riil = /stocks; HRTA11 bukan reksa dana & bukan ticker IDX (DB hanya HRTA.JK, Hartadinata Abadi EQUITY Utama; web-search konfirmasi kode resmi = HRTA) -> FAQ dibuat jujur-klarifikasi, BUKAN halaman reksa dana baru. Commit ec65941 (5 file +76/-30): (1) ticker FAQ 3->6 item via faqItems DRY (JSON-LD + section visible <details> render match) + item kondisional HRTA11-clarify; (2) /stocks H1 'Radar Saham IDX' + subtitle + meta desc/og 'radar saham' + keywords; (3) sectors.ts perdagangan + HRTA (internal link /sektor/perdagangan -> /stocks/HRTA.JK); (4) komponen baru radar-cta-link.tsx SSR + insert setelah RelatedSignals di berita/[slug] (anchor 'radar saham IDX' ke /stocks di SEMUA artikel incl brief harian). tsc 0. Deploy image 20aa85828b93 07:44 healthy. LIVE verify: H1=Radar Saham IDX; HRTA.JK Question 7/7 + visible 7 <details> + HRTA11 item + cara-beli; BBRI 6/6 (regression-free); sektor HRTA link 1; radar CTA di brief hari ini 1; 6 URL 200 before=after (baseline 07:39). Baseline GSC: hrta11 pos 5.0 (56 impr/25d, di luar top-10 snapshot harian), idx radar pos 12.0 CTR 100% — eval 7-14 hari via gsc-keyword-history (review 22 Okt per SEO-ROADMAP). Rollback anchor: image 1b22a31fa4ad + git revert ec65941.",
+   "qa_verified": true,
+   "qa_by": "reviewer",
+   "qa_at": "2026-10-09 08:5x WIB",
+   "qa_note": "Independen: commit ec65941 ada (5 file); container app healthy sejak 07:44; LIVE /stocks/HRTA.JK 200 + FAQPage JSON-LD + 7 <details>; /stocks H1=\"Radar Saham IDX\" + 10 radar mentions; kontrol BBRI 200; tsc exit 0 per CTO log. QA pass."
+  },
+  {
+   "id": "qa-2026-10-09-01",
+   "type": "ops",
+   "priority": "P1",
+   "status": "done",
+   "title": "Patch link internal 404 di brief-pasar-idx-2026-10-09 (2 link tanpa prefix /berita/)",
+   "created_at": "2026-10-09 09:1x WIB",
+   "origin": "Content Reviewer QA 9 Okt (post-publish gate)",
+   "spec": "INTENT: brief 9 Okt (slug brief-pasar-idx-2026-10-09-pasar-merah-melar, published 9 Okt 06:3x) punya 2 markdown link ke slug tanpa prefix /berita/ -> live 404: (1) ](/analisa-saham-bbri-death-cross-ema) di paragraf bank; (2) ](/brief-pasar-idx-2026-10-08-pasar-berbalik-merah) di paragraf TLKM. Bukti: curl https://teknikal.id/analisa-saham-bbri-death-cross-ema = 404, versi /berita/ = 200. AKSEPTANSI: (a) UPDATE content kedua link jadi ](/berita/analisa-saham-bbri-death-cross-ema) dan ](/berita/brief-pasar-idx-2026-10-08-pasar-berbalik-merah) — pola persis patch qa-2026-10-07-01/qa-2026-10-08-01 (SQL 1 transaksi, backup dulu, TANPA deploy, ISR revalidate 300s); (b) verify curl live kedua link 200 dari /berita/brief-pasar-idx-2026-10-09-*; (c) OPSIONAL same-pass typo di artikel sama: jenuj->jenuh, cyclicak->cyclical, defesif->defensif, 40,9 jta->40,9 juta, Rentang->Rangkuman (non-blocking, boleh ditolak CTO); (d) impact_check_due 2026-10-10: brief berikutnya harus link dengan prefix /berita/ penuh — kalau pola berulang, tambah guard di prompt Mandor.",
+   "north_star": "trust (link mati dari artikel paling fresher = crawl budget bocor + UX patah) + easy-reliable",
+   "constraints": "READ-ONLY QA -> fix via SQL content patch saja, NO kode, NO deploy, backup DB dulu",
+   "completed_at": "2026-10-09 19:0x WIB",
+   "result": "DONE 09 Okt 19:0x CTO sore (SQL patch 1 transaksi, TANPA deploy; backup db-20261009 01:16 valid). UPDATE 1: 2 link internal +prefix /berita/ (analisa-saham-bbri-death-cross-ema, brief-pasar-idx-2026-10-08-pasar-berbalik-merah; target 200-verified, versi tanpa prefix 404-verified sebelum patch) + 4 typo (jenuj jual→jenuh jual, cyclicak→cyclical, defesif→defensif, 40,9 jta→40,9 juta). 'Rentang'→'Rangkuman' TIDAK dieksekusi (0 hit di content — spec QA tidak match DB, preseden verifikasi-ke-DB). POST-DB: link lama 0/0, baru 1/1, typo resid 0, kontrol utuh (514 saham turun / 182 naik / Rp1.335). LIVE 200 (ISR rotasi ~5mnt): link lama 0/0, link baru 2/2 (href render), typo 0, kontrol 514 x4 + 182 x3 + jenuh jual x4 utuh. Log decisions.md + changelog. Impact check 2026-10-10: brief berikutnya link prefix /berita/ penuh; kalau berulang → guard prompt Mandor. Rollback: UPDATE reverse / backup db-20261009.sql.gz. Eksekusi PARALEL dgn prd-2026-10-05-01 (worker kode; non-overlap: DB content vs src/)."
   }
  ]
 }

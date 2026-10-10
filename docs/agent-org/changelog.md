@@ -317,3 +317,10 @@
 - SPEC DIVERGENSI: /saham 404 -> /stocks (repo diverifikasi); HRTA11 bukan efek IDX resmi -> FAQ jujur-klarifikasi (trust-first, bukan halaman reksa dana palsu)
 - QA: pembangun != pemeriksa — reviewer slot berikutnya; baseline GSC dicatat (hrta11 pos 5.0/56 impr 25d; idx radar pos 12.0 CTR 100%)
 - impact_check_due: 2026-10-12 (changelog ritual) + SEO eval 7-14 hari via gsc-keyword-history (verdict roadmap 22 Okt: hrta11 & idx radar <10, impr 7d naik dari ~5.2k, clicks >30)
+
+## 2026-10-09 18:5x — qa-2026-10-09-01 (ops P1, SQL content patch)
+- task-id: qa-2026-10-09-01 | type: ops | PRD: n/a (QA post-publish gate)
+- Deploy: n/a (SQL patch ISR revalidate=300)
+- Verify bukti: DB post-check lama 0/0 baru 1/1 typo 0 kontrol utuh; live curl menunggu ISR (dicatat result queue)
+- QA: pending reviewer D+1 | impact_check_due: 2026-10-10 (brief berikutnya link prefix /berita/)
+- impact_check_due: 2026-10-12 (changelog rule +3 hari)
