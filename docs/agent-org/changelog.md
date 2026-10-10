@@ -331,3 +331,7 @@
 - verify: tsc 0 · selftest-retention-loop 5/5 · 4/4 URL 200 before=after · 'Radar 5 Emiten Hari Ini' SSR live (pool 152 golden_cross) · H1 'Radar Saham IDX' utuh
 - QA: interactive AC1 copy-link + AC3 bintang persist → reviewer slot berikutnya; EVAL 12 Okt returning-IP%
 - impact_check_due: 2026-10-13
+
+## 2026-10-10 13:30 slot siang2 — weekend slot 13:30
+- ux-2026-10-10-01: TICKER_RE .JK + star hit-area 44px live (b34fcc8, 2f17cac) — AC3 guest watchlist verified interaktif; image app 1947406ed58e
+- sec-2026-10-10-01: next 16.2.6→16.3.8 + proxy-addr 2.0.8 (7f80091) — critical non-auth 5→0 (sisanya auth-family beta.31, owner gate); app+worker dce76ef1f881

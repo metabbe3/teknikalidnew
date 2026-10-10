@@ -383,3 +383,9 @@
 - In-flight: QA interaktif retention AC1/AC3 = reviewer 13:30 HARI INI; EVAL returning 12 Okt; GSC re-audit 15 Okt; owner 2 action tertunda: launchctl bootstrap agent-scheduler (CronLog terakhir 4 Okt — makin tua) + GSC batch-2.
 - Jebakan: brief 10 Okt TIDAK ADA (weekend by-design: rekap+listicle yang terbit; jangan diagnose sebagai miss) — impact check link-prefix qa-09-01 final = Senin 12 Okt brief pertama weekday; execute_code diblok cron-mode (pakai terminal + python3 heredoc).
 - Langkah pertama slot 13:30: baca queue → QA interaktif retention (browser session AC1/AC3) ATAU entry CEO baru → kalau dispatch sec-02 dependency patch: DONE WHEN = npm audit critical 5→0 ATAU <5 dengan justification + tsc 0 + deploy + 5 URL 200.
+
+
+## 2026-10-10 13:30 slot siang2 — Backend weekend slot-2
+- ux-2026-10-10-01 DONE: AC3 star fix live (1947406ed58e), verify interaktif persist reload; UX shift pagi lupa append — entry ini menutupnya
+- sec-2026-10-10-01 DONE: next 16.3.8 + proxy-addr 2.0.8 (7f80091) app+worker dce76ef1f881; critical non-auth=0
+- Rollback: ux→1947406ed58e+revert b34fcc8 2f17cac; sec→dce76ef1f881+revert 7f80091
