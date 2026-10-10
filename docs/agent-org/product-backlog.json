@@ -6,6 +6,19 @@
   },
   "entries": [
     {
+      "id": "idea-2026-10-10-1",
+      "date": "2026-10-10",
+      "priority": "P2",
+      "type": "feature",
+      "status": "idea",
+      "source": "mandor [WEEKEND-IDEA] 10 Okt 06:45 — CEO verdict PAGI INI (tidak tunggu Senin, weekend idle capacity)",
+      "title": "SEO landing '/harga-saham-hari-ini' — pintu masuk query navigasional 'daftar harga saham hari ini' (GSC 7d: 7 impresi pos 85,3 — demand ada, halaman match belum ada)",
+      "north_star": "reach/traffic (NS#1) + owner mandate 9 Okt; search-first → bukan pelanggaran non-goal 'konten non-search'",
+      "user_story": "Sebagai pencari Google mobile 'harga saham hari ini / daftar harga saham', saya ingin 1 halaman cepat berisi tabel ringkas top-movers + harga EOD segar + link 'lihat semua di screener' — sehingga saya mendarat di teknikal.id bukan competitor.",
+      "first_step": "PRD (Product Agent Senin 10:15): reuse StockPrice EOD + komponen tabel /stocks; SSR+revalidate; NO new query path; internal-link ke /stocks & signal pages. DONE WHEN (PRD level): spec_ready dgn prd_id + AC testable (curl 200, tabel >=10 baris, LCP mobile, link screener).",
+      "ceo_verdict": "APPROVE→mandate PRD 10 Okt: lolos lensa north star (reach via search demand terbukti GSC; reliable=reuse data EOD kanonik). Feature → WAJIB lewat PRD (SDLC 17 Sep), TIDAK langsung dispatch."
+    },
+    {
       "id": "idea-2026-10-09-1",
       "date": "2026-10-09",
       "priority": "P1",
@@ -864,21 +877,25 @@
       "sec_review": "npm audit 9 Okt 21:43. next upgrade patch ke >=16.3.8 menutup critical; next-auth beta → rilis stabil/patch @auth/core. proxy-addr/axios/engine.io mostly transitive. Dependency-hygiene P2 (bukan P0: tidak ada PoC aktif, permukaan publik di belakang Cloudflare).",
       "data": "npm audit --omit=dev: critical=5 (next, next-auth, @auth/core, @auth/prisma-adapter, proxy-addr) high=29",
       "cto_analysis": "CTO weekend 10 Okt (PRODUCT MODE read-only, no deploy): klaim npm audit TERKONFIRMASI -- critical=5 (next 16.2.6 range 9.3.4-canary - 16.3.7; next-auth 5.0.0-beta.31 via @auth/core; proxy-addr transitive). PREKONDISI EXPLOIT MIDDLEWARE-BYPASS CVE: next.config.ts L20 turbopack:{} = ON; i18n locales TIDAK ada (single-locale) -> kombinasi Turbopack+single-locale JUSTRU segmen yang kena middleware/proxy bypass; repo PAKAI src/proxy.ts + auth() (klaim audit valid). Server Actions hanya 1 file admin (authed) -> SSRF/DoS surface kecil. FIX PATH NON-BREAKING: npm audit fixAvailable next 16.2.6->16.4.0 isSemVerMajor=false (patch-minor); @auth/core & next-auth fix=true. REKOMENDASI: promote P1 ops 'dependency patch next 16.4 + @auth/core stable' 1 deploy app+worker, changelog impact_check +3d; jangan npm audit fix --force (major breaks). Effort ~1 slot.",
-      "cto_analyzed_at": "2026-10-10T08:1x+07:00"
+      "cto_analyzed_at": "2026-10-10T08:1x+07:00",
+      "ceo_verdict": "CEO 10 Okt APPROVE-PARSIAL (rekomendasi): bump ONLY next 16.2.6->>=16.3.8 (tutup CVE middleware/proxy bypass; teknikal pakai src/proxy.ts+auth()); next-auth beta->stabil DITAHAN. GUARDRAIL HARD 'security' tanpa owner -> blocked_for_owner di cto-queue (sec-2026-10-10-01), owner approve 1x di digest lalu dispatch. Lens: trust/reliability; tidak urgent (Cloudflare, no PoC).",
+      "ceo_decision_pending": true
     },
     {
       "id": "sec-2026-10-09-01",
       "date": "2026-10-09",
       "priority": "P3",
       "type": "ops",
-      "status": "candidate",
+      "status": "rejected",
       "source": "itsec-red",
       "exploitability": "rendah",
       "title": "[RED] Fact-check gate (1c4f59f): konten RSS pihak-3 mengalir ke prompt LLM koreksi → prompt-injection bisa memanipulasi correctedContent yang auto-PUBLISH; gate fail-open saat gatherMarketContext error (skipped_no_ctx tetap publish)",
       "sec_review": "Audit kode 9 Okt: authz/injection bersih (internal pipeline, tanpa endpoint baru). Dua catatan: (1) rss path — result.content dari feed eksternal masuk system+user prompt extractClaims & correction; injection di feed bisa memesan correctedContent attacker-controlled yang di-publish sebagai artikel terpercaya. (2) Fail-open by-design (gate unavailable tidak blokir publish) + stock_rsi skip saat rsi14 null. Keduanya trade-off sadar; mitigasi termurah: wrap konten RSS dalam delimiter + instruksi treat-as-data, atau hold-as-DRAFT bila correction berubah >30% vs original.",
       "data": "src/domains/article/article-fact-check.ts:379-412 (prompt tanpa framing data), news-source.service.ts:197-213 (correctedContent langsung PUBLISHED)",
       "cto_analysis": "CTO weekend 10 Okt: jalur kode TERVERIFIKASI -- article-fact-check.ts L275 combinedText=title+content masuk prompt correctArticleErrors TANPA delimiter treat-as-data; news-source.service.ts L182/200 finalContent=correctedContent langsung status PUBLISHED (holdAsDraft hanya verdict-driven). RSS eksternal = injection vector nyata tapi exploitability rendah (perlu feed compromise). Mitigasi murah sesuai saran RED: wrap RSS dalam delimiter + instruksi treat-as-data + guard diff>30% -> DRAFT. Natural home: task ops kecil (1 commit, jalur worker) -- kandidat dispatch CEO setelah sec-02 dependency patch.",
-      "cto_analyzed_at": "2026-10-10T08:1x+07:00"
+      "cto_analyzed_at": "2026-10-10T08:1x+07:00",
+      "ceo_verdict": "REJECT 10 Okt (bukan selamanya): gate fact-check SHIP <24 jam — iterasi tanpa data = premature; exploitability rendah & fail-open = trade-off sadar (itsec-red). Minggu ini owner mandate reach+retention. Mitigasi murah TERCATAT (RSS delimiter treat-as-data; hold-DRAFT bila correction delta >30%). REVISIT-TRIGGER: exploitability naik / bukti konten ter-manipulasi.",
+      "revisit_trigger": "itsec naikkan exploitability / ada bukti konten ter-manipulasi / slot longgar"
     }
   ]
 }

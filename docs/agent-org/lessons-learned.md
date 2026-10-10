@@ -224,3 +224,8 @@ Submit sitemap via GSC web (Angular closure, tanpa <form>): 6 jurus gagal — JS
 
 ## 2026-10-08 | tooling | GSC 'Minta pengindeksan' BERHASIL via CDP UI-fill (koreksi lesson 13 Sep)
 Lesson 13 Sep menyatakan submit GSC kebal klik programmatic — berlaku untuk form sitemap, TIDAK untuk tombol 'Minta pengindeksan': 6/6 URL sukses via UI-fill kolom inspeksi + JS .click() pada tombol request (CDP 9222, profil ~/.hermes/browser-gsc). Dua jebakan: (1) CDP Runtime.evaluate pada arrow-fn TANPA invoke ()() mengembalikan {} senyap — semua JS snippet wajib IIFE; (2) tunggu live-test Google ~30-60 dtk sebelum tombol 'Kirim permintaan' muncul; dialog sukses = 'Pengindeksan diminta'. Pencegahan: pakai ops/gsc_request_index.py (repo); re-audit crawl via gsc_diag3.py pattern; kuota ~10-12 URL/hari.
+
+
+## 2026-10-10 | infra-docs | product-backlog.json datadir-repo divergen (31 vs 30 entry) karena datadir bukan symlink
+- PELAJARAN: agent menulis backlog ke 2 lokasi (datadir & repo) saat file belum disymlink — cto-queue.json sudah symlink sejak 5 Okt, backlog TIDAK, sehingga tulisan itsec-blue 21:48 & Product Agent 22:15 + CTO pagi 07:39 berakhir di file berbeda dan hampir hilang 2 kandidat security.
+- PENCEGAHAN: datadir product-backlog.json kini -> symlink repo kanonik (pola sama cto-queue.json). Tiap CEO run: cek `ls -la` islink untuk SEMUA file jamak-tulis (backlog, queue, decisions, handoff) sebelum menulis; temukan drift = merge union + backup + verify readback, jangan overwrite sepihak.

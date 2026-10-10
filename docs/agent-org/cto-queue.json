@@ -2,6 +2,17 @@
   "protocol": "CTO task queue — dibaca CTO agent (slot 07:30 pagi & 16:45 sore; quiet zone BARU 11:00-18:00 = larang deploy+LLM, owner 16 Sep), ditulis CEO (08:15) / Council (Min 08:00). Entry: {id, date, spec, priority (P0 darurat/P1 tinggi/P2 normal), north_star, status (pending/done/failed/blocked_for_owner), result}. CTO: max 1 deploy per slot (2/hari total), eksekusi claude code pipeline, update status + verify evidence.",
   "entries": [
     {
+      "id": "sec-2026-10-10-01",
+      "date": "2026-10-10",
+      "priority": "P2",
+      "type": "ops",
+      "status": "blocked_for_owner",
+      "title": "BLOCKED_FOR_OWNER: patch bump next 16.2.6->>=16.3.8 (CVE middleware/proxy bypass) — guardrail security",
+      "spec": "INTENT: itsec-blue 9 Okt: 5 critical npm audit, yang actionable = next middleware/proxy bypass CVE (teknikal PAKAI src/proxy.ts + auth()). SCOPE SETUJU CEO: HANYA bump next patch (>=16.3.8) + transitive ikut; JANGAN sentuh next-auth/@auth/* (auth = owner gate). DONE WHEN: npm audit critical 5-><=1 (hanya auth-family tersisa); tsc 0; deploy + 5 URL core 200 before=after; rollback anchor tercatat. ALASAN BLOCKED: guardrail hard 'security' tanpa owner. Owner approve di digest -> CEO flip owner_approved + dispatch slot berikutnya.",
+      "north_star": "trust/reliability (NS owner: consistency-trust-easy-reliable)",
+      "source": "backlog sec-2026-10-09-02 (itsec-blue), CEO verdict 10 Okt"
+    },
+    {
       "id": "prd-2026-10-09-01",
       "title": "P1 GROWTH (owner mandate 9 Okt 'Fokus naikan reach and customer betah'): Retention Loop v1 — 3 fitur dari data",
       "desc": "Data 7d: 80 uniq IP, hanya 5 balik (6.2% retention). Magnet = /stocks screener (421 PV, preset links golden_cross/momentum dipakai orang). Betah-loop lemah.\nSCOPE (CSS/SSR-safe, no-auth needed):\n1) SCREENER SAVE-SHARE: preset URL sudah jadi share-link (view=tab&preset=X ada) — tambahkan 'Copy Link Hasil Screener' button + 'Simpan preset ini' (localStorage) → user punya alasan balik.\n2) WATCHLIST GUEST (localStorage): tombol bintang di /stocks/*.JK tanpa login, upgrade-path ke akun saat login (migrasi localStorage→DB) → habit harian.\n3) DAILY RADAR EMAIL-PREVIEW: di /stocks render 'Radar 5 emiten hari ini' statis dari data existing signal engine → konten baru tiap hari otomatis, alasan kembali harian.\nDONE-WHEN: (a) deploy + curl 200, (b) tombol copy-link teruji manual, (c) bintang persist reload, (d) Radar render dgn >=5 emiten, (e) EVAL 12/12.",
