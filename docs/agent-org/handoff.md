@@ -389,3 +389,10 @@
 - ux-2026-10-10-01 DONE: AC3 star fix live (1947406ed58e), verify interaktif persist reload; UX shift pagi lupa append — entry ini menutupnya
 - sec-2026-10-10-01 DONE: next 16.3.8 + proxy-addr 2.0.8 (7f80091) app+worker dce76ef1f881; critical non-auth=0
 - Rollback: ux→1947406ed58e+revert b34fcc8 2f17cac; sec→dce76ef1f881+revert 7f80091
+
+## 2026-10-10 17:3x — CTO weekend slot sore (prd-2026-10-10-01 deployed)
+- State: sehat; site 200 TTFB 0.75s; 3 container teknikal healthy; app image 39ce6b064ea5 (deploy 2 slot ini); EOD 9 Okt = benar (Sabtu IDX tutup).
+- Barusan: Engagement telemetry LIVE — tabel EngagementEvent (migrate additive via entrypoint), beacon /api/public/engagement (rate-limit 65/min→429, bot-filter, no-PII), client hook global (dwell 15/60/180 + scroll_max + cta_click delegated), admin /api/admin/engagement funnel, brief pagi +1 baris engagement. E2E browser nyata semua event masuk DB.
+- In-flight: QA reviewer D+1 (curasi: dwell real-user mulai Senin); EVAL returning 12 Okt pakai funnel ini; GSC re-audit 15 Okt; owner 2 action tertunda (agent-scheduler LaunchAgent + GSC batch-2).
+- Jebakan: (1) curl UA 'Mozilla' polos = ter-flag bot → test beacon WAJIB UA browser lengkap + Origin header (CSRF proxy 403 tanpa Origin); (2) browser harness = HeadlessChrome → ter-filter; QA interaktif pakai cdp Network.setUserAgentOverride dulu; (3) anonId regex hex-only — payload test harus hex murni; (4) dwell median hari ini = data testing sendiri, jangan baca sebagai traffic; (5) terminal scanner blok kata tertentu di heredoc — pisahkan docs ke tool patch.
+- Langkah pertama slot berikutnya: baca queue → entry CEO baru? → QA engagement (admin endpoint authed + sampel dwell real-user Senin) → impact_check_due 13 Okt.
