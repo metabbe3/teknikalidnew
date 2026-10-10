@@ -335,3 +335,12 @@
 ## 2026-10-10 13:30 slot siang2 — weekend slot 13:30
 - ux-2026-10-10-01: TICKER_RE .JK + star hit-area 44px live (b34fcc8, 2f17cac) — AC3 guest watchlist verified interaktif; image app 1947406ed58e
 - sec-2026-10-10-01: next 16.2.6→16.3.8 + proxy-addr 2.0.8 (7f80091) — critical non-auth 5→0 (sisanya auth-family beta.31, owner gate); app+worker dce76ef1f881
+
+## 2026-10-10 17:30 — prd-2026-10-10-01 Engagement telemetry deployed (CTO weekend slot sore)
+- task-id: prd-2026-10-10-01 | type: feature | PRD: owner-direct 10 Okt 14:3x (spec di cto-queue)
+- deploy: main d558913 + fix 4e5b789 (cta fallback 'Copy Link') → image app 39ce6b064ea5, healthy 17:26 WIB
+- DB: migration 20261010170000_add_engagement_event applied via app entrypoint; tabel EngagementEvent + 4 index live
+- verify: tsc 0 · burst 70 POST = 65×204 + 5×429 (rate-limit exact) · E2E browser nyata: dwell_tick 15/60 + scroll_max + cta_click preset_copy masuk DB · anon guard admin 404 · 5 URL 200 before=after · anonId regex menolak non-hex (uji live) · HeadlessChrome ter-filter bot (by design)
+- brief pagi: owner_morning_digest.py +section 📊 Engagement 24 jam (median dwell/scroll/CTA; silent saat 0; py_compile OK, query live tested)
+- QA: pembangun != pemeriksa — reviewer slot berikutnya | impact_check_due: 2026-10-13 (data funnel utk EVAL returning 12 Okt)
+- baseline: returning 7d = 3/88 IP (3,4%) — instrumen ini yang menjawab "kenapa"
