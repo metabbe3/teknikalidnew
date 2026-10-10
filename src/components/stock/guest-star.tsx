@@ -36,7 +36,7 @@ export function GuestStar({ ticker, compact = false }: { ticker: string; compact
   return (
     <button
       onClick={handleClick}
-      className={compact ? "p-1.5 rounded-md transition-colors cursor-pointer" : "inline-flex items-center gap-1.5 rounded-full px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium transition-all press-scale cursor-pointer"}
+      className={compact ? "relative p-1.5 rounded-md transition-colors cursor-pointer before:absolute before:-inset-2 before:content-['']" : "inline-flex items-center gap-1.5 rounded-full px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium transition-all press-scale cursor-pointer"}
       aria-pressed={active}
       aria-label={active ? `Hapus ${ticker} dari pantauan` : `Pantau ${ticker} (disimpan di perangkat)`}
       title={active ? "Ada di pantauan perangkat ini" : "Simpan ke pantauan di perangkat ini (tanpa akun)"}
