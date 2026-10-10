@@ -369,3 +369,10 @@
 - App image BARU 2efc2b404dbb; gate TS di compiled chunks (stock_rsi x2); worker restart (tsx live-code) heartbeat fresh 20:30 WIB.
 - Route 200: / /berita /stocks /auth/register. /articles & /register 404 = bukan route (baseline salah URL, bukan regresi).
 - Queue prd-2026-10-05-01 → done. AC5 (live Mandor brief besok pagi) tersisa.
+
+## 2026-10-10 07:4x — CTO pagi weekend slot-1 (prd-2026-10-09-01 deployed; night blip resumed)
+- State: FRESH (9 Okt; Sabtu libur IDX normal); deploy 1/1; image 2b839e98fcdf (retention v1 + fact-check gate night); 3 container healthy; night-audit CLEAN (32bbf6f docs-only); push main da481db.
+- Barusan: Retention Loop v1 LIVE — copy-link hasil screener (AC1), saved-screens guest + GuestStar bintang localStorage + migrasi auto saat login (AC2/AC3), DailyRadar 'Radar 5 Emiten' SSR /stocks (AC4). tsc 0, selftest 5/5, 4 URL 200 before=after.
+- In-flight: QA interactive AC1/AC3 (copy-link klik + bintang persist reload) = reviewer slot 13:30; EVAL returning-IP% 12 Okt; owner actions tertunda: launchctl bootstrap agent-scheduler + GSC batch-2 (re-audit 15 Okt).
+- Jebakan: (1) grep SSR `{items.length}` KENA comment-marker `<!-- -->` — pakai frasa pendek 'Emiten Hari Ini' (lagi!); (2) CTO Night blip meninggalkan kerja di night branch + working tree — SELALU cek `git branch --show-current` + status sebelum mulai; (3) psql di-docker: user dari $POSTGRES_USER, role 'teknikal' tidak ada.
+- Langkah pertama slot 13:30: baca queue → QA interactive retention (browser session) atau task pending berikutnya; deploy budget sore utuh (0/1).

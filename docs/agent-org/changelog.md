@@ -324,3 +324,10 @@
 - Verify bukti: DB post-check lama 0/0 baru 1/1 typo 0 kontrol utuh; live curl menunggu ISR (dicatat result queue)
 - QA: pending reviewer D+1 | impact_check_due: 2026-10-10 (brief berikutnya link prefix /berita/)
 - impact_check_due: 2026-10-12 (changelog rule +3 hari)
+
+## 2026-10-10 07:37 — prd-2026-10-09-01 Retention Loop v1 deployed (CTO pagi, weekend slot-1)
+- task-id: prd-2026-10-09-01 | type: feature | PRD: idea-2026-10-09-1 (spec_ready)
+- deploy: main@da481db (merge night branch; 3 commit) → image 2b839e98fcdf, container healthy 07:37 WIB
+- verify: tsc 0 · selftest-retention-loop 5/5 · 4/4 URL 200 before=after · 'Radar 5 Emiten Hari Ini' SSR live (pool 152 golden_cross) · H1 'Radar Saham IDX' utuh
+- QA: interactive AC1 copy-link + AC3 bintang persist → reviewer slot berikutnya; EVAL 12 Okt returning-IP%
+- impact_check_due: 2026-10-13
