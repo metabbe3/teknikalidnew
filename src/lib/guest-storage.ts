@@ -16,8 +16,10 @@ export const MAX_SAVED_SCREENS = 10;
 export const GUEST_WATCHLIST_EVENT = "teknikal:guest-watchlist-updated";
 export const SAVED_SCREENS_EVENT = "teknikal:screens-updated";
 
-/** Ticker IDX: 4 huruf umum, tapi sintetis/uccp bisa lain — longgar 2-10 alfanumerik. */
-const TICKER_RE = /^[A-Z0-9]{2,10}$/;
+/** Ticker IDX: 4 huruf umum, tapi sintetis/uccp bisa lain — longgar 2-10 alfanumerik.
+ *  DB menyimpan ticker IDX DENGAN suffix .JK (format kanonis, dipakai migrasi login);
+ *  crypto bare (BTC-USD sudah difilter isCryptoTicker). Suffix opsional, satu kali, 2-4 huruf. */
+const TICKER_RE = /^[A-Z0-9]{2,10}(?:\.[A-Z]{2,4})?$/;
 const MAX_SERIALIZED = 32 * 1024; // guard storage abuse
 
 function defaultStorage(): GuestStorage | null {

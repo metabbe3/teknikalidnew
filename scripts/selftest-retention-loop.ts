@@ -50,6 +50,14 @@ test("[2] guest watchlist: dedupe + tolak ticker malformed", () => {
   assert.deepEqual(readGuestWatchlist(st), ["OKTO", "BBRI"], "non-string/malformed difilter");
   assert.equal(toggleGuestWatchlistTicker("bad ticker", st), null, "spasi ditolak");
   assert.equal(toggleGuestWatchlistTicker("x", st), null, "1 char ditolak");
+  // format kanonis DB (.JK) harus diterima — jalur UI screener/detail memakai suffix
+  const r1 = toggleGuestWatchlistTicker("AMAR.JK", st);
+  assert.ok(r1 && r1.added, "AMAR.JK diterima = add");
+  assert.deepEqual(r1!.list, ["OKTO", "BBRI", "AMAR.JK"], "list berisi AMAR.JK");
+  const r2 = toggleGuestWatchlistTicker("AMAR.JK", st);
+  assert.equal(r2!.added, false, "toggle AMAR.JK lagi = remove");
+  assert.equal(toggleGuestWatchlistTicker("AMAR.JKX9", st), null, "suffix >4 char ditolak");
+  assert.equal(toggleGuestWatchlistTicker("A B.JK", st), null, "spasi ditolak walau ada suffix");
 });
 
 test("[3] guest watchlist: JSON korup / oversized dibaca sebagai kosong", () => {
