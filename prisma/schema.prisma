@@ -1082,6 +1082,22 @@ model ShareEvent {
   @@index([isBot])
 }
 
+// Engagement telemetry: dwell/scroll/CTA beacons (no PII — anonId is a client-side uuid).
+model EngagementEvent {
+  id        Int      @id @default(autoincrement())
+  anonId    String   @db.VarChar(36)
+  path      String   @db.VarChar(255)
+  type      String   @db.VarChar(16) // dwell_tick | scroll_max | cta_click
+  label     String?  @db.VarChar(32) // star_add | preset_copy | radar_open | preset_save
+  valueNum  Int?     // detik utk dwell_tick, persen utk scroll_max
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([type, createdAt(sort: Desc)])
+  @@index([anonId, createdAt])
+  @@index([path])
+}
+
 model SavedScreener {
   id              String   @id @default(cuid())
   userId          String

@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, Geist_Mono, Newsreader } from "next/font/google";
 import "./globals.css";
 import { SITE_URL } from "@/lib/constants";
 import "@/lib/events-init";
+import { EngagementInstrument } from "@/components/engagement-instrument";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ConditionalSocketProvider as SocketProvider } from "@/components/providers/socket-provider";
@@ -149,6 +150,7 @@ export default function RootLayout({
             </SocketProvider>
           </AuthProvider>
         </QueryProvider>
+        <EngagementInstrument />
       </body>
     </html>
   );

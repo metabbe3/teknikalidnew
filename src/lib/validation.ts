@@ -246,6 +246,18 @@ export const schemas = {
     path: z.string().min(1).max(255),
   }),
 
+  // public/engagement - POST body (dwell/scroll/cta telemetry beacon)
+  engagement: z.object({
+    events: z.array(z.object({
+      type: z.enum(["dwell_tick", "scroll_max", "cta_click"]),
+      label: z.enum(["star_add", "preset_copy", "radar_open", "preset_save"]).nullish(),
+      valueNum: z.number().int().min(0).max(86400).nullish(),
+      path: z.string().min(1).max(255),
+      ts: z.number().int().min(0).nullish(),
+    })).min(1).max(10),
+    anonId: z.string().regex(/^[a-f0-9-]{8,36}$/),
+  }),
+
   // admin/eod-logs - GET query
   eodLogs: z.object({
     from: z.string().optional(),
