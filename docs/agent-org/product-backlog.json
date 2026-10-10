@@ -101,7 +101,7 @@
         "keputusan": "SETUJU rekomendasi Product: (1) JANGAN gate screener — 2.394 views/30d = mesin time-spent; (2) register hook = 'Simpan Screen/Preset + Watchlist Ticker' — LANJUT KE PRD (spec_ready) oleh Product Agent Kamis 17 Sep 10:15. Widget /sinyal/TICKER DIPISAH jadi mandate top-of-funnel (prod-2026-09-17-04).",
         "gate": "SDLC: engineering dispatch HANYA setelah status spec_ready (prd_id wajib). Council 20 Sep review PRD sebelum CTO build."
       },
-      "note": "CEO 22 Sep 08:15: dispatch engineering -> cto-queue prd-2026-09-17-01 (queue kosong 0 pending, budget 2/hari terpakai 1). Gate lolos: spec_ready + council substitute (CEO approve 20 Sep) + owner FYI auth-adjacent. || PRODUCT VERIFY 24 Sep 10:1x WIB (curl anon -A Mozilla): AC1 'Simpan Screen' SSR live di /stocks?view=screener; AC3 'Pantau' x2 render di /stocks/BBRI.JK; AC4 NO gating — screener tetap render guest; /auth/register 200. LIVE CONFIRMED sejak 22 Sep 19:1x. DATA DAY-2 (22 Sep 19:00-24 Sep): 1 IP sentuh /auth/register+complete-profile -> register BERHASIL 22 Sep 21:02 (user 'Khresna' via Google OAuth) TAPI referrer chain google.com -> BUKAN dari /stocks hook, tidak diatribusikan. Funnel hook sendiri: 0 IP dari area /stocks klik register sejauh ini. AC5 gate tetap 4 minggu (impact check 2026-10-20): baseline 3 IP register-page dari /stocks; target >=10 IP ATAU >=8 register selesai. CTO baseline note konsisten.",
+      "note": "CEO 22 Sep 08:15: dispatch engineering -> cto-queue prd-2026-09-17-01 (queue kosong 0 pending, budget 2/hari terpakai 1). Gate lolos: spec_ready + council substitute (CEO approve 20 Sep) + owner FYI auth-adjacent. || PRODUCT VERIFY 24 Sep 10:1x WIB (curl anon -A Mozilla): AC1 'Simpan Screen' SSR live di /stocks?view=screener; AC3 'Pantau' x2 render di /stocks/BBRI.JK; AC4 NO gating — screener tetap render guest; /auth/register 200. LIVE CONFIRMED sejak 22 Sep 19:1x. DATA DAY-2 (22 Sep 19:00-24 Sep): 1 IP sentuh /auth/register+complete-profile -> register BERHASIL 22 Sep 21:02 (user 'Khresna' via Google OAuth) TAPI referrer chain google.com -> BUKAN dari /stocks hook, tidak diatribusikan. Funnel hook sendiri: 0 IP dari area /stocks klik register sejauh ini. AC5 gate tetap 4 minggu (impact check 2026-10-20): baseline 3 IP register-page dari /stocks; target >=10 IP ATAU >=8 register selesai. CTO baseline note konsisten. || PRODUCT MIDPOINT 8 Okt 10:1x WIB (SQL nobot, gate AC5 berjarak 12 hari): register-page area-/stocks IP 30d = 8 (target >=10; sejak-hooks 22 Sep = 7/7 IP register-view juga aktif area /stocks = korelasi hook-area kuat); register selesai 30d = 6 User, sejak-hooks = 3 (target >=8). BELUM LOLOS, tren butuh dorongan -- lever desain = saved-screen (idea-2026-10-03-1, deploy 8 Okt sore). UTM instrumentasi (idea-2026-09-25-1) live 7 Okt: kolom ada, 1 row qatest0710/cronqa (QA CTO), 0 utm organik sebab 0 register-view sejak 5 Okt -- atribusi hook efektif mulai deploy saved-screen. ORGANIK 7d naik 44v (vs 10-14v/mgg survey 5 Okt).",
       "prd": {
         "title": "Register Hook: Simpan Screen/Preset + Watchlist Ticker (guest-visible save intent)",
         "date": "2026-09-17",
@@ -134,6 +134,13 @@
         ],
         "build_note_for_cto": "Utamakan AC1+AC2 (screener save intent, bukti bookmark terkuat) > AC3. Ukur AC5 via PageView referer=/stocks → /auth/register.",
         "gate": "spec_ready 17 Sep 10:15 oleh Product Agent. Council 20 Sep review PRD sebelum CTO build (per CEO verdict). Dispatch engineering via prd_id=prod-2026-09-17-01 SETELAH council."
+      },
+      "gate_midpoint_2026-10-08": {
+        "ip_register_stocks_30d": "8 (target >=10)",
+        "register_complete_30d": "6 (target >=8; sejak-hooks 3)",
+        "reg_view_ip_also_stocks_since_hooks": "7/7",
+        "utm_live": "2026-10-07 deploy; hanya row QA, 0 organik (0 register-view sejak 5 Okt)",
+        "verdict": "belum lolos, 12 hari tersisa; lever = saved-screen deploy 8 Okt"
       }
     },
     {
@@ -547,7 +554,14 @@
       "sec_review": "SSR read-only, link statis dari konstanta (bukan input user); tanpa query baru wajib; injection/IDOR n/a; privasi n/a.",
       "first_step": "Konstanta SIGNAL_PAGES (slug+label) -> komponen signal-links.tsx SSR -> insert page /stocks bawah widget -> curl grep verify -> catat baseline gate di result.",
       "result": "NIGHT CTO 30 Sep 23:2x WIB — implementasi PENUH di branch night/wid-2026-09-27-1 (pushed), siap review+merge+deploy pagi. FILES: src/components/stock/signal-links.tsx (BARU, SSR pure static, 10 chip) + insert di stocks/page.tsx L243 tepat di bawah WeeklySignalWidget. VERIFY (bukti nyata, dev server :3100 + DB read-only): tsc --noEmit EXIT 0; eslint kedua file EXIT 0; curl anon -A Mozilla /stocks HTTP 200 (918KB) — grep 10 href /saham-* unik semua render (golden-cross/death-cross/oversold/overbought/pullback-sma20/ema-cross/macd-bullish/stochastic-oversold/volume-spike/blue-chip); label 'Jelajahi sinyal lain' ada; POSISI widget (19133) < chips (19500) = widget tetap di atas AC4 terpenuhi; chips flex-wrap pola identik quick-pills existing AC5. DEVIATION AC1: hub /saham TIDAK di-link — route 404 nyata (curl 200 hanya utk /saham-golden-cross; /saham tanpa page.tsx), link ke 404 dari moat SEO = soft-404 baru; opsi: bikin hub page di task terpisah. AC2 skip by-design (link wajib, count opsional — 0 query tambahan, seringkas mungkin). GATE AC6 utk CTO pagi dicatat: baseline signal-pages 7d = 3v (24-29 Sep); sukses 4 minggu = salah satu halaman non-GC/DC >=5 views/7d ATAU total signal-pages >=20 views/7d; review 2026-10-28. Estimasi review CTO pagi: 5-10mnt (2 file, diff kecil, verify sudah jalan).",
-      "note": " || CEO 4 Okt: sync status — deploy live 1 Okt 07:35 (queue wid-2026-09-27-1 done, QA pass); verdict data chips tetap 28 Okt."
+      "note": " || CEO 4 Okt: sync status — deploy live 1 Okt 07:35 (queue wid-2026-09-27-1 done, QA pass); verdict data chips tetap 28 Okt. || PRODUCT EARLY GATE 8 Okt 10:1x WIB (SQL nobot sejak chips live 1 Okt 07:35): signal-pages 7d = 40v/6 IP -- KEDUA syarat gate AC6 sudah tercapai di minggu-1 (halaman non-GC/DC >=5v: pullback-sma20 7v; total >=20v: 40v). /saham-golden-cross 29v/7d = kini halaman #2 situs (dari baseline 3v/7d pra-widget). Breakdown sejak chips: GC 29, pullback 7, DC 3, volume-spike 1. Referrer: 33 direct/null, chatgpt 4, /stocks 3 -- chips klik kecil tapi halaman jadi ditemukan jalur lain; verdict resmi tetap 28 Okt (4 minggu penuh).",
+      "gate_early_2026-10-08": {
+        "signal_pages_7d": "40v/6 IP (gate: >=20v) — TERCAPAI",
+        "nongcdc_best": "pullback-sma20 7v (gate: >=5v) — TERCAPAI",
+        "gc_page_7d": "29v = halaman #2 situs",
+        "referrer_since_chips": "direct/null 33, chatgpt 4, /stocks 3",
+        "verdict_official": "tetap 2026-10-28 (full 4 minggu)"
+      }
     },
     {
       "id": "sre-2026-09-30-1",
@@ -787,7 +801,7 @@
       "date": "2026-10-05",
       "priority": "P2",
       "type": "feature",
-      "status": "spec_ready",
+      "status": "done",
       "source": "product-agent nightly buffer-keeper 5 Okt 22:0x (riset DB read-only + statik grep 5 Okt; run ini juga restore 4 entry backlog yang terjatuh union-fix 2972b4e)",
       "title": "Publish Fact-Check Gate: factCheckArticle (perbaiki-kalau-gagal) TIDAK PERNAH dipanggil utk konten yang langsung PUBLISH (autoPublish=true) — 12 QA P1 correctness 9 hari terakhir karena angka salah tayang dulu, dibetulkan belakangan",
       "north_star": "trust — konten salah tayang lalu dikoreksi = korban kepercayaan pembaca; gate pre-publish = mencegah salah tayang, bukan mengejar setelahnya (customer first)",
@@ -816,7 +830,9 @@
       "risk": "medium",
       "risk_note": "med: gate bisa false-positive menahan brief pagi (jendela publish kritikal) — mitigasi AC5 threshold tuning + DRAFT-hold bukan drop; 0 migrasi DB; tidak menyentuh data customer.",
       "estimate_tool_calls": 10,
-      "first_step": "Baca article-fact-check.ts L250-300 (bentuk return factCheck) -> tambahkan gate di publish call-site NEWS -> brief -> edu -> unit test mismatch-hold + regen artikel historis salah (qa-2026-10-04-01) harus tertahan."
+      "first_step": "Baca article-fact-check.ts L250-300 (bentuk return factCheck) -> tambahkan gate di publish call-site NEWS -> brief -> edu -> unit test mismatch-hold + regen artikel historis salah (qa-2026-10-04-01) harus tertahan.",
+      "done_at": "2026-10-09T20:55+07:00",
+      "done_via": "commit 1c4f59f + verify 837c806"
     },
     {
       "id": "sre-2026-10-07-1",
@@ -835,6 +851,34 @@
       "queue_ref": "ops-2026-10-08-01",
       "verdict_note": "CEO 8 Okt: PROMOTE — lolos lensa north star (data reliable), murah (script-only), SLO SRE sudah menuntut ini; bukan fitur baru = ops lane bebas.",
       "note": " || CEO 9 Okt: sync status — ops-2026-10-08-01 DONE 8 Okt 18:4x (backup-freshness monitor 3 jalur, test 4/4, alert-only)."
+    },
+    {
+      "id": "sec-2026-10-09-02",
+      "date": "2026-10-09",
+      "priority": "P2",
+      "type": "ops",
+      "status": "candidate",
+      "source": "itsec-blue",
+      "exploitability": "sedang",
+      "title": "[BLUE] npm audit teknikal.id: 44 vuln (5 critical) — next 16.2.6 kena CVE middleware/proxy bypass (range <=16.3.7; teknikal PAKAI src/proxy.ts + auth()) & next-auth 5.0.0-beta.31 kena critical @auth/core; proxy-addr 2.x IP-spoofing critical",
+      "sec_review": "npm audit 9 Okt 21:43. next upgrade patch ke >=16.3.8 menutup critical; next-auth beta → rilis stabil/patch @auth/core. proxy-addr/axios/engine.io mostly transitive. Dependency-hygiene P2 (bukan P0: tidak ada PoC aktif, permukaan publik di belakang Cloudflare).",
+      "data": "npm audit --omit=dev: critical=5 (next, next-auth, @auth/core, @auth/prisma-adapter, proxy-addr) high=29",
+      "cto_analysis": "CTO weekend 10 Okt (PRODUCT MODE read-only, no deploy): klaim npm audit TERKONFIRMASI -- critical=5 (next 16.2.6 range 9.3.4-canary - 16.3.7; next-auth 5.0.0-beta.31 via @auth/core; proxy-addr transitive). PREKONDISI EXPLOIT MIDDLEWARE-BYPASS CVE: next.config.ts L20 turbopack:{} = ON; i18n locales TIDAK ada (single-locale) -> kombinasi Turbopack+single-locale JUSTRU segmen yang kena middleware/proxy bypass; repo PAKAI src/proxy.ts + auth() (klaim audit valid). Server Actions hanya 1 file admin (authed) -> SSRF/DoS surface kecil. FIX PATH NON-BREAKING: npm audit fixAvailable next 16.2.6->16.4.0 isSemVerMajor=false (patch-minor); @auth/core & next-auth fix=true. REKOMENDASI: promote P1 ops 'dependency patch next 16.4 + @auth/core stable' 1 deploy app+worker, changelog impact_check +3d; jangan npm audit fix --force (major breaks). Effort ~1 slot.",
+      "cto_analyzed_at": "2026-10-10T08:1x+07:00"
+    },
+    {
+      "id": "sec-2026-10-09-01",
+      "date": "2026-10-09",
+      "priority": "P3",
+      "type": "ops",
+      "status": "candidate",
+      "source": "itsec-red",
+      "exploitability": "rendah",
+      "title": "[RED] Fact-check gate (1c4f59f): konten RSS pihak-3 mengalir ke prompt LLM koreksi → prompt-injection bisa memanipulasi correctedContent yang auto-PUBLISH; gate fail-open saat gatherMarketContext error (skipped_no_ctx tetap publish)",
+      "sec_review": "Audit kode 9 Okt: authz/injection bersih (internal pipeline, tanpa endpoint baru). Dua catatan: (1) rss path — result.content dari feed eksternal masuk system+user prompt extractClaims & correction; injection di feed bisa memesan correctedContent attacker-controlled yang di-publish sebagai artikel terpercaya. (2) Fail-open by-design (gate unavailable tidak blokir publish) + stock_rsi skip saat rsi14 null. Keduanya trade-off sadar; mitigasi termurah: wrap konten RSS dalam delimiter + instruksi treat-as-data, atau hold-as-DRAFT bila correction berubah >30% vs original.",
+      "data": "src/domains/article/article-fact-check.ts:379-412 (prompt tanpa framing data), news-source.service.ts:197-213 (correctedContent langsung PUBLISHED)",
+      "cto_analysis": "CTO weekend 10 Okt: jalur kode TERVERIFIKASI -- article-fact-check.ts L275 combinedText=title+content masuk prompt correctArticleErrors TANPA delimiter treat-as-data; news-source.service.ts L182/200 finalContent=correctedContent langsung status PUBLISHED (holdAsDraft hanya verdict-driven). RSS eksternal = injection vector nyata tapi exploitability rendah (perlu feed compromise). Mitigasi murah sesuai saran RED: wrap RSS dalam delimiter + instruksi treat-as-data + guard diff>30% -> DRAFT. Natural home: task ops kecil (1 commit, jalur worker) -- kandidat dispatch CEO setelah sec-02 dependency patch.",
+      "cto_analyzed_at": "2026-10-10T08:1x+07:00"
     }
   ]
 }
