@@ -416,3 +416,68 @@ Top mover: BARU "harga saham" (6 Okt, impr 8, pos 88,1 — head keyword pertama 
 - 08:2x | DISPATCH ops-2026-10-08-01 ke CTO: [BACKUP FRESHNESS] sre_brief.py cek mtime+size backup teknikal & hivePOS (alert-only exit 0). Promote backlog sre-2026-10-07-1 (candidate→dispatched). | ALASAN-DATA: SLO SRE menuntut backup jalan tapi 0 monitor; verifikasi manual 7 Okt hijau = blind spot. | Antrian CTO: 1 pending.
 - BACKLOG HYGIENE: sisa aktif = 2 spec_ready (idea-10-03-1 saved-screen sore ini owner-package prisma migrate; idea-10-05-1 fact-check gate assign 9 Okt) — keduanya baru masuk 3/5 Okt, belum >3 hari, on track. METRIK CEO verdict dashboard: 0 entry menunggu owner dgn flag. Owner 2 action lama: launchctl agent-scheduler (prd-02-01 approved 6 Okt, belum dibootstrap) + follow-up GSC.
 - 8 Okt 18:4x CTO sore: ops-08-01 DONE (backup-freshness monitor 3 jalur, test 4/4, alert-only; koreksi spec: host hivePOS harian 01:25, bukan 2x/hari). prd-03-02 saved-screen RESOLVED no-op — fitur sudah live 22 Sep (55c42d6), owner approve prisma migrate TIDAK diperlukan; utm=stocks_screener dipertahankan (kanonik). 0 deploy sore. EOD 8 Okt IN; site 200.
+
+## [KEYWORD-RESEARCH] 8 Okt malam — analisa 25 hari GSC (20 unique queries, data penuh)
+METODE: bukan random — semua dari data GSC aktual 14 Sep-8 Okt, dikategorikan per pipeline SEO agent.
+
+### PRIORITAS 1 — STRIKING DISTANCE (pos 5-15, 1 lompatan ke page 1)
+1. hrta11 (pos 5.0, 56 impr, 0 klik) — sudah nangkring pos 5! Konten on-page + internal link → page 1
+2. idx radar (pos 12, 16 klik/16 impr CTR 100%) — intent MATCH sempurna (produk kita!), CTR 100% tanda konten relevan
+
+### PRIORITAS 2 — CONTENT GAP TIER A (impr tinggi, konten lemah, saham blue-chip yang dicari orang)
+3. eastspring idx esg leaders plus kelas a (871 impr!) — reksa dana, halaman fund fact sheet
+4. diskusi investasi (351 impr) — komunitas/forum, ada fitur diskusi?
+5. bbri saham + harga saham bbri + saham bbri (374 impr gabungan) — halaman saham BBRI khusus
+6. klbf + saham klbf (446 impr gabungan) — halaman saham KLBF
+7. idx smc liquid (269 impr) — reksa dana liquid
+8. idx inco (217 impr, pos 64) — posisi terbaik di tier ini
+9. ultj (212 impr) — halaman saham ULTJ
+10. indf (104 impr) — halaman saham INDF
+
+### PRIORITAS 3 — MONITOR
+11. arka · 12. harga saham (generic, skip dulu) · 13. cpro saham · 14. harga saham npgf · 15. langgeng makmur industri
+
+### CATATAN METODE
+- Volume 25d = proxy demand; big-G (IDX channel/Kontan) dominasi page 1 utk ticker murni → beda-sain: halaman ticker kita harus value-add (fundamental + chart interaktif + "Kenapa naik/turun hari ini") bukan duplikat data
+- "diskusi investasi" 351 impr = intent komunitas — cek fitur diskusi teknikal.id, kalau ada → landing khusus; kalau tidak → konten edukasi forum-style
+- Update otomatis: pipeline SEO agent Selasa 08:00 sudah nangkap semuanya; analisa ini = input konten Mandor pipeline
+
+## [SEO-ROADMAP] 8 Okt 21:55 — owner mandat "kembangkan terus, lebih cepat lebih bagus"
+Owner approve arah SEO 3-tier. Eksekusi dimulai:
+1. **SUDAH DI-QUEUE (CTO pagi 9 Okt, P1)**: seo-2026-10-08-01 — Tier-1 push hrta11 (pos 5→page 1) + idx radar (pos 12→top 5) via FAQ+schema+internal link. Done-when terukur: posisi 7-14 hari.
+2. **Minggu ini (Mandor)**: brief pasar harian wajib 2-3 internal link anchor keyword Tier-2 (BBRI/KLBF/ULTJ/INCO) — backlink internal gratis tiap hari.
+3. **Minggu depan**: program backlink eksternal — 2-3 guest post blog investasi ID + listing direktori. NO paid/PBN (risiko deindex).
+4. **Tier-2 content depth** (backlog PRD setelah Tier-1 verified): halaman ticker + naratif "kenapa naik/turun hari ini" + FAQ — beda-sain vs Investing.com.
+Metrik keberhasilan (review 22 Okt): hrta11 & idx radar pos <10; impressions 7d naik dari ~5.2k; clicks 7d > 30.
+
+## 2026-10-09 08:15 — CEO pagi (ritual [PRODUCT] 0 pending; backlog sync 4 entry; 0 dispatch baru — on track)
+- 08:15 | RITUAL [PRODUCT]: 0 entry pending. STANDING GUARD dipatuhi (IG pause 17 Sep, crypto by-design — 0 task fix). | grep ceo-decisions.md
+- 08:1x | BACKLOG HYGIENE: sync 4 entry backlog ke hasil aktual queue (idea-10-03-1→shipped no-op-already-live, sre-10-03-2→shipped, sre-10-07-1→shipped, idea-10-02-2→deployed) — dual-write datadir+repo, verify readback identik. Anti-stagnation: 0 entry idea/candidate >7d tanpa verdict; 1 spec_ready (prd-2026-10-05-01 fact-check gate) umur 4 hari = SUDAH dibuku slot sore 16:45 HARI INI (bukan stagnan, on track). | product-backlog.json
+- 08:1x | KEPUTUSAN: 0 dispatch baru pagi ini. | ALASAN-DATA: (1) Budget CTO pagi sudah terpakai 1/1 deploy SEO Tier-1 owner-direct (seo-2026-10-08-01 DONE 07:45, image 20aa85828b93, live-verified CEO curl: /stocks 200 H1 'Radar Saham IDX', HRTA.JK 200 FAQ HRTA11 tayang); slot sore 16:45 sudah dibuku prd-2026-10-05-01 fact-check gate (P2 trust, 12 QA P1 9 hari = alasan kuat). Menambah task = pelanggaran budget. (2) Metrik: traffic 973v/7d (2.1x WoW) = PERTUMBUHAN dari GSC request-indexing 8 Okt + pres SRE; register 1/7d & returning 6.4% = MATI tapi obatnya SUDAH dalam pipa (saved-screen live 22 Sep, welcome-loop live 7 Okt, register-hook live 2 Okt) — jangan nambah fitur, tunggu funnel bekerja. (3) Duplicate check: 0 topik tumpang tindih. | Verify: sore 16:45 fact-check gate deploy; 15 Okt GSC re-audit; 22 Okt SEO eval posisi hrta11/idx-radar.
+- METRIK CEO verdict dashboard: 0 entry owner-pending. OWNER 2 action tertunda: launchctl bootstrap agent-scheduler (prd-02-01 approved 6 Okt) + GSC batch-2 indexing menunggu re-audit 15 Okt.
+
+### 2026-10-09 09:1x — [REVIEWER] QA pagi 9 Okt: 43 artikel, 0 fatal, 1 P1
+- 43 artikel 24 jam (40 snapshot saham + 2 brief pasar + 1 analisa BBRI): angka harga/persen/high-low/volume/breadth/movers SEMUA match DB (termasuk cross-day Senin 540/Selasa 508/Rabu 276-386/Kamis 182-514, universe 866 konsisten 4 sesi). Disclaimer + slug + excerpt semua OK; link internal /stocks/TICKER.JK kanonik.
+- P1 qa-2026-10-09-01: brief 9 Okt punya 2 link internal tanpa prefix /berita/ -> 404 (pertama kali pola ini muncul; 7 hari ke belakang hanya artikel ini).
+- Deploy semalam seo-2026-10-08-01 QA PASS independen (commit ec65941, container healthy 07:44, HRTA FAQ JSON-LD + Radar Saham IDX H1 live). Admin debt dibayar: ux-2026-10-05-01 & prd-2026-10-01-01 flip deployed->qa_pass dari bukti 7 Okt. Open: AC1-AC3 interaktif prd-02-02 butuh browser session reviewer.
+
+## 2026-10-09 — OWNER MANDATE: Fokus Reach + Customer Betah
+- DM 26155: "Fokus naikan reach and customer betah"
+- Lens evaluasi dispatch BERTAMBAH: selain consistency/trust/easy/reliable — tiap task harus jawab
+  "apakah ini naikin reach ATAU bikin orang balik?"
+- Data pendukung 7d (9 Okt): 80 uniq IP · 5 balik (6.2%) · magnet = /stocks screener 421 PV
+  · preset links organik dipakai · referrer: direct 30, bing 14, google 13
+- Dispatch: prd-2026-10-09-01 P1 Retention Loop v1 (screener save-share, guest watchlist, daily radar)
+- Non-goal minggu ini: fitur non-retention, konten non-search
+
+## 2026-10-09 (malam) — OWNER: Weekend Capacity Boost
+- DM: "Lakukan improvement. Weekend boleh lebih banyak karena teknikal weekend tidak ada market open. Slot boleh diperbanyakan dan tidak ada batasan jam deployment pas pagi kecuali jam siang"
+- 3 SLOT WEEKEND BARU live: CTO Builder pagi 08:00 · siang2 13:30 · sore 17:00 (Sabtu+Minggu)
+- Rule deploy weekend: BEBAS pagi/sore/malam; hindari 12:00-13:30 siang
+- Prioritas queue weekend: P1 retention/growth (prd-2026-10-09-01 Retention Loop v1 pertama)
+
+### 2026-10-10 06:45 — [WEEKEND-IDEA] Mandor: SEO landing "Harga Saham Hari Ini" (reach, bukan fitur baru)
+- DATA: GSC 7d (cache 10 Okt) query "daftar harga saham hari ini" = 7 impresi, pos 85,3 — Google menayangkan tapi kita belum punya halaman yang match. Magnet trafik eksisting justru /stocks screener (395 PV/7d, 42% dari total 949). Gap weekend masih terbuka (Sab 79 · Min 231 views vs weekday 200+).
+- IDEA: 1 halaman SEO statis-ish `/harga-saham-hari-ini` (SSR + revalidate): tabel ringkas top-movers + link "lihat semua di screener" → jadi pintu masuk query navigasional "harga saham hari ini/daftar harga saham", bukan fitur baru. Sejalan owner mandate 9 Okt (reach) & non-goal "konten non-search" tidak dilanggar (ini justru search-first).
+- Estimasi effort: kecil (reuse data StockPrice EOD + komponen tabel /stocks). CEO verdict Senin.
+

@@ -7,6 +7,9 @@ import { useQuery } from "@tanstack/react-query";
 import { BottomFishingRadar } from "@/components/stock/bottom-fishing-radar";
 import { SavedScreenerBar } from "@/components/screener/saved-screener-bar";
 import { SaveScreenPrompt } from "@/components/screener/save-screen-prompt";
+import { ScreenActions } from "@/components/screener/screen-actions";
+import { SavedScreensPanel } from "@/components/screener/saved-screens-panel";
+import { GuestStar } from "@/components/stock/guest-star";
 import { useWatchlist, useToggleWatchlist, useBatchAddToWatchlist, useBatchRemoveFromWatchlist } from "@/hooks/use-watchlist";
 
 // Import types
@@ -170,6 +173,37 @@ function ScreenerPageContent({ assetClass, linkBase = "/stocks" }: { assetClass?
 
   const currentUrl = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
 
+  // Shareable query (Retention Loop v1 AC1): tab + preset + slider params + custom params —
+  // dibuka di sesi anonim baru me-restore tab+preset+slider yang sama (init state dari searchParams).
+  const shareQuery = useMemo(() => {
+    const params = new URLSearchParams();
+    params.set("view", "screener");
+    params.set("tab", activeStyle);
+    if (activeStyle === "custom") {
+      for (const [k, v] of Object.entries(customParams)) params.set(k, v);
+    } else if (activePreset && activePreset !== "radar") {
+      params.set("preset", activePreset);
+      const presetDef = styles.flatMap((st) => st.presets).find((pr) => pr.key === activePreset);
+      for (const slider of presetDef?.sliders ?? []) {
+        const val = sliderValues[slider.key] ?? slider.default;
+        if (val !== slider.default) params.set(slider.param, String(val));
+      }
+    }
+    return params.toString();
+  }, [activeStyle, activePreset, customParams, sliderValues, styles]);
+
+  const shareLabel = useMemo(() => {
+    if (activeStyle === "custom") return "Screen custom";
+    if (!activePreset || activePreset === "radar") return styleDef.label;
+    const presetDef = styles.flatMap((st) => st.presets).find((pr) => pr.key === activePreset);
+    return presetDef ? `${styleDef.shortLabel ?? styleDef.label} · ${presetDef.label}` : styleDef.label;
+  }, [activeStyle, activePreset, styleDef, styles]);
+
+  const hasActiveScreen = useMemo(
+    () => activeStyle === "custom" ? Object.keys(customParams).length > 0 : !!activePreset,
+    [activeStyle, activePreset, customParams],
+  );
+
   return (
     <div className="fade-in">
       {/* Trading-style tabs (the page <PageHero> provides the title/description) */}
@@ -195,7 +229,10 @@ function ScreenerPageContent({ assetClass, linkBase = "/stocks" }: { assetClass?
             tradingStyle={activeStyle}
           />
         ) : (
-          <SaveScreenPrompt filters={guestSaveFilters} next={currentUrl} />
+          <div className="space-y-3">
+            <SaveScreenPrompt filters={guestSaveFilters} next={currentUrl} />
+            <SavedScreensPanel />
+          </div>
         )}
 
         {/* Preset Cards */}
@@ -252,7 +289,7 @@ function ScreenerPageContent({ assetClass, linkBase = "/stocks" }: { assetClass?
         {/* Results */}
         {fetchUrl && (
           <section className="space-y-4">
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <div className="w-1 h-6 rounded-full" style={{ background: styleDef.accentHex }} aria-hidden="true" />
               <ResultsHeader
                 count={isLoading ? 0 : stocks.length}
@@ -268,6 +305,9 @@ function ScreenerPageContent({ assetClass, linkBase = "/stocks" }: { assetClass?
                 sortOrder={sortOrder}
                 onSortChange={handleSortChange}
               />
+              {hasActiveScreen && (
+                <ScreenActions currentUrl={currentUrl} shareQuery={shareQuery} saveLabel={shareLabel} />
+              )}
             </div>
 
             {isLoading ? (

@@ -648,3 +648,10 @@ commit pre-deploy live-unknown; merge HEAD: 1e4d517
 - Anchor internal link: berita (semua artikel + brief harian regenerasi) -> /stocks 'radar saham IDX'; /sektor/perdagangan -> HRTA.JK.
 - Baseline GSC (eval 7-14 hari, verdict 22 Okt): hrta11 pos 5.0 56 impr/25d; idx radar pos 12.0 CTR 100%.
 - Slot sore 9 Okt: prd-2026-10-05-01 fact-check gate (re-assign dari pagi; pagi terpakai seo owner-direct).
+
+## 2026-10-09 18:5x WIB — CTO sore: qa-2026-10-09-01 link 404 brief 9 Okt (SQL patch, tanpa deploy)
+- Artikel grw26100906335791nvjm (brief-pasar-idx-2026-10-09-pasar-merah-melar, PUBLISHED).
+- UPDATE 1 transaksi (backup db-20260910... = db-20261009.sql.gz 01:16 fresh; ON_ERROR_STOP): 2 link internal +prefix /berita/ (analisa-saham-bbri-death-cross-ema, brief-pasar-idx-2026-10-08-pasar-berbalik-merah — target 200-verified, versi tanpa prefix 404-verified) + 4 typo (jenuj jual→jenuh jual, cyclicak→cyclical, defesif→defensif, 40,9 jta→40,9 juta). "Rentang"→"Rangkuman" TIDAK dieksekusi (0 hit di content — sudah benar).
+- POST-DB: link lama 0/0, link baru 1/1, typo resid 0, kontrol utuh (514 saham turun / 182 naik / Rp1.335). Rowcount: UPDATE 1.
+- Impact check 2026-10-10: brief berikutnya harus link prefix /berita/ penuh; kalau berulang → guard prompt Mandor.
+2026-10-10 07:34 ROLLBACK ANCHOR pre-deploy prd-2026-10-09-01: live image 20aa85828b93 (9 Okt) + main@ec65941; local HEAD 6a8b603 (guest-storage lib, belum live)

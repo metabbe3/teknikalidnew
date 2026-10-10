@@ -439,3 +439,51 @@ export const screenerAnalysisService = {
     return stocks;
   },
 };
+// ── Daily Radar (Retention Loop v1 — PRD idea-2026-10-09-1 AC4) ──
+// 5 emiten segar dari signal engine existing: baris StockIndicator interval 1d date terbaru
+// dengan smaCrossSignal=golden_cross (reuse filter L78), urut signalScore desc, tie-break ticker asc.
+// Deterministik; fallback jujur bila pool < limit (caller menampilkan jumlah asli — DILARANG fabricate).
+
+export interface DailyRadarItem {
+  ticker: string;
+  name: string;
+  close: number | null;
+  changePercent: number | null;
+  signalScore: number | null;
+  signalLabel: string | null;
+  smaCrossDate: Date | null;
+}
+
+export const dailyRadarService = {
+  async getDailyRadar(limit = 5, assetClass: "EQUITY" | "CRYPTO" = "EQUITY"): Promise<{ date: Date | null; items: DailyRadarItem[] }> {
+    const latestDateRow = await stockRepository.getLatestIndicatorDate(assetClass);
+    if (!latestDateRow) return { date: null, items: [] };
+    const latestDate = latestDateRow.date;
+
+    const where = buildIndicatorWhere("golden_cross", latestDate, assetClass);
+    const rows = await stockRepository.findIndicatorsByDate(latestDate, where);
+
+    const items: DailyRadarItem[] = rows
+      .map((r) => {
+        const { close, changePercent } = computeChange(r.stock.prices[0], r.stock.prices[1]);
+        return {
+          ticker: r.stock.ticker,
+          name: r.stock.name,
+          close,
+          changePercent,
+          signalScore: decimalToNumber(r.signalScore),
+          signalLabel: r.signalLabel ?? null,
+          smaCrossDate: r.smaCrossDate,
+        };
+      })
+      .filter((it) => it.close !== null)
+      .sort(
+        (a, b) =>
+          (b.signalScore ?? -999) - (a.signalScore ?? -999) ||
+          a.ticker.localeCompare(b.ticker),
+      )
+      .slice(0, limit);
+
+    return { date: latestDate, items };
+  },
+};
