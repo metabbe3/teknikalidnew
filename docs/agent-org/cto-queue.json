@@ -2,6 +2,20 @@
   "protocol": "CTO task queue — dibaca CTO agent (slot 07:30 pagi & 16:45 sore; quiet zone BARU 11:00-18:00 = larang deploy+LLM, owner 16 Sep), ditulis CEO (08:15) / Council (Min 08:00). Entry: {id, date, spec, priority (P0 darurat/P1 tinggi/P2 normal), north_star, status (pending/done/failed/blocked_for_owner), result}. CTO: max 1 deploy per slot (2/hari total), eksekusi claude code pipeline, update status + verify evidence.",
   "entries": [
     {
+      "id": "test-2026-10-11-01",
+      "date": "2026-10-11",
+      "priority": "P3",
+      "type": "test",
+      "status": "night_ready",
+      "title": "NIGHT: selftest regression 2 guard data-trust (isWibWriteWindow + formatVolumeHuman) — 0 behavior change",
+      "created_by": "CTO Night 11 Okt (opsi #3 test coverage; queue 0 pending, 0 PRD spec_ready)",
+      "branch": "night/test-2026-10-11-01",
+      "spec": "INTENT: code-audit 28 Sep bilang standar tinggi tapi dua guard yang menyelamatkan insiden data-trust NYATA belum punya test regression: (1) isWibWriteWindow (P0 14 Sep: 865 baris fantasi Minggu 13 Sep dari intraday cron tanpa guard); (2) formatVolumeHuman (P1 15 Sep: 41 artikel 'juta lot' padahal DB saham, implikasi 100x). Perubahan ADDITIVE-ONLY: param clock opsional default Date.now() + export alias test-only _isWibWriteWindow/_formatVolumeHuman + selftest baru scripts/selftest-data-trust.ts (9 kasus: weekend Sabtu/Minggu, pre-market 08:59, sesi 09:00/12:00/16:15, buffer EOD 18:00 inklusif, 18:01 tutup, Jumat malam, BBRI 278.495.400 = '278.5 juta saham' persis kasus insiden, tiering miliar/juta/ribu/satuan, null N/A).",
+      "verify_evidence": "tsc --noEmit EXIT 0 full repo; selftest-data-trust 9/9 pass; selftest-retention-loop 5/5 pass (tak rusak); LINT 0 error; diff 3 file (2 src additive + 1 script baru), 0 logic change; commit ebad1e1 pushed night/test-2026-10-11-01",
+      "estimate_review_min": 5,
+      "merge_note": "Review diff 5 menit (hanya alias export + param default). Merge = git merge --no-ff night/test-2026-10-11-01. TIDAK WAJIB deploy (0 behavior change) — bisa numpang build berikutnya; kalau mau deploy sendiri: 1 build app saja."
+    },
+    {
       "id": "sec-2026-10-10-01",
       "date": "2026-10-10",
       "priority": "P1",
