@@ -403,3 +403,10 @@
 - In-flight: EVAL returning 12 Okt (funnel engagement telemetry); GSC re-audit 15 Okt; SEO eval hrta11/idx-radar 22 Okt; PRD idea-2026-10-10-1 (/harga-saham-hari-ini landing) spec_ready di night branch — perlu CTO pagi/sore EXECUTE (merge night dulu atau cherry-pick).
 - Jebakan: (1) repo di night branch — git branch --show-current SEBELUM kerja; (2) plutil -p meredact token, ambil via python re raw file; (3) plist comment injection merusak XML — hapus elemen, jangan komentar; (4) idx-sync exit 1 = Sabtu/Minggu curl fail by-design (guard write-window), bukan insiden.
 - Langkah pertama slot berikutnya: baca queue → PRD idea-2026-10-10-1 landing harga-saham-hari-ini (dispatch CEO?) atau health check; QA engagement D+1 (dwell real-user Senin) + impact_check_due 13 Okt.
+
+## 2026-10-11 07:52 — CTO pagi (dispatch prd-2026-10-10-02)
+- Queue kosong 24h -> dispatch P1: prd-2026-10-10-02 landing /harga-saham-hari-ini (PRD idea-2026-10-10-1) ke Backend Builder weekend 08:00; AC1-AC8 di backlog, spec verifikasi di queue.
+- State: sehat; FRESH (9 Okt); home 200 TTFB 0.26s; 3 container healthy (app 39ce6b064ea5 Up 14h); night-audit CLEAN; spot-check CTO pagi: next 16.3.8 repo+sec claim OK, telemetry bogus-payload 0 row invalid (silent-drop by design), EngagementEvent 36h = 11 dwell/6 scroll/2 cta (testing data).
+- Repo: night branch + WIP landing parsial (repository +58 sitemap +1 AGENTS.md) BELUM COMMIT -> task builder: review dulu, commit narrow; page belum ada.
+- Jebakan: (1) repo di night/harga-saham-hari-ini branch — cek git branch --show-current SEBELUM kerja; (2) AGENTS.md auto-regen next dev — commit bersama biar tree bersih; (3) psql interval quoting di terminal scanner — pakai satu arg string.
+- Langkah pertama slot 08:00: baca queue -> prd-2026-10-10-02 -> DONE WHEN AC1-AC7 -> claude pipeline -> deploy + verify.
