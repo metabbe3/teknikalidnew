@@ -10,13 +10,49 @@
       "date": "2026-10-10",
       "priority": "P2",
       "type": "feature",
-      "status": "idea",
+      "status": "spec_ready",
       "source": "mandor [WEEKEND-IDEA] 10 Okt 06:45 — CEO verdict PAGI INI (tidak tunggu Senin, weekend idle capacity)",
       "title": "SEO landing '/harga-saham-hari-ini' — pintu masuk query navigasional 'daftar harga saham hari ini' (GSC 7d: 7 impresi pos 85,3 — demand ada, halaman match belum ada)",
       "north_star": "reach/traffic (NS#1) + owner mandate 9 Okt; search-first → bukan pelanggaran non-goal 'konten non-search'",
       "user_story": "Sebagai pencari Google mobile 'harga saham hari ini / daftar harga saham', saya ingin 1 halaman cepat berisi tabel ringkas top-movers + harga EOD segar + link 'lihat semua di screener' — sehingga saya mendarat di teknikal.id bukan competitor.",
       "first_step": "PRD (Product Agent Senin 10:15): reuse StockPrice EOD + komponen tabel /stocks; SSR+revalidate; NO new query path; internal-link ke /stocks & signal pages. DONE WHEN (PRD level): spec_ready dgn prd_id + AC testable (curl 200, tabel >=10 baris, LCP mobile, link screener).",
-      "ceo_verdict": "APPROVE→mandate PRD 10 Okt: lolos lensa north star (reach via search demand terbukti GSC; reliable=reuse data EOD kanonik). Feature → WAJIB lewat PRD (SDLC 17 Sep), TIDAK langsung dispatch."
+      "ceo_verdict": "APPROVE→mandate PRD 10 Okt: lolos lensa north star (reach via search demand terbukti GSC; reliable=reuse data EOD kanonik). Feature → WAJIB lewat PRD (SDLC 17 Sep), TIDAK langsung dispatch.",
+      "prd_ready_at": "2026-10-10T22:20+07:00",
+      "prd_note": "PRD spec_ready ditulis Product Agent nightly 10 Okt (buffer keeper run). Riset SQL read-only + statik tree teknikalidnew main@39bbd07.",
+      "prd": {
+        "user_story": "Sebagai pencari Google mobile query \"harga saham hari ini / daftar harga saham\", saya ingin 1 halaman cepat berisi tabel ringkas top movers + harga EOD segar + link \"lihat semua di screener\" — sehingga saya mendarat di teknikal.id (bukan competitor) dan menemukan jalur ke screener/watchlist.",
+        "acceptance_criteria": [
+          "AC1: GET /harga-saham-hari-ini HTTP 200; view-source menampilkan tabel SSR (bukan shell kosong) + label tanggal EOD terakhir (format d MMM yyyy, data asli StockPrice)",
+          "AC2: Tabel >= 10 baris = ranking TOP nilai transaksi (close x volume, desc) hari EOD terakhir; kolom: ticker, nama, close, perubahan % vs close hari bursa sebelumnya, volume; klik ticker -> /stocks/[ticker]",
+          "AC3: Metadata SEO: title \"Harga Saham Hari Ini — <tanggal EOD> | teknikal.id\", canonical /harga-saham-hari-ini, og:title+og:description, description <= 160 char; revalidate 300 (pattern /saham-golden-cross)",
+          "AC4: Internal link: CTA \"Lihat semua di screener\" -> /stocks (dofollow) + >= 1 link ke halaman sinyal (mis. /saham-golden-cross) + render DailyRadar section (reuse komponen, fallback jujur pool < 5)",
+          "AC5: sitemap.ts menambah entry /harga-saham-hari-ini lastModified: today, changeFrequency: daily, priority 0.8 (pattern section \"Static pages with today's date\")",
+          "AC6: Tabel = SERVER component 0 client-JS baru (JANGAN reuse StockTable virtualized client); LCP mobile aman — tidak ada bundle JS tambahan selain Link",
+          "AC7: Hari non-trading (weekend/libur) tetap render EOD terakhir yang ada + label tanggal asli (DILARANG fabricate \"hari ini\" palsu); pool kosong -> render pesan jujur, bukan error",
+          "AC8: EVAL D+14 (GSC): query navigasional 'daftar harga saham hari ini' impresi naik vs baseline 7/7d; halaman ter-index (site: cek) tanpa duplikat canonical"
+        ],
+        "data_evidence": {
+          "research_basis": "tree teknikalidnew main@39bbd07 (HEAD verified 10 Okt); DB teknikalid read-only",
+          "gsc_demand": "query \"daftar harga saham hari ini\" 7d: 7 impresi, posisi rata2 85,3 (mandor WEEKEND-IDEA 10 Okt 06:45; CEO APPROVE mandate PRD pagi ini)",
+          "eod_freshness": "StockPrice 866 rows/hari konsisten (1.445 saham total), tanggal terakhir 2026-10-09 (Jumat) — data segar utk SSR weekend",
+          "ranking_query_2026_10_09": "TOP nilai transaksi (close x volume desc): BBCA.JK 6050 (Rp527M nilai), BBRI.JK 3100, GOTO.JK 30, TLKM.JK 2320, BUMI.JK 180, FORU.JK 140, AMMN.JK 4410, SINI.JK 15800, BMRI.JK 4040, CUAN.JK 770, PTRO.JK 4750, ENRG.JK 995 — query ranking asli per rule qa-30-01 (bukan hitung sendiri)",
+          "reuse_proof": "DailyRadar = server component 0-JS dgn fallback jujur (src/components/stock/daily-radar.tsx); sitemap punya section \"Static pages with today's date\" (priority 0.8 pattern); signal page revalidate=300 preseden; StockPrice @@index([date]) mendukung query murah"
+        },
+        "impact": 4,
+        "effort": 2,
+        "target_files": [
+          "src/app/(public)/harga-saham-hari-ini/page.tsx (BARU)",
+          "src/components/stock/eod-price-table.tsx (BARU — server component ringan)",
+          "src/app/sitemap.ts (tambah 1 entry)",
+          "src/domains/stock/stock.repository.ts (query top-movers + prev-close, read-only tambahan)"
+        ],
+        "db_migrations": false,
+        "dependencies": [
+          "unknown — tidak ada paket baru; reuse prisma/next/date-fns existing"
+        ],
+        "risk": "low",
+        "estimate_tool_calls": 12
+      }
     },
     {
       "id": "idea-2026-10-09-1",
