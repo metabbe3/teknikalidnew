@@ -24,13 +24,16 @@ function sleep(ms: number) {
  * 09:00–16:15 plus the EOD sync buffer at 16:30/17:00); outside that window the
  * data would be re-served last-session quotes. Holidays are NOT covered — see
  * TODO in the filter below. */
-function isWibWriteWindow(): boolean {
-  const wib = new Date(Date.now() + 7 * 60 * 60 * 1000);
+function isWibWriteWindow(now: () => number = Date.now): boolean {
+  const wib = new Date(now() + 7 * 60 * 60 * 1000);
   const day = wib.getUTCDay();
   if (day === 0 || day === 6) return false;
   const mins = wib.getUTCHours() * 60 + wib.getUTCMinutes();
   return mins >= 9 * 60 && mins <= 18 * 60;
 }
+
+/** Exported for selftest (scripts/selftest-data-trust.ts). Test-only alias. */
+export const _isWibWriteWindow = isWibWriteWindow;
 
 function buildPriceItems(
   quoteResults: { ticker: string; quote: { regularMarketPrice?: number | null; regularMarketOpen?: number | null; regularMarketPreviousClose?: number | null; regularMarketDayHigh?: number | null; regularMarketDayLow?: number | null; regularMarketVolume?: number | null; regularMarketTime?: number | null } | null }[],

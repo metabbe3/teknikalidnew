@@ -205,6 +205,9 @@ function formatVolumeHuman(vol: number | null): string {
   return `${vol} saham`;
 }
 
+/** Exported for selftest (scripts/selftest-data-trust.ts). Test-only alias. */
+export const _formatVolumeHuman = formatVolumeHuman;
+
 function formatMarketCapHuman(mc: number | null): string {
   if (mc === null) return "N/A";
   if (mc >= 1e12) return `Rp ${(mc / 1e12).toFixed(1)} Triliun`;
