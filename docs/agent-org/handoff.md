@@ -422,3 +422,10 @@
 - In-flight: QA reviewer slot 13:30 (spot tabel+sitemap); EVAL GSC D+14 25 Okt (AC8); EVAL returning 12 Okt (engagement funnel); owner 3 command launchctl tertunda (agent-scheduler x2 + resolve-predictions reload).
 - Jebakan: (1) ISR bake kosong pasca-deploy page ber-DB — self-heal TTL 300s, verifikasi via ISR-file-in-container + direct curl localhost:3000, JANGAN panic-rollback (lagi, pola isr-19-01); (2) docker exec node script butuh prisma standalone generate — tidak ada module @prisma/client di /app utk script ad-hoc; (3) psql ranking parity WAJIB NULLS LAST.
 - Langkah pertama slot 13:30: baca queue → entry baru CEO/reviewer? → kalau kosong: QA landing spot + engagement funnel dwell real-user (Senin baru ada) + health check.
+
+## 2026-10-11 10:5x — UX Builder weekend (screener register CTA SHIPPED)
+- Council P3 dieksekusi: commit fb11600 + deploy image 8b999680c156 — 3 fix UX screener guest (locked-filter register CTA 44px, banner GuestRegisterCta pasca-hasil utm results_cta, empty-state reset 1-klik).
+- Verify: tsc 0, marker live di container chunks, H1 'Radar Saham IDX' 1=1, /stocks + teknikal.id 200.
+- Impact check 18 Okt: register views ≥15/7d + utm_medium locked_filter/results_cta di kanal register.
+- Flow (a) screener→preset→sinyal→register: 3 friction dipotong; sisa kandidat rotasi berikut = urutan preset & discoverability radar.
+- QA interaktif klik CTA = reviewer; bug baru: 0 ditemukan shift ini.

@@ -1,3 +1,11 @@
+## [2026-10-11 10:45] UX Builder weekend — screener register CTA (Council 11 Okt P3: 313 PV → 9 signin, CTR 0,03%)
+- Type: UX frontend-only  |  PRD: Council P3 (owner steering 10 Okt UX priority)
+- Deploy: image 8b999680c156 (commit fb11600)  |  Rollback: revert fb11600 + image 39ce6b064ea5
+- 3 fix: (1) kartu filter terkunci: link signin diteks kecil → register CTA `Daftar gratis untuk buka filter ini` + utm_medium=locked_filter + tap target 44px + arrow; (2) banner GuestRegisterCta SETELAH hasil screener (copy jujur: migrasi bintang guest→akun) + utm_medium=results_cta + Masuk/Daftar gratis — guest + hasil>0 saja; (3) empty state hasil: teks pasrah → penjelasan + tombol `Reset ke Radar Pantulan` (1 klik, handler reset state nyata — Link pathname polos TIDAK reset useState, deviasi spec disengaja).
+- Verify: tsc 0 error; grep marker live di container chunks (locked_filter/results_cta/Daftar gratis/Reset) ✓; H1 'Radar Saham IDX' utuh before=after (1=1); /stocks + / + https://teknikal.id/stocks 200.
+- Impact check: 2026-10-18 — register views ≥15/7d (gate Council), utm_medium=locked_filter+results_cta di kanal registrasi.
+
+
 ## [2026-10-01 07:5x] reviewer — QA 1 Okt: 42 artikel + deploy verify wid-27-1 + bookkeeping [read-only + 1 task P1]
 - Type: QA/ops  |  PRD: -
 - Deploy: TIDAK ADA (QA + bookkeeping; 1 task ke queue)  |  Rollback: -
