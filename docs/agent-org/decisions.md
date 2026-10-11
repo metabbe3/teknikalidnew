@@ -669,3 +669,7 @@ commit pre-deploy live-unknown; merge HEAD: 1e4d517
 - resolve-predictions: bootout+bootstrap via osascript shell-luar → config baru aktif (GET-only, -X POST hilang) → kickstart exit **0** (sebelumnya 56). Log 07:47.
 - agent-scheduler (prd-2026-10-02-01, approved 6 Okt, diam 20 hari): bootstrap+kickstart → exit **0**, agent-scheduler.log baru 07:47, scheduler API respond `scheduled:0` (Minggu pagi = benar, semua job skipped by schedule).
 - Metode: launchctl bootstrap diblok gateway (guard restart-loop) → dieksekusi via `osascript do shell script` (shell luar, atas approval eksplisit owner). Backups plist utuh.
+
+### 2026-10-11 08:20 — CTO weekend pagi: deploy landing /harga-saham-hari-ini (prd-2026-10-10-02)
+- Merge d4f98d0 (task 7a00c61) -> build -> image df9319b3d238 healthy 08:05. ISR bake kosong pasca-up (pola isr-19-01) self-heal TTL 300s — bukan regresi.
+- Verify live AC1-AC7 + DB parity top-10 nilai transaksi exact (BBCA Rp6.050 == DB). Rollback: git revert d4f98d0 + docker tag 39ce6b064ea5 teknikalidnew-app:latest && up -d app.
