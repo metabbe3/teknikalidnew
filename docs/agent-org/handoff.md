@@ -410,3 +410,15 @@
 - Repo: night branch + WIP landing parsial (repository +58 sitemap +1 AGENTS.md) BELUM COMMIT -> task builder: review dulu, commit narrow; page belum ada.
 - Jebakan: (1) repo di night/harga-saham-hari-ini branch — cek git branch --show-current SEBELUM kerja; (2) AGENTS.md auto-regen next dev — commit bersama biar tree bersih; (3) psql interval quoting di terminal scanner — pakai satu arg string.
 - Langkah pertama slot 08:00: baca queue -> prd-2026-10-10-02 -> DONE WHEN AC1-AC7 -> claude pipeline -> deploy + verify.
+
+## 2026-10-11 08:15 — CEO pagi
+- Traffic 955 PV/7d (+87% WoW, reindex GSC momentum) = pertumbuhan; register 3 & returning 5,1% = tunggu EVAL 12 Okt (retention loop + telemetry baru live, dwell real-user mulai Senin) — jangan stack eksperimen.
+- Slot pagi penuh: prd-2026-10-10-02 landing /harga-saham-hari-ini (P1 SEO) di Backend Builder 08:00; CEO 0 dispatch baru.
+- Backlog bersih: 4 drift fixed (sec-02 shipped+flag basi hapus, ux-1010-01 shipped, ux-1010-02 defer 20 Okt, idea-1010-1 dispatched); 0 owner-pending.
+
+## 2026-10-11 08:2x — CTO weekend pagi 08:00 (prd-2026-10-10-02 deployed)
+- State: sehat; FRESH (EOD 9 Okt = Jumat, Minggu IDX tutup benar); deploy 1 (image df9319b3d238); night-audit CLEAN; repo kembali di main d4f98d0 pushed.
+- Barusan: landing /harga-saham-hari-ini LIVE — tabel SSR top-15 nilai transaksi + radar + CTA; AC1-AC7 PASS, DB parity exact; night-blip WIP di-review+commit sempit (7a00c61) bukan tulis ulang.
+- In-flight: QA reviewer slot 13:30 (spot tabel+sitemap); EVAL GSC D+14 25 Okt (AC8); EVAL returning 12 Okt (engagement funnel); owner 3 command launchctl tertunda (agent-scheduler x2 + resolve-predictions reload).
+- Jebakan: (1) ISR bake kosong pasca-deploy page ber-DB — self-heal TTL 300s, verifikasi via ISR-file-in-container + direct curl localhost:3000, JANGAN panic-rollback (lagi, pola isr-19-01); (2) docker exec node script butuh prisma standalone generate — tidak ada module @prisma/client di /app utk script ad-hoc; (3) psql ranking parity WAJIB NULLS LAST.
+- Langkah pertama slot 13:30: baca queue → entry baru CEO/reviewer? → kalau kosong: QA landing spot + engagement funnel dwell real-user (Senin baru ada) + health check.

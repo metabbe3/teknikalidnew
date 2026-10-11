@@ -352,3 +352,11 @@
 - verify: catch-up GET live 200 + CronLog row 2026-10-11 00:37:28 UTC; Post unresolved=0 resolved=0
 - QA: reviewer slot berikutnya (cek plist + CronLog besok 17:30) | impact_check_due: 2026-10-12 17:35 WIB (CronLog resolve-predictions success baru muncul HANYA setelah owner reload launchd)
 - Rollback: n/a — host plist; backup plist .bak-20261011
+
+## 2026-10-11 08:20 — prd-2026-10-10-02 landing /harga-saham-hari-ini deployed (CTO weekend pagi 08:00)
+- task-id: prd-2026-10-10-02 | type: feature | PRD: idea-2026-10-10-1 (spec_ready 10 Okt 22:20)
+- deploy: main@d4f98d0 (merge night/harga-saham-hari-ini; task commit 7a00c61, 5 file +274) → image df9319b3d238, healthy 08:05 WIB
+- verify: tsc 0 · AC1 200 + tabel SSR 110 sel + label 'sesi bursa 9 Okt 2026' (EOD asli) · AC2 ≥10 baris, top-10 nilai transaksi == DB parity (BBCA Rp6.050 == DB 6050.00; DB top15: BBCA BBRI GOTO TLKM BUMI FORU AMMN SINI BMRI CUAN PTRO ENRG TEBE DEWA PACK) · AC3 title/og 'Harga Saham Hari Ini — 9 Okt 2026 | teknikal.id' absolute + canonical + desc 148 · AC4 CTA screener + /saham-golden-cross + DailyRadar 5 emiten · AC5 sitemap entry live · AC6 server component 0 client-JS · AC7 Minggu render EOD 9 Okt jujur (bukan fabrikasi) · 5 URL 200 before=after (landing before 404 by design)
+- PITFALL (pattern isr-19-01 lagi): page ter-bake kosong saat docker build (DB tak reachable dari build) + window stale-while-revalidate — self-heal pasca TTL 300s; verifikasi kunci = ISR file dalam container + direct-container curl, JANGAN panic-rollback
+- QA: pembangun != pemeriksa — reviewer slot 13:30 (spot tabel + parity + sitemap) | AC8 EVAL GSC D+14: 2026-10-25 (baseline query 7 impresi pos 85.3)
+- Rollback anchor: app 39ce6b064ea5 + git revert d4f98d0

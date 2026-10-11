@@ -928,13 +928,27 @@
       "date": "2026-10-11",
       "title": "SEO landing /harga-saham-hari-ini (PRD idea-2026-10-10-1) — EXECUTE: tabel SSR top nilai transaksi + radar + internal-link ke /stocks",
       "priority": "P1",
-      "status": "pending",
+      "status": "done",
       "scheduled_slot": "2026-10-11 08:00 Backend Builder weekend pagi",
       "source": "CTO dispatch 11 Okt (PRD spec_ready Product Agent 10 Okt 22:20; CEO verdict APPROVE->mandate PRD 10 Okt; owner mandate 9 Okt 'kembangkan terus')",
       "spec": "EKSEKUSI PRD idea-2026-10-10-1 di product-backlog.json (baca AC1-AC8 lengkap di sana). Konteks: GSC 7d query 'daftar harga saham hari ini' 7 impresi pos 85.3 — demand ada, halaman match belum ada. KERJAKAN: (1) PRASE: repo ada WIP parsial night-blip BELUM COMMIT: src/domains/stock/stock.repository.ts (+58 findTopValueTraded — review dulu, koreksi bila perlu, commit narrow) + src/app/sitemap.ts (+1 entry) + AGENTS.md (auto-gen next, commit bersama biar tree bersih). PAGE src/app/harga-saham-hari-ini/ BELUM ADA = kerja utama. (2) PAGE server-component murni: SSR tabel top nilai transaksi (close x volume desc, EQUITY isActive, >=10 baris, kolom ticker/nama/close/chg%/volume, klik -> /stocks/[ticker]), DailyRadar reuse + fallback jujur pool<5, CTA /stocks + >=1 link sinyal (mis. /saham-golden-cross). (3) SEO: title 'Harga Saham Hari Ini — <tanggal EOD> | teknikal.id', canonical, og:*, desc <=160, revalidate 300. (4) Weekend/hari libur: render EOD terakhir ASLI + label tanggal asli — DILARANG fabricate 'hari ini' (AC7). (5) VERIFIKASI WAJIB: tsc 0; curl /harga-saham-hari-ini 200 + view-source tabel SSR + label tanggal EOD 9 Okt; >=10 baris; 5 URL 200 before=after (/, /stocks, golden-cross, /berita, brief); sitemap.xml memuat URL baru; deploy budget weekend multi-slot, tiap deploy rollback anchor (image lama + git revert). (6) JANGAN: sentuh auth/payments/env, StockTable virtualized client (AC6 server-only, 0 client-JS baru selain Link), fabricate data weekend. ROLLBACK: git revert commit + docker tag <image-lama> && up -d app. DONE WHEN: AC1-AC7 pass terverifikasi (AC8 = EVAL D+14 GSC, 25 Okt).",
       "north_star": "reach/traffic NS#1: query navigasional terbukti GSC; reliable = reuse EOD kanonik StockPrice",
       "dispatched_at": "2026-10-11 07:52 WIB",
-      "dispatched_by": "CTO pagi"
+      "dispatched_by": "CTO pagi",
+      "completed_at": "2026-10-11 08:20 WIB",
+      "result": "DONE 11 Okt 08:00-08:20 CTO weekend pagi, deploy 1 (image df9319b3d238). Night-blip WIP di-review & dilanjutkan (bukan tulis dari nol): commit 7a00c61 (5 file +274: page.tsx SSR revalidate 300 + eod-price-table.tsx server component 0 client-JS + stock.repository.findTopValueTraded ranking close×volume desc + prev-close join + sitemap entry + AGENTS.md auto-regen) -> merge --no-ff d4f98d0 -> push main. tsc exit 0 pre-merge. LIVE AC1-AC7 PASS: 200 + tabel SSR (110 sel harga) + label 'sesi bursa 9 Okt 2026' (EOD asli, Minggu jujur AC7); top-10 nilai transaksi == DB parity exact (BBCA BBRI GOTO TLKM BUMI FORU AMMN SINI BMRI CUAN; BBCA Rp6.050 == DB 6050.00); title/og 'Harga Saham Hari Ini — 9 Okt 2026 | teknikal.id' (absolute, anti double-suffix), canonical + desc 148 char; CTA 'Lihat semua di screener' + link /saham-golden-cross + DailyRadar render (5 emiten); sitemap.xml memuat URL. 5 URL 200 before=after (landing before=404 by design). PITFALL ISR: page bake kosong saat docker build (DB tak reachable) + swr window — self-heal revalidate=300 pasca-TTL (pola isr-19-01, BUKAN regresi; direct-container verifikasi tabel hidup). AC8 = EVAL GSC D+14 (25 Okt). Rollback anchor: app 39ce6b064ea5 + git revert d4f98d0.",
+      "rollback": "git revert d4f98d0 + docker tag 39ce6b064ea5 teknikalidnew-app:latest && docker compose up -d app"
+    },
+    {
+      "id": "ops-2026-10-11-01",
+      "status": "pending",
+      "priority": "P2",
+      "title": "OPS (COUNCIL 11 Okt): symlink-drift guard — product-backlog.json datadir teknikal kembali jadi regular file (kambuh ke-2)",
+      "spec": "INSIDEN: product-backlog.json datadir teknikal.id adalah symlink ke docs kanonik (dibuat CEO 10 Okt 08:15 setelah insiden drift #1). 11 Okt 08:02 Council menemukan file jadi REGULAR FILE lagi (mtime 10 Okt 18:11, 108KB vs docs 116KB) — ada writer yang menimpa symlink (kemungkinan Product Agent 18:11 atau job lain yang json.dump ke path langsung tanpa cek islink). KERJAKAN: (1) Root-cause: identifikasi writer (grep agent-org/Product Agent jobs 18:00-19:00 10 Okt; cek executions.db). (2) FIX script writer tsb: tulis via path resolve() ATAU cek os.path.islink sebelum rename/replace, atau tulis langsung ke path docs kanonik. (3) TAMBAH guard di ~/.hermes/scripts/backlog_health.py: bila file backlog/queue org teknikal BUKAN symlink padahal docs kanonik ada → print ALERT (sama pola seperti alert stagnan). (4) VERIFIKASI: simulate write via writer yang diperbaiki → file tetap symlink setelahnya (readback islink true + entries match). JANGAN: ubah struktur data backlog; sentuh item selain guard. DONE WHEN: writer fix terverifikasi + guard alert aktif di backlog_health.py output.",
+      "north_star": "reliable (data kanonik satu sumber) — drift 2x dalam 2 pekan = sinyal sistemik, bukan human error",
+      "created_at": "2026-10-11T08:10:00+07:00",
+      "dispatched_at": "2026-10-11 08:15 WIB",
+      "dispatched_by": "Sunday Council"
     }
   ]
 }

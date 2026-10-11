@@ -10,7 +10,7 @@
       "date": "2026-10-10",
       "priority": "P2",
       "type": "feature",
-      "status": "spec_ready",
+      "status": "shipped",
       "source": "mandor [WEEKEND-IDEA] 10 Okt 06:45 — CEO verdict PAGI INI (tidak tunggu Senin, weekend idle capacity)",
       "title": "SEO landing '/harga-saham-hari-ini' — pintu masuk query navigasional 'daftar harga saham hari ini' (GSC 7d: 7 impresi pos 85,3 — demand ada, halaman match belum ada)",
       "north_star": "reach/traffic (NS#1) + owner mandate 9 Okt; search-first → bukan pelanggaran non-goal 'konten non-search'",
@@ -52,6 +52,14 @@
         ],
         "risk": "low",
         "estimate_tool_calls": 12
+      },
+      "prd_for": "prd-2026-10-10-02",
+      "dispatched_at": "2026-10-11 07:52 WIB (CTO pagi -> Backend Builder weekend 08:00)",
+      "shipped_result": {
+        "shipped_at": "2026-10-11T08:20+07:00",
+        "commit": "7a00c61 (merge d4f98d0)",
+        "image": "df9319b3d238",
+        "verify": "AC1-AC7 PASS live; DB parity top-10 exact; AC8 eval 2026-10-25"
       }
     },
     {
@@ -403,14 +411,15 @@
       "title": "Cross-link ticker-detail -> signal pages (related-signals di /stocks/[ticker])",
       "hypothesis": "133 IP/30d baca detail ticker tapi cuma 15% sampai /saham-* — pola related-signals (komponen SUDAH ADA di artikel, council-13-02) tinggal dipasang di detail ticker utk ticker yg punya smaCrossSignal aktif. Effort 1 (reuse), menunggu prod-19-01 terukur dulu biar efek link-equity tak tercampur.",
       "data": "CTO sore 23 Sep: ticker-detail 1.710v/133 IP, cross 20 IP (15%); 87% views GC berasal dari /stocks (21 Sep survey) = link equity dari nav proven; komponen related-signals.tsx existing (commit f75dd7d).",
-      "note": " || CEO 24 Sep 08:15: DEFER — jangan campur atribusi link-equity saat widget mingguan (prod-19-01) baru live; review pasca gate AC6 2026-10-22.",
-      "review_date": "2026-10-22"
+      "note": " || CEO 24 Sep 08:15: DEFER — jangan campur atribusi link-equity saat widget mingguan (prod-19-01) baru live; review pasca gate AC6 2026-10-22. || COUNCIL 11 Okt 2026 VERDICT=schedule: scheduled_slot 2026-10-22 (review pasca gate AC6 widget mingguan; jangan campur atribusi link-equity sebelum itu).",
+      "review_date": "2026-10-22",
+      "scheduled_slot": "2026-10-22"
     },
     {
       "id": "prod-2026-09-24-01",
       "date": "2026-09-24",
       "priority": "P3",
-      "status": "promoted_prd",
+      "status": "superseded",
       "source": "product-idle",
       "type": "feature",
       "title": "Title halaman ticker terpotong di tengah kata — 'Bank Rakyat Indonesia (Pe…' (144/1.353 stok, 15% views ticker-detail)",
@@ -418,7 +427,7 @@
       "data": "PageView 30d isBot=false: 389 ticker unik dilihat, 61 di antaranya (15,7%) punya nama >25 char = 267/1.732 views ticker-detail (15,4%) mendarat di halaman ber-title terpotong. DB: 144/1.353 stok aktif (10,7%) nama >25 char. Top affected view: BBRI (bank terbesar, brand search tinggi). Konteks funnel: organic search cuma 3% views 7d (28/873) dan GSC reindex pending — title = wajah CTR saat 389 halaman ticker mulai terindex.",
       "hypothesis": "Fix kecil high-trust: strip suffix '(Persero)' & 'Tbk' SEBELUM cut, potong di word-boundary, budget naik ke ~35 char (masih aman <60 total dgn '| TeknikalID'). Effort 1 (satu fungsi helper + test). Lensa owner: consistency + trust + easy — 'Pe…' di tab browser = polish yang bolong; nyaris mustahil diukur dari PageView (gate: QA visual + GSC CTR pasca reindex, review 2026-10-22 sejajar idea-2026-09-23-1).",
       "north_star": "trust/consistency (lensa owner 17 Sep) + growth traffic (CTR SERP pasca reindex)",
-      "note": "ID-NOTE: entry ini (backlog prod-2026-09-24-01 = title terpotong) TIDAK BERHUBUNGAN dgn task cto-queue 'prd-2026-09-24-01' (widget Sinyal Minggu Ini dari prod-2026-09-19-01, dispatched CEO 24 Sep 08:15). Namespace beda file — jangan campur saat grep. || CEO 25 Sep 08:15: verdict PROMOTE -> mandate PRD utk Product Agent Senin 28 Sep 10:15 (lensa owner consistency/trust/polish; effort 1; review GSC-CTR 2026-10-22 sejajar idea-23-1). TIDAK dispatch engineering sampai spec_ready (SDLC).",
+      "note": "ID-NOTE: entry ini (backlog prod-2026-09-24-01 = title terpotong) TIDAK BERHUBUNGAN dgn task cto-queue 'prd-2026-09-24-01' (widget Sinyal Minggu Ini dari prod-2026-09-19-01, dispatched CEO 24 Sep 08:15). Namespace beda file — jangan campur saat grep. || CEO 25 Sep 08:15: verdict PROMOTE -> mandate PRD utk Product Agent Senin 28 Sep 10:15 (lensa owner consistency/trust/polish; effort 1; review GSC-CTR 2026-10-22 sejajar idea-23-1). TIDAK dispatch engineering sampai spec_ready (SDLC). || COUNCIL 11 Okt VERDICT=supersede: tercakup & SHIPPED via cto-queue prd-2026-10-01-02 (fix title ticker mid-word, status done).",
       "sec_preview": "Saat dipromote jadi PRD, SEC-REVIEW minimal: (1) input: ticker param sudah tervalidasi route existing — helper string murni, tanpa input user baru; (2) injection: n/a (tanpa query baru); (3) logic: strip suffix jangan sampai nama jadi kosong utk stok bernama pendek/simbol; (4) perf: generateMetadata sudah existing, no new query; (5) privilege/IDOR: n/a read-only SSR.",
       "prd": {
         "title": "Fix title ticker terpotong mid-word: strip suffix formal + word-boundary cut (144/1.353 stok, 268/1.586 views ticker-detail 30d)",
@@ -459,14 +468,14 @@
     },
     {
       "id": "idea-2026-09-25-1",
-      "status": "promoted_prd",
+      "status": "superseded",
       "source": "cto-idle",
       "priority": "P2",
       "date": "2026-09-25",
       "title": "Atribusi register hook hilang: PageView.path tidak simpan query string — utm_source 3 hook (signal_page/stocks_screener/stocks_ticker) tak terukur",
       "data": "Bukti 25 Sep (DB read-only): (1) 12/12 PageView nobot 30d path='/auth/register' persis — query string dibuang sebelum insert (kolom PageView: path/referrer/userId/ip/userAgent/createdAt/isBot, tanpa utm); (2) referrer register 30d: 10 direct + 1 google + 1 teknikal.id root — JS redirect window.location = direct, hook tak terlihat; (3) 3 hook live sejak 22 Sep 19:1x semuanya bawa utm_source di URL (register-cta.tsx signal_page, save-screen-prompt.tsx stocks_screener, stock-action-badge.tsx stocks_ticker) tapi 0 tercatat; (4) DAMPAK: gate AC5 prd-17-01 (register-page IP area /stocks >=10 IP ATAU >=8 register, impact check 2026-10-20) tidak bisa membedakan register via hook vs organik — verifikasi fitur 400rb rupiah terancam tak terukur; (5) komposisi views 14d: /stocks/[ticker] 683 + /stocks 567 = 78% trafik nobot — area hook mempunyai exposure besar. Usulan arah: simpan utm_source/utm_medium (whitelist + length cap) saat track pageview register, atau kolom additive — murni instrumen, no UI change. SEC-REVIEW (utk PRD): param whitelist+cap panjang (bukan raw query string — cegah log injection), tanpa PII baru, tanpa endpoint baru, additive column via prisma migrate = koordinasi owner (bukan silent).",
       "north_star": "growth register (NS#1) — pengukuran funnel, bukan UI",
-      "note": " || CEO 28 Sep 08:15: PROMOTE mandate PRD #2 utk Product Agent Senin 28 Sep 10:15 (setelah prod-24-01 title-ticker). Alasan: north star #1 langsung — register_views 4/7d pertama non-zero tapi hook tak bisa di-attribusi tanpa query-param persistence; effort kecil (PageView simpan UTM/ref). Lensa data-reliable owner.",
+      "note": " || CEO 28 Sep 08:15: PROMOTE mandate PRD #2 utk Product Agent Senin 28 Sep 10:15 (setelah prod-24-01 title-ticker). Alasan: north star #1 langsung — register_views 4/7d pertama non-zero tapi hook tak bisa di-attribusi tanpa query-param persistence; effort kecil (PageView simpan UTM/ref). Lensa data-reliable owner. || COUNCIL 11 Okt VERDICT=supersede: tercakup & SHIPPED via cto-queue prd-2026-10-01-01 (PageView simpan utm_source, status qa_pass).",
       "prd_id": "idea-2026-09-25-1",
       "prd_written_at": "2026-09-30 22:1x WIB",
       "user_story": "Sebagai pemilik produk, saya perlu tahu dari mana register berasal (3 hook in-product vs organik vs direct) supaya keputusan investsi fitur register-hook (live 22 Sep, gate AC5 prd-17-01 impact-check 2026-10-20) berbasis data — hari ini 16 register-view/30d TAK BISA di-atribusi karena query string dibuang sebelum insert PageView.",
@@ -906,7 +915,7 @@
       "date": "2026-10-09",
       "priority": "P2",
       "type": "ops",
-      "status": "approved",
+      "status": "shipped",
       "source": "itsec-blue",
       "exploitability": "sedang",
       "title": "[BLUE] npm audit teknikal.id: 44 vuln (5 critical) — next 16.2.6 kena CVE middleware/proxy bypass (range <=16.3.7; teknikal PAKAI src/proxy.ts + auth()) & next-auth 5.0.0-beta.31 kena critical @auth/core; proxy-addr 2.x IP-spoofing critical",
@@ -915,9 +924,13 @@
       "cto_analysis": "CTO weekend 10 Okt (PRODUCT MODE read-only, no deploy): klaim npm audit TERKONFIRMASI -- critical=5 (next 16.2.6 range 9.3.4-canary - 16.3.7; next-auth 5.0.0-beta.31 via @auth/core; proxy-addr transitive). PREKONDISI EXPLOIT MIDDLEWARE-BYPASS CVE: next.config.ts L20 turbopack:{} = ON; i18n locales TIDAK ada (single-locale) -> kombinasi Turbopack+single-locale JUSTRU segmen yang kena middleware/proxy bypass; repo PAKAI src/proxy.ts + auth() (klaim audit valid). Server Actions hanya 1 file admin (authed) -> SSRF/DoS surface kecil. FIX PATH NON-BREAKING: npm audit fixAvailable next 16.2.6->16.4.0 isSemVerMajor=false (patch-minor); @auth/core & next-auth fix=true. REKOMENDASI: promote P1 ops 'dependency patch next 16.4 + @auth/core stable' 1 deploy app+worker, changelog impact_check +3d; jangan npm audit fix --force (major breaks). Effort ~1 slot.",
       "cto_analyzed_at": "2026-10-10T08:1x+07:00",
       "ceo_verdict": "CEO 10 Okt APPROVE-PARSIAL (rekomendasi): bump ONLY next 16.2.6->>=16.3.8 (tutup CVE middleware/proxy bypass; teknikal pakai src/proxy.ts+auth()); next-auth beta->stabil DITAHAN. GUARDRAIL HARD 'security' tanpa owner -> blocked_for_owner di cto-queue (sec-2026-10-10-01), owner approve 1x di digest lalu dispatch. Lens: trust/reliability; tidak urgent (Cloudflare, no PoC).",
-      "ceo_decision_pending": true,
       "approved_by": "owner digest 10 Okt",
-      "dispatched": "sec-2026-10-10-01"
+      "dispatched": "sec-2026-10-10-01",
+      "owner_decision": "approved via digest 10 Okt (tombol Qpprove)",
+      "shipped_via": "cto sec-2026-10-10-01: next 16.2.6->16.3.8 + proxy-addr 2.0.8 (7f80091, image dce76ef1f881, deploy 10 Okt 13:30); critical non-auth 5->0",
+      "residual": "auth-family (next-auth 5.0.0-beta.31) tetap owner gate",
+      "ceo_decision_pending": false,
+      "lifecycle": "spec_ready"
     },
     {
       "id": "sec-2026-10-09-01",
@@ -940,22 +953,25 @@
       "date": "2026-10-10",
       "title": "BUG P1: GuestStar guest watchlist mati — TICKER_RE tolak ticker .JK (AC3 retention v1)",
       "source": "ux-audit",
-      "status": "in_progress",
+      "status": "shipped",
       "priority": "P1",
       "description": "QA interaktif browser: klik bintang Pantau AMAR.JK (screener + detail page) = silent null; localStorage guest_watchlist tidak tertulis. Root cause: TICKER_RE /^[A-Z0-9]{2,10}$/ di src/lib/guest-storage.ts menolak titik suffix .JK; semua caller kirim format DB = AMAR.JK. AC2 Simpan preset PASS, AC4 DailyRadar SSR PASS. AC1 copy-link tidak terverifikasi di automation (synthetic click tanpa user activation; ada fallback execCommand) — perlu verifikasi device asli. | FIX CODE DONE: b34fcc8 (TICKER_RE + suffix .JK, selftest 5/5, tsc 0) + 2f17cac (tap target 44px). Menunggu window deploy 13:30 WIB.",
       "acceptance": "Bintang guest toggle live di /stocks screener + detail; guest_watchlist tertulis; persist pasca reload; migrasi login tetap jalan (format .JK == DB exact match).",
-      "evidence": "aria Pantau AMAR.JK pressed=false pasca klik; localStorage kosong; DB ticker=AMAR.JK verified via psql | AC1 PASS dengan clipboard permission granted (toast sukses + clipboard = URL preset benar); kegagalan awal = sandbox headless tanpa user activation."
+      "evidence": "aria Pantau AMAR.JK pressed=false pasca klik; localStorage kosong; DB ticker=AMAR.JK verified via psql | AC1 PASS dengan clipboard permission granted (toast sukses + clipboard = URL preset benar); kegagalan awal = sandbox headless tanpa user activation.",
+      "shipped": "CTO 10 Okt 13:37-13:55 slot-2: b34fcc8 TICKER_RE .JK + 2f17cac hit-area 44px, image 1947406ed58e; AC3 live verified interaktif (klik Pantau AMAR.JK -> localStorage persist pasca reload)"
     },
     {
       "id": "ux-2026-10-10-02",
       "date": "2026-10-10",
       "title": "FRICTION: 2 tombol simpan guest kontradiktif — top bar register-wall vs results localStorage",
       "source": "ux-audit",
-      "status": "candidate",
+      "status": "deferred",
       "priority": "P2",
       "description": "Guest di screener melihat 2 affordance simpan: (1) SaveScreenPrompt top bar \"Simpan Screen\" copy \"Simpan filter agar tidak hilang saat ganti tab\" tapi kliknya = redirect /auth/register (utm_medium=save_prompt, pending_post_register); (2) ScreenActions \"Simpan preset ini\" di header hasil = localStorage instan tanpa akun, toast sukses. Guest yang tak mau register dapat fungsi yang dijanjikan (1) gratis di (2) — copy (1) menyesatkan relatif ke kemampuan produk.",
       "recommendation": "TUNGGU verdict AC5 prd-17-01 (20 Okt) dulu — funnel save_prompt sedang diukur, jangan kontaminasi. Pasca-AC5 opsi: (a) tombol top bar guest = localStorage save + CTA sekunder \"sinkron antar perangkat → daftar\"; (b) samakan copy. Keputusan CEO/owner (tradeoff konversi vs trust).",
-      "evidence": "QA interaktif 10 Okt: klik Simpan Screen → location.href /auth/register?utm_source=stocks_screener&utm_medium=save_prompt (save-screen-prompt.tsx L28); klik Simpan preset ini → teknikal_saved_screens +1, toast sukses."
+      "evidence": "QA interaktif 10 Okt: klik Simpan Screen → location.href /auth/register?utm_source=stocks_screener&utm_medium=save_prompt (save-screen-prompt.tsx L28); klik Simpan preset ini → teknikal_saved_screens +1, toast sukses.",
+      "ceo_verdict": "DEFER (CEO 11 Okt): jangan kontaminasi funnel AC5 prd-17-01 yang sedang diukur (impact check 20 Okt) — rekomendasi QA sendiri. Pasca-AC5 pilih (a) top bar guest = localStorage + CTA sync, atau (b) samakan copy.",
+      "review_date": "2026-10-20"
     }
   ]
 }
