@@ -19,13 +19,13 @@ export { STYLES, CUSTOM_FILTERS, SORT_OPTIONS, signalLabelColor } from "./screen
 // Import components
 export { BookmarkIcon, PresetIcon } from "./screener-icons";
 export { ScreenerTabs, PresetCard, CustomBuilder } from "./screener-presets";
-export { ResultsHeader, ResultsTable, ResultsCards } from "./screener-results";
+export { ResultsHeader, ResultsTable, ResultsCards, GuestRegisterCta } from "./screener-results";
 
 // Import for internal use
 import type { TradingStyle, PresetDef, ViewMode, SortField, SortOrder, ScreenerStock } from "./screener-types";
 import { stylesForAssetClass } from "./screener-types";
 import { ScreenerTabs, PresetCard, CustomBuilder } from "./screener-presets";
-import { ResultsHeader, ResultsTable, ResultsCards } from "./screener-results";
+import { ResultsHeader, ResultsTable, ResultsCards, GuestRegisterCta } from "./screener-results";
 
 // ── Main Page Component ──
 
@@ -133,6 +133,15 @@ function ScreenerPageContent({ assetClass, linkBase = "/stocks" }: { assetClass?
     setSortBy(field);
     setSortOrder(order);
   }, []);
+
+  // Empty-state recovery: back to default radar (plain pathname drops searchParams)
+  const handleReset = useCallback(() => {
+    setActiveStyle("bottom-fishing");
+    setActivePreset(null);
+    setSliderValues({});
+    setCustomParams({});
+    router.push(pathname, { scroll: false });
+  }, [router, pathname]);
 
   const showRadar = activeStyle === "bottom-fishing" && (activePreset === "radar" || activePreset === null);
 
@@ -326,9 +335,14 @@ function ScreenerPageContent({ assetClass, linkBase = "/stocks" }: { assetClass?
                 </button>
               </div>
             ) : (
-              viewMode === "table"
-                ? <ResultsTable stocks={stocks} watchlistTickers={watchlistTickers} onToggleWatchlist={handleToggleWatchlist} linkBase={linkBase} />
-                : <ResultsCards stocks={stocks} styleDef={styleDef} watchlistTickers={watchlistTickers} onToggleWatchlist={handleToggleWatchlist} linkBase={linkBase} />
+              <>
+                {viewMode === "table" ? (
+                  <ResultsTable stocks={stocks} watchlistTickers={watchlistTickers} onToggleWatchlist={handleToggleWatchlist} onReset={handleReset} linkBase={linkBase} />
+                ) : (
+                  <ResultsCards stocks={stocks} styleDef={styleDef} watchlistTickers={watchlistTickers} onToggleWatchlist={handleToggleWatchlist} onReset={handleReset} linkBase={linkBase} />
+                )}
+                {!session?.user && stocks.length > 0 && <GuestRegisterCta />}
+              </>
             )}
           </section>
         )}

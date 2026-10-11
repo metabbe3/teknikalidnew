@@ -129,7 +129,7 @@ export function ResultsHeader({
 
 // ── Results Table ──
 
-export function ResultsTable({ stocks, watchlistTickers, onToggleWatchlist, linkBase = "/stocks" }: { stocks: ScreenerStock[]; watchlistTickers: Set<string>; onToggleWatchlist: (ticker: string) => void; linkBase?: string }) {
+export function ResultsTable({ stocks, watchlistTickers, onToggleWatchlist, onReset, linkBase = "/stocks" }: { stocks: ScreenerStock[]; watchlistTickers: Set<string>; onToggleWatchlist: (ticker: string) => void; onReset: () => void; linkBase?: string }) {
   const { data: session } = useSession();
   const isAuthenticated = !!session?.user;
   const router = useRouter();
@@ -149,7 +149,18 @@ export function ResultsTable({ stocks, watchlistTickers, onToggleWatchlist, link
     return (
       <div className="card-gradient depth-shadow rounded-xl p-8 text-center border border-border">
         <p className="text-text-secondary text-sm">Tidak ada saham yang cocok dengan filter ini.</p>
-        <p className="text-text-tertiary text-xs mt-1">Coba filter lain atau cek lagi nanti.</p>
+        <p className="text-text-tertiary text-xs mt-1">
+          Filter ketat sering meloloskan 0 saham. Longgarkan rentang slider, atau kembali ke scan default.
+        </p>
+        <button
+          onClick={onReset}
+          className="mt-4 inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-border bg-bg-card px-4 py-2.5 text-xs font-medium hover:bg-bg-hover transition-colors press-scale cursor-pointer"
+        >
+          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" />
+          </svg>
+          Reset ke Radar Pantulan
+        </button>
       </div>
     );
   }
@@ -245,14 +256,26 @@ export function ResultsTable({ stocks, watchlistTickers, onToggleWatchlist, link
 
 // ── Results Cards ──
 
-export function ResultsCards({ stocks, styleDef, watchlistTickers, onToggleWatchlist, linkBase = "/stocks" }: { stocks: ScreenerStock[]; styleDef: TradingStyleDef; watchlistTickers: Set<string>; onToggleWatchlist: (ticker: string) => void; linkBase?: string }) {
+export function ResultsCards({ stocks, styleDef, watchlistTickers, onToggleWatchlist, onReset, linkBase = "/stocks" }: { stocks: ScreenerStock[]; styleDef: TradingStyleDef; watchlistTickers: Set<string>; onToggleWatchlist: (ticker: string) => void; onReset: () => void; linkBase?: string }) {
   const { data: session } = useSession();
   const isAuthenticated = !!session?.user;
 
   if (stocks.length === 0) {
     return (
       <div className="card-gradient depth-shadow rounded-xl p-8 text-center border border-border">
-        <p className="text-text-secondary text-sm">Tidak ada saham yang cocok.</p>
+        <p className="text-text-secondary text-sm">Tidak ada saham yang cocok dengan filter ini.</p>
+        <p className="text-text-tertiary text-xs mt-1">
+          Filter ketat sering meloloskan 0 saham. Longgarkan rentang slider, atau kembali ke scan default.
+        </p>
+        <button
+          onClick={onReset}
+          className="mt-4 inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-border bg-bg-card px-4 py-2.5 text-xs font-medium hover:bg-bg-hover transition-colors press-scale cursor-pointer"
+        >
+          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" />
+          </svg>
+          Reset ke Radar Pantulan
+        </button>
       </div>
     );
   }
@@ -328,6 +351,35 @@ export function ResultsCards({ stocks, styleDef, watchlistTickers, onToggleWatch
           </div>
         );
       })}
+    </div>
+  );
+}
+
+// ── Guest Register CTA (Council 11 Okt P3: 313 PV → 9 signin) ──
+
+export function GuestRegisterCta() {
+  return (
+    <div className="mt-2 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-bg-card/50 px-4 py-3">
+      <div className="flex items-center gap-2.5 text-xs text-text-secondary">
+        <svg className="w-4 h-4 shrink-0 text-accent" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
+        </svg>
+        <span>
+          <span className="font-medium text-text-primary">Simpan pantauan Anda.</span>{" "}
+          Bintang yang ditandai otomatis pindah ke akun saat daftar — aman lintas perangkat.
+        </span>
+      </div>
+      <div className="flex items-center gap-3">
+        <Link href="/auth/signin" className="text-xs text-text-tertiary hover:text-text-primary transition-colors">
+          Masuk
+        </Link>
+        <Link
+          href="/auth/register?utm_source=stocks_screener&utm_medium=results_cta"
+          className="inline-flex min-h-11 items-center rounded-lg bg-accent px-4 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-accent/90 press-scale cursor-pointer"
+        >
+          Daftar gratis
+        </Link>
+      </div>
     </div>
   );
 }

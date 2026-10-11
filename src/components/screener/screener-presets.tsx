@@ -189,10 +189,13 @@ export function CustomBuilder({
                   </svg>
                 </div>
                 <Link
-                  href="/auth/signin"
-                  className="mt-3 block text-xs text-accent hover:underline"
+                  href="/auth/register?utm_source=stocks_screener&utm_medium=locked_filter"
+                  className="mt-3 inline-flex min-h-11 items-center gap-1.5 text-xs font-medium text-accent hover:underline"
                 >
-                  Daftar untuk filter lanjutan
+                  Daftar gratis untuk buka filter ini
+                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </Link>
               </div>
             );
