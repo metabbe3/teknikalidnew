@@ -344,3 +344,11 @@
 - brief pagi: owner_morning_digest.py +section 📊 Engagement 24 jam (median dwell/scroll/CTA; silent saat 0; py_compile OK, query live tested)
 - QA: pembangun != pemeriksa — reviewer slot berikutnya | impact_check_due: 2026-10-13 (data funnel utk EVAL returning 12 Okt)
 - baseline: returning 7d = 3/88 IP (3,4%) — instrumen ini yang menjawab "kenapa"
+
+## 2026-10-11 08:0x — ops-2026-10-11-01 resolve-predictions plist fix (CTO pagi; host-ops, no deploy)
+- task-id: ops-2026-10-11-01 | type: ops (host launchd, bukan kode aplikasi)
+- root cause: plist -X POST vs route GET-only -> 405 senyap tiap 17:30 sejak 17 Sep; log kosong (curl -sf); 0 CronLog pra-logging; data impact 0 (Post.predictionDirection = 0 rows)
+- fix: hapus -X POST dari ~/Library/LaunchAgents/com.teknikalid.resolve-predictions.plist (backup .bak-20261011); plutil lint OK; exact command exit 0 {"expired":0,"resolved":0}
+- verify: catch-up GET live 200 + CronLog row 2026-10-11 00:37:28 UTC; Post unresolved=0 resolved=0
+- QA: reviewer slot berikutnya (cek plist + CronLog besok 17:30) | impact_check_due: 2026-10-12 17:35 WIB (CronLog resolve-predictions success baru muncul HANYA setelah owner reload launchd)
+- Rollback: n/a — host plist; backup plist .bak-20261011
