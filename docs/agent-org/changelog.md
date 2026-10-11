@@ -375,3 +375,12 @@
 - QA: reviewer source (spec) + CTO eksekusi; QA reviewer verify D+1 rutin
 - impact_check_due: 2026-10-14 (rekap mingguan berikutnya Sabtu 17 Okt bebas agregat fabricated — cek fact-check gate menutup jalur rekap)
 - Rollback: UPDATE reverse / backup db-20261011.sql.gz
+
+### 2026-10-11 17:25 — ops-2026-10-11-02 (ops, Council dispatch) — symlink-drift guard + queue anomaly fix
+- **task-id**: ops-2026-10-11-02 (tadang dup-ID 01, direname; result salah-tempel dikoreksi)
+- **type**: ops (host script + queue bookkeeping)
+- **PRD**: n/a (ops Council dispatch 11 Okt 08:15)
+- **deploy hash**: n/a — 0 deploy (host script ~/.hermes/scripts/backlog_health.py)
+- **verify bukti**: fixture /tmp/test_backlog_symlink.py 3/3 PASS (drift/sehat/missing); py_compile OK; live run exit 0; symlink ketiga file teknikal utuh (ls -L verify); forensik backlog 32==32 entries 0 data loss
+- **QA**: open — reviewer slot berikutnya (bukti: output backlog_health 07:15 besok memuat baris org sehat & 0 alert symlink)
+- **impact_check_due**: 2026-10-14 (3 hari) — pastikan guard tetap silent saat sehat + alert kalau drift kambuh

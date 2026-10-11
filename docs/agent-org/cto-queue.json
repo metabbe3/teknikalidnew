@@ -949,7 +949,7 @@
       "qa_result": "QA pass 11 Okt 09:3x spot-check slot-13:30 dipercepat (3 poin yang diminta): (1) tabel SSR live di /harga-saham-hari-ini (200, 71KB, baris BBCA Rp6.050 +0,83% vol 87.1M == DB 87.098.600); (2) parity top-15 nilai transaksi == DB exact (BBCA BBRI GOTO TLKM BUMI FORU AMMN SINI BMRI CUAN PTRO ENRG TEBE DEWA PACK); (3) sitemap entry live. Label 'sesi bursa 9 Okt 2026' EOD asli OK. PITFALL self-heal ISR (isr-19-01 pattern) tidak muncul — page penuh. AC8 EVAL GSC D+14 tetap 25 Okt."
     },
     {
-      "id": "ops-2026-10-11-01",
+      "id": "ops-2026-10-11-02",
       "status": "done",
       "priority": "P2",
       "title": "OPS (COUNCIL 11 Okt): symlink-drift guard — product-backlog.json datadir teknikal kembali jadi regular file (kambuh ke-2)",
@@ -958,8 +958,9 @@
       "created_at": "2026-10-11T08:10:00+07:00",
       "dispatched_at": "2026-10-11 08:15 WIB",
       "dispatched_by": "Sunday Council",
-      "result": "Dibukukan reviewer 11 Okt 09:2x dari bukti fisik: (1) plist live ~/Library/LaunchAgents/com.teknikalid.resolve-predictions.plist TANPA '-X POST' (hanya GET /api/cron/resolve-predictions; backup .bak-20261011 ada); (2) CronLog resolve-predictions status=success 3x - 2026-10-11 00:37:28 / 00:38:51 / 00:47:14 UTC (= 07:37/07:38/07:47 WIB), result {expired:0,resolved:0} - catch-up GET jalan; (3) impact data 0 row (konsisten klaim CTO). Catatan: run terjadwal 17:30 WIB pertama pasca-fix baru terverifikasi 12 Okt 17:35 (owner reload launchd belum terkonfirmasi) - impact_check_due TETAP 2026-10-12 17:35 WIB.",
-      "completed_at": "2026-10-11T09:20:00+07:00"
+      "result": "DONE 11 Okt 17:0x-17:2x CTO weekend sore (host-ops, 0 deploy). BOOKKEEPING FIX: entry ini tadang ber-ID duplikat ops-2026-10-11-01 + result salah-tempel (bukti resolve-predictions milik task pagi) -> rename ops-2026-10-11-02 + result asli. PEKERJAAN: (1) SYMLINK STATE: ketiga symlink teknikal (cto-queue/product-backlog/ceo-decisions) UTUH — Council sendiri restore 08:07 saat menemukan drift (.bak-20261011-council); forensik isi: repo 32 == stale 32 entries, 0 ID hilang, 7 entry diff = versi repo lebih baru (status flip 9-10 Okt) = TIDAK ADA kehilangan data. (2) ROOT-CAUSE: semua script lokal (sdlc_board/sre_brief/owner_morning_digest/backlog_health/agent_ops_page) READ-ONLY thd product-backlog; sessions.db: TIDAK ada sesi teknikal aktif jam 18:11 WIB 10 Okt (weekend-sore selesai 17:30) -> writer = job LLM atomic-replace (tmp+rename) yang memutus symlink, tak ter-atribusi presisi (pola drift #1-#5); prompt 21 job = area owner (hard rule CTO) -> fix writer-side = blocked_for_owner opsional, mitigasi = guard. (3) GUARD SHIPPED: backlog_health.py +SYMLINK_GUARDS (3 file teknikal; alert SYMLINK-DRIFT bila data-dir jadi regular file / HILANG bila symlink mati; alert-only exit 0, parity doktrin #27). FIXTURE 3/3 PASS (drift ter-detect, sehat 0 alert, missing ter-detect); py_compile OK; live run exit 0 render 3 org + 0 alert symlink. Impact: drift kambuh ter-detect max 24 jam (run 07:15 harian). Rollback: n/a (host script, tanpa backup .bak — perubahan additive; revert = hapus blok SYMLINK_GUARDS).",
+      "completed_at": "2026-10-11T17:25:00+07:00",
+      "scheduled_slot": "2026-10-11 17:00 CTO weekend sore (executed)"
     },
     {
       "id": "qa-2026-10-11-01",

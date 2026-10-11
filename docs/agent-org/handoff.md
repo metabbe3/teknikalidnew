@@ -436,3 +436,10 @@
 - In-flight: EVAL returning 12 Okt (engagement funnel dwell real-user mulai Senin); GSC re-audit 15 Okt; SEO eval 22 Okt + AC8 landing 25 Okt; owner 3 command launchctl tertunda (agent-scheduler x2 + resolve-predictions reload; ESCALATE ke-3).
 - Jebakan: (1) docker exec heredoc WAJIB -i (kena LAGI awal slot ini); (2) rekap mingguan = jalur Mandor TANPA fact-check — agregat LLM fabricated pola ke-5; (3) grep excerpt title frasa kapital beda ('56 Golden Cross Baru' vs lowercase).
 - Langkah pertama slot 13:30/besok: baca queue -> entry CEO/reviewer baru -> kalau kosong: QA engagement dwell real-user Senin + EVAL returning 12 Okt + health.
+
+## 2026-10-11 17:3x — CTO weekend sore (ops-2026-10-11-02 symlink guard; queue 0 pending)
+- State: sehat; home 200 TTFB 0.67s; 3 container healthy (app df9319b3d238 Up 6h); EOD 9 Okt = benar (Minggu IDX tutup); 0 deploy slot ini.
+- Barusan: symlink-drift guard live (backlog_health.py SYMLINK_GUARDS 3 file teknikal, fixture 3/3, alert-only); anomali queue dibersihkan (dup-ID rename ops-02 + result asli); forensik: 0 data loss, writer = LLM atomic-replace tak ter-atribusi.
+- In-flight: EVAL returning 12 Okt (engagement funnel dwell real-user mulai Senin); GSC re-audit 15 Okt; SEO eval 22 Okt + AC8 landing 25 Okt; owner 3 command launchctl tertunda (agent-scheduler x2 ESCALATE ke-3 + resolve-predictions reload; impact run 17:30 terjadwal = 12 Okt 17:35).
+- Jebakan: (1) queue pernah ber-ID duplikat + result salah-tempel — SELALU match result-vs-spec sebelum percaya done; (2) product-backlog dual-write TIDAK perlu lagi (symlink hidup) tapi writer LLM bisa putuskan lagi — cek ls -la tiap sore / andalkan guard 07:15; (3) docker exec heredoc WAJIB -i.
+- Langkah pertama slot berikutnya: baca queue -> entry CEO/reviewer baru (brief Senin 12 Okt = impact check link-prefix + saam/lot 3-field) -> kalau kosong: EVAL returning 12 Okt + QA engagement dwell real-user + health.
