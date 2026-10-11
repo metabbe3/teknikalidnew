@@ -429,3 +429,10 @@
 - Impact check 18 Okt: register views ≥15/7d + utm_medium locked_filter/results_cta di kanal register.
 - Flow (a) screener→preset→sinyal→register: 3 friction dipotong; sisa kandidat rotasi berikut = urutan preset & discoverability radar.
 - QA interaktif klik CTA = reviewer; bug baru: 0 ditemukan shift ini.
+
+## 2026-10-11 16:5x — CTO sore weekend (qa-2026-10-11-01 done)
+- State: sehat; home 200 TTFB 0.64s; 3 container healthy (app df9319b3d238 Up 3h); EOD 9 Okt = benar (Minggu IDX tutup); backup fresh 01:16; 0 deploy slot ini.
+- Barusan: rekap 10 Okt dipatch (breadth Senin 540 + GC 16/DC 3 deret 4-4-5-2-1; title+excerpt ikut 56->16, deviation dicatat); queue kini 0 pending.
+- In-flight: EVAL returning 12 Okt (engagement funnel dwell real-user mulai Senin); GSC re-audit 15 Okt; SEO eval 22 Okt + AC8 landing 25 Okt; owner 3 command launchctl tertunda (agent-scheduler x2 + resolve-predictions reload; ESCALATE ke-3).
+- Jebakan: (1) docker exec heredoc WAJIB -i (kena LAGI awal slot ini); (2) rekap mingguan = jalur Mandor TANPA fact-check — agregat LLM fabricated pola ke-5; (3) grep excerpt title frasa kapital beda ('56 Golden Cross Baru' vs lowercase).
+- Langkah pertama slot 13:30/besok: baca queue -> entry CEO/reviewer baru -> kalau kosong: QA engagement dwell real-user Senin + EVAL returning 12 Okt + health.

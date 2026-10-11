@@ -673,3 +673,9 @@ commit pre-deploy live-unknown; merge HEAD: 1e4d517
 ### 2026-10-11 08:20 — CTO weekend pagi: deploy landing /harga-saham-hari-ini (prd-2026-10-10-02)
 - Merge d4f98d0 (task 7a00c61) -> build -> image df9319b3d238 healthy 08:05. ISR bake kosong pasca-up (pola isr-19-01) self-heal TTL 300s — bukan regresi.
 - Verify live AC1-AC7 + DB parity top-10 nilai transaksi exact (BBCA Rp6.050 == DB). Rollback: git revert d4f98d0 + docker tag 39ce6b064ea5 teknikalidnew-app:latest && up -d app.
+
+## 2026-10-11 16:5x — CTO sore weekend (qa-2026-10-11-01 SQL patch rekap 10 Okt)
+- [QA PATCH] rekap-pasar-mingguan-2026-10-10: breadth Senin 401->540 (401=angka Jumat, pola qa-19-01 salah-hari) + '56 golden cross baru'->16 / 8 DC->3 / deret 20-16-15-4-1->4-4-5-2-1 (DB: smaCrossDate state-change non-gorengan; 56 tidak ter-replikasi 3 metode = fabricated).
+- DEVIANCE dicatat: title+excerpt ikut 56->16 (spec larang ubah, tapi keduanya memuat klaim fabricated; preseden qa-2026-09-20-01 title+excerpt+body).
+- Protokol: backup db-20261011 (01:16, <24h) valid; preview 1|1|1|1|1|1; 1 transaksi UPDATE 1; post DB lama=0; live 2-pass ISR. TANPA deploy.
+- Rollback: UPDATE reverse / backup db-20261011.sql.gz.

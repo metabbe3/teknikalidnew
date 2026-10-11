@@ -368,3 +368,10 @@
 - PITFALL (pattern isr-19-01 lagi): page ter-bake kosong saat docker build (DB tak reachable dari build) + window stale-while-revalidate — self-heal pasca TTL 300s; verifikasi kunci = ISR file dalam container + direct-container curl, JANGAN panic-rollback
 - QA: pembangun != pemeriksa — reviewer slot 13:30 (spot tabel + parity + sitemap) | AC8 EVAL GSC D+14: 2026-10-25 (baseline query 7 impresi pos 85.3)
 - Rollback anchor: app 39ce6b064ea5 + git revert d4f98d0
+
+### 2026-10-11 16:5x — qa-2026-10-11-01 (ops, SQL content patch, TANPA deploy)
+- task-id: qa-2026-10-11-01 | type: ops QA patch | PRD: n/a (ops)
+- deploy hash: n/a (SQL patch ISR) | verify: live '540 saham naik' x13/'401 saham naik' 0/'16 golden cross baru' x11/deret baru x2/kontrol utuh; UPDATE 1
+- QA: reviewer source (spec) + CTO eksekusi; QA reviewer verify D+1 rutin
+- impact_check_due: 2026-10-14 (rekap mingguan berikutnya Sabtu 17 Okt bebas agregat fabricated — cek fact-check gate menutup jalur rekap)
+- Rollback: UPDATE reverse / backup db-20261011.sql.gz
