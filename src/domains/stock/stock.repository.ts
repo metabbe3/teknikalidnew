@@ -225,6 +225,64 @@ export const stockRepository = {
     });
   },
 
+  // ── Harga Saham Hari Ini landing (PRD idea-2026-10-10-1) — read-only ──
+  // Top rows by transaction value (close × volume, desc) for the latest EOD date,
+  // with prev trading-day close for % change. Honors rule qa-30-01: ranking claims
+  // come from a real DB query, never hand-computed. Fail-closed: throws to caller.
+  async findTopValueTraded(limit = 15): Promise<
+    { date: Date | null; rows: { ticker: string; name: string; close: number; volume: number; prevClose: number | null }[] }
+  > {
+    const latest = await prisma.stockPrice.findFirst({
+      orderBy: { date: "desc" },
+      where: { stock: { isActive: true, assetClass: "EQUITY" } },
+      select: { date: true },
+    });
+    if (!latest) return { date: null, rows: [] };
+
+    const dayRows = await prisma.stockPrice.findMany({
+      where: { date: latest.date, stock: { isActive: true, assetClass: "EQUITY" } },
+      select: {
+        close: true,
+        volume: true,
+        stockId: true,
+        stock: { select: { ticker: true, name: true } },
+      },
+    });
+
+    const ranked = dayRows
+      .map((r) => ({
+        stockId: r.stockId,
+        ticker: r.stock.ticker,
+        name: r.stock.name,
+        close: r.close.toNumber(),
+        volume: Number(r.volume),
+      }))
+      .sort((a, b) => b.close * b.volume - a.close * a.volume)
+      .slice(0, limit);
+
+    if (ranked.length === 0) return { date: latest.date, rows: [] };
+
+    // Prev trading day = latest distinct date strictly before the EOD date.
+    const prevDateRow = await prisma.stockPrice.findFirst({
+      orderBy: { date: "desc" },
+      where: { date: { lt: latest.date }, stock: { isActive: true, assetClass: "EQUITY" } },
+      select: { date: true },
+    });
+
+    const prevCloses = prevDateRow
+      ? await prisma.stockPrice.findMany({
+          where: { date: prevDateRow.date, stockId: { in: ranked.map((r) => r.stockId) } },
+          select: { stockId: true, close: true },
+        })
+      : [];
+    const prevCloseById = new Map(prevCloses.map((r) => [r.stockId, r.close.toNumber()]));
+
+    return {
+      date: latest.date,
+      rows: ranked.map(({ stockId, ...rest }) => ({ ...rest, prevClose: prevCloseById.get(stockId) ?? null })),
+    };
+  },
+
   getSparklineData(since: Date) {
     return prisma.stockPrice.findMany({
       // EQUITY only — dormant crypto rows must not feed homepage sparklines.
