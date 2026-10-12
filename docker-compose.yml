@@ -4,10 +4,13 @@ services:
       context: .
       args:
         - NEXT_PUBLIC_CRYPTO_ENABLED=${NEXT_PUBLIC_CRYPTO_ENABLED:-}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=${DOCKER_DATABASE_URL:-postgresql://teknikalid:teknikalid_secret_2024@db:5432/teknikalid}
+      - DATABASE_URL=${DOCKER_DATABASE_URL:-postgresql://teknikalid:***@db:5432/teknikalid}
+      - MLX_AI_URL=http://host.docker.internal:8765
       - AUTH_SECRET=${AUTH_SECRET:?AUTH_SECRET is required}
       - AUTH_URL=${AUTH_URL:-https://teknikal.id}
       - AUTH_TRUST_HOST=true

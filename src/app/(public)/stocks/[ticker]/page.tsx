@@ -26,6 +26,7 @@ import { StockPaperPosition } from "@/components/paper-trading/stock-paper-posit
 import { HealthScoreDetail } from "@/components/stock/health-score-detail";
 import { StockLogo } from "@/components/stock/stock-logo";
 import { SignalVerdict } from "@/components/stock/signal-verdict";
+import { StockAiPanel } from "@/components/stock/stock-ai-panel";
 import { RelatedStocks } from "@/components/stock/related-stocks";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { IndicatorTooltip } from "@/components/ui/indicator-tooltip";
@@ -508,6 +509,27 @@ export default async function StockDetailPage({
         isGorengan={indicators?.isGorengan ?? false}
         showHypeAlert={showHypeAlert}
         summary={verdictProse}
+      />
+
+      {/* ── AI panel (MLX lokal, ringkasan naratif + Q&A) ── */}
+      <StockAiPanel
+        data={{
+          ticker,
+          name: stock.name,
+          sector: stock.sector,
+          close,
+          changePercent,
+          volume: latestVolume || null,
+          avgVol20: avgVolume || null,
+          rsi14: indicators?.rsi14 ?? null,
+          macdHist: indicators?.macdHist ?? null,
+          sma20: indicators?.sma20 ?? null,
+          sma50: indicators?.sma50 ?? null,
+          sma200: indicators?.sma200 ?? null,
+          signalLabel: indicators?.signalLabel ?? null,
+          high52: detail.week52High ?? null,
+          low52: detail.week52Low ?? null,
+        }}
       />
 
       {/* Price header (light broadsheet) */}
