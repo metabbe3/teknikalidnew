@@ -749,48 +749,18 @@ export default async function StockDetailPage({
                   {changePercent !== null && ` (${formatPercent(changePercent)})`}
                   {latestHigh && latestLow && <> · <span className="font-semibold text-text-primary">Range:</span> {formatPrice(latestLow)} — {formatPrice(latestHigh)}</>}
                 </p>
-                {fundamentals && (
-                  <p className="text-text-secondary">
-                    <span className="font-semibold text-text-primary">Fundamental:</span>
-                    {fundamentals.pe !== null && ` P/E ${fundamentals.pe.toFixed(1)}`}
-                    {fundamentals.pb !== null && ` · P/B ${fundamentals.pb.toFixed(1)}`}
-                    {fundamentals.marketCap !== null && ` · Market Cap Rp${(fundamentals.marketCap / 1e12).toFixed(1)}T`}
-                  </p>
-                )}
+                <p className="text-text-secondary">
+                  <span className="font-semibold text-text-primary">Fundamental:</span>{' '}
+                  P/E, P/B, dan kapitalisasi pasar — <span className="font-medium text-accent">gratis setelah daftar</span>.
+                </p>
               </div>
               <div className="space-y-2">
                 <p className="text-text-secondary">
-                  <span className="font-semibold text-text-primary">RSI (14):</span> {indicators.rsi14?.toFixed(1) ?? "—"}
-                  {' '}
-                  <span className="text-text-tertiary">
-                    {indicators.rsi14 !== null ? (indicators.rsi14 > 70 ? "(Overbought)" : indicators.rsi14 < 30 ? "(Oversold)" : "(Normal)") : ""}
-                  </span>
-                </p>
-                <p className="text-text-secondary">
-                  <span className="font-semibold text-text-primary">MACD:</span>{' '}
-                  {indicators.macdHist !== null ? (indicators.macdHist > 0 ? "Bullish" : "Bearish") : "—"}
-                  {' '}
-                  {indicators.adx !== null && `· ADX ${indicators.adx.toFixed(0)} (${indicators.adx > 25 ? "Tren Kuat" : "Tren Lemah"})`}
-                </p>
-                <p className="text-text-secondary">
-                  <span className="font-semibold text-text-primary">SMA:</span>
-                  {indicators.sma20 !== null && close > indicators.sma20 ? " ▲ di atas SMA20" : indicators.sma20 !== null ? " ▼ di bawah SMA20" : ""}
-                  {indicators.sma50 !== null && close > indicators.sma50 ? " · ▲ di atas SMA50" : indicators.sma50 !== null ? " · ▼ di bawah SMA50" : ""}
-                  {indicators.sma200 !== null && close > indicators.sma200 ? " · ▲ di atas SMA200" : indicators.sma200 !== null ? " · ▼ di bawah SMA200" : ""}
+                  <span className="font-semibold text-text-primary">Detail indikator:</span>{' '}
+                  nilai RSI, MACD, ADX, dan posisi SMA real-time — <span className="font-medium text-accent">buka gratis setelah daftar</span>.
                 </p>
               </div>
             </div>
-            {tradingPlan && (
-              <div className="border-t border-border pt-3 text-sm text-text-secondary">
-                <p className="font-semibold text-text-primary mb-1">Trading Plan Hari Ini:</p>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  <div><span className="text-text-tertiary text-xs">Entry</span><p className="font-mono">{formatPrice(tradingPlan.entry)}</p></div>
-                  <div><span className="text-text-tertiary text-xs">Target</span><p className="font-mono text-bullish">{formatPrice(tradingPlan.tp1)}</p></div>
-                  <div><span className="text-text-tertiary text-xs">Stop Loss</span><p className="font-mono text-bearish">{formatPrice(tradingPlan.sl)}</p></div>
-                  <div><span className="text-text-tertiary text-xs">Risk/Reward</span><p className="font-mono">1:{tradingPlan.riskReward.toFixed(1)}</p></div>
-                </div>
-              </div>
-            )}
             <div className="border-t border-border pt-3">
               <RegistrationInlinePrompt ticker={ticker} />
             </div>
