@@ -80,6 +80,22 @@ function StructuredSummary({ summary, ticker, name }: { summary: string; ticker:
   );
 }
 
+export function StockAiModalButton({ ticker, name }: { ticker: string; name: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium border border-accent/30 text-accent hover:bg-accent/10 transition-all press-scale"
+        aria-label={`Analisa AI ${name}`}
+      >
+        <span aria-hidden="true">✨</span> Analisa AI
+      </button>
+      {open && <StockAiModal ticker={ticker} name={name} onClose={() => setOpen(false)} />}
+    </>
+  );
+}
+
 export function StockAiModal({ ticker, name, onClose }: { ticker: string; name: string; onClose: () => void }) {
   const [summary, setSummary] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);

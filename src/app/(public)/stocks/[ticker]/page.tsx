@@ -26,6 +26,7 @@ import { StockPaperPosition } from "@/components/paper-trading/stock-paper-posit
 import { HealthScoreDetail } from "@/components/stock/health-score-detail";
 import { StockLogo } from "@/components/stock/stock-logo";
 import { StockAiPanel } from "@/components/stock/stock-ai-panel";
+import { StockAiModalButton } from "@/components/stock/stock-ai-modal";
 import { RelatedStocks } from "@/components/stock/related-stocks";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { IndicatorTooltip } from "@/components/ui/indicator-tooltip";
@@ -613,6 +614,7 @@ export default async function StockDetailPage({
                     </p>
                   )}
                   <div className="mt-3 flex flex-wrap items-center justify-end gap-2 opacity-90">
+                    <StockAiModalButton ticker={ticker} name={stock.name} />
                     <StockActionBadge ticker={ticker} />
                     <ThesisButton ticker={ticker} />
                     <Link

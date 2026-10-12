@@ -71,7 +71,8 @@ const nextConfig: NextConfig = {
         source: "/(.*)",
         headers: [
           { key: "X-Frame-Options", value: "DENY" },
-          { key: "X-Content-Type-Options", value: "nosniff" },
+          // X-Content-Type-Options dipindah ke proxy.ts (conditional — RSC payload tanpa nosniff,
+          // Safari iOS men-download text/x-component+nosniff; bug dialog download iPhone 12 Okt)
           { key: "X-XSS-Protection", value: "1; mode=block" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           {
