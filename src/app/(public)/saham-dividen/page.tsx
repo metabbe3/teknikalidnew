@@ -6,7 +6,7 @@ import { SITE_URL } from "@/lib/constants";
 import { stripJk } from "@/lib/utils";
 import Link from "next/link";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Daftar Saham Dividen Tinggi Indonesia — Yield Terbaru",
