@@ -19,15 +19,18 @@ interface StockPaperPositionProps {
 }
 
 export function StockPaperPosition({ ticker, entryPrice, tp, sl }: StockPaperPositionProps) {
-  const { data: session } = useSession();
-  const { data: position, isLoading } = useStockPosition(ticker);
+  const { data: session, status } = useSession();
+  // ANON GUARD: jangan fetch endpoint auth (/api/paper-trading/stock/*) sebelum session diketahui —
+  // fetch 401 berulang (refetchInterval 30s) di iOS Safari memicu prompt "download TICKER" (owner report 12 Okt).
+  const enabled = status === "authenticated";
+  const { data: position, isLoading } = useStockPosition(ticker, enabled);
   const closePosition = useClosePosition();
   const [showTradeModal, setShowTradeModal] = useState(false);
   const [tradeSide, setTradeSide] = useState<"BUY" | "SELL">("BUY");
   const [confirmClose, setConfirmClose] = useState(false);
   const { toast } = useToast();
 
-  if (!session?.user) {
+  if (!enabled || !session?.user) {
     return <PaperTradingTeaser ticker={ticker} entryPrice={entryPrice} tp={tp} sl={sl} />;
   }
 

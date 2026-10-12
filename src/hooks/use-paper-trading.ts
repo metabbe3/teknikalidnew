@@ -287,7 +287,7 @@ export interface StockPosition {
   }[];
 }
 
-export function useStockPosition(ticker: string) {
+export function useStockPosition(ticker: string, enabled = true) {
   return useQuery<StockPosition | null>({
     queryKey: ["paper-trading", "stock-position", ticker],
     queryFn: async () => {
@@ -296,6 +296,7 @@ export function useStockPosition(ticker: string) {
       const json = await res.json();
       return json.data;
     },
+    enabled,
     retry: false,
     refetchInterval: 30000,
   });
