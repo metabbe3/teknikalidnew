@@ -1,12 +1,84 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { parseAiText, shareAiStock } from "@/components/stock/stock-ai-shared";
 
 /**
  * Modal AI untuk stock-card di halaman /stocks — analisa + tanya saham
  * tanpa pindah halaman. Data diambil dari endpoint ringkas /api/ai/stock
  * (ticker saja → server lengkapi indikator) supaya card list tetap ringan.
  */
+
+function StructuredSummary({ summary, ticker, name }: { summary: string; ticker: string; name: string }) {
+  const parsed = parseAiText(summary);
+  const [shareState, setShareState] = useState<"idle" | "ok" | "copied" | "fail">("idle");
+
+  async function onShare() {
+    const r = await shareAiStock(name, ticker, parsed);
+    setShareState(r === "shared" ? "ok" : r === "copied" ? "copied" : "fail");
+    setTimeout(() => setShareState("idle"), 2000);
+  }
+
+  // Fallback kalau model tak ikut format — render polos
+  if (!parsed.ringkasan && parsed.insights.length === 0) {
+    return <div className="text-sm text-text-secondary leading-relaxed whitespace-pre-line">{parsed.raw}</div>;
+  }
+
+  return (
+    <div className="space-y-4">
+      {parsed.ringkasan && (
+        <div>
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-accent">✨ AI Summary</span>
+          </div>
+          <p className="text-sm text-text-secondary leading-relaxed">{parsed.ringkasan}</p>
+        </div>
+      )}
+
+      {parsed.insights.length > 0 && (
+        <div className="rounded-lg bg-bg-tertiary/60 border border-border p-3">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary mb-2">Insight</p>
+          <ul className="space-y-1.5">
+            {parsed.insights.map((i, idx) => (
+              <li key={idx} className="text-[13px] text-text-secondary leading-relaxed flex gap-1.5">
+                <span className="text-accent shrink-0">•</span>
+                <span>{i}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {parsed.drivers.length > 0 && (
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary mb-2">Key Drivers</p>
+          <ul className="space-y-1.5">
+            {parsed.drivers.map((d, idx) => (
+              <li key={idx} className="text-[13px] text-text-secondary leading-relaxed flex gap-1.5">
+                <span className="text-bullish shrink-0">▸</span>
+                <span>{d}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {parsed.level && (
+        <div className="text-[12px] text-text-tertiary border-t border-border pt-2.5 font-medium">
+          📍 {parsed.level}
+        </div>
+      )}
+
+      <button
+        onClick={onShare}
+        className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-accent/40 text-accent text-sm font-medium hover:bg-accent/10 transition-colors"
+      >
+        {shareState === "ok" ? "✓ Terbagikan" : shareState === "copied" ? "✓ Tersalin ke clipboard" : shareState === "fail" ? "Gagal membagikan" : "📤 Bagikan Analisa"}
+      </button>
+      <p className="text-[10px] text-text-tertiary text-center">Data teknikal, bukan rekomendasi beli — teknikal.id</p>
+    </div>
+  );
+}
 
 export function StockAiModal({ ticker, name, onClose }: { ticker: string; name: string; onClose: () => void }) {
   const [summary, setSummary] = useState<string | null>(null);
@@ -111,9 +183,7 @@ export function StockAiModal({ ticker, name, onClose }: { ticker: string; name: 
             </div>
           )}
           {error && <p className="text-sm text-bearish">{error}</p>}
-          {summary && (
-            <div className="text-sm text-text-secondary leading-relaxed whitespace-pre-line">{summary}</div>
-          )}
+          {summary && <StructuredSummary summary={summary} ticker={ticker} name={name} />}
 
           {askOpen ? (
             <div className="space-y-2 border-t border-border pt-3">

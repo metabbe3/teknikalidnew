@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useToast } from "@/components/paper-trading/toast";
+import { parseAiText, shareAiStock } from "@/components/stock/stock-ai-shared";
 
 /**
  * Tombol "✨ Ringkas AI" + panel "Tanya saham ini" — halaman detail saham.
@@ -57,6 +58,72 @@ export interface StockAiData {
   listedShares?: number | null;
   foreignOwnershipPercent?: number | null;
   listingDate?: string | null;
+}
+
+
+function StructuredPanelSummary({ summary, ticker, name }: { summary: string; ticker: string; name: string }) {
+  const parsed = parseAiText(summary);
+  const [shareState, setShareState] = useState<"idle" | "ok" | "copied" | "fail">("idle");
+
+  async function onShare() {
+    const r = await shareAiStock(name, ticker, parsed);
+    setShareState(r === "shared" ? "ok" : r === "copied" ? "copied" : "fail");
+    setTimeout(() => setShareState("idle"), 2000);
+  }
+
+  if (!parsed.ringkasan && parsed.insights.length === 0) {
+    return <p className="mt-3 text-sm leading-relaxed text-text-secondary whitespace-pre-line">{parsed.raw}</p>;
+  }
+
+  return (
+    <div className="mt-3 space-y-3">
+      {parsed.ringkasan && (
+        <p className="text-sm leading-relaxed text-text-secondary">{parsed.ringkasan}</p>
+      )}
+
+      {parsed.insights.length > 0 && (
+        <div className="rounded-lg bg-bg-tertiary/60 border border-border p-3">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary mb-2">Insight</p>
+          <ul className="space-y-1.5">
+            {parsed.insights.map((i, idx) => (
+              <li key={idx} className="text-[13px] text-text-secondary leading-relaxed flex gap-1.5">
+                <span className="text-accent shrink-0">•</span>
+                <span>{i}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {parsed.drivers.length > 0 && (
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary mb-2">Key Drivers</p>
+          <ul className="space-y-1.5">
+            {parsed.drivers.map((d, idx) => (
+              <li key={idx} className="text-[13px] text-text-secondary leading-relaxed flex gap-1.5">
+                <span className="text-bullish shrink-0">▸</span>
+                <span>{d}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {parsed.level && (
+        <div className="text-[12px] text-text-tertiary font-medium">📍 {parsed.level}</div>
+      )}
+
+      <div className="flex items-center justify-between gap-3 pt-1">
+        <button
+          onClick={onShare}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-accent/40 text-accent text-xs font-medium hover:bg-accent/10 transition-colors"
+        >
+          {shareState === "ok" ? "✓ Terbagikan" : shareState === "copied" ? "✓ Tersalin" : shareState === "fail" ? "Gagal" : "📤 Bagikan"}
+        </button>
+        <p className="text-[10px] text-text-tertiary text-right">Data teknikal, bukan rekomendasi beli</p>
+      </div>
+    </div>
+  );
 }
 
 export function StockAiPanel({ data }: { data: StockAiData }) {
@@ -128,9 +195,7 @@ export function StockAiPanel({ data }: { data: StockAiData }) {
       {loading && <div className="mt-3 skeleton-shimmer h-16 rounded-lg" />}
 
       {summary && !loading && (
-        <p className="mt-3 text-sm leading-relaxed text-text-secondary whitespace-pre-line">
-          {summary}
-        </p>
+        <StructuredPanelSummary summary={summary} ticker={data.ticker} name={data.name} />
       )}
 
       {!summary && !loading && (
