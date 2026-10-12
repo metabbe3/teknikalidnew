@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { parseAiText, shareAiStock } from "@/components/stock/stock-ai-shared";
 
 /**
@@ -97,6 +98,7 @@ export function StockAiModalButton({ ticker, name }: { ticker: string; name: str
 }
 
 export function StockAiModal({ ticker, name, onClose }: { ticker: string; name: string; onClose: () => void }) {
+  const [mounted, setMounted] = useState(false);
   const [summary, setSummary] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -132,6 +134,7 @@ export function StockAiModal({ ticker, name, onClose }: { ticker: string; name: 
   }, [ticker, name]);
 
   // Close on Escape + lock scroll
+  useEffect(() => { setMounted(true); }, []);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", onKey);
@@ -157,7 +160,9 @@ export function StockAiModal({ ticker, name, onClose }: { ticker: string; name: 
     }
   }
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <div
       className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-6"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
@@ -234,6 +239,7 @@ export function StockAiModal({ ticker, name, onClose }: { ticker: string; name: 
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
