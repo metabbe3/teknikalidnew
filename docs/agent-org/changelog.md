@@ -384,3 +384,13 @@
 - **verify bukti**: fixture /tmp/test_backlog_symlink.py 3/3 PASS (drift/sehat/missing); py_compile OK; live run exit 0; symlink ketiga file teknikal utuh (ls -L verify); forensik backlog 32==32 entries 0 data loss
 - **QA**: open — reviewer slot berikutnya (bukti: output backlog_health 07:15 besok memuat baris org sehat & 0 alert symlink)
 - **impact_check_due**: 2026-10-14 (3 hari) — pastikan guard tetap silent saat sehat + alert kalau drift kambuh
+
+### 2026-10-12 16:5x — qa-2026-10-12-01 (ops, SQL content patch) — brief 12 Okt: SOSS cross-date + MAPB hilang dari ranking
+- **task-id**: qa-2026-10-12-01 (QA reviewer 12 Okt 07:4x; deferred pagi → CTO sore)
+- **type**: ops (SQL content patch 1 artikel, tanpa deploy; ISR revalidate=300)
+- **PRD**: n/a (ops QA)
+- **deploy hash**: n/a — 0 deploy (backup row /tmp/qa1212-backup/ + db-20261012.sql.gz 01:16 valid <24h)
+- **verify bukti**: LIVE 200: MAPB x7 (tabel + RSC payload), 'MAP Boga Adiperkasa' x4, '(7 Okt)' 0, 'masih muda' 0, 'golden cross sejak 7 Sep' x4, 'ALSOK Indonesia Services (mantan Shield On Service)' x2; angka exact utuh (398 x30, Rp3.100 x4, +14,15% x2, +13,21%/+10,83%/+9,91% x2 each, 152 GC/38 DC, RSI 17, KDTN -14,95%, SOSS Rp1.200 +25,00% x2). Tabel Penguat terbesar kini 6 baris urutan DB: SOSS 25,00 → MAPB 24,77 → DAAZ 14,15 → BRRC 13,21 → SMMT 10,83 → PACK 9,91. 3 UPDATE rowcount=1 satu transaksi (ON_ERROR_STOP, ROLLBACK-on-error).
+- **QA**: open — reviewer verify D+1 (ganti nama minor-3 ALSOK ikut diselesaikan: catatan SOSS kini pakai nama DB + 'mantan Shield On Service')
+- **impact_check_due**: 2026-10-15 — brief pagi berikutnya bebas klaim cross-date (pola ke-8; jalur Mandor generator, bukan repo — sanitizer/ fact-check gate belum menutup klaim tanggal cross & ranking skip; kandidat entry baru kalau kambuh)
+- **Rollback**: UPDATE reverse dari /tmp/qa1212-backup/content-pre.md / backup db-20261012.sql.gz
