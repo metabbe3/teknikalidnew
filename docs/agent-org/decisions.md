@@ -679,3 +679,47 @@ commit pre-deploy live-unknown; merge HEAD: 1e4d517
 - DEVIANCE dicatat: title+excerpt ikut 56->16 (spec larang ubah, tapi keduanya memuat klaim fabricated; preseden qa-2026-09-20-01 title+excerpt+body).
 - Protokol: backup db-20261011 (01:16, <24h) valid; preview 1|1|1|1|1|1; 1 transaksi UPDATE 1; post DB lama=0; live 2-pass ISR. TANPA deploy.
 - Rollback: UPDATE reverse / backup db-20261011.sql.gz.
+
+## 2026-10-12 08:2x — [OWNER dispatch "fix yang untuk owner"] DRIFT KE-3: ROOT CAUSE DITEMUKAN & DIPATCH — OPSI B DIGANTIKAN FIX AKAR
+- FORENSIK LANJUTAN: writer drift-3 (06:48) = QA Verifier manual owner-session (backup .bak-qa1012 06:47 → os.replace tmp→path). POLA BUG: os.replace ke path SYMLINK menimpa symlink jadi regular file. BUKAN job LLM — agent-utama sendiri. Ini juga menjelaskan drift 1-2 (jalur tulis atomik sama di tools owner/dashboards).
+- FIX AKAR (symlink-aware write): sdlc_board.py _mutate kini realpath-resolve sebelum os.replace. E2E verified: action dispatch prd-2026-10-02-01 OK + symlink tetap symlink ✅.
+- QA gate job prompt +[GUARD SYMLINK] rule (realpath dulu, baru atomic-write).
+- OPSI B (pindah semua writer ke jalur repo) TIDAK perlu — akar sudah dipatch di jalur tulis, bukan di jalur file. Guard backlog_health 07:15 tetap sebagai tripwire.
+- Launchctl "tertunda ke-5": SUDAH LUNAS 11 Okt (agent-hub CronLog success tiap 30mnt; resolve 4x success, on-schedule) — eskalasi CEO/CTO basi, lesson: cek CronLog sebelum eskalasi.
+
+## 2026-10-12 08:5x — [OWNER] AGENT BARU: TeknikalID Backoffice Builder (b4d3c8ed3b1c) + hivePOS full-delegasi
+- Owner: hivePOS dikerjakan agent-nya sendiri (perhatian owner pindah); teknikal.id = fokus utama, area backoffice/admin kurang tergarap ("admin no update": 12/26 halaman tak tersentuh sejak Juni).
+- Mandat backoffice: matangkan fitur + buang yang tak berguna + lebih banyak kontrol dari backoffice + more data/insight. Best practice dipilih builder; halaman kandidat-buang = owner approve dulu.
+- Job: slot 03:00 WIB harian (setelah CTO slot2, sebelum QA gate 03:30), glm-5.3 pinned, entry prefix bo-* di cto-queue, max 1 deploy/slot, hard rule DB read-only + no market-hours deploy.
+- Seed entry: bo-2026-10-13-01 audit ronde-1 (klasifikasi 26 halaman → matriks + 3 prioritas).
+
+## 2026-10-12 09:0x — [OWNER dispatch "curi & implement sekarang"] 3 fitur kompetitor live (1 deploy)
+- Sumber analisa: purbayasadewa.id charting (70+ indikator, berhenti di chart, tanpa analisa). Dicuri yang murah-bernilai, bukan perang indikator.
+- (1) OHLC + 52-week strip di header halaman saham — ANON-visible (dulu cuma authed KeyStatistics): Buka/Tertinggi/Terendah/Volume/Rentang-52mgg/Posisi-52mgg bar + label "Penutupan <tanggal>". SSR = SEO instant utk ribuan halaman saham.
+- (2) Toggle Log chart (lightweight-charts priceScale mode 1, live applyOptions tanpa recreate) — tooltip edukatif.
+- (3) Preset cara-baca: Klasik (SMA50/200) · Tren (SMA20/50+EMA12/26) · Momentum (RSI+MACD) · Bersih — nama = niat user (md+ toolbar).
+- Verify: tsc 0 error · commit 3 file +99 lines · build · up healthy · home 200 · SSR strip live (grep Buka/Tertinggi/52mgg OK) · logScale marker live di chunk 2445.
+- Rollback: git revert HEAD + rebuild. Positioning tetap: kami yang MEMBACAKAN chart (kompetitor = alat mentah kosong).
+
+## 2026-10-12 09:2x — [OWNER report "Momentum error value null"] FATAL FIX: panel RSI/MACD crash "Value is null"
+- GEJALA: klik preset Momentum → seluruh halaman saham crash ke error boundary "Failed to load stock / Value is null" (owner report + repro 100%: canvas 0).
+- AKAR: lightweight-charts ensureNotNull — panel RSI/MACD saat mount memanggil setVisibleRange(parentVisibleRange) SEBELUM series setData → throw. Bug LATENT sejak panel dibuat (jalur lama: dropdown Indikator khusus user login); preset Momentum baru membuka jalur ke semua visitor → kejadian pertama.
+- FIX: guard hasData (series.data().length>0) + try/catch + dep array diperluas (data props) supaya sync jalan setelah data settle — rsi-panel.tsx + macd-panel.tsx. TSC 0.
+- VERIFY LIVE: klik Momentum → NO crash, canvas 21 (RSI+MACD panel render), lanjut klik Tren→Klasik→Log semua stabil; container healthy; home 200.
+- Commits hari ini: 37e5352 (3 fitur) → fix preset anon → fix fatal ini. Rollback: git revert.
+- Lesson: fitur baru yang membuka jalur UI lama = test jalur itu juga; error boundary menelan stack — repro via DOM state (canvas count), bukan console.
+
+## 2026-10-12 09:4x — [OWNER "lakukan semua rekomendasi"] Register-funnel fix: alert-preview + channel CTA + metrik engaged
+- INSIGHT OWNER (validated data): 93% traffic anon, gratisan sudah lengkap → register flat (39→79 IP naik, register 2→3). Value terkuat (alert/watchlist) TERSEMBUNYI di balik login. Jangan rapat gate (SEO 72% traffic butuh halaman kaya) — PERLIHATKAN yang hidden.
+- (1) AlertPreviewCard: anon di halaman saham PUNYA sinyal aktif (signalLabel non-netral, SSR) — "TICKER sedang mengirim sinyal [label]" + benefit alert otomatis + CTA daftar + channel CTA compact. Netral = tidak render (tak spam).
+- (2) ChannelCta (t.me/teknikalid default, env NEXT_PUBLIC_TELEGRAM_CHANNEL_URL utk final): /stocks bawah LoginGate + dalam alert card. Owned audience.
+- (3) teknikalid_ceo_brief.py +engaged_ips (anon IP ≥3 views) → metrik konversi jujur register/engaged (baseline: 3/30 = 10%).
+- VERIFY: tsc 0 · brief script live (engaged 30) · deploy healthy · ADRO (sinyal Bearish fresh): 3 marker live SSR ×2 · BBCA netral: 0 (benar, tak spam) · VBG stale-indicator: tak render (edge case tercatat: indicator worker skip beberapa ticker sejak Juli — note utk CTO).
+- Catatan: cloudflare edge cache bisa tunda 5-15mnt di halaman non-populer; origin verified langsung.
+
+## 2026-10-12 — SEO batch (owner: "Dispatch agent check all SEO + optimized now")
+- Sitemap shortlist 150→500 saham (kriteria avg20 nilai transaksi 30 hari, stabil vs spike harian) + GSC intent list CPRO/MAPB/SOSS/DVLA/ELTY wajib masuk — commit 53acd27. Temuan dasar: top query GSC halamannya tak tersubmit (agent SEO audit 12 Okt).
+- Title halaman saham: "BBCA — Bank Central Asia" → "Bank Central Asia ( BBCA ) Harga Saham Hari Ini" — match GSC intent (CTR 0.8%, pos 67) — commit 1f37ad9. JSON-LD sudah ada 2 blok (skip). Meta akademi/berita/landing 34/34 unik (verified agent).
+- Agent SEO retry timeout 600s (46 calls) setelah riset lengkap — implementasi diselesaikan manual main-agent.
+- GSC daily validation cron 899e13a5a99b 06:15 (owner approved "Boleh") — silent-when-healthy; alert: Chrome mati/login expired/klik 3mg nol.
+- GSC 28d (12 Sep–9 Okt): 8 klik, 1.031 impr, CTR 0.8%, pos 67.4; tren 26→3→2→1 — posisi melorot dari 28.9 (3bln). Fix title+sitemap menarget ini. Resubmit sitemap di GSC = owner 1 klik.
