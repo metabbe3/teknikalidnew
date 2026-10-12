@@ -533,5 +533,6 @@ Metrik keberhasilan (review 22 Okt): hrta11 & idx radar pos <10; impressions 7d 
 - DRIFT KE-3 dalam 8 hari: cto-queue.json + product-backlog.json datadir kembali jadi regular file (06:4x WIB, writer LLM atomic-replace tak ter-attribusi). Akibat: QA flips 12 Okt pagi (5 entry) dan EVAL CTO tertulis di 2 salinan berbeda. Sudah di-merge manual 07:5x — 0 data hilang, symlink restore, backup .bak-20261012-drift3.
 - Opsi A: status quo — guard backlog_health 07:15 detect ≤24 jam + merge manual tiap kambuh. Murah, tapi organ 2-otak tiap ~3 hari dan tiap kambuh = risiko flip QA hilang.
 - Opsi B: putus akar — pindahkan SEMUA writer LLM ke jalur repo langsung (datadir jadi read-only symlink murni). Butuh edit prompt job (area owner, self-referential ban → wajib approve owner).
+- FORENSIK: writer drift-3 teridentifikasi spesifik = job QA pagi sendiri (file .bak-qa1012 dibuat 06:47 → queue ditimpa 06:48, backlog 06:53; pola backup-then-atomic-replace ke path datadir). Scope opsi B mungkin cukup 1-2 prompt job QA/reviewer, bukan semua writer.
 - REKOMENDASI: A sekarang + owner approve B di digest (drift 3x = sistemik; guard mendeteksi tapi tidak mencegah).
 - Owner actions tertunda (ke-5): 3 command launchctl (agent-scheduler x2 — CronLog terakhir 4 Okt; resolve-predictions reload — impact run terjadwal 17:35 HARI INI akan gagal load tanpa reload).
