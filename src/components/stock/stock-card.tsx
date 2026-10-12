@@ -36,6 +36,7 @@ export function StockCard({ ticker, name, sector, close, change, changePercent, 
   return (
     <Link
       href={`/stocks/${ticker}`}
+      prefetch={false}
       className={`block rounded-xl ${bgTint} depth-shadow p-4 hover:depth-shadow-hover transition-all duration-200 press-scale ${colorAccent}`}
       aria-label={`${stripJk(ticker)} — ${name}, ${close !== null ? formatPrice(close) : "no price"}${changePercent !== null ? `, ${changePercent >= 0 ? "+" : ""}${changePercent.toFixed(2)}%` : ""}`}
     >

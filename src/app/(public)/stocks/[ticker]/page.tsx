@@ -568,6 +568,7 @@ export default async function StockDetailPage({
                     <ThesisButton ticker={ticker} />
                     <Link
                       href={`/compare?s=${ticker}`}
+                      prefetch={false}
                       className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium border border-border text-text-tertiary hover:bg-bg-hover hover:text-text-primary transition-all press-scale"
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
