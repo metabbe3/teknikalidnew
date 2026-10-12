@@ -91,7 +91,7 @@ export function PaperTradingTeaser({
         )}
 
         <Link
-          href={`/auth/signin?callbackUrl=${encodeURIComponent(`/paper-trading?ticker=${ticker}`)}`}
+          href={`/auth/signin?callbackUrl=${encodeURIComponent(`/paper-trading?ticker=${encodeURIComponent(ticker)}`)}`}
           className="press-scale inline-flex items-center gap-1.5 text-xs font-bold bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors shadow-sm shadow-teal-600/20"
         >
           Daftar & Mulai Simulasi Gratis
