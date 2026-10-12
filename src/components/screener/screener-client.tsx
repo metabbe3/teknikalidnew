@@ -239,7 +239,10 @@ function ScreenerPageContent({ assetClass, linkBase = "/stocks" }: { assetClass?
           />
         ) : (
           <div className="space-y-3">
-            <SaveScreenPrompt filters={guestSaveFilters} next={currentUrl} />
+            {/* Save-intent only when there's an actual screen to save — hide on fresh guest entry (noise) */}
+            {Object.keys(guestSaveFilters).length > 0 && (
+              <SaveScreenPrompt filters={guestSaveFilters} next={currentUrl} />
+            )}
             <SavedScreensPanel />
           </div>
         )}
