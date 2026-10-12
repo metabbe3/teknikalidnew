@@ -13,6 +13,40 @@ const MLX_URL = process.env.MLX_AI_URL ?? "http://host.docker.internal:8765";
 const RATE_LIMIT = 20; // per jam
 const buckets = new Map<string, { count: number; resetAt: number }>();
 
+/**
+ * Answer cache: pertanyaan serupa + data screener sama → jawaban cached,
+ * AI (MLX) tidak dijalankan ulang. Key = preset + hash isi data.
+ * Data berubah (update 5 mnt) → hash beda → cache baru. Max 64 entri (LRU-ish).
+ */
+type CachedAnswer = { text: string; presetLabel: string; matched: number; stocks: unknown[]; at: number };
+const answerCache = new Map<string, CachedAnswer>();
+const CACHE_MAX = 64;
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 mnt — selaras refresh data intraday
+
+function dataSignature(rows: Record<string, unknown>[]): string {
+  // ticker + close + skor = cukup utk deteksi perubahan data
+  return rows.map((r) => `${r.ticker}:${r.close}:${r.signalScore}`).join("|").slice(0, 4000);
+}
+
+function cacheGet(key: string): CachedAnswer | null {
+  const hit = answerCache.get(key);
+  if (!hit) return null;
+  if (Date.now() - hit.at > CACHE_TTL_MS) {
+    answerCache.delete(key);
+    return null;
+  }
+  return hit;
+}
+
+function cacheSet(key: string, val: CachedAnswer): void {
+  if (answerCache.size >= CACHE_MAX) {
+    // hapus entri terlama
+    const oldest = [...answerCache.entries()].sort((a, b) => a[1].at - b[1].at)[0];
+    if (oldest) answerCache.delete(oldest[0]);
+  }
+  answerCache.set(key, val);
+}
+
 function rateLimited(ip: string): boolean {
   const now = Date.now();
   const b = buckets.get(ip);
@@ -93,6 +127,22 @@ export async function POST(req: NextRequest) {
     signalScore: r.signalScore ?? null,
   }));
 
+  const sig = dataSignature(rows);
+  const cacheKey = `${chosen.preset}::${sig}`;
+  const cached = cacheGet(cacheKey);
+  if (cached) {
+    return NextResponse.json({
+      ok: true,
+      text: cached.text,
+      preset: chosen.preset,
+      presetLabel: cached.presetLabel,
+      matched: cached.matched,
+      stocks: cached.stocks,
+      ms: 0,
+      cached: true,
+    });
+  }
+
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 60_000);
@@ -113,7 +163,7 @@ export async function POST(req: NextRequest) {
     }
 
     const data = (await res.json()) as { ok?: boolean; text?: string; ms?: number };
-    return NextResponse.json({
+    const payload = {
       ok: true,
       text: data.text ?? "",
       preset: chosen.preset,
@@ -121,7 +171,9 @@ export async function POST(req: NextRequest) {
       matched: stocks.length,
       stocks, // tabel: sama dengan data screener, client render
       ms: data.ms ?? null,
-    });
+    };
+    cacheSet(cacheKey, { text: payload.text, presetLabel: payload.presetLabel, matched: payload.matched, stocks, at: Date.now() });
+    return NextResponse.json(payload);
   } catch {
     return NextResponse.json(
       { error: "AI lokal tidak merespons — coba lagi sebentar." },
