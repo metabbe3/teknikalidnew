@@ -845,7 +845,7 @@ export const stockRepository = {
       SELECT s.ticker, s.name, s.sector, sp.close, sf.pe, sf.pb, sf.eps, sf."dividendYield", sf."marketCap"
       FROM "StockFundamental" sf
       JOIN "Stock" s ON s.id = sf."stockId"
-      JOIN "StockPrice" sp ON sp."stockId" = s.id AND sp.date = sf.date
+      JOIN LATERAL (SELECT sp2.close AS close FROM "StockPrice" sp2 WHERE sp2."stockId" = s.id ORDER BY sp2.date DESC LIMIT 1) sp ON true
       WHERE sf.date = ${latestDate} AND s."isActive" = true
         AND sf.pe IS NOT NULL AND sf.pe > 0 AND sf.pe < 15
         AND sf.pb IS NOT NULL AND sf.pb < 1.5
@@ -860,7 +860,7 @@ export const stockRepository = {
       SELECT s.ticker, s.name, s.sector, sp.close, sf.pe, sf.pb, sf.eps, sf."dividendYield", sf."marketCap"
       FROM "StockFundamental" sf
       JOIN "Stock" s ON s.id = sf."stockId"
-      JOIN "StockPrice" sp ON sp."stockId" = s.id AND sp.date = sf.date
+      JOIN LATERAL (SELECT sp2.close AS close FROM "StockPrice" sp2 WHERE sp2."stockId" = s.id ORDER BY sp2.date DESC LIMIT 1) sp ON true
       WHERE sf.date = ${latestDate} AND s."isActive" = true
         AND sf."dividendYield" IS NOT NULL AND sf."dividendYield" > 3.0
       ORDER BY sf."dividendYield" DESC
@@ -874,7 +874,7 @@ export const stockRepository = {
       SELECT s.ticker, s.name, s.sector, sp.close, sf.pe, sf.pb, sf.eps, sf."dividendYield", sf."marketCap"
       FROM "StockFundamental" sf
       JOIN "Stock" s ON s.id = sf."stockId"
-      JOIN "StockPrice" sp ON sp."stockId" = s.id AND sp.date = sf.date
+      JOIN LATERAL (SELECT sp2.close AS close FROM "StockPrice" sp2 WHERE sp2."stockId" = s.id ORDER BY sp2.date DESC LIMIT 1) sp ON true
       WHERE sf.date = ${latestDate} AND s."isActive" = true
         AND sf."marketCap" > 50000000000000
       ORDER BY sf."marketCap" DESC
@@ -888,7 +888,7 @@ export const stockRepository = {
       SELECT s.ticker, s.name, s.sector, sp.close, sf.pe, sf.pb, sf.eps, sf."dividendYield", sf."marketCap"
       FROM "StockFundamental" sf
       JOIN "Stock" s ON s.id = sf."stockId"
-      JOIN "StockPrice" sp ON sp."stockId" = s.id AND sp.date = sf.date
+      JOIN LATERAL (SELECT sp2.close AS close FROM "StockPrice" sp2 WHERE sp2."stockId" = s.id ORDER BY sp2.date DESC LIMIT 1) sp ON true
       WHERE sf.date = ${latestDate} AND s."isActive" = true
         AND sf.pe IS NOT NULL AND sf.pe > 0 AND sf.pe < 20
         AND sf.eps IS NOT NULL
