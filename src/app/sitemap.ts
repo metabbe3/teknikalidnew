@@ -52,21 +52,45 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const tickerToStockId = new Map(stockRecords.map((s) => [s.ticker, s.id]));
   const stockIdToDate = new Map(latestPriceDates.map((p) => [p.stockId, p._max.date]));
 
-  // Sitemap shortlist: IDX40 (always) ∪ top 150 by latest-day transaction value
-  // (close × volume). The other ~800 IDX stocks stay reachable at runtime, just
-  // not promoted — they were thin pages driving the "discovered, not indexed" bucket.
+  // Sitemap shortlist: IDX40 (always) ∪ top 500 by 20-day average transaction value
+  // (close × volume) ∪ GSC top-query stocks (search intent proven). The rest stay
+  // reachable at runtime, just not promoted — thin pages drove the
+  // "discovered, not indexed" bucket. Top-500 by avg20 is stabler than single-day
+  // value (gorengan spike hari tunggal tak lolos). CPRO #304, SOSS #659, MAPB #877 —
+  // masuk lewat GSC list; DARYA query = DVLA.JK (#790).
+  const gscIntentTickers = new Set([
+    "CPRO.JK", // "cpro saham" — GSC top query, halaman tak terindeks
+    "MAPB.JK", // MAP Boga Adiperkasa — GSC query
+    "SOSS.JK", // Shield On Service — GSC query
+    "DVLA.JK", // "darya varia" = Darya-Varia Laboratoria — GSC top query
+    "ELTY.JK", // "elty" — sudah masuk top-150 tapi dijamin
+  ]);
   const liquidRows = latestDate
     ? await prisma.stockPrice.findMany({
-        where: { date: latestDate },
-        select: { close: true, volume: true, stock: { select: { ticker: true } } },
+        where: { date: { gte: new Date(latestDate.getTime() - 30 * 24 * 3600 * 1000) } },
+        select: {
+          close: true,
+          volume: true,
+          stockId: true,
+          stock: { select: { ticker: true } },
+        },
       })
     : [];
+  // avg transaction value over the window per stock (≈20 trading days in 30 calendar days)
+  const avgValueByTicker = new Map<number, { ticker: string; value: number }>();
+  for (const r of liquidRows) {
+    const v = r.close.toNumber() * Number(r.volume);
+    const cur = avgValueByTicker.get(r.stockId) ?? { ticker: r.stock.ticker, value: 0 };
+    cur.value += v;
+    avgValueByTicker.set(r.stockId, cur);
+  }
   const sitemapTickers = new Set<string>(idx40Set);
-  liquidRows
-    .map((r) => ({ ticker: r.stock.ticker, value: r.close.toNumber() * Number(r.volume) }))
+  [...avgValueByTicker.values()]
+    .map((a) => ({ ...a, value: a.value / 21 })) // avg per hari-trading
     .sort((a, b) => b.value - a.value)
-    .slice(0, 150)
+    .slice(0, 500)
     .forEach((r) => sitemapTickers.add(r.ticker));
+  gscIntentTickers.forEach((t) => sitemapTickers.add(t));
 
   // Phase 3 staged stock claim: add human-promoted wave tickers; keep unpromoted
   // wave landing articles out of the sitemap until an editor reviews them.
