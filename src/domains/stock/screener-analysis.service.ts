@@ -71,9 +71,15 @@ export const screenerAnalysisService = {
       // Fundamental jarang update (kuartalan) — pakai tanggal fundamental TERBARU sendiri,
       // BUKAN tanggal harga terbaru; kalau dipaksa sama (sf.date = harga), hasil selalu
       // kosong di hari fundamental tertinggal (repro 12 Okt: fundamental 11 Okt, harga 12 Okt).
+      // Snapshot fundamental "terisi" terakhir — sumber quotes kadang berhenti kirim
+      // kolom tertentu (dividendYield NULL sejak Yahoo API berubah) meski row harian
+      // tetap dibuat. Pakai tanggal snapshot terakhir dgn coverage kolom berarti.
       const fundDateRow = await prisma.$queryRaw<{ date: Date }[]>`
-        SELECT MAX(sf.date) AS date FROM "StockFundamental" sf
-        JOIN "Stock" s ON s.id = sf."stockId" AND s."isActive" = true`;
+        SELECT sf.date FROM "StockFundamental" sf
+        JOIN "Stock" s ON s.id = sf."stockId" AND s."isActive" = true
+        WHERE sf."dividendYield" IS NOT NULL OR sf.pe IS NOT NULL OR sf."marketCap" IS NOT NULL
+        GROUP BY sf.date HAVING COUNT(*) >= 100
+        ORDER BY sf.date DESC LIMIT 1`;
       const fundDate = fundDateRow[0]?.date;
       if (!fundDate) return [];
       const queryMap: Record<string, (d: Date) => Promise<unknown[]>> = {
