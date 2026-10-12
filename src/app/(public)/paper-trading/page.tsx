@@ -83,7 +83,10 @@ function PaperTradingDashboardRouter() {
     );
   }
 
-  const initialTicker = searchParams.get("ticker") ?? undefined;
+  const rawTicker = searchParams.get("ticker") ?? undefined;
+  // Normalisasi: terima ticker dengan atau tanpa suffix .JK (link sign-in sengaja kirim tanpa .JK
+  // agar tidak memicu dialog "download TICKER.JK" di iOS Safari — owner report 12 Okt).
+  const initialTicker = rawTicker ? `${rawTicker.replace(/\.jk$/i, "")}.JK` : undefined;
   return <PaperTradingDashboard account={account} initialTicker={initialTicker} />;
 }
 
