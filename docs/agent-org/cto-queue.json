@@ -33,7 +33,8 @@
       "rollback": "git revert da481db + rebuild; image pre: 20aa85828b93",
       "qa_verified": true,
       "qa_by": "reviewer",
-      "qa_result": "QA pass 11 Okt 09:2x (interaktif browser nyata): AC3 bintang guest persist OK (aria-pressed=true bertahan lintas hari di /stocks, guest-storage + TICKER_RE .JK b34fcc8 hidup); Radar SSR OK live ('Radar 5 Emiten Hari Ini' + 'Radar Saham IDX' di /stocks & /harga-saham-hari-ini, 200); AC1 copy-link: 23 EngagementEvent live incl. cta_click preset_copy (E2E CTO 10 Okt) - tidak direproduksi ulang, bukti DB cukup. EVAL returning-IP gate 12 Okt tetap terjadwal."
+      "qa_result": "QA pass 11 Okt 09:2x (interaktif browser nyata): AC3 bintang guest persist OK (aria-pressed=true bertahan lintas hari di /stocks, guest-storage + TICKER_RE .JK b34fcc8 hidup); Radar SSR OK live ('Radar 5 Emiten Hari Ini' + 'Radar Saham IDX' di /stocks & /harga-saham-hari-ini, 200); AC1 copy-link: 23 EngagementEvent live incl. cta_click preset_copy (E2E CTO 10 Okt) - tidak direproduksi ulang, bukti DB cukup. EVAL returning-IP gate 12 Okt tetap terjadwal.",
+      "eval_result": "EVAL returning 12 Okt 07:4x CTO pagi: 3/65 uniq IP 7d (4,6%) — belum bergerak dari baseline 5/80 (6,2%); dwell real-user baru mulai Senin 12 Okt (dwell 1 anon hari ini, 9/6anon total 36h termasuk data testing E2E). VERDICT: TERLALU DINI utk nyatakan gagal/sukses — retention loop live baru 2 hari + GSC belum reindex; re-EVAL 19 Okt pakai funnel EngagementEvent (dwell/scroll real-user minggu penuh)."
     },
     {
       "id": "wid-2026-09-27-1",
