@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { ALL_TICKERS } from "@/lib/constants";
 import { isBlocked, block as blockIp } from "@/lib/ip-blocklist";
 import { recordApiRequest } from "@/lib/api-traffic-log";
+import { accessLimitedResponse, shouldEscalateCgnat } from "@/lib/access-limit";
 
 const cspScriptSrc = process.env.NODE_ENV === "production"
   ? "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com"
@@ -249,7 +250,8 @@ export async function proxy(request: NextRequest) {
     // by the pageview route's account-ban; the session revalidates from DB within ~60s.
     if (!WHITELIST_IPS.has(ip ?? "")) {
       const session = await auth();
-      if (!session?.user) return new NextResponse(null, { status: 403 });
+      // bug-2026-10-12-01: white screen → /akses-dibatasi (authed bypass dipertahankan)
+      if (!session?.user) return accessLimitedResponse(request, 403);
     }
   }
 
@@ -285,11 +287,16 @@ export async function proxy(request: NextRequest) {
         ? { count: 1, resetAt: now + STOCK_PAGE_VIOLATION_WINDOW }
         : { count: v.count + 1, resetAt: v.resetAt };
       stockPageViolations.set(ip, entry);
-      if (entry.count >= 3) {
+      // AC5 (PRD idea-2026-10-12-2): CGNAT prefix dikenal butuh eksponen kedua
+      // (UA browser) utk eskalasi blokir 1 jam — request-count saja mengunci ribuan
+      // manusia yang berbagi 1 IP (bukti: 82% row BlockedIp = CGNAT).
+      let retryMs = RATE_WINDOW; // soft-limit: tunggu window 1 menit ini berakhir
+      if (entry.count >= 3 && shouldEscalateCgnat(ip, request.headers.get("user-agent"))) {
         blockedIps.set(ip, now + STOCK_PAGE_BLOCK_WINDOW);
+        retryMs = STOCK_PAGE_BLOCK_WINDOW; // tereskalasi: cooldown 1 jam
         blockIp(ip, "auto: stock-page scrape escalation", undefined, new Date(now + STOCK_PAGE_BLOCK_WINDOW)).catch(() => {});
       }
-      return new NextResponse(null, { status: 429 });
+      return accessLimitedResponse(request, 429, retryMs);
     }
   }
 
