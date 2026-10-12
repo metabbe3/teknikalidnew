@@ -119,6 +119,7 @@ export async function POST(req: NextRequest) {
       preset: chosen.preset,
       presetLabel: chosen.label,
       matched: stocks.length,
+      stocks, // tabel: sama dengan data screener, client render
       ms: data.ms ?? null,
     });
   } catch {

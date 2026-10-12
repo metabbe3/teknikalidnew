@@ -21,11 +21,12 @@ function AiAnswer({ text }: { text: string }) {
   return (
     <div className="space-y-1.5">
       {lines.map((line, i) => {
-        const parts = line.split(/(\[[A-Z0-9.^-]{2,12}\]\([^)]*\))/g);
+        // tangkap [TICKER](url) maupun [TICKER] polos
+        const parts = line.split(/(\[[A-Z0-9.^-]{2,12}\](?:\([^)]*\))?)/g);
         return (
           <p key={i} className="text-sm leading-relaxed text-text-primary">
             {parts.map((part, j) => {
-              const m = part.match(/^\[([A-Z0-9.^-]{2,12})\]\(([^)]*)\)$/);
+              const m = part.match(/^\[([A-Z0-9.^-]{2,12})\](?:\(([^)]*)\))?$/);
               if (m) {
                 return (
                   <a
@@ -53,6 +54,7 @@ export function ScreenerAiButton() {
   const [loading, setLoading] = useState(false);
   const [answer, setAnswer] = useState("");
   const [meta, setMeta] = useState<{ presetLabel?: string; matched?: number } | null>(null);
+  const [tableStocks, setTableStocks] = useState<{ ticker: string; name: string; close: number | null; changePercent: number | null; signalScore: number | null }[]>([]);
   const [error, setError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -75,6 +77,7 @@ export function ScreenerAiButton() {
     setError("");
     setAnswer("");
     setMeta(null);
+    setTableStocks([]);
     try {
       const res = await fetch("/api/ai/screener", {
         method: "POST",
@@ -85,6 +88,7 @@ export function ScreenerAiButton() {
       if (!res.ok) throw new Error(data.error ?? "Gagal");
       setAnswer(data.text ?? "");
       setMeta({ presetLabel: data.presetLabel, matched: data.matched });
+      setTableStocks(Array.isArray(data.stocks) ? data.stocks : []);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Terjadi error");
     } finally {
@@ -156,13 +160,50 @@ export function ScreenerAiButton() {
           {error && <p className="text-sm text-bearish">{error}</p>}
 
           {answer && (
-            <div className="space-y-2">
+            <div className="space-y-3">
               {meta && (
                 <p className="text-[11px] text-text-tertiary">
                   📊 Berdasarkan preset {meta.presetLabel} · {meta.matched} saham lolos
                 </p>
               )}
               <AiAnswer text={answer} />
+
+              {tableStocks.length > 0 && (
+                <div className="rounded-xl border border-border overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-bg-secondary text-left text-[11px] uppercase tracking-wide text-text-tertiary">
+                        <th className="px-3 py-2 font-semibold">Saham</th>
+                        <th className="px-3 py-2 font-semibold text-right">Harga</th>
+                        <th className="px-3 py-2 font-semibold text-right">Chg</th>
+                        <th className="px-3 py-2 font-semibold text-right">Skor</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tableStocks.slice(0, 10).map((s) => (
+                        <tr key={s.ticker} className="border-t border-border hover:bg-bg-hover transition-colors">
+                          <td className="px-3 py-2">
+                            <a href={`/stocks/${s.ticker}.JK`} className="font-mono text-xs font-bold text-accent hover:underline">
+                              {s.ticker}
+                            </a>
+                            <span className="ml-2 text-[11px] text-text-tertiary hidden sm:inline">{s.name}</span>
+                          </td>
+                          <td className="px-3 py-2 text-right font-mono text-xs">{s.close != null ? new Intl.NumberFormat("id-ID").format(s.close) : "–"}</td>
+                          <td className={`px-3 py-2 text-right font-mono text-xs ${(s.changePercent ?? 0) >= 0 ? "text-bullish" : "text-bearish"}`}>
+                            {s.changePercent != null ? `${s.changePercent >= 0 ? "+" : ""}${s.changePercent.toFixed(2)}%` : "–"}
+                          </td>
+                          <td className="px-3 py-2 text-right font-mono text-xs text-text-secondary">{s.signalScore != null ? s.signalScore.toFixed(2) : "–"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {tableStocks.length > 10 && (
+                    <p className="px-3 py-2 text-[11px] text-text-tertiary bg-bg-secondary">
+                      +{tableStocks.length - 10} lainnya — lihat semua di tab Screener
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>
