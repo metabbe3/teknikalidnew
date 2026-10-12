@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/layout/page-hero";
+import { AskAiCta } from "@/components/seo/ask-ai-cta";
 import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { formatPrice, formatPercent, stripJk, changeColor, rsiColor } from "@/lib/utils";
@@ -228,6 +229,9 @@ export default async function SahamStochasticOversoldPage() {
             </tbody>
           </table>
         </div>
+
+        
+        <AskAiCta question="Stochastic oversold ada?" />
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/screener" className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">

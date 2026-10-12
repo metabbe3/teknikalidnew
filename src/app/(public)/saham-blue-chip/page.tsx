@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/layout/page-hero";
+import { AskAiCta } from "@/components/seo/ask-ai-cta";
 import Link from "next/link";
 import { IDX_STOCKS, IDX40_TICKERS } from "@/lib/constants";
 import { SITE_URL } from "@/lib/constants";
@@ -107,6 +108,9 @@ export default function SahamBlueChipPage() {
             </Link>
           ))}
         </div>
+
+        
+        <AskAiCta question="Blue chip yang lagi oke?" />
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/screener" className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">🔍 Screener Lengkap</Link>

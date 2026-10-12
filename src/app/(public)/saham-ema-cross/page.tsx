@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/layout/page-hero";
+import { AskAiCta } from "@/components/seo/ask-ai-cta";
 import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
@@ -125,6 +126,9 @@ export default async function SahamEmaCrossPage() {
             </tbody>
           </table>
         </div>
+
+        
+        <AskAiCta question="EMA cross baru ada?" />
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/stocks?view=screener" className="rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-accent/90">

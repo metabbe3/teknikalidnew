@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/layout/page-hero";
+import { AskAiCta } from "@/components/seo/ask-ai-cta";
 import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { formatPrice, formatPercent, stripJk, changeColor, rsiColor } from "@/lib/utils";
@@ -110,6 +111,9 @@ export default async function SahamOverboughtPage() {
             </tbody>
           </table>
         </div>
+        
+        <AskAiCta question="Saham overbought ada?" />
+
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/saham-oversold" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">💎 Saham Oversold</Link>
           <Link href="/saham-golden-cross" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">📈 Saham Golden Cross</Link>

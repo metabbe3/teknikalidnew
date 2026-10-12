@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/layout/page-hero";
+import { AskAiCta } from "@/components/seo/ask-ai-cta";
 import { RegisterCta } from "@/components/signal/register-cta";
 import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
@@ -128,6 +129,9 @@ export default async function SahamVolumeSpikePage() {
 
           <RegisterCta slug="saham-volume-spike" />
         </div>
+
+        
+        <AskAiCta question="Volume lagi ramai di mana?" />
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/stocks?view=screener" className="rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-accent/90">

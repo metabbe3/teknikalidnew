@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/layout/page-hero";
+import { AskAiCta } from "@/components/seo/ask-ai-cta";
 import { RegisterCta } from "@/components/signal/register-cta";
 import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
@@ -224,6 +225,9 @@ export default async function SahamOversoldPage() {
 
           <RegisterCta slug="saham-oversold" />
         </div>
+
+        
+        <AskAiCta question="Saham oversold murah ada?" />
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/screener" className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">
