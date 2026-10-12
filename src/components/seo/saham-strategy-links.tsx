@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import { SectionHeading } from "@/components/ui/section-heading";
 
@@ -63,7 +66,12 @@ const STRATEGY_PAGES = [
   },
 ] as const;
 
+/** 4 kartu tampil dulu — sisanya expand. Mengurangi overwhelm mobile tanpa
+ * mengorbankan internal-link SEO (link tetap di DOM saat expand, crawlable). */
+const VISIBLE = 4;
+
 export function SahamStrategyLinks({ compact = false }: { compact?: boolean }) {
+  const [expanded, setExpanded] = useState(false);
   return (
     <section className={compact ? "space-y-3" : "space-y-4"}>
       <SectionHeading
@@ -72,11 +80,12 @@ export function SahamStrategyLinks({ compact = false }: { compact?: boolean }) {
         title="Screener Strategi Saham"
       />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {STRATEGY_PAGES.map((p) => (
+        {STRATEGY_PAGES.map((p, i) => (
           <Link
             key={p.href}
             href={p.href}
-            className="group block rounded-xl border border-border bg-bg-card p-4 hover:depth-shadow-hover transition-all"
+            data-idx={i}
+            className={`group block rounded-xl border border-border bg-bg-card p-4 hover:depth-shadow-hover transition-all ${!expanded && i >= VISIBLE ? "hidden sm:block lg:hidden xl:block" : ""}`}
           >
             <p className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors">
               {p.title}
@@ -85,6 +94,15 @@ export function SahamStrategyLinks({ compact = false }: { compact?: boolean }) {
           </Link>
         ))}
       </div>
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        aria-expanded={expanded}
+        className="mx-auto flex items-center gap-1 rounded-full border border-border bg-bg-card px-4 py-1.5 text-xs font-medium text-text-secondary hover:text-accent transition-colors"
+      >
+        {expanded ? "Sembunyikan" : `Lihat ${STRATEGY_PAGES.length - VISIBLE} strategi lainnya`}
+        <span aria-hidden className={`transition-transform ${expanded ? "rotate-180" : ""}`}>▾</span>
+      </button>
     </section>
   );
 }

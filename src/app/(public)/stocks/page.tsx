@@ -203,10 +203,9 @@ export default async function StocksPage() {
           {/* Quick discovery pills → screener tab */}
           <div className="mt-6 flex flex-wrap gap-2">
             {[
-              { label: "Sinyal Bullish", href: "/stocks?view=screener&tab=swing-trade&preset=macd_bullish" },
-              { label: "Oversold (RSI<30)", href: "/stocks?view=screener&tab=bottom-fishing&preset=rsi_oversold" },
-              { label: "Golden Cross", href: "/stocks?view=screener&tab=swing-trade&preset=golden_cross" },
-              { label: "Volume Spike", href: "/stocks?view=screener&tab=bottom-fishing&preset=volume_spike_low" },
+              { label: "📈 Lagi Naik", href: "/stocks?view=screener&tab=swing-trade&preset=macd_bullish" },
+              { label: "📉 Lagi Murah", href: "/stocks?view=screener&tab=bottom-fishing&preset=rsi_oversold" },
+              { label: "✨ Tanya AI", href: "/stocks?view=screener" },
             ].map((p) => (
               <Link
                 key={p.label}
