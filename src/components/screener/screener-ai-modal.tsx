@@ -86,6 +86,18 @@ export function ScreenerAiButton() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => setMounted(true), []);
+
+  // Deep link dari landing SEO: /stocks?view=screener&ask=<q> — buka modal + auto-isi pertanyaan
+  useEffect(() => {
+    if (!mounted) return;
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get("ask");
+    if (q && !open) {
+      setQuestion(q);
+      setOpen(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mounted]);
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
