@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { HealthScoreBadge } from "@/components/stock/health-score-badge";
 import { Sparkline } from "@/components/stock/sparkline";
+import { StockAiModal } from "@/components/stock/stock-ai-modal";
 import type { StockRow } from "@/components/stock/stock-table";
 
 interface StockCardProps {
@@ -29,11 +31,15 @@ const SIGNAL_STYLES: Record<string, string> = {
 };
 
 export function StockCard({ ticker, name, sector, close, change, changePercent, signalLabel, signalScore, isGorengan }: StockCardProps) {
+  const router = useRouter();
+  const [aiOpen, setAiOpen] = useState(false);
   const isPositive = changePercent !== null && changePercent >= 0;
   const colorAccent = changePercent === null ? "" : isPositive ? "card-bullish" : "card-bearish";
   const bgTint = changePercent === null ? "bg-bg-card" : isPositive ? "bg-bullish/[0.02]" : "bg-bearish/[0.02]";
 
   return (
+    <>
+    <div className="relative">
     <Link
       href={`/stocks/${ticker}`}
       prefetch={false}
@@ -71,13 +77,28 @@ export function StockCard({ ticker, name, sector, close, change, changePercent, 
       </div>
       <div className="mt-3 flex items-center justify-between">
         <span className="text-[10px] text-text-tertiary font-medium uppercase tracking-wider">{sector}</span>
+        <div className="flex items-center gap-1.5">
         {changePercent !== null && (
           <span className={`flex items-center justify-center w-4 h-4 rounded-full text-white text-[8px] font-bold ${isPositive ? "bg-bullish" : "bg-bearish"}`} aria-hidden="true">
             {isPositive ? "↑" : "↓"}
           </span>
         )}
+        <button
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setAiOpen(true); }}
+          className="flex items-center justify-center w-6 h-6 rounded-full bg-accent/10 text-accent hover:bg-accent/20 transition-colors text-[11px]"
+          aria-label={`Analisa AI ${name}`}
+          title="Analisa AI"
+        >
+          ✨
+        </button>
+        </div>
       </div>
     </Link>
+    </div>
+    {aiOpen && (
+      <StockAiModal ticker={ticker} name={name} onClose={() => setAiOpen(false)} />
+    )}
+    </>
   );
 }
 
