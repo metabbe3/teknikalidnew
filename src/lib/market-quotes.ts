@@ -17,7 +17,7 @@ const SCANNER_URL = "https://scanner.tradingview.com/indonesia/scan";
 const CHUNK_SIZE = 150;
 const TV_COLUMNS = [
   "close", "change", "volume", "high", "low", "open",
-  "price_earnings_ttm", "market_cap_basic", "description", "currency",
+  "price_earnings_ttm", "market_cap_basic", "description", "currency", "dividends_yield_current",
 ];
 
 /** Map "BBCA.JK" → "IDX:BBCA" (scanner symbol space). */
@@ -30,7 +30,7 @@ interface TvRow { s: string; d: (number | string | null)[] }
 function mapRow(ticker: string, row: TvRow): StockQuote {
   const [
     close, changePct, volume, high, low, open,
-    pe, marketCap, description, currency,
+    pe, marketCap, description, currency, divYield,
   ] = row.d;
   const price = typeof close === "number" ? close : null;
   const pct = typeof changePct === "number" ? changePct : null;
@@ -60,7 +60,7 @@ function mapRow(ticker: string, row: TvRow): StockQuote {
     forwardPE: null,
     priceToBook: null,
     trailingEps: null,
-    dividendYield: null,
+    dividendYield: typeof divYield === "number" && divYield > 0 ? divYield : null,
     averageDailyVolume3Month: null,
   };
 }
