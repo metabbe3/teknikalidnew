@@ -89,8 +89,9 @@ export async function generateMetadata({
 
   // SEO-optimized title — shortName ≤ 35 chars (suffix stripped, word-boundary cut; root template adds "| TeknikalID" = ~13 chars → total < 60)
   // Price lives in meta description, not title (title stays stable for SERP consistency)
+  // GSC intent (CTR 0.8%, pos 67): query user = "harga saham X hari ini" → keyword WAJIB di title.
   const shortName = normalizeTickerTitle(fullName, name);
-  const title = `${name} — ${shortName}`;
+  const title = `${shortName} ( ${name} ) Harga Saham Hari Ini`;
   const description = price
     ? `Harga saham ${name} (${fullName}) hari ini ${price}${changeStr}. Analisa teknikal lengkap: chart interaktif, RSI, MACD, Bollinger Bands, support/resistance, dan sinyal trading.`
     : `Analisa teknikal saham ${fullName} (${name}) hari ini. Chart interaktif, RSI, MACD, Bollinger Bands, SMA/EMA, dan sinyal trading di TeknikalID.`;
