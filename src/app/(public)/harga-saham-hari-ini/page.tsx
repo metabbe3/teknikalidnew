@@ -10,7 +10,7 @@ import { dailyRadarService } from "@/domains/stock/screener-analysis.service";
 import { SITE_URL } from "@/lib/constants";
 
 // PRD idea-2026-10-10-1 AC3 — pattern /saham-golden-cross (ISR 5 menit).
-export const revalidate = 300;
+export const revalidate = 30; // 12 Okt: failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal
 
 // AC1/AC7: tanggal EOD asli dari data (bukan "hari ini" fabrikasi) — dievaluasi
 // saat request, bukan di export-time metadata statis.

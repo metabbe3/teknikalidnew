@@ -9,7 +9,7 @@ export type ScreenerFetchResult = { stocks: Record<string, unknown>[]; failed: b
  * blips when the DB pool is still warming up.
  */
 export async function fetchScreenerRows(signal: string, take = 30): Promise<ScreenerFetchResult> {
-  for (let attempt = 1; attempt <= 2; attempt++) {
+  for (let attempt = 1; attempt <= 3; attempt++) {
     try {
       const result = await technicalAnalysisService.screenerQuery(signal);
       if (result && !("error" in result)) {
@@ -22,7 +22,7 @@ export async function fetchScreenerRows(signal: string, take = 30): Promise<Scre
         e instanceof Error ? e.message : e,
       );
     }
-    if (attempt < 2) await new Promise((r) => setTimeout(r, 700)); // retry once for post-restart blip
+    if (attempt < 3) await new Promise((r) => setTimeout(r, 700 * attempt)); // 3 attempts, backoff — DB pool warm-up setelah deploy
   }
   return { stocks: [], failed: true };
 }

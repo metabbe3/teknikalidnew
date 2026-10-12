@@ -5,7 +5,7 @@ import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { formatPrice, formatPercent, stripJk, changeColor, rsiColor } from "@/lib/utils";
 import { SITE_URL } from "@/lib/constants";
 
-export const revalidate = 300; // 5 min ISR
+export const revalidate = 30; // 12 Okt: failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal // 5 min ISR
 
 export const metadata: Metadata = {
   title: "Saham Stochastic Oversold Hari Ini — %K & %D Dibawah 20",
