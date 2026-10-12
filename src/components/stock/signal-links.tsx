@@ -26,8 +26,8 @@ const SIGNAL_PAGES = [
 
 export function SignalLinks() {
   return (
-    <section className="mt-6" aria-label="Jelajahi sinyal lain">
-      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-text-tertiary">
+    <section className="mt-10 mb-10 border-t border-border/60 pt-6" aria-label="Jelajahi sinyal lain">
+      <p className="mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-text-tertiary">
         Jelajahi sinyal lain
       </p>
       <div className="flex flex-wrap gap-2">
