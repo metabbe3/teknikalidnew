@@ -25,7 +25,6 @@ import { CompanyDataTabs } from "@/components/stock/company-data-tabs";
 import { StockPaperPosition } from "@/components/paper-trading/stock-paper-position";
 import { HealthScoreDetail } from "@/components/stock/health-score-detail";
 import { StockLogo } from "@/components/stock/stock-logo";
-import { SignalVerdict } from "@/components/stock/signal-verdict";
 import { StockAiPanel } from "@/components/stock/stock-ai-panel";
 import { RelatedStocks } from "@/components/stock/related-stocks";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
@@ -267,6 +266,16 @@ export default async function StockDetailPage({
     : 0;
   const volumeRatio = avgVolume > 0 ? latestVolume / avgVolume : 0;
 
+  // Perubahan multi-hari utk konteks AI (close-based)
+  const closeAt = (daysAgo: number) => {
+    const p = prices[daysAgo];
+    return p ? decimalToNumber(p.close) : null;
+  };
+  const change5d = close !== null && closeAt(5) !== null && closeAt(5)! > 0
+    ? ((close - closeAt(5)!) / closeAt(5)!) * 100 : null;
+  const change20d = close !== null && closeAt(20) !== null && closeAt(20)! > 0
+    ? ((close - closeAt(20)!) / closeAt(20)!) * 100 : null;
+
   const pivots = latestHigh && close
     ? calculatePivotPoints(latestHigh, latestLow ?? close, close)
     : null;
@@ -499,36 +508,54 @@ export default async function StockDetailPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
     <div className="fade-in">
-      {/* ── Signal verdict (leads the page) ── */}
-      <SignalVerdict
-        ticker={ticker}
-        signalLabel={indicators?.signalLabel ?? null}
-        signalScore={isAuthed ? indicators?.signalScore ?? null : null}
-        outlook={outlook}
-        rsi14={isAuthed ? indicators?.rsi14 ?? null : null}
-        isGorengan={indicators?.isGorengan ?? false}
-        showHypeAlert={showHypeAlert}
-        summary={verdictProse}
-      />
-
-      {/* ── AI panel (MLX lokal, ringkasan naratif + Q&A) ── */}
+      {/* ── AI panel (MLX lokal, ringkasan naratif + Q&A) — menggantikan SignalVerdict
+          yang repetitif (owner 12 Okt: "verdict/score di atas tidak guna") ── */}
       <StockAiPanel
         data={{
           ticker,
           name: stock.name,
           sector: stock.sector,
+          subSector: stock.subSector ?? null,
+          industry: stock.industry ?? null,
+          businessActivity: stock.businessActivity ?? null,
           close,
           changePercent,
+          high: detail.latest ? Number(detail.latest.high) : null,
+          low: detail.latest ? Number(detail.latest.low) : null,
+          open: detail.latest ? Number(detail.latest.open) : null,
           volume: latestVolume || null,
           avgVol20: avgVolume || null,
           rsi14: indicators?.rsi14 ?? null,
+          macdLine: indicators?.macdLine ?? null,
+          macdSignal: indicators?.macdSignal ?? null,
           macdHist: indicators?.macdHist ?? null,
           sma20: indicators?.sma20 ?? null,
           sma50: indicators?.sma50 ?? null,
           sma200: indicators?.sma200 ?? null,
+          ema12: indicators?.ema12 ?? null,
+          ema26: indicators?.ema26 ?? null,
+          bbUpper: indicators?.bbUpper ?? null,
+          bbMiddle: indicators?.bbMiddle ?? null,
+          bbLower: indicators?.bbLower ?? null,
+          adx: indicators?.adx ?? null,
+          atr: indicators?.atr ?? null,
+          stochK: indicators?.stochK ?? null,
+          stochD: indicators?.stochD ?? null,
+          vwap: indicators?.vwap ?? null,
+          obvTrend: indicators?.obvTrend ?? null,
+          supertrend: indicators?.supertrend ?? null,
+          emaCrossSignal: indicators?.emaCrossSignal ?? null,
+          emaCrossDate: indicators?.emaCrossDate ?? null,
+          smaCrossSignal: indicators?.smaCrossSignal ?? null,
           signalLabel: indicators?.signalLabel ?? null,
+          isGorengan: indicators?.isGorengan ?? false,
           high52: detail.week52High ?? null,
           low52: detail.week52Low ?? null,
+          change5d,
+          change20d,
+          listedShares: stock.listedShares != null ? Number(stock.listedShares) : null,
+          foreignOwnershipPercent: stock.foreignOwnershipPercent != null ? Number(stock.foreignOwnershipPercent) : null,
+          listingDate: stock.listingDate ? stock.listingDate.toISOString().slice(0, 10) : null,
         }}
       />
 
