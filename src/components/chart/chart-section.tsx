@@ -304,25 +304,6 @@ export function ChartSection({ ticker }: ChartSectionProps) {
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className={`transition-transform ${showOverlays ? "rotate-180" : ""}`} aria-hidden="true"><polyline points="6 9 12 15 18 9" /></svg>
               </button>
 
-              {/* Preset cara-baca */}
-              <div className="hidden md:flex bg-bg-card depth-shadow rounded-lg p-0.5" role="group" aria-label="Preset indikator">
-                {([
-                  { key: "klasik" as const, label: "Klasik", hint: "SMA 50 + 200 — cerita medium vs long term" },
-                  { key: "tren" as const, label: "Tren", hint: "SMA 20/50 + EMA 12/26 — tren jangka pendek-menengah" },
-                  { key: "momentum" as const, label: "Momentum", hint: "RSI + MACD — pembacaan momentum" },
-                  { key: "bersih" as const, label: "Bersih", hint: "Semua overlay off — chart polos" },
-                ]).map((p) => (
-                  <button
-                    key={p.key}
-                    onClick={() => applyPreset(p.key)}
-                    title={p.hint}
-                    className="px-2.5 py-1 text-xs font-medium rounded-md text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
-                  >
-                    {p.label}
-                  </button>
-                ))}
-              </div>
-
               {showOverlays && (
                 <>
                   <button type="button" tabIndex={-1} aria-hidden="true" onClick={() => setShowOverlays(false)} className="fixed inset-0 z-30 cursor-default" />
@@ -364,6 +345,25 @@ export function ChartSection({ ticker }: ChartSectionProps) {
             </a>
           )}
         </div>
+
+        {/* Preset cara-baca */}
+              <div className="hidden md:flex bg-bg-card depth-shadow rounded-lg p-0.5" role="group" aria-label="Preset indikator">
+                {([
+                  { key: "klasik" as const, label: "Klasik", hint: "SMA 50 + 200 — cerita medium vs long term" },
+                  { key: "tren" as const, label: "Tren", hint: "SMA 20/50 + EMA 12/26 — tren jangka pendek-menengah" },
+                  { key: "momentum" as const, label: "Momentum", hint: "RSI + MACD — pembacaan momentum" },
+                  { key: "bersih" as const, label: "Bersih", hint: "Semua overlay off — chart polos" },
+                ]).map((p) => (
+                  <button
+                    key={p.key}
+                    onClick={() => applyPreset(p.key)}
+                    title={p.hint}
+                    className="px-2.5 py-1 text-xs font-medium rounded-md text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
       </div>
 
       {/* Chart container — multi-pane */}
