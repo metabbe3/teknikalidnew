@@ -38,7 +38,7 @@ import { SITE_URL, isCryptoTicker } from "@/lib/constants";
 import { getSectorSlug, sectorToBahasa } from "@/lib/sectors";
 import { ShareButtons } from "@/components/ui/share-buttons";
 import { articleRepository } from "@/domains/article/article.repository";
-import { isStaleArticle, DATA_SOURCE_LABEL } from "@/domains/article/article-freshness";
+import { DATA_SOURCE_LABEL } from "@/domains/article/article-freshness";
 import { ArticleContent } from "@/components/article/article-renderer";
 import { IDX_STOCKS } from "@/lib/idx-stocks";
 import { prisma } from "@/lib/prisma";
@@ -205,7 +205,7 @@ export default async function StockDetailPage({
     ? IDX_STOCKS.filter((s) => s.sector === stock.sector && s.ticker !== ticker).map((s) => s.ticker)
     : [];
 
-  const [socialData, { structure: marketStructure }, fundamentalRow, idxCommissioners, idxDirectors, idxShareholders, idxSubsidiaries, idxDividends, relatedArticles, dailySnapshot, sectorArticles] = await Promise.all([
+  const [socialData, { structure: marketStructure }, fundamentalRow, idxCommissioners, idxDirectors, idxShareholders, idxSubsidiaries, idxDividends, relatedArticles, sectorArticles] = await Promise.all([
     prisma.post.aggregate({
       where: { tickerTag: ticker, createdAt: { gte: subDays(new Date(), 7) } },
       _count: true,
@@ -223,11 +223,6 @@ export default async function StockDetailPage({
       orderBy: { publishedAt: "desc" },
       take: 5,
       select: { id: true, slug: true, title: true, publishedAt: true, articleType: true },
-    }),
-    prisma.article.findFirst({
-      where: { status: "PUBLISHED", articleType: "DAILY_SNAPSHOT", tickerTag: ticker },
-      orderBy: { publishedAt: "desc" },
-      select: { id: true, slug: true, title: true, excerpt: true, publishedAt: true, content: true, articleType: true, updatedAt: true },
     }),
     sectorPeers.length > 0
       ? prisma.article.findMany({
@@ -869,9 +864,6 @@ export default async function StockDetailPage({
             />
         ) : null}
 
-        {/* Saham Hari Ini section moved to bottom (before related articles) — full daily
-            snapshot prose renders on this page now; /berita/saham-<ticker> 308s here. */}
-
         {/* Indicators + Sidebar */}
         <div className="flex items-center justify-between mb-2">
           <h2 className="font-serif text-lg font-semibold text-text-primary">Indikator Teknikal</h2>
@@ -1040,33 +1032,6 @@ export default async function StockDetailPage({
 
         <StockFAQWidget ticker={ticker} />
 
-        {/* Saham Hari Ini — full daily snapshot prose, SSR'd anon-visible for SEO.
-            /berita/saham-<ticker> 308s here, so the per-ticker ranking signals land
-            on this URL. Stale snapshots (>3d, e.g. paused generation) render nothing
-            rather than claiming "hari ini" with old data (article-freshness.ts). */}
-        {dailySnapshot && !isStaleArticle(dailySnapshot) && (
-          <section className="mt-6" aria-label="Saham hari ini">
-            <div className="bg-bg-card rounded-xl depth-shadow border border-border p-5 sm:p-6">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-accent">
-                  Saham Hari Ini
-                </span>
-                <span className="text-xs text-text-tertiary font-mono">
-                  {new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" }).format(dailySnapshot.updatedAt)}
-                </span>
-                <span className="ml-auto text-[10px] font-mono text-text-tertiary">
-                  Data: {DATA_SOURCE_LABEL}
-                </span>
-              </div>
-              <h2 className="font-serif text-xl sm:text-2xl font-semibold text-text-primary leading-snug">
-                {dailySnapshot.title}
-              </h2>
-              <div className="mt-4">
-                <ArticleContent content={dailySnapshot.content} />
-              </div>
-            </div>
-          </section>
-        )}
 
         {/* Related articles */}
         {relatedArticles.length > 0 && (
