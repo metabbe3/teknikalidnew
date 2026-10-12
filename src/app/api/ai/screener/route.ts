@@ -61,10 +61,25 @@ function rateLimited(ip: string): boolean {
 /** Map pertanyaan bebas → preset screener (heuristik kata kunci). */
 const QUESTION_PRESETS: { match: RegExp; preset: string; label: string }[] = [
   { match: /bullish|naik|oke|bagus|kuat|mantap|sehat/i, preset: "macd_bullish", label: "Sinyal Bullish" },
-  { match: /oversold|murah|turun banget|bottom|bawah/i, preset: "rsi_oversold", label: "Oversold (RSI<30)" },
+  { match: /overbought|mahal|panas|euphor/i, preset: "rsi_overbought", label: "Overbought (RSI>70)" },
+  { match: /oversold|murah|turun banget|bottom|bawah|diskon/i, preset: "rsi_oversold", label: "Oversold (RSI<30)" },
   { match: /golden cross|gc|tren baru/i, preset: "golden_cross", label: "Golden Cross" },
+  { match: /death cross|bearish|turun terus|lemah/i, preset: "death_cross", label: "Death Cross" },
+  { match: /ema cross|ema12|ema 12/i, preset: "ema_cross", label: "EMA Cross" },
   { match: /volume|spike|ramai|aktif/i, preset: "volume_spike_low", label: "Volume Spike" },
   { match: /squeeze|volatil|akan bergerak/i, preset: "bb_squeeze", label: "Bollinger Squeeze" },
+  { match: /dividen|dividend|payout|pasif/i, preset: "high_dividend", label: "Dividen Tinggi" },
+  { match: /blue chip|besar|aman|likuid|large cap|perbankan inti/i, preset: "blue_chip", label: "Blue Chip" },
+  { match: /fundamental|undervalued|murah secara|valuasi|wajar/i, preset: "undervalued", label: "Undervalued" },
+  { match: /tumbuh|growth|cuan jangka panjang|fundamental kuat/i, preset: "value_growth", label: "Value Growth" },
+  { match: /pullback|koreksi|entry|beli saat turun/i, preset: "pullback_sma20", label: "Pullback SMA20" },
+  { match: /accumulation|dikumpulin|diam2|smart money/i, preset: "obv_accumulation", label: "OBV Accumulation" },
+  { match: /trend kuat|adx|trending/i, preset: "adx_trending", label: "ADX Trending" },
+  { match: /supertrend|stop and reverse/i, preset: "supertrend_bullish", label: "Supertrend Bullish" },
+  { match: /stochastic|stoch/i, preset: "stoch_oversold", label: "Stochastic Oversold" },
+  { match: /di atas sma200|long term|jangka panjang teknikal/i, preset: "above_sma200", label: "Above SMA200" },
+  { match: /hype|viral|heboh|sorotan/i, preset: "hype_alert", label: "Hype Alert" },
+  { match: /menyentuh bollinger bawah|bollinger lower/i, preset: "bb_lower_touch", label: "Bollinger Lower Touch" },
 ];
 
 function pickPreset(question: string): { preset: string; label: string } {

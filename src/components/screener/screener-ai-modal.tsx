@@ -13,6 +13,9 @@ const DEFAULT_QUESTIONS = [
   "Ada yang oversold murah?",
   "Volume lagi ramai di mana?",
   "Golden cross ada nggak?",
+  "Saham blue chip yang aman?",
+  "Dividen tinggi ada?",
+  "Yang lagi hype apa aja?",
 ];
 
 /**
