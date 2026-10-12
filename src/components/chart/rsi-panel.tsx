@@ -170,15 +170,22 @@ export default function RsiPanel({
   }, [onVisibleTimeRangeChange]);
 
   // Sync with parent chart - apply parent's visible range
+  // Guard: setVisibleRange pada chart tanpa data = lightweight-charts ensureNotNull throw
+  // "Value is null" (panel mount SEBELUM setData → crash seluruh halaman via error boundary).
+  // Safe: cek series punya data dulu + try/catch; sync ulang otomatis saat data effect berikutnya jalan.
   useEffect(() => {
     if (!chartRef.current || !parentVisibleRange) return;
-
-    const timeScale = chartRef.current.timeScale();
-    timeScale.setVisibleRange({
-      from: parentVisibleRange.from as Time,
-      to: parentVisibleRange.to as Time,
-    });
-  }, [parentVisibleRange]);
+    const hasData = (rsiSeriesRef.current?.data() ?? []).length > 0;
+    if (!hasData) return;
+    try {
+      chartRef.current.timeScale().setVisibleRange({
+        from: parentVisibleRange.from as Time,
+        to: parentVisibleRange.to as Time,
+      });
+    } catch {
+      // range belum valid (data belum settle) — diabaikan, akan sync di update berikutnya
+    }
+  }, [parentVisibleRange, data]);
 
   // Update timeVisible option
   useEffect(() => {

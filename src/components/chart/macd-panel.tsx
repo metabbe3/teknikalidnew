@@ -109,14 +109,21 @@ export default function MacdPanel({
   }, []);
 
   // Update chart when parentVisibleRange changes
+  // Guard "Value is null": setVisibleRange sebelum series ada data = throw lightweight-charts (lihat rsi-panel).
   useEffect(() => {
     if (chartRef.current && parentVisibleRange) {
-      chartRef.current.timeScale().setVisibleRange({
-        from: parentVisibleRange.from as Time,
-        to: parentVisibleRange.to as Time,
-      });
+      const hasData = (macdSeriesRef.current?.data() ?? []).length > 0;
+      if (!hasData) return;
+      try {
+        chartRef.current.timeScale().setVisibleRange({
+          from: parentVisibleRange.from as Time,
+          to: parentVisibleRange.to as Time,
+        });
+      } catch {
+        // range belum valid — sync ulang saat data effect berikutnya
+      }
     }
-  }, [parentVisibleRange]);
+  }, [parentVisibleRange, macdLine, signal, histogram]);
 
   // Update series data when props change
   useEffect(() => {
