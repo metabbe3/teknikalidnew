@@ -151,6 +151,15 @@ export async function proxy(request: NextRequest) {
     response.headers.set(key, value);
   }
 
+  // RSC payload (text/x-component): Safari iOS memperlakukan tipe ini sebagai unduhan
+  // ketika dikombinasikan dengan X-Content-Type-Options: nosniff. Payload RSC hanya
+  // dikonsumsi internal oleh router Next di halaman yang sah (same-origin, JS aktif),
+  // jadi nosniff tidak menambah keamanan di sini — tapi tetap dipertahankan untuk
+  // semua respons lain. (Akar masalah dialog download "BIKE.JK" di iPhone, 12 Okt.)
+  if (request.headers.get("RSC") === "1" || request.nextUrl.searchParams.has("_rsc")) {
+    response.headers.delete("X-Content-Type-Options");
+  }
+
   const pathname = request.nextUrl.pathname;
 
   // CSRF protection: verify Origin/Referer for state-changing requests
