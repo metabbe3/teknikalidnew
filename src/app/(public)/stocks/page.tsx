@@ -16,6 +16,7 @@ import { SahamStrategyLinks } from "@/components/seo/saham-strategy-links";
 import { LoginGate } from "@/components/auth/login-gate";
 import { WeeklySignalWidget } from "@/components/signal/weekly-signal-widget";
 import { DailyRadar } from "@/components/stock/daily-radar";
+import { ChannelCta } from "@/components/stock/channel-cta";
 import { dailyRadarService } from "@/domains/stock/screener-analysis.service";
 
 export const dynamic = "force-dynamic";
@@ -257,6 +258,11 @@ export default async function StocksPage() {
           feature="Watchlist & Alert Sinyal"
           message="Daftar gratis untuk menyimpan watchlist, alert golden cross/oversold, dan trading plan otomatis untuk 950+ saham IDX."
         />
+
+        {/* Channel CTA — owned audience, retention tanpa gesekan register */}
+        <div className="mt-4 flex justify-center">
+          <ChannelCta />
+        </div>
 
         {/* ── SEO Content Block: Educational + FAQ + Strategy Links ── */}
         <section className="mt-16 space-y-10">

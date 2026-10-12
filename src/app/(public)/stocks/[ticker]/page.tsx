@@ -15,6 +15,7 @@ import { HypeWarningBadge } from "@/components/stock/hype-warning-badge";
 import { StockDiscussion } from "@/components/community/stock-discussion";
 import { RegistrationInlinePrompt } from "@/components/ui/registration-inline-prompt";
 import { StockActionBadge } from "@/components/stock/stock-action-badge";
+import { AlertPreviewCard } from "@/components/stock/alert-preview-card";
 import { ThesisButton } from "@/components/stock/thesis-modal";
 import { SentimentGauge } from "@/components/stock/sentiment-gauge";
 import { PresenceBadge } from "@/components/stock/presence-badge";
@@ -708,6 +709,15 @@ export default async function StockDetailPage({
           </div>
         </div>
       </section>
+
+      {/* Alert preview CTA — anon only: tunjukkan value tersembunyi (alert sinyal) saat saham PUNYA sinyal aktif */}
+      {!isAuthed && (
+        <AlertPreviewCard
+          ticker={ticker}
+          signalLabel={indicators?.signalLabel ?? null}
+          hasSignal={!!(indicators?.signalLabel && indicators.signalLabel.toLowerCase() !== "netral" && indicators.signalLabel.toLowerCase() !== "neutral")}
+        />
+      )}
 
       {/* Main content */}
       <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
