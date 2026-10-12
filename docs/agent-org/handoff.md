@@ -450,3 +450,10 @@
 - In-flight: dwell real-user minggu penuh baru mulai hari ini (Senin); GSC re-audit 15 Okt (6 URL manual index + landing baru 0 view = belum terindeks, expected); SEO eval hrta11/idx-radar 22 Okt; AC5 register 20 Okt; owner 3 command launchctl tertunda (agent-scheduler x2 + resolve-predictions reload, ESCALATE ke-4).
 - Jebakan: (1) EngagementEvent masih campur data E2E testing sendiri — baca dwell hanya dari anonId bukan milik test; (2) brief 12 Okt terbit 06:34 jalur growth-mandor — sanitizer jalur ini TERBUKTI jalan (impact qa-28-01 lanjutan PASS); (3) repo main, worktree kotor screenshot PNG root = bukan milik slot.
 - Langkah pertama slot sore: baca queue -> entry CEO 08:15/reviewer baru? -> kalau kosong: health + QA landing /harga-saham-hari-ini spot tabel + engagement funnel sampel real-user; re-EVAL returning 19 Okt.
+
+## 2026-10-12 07:5x — CTO pagi rerun (drift-3 merge; queue 0 pending)
+- State: sehat; home 200 TTFB 0.27s; 3 container healthy (app 21h df9319b3d238); brief Senin 12 Okt spot: saam=0 lot=0 link-prefix=0 (impact FINAL qa-09-01 tetap PASS).
+- Barusan: MERGE split-brain drift ke-3 — queue 65 (5 QA flip 12 Okt pagi recovered: sec-10-01/prd-10-02-02/ux-10-10-01/ops-11-01/qa-11-01) + backlog 35 (SWEEP note recovered); symlink 3/3 RESTORED; backup .bak-20261012-drift3; CTO note CEO ter tulis.
+- In-flight: tidak berubah — re-EVAL returning 19 Okt; GSC re-audit 15 Okt; SEO eval 22 Okt; owner 3 launchctl (eskalasi ke-5 di CTO note).
+- Jebakan: drift kambuh TIAP writer job LLM jam 06:4x-06:5x pagi — cek `ls -la` datadir tiap pagi sampai opsi B jalan; backlog 4 entry lama pakai task_id bukan id (key resolver merge).
+- Langkah pertama slot sore: baca queue -> entry CEO 08:15 -> kalau kosong: health + dwell real-user sampel + QA landing spot.

@@ -528,3 +528,10 @@ Metrik keberhasilan (review 22 Okt): hrta11 & idx radar pos <10; impressions 7d 
 - Council 08:15 dispatch symlink-drift guard; sore ini dieksekusi: symlink sudah di-restore Council 08:07 (0 data loss, 32==32 entries), root-cause = writer LLM atomic-replace (tak ter-atribusi presisi; scripts lokal read-only; prompt jobs = area owner).
 - Guard live: backlog_health.py SYMLINK_GUARDS 3 file teknikal, fixture 3/3 PASS, alert-only exit 0 — drift kambuh ter-detect max 24 jam.
 - Anomali queue dibersihkan: entry Council salah-ID-duplikat (ops-2026-10-11-01 x2) + result salah-tempel → rename ops-2026-10-11-02 + result asli.
+
+## CTO note 2026-10-12
+- DRIFT KE-3 dalam 8 hari: cto-queue.json + product-backlog.json datadir kembali jadi regular file (06:4x WIB, writer LLM atomic-replace tak ter-attribusi). Akibat: QA flips 12 Okt pagi (5 entry) dan EVAL CTO tertulis di 2 salinan berbeda. Sudah di-merge manual 07:5x — 0 data hilang, symlink restore, backup .bak-20261012-drift3.
+- Opsi A: status quo — guard backlog_health 07:15 detect ≤24 jam + merge manual tiap kambuh. Murah, tapi organ 2-otak tiap ~3 hari dan tiap kambuh = risiko flip QA hilang.
+- Opsi B: putus akar — pindahkan SEMUA writer LLM ke jalur repo langsung (datadir jadi read-only symlink murni). Butuh edit prompt job (area owner, self-referential ban → wajib approve owner).
+- REKOMENDASI: A sekarang + owner approve B di digest (drift 3x = sistemik; guard mendeteksi tapi tidak mencegah).
+- Owner actions tertunda (ke-5): 3 command launchctl (agent-scheduler x2 — CronLog terakhir 4 Okt; resolve-predictions reload — impact run terjadwal 17:35 HARI INI akan gagal load tanpa reload).
