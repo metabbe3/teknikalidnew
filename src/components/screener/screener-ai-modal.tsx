@@ -15,31 +15,50 @@ const DEFAULT_QUESTIONS = [
   "Golden cross ada nggak?",
 ];
 
-/** Render jawaban MLX: [TICKER](/stocks/TICKER) → <Link>, sisanya teks polos + baris '- '. */
-function AiAnswer({ text }: { text: string }) {
-  const lines = text.split("\n").filter((l) => l.trim());
+/**
+ * Render jawaban MLX — ANTI-FRAGILE: tidak peduli format model ([BOGA], BOGA[/stocks/BOGA],
+ * BOGA(/stocks/BOGA), atau BOGA polos), semuanya dibersihkan jadi teks polos dulu,
+ * lalu ticker yang DIKETAHUI dari data DB di-linkify otomatis. Model tak bisa salah format.
+ */
+function cleanAnswerText(raw: string): string {
+  return raw
+    // [TICKER](/stocks/ANY) → TICKER
+    .replace(/\[([A-Z0-9.^-]{2,12})\]\([^)]*\)/g, "$1")
+    // [/stocks/TICKER] → TICKER
+    .replace(/\[\/?stocks\/([A-Z0-9.^-]{2,12})\]/g, "$1")
+    // [TICKER] → TICKER
+    .replace(/\[([A-Z0-9.^-]{2,12})\]/g, "$1")
+    // TICKER(/stocks/ANY) → TICKER
+    .replace(/([A-Z0-9.^-]{2,12})\(\/?stocks\/[A-Z0-9.^-]+\)/g, "$1")
+    // ** bold md
+    .replace(/\*\*/g, "");
+}
+
+function AiAnswer({ text, tickers }: { text: string; tickers: string[] }) {
+  const cleaned = cleanAnswerText(text);
+  const known = new Set(tickers);
+  const lines = cleaned.split("\n").filter((l) => l.trim());
   return (
     <div className="space-y-1.5">
       {lines.map((line, i) => {
-        // tangkap [TICKER](url), [TICKER] polos, maupun [TICKER]/stocks/XXX nempel
-        const parts = line.split(/(\[[A-Z0-9.^-]{2,12}\](?:\([^)]*\)|\/stocks\/[A-Z0-9.^-]+)?)/g);
+        // split per kata; kata = ticker dikenal & huruf kapital penuh → link
+        const tokens = line.split(/(\s+)/);
         return (
           <p key={i} className="text-sm leading-relaxed text-text-primary">
-            {parts.map((part, j) => {
-              const m = part.match(/^\[([A-Z0-9.^-]{2,12})\](?:\(([^)]*)\)|(\/stocks\/[A-Z0-9.^-]+))?$/);
-              if (m) {
-                const href = (m[2] || m[3] || "");
+            {tokens.map((tok, j) => {
+              const bare = tok.replace(/^[^A-Z0-9]+|[^A-Z0-9]+$/g, ""); // strip punct tepi
+              if (known.has(bare)) {
                 return (
                   <a
                     key={j}
-                    href={href.startsWith("/stocks/") ? href : `/stocks/${m[1]}.JK`}
+                    href={`/stocks/${bare}.JK`}
                     className="font-mono text-xs font-bold text-accent hover:underline bg-accent/10 rounded px-1.5 py-0.5"
                   >
-                    {m[1]}
+                    {tok}
                   </a>
                 );
               }
-              return <span key={j}>{part.replace(/^- /, "• ")}</span>;
+              return <span key={j}>{tok.replace(/^- /, "• ")}</span>;
             })}
           </p>
         );
@@ -167,7 +186,7 @@ export function ScreenerAiButton() {
                   📊 Berdasarkan preset {meta.presetLabel} · {meta.matched} saham lolos
                 </p>
               )}
-              <AiAnswer text={answer} />
+              <AiAnswer text={answer} tickers={tableStocks.map((s) => s.ticker)} />
 
               {tableStocks.length > 0 && (
                 <div className="rounded-xl border border-border overflow-hidden">
