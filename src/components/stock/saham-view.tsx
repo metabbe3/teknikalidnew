@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { StockTable, type StockRow } from "@/components/stock/stock-table";
 import ScreenerClient from "@/components/screener/screener-client";
+import { ScreenerAiButton } from "@/components/screener/screener-ai-modal";
 
 /**
  * Saham page content: Browse (full stock table) | Screener (filter presets) in one place.
@@ -46,13 +47,16 @@ export function SahamView({
 
   return (
     <div className="space-y-4">
-      <div
-        role="tablist"
-        aria-label="Mode tampilan"
-        className="inline-flex items-center gap-1 rounded-lg border border-border bg-bg-card p-1"
-      >
-        <Tab active={!isScreener} onClick={showBrowse}>{browseLabel}</Tab>
-        <Tab active={isScreener} onClick={showScreener}>Screener</Tab>
+      <div className="flex flex-wrap items-center gap-2">
+        <div
+          role="tablist"
+          aria-label="Mode tampilan"
+          className="inline-flex items-center gap-1 rounded-lg border border-border bg-bg-card p-1"
+        >
+          <Tab active={!isScreener} onClick={showBrowse}>{browseLabel}</Tab>
+          <Tab active={isScreener} onClick={showScreener}>Screener</Tab>
+        </div>
+        <ScreenerAiButton />
       </div>
 
       {isScreener ? (
