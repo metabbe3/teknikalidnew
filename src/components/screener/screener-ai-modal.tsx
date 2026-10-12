@@ -21,17 +21,18 @@ function AiAnswer({ text }: { text: string }) {
   return (
     <div className="space-y-1.5">
       {lines.map((line, i) => {
-        // tangkap [TICKER](url) maupun [TICKER] polos
-        const parts = line.split(/(\[[A-Z0-9.^-]{2,12}\](?:\([^)]*\))?)/g);
+        // tangkap [TICKER](url), [TICKER] polos, maupun [TICKER]/stocks/XXX nempel
+        const parts = line.split(/(\[[A-Z0-9.^-]{2,12}\](?:\([^)]*\)|\/stocks\/[A-Z0-9.^-]+)?)/g);
         return (
           <p key={i} className="text-sm leading-relaxed text-text-primary">
             {parts.map((part, j) => {
-              const m = part.match(/^\[([A-Z0-9.^-]{2,12})\](?:\(([^)]*)\))?$/);
+              const m = part.match(/^\[([A-Z0-9.^-]{2,12})\](?:\(([^)]*)\)|(\/stocks\/[A-Z0-9.^-]+))?$/);
               if (m) {
+                const href = (m[2] || m[3] || "");
                 return (
                   <a
                     key={j}
-                    href={m[2].startsWith("/stocks/") ? m[2] : `/stocks/${m[1]}.JK`}
+                    href={href.startsWith("/stocks/") ? href : `/stocks/${m[1]}.JK`}
                     className="font-mono text-xs font-bold text-accent hover:underline bg-accent/10 rounded px-1.5 py-0.5"
                   >
                     {m[1]}
