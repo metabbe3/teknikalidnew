@@ -4,7 +4,7 @@ import Link from "next/link";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { StockNotFoundError } from "@/domains/stock/stock.errors";
 import { bigIntToNumber, decimalToNumber } from "@/lib/serialize";
-import { formatPrice, formatPercent, stripJk, changeColor, rsiColor } from "@/lib/utils";
+import { formatPrice, formatPercent, formatVolume, stripJk, changeColor, rsiColor } from "@/lib/utils";
 import { normalizeTickerTitle } from "@/lib/normalize-ticker-title";
 import { ChartSection } from "@/components/chart/chart-section";
 import { IndicatorPanel } from "@/components/stock/indicator-panel";
@@ -578,6 +578,54 @@ export default async function StockDetailPage({
               )}
               {close === null && <StockActionBadge ticker={ticker} />}
             </div>
+
+            {/* OHLC + 52-week strip — anon-visible (SEO + first impression; data sudah SSR di page) */}
+            {close !== null && (
+              <div className="mt-5 pt-4 border-t border-border">
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-x-4 gap-y-2 text-xs" aria-label="Statistik harga hari ini">
+                  <div>
+                    <span className="text-text-tertiary block">Buka</span>
+                    <span className="font-mono font-semibold text-text-secondary tabular-nums">{latest ? formatPrice(decimalToNumber(latest.open) ?? close) : "—"}</span>
+                  </div>
+                  <div>
+                    <span className="text-text-tertiary block">Tertinggi</span>
+                    <span className="font-mono font-semibold text-text-secondary tabular-nums">{latestHigh !== null ? formatPrice(latestHigh) : "—"}</span>
+                  </div>
+                  <div>
+                    <span className="text-text-tertiary block">Terendah</span>
+                    <span className="font-mono font-semibold text-text-secondary tabular-nums">{latestLow !== null ? formatPrice(latestLow) : "—"}</span>
+                  </div>
+                  <div>
+                    <span className="text-text-tertiary block">Volume</span>
+                    <span className="font-mono font-semibold text-text-secondary tabular-nums">{latestVolume > 0 ? formatVolume(latestVolume) : "—"}</span>
+                  </div>
+                  <div>
+                    <span className="text-text-tertiary block">Rentang 52mgg</span>
+                    <span className="font-mono font-semibold text-text-secondary tabular-nums">
+                      {detail.week52Low !== null && detail.week52High !== null ? `${formatPrice(detail.week52Low)} – ${formatPrice(detail.week52High)}` : "—"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-text-tertiary block">Posisi 52mgg</span>
+                    {detail.week52Low !== null && detail.week52High !== null && detail.week52High > detail.week52Low ? (
+                      <div className="flex items-center gap-2">
+                        <div className="h-1.5 flex-1 min-w-[48px] rounded-full bg-bg-hover overflow-hidden" role="img" aria-label={`Posisi harga dalam rentang 52 minggu: ${Math.round(((close - detail.week52Low) / (detail.week52High - detail.week52Low)) * 100)}%`}>
+                          <div className={`h-full rounded-full ${changePercent !== null && changePercent < 0 ? "bg-bearish" : "bg-bullish"}`} style={{ width: `${Math.min(100, Math.max(0, ((close - detail.week52Low) / (detail.week52High - detail.week52Low)) * 100))}%` }} />
+                        </div>
+                        <span className="font-mono font-semibold text-text-secondary tabular-nums">{Math.round(((close - detail.week52Low) / (detail.week52High - detail.week52Low)) * 100)}%</span>
+                      </div>
+                    ) : (
+                      <span className="font-mono text-text-secondary">—</span>
+                    )}
+                  </div>
+                </div>
+                {latest && (
+                  <p className="mt-3 text-[11px] text-text-tertiary font-mono">
+                    Penutupan {new Date(latest.date).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Paper trading position card */}
             {close !== null && <StockPaperPosition ticker={ticker} />}

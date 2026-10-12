@@ -37,6 +37,7 @@ export function ChartSection({ ticker }: ChartSectionProps) {
   const isAuthed = status === "authenticated";
   const [range, setRange] = useState<DateRange>("6mo");
   const [chartType, setChartType] = useState<"candlestick" | "line" | "area">("candlestick");
+  const [logScale, setLogScale] = useState(false);
   const [showSma20, setShowSma20] = useState(false);
   const [showSma50, setShowSma50] = useState(true);
   const [showSma200, setShowSma200] = useState(false);
@@ -146,6 +147,15 @@ export function ChartSection({ ticker }: ChartSectionProps) {
     setShowZigzag(false); setShowRsi(false); setShowMacd(false);
   };
 
+  // Preset cara-baca manusiawi (inspirasi kompetitor: nama preset = niat user, bukan istilah teknis)
+  const applyPreset = (preset: "klasik" | "momentum" | "tren" | "bersih") => {
+    resetOverlays();
+    if (preset === "klasik") { setShowSma50(true); setShowSma200(true); }       // cerita klasik: medium vs long-term
+    if (preset === "momentum") { setShowRsi(true); setShowMacd(true); }          // pembaca momentum
+    if (preset === "tren") { setShowSma20(true); setShowSma50(true); setShowEma12(true); setShowEma26(true); } // tren jangka pendek-menengah
+    if (preset === "bersih") { /* semua off — chart polos */ }
+  };
+
   return (
     <div className="space-y-3">
       {/* Toolbar */}
@@ -200,6 +210,18 @@ export function ChartSection({ ticker }: ChartSectionProps) {
               {t.label}
             </button>
           ))}
+          <button
+            onClick={() => setLogScale((v) => !v)}
+            aria-pressed={logScale}
+            title="Skala logaritmik — jujur untuk saham yang bergerak ratusan persen (linear menyimpangkan pergerakan besar)"
+            className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all duration-150 ml-1 ${
+              logScale
+                ? "bg-text-primary text-white shadow-sm"
+                : "text-text-secondary hover:text-text-primary"
+            }`}
+          >
+            Log
+          </button>
         </div>
 
         {/* Compare */}
@@ -282,6 +304,25 @@ export function ChartSection({ ticker }: ChartSectionProps) {
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className={`transition-transform ${showOverlays ? "rotate-180" : ""}`} aria-hidden="true"><polyline points="6 9 12 15 18 9" /></svg>
               </button>
 
+              {/* Preset cara-baca */}
+              <div className="hidden md:flex bg-bg-card depth-shadow rounded-lg p-0.5" role="group" aria-label="Preset indikator">
+                {([
+                  { key: "klasik" as const, label: "Klasik", hint: "SMA 50 + 200 — cerita medium vs long term" },
+                  { key: "tren" as const, label: "Tren", hint: "SMA 20/50 + EMA 12/26 — tren jangka pendek-menengah" },
+                  { key: "momentum" as const, label: "Momentum", hint: "RSI + MACD — pembacaan momentum" },
+                  { key: "bersih" as const, label: "Bersih", hint: "Semua overlay off — chart polos" },
+                ]).map((p) => (
+                  <button
+                    key={p.key}
+                    onClick={() => applyPreset(p.key)}
+                    title={p.hint}
+                    className="px-2.5 py-1 text-xs font-medium rounded-md text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+
               {showOverlays && (
                 <>
                   <button type="button" tabIndex={-1} aria-hidden="true" onClick={() => setShowOverlays(false)} className="fixed inset-0 z-30 cursor-default" />
@@ -333,6 +374,7 @@ export function ChartSection({ ticker }: ChartSectionProps) {
         <CandlestickChart
           data={history}
           chartType={chartType}
+          logScale={logScale}
           sma20={indicators?.sma20}
           sma50={indicators?.sma50}
           sma200={indicators?.sma200}

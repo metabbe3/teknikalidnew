@@ -61,6 +61,7 @@ interface CandlestickChartProps {
   isTimeVisible?: boolean;
   onVisibleTimeRangeChange?: (from: number, to: number) => void;
   parentVisibleRange?: { from: number; to: number } | null;
+  logScale?: boolean;
 }
 
 interface ChartState {
@@ -124,6 +125,7 @@ export function CandlestickChart({
   isTimeVisible = false,
   onVisibleTimeRangeChange,
   parentVisibleRange,
+  logScale = false,
 }: CandlestickChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const stateRef = useRef<ChartState | null>(null);
@@ -197,7 +199,7 @@ export function CandlestickChart({
         vertLines: { color: "rgba(0,0,0,0.03)" },
         horzLines: { color: "rgba(0,0,0,0.03)" },
       },
-      rightPriceScale: { borderColor: "rgba(0,0,0,0.06)" },
+      rightPriceScale: { borderColor: "rgba(0,0,0,0.06)", mode: logScale ? 1 : 0 },
       timeScale: { borderColor: "rgba(0,0,0,0.06)", timeVisible: isTimeVisible, secondsVisible: false },
       crosshair: { mode: 0 },
     });
@@ -386,6 +388,11 @@ export function CandlestickChart({
       stateRef.current = null;
     };
   }, [isTimeVisible, handleCrosshairMove]);
+
+  // Log-scale toggle — live applyOptions, no chart recreation (price scale mode 1 = logarithmic)
+  useEffect(() => {
+    stateRef.current?.chart.priceScale("right").applyOptions({ mode: logScale ? 1 : 0 });
+  }, [logScale]);
 
   // Update data when it changes
   useEffect(() => {
