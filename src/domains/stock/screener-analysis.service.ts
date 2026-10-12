@@ -1,3 +1,4 @@
+import { prisma } from "@/lib/prisma";
 import { computeChange, decimalToNumber, bigIntToNumber } from "@/lib/serialize";
 import { calculatePivotPoints } from "@/lib/indicators";
 import { stockRepository } from "./stock.repository";
@@ -67,13 +68,21 @@ export const screenerAnalysisService = {
 
     const FUNDAMENTAL_PRESETS = new Set(["undervalued", "high_dividend", "blue_chip", "value_growth"]);
     if (FUNDAMENTAL_PRESETS.has(preset)) {
+      // Fundamental jarang update (kuartalan) — pakai tanggal fundamental TERBARU sendiri,
+      // BUKAN tanggal harga terbaru; kalau dipaksa sama (sf.date = harga), hasil selalu
+      // kosong di hari fundamental tertinggal (repro 12 Okt: fundamental 11 Okt, harga 12 Okt).
+      const fundDateRow = await prisma.$queryRaw<{ date: Date }[]>`
+        SELECT MAX(sf.date) AS date FROM "StockFundamental" sf
+        JOIN "Stock" s ON s.id = sf."stockId" AND s."isActive" = true`;
+      const fundDate = fundDateRow[0]?.date;
+      if (!fundDate) return [];
       const queryMap: Record<string, (d: Date) => Promise<unknown[]>> = {
         undervalued: (d) => stockRepository.findUndervalued(d),
         high_dividend: (d) => stockRepository.findHighDividend(d),
         blue_chip: (d) => stockRepository.findBlueChip(d),
         value_growth: (d) => stockRepository.findValueGrowth(d),
       };
-      const rows = await queryMap[preset]!(latestDate);
+      const rows = await queryMap[preset]!(fundDate);
       return (rows as { ticker: string; name: string; sector: string; close: number; pe: number | null; pb: number | null; eps: number | null; dividendYield: number | null; marketCap: bigint }[]).map((r) => ({
         ticker: r.ticker, name: r.name, sector: r.sector,
         close: Number(r.close),
