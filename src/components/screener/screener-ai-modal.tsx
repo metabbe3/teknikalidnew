@@ -22,6 +22,10 @@ const DEFAULT_QUESTIONS = [
  */
 function cleanAnswerText(raw: string): string {
   return raw
+    // TICKER[/stocks/TICKER] → TICKER (dedup nempel — dicek PERTAMA sebelum bracket umum)
+    .replace(/([A-Z0-9.^-]{2,12})\[\/?stocks\/[A-Z0-9.^-]{2,12}\]/g, "$1")
+    // [TICKER]/stocks/TICKER → TICKER
+    .replace(/\[([A-Z0-9.^-]{2,12})\]\/?stocks\/[A-Z0-9.^-]{2,12}/g, "$1")
     // [TICKER](/stocks/ANY) → TICKER
     .replace(/\[([A-Z0-9.^-]{2,12})\]\([^)]*\)/g, "$1")
     // [/stocks/TICKER] → TICKER
