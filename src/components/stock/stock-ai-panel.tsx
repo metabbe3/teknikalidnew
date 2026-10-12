@@ -84,7 +84,7 @@ export function StockAiPanel({ data }: { data: StockAiData }) {
         <div className="flex items-center gap-2">
           <span className="text-sm font-semibold text-text-primary">✨ Analisa AI</span>
           <span className="text-[10px] px-1.5 py-0.5 rounded bg-accent/10 text-accent font-medium">
-            LOKAL · gratis
+            AI
           </span>
         </div>
         <button
