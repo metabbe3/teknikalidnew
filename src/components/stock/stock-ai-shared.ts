@@ -31,7 +31,14 @@ export function parseAiText(raw: string): ParsedAi {
     ringkasan: grabSection("RINGKASAN"),
     insights: bulletList(grabSection("INSIGHT")),
     drivers: bulletList(grabSection("KEY DRIVERS")),
-    level: grabSection("LEVEL")?.split("\n")[0] ?? null,
+    // LEVEL bisa 1 baris ATAU multi-baris (support & resistance terpisah) —
+    // jangan potong: gabung seluruh baris section, rapikan jadi satu baris.
+    level:
+      grabSection("LEVEL")
+        ?.split("\n")
+        .map((l) => l.trim())
+        .filter((l) => l && !/rekomendasi|disclaimer/i.test(l))
+        .join(" · ") ?? null,
     raw: clean,
   };
 }
