@@ -25,7 +25,8 @@ const securityHeaders = {
   ].join("; "),
   "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
   "X-Frame-Options": "DENY",
-  "X-Content-Type-Options": "nosniff",
+  // X-Content-Type-Options: nosniff DIHAPUS — akar dialog download iPhone Safari iOS
+  // (text/x-component RSC + nosniff = download). HTML utama text/html murni, risk minimal.
   "X-XSS-Protection": "1; mode=block",
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
@@ -156,9 +157,6 @@ export async function proxy(request: NextRequest) {
   // dikonsumsi internal oleh router Next di halaman yang sah (same-origin, JS aktif),
   // jadi nosniff tidak menambah keamanan di sini — tapi tetap dipertahankan untuk
   // semua respons lain. (Akar masalah dialog download "BIKE.JK" di iPhone, 12 Okt.)
-  if (request.headers.get("RSC") === "1" || request.nextUrl.searchParams.has("_rsc")) {
-    response.headers.delete("X-Content-Type-Options");
-  }
 
   const pathname = request.nextUrl.pathname;
 
