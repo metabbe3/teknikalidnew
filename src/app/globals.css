@@ -1324,3 +1324,12 @@ button:focus-visible,
 .health-card-signal-bearish {
   background: rgba(220, 38, 38, 0.06);
 }
+/* AI modal progress bar — indeterminate sweep (loading analisa MLX lokal) */
+@keyframes ai-progress-sweep {
+  0% { left: -35%; width: 35%; }
+  50% { left: 30%; width: 45%; }
+  100% { left: 100%; width: 35%; }
+}
+.ai-progress {
+  animation: ai-progress-sweep 1.6s ease-in-out infinite;
+}

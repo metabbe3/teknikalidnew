@@ -196,11 +196,15 @@ export function StockAiModal({ ticker, name, onClose }: { ticker: string; name: 
         {/* Body */}
         <div className="px-5 py-4 overflow-y-auto space-y-4">
           {loading && (
-            <div className="space-y-2 py-2">
+            <div className="space-y-3 py-2">
+              {/* Progress bar — AI lokal butuh ~8 dtk */}
+              <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-bg-tertiary">
+                <div className="ai-progress absolute inset-y-0 left-0 w-1/3 rounded-full bg-accent" />
+              </div>
               <div className="h-3 bg-bg-tertiary rounded animate-pulse w-full" />
               <div className="h-3 bg-bg-tertiary rounded animate-pulse w-11/12" />
               <div className="h-3 bg-bg-tertiary rounded animate-pulse w-4/5" />
-              <p className="text-[11px] text-text-tertiary pt-2">Menganalisa {name}…</p>
+              <p className="text-[11px] text-text-tertiary pt-2">🧠 Menganalisa {name}… <span className="ai-pct">±8 dtk</span></p>
             </div>
           )}
           {error && <p className="text-sm text-bearish">{error}</p>}

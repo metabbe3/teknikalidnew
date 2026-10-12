@@ -190,6 +190,11 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // SW update-check jangan pernah diblokir HTTP cache (24h browser check + 4h cache = lambat)
+  if (pathname === "/sw.js") {
+    response.headers.set("Cache-Control", "no-cache, must-revalidate");
+  }
+
   // Cache immutable static assets (fonts, images with hashes)
   if (pathname.match(/\.\w{8,}\.(js|css|woff2?|ttf|ico|png|jpg|svg|webp)$/)) {
     response.headers.set("Cache-Control", "public, max-age=31536000, immutable");
@@ -200,7 +205,9 @@ export async function proxy(request: NextRequest) {
   const isHtmlPage = !pathname.startsWith("/api/") && !pathname.startsWith("/_next/") && !pathname.includes(".");
   const isAdminPage = pathname.startsWith("/admin") || pathname.startsWith("/profile/edit");
   if (isHtmlPage && !isAdminPage) {
-    response.headers.set("Cache-Control", "public, s-maxage=300, stale-while-revalidate=600");
+    // HTML no-cache: 12 Okt — HTML stale di edge POP (3 deploy beruntun) menunjuk chunk 404
+    // → iPhone white screen. CF serve DYNAMIC; HTML gzip ~30KB, biaya kecil.
+    response.headers.set("Cache-Control", "no-cache, must-revalidate");
   }
 
   const ip = request.headers.get("cf-connecting-ip")?.trim()
