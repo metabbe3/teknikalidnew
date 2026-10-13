@@ -394,3 +394,13 @@
 - **QA**: open — reviewer verify D+1 (ganti nama minor-3 ALSOK ikut diselesaikan: catatan SOSS kini pakai nama DB + 'mantan Shield On Service')
 - **impact_check_due**: 2026-10-15 — brief pagi berikutnya bebas klaim cross-date (pola ke-8; jalur Mandor generator, bukan repo — sanitizer/ fact-check gate belum menutup klaim tanggal cross & ranking skip; kandidat entry baru kalau kambuh)
 - **Rollback**: UPDATE reverse dari /tmp/qa1212-backup/content-pre.md / backup db-20261012.sql.gz
+
+### 2026-10-12 23:2x — bug-2026-10-12-01 (bug, night-prep) — /akses-dibatasi ganti white-screen 403/429 (PRD idea-2026-10-12-2)
+- **task-id**: bug-2026-10-12-01 | **PRD**: idea-2026-10-12-2 (spec_ready, Product Agent 12 Okt 22:1x)
+- **type**: bug frontend/proxy (0 DB, 0 deploy malam — PREP-ONLY, deploy CTO pagi)
+- **branch**: night/bug-2026-10-12-01 (f0d018e kode + bookkeeping commit)
+- **perubahan**: src/lib/access-limit.ts BARU (accessLimitedResponse HTML-rewrite/API-JSON + shouldEscalateCgnat AC5 + sanitizeReturnPath) · src/proxy.ts blocked-gate 403 + stock-page 429 → accessLimitedResponse, eskalasi CGNAT digate UA-browser, retryMs akurat soft-60s/eskalasi-1h · src/app/(public)/akses-dibatasi/page.tsx BARU server-component 0 client-JS noindex · scripts/selftest-access-limit.ts BARU
+- **verify**: tsc --noEmit 0 · selftest 9/9 PASS (node:test, fixture tanpa IP nyata) · sdlc_lint 0 error · grep 'new NextResponse(null' src/proxy.ts = 0 sisa
+- **failing-test-first**: module access-limit + 9 test ditulis sebagai reproduksi (proxy lama body-kosong tak teruji) — commit test+kode satu paket selftest AC6
+- **QA**: open — CTO pagi 07:30 review+merge+deploy; live AC1-AC4 verify pasca-deploy (curl rewrite dari kondisi simulasi)
+- **Rollback**: git revert f0d018e (0 DB; halaman additive)
