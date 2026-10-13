@@ -1,3 +1,12 @@
+## [2026-10-14 03:1x] backoffice-builder — bo-2026-10-13-01: audit 26 halaman admin + fix dead-code moderasi /admin/reports + nav Review Artikel
+- Type: backoffice frontend-only  |  PRD: bo-2026-10-13-01 (owner mandat 12 Okt: matangkan/buang/kuasai/insight)
+- Deploy: image post-deploy commit fix  |  Rollback: anchor 6952a83 (revert + docker tag sebelum up)
+- AUDIT 26/26: 12 halaman = redirect shim 5-baris (predictions/community/user-analytics/auth-health/stock-engagement/eod-logs/intraday-logs/queue-monitor/cron-monitor/cron-config/api-keys + ticker-manager tervalidasi) → konsolidasi ke /admin tabs + /admin/pipelines SUKSES, bukan halaman mati. Real pages: 8 tab overview + review + articles + social-cards + shares + retention + errors + agent-hub + ticker-manager.
+- FIX P1 (dead-code): /admin/reports 3 tombol moderasi (Hapus Konten/Abaikan/Ban User) tanpa handler sejak Mei — page.tsx server component, data-action buttons + 0 script. Backend LENGKAP (PATCH /api/admin/reports/[id] + moderationService.reviewReport + audit log). Fix: report-actions.tsx client comp (useMutation PATCH {action: delete|dismiss|ban}, router.refresh, toast), tombol lama diganti. DB Report = 0 rows (fitur live tapi belum pernah dipakai).
+- FIX nav: /admin/review (gerbang approve artikel AI — status Article DRAFT=1 PUBLISHED=128, alur aktif) ORPHAN sejak 28 Sep — tak ada di sidebar, 0 link inbound. Ditambahkan ke group Content 'Review Artikel' + PAGE_NAMES.
+- Verify: tsc --noEmit EXIT 0 (host); grep ReportActions x2 page.tsx, FileCheck+Review Artikel layout.tsx; DB read-only sepanjang slot.
+- Impact check: 2026-10-21 — nav Review Artikel diklik owner; (opsional) laporan masuk & diproses via tombol.
+
 ## [2026-10-13 09:3x] reviewer — QA konten 24 jam: 40/40 snapshot EXACT; brief13 3 FATAL → qa-2026-10-13-01 (basis OPEN vs prev-close + superlatif); bug-12-01 qa_pass; 6d803fc live tapi tanpa changelog
 - Type: QA/ops  |  PRD: -
 - Deploy: tanpa deploy — QA + 1 task P1 ke queue + bookkeeping  |  Rollback: -

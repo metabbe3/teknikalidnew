@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-guard";
 import Link from "next/link";
+import { ReportActions } from "./report-actions";
 
 export const revalidate = 60;
 
@@ -125,33 +126,11 @@ export default async function AdminReportsPage() {
               </p>
 
               {/* Actions */}
-              <div className="flex items-center gap-2 pt-1 border-t border-border">
-                <button
-                  data-action="delete-report"
-                  data-report-id={report.id}
-                  data-target-type={report.targetType}
-                  data-target-id={report.targetId}
-                  className="text-xs font-medium text-bearish hover:text-bearish/80 bg-bearish/5 px-3 py-1.5 rounded-full transition-colors press-scale"
-                >
-                  Hapus Konten
-                </button>
-                <button
-                  data-action="dismiss-report"
-                  data-report-id={report.id}
-                  className="text-xs font-medium text-text-secondary hover:text-text-primary bg-bg-hover px-3 py-1.5 rounded-full transition-colors press-scale"
-                >
-                  Abaikan
-                </button>
-                <button
-                  data-action="ban-user"
-                  data-report-id={report.id}
-                  data-target-type={report.targetType}
-                  data-target-id={report.targetId}
-                  className="text-xs font-medium text-white bg-text-primary hover:opacity-90 px-3 py-1.5 rounded-full transition-opacity press-scale"
-                >
-                  Ban User
-                </button>
-              </div>
+              <ReportActions
+                reportId={report.id}
+                targetType={report.targetType}
+                targetId={report.targetId}
+              />
             </div>
           ))}
         </div>

@@ -38,6 +38,7 @@ import {
   Database,
   BarChart3,
   FileText,
+  FileCheck,
   Shield,
   LogOut,
   ChevronRight,
@@ -85,6 +86,7 @@ const sidebarNav: NavGroup[] = [
     icon: FileText,
     items: [
       { label: "Articles", href: "/admin/articles", icon: FileText },
+      { label: "Review Artikel", href: "/admin/review", icon: FileCheck },
       { label: "Social Cards", href: "/admin/social-cards", icon: Smartphone },
       { label: "Reports", href: "/admin/reports", icon: Shield },
     ],
@@ -107,6 +109,7 @@ const PAGE_NAMES: Record<string, string> = {
   "/admin/ticker-manager": "Ticker Manager",
   "/admin/articles": "Articles",
   "/admin/articles/generate": "Generate Article",
+  "/admin/review": "Review Artikel",
   "/admin/reports": "Reports",
   "/admin/agent-hub": "AI Agent Hub",
   "/admin/agent-hub/seo_optimizer": "SEO Optimizer",
