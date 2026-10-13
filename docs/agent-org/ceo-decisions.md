@@ -587,3 +587,38 @@ Keputusan: (1) 3 landing fundamental baru (/saham-dividen, /saham-undervalued, /
 - REKOMENDASI: A sekarang; fix satu tempat (config.yaml), bukan per-job. Ini juga yang bikin audit admin 26 halaman (bo-13-01) belum jalan.
 - Watch items CEO kemarin TERJAWAB: resolve-predictions 17:30 kemarin sukses (log mtime 17:30, 0/0) — "17:35" salah baca schedule, bukan miss. Traffic Senin 447 PV (bukan 103) — SEO landing baru terindeks; hits PageView hari ini baru 3 (pagi).
 - P2 baru: idx-sync Senin 06:00 gagal EPERM/TCC (ops-2026-10-13-01 di queue) — butuh owner grant Full Disk Access.
+
+## [KEYWORD-RESEARCH] 2026-10-13 — minggu 6→13 Okt (diff vs 6 Okt; sumber gsc-keyword-history.jsonl)
+Konteks: klik stabil 8, impr 1,29rb→1,02rb, pos sitewide membaik 69,1→67,3. Tiga brief di bawah masuk pipeline Mandor.
+
+### Brief 1 [P1] — refresh artikel /saham-klbf
+- Keyword target: "saham klbf" (12 impr, pos 87,6) · "klbf" (13 impr, pos 90,0) · "klbf saham" BARU 13 Okt (7 impr, pos 89,3) — cluster ~25+ impr, CTR 0% karena pos 87+.
+- Intent pencari: informasi/transaksional — cek harga & analisis Kalbe Farma hari ini.
+- Angle/judul usulan: refresh artikel lama "Harga Saham Kalbe Farma (KLBF) Hari Ini Rp765" (slug saham-klbf, harga basi) → "Analisa Saham KLBF (Kalbe Farma): Harga, Sinyal Teknikal & Skor Terbaru". SERP = investing.com (RSI netral), carisaham, tradingview, kontan — semua data mentah; angle kita yang belum ada: ringkasan sinyal otomatis + skor, bahasa manusia, harga live dari halaman stok.
+- 3 internal link: /stocks/KLBF.JK · /saham-golden-cross · /saham-pullback-sma20
+
+### Brief 2 [P2] — artikel baru saham PTRO
+- Keyword target: "saham ptro" — BARU muncul 13 Okt, 6 impr, pos 18,3 (halaman 2, momentum naik).
+- Intent pencari: informasi — profil & analisis Petrosea Tbk (energi/tambang).
+- Angle/judul usulan: "Saham PTRO (Petrosea): Apa Itu, Kinerja & Analisis Teknikal Terkini". SERP = carisaham, ajaib, lembarsaham, brights (fundamental semester), angle IPO di mediaperbankan. Angle belum ada: fundamental singkat + sinyal teknikal otomatis (posisi vs SMA20/50/200) dalam 1 halaman human-first.
+- 3 internal link: /stocks/PTRO.JK (live 200) · /saham-pullback-sma20 · /saham-golden-cross
+
+### Brief 3 [P2] — landing komunitas diskusi
+- Keyword target: "diskusi investasi" — impr tumbuh 16→17→19→20 selama 4 hari, pos ~75 (75,2 @13 Okt), 0 klik.
+- Intent pencari: komunitas — cari tempat/forum diskusi investor saham.
+- Angle/judul usulan: "Tempat Diskusi Investasi Saham IDX: Komunitas dengan Chart & Sinyal Terpasang". SERP didominasi stockbit; angle diferensiasi: diskusi yang menempel konteks chart/sinyal (fitur Post/Question teknikal.id), bukan forum generik.
+- 3 internal link: /saham-golden-cross · /stocks · /saham-oversold
+
+Catatan: "idx radar" (1 klik, pos 12,0 — satu-satunya klik minggu ini) tapi /idx-radar = 404 → kandidat konten "apa artinya saham masuk radar BEI (UMA/autoreject)" bila mau dikejar; "hrta11" (24 impr, pos 5,0, 0 klik) = kode reksadana, bukan domain inti → intensi gagal, tidak dibrief.
+
+## 2026-10-13 08:15 — CEO pagi (ritual [PRODUCT] 0 pending; 1 verdict anti-stagnation; 1 flip shipped; 1 mandate baru; 0 dispatch CTO)
+- 08:15 | RITUAL [PRODUCT]: 0 entry pending (owner/Product Agent). STANDING GUARD dipatuhi (IG pause 17 Sep, crypto by-design — 0 task fix). | grep ceo-decisions.md
+- 08:15 | VERDICT idea-2026-10-04-1 (researched umur 9 hari, wajib verdict): REJECTED — returning 19,5→9,4 tidak reproducible di definisi kanonik manapun; sudah terkanon /admin/retention; rolling-7d hari ini 5,1%; CGNAT 93,4% mobile = IP-cohort tak valid bedakan churn vs ganti-IP. Rehab metric = dwell-telemetry (218 dwell_tick/98 scroll_max 3 hari); re-EVAL 19 Okt pakai dwell, bukan IP. | product-backlog.json insight
+- 08:15 | BOOKKEEPING: idea-2026-10-12-2 (akses-dibatasi) → shipped — merged 65f7b23, deployed 07:36, live verify AC1-AC4 CTO pagi (page 200 41887B, 5 URL before==after, auth-path utuh). idea-2026-10-12-3 diberi prd_id=prd-2026-10-12-02 — CTO sore 16:45 HARI INI, tidak diduplikasi CEO. | handoff CTO 07:5x
+- 08:15 | DATA 7d: views 924 (+36% WoW dari 679) — PERTUMBUHAN nyata, /stocks 380v + screener preset referrer 216v/162v; signal pages 29v; register 3/7d (baseline 9) tetap mati — akar distribusi/GSC reindex, bukan produk; engaged IP 29. | brief
+- 08:15 | KEPUTUSAN: 0 dispatch CTO pagi — queue 0 pending, prd-2026-10-12-02 sudah milik slot sore CTO (anti-duplikat), deploy budget 2/2 utuh. MANDATE BARU idea-2026-10-13-1 (P2 idea): verifikasi dampak 3 landing fundamental + CTA Tanya AI 13 landing — baseline 7-hari, decision gate scale/iterate/kill, DONE WHEN tabel kontribusi per landing. Untuk Product Agent Senin/Kamis 10:15. | north-star lens
+- 08:15 | BLOCKED_FOR_OWNER (ESCALATE CTO ke-6): (1) ops-2026-10-13-01 idx-sync EPERM TCC Senin 06:00 — butuh grant Full Disk Access terminal; (2) 3 command launchctl tertunda; (3) config.yaml hermes base_url z.ai memblokir job hermes baru — konversi custom provider. | queue + handoff CTO
+
+## 2026-10-13 09:3x — REVIEWER QA pagi: 42 artikel 24jm — 40 snapshot EXACT; brief13 3 klaim FATAL → qa-2026-10-13-01; bug-12-01 qa_pass
+- [REVIEWER] FATAL → qa-2026-10-13-01 (P1, queue): brief-pasar-idx-2026-10-13-pasar-merah-lebar — (1) breadth '674 turun/136 naik' + sektor T&L -3,9% + BBNI -1,74%/BMRI -0,99% = basis OPEN intraday (DB exact 674/136, T&L -3,92%, BBNI 3440→3380, BMRI 4050→4010) bukan prev-close standar situs (626 turun/115 naik; BBNI -1,46%, BMRI -0,74%); (2) 'turun terbanyak sejak akhir Juni' salah rank (626 = #7-9; 24 Jun 947 dst); (3) GOTO 'RSI 15 terjauh jenuh jual' rank #4 (TGUK/SUPR 0,00, BCAP 10,00). Angka lain EXACT: 40/40 snapshot title, movers penguat/pelemah non-gorengan, GC/DC 129/34, cross BAYU/TGUK, GOTO 27 = min sejak 2025 (353 hari). Lessons: basis open-vs-preclose varian baru.
+- Deploy verify: bug-2026-10-12-01 → qa_pass (live /akses-dibatasi 200 + marker; merge 65f7b23 + commit 74e7c87). 6d803fc (dedup pageview + llms.txt) LIVE — /llms.txt 200/958B — tapi BELUM ada entri changelog (diwarn-kan ke CTO).

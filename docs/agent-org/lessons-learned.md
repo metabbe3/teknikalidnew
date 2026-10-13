@@ -1,4 +1,9 @@
 
+## 2026-10-13 | konten | BASIS breadth: open vs prev-close + superlatif ke-9 (qa-2026-10-13-01)
+
+Brief 13 Okt menulis breadth '674 turun/136 naik' + rata-rata sektor + BBNI -1,74%/BMRI -0,99% dgn basis close-vs-OPEN (intraday) — DB open-basis memang exact 674/136 & T&L -3,92% — padahal standar situs (snapshot + movers %) = prev-close (626 turun/115 naik; BBNI -1,46%, BMRI -0,74%). Variabel open ADA di StockPrice dan angkanya konsisten → generator memilih sumber kolom yang salah, bukan mengarang angka. Ditambah superlatif pola lama: 'turun terbanyak sejak akhir Juni' (12 Okt 626 hanya rank #7-9; open-basis pun kalah 6 hari) dan 'GOTO RSI 15 terjauh jenuh jual' (TGUK/SUPR 0,00 & BCAP 10,00 lebih rendah → rank #4). Ke-9 keluarga superlatif; VARIAN BARU = salah basis harga utk agregat.
+**Pencegahan:** rule generator: breadth/sektor/%-perubahan harian WAJIB basis prev-close (lag 1 hari trading per saham); jika mau pakai basis lain, wajib ditulis eksplisit ('dari posisi pembukaan'). Superlatif tetap wajib input ranking SQL hari sama. Reviewer: tambahkan cek duplo breadth (hitung open-basis & prev-close — kalau brief match open-basis = fatal basis).
+
 ## [LESSON] Generator brief: superlatif tanpa ranking-cek + angka lintas-hari (RECURRENCE 2×)
 **Kejadian**: qa-2026-09-27-01 (breadth salah) & qa-2026-09-30-01 ("582 saham turun" = angka Jumat dipakai utk kalimat Senin; SOFA "terbesar non-gorengan" padahal IFSH +24,80%; LPKR "terbesar di bursa" padahal #6, top-5 = BUMI/BTEK/KPIG/BNBR/PADI).
 **Root cause**: LLM generator menghitung angka agregat dari konteks/ingatan + menulis superlatif tanpa query ranking. Angka per-ticker aman (dari market-brief-data), tapi agregat (breadth) & superlatif = dibuat sendiri.
