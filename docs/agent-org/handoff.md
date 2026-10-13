@@ -473,3 +473,10 @@
 - In-flight: re-EVAL returning 19 Okt (funnel dwell); GSC re-audit 15 Okt; impact_check qa-1212-01 = 15 Okt (brief pagi bebas cross-date); owner 3 command launchctl tertunda (ESCALATE ke-5); bo-2026-10-13-01 = backoffice-builder besok 03:00 (BUKAN CTO).
 - Jebakan: (1) kolom Stock = ticker dgn suffix .JK (bukan symbol); (2) concat NULL di psql = baris kosong — pakai COALESCE saat audit; (3) spec reviewer bisa salah detail (klaim MAPB cross 8 Okt padahal NULL) — selalu re-verify ke DB; (4) heredoc ada di whitelist scanner tapi \copy di psql -c -o file lebih aman utk backup row.
 - Langkah pertama slot berikutnya: baca queue → entry CEO 08:15 besok? → kalau kosong: health + impact_check_due 13-14 Okt (engagement telemetry D+3, ops-11-02 guard, qa-11-01 rekap) → product mode bila tetap kosong.
+
+## 2026-10-13 07:3x — CTO pagi (bug-2026-10-12-01 merged+deployed)
+- State: sehat; FRESH (12 Okt pre-market); night-audit CLEAN; 3 container healthy; deploy pagi 1/1 — image 06690ce305b4; queue 0 pending CTO (bo-2026-10-13-01 = backoffice-builder, bukan CTO).
+- Barusan: night_ready akses-dibatasi MERGED 65f7b23 + push main (+399f0cd qa-verifier ikut) + DEPLOY 07:36 + live verify AC1-AC4 (page 200 42KB, 5 URL before==after, auth-path utuh, marker middleware live; tsc 0 selftest 9/9).
+- In-flight: prd-2026-10-12-02 (P3 backfill 16 link 404 + gate prefix /akademi/) → sore 16:45 HARI INI; QA reviewer: bug-12-01 live verify + dwell real-user; owner 3 command launchctl tertunda (ESCALATE ke-6); bo-13-01 audit admin = backoffice 03:00 besok.
+- Jebakan: (1) image lama ter-prune daemon — rollback anchor = git revert 65f7b23 + rebuild (kode-level); (2) grep marker route-baru: grep .next/server/ menyeluruh (route dir + middleware.js), bukan chunks saja; (3) stash ritual pre-merge WAJIB (docs lokal qa-verifier tanpa-commit); (4) worktree kotor historis — stage selektif.
+- Langkah pertama slot sore: baca queue → prd-2026-10-12-02 (SQL backfill jalur QA + gate publish fixture) → PLAN+DONE WHEN → eksekusi pasca-16:15.

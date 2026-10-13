@@ -999,7 +999,7 @@
       "priority": "P2",
       "north_star": "consistency, trust, easy to use",
       "spec": "UX PUTCASE (bug-2026-10-12-01) — IP kena block/rate-limit dapat body kosong (white screen). Repro: (1) Dari IP yang ada di tabel BlockedIp (atau trigger auto: >180 req/mnt ke /stocks/*, 3 violation eskalasi), GET https://teknikal.id/stocks sebagai anon; (2) Response = 403 dengan Content-Length 0 (proxy.ts line 252: new NextResponse(null, {status:403})) — browser render halaman kosong putih, tanpa pesan/cara keluar. (3) Varian 429 di line 292 juga body kosong. Severity: P2 — Dampak: user hilang tanpa diagnostics; BlockedIp 15 rows didominasi IP CGNAT Indonesia (180.247.x, 114.12.x, 182.3.x, 2404:c0:x) — 1 IP dibagi ribuan user Telkomsel/Indihome, blokir 1 jam bisa menutup akses banyak pengguna nyata yang tidak tahu kenapa. Fixture test sendiri UX Builder shift ini kena (114.12.1.248 blocked 18:28-19:28 WIB). DESAIN YANG DIREKOMENDASIKAN (keputusan CTO): ganti NextResponse(null) dengan NextResponse.rewrite ke halaman 'akses-dibatasi' (copy jelas: sinyal keterbatasan, durasi, link buka kembali dalam X menit, kontak) + jangan auto-block IP CGNAT tanpa eksponen tambahan (UA+heuristic). Frontend-only variant juga disukai: rewrite /stocks → /akses-dibatasi?path=... dengan pesan + countdown. NOTE UX Builder: bukan domain saya — dispatch sesuai aturan bug.",
-      "status": "night_ready",
+      "status": "done",
       "note": "Dispatched by UX Builder shift 19:15 12 Okt. Sumber: kena sendiri saat verify live /stocks (IP rumah 114.12.1.248 auto-block 18:28 WIB, expired 19:28). Bukti: curl -D headers = 403 Content-Length 0; tabel BlockedIp query 19:15. || Product Agent 2026-10-12 22:1x WIB: PRD LENGKAP idea-2026-10-12-2 (AC1-AC6 + metadata v2) — data: 56 rows BlockedIp 82% CGNAT, 8 IP blocked = 626 views asli 30d, 1 user authed ikut terkunci (114.12.1.248, 33 views 7d).",
       "prd_id": "idea-2026-10-12-2",
       "created_by": "Product Agent nightly buffer-keeper 2026-10-12 22:1x WIB (riset SQL BlockedIp/PageView read-only + statik proxy.ts @ 399f0cd + live curl)",
@@ -1035,12 +1035,14 @@
       ],
       "risk": "med",
       "estimate_tool_calls": 10,
-      "scheduled_slot": "slot CTO berikutnya (frontend-only, tanpa quiet zone 11:00-18:00)",
+      "scheduled_slot": "2026-10-13 07:30 CTO pagi (night_ready merge+deploy)",
       "title": "P2 BUG (PRD idea-2026-10-12-2): halaman /akses-dibatasi utk IP block/rate-limit — ganti white screen 403/429 body-kosong",
       "branch": "night/bug-2026-10-12-01",
       "verify_evidence": "NIGHT 12 Okt 23:2x: tsc --noEmit exit 0; selftest-access-limit.ts 9/9 PASS (node:test — wantsJsonError API-vs-HTML, buildAccessLimitUrl status/path/retry+cap, CGNAT prefix, UA browser-signal, shouldEscalateCgnat AC5 non-CGNAT perilaku-lama, sanitizeReturnPath anti open-redirect, secondsUntil clamp); sdlc_lint 0 error; 'new NextResponse(null' di proxy.ts = 0 sisa (kedua varian tercover). Commit f0d018e.",
       "night_result": "Implementasi PENUH branch night/bug-2026-10-12-01 (f0d018e): (1) src/lib/access-limit.ts BARU — accessLimitedResponse (HTML→rewrite /akses-dibatasi?status=&path=&retry=; API /api/*→NextResponse.json berbody utk client XHR), shouldEscalateCgnat AC5 (CGNAT 180.247/114.12/182.3/2404:c0 wajib UA browser utk eskalasi blokir 1 jam; non-CGNAT perilaku lama), buildAccessLimitUrl/sanitizeReturnPath/secondsUntil pure. (2) src/proxy.ts L254 (blocked-gate 403) + L297 (stock-page 429) NextResponse(null) → accessLimitedResponse; retry param akurat: soft-limit 60s vs tereskalasi 1h. (3) /akses-dibatasi page BARU server-component 0 client-JS, copy non-menuduh CGNAT-aware + durasi menit + Coba Lagi + kontak komunitas, noindex. (4) selftest 9 test. TANPA deploy (PREP-ONLY hard-gate 21:45-07:00), 0 DB write. ACTION CTO PAGI: review diff + merge + deploy app, live-verify AC1 (403 varian dari IP ter-simulasi/fixture), AC3 negatif IP sehat, 5 URL 200 before==after.",
-      "estimate_review_min": 10
+      "estimate_review_min": 10,
+      "completed_at": "2026-10-13 08:0x WIB",
+      "result": "DONE 13 Okt 07:3x-08:0x CTO pagi (night_ready merge + deploy 1/1). MERGE PROTOCOL: dry-run exit 0 NO_CONFLICT, schema-shield PASS (0 file migrations/prisma/sql), merge --no-ff 65f7b23 (night f0d018e+b79657e) + push origin/main (ikut terangkat commit lokal 399f0cd qa-verifier 'pill Tanya AI' — preseden 4 Okt jam aman). STASH RITUAL: docs lokal (qa-verifier 03:3x tanpa-commit) di-stash pre-merge, pop bersih pasca. VERIFY: tsc --noEmit exit 0 + selftest-access-limit 9/9 PASS di merge commit. DEPLOY 07:34-07:36 (build cached 1m42s) image 06690ce305b4 / sha 06ed8575ddee created 07:35 WIB; 3 container healthy. ANCHOR-VALIDATION (lesson 12 Okt): marker 'akses-dibatasi' live di middleware.js + (public)/akses-dibatasi/page.js container + image created HARI INI = bukan cache basi (grep chunks awal :0 → ditemukan di route-diri + middleware — pitfall grep route-vs-chunks dicatat). LIVE DONE-WHEN 5/5: (1) /akses-dibatasi?status=429&path=/stocks&retry=60 = 200 body 42.143B 'Akses Dibatasi' + 'Coba Lagi' + noindex (AC1/AC2); (2) AC3 negatif IP sehat: 5 URL 200 before==after (home/stocks/berita/golden-cross/BBRI.JK); (3) AC4: /auth/signin + /auth/register 200 (auth-path tidak tertelan rewrite); (4) API varian wantsJsonError = NextResponse.json berbody (selftest 9/9, jalur XHR); (5) changelog == merge. AC5 CGNAT-escalation-gate: shipped in-code + selftest shouldEscalateCgnat. Rollback anchor: app 06690ce305b4 + git revert 65f7b23 (image lama ter-prune daemon; revert = rebuild dari main-pre-merge)."
     },
     {
       "id": "cta-tanya-ai-signal-pages",
@@ -1049,7 +1051,10 @@
       "north_star": "time spent + returning users",
       "spec": "Tambah CTA kecil '✨ Tanya AI gratis, tanpa login' (link /stocks?view=screener, buka modal AI) di 10 halaman signal SEO (/saham-golden-cross, /saham-oversold, dll — daftar di saham-strategy-links.tsx STRATEGY_PAGES). Satu komponen reusable, dipasang via page masing2. JANGAN bikin halaman AI baru / kejar keyword AI (keputusan owner 12 Okt). Verify: grep CTA di 10 halaman live + tsc 0 + 1 deploy max.",
       "status": "done",
-      "note": "Dieksekusi owner-direct 12 Okt malam oleh agent utama (commits af0706f + a00e562)"
+      "note": "Dieksekusi owner-direct 12 Okt malam oleh agent utama (commits af0706f + a00e562)",
+      "qa_verified": true,
+      "qa_note": "PASS: AskAiCta live di 12/12 landing signal dicek (golden-cross,oversold,stochastic-oversold,volume-spike,pullback-sma20,macd-bullish,death-cross,overbought,ema-cross,dividen,undervalued,value-growth) semua 200 + 'Tanya AI' hadir; komponen src/components/seo/ask-ai-cta.tsx + 13 usage di repo; commits af0706f+a00e562 ada.",
+      "qa_at": "2026-10-13 03:3x WIB by qa-verifier"
     },
     {
       "id": "qa-2026-10-12-01",
@@ -1063,7 +1068,10 @@
       "title": "P1: Brief 12 Okt (brief-pasar-idx-2026-10-12-rebound-bank-bangkit) — SOSS 'golden cross masih muda (7 Okt)' salah (DB smaCrossDate=7 Sep, >1 bulan lalu) + daftar Penguat Terbesar skip MAPB +24,77% (peringkat 2 DB, di atas DAAZ)",
       "spec": "INTENT: QA reviewer 12 Okt — patch 2 klaim fatal di brief-pasar-idx-2026-10-12-rebound-bank-bangkit (NEWS, live /berita/<slug> 200). ANGKA EXACT - JANGAN disentuh: breadth 398/282/866 + konteks Rabu-Kamis merah; BBRI +2,31% 3.100 (Kamis -3,50%, dekat low 30d 3.030); BMRI +1,00% 4.040 (-2,44%); BBCA +0,83% 6.050; BBNI +0,59% 3.430; TLKM +2,65% 2.320; TOWR +5,53% 458 & +10,6% sepekan dari 414 Senin (RSI 65); DAAZ +14,15% 2.420 vol 2,15jt; BRRC +13,21% 60 vol 48,3jt; SMMT +10,83% 3.990 nilai 19,8 M; PACK +9,91% 488 vol 308jt nilai 150,5 M; losers KDTN -14,95/DOOH -12,90/IFSH -11,01/PTSN -10,95/GEMS -9,97 7.900; GC 152 vs DC 38; oversold 33 (GOTO 17,5 vol 12,9 miliar/ADHI 18,7/BCAP 11,6/MNCN 27,8/BMTR 27,5); BBRI death cross EMA bearish 29 Sep. FIX WAJIB (1) — SOSS cross-date: tabel Penguat Terbesar klaim 'golden cross masih muda (7 Okt)' SALAH — DB StockIndicator 9 Okt: SOSS smaCrossDate=2026-09-07 (golden_cross); 7 Okt tidak ada cross baru. Perbaiki catatan SOSS jadi akurat (mis. 'golden cross 7 Sep, sudah sebulan berjalan') ATAU hapus klaim cross; jangan mengarang tanggal lain. Harga Rp1.200 +25,00% EXACT — pertahankan. FIX WAJIB (2) — ranking Penguat Terbesar tidak lengkap: DB 9 Okt non-gorengan MAPB (MAP Boga Adiperkasa) +24,77% (1.070→1.335) = peringkat 2, di atas DAAZ +14,15%, tapi tidak disebut di mana pun. Tambahkan MAPB ke tabel (close 1.335, +24,77%; catatan netral — JANGAN sebut golden cross utk MAPB meski DB smaCrossDate=8 Okt, signalScore 0,42) ATAU ubah framing daftar jadi seleksi eksplisit (mis. 'penguat terbesar pilihan') — heading 'terbesar' tanpa MAPB = ranking salah. MINOR OPSIONAL (3): nama SOSS di teks 'Shield On Service' — DB Stock.name='ALSOK Indonesia Services' (rebrand); samakan atau tambah '(kini ALSOK Indonesia Services)'. DONE WHEN: (a) backup row dulu (psql \\copy ke /tmp atau dump content ke file), patch SQL via docker exec psql; (b) curl /berita/brief-pasar-idx-2026-10-12-rebound-bank-bangkit 200 + grep: 'MAPB' hadir, klaim cross '7 Okt' pada konteks SOSS hilang; (c) spot-check angka exact tak berubah (398, 3.100, 14,15%, 152); (d) flip status + changelog entry sesuai template. Tanpa deploy app.",
       "completed_at": "2026-10-12 16:5x WIB",
-      "result": "DONE 12 Okt 16:45-17:0x CTO sore (SQL patch 1 transaksi 3 UPDATE rowcount=1, TANPA deploy; backup db-20261012 01:16 valid + fullrow /tmp/qa1212-backup). FIX1 SOSS cross-date: catatan tabel 'Shield On Service, golden cross masih muda (7 Okt)' → 'ALSOK Indonesia Services (mantan Shield On Service), golden cross sejak 7 Sep' (DB smaCrossDate=2026-09-07 golden_cross; minor-3 rebrand name ikut selesai). FIX2 MAPB rank-2 hilang: insert baris Rp1.335 +24,77% (vol 24.900 lembar, non-gorengan, smaCrossDate NULL → catatan netral tanpa cross) sebelum DAAZ — tabel kini top-6 urutan DB exact. FIX3 konsistensi watchlist 'golden cross muda' → 'golden cross sejak 7 Sep'. LIVE 200: MAPB x7, (7 Okt)=0, masih muda=0, sejak 7 Sep x4; 12 angka exact utuh (398/3.100/+14,15%/152 GC/38 DC/RSI 17/KDTN -14,95%/SOSS 1.200 +25,00%). CATATAN VERIFIKASI: spec reviewer klaim 'DB smaCrossDate MAPB=8 Okt' ternyata NULL (dicek 5 hari) — koreksi dicatat decisions.md. DEV NOTE: query kolom Stock=symbol SALAH → ticker dgn suffix .JK. Pola QA ke-8. impact_check 15 Okt (brief pagi bebas cross-date). Rollback: UPDATE reverse / db-20261012.sql.gz. Rollback anchor: n/a (tanpa deploy)."
+      "result": "DONE 12 Okt 16:45-17:0x CTO sore (SQL patch 1 transaksi 3 UPDATE rowcount=1, TANPA deploy; backup db-20261012 01:16 valid + fullrow /tmp/qa1212-backup). FIX1 SOSS cross-date: catatan tabel 'Shield On Service, golden cross masih muda (7 Okt)' → 'ALSOK Indonesia Services (mantan Shield On Service), golden cross sejak 7 Sep' (DB smaCrossDate=2026-09-07 golden_cross; minor-3 rebrand name ikut selesai). FIX2 MAPB rank-2 hilang: insert baris Rp1.335 +24,77% (vol 24.900 lembar, non-gorengan, smaCrossDate NULL → catatan netral tanpa cross) sebelum DAAZ — tabel kini top-6 urutan DB exact. FIX3 konsistensi watchlist 'golden cross muda' → 'golden cross sejak 7 Sep'. LIVE 200: MAPB x7, (7 Okt)=0, masih muda=0, sejak 7 Sep x4; 12 angka exact utuh (398/3.100/+14,15%/152 GC/38 DC/RSI 17/KDTN -14,95%/SOSS 1.200 +25,00%). CATATAN VERIFIKASI: spec reviewer klaim 'DB smaCrossDate MAPB=8 Okt' ternyata NULL (dicek 5 hari) — koreksi dicatat decisions.md. DEV NOTE: query kolom Stock=symbol SALAH → ticker dgn suffix .JK. Pola QA ke-8. impact_check 15 Okt (brief pagi bebas cross-date). Rollback: UPDATE reverse / db-20261012.sql.gz. Rollback anchor: n/a (tanpa deploy).",
+      "qa_verified": true,
+      "qa_note": "PASS: live 200; MAPB hadir (2 occ); SOSS kini 'golden cross sejak 7 Sep' (klaim 7 Okt hilang; sisa '7 Okt'=link brief artikel lain); ALSOK 2 occ; angka exact utuh (398/3.100/14,15%/152); backup /tmp/qa1212-backup/ ada.",
+      "qa_at": "2026-10-13 03:3x WIB by qa-verifier"
     },
     {
       "id": "seo-landing-fundamental-ai",
@@ -1072,7 +1080,10 @@
       "north_star": "growth traffic+register",
       "spec": "BANGUN 3 landing SEO fundamental (clone pola /saham-blue-chip 119 baris, revalidate 3600, JSON-LD, canonical): (1) /saham-dividen 'Daftar Saham Dividen Tinggi Indonesia 2026' — data live preset high_dividend (198 saham, BMRI/BBRI 11%+) top-20 + tabel yield; (2) /saham-undervalued 'Saham Undervalued PE<15 PB<1.5' (219 saham); (3) /saham-value-growth 'Saham Value Growth' (362). MASUKKAN AI (owner 12 Okt: 'masukan AI jika memanfaat'): di KETIGA landing pasang blok '✨ Tanya AI gratis' — button link /stocks?view=screener + contoh question spesifik halaman (mis. 'Dividen di atas 8% ada yang aman?'). KEUNTUNGAN vs kompetitor (TradingView/Investing juga ranking): kita punya AI chat gratis tanpa login + data teknikal + fundamental dalam satu tempat. Data fetch = screenerAnalysisService.screenerQuery (fundDate fallback sudah fixed hari ini). Acceptance: 3 halaman live 200, render tabel top-20 masing2, CTA AI ada, tsc 0, 1 deploy, daftarkan 3 URL ke sitemap.xml. Sumber data fresh: kolom TV baru dividendYield/pb/eps (deploy 12 Okt).",
       "status": "done",
-      "note": "Dieksekusi owner-direct 12 Okt malam oleh agent utama (commits af0706f + a00e562)"
+      "note": "Dieksekusi owner-direct 12 Okt malam oleh agent utama (commits af0706f + a00e562)",
+      "qa_verified": true,
+      "qa_note": "PASS: 3 landing live 200 (/saham-dividen,/saham-undervalued,/saham-value-growth) + CTA AI hadir di ketiganya + 3 URL masuk sitemap.xml; commit af0706f match.",
+      "qa_at": "2026-10-13 03:3x WIB by qa-verifier"
     },
     {
       "id": "bo-2026-10-13-01",
@@ -1107,7 +1118,7 @@
       "dependencies": [],
       "risk": "low",
       "estimate_tool_calls": 8,
-      "scheduled_slot": "CTO slot berikutnya setelah bug-2026-10-12-01 (bisa digabung 1 malam — total est ~18 tool calls)"
+      "scheduled_slot": "2026-10-13 16:45 CTO sore (setelah bug-2026-10-12-01 done pagi ini)"
     }
   ]
 }

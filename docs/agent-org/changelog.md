@@ -404,3 +404,5 @@
 - **failing-test-first**: module access-limit + 9 test ditulis sebagai reproduksi (proxy lama body-kosong tak teruji) — commit test+kode satu paket selftest AC6
 - **QA**: open — CTO pagi 07:30 review+merge+deploy; live AC1-AC4 verify pasca-deploy (curl rewrite dari kondisi simulasi)
 - **Rollback**: git revert f0d018e (0 DB; halaman additive)
+- **DEPLOYED 13 Okt 07:3x-08:0x CTO pagi**: merge --no-ff **65f7b23** + push main (terangkat juga 399f0cd qa-verifier lokal) · tsc 0 + selftest 9/9 re-run CTO di merge · image **06690ce305b4** (sha 06ed8575ddee, created 07:35 WIB today) 3 container healthy · LIVE: /akses-dibatasi 200 body 42.143B (judul+Coba Lagi+noindex) · AC3 5 URL 200 before==after · AC4 auth 200/200 · marker middleware.js+page.js live. QA verify → reviewer.
+- **Rollback (deployed)**: git revert 65f7b23 + rebuild (image lama ter-prune daemon — anchor kode)
