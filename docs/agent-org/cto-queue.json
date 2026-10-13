@@ -1119,6 +1119,17 @@
       "risk": "low",
       "estimate_tool_calls": 8,
       "scheduled_slot": "2026-10-13 16:45 CTO sore (setelah bug-2026-10-12-01 done pagi ini)"
+    },
+    {
+      "id": "prd-2026-10-13-02",
+      "date": "2026-10-13",
+      "priority": "P2",
+      "status": "night_ready",
+      "title": "P2 FITUR (PRD idea-2026-10-13-2): ai-search visibility (growth kpis per-path) + CTA register kontekstual di /saham-golden-cross",
+      "branch": "night/prd-2026-10-13-02",
+      "scheduled_slot": "CTO pagi 07:30 14 Okt: review + merge + deploy (AC1 sudah live; AC2/AC4 verify curl pasca-deploy)",
+      "spec": "INTENT (PRD LENGKAP di product-backlog.json idea-2026-10-13-2 — baca PRD). AC1 growth kpis ai_search_paths (LIVE) + AC2 CTA utm ai-search + AC4 kondisional login. 0 sentuh data user.",
+      "result": "NIGHT READY 13 Okt 23:1x WIB (CTO night, branch night/prd-2026-10-13-02, base origin/main 74e7c87). AC1 DONE LIVE: teknikalid_growth.py kpis + blok ai_search_paths top-5 7d — bukti live DB read-only: [golden-cross 4, stocks 4] 100% chatgpt.com; script lokal Hermes, AKTIF TANPA DEPLOY. AC2 code-ready: RegisterCta → client comp; href /auth/register?utm_source=ai-search&utm_medium=referral&utm_campaign=<slug>; nilai lolos parseUtmParam [a-z0-9_-]{1,32} → tertangkap extractPageviewAttribution beacon /auth/; PRD menulis /auth/signup tapi satu-satunya route register = /auth/register — utm values identik, atribusi tetap terukur. AC4 code-ready: hidden utk authenticated (pola GatedContent, tanpa logged-in flash), CTA below-the-fold di bawah tabel → LCP tak tersentuh. VERIFY: tsc --noEmit EXIT-0 · node:test 3/3 (register-cta.test.ts failing-first) · LINT 0 error · growth kpis CLI exit-0 berisi ai_search_paths. SISA CTO PAGI: merge + deploy → curl /saham-golden-cross grep href utm; AC3 = observasi 7d pasca-deploy (PageView /auth/* dari referrer ai-search >=1, else verdict iterate/kill). Estimasi review 10-15 menit (diff 41+29 baris + blok SQL script)."
     }
   ]
 }
