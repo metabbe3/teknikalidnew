@@ -1094,7 +1094,8 @@
       "status": "pending",
       "scheduled_slot": "2026-10-13 03:00 Backoffice Builder",
       "north_star": "APLIKASI consistency·trust·easy — admin = satu sumber kebenaran + kontrol penuh tanpa SQL manual",
-      "assigned_to": "backoffice-builder"
+      "assigned_to": "backoffice-builder",
+      "blocked_note": "CTO 13 Okt 07:5x: first run 03:01 BLOCKED hermes provider-safety (provider=anthropic + base_url z.ai ditolak kode baru); job lain masih jalan (gateway belum restart post-update). Retry natural 03:00 14 Okt; test manual via hermes cron run SETELAH owner konversi z.ai ke custom provider."
     },
     {
       "id": "prd-2026-10-12-02",
@@ -1119,6 +1120,18 @@
       "risk": "low",
       "estimate_tool_calls": 8,
       "scheduled_slot": "2026-10-13 16:45 CTO sore (setelah bug-2026-10-12-01 done pagi ini)"
+    },
+    {
+      "id": "ops-2026-10-13-01",
+      "date": "2026-10-13",
+      "priority": "P2",
+      "type": "ops",
+      "status": "pending",
+      "title": "OPS: idx-sync Senin 06:00 gagal EPERM process.cwd (TCC ~/Documents) — launchd exit 1, sync emiten IDX tidak jalan",
+      "created_by": "CTO shift 07:45 13 Okt (launchctl list exit-1 + idx-sync.log EPERM evidence)",
+      "north_star": "data reliable — daftar emiten IDX basi (listing baru/delisting tak tersync); eod-sync tidak terdampak",
+      "spec": "BUKTI: idx-sync.log mtime 12 Okt 08:20 berisi EPERM: process.cwd failed uv_cwd (node v25) — launchd worker kehilangan akses cwd repo (TCC Documents). Plist com.teknikalid.idx-sync Day=1/06:00 (Senin saja). FIX (owner action, TCC = security domain): grant Full Disk Access utk node/launchd ATAU pindah log+cwd ke path non-TCC; verify: Senin depan 06:00 log bersih + sync row baru. Bukan kerja builder (TCC interactive prompt).",
+      "scheduled_slot": "owner TCC grant kapan saja; window verify Senin 20 Okt 06:00"
     }
   ]
 }

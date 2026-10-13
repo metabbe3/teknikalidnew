@@ -549,3 +549,41 @@ Metrik keberhasilan (review 22 Okt): hrta11 & idx radar pos <10; impressions 7d 
 - **Artikel edu beda-golden-cross-vs-death-cross: 0 fatal** — 16 GC vs 3 DC mingguan EXACT (5-9 Okt non-gorengan), RELI cross 9 Okt SMA 544,50/525,70 RSI 52,7 EXACT, MBAP cross 8 Okt 1.688,50/1.589,20 EXACT, studi kasus INAI EXACT penuh (GC 21 Sep 177,20/172,66; high 185 close 22 Sep; DC 9 Okt 165,15/172,30; close 159 = -14% dari 185; RSI 42,8). MINOR berulang ke-3: link internal ke artikel EDUCATIONAL tanpa prefix jalur → `/beda-golden-cross-vs-death-cross` & `/ema-cross-...` 404 (benar /akademi/) — sudah jadi rule lessons 11 Okt, generator belum fix.
 - Deploy verify: UX screener register CTA (fb11600, image 8b999680c156) → 4/4 marker di chunks container, /stocks 200 H1 utuh → PASS. First-Session Welcome Loop (prd-2026-10-02-02, deployed) → **qa_pass**: EngagementEvent 46 rows live (dwell 27/scroll 17/cta 2), tumbuh dari 32 pagi = menerima event nyata; komponen dari merge ae6f0a6 terangkat image 7 Okt. qa-2026-10-11-01 → terverifikasi live: rekap 10 Okt kini "540 saham" x13 + "16 golden cross" x11, "401"/"56" = 0 hit.
 - **SELF-INCIDEN drift symlink ke-4 (drift-3 baru dibersihkan pagi ini)**: 09:05 saya menulis queue via os.replace ke path datadir (symlink) → berubah regular file — pola PERSIS writer 06:47. Terdeteksi sendiri <1 menit (script print islink), dipulihkan 09:09: konten baru ditulis atomik ke file kanonik docs, symlink dibuat ulang (verified islink+samefile+67 entries). Backup pre-edit: ~/.hermes/data/teknikalid-growth/cto-queue.json.bak-qa1012. RULE BARU LESSONS: penulis queue WAJIB resolve() dulu / tulis ke path docs kanonik.
+
+## 2026-10-12 [OWNER] SEO expansion + AI integration
+Owner: "Kembangkan SEO, masukan AI jika memanfaat berguna."
+Keputusan: (1) 3 landing fundamental baru (/saham-dividen, /saham-undervalued, /saham-value-growth) — query mapas, kompetitor TradingView/Investing ranking tapi kita unggul AI gratis tanpa login; (2) blok "Tanya AI" dipasang di SEMUA landing signal+fundamental (bukan halaman AI terpisah — fitur, bukan keyword chase); dispatch cto-queue: seo-landing-fundamental-ai P1 + cta-tanya-ai-signal-pages P2. Data dasar: fundamental TV live 12 Okt (198 dividen/219 undervalued/362 growth).
+
+## 2026-10-12 malam — Gating audit AKKU + akar 404 berantai
+- Owner audit: Ringkasan Teknikal anon bocor data gated (P/B, MarketCap, RSI/ADX/SMA angka, Trading Plan Entry/TP/SL/RR). FIX cddd746: ringkasan anon = sinyal+prose+harga (SEO) + teaser; angka gated → login. Verified PASS.
+- AKAR 404 berantai: landing ISR (revalidate=3600) → prerender saat build butuh Prisma, DB tak ada di build container → build exit 1, TAPI `docker compose build | tail -1` menelan exit code → up -d recreate image lama → verify palsu 3x. FIX 7198f9c: force-dynamic + protokol deploy baru (exit code eksplisit, build gagal = STOP).
+- Landing fundamental LIVE: /saham-dividen /saham-undervalued /saham-value-growth + CTA Tanya AI di 13 landing (af0706f, a00e562). Sitemap updated — resubmit GSC menyusul.
+
+## 2026-10-12 malam — Eval A/B gemma-3-4b vs gemma-4-e2b (Tanya AI MLX)
+- **Keputusan: TETAP gemma-3-4b-it-4bit di produksi.** Skor comprehensive (10 Q, ground truth /api/screener): gemma-3 = 33 valid-ticker, 0 karangan, 0 bocor, 3,5s/q, RAM 158MB; gemma-4-e2b = 18 valid, 2 karangan, 7/10 thought-bocor (pre-fix), 4,6s/q, RAM 322MB.
+- Post-fix (pemisah nyata `<channel|>` + 900 token): output final Indonesia bersih TAPI kualitas di bawah gemma-3 utk kasus uji ("tidak ada info dividen" padahal konteks = hasil screen dividen; format link `PERSIS [TICKER]/path` tak ikut spec) + 2× RAM + reasoning-slow (10,4s vs 2,6s sanity sama).
+- Temuan teknis (utk retry nanti): (1) MLX 0.31.2 wheel rusak di macOS 26.6.2 ("Stream(gpu,1)") → wajib mlx 0.32.3 via venv py3.14 (`~/.hermes/mlx4-venv`); (2) generate() di macOS 26+MLX0.32 hanya jalan di MAIN thread — server perlu arsitektur HTTP-thread + inference-main-loop; (3) gemma-4 = reasoning model, perlu strip `<channel|>` + budget ≥900; (4) butuh fine-tune prompt/1-shot utk patuh format ticker-link.
+- gemma-4 server benchmark dimatikan; model 3,3GB + venv DISIMPAN utk coba ulang saat ada waktu fine-tune (hapus utk +3,3GB disk = keputusan owner).
+- Hybrid AI+DB dipertahankan (angka 100% DB, model hanya merangkai) — arsitektur ini yang bikin gemma-3 akurat (0 karangan konsisten 3 run).
+
+## 2026-10-12 malam (lanjutan) — Eval gemma-4-e4b (4B sungguhan, QAT) — CASE CLOSED
+- **Keputusan FINAL owner-dirasakan: gemma-3-4b dipatenkan utk Tanya AI.** e4b apple-to-apple: valid 22 vs 33, karangan 1 vs 0, bocor 1/10 vs 0, **24,9s vs 4,7s per jawaban (5× lebih lambat)**, RAM 7GB vs 158MB.
+- Pola kelemahan IDENTIK dgn e2b: ditanya preset dividen/undervalued/value-growth → "tidak ada informasi dividen" (gagal baca konteks rows); death cross malah dump 16 ticker + 1 karangan. Bukan masalah ukuran model — arsitektur reasoning + pemahaman konteks instruction gemma-4 generasi ini memang kurang cocok utk task Tanya AI dibanding gemma-3-4b.
+- Kesimpulan komparatif: gemma-3-4b = 0 karangan di 4 run evaluasi (konsistensi sempurna). Verdict window gemma-4: tutup; retry hanya jika keluar varian text-only atau fine-tune instruction.
+- e4b server dimatikan; RAM free kembali 69%. Model e2b (3,3GB) + e4b (7GB) + venv py3.14 = 10,3GB disk disimpan sementara — kandidat hapus utk disk space (owner call).
+
+## 2026-10-12 21:0x — CEO malam (review eksekusi; 0 dispatch; QA P1 verified live; Product Agent miss 2 slot)
+- VERIFY: site 200 semua (/, /stocks, 3 landing fundamental baru, golden-cross); container app/worker/db healthy; agent-hub-scheduler fire 30mnt beruntun success (last 21:00 WIB). qa-2026-10-12-01 (SOSS+MAPB) = FIXED terverifikasi live: "masih muda" hilang, MAPB masuk artikel. Eval gemma-4 case closed, gemma-3-4b dipatenkan.
+- DATA: views hari-ini s.d. 21:00 = 103 vs ~189 kemarin sore (-46%); Senin kemarin 331 → hari ini terendah 10 hari. Bukan panic-refactor, tapi kalau Selasa <100 = pola, bukan noise → diagnosis distribusi (GSC index/bot-filter) jadi slot pagi.
+- VERDICT BACKLOG: prd-2026-10-02-01 (restore agent-hub-scheduler, P1 pending sejak 2 Okt = 10 hr) → REKOMENDASI flip SUPERSEDED — scheduler live dibuktikan CronLog success beruntun 12 Okt (owner reload launchctl 12 Okt). Flip dieksekusi CEO pagi. Queue aktif: bug-2026-10-12-01 P2 (white-screen blocked-IP) + bo-2026-10-13-01 P2 (backoffice audit, jadwal besok) — prioritas lengkap.
+- PRODUCT AGENT MISS: 2 slot beruntun (Kam 8 Okt + Sen 12 Okt) tanpa insight baru di product-backlog.json — tidak dijalankan sendiri sesuai SDLC; perlu owner cek job product-agent nightl.
+- WATCH: resolve-predictions jalan 10:30 WIB success (0/0), TAPI fire "impact 17:35 WIB" tidak muncul di CronLog — cek besok pagi apakah schedule-nya weekday-only atau perlu launchd cek. IG tetap pause by design (log terakhir 17 Sep).
+- STATUS: warn — semua gate teknis hijau; warna kuning dari traffic Senin -46%, Product Agent miss 2x, impact-run 17:35 tak terlihat.
+
+## CTO note 2026-10-13
+- ISSU TERPENTING: TeknikalID Backoffice Builder (job hermes baru, first run 03:01 tadi) diblokir provider-safety hermes — provider anthropic + base_url z.ai ditolak kode baru ("use provider=custom"). Job lama masih lolos karena gateway belum restart pasca-update (mixed modules); begitu gateway di-restart, SEMUA job z.ai+anthropic berpotensi kena blokir yang sama.
+- Opsi A: owner konversi config z.ai ke provider custom via hermes config (5 mnt, sekarang, sebelum gateway restart).
+- Opsi B: diamkan — job lama jalan terus selama gateway tak restart, tapi 03:00 besok backoffice gagal lagi + bom waktu tiap update/restart.
+- REKOMENDASI: A sekarang; fix satu tempat (config.yaml), bukan per-job. Ini juga yang bikin audit admin 26 halaman (bo-13-01) belum jalan.
+- Watch items CEO kemarin TERJAWAB: resolve-predictions 17:30 kemarin sukses (log mtime 17:30, 0/0) — "17:35" salah baca schedule, bukan miss. Traffic Senin 447 PV (bukan 103) — SEO landing baru terindeks; hits PageView hari ini baru 3 (pagi).
+- P2 baru: idx-sync Senin 06:00 gagal EPERM/TCC (ops-2026-10-13-01 di queue) — butuh owner grant Full Disk Access.
