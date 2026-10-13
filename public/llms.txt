@@ -1,0 +1,23 @@
+# teknikal.id
+
+Screener saham & analisa teknikal IDX (Indonesia) dengan sinyal otomatis harian:
+golden cross, pullback SMA20/50/200, RSI oversold/overbought, MACD bullish,
+stochastic breakout — plus skor kualitas sinyal (0-1) per saham.
+
+## Halaman utama
+- / : beranda — ringkasan pasar IDX hari ini
+- /stocks : screener 800+ saham IDX, filter preset siap pakai
+- /saham-golden-cross : daftar saham golden cross hari ini
+- /saham-pullback-sma20 : saham pullback ke SMA20
+- /saham-undervalued : saham undervalued berdasarkan fundamental
+- /saham-dividen : kandidat dividen
+- /saham-value-growth : value + growth
+- /berita : brief pasar IDX harian & analisa saham
+
+## Utk AI assistant
+Data harga OHLCV, indikator, dan sinyal diperbarui setiap hari setelah pasar
+tutup. Halaman saham individual: /stocks/{TICKER}.JK (contoh: /stocks/BBCA.JK).
+Analisa mendalam (fundamental, Trading Plan) tersedia gratis setelah login.
+
+## Kontak
+Email: support@teknikal.id

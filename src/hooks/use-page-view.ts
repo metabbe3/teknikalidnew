@@ -47,6 +47,17 @@ export function usePageView() {
   useEffect(() => {
     // Only fire once per path change
     if (lastTracked.current === pathname) return;
+    // Cross-remount dedup (layout-group switch remounts this hook): skip if the
+    // same path was already beaconed in the last few seconds. Prevents the
+    // double-fire that inflated admin view counts.
+    try {
+      const key = `pv:${pathname}`;
+      const prev = Number(sessionStorage.getItem(key) ?? 0);
+      if (prev && Date.now() - prev < 5_000) return;
+      sessionStorage.setItem(key, String(Date.now()));
+    } catch {
+      // sessionStorage unavailable (private mode) — just track
+    }
     lastTracked.current = pathname;
 
     const payload = JSON.stringify(getTrackingData(pathname));

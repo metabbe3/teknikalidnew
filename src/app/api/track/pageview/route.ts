@@ -117,6 +117,27 @@ export async function POST(request: NextRequest) {
       ip ? isBlocked(ip) : Promise.resolve(false),
     ]);
 
+    // Double-fire dedup: the tracker hook remounts when visitors cross layout
+    // groups (public ↔ auth), re-sending the same path ~100-200ms later and
+    // inflating views (~25%). Skip exact repeats from the same identity within
+    // a short window. Best-effort only — a failed check still records the view.
+    try {
+      const scope = userId ? { userId } : ip ? { ip } : null;
+      if (scope) {
+        const dupe = await prisma.pageView.findFirst({
+          where: {
+            path,
+            ...scope,
+            createdAt: { gte: new Date(Date.now() - 5_000) },
+          },
+          select: { id: true },
+        });
+        if (dupe) return new NextResponse(null, { status: 204 });
+      }
+    } catch {
+      // dedup is advisory; fall through and record
+    }
+
     await prisma.pageView.create({
       data: {
         path,

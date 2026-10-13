@@ -1,0 +1,30 @@
+# Search engines & AI assistants are welcome to crawl public content.
+# Gated content (fundamental, indikator detail, Trading Plan) requires login.
+
+User-Agent: Googlebot
+Allow: /
+Disallow: /api/
+Disallow: /auth/
+Disallow: /admin/
+Disallow: /paper-trading/
+Disallow: /portfolio/
+Disallow: /watchlist
+Disallow: /billing
+Disallow: /settings
+Disallow: /payment
+
+User-Agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /paper-trading/
+Disallow: /portfolio/
+Disallow: /watchlist
+Disallow: /billing
+Disallow: /settings
+Disallow: /payment
+Disallow: /auth/
+
+Host: https://teknikal.id
+Sitemap: https://teknikal.id/sitemap.xml
+Sitemap: https://teknikal.id/sitemap-news.xml
