@@ -26,6 +26,7 @@ import { ForYouSignals } from "@/components/home/for-you-signals";
 import { reputationRepository } from "@/domains/reputation/reputation.repository";
 import { articleRepository } from "@/domains/article/article.repository";
 import { SnapshotCard, type SnapshotCardData } from "@/components/berita/snapshot-card";
+import { DailyBriefHero } from "@/components/berita/daily-brief-hero";
 import { MarketBreathStrip } from "@/components/ui/market-breath-strip";
 import { SectionHeading } from "@/components/ui/section-heading";
 
@@ -320,12 +321,15 @@ export default async function HomePage() {
   const currentUser = await authService.getCurrentUser();
 
   // Fast cached calls only — hero renders immediately
-  const [overview, marketInfo, ihsgPrices] = await Promise.all([
+  const [overview, marketInfo, ihsgPrices, homeBrief] = await Promise.all([
     stockMarketService.getMarketOverview(),
     stockMarketService.getMarketStatusForPage(),
     prisma.stock.findUnique({ where: { ticker: "^JKSE" } })
       .then((stock) => stock ? prisma.stockPrice.findMany({ where: { stockId: stock.id }, orderBy: { date: "desc" }, take: 2 }) : null)
       .catch(() => null),
+    // Latest daily brief — 1-click editorial surface for anonymous visitors
+    // (flow landing→berita→artikel was 2 clicks + required knowing the nav).
+    articleRepository.findLatestDailyBrief().catch(() => null),
   ]);
 
   // Compute IHSG change
@@ -484,6 +488,9 @@ export default async function HomePage() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-10 space-y-14">
+        {/* Latest daily brief — 1 click from landing (flow b) */}
+        <DailyBriefHero brief={homeBrief} />
+
         {/* Welcome Back Banner for returning anonymous visitors */}
         <WelcomeBackBanner />
 
