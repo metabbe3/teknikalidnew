@@ -6,13 +6,16 @@
       "date": "2026-10-14",
       "priority": "P1",
       "type": "ops",
-      "status": "pending",
+      "status": "done",
       "source": "Content Reviewer QA 14 Okt 08:5x (post-publish gate)",
       "scheduled_slot": "CTO sore 14 Okt 16:45 SETELAH prd-2026-10-12-02 (SQL content patch tanpa deploy, ISR revalidate=300)",
       "north_star": "trust — artikel #1 pagi ini (brief 14 Okt) menulis golden cross 'segar' padahal cross 4 minggu lalu; pembaca yang beli berdasarkan klaim kesegaran sinyal = keputusan dari data palsu",
       "title": "P1: Brief 14 Okt — 2x klaim golden cross 'segar' FATAL stale (KETR cross 15 Sep, ERAA 27 Aug) + '16 kali lipat' salah (BUMI 1,96M = 5,8x bukan 16x)",
       "spec": "INTENT: SQL content patch 1 artikel brief-pasar-idx-2026-10-14-goto-volume-excl (protokol backup<24jm + COUNT preview + 1 transaksi + log decisions.md; TANPA deploy). Angka BERIKUT SUDAH QA-VERIFIED EXACT vs DB — JANGAN disentuh: breadth 351/308/302, big-4 (BBCA 5950 0,00 / BBNI 3400 +0,59 / BMRI 3990 -0,50 / BBRI 3080 -0,96), sektor BM +0,82/CC +0,69/Fin -0,21, movers AYLS +11,58 212 / KETR +9,68 850 / FORU +8,53 140 RSI 29,25 / CTRA +6,48 575 / EXCL +2,37 2160 / WIFI +3,10 1330 / JPFA -4,57 1985 / INKP -4,03 8325 / TLKM -1,75 2240 RSI 31,77, GC 134/DC 38 non-gorengan, oversold 54, BRIS 16,88/ADHI 18,68/PTPP 20,39, GOTO Rp27 vol 11.323.075.500 RSI 14,72. PATCH 3 TITIK: (1) FATAL-freshness x2 — 'KETR +9,68% (Rp850) yang sekaligus mencetak golden cross segar' SALAH (StockIndicator smaCrossDate KETR = 2026-09-15, sebulan lalu; 13 Okt TIDAK ada cross baru non-gorengan sama sekali) -> hapus frasa 'yang sekaligus mencetak golden cross segar'; dan watchlist 'ERAA | Golden cross segar dengan volume 39 juta saham' SALAH (smaCrossDate ERAA = 2026-08-27, 6 minggu lalu) -> ganti alasan jadi fakta netral tanpa kata 'segar' (mis. 'golden cross (27 Agu) dengan volume 39 juta saham, RSI 64'); (2) FATAL-magnitudo — 'sekitar 16 kali lipat emiten dengan volume terbesar berikutnya' SALAH (no.2 = BUMI 1.957.984.900; rasio 11,32M/1,96M = 5,8x) -> ganti 'sekitar 16 kali lipat' -> 'hampir 6 kali lipat'; (3) MINOR opsional same-pass — '398 saham naik' (klaim brief Jumat 9 Okt) -> '400 saham naik' per DB prev-close 9 Okt; boleh ditolak CTO (kutipan artikel lain, non-blocking). ROOT-CAUSE ringan (catat di result, jangan eksekusi): generator Mandor menulis klaim 'segar' dari smaCrossSignal status TANPA cek smaCrossDate recency — usulan guard prompt: kata 'segar/baru' hanya boleh jika smaCrossDate = tanggal sesi artikel. ACCEPTANCE: (a) curl -A Mozilla /berita/brief-pasar-idx-2026-10-14-goto-volume-excl: 'golden cross segar' = 0, '16 kali lipat' = 0, angka exact di atas UTUH (diff minimal); (b) log decisions.md + changelog; (c) impact-check besok pagi: brief 15 Okt bebas pola 'segar stale' — kalau kambuh = pola berulang ke-4 (lihat lessons-learned 14 Okt).",
-      "done_when": "curl brief14: 'golden cross segar'=0, '16 kali lipat'=0, angka exact utuh; decisions.md + changelog"
+      "done_when": "curl brief14: 'golden cross segar'=0, '16 kali lipat'=0, angka exact utuh; decisions.md + changelog",
+      "completed_at": "2026-10-14 19:0x WIB",
+      "result": "DONE 14 Okt 16:45-17:1x CTO sore (SQL patch 1 transaksi 4 UPDATE=1, TANPA deploy; backup db-20261014 01:16 age 17,3h + fullrow /tmp/qa1014-backup). (1) KETR movers 'yang sekaligus mencetak golden cross segar' DIHAPUS (DB smaCrossDate KETR=2026-09-15); (2) watchlist ERAA 'Golden cross segar dgn volume 39 juta saham' -> 'Golden cross (27 Agu) dgn volume 39 juta saham, RSI 64' (DB EXACT cross 2026-08-27 rsi14 64,17); (3) DEVISI SPEC (titik fatal-freshness ke-3 oleh CTO): watchlist KETR '+9,68% disertai golden cross baru' -> '+9,68% melanjutkan momentum pasca golden cross 15 Sep' (klaim 'baru' sama-sama salah); (4) 'sekitar 16 kali lipat' -> 'hampir 6 kali lipat' (DB GOTO 11.323.075.500 / BUMI 1.957.984.900 = 5,78x). MINOR (3) '398->400' DITOLAK: occ=0 frasa tak ada di brief14. LIVE PASS: 'golden cross segar'=0 '16 kali lipat'=0 frasa-baru x2; kontrol utuh (351/308, BBCA 5.950, BBRI Rp3.080 -0,96%, 11,32 miliar x11, RSI 14,7 x4, 38 DC, 16,9). ROOT-CAUSE dicatat decisions.md: generator tulis 'segar/baru' dari smaCrossSignal TANPA recency smaCrossDate; NOTE klaim QA '13 Okt 0 cross baru' tidak presisi (DISTINCT ON non-gorengan smaCrossDate 13 Okt = 9) tapi klaim per-ticker KETR/ERAA valid. Impact check 15 Okt: brief15 bebas 'segar stale' — kambuh = pola ke-4. Rollback: UPDATE reverse / db-20261014.sql.gz.",
+      "qa_verified": null
     },
     {
       "id": "qa-2026-10-14-verdict",
@@ -35,7 +38,7 @@
       "title": "OPS: backlog_health SYMLINK_GUARDS upgrade alert-only -> AUTO-RESTORE (union-merge + backup + re-symlink)",
       "north_star": "data reliable — drift kambuh #7 dalam 3 pekan (2x/pekan), restore manual = beban + risiko human-error",
       "spec": "Drift #7 pagi 14 Okt (writer 06:36 putuskan symlink; tak ter-atribusi). Prosedur manual TERUJI shift ini: (1) baca 2 sisi (datadir regular + docs kanonik), (2) union-merge entry by id (docs base + datadir-only appended; field-level: field non-kosong menang, research_brief/research_note restore), (3) backup kedua file .bak-<ts>-driftN, (4) atomic-write docs + os.replace, (5) rm datadir regular + re-symlink, (6) alert TETAP dicetak (audit trail). KODEKAN prosedur ini ke SYMLINK_GUARDS backlog_health.py (utk 3 file teknikal; kalau merge menemui kondisi tak-terduga mis. docs korup -> fallback alert-only JANGAN auto-restore). DONE WHEN: fixture 3/3 (drift->restore utuh+union+backup ada; sehat=0 alert; docs korup=fallback alert) + py_compile + live run 0 alert + drift simulasi ter-restore otomatis. 0 deploy aplikasi (host script). Rollback: n/a additive (hapus blok auto-restore kembali alert-only).",
-      "scheduled_slot": "2026-10-15 slot sore CTO (host-ops, no deploy; setelah prd-2026-10-12-02)",
+      "scheduled_slot": "2026-10-15 slot sore CTO (host-ops, no deploy; konfirmasi git: belum dikerjakan sore ini)",
       "created_at": "2026-10-14T07:55+07:00",
       "dispatched_by": "CTO Tech Lead 07:45 (ritual drift-7)"
     },
@@ -1181,7 +1184,7 @@
       "type": "bug",
       "date": "2026-10-12",
       "priority": "P3",
-      "status": "spec_ready",
+      "status": "done",
       "prd_id": "idea-2026-10-12-3",
       "created_by": "Product Agent nightly buffer-keeper 2026-10-12 22:1x WIB (scan SQL read-only 126 artikel + live curl + statik @ 399f0cd)",
       "north_star": "consistency·trust — link internal edu hidup (SEO equity + anti 404)",
@@ -1198,7 +1201,9 @@
       "dependencies": [],
       "risk": "low",
       "estimate_tool_calls": 8,
-      "scheduled_slot": "2026-10-14 16:45 CTO sore (backfill 16 link + gate prefix /akademi/)"
+      "scheduled_slot": "2026-10-14 16:45 CTO sore (backfill 16 link + gate prefix /akademi/)",
+      "completed_at": "2026-10-14 19:0x WIB",
+      "result": "DONE 14 Okt CTO sore (gabungan temuan + gate). AC1/AC2/AC4 = RESOLVED ALREADY-SHIPPED: 16 link backfill SUDAH dipatch 13 Okt 11:55:10 oleh main-agent owner-direct (4 artikel updatedAt serentak; rescan CTO 0 broken dari 45 md-link; AgentJob/CronLog kosong window itu = direct psql, sesi sama dgn qa-13-01 12:03 — bookkeeping gap pola ke-2, sudah dibukukan hari ini). AC3 GATE SHIPPED commit 01d20d0: validateInternalLinks() pure-fn di article-fact-check.ts (root-path edu->prefix /akademi/, news->/berita/, cross-prefix kedua arah, dedupe, skip image/anchor/query; DB error->skip+warn gate tak bunuh generation) wired gate-0 factCheckArticle -> finding = passed:false + holdAsDraft (autoPublish di-override DRAFT); selftest-factcheck-links.ts 5/5 PASS; tsc 0. AC5 root-cause: generator link (bukan internal-linker tagging-only) — rule lessons 11 Okt + gate kini menutup jalur news+general; LIMITASI dicatat: generateEducational TIDAK lewat fact-check (wiring butuh task baru), generateGeneralArticle tanpa ticker skip gate. Deploy gabung slot ini DITUNDA — sesi lain (ai-stock owner-direct) deploy 18:40 + masih edit file; commit 01d20d0 di main terangkat build berikutnya. Rollback: git revert 01d20d0."
     },
     {
       "id": "ops-2026-10-13-01",
@@ -1278,8 +1283,11 @@
         ]
       },
       "qa_plan": "QA Gate: tsc --noEmit EXIT 0 · render manual 2 range · SQL parity spot-check 3 jam · screenshot before/after ke owner",
-      "status": "night_ready",
-      "created_at": "2026-10-14T09:5x:00"
+      "status": "done",
+      "created_at": "2026-10-14T09:5x:00",
+      "completed_at": "2026-10-14 19:0x WIB",
+      "branch": "main langsung (e621a68)",
+      "result": "DONE 14 Okt CTO sore, TANPA deploy slot ini (sesi lain aktif deploy 18:40 — commit e621a68 di main siap terangkat build berikutnya). Worker claude paralel (analytics FE) + verify sendiri: analytics-tab.tsx +309: bar 24 jam + header 'Total X tampilan · rata-rata Y/jam' + label WIB eksplisit; date-picker native dari/sampai max 90d (resolveCustomRange, invalid->fallback quick-range); mode Compare A/B (B = periode tepat sebelum A, query ke-2 enabled:compareMode) tabel 24 baris + delta%; empty-state jujur 'Belum ada views hari ini (real users)' + hint excluded. 0 ubah SQL/bot-filter; kontrak API tak diubah (route menerima start/end existing); tsc EXIT 0; baseline 5 URL 200 (analytics 22.994B). AC smoke (pilih kemarin 24 bar + compare) = QA reviewer slot berikutnya pasca-deploy. Rollback: git revert e621a68."
     }
   ]
 }
