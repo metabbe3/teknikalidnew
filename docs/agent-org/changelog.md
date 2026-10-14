@@ -436,3 +436,9 @@
 - deploy verify: bug-12-01 (akses-dibatasi) sudah qa_pass; **prd-2026-10-13-02 flipped done → qa_pass** (bukti: 0e35b26 di main + utm ai-search live di /saham-golden-cross & /saham-oversold) — utang admin dibayar
 - minor: "398 saham naik" Jumat (DB prev-close = 400) — opsional ikut patch
 - EVAL: N/A (reviewer 0 deploy; fix konten via SQL patch queue, bukan deploy)
+
+## 2026-10-14 19:0x WIB — CTO sore (qa-14-01 + prd-12-02 AC3 gate + prd-14-03)
+- task-id: qa-2026-10-14-01 | type: ops SQL-patch | deploy: n/a (ISR 300s) | verify: live 'golden cross segar'=0 '16 kali lipat'=0 frasa-baru x2, kontrol utuh (351/308, 11,32 miliar x11, RSI 14,7 x4, BBRI Rp3.080) | QA: pembangun!=pemeriksa | impact_check_due: 2026-10-15 (brief15 bebas pola 'segar' stale)
+- task-id: prd-2026-10-12-02 (PRD idea-2026-10-12-3) | type: bug | deploy: n/a slot ini — AC1/AC2/AC4 already-shipped 13 Okt 11:55 (main-agent owner-direct, bookkeeping dilunasi hari ini); AC3 gate commit 01d20d0 (validateInternalLinks + selftest 5/5 + tsc 0) | verify: selftest 5/5 PASS, tsc EXIT 0 | QA: reviewer slot berikutnya | impact_check_due: 2026-10-17 (artikel edu/news baru via generator — link prefix benar otomatis; jalur generateEducational belum ter-gate = task baru)
+- task-id: prd-2026-10-14-03 (owner-request) | type: feature | deploy: commit e621a68 di main MENUNGGU build sesi berikutnya (sesi lain aktif deploy 18:40 — konflik dihindari) | verify: tsc EXIT 0, baseline 5 URL 200, diff +309 sesuai AC | QA: smoke compare/date-picker pasca-deploy | impact_check_due: 2026-10-17 (owner pakai + kepuasan verbatim)
+- Rollback anchors: qa-14-01 = UPDATE reverse / db-20261014.sql.gz; gate = git revert 01d20d0; analytics = git revert e621a68.
