@@ -4,6 +4,8 @@ import { decimalToNumber, bigIntToNumber } from "@/lib/serialize";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { fetchQuote } from "@/lib/yahoo-finance";
 import { passesTitleGuard } from "./title-guard";
+import { ArticleStatus, ArticleType } from "@/generated/prisma/client";
+import { prisma } from "@/lib/prisma";
 
 // ── Types ──
 
@@ -46,6 +48,8 @@ export interface FactCheckResult {
     actualValue: number;
     description: string;
   }>;
+  /** Broken internal links from Gate 0 — present only when the prefix check fired. */
+  linkIssues?: InternalLinkIssue[];
   correctedContent: string | null;
   correctedTitle: string | null;
   meta: {
@@ -251,6 +255,112 @@ export function formatMarketContextForPrompt(ctx: MarketContext): string {
   return lines.join("\n");
 }
 
+// ── Internal-link prefix validation (deterministic, no AI) ──
+
+export interface InternalLinkIssue {
+  /** href as written in the markdown, e.g. "/cara-membaca-macd-saham-…". */
+  href: string;
+  /** Canonical href with the prefix the target's articleType lives under. */
+  correctHref: string;
+  /** Gate error message — quoted verbatim in the held-draft reason. */
+  message: string;
+}
+
+const MD_INTERNAL_LINK_REGEX = /\[[^\]]*\]\((\/[^)\s]*)\)/g;
+
+/**
+ * Flag markdown links to PUBLISHED edu/news articles that miss (or guess wrong)
+ * their route prefix. Root path "/<slug>" is a live 404 for every article type:
+ * EDUCATIONAL lives at /akademi/<slug>, NEWS at /berita/<slug>. Pure function —
+ * slug sets are passed in so the gate is testable without a DB.
+ */
+export function validateInternalLinks(
+  content: string,
+  eduSlugs: ReadonlySet<string>,
+  newsSlugs: ReadonlySet<string>,
+): InternalLinkIssue[] {
+  const issues: InternalLinkIssue[] = [];
+  const seen = new Set<string>();
+
+  for (const m of content.matchAll(MD_INTERNAL_LINK_REGEX)) {
+    if (m.index > 0 && content[m.index - 1] === "!") continue; // image, not a link
+    const href = m[1].split(/[?#]/)[0].replace(/\/+$/, "");
+    if (href === "/" || seen.has(href)) continue;
+    seen.add(href);
+
+    const segments = href.slice(1).split("/");
+    if (segments.length === 1) {
+      // Root path "/<slug>" — 404 for both article types.
+      const slug = segments[0];
+      if (eduSlugs.has(slug)) {
+        issues.push({
+          href,
+          correctHref: `/akademi/${slug}`,
+          message: `Link internal artikel edukasi tanpa prefix /akademi/ (404): /${slug} — ganti jadi /akademi/${slug}`,
+        });
+      } else if (newsSlugs.has(slug)) {
+        issues.push({
+          href,
+          correctHref: `/berita/${slug}`,
+          message: `Link internal artikel berita tanpa prefix /berita/ (404): /${slug} — ganti jadi /berita/${slug}`,
+        });
+      }
+    } else if (segments.length === 2) {
+      // Prefixed "/<prefix>/<slug>" — wrong only when the slug exists under the OTHER type.
+      const [prefix, slug] = segments;
+      if (prefix === "berita" && eduSlugs.has(slug)) {
+        issues.push({
+          href,
+          correctHref: `/akademi/${slug}`,
+          message: `Link internal artikel edukasi salah prefix /berita/ (seharusnya /akademi/): /berita/${slug} — ganti jadi /akademi/${slug}`,
+        });
+      } else if (prefix === "akademi" && newsSlugs.has(slug)) {
+        issues.push({
+          href,
+          correctHref: `/berita/${slug}`,
+          message: `Link internal artikel berita salah prefix /akademi/ (seharusnya /berita/): /akademi/${slug} — ganti jadi /berita/${slug}`,
+        });
+      }
+    }
+  }
+
+  return issues;
+}
+
+/**
+ * PUBLISHED slugs for the two prefixed article types
+ * (EDUCATIONAL → /akademi, NEWS → /berita).
+ * ponytail: direct prisma instead of a repository method — task scope pins this
+ * file; move to article.repository.ts if more callers appear.
+ */
+async function loadPublishedArticleSlugs(): Promise<{ eduSlugs: Set<string>; newsSlugs: Set<string> }> {
+  const rows = await prisma.article.findMany({
+    where: {
+      status: ArticleStatus.PUBLISHED,
+      articleType: { in: [ArticleType.EDUCATIONAL, ArticleType.NEWS] },
+    },
+    select: { slug: true, articleType: true },
+  });
+  const eduSlugs = new Set<string>();
+  const newsSlugs = new Set<string>();
+  for (const r of rows) {
+    if (r.articleType === ArticleType.EDUCATIONAL) eduSlugs.add(r.slug);
+    else newsSlugs.add(r.slug);
+  }
+  return { eduSlugs, newsSlugs };
+}
+
+/** DB-backed wrapper for the gate. Failed slug query skips the check — the gate must never kill generation. */
+async function checkInternalLinks(content: string): Promise<InternalLinkIssue[]> {
+  try {
+    const { eduSlugs, newsSlugs } = await loadPublishedArticleSlugs();
+    return validateInternalLinks(content, eduSlugs, newsSlugs);
+  } catch (err) {
+    console.warn("[FactCheckGate] internal-link check skipped (slug query failed):", err instanceof Error ? err.message : err);
+    return [];
+  }
+}
+
 // ── Fact-check article against market data ──
 
 export async function factCheckArticle(
@@ -258,6 +368,25 @@ export async function factCheckArticle(
   marketContext: MarketContext,
   title?: string,
 ): Promise<FactCheckResult> {
+  // ── Gate 0: internal-link prefix check (deterministic, no AI) ──
+  // Generator regression (3×, Okt 2026): root-path links to edu/news articles 404.
+  // Any finding holds the article as draft — factCheckVerdict sees passed=false
+  // with no correction, so autoPublish is overridden.
+  const linkIssues = await checkInternalLinks(content);
+  if (linkIssues.length > 0) {
+    console.warn(
+      `[FactCheckGate] HELD AS DRAFT — ${linkIssues.length} broken internal link(s): ${linkIssues.map((l) => l.message).join("; ")}`,
+    );
+    return {
+      passed: false,
+      mismatches: [],
+      correctedContent: null,
+      correctedTitle: null,
+      linkIssues,
+      meta: { claimsChecked: 0, checkedAt: new Date().toISOString() },
+    };
+  }
+
   // Build lookup map from market context
   const priceLookup = new Map<string, { close: number | null; changePercent: number | null; rsi14: number | null }>();
 
