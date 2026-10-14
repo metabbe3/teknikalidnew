@@ -1,3 +1,22 @@
+## [2026-10-15 0x:xx] backoffice-builder — bo-2026-10-14-01: Riwayat moderasi /admin/reports + badge pending sidebar
+- Type: backoffice frontend + 1 endpoint kecil  |  PRD: bo-2026-10-14-01 (owner: tak bisa lihat keputusan lama, tak ada sinyal laporan baru)
+- Deploy: 15 Okt ~03:xx backoffice-builder (docker compose build app && up -d app, baseline-then-deploy)  |  Rollback anchor: pre-deploy HEAD + git revert commit ini (4 file: page.tsx, layout.tsx, + 2 file baru hapus)
+- RIWAYAT: section baru di /admin/reports bawah pending list — query status REVIEWED/DISMISSED take 50 + preview target (null → "[Post/Komentar dihapus]"), reviewer/aksi/waktu review dari AuditLog action=admin:review_report (map details.reportId, take 200, first-wins desc), badge status (Ditinjau hijau/Diabaikan netral) + targetType + reason + reporter. Empty-state "Belum ada riwayat moderasi." (DB Report 0 rows — tidak ada dummy). Pending list & actions TIDAK disentuh.
+- BADGE: GET /api/admin/reports/pending-count (requireAdmin, prisma.count PENDING, kontrak { data: { count } }) + komponen client ReportsPendingBadge (useQuery ["reports-pending-count"], refetchInterval 60s, staleTime 30s, pill merah 99+ cap, null saat 0) dipasang di SidebarMenuSubButton item Reports (grup Content) setelah label, ml-auto.
+- Verify: npx tsc --noEmit EXIT 0; grep REVIEWED/DISMISSED page.tsx ada; grep pending-count layout+badge terpasang; 0 string "RESOLVED". Smoke curl pending-count pasca-deploy (butuh cookie admin).
+- Impact check: 2026-10-22 — owner pakai tab Riwayat saat pertama laporan diproses; badge update ≤60s setelah laporan masuk.
+
+
+## [2026-10-14 23:2x] night CTO — prd-2026-10-14-04: publish-path internal-link gate SEMUA jalur (branch night/prd-2026-10-14-04, MERGE PENDING)
+- Type: bug P2 (TRUST)  |  PRD: idea-2026-10-14-2 (spec_ready, PRD lengkap di product-backlog.json)
+- Deploy: BELUM — branch night/* siap merge pagi (hard-gate 21:45-07:00)  |  Rollback: git revert 686132f
+- AC1 PUBLISH-GATE: publishArticle menjalankan checkInternalLinks(article.content) SEBELUM flip PUBLISHED; >=1 issue -> REJECT (ValidationError 400, status tetap DRAFT) + log [PublishGate] menyebut link & prefix benar.
+- AC2 GENERATE-GATE: generateEducational menjalankan checkInternalLinks(cleanContent) SEBELUM create DRAFT; issue -> throw ArticleGenerationError (artikel TIDAK dibuat) + log [PublishGate].
+- AC3 FIXTURE: failing-test-first — fixture commit f2bc4c2 MERAH dulu (checkInternalLinksContract is not a function), implementasi 686132f memutar 8/8 HIJAU (5 lama + 3 baru: publish bare->REJECT, prefixed->PASS, news no-regresi). Fixture pakai slug-injected contract (deterministik tanpa DB, sesuai PRD "di-set edu-slugs").
+- AC4 PARITY: 4/4 URL published (2 edu + 2 news) 200 before==after; live-corpus 12 artikel terbaru 0 false-positive (gate terkalibrasi). Re-publish sehat tetap lolos (positive-path).
+- Verify: LINT 0 error (sdlc_lint); npx tsc --noEmit EXIT-0; npx tsx selftest-factcheck-links.ts 8/8 EXIT-0. NOTE merge: base = lokal main 3bd5138 (gate 01d20d0 belum di origin saat hard-gate) — merge dari branch night ini langsung.
+- Impact check: 2026-10-15 — 0 link internal rusak baru di artikel publish-path apapun (backoffice publish + generateEducational); QA brief pagi tetap jalan.
+
 ## [2026-10-14 03:1x] backoffice-builder — bo-2026-10-13-01: audit 26 halaman admin + fix dead-code moderasi /admin/reports + nav Review Artikel
 - Type: backoffice frontend-only  |  PRD: bo-2026-10-13-01 (owner mandat 12 Okt: matangkan/buang/kuasai/insight)
 - Deploy: image post-deploy commit fix  |  Rollback: anchor 6952a83 (revert + docker tag sebelum up)

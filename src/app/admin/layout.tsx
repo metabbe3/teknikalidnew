@@ -49,6 +49,7 @@ import {
   Users,
 } from "lucide-react";
 import { AdminStatusIndicator } from "@/components/admin/admin-status-indicator";
+import { ReportsPendingBadge } from "@/components/admin/reports-pending-badge";
 
 interface NavItem {
   label: string;
@@ -173,6 +174,7 @@ function NavGroupWithSubmenu({ group, pathname }: { group: NavGroup; pathname: s
                     >
                       <item.icon className="h-4 w-4" />
                       <span>{item.label}</span>
+                      {item.href === "/admin/reports" && <ReportsPendingBadge />}
                     </SidebarMenuSubButton>
                   </SidebarMenuSubItem>
                 ))}

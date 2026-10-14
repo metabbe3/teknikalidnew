@@ -59,6 +59,77 @@ export default async function AdminReportsPage() {
     OTHER: "Lainnya",
   };
 
+  // Riwayat: laporan yang sudah diputus + reviewer dari AuditLog (admin:review_report)
+  const reviewedReports = await prisma.report.findMany({
+    where: { status: { in: ["REVIEWED", "DISMISSED"] } },
+    orderBy: { createdAt: "desc" },
+    take: 50,
+    include: {
+      reporter: { select: { id: true, username: true, name: true, image: true } },
+    },
+  });
+
+  const reviewLogs = await prisma.auditLog.findMany({
+    where: { action: "admin:review_report" },
+    orderBy: { createdAt: "desc" },
+    take: 200,
+    include: { user: { select: { name: true, username: true } } },
+  });
+  const reviewByReportId = new Map<
+    string,
+    { reviewer: string; reviewedAt: string; action: string }
+  >();
+  for (const log of reviewLogs) {
+    const details = log.details as { reportId?: string; action?: string } | null;
+    if (!details?.reportId || reviewByReportId.has(details.reportId)) continue;
+    reviewByReportId.set(details.reportId, {
+      reviewer: log.user?.username ?? log.user?.name ?? "admin",
+      reviewedAt: log.createdAt.toISOString(),
+      action: details.action ?? "",
+    });
+  }
+
+  const historyItems = await Promise.all(
+    reviewedReports.map(async (report) => {
+      let targetPreview = "";
+
+      if (report.targetType === "POST") {
+        const post = await prisma.post.findUnique({
+          where: { id: report.targetId },
+          select: { content: true, author: { select: { username: true } } },
+        });
+        targetPreview = post
+          ? `Post oleh @${post.author.username}: "${post.content.slice(0, 80)}${post.content.length > 80 ? "..." : ""}"`
+          : "[Post dihapus]";
+      } else {
+        const comment = await prisma.comment.findUnique({
+          where: { id: report.targetId },
+          select: { content: true, author: { select: { username: true } } },
+        });
+        targetPreview = comment
+          ? `Komentar oleh @${comment.author.username}: "${comment.content.slice(0, 80)}${comment.content.length > 80 ? "..." : ""}"`
+          : "[Komentar dihapus]";
+      }
+
+      return {
+        id: report.id,
+        targetType: report.targetType,
+        reason: report.reason,
+        status: report.status,
+        createdAt: report.createdAt.toISOString(),
+        reporter: report.reporter,
+        targetPreview,
+        review: reviewByReportId.get(report.id) ?? null,
+      };
+    })
+  );
+
+  const actionLabels: Record<string, string> = {
+    delete: "Hapus Konten",
+    dismiss: "Abaikan",
+    ban: "Ban User",
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-6 fade-in">
       <div className="flex items-center justify-between">
@@ -135,6 +206,84 @@ export default async function AdminReportsPage() {
           ))}
         </div>
       )}
+
+      {/* Riwayat moderasi */}
+      <section className="space-y-3 pt-2 border-t border-border">
+        <h2 className="text-lg font-semibold">Riwayat</h2>
+
+        {historyItems.length === 0 ? (
+          <p className="text-center text-text-secondary text-sm py-8">
+            Belum ada riwayat moderasi.
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {historyItems.map((report) => (
+              <div key={report.id} className="bg-bg-card depth-shadow rounded-xl p-5 space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span
+                      className={`text-[10px] font-medium uppercase tracking-wide px-2 py-0.5 rounded-full ${
+                        report.status === "REVIEWED"
+                          ? "bg-bullish/10 text-bullish"
+                          : "bg-bg-hover text-text-secondary"
+                      }`}
+                    >
+                      {report.status === "REVIEWED" ? "Ditinjau" : "Diabaikan"}
+                    </span>
+                    <span className="text-[10px] font-medium uppercase tracking-wide bg-bg-hover text-text-secondary px-2 py-0.5 rounded-full">
+                      {report.targetType === "POST" ? "Post" : "Komentar"}
+                    </span>
+                    <span className="text-[10px] font-medium uppercase tracking-wide bg-bearish/10 text-bearish px-2 py-0.5 rounded-full">
+                      {reasonLabels[report.reason] || report.reason}
+                    </span>
+                  </div>
+                  <span className="text-xs text-text-secondary shrink-0">
+                    Dilaporkan{" "}
+                    {new Date(report.createdAt).toLocaleDateString("id-ID", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </div>
+
+                <p className="text-sm text-text-primary leading-relaxed break-words">
+                  {report.targetPreview}
+                </p>
+
+                <div className="flex items-center justify-between gap-3 flex-wrap border-t border-border pt-2">
+                  <p className="text-xs text-text-secondary">
+                    Dilaporkan oleh{" "}
+                    <Link
+                      href={`/profile/${report.reporter.username}`}
+                      className="text-accent hover:underline font-medium"
+                    >
+                      @{report.reporter.username}
+                    </Link>
+                  </p>
+                  {report.review ? (
+                    <p className="text-xs text-text-secondary">
+                      Ditinjau oleh <span className="font-medium text-text-primary">@{report.review.reviewer}</span>{" "}
+                      · {actionLabels[report.review.action] || report.review.action} ·{" "}
+                      {new Date(report.review.reviewedAt).toLocaleDateString("id-ID", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-text-secondary italic">Reviewer tidak diketahui</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
