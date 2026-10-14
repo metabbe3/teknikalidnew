@@ -622,3 +622,31 @@ Catatan: "idx radar" (1 klik, pos 12,0 — satu-satunya klik minggu ini) tapi /i
 ## 2026-10-13 09:3x — REVIEWER QA pagi: 42 artikel 24jm — 40 snapshot EXACT; brief13 3 klaim FATAL → qa-2026-10-13-01; bug-12-01 qa_pass
 - [REVIEWER] FATAL → qa-2026-10-13-01 (P1, queue): brief-pasar-idx-2026-10-13-pasar-merah-lebar — (1) breadth '674 turun/136 naik' + sektor T&L -3,9% + BBNI -1,74%/BMRI -0,99% = basis OPEN intraday (DB exact 674/136, T&L -3,92%, BBNI 3440→3380, BMRI 4050→4010) bukan prev-close standar situs (626 turun/115 naik; BBNI -1,46%, BMRI -0,74%); (2) 'turun terbanyak sejak akhir Juni' salah rank (626 = #7-9; 24 Jun 947 dst); (3) GOTO 'RSI 15 terjauh jenuh jual' rank #4 (TGUK/SUPR 0,00, BCAP 10,00). Angka lain EXACT: 40/40 snapshot title, movers penguat/pelemah non-gorengan, GC/DC 129/34, cross BAYU/TGUK, GOTO 27 = min sejak 2025 (353 hari). Lessons: basis open-vs-preclose varian baru.
 - Deploy verify: bug-2026-10-12-01 → qa_pass (live /akses-dibatasi 200 + marker; merge 65f7b23 + commit 74e7c87). 6d803fc (dedup pageview + llms.txt) LIVE — /llms.txt 200/958B — tapi BELUM ada entri changelog (diwarn-kan ke CTO).
+
+## [RESEARCHER] 2026-10-13 — Gate riset pra-eksekusi backlog (3 kandidat, riset internet)
+
+- **idea-2026-10-13-1** (verifikasi landing fundamental + CTA Tanya AI) — VERDICT: BUILD (sebagai evaluasi terjadwal, bukan build baru). Indeks halaman baru umumnya butuh beberapa hari s/d berminggu-minggu (Mueller: "several hours to several weeks") → window eval minimal 2-4 minggu, jangan menilai dari minggu-1 GSC. Pisahkan metrik indexation vs demand; +36% WoW jangan langsung diatribusikan ke landing baru tanpa breakdown per-path. Bukti: SEDANG (timeline indeks kuat; dampak CTA AI utk konten saham B2C tak ada studi → putuskan dari data internal D+7 s/d D+28).
+- **idea-2026-09-23-1** (related-signals di ticker-detail) — VERDICT: BUILD, jadwal tetap slot 2026-10-22 pasca gate AC6 widget (konsisten defer yang ada). Pola internal-link/recommendation module terbukti di industri publisher (pages/session +6-25% di studi kasus/vendor); kondisi teknikal.id cocok (87% views GC dari /stocks = link proven; komponen existing → effort 1). Guard: render hanya utk ticker bersinyal aktif, link SSR dofollow, 3-5 link, ukur referer 15% → naik. Bukti: SEDANG-KUAT (studi pihak-3, bukan RCT; konteks IDX tak ada studi).
+- **idea-2026-10-12-3** (backfill 16 link 404 edu + gate publish prefix /akademi/) — VERDICT: BUILD. Konsensus industry: internal 404 = buang crawl budget + putus link equity + sinyal maintenance buruk; low-risk fix. Catatan: dampak ranking individual kecil (16/524 link = 3,1%) tapi kambuh ke-3 → AC3 gate publish = bagian paling berharga; gate 2 arah (prefix + resolve-200 target); tambah monitor bulanan md-links. Bukti: KUAT (multi-sumber + curl-verify internal).
+
+research_brief sudah ditulis ke field `research_brief` product-backlog.json (3 entry, atomic edit, backup .bak-20261013-researcher). Tidak ada keputusan owner yang diminta — semua verdict bersifat pra-eksekusi gate untuk CEO/CTO.
+
+## 2026-10-13 21:0x — CEO malam (review eksekusi; read-only; 0 dispatch; 1 slot kosong)
+- VERIFY: site 200 (0.3s), app/worker/db healthy. qa-2026-10-13-01 SUBSTANCE sudah FIXED live: brief13 kini "626 saham turun/115 naik"+"tertinggi sejak akhir Juli" (11× curl; "674"/"sejak akhir Juni" = 0 hit) — TAPI queue entry masih pending, result kosong (bookkeeping debt). 6d803fc live verified (/llms.txt 200, /akses-dibatasi 200).
+- ❌ Slot CTO sore 16:45 TANPA OUTPUT: 0 commit repo setelah 16:00, queue tersentuh 0 — prd-2026-10-12-02 masih spec_ready, bo-13-01 kosong. Flip prd-2026-10-02-01 yang diklaim dieksekusi CEO pagi 12 Okt belum terlihat di queue canonical (masih pending) → flip ulang besok.
+- 📊 Views: hari ini 45 PV (40 human) vs kemarin 447 (-90%; kemarin = hari spike SEO-index, bukan baseline). PageView ingestion terakhir tercatat 20:18 WIB (0 event 43 mnt, site tetap 200) — watch: bisa efek dedup baru 6d803fc, verify pagi.
+- 🔥 BESOK PAGI: 1 fokus — isi slot CTO pagi yang hari ini kosong: qa-2026-10-13-01 verify+flip done, lanjut prd-2026-10-12-02 (jangan masuk hari ke-2 spec_ready). Backlog: 0 entry aktif >7d tanpa verdict; ops-13-01 tetap blocked_for_owner (TCC); Product Agent Selasa bukan slot. STATUS: warn.
+
+## [LIVE-VIEW] 2026-10-14 06:4x — idea-2026-10-14-01 SHIPPED (owner direct order)
+- /live di :8790: SDLC Agent Runs (executions.db, immutable read) + Sesi Owner (agent.log metadata: llm/tool/cron events, TANPA isi pesan — privasi) + chat relay POST /live/api/chat → hermes send telegram DM.
+- Build-nya sidestep gate FDE atas instruksi langsung owner ('Bangun sekarang'); PRD sudah lengkap sebelum build (5 AC terpenuhi semua: 200 render, run aktif, poll 5s, read-only DB immutable, cache 5s).
+- Lesson: sqlite mode=ro gagal di env server (WAL) → immutable=1 solusi.
+
+## [LIVE-VIEW] 2026-10-14 06:5x — UNWIRE idea-2026-10-14-01 (owner verdict: kurang guna)
+- Route /live dihapus dari pt_dashboard.py (do_GET+do_POST bersih), server restart, regression 200 semua. dash_live.py disimpan sbg referensi.
+- LESSON SDLC: fitur visibilitas hanya bernilai kalau ada masalah nyata yang berulang (mis. debug skip/429). Build-on-request tanpa pain = cepat jadi 'kurang guna'. Catat utk gate Researcher: pertanyaan wajib 'pain apa yang berulang?'.
+
+## [EDU-EDITOR] 2026-10-14 — owner authorize auto-publish
+- Owner verbatim: "Kalau sudah lolos QC langsung kamu post saja"
+- Rule baru job 7755ba996f65: QC 7/7 → insert langsung PUBLISHED; QC gagal setelah 1x perbaikan → DRAFT + laporan item gagal; larangan publish QC-gagal.
+- Escalation path tetap: kalau 2 run berturut QC gagal / artikel lolos ternyata bermasalah → turunkan kembali ke DRAFT-only (keputusan CTO/owner).

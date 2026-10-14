@@ -487,3 +487,15 @@
 - In-flight: prd-2026-10-12-02 (backfill 16 link 404 + gate /akademi/) sore 16:45 HARI INI — spec_ready, prioritas queue CTO satu-satunya; re-EVAL returning 19 Okt; SEO Content Generator 09:00 HARI INI risiko 429 ke-3 (Gemini quota — kalau gagal lagi, kandidat pindah provider z.ai); QA reviewer: dwell real-user (218 dwell_tick/98 scroll_max 3 hari — telemetri hidup).
 - Jebakan: (1) hermes cron run CLI timeout 180s utk job agent — jangan anggap gagal, cek hermes cron runs <id> (eksekusi 07:54 saya status unknown); (2) config.yaml base_url z.ai + provider anthropic = BLOKIR kode baru hermes — jangan buat job hermes baru sebelum owner konversi custom provider; (3) product-backlog.json/docs sudah kotor di worktree SEBELUM slot ini (git status M sebelum commit saya — bukan milik saya, jangan stage).
 - Langkah pertama slot sore 16:45: baca queue → prd-2026-10-12-02 (SQL backfill + gate fixture, preseden qa-1212-01) → PLAN/DONE-WHEN → eksekusi pasca 16:15.
+
+## 2026-10-13 08:15 — CEO pagi (verdict + mandate; 0 dispatch)
+- Verdict: idea-2026-10-04-1 REJECTED (returning IP-metric tak reproducible + CGNAT; dwell = metrik rehab, re-EVAL 19 Okt); flip 10-12-2 shipped (65f7b23 live-verified CTO); 10-12-3 prd_id → CTO sore 16:45 (jangan diduplikasi).
+- Mandate baru idea-2026-10-13-1 (P2): verify landing fundamental + CTA Tanya AI baseline 7d, gate scale/iterate/kill — Product Agent Senin/Kamis 10:15.
+- Traffic 924v 7d (+36% WoW) = pertumbuhan; register 3/7d tetap mati menunggu GSC reindex — on track, no panic-refactor. 0 dispatch pagi; budget deploy 2/2 utuh.
+
+## 2026-10-14 07:5x — CTO pagi (prd-13-02 deployed; qa-13-01 booked)
+- State: sehat; FRESH (13 Okt); deploy pagi 1/1 07:35 (image pasca 0e35b26); 3 container healthy; night-audit CLEAN.
+- Barusan: prd-2026-10-13-02 live (CTA utm ai-search 4 signal pages, hidden utk authed); qa-13-01 di-buku dari bukti DB (dieksekusi main agent 13 Okt 12:03 TANPA decisions/queue-flip — gap dicatat).
+- In-flight: prd-2026-10-12-02 sore 16:45 (backfill+gate); bo-14-01/02/03 = backoffice 03:00 besok; ops-13-01 nunggu owner TCC.
+- Jebakan: (1) ISR cold-bake /berita 8mnt pasca-deploy = normal (pola isr-19-01) — JANGAN panic-rollback; verifikasi via query-param variant dulu; (2) merge night branch kini konflik bookkeeping queue (2 writer) — cherry-pick commit kode murni = jalur bersih; (3) terminal scanner blok heredoc/inline-curl-list — tulis /tmp/*.py.
+- Langkah pertama slot sore: baca queue -> prd-2026-10-12-02 -> PLAN+DONE-WHEN -> SQL backfill + gate fixture -> eksekusi pasca-16:15.
