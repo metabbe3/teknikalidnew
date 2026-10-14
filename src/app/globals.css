@@ -388,6 +388,21 @@ button:focus-visible,
   }
 }
 
+
+/* ─── Stock detail: adaptif font besar ───
+   User OS font gede (default 18-20px+) sering tidak sadar ada data di bawah fold.
+   Kompak otomatis: turunkan skala root halaman saham + rapatkan spacing,
+   supaya lebih banyak konten (indikator!) kelihatan di layar pertama. */
+/* Skala adaptif: layar desktop/laptop — turunkan sedikit supaya indikator masuk fold-1 */
+@media screen and (min-width: 1024px) {
+  .stock-detail-root {
+    font-size: clamp(0.8rem, 0.72rem + 0.35vw, 0.95rem);
+  }
+}
+/* Zoom/font browser gede: heading besar dirapatkan */
+.stock-detail-root .text-2xl { font-size: 1.35rem; line-height: 1.1; }
+.stock-detail-root .text-3xl { font-size: 1.6rem; line-height: 1.1; }
+
 /* ─── Akademi Hero ─── */
 .akademi-hero {
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);

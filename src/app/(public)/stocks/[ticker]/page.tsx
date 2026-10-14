@@ -502,12 +502,12 @@ export default async function StockDetailPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-    <div className="fade-in">
+    <div className="fade-in stock-detail-root">
       {/* ── AI panel (MLX lokal, ringkasan naratif + Q&A) — menggantikan SignalVerdict
 
       {/* Price header (light broadsheet) */}
       <section className="border-b border-border bg-bg-card">
-        <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8 space-y-5">
+        <div className="max-w-7xl mx-auto px-4 py-3 sm:py-5 space-y-3">
           {/* Breadcrumb */}
           <nav className="text-xs text-text-tertiary flex items-center gap-1.5 font-mono" aria-label="Breadcrumb">
             <Link href="/stocks" className="hover:text-text-primary transition-colors">Stocks</Link>
@@ -518,7 +518,7 @@ export default async function StockDetailPage({
           </nav>
 
           {/* Price Header Card */}
-          <div className="rounded-xl border border-border bg-bg-primary/60 p-5 sm:p-6 relative overflow-hidden">
+          <div className="rounded-xl border border-border bg-bg-primary/60 p-4 sm:p-5 relative overflow-hidden">
             <div className={`absolute top-0 left-0 right-0 h-[3px] rounded-t-xl ${
               change !== null
                 ? (isPositive ? "bg-gradient-to-r from-bullish via-bullish/40 to-transparent" : "bg-gradient-to-r from-bearish via-bearish/40 to-transparent")
@@ -559,6 +559,7 @@ export default async function StockDetailPage({
                     </p>
                   )}
                   <div className="mt-3 flex flex-wrap items-center justify-end gap-2 opacity-90">
+                    <span id="ai" className="block scroll-mt-24" />
                     <StockAiModalButton ticker={ticker} name={stock.name} />
                     <StockActionBadge ticker={ticker} />
                     <ThesisButton ticker={ticker} />
@@ -626,10 +627,32 @@ export default async function StockDetailPage({
               </div>
             )}
 
-            {/* Paper trading position card */}
-            {close !== null && <StockPaperPosition ticker={ticker} />}
-
-            {/* Indicator strip — auth-gated (current indicator values are scrape data) */}
+            {/* Indicator strip — authed: penuh; anon: teaser angka real (value first) */}
+            {indicators && close !== null && !isAuthed && (
+              <div className="border-t border-border mt-5 pt-4">
+                <div className="flex items-center gap-2.5 flex-wrap text-sm">
+                  <span className={`font-mono font-semibold inline-flex items-center gap-1 ${rsiColor(indicators.rsi14) || "text-text-secondary"}`}>
+                    RSI {indicators.rsi14?.toFixed(0) ?? "—"}
+                    <IndicatorTooltip indicator="RSI" />
+                  </span>
+                  <Dot />
+                  <span className="font-mono font-semibold text-text-secondary">
+                    MACD {indicators.macdHist !== null && indicators.macdHist !== undefined ? (indicators.macdHist > 0 ? "↑" : "↓") : "—"}
+                  </span>
+                  <Dot />
+                  <span className="font-mono font-semibold text-text-secondary">
+                    ADX {indicators.adx?.toFixed(0) ?? "—"}
+                  </span>
+                  <Dot />
+                  <span className="font-mono font-semibold text-text-secondary">
+                    Sinyal: {indicators.signalLabel ?? "—"}
+                  </span>
+                  <Link href="/daftar" className="text-[11px] text-primary hover:underline ml-1">
+                    narasi lengkap →
+                  </Link>
+                </div>
+              </div>
+            )}
             {isAuthed && indicators && close !== null && (
               <div className="border-t border-border mt-5 pt-4">
                 <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -708,6 +731,26 @@ export default async function StockDetailPage({
         </div>
       </section>
 
+<nav aria-label="Navigasi bagian halaman" className="sticky top-[57px] z-40 border-b border-border bg-bg-primary/95 backdrop-blur">
+          <div className="max-w-7xl mx-auto px-4 py-1.5 flex gap-1 overflow-x-auto">
+            {[
+              ["analisa", "📊 Analisa"],
+              ["chart", "📈 Chart"],
+              ["indikator", "🧭 Indikator"],
+              ["ai", "✨ AI"],
+              ...(isAuthed ? [["plan", "🎯 Trading Plan"]] : []),
+            ].map(([id, label]) => (
+              <a
+                key={id}
+                href={`#${id}`}
+                className="shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
+              >
+                {label}
+              </a>
+            ))}
+          </div>
+        </nav>
+
       {/* Alert preview CTA — anon only: tunjukkan value tersembunyi (alert sinyal) saat saham PUNYA sinyal aktif */}
       {!isAuthed && (
         <AlertPreviewCard
@@ -717,8 +760,12 @@ export default async function StockDetailPage({
         />
       )}
 
+
+        {/* Sticky section nav — akses 1-tap ke semua blok; menjawab bounce "tidak tahu ada data di bawah" */}
+        
+
       {/* Main content */}
-      <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
+      <div className="max-w-7xl mx-auto px-4 py-4 space-y-5">
         <Breadcrumbs
           items={[
             { label: "Beranda", href: "/" },
@@ -768,7 +815,12 @@ export default async function StockDetailPage({
         )}
 
         {/* Chart — free for everyone (hybrid freemium). Anon fetches via API, range-clamped to ~90d; the OHLC series is still never SSR-embedded. */}
-        <ChartSection ticker={ticker} />
+        <section id="chart" className="scroll-mt-24">
+          <ChartSection ticker={ticker} />
+        </section>
+
+        {/* Paper trading position card — dipindah ke bawah: jangan rebut fold-1 user baru */}
+        {close !== null && <StockPaperPosition ticker={ticker} />}
 
         {/* Today's market brief, if this stock is mentioned (≤3 days old) — anon-visible internal link */}
         {await (async () => {
@@ -794,6 +846,7 @@ export default async function StockDetailPage({
         })()}
 
         {/* Daily Analysis — auth-gated (embeds indicator values in narrative) */}
+        <span id="analisa" className="block scroll-mt-24" />
         {isAuthed && close !== null ? (
             <DailyAnalysisSection
               ticker={ticker}
@@ -835,7 +888,7 @@ export default async function StockDetailPage({
         ) : null}
 
         {/* Indicators + Sidebar */}
-        <div className="flex items-center justify-between mb-2">
+        <div id="indikator" className="flex items-center justify-between mb-2 scroll-mt-24 pt-2">
           <h2 className="font-serif text-lg font-semibold text-text-primary">Indikator Teknikal</h2>
           <Link
             href={`/stocks/${ticker}/indikator`}
@@ -901,12 +954,13 @@ export default async function StockDetailPage({
             )}
             {isAuthed ? (
               <div className="space-y-4">
+                <span id="plan" className="block scroll-mt-24" />
+                {tradingPlan && <TradingPlanCard plan={tradingPlan} />}
                 <HealthScoreDetail
                   signalScore={indicators?.signalScore ?? null}
                   breakdown={signalBreakdown}
                 />
                 <FundamentalData data={fundamentals} />
-                {tradingPlan && <TradingPlanCard plan={tradingPlan} />}
               </div>
             ) : (
               <LoginGate
