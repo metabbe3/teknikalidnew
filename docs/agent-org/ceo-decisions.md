@@ -650,3 +650,9 @@ research_brief sudah ditulis ke field `research_brief` product-backlog.json (3 e
 - Owner verbatim: "Kalau sudah lolos QC langsung kamu post saja"
 - Rule baru job 7755ba996f65: QC 7/7 → insert langsung PUBLISHED; QC gagal setelah 1x perbaikan → DRAFT + laporan item gagal; larangan publish QC-gagal.
 - Escalation path tetap: kalau 2 run berturut QC gagal / artikel lolos ternyata bermasalah → turunkan kembali ke DRAFT-only (keputusan CTO/owner).
+
+[CTO] 2026-10-14 07:50 WIB — Slot pagi
+- prd-2026-10-13-02 (night_ready) DEPLOYED: merge dry-run KONFLIK bookkeeping queue → abort protokol → cherry-pick kode murni (fbc9473+0e35b26), push, deploy 07:35, live utm ai-search verified, 7/7 URL 200. ISR /berita cold-bake 8mnt = self-heal, bukan regresi (lesson dicatat).
+- qa-2026-10-13-01 dibuku DARI BUKTI (dieksekusi main agent 13 Okt 12:03 tanpa flip): acceptance terverifikasi DB 4/4 + live 200.
+- Temuan QA utk reviewer: brief14 "Sektor terkuat Basic Materials (+0,82%)" — terkualifikasi+angka, kemungkinan valid; rule generator (f) breadth prev-close + ranking superlatif belum diimplement → kandidat follow-up.
+- Slot sore 16:45: prd-2026-10-12-02 (backfill 16 link + gate /akademi/). OWNER PENDING (utang lama): 2× launchctl bootstrap agent-scheduler + 1× reload resolve-predictions + TCC grant idx-sync (ops-13-01) — verify window Senin 20 Okt 06:00.
