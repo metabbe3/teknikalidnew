@@ -9,7 +9,7 @@ import { FunnelSection } from "./funnel-section";
 import {
   Eye, Users, TrendingUp, Clock, Search, Share2, Globe2,
   ArrowUpRight, ArrowDownRight, Monitor, Smartphone, Tablet,
-  Wifi, MapPin, Target, Hash, ExternalLink,
+  Wifi, MapPin, Target, Hash, ExternalLink, ArrowRightLeft,
 } from "lucide-react";
 import { formatVolume } from "@/lib/utils";
 import { wibDayStart, wibNextDayStart } from "@/lib/datetime-wib";
@@ -111,39 +111,118 @@ const QUICK_RANGES = [
   { label: "90 Days", days: 90 },
 ] as const;
 
+interface HourSlot {
+  hour: number;
+  label: string;
+  views: number;
+  uniqueVisitors: number;
+}
+
+interface ResolvedRange {
+  start: Date;
+  end: Date;
+  days: number;
+}
+
+// Calendar-day WIB bounds: Today = today's WIB day; N Days = last N WIB days inclusive.
+function resolveQuickRange(days: number): ResolvedRange {
+  const now = new Date();
+  const end = wibNextDayStart(now);
+  const start = wibDayStart(new Date(now.getTime() - (days - 1) * 24 * 60 * 60 * 1000));
+  return { start, end, days };
+}
+
+// Date-picker values ("YYYY-MM-DD", UTC midnight) → same WIB calendar-day bounds.
+// null = incomplete or invalid (start > end, span > 90d); caller falls back to quick range.
+function resolveCustomRange(from: string, to: string): ResolvedRange | null {
+  if (!from || !to) return null;
+  const s = new Date(from);
+  const e = new Date(to);
+  if (isNaN(s.getTime()) || isNaN(e.getTime())) return null;
+  const start = wibDayStart(s);
+  const end = wibNextDayStart(e);
+  const days = Math.round((end.getTime() - start.getTime()) / (24 * 60 * 60 * 1000));
+  if (days < 1 || days > 90) return null;
+  return { start, end, days };
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+const fmtDay = (d: Date) =>
+  d.toLocaleDateString("id-ID", { day: "numeric", month: "short", timeZone: "Asia/Jakarta" });
+
+const fmtRangeLabel = (r: ResolvedRange) =>
+  `${fmtDay(r.start)} – ${fmtDay(new Date(r.end.getTime() - DAY_MS))}`;
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function AnalyticsTab() {
   const [rangeDays, setRangeDays] = useState<number>(7);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [compareMode, setCompareMode] = useState(false);
   const [pathFilter, setPathFilter] = useState<string>("");
   const [sourceFilter, setSourceFilter] = useState<string>("");
 
-  const buildUrl = useCallback(() => {
-    // Calendar-day WIB bounds: Today = today's WIB day; N Days = last N WIB days inclusive.
-    const now = new Date();
-    const end = wibNextDayStart(now);
-    const start = wibDayStart(new Date(now.getTime() - (rangeDays - 1) * 24 * 60 * 60 * 1000));
-    const params = new URLSearchParams({
-      start: start.toISOString(),
-      end: end.toISOString(),
-    });
-    if (pathFilter.trim()) params.set("path", pathFilter.trim());
-    if (sourceFilter) params.set("source", sourceFilter);
-    return `/api/admin/analytics/comprehensive?${params}`;
-  }, [rangeDays, pathFilter, sourceFilter]);
+  const customRange = resolveCustomRange(dateFrom, dateTo);
+  const customInvalid = (dateFrom || dateTo) && !customRange;
+  const activeRange = customRange ?? resolveQuickRange(rangeDays);
+
+  // Compare B = the period immediately before A (A is N days → B is the N days before it).
+  const compareRange: ResolvedRange = (() => {
+    const spanMs = activeRange.end.getTime() - activeRange.start.getTime();
+    return {
+      start: new Date(activeRange.start.getTime() - spanMs),
+      end: new Date(activeRange.start.getTime()),
+      days: activeRange.days,
+    };
+  })();
+
+  const buildUrl = useCallback(
+    (range: ResolvedRange) => {
+      const params = new URLSearchParams({
+        start: range.start.toISOString(),
+        end: range.end.toISOString(),
+      });
+      if (pathFilter.trim()) params.set("path", pathFilter.trim());
+      if (sourceFilter) params.set("source", sourceFilter);
+      return `/api/admin/analytics/comprehensive?${params}`;
+    },
+    [pathFilter, sourceFilter],
+  );
+
+  const fetchAnalytics = async (url: string): Promise<AnalyticsData> => {
+    const r = await fetch(url);
+    // Throw (don't return undefined): a silent undefined cached by React Query
+    // rendered as "No data" during API outages — the chart looked permanently
+    // empty with no error hint. Throwing lets RQ retry + surface isError.
+    if (!r.ok) throw new Error(`Analytics API ${r.status}`);
+    const json = await r.json();
+    return json.data;
+  };
 
   const { data, isLoading } = useQuery<AnalyticsData>({
-    queryKey: ["admin-analytics", rangeDays, pathFilter, sourceFilter],
-    queryFn: async () => {
-      const r = await fetch(buildUrl());
-      // Throw (don't return undefined): a silent undefined cached by React Query
-      // rendered as "No data" during API outages — the chart looked permanently
-      // empty with no error hint. Throwing lets RQ retry + surface isError.
-      if (!r.ok) throw new Error(`Analytics API ${r.status}`);
-      const json = await r.json();
-      return json.data;
-    },
+    queryKey: [
+      "admin-analytics",
+      activeRange.start.toISOString(),
+      activeRange.end.toISOString(),
+      pathFilter,
+      sourceFilter,
+    ],
+    queryFn: () => fetchAnalytics(buildUrl(activeRange)),
     refetchInterval: 30_000,
+  });
+
+  const { data: dataB, isLoading: isLoadingB } = useQuery<AnalyticsData>({
+    queryKey: [
+      "admin-analytics",
+      compareRange.start.toISOString(),
+      compareRange.end.toISOString(),
+      pathFilter,
+      sourceFilter,
+    ],
+    queryFn: () => fetchAnalytics(buildUrl(compareRange)),
+    enabled: compareMode,
   });
 
   // KPI Cards
@@ -185,9 +264,19 @@ export function AnalyticsTab() {
     },
   ];
 
-  // Hourly chart data
-  const hourly = data?.hourly ?? [];
+  // Hourly chart data — always exactly 24 WIB slots, zero-filled
+  const hourly: HourSlot[] = (() => {
+    const byHour = new Map((data?.hourly ?? []).map((h) => [h.hour, h]));
+    return Array.from({ length: 24 }, (_, h) =>
+      byHour.get(h) ?? { hour: h, label: `${String(h).padStart(2, "0")}:00`, views: 0, uniqueVisitors: 0 },
+    );
+  })();
   const maxHourly = Math.max(1, ...hourly.map((h) => h.views));
+  const hourlyTotal = hourly.reduce((s, h) => s + h.views, 0);
+  const avgPerHour = Math.round((hourlyTotal / 24) * 10) / 10;
+
+  // Compare period hourly lookup
+  const hourlyB = new Map((dataB?.hourly ?? []).map((h) => [h.hour, h]));
 
   // Daily chart data
   const daily = data?.daily ?? [];
@@ -202,14 +291,54 @@ export function AnalyticsTab() {
           {QUICK_RANGES.map((r) => (
             <Button
               key={r.days}
-              variant={rangeDays === r.days ? "default" : "outline"}
+              variant={!customRange && rangeDays === r.days ? "default" : "outline"}
               size="sm"
-              onClick={() => setRangeDays(r.days)}
+              onClick={() => {
+                setRangeDays(r.days);
+                setDateFrom("");
+                setDateTo("");
+              }}
             >
               {r.label}
             </Button>
           ))}
         </div>
+
+        {/* Custom Date Picker — single date (from = to) or range, max 90 days */}
+        <div className="flex items-center gap-1.5">
+          <input
+            type="date"
+            aria-label="Dari tanggal"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            className="px-2.5 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 bg-white tabular-nums"
+          />
+          <span className="text-xs text-gray-400">–</span>
+          <input
+            type="date"
+            aria-label="Sampai tanggal"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+            className="px-2.5 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 bg-white tabular-nums"
+          />
+        </div>
+
+        {/* Compare with previous period */}
+        <Button
+          variant={compareMode ? "default" : "outline"}
+          size="sm"
+          onClick={() => setCompareMode((v) => !v)}
+          title={`Bandingkan ${fmtRangeLabel(activeRange)} vs ${fmtRangeLabel(compareRange)}`}
+        >
+          <ArrowRightLeft className="h-3.5 w-3.5 mr-1" />
+          Compare
+        </Button>
+
+        {customInvalid && (
+          <span className="text-xs text-rose-500">
+            Rentang tanggal tidak valid — pastikan dari ≤ sampai dan maks 90 hari
+          </span>
+        )}
 
         {/* Path Filter */}
         <input
@@ -373,48 +502,106 @@ export function AnalyticsTab() {
       {/* Hourly Traffic Chart */}
       <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
         <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-blue-50 to-white rounded-t-lg">
-          <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
+          <CardTitle className="flex flex-wrap items-center gap-2 text-sm font-bold text-gray-800">
             <Clock className="h-4 w-4 text-blue-500" />
             Traffic by Hour
-            <span className="text-xs font-normal text-gray-400">— when visitors come</span>
+            <span className="text-xs font-normal text-gray-400">— jam WIB (UTC+7)</span>
+            <span className="ml-auto text-xs font-semibold text-gray-500 tabular-nums">
+              {formatVolume(hourlyTotal)} views · rata-rata {avgPerHour}/jam
+              {activeRange.days > 1 && ` · agregat ${activeRange.days} hari`}
+            </span>
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-4">
           {isLoading ? (
             <div className="h-40 bg-gray-50 rounded-lg animate-pulse" />
-          ) : hourly.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-8">No data</p>
-          ) : (
-            <div className="flex items-end gap-0.5 h-40">
-              {hourly.map((h) => {
-                const height = Math.max(2, (h.views / maxHourly) * 100);
-                const isPeak = data?.overview.peakHour?.hour === h.hour;
-                return (
-                  <div
-                    key={h.hour}
-                    className="flex-1 flex flex-col items-center gap-1 group relative"
-                  >
-                    {/* Tooltip */}
-                    <div className="absolute -top-12 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white text-[10px] px-2 py-1 rounded-md whitespace-nowrap z-10 pointer-events-none">
-                      {h.label} · {h.views} views · {h.uniqueVisitors} unique
-                    </div>
-                    <div
-                      className={`w-full rounded-t transition-all duration-300 ${
-                        isPeak
-                          ? "bg-gradient-to-t from-purple-600 to-purple-400"
-                          : "bg-gradient-to-t from-blue-600 to-cyan-400"
-                      }`}
-                      style={{ height: `${height}%` }}
-                    />
-                    {h.hour % 3 === 0 && (
-                      <span className="text-[8px] text-gray-400 tabular-nums font-medium">
-                        {h.hour}
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
+          ) : hourlyTotal === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-sm text-gray-500 font-medium">
+                Belum ada views {activeRange.days === 1 ? "hari ini" : "di periode ini"} (real users)
+              </p>
+              <p className="text-xs text-gray-400 mt-1">
+                Bot/admin/suspek di-exclude dari angka ini — traffic bot tidak dihitung.
+              </p>
             </div>
+          ) : compareMode ? (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-100">
+                    <th className="text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider py-2 px-2">Jam (WIB)</th>
+                    <th className="text-right text-[10px] font-bold text-blue-600 uppercase tracking-wider py-2 px-2">
+                      {fmtRangeLabel(activeRange)}
+                    </th>
+                    <th className="text-right text-[10px] font-bold text-gray-400 uppercase tracking-wider py-2 px-2">
+                      {fmtRangeLabel(compareRange)}
+                    </th>
+                    <th className="text-right text-[10px] font-bold text-gray-400 uppercase tracking-wider py-2 px-2">Δ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {hourly.map((h) => {
+                    const b = hourlyB.get(h.hour)?.views ?? 0;
+                    const pct = b > 0 ? Math.round(((h.views - b) / b) * 100) : null;
+                    return (
+                      <tr key={h.hour} className="border-b border-gray-50 hover:bg-gray-50/50">
+                        <td className="py-1.5 px-2 text-xs text-gray-600 tabular-nums font-medium">{h.label}</td>
+                        <td className="py-1.5 px-2 text-right text-sm font-bold text-blue-600 tabular-nums">{h.views}</td>
+                        <td className="py-1.5 px-2 text-right text-sm text-gray-500 tabular-nums">{b}</td>
+                        <td className="py-1.5 px-2 text-right">
+                          {pct === null ? (
+                            <span className="text-xs text-gray-400">{h.views > 0 ? "baru" : "—"}</span>
+                          ) : (
+                            <span className={`text-xs font-bold tabular-nums ${pct >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+                              {pct >= 0 ? "+" : ""}{pct}%
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+              {isLoadingB && !dataB && (
+                <p className="text-xs text-gray-400 text-center py-2">Memuat periode pembanding…</p>
+              )}
+            </div>
+          ) : (
+            <>
+              <div className="flex items-end gap-0.5 h-40">
+                {hourly.map((h) => {
+                  const height = Math.max(2, (h.views / maxHourly) * 100);
+                  const isPeak = data?.overview.peakHour?.hour === h.hour;
+                  return (
+                    <div
+                      key={h.hour}
+                      className="flex-1 flex flex-col items-center gap-1 group relative"
+                    >
+                      {/* Tooltip */}
+                      <div className="absolute -top-12 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white text-[10px] px-2 py-1 rounded-md whitespace-nowrap z-10 pointer-events-none">
+                        {h.label} WIB · {h.views} views · {h.uniqueVisitors} unique
+                      </div>
+                      <div
+                        className={`w-full rounded-t transition-all duration-300 ${
+                          isPeak
+                            ? "bg-gradient-to-t from-purple-600 to-purple-400"
+                            : "bg-gradient-to-t from-blue-600 to-cyan-400"
+                        }`}
+                        style={{ height: `${height}%` }}
+                      />
+                      {h.hour % 3 === 0 && (
+                        <span className="text-[8px] text-gray-400 tabular-nums font-medium">
+                          {h.hour}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="text-[10px] text-gray-400 mt-2 text-center">
+                Jam WIB (00–23) · {fmtRangeLabel(activeRange)}
+              </p>
+            </>
           )}
         </CardContent>
       </Card>
