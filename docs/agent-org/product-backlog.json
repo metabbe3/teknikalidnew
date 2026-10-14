@@ -447,7 +447,8 @@
       "data": "CTO sore 23 Sep: ticker-detail 1.710v/133 IP, cross 20 IP (15%); 87% views GC berasal dari /stocks (21 Sep survey) = link equity dari nav proven; komponen related-signals.tsx existing (commit f75dd7d).",
       "note": " || CEO 24 Sep 08:15: DEFER — jangan campur atribusi link-equity saat widget mingguan (prod-19-01) baru live; review pasca gate AC6 2026-10-22. || COUNCIL 11 Okt 2026 VERDICT=schedule: scheduled_slot 2026-10-22 (review pasca gate AC6 widget mingguan; jangan campur atribusi link-equity sebelum itu).",
       "review_date": "2026-10-22",
-      "scheduled_slot": "2026-10-22"
+      "scheduled_slot": "2026-10-22",
+      "research_brief": "RESEARCH BRIEF (Researcher 13 Okt 2026) — VERDICT: BUILD (konfirmasi pendekatan; jadwal tetap slot 2026-10-22 pasca gate AC6 widget — konsisten dgn keputusan defer yang sudah ada). Alasan: related-signals/internal-link module = pola terbukti di industri publisher: studi kasus & vendor data menunjukkan modul link internal/rekomendasi menaikkan pages/session ~6-25% dan session time secara konsisten; kondisi teknikal.id cocok (87% views /saham-golden-cross datang dari referrer /stocks = link nav proven; ticker-detail 133 IP tapi cuma 15% mengalir ke /saham-*). Komponen related-signals.tsx SUDAH ada (f75dd7d) → effort 1. Best practice: (1) hanya render related-signals utk ticker yg punya sinyal aktif (hindari empty-state/soft-404); (2) link SSR dofollow di HTML (bukan JS-only) — anchor terlihat crawler; (3) batas 3-5 link kontekstual, jangan link-farm; (4) ukur pasca-deploy via PageView referer ticker-detail -> /saham-* (baseline 15%); (5) jangan ubah halaman lain bersamaan agar atribusi bersih. Anti-pattern: render module dgn placeholder kosong saat 0 sinyal (buruk utk UX + crawl); menumpuk deploy dgn perubahan navigasi lain di /stocks (atribusi rusak — pelajaran defer asli). SUMBER: froomle.ai case study Nation News (+6% page views/session via recommendation modules); webselect.agency/internal-linking-user-engagement-signals (pages/session +15-25% dalam 2 bulan); developry.com case study internal linking 2->8 menit session. BUKTI: SEDANG-KUAT untuk efek engagement internal-linking umum (studi pihak-3/vendor, bukan RCT); untuk konteks spesifik IDX/finance-ID tak ada studi — verifikasi via gate internal."
     },
     {
       "id": "prod-2026-09-24-01",
@@ -1090,7 +1091,8 @@
       "estimate_tool_calls": 8,
       "research_basis": "tree teknikalidnew @ 399f0cd; DB read-only 12 Okt; live curl teknikal.id",
       "research_note": "Product Agent 12 Okt 22:0x: scan penuh 126 artikel — 16 link 404 terkonfirmasi exact (daftar per artikel di AC1). Superlatif/breadth qa-30-01 dipenuhi: ranking/link dihitung query asli scan penuh, bukan manual.",
-      "prd_id": "prd-2026-10-12-02"
+      "prd_id": "prd-2026-10-12-02",
+      "research_brief": "RESEARCH BRIEF (Researcher 13 Okt 2026) — VERDICT: BUILD. Alasan: broken internal links = clean-up standar dengan konsensus industry kuat — membuang crawl budget, memutus link equity, dan sinyal pemeliharaan buruk; fix-nya low-risk (backfill 16 link + publish gate), bukan eksperimen. Konteks penting: 126 artikel published dgn 16 link 404 (3,1% dari 524 link) dan 4 artikel affected — dampak ranking individual kecil, tapi ini kerusakan berulang (kambuh ke-3) → gate publish (AC3) = bagian paling berharga, bukan cuma backfill. Best practice: (1) prioritas fix internal 404 di halaman ber-authority (artikel edu dgn traffic) — sudah tepat; (2) publish-gate 2 arah: validasi prefix /akademi/ utk slug edu + verifikasi target resolve 200 (hardcoded prefix saja bisa tertukar slug); (3) sertakan regression parity (AC4) agar patch SQL tidak menyentuh artikel lain; (4) monitor kambuh via cron scan bulanan md-links (murah, mencegah repeat); (5) gunakan 301 hanya jika slug memang pindah permanen — di sini backfill langsung ke URL benar lebih tepat daripada redirect. Anti-pattern: membiarkan 404 mengendap krn 'SEO impact kecil' — biaya bukan ranking tapi crawl equity + trust pembaca; patch berulang manual tanpa gate (sudah 3x minor berulang — QA benar menandai); redirect massal 301 utk menyembunyikan bug generator (menutup akar masalah AC5). SUMBER: developers.google.com/search/docs/crawling-indexing (duplicate/crawl budget doc); similarweb.com blog 404-not-found (crawl budget); hostinger.com tutorial fix-404 (link equity); pantra.io/issues/broken-internal-links; tangence.in internal-linking-mistakes. BUKTI: KUAT utk diagnosis & tindakan (konsensus multi-sumber); KUAT via bukti internal juga (curl 404 vs 200 terverifikasi 12 Okt)."
     },
     {
       "id": "idea-2026-10-13-1",
@@ -1103,7 +1105,74 @@
       "hypothesis": "Landing /saham-dividen /saham-undervalued /saham-value-growth (live 12 Okt malam, af0706f) + CTA Tanya AI di 13 landing (a00e562) memunculkan impressions/click GSC minggu pertama dan menambah rute masuk non-/stocks. Traffic 7d 924v (+36% WoW) — perlu dipastikan kontribusi baru vs baseline.",
       "first_step": "ANALISIS DATA (no deploy): SQL read-only PageView 7 hari pasca-live (13-19 Okt) per-path landing fundamental vs baseline pre-live; GSC impressions/click per-URL kalau API siap; dwell pada CTA Tanya AI. Output = insight entry ini + rekomendasi scale/iterate/kill. DONE WHEN: tabel kontribusi views 7d per landing baru (min 3 baris) + keputusan scale/iterate/kill tertulis di insight.",
       "data_evidence": "Brief 13 Okt: traffic 924v 7d (+36% WoW dari 679); top-pages masih /stocks 380v; landing baru belum muncul di top-10 — wajar, umur <1 hari.",
-      "research_note": "Riset nightly 13 Okt 21:3x (buffer-keeper): landing fundamental + CTA Tanya AI baru live <24 jam. Baseline 7d pre/full-week: total 1093 views; top paths /stocks 356, / 95, /saham-golden-cross 23; register 4 minggu terakhir = 1/3/3/1 (8 total, stagnan); /auth/signin hanya 10 views 7d. Sinyal baru terukur: referrer ai-search chatgpt.com 8 views 7d, SEMUA jatuh ke 2 halaman: /saham-golden-cross 4 + /stocks 4. Verifikasi dampak entry ini tetap menunggu jendela 7-hari penuh (19-20 Okt) — jangan dipromote sebelum baseline lengkap. Spin-off PRD terpisah: idea-2026-10-13-2 (ai-search visibility + CTA register di halaman AI-landing)."
+      "research_note": "Riset nightly 13 Okt 21:3x (buffer-keeper): landing fundamental + CTA Tanya AI baru live <24 jam. Baseline 7d pre/full-week: total 1093 views; top paths /stocks 356, / 95, /saham-golden-cross 23; register 4 minggu terakhir = 1/3/3/1 (8 total, stagnan); /auth/signin hanya 10 views 7d. Sinyal baru terukur: referrer ai-search chatgpt.com 8 views 7d, SEMUA jatuh ke 2 halaman: /saham-golden-cross 4 + /stocks 4. Verifikasi dampak entry ini tetap menunggu jendela 7-hari penuh (19-20 Okt) — jangan dipromote sebelum baseline lengkap. Spin-off PRD terpisah: idea-2026-10-13-2 (ai-search visibility + CTA register di halaman AI-landing).",
+      "research_brief": "RESEARCH BRIEF (Researcher 13 Okt 2026) — VERDICT: BUILD (sebagai evaluasi terjadwal, bukan build baru). Alasan: item ini = verifikasi dampak fitur yang SUDAH live (landing fundamental af0706f + CTA Tanya AI a00e562) — prosedurnya benar (baseline 7d + decision gate scale/iterate/kill). Bukti eksternal: indeks halaman baru umumnya butuh beberapa hari s/d berminggu-minggu (John Mueller: 'several hours to several weeks'; konvensi SEO 30-60 hari utk halaman baru) — JANGAN menilai landing baru dari minggu-1 GSC saja; window eval minimal 2-4 minggu. Best practice utk CTO/evaluator: (1) pisahkan metrik indexation (GSC coverage/URL Inspection) dari metrik demand (impressions/clicks per-URL) — jangan campur dgn traffic situs-situs; (2) bandingkan page-level 7d vs 28d delta, bukan absolute minggu-1; (3) CTA Tanya AI ukur dwell+click event terpisah dari pageview; (4) guard bot-traffic di perbandingan (isBot=false). Anti-pattern: menilai kegagalan landing <7 hari umur (false kill); menarik kesimpulan +36% WoW sebagai kontribusi landing baru tanpa breakdown per-path. SUMBER: searchenginejournal.com/how-long-before-google-indexes-my-new-page/464309/; monsterinsights.com/google-index (kutipan Mueller); developers.google.com/search/docs (GSC performance doc). BUKTI: SEDANG — timeline indeks Google kuat terdokumentasi; dampak CTA AI di konten saham B2C tidak ada studi spesifik (putuskan dari data internal D+7 s/d D+28)."
+    },
+    {
+      "id": "sec-2026-10-13-01",
+      "date": "2026-10-13",
+      "title": "Evaluasi PentAGI (self-hosted AI pentest) untuk pentest aset sendiri (teknikal.id + hivepos.id)",
+      "status": "idea",
+      "priority": "P3",
+      "source": "owner-idea",
+      "hypothesis": "PentAGI (vxcontrol/pentagi, MIT, 25k stars) multi-agent pentest self-hosted bisa memproduksi vulnerability report untuk teknikal.id & hivepos.id lebih murah+cepat daripada pentest manual, sebagai layer keamanan pra-rilis/quarterly. Assistant-guided mode = aman (agent usul, owner approve).",
+      "north_star": "trust — data reliable & aman (aset sendiri ter-uji sebelum ditemukan orang lain)",
+      "user_story": "Sebagai Technical Risk Engineer, aku ingin vulnerability report otomatis atas infrastruktur web milik sendiri, sehingga kelemahan ditemukan dan ditutup sebelum dieksploitasi pihak lain.",
+      "acceptance_criteria": [
+        "PentAGI jalan self-hosted di PC 3090 (Ollama) atau via API z.ai, mode assistant-guided",
+        "1 run penuh vs teknikal.id STAGING (bukan prod) menghasilkan vulnerability report tertulis",
+        "Temuan diklasifikasi: benar / false-positive, diverifikasi manual",
+        "Tidak ada eksekusi terhadap aset selain milik sendiri (teknikal.id, hivepos.id) — aset kantor DANA dilarang mutlak",
+        "Evaluasi tertulis: biaya LLM vs nilai report, layak-tidaknya quarterly"
+      ],
+      "data_evidence": "Repo dicek langsung 13 Okt 2026: MIT license, arsitektur sandbox Docker isolated, Postgres+pgvector memory, support GLM/Ollama/vLLM, assistant-guided mode ada. Review pihak-3 (PlayCISO, bridgers) positif dengan catatan bukan BAS/adversary-emulation.",
+      "research_basis": "manual-check-github-readme-2026-10-13",
+      "risk": "Biaya LLM per-run tidak diketahui (bisa besar); false-positive butuh filter manual; resiko legal kalau scope melenceng — mitigasi: staging-only + whitelist target eksplisit; jangan ganggu jam market 09:00-16:15.",
+      "effort": 2,
+      "dependencies": [
+        "PC 3090 alive + Ollama, atau API budget z.ai",
+        "teknikal.id staging environment reachable",
+        "slot weekend (bukan weekday growth sprint)"
+      ],
+      "target_files": [
+        "infra lokal PC — bukan repo teknikalidnew"
+      ],
+      "prd_id": null
+    },
+    {
+      "id": "idea-2026-10-14-01",
+      "date": "2026-10-14",
+      "title": "Live Agent View ('pair' ala OpenCode 2) di dashboard :8790 — owner tonton build CTO/QA real-time",
+      "status": "rejected",
+      "priority": "P3",
+      "source": "owner-idea (inspirasi riset OpenCode 2.0 14 Okt)",
+      "hypothesis": "Fitur paling berharga OpenCode 2 (opencode pair: URL live utk nonton agent bekerja) bisa direplikasi di Hermes: halaman /live di dashboard :8790 yang men-stream eksekusi cron agent (tool calls, file diffs ringkas, status) dari executions.db + gateway log. Owner bisa menonton CTO build dari iPhone real-time, bukan menunggu laporan 21:00 — naikkan trust + kemampuan redirect dini.",
+      "north_star": "trust + visibility (owner as board WITH live camera)",
+      "user_story": "Sebagai owner, aku ingin membuka satu URL dari HP dan melihat agent build sedang berjalan (apa file yang diedit, command apa yang jalan, sudahberapa langkah), sehingga bisa intervensi dini kalau arah melenceng dan tidak perlu menunggu laporan akhir.",
+      "acceptance_criteria": [
+        "Halaman /live di :8790 render HTTP 200 dari jaringan lokal (dan terverifikasi bisa dibuka via iPhone same-network)",
+        "Menampilkan run aktif hari ini: job name, start time, langkah terakhir (tool call ringkas), status live/finished",
+        "Auto-refresh <=10 detik tanpa reload manual (polling atau SSE)",
+        "READ-ONLY: tidak ada kontrol mutasi dari halaman (bukan remote control, cuma kamera)",
+        "Zero impact performa gateway saat idle (query terindex, cache 5s)"
+      ],
+      "data_evidence": "Audit 14 Okt: dashboard :8790 HTTP 200 hidup; bahan mentah ada (executions.db, ~/.hermes/logs/gateway.error.log, jobs.json 77 job); OpenCode 2 bukti pola ini bernilai (fitur andalan v2).",
+      "research_basis": "riset opencode v2 docs + benchmark 14 Okt (chat); menunggu research_brief Researcher 08:30",
+      "risk": "executions.db schema tidak resmi-dokumentasi (bisa berubah saat hermes update) — mitigasi baca defensive + fallback pesan 'data tidak tersedia'; jangan expose di 0.0.0.0 tanpa auth — bind localhost/Tailscale only; jangan ganggu jalur cron (read-only DB).",
+      "effort": 2,
+      "dependencies": [
+        "dashboard :8790 infra (sudah ada)",
+        "executions.db readable",
+        "slot CTO build weekend"
+      ],
+      "target_files": [
+        "~/.hermes/scripts/dash_live.py (baru)",
+        "integrasi pt_dashboard.py atau server terpisah port 8791"
+      ],
+      "prd_id": null,
+      "shipped_at": "2026-10-14",
+      "ship_note": "Fase 1+2 LIVE: /live :8790 (tab SDLC runs + tab sesi owner metadata-only, poll 5s) + chat relay web→Telegram via hermes send. dash_live.py baru + integrasi pt_dashboard.py (do_GET/do_POST /live*). Verify: /live 200 5.3KB, /live/api/state 200 (40 runs, 60 ev), chat relay ok:true terkirim. Regression: root/agents/site 200. Owner-approved build same-day.",
+      "reject_note": "Owner verdict 14 Okt (1 jam post-ship): 'Kurang guna si, tidak usah di wire'. Route /live dihapus dari pt_dashboard (unwire bersih, syntax+lint OK, server restart, regression root/agents/api 200). dash_live.py DISIMPAN (tidak dihapus) utk referensi; lesson: fitur 'nonton' tanpa masalah nyata = demo tech, bukan produk."
     }
   ]
 }

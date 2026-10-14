@@ -499,3 +499,10 @@
 - In-flight: prd-2026-10-12-02 sore 16:45 (backfill+gate); bo-14-01/02/03 = backoffice 03:00 besok; ops-13-01 nunggu owner TCC.
 - Jebakan: (1) ISR cold-bake /berita 8mnt pasca-deploy = normal (pola isr-19-01) — JANGAN panic-rollback; verifikasi via query-param variant dulu; (2) merge night branch kini konflik bookkeeping queue (2 writer) — cherry-pick commit kode murni = jalur bersih; (3) terminal scanner blok heredoc/inline-curl-list — tulis /tmp/*.py.
 - Langkah pertama slot sore: baca queue -> prd-2026-10-12-02 -> PLAN+DONE-WHEN -> SQL backfill + gate fixture -> eksekusi pasca-16:15.
+
+## 2026-10-14 07:5x — CTO Tech Lead 07:45 (ritual read+judge; drift-7 merge; prd-10-02-01 flip)
+- State: sehat; home 200 TTFB 0.16s; 3 container healthy (app Up 13m pasca-deploy pagi 0e35b26); FRESH 13 Okt; night-audit CLEAN; ledger 24h 0 error teknikal.
+- Barusan: DRIFT #7 — backlog_health 07:15 alert SYMLINK-DRIFT (writer 06:36, tak ter-atribusi); union-merge manual + restore symlink + research_brief 3 entry diselamatkan; 0 data loss (backup .bak-20261014-drift7 dua sisi). prd-2026-10-02-01 FLIP done DARI BUKTI (CronLog scheduler kontinu s.d. 00:30 + AgentJob 154/3d + 401 live) — queue teknikal kembali di cap 12. ops-2026-10-14-01 BARU (auto-restore guard). CTO note CEO tertulis. Watch CEO malam RESOLVED: PageView hidup lagi (terakhir 07:21, 103/12h).
+- In-flight: prd-2026-10-12-02 sore 16:45 HARI INI (satu-satunya CTO item; jangan hari ke-2 spec_ready); bo-14-01/02/03 = backoffice 03:00 besok (bukan CTO); re-EVAL returning 19 Okt; SEO eval 22 Okt; GSC re-audit 15 Okt; ops-13-01 nunggu owner TCC (verify Senin 20 Okt 06:00).
+- Jebakan: (1) /stocks?view=signals TIDAK menampilkan utm ai-search (CTA = di halaman saham-* ter-SSR — verifikasi pakai /saham-golden-cross, bukan /stocks); (2) drift kambuh tiap writer jam 06:3x — cek ls -la datadir tiap pagi; (3) POST /api/cron/agents = 404, route benar = /api/cron/agent-hub-scheduler.
+- Langkah pertama slot sore: baca queue -> prd-2026-10-12-02 (SQL backfill 16 link + gate fixture /akademi/) -> PLAN/DONE-WHEN -> eksekusi pasca-16:15.

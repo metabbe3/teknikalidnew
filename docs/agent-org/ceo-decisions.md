@@ -656,3 +656,16 @@ research_brief sudah ditulis ke field `research_brief` product-backlog.json (3 e
 - qa-2026-10-13-01 dibuku DARI BUKTI (dieksekusi main agent 13 Okt 12:03 tanpa flip): acceptance terverifikasi DB 4/4 + live 200.
 - Temuan QA utk reviewer: brief14 "Sektor terkuat Basic Materials (+0,82%)" — terkualifikasi+angka, kemungkinan valid; rule generator (f) breadth prev-close + ranking superlatif belum diimplement → kandidat follow-up.
 - Slot sore 16:45: prd-2026-10-12-02 (backfill 16 link + gate /akademi/). OWNER PENDING (utang lama): 2× launchctl bootstrap agent-scheduler + 1× reload resolve-predictions + TCC grant idx-sync (ops-13-01) — verify window Senin 20 Okt 06:00.
+
+## [NORTH-STAR] 2026-10-14 — KPI framework LIVE (owner mandate)
+- Owner: "perlu buat north star guidance di teknikal + KPI yang bisa di track + taruh di dashboard agar semua agent ada acuan dan target"
+- LIVE: dashboard :8790/northstar (kartu 5 pilar, hijau/kuning); collector teknikalid_northstar_kpi.py (SQL-verified); refresh cron 07:05 no_agent silent.
+- North star: Weekly Returning Visitor Ratio (baseline riil 3.8% 14 Okt, target >=8% 6 minggu). Pilar: STICKY/GROWTH/CONTENT/AI_SEARCH/TRUST dengan target eksplisit per KPI.
+- 3 prompt agent dipatch (CEO + CTO pagi + CTO sore): wajib sebut pilar KPI yang dilayani tiap dispatch.
+- KPI baselines diambil dari data riil (bukan aspirasi): register_7d floor 6 (turun 2 minggu), dwell 60s, views 1120.
+
+## CTO note 2026-10-14
+- Drift backlog kambuh #7 (3 pekan): writer LLM 06:36 putuskan symlink datadir; guard 07:15 tertangkap, saya union-merge manual pagi ini (riset field selamat, 0 data loss). Guard sekarang alert-only = beban operasional berulang.
+- Opsi A: status-quo alert + restore manual tiap kejadian (0 risiko kode, biaya ±15mnt/insiden, human-error risk).
+- Opsi B (rekomendasi saya): kodekan prosedur restore TERUJI ini jadi auto-restore di backlog_health.py (union-merge + backup + re-symlink + fallback alert kalau docs korup) — ops-2026-10-14-01 di queue, slot sore besok, host-script 0 deploy.
+- Prd-2026-10-02-01 (P1, 12 hari pending) di-flip done DARI BUKTI: scheduler CronLog kontinu + AgentJob mengalir + 401 negative-test live — owner launchctl ternyata sudah tereksekusi; queue kembali di cap 12.
