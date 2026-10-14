@@ -1288,6 +1288,21 @@
       "completed_at": "2026-10-14 19:0x WIB",
       "branch": "main langsung (e621a68)",
       "result": "DONE 14 Okt CTO sore, TANPA deploy slot ini (sesi lain aktif deploy 18:40 — commit e621a68 di main siap terangkat build berikutnya). Worker claude paralel (analytics FE) + verify sendiri: analytics-tab.tsx +309: bar 24 jam + header 'Total X tampilan · rata-rata Y/jam' + label WIB eksplisit; date-picker native dari/sampai max 90d (resolveCustomRange, invalid->fallback quick-range); mode Compare A/B (B = periode tepat sebelum A, query ke-2 enabled:compareMode) tabel 24 baris + delta%; empty-state jujur 'Belum ada views hari ini (real users)' + hint excluded. 0 ubah SQL/bot-filter; kontrak API tak diubah (route menerima start/end existing); tsc EXIT 0; baseline 5 URL 200 (analytics 22.994B). AC smoke (pilih kemarin 24 bar + compare) = QA reviewer slot berikutnya pasca-deploy. Rollback: git revert e621a68."
+    },
+    {
+      "id": "ux-2026-10-14-01",
+      "title": "UX/OPS: post-deploy ISR warm-up /berita — cold-bake '0 tulisan/ Belum ada brief' tampil ke user asli 5-15mnt tiap deploy",
+      "priority": "P2",
+      "status": "pending",
+      "created_at": "2026-10-14 19:35",
+      "created_by": "frontend-builder-ux",
+      "domain": "deploy-pipeline/backend",
+      "spec": "Setiap `docker compose up -d app` bake ulang ISR dari image TANPA DB: /berita (revalidate 300) render '0 naik 0 turun / 0 tulisan / Belum ada brief' padahal DB punya artikel. Edge s-maxage=300 + SWR 600 memperpanjang jendela salah ke 5-15mnt. Bukti shift 19:19-19:37 WIB 14 Okt: live /berita empty ~50mnt pasca-deploy 18:47 (bake 18:40) sampai direct-origin hit memicu regen; variant URL langsung benar (12 tulisan). Solusi kandidat: (a) post-deploy warm: curl loop origin localhost:3000/berita + halaman ISR ber-DB lain (golden-cross, harga-saham-hari-ini, laporan-pasar) sampai x-nextjs-cache=HIT fresh, sebelum container dianggap healthy; ATAU (b) revalidatePath on boot. JANGAN ubah copy empty-state (sudah jujur utk kasus market pre-open).",
+      "repro": "1. deploy app image baru 2. curl https://teknikal.id/berita <5mnt 3. lihat '0 tulisan/Belum ada brief' padahal docker exec psql Article count > 0",
+      "severity": "P2 — trust: konten utama retensi tampil kosong pasca-deploy rutin",
+      "kpi_pillar": "TRUST + STICKY (returning visitor mengandalkan brief harian)",
+      "done_when": "Deploy berikutnya: dalam <=60s pasca-up, curl /berita origin menampilkan >=1 artikel link; docs deploy runbook di-update",
+      "notes": "Dispatch oleh UX Builder 14 Okt (bukan bugfix mandiri: pipeline deploy = domain CTO). BUKAN panic-rollback; ISR self-heal terkonfirmasi jalan."
     }
   ]
 }

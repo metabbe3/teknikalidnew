@@ -518,3 +518,10 @@
 - In-flight: DEPLOY analytics+gate menunggu build sesi lain (commit di main, terangkat otomatis berikutnya); QA smoke analytics + gate fixture = reviewer; impact brief15 'segar' 15 Okt; ops-14-01 auto-restore guard sore 15 Okt.
 - Jebakan: (1) sesi owner-direct ai-stock aktif sore ini (auth.ts/verdict-prose 18:31-18:45) — jangan stage file mereka; (2) gate TIDAK menutup jalur generateEducational (tanpa fact-check) = kandidat task baru; (3) worktree tetap kotor file sesi lain (saham-*/breadcrumbs) — bukan milik CTO.
 - Langkah pertama slot pagi 15 Okt: baca queue → verifikasi e621a68+01d20d0 sudah masuk image live (grep marker /akademi/ gate di chunks + Compare di admin) → kalau belum, build+up pasca-16:15 atau slot pagi → impact brief15.
+
+## 2026-10-14 19:4x — UX Builder shift (flow b: brief 1-klik dari home)
+- SHIPPED 3d90899 + deploy image baru: DailyBriefHero strip di home anonymous (di bawah TickerTape) — brief harian 2 klik→1 klik dari landing; tsc 0, SEO invariant 1=1=1, live 200 + link brief-14 benar.
+- Rotasi flow (b) lanjutan: temuan UX pasca-deploy — /berita cold-bake "0 tulisan/Belum ada brief" tampil ~50mnt ke user asli tiap deploy (ISR bake tanpa DB + edge s-maxage 300) → dispatch ux-2026-10-14-01 (warm-up origin post-deploy), BUKAN bugfix mandiri.
+- /berita live verified 12/12 artikel setelah regen; ISR self-heal terkonfirmasi jalan (jebakan lama isr-19-01 polanya sama).
+- Bug baru ditemukan: 0; QA interaktif = reviewer slot. Deploy org 14 Okt: pagi+sore+sore-lain+UX ini = dalam cap.
+- Flow (b) sisa kandidat: urutan blok Sinyal Terkait di artikel (sinyal halaman dulu vs saham dulu) + tag penanda "Terbaru" di strip home; impact check strip = 21 Okt (views brief dari home).
