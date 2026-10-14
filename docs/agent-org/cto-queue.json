@@ -46,12 +46,14 @@
       "id": "bo-2026-10-14-01",
       "date": "2026-10-14",
       "priority": "P2",
-      "status": "pending",
+      "status": "done",
       "assigned_to": "backoffice-builder",
       "north_star": "MATANGKAN — halaman aktif fitur setengah jadi",
       "scheduled_slot": "Backoffice Builder 03:00 besok (15 Okt)",
       "title": "Backoffice MATANGKAN: /admin/reports riwayat moderasi + badge jumlah pending di sidebar",
-      "spec": "Follow-up audit bo-2026-10-13-01: page hanya query status=PENDING (0 rows kini) — owner tak bisa lihat keputusan lama (DISMISSED/RESOLVED) & tak ada sinyal kalau laporan baru masuk. Tambah: (1) tab/section Riwayat (status DISMISSED/RESOLVED + reviewedBy + waktu, dari tabel Report + AuditLog admin:review_report); (2) badge count pending di item sidebar Reports (server-render count, pola react-query existing OK). DONE-WHEN: riwayat render dgn data audit log nyata (seed dari AuditLog kalau ada), badge muncul, tsc EXIT-0."
+      "spec": "Follow-up audit bo-2026-10-13-01: page hanya query status=PENDING (0 rows kini) — owner tak bisa lihat keputusan lama (DISMISSED/RESOLVED) & tak ada sinyal kalau laporan baru masuk. Tambah: (1) tab/section Riwayat (status DISMISSED/RESOLVED + reviewedBy + waktu, dari tabel Report + AuditLog admin:review_report); (2) badge count pending di item sidebar Reports (server-render count, pola react-query existing OK). DONE-WHEN: riwayat render dgn data audit log nyata (seed dari AuditLog kalau ada), badge muncul, tsc EXIT-0.",
+      "completed_at": "2026-10-15 03:0x WIB",
+      "result": "DONE 15 Okt 03:0x backoffice-builder slot malam. Commit 59b6d5d di main (claude code pipeline + verify sendiri). RIWAYAT: section baru /admin/reports — status REVIEWED/DISMISSED take 50, reviewer/aksi/waktu dari AuditLog admin:review_report (details.reportId map, take 200, first-wins), preview null-safe '[Post/Komentar dihapus]', badge Ditinjau(hijau)/Diabaikan(netral). BADGE: GET /api/admin/reports/pending-count (requireAdmin, prisma.count, kontrak {data:{count}}) + ReportsPendingBadge useQuery refetch 60s pill merah 99+ di SidebarMenuSubButton Reports. VERIFY: tsc EXIT-0 (host); build manifest route ƒ /api/admin/reports/pending-count; live root/berita 200, /admin/reports 307 login-redirect, API unauth 404 = samar sama dgn endpoint admin existing. DB Report 0 rows semua status → empty-state benar (tanpa dummy). INSIDEN kecil dibereskan: commit awal nyasar ke night/prd-2026-10-14-04 (repo ternyata checkout night) — cherry-pick ke main + night branch di-reset ke 3446cd9 persis titik merge CTO pagi; changelog conflict resolve (entry night utuh). Rollback: git revert 59b6d5d + rebuild. Next: bo-2026-10-14-02 (edit artikel dari backoffice)."
     },
     {
       "id": "bo-2026-10-14-02",
