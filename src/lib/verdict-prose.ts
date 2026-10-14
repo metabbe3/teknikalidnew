@@ -210,9 +210,20 @@ export function explainMove(opts: {
   const hasSignal = drivers.length > 0;
 
   let headline: string;
-  if (primary) {
+  const gapOnly =
+    primary !== null &&
+    primary.kind === "gap" &&
+    ((direction === "naik" && primary.label.startsWith("Naik")) ||
+      (direction === "turun" && primary.label.startsWith("Turun")));
+  if (primary && !gapOnly) {
     const detail = primary.detail ? ` (${primary.detail.toLowerCase()})` : "";
     headline = `${sym} ${movePhrase} hari ini, didorong ${primary.label.toLowerCase()}${detail}.`;
+  } else if (primary && gapOnly) {
+    // Tautologi guard: satu-satunya driver adalah pergerakan harga itu sendiri → jangan
+    // tulis "naik X%, didorong naik X%". Sebut magnet pergerakannya secara jujur.
+    const moveWord = direction === "naik" ? "kenaikan" : direction === "turun" ? "penurunan" : "pergerakan";
+    headline =
+      `${sym} ${movePhrase} hari ini (${Math.abs(changePercent ?? 0).toFixed(1)}%) tanpa perubahan sinyal teknikal mayor — ${moveWord} sebesar ini umumnya dipicu tekanan beli/jual intraday dan volume, bukan pergantian tren.`;
   } else if (direction === "datar") {
     headline = `${sym} bergerak relatif datar hari ini tanpa perubahan sinyal teknikal yang berarti.`;
   } else {

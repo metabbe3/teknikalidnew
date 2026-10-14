@@ -24,7 +24,7 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
   return (
     <>
       <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
-      <nav className="flex items-center gap-1.5 text-xs font-mono text-text-tertiary mb-6 overflow-hidden" aria-label="Breadcrumb">
+      <nav className="flex items-center gap-1.5 text-xs font-mono text-text-tertiary mb-6 overflow-hidden [&_a]:inline-flex [&_a]:items-center [&_a]:min-h-[24px] [&_a]:py-1" aria-label="Breadcrumb">
         {items.map((it, i) => {
           const last = i === items.length - 1;
           return (

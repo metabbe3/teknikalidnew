@@ -43,6 +43,7 @@ export const authConfig: NextAuthConfig = {
   session: { strategy: "jwt", maxAge: 7 * 24 * 60 * 60 },
   pages: {
     signIn: "/auth/signin",
+    error: "/auth/error",
   },
   providers: [
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET

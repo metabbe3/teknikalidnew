@@ -101,12 +101,14 @@ export default async function SahamOversoldPage() {
           dibawah 30. Ini berarti harga turun terlalu cepat dan berpotensi naik kembali (rebound).
         </div>
 
+                  <RegisterCta slug="saham-oversold" />
+
         <div className="mt-6 space-y-4 text-sm leading-relaxed text-text-secondary">
           <p>
             <strong className="text-text-primary">Saham oversold hari ini</strong> merujuk pada saham di Bursa Efek
             Indonesia (BEI) yang Relative Strength Index (RSI)-nya berada dibawah 30. RSI adalah indikator momentum
             berskala 0–100; nilai dibawah 30 menandakan tekanan jual yang berlebihan sehingga harga terkoreksi jauh
-            dari nilai wajar. Secara historis, kondisi ini kering mendahului <em>rebound</em> atau pantulan harga
+            dari nilai wajar. Secara historis, kondisi ini kerap mendahului <em>rebound</em> atau pantulan harga
             jangka pendek karena tekanan jual mulai habis.
           </p>
           <p>
@@ -118,7 +120,7 @@ export default async function SahamOversoldPage() {
           <p>
             Penting untuk membedakan <strong className="text-text-primary">oversold teknikal</strong> dari
             <strong className="text-text-primary"> penurunan fundamental</strong>. Saham yang RSI-nya jatuh karena
-            gorjetan pasar bisa jadi peluang rebound, sementara saham yang turun karena laporan keuangan buruk atau
+            gejolak pasar bisa jadi peluang rebound, sementara saham yang turun karena laporan keuangan buruk atau
             sanksi regulator berisiko terus melemah. Selalu konfirmasi dengan struktur pasar, volume, dan konteks
             berita sebelum mengambil posisi.
           </p>
@@ -223,7 +225,6 @@ export default async function SahamOversoldPage() {
             </tbody>
           </table>
 
-          <RegisterCta slug="saham-oversold" />
         </div>
 
         

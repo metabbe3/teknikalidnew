@@ -69,6 +69,7 @@ export default async function SahamVolumeSpikePage() {
 
   return (
     <>
+        {failed && <meta name="robots" content="noindex" />}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <PageHero
         eyebrow="Saham IDX"
@@ -96,7 +97,7 @@ export default async function SahamVolumeSpikePage() {
               {failed ? (
                 <tr>
                   <td colSpan={4} className="py-8 text-center text-text-tertiary">
-                    Data sinyal sementara tidak dapat dimuat — sedang diperbarui. Mohon muat ulang dalam beberapa menit.
+                    Data sedang diperbarui — muat ulang sebentar lagi.
                   </td>
                 </tr>
               ) : stocks.length === 0 ? (
