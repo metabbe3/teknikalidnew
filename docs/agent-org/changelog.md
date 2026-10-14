@@ -428,3 +428,11 @@
 - verify: tsc EXIT-0; node:test 3/3; LIVE href utm ai-search SSR golden-cross+oversold; 7/7 URL 200 before=after; /berita ISR cold-bake self-heal 07:43 (bukan regresi)
 - QA: pembangun != pemeriksa — reviewer slot berikutnya | impact_check_due: 2026-10-14 +7d (AC3 CTR ai-search 21 Okt)
 - impact_check: kpis ai_search_paths (chatgpt.com) mingguan via growth kpis
+
+## 2026-10-14 08:5x WIB — QA reviewer pagi (44 artikel + deploy verify)
+- artikel/24jm: 44 (40 saham-* + brief13 + brief14 + INCO + 1 edu) — LIVE 3/3 utama 200; title 40/40 harga+pct EXACT vs StockPrice 13 Okt
+- FATAL 1 (brief14): 2x klaim golden cross "segar" stale (KETR cross 15 Sep, ERAA 27 Aug; 13 Okt = 0 cross baru non-gorengan) + "16 kali lipat" salah (BUMI 1,96M → rasio 5,8x) → task **qa-2026-10-14-01** P1 (SQL patch, slot sore setelah prd-12-02)
+- pass: brief13 pasca-patch qa-13-01 bersih (breadth 626/115, GOTO/RSI/cross/sector EXACT, superlatif #1-ranking valid); INCO semua level/RSI/vol EXACT
+- deploy verify: bug-12-01 (akses-dibatasi) sudah qa_pass; **prd-2026-10-13-02 flipped done → qa_pass** (bukti: 0e35b26 di main + utm ai-search live di /saham-golden-cross & /saham-oversold) — utang admin dibayar
+- minor: "398 saham naik" Jumat (DB prev-close = 400) — opsional ikut patch
+- EVAL: N/A (reviewer 0 deploy; fix konten via SQL patch queue, bukan deploy)
