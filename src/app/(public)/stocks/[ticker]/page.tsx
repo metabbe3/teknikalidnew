@@ -582,7 +582,25 @@ export default async function StockDetailPage({
             {/* OHLC + 52-week strip — anon-visible (SEO + first impression; data sudah SSR di page) */}
             {close !== null && (
               <div className="mt-5 pt-4 border-t border-border">
-                <div className="grid grid-cols-3 sm:grid-cols-6 gap-x-4 gap-y-2 text-xs" aria-label="Statistik harga hari ini">
+                {/* Section nav — di DALAM price card (atas): terlihat sejak first paint */}
+              <div className="flex gap-1 overflow-x-auto -mx-1 px-1 pt-1 pb-0.5">
+                {[
+                  ["chart", "📈 Chart"],
+                  ["indikator", "🧭 Indikator"],
+                  ["ai", "✨ AI"],
+                  ...(isAuthed ? [["plan", "🎯 Trading Plan"]] : []),
+                ].map(([id, label]) => (
+                  <a
+                    key={id}
+                    href={`#${id}`}
+                    className="shrink-0 rounded-full border border-border px-3 py-1 text-[11px] font-semibold text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
+                  >
+                    {label}
+                  </a>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-x-4 gap-y-2 text-xs" aria-label="Statistik harga hari ini">
                   <div>
                     <span className="text-text-tertiary block">Buka</span>
                     <span className="font-mono font-semibold text-text-secondary tabular-nums">{latest ? formatPrice(decimalToNumber(latest.open) ?? close) : "—"}</span>
@@ -731,10 +749,10 @@ export default async function StockDetailPage({
         </div>
       </section>
 
-<nav aria-label="Navigasi bagian halaman" className="sticky top-[57px] z-40 border-b border-border bg-bg-primary/95 backdrop-blur">
+        {/* Sticky nav — nempel setelah price card terlewat */}
+        <div className="sticky top-[57px] z-40 border-b border-border bg-bg-primary/95 backdrop-blur">
           <div className="max-w-7xl mx-auto px-4 py-1.5 flex gap-1 overflow-x-auto">
             {[
-              ["analisa", "📊 Analisa"],
               ["chart", "📈 Chart"],
               ["indikator", "🧭 Indikator"],
               ["ai", "✨ AI"],
@@ -749,7 +767,9 @@ export default async function StockDetailPage({
               </a>
             ))}
           </div>
-        </nav>
+        </div>
+
+
 
       {/* Alert preview CTA — anon only: tunjukkan value tersembunyi (alert sinyal) saat saham PUNYA sinyal aktif */}
       {!isAuthed && (
