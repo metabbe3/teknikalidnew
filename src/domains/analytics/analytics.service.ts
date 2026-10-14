@@ -423,8 +423,9 @@ function detectSuspectedBotIps(rows: AnalyticsRow[]): Set<string> {
 
   const suspected = new Set<string>();
   for (const [ip, paths] of byIp) {
-    let dupePaths = 0;
+    let fastPaths = 0;
     let maxFastHits = 0;
+    let maxFastRatio = 0;
     for (const times of paths.values()) {
       if (times.length < 2) continue;
       times.sort((a, b) => a.getTime() - b.getTime());
@@ -432,10 +433,33 @@ function detectSuspectedBotIps(rows: AnalyticsRow[]): Set<string> {
       for (let i = 1; i < times.length; i++) {
         if (times[i].getTime() - times[i - 1].getTime() < 2000) fast++;
       }
-      if (fast > 0) dupePaths++;
+      if (fast > 0) fastPaths++;
       if (fast > maxFastHits) maxFastHits = fast;
+      // Rasio hanya bermakna dengan sample cukup: n=2 double-fire beacon
+      // otomatis ratio 1.0 palsu (14 Okt audit: 9 path n=2 milik user setia).
+      if (times.length >= 4) {
+        const ratio = fast / (times.length - 1);
+        if (ratio > maxFastRatio) maxFastRatio = ratio;
+      }
     }
-    if (dupePaths >= 3 || maxFastHits >= 6) suspected.add(ip);
+    // 14 Okt owner-audit fix: lama `dupePaths >= 3 || maxFastHits >= 6` menghukum
+    // user setia — /stocks 200 kunjungan/hari otomatis mengantongi beberapa gap <2s
+    // (klik cepat + double-fire beacon), padahal rasio gap-cepatnya cuma ~9%.
+    // Baru: flag hanya jika POLA DIDOMINASI gap-cepat pada path yang sama —
+    // rasio >=60% hits <2s DENGAN minimal 6 hits cepat di satu path (bot replay),
+    // ATAU footprint luas-anomali (>=15 path unik yang masing-masing di-hit cepat).
+    // Sonde akun: >=4 hits di path /auth/* (signin/register/complete-profile
+    // berulang) = sondaran signup/credential — buang dari "real humans".
+    let authHits = 0;
+    for (const [p, times] of paths) {
+      if (p.startsWith("/auth/")) authHits += times.length;
+    }
+    if (
+      (maxFastRatio >= 0.6 && maxFastHits >= 6) ||
+      fastPaths >= 15 ||
+      authHits >= 4
+    )
+      suspected.add(ip);
   }
   return suspected;
 }
