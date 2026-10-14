@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-06T00:00:00.000Z",
+  "title": "Design System: TeknikalID",
+  "extensions": {
+    "colorMeta": {
+      "signal-blue": { "role": "primary", "displayName": "Signal Blue (readable)", "canonical": "oklch(42% 0.13 244)", "hex": "#0369a1", "tonalRamp": ["oklch(0.20 0.10 223)", "oklch(0.32 0.13 223)", "oklch(0.44 0.15 223)", "oklch(0.56 0.16 223)", "oklch(0.69 0.15 223)", "oklch(0.78 0.12 223)", "oklch(0.88 0.08 223)", "oklch(0.95 0.04 223)"] },
+      "signal-blue-bright": { "role": "primary", "displayName": "Signal Blue Bright (decoration)", "canonical": "oklch(69% 0.15 223)", "hex": "#0ea5e9", "tonalRamp": ["oklch(0.20 0.10 223)", "oklch(0.32 0.13 223)", "oklch(0.44 0.15 223)", "oklch(0.56 0.16 223)", "oklch(0.69 0.15 223)", "oklch(0.78 0.12 223)", "oklch(0.88 0.08 223)", "oklch(0.95 0.04 223)"] },
+      "bull-teal": { "role": "secondary", "displayName": "Bull Teal", "canonical": "oklch(56% 0.11 174)", "tonalRamp": ["oklch(0.18 0.05 174)", "oklch(0.28 0.07 174)", "oklch(0.40 0.09 174)", "oklch(0.56 0.11 174)", "oklch(0.68 0.10 174)", "oklch(0.80 0.08 174)", "oklch(0.90 0.05 174)", "oklch(0.96 0.02 174)"] },
+      "bear-red": { "role": "secondary", "displayName": "Bear Red", "canonical": "oklch(55% 0.22 27)", "tonalRamp": ["oklch(0.20 0.10 27)", "oklch(0.32 0.14 27)", "oklch(0.44 0.18 27)", "oklch(0.55 0.22 27)", "oklch(0.66 0.19 27)", "oklch(0.78 0.14 27)", "oklch(0.89 0.08 27)", "oklch(0.96 0.03 27)"] },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "oklch(20% 0.005 40)", "tonalRamp": ["oklch(0.18 0.005 40)", "oklch(0.28 0.005 40)", "oklch(0.40 0.006 40)", "oklch(0.52 0.007 40)", "oklch(0.66 0.006 40)", "oklch(0.78 0.005 40)", "oklch(0.90 0.004 40)", "oklch(0.97 0.003 40)"] },
+      "ink-muted": { "role": "neutral", "displayName": "Ink Muted", "canonical": "oklch(52% 0.01 50)", "tonalRamp": ["oklch(0.20 0.006 50)", "oklch(0.30 0.007 50)", "oklch(0.42 0.009 50)", "oklch(0.52 0.01 50)", "oklch(0.64 0.009 50)", "oklch(0.76 0.008 50)", "oklch(0.88 0.006 50)", "oklch(0.96 0.004 50)"] },
+      "paper": { "role": "neutral", "displayName": "Paper", "canonical": "oklch(98% 0.003 240)", "tonalRamp": ["oklch(0.22 0.003 240)", "oklch(0.38 0.003 240)", "oklch(0.55 0.003 240)", "oklch(0.72 0.003 240)", "oklch(0.84 0.003 240)", "oklch(0.92 0.003 240)", "oklch(0.96 0.003 240)", "oklch(0.99 0.002 240)"] },
+      "card": { "role": "neutral", "displayName": "Card White", "canonical": "oklch(100% 0 0)", "tonalRamp": ["oklch(0.20 0 0)", "oklch(0.36 0 0)", "oklch(0.52 0 0)", "oklch(0.68 0 0)", "oklch(0.82 0 0)", "oklch(0.92 0 0)", "oklch(0.97 0 0)", "oklch(1 0 0)"] },
+      "rule": { "role": "neutral", "displayName": "Rule", "canonical": "oklch(92% 0.004 60)", "tonalRamp": ["oklch(0.22 0.004 60)", "oklch(0.38 0.004 60)", "oklch(0.54 0.004 60)", "oklch(0.70 0.004 60)", "oklch(0.82 0.004 60)", "oklch(0.92 0.004 60)", "oklch(0.96 0.003 60)", "oklch(0.99 0.002 60)"] },
+      "terminal-slate": { "role": "neutral", "displayName": "Terminal Slate", "canonical": "oklch(21% 0.03 260)", "tonalRamp": ["oklch(0.15 0.03 260)", "oklch(0.21 0.03 260)", "oklch(0.27 0.03 260)", "oklch(0.35 0.03 260)", "oklch(0.46 0.03 260)", "oklch(0.60 0.03 260)", "oklch(0.76 0.02 260)", "oklch(0.92 0.01 260)"] },
+      "terminal-slate-deep": { "role": "neutral", "displayName": "Terminal Slate Deep", "canonical": "oklch(27% 0.03 260)", "tonalRamp": ["oklch(0.15 0.03 260)", "oklch(0.21 0.03 260)", "oklch(0.27 0.03 260)", "oklch(0.36 0.03 260)", "oklch(0.48 0.03 260)", "oklch(0.62 0.03 260)", "oklch(0.78 0.02 260)", "oklch(0.93 0.01 260)"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display (Newsreader)", "purpose": "Editorial headlines only — section headings, verdicts, masthead. Never on tool surfaces." },
+      "headline": { "displayName": "Headline (Jakarta)", "purpose": "Terminal/product hero titles on dark canvases, page titles." },
+      "body": { "displayName": "Body (Jakarta)", "purpose": "Prose and UI text; 65–75ch cap on editorial, drops to 14px in dense UI." },
+      "label": { "displayName": "Label (Geist Mono)", "purpose": "Reserved mono micro-kicker for data-label contexts — verdicts, section eyebrows." },
+      "mono": { "displayName": "Mono (Geist Mono)", "purpose": "Every financial value: prices, %, tickers, timestamps. Always tabular." }
+    },
+    "shadows": [
+      { "name": "resting-hairline", "value": "0 0 0 1px rgba(0,0,0,0.03)", "purpose": "Base edge replacing a hard border on light cards at rest." },
+      { "name": "hover-lift", "value": "0 0 0 1px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.06), 0 12px 28px rgba(0,0,0,0.04)", "purpose": "Cards and list items on hover; surface rises 2–3px, rule dissolves into shadow." },
+      { "name": "strong-lift", "value": "0 0 0 1px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06), 0 16px 48px rgba(0,0,0,0.04)", "purpose": "Popovers, sticky panels, modals — widest, softest falloff." },
+      { "name": "glow-bullish", "value": "0 0 12px rgba(13,148,136,0.15)", "purpose": "Active bullish value demanding attention; never decorative." },
+      { "name": "glow-bearish", "value": "0 0 12px rgba(220,38,38,0.15)", "purpose": "Active bearish value demanding attention; never decorative." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Default ease-out-quint for nearly every state transition and entrance." },
+      { "name": "dur-fast", "value": "150ms", "purpose": "Color/background/border transitions (nav, pills, buttons)." },
+      { "name": "dur-base", "value": "250ms", "purpose": "Card hover lifts and state changes." },
+      { "name": "dur-slow", "value": "300ms", "purpose": "Entrance reveals (fade-in, stagger)." },
+      { "name": "ticker-scroll", "value": "60s linear infinite", "purpose": "Ticker tape marquee; pauses on hover and under prefers-reduced-motion." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" },
+      { "name": "container", "value": "1280px", "purpose": "max-w-7xl content rail" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Default action control. Ink fill, not Signal Blue — blue is reserved for links and focus. 32px dense height.",
+      "html": "<button class=\"ds-btn\">Beli</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 32px; padding: 0 10px; background: var(--color-text-primary, #1c1917); color: #ffffff; font-family: var(--font-jakarta, system-ui, sans-serif); font-size: 14px; font-weight: 500; border: none; border-radius: 10px; cursor: pointer; transition: background 150ms cubic-bezier(0.16,1,0.3,1), transform 150ms cubic-bezier(0.16,1,0.3,1); } .ds-btn:hover { background: #2a2723; } .ds-btn:focus-visible { outline: 2px solid var(--color-accent, #0ea5e9); outline-offset: 2px; } .ds-btn:active { transform: translateY(1px); }"
+    },
+    {
+      "name": "Filter Pill",
+      "kind": "chip",
+      "refersTo": "pill-filter",
+      "description": "Fully-round filter toggle for screener presets and category filters. Active inverts to Signal Blue.",
+      "html": "<span class=\"ds-pill\">Momentum</span> <span class=\"ds-pill ds-pill-active\">Golden Cross</span>",
+      "css": ".ds-pill { display: inline-flex; align-items: center; padding: 5px 12px; border-radius: 9999px; border: 1px solid var(--color-border, #e7e5e4); background: var(--color-bg-card, #ffffff); color: var(--color-text-secondary, #78716c); font-family: var(--font-jakarta, system-ui, sans-serif); font-size: 11px; font-weight: 500; white-space: nowrap; cursor: pointer; transition: all 150ms ease; } .ds-pill:hover { border-color: var(--color-accent, #0ea5e9); color: var(--color-accent, #0ea5e9); } .ds-pill-active { background: var(--color-accent, #0ea5e9); color: #ffffff; border-color: var(--color-accent, #0ea5e9); } .ds-pill-active:hover { color: #ffffff; } .ds-pill:focus-visible { outline: 2px solid var(--color-accent, #0ea5e9); outline-offset: 2px; }"
+    },
+    {
+      "name": "Indicator Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Flat-at-rest data card. Mono micro-label, tabular mono value, directional delta with arrow. Lifts on hover.",
+      "html": "<div class=\"ds-card\"><p class=\"ds-card-label\">RSI (14)</p><p class=\"ds-card-value\">62.4</p><p class=\"ds-card-delta\">▲ Neutral</p></div>",
+      "css": ".ds-card { padding: 16px; background: var(--color-bg-card, #ffffff); border: 1px solid var(--color-border, #e7e5e4); border-radius: 12px; transition: box-shadow 250ms cubic-bezier(0.16,1,0.3,1), transform 250ms cubic-bezier(0.16,1,0.3,1), border-color 250ms; } .ds-card:hover { transform: translateY(-2px); border-color: transparent; box-shadow: 0 0 0 1px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.06), 0 12px 28px rgba(0,0,0,0.04); } .ds-card-label { margin: 0 0 6px; font-family: var(--font-geist-mono, ui-monospace, monospace); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-text-tertiary, #928b85); } .ds-card-value { margin: 0; font-family: var(--font-geist-mono, ui-monospace, monospace); font-size: 24px; font-weight: 600; color: var(--color-text-primary, #1c1917); font-variant-numeric: tabular-nums; } .ds-card-delta { margin: 6px 0 0; font-family: var(--font-geist-mono, ui-monospace, monospace); font-size: 12px; font-weight: 600; color: var(--color-bullish, #0d9488); }"
+    },
+    {
+      "name": "Section Heading",
+      "kind": "custom",
+      "refersTo": "button-primary",
+      "description": "Broadsheet rhythm: a 4px Signal-Blue leading rule + mono micro-kicker + Newsreader serif title. The one named kicker system — reserved for section/data-label contexts.",
+      "html": "<div class=\"ds-sh\"><span class=\"ds-sh-rule\" aria-hidden=\"true\"></span><div><p class=\"ds-sh-eyebrow\">PASAR HARI INI</p><h2 class=\"ds-sh-title\">Ringkasan Teknikal IDX40</h2></div></div>",
+      "css": ".ds-sh { display: flex; align-items: flex-end; gap: 10px; } .ds-sh-rule { width: 4px; height: 24px; border-radius: 9999px; background: var(--color-accent, #0ea5e9); flex-shrink: 0; } .ds-sh-eyebrow { margin: 0 0 2px; font-family: var(--font-geist-mono, ui-monospace, monospace); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-text-tertiary, #928b85); } .ds-sh-title { margin: 0; font-family: var(--font-newsreader, Georgia, serif); font-size: 30px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; color: var(--color-text-primary, #1c1917); }"
+    },
+    {
+      "name": "Signal Verdict",
+      "kind": "custom",
+      "refersTo": "button-primary",
+      "description": "Flagship component leading every stock page. Plain-language verdict before the data dump — 'practice what you preach' made literal. Direction color via the leading rule + serif label, never a border stripe.",
+      "html": "<section class=\"ds-verdict\"><span class=\"ds-verdict-rule\" aria-hidden=\"true\"></span><div class=\"ds-verdict-body\"><p class=\"ds-verdict-kicker\">VERDIK SINYAL</p><p class=\"ds-verdict-label\">Bullish</p><p class=\"ds-verdict-summary\">Indikator teknikal condong bullish — momentum beli sedang kuat. Tetap kelola risiko dengan stop loss.</p></div></section>",
+      "css": ".ds-verdict { display: flex; align-items: center; gap: 12px; padding: 20px 16px; background: var(--color-bg-card, #ffffff); border-bottom: 1px solid var(--color-border, #e7e5e4); } .ds-verdict-rule { width: 6px; height: 44px; border-radius: 9999px; background: var(--color-bullish, #0d9488); flex-shrink: 0; } .ds-verdict-kicker { margin: 0 0 2px; font-family: var(--font-geist-mono, ui-monospace, monospace); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-text-tertiary, #928b85); } .ds-verdict-label { margin: 0; font-family: var(--font-newsreader, Georgia, serif); font-size: 30px; font-weight: 600; line-height: 1.1; color: var(--color-bullish, #0d9488); } .ds-verdict-summary { margin: 6px 0 0; font-family: var(--font-jakarta, system-ui, sans-serif); font-size: 14px; line-height: 1.6; color: var(--color-text-secondary, #78716c); }"
+    },
+    {
+      "name": "Ticker Tape",
+      "kind": "custom",
+      "refersTo": "button-primary",
+      "description": "Terminal heartbeat on the homepage. Scrolling mono marquee on Terminal Slate ground; pauses on hover and under reduced-motion.",
+      "html": "<div class=\"ds-ticker\"><div class=\"ds-ticker-track\"><span class=\"ds-ticker-item\"><b>BBRI</b> 4.825 <i class=\"ds-up\">+1.24%</i></span><span class=\"ds-ticker-item\"><b>BMRI</b> 9.150 <i class=\"ds-down\">-0.55%</i></span><span class=\"ds-ticker-item\"><b>ASII</b> 5.020 <i class=\"ds-up\">+2.10%</i></span><span class=\"ds-ticker-item\"><b>TLKM</b> 2.840 <i class=\"ds-down\">-0.35%</i></span></div></div>",
+      "css": ".ds-ticker { overflow: hidden; white-space: nowrap; background: #0f172a; border-bottom: 1px solid rgba(13,148,136,0.15); } .ds-ticker-track { display: inline-flex; animation: ds-ticker 60s linear infinite; } .ds-ticker:hover .ds-ticker-track { animation-play-state: paused; } .ds-ticker-item { display: inline-flex; align-items: center; gap: 6px; padding: 10px 24px; font-family: var(--font-geist-mono, ui-monospace, monospace); font-size: 11px; letter-spacing: 0.04em; color: rgba(255,255,255,0.7); border-right: 1px solid rgba(255,255,255,0.05); font-variant-numeric: tabular-nums; } .ds-ticker-item b { color: #ffffff; font-weight: 600; } .ds-up { color: #2dd4bf; font-style: normal; } .ds-down { color: #f87171; font-style: normal; } @keyframes ds-ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } } @media (prefers-reduced-motion: reduce) { .ds-ticker-track { animation: none; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Trading Desk",
+    "overview": "TeknikalID is a calm, professional workspace where dense terminal data meets broadsheet readability. The analyst sits at a desk, not in a casino: numbers are exact and tabular, direction is encoded in color, and every pixel of decoration has to justify itself against the data it surrounds. Authority comes from clarity, never from loudness.\n\nThe system runs in two registers that share one desk. Terminal mode — dark slate canvases, a live mono ticker tape, crosshatch grids, radial glows, Geist Mono numerics — carries the markets when the data is live. Broadsheet mode — Newsreader serif headlines on a cool near-white, generous measure, leading accent rules — carries the editorial publication and the human-language verdicts that lead every stock page.",
+    "keyCharacteristics": [
+      "Cool near-white paper (#f8fafc) with warm-stone ink (#1c1917); one sky-blue brand accent (#0ea5e9) used sparingly.",
+      "Direction-as-meaning: teal (#0d9488) bullish / red (#dc2626) bearish, always paired with a non-color signal.",
+      "Three typefaces with strict jobs: Plus Jakarta Sans (UI), Geist Mono (all financial values), Newsreader (editorial headlines only).",
+      "Flat-at-rest surfaces that lift on state via soft, layered shadows; reduced-motion always respected.",
+      "Compact, dense controls (32px default) — a tool, not a brochure."
+    ],
+    "rules": [
+      { "name": "The Direction-Is-Meaning Rule", "body": "Teal and red encode data direction only. Never use them as a generic accent or decorative gradient stop.", "section": "colors" },
+      { "name": "The One-Accent Rule", "body": "Signal Blue is the only brand accent — focus, active state, the single leading rule, links. Used on ≤10% of any screen.", "section": "colors" },
+      { "name": "The Numbers-Are-Mono Rule", "body": "Every financial value is Geist Mono with tabular figures. A price in the proportional sans is a bug.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "A card at rest has no drop shadow — only a hairline or tonal step. Shadow is a response to state.", "section": "elevation" },
+      { "name": "The No-Border-Stripe Rule", "body": "Directional color via background tint, leading rule, icon, or full border — never a border-left/right stripe thicker than 1px.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do set every financial value in Geist Mono with tabular-nums.",
+      "Do pair every bullish/bearish color with a non-color signal (icon, arrow, word).",
+      "Do lead stock pages with a plain-language SignalVerdict in Bahasa Indonesia.",
+      "Do keep surfaces flat at rest and reserve shadow for hover, focus, and genuine elevation.",
+      "Do use Newsreader only for editorial headlines and verdicts; Jakarta for tool/UI surfaces.",
+      "Do verify Ink-Muted contrast and bump toward Ink where it falls below 4.5:1.",
+      "Do honor prefers-reduced-motion."
+    ],
+    "donts": [
+      "Don't use border-left/right thicker than 1px as a colored stripe — legacy .trade-card-bullish / .holding-card-* / .comparison-* / .tip-box / .warning-box / .akademi-featured stripes are debt to retire.",
+      "Don't apply gradient text (background-clip: text) anywhere — admin .admin-gradient-text is debt.",
+      "Don't build crypto / gambling-bro hype: no neon gradients, moon/rocket iconography, or get-rich-quick energy.",
+      "Don't default to generic SaaS-fintech: no cream/beige paper, identical icon-card grids, or the hero-metric template.",
+      "Don't ship cluttered legacy-broker density — low-contrast tables crammed together.",
+      "Don't copy NYSE/Nasdaq conventions wholesale — this is an IDX product for an Indonesian audience.",
+      "Don't add a tiny uppercase tracked eyebrow above every section — the mono micro-kicker is a reserved system.",
+      "Don't put a resting drop shadow on a non-elevated card, or animate layout properties when transform/opacity will do."
+    ]
+  }
+}

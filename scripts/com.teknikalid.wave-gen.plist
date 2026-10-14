@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.teknikalid.wave-gen</string>
+    <!--
+      Phase 3 SEO: generate archetype landings for the next wave tickers.
+      Twice/week (Wed + Sun) at 02:00 WIB — conservative cadence to stay well under
+      provider rate limits while steadily claiming the 766 unpromoted stocks.
+      Runs the worker container (has the Z.ai AI env); --limit 8 landings/run.
+      Landings stay unlisted until an editor approves them at /admin/review.
+    -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/sh</string>
+        <string>-c</string>
+        <string>cd /Users/nicholasandriansurjadi/Documents/teknikalidnew &amp;&amp; /opt/homebrew/bin/docker compose run --rm worker npx tsx --tsconfig tsconfig.json scripts/generate-wave.ts --limit 8 &gt;&gt; logs/wave-gen.log 2&gt;&amp;1</string>
+    </array>
+    <key>StartCalendarInterval</key>
+    <array>
+        <dict><key>Weekday</key><integer>3</integer><key>Hour</key><integer>2</integer><key>Minute</key><integer>0</integer></dict>
+        <dict><key>Weekday</key><integer>7</integer><key>Hour</key><integer>2</integer><key>Minute</key><integer>0</integer></dict>
+    </array>
+    <key>ExitTimeOut</key>
+    <integer>3600</integer>
+    <key>StandardOutPath</key>
+    <string>/Users/nicholasandriansurjadi/Documents/teknikalidnew/logs/wave-gen-stdout.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/nicholasandriansurjadi/Documents/teknikalidnew/logs/wave-gen-stderr.log</string>
+</dict>
+</plist>

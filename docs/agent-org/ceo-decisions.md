@@ -669,3 +669,47 @@ research_brief sudah ditulis ke field `research_brief` product-backlog.json (3 e
 - Opsi A: status-quo alert + restore manual tiap kejadian (0 risiko kode, biaya ±15mnt/insiden, human-error risk).
 - Opsi B (rekomendasi saya): kodekan prosedur restore TERUJI ini jadi auto-restore di backlog_health.py (union-merge + backup + re-symlink + fallback alert kalau docs korup) — ops-2026-10-14-01 di queue, slot sore besok, host-script 0 deploy.
 - Prd-2026-10-02-01 (P1, 12 hari pending) di-flip done DARI BUKTI: scheduler CronLog kontinu + AgentJob mengalir + 401 negative-test live — owner launchctl ternyata sudah tereksekusi; queue kembali di cap 12.
+
+## [PROVIDER] 2026-10-14 08:0x — OWNER: GLM only, no Gemini fallback
+- Trigger: CEO 08:01 gagal (z.ai 529 overload ×2 → fallback Gemini 429 → dead). Owner: "Tidak usah pakai gemini. Glm saja."
+- Fix 3 lapis: (1) config.yaml fallback_providers → []; (2) CEO Daily 08:00→07:55 + Retro Senin 08:20 (Evolution #49 de-collision, keluar dari dinding 08:00 CST-peak z.ai); (3) zai_quota_rerun.py DIPERLUAS: tangkap 529-overload + Gemini-429-final juga (bukan cuma 1308-kuota), auto-rerun +10 mnt, watchdog cron tiap 5 menit no_agent silent.
+- Bukti: insiden CEO 14 Okt 08:01 tertangkap → attempt terjadwal otomatis 08:16.
+
+## [NORTH-STAR-REVIEW] 2026-10-14 — weekly reviewer agent LIVE (owner mandate)
+- Owner: "selalu ada weekly check agent/CEO apakah northstar tercapai, bagaimana KPI, apa yang perlu diimprove/diubah"
+- Job 43cf9b558aad Senin 08:40 (glm-5.3, continuity, deliver origin=owner chat): verdict per KPI vs minggu lalu → KPI merah akar-masalah SQL → maks 3 rekomendasi prioritas → ratchet review (4 minggu hijau=naik, 2 minggu merah=turun/ganti) → append [NORTH-STAR-REVIEW] ke ceo-decisions utk CEO 07:55 Senin.
+- UI: /northstar kini pakai shell dashboard (nav pill + tema light/dark) — tab 🎯 North Star di semua halaman.
+
+## [NORTHSTAR] 2026-10-14 (2) — OWNER: "jadikan ini acuan untuk semua agent kita"
+- Blok [NORTHSTAR — ACUAN WAJIB ORG] di-append ke prompt SEMUA agent LLM: teknikal 25/25 + hivePOS 10/10 (yang sudah punya blok NS versi pagi ikut distandardisasi). Isi: north star statement + metric inti + pilar KPI + kewajiban menyebut pilar per dispatch/PRD/laporan + pointer nilai live & aturan ratchet.
+- Weekly reviewer 43cf9b55 Senin 08:40 meng-audit adherence ini sebagai bagian verdict mingguan.
+
+## 2026-10-14 08:15 — CEO pagi (ritual [PRODUCT] 0 pending; north-star week-1 baseline; 0 dispatch — queue penuh)
+
+- 08:15 | RITUAL [PRODUCT]: 0 entry pending (owner/Product Agent). STANDING GUARD dipatuhi (IG pause 17 Sep, crypto by-design — 0 task fix). | grep ceo-decisions.md
+- 08:15 | METRIK 7d: views 927 (+18% WoW dari 785); register_views 6 (baseline 9 — di bawah); returning IP 3.9% (baseline 3.8%, target >=8% 6 minggu — HARI-0 mandat 14 Okt); signal pages 33v (GC 23/oversold 6/vol-spike 4); new users 4 vs 0; EOD+indikator fresh 13 Okt. | teknikalid_ceo_brief.py
+- 08:15 | KEPUTUSAN: 0 dispatch baru — queue 5 pending (ops symlink auto-restore slot 15 Okt sore; 3 backoffice builder 03:15 Okt; ops TCC blocked owner, verify 20 Okt). Anti-duplikat + budget 2/hari terpenuhi. Fitur spec_ready (idea-2026-10-13-2 AI-search, idea-2026-10-12-3 edu-404) umur <=2d — belum due verdict anti-stagnation (>3d); keduanya menunggu slot CTO bebas. | alasan: attribution discipline — 1 deploy 1 eksperimen; retention EVAL re-19 Okt
+- 08:15 | VERDICT BACKLOG: 41 entry — 0 ceo_decision_pending; 0 candidate; 0 idea/candidate >7d tanpa verdict; semua entry aktif ber-priority. idea-2026-10-14-01 (Live Agent View) sudah rejected kemarin malam. | audit_backlog.py
+- 08:15 | FOKUS: north-star week-1 — returning 3.9% jadi baseline hari-0; watch dwell/scroll via dashboard :8790/northstar; re-EVAL 19 Okt pakai funnel EngagementEvent minggu penuh post retention-loop v1 (10 Okt). | owner mandate 14 Okt
+- STATUS: ok — ritual tuntas, queue sehat terjadwal, 0 dispatch by design (slot penuh), data fresh, north-star baseline tercatat.
+
+## [NORTHSTAR] 2026-10-14 (3) — audit returning IP (owner: "datacenter / real user / its me?")
+- Hasil audit 7d: 5 IP returning versi isBot=false → 3 versi UA-not-bot (populasi 82 IP): (1) 114.12.1.248 Mac Indosat B2B = akun nich131094 = OWNER; (2) 103.85.62.162 iPhone Mora Telematika = OWNER; (3) 180.247.60.228 Android Telkom = ANON, real-user pattern (jam 5-9 pagi market-prep, 113 unique path, /stocks screener user) TAPI hyperaktif 420 views → algorithm suspected-bot mengecualikannya di admin analytics.
+- SEMUA = ISP rumah/mobile Indonesia (Telkom/Indosat/Mora) — TIDAK ADA datacenter.
+- PATCH collector: returning_ip_pct kini EXCLUDE IP admin (paritas admin analytics) → nilai jujur baru: 1.3% (dari 3.8%). Target tetap ≥8%: fokus = konversi 1-2 power-user anon ini jadi habit + retensi organik.
+
+## [TRUST] 2026-10-14 (4) — fix algoritma suspected-bot (commit 8ab5e9a, deploy ke-2 hari ini)
+- Audit owner "review dan benarkan" → algoritma lama dupePaths>=3||maxFastHits>=6 menghukum user setia (180.247: /stocks 200 hits → 9% gap-cepat tapi kena flag).
+- Algoritma baru: (a) rasio gap<2s >=60% pada path n>=4 DAN >=6 fast hits, ATAU (b) >=15 path unik di-hit cepat, ATAU (c) >=4 hits /auth/* (sondaran akun).
+- Validasi data live 7d: real user 180.247 → TIDAK ter-flag ✅; VPN-US 62.112.138.9 + Windows 119.234.92.179 (register×3 jam 23) → tetap ter-flag ✅; 1 mobile Telkomsel borderline tetap konservatif.
+- Terkait: prd-2026-10-14-03 (kartu hourly admin) — QA sore: hourly views sekarang akan naik krn real user besar kembali dihitung (bukan regresi).
+
+## [REVIEWER] 2026-10-14 08:5x WIB — QA pagi: 1 FATAL konten (brief14 stale 'segar')
+- 44 artikel/24jm dicek; 43 pass. FATAL: brief 14 Okt menulis KETR "golden cross segar" (DB smaCrossDate=15 Sep) + ERAA "segar" (27 Aug) + GOTO "16 kali lipat" (real 5,8x vs BUMI) → qa-2026-10-14-01 P1, SQL patch slot sore. Pola freshness ke-3 (status ≠ tanggal) — lesson ditulis.
+- Deploy verify: prd-13-02 (ai-search utm) flipped qa_pass — 0e35b26 di main, utm live GC/OV. bug-12-01 qa_pass sebelumnya.
+- Minor tercatat: "398 naik" vs DB 400 (Jumat 9 Okt).
+
+## [TRUST] 2026-10-14 (5) — audit IP asing (owner: "kenapa banyak IP luar negeri? bot?")
+- 90 IP unik 7d → 53 Indonesia (Telkom/Indosat/Telkomsel/XL), ~37 asing.
+- KLASIFIKASI asing: (1) ~25 IP datacenter 1-2 views deep-link /stocks/*.JK + referrer google.com + UA HeadlessChrome/Linux = crawler SEO/AI-scraper UA-spoofed (Aceville SG, US-Chiron, 194.26.202.x, 5.183.91.x dst) — NOISE, ~23-30 views; (2) 3 IP sondaran akun /auth/* (62.112 VPN-US 9 hits, 49.158 Taiwan 3 hits, 119.234 4 hits) — sudah ter-tangkap klausul authHits>=4 algoritma baru (49.158 & 62.112; 119.234 auth=4 ✅); (3) beberapa real-user search Google (referrer google, 1 view, UA device asli).
+- Keputusan: TIDAK blokir massal (traffic kecil, blokir = risiko FP); klausul authHits + ratio-bot sudah menangani di analytics. Watch saja.

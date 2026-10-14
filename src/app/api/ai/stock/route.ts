@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { buildStockAiContext } from "./context";
 
 /**
  * AI ringkasan saham — proxy ke model MLX lokal (gemma-3-4b-it-4bit) di Mac mini host.
@@ -47,6 +48,12 @@ export interface StockAiContext {
   low52?: number | null;
 }
 
+function stripNulls(obj: Record<string, unknown>): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, v]) => v !== null && v !== undefined && v !== ""),
+  );
+}
+
 export async function POST(req: NextRequest) {
   const ip =
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
@@ -75,7 +82,17 @@ export async function POST(req: NextRequest) {
   }
 
   // Strip non-context fields before forwarding
-  const { mode: _m, question: _q, ...context } = body;
+  const { mode: _m, question: _q, ...clientContext } = body;
+
+  // Client modal hanya kirim {ticker,name} → lengkapi dari DB supaya AI tidak
+  // mengarang angka (RCA bug "support/resistance semua 8000": prompt kosong).
+  let context = clientContext;
+  if (typeof clientContext.ticker === "string" && clientContext.ticker) {
+    const dbCtx = await buildStockAiContext(clientContext.ticker);
+    if (Object.keys(dbCtx).length > 0) {
+      context = { ...dbCtx, ...stripNulls(clientContext) }; // client-explicit menang
+    }
+  }
 
   try {
     const controller = new AbortController();
