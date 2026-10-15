@@ -264,3 +264,11 @@ Lesson 13 Sep menyatakan submit GSC kebal klik programmatic — berlaku untuk fo
 
 ### 2026-10-14 — Klaim "golden cross segar" stale (pola freshness ke-3): status ≠ tanggal
 Ke-3 kalinya klaim kesegaran sinyal lolos generator Mandor: qa-2026-09-27-01 (hitungan GC salah), qa-2026-10-12-01 (cross-date skip), kini qa-2026-10-14-01 (KETR disebut "segar" padahal cross 15 Sep; ERAA 27 Aug; hari itu NOL cross baru non-gorengan). Pola umum: generator membaca smaCrossSignal (status saat ini) dan menulis "segar/baru" TANPA memverifikasi smaCrossDate == tanggal sesi. Magnitudo komparatif juga rapuh: "16 kali lipat" GOTO vs BUMI riilnya 5,8x — rasio harus dihitung dari DB, bukan ditaksir LLM. Kandidat guard prompt Mandor: (1) kata "segar/baru" hanya boleh jika smaCrossDate = tanggal sesi artikel; (2) angka rasio/perbandingan WAJIB diberikan generator sebagai data, bukan disimpulkan model. Jalur patch konten sudah baku (qa-2026-10-14-01).
+
+## 2026-10-15 — Swarm QA pilot: deterministik dulu, LLM belakangan
+**Konteks**: pilot "Haiku swarm" pattern (viral Anthropic trick) untuk QA 42 artikel saham.
+**Temuan**:
+1. Gagal v1-v2 BUKAN karena model — URL pattern (`/saham-X` → `/stocks/X.JK`), field name (`price` bukan `lastPrice`), schema DB (`ticker` bukan `symbol`, 52wk = MIN/MAX hitung sendiri). Worker LLM ganti model apapun hasilnya sama.
+2. Untuk QA numerik live-website: worker deterministik (curl+psql) = 100% cukup, 0 token, 90 detik utk 42 artikel × 3 checks. LLM hanya perlu di verifier stage (kritik metode) + deteksi semantik (narasi cross-day — 2 FATAL Reviewer 15 Okt yang TIDAK bisa ditangkap angka).
+3. 2 slug "saham-overbought/oversold-*" = artikel edukasi, bukan ticker — filter regex perlu whitelist pattern ticker 4 huruf.
+**Rule**: swarm = lapisan NUMERIK (skala besar, murah, exact); reviewer LLM = lapisan SEMANTIK. Jangan digabung/digantikan.

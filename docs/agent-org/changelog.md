@@ -467,3 +467,11 @@
 - task-id: impact-check qa-14-01 | type: impact | verify: brief15 LIVE 200 121KB — 'golden cross segar'=0, saam=0, lot=0, '4 golden cross baru' == DB (smaCrossDate 2026-10-14 non-gorengan: 4 GC/2 DC) EXACT | verdict: PASS — pola 'segar' stale tidak kambuh; urutan QA follow-up: QA reviewer 15 Okt sweep 24jm
 - task-id: ux-2026-10-14-01 | type: ops host (0 deploy) | deploy: n/a | verify: ops/isr-warmup.js live-run WARM 4/4 (/berita 38ms links=13, gc/dc/harga 200), node --check OK; runbook docs/agent-org/ops/deploy-runbook.md (warm-up = langkah wajib #4) | QA: pembangun != pemeriksa — verifikasi cold-cache nyata pada deploy app berikutnya (sore 15 Okt bila ada) | impact_check_due: 2026-10-22 (7 hari tanpa laporan '0 tulisan' pasca-deploy)
 - Rollback: n/a — additive docs/ops script; revert = hapus runbook langkah 4 + file ops.
+
+## 2026-10-15 18:4x — sec-purge-2026-10-15 (SEC P0)
+- **task-id**: sec-purge-2026-10-15 · **type**: sec/ops · **PRD**: sec-2026-10-14-01/02 (owner approve digest 15 Okt)
+- **deploy hash**: n/a (git-history purge, 0 app deploy) · commit .gitignore 0ec64c2
+- **verify**: raw ig-session+tiktok-session 404; ls-files 220→0; pushed-main history 0 file session (3 hit passport-sotl = prosa doc); fix ai-stock e532261 utuh pasca-rewrite
+- **QA**: post-slot QA Verifier 03:30 re-curl · **impact_check_due**: 2026-10-18
+- **impact_check**: raw URL tetap 404 + ls-files 0 + quarantine branch tak ter-push
+- **KPI**: TRUST
