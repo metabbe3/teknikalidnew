@@ -43,7 +43,6 @@ function ChangeBadge({ pct, className }: { pct: number | null; className?: strin
   if (pct === null) return <span className={cn("text-sm tabular-nums text-text-tertiary", className)}>—</span>;
   return (
     <span className={cn("text-sm font-semibold tabular-nums", pct >= 0 ? "text-bullish" : "text-bearish", className)}>
-      {pct >= 0 ? "+" : ""}
       {formatPercent(pct)}
     </span>
   );
