@@ -9,7 +9,7 @@ import { articleRepository } from "./article.repository";
 import { createAIProvider } from "./ai-provider";
 import { buildStockAnalysisPrompt, buildEducationalPrompt, buildNewsPrompt, buildGeneralPrompt, pickNextTopic } from "./prompts";
 import { buildTemplateArticle, buildDailySnapshot, buildDailySlug } from "./article-template";
-import { ArticleNotFoundError, ArticleGenerationError, DuplicateSlugError } from "./article.errors";
+import { ArticleNotFoundError, ArticleGenerationError, DuplicateSlugError, PublishedArticleDeleteError } from "./article.errors";
 import { gatherMarketContext, formatMarketContextForPrompt, factCheckArticle, factCheckVerdict, extractTickersFromText } from "./article-fact-check";
 import type { MarketContext } from "./article-fact-check";
 import { validateArticle } from "./quality-validator";
@@ -290,7 +290,7 @@ export const articleService = {
     return articleRepository.update(id, { status: ArticleStatus.DRAFT });
   },
 
-  async updateArticle(id: string, data: { title?: string; excerpt?: string; content?: string; tags?: string[] }) {
+  async updateArticle(id: string, data: { title?: string; excerpt?: string; content?: string; tags?: string[]; tickerTag?: string | null; isListed?: boolean }) {
     const article = await articleRepository.findById(id);
     if (!article) throw new ArticleNotFoundError();
     return articleRepository.update(id, data);
@@ -299,6 +299,7 @@ export const articleService = {
   async deleteArticle(id: string) {
     const article = await articleRepository.findById(id);
     if (!article) throw new ArticleNotFoundError();
+    if (article.status !== ArticleStatus.DRAFT) throw new PublishedArticleDeleteError();
     return articleRepository.delete(id);
   },
 

@@ -1,3 +1,9 @@
+## [2026-10-16 03:xx] backoffice-builder — bo-2026-10-14-02: Edit metadata artikel dari /admin/articles + guard delete DRAFT-only
+- Type: backoffice (service + API + UI modal)  |  PRD: bo-2026-10-14-02 (owner: edit metadata artikel butuh SQL manual, delete PUBLISHED tak ada guard)
+- Owner kini edit title/excerpt/tags/tickerTag/isListed via modal Edit di /admin/articles (PATCH /api/admin/articles/[id]); audit admin:edit_article (fields actually changed + tickerTag/isListed before-after) & admin:delete_article (id/slug/title, log SEBELUM delete) via auditService. Validasi 400 pre-Prisma: title<=255, excerpt<=500, tickerTag<=20 (trim+uppercase, kosong/whitespace=null).
+- GUARD DELETE: deleteArticle service throw PublishedArticleDeleteError (ValidationError 400) kalau status !== DRAFT — "Artikel PUBLISHED tidak bisa dihapus — unpublish dulu". Tombol delete UI disabled + title hint utk PUBLISHED; DRAFT tetap confirm-delete.
+- Files: article.service.ts (updateArticle +tickerTag/isListed, deleteArticle guard), article.errors.ts (+PublishedArticleDeleteError), api/admin/articles/[id]/route.ts (PATCH metadata + audit, DELETE audit pre-delete), admin/articles/page.tsx (+tombol Edit, +isListed, delete guard UX), components/admin/article-edit-modal.tsx (BARU, toast sonner + invalidate admin-articles/admin-article-stats). findAllForAdmin sudah return isListed (include author, no select) — route list tak disentuh.
+
 ## [2026-10-15 0x:xx] backoffice-builder — bo-2026-10-14-01: Riwayat moderasi /admin/reports + badge pending sidebar
 - Type: backoffice frontend + 1 endpoint kecil  |  PRD: bo-2026-10-14-01 (owner: tak bisa lihat keputusan lama, tak ada sinyal laporan baru)
 - Deploy: 15 Okt ~03:xx backoffice-builder (docker compose build app && up -d app, baseline-then-deploy)  |  Rollback anchor: pre-deploy HEAD + git revert commit ini (4 file: page.tsx, layout.tsx, + 2 file baru hapus)

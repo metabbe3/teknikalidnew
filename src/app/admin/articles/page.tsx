@@ -8,11 +8,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AdminKpiCard } from "@/components/admin/admin-kpi-card";
+import { ArticleEditModal } from "@/components/admin/article-edit-modal";
 import {
   FileText,
   Plus,
   Eye,
   Trash2,
+  Pencil,
   CheckCircle2,
   Clock,
   Newspaper,
@@ -32,6 +34,7 @@ interface Article {
   articleType: "STOCK_ANALYSIS" | "EDUCATIONAL" | "NEWS" | "GENERAL";
   aiProvider: string | null;
   tickerTag: string | null;
+  isListed: boolean;
   tags: string[];
   createdAt: string;
   publishedAt: string | null;
@@ -42,6 +45,7 @@ export default function ArticlesAdminPage() {
   const qc = useQueryClient();
   const [statusFilter, setStatusFilter] = useState<"all" | "DRAFT" | "PUBLISHED">("all");
   const [typeFilter, setTypeFilter] = useState<"all" | "STOCK_ANALYSIS" | "EDUCATIONAL" | "NEWS" | "GENERAL">("all");
+  const [editing, setEditing] = useState<Article | null>(null);
 
   const { data: statsData } = useQuery<{ data: { total: number; published: number; drafts: number; stockAnalysis: number; educational: number } }>({
     queryKey: ["admin-article-stats"],
@@ -206,6 +210,15 @@ export default function ArticlesAdminPage() {
                         Preview
                       </Button>
                     </Link>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-1 text-xs"
+                      onClick={() => setEditing(article)}
+                    >
+                      <Pencil className="h-3 w-3" />
+                      Edit
+                    </Button>
                     {article.status === "DRAFT" ? (
                       <Button
                         size="sm"
@@ -232,10 +245,11 @@ export default function ArticlesAdminPage() {
                       size="sm"
                       variant="outline"
                       className="gap-1 text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+                      title={article.status === "PUBLISHED" ? "Unpublish dulu sebelum menghapus" : "Hapus artikel"}
                       onClick={() => {
                         if (confirm("Delete this article?")) deleteMut.mutate(article.id);
                       }}
-                      disabled={deleteMut.isPending}
+                      disabled={deleteMut.isPending || article.status === "PUBLISHED"}
                     >
                       <Trash2 className="h-3 w-3" />
                     </Button>
@@ -246,6 +260,8 @@ export default function ArticlesAdminPage() {
           ))}
         </div>
       )}
+
+      {editing && <ArticleEditModal article={editing} open onClose={() => setEditing(null)} />}
     </div>
   );
 }
