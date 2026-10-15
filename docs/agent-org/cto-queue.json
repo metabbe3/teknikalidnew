@@ -1400,9 +1400,11 @@
       "priority": "P1",
       "north_star": "growth",
       "scheduled_slot": "2026-10-16 09:30 slot pagi",
-      "status": "pending",
+      "status": "done",
       "spec": "GSC report: 'Duplikat, Google memilih versi kanonis berbeda'. Root cause terverifikasi live:\n1) /stocks/AADI.JK/indikator canonical -> /stocks/aadi/indikator (lowercase tanpa .JK) tapi /stocks/BBCA.JK canonical -> self (uppercase + .JK). Dua konvensi bercampur.\n2) Kandidat canonical final: /stocks/TICKER.JK uppercase+JK (konsisten halaman utama & internal link). atau lowercase tanpa JK — PILIH SATU, terapkan di generateMetadata canonical + sitemap + redirect 301 varian kalah.\n3) Bonus bug: /saham/aadi/kenapa-naik-hari-ini title bilang 'Turun' — template title harus match arah URL.\nDONE-WHEN: (a) semua /stocks/* (utama+indikator) satu skema canonical; (b) varian lain 301; (c) sitemap.xml hanya URL canonical; (d) spot-check 5 ticker curl canonical konsisten; (e) deploy ≤2/hari dihormati.",
-      "acceptance": "GSC duplicate-canonical reason berhenti bertambah setelah re-crawl (cek 7-14 hari); canonical spot-check 5/5 konsisten."
+      "acceptance": "GSC duplicate-canonical reason berhenti bertambah setelah re-crawl (cek 7-14 hari); canonical spot-check 5/5 konsisten.",
+      "executed_at": "2026-10-15 evening (owner: fix sekarang)",
+      "commit": "31a94d9"
     }
   ],
   "tasks": []
