@@ -1333,6 +1333,52 @@
    "qa_plan": "Post-slot QA Verifier 03:30: re-curl 2 raw URL = 404 + ls-files 0 + main bersih; sec-2026-10-14-01/02 backlog flip shipped setelah verify.",
    "created": "2026-10-15T07:59+07:00",
    "updated": "2026-10-15T07:59+07:00"
+  },
+  {
+   "id": "sec-2026-10-15-01",
+   "source": "owner-approve-trivy-15okt",
+   "priority": "P1",
+   "north_star": "TRUST",
+   "date": "2026-10-15",
+   "status": "pending",
+   "slot": "16 Okt Backend Builder pagi",
+   "title": "dep-bump auth CRITICAL + HIGH batch (Trivy 15 Okt)",
+   "spec": "Scan Trivy v0.76.0 image teknikalidnew-app: 3 CRITICAL di auth stack — next-auth 5.0.0-beta.31 → 5.0.0-beta.32 (CVE-2026-73420 email normalizer bypass + CVE-2026-73421 existence-based auth bypass) dan @auth/core 0.41.2 → 0.41.3; total 70 vulns (68 fixable). ACCEPTANCE: (1) bump next-auth/@auth/core exact; (2) npm audit fix batch HIGH prioritas: axios 1.17.0→1.20.0, undici→6.28.1, ws→8.21.0, mysql2→3.22.0, xlsx→0.19.3, tar, js-yaml, brace-expansion dll transitive; (3) tsc --noEmit clean; (4) docker compose build app && up -d; ISR warm-up 4 route (runbook #4); (5) verify: login flow masih jalan (curl /api/auth/* + 1 UI check), trivy image ulang → 0 CRITICAL, HIGH turun ≥80%; (6) changelog + handoff. GUARD: push-hold sampai sec-purge malam ini selesai; deploy setelah purge OK.",
+   "evidence": "/tmp/trivy_app.json + /tmp/trivy_repo.json (scan 15 Okt ~09:20); secret terdeteksi 1 = tiktok-session.json (confirm sec-01)"
+  },
+  {
+   "id": "prd-pasar-live-01",
+   "date": "2026-10-15",
+   "type": "prd",
+   "priority": "P1",
+   "status": "pending",
+   "title": "PRD 'Koran Saham Live' — push Telegram 4x/hari (pagi/siang/sore/close) + auto-push breaking news emiten",
+   "owner_mandate": "2026-10-15 owner: 'fokusnya pagi, siang, sore saat market open, half session dan close session — atau ada berita menarik tentang suatu emiten, auto push to Telegram'. Premium nanti (PDF/lengkap di web), tapi GRATIS dulu utk bangun trust + waitlist. Harus seakurat mungkin — AI agent yang rangkum supaya user tidak perlu riset.",
+   "spec": {
+    "konsep": "Koran saham 1-page di web teknikal.id yang UPDATE LIVE sepanjang sesi + push ringkasan ke Telegram channel/bot pada momen kunci. User baca 1 halaman, tidak perlu riset.",
+    "jadwal_push": {
+     "06:30 WIB": "PAGI — pre-market: recap Wall Street semalam + IHSG futures/asymi, 3-5 saham menarik hari ini + trading plan (entry/support/resistance dari StockIndicator), news emiten semalam yang mempengaruhi open",
+     "12:00 WIB": "SIANG — half session: IHSG morning session recap, top movers pagi, perubahan watchlist, news cross-check pagi",
+     "15:15 WIB": "SORE — pre-close: arah closing, aksi terakhir (jual/tahan), rangkum rumor penting sore",
+     "17:30 WIB": "CLOSE — full recap hari ini: IHSG close + volume, top gainers/losers, saham watch yang jalan/tidak sesuai plan, preview besok"
+    },
+    "breaking_push": "Monitor news feed (Google News RSS query emiten/watchlist + sumber lokal) tiap 15mnt saat 08:00-17:30; kalau ada berita SIGNIFIKAN tentang emiten di watchlist (akuisisi, dividen, rights issue, suspensi, commodity shock) → push instan '🚨 EMITEN X: <berita> — dampak: <bullish/bearish/netral>' max 3/hari biar tidak spam",
+    "sumber_data": "REUSE: Stock + StockPrice + StockIndicator DB (OHLC, golden cross, EMA, oversold — sudah jalan) + live quote endpoint existing (price field) + Google News RSS (query per emiten watchlist, crawl pola idx-sync)",
+    "halaman_web": "/pasar — 1 page live: header IHSG live + jam update, section: Watchlist Hari Ini (trading plan per saham), Top Movers, News Cross-Check (berita vs emiten), Disclaimer. SSR + revalidate 60s saat market hours, cache off-hours.",
+    "premium_path": "Fase lanjut (jangan build sekarang): versi PDF pagi rapi + Telegram premium channel. Gratis dulu, gate waitlist 300 subscriber (roadmap-pro fase 2).",
+    "akurasi_guard": "SETIAP angka di push WAJIB dari DB/endpoint deterministik (bukan LLM mengarang angka); LLM hanya menulis narasi dari angka yang sudah ada. Numerik disweep deterministik pasca-publish (pola tknkl_article_sweep). Disclaimer wajib: 'bukan rekomendasi jual beli'.",
+    "out_of_scope": [
+     "signal otomatis beli/jual (reksa dana? no)",
+     "paid tier sebelum gate",
+     "push WhatsApp (Telegram dulu — bot token sudah ada)",
+     "intraday charting lengkap"
+    ]
+   },
+   "evidence": [
+    "owner roadmap-pro-2026-10-15 (trust-first, gates per fase)",
+    "idx-sync + StockIndicator + live price endpoint sudah jalan (reuse)",
+    "Telegram bot token tersedia (TEKNIKALID_BOT_TOKEN) — push channel bisa dibuat besok"
+   ]
   }
  ],
  "tasks": []
