@@ -16,6 +16,17 @@ Metric inti: **Weekly Returning Visitor Ratio** — % IP non-bot dengan ≥2 kun
 | AI_SEARCH | ai_search_views_7d | ≥10 | 8 |
 | TRUST | days_zero_views_7d | 0 | 0 |
 
+## Target baru (owner 15 Okt 2026): "Koran Saham Live" → Pro subscriber
+**L jalur monetisasi:** trust-first (gates per fase) → /pasar live page + TG push 4x/hari + breaking news → track-record otomatis → Pro Rp10-20rb/bln (Q1'27).
+| Fase | KPI baru | Target | Baseline |
+|---|---|---|---|
+| NOW-Des | impressions_30d | ≥30.000/bln stabil 2 bulan | ~3.000 |
+| Fase 2 | pasar_uv_7d (user /pasar) | ≥500 | 0 (belum launch) |
+| Fase 2 | tg_channel_members | ≥300 (gate monetisasi) | 0 (channel belum dibuat) |
+| Fase 3 | pro_paid_subs | ≥50 (bulanan, % conversion ≥3%) | 0 |
+
+**Prioritas entri P0 di queue:** prd-pasar-live-01 → build MALAM INI (16 Okt window 00:00-05:00), kelar besok. Owner rule: JANGAN build siang hari — high AI usage 3× (z.ai quota); semua build di slot malam.
+
 ## Aturan pakai (untuk SEMUA agent)
 1. Tiap dispatch/PRD/laporan WAJIB menyebut pilar KPI mana yang dilayani.
 2. Pekerjaan tanpa pilar = pertanyakan prioritas (boleh dikerjakan kalau ada alasan eksplisit: tech-debt, compliance, infra).

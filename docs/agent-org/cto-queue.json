@@ -1350,7 +1350,7 @@
    "id": "prd-pasar-live-01",
    "date": "2026-10-15",
    "type": "prd",
-   "priority": "P1",
+   "priority": "P0",
    "status": "pending",
    "title": "PRD 'Koran Saham Live' — push Telegram 4x/hari (pagi/siang/sore/close) + auto-push breaking news emiten",
    "owner_mandate": "2026-10-15 owner: 'fokusnya pagi, siang, sore saat market open, half session dan close session — atau ada berita menarik tentang suatu emiten, auto push to Telegram'. Premium nanti (PDF/lengkap di web), tapi GRATIS dulu utk bangun trust + waitlist. Harus seakurat mungkin — AI agent yang rangkum supaya user tidak perlu riset.",
@@ -1384,7 +1384,8 @@
     "owner roadmap-pro-2026-10-15 (trust-first, gates per fase)",
     "idx-sync + StockIndicator + live price endpoint sudah jalan (reuse)",
     "Telegram bot token tersedia (TEKNIKALID_BOT_TOKEN) — push channel bisa dibuat besok"
-   ]
+   ],
+   "scheduled_slot": "2026-10-16 01:00 CTO pagi (jalankan malam 15→16 Okt window 00:00-05:00 — owner: build malam saja, AI usage siang 3x lipat)"
   }
  ],
  "tasks": []
