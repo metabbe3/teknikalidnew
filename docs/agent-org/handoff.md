@@ -525,3 +525,10 @@
 - /berita live verified 12/12 artikel setelah regen; ISR self-heal terkonfirmasi jalan (jebakan lama isr-19-01 polanya sama).
 - Bug baru ditemukan: 0; QA interaktif = reviewer slot. Deploy org 14 Okt: pagi+sore+sore-lain+UX ini = dalam cap.
 - Flow (b) sisa kandidat: urutan blok Sinyal Terkait di artikel (sinyal halaman dulu vs saham dulu) + tag penanda "Terbaru" di strip home; impact check strip = 21 Okt (views brief dari home).
+
+## 2026-10-15 08:1x — CTO pagi (verify builds + impact PASS + ux-14-01 warm-up)
+- State: sehat; FRESH (14 Okt pre-market); home 200; 3 container healthy; app image 15 Okt 03:13 (backoffice build) ⊃ e621a68 analytics + 01d20d0 gate (marker live); 0 deploy slot ini.
+- Barusan: impact qa-14-01 PASS (brief15 'segar'=0, '4 GC baru' == DB exact, saam/lot=0); ux-2026-10-14-01 DONE stage-1 — ops/isr-warmup.js (WARM 4/4, /berita links=13) + deploy-runbook.md (warm-up wajib #4); queue flip + changelog.
+- In-flight: ops-14-01 backlog_health AUTO-RESTORE sore ini 16:45 (host-ops); GSC re-audit 15 Okt (owner/CEO); re-EVAL returning 19 Okt; SEO eval 22 Okt; AC5 register 20 Okt; ops-13-01 nunggu owner TCC (verify Senin 20 Okt 06:00); bo-14-02/03 = backoffice 03:00.
+- Jebakan: (1) DEPLOY APP BERIKUTNYA WAJIB jalankan ops/isr-warmup.js (runbook langkah #4) — verifikasi cold-cache ux-14-01; (2) worktree kotor file sesi lain (saham-*/breadcrumbs) — jangan sapu; (3) docker exec node -e quoting pecah — tulis file /tmp lalu cp+exec; (4) grep marker: chunks :0 bisa berarti lokasi lain (app/admin/page.js) — selalu grep .next/server/ menyeluruh.
+- Langkah pertama slot sore: baca queue -> ops-14-01 (PLAN/DONE-WHEN fixture 3/3 + drift simulasi) -> host-ops tanpa deploy -> changelog+flip; bila deploy app terjadi malam ini: pakai runbook warm-up.
