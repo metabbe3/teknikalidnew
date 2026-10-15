@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { subDays } from "date-fns";
 import { ChevronRight, Activity, Lock, TrendingUp } from "lucide-react";
@@ -75,16 +75,18 @@ export async function generateMetadata({
   let data;
   try { data = await loadHistory(ticker); } catch { return {}; }
   if (!data) return {};
+  // Canonical: sama dengan halaman utama stocks — uppercase TICKER.JK (seo-2026-10-15-01).
+  const tickerJK = data.tickerJK;
 
   const title = `Riwayat Indikator Teknikal ${data.name} (${data.tickerClean})`;
   const description = `Arsip riwayat indikator teknikal ${data.name} (${data.tickerClean}) — verdik sinyal harian RSI, MACD, SMA, EMA, dan crossing historis.`;
   return {
     title,
     description,
-    alternates: { canonical: `/stocks/${data.tickerClean.toLowerCase()}/indikator` },
+    alternates: { canonical: `/stocks/${tickerJK}/indikator` },
     openGraph: {
       title, description, type: "article",
-      url: `${SITE_URL}/stocks/${data.tickerClean.toLowerCase()}/indikator`,
+      url: `${SITE_URL}/stocks/${tickerJK}/indikator`,
     },
     keywords: [
       `riwayat indikator ${data.tickerClean}`,
@@ -105,6 +107,10 @@ export default async function IndicatorHistoryPage({
   try { data = await loadHistory(ticker); }
   catch (e) { if (e instanceof StockNotFoundError) notFound(); throw e; }
   if (!data) notFound();
+
+  // seo-2026-10-15-01: non-canonical URL variants (lowercase / missing .JK)
+  // 308 to the canonical /stocks/TICKER.JK/indikator so crawlers consolidate.
+  if (ticker !== data.tickerJK) redirect(`/stocks/${data.tickerJK}/indikator`);
 
   const { tickerClean, tickerJK, name, rows } = data;
   const ordered = [...rows].sort((a, b) => b.date.getTime() - a.date.getTime());

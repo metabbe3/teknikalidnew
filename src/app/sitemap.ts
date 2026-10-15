@@ -138,7 +138,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const sid = tickerToStockId.get(s.ticker);
     const realDate = sid ? stockIdToDate.get(sid) : undefined;
     return {
-      url: `${baseUrl}/stocks/${s.ticker.replace(/\.JK$/, "").toLowerCase()}/indikator`,
+      // seo-2026-10-15-01: gunakan TICKER.JK uppercase — konsisten dengan canonical halaman utama/indikator.
+      url: `${baseUrl}/stocks/${s.ticker}/indikator`,
       lastModified: realDate ?? today,
       changeFrequency: "daily" as const,
       priority: idx40Set.has(s.ticker) ? 0.6 : 0.4,
