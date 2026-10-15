@@ -307,7 +307,7 @@ export function ChartSection({ ticker }: ChartSectionProps) {
               {showOverlays && (
                 <>
                   <button type="button" tabIndex={-1} aria-hidden="true" onClick={() => setShowOverlays(false)} className="fixed inset-0 z-30 cursor-default" />
-                  <div role="menu" className="absolute top-full right-0 mt-1 w-[calc(100vw-2.5rem)] max-w-60 max-h-[70vh] overflow-y-auto bg-bg-card depth-shadow-strong rounded-lg border border-border z-40 p-1.5">
+                  <div role="menu" className="fixed inset-x-2 bottom-2 max-h-[75vh] overflow-y-auto bg-bg-card depth-shadow-strong rounded-lg border border-border z-40 p-1.5 md:absolute md:inset-auto md:bottom-auto md:top-full md:right-0 md:mt-1 md:w-60 md:max-h-[70vh]">
                     <div className="flex items-center justify-between px-2 py-1">
                       <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-text-tertiary">Indikator</span>
                       {overlayCount > 0 && (
