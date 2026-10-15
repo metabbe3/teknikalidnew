@@ -41,10 +41,11 @@
       "title": "OPS: backlog_health SYMLINK_GUARDS upgrade alert-only -> AUTO-RESTORE (union-merge + backup + re-symlink)",
       "north_star": "data reliable — drift kambuh #7 dalam 3 pekan (2x/pekan), restore manual = beban + risiko human-error",
       "spec": "Drift #7 pagi 14 Okt (writer 06:36 putuskan symlink; tak ter-atribusi). Prosedur manual TERUJI shift ini: (1) baca 2 sisi (datadir regular + docs kanonik), (2) union-merge entry by id (docs base + datadir-only appended; field-level: field non-kosong menang, research_brief/research_note restore), (3) backup kedua file .bak-<ts>-driftN, (4) atomic-write docs + os.replace, (5) rm datadir regular + re-symlink, (6) alert TETAP dicetak (audit trail). KODEKAN prosedur ini ke SYMLINK_GUARDS backlog_health.py (utk 3 file teknikal; kalau merge menemui kondisi tak-terduga mis. docs korup -> fallback alert-only JANGAN auto-restore). DONE WHEN: fixture 3/3 (drift->restore utuh+union+backup ada; sehat=0 alert; docs korup=fallback alert) + py_compile + live run 0 alert + drift simulasi ter-restore otomatis. 0 deploy aplikasi (host script). Rollback: n/a additive (hapus blok auto-restore kembali alert-only).",
-      "scheduled_slot": "2026-10-16 Backend Builder pagi 07:30 (host-ops, no app deploy; slot sore CTO sudah tidak ada — reslot CTO 15 Okt; malam 15 Okt dipakai sec-purge P0)",
+      "scheduled_slot": "2026-10-16 CTO pagi 07:30 (build) → kereta malam T-1016-N",
       "created_at": "2026-10-14T07:55+07:00",
       "dispatched_by": "CTO Tech Lead 07:45 (ritual drift-7)",
-      "updated": "2026-10-15T08:01+07:00"
+      "updated": "2026-10-15T08:01+07:00",
+      "train": "T-1016-N"
     },
     {
       "id": "bo-2026-10-14-01",
@@ -68,9 +69,10 @@
       "status": "pending",
       "assigned_to": "backoffice-builder",
       "north_star": "KUASAI — atur dari backoffice tanpa SQL manual",
-      "scheduled_slot": "Backoffice Builder 03:00 (next, setelah -01)",
+      "scheduled_slot": "2026-10-16 Backoffice 03:00",
       "title": "Backoffice KUASAI: edit artikel dari /admin/articles (metadata + unpublish + delete draft) tanpa SQL manual",
-      "spec": "Audit: articles page hanya publish/unpublish/preview/generate — TIDAK ADA edit. Owner harus SQL manual utk koreksi judul/excerpt/tags/tickerTag. Tambah edit modal/halaman utk field aman (title, excerpt, tags, tickerTag, isListed) via PATCH /api/admin/articles/[id] yang sudah ada (cek dulu field mana yang didukung, extend minimal), + tombol delete DRAFT saja (PUBLISHED = unpublish dulu, guard). Audit log via auditService pola toggle_ticker. DONE-WHEN: edit 1 field dari UI ter-verify (tsc + live form render), audit row tercatat."
+      "spec": "Audit: articles page hanya publish/unpublish/preview/generate — TIDAK ADA edit. Owner harus SQL manual utk koreksi judul/excerpt/tags/tickerTag. Tambah edit modal/halaman utk field aman (title, excerpt, tags, tickerTag, isListed) via PATCH /api/admin/articles/[id] yang sudah ada (cek dulu field mana yang didukung, extend minimal), + tombol delete DRAFT saja (PUBLISHED = unpublish dulu, guard). Audit log via auditService pola toggle_ticker. DONE-WHEN: edit 1 field dari UI ter-verify (tsc + live form render), audit row tercatat.",
+      "train": "T-1016-N"
     },
     {
       "id": "bo-2026-10-14-03",
@@ -79,9 +81,10 @@
       "status": "pending",
       "assigned_to": "backoffice-builder",
       "north_star": "INSIGHT — admin = satu sumber kebenaran data",
-      "scheduled_slot": "Backoffice Builder 03:00 (next-next, setelah -01 -02)",
+      "scheduled_slot": "2026-10-17 Backoffice 03:00",
       "title": "Backoffice INSIGHT: tab performa konten — pageviews + konversi register per artikel (satu sumber kebenaran konten)",
-      "spec": "Audit menemukan admin punya user-analytics & retention tapi TIDAK ada view performa per-artikel. Bangun tab/halaman performa konten: pageviews per artikel (PageView join Article slug), avg time, CTA/konversi register attribution (utm_campaign=slug pola RegisterCta prd-13-02), top/bottom konten 7d/30d. Data read-only prisma. DONE-WHEN: tab live menampilkan top-10 artikel by views dgn angka dari DB (curl verify), 0 tabel baru."
+      "spec": "Audit menemukan admin punya user-analytics & retention tapi TIDAK ada view performa per-artikel. Bangun tab/halaman performa konten: pageviews per artikel (PageView join Article slug), avg time, CTA/konversi register attribution (utm_campaign=slug pola RegisterCta prd-13-02), top/bottom konten 7d/30d. Data read-only prisma. DONE-WHEN: tab live menampilkan top-10 artikel by views dgn angka dari DB (curl verify), 0 tabel baru.",
+      "train": "T-1017-N"
     },
     {
       "id": "mandor-2026-09-15-01",
@@ -1223,7 +1226,8 @@
       "created_by": "CTO shift 07:45 13 Okt (launchctl list exit-1 + idx-sync.log EPERM evidence)",
       "north_star": "data reliable — daftar emiten IDX basi (listing baru/delisting tak tersync); eod-sync tidak terdampak",
       "spec": "BUKTI: idx-sync.log mtime 12 Okt 08:20 berisi EPERM: process.cwd failed uv_cwd (node v25) — launchd worker kehilangan akses cwd repo (TCC Documents). Plist com.teknikalid.idx-sync Day=1/06:00 (Senin saja). FIX (owner action, TCC = security domain): grant Full Disk Access utk node/launchd ATAU pindah log+cwd ke path non-TCC; verify: Senin depan 06:00 log bersih + sync row baru. Bukan kerja builder (TCC interactive prompt).",
-      "scheduled_slot": "owner TCC grant kapan saja; window verify Senin 20 Okt 06:00"
+      "scheduled_slot": "owner TCC grant; verify Senin 20 Okt 06:00",
+      "train": "T-1020-N"
     },
     {
       "id": "qa-2026-10-13-01",
@@ -1346,7 +1350,9 @@
       "slot": "16 Okt Backend Builder pagi",
       "title": "dep-bump auth CRITICAL + HIGH batch (Trivy 15 Okt)",
       "spec": "Scan Trivy v0.76.0 image teknikalidnew-app: 3 CRITICAL di auth stack — next-auth 5.0.0-beta.31 → 5.0.0-beta.32 (CVE-2026-73420 email normalizer bypass + CVE-2026-73421 existence-based auth bypass) dan @auth/core 0.41.2 → 0.41.3; total 70 vulns (68 fixable). ACCEPTANCE: (1) bump next-auth/@auth/core exact; (2) npm audit fix batch HIGH prioritas: axios 1.17.0→1.20.0, undici→6.28.1, ws→8.21.0, mysql2→3.22.0, xlsx→0.19.3, tar, js-yaml, brace-expansion dll transitive; (3) tsc --noEmit clean; (4) docker compose build app && up -d; ISR warm-up 4 route (runbook #4); (5) verify: login flow masih jalan (curl /api/auth/* + 1 UI check), trivy image ulang → 0 CRITICAL, HIGH turun ≥80%; (6) changelog + handoff. GUARD: push-hold sampai sec-purge malam ini selesai; deploy setelah purge OK.",
-      "evidence": "/tmp/trivy_app.json + /tmp/trivy_repo.json (scan 15 Okt ~09:20); secret terdeteksi 1 = tiktok-session.json (confirm sec-01)"
+      "evidence": "/tmp/trivy_app.json + /tmp/trivy_repo.json (scan 15 Okt ~09:20); secret terdeteksi 1 = tiktok-session.json (confirm sec-01)",
+      "train": "T-1016-N",
+      "scheduled_slot": "2026-10-16 CTO pagi 07:30 (dep-bump auth CRITICAL)"
     },
     {
       "id": "prd-pasar-live-01",
@@ -1391,7 +1397,8 @@
         "idx-sync + StockIndicator + live price endpoint sudah jalan (reuse)",
         "Telegram bot token tersedia (TEKNIKALID_BOT_TOKEN) — push channel bisa dibuat besok"
       ],
-      "scheduled_slot": "2026-10-16 01:00 CTO pagi (jalankan malam 15→16 Okt window 00:00-05:00 — owner: build malam saja, AI usage siang 3x lipat)"
+      "scheduled_slot": "2026-10-16 01:00 window malam (build) → kereta T-1016-N",
+      "train": "T-1016-N"
     },
     {
       "id": "seo-2026-10-15-01",
