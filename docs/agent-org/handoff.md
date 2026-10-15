@@ -558,3 +558,4 @@
 - in-flight: cron push 4 slot (06:30/12:00/15:45/17:45) BELUM didaftarkan — script pasar_live_push.py siap, default dry-run
 - traps: deploy.sh "Already up to date" kalau working dir sudah di commit target → langsung docker compose build+up; pcl_9e5c gagal sendiri (0 artikel hantu)
 - next: owner approve dry-run output → TKNKL_PASAR_PUSH_ENABLED=1 + daftar 4 cron; deploy budget teknikal 1/2 terpakai
+- owner 16 Okt ~06:10: "ikut jadwal saja" — aktivasi push TIDAK dipercepat; slot CTO pagi 07:30 yang present dry-run pasar_live_push.py ke owner, approve di situ baru TKNKL_PASAR_PUSH_ENABLED=1 + daftar 4 cron
