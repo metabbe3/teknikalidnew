@@ -41,9 +41,10 @@
    "title": "OPS: backlog_health SYMLINK_GUARDS upgrade alert-only -> AUTO-RESTORE (union-merge + backup + re-symlink)",
    "north_star": "data reliable — drift kambuh #7 dalam 3 pekan (2x/pekan), restore manual = beban + risiko human-error",
    "spec": "Drift #7 pagi 14 Okt (writer 06:36 putuskan symlink; tak ter-atribusi). Prosedur manual TERUJI shift ini: (1) baca 2 sisi (datadir regular + docs kanonik), (2) union-merge entry by id (docs base + datadir-only appended; field-level: field non-kosong menang, research_brief/research_note restore), (3) backup kedua file .bak-<ts>-driftN, (4) atomic-write docs + os.replace, (5) rm datadir regular + re-symlink, (6) alert TETAP dicetak (audit trail). KODEKAN prosedur ini ke SYMLINK_GUARDS backlog_health.py (utk 3 file teknikal; kalau merge menemui kondisi tak-terduga mis. docs korup -> fallback alert-only JANGAN auto-restore). DONE WHEN: fixture 3/3 (drift->restore utuh+union+backup ada; sehat=0 alert; docs korup=fallback alert) + py_compile + live run 0 alert + drift simulasi ter-restore otomatis. 0 deploy aplikasi (host script). Rollback: n/a additive (hapus blok auto-restore kembali alert-only).",
-   "scheduled_slot": "2026-10-15 slot sore CTO (host-ops, no deploy; konfirmasi git: belum dikerjakan sore ini)",
+   "scheduled_slot": "2026-10-16 Backend Builder pagi 07:30 (host-ops, no app deploy; slot sore CTO sudah tidak ada — reslot CTO 15 Okt; malam 15 Okt dipakai sec-purge P0)",
    "created_at": "2026-10-14T07:55+07:00",
-   "dispatched_by": "CTO Tech Lead 07:45 (ritual drift-7)"
+   "dispatched_by": "CTO Tech Lead 07:45 (ritual drift-7)",
+   "updated": "2026-10-15T08:01+07:00"
   },
   {
    "id": "bo-2026-10-14-01",
@@ -1316,17 +1317,23 @@
    "kpi_pillar": "TRUST + STICKY (returning visitor mengandalkan brief harian)",
    "done_when": "Deploy berikutnya: dalam <=60s pasca-up, curl /berita origin menampilkan >=1 artikel link; docs deploy runbook di-update",
    "notes": "Dispatch oleh UX Builder 14 Okt (bukan bugfix mandiri: pipeline deploy = domain CTO). BUKAN panic-rollback; ISR self-heal terkonfirmasi jalan."
-  }
- ],
- "tasks": [
+  },
   {
    "id": "sec-purge-2026-10-15",
-   "source": "owner-digest-approve",
+   "type": "sec",
+   "date": "2026-10-15",
    "priority": "P0",
-   "created": "2026-10-15T07:36+07:00",
-   "status": "queued",
-   "title": "EXECUTE sec-2026-10-14-01/02: purge session cookies dari git history + repo hygiene (rm-cached 220 file social-auto-poster + 96 screenshot)",
-   "notes": "Owner APPROVE SEMUA 15 Okt. Window: merge branch night/prd-2026-10-14-04 SUDAH terjadi? cek e532261 masuk main. Butuh: git filter-repo/BFG path e532261 (ig 2.1KB + tiktok 15.6KB raw) + force-push + relogin IG/TikTok + .gitignore social-auto-poster. Jangan pakai cookies itu."
+   "status": "pending",
+   "source": "owner-digest-approve (Approve semua 07:30 15 Okt) + itsec-red/blue sec-2026-10-14-01/02",
+   "north_star": "TRUST (repo publik = etalase engineering; session cookies tak boleh ada di git)",
+   "scheduled_slot": "Backend Builder malam 18:30 15 Okt (P0 — quiet zone 11-18 blok eksekusi lebih awal)",
+   "title": "SEC P0: purge session cookies IG/TikTok dari git history + rm-cached 220 file social-auto-poster (sec-2026-10-14-01/02)",
+   "spec": "BUKTI LIVE 07:5x: raw.githubusercontent.com/metabbe3/teknikalidnew/night/prd-2026-10-14-04/social-auto-poster/sessions/ig-session.json = HTTP 200 (2109B); tiktok-session.json 15.6KB (passport-sotl-auth-token-nonce EC private key, expired 12 Jun 2026, device-bound; IG hanya device cookies, TANPA sessionid — risiko takeover rendah, tapi file WAJIB hilang). Commit e532261 (14 Okt, 289 file / +370k baris) = fix ai-stock NYATA tercampur dump social-auto-poster (220 file + node_modules + 96 screenshot + AUDIT_REPORT.md + file '='). FAKTA KUNCI: e532261 BELUM ada di origin/main (merge-base rc=1) — lokal main 13 commit unpushed (origin/main=8ab5e9a). Rewrite history LOKAL saja, TANPA force-push. URUTAN: (1) git branch backup/pre-sec-purge-1015 (rollback anchor); (2) buang path dari 13 commit unpushed: git filter-branch --index-filter 'git rm -r --cached --ignore-unmatch social-auto-poster =' origin/main..main (JANGAN drop commit e532261 utuh — fix ai-stock harus tetap ada; alternatif: rebase -i edit e532261); (3) .gitignore += 'social-auto-poster/' + 'social-auto-poster/sessions/'; (4) git push origin --delete night/prd-2026-10-14-04 (branch publik pembawa sessions); (5) push main (aman — origin belum pernah menerima e532261); (6) verify. DILARANG: pakai/memuat cookies itu; jangan push main SEBELUM filter selesai. DONE-WHEN: (a) curl raw ig-session.json = 404; (b) git ls-files | grep social-auto-poster = 0, '=' tidak tracked; (c) git log -p origin/main..HEAD setelah push | grep -c passport-sotl = 0; (d) fix ai-stock e532261 tetap ada di main (grep 'halusinasi'/'S/R pivot' di src); (e) changelog + handoff + queue flip DI SLOT YANG SAMA. Catatan risiko utk laporan: GitHub cache/fork bisa menahan raw URL beberapa jam pasca-delete — relogin IG/TikTok oleh owner = mematikan nilai cookie sisa (opsional, risiko rendah).",
+   "notes": "Owner APPROVE SEMUA 15 Okt. Window: merge branch night/prd-2026-10-14-04 SUDAH terjadi? cek e532261 masuk main. Butuh: git filter-repo/BFG path e532261 (ig 2.1KB + tiktok 15.6KB raw) + force-push + relogin IG/TikTok + .gitignore social-auto-poster. Jangan pakai cookies itu.",
+   "qa_plan": "Post-slot QA Verifier 03:30: re-curl 2 raw URL = 404 + ls-files 0 + main bersih; sec-2026-10-14-01/02 backlog flip shipped setelah verify.",
+   "created": "2026-10-15T07:59+07:00",
+   "updated": "2026-10-15T07:59+07:00"
   }
- ]
+ ],
+ "tasks": []
 }

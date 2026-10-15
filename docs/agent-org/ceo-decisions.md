@@ -713,3 +713,10 @@ research_brief sudah ditulis ke field `research_brief` product-backlog.json (3 e
 - 90 IP unik 7d → 53 Indonesia (Telkom/Indosat/Telkomsel/XL), ~37 asing.
 - KLASIFIKASI asing: (1) ~25 IP datacenter 1-2 views deep-link /stocks/*.JK + referrer google.com + UA HeadlessChrome/Linux = crawler SEO/AI-scraper UA-spoofed (Aceville SG, US-Chiron, 194.26.202.x, 5.183.91.x dst) — NOISE, ~23-30 views; (2) 3 IP sondaran akun /auth/* (62.112 VPN-US 9 hits, 49.158 Taiwan 3 hits, 119.234 4 hits) — sudah ter-tangkap klausul authHits>=4 algoritma baru (49.158 & 62.112; 119.234 auth=4 ✅); (3) beberapa real-user search Google (referrer google, 1 view, UA device asli).
 - Keputusan: TIDAK blokir massal (traffic kecil, blokir = risiko FP); klausul authHits + ratio-bot sudah menangani di analytics. Watch saja.
+
+
+## CTO note 2026-10-15 — sec-purge P0 & struktur queue
+- P0 (owner approved 07:30): session cookies IG/TikTok live di GitHub publik via branch night/prd-2026-10-14-04 (raw 200). FAKTA BARU CTO: commit pembawa (e532261) BELUM ada di origin/main — main lokal 13 commit unpushed SUDAH track 220 file itu. Push main sebelum purge = bocor ke main.
+- Opsi A: Backend Builder malam 18:30 eksekusi rewrite unpushed-history (tanpa force-push) + delete branch night + .gitignore; spec lengkap di queue sec-purge-2026-10-15. Opsi B: owner jalankan manual sekarang (3 perintah) — lebih cepat tapi tangan owner.
+- Rekomendasi A: jendela risiko 08:00-18:33 rendah (tak ada slot builder sebelum 18:30, quiet zone 11-18); semua bookkeeping commit STAY UNPUSHED sampai purge selesai.
+- Bug dipatch CTO: entry approve tadi tertulis di tasks[] (tak terlihat builder) → sudah dipindah ke entries[] P0; kpi TRUST days_zero err → fixed (nilai -1 = tracking hidup). QA fatal kemarin (brief stale 'segar') sudah tersolve sore 14 Okt; 43/44 pass.
