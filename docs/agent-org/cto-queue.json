@@ -1357,10 +1357,11 @@
    "spec": {
     "konsep": "Koran saham 1-page di web teknikal.id yang UPDATE LIVE sepanjang sesi + push ringkasan ke Telegram channel/bot pada momen kunci. User baca 1 halaman, tidak perlu riset.",
     "jadwal_push": {
-     "06:30 WIB": "PAGI — pre-market: recap Wall Street semalam + IHSG futures/asymi, 3-5 saham menarik hari ini + trading plan (entry/support/resistance dari StockIndicator), news emiten semalam yang mempengaruhi open",
-     "12:00 WIB": "SIANG — half session: IHSG morning session recap, top movers pagi, perubahan watchlist, news cross-check pagi",
-     "15:15 WIB": "SORE — pre-close: arah closing, aksi terakhir (jual/tahan), rangkum rumor penting sore",
-     "17:30 WIB": "CLOSE — full recap hari ini: IHSG close + volume, top gainers/losers, saham watch yang jalan/tidak sesuai plan, preview besok"
+     "06:30": "PAGI pre-market: Wall St semalam, 3-5 saham menarik + trading plan (entry/S/R dari StockIndicator), news semalam",
+     "12:00": "SIANG half-session: recap morning, movers, perubahan watchlist",
+     "15:45": "SORE pre-close: full plan utk sesi akhir — aksi terakhir jual/tahan per watch, IHSG arah closing",
+     "17:45": "CLOSE recap: IHSG close+volume, gainers/losers, plan vs aktual (akurasi track-record!), preview besok",
+     "ANYTIME": "BREAKING: berita signifikan emiten watchlist → push instan max 3/hari"
     },
     "breaking_push": "Monitor news feed (Google News RSS query emiten/watchlist + sumber lokal) tiap 15mnt saat 08:00-17:30; kalau ada berita SIGNIFIKAN tentang emiten di watchlist (akuisisi, dividen, rights issue, suspensi, commodity shock) → push instan '🚨 EMITEN X: <berita> — dampak: <bullish/bearish/netral>' max 3/hari biar tidak spam",
     "sumber_data": "REUSE: Stock + StockPrice + StockIndicator DB (OHLC, golden cross, EMA, oversold — sudah jalan) + live quote endpoint existing (price field) + Google News RSS (query per emiten watchlist, crawl pola idx-sync)",
@@ -1372,7 +1373,8 @@
      "paid tier sebelum gate",
      "push WhatsApp (Telegram dulu — bot token sudah ada)",
      "intraday charting lengkap"
-    ]
+    ],
+    "akurasi_track_record": "Setiap push sore & close mencatat plan vs aktual → halaman /track-record otomatis = trust asset fase 1 roadmap Pro."
    },
    "evidence": [
     "owner roadmap-pro-2026-10-15 (trust-first, gates per fase)",
