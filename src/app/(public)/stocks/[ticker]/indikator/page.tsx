@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import { subDays } from "date-fns";
 import { ChevronRight, Activity, Lock, TrendingUp } from "lucide-react";
@@ -110,7 +110,7 @@ export default async function IndicatorHistoryPage({
 
   // seo-2026-10-15-01: non-canonical URL variants (lowercase / missing .JK)
   // 308 to the canonical /stocks/TICKER.JK/indikator so crawlers consolidate.
-  if (ticker !== data.tickerJK) redirect(`/stocks/${data.tickerJK}/indikator`);
+  if (ticker !== data.tickerJK) permanentRedirect(`/stocks/${data.tickerJK}/indikator`);
 
   const { tickerClean, tickerJK, name, rows } = data;
   const ordered = [...rows].sort((a, b) => b.date.getTime() - a.date.getTime());
