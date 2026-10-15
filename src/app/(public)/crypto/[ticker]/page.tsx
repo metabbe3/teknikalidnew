@@ -92,7 +92,7 @@ export default async function CryptoDetailPage({ params }: { params: Promise<{ t
                 </span>
                 {changePercent !== null && (
                   <span className={`font-mono text-sm font-semibold tabular-nums ${changeColor(changePercent)}`}>
-                    {isPositive ? "+" : ""}{formatPercent(changePercent)}
+                    {formatPercent(changePercent)}
                   </span>
                 )}
               </div>

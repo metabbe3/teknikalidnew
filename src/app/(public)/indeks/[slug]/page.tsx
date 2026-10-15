@@ -191,7 +191,7 @@ export default async function IndexDetailPage({
                         className={`py-3 px-3 text-right tabular-nums font-medium ${changeColor(stock.changePercent)}`}
                       >
                         {stock.changePercent != null
-                          ? `${isPositive ? "+" : ""}${formatPercent(stock.changePercent)}`
+                          ? `${formatPercent(stock.changePercent)}`
                           : "—"}
                       </td>
                       <td
@@ -270,7 +270,6 @@ export default async function IndexDetailPage({
                       <p
                         className={`text-xs font-medium ${changeColor(stock.changePercent)}`}
                       >
-                        {isPositive ? "+" : ""}
                         {formatPercent(stock.changePercent)}
                       </p>
                     )}

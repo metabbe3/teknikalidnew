@@ -48,7 +48,7 @@ export function StockArticleCard({ ticker, name, sector, close, changePercent, r
           )}
           {changePercent !== null && (
             <p className={`text-xs font-medium mt-0.5 ${changeColor(changePercent)}`}>
-              {isPositive ? "+" : ""}{formatPercent(changePercent)}
+              {formatPercent(changePercent)}
             </p>
           )}
         </div>

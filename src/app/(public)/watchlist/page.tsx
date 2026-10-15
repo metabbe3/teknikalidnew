@@ -96,7 +96,6 @@ export default async function WatchlistPage() {
                   </p>
                   {item.changePercent !== null && (
                     <p className={`text-xs font-mono ${changeColor(item.changePercent)}`}>
-                      {item.changePercent >= 0 ? "+" : ""}
                       {formatPercent(item.changePercent)}
                     </p>
                   )}
