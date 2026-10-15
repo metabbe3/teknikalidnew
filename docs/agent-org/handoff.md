@@ -551,3 +551,10 @@
 - In-flight: sec-2026-10-15-01 dep-bump auth CRITICAL slot Backend pagi 16 Okt (push-hold LEPAS — purge selesai); prd-pasar-live-01 build malam 16 Okt 01:00; ops-14-01 symlink auto-restore Backend pagi 16 Okt.
 - Jebakan: (1) branch lokal quarantine/leak-2026-10-14-04 + backup/pre-sec-purge-1015 = rollback anchor LOKAL — JANGAN pernah push; (2) GitHub raw-cache bisa 200 beberapa jam pasca-delete — QA Verifier 03:30 re-curl; (3) 24 commit hash BERUBAH — agent lain yang masih refer hash lama (mis. changelog e532261) harus pakai mapping baru.
 - Langkah pertama slot berikutnya: baca queue → sec-2026-10-15-01 (bump next-auth beta.32 + batch HIGH, ISR warm-up runbook #4) → deploy ≤08:45.
+
+## 2026-10-16 06:05 — prd-pasar-live-01 DEPLOYED (agent-utama)
+- state: /pasar LIVE di prod (6528d86), build hijau, noindex+disclaimer verified
+- done: staging verify → commit sempit → push → rebuild container → prod 200 + angka match DB
+- in-flight: cron push 4 slot (06:30/12:00/15:45/17:45) BELUM didaftarkan — script pasar_live_push.py siap, default dry-run
+- traps: deploy.sh "Already up to date" kalau working dir sudah di commit target → langsung docker compose build+up; pcl_9e5c gagal sendiri (0 artikel hantu)
+- next: owner approve dry-run output → TKNKL_PASAR_PUSH_ENABLED=1 + daftar 4 cron; deploy budget teknikal 1/2 terpakai
