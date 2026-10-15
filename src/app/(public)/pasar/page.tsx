@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHero } from "@/components/layout/page-hero";
-import { pasarLiveService, isLiveWindow, isMarketHours, wibNow } from "@/domains/stock/pasar-live.service";
+import { pasarLiveService, isLiveWindow, isMarketHours, wibNow, wibHHMM } from "@/domains/stock/pasar-live.service";
 import { formatPrice, formatPercent, formatVolume, stripJk } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { TrendingUp, TrendingDown, Newspaper, AlertTriangle, Clock } from "lucide-react";
@@ -53,7 +53,7 @@ export default async function PasarPage() {
   const live = isLiveWindow();
   const marketOpen = isMarketHours();
   const nowWib = wibNow();
-  const preOpen = !live && nowWib.getUTCHours() < 6;
+  const preOpen = !live && wibHHMM(nowWib) < 630;  // 00:00-06:29 = pre-open (fix: 06:00-06:29 sempat jatuh ke 'weekend')
   const weekend = !live && !preOpen;
 
   // ── Pre-open / weekend: rekap kemarin (cheap path, no news fetch) ──
