@@ -15,6 +15,11 @@ import {
   calculateOBV,
   classifyObvTrend,
   calculateSupertrend,
+  calculateChoppiness,
+  calculateIchimoku,
+  calculateWilliamsR,
+  calculateKST,
+  calculateVortex,
   detectSwingPoints,
   classifyMarketStructure,
 } from "@/lib/indicators";
@@ -28,6 +33,11 @@ import {
   translateSupertrend,
   translateOBV,
   translateVWAP,
+  translateChoppiness,
+  translateIchimoku,
+  translateWilliamsR,
+  translateKST,
+  translateVortex,
 } from "@/lib/indicator-translations";
 import type { SwingPoint, MarketStructure } from "@/lib/indicators";
 import { INTERVAL } from "@/lib/constants";
@@ -127,6 +137,12 @@ interface SignalInput {
   supertrend: number | null;
   obvTrend: string | null;
   vwap: number | null;
+  // Sinyal v2 — optional agar caller lama (backfill dsb) tetap type-safe
+  choppiness?: number | null;
+  ichimoku?: { tenkan: number | null; kijun: number | null; senkouA: number | null; senkouB: number | null; chikou: number | null } | null;
+  williamsR?: number | null;
+  kst?: { kst: number | null; signal: number | null } | null;
+  vortex?: { plus: number | null; minus: number | null } | null;
 }
 
 const SIGNAL_LABELS = [
@@ -150,33 +166,49 @@ export function computeSignalScore(input: SignalInput): {
 
   // Trend indicators (40% total, ~10% each)
   const sma = translateSMA(input.sma20, input.sma50, input.sma200, input.price);
-  breakdown.push({ name: "SMA", sentiment: sma.sentiment, weight: 0.10 });
+  breakdown.push({ name: "SMA", sentiment: sma.sentiment, weight: 0.07 });
 
   const ema = translateEMA(input.ema12, input.ema26, input.price);
-  breakdown.push({ name: "EMA", sentiment: ema.sentiment, weight: 0.10 });
+  breakdown.push({ name: "EMA", sentiment: ema.sentiment, weight: 0.07 });
 
   const st = translateSupertrend(input.price, input.supertrend);
-  breakdown.push({ name: "Supertrend", sentiment: st.sentiment, weight: 0.10 });
+  breakdown.push({ name: "Supertrend", sentiment: st.sentiment, weight: 0.07 });
 
   const adx = translateADX(input.adx);
-  breakdown.push({ name: "ADX", sentiment: adx.sentiment, weight: 0.10 });
+  breakdown.push({ name: "ADX", sentiment: adx.sentiment, weight: 0.07 });
 
   // Momentum indicators (35% total, ~12% each)
   const rsi = translateRSI(input.rsi14);
-  breakdown.push({ name: "RSI", sentiment: rsi.sentiment, weight: 0.12 });
+  breakdown.push({ name: "RSI", sentiment: rsi.sentiment, weight: 0.08 });
 
   const macd = translateMACD(input.macdHist);
-  breakdown.push({ name: "MACD", sentiment: macd.sentiment, weight: 0.12 });
+  breakdown.push({ name: "MACD", sentiment: macd.sentiment, weight: 0.08 });
 
   const stoch = translateStochastic(input.stochK, input.stochD);
-  breakdown.push({ name: "Stochastic", sentiment: stoch.sentiment, weight: 0.11 });
+  breakdown.push({ name: "Stochastic", sentiment: stoch.sentiment, weight: 0.07 });
 
   // Volume indicators (25% total, ~12.5% each)
   const obv = translateOBV(input.obvTrend);
-  breakdown.push({ name: "OBV", sentiment: obv.sentiment, weight: 0.125 });
+  breakdown.push({ name: "OBV", sentiment: obv.sentiment, weight: 0.08 });
 
   const vwap = translateVWAP(input.price, input.vwap);
-  breakdown.push({ name: "VWAP", sentiment: vwap.sentiment, weight: 0.125 });
+  breakdown.push({ name: "VWAP", sentiment: vwap.sentiment, weight: 0.07 });
+
+  // Sinyal v2 (owner 15 Okt) — 5 indikator hasil riset TradingView
+  const chop = translateChoppiness(input.choppiness ?? null);
+  breakdown.push({ name: "Choppiness", sentiment: chop.sentiment, weight: 0.08 });
+
+  const ichi = translateIchimoku(input.ichimoku ?? null, input.price);
+  breakdown.push({ name: "Ichimoku", sentiment: ichi.sentiment, weight: 0.08 });
+
+  const wr = translateWilliamsR(input.williamsR ?? null);
+  breakdown.push({ name: "Williams %R", sentiment: wr.sentiment, weight: 0.06 });
+
+  const kst = translateKST(input.kst ?? null);
+  breakdown.push({ name: "KST", sentiment: kst.sentiment, weight: 0.06 });
+
+  const vortex = translateVortex(input.vortex ?? null);
+  breakdown.push({ name: "Vortex", sentiment: vortex.sentiment, weight: 0.06 });
 
   const rawScore = breakdown.reduce(
     (sum, b) => sum + sentimentToValue(b.sentiment) * b.weight,
@@ -260,6 +292,12 @@ export const indicatorService = {
     const vwapResult = calculateVWAP(closes, volumes, highs, lows);
     const obvResult = calculateOBV(closes, volumes);
     const supertrendResult = calculateSupertrend(closes, highs, lows);
+    // Sinyal v2 (owner 15 Okt)
+    const chopResult = calculateChoppiness(highs, lows, closes, 14);
+    const ichimokuResult = calculateIchimoku(highs, lows, closes);
+    const williamsRResult = calculateWilliamsR(closes, highs, lows, 14);
+    const kstResult = calculateKST(closes);
+    const vortexResult = calculateVortex(highs, lows, closes, 14);
 
     const smaCross = detectCrossover(sma50, sma200, prices, "golden_cross", "death_cross");
     const emaCross = detectCrossover(ema12, ema26, prices, "bullish", "bearish");
@@ -301,6 +339,22 @@ export const indicatorService = {
       obv: obvResult,
       obvTrend: classifyObvTrend(obvResult),
       supertrend: supertrendResult,
+      choppiness: chopResult,
+      ichimoku: {
+        tenkan: ichimokuResult.map((i) => i?.tenkan ?? null),
+        kijun: ichimokuResult.map((i) => i?.kijun ?? null),
+        senkouA: ichimokuResult.map((i) => i?.senkouA ?? null),
+        senkouB: ichimokuResult.map((i) => i?.senkouB ?? null),
+      },
+      williamsR: williamsRResult,
+      kst: {
+        kst: kstResult.map((k) => k?.kst ?? null),
+        signal: kstResult.map((k) => k?.signal ?? null),
+      },
+      vortex: {
+        plus: vortexResult.map((v) => v?.plus ?? null),
+        minus: vortexResult.map((v) => v?.minus ?? null),
+      },
       smaCrossSignal: smaCross.signal,
       smaCrossDate: smaCross.date,
       emaCrossSignal: emaCross.signal,
@@ -349,6 +403,11 @@ export const indicatorService = {
     const vwapResult = calculateVWAP(closes, volumes, highs, lows);
     const obvResult = calculateOBV(closes, volumes);
     const supertrendResult = calculateSupertrend(closes, highs, lows);
+    const chopResult = calculateChoppiness(highs, lows, closes, 14);
+    const ichimokuResult = calculateIchimoku(highs, lows, closes);
+    const williamsRResult = calculateWilliamsR(closes, highs, lows, 14);
+    const kstResult = calculateKST(closes);
+    const vortexResult = calculateVortex(highs, lows, closes, 14);
 
     const last = closes.length - 1;
     const date = prices[last].date;
@@ -385,6 +444,23 @@ export const indicatorService = {
         obv: obvResult[last],
         obvTrend: classifyObvTrend(obvResult),
         supertrend: supertrendResult[last],
+        choppiness: chopResult[last],
+        ichimoku: {
+          tenkan: ichimokuResult[last]?.tenkan ?? null,
+          kijun: ichimokuResult[last]?.kijun ?? null,
+          senkouA: ichimokuResult[last]?.senkouA ?? null,
+          senkouB: ichimokuResult[last]?.senkouB ?? null,
+          chikou: ichimokuResult[last]?.chikou ?? null,
+        },
+        williamsR: williamsRResult[last],
+        kst: {
+          kst: kstResult[last]?.kst ?? null,
+          signal: kstResult[last]?.signal ?? null,
+        },
+        vortex: {
+          plus: vortexResult[last]?.plus ?? null,
+          minus: vortexResult[last]?.minus ?? null,
+        },
         smaCrossSignal: smaCross.signal,
         smaCrossDate: smaCross.date,
         emaCrossSignal: emaCross.signal,

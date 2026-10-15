@@ -31,7 +31,7 @@ import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { IndicatorTooltip } from "@/components/ui/indicator-tooltip";
 import { technicalAnalysisService, computeSignalScore } from "@/domains/stock/technical-analysis.service";
 import { stockRepository } from "@/domains/stock/stock.repository";
-import { calculatePivotPoints } from "@/lib/indicators";
+import { calculatePivotPoints, calculateChoppiness, calculateIchimoku, calculateWilliamsR, calculateKST, calculateVortex } from "@/lib/indicators";
 import { summarizeVerdict, toSnapshot } from "@/lib/verdict-prose";
 import { subDays } from "date-fns";
 import { SITE_URL, isCryptoTicker } from "@/lib/constants";
@@ -149,6 +149,21 @@ export default async function StockDetailPage({
 
   const now = new Date().getTime();
 
+  // Sinyal v2 (owner 15 Okt): 5 indikator baru dihitung fresh dari prices
+  // (row StockIndicator DB belum menyimpan kolomnya — menunggu migrasi worker)
+  const hist = prices.slice().reverse();
+  const closesH = hist.map((p) => Number(p.close));
+  const highsH = hist.map((p) => Number(p.high));
+  const lowsH = hist.map((p) => Number(p.low));
+  const lastIdx = closesH.length - 1;
+  const v2 = {
+    choppiness: calculateChoppiness(highsH, lowsH, closesH, 14)[lastIdx] ?? null,
+    ichimoku: calculateIchimoku(highsH, lowsH, closesH)[lastIdx] ?? null,
+    williamsR: calculateWilliamsR(closesH, highsH, lowsH, 14)[lastIdx] ?? null,
+    kst: calculateKST(closesH)[lastIdx] ?? null,
+    vortex: calculateVortex(highsH, lowsH, closesH, 14)[lastIdx] ?? null,
+  };
+
   // Compute signal breakdown for health score detail
   const signalBreakdown = indicators ? computeSignalScore({
     price: close,
@@ -165,6 +180,7 @@ export default async function StockDetailPage({
     supertrend: indicators.supertrend,
     obvTrend: indicators.obvTrend ?? null,
     vwap: indicators.vwap,
+    ...v2,
   }).breakdown : [];
 
   const smaCrossText = (() => {

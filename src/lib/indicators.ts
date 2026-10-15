@@ -272,3 +272,135 @@ export function classifyMarketStructure(swings: SwingPoint[]): MarketStructure {
   if (highsDescending && lowsDescending) return "LOWER_LOWS";
   return "CONSOLIDATION";
 }
+
+// ─── Sinyal v2 (owner 15 Okt "tambahkan semua") — 5 indikator baru dari riset TradingView ───
+
+/** Choppiness Index (CHOP) — 0..100+. >61.8 = sideways (sinyal lain tahan), <38.2 = trending kuat. */
+export function calculateChoppiness(
+  highs: number[],
+  lows: number[],
+  closes: number[],
+  period = 14
+): (number | null)[] {
+  const result: (number | null)[] = [];
+  const trs: number[] = [];
+  for (let i = 0; i < closes.length; i++) {
+    const prevClose = i > 0 ? closes[i - 1] : closes[i];
+    trs.push(Math.max(highs[i] - lows[i], Math.abs(highs[i] - prevClose), Math.abs(lows[i] - prevClose)));
+    if (i < period - 1) { result.push(null); continue; }
+    const window = trs.slice(i - period + 1, i + 1);
+    const sumTR = window.reduce((a, b) => a + b, 0);
+    const hh = Math.max(...highs.slice(i - period + 1, i + 1));
+    const ll = Math.min(...lows.slice(i - period + 1, i + 1));
+    const range = hh - ll;
+    if (sumTR <= 0 || range <= 0) { result.push(null); continue; }
+    result.push((100 * Math.log10(sumTR / range)) / Math.log10(period));
+  }
+  return result;
+}
+
+export interface IchimokuResult {
+  tenkan: number | null;
+  kijun: number | null;
+  senkouA: number | null;
+  senkouB: number | null;
+  chikou: number | null;
+}
+
+/** Ichimoku Kinko Hyo (9/26/52) — kumo via senkouA/B. */
+export function calculateIchimoku(highs: number[], lows: number[], closes: number[]): (IchimokuResult | null)[] {
+  const mid = (p: number, i: number) => {
+    if (i < p - 1) return null;
+    const hh = Math.max(...highs.slice(i - p + 1, i + 1));
+    const ll = Math.min(...lows.slice(i - p + 1, i + 1));
+    return (hh + ll) / 2;
+  };
+  const tenkanSeries: (number | null)[] = [];
+  const kijunSeries: (number | null)[] = [];
+  const senkouBSeries: (number | null)[] = [];
+  for (let i = 0; i < closes.length; i++) {
+    tenkanSeries.push(mid(9, i));
+    kijunSeries.push(mid(26, i));
+    senkouBSeries.push(mid(52, i));
+  }
+  const senkouASeries: (number | null)[] = tenkanSeries.map((t, i) =>
+    t !== null && kijunSeries[i] !== null ? (t + kijunSeries[i]!) / 2 : null
+  );
+  const displ = 26;
+  return closes.map((_, i) => {
+    const a = i - displ >= 0 ? senkouASeries[i - displ] : null;
+    const b = i - displ >= 0 ? senkouBSeries[i - displ] : null;
+    const chikou = i + displ < closes.length ? closes[i + displ] : null;
+    if (tenkanSeries[i] === null && kijunSeries[i] === null && a === null && b === null) return null;
+    return { tenkan: tenkanSeries[i], kijun: kijunSeries[i], senkouA: a, senkouB: b, chikou };
+  });
+}
+
+/** Williams %R — 0..-100. >-20 overbought, <-80 oversold. */
+export function calculateWilliamsR(
+  closes: number[],
+  highs: number[],
+  lows: number[],
+  period = 14
+): (number | null)[] {
+  const result: (number | null)[] = [];
+  for (let i = 0; i < closes.length; i++) {
+    if (i < period - 1) { result.push(null); continue; }
+    const hh = Math.max(...highs.slice(i - period + 1, i + 1));
+    const ll = Math.min(...lows.slice(i - period + 1, i + 1));
+    if (hh === ll) { result.push(null); continue; }
+    result.push(((hh - closes[i]) / (hh - ll)) * -100);
+  }
+  return result;
+}
+
+export interface KSTResult { kst: number | null; signal: number | null; }
+
+/** Know Sure Thing (KST) — momentum smoothed multi-period, ROC 10/15/20/30 × SMA 10/10/10/15, signal 9. */
+export function calculateKST(closes: number[]): (KSTResult | null)[] {
+  const roc = (p: number, i: number) => (i >= p ? (closes[i] - closes[i - p]) / closes[i - p] : null);
+  const smaOf = (arr: (number | null)[], p: number, i: number) => {
+    const win = arr.slice(Math.max(0, i - p + 1), i + 1).filter((v): v is number => v !== null);
+    return win.length === p ? win.reduce((a, b) => a + b, 0) / p : null;
+  };
+  const r1: (number | null)[] = [], r2: (number | null)[] = [], r3: (number | null)[] = [], r4: (number | null)[] = [];
+  for (let i = 0; i < closes.length; i++) { r1.push(roc(10, i)); r2.push(roc(15, i)); r3.push(roc(20, i)); r4.push(roc(30, i)); }
+  const kstRaw: (number | null)[] = [];
+  for (let i = 0; i < closes.length; i++) {
+    const s1 = smaOf(r1, 10, i), s2 = smaOf(r2, 10, i), s3 = smaOf(r3, 10, i), s4 = smaOf(r4, 15, i);
+    kstRaw.push(s1 !== null && s2 !== null && s3 !== null && s4 !== null ? s1 + 2 * s2 + 3 * s3 + 4 * s4 : null);
+  }
+  const signal = (i: number) => smaOf(kstRaw, 9, i);
+  return closes.map((_, i) => {
+    if (kstRaw[i] === null) return null;
+    return { kst: kstRaw[i], signal: signal(i) };
+  });
+}
+
+export interface VortexResult { plus: number | null; minus: number | null; }
+
+/** Vortex Indicator (VI+/VI-, period 14) — tren naik saat plus > minus. */
+export function calculateVortex(
+  highs: number[],
+  lows: number[],
+  closes: number[],
+  period = 14
+): (VortexResult | null)[] {
+  const result: (VortexResult | null)[] = [];
+  const vmPlus: number[] = [0], vmMinus: number[] = [0], trs: number[] = [highs[0] - lows[0]];
+  for (let i = 1; i < closes.length; i++) {
+    vmPlus.push(Math.abs(highs[i] - lows[i - 1]));
+    vmMinus.push(Math.abs(lows[i] - highs[i - 1]));
+    const prevClose = closes[i - 1];
+    trs.push(Math.max(highs[i] - lows[i], Math.abs(highs[i] - prevClose), Math.abs(lows[i] - prevClose)));
+  }
+  for (let i = 0; i < closes.length; i++) {
+    if (i < period - 1) { result.push(null); continue; }
+    const sp = vmPlus.slice(i - period + 1, i + 1).reduce((a, b) => a + b, 0);
+    const sm = vmMinus.slice(i - period + 1, i + 1).reduce((a, b) => a + b, 0);
+    const st = trs.slice(i - period + 1, i + 1).reduce((a, b) => a + b, 0);
+    if (st <= 0) { result.push(null); continue; }
+    result.push({ plus: sp / st, minus: sm / st });
+  }
+  return result;
+}

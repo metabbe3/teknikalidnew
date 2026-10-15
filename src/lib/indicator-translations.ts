@@ -127,3 +127,41 @@ export const INDICATOR_TIPS: Record<string, string> = {
   "Golden Cross": "SMA 50 memotong SMA 200 ke atas — sinyal bullish jangka panjang.",
   "Death Cross": "SMA 50 memotong SMA 200 ke bawah — sinyal bearish jangka panjang.",
 };
+
+// ─── Sinyal v2 (owner 15 Okt) — translasi 5 indikator baru ───
+
+export function translateChoppiness(chop: number | null): Translation {
+  if (chop === null) return { short: "Tidak ada data", explanation: "", sentiment: "netral" };
+  if (chop > 61.8) return { short: "Sideways", explanation: "Pasar bergerak datar (CHOP " + chop.toFixed(0) + ") — sinyal tren rawan false, tunda entry.", sentiment: "netral" };
+  if (chop < 38.2) return { short: "Trending Kuat", explanation: "Tren sehat (CHOP " + chop.toFixed(0) + ") — sinyal tren lebih bisa dipercaya.", sentiment: "positif" };
+  return { short: "Transisi", explanation: "Pasar mulai membentuk arah (CHOP " + chop.toFixed(0) + ").", sentiment: "netral" };
+}
+
+export function translateIchimoku(i: { tenkan: number | null; kijun: number | null; senkouA: number | null; senkouB: number | null } | null, price: number | null): Translation {
+  if (!i || price === null || i.senkouA === null || i.senkouB === null) return { short: "Tidak ada data", explanation: "", sentiment: "netral" };
+  const cloudTop = Math.max(i.senkouA, i.senkouB);
+  const cloudBottom = Math.min(i.senkouA, i.senkouB);
+  if (price > cloudTop) return { short: "Di Atas Kumo", explanation: "Harga menembus awan Ichimoku — bias bullish.", sentiment: "positif" };
+  if (price < cloudBottom) return { short: "Di Bawah Kumo", explanation: "Harga di bawah awan Ichimoku — bias bearish.", sentiment: "negatif" };
+  if (i.tenkan !== null && i.kijun !== null && i.tenkan > i.kijun) return { short: "Dalam Kumo (TK Bullish)", explanation: "Harga di dalam awan, Tenkan > Kijun — mulai menguat.", sentiment: "positif" };
+  return { short: "Dalam Kumo", explanation: "Harga di dalam awan Ichimoku — netral / konsolidasi.", sentiment: "netral" };
+}
+
+export function translateWilliamsR(wr: number | null): Translation {
+  if (wr === null) return { short: "Tidak ada data", explanation: "", sentiment: "netral" };
+  if (wr > -20) return { short: "Overbought", explanation: "%R " + wr.toFixed(0) + " — jenuh beli, waspada koreksi.", sentiment: "negatif" };
+  if (wr < -80) return { short: "Oversold", explanation: "%R " + wr.toFixed(0) + " — jenuh jual, potensi rebound.", sentiment: "positif" };
+  return { short: "Netral", explanation: "%R " + wr.toFixed(0) + " di zona netral.", sentiment: "netral" };
+}
+
+export function translateKST(k: { kst: number | null; signal: number | null } | null): Translation {
+  if (!k || k.kst === null || k.signal === null) return { short: "Tidak ada data", explanation: "", sentiment: "netral" };
+  if (k.kst > k.signal) return { short: "KST Bullish", explanation: "Momentum gabungan naik (KST di atas signal).", sentiment: "positif" };
+  return { short: "KST Bearish", explanation: "Momentum gabungan turun (KST di bawah signal).", sentiment: "negatif" };
+}
+
+export function translateVortex(v: { plus: number | null; minus: number | null } | null): Translation {
+  if (!v || v.plus === null || v.minus === null) return { short: "Tidak ada data", explanation: "", sentiment: "netral" };
+  if (v.plus > v.minus) return { short: "Vortex Bullish", explanation: "VI+ (" + v.plus.toFixed(2) + ") > VI- (" + v.minus.toFixed(2) + ") — tekanan beli dominan.", sentiment: "positif" };
+  return { short: "Vortex Bearish", explanation: "VI- (" + v.minus.toFixed(2) + ") > VI+ (" + v.plus.toFixed(2) + ") — tekanan jual dominan.", sentiment: "negatif" };
+}
