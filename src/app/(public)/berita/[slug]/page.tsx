@@ -327,12 +327,7 @@ export default async function BeritaArticlePage({
               {/* Analysis body */}
               <ArticleContent content={article.content} />
 
-              {/* Contextual signal links (server-rendered, SEO/discovery) */}
-              <RelatedSignals ticker={relatedSignalTicker} />
-
-              <RadarCtaLink />
-
-              {/* Stock cards for mentioned tickers */}
+              {/* Stock cards for mentioned tickers — first: direct continuation of reading intent */}
               {stockCards.length > 0 && (
                 <div className="mt-8 space-y-3">
                   <p className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">Saham Terkait</p>
@@ -343,6 +338,9 @@ export default async function BeritaArticlePage({
                   </div>
                 </div>
               )}
+
+              {/* Contextual signal links (server-rendered, SEO/discovery) */}
+              <RelatedSignals ticker={relatedSignalTicker} />
 
               {/* Related articles */}
               {relatedArticles.length > 0 && (
@@ -371,6 +369,8 @@ export default async function BeritaArticlePage({
                   </div>
                 </div>
               )}
+
+              <RadarCtaLink />
 
               {/* Source attribution */}
               {article.generationMeta && typeof article.generationMeta === "object" && "sourceUrl" in article.generationMeta && (
