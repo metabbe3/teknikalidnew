@@ -1374,7 +1374,11 @@
      "push WhatsApp (Telegram dulu — bot token sudah ada)",
      "intraday charting lengkap"
     ],
-    "akurasi_track_record": "Setiap push sore & close mencatat plan vs aktual → halaman /track-record otomatis = trust asset fase 1 roadmap Pro."
+    "akurasi_track_record": "Setiap push sore & close mencatat plan vs aktual → halaman /track-record otomatis = trust asset fase 1 roadmap Pro.",
+    "page_semantics": "/pasar = HARI INI saja (real-time). Bukan arsip. Kalau diakses sebelum open 06:30 = tampil 'pasar belum buka' + rekap kemarin singkat. NO full backdate (biaya render per hari + thin-content risk).",
+    "arsip_policy": "Backdate GRATIS lewat jalur existing: recap 17:45 auto-publish jadi Article brief-pasar-YYYY-MM-DD (format SUDAH jalan sejak 10 Sep) → masuk sitemap + SEO. Page live mati tiap hari, artikel recap hidup selamanya. Track-record = satu-satunya 'histori' lain yang dibangun.",
+    "seo_policy": "/pasar live = NOINDEX (konten berubah tiap jam, tidak ada keyword stabil — jangan dipaksa SEO). SEO engine tetap 40 artikel/hari + recap harian artikel ('rekap ihsg hari ini' = query dicari orang TIAP HARI). /pasar = retention, artikel = acquisition, TG = habit.",
+    "login_policy": "FASE SEKARANG: TANPA login utk /pasar (friksi bunuh habit; setiap login wall = drop 30-50%). Identity = join TG channel (zero friction, itu 'akun'-nya) + email opsional. LOGIN EMAIL/Google baru muncul saat Pro launch (fase 3) utk gating konten premium — bukan utk free. Gate waitlist 300 dihitung dari TG + email."
    },
    "evidence": [
     "owner roadmap-pro-2026-10-15 (trust-first, gates per fase)",
