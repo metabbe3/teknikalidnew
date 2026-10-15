@@ -582,23 +582,7 @@ export default async function StockDetailPage({
             {/* OHLC + 52-week strip — anon-visible (SEO + first impression; data sudah SSR di page) */}
             {close !== null && (
               <div className="mt-5 pt-4 border-t border-border">
-                {/* Section nav — di DALAM price card (atas): terlihat sejak first paint */}
-              <div className="flex gap-1 overflow-x-auto -mx-1 px-1 pt-1 pb-0.5">
-                {[
-                  ["chart", "📈 Chart"],
-                  ["indikator", "🧭 Indikator"],
-                  ["ai", "✨ AI"],
-                  ...(isAuthed ? [["plan", "🎯 Trading Plan"]] : []),
-                ].map(([id, label]) => (
-                  <a
-                    key={id}
-                    href={`#${id}`}
-                    className="shrink-0 rounded-full border border-border px-3 py-1 text-[11px] font-semibold text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
-                  >
-                    {label}
-                  </a>
-                ))}
-              </div>
+                {/* Section nav dipindah ke sticky bar tunggal di bawah (dedupe 15 Okt — dulu 2 baris identik) */}
 
               <div className="grid grid-cols-3 sm:grid-cols-6 gap-x-4 gap-y-2 text-xs" aria-label="Statistik harga hari ini">
                   <div>
