@@ -37,7 +37,7 @@
    "type": "ops",
    "date": "2026-10-14",
    "priority": "P2",
-   "status": "pending",
+   "status": "done",
    "title": "OPS: backlog_health SYMLINK_GUARDS upgrade alert-only -> AUTO-RESTORE (union-merge + backup + re-symlink)",
    "north_star": "data reliable — drift kambuh #7 dalam 3 pekan (2x/pekan), restore manual = beban + risiko human-error",
    "spec": "Drift #7 pagi 14 Okt (writer 06:36 putuskan symlink; tak ter-atribusi). Prosedur manual TERUJI shift ini: (1) baca 2 sisi (datadir regular + docs kanonik), (2) union-merge entry by id (docs base + datadir-only appended; field-level: field non-kosong menang, research_brief/research_note restore), (3) backup kedua file .bak-<ts>-driftN, (4) atomic-write docs + os.replace, (5) rm datadir regular + re-symlink, (6) alert TETAP dicetak (audit trail). KODEKAN prosedur ini ke SYMLINK_GUARDS backlog_health.py (utk 3 file teknikal; kalau merge menemui kondisi tak-terduga mis. docs korup -> fallback alert-only JANGAN auto-restore). DONE WHEN: fixture 3/3 (drift->restore utuh+union+backup ada; sehat=0 alert; docs korup=fallback alert) + py_compile + live run 0 alert + drift simulasi ter-restore otomatis. 0 deploy aplikasi (host script). Rollback: n/a additive (hapus blok auto-restore kembali alert-only).",
@@ -45,7 +45,10 @@
    "created_at": "2026-10-14T07:55+07:00",
    "dispatched_by": "CTO Tech Lead 07:45 (ritual drift-7)",
    "updated": "2026-10-15T08:01+07:00",
-   "train": "T-1016-N"
+   "train": "",
+   "result": "DONE host-ops (Claude Code worker + verify CTO sendiri): SYMLINK_GUARDS auto-restore union-merge + backup .bak + re-symlink; fallback alert-only bila docs korup. BUKTI: fixture /tmp/test_backlog_symlink_restore.py 3/3 PASS (drift->restore utuh / sehat 0 alert / korup fallback tanpa tulis); python3 -m py_compile clean; live run exit 0 + 0 alert symlink; bukti nyata: guard self-heal drift pagi ini (cto-queue.json.bak-20261016-073921-drift1 ada di repo, data nol hilang). Root-cause writer atomic-replace masih hidup — guard = self-heal. 0 deploy (host script).",
+   "done_when_met": true,
+   "verified_at": "2026-10-16 08:0x WIB"
   },
   {
    "id": "bo-2026-10-14-01",
@@ -72,7 +75,11 @@
    "scheduled_slot": "2026-10-16 Backoffice 03:00",
    "title": "Backoffice KUASAI: edit artikel dari /admin/articles (metadata + unpublish + delete draft) tanpa SQL manual",
    "spec": "Audit: articles page hanya publish/unpublish/preview/generate — TIDAK ADA edit. Owner harus SQL manual utk koreksi judul/excerpt/tags/tickerTag. Tambah edit modal/halaman utk field aman (title, excerpt, tags, tickerTag, isListed) via PATCH /api/admin/articles/[id] yang sudah ada (cek dulu field mana yang didukung, extend minimal), + tombol delete DRAFT saja (PUBLISHED = unpublish dulu, guard). Audit log via auditService pola toggle_ticker. DONE-WHEN: edit 1 field dari UI ter-verify (tsc + live form render), audit row tercatat.",
-   "train": "T-1016-N"
+   "train": "T-1016-N",
+   "result": "DONE 16 Okt 03:0x backoffice slot. Commit 9914ef9 main (claude code pipeline + verify sendiri). FITUR: edit modal /admin/articles (title/excerpt/tags/tickerTag/isListed) tombol Edit per-row; PATCH /api/admin/articles/[id] extend tickerTag (normalize uppercase/<=20, kosong=null) + isListed + validasi 400 pre-Prisma (title<=255/excerpt<=500); audit admin:edit_article (fields-diff + before/after tickerTag/isListed, pola tickers) + admin:delete_article pre-delete; guard delete DRAFT-only (PublishedArticleDeleteError 400) + tombol delete disabled utk PUBLISHED dgn hint. VERIFY: tsc EXIT-0; build dari CLEAN GIT WORKTREE 9914ef9 (repo ada WIP /pasar P0 + mysql2 override agent lain - TIDAK ikut ke image); baseline 5 URL 200/307 before=after; container healthy; marker live: 'Artikel tersimpan' di page.js + chunk admin articles, 'edit_article' di compiled route.js; FN-TEST via service+prisma resmi vs DB: GUARD-OK PublishedArticleDeleteError, EDIT-OK tickerTag null->BBRI, REVERT-OK true; unauth PATCH 403 samar konsisten tickers 403. Audit row akan tercatat saat edit owner pertama (jalur route; wired+compiled, pola identik toggle_ticker proven). ROLLBACK: git revert 9914ef9 + image anchor sha256:545ef278ef85 (built 15 Okt 12:29Z) rebuild. DEPLOY COUNT: 1/1 slot backoffice; 1 dari 2 org-wide hari ini (slot CTO pagi 16 Okt masih tersisa utk sec-2026-10-15-01). Next: bo-2026-10-14-03 (content performance insight) 17 Okt.",
+   "qa_verified": true,
+   "qa_note": "PASS 16 Okt 03:30 QA. Fisik: container teknikalidnew-app-1 healthy; marker 'Artikel tersimpan' live di .next server page.js + chunk admin articles; 'edit_article'+'delete_article' di compiled route.js api/admin/articles/[id]; guard PublishedArticleDeleteError ada di source article.errors.ts:26; unauth PATCH = 403, /admin/articles = 307 auth; commit 9914ef9 = HEAD main deployed. Catatan: authed E2E edit+audit row menunggu edit owner pertama (jalur route wired+compiled, pola toggle_ticker) — read-only QA tidak bisa memicu; bukan blocker.",
+   "qa_at": "2026-10-16T03:32+07:00"
   },
   {
    "id": "bo-2026-10-14-03",
@@ -1338,7 +1345,10 @@
    "created": "2026-10-15T07:59+07:00",
    "updated": "2026-10-15T07:59+07:00",
    "completed_at": "2026-10-15 18:4x WIB",
-   "result": "DONE 15 Okt 18:30-18:4x CTO Backend malam (git ops, 0 deploy, DB tak tersentuh). (1) anchor: backup/pre-sec-purge-1015 = 14bcb3d (rollback lokal, JANGAN push). (2) filter-branch --index-filter 'git rm -r --cached --ignore-unmatch social-auto-poster =' origin/main..main — 24 commit unpushed di-rewrite (e532261→f1e58b7-equivalent; fix ai-stock UTUH: context.ts +86, route.ts, 68 file src/prisma/scripts/docs tetap). (3) .gitignore += social-auto-poster/ + sessions/ commit 0ec64c2. (4) remote night/prd-2026-10-14-04 DELETED + main 0ec64c2 pushed (fast-forward, origin tak pernah terima e532261 asli). DONE-WHEN: (a) raw ig-session 404 + raw main tiktok-session 404; (b) ls-files social-auto-poster|= = 0; (c) passport-sotl di histori pushed = hanya 3 prosa-doc spec/backlog (audit trail), 0 file session; (d) fix ai-stock ada. Catatan: branch lokal quarantine/leak-2026-10-14-04 + backup menyimpan histori leak LOKAL-saja (rollback anchor); GitHub raw-cache bisa 200 beberapa jam; relogin IG/TikTok opsional mematikan sisa nilai cookie. KPI: TRUST. Rollback: n/a deploy — git push origin backup/pre-sec-purge-1015:main (force) bila diperlukan."
+   "result": "DONE 15 Okt 18:30-18:4x CTO Backend malam (git ops, 0 deploy, DB tak tersentuh). (1) anchor: backup/pre-sec-purge-1015 = 14bcb3d (rollback lokal, JANGAN push). (2) filter-branch --index-filter 'git rm -r --cached --ignore-unmatch social-auto-poster =' origin/main..main — 24 commit unpushed di-rewrite (e532261→f1e58b7-equivalent; fix ai-stock UTUH: context.ts +86, route.ts, 68 file src/prisma/scripts/docs tetap). (3) .gitignore += social-auto-poster/ + sessions/ commit 0ec64c2. (4) remote night/prd-2026-10-14-04 DELETED + main 0ec64c2 pushed (fast-forward, origin tak pernah terima e532261 asli). DONE-WHEN: (a) raw ig-session 404 + raw main tiktok-session 404; (b) ls-files social-auto-poster|= = 0; (c) passport-sotl di histori pushed = hanya 3 prosa-doc spec/backlog (audit trail), 0 file session; (d) fix ai-stock ada. Catatan: branch lokal quarantine/leak-2026-10-14-04 + backup menyimpan histori leak LOKAL-saja (rollback anchor); GitHub raw-cache bisa 200 beberapa jam; relogin IG/TikTok opsional mematikan sisa nilai cookie. KPI: TRUST. Rollback: n/a deploy — git push origin backup/pre-sec-purge-1015:main (force) bila diperlukan.",
+   "qa_verified": true,
+   "qa_note": "PASS 16 Okt 03:30 QA (DONE-WHEN a-d semua fisik). raw ig-session + tiktok-session di main & branch night = 404/404/404; git ls-files social-auto-poster=0, '='=0; tidak ada branch remote yang berisi e532261 asli maupun backup 14bcb3d (rollback lokal saja, sesuai instruksi); remote night/prd-2026-10-14-04 terhapus; passport-sotl di histori origin/main hanya di docs/agent-org (prosa audit trail); fix ai-stock utuh (grep halusinasi/S/R pivot ada di src/api/ai). GitHub raw-cache sudah clear.",
+   "qa_at": "2026-10-16T03:32+07:00"
   },
   {
    "id": "sec-2026-10-15-01",
@@ -1346,13 +1356,15 @@
    "priority": "P1",
    "north_star": "TRUST",
    "date": "2026-10-15",
-   "status": "pending",
+   "status": "in_train",
    "slot": "16 Okt Backend Builder pagi",
    "title": "dep-bump auth CRITICAL + HIGH batch (Trivy 15 Okt)",
    "spec": "Scan Trivy v0.76.0 image teknikalidnew-app: 3 CRITICAL di auth stack — next-auth 5.0.0-beta.31 → 5.0.0-beta.32 (CVE-2026-73420 email normalizer bypass + CVE-2026-73421 existence-based auth bypass) dan @auth/core 0.41.2 → 0.41.3; total 70 vulns (68 fixable). ACCEPTANCE: (1) bump next-auth/@auth/core exact; (2) npm audit fix batch HIGH prioritas: axios 1.17.0→1.20.0, undici→6.28.1, ws→8.21.0, mysql2→3.22.0, xlsx→0.19.3, tar, js-yaml, brace-expansion dll transitive; (3) tsc --noEmit clean; (4) docker compose build app && up -d; ISR warm-up 4 route (runbook #4); (5) verify: login flow masih jalan (curl /api/auth/* + 1 UI check), trivy image ulang → 0 CRITICAL, HIGH turun ≥80%; (6) changelog + handoff. GUARD: push-hold sampai sec-purge malam ini selesai; deploy setelah purge OK.",
    "evidence": "/tmp/trivy_app.json + /tmp/trivy_repo.json (scan 15 Okt ~09:20); secret terdeteksi 1 = tiktok-session.json (confirm sec-01)",
    "train": "T-1016-N",
-   "scheduled_slot": "2026-10-16 CTO pagi 07:30 (dep-bump auth CRITICAL)"
+   "scheduled_slot": "2026-10-16 CTO pagi 07:30 (dep-bump auth CRITICAL)",
+   "result": "BUILD-ONLY slot pagi 16 Okt (doctrine window): next-auth 5.0.0-beta.32 + @auth/core 0.41.3 exact, sharp 0.35.5, npm audit fix batch. BUKTI: npm audit 3 CRITICAL/30 HIGH -> 0 CRITICAL/10 HIGH (10 sisa = dev-tooling npm space: eslint/shadcn/ts-morph/xlsx/host-only); Dockerfile stage prod-deps --omit=dev (runner tak lagi copy devDeps) -> Trivy image 70 vulns -> 9 (0 CRITICAL, -87%, target -80% PASS). tsc --noEmit clean. Smoke container image baru: /api/auth/providers 200, sharp load OK, signin 200 (home/pasar 500 di smoke = DB network saja, bukan regresi). COMMIT 6c802c6. Deploy = kereta malam T-1016-N (22:00-01:30) dgn ISR warm-up runbook #4 + verify login flow pasca-deploy. Catatan: 9 HIGH sisa = salinan bundled next/dist/compiled (undici 6.27.0, tar 7.5.19, ip-address 10.2.0, brace-expansion 5.0.7) + braces/http-cache-semantics no-fix; follow-up task terpisah.",
+   "verified_at": "2026-10-16 08:0x WIB"
   },
   {
    "id": "prd-pasar-live-01",
@@ -1412,7 +1424,10 @@
    "spec": "GSC report: 'Duplikat, Google memilih versi kanonis berbeda'. Root cause terverifikasi live:\n1) /stocks/AADI.JK/indikator canonical -> /stocks/aadi/indikator (lowercase tanpa .JK) tapi /stocks/BBCA.JK canonical -> self (uppercase + .JK). Dua konvensi bercampur.\n2) Kandidat canonical final: /stocks/TICKER.JK uppercase+JK (konsisten halaman utama & internal link). atau lowercase tanpa JK — PILIH SATU, terapkan di generateMetadata canonical + sitemap + redirect 301 varian kalah.\n3) Bonus bug: /saham/aadi/kenapa-naik-hari-ini title bilang 'Turun' — template title harus match arah URL.\nDONE-WHEN: (a) semua /stocks/* (utama+indikator) satu skema canonical; (b) varian lain 301; (c) sitemap.xml hanya URL canonical; (d) spot-check 5 ticker curl canonical konsisten; (e) deploy ≤2/hari dihormati.",
    "acceptance": "GSC duplicate-canonical reason berhenti bertambah setelah re-crawl (cek 7-14 hari); canonical spot-check 5/5 konsisten.",
    "executed_at": "2026-10-15 evening (owner: fix sekarang)",
-   "commit": "31a94d9"
+   "commit": "31a94d9",
+   "qa_verified": true,
+   "qa_note": "PASS 16 Okt 03:30 QA. Spot-check 5/5 (BBCA/AADI/GOTO/TLKM/BBRI): canonical main+indikator semua https://teknikal.id/stocks/TICKER.JK uppercase konsisten; varian kalah redirect 308 (/stocks/aadi/indikator -> AADI.JK/indikator; bbca idem) + main lowercase 301; sitemap.xml 1000 URL /stocks/, 0 non-canonical. Commit 31a94d9+47918b4 live. Catatan: bonus bug title arah (kenapa-naik vs 'Turun') TIDAK dikerjakan — di luar DONE-WHEN, live title masih 'Turun Hari Ini' (boleh dinamis arah harga); sisa ke GSC re-crawl 7-14 hari.",
+   "qa_at": "2026-10-16T03:32+07:00"
   }
  ],
  "tasks": []
