@@ -50,6 +50,10 @@ export default function LivePrice({ intervalMs = 60_000 }: { intervalMs?: number
 
     async function refresh() {
       if (typeof document === "undefined" || document.hidden) return;
+      // Weekend: pasar tutup — jangan poll (harga EOD beku, kayak TradingView
+      // yang freeze saat closed; hemat request server + client).
+      const day = new Date().getDay();
+      if (day === 0 || day === 6) return;
       const priceEls = Array.from(document.querySelectorAll<HTMLElement>("[data-live-price]"));
       const pctEls = Array.from(document.querySelectorAll<HTMLElement>("[data-live-percent]"));
       const tickers = [

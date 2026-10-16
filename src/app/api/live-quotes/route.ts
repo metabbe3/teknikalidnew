@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { fetchQuotesBatch } from "@/lib/yahoo-finance";
+import { findPrevClosesByTicker } from "@/domains/stock/stock.repository";
 import { handleApiError } from "@/lib/api-error";
 import { TtlCache } from "@/lib/cache";
 
@@ -48,18 +49,39 @@ export async function GET(request: NextRequest) {
     }
 
     const results = await fetchQuotesBatch(tickers);
-    const quotes: LiveQuoteRow[] = results.map(({ ticker, quote }) => ({
-      ticker,
-      price: quote?.regularMarketPrice ?? null,
-      change: quote?.regularMarketChange ?? null,
-      changePercent: quote?.regularMarketChangePercent ?? null,
-      volume: quote?.regularMarketVolume ?? null,
-      dayHigh: quote?.regularMarketDayHigh ?? null,
-      dayLow: quote?.regularMarketDayLow ?? null,
-      open: quote?.regularMarketOpen ?? null,
-      prevClose: quote?.regularMarketPreviousClose ?? null,
-      marketState: quote?.marketState ?? null,
-    }));
+
+    // Percent correction (owner 16 Okt "AKKU bilang +28% padahal flat"): prev dari
+    // TV/Yahoo utk saham illiquid membandingkan ke session TERAKHIR saham trade,
+    // bukan kemarin → saham tidak aktif tampil ±30% bohong. Prev kanonik = EOD DB.
+    let eodPrev: Map<string, number> = new Map();
+    try {
+      eodPrev = await findPrevClosesByTicker(tickers);
+    } catch (e) {
+      console.error("[LiveQuotes] EOD prev lookup failed, fallback feed prev", e);
+    }
+
+    const quotes: LiveQuoteRow[] = results.map(({ ticker, quote }) => {
+      const feedPrice = quote?.regularMarketPrice ?? null;
+      const prev = eodPrev.get(ticker) ?? quote?.regularMarketPreviousClose ?? null;
+      const changePercent =
+        feedPrice != null && prev != null && prev > 0
+          ? ((feedPrice - prev) / prev) * 100
+          : quote?.regularMarketChangePercent ?? null;
+      const change =
+        feedPrice != null && prev != null ? feedPrice - prev : quote?.regularMarketChange ?? null;
+      return {
+        ticker,
+        price: feedPrice,
+        change,
+        changePercent,
+        volume: quote?.regularMarketVolume ?? null,
+        dayHigh: quote?.regularMarketDayHigh ?? null,
+        dayLow: quote?.regularMarketDayLow ?? null,
+        open: quote?.regularMarketOpen ?? null,
+        prevClose: prev,
+        marketState: quote?.marketState ?? null,
+      };
+    });
 
     const payload = { quotes, ts: Date.now() };
     CACHE.set(cacheKey, payload, TTL_MS);

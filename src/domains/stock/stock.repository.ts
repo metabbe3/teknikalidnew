@@ -896,3 +896,36 @@ export const stockRepository = {
     `;
   },
 };
+
+// Batch EOD prev-close: close TERAKHIR sebelum startOfToday utk daftar ticker.
+// Dipakai live-quotes — prev Yahoo/TV utk saham illiquid bisa basi (bandingkan
+// ke session terakhir saham itu trade, bukan kemarin) → percent bohong ±30%.
+export async function findPrevClosesByTicker(tickers: string[]) {
+  if (tickers.length === 0) return new Map<string, number>();
+  const today = startOfDay(new Date());
+  const stocks = await prisma.stock.findMany({
+    where: { ticker: { in: tickers } },
+    select: { id: true, ticker: true },
+  });
+  // prev trading day = tanggal EOD terbaru < hari ini (level pasar, bukan per-saham)
+  const prevDateRow = await prisma.stockPrice.findFirst({
+    orderBy: { date: "desc" },
+    where: { date: { lt: today } },
+    select: { date: true },
+  });
+  const out = new Map<string, number>();
+  if (!prevDateRow) return out;
+  const idByTicker = new Map(stocks.map((s) => [s.ticker, s.id]));
+  const rows = await prisma.stockPrice.findMany({
+    where: { date: prevDateRow.date, stockId: { in: stocks.map((s) => s.id) } },
+    select: { stockId: true, close: true },
+  });
+  const closeById = new Map<number, number>();
+  for (const r of rows) closeById.set(r.stockId, r.close.toNumber());
+  const result = new Map<string, number>();
+  for (const [ticker, id] of idByTicker) {
+    const c = closeById.get(id);
+    if (c != null) result.set(ticker, c);
+  }
+  return result;
+}
