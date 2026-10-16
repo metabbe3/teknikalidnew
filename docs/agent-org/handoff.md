@@ -595,3 +595,10 @@
 - In-flight: kereta T-1016-N malam (22:00-01:30) manifest = sec-2026-10-15-01 (6c802c6 dep-bump auth) + prd-trust-badge-live-01 (cab6acf feat + b3ed726 fix market-status) — SATU build, SATU deploy, verify per-fitur + ISR warm-up runbook #4 + login flow.
 - Jebakan: (1) Yahoo v8 chart meta TIDAK kirim marketState (default REGULAR di fetchQuoteV8) — jangan percaya state Yahoo utk status sesi, jam WIB sumber kebenaran (fix b3ed726); (2) worker dev :3100 sudah dimatikan; (3) prod image masih 05cf843 — kereta harus build dari HEAD 05328b9.
 - Langkah pertama slot berikutnya: baca manifest kereta → cek apakah T-1016-N sudah berangkat (Backoffice 23:00) → kalau ya verify per-fitur di prod; kalau belum, angkat sesuai boarding gate.
+
+## 2026-10-16 19:5x — UX Builder shift 19:15 (rotasi flow c: landing->register)
+- SHIPPED 87a84c1 (push, build-only): register autoFocus email + complete-profile PREFILL username dari email-local (sanitize+slice20) dengan effect-sync session-ready + guard touched — 1 field wajib diketik hilang, 2 klik fokus hilang. tsc 0, build 0, staging :3100 verified (autofocus DOM 1, H1 1=1), ux-2026-10-16-01 in_train T-1016-N.
+- DISPATCH bug-2026-10-16-01 (P2): ScreenActions 'Simpan ke Akun' user LOGIN malah route /auth/register (logika guest/login terbalik, Retention AC2 rusak utk login) — CTO please fix, bukan domain UX.
+- Audit flow (c): landing->register 3 field + google (1 klik) OK; register->complete-profile kini 1 field wajib efektif (username prefill). Flow (c) TANDAI hampir optimal — sisa: bug di atas + (opsional) ukur drop-off.
+- Flow rotasi SEMUA done: (a) (b) (c) (d) — besok mulai siklus baru: re-audit (a) screener pasca trust-badge live, atau empty-state/375px sweep halaman publik.
+- Kereta T-1016-N manifest dari sisi UX: + ux-2026-10-16-01 (naik, bukti lengkap). SEC GATE: N/A frontend-only.
