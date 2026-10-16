@@ -3,6 +3,12 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
+# sec-2026-10-15-01: runtime-only node_modules (devDeps with vulns must not enter prod image)
+FROM node:24-alpine AS prod-deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+
 FROM node:24-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
@@ -30,8 +36,8 @@ COPY --from=builder /app/src/generated/prisma ./src/generated/prisma
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 
-# Full node_modules for prisma CLI and runtime deps
-COPY --from=builder /app/node_modules ./node_modules
+# Runtime-only node_modules (prisma CLI + runtime deps, no devDeps) — sec-2026-10-15-01
+COPY --from=prod-deps /app/node_modules ./node_modules
 
 USER nextjs
 EXPOSE 3000
