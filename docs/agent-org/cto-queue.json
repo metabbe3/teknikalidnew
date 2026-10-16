@@ -9,9 +9,10 @@
    "north_star": "trust",
    "spec": "TRUST SIGNAL: badge 'Data live · update <1 mnt lalu' di header (sebelah IHSG badge) + timestamp 'Harga EOD <tgl> · live saat market buka' di halaman detail saham & tabel stocks. Sumber: ts terakhir poll live-quotes (client) + getMarketStatusForPage (server). Konteks: owner 16 Okt — retention/register rendah karena trust 0 (data basi saat crash -10%). Transparansi umur data = trust termurah.",
    "acceptance": "1) Badge muncul di header prod saat market buka, menampilkan umur update dinamis (detik/menit). 2) Saat market tutup badge berubah jadi 'EOD <tanggal>'. 3) Halaman /stocks/[ticker] tampilkan baris status harga. 4) Bukti: grep DOM live + screenshot staging :3100.",
-   "status": "pending",
+   "status": "in_train",
    "owner_directed": true,
-   "scheduled_slot": "2026-10-16 16:45 slot sore (build) → kereta malam T-1016-N"
+   "scheduled_slot": "2026-10-16 16:45 slot sore (build) → kereta malam T-1016-N",
+   "result": "BUILD-ONLY slot sore (window doctrine): badge freshness 'EOD <tgl>' SSR + 'live · Xs' client saat market buka. Freshness engine di LivePrice (lastLiveTs + updateFreshEls) patch [data-live-fresh] global. 4 file: live-price.tsx, header.tsx (desktop+mobile), stocks/[ticker]/page.tsx, stocks/page.tsx. BONUS FIX (acceptance#2 terpenuhi): market-hours.ts 'Pasar Buka' 24-jam (v8 chart meta TANPA marketState → default REGULAR; PRE malam) → gerbang jam WIB. BUKTI: tsc 0 err; staging :3100 = /stocks/BBCA.JK 'Harga EOD Jumat, 16 Oktober 2026' + data-live-fresh; /stocks 'Harga EOD 16 Okt 2026' + data-live-fresh; /stocks kini 'Pasar Tutup' 18:47 WIB (before 'Pasar Buka'). npm run build hijau. COMMITS cab6acf + b3ed726. Deploy kereta malam T-1016-N; pasca-deploy verify: Senin pagi badge 'live · X mnt' saat sesi + homepage badge header."
   },
   {
    "id": "prd-retention-tracker-01",
@@ -21,9 +22,10 @@
    "north_star": "growth",
    "spec": "RETENTION TRACKER: tambah section di stock_integrity_check.py (cron 07:00) — register kemarin + returning user 7hr rolling dari DB (User.createdAt, PageView distinct userId×date). Cetak HANYA saat integrity alert ATAU mingguan (Senin) supaya silent-healthy tetap. Baseline 16 Okt: 5 register/14hr, 2 returning — tujuan ukur pemulihan post live-price fix.",
    "acceptance": "1) Query register+returning jalan tanpa error (test manual exit code sesuai). 2) Output Senin cantumkan angka + delta vs minggu lalu. 3) Bukti: run manual + contoh output di field result.",
-   "status": "pending",
+   "status": "done",
    "owner_directed": true,
-   "scheduled_slot": "2026-10-16 16:45 slot sore (paralel, host script no-deploy)"
+   "scheduled_slot": "2026-10-16 16:45 slot sore (paralel, host script no-deploy)",
+   "result": "DONE host-script (no deploy): retention_section() di stock_integrity_check.py cron 07:00/10:30 — register kemarin+7hr, returning authed 7hr (>=2 hari), ratio, snapshot mingguan ~/.hermes/data/teknikalid-retention.json + delta vs minggu lalu. Gate: cetak hanya Senin ATAU saat FAIL ATAU RETENTION_PRINT=1; silent-healthy terjaga. BUKTI: RETENTION_PRINT=1 → 'register kemarin 1 · register 7hr 3 · returning 2/4 authed = 50.0%' exit 0; run biasa Jumat → 0 output exit 0. Angka baseline 16 Okt: 5 reg/14hr, 2 returning — konsisten."
   },
   {
    "id": "qa-2026-10-14-01",

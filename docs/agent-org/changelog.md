@@ -496,3 +496,19 @@
 - commit: n/a host script (bukan repo) · deploy: n/a
 - verify: fixture 3/3 PASS + py_compile + live exit 0 + drift nyata 07:39 ter-restore (backup .bak-20261016-073921-drift1)
 - QA: self-check (hotfix host-ops kecil) · impact_check_due: n/a
+
+## 2026-10-16 — prd-trust-badge-live-01 (P0, in_train T-1016-N)
+- task-id: prd-trust-badge-live-01 · type: fitur · PRD: n/a (owner_directed 16 Okt, spec di queue)
+- change: badge umur data trust — [data-live-fresh] SSR 'EOD <tgl>' + client 'live · X dtk/mnt' (freshness engine LivePrice); header desktop+mobile, detail saham, tabel stocks
+- commit: cab6acf (+bonus fix b3ed726 market-status 24-jam 'Pasar Buka': v8 meta tanpa marketState + PRE malam → gerbang jam WIB)
+- deploy: kereta malam T-1016-N (build-only slot sore, window doctrine) · verify: tsc 0 · staging :3100 DOM 'Harga EOD Jumat, 16 Oktober 2026' + data-live-fresh · /stocks 'Pasar Tutup' pasca-fix (before 'Pasar Buka' 18:44 WIB)
+- QA: pre-boarding kereta malam (manifest cek) · impact_check_due: 2026-10-19
+- KPI: TRUST (transparansi umur data = jawab owner "trust 0 saat crash -10%")
+
+## 2026-10-16 — prd-retention-tracker-01 (P1, done)
+- task-id: prd-retention-tracker-01 · type: ops host script · PRD: n/a (owner_directed)
+- change: retention_section() stock_integrity_check.py — register/returning 7hr + snapshot mingguan + delta; gate Senin/FAIL/RETENTION_PRINT
+- commit: n/a (host script ~/.hermes/scripts) · deploy: n/a
+- verify: RETENTION_PRINT=1 output 'register kemarin 1 · register 7hr 3 · returning 2/4 authed = 50.0%' exit 0 · silent run exit 0 tanpa output
+- QA: self-check · impact_check_due: Senin 20 Okt (first scheduled print)
+- KPI: STICKY (ukur pemulihan returning post live-price fix)
