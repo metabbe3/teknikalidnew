@@ -588,3 +588,10 @@
 - RATE-LIMIT DIHAPUS (owner: views kecil, jangan blok): stocks API 60→600/mnt, stocks page 180→600/mnt, AI 30/20→300/jam, auto-block 1 jam CGNAT DIMATIKAN (82% BlockedIp = manusia CGNAT), 61 IP diamnesti. Auth+register limit TETAP.
 - WATCHDOG BARU: stock_integrity_check.py (silent-healthy) cron 07:00+10:30 weekday → Telegram. Cek EOD fresh, ^JKSE gap, saham basi aktif, live feed, chart 1D umur.
 - VERIFIED PROD: header IHSG 5.232,84 −10,76% live; chart 1D 11mnt; burst 30×BBCA all 200; integrity EXIT 0.
+
+## 2026-10-16 18:55 — CTO sore
+- State: prod 200 sehat; EOD 16 Okt ✓ masuk; deploy 0/2 hari ini (semua build-only). tsc+build hijau.
+- Barusan selesai: prd-retention-tracker-01 (done, host script — register/returning tracker di integrity cron, silent-healthy terjaga); prd-trust-badge-live-01 build → in_train (badge EOD/live + freshness engine).
+- In-flight: kereta T-1016-N malam (22:00-01:30) manifest = sec-2026-10-15-01 (6c802c6 dep-bump auth) + prd-trust-badge-live-01 (cab6acf feat + b3ed726 fix market-status) — SATU build, SATU deploy, verify per-fitur + ISR warm-up runbook #4 + login flow.
+- Jebakan: (1) Yahoo v8 chart meta TIDAK kirim marketState (default REGULAR di fetchQuoteV8) — jangan percaya state Yahoo utk status sesi, jam WIB sumber kebenaran (fix b3ed726); (2) worker dev :3100 sudah dimatikan; (3) prod image masih 05cf843 — kereta harus build dari HEAD 05328b9.
+- Langkah pertama slot berikutnya: baca manifest kereta → cek apakah T-1016-N sudah berangkat (Backoffice 23:00) → kalau ya verify per-fitur di prod; kalau belum, angkat sesuai boarding gate.

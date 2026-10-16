@@ -745,3 +745,23 @@ research_brief sudah ditulis ke field `research_brief` product-backlog.json (3 e
 - Opsi A: kereta besok (T-1017) khusus retention — re-verify 3 fitur + naik sekaligus.
 - Opsi B: hari ini aktivasi push /pasar 4x/hari (dry-run deterministik siap, angka dari DB) — murah, naikin views/distribusi; retention menyusul.
 - Rekomendasi CTO: B sekarang + A jadi kereta besok. Distribusi murah menaikkan views, tapi returning hanya bisa naik kalau fitur retention benar-benar LIVE; zombie queue saya bersihkan hari ini (flip + audit status vs marker live).
+
+## [RESEARCHER] 16 Okt 2026 — gate riset pra-eksekusi
+
+- **idea-2026-10-15-1 (internal-link 3 landing fundamental)** — VERDICT: **BUILD**, BUKTI: KUAT. Aturan "halaman penting wajib reachable via internal link, sitemap saja tidak cukup" = dok resmi Google Search Central (Link best practices + SEO Starter Guide) + Moz; bukti internal sendiri lebih kuat lagi (43% traffic /saham-golden-cross via referrer /stocks). research_brief sudah ditulis ke field entry (atomic, field lain utuh). PRD: substansi 7 field lengkap → FDE-READY; catatan kecil: `dependencies: []` (array kosong) memicu flag "missing" di audit harian — isi string "none" bila memang tanpa dependensi.
+- Kandidat lain: tidak ada entry product-shaped baru tanpa research_brief (sisanya SEC/ops — di luar wewenang Researcher).
+- **INTAKE GAP**: stok spec_ready teknikal = 2 (idea-2026-10-12-3 P3 + idea-2026-10-15-1 P2) < target 8-12 (owner 15 Okt). Idea lane tinggal SEC/ops/security (bukan product). Perlu CEO/Product Agent generate kandidat product baru (user feedback, data anomaly, competitor gap) — kualitas tetap gate #1.
+
+## 2026-10-16 08:15 — CEO pagi (ritual [PRODUCT] 0 pending; 4 dispatch kereta retention; 3 verdict kandidat; 1 mandate intake)
+- 08:15 | RITUAL [PRODUCT]: 0 entry pending (owner/Product Agent). STANDING GUARD dipatuhi (IG pause 17 Sep, crypto by-design — 0 task fix). | grep ceo-decisions.md
+- 08:15 | DATA (kpi.json 07:05): returning IP 3,4% — DI BAWAH baseline 3,8%, target ≥8% per 25 Nov; register_7d 4 < floor 6; views_nobot 1132 ✓. Brief pagi: 845v -13% WoW (pekan-2 turun, masih pasca-GSC ekspektasi tapi WATCH). Akar masalah returning (CTO note 16 Okt): 3 fitur retention QA-pass tapi zombie sejak 6-8 Okt tak pernah naik kereta. | kpi.json + teknikalid_ceo_brief.py + cto-queue audit
+- 08:15 | DISPATCH KERETA T-1017 (rekomendasi CTO Opsi A di-adopsi): prd-2026-10-16-01 P1 wrapper retention trio (STICKY; DONE WHEN 3 marker live curl + checkpoint 23 Okt) — naikkan prd-2026-10-02-02 (Welcome Loop) + prd-2026-10-03-02 (Saved Screen, prisma migrate=owner-gate) + utm attribution; prd-2026-10-16-02 P2 wiring 3 landing fundamental (GROWTH; FDE PASS research_brief KUAT+PRD 7-field; backlog idea-2026-10-15-1 → dispatched); prd-2026-10-16-03 P2 backfill 16 link 404 + gate /akademi/ (TRUST; prd-2026-10-12-02). sec-2026-10-16-01 T-1019 (nosniff, TRUST). | cto-queue.json
+- 08:15 | VERDICT KANDIDAT: sec-15-01 nosniff PROMOTE P2 (asimetri vs hivepos.id, curl verified MISSING); sec-15-02 ARDAgent REJECT → owner manual 1-klik (host-level, bukan task repo); sec-15-03 open-redirect CLOSE-CLEAN (bukti git show: tickerJK dari DB, bukan input user). | product-backlog.json
+- 08:15 | MANDATE INTAKE: idea-2026-10-16-1 (P2 idea) — refill stok spec_ready ke 8-12 (Researcher 16 Okt: stok sisa 2 < target owner 15 Okt; DONE WHEN ≥8 spec_ready via JSON count). Untuk Product Agent Senin/Kamis 10:15. | product-backlog.json
+- 08:15 | NOTA PASAR: /pasar live 200 (prd-pasar-live-01, 06:05); aktivasi push 4x/hari = owner approve dry-run di slot CTO pagi — ikut jadwal, CEO tidak mempercepat (owner ~06:10 "ikut jadwal saja"). | handoff.md CTO 06:05
+- STATUS: ok — ritual tuntas, 4 dispatch FDE-valid dgn kereta+slot, kandidat diverdict, data fresh; WATCH returning 3,4% (bawah baseline) → trio retention T-1017 jawabannya, checkpoint 23 Okt.
+
+### CTO sore 16 Okt 16:45 (eksekusi 18:30-18:55)
+- prd-trust-badge-live-01 (P0): BUILD SELESAI → in_train T-1016-N. Badge umur data 'EOD <tgl>' / 'live · X mnt' di header + detail saham + tabel. Bonus root-cause fix: market status bilang 'Pasar Buka' 24 jam (Yahoo v8 chart meta tidak kirim marketState → default REGULAR; PRE dianggap open) → gerbang jam WIB. Verify staging :3100 hijau.
+- prd-retention-tracker-01 (P1): DONE (host script, no deploy). Baseline hari ini terukur: register 7hr=3, returning 2/4 authed=50%. Print Senin berikutnya.
+- Kereta T-1016-N manifest update: NAIK sec-2026-10-15-01 (6c802c6) + prd-trust-badge-live-01 (cab6acf+b3ed726). Pasca-deploy verify: login flow, badge live Senin pagi saat sesi, ISR warm-up.
