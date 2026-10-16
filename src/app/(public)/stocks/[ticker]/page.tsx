@@ -623,7 +623,7 @@ export default async function StockDetailPage({
                 </div>
                 {latest && (
                   <p className="mt-3 text-[11px] text-text-tertiary font-mono">
-                    Harga LIVE saat pasar buka · EOD {new Date(latest.date).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+                    Harga EOD {new Date(latest.date).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })} · <span data-live-fresh data-fresh-eod="live saat pasar buka">live saat pasar buka</span>
                   </p>
                 )}
               </div>

@@ -57,6 +57,13 @@ export function Header() {
                   {ihsg.changePercent >= 0 ? "+" : ""}{ihsg.changePercent.toFixed(2)}%
                 </span>
               )}
+              {ihsg?.date && (() => {
+                const d = new Date(ihsg.date);
+                const eod = `EOD ${d.toLocaleDateString("id-ID", { day: "numeric", month: "short" })}`;
+                return (
+                  <span data-live-fresh data-fresh-eod={eod} className="font-mono text-[10px] text-text-tertiary border-l border-border pl-1.5 ml-0.5 whitespace-nowrap">{eod}</span>
+                );
+              })()}
             </div>
           )}
           {ihsg && ihsg.close === null && (
@@ -72,6 +79,13 @@ export function Header() {
                   {ihsg.changePercent >= 0 ? "+" : ""}{ihsg.changePercent.toFixed(2)}%
                 </span>
               )}
+              {ihsg?.date && (() => {
+                const d = new Date(ihsg.date);
+                const eod = `EOD ${d.toLocaleDateString("id-ID", { day: "numeric", month: "short" })}`;
+                return (
+                  <span data-live-fresh data-fresh-eod={eod} className="font-mono text-[10px] text-text-tertiary">{eod}</span>
+                );
+              })()}
             </div>
           )}
         </div>

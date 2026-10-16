@@ -42,6 +42,45 @@ function formatPercent(n: number): string {
   return `${s}%`;
 }
 
+// Freshness engine — trust badge: user harus tahu angka itu live atau EOD beku.
+// Patch [data-live-fresh] jadi "live · X dtk" saat pasar buka + data hidup,
+// restore teks EOD (data-fresh-eod) saat tutup/weekend/gagal.
+let lastLiveTs: number | null = null;
+
+function wibNow(): Date {
+  // WIB (UTC+7), locale-agnostic — offset lokal apapun.
+  return new Date(Date.now() + (new Date().getTimezoneOffset() + 420) * 60000);
+}
+
+function isMarketHoursWib(): boolean {
+  const d = wibNow();
+  const day = d.getDay();
+  const h = d.getHours();
+  const m = d.getMinutes();
+  return day >= 1 && day <= 5 && h >= 9 && (h < 16 || (h === 16 && m <= 15));
+}
+
+function fmtAge(ms: number): string {
+  const s = Math.floor(ms / 1000);
+  if (s < 60) return `${s} dtk`;
+  if (s < 3600) return `${Math.floor(s / 60)} mnt`;
+  return `${Math.floor(s / 3600)} jam`;
+}
+
+function updateFreshEls() {
+  for (const el of document.querySelectorAll<HTMLElement>("[data-live-fresh]")) {
+    if (isMarketHoursWib() && lastLiveTs !== null) {
+      el.textContent = `live · ${fmtAge(Date.now() - lastLiveTs)}`;
+      el.classList.add("text-emerald-600");
+      el.classList.remove("text-text-tertiary");
+    } else {
+      el.textContent = el.getAttribute("data-fresh-eod") ?? el.textContent;
+      el.classList.remove("text-emerald-600");
+      el.classList.add("text-text-tertiary");
+    }
+  }
+}
+
 export default function LivePrice({ intervalMs = 60_000 }: { intervalMs?: number }) {
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -49,54 +88,66 @@ export default function LivePrice({ intervalMs = 60_000 }: { intervalMs?: number
     let cancelled = false;
 
     async function refresh() {
-      if (typeof document === "undefined" || document.hidden) return;
+      if (typeof document === "undefined") return;
       // Weekend: pasar tutup — jangan poll (harga EOD beku, kayak TradingView
       // yang freeze saat closed; hemat request server + client).
       const day = new Date().getDay();
-      if (day === 0 || day === 6) return;
-      const priceEls = Array.from(document.querySelectorAll<HTMLElement>("[data-live-price]"));
-      const pctEls = Array.from(document.querySelectorAll<HTMLElement>("[data-live-percent]"));
-      const tickers = [
-        ...new Set(
-          [...priceEls, ...pctEls]
-            .map((el) => el.getAttribute("data-live-price") ?? el.getAttribute("data-live-percent"))
-            .filter((t): t is string => Boolean(t))
-        ),
-      ];
-      if (tickers.length === 0) return;
+      if (!document.hidden && day !== 0 && day !== 6) {
+        const priceEls = Array.from(document.querySelectorAll<HTMLElement>("[data-live-price]"));
+        const pctEls = Array.from(document.querySelectorAll<HTMLElement>("[data-live-percent]"));
+        const tickers = [
+          ...new Set(
+            [...priceEls, ...pctEls]
+              .map((el) => el.getAttribute("data-live-price") ?? el.getAttribute("data-live-percent"))
+              .filter((t): t is string => Boolean(t))
+          ),
+        ];
 
-      try {
-        const res = await fetch(`/api/live-quotes?s=${encodeURIComponent(tickers.join(","))}`, {
-          cache: "no-store",
-        });
-        if (!res.ok) return;
-        const data = (await res.json()) as { quotes: QuoteRow[] };
-        if (cancelled || !Array.isArray(data.quotes)) return;
-        const byTicker = new Map(data.quotes.map((q) => [q.ticker, q]));
+        if (tickers.length > 0) {
+          try {
+            const res = await fetch(`/api/live-quotes?s=${encodeURIComponent(tickers.join(","))}`, {
+              cache: "no-store",
+            });
+            if (!res.ok || cancelled) {
+              updateFreshEls();
+              return;
+            }
+            const data = (await res.json()) as { quotes: QuoteRow[] };
+            if (!Array.isArray(data.quotes)) {
+              updateFreshEls();
+              return;
+            }
+            const byTicker = new Map(data.quotes.map((q) => [q.ticker, q]));
 
-        for (const el of priceEls) {
-          const t = el.getAttribute("data-live-price");
-          const q = t ? byTicker.get(t) : undefined;
-          const isIndex = Boolean(t && t.startsWith("^"));
-          const fmt = (n: number) => formatPrice(n, isIndex);
-          if (q?.price != null && el.textContent !== fmt(q.price)) {
-            el.textContent = fmt(q.price);
-            el.setAttribute("data-live-state", "live");
+            for (const el of priceEls) {
+              const t = el.getAttribute("data-live-price");
+              const q = t ? byTicker.get(t) : undefined;
+              const isIndex = Boolean(t && t.startsWith("^"));
+              const fmt = (n: number) => formatPrice(n, isIndex);
+              if (q?.price != null && el.textContent !== fmt(q.price)) {
+                el.textContent = fmt(q.price);
+                el.setAttribute("data-live-state", "live");
+              }
+            }
+            for (const el of pctEls) {
+              const t = el.getAttribute("data-live-percent");
+              const q = t ? byTicker.get(t) : undefined;
+              if (q?.changePercent != null) {
+                const next = formatPercent(q.changePercent);
+                if (el.textContent !== next) el.textContent = next;
+                el.classList.toggle("text-bullish", q.changePercent > 0);
+                el.classList.toggle("text-bearish", q.changePercent < 0);
+              }
+            }
+            lastLiveTs = Date.now();
+          } catch {
+            // network hiccup — keep server-rendered values, retry next tick
           }
         }
-        for (const el of pctEls) {
-          const t = el.getAttribute("data-live-percent");
-          const q = t ? byTicker.get(t) : undefined;
-          if (q?.changePercent != null) {
-            const next = formatPercent(q.changePercent);
-            if (el.textContent !== next) el.textContent = next;
-            el.classList.toggle("text-bullish", q.changePercent > 0);
-            el.classList.toggle("text-bearish", q.changePercent < 0);
-          }
-        }
-      } catch {
-        // network hiccup — keep server-rendered values, retry next tick
       }
+      // Selalu di akhir (di luar try): badge umur/EOD jujur tiap interval,
+      // meski poll di-skip (weekend/hidden/tanpa ticker) atau fetch gagal.
+      updateFreshEls();
     }
 
     refresh();

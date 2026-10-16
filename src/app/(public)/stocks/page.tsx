@@ -62,7 +62,7 @@ function MarketStatus({ marketStatus, latestPrice }: { marketStatus: MarketStatu
           <span className="font-mono text-xs font-semibold uppercase tracking-[0.15em] text-emerald-700">Pasar Buka</span>
         </span>
         {dateStr && (
-          <span className="font-mono text-xs text-text-tertiary">Data terakhir: {dateStr}</span>
+          <span className="font-mono text-xs text-text-tertiary">Harga EOD {dateStr} · <span data-live-fresh data-fresh-eod="live saat pasar buka">live saat pasar buka</span></span>
         )}
       </div>
     );
