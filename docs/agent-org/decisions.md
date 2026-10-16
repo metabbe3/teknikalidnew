@@ -740,3 +740,7 @@ commit pre-deploy live-unknown; merge HEAD: 1e4d517
 - ROOT-CAUSE (qa-14-01, catat tanpa eksekusi): generator menulis 'segar/baru' dari status smaCrossSignal TANPA cek recency smaCrossDate. Catatan data: klaim QA '13 Okt = 0 cross baru non-gorengan' TIDAK presisi — DISTINCT ON (stockId) smaCrossDate=13 Okt non-gorengan = 9 emiten; klaim per-ticker KETR/ERAA tetap valid (15 Sep/27 Agu). Usulan guard prompt: kata 'segar/baru' hanya boleh jika smaCrossDate = tanggal sesi artikel.
 - MINOR spec point (3) '398 saham naik' → '400': occ=0 di brief14 (frasa tidak ada) — DITOLAK preseden grep-konteks-aktual.
 - Rollback: UPDATE reverse / backup db-20261014.sql.gz + /tmp/qa1014-backup/.
+
+## 2026-10-16 18:35 — CTO sore: slot build trust-badge + retention-tracker
+- ROLLBACK ANCHOR pra-kereta T-1016-N: git HEAD pra-task + image app live (dicatat utk kereta malam, deploy bukan slot ini — window doctrine).
+- Task diambil: prd-trust-badge-live-01 (P0) + prd-retention-tracker-01 (P1) PARALEL (non-overlap: src/ vs ~/.hermes/scripts/).
