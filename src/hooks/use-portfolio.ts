@@ -73,6 +73,9 @@ export function usePortfolio() {
       const json = await res.json();
       return json.data;
     },
+    // Live prices: refetch tiap 60s saat tab visible (server applies live overlay during market hours)
+    refetchInterval: 60_000,
+    refetchIntervalInBackground: false,
   });
 }
 

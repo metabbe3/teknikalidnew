@@ -4,6 +4,8 @@ import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { StockNotFoundError } from "@/domains/stock/stock.errors";
 import { HoldingNotFoundError, PortfolioPrivateError } from "./portfolio.errors";
 import { decimalToNumber } from "@/lib/serialize";
+import { fetchQuotesBatch } from "@/lib/yahoo-finance";
+import { isMarketHours } from "@/domains/stock/pasar-live.service";
 import { generateAdvice, summarizePortfolioAdvice } from "./advice-engine";
 import type { HoldingAdvice, PortfolioAdviceSummary } from "./advice-engine";
 
@@ -121,10 +123,29 @@ export const portfolioService = {
   async getPortfolio(userId: string): Promise<PortfolioData> {
     const holdings = await portfolioRepository.findUserHoldings(userId);
 
+    // Live price overlay (owner 16 Okt: "harga harus update tiap 5 menit semua component"):
+    // during market hours currentPrice comes from live quotes (TradingView/Yahoo), EOD DB
+    // otherwise. One change here flows to summary bar, health card and holdings table.
+    let livePrices = new Map<string, number>();
+    if (holdings.length > 0 && isMarketHours()) {
+      try {
+        const tickers = holdings.map((h) => h.stockTicker);
+        const quotes = await fetchQuotesBatch(tickers);
+        livePrices = new Map(
+          quotes
+            .filter((q) => q.quote?.regularMarketPrice != null)
+            .map((q) => [q.ticker, q.quote!.regularMarketPrice!])
+        );
+      } catch (err) {
+        console.warn("[portfolio] live quote overlay failed, using EOD:", err instanceof Error ? err.message : err);
+      }
+    }
+
     const items: HoldingItem[] = holdings.map((h) => {
       const prices = h.stock.prices;
       const latest = prices[0];
-      const currentPrice = latest ? decimalToNumber(latest.close) : null;
+      const eodPrice = latest ? decimalToNumber(latest.close) : null;
+      const currentPrice = livePrices.get(h.stockTicker) ?? eodPrice;
       const buyPrice = Number(h.buyPrice);
       const marketValue = currentPrice !== null ? currentPrice * h.quantity : null;
       const cost = buyPrice * h.quantity;
@@ -247,17 +268,34 @@ export const portfolioService = {
 
     const holdings = await portfolioRepository.findUserHoldings(user.id);
 
+    // Live overlay untuk public view juga (konsisten dgn getPortfolio)
+    let livePricesPub = new Map<string, number>();
+    if (holdings.length > 0 && isMarketHours()) {
+      try {
+        const quotes = await fetchQuotesBatch(holdings.map((h) => h.stockTicker));
+        livePricesPub = new Map(
+          quotes
+            .filter((q) => q.quote?.regularMarketPrice != null)
+            .map((q) => [q.ticker, q.quote!.regularMarketPrice!])
+        );
+      } catch {
+        // fallback EOD di bawah
+      }
+    }
+
     const totalValue = holdings.reduce((sum, h) => {
-      const currentPrice = h.stock.prices[0]
-        ? decimalToNumber(h.stock.prices[0].close) ?? Number(h.buyPrice)
-        : Number(h.buyPrice);
+      const currentPrice = livePricesPub.get(h.stockTicker)
+        ?? (h.stock.prices[0]
+          ? decimalToNumber(h.stock.prices[0].close) ?? Number(h.buyPrice)
+          : Number(h.buyPrice));
       return sum + currentPrice * h.quantity;
     }, 0);
 
     const items = holdings.map((h) => {
-      const currentPrice = h.stock.prices[0]
-        ? decimalToNumber(h.stock.prices[0].close)
-        : null;
+      const currentPrice = livePricesPub.get(h.stockTicker)
+        ?? (h.stock.prices[0]
+          ? decimalToNumber(h.stock.prices[0].close)
+          : null);
       const marketValue = currentPrice !== null ? currentPrice * h.quantity : null;
       const indicator = h.stock.indicators?.[0];
 
