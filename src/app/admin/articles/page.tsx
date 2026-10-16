@@ -23,7 +23,9 @@ import {
   AlertCircle,
   Megaphone,
   MessageSquare,
+  Users,
 } from "lucide-react";
+import type { ContentPerformance } from "@/lib/admin-content-performance.service";
 
 interface Article {
   id: string;
@@ -46,6 +48,18 @@ export default function ArticlesAdminPage() {
   const [statusFilter, setStatusFilter] = useState<"all" | "DRAFT" | "PUBLISHED">("all");
   const [typeFilter, setTypeFilter] = useState<"all" | "STOCK_ANALYSIS" | "EDUCATIONAL" | "NEWS" | "GENERAL">("all");
   const [editing, setEditing] = useState<Article | null>(null);
+  const [tab, setTab] = useState<"articles" | "performance">("articles");
+  const [perfDays, setPerfDays] = useState<7 | 30>(7);
+
+  const { data: perfData, isLoading: perfLoading } = useQuery<{ data: ContentPerformance }>({
+    queryKey: ["admin-article-performance", perfDays],
+    enabled: tab === "performance",
+    queryFn: async () => {
+      const r = await fetch(`/api/admin/articles/performance?days=${perfDays}`);
+      if (!r.ok) return undefined;
+      return r.json();
+    },
+  });
 
   const { data: statsData } = useQuery<{ data: { total: number; published: number; drafts: number; stockAnalysis: number; educational: number } }>({
     queryKey: ["admin-article-stats"],
@@ -88,11 +102,24 @@ export default function ArticlesAdminPage() {
 
   const stats = statsData?.data;
   const articles = articlesData?.data ?? [];
+  const perf = perfData?.data;
 
   return (
     <div className="space-y-6">
       <AdminPageHeader title="Article Management" description="Manage AI-generated articles for SEO content" icon={FileText} />
 
+      {/* Tab switch: Artikel | Performa */}
+      <div className="flex gap-1">
+        <Button variant={tab === "articles" ? "default" : "outline"} size="sm" onClick={() => setTab("articles")}>
+          Artikel
+        </Button>
+        <Button variant={tab === "performance" ? "default" : "outline"} size="sm" onClick={() => setTab("performance")}>
+          Performa
+        </Button>
+      </div>
+
+      {tab === "articles" ? (
+      <>
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <AdminKpiCard title="Total Articles" icon={FileText} value={stats?.total ?? 0} gradient="blue" />
@@ -258,6 +285,141 @@ export default function ArticlesAdminPage() {
               </CardContent>
             </Card>
           ))}
+        </div>
+      )}
+      </>
+      ) : (
+        <div className="space-y-6">
+          {/* Window toggle */}
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex gap-1">
+              {([7, 30] as const).map((d) => (
+                <Button
+                  key={d}
+                  variant={perfDays === d ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setPerfDays(d)}
+                >
+                  {d}d
+                </Button>
+              ))}
+            </div>
+            {perf && (
+              <span className="text-xs text-gray-400">
+                Generated {new Date(perf.generatedAt).toLocaleString("id-ID")}
+              </span>
+            )}
+          </div>
+
+          {/* Performance KPIs */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <AdminKpiCard title="Total Views" icon={Eye} value={perf?.kpis.totalViews ?? 0} loading={perfLoading} />
+            <AdminKpiCard title="Unik IP" icon={Users} value={perf?.kpis.totalUniqIp ?? 0} loading={perfLoading} />
+            <AdminKpiCard title="Avg Dwell (s)" icon={Clock} value={perf?.kpis.avgDwellSec ?? "—"} loading={perfLoading} />
+            <AdminKpiCard
+              title="Register (IP sama)"
+              icon={CheckCircle2}
+              value={perf?.kpis.registerAfterRead ?? 0}
+              subtitle={perf ? `dari ${perf.kpis.registerTotal} register di window` : undefined}
+              loading={perfLoading}
+            />
+          </div>
+
+          {/* Top articles by views */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Top 10 Artikel (dwell = avg s per tick, register = IP sama)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {perfLoading ? (
+                <div className="flex items-center justify-center py-10">
+                  <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+                </div>
+              ) : !perf || perf.top.length === 0 ? (
+                <p className="text-sm text-gray-500 text-center py-10">No article views in this window.</p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="text-left text-gray-500 border-b">
+                        <th className="py-2 pr-2">#</th>
+                        <th className="py-2 pr-2">Judul</th>
+                        <th className="py-2 px-2 text-right">Views</th>
+                        <th className="py-2 px-2 text-right">Unik IP</th>
+                        <th className="py-2 px-2 text-right">Dwell s</th>
+                        <th className="py-2 px-2 text-right">Scroll %</th>
+                        <th className="py-2 px-2 text-right">Register</th>
+                        <th className="py-2 pl-2 text-right">Konv%</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {perf.top.map((t, i) => (
+                        <tr key={t.path} className="border-b last:border-0 hover:bg-gray-50">
+                          <td className="py-2 pr-2 text-gray-400 tabular-nums">{i + 1}</td>
+                          <td className="py-2 pr-2 font-medium text-gray-900 max-w-md truncate">
+                            {t.slug ? (
+                              <Link href={`/berita/${t.slug}`} target="_blank" className="hover:underline">
+                                {t.title}
+                              </Link>
+                            ) : (
+                              <span className="text-gray-400 italic">(artikel terhapus)</span>
+                            )}
+                          </td>
+                          <td className="py-2 px-2 text-right tabular-nums">{t.views}</td>
+                          <td className="py-2 px-2 text-right tabular-nums">{t.uniqIp}</td>
+                          <td className="py-2 px-2 text-right tabular-nums">{t.dwellAvgSec ?? "—"}</td>
+                          <td className="py-2 px-2 text-right tabular-nums">{t.scrollAvgPct != null ? `${t.scrollAvgPct}%` : "—"}</td>
+                          <td className="py-2 px-2 text-right tabular-nums">{t.register}</td>
+                          <td className="py-2 pl-2 text-right tabular-nums">{t.convPct != null ? `${t.convPct}%` : "—"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Zero-view published articles */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Published — 0 Views</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {!perfLoading && perf && perf.bottom.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="text-left text-gray-500 border-b">
+                        <th className="py-2 pr-2">Judul</th>
+                        <th className="py-2 px-2">Status</th>
+                        <th className="py-2 px-2">Published</th>
+                        <th className="py-2 pl-2 text-right">Views</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {perf.bottom.map((b) => (
+                        <tr key={b.id} className="border-b last:border-0 hover:bg-gray-50">
+                          <td className="py-2 pr-2 font-medium text-gray-900 max-w-md truncate">{b.title}</td>
+                          <td className="py-2 px-2">
+                            <Badge variant="secondary" className="text-[10px] font-bold">{b.status}</Badge>
+                          </td>
+                          <td className="py-2 px-2 text-gray-500">
+                            {b.publishedAt ? new Date(b.publishedAt).toLocaleDateString("id-ID") : "—"}
+                          </td>
+                          <td className="py-2 pl-2 text-right tabular-nums text-gray-400">0</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500 text-center py-10">
+                  {perfLoading ? "" : "All published articles have views in this window."}
+                </p>
+              )}
+            </CardContent>
+          </Card>
         </div>
       )}
 
