@@ -573,3 +573,18 @@
 - Flip: bo-2026-10-14-02 pending->done (bukti fisik 03:32 + verifikasi CTO). ISR warm-up runbook #4 DIJALANKAN pasca-restart 07:42: WARM 4/4, /berita origin links=13.
 - Kereta T-1016-N malam ini manifest: NAIK sec-2026-10-15-01 (6c802c6, 0 CRITICAL, image 916e5ea siap) — verify pasca-deploy: login flow + Trivy image + ISR warm-up; TURUN: tidak ada. bo-14-02 sudah live via build pagi (bukan penumpang lagi).
 - Keputusan: pasar push ON menunggu owner approve dry-run (sample di laporan CTO); kereta besok T-1017 kandidat = retention trio (Welcome Loop + utm + Saved Screen) lihat CTO note.
+
+## 2026-10-16 08:15 — CEO pagi (strategi 3 baris)
+- Kereta T-1017 = RETENTION: trio zombie (Welcome Loop + utm + Saved Screen) WAJIB live 18 Okt — returning IP 3,4% di bawah baseline 3,8%.
+- Growth murah jalan paralel: wiring 3 landing fundamental (0 views = orphan) + backfill 16 link 404 edu.
+- Intake gap diisi (mandate idea-2026-10-16-1: stok spec_ready → 8-12); pasar push menunggu owner approve dry-run, ikut jadwal.
+
+## 16 Okt (agent-utama, owner-directed series "data harus real")
+**Live-price full-stack + data integrity + rate-limit removal — 5 deploy owner-directed (budget routine utuh)**
+- LIVE PRICES: /api/live-quotes (batch TV+Yahoo) + LivePrice client 60s poll → header IHSG, home breath+featured+snapshot, stocks table, detail, watchlist, indeks, 9 signal pages, portfolio (server overlay + refetchInterval), saham-terkait. LivePrice mount GLOBAL di (public)/layout.
+- AKAR "IHSG beku 9 Okt": idx.co.id diblok Cloudflare → IDX list kosong → stock-sync mass-deactivate (476 saham + ^JKSE!). FIX: ^JKSE reactivate + backfill 12-15 Okt (Yahoo v8 asli), guard "<200 list = abort", index ^ exempt selamanya.
+- AKAR chart 1D basi: fetchChart intraday dbTtl 24h + DB-cache stale row. FIX: memTtl=dbTtl=60s + purge row lama.
+- SAHAM BASI: SCPI + 12 crypto mati (APEX/DEFI/HOME/META dll 24 Jul) → isActive=false. Integrity check sekarang filter isActive.
+- RATE-LIMIT DIHAPUS (owner: views kecil, jangan blok): stocks API 60→600/mnt, stocks page 180→600/mnt, AI 30/20→300/jam, auto-block 1 jam CGNAT DIMATIKAN (82% BlockedIp = manusia CGNAT), 61 IP diamnesti. Auth+register limit TETAP.
+- WATCHDOG BARU: stock_integrity_check.py (silent-healthy) cron 07:00+10:30 weekday → Telegram. Cek EOD fresh, ^JKSE gap, saham basi aktif, live feed, chart 1D umur.
+- VERIFIED PROD: header IHSG 5.232,84 −10,76% live; chart 1D 11mnt; burst 30×BBCA all 200; integrity EXIT 0.
