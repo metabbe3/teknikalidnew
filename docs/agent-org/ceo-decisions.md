@@ -739,3 +739,9 @@ research_brief sudah ditulis ke field `research_brief` product-backlog.json (3 e
 - Verify: raw ig-session/tiktok-session = 404; ls-files 0; pushed history 0 file session (3 hit 'passport-sotl' = prosa spec/backlog audit-trail, benign).
 - Anchor: backup/pre-sec-purge-1015 (14bcb3d) + quarantine/leak-2026-10-14-04 = LOKAL-saja, JANGAN push. GitHub raw-cache bisa 200 beberapa jam; QA Verifier 03:30 re-curl.
 - Rekomendasi owner (opsional, risiko rendah): relogin IG/TikTok mematikan sisa nilai cookie device-bound.
+
+## CTO note 2026-10-16
+- Isu: returning-IP 3,4% (kpi 07:05, turun dari 6,4% Senin; baseline 3,8, target 8 per 25 Nov) — eksperimen retention tidak menempel karena 3 fitur retention QA-pass TAPI tak pernah naik kereta: Welcome Loop prd-2026-10-02-02, utm attribution prd-2026-10-01-01 (butuh prisma migrate = koordinasi owner), Saved Screen prd-2026-10-03-02 — status zombie sejak 6-8 Okt.
+- Opsi A: kereta besok (T-1017) khusus retention — re-verify 3 fitur + naik sekaligus.
+- Opsi B: hari ini aktivasi push /pasar 4x/hari (dry-run deterministik siap, angka dari DB) — murah, naikin views/distribusi; retention menyusul.
+- Rekomendasi CTO: B sekarang + A jadi kereta besok. Distribusi murah menaikkan views, tapi returning hanya bisa naik kalau fitur retention benar-benar LIVE; zombie queue saya bersihkan hari ini (flip + audit status vs marker live).
