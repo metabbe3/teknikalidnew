@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { computeChange } from "@/lib/serialize";
+import LivePrice from "@/components/stock/live-price";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -54,6 +55,7 @@ export default async function WatchlistPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-6 fade-in">
+      <LivePrice />
       <div className="space-y-1">
         <h1 className="text-2xl font-bold">Watchlist Saham</h1>
         <p className="text-text-secondary text-sm">
@@ -91,11 +93,11 @@ export default async function WatchlistPage() {
                   <p className="text-xs text-text-secondary truncate">{item.name}</p>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="font-semibold font-mono text-sm">
+                  <p data-live-price={item.ticker} className="font-semibold font-mono text-sm">
                     {item.close != null ? formatPrice(item.close) : "---"}
                   </p>
                   {item.changePercent !== null && (
-                    <p className={`text-xs font-mono ${changeColor(item.changePercent)}`}>
+                    <p data-live-percent={item.ticker} className={`text-xs font-mono ${changeColor(item.changePercent)}`}>
                       {formatPercent(item.changePercent)}
                     </p>
                   )}

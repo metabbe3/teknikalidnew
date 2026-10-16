@@ -8,6 +8,7 @@ import { formatPrice, formatPercent, formatVolume, stripJk, changeColor, rsiColo
 import { normalizeTickerTitle } from "@/lib/normalize-ticker-title";
 import { ChartSection } from "@/components/chart/chart-section";
 import { IndicatorPanel } from "@/components/stock/indicator-panel";
+import LivePrice from "@/components/stock/live-price";
 import { KeyStatistics } from "@/components/stock/key-statistics";
 import { FundamentalData } from "@/components/stock/fundamental-data";
 import { TradingPlanCard } from "@/components/stock/trading-plan-card";
@@ -543,9 +544,9 @@ export default async function StockDetailPage({
               </div>
               {close !== null && (
                 <div className="text-right shrink-0">
-                  <p className="text-2xl sm:text-3xl font-bold tracking-tight leading-none tabular-nums text-text-primary">{formatPrice(close)}</p>
+                  <p data-live-price={ticker} className="text-2xl sm:text-3xl font-bold tracking-tight leading-none tabular-nums text-text-primary">{formatPrice(close)}</p>
                   {changePercent !== null && (
-                    <p className={`text-sm mt-1 tabular-nums ${
+                    <p data-live-percent={ticker} className={`text-sm mt-1 tabular-nums ${
                       changePercent === 0
                         ? "text-text-tertiary"
                         : `font-semibold ${changeColor(changePercent)}`
@@ -623,7 +624,7 @@ export default async function StockDetailPage({
                 </div>
                 {latest && (
                   <p className="mt-3 text-[11px] text-text-tertiary font-mono">
-                    Penutupan {new Date(latest.date).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+                    Harga LIVE saat pasar buka · EOD {new Date(latest.date).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
                   </p>
                 )}
               </div>
@@ -1148,6 +1149,7 @@ export default async function StockDetailPage({
       </div>
 
       <StockAlertBanner ticker={ticker} />
+      <LivePrice />
     </div>
     </>
   );

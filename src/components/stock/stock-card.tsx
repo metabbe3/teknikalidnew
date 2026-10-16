@@ -64,12 +64,12 @@ export function StockCard({ ticker, name, sector, close, change, changePercent, 
         </div>
         <div className="text-right shrink-0 tabular-nums">
           {close != null ? (
-            <p className="font-semibold text-[15px] tracking-tight">{formatPrice(close)}</p>
+            <p data-live-price={ticker} className="font-semibold text-[15px] tracking-tight">{formatPrice(close)}</p>
           ) : (
             <p className="font-semibold text-text-tertiary">—</p>
           )}
           {changePercent !== null && (
-            <p className={`text-xs font-medium mt-0.5 ${changeColor(changePercent)}`}>
+            <p data-live-percent={ticker} className={`text-xs font-medium mt-0.5 ${changeColor(changePercent)}`}>
               {formatPercent(changePercent)}
             </p>
           )}

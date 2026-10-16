@@ -238,7 +238,7 @@ export function StockTable({ stocks, sectors, linkBase = "/stocks" }: StockTable
                       )}
                     </div>
                     <div className="px-4 py-3 text-text-secondary text-xs">{stock.sector}</div>
-                    <div className="px-4 py-3 text-right font-mono tabular-nums font-medium">
+                    <div data-live-price={stock.ticker} className="px-4 py-3 text-right font-mono tabular-nums font-medium">
                       {stock.close !== null ? formatPrice(stock.close) : "—"}
                     </div>
                     <div className="px-4 py-3 text-right">
@@ -249,7 +249,7 @@ export function StockTable({ stocks, sectors, linkBase = "/stocks" }: StockTable
                         />
                       )}
                     </div>
-                    <div className={`px-4 py-3 text-right font-mono tabular-nums font-medium ${changeColor(stock.changePercent)} ${bigMove ? (stock.changePercent! > 0 ? "bg-bullish/[0.06]" : "bg-bearish/[0.06]") : ""}`}>
+                    <div data-live-percent={stock.ticker} className={`px-4 py-3 text-right font-mono tabular-nums font-medium ${changeColor(stock.changePercent)} ${bigMove ? (stock.changePercent! > 0 ? "bg-bullish/[0.06]" : "bg-bearish/[0.06]") : ""}`}>
                       {stock.changePercent !== null ? formatPercent(stock.changePercent) : "—"}
                     </div>
                     <div className="px-4 py-3 text-right font-mono tabular-nums text-text-secondary">
