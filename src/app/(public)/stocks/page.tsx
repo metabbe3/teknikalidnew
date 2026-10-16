@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { SahamView } from "@/components/stock/saham-view";
-import LivePrice from "@/components/stock/live-price";
 import { SignalLinks } from "@/components/stock/signal-links";
 import { IDX_STOCKS } from "@/lib/constants";
 import { format } from "date-fns";
@@ -248,7 +247,6 @@ export default async function StocksPage() {
           <WeeklySignalWidget />
           {/* Discovery chips: feed topical signal pages (wid-2026-09-27-1) */}
           <SignalLinks />
-          <LivePrice />
           <Suspense fallback={<div className="p-8 text-center text-text-secondary">Memuat…</div>}>
             <SahamView stocks={rows} sectors={sectors} assetClass="EQUITY" linkBase="/stocks" />
           </Suspense>

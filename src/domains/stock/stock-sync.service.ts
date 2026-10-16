@@ -35,6 +35,16 @@ export const stockSyncService = {
     const dbMap = new Map(dbStocks.map((s) => [s.ticker.replace(".JK", ""), s]));
     const idxMap = new Map(idxStocks.map((s) => [s.code, s]));
 
+    // GUARD (16 Okt): IDX diblok Cloudflare beberapa kali → daftar kosong/gagal
+    // sempat mass-deactivate ^JKSE + ratusan saham ("korban" tidak ada di list).
+    // Daftar < 200 entry = sinyal fetch rusak → batalkan sinkronisasi, jangan
+    // sentuh isActive sama sekali. IDX riil ~950+ emiten.
+    if (idxStocks.length < 200) {
+      throw new Error(
+        `IDX list suspiciously small (${idxStocks.length} entries) — aborting sync to avoid mass-deactivation`
+      );
+    }
+
     const added: string[] = [];
     const removed: string[] = [];
     const updated: Array<{ ticker: string; changes: string[] }> = [];
@@ -57,9 +67,10 @@ export const stockSyncService = {
       }
     }
 
-    // Find stocks to deactivate (in DB but not in IDX)
+    // Find stocks to deactivate (in DB but not in IDX).
+    // Indices (^JKSE etc.) are never IDX-listed equities — always exempt.
     for (const [code, db] of dbMap) {
-      if (!idxMap.has(code) && db.isActive) {
+      if (!idxMap.has(code) && db.isActive && !db.ticker.startsWith("^")) {
         await prisma.stock.update({
           where: { id: db.id },
           data: { isActive: false },

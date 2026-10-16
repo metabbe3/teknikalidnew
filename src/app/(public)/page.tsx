@@ -28,7 +28,6 @@ import { articleRepository } from "@/domains/article/article.repository";
 import { SnapshotCard, type SnapshotCardData } from "@/components/berita/snapshot-card";
 import { DailyBriefHero } from "@/components/berita/daily-brief-hero";
 import { MarketBreathStrip } from "@/components/ui/market-breath-strip";
-import LivePrice from "@/components/stock/live-price";
 import { SectionHeading } from "@/components/ui/section-heading";
 
 const MiniScreenerPreview = dynamicImport(
@@ -362,7 +361,6 @@ export default async function HomePage() {
 
     return (
       <div className="fade-in">
-        <LivePrice />
         <TickerTape items={tickerItems} />
         <PersonalizedGreeting name={userName} marketInfo={marketInfo} overview={overview} ihsg={ihsg} />
         <div className="max-w-7xl mx-auto px-4 py-10 space-y-14">
@@ -412,7 +410,6 @@ export default async function HomePage() {
 
   return (
     <div className="fade-in">
-      <LivePrice />
       {/* ── Editorial masthead hero ── */}
       <section className="relative overflow-hidden border-b border-border bg-bg-card">
         <div

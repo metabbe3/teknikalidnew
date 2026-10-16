@@ -8,7 +8,6 @@ import { formatPrice, formatPercent, formatVolume, stripJk, changeColor, rsiColo
 import { normalizeTickerTitle } from "@/lib/normalize-ticker-title";
 import { ChartSection } from "@/components/chart/chart-section";
 import { IndicatorPanel } from "@/components/stock/indicator-panel";
-import LivePrice from "@/components/stock/live-price";
 import { KeyStatistics } from "@/components/stock/key-statistics";
 import { FundamentalData } from "@/components/stock/fundamental-data";
 import { TradingPlanCard } from "@/components/stock/trading-plan-card";
@@ -1149,7 +1148,6 @@ export default async function StockDetailPage({
       </div>
 
       <StockAlertBanner ticker={ticker} />
-      <LivePrice />
     </div>
     </>
   );

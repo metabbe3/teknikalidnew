@@ -4,7 +4,6 @@ import { AskAiCta } from "@/components/seo/ask-ai-cta";
 import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
-import LivePrice from "@/components/stock/live-price";
 import { SITE_URL } from "@/lib/constants";
 
 export const revalidate = 30; // 12 Okt: failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal
@@ -83,7 +82,6 @@ export default async function SahamPullbackSma20Page() {
         </div>
 
         <div className="mt-6 overflow-x-auto">
-          <LivePrice />
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-left">

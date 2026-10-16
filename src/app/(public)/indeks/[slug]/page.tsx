@@ -1,7 +1,6 @@
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import LivePrice from "@/components/stock/live-price";
 import { IDX_INDICES } from "@/lib/idx-indices";
 import { SITE_URL } from "@/lib/constants";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
@@ -93,7 +92,6 @@ export default async function IndexDetailPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
-        <LivePrice />
         {/* Breadcrumb */}
         <nav
           className="text-xs text-text-tertiary flex items-center gap-1.5"

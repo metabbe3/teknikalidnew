@@ -338,7 +338,7 @@ export async function fetchChart(
   const isSubDaily = ["1m", "5m", "15m", "30m", "60m", "1h"].includes(interval);
   const memTtl = isSubDaily ? 60 * 1000 : HISTORICAL_TTL_MS;
 
-  const raw = await cachedFetch(cacheKey, memTtl, HISTORICAL_DB_TTL_MS, () =>
+  const raw = await cachedFetch(cacheKey, memTtl, memTtl, () =>
     yahooFinance.chart(ticker, {
       period1: options.period1,
       period2: options.period2,

@@ -51,9 +51,9 @@ export function Header() {
           {ihsg && ihsg.close !== null && (
             <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-border bg-bg-surface text-xs">
               <span className="text-text-secondary font-medium">IHSG</span>
-              <span className="font-mono font-semibold text-text-primary tabular-nums">{ihsg.close.toLocaleString("id-ID", { minimumFractionDigits: 2 })}</span>
+              <span data-live-price="^JKSE" className="font-mono font-semibold text-text-primary tabular-nums">{ihsg.close.toLocaleString("id-ID", { minimumFractionDigits: 2 })}</span>
               {ihsg.changePercent !== null && (
-                <span className={`font-mono font-bold tabular-nums ${ihsg.changePercent >= 0 ? "text-bullish" : "text-bearish"}`}>
+                <span data-live-percent="^JKSE" className={`font-mono font-bold tabular-nums ${ihsg.changePercent >= 0 ? "text-bullish" : "text-bearish"}`}>
                   {ihsg.changePercent >= 0 ? "+" : ""}{ihsg.changePercent.toFixed(2)}%
                 </span>
               )}
@@ -68,7 +68,7 @@ export function Header() {
             <div className="sm:hidden flex items-center gap-1 text-xs">
               <span className="text-text-secondary font-medium">IHSG</span>
               {ihsg.changePercent !== null && (
-                <span className={`font-mono font-bold tabular-nums ${ihsg.changePercent >= 0 ? "text-bullish" : "text-bearish"}`}>
+                <span data-live-percent="^JKSE" className={`font-mono font-bold tabular-nums ${ihsg.changePercent >= 0 ? "text-bullish" : "text-bearish"}`}>
                   {ihsg.changePercent >= 0 ? "+" : ""}{ihsg.changePercent.toFixed(2)}%
                 </span>
               )}
