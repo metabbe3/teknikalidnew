@@ -559,3 +559,10 @@
 - traps: deploy.sh "Already up to date" kalau working dir sudah di commit target → langsung docker compose build+up; pcl_9e5c gagal sendiri (0 artikel hantu)
 - next: owner approve dry-run output → TKNKL_PASAR_PUSH_ENABLED=1 + daftar 4 cron; deploy budget teknikal 1/2 terpakai
 - owner 16 Okt ~06:10: "ikut jadwal saja" — aktivasi push TIDAK dipercepat; slot CTO pagi 07:30 yang present dry-run pasar_live_push.py ke owner, approve di situ baru TKNKL_PASAR_PUSH_ENABLED=1 + daftar 4 cron
+
+## 2026-10-16 08:0x — CTO pagi 07:30
+- State: sehat; freshness FRESH (15 Okt); prod 200 TTFB 0.24s; night-audit bersih (commit 03:09-06:43 = owner/agent-utama terdokumentasi, bukan bypass)
+- Barusan: sec-2026-10-15-01 BUILD DONE (6c802c6): 0 CRITICAL npm+image (Trivy 70→9), smoke auth 200 — status in_train T-1016-N; ops-2026-10-14-01 DONE (fixture 3/3, drift nyata ter-restore 07:39)
+- In-flight: kereta T-1016-N malam ini = sec-dep-bump + (manifest cek bo-14-02 bukti QA); backlog warn 15>cap12 + prod-17-01 stagnan 8d perlu verdict; pasar dry-run → owner (lihat bawah)
+- Jebakan: (1) container prod restart 07:42 exit-0 image TIDAK berubah (watchdog, bukan deploy) — jangan salah baca sebagai deploy; (2) smoke container tanpa network DB → home 500 = bukan regresi; (3) security scanner blok npm tarball CDN + pipe — pakai file /tmp; (4) 9 HIGH image sisa = bundled next/dist/compiled + no-fix, follow-up terpisah
+- Langkah pertama slot sore: baca queue → cek dry-run pasar_live_push.py + owner approve → daftar 4 cron push; kereta malam angkat sec-6c802c6 dgn ISR warm-up #4
