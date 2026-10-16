@@ -481,3 +481,18 @@
 - **QA**: post-slot QA Verifier 03:30 re-curl · **impact_check_due**: 2026-10-18
 - **impact_check**: raw URL tetap 404 + ls-files 0 + quarantine branch tak ter-push
 - **KPI**: TRUST
+
+## 2026-10-16 — sec-2026-10-15-01 (P1 security, in_train T-1016-N)
+- task-id: sec-2026-10-15-01 · type: ops/security · PRD: n/a (audit-driven, spec queue)
+- change: next-auth 5.0.0-beta.31→beta.32 + @auth/core 0.41.2→0.41.3 (CVE-2026-73420/73421 auth bypass), sharp 0.34.5→0.35.5, npm audit fix batch; Dockerfile stage prod-deps --omit=dev (devDeps tidak lagi masuk prod image)
+- commit: 6c802c6 (build-only; deploy kereta malam T-1016-N)
+- verify: npm audit 3C/30H→0C/10H · Trivy image 70→9 (0C, −87%) · tsc clean · smoke: /api/auth/providers 200, sharp OK
+- QA: verifier slot berikutnya pre-boarding (login flow + ISR warm-up runbook #4 pasca-deploy)
+- impact_check_due: 2026-10-19
+
+## 2026-10-16 — ops-2026-10-14-01 (P2 ops, done)
+- task-id: ops-2026-10-14-01 · type: ops (host script) · PRD: n/a
+- change: backlog_health.py SYMLINK_GUARDS alert-only → AUTO-RESTORE (union-merge + backup + re-symlink, fallback alert-only saat docs korup)
+- commit: n/a host script (bukan repo) · deploy: n/a
+- verify: fixture 3/3 PASS + py_compile + live exit 0 + drift nyata 07:39 ter-restore (backup .bak-20261016-073921-drift1)
+- QA: self-check (hotfix host-ops kecil) · impact_check_due: n/a
