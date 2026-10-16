@@ -1,6 +1,7 @@
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import LivePrice from "@/components/stock/live-price";
 import { IDX_INDICES } from "@/lib/idx-indices";
 import { SITE_URL } from "@/lib/constants";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
@@ -92,6 +93,7 @@ export default async function IndexDetailPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
+        <LivePrice />
         {/* Breadcrumb */}
         <nav
           className="text-xs text-text-tertiary flex items-center gap-1.5"
@@ -182,12 +184,13 @@ export default async function IndexDetailPage({
                       <td className="py-3 px-3 text-text-secondary truncate max-w-[200px]">
                         {stock.name}
                       </td>
-                      <td className="py-3 px-3 text-right tabular-nums font-medium">
+                      <td data-live-price={stock.ticker} className="py-3 px-3 text-right tabular-nums font-medium">
                         {stock.close != null
                           ? formatPrice(stock.close)
                           : "—"}
                       </td>
                       <td
+                        data-live-percent={stock.ticker}
                         className={`py-3 px-3 text-right tabular-nums font-medium ${changeColor(stock.changePercent)}`}
                       >
                         {stock.changePercent != null
@@ -260,7 +263,7 @@ export default async function IndexDetailPage({
                   </div>
                   <div className="text-right shrink-0 tabular-nums">
                     {stock.close != null ? (
-                      <p className="font-semibold text-sm">
+                      <p data-live-price={stock.ticker} className="font-semibold text-sm">
                         {formatPrice(stock.close)}
                       </p>
                     ) : (

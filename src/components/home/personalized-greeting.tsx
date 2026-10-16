@@ -63,10 +63,10 @@ export function PersonalizedGreeting({
           <span className="text-text-secondary">
             IHSG{" "}
             <span className="font-mono font-semibold text-text-primary tabular-nums">
-              {ihsg ? ihsg.close.toLocaleString("id-ID", { minimumFractionDigits: 2 }) : "—"}
+              {ihsg ? <span data-live-price="^JKSE">{ihsg.close.toLocaleString("id-ID", { minimumFractionDigits: 2 })}</span> : "—"}
             </span>
             {ihsg?.changePercent !== null && ihsg?.changePercent !== undefined && (
-              <span className={`ml-1 font-mono font-semibold tabular-nums ${ihsg.changePercent >= 0 ? "text-bullish" : "text-bearish"}`}>
+              <span data-live-percent="^JKSE" className={`ml-1 font-mono font-semibold tabular-nums ${ihsg.changePercent >= 0 ? "text-bullish" : "text-bearish"}`}>
                 {ihsg.changePercent >= 0 ? "+" : ""}{ihsg.changePercent.toFixed(2)}%
               </span>
             )}

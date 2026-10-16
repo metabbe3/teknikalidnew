@@ -4,6 +4,7 @@ import { AskAiCta } from "@/components/seo/ask-ai-cta";
 import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { formatPrice, formatPercent, stripJk, changeColor, rsiColor } from "@/lib/utils";
+import LivePrice from "@/components/stock/live-price";
 import { SITE_URL } from "@/lib/constants";
 
 export const revalidate = 30; // 12 Okt: failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal
@@ -79,6 +80,7 @@ export default async function SahamOverboughtPage() {
           diatas 70. Gunakan bersama indikator lain.
         </div>
         <div className="mt-6 overflow-x-auto">
+          <LivePrice />
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b text-left">
@@ -101,7 +103,7 @@ export default async function SahamOverboughtPage() {
                     <tr key={s.ticker} className="border-b hover:bg-muted/50">
                       <td className="py-2 pr-4"><Link href={`/stocks/${s.ticker}`} className="font-semibold text-blue-600 hover:underline inline-block py-1.5">{stripJk(s.ticker)}</Link></td>
                       <td className="py-2 pr-4 text-muted-foreground">{s.name}</td>
-                      <td className="py-2 pr-4">{s.close !== null ? formatPrice(s.close) : "—"}</td>
+                      <td className="py-2 pr-4"><span data-live-price={(s ?? stock).ticker}>{s.close !== null ? formatPrice(s.close) : "—"}</span></td>
                       <td className={`py-2 pr-4 ${s.changePercent !== null ? changeColor(s.changePercent) : ""}`}>{s.changePercent !== null ? formatPercent(s.changePercent) : "—"}</td>
                       <td className={`py-2 pr-4 font-semibold ${s.rsi14 !== null ? rsiColor(s.rsi14) : ""}`}>{s.rsi14 !== null ? s.rsi14.toFixed(1) : "—"}</td>
                     </tr>

@@ -79,7 +79,7 @@ export function SnapshotCard({
       {/* Middle: price + change | sparkline */}
       <div className="mt-3 flex items-end justify-between gap-2">
         <div className="min-w-0">
-          <span className="font-mono text-lg font-bold tabular-nums text-text-primary">
+          <span data-live-price={ticker} className="font-mono text-lg font-bold tabular-nums text-text-primary">
             {close !== null ? formatPrice(close) : "—"}
           </span>
           {changePercent !== null && (

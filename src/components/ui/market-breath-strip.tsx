@@ -25,9 +25,9 @@ export function MarketBreathStrip({ data, className }: { data: BreathData; class
       {ihsg && ihsg.close !== null && (
         <span className="inline-flex items-center gap-1.5 font-mono w-full sm:w-auto">
           <span className="text-text-tertiary text-xs">IHSG</span>
-          <span className="font-bold tabular-nums text-text-primary">{formatPrice(ihsg.close)}</span>
+          <span data-live-price="^JKSE" className="font-bold tabular-nums text-text-primary">{formatPrice(ihsg.close)}</span>
           {ihsg.changePercent !== null && (
-            <span className={cn("font-semibold tabular-nums", ihsg.changePercent >= 0 ? "text-bullish" : "text-bearish")}>
+            <span data-live-percent="^JKSE" className={cn("font-semibold tabular-nums", ihsg.changePercent >= 0 ? "text-bullish" : "text-bearish")}>
               {ihsg.changePercent >= 0 ? "+" : ""}{ihsg.changePercent.toFixed(2)}%
             </span>
           )}

@@ -62,12 +62,12 @@ export function FeaturedStockCard({
         </div>
         <div className="text-right shrink-0 tabular-nums">
           {close != null ? (
-            <p className="font-mono font-semibold text-[15px]">{formatPrice(close)}</p>
+            <p data-live-price={ticker} className="font-mono font-semibold text-[15px]">{formatPrice(close)}</p>
           ) : (
             <p className="font-semibold text-text-tertiary">—</p>
           )}
           {changePercent !== null && (
-            <p className={`text-xs font-medium mt-0.5 font-mono ${changeColor(changePercent)}`}>
+            <p data-live-percent={ticker} className={`text-xs font-medium mt-0.5 font-mono ${changeColor(changePercent)}`}>
               {formatPercent(changePercent)}
             </p>
           )}

@@ -5,6 +5,7 @@ import { RegisterCta } from "@/components/signal/register-cta";
 import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
+import LivePrice from "@/components/stock/live-price";
 import { SITE_URL } from "@/lib/constants";
 
 export const revalidate = 30; // 12 Okt: failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal
@@ -86,6 +87,7 @@ export default async function SahamGoldenCrossPage() {
         </div>
 
         <div className="mt-6 overflow-x-auto">
+          <LivePrice />
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b text-left">
@@ -119,7 +121,7 @@ export default async function SahamGoldenCrossPage() {
                         </Link>
                       </td>
                       <td className="py-2 pr-4 text-muted-foreground">{s.name}</td>
-                      <td className="py-2 pr-4">{s.close !== null ? formatPrice(s.close) : "—"}</td>
+                      <td className="py-2 pr-4"><span data-live-price={(s ?? stock).ticker}>{s.close !== null ? formatPrice(s.close) : "—"}</span></td>
                       <td className={`py-2 pr-4 ${s.changePercent !== null ? changeColor(s.changePercent) : ""}`}>
                         {s.changePercent !== null ? formatPercent(s.changePercent) : "—"}
                       </td>

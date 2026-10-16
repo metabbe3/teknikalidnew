@@ -28,7 +28,8 @@ interface QuoteRow {
 const fmtID = (n: number, opts?: Intl.NumberFormatOptions) =>
   new Intl.NumberFormat("id-ID", opts).format(n);
 
-function formatPrice(n: number): string {
+function formatPrice(n: number, isIndex = false): string {
+  if (isIndex) return fmtID(n, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   return `Rp${fmtID(n, { maximumFractionDigits: 0 })}`;
 }
 
@@ -72,8 +73,10 @@ export default function LivePrice({ intervalMs = 60_000 }: { intervalMs?: number
         for (const el of priceEls) {
           const t = el.getAttribute("data-live-price");
           const q = t ? byTicker.get(t) : undefined;
-          if (q?.price != null && el.textContent !== formatPrice(q.price)) {
-            el.textContent = formatPrice(q.price);
+          const isIndex = Boolean(t && t.startsWith("^"));
+          const fmt = (n: number) => formatPrice(n, isIndex);
+          if (q?.price != null && el.textContent !== fmt(q.price)) {
+            el.textContent = fmt(q.price);
             el.setAttribute("data-live-state", "live");
           }
         }

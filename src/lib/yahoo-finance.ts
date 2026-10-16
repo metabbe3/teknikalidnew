@@ -333,8 +333,12 @@ export async function fetchChart(
   const p1 = toDateKey(new Date(options.period1));
   const p2 = toDateKey(options.period2 ? new Date(options.period2) : new Date());
   const cacheKey = `yf:chart:${ticker}:${interval}:${p1}:${p2}`;
+  // Intraday candles must stay fresh during market hours (owner 16 Okt: chart tidak
+  // terupdate) — 60s TTL for sub-daily intervals, 1h for daily/weekly history.
+  const isSubDaily = ["1m", "5m", "15m", "30m", "60m", "1h"].includes(interval);
+  const memTtl = isSubDaily ? 60 * 1000 : HISTORICAL_TTL_MS;
 
-  const raw = await cachedFetch(cacheKey, HISTORICAL_TTL_MS, HISTORICAL_DB_TTL_MS, () =>
+  const raw = await cachedFetch(cacheKey, memTtl, HISTORICAL_DB_TTL_MS, () =>
     yahooFinance.chart(ticker, {
       period1: options.period1,
       period2: options.period2,
