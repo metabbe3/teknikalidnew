@@ -1,16 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function CompleteProfilePage() {
   const { data: session, update } = useSession();
   const router = useRouter();
-  const [username, setUsername] = useState("");
+  const emailLocal = (session?.user?.email || "").split("@")[0].toLowerCase().replace(/[^a-z0-9_]/g, "").slice(0, 20);
+  const suggested = /^[a-zA-Z0-9_]{3,20}$/.test(emailLocal) ? emailLocal : "";
+  const [username, setUsername] = useState(suggested);
+  const [usernameTouched, setUsernameTouched] = useState(false);
   const [name, setName] = useState(session?.user?.name || "");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Session client-side terisi SETELAH mount — useState(suggested) latch kosong.
+  // Sync sekali saat session ready, selama user belum menulis apa pun.
+  useEffect(() => {
+    if (usernameTouched) return;
+    if (suggested && username !== suggested) setUsername(suggested);
+  }, [suggested, username, usernameTouched]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -89,8 +99,12 @@ export default function CompleteProfilePage() {
             <input
               id="username"
               type="text"
+              autoFocus
               value={username}
-              onChange={(e) => setUsername(e.target.value.toLowerCase())}
+              onChange={(e) => {
+                setUsernameTouched(true);
+                setUsername(e.target.value.toLowerCase());
+              }}
               required
               maxLength={20}
               className="w-full bg-bg-hover border border-border rounded-xl px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-accent"

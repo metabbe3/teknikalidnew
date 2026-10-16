@@ -114,6 +114,7 @@ export default function RegisterPage() {
                 <input
                   id="email"
                   type="email"
+                  autoFocus
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
