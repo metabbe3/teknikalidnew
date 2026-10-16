@@ -12,7 +12,7 @@ import { buildStockAiContext } from "./context";
 
 const MLX_URL = process.env.MLX_AI_URL ?? "http://host.docker.internal:8765";
 
-const RATE_LIMIT = 30; // per jam
+const RATE_LIMIT = 300; // per jam (owner 16 Okt: jangan limit browsing)
 const buckets = new Map<string, { count: number; resetAt: number }>();
 
 function rateLimited(ip: string): boolean {

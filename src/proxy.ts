@@ -47,16 +47,20 @@ const REGISTER_RATE_LIMIT = 5;  // 5 registrations per hour per IP
 const REGISTER_RATE_WINDOW = 60 * 60_000;
 
 // Stricter limit on scrape-prone stock data APIs + repeat-offender IP cooldown
+// OWNER 16 Okt: limits DIHAPUS utk browsing saham ("views kecil, jangan di-limit,
+// biar potensi tidak terblok — kalau lagi crash pasti semua orang check banyak saham").
+// CGNAT Indonesia = ribuan user share 1 IP; limit 60 req/mnt mem-block manusia asli.
+// Yang tersisa hanya blocklist manual (blockedIps oleh admin) — auto-escalation dimatikan.
 const stockApiRateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const STOCK_API_RATE_LIMIT = 60; // req/min/IP on /api/stocks/* etc.
+const STOCK_API_RATE_LIMIT = 600; // req/min/IP — praktis unlimited utk manusia
 const stockApiViolations = new Map<string, { count: number; resetAt: number }>();
-const STOCK_API_VIOLATION_WINDOW = 10 * 60_000; // track repeat offenders over 10 min
-const STOCK_API_BLOCK_WINDOW = 60 * 60_000; // 1h cooldown after 3 violations
+const STOCK_API_VIOLATION_WINDOW = 10 * 60_000;
+const STOCK_API_BLOCK_WINDOW = 60 * 60_000;
 const blockedIps = new Map<string, number>(); // ip → unblockAt (ms)
 
 // Rate-limit + blocklist for the public /stocks/* HTML pages (the scrape surface).
 const stockPageRateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const STOCK_PAGE_RATE_LIMIT = 180; // req/min/IP — generous for humans/NAT, catches enumeration
+const STOCK_PAGE_RATE_LIMIT = 600; // req/min/IP — praktis unlimited; admin blocklist utk scraper berat
 const stockPageViolations = new Map<string, { count: number; resetAt: number }>();
 const STOCK_PAGE_VIOLATION_WINDOW = 10 * 60_000; // track repeat offenders over 10 min
 const STOCK_PAGE_BLOCK_WINDOW = 60 * 60_000; // 1h cooldown after 3 violations
@@ -271,9 +275,8 @@ export async function proxy(request: NextRequest) {
         ? { count: 1, resetAt: now + STOCK_API_VIOLATION_WINDOW }
         : { count: v.count + 1, resetAt: v.resetAt };
       stockApiViolations.set(ip, entry);
-      if (entry.count >= 3) {
-        blockedIps.set(ip, now + STOCK_API_BLOCK_WINDOW);
-      }
+      // OWNER 16 Okt: auto-block 1 jam DIMATIKAN — manusia CGNAT jangan terkunci
+      // (dengan limit 600/mnt, violation hanya scraper agresif; blocklist admin cukup)
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
   }
@@ -287,15 +290,9 @@ export async function proxy(request: NextRequest) {
         ? { count: 1, resetAt: now + STOCK_PAGE_VIOLATION_WINDOW }
         : { count: v.count + 1, resetAt: v.resetAt };
       stockPageViolations.set(ip, entry);
-      // AC5 (PRD idea-2026-10-12-2): CGNAT prefix dikenal butuh eksponen kedua
-      // (UA browser) utk eskalasi blokir 1 jam — request-count saja mengunci ribuan
-      // manusia yang berbagi 1 IP (bukti: 82% row BlockedIp = CGNAT).
+      // OWNER 16 Okt: eskalasi blokir CGNAT 1 jam DIMATIKAN (82% BlockedIp ternyata
+      // manusia CGNAT). Soft-limit window 1 menit saja; tanpa block otomatis.
       let retryMs = RATE_WINDOW; // soft-limit: tunggu window 1 menit ini berakhir
-      if (entry.count >= 3 && shouldEscalateCgnat(ip, request.headers.get("user-agent"))) {
-        blockedIps.set(ip, now + STOCK_PAGE_BLOCK_WINDOW);
-        retryMs = STOCK_PAGE_BLOCK_WINDOW; // tereskalasi: cooldown 1 jam
-        blockIp(ip, "auto: stock-page scrape escalation", undefined, new Date(now + STOCK_PAGE_BLOCK_WINDOW)).catch(() => {});
-      }
       return accessLimitedResponse(request, 429, retryMs);
     }
   }
