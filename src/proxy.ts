@@ -26,8 +26,9 @@ const securityHeaders = {
   ].join("; "),
   "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
   "X-Frame-Options": "DENY",
-  // X-Content-Type-Options: nosniff DIHAPUS — akar dialog download iPhone Safari iOS
-  // (text/x-component RSC + nosniff = download). HTML utama text/html murni, risk minimal.
+  // X-Content-Type-Options: nosniff di-set CONDITIONAL di bawah (bukan konstan global):
+  // semua respons dapat nosniff KECUALI RSC payload (text/x-component) — nosniff di sana
+  // memicu dialog download di Safari iOS (insiden BIKE.JK, 12 Okt).
   "X-XSS-Protection": "1; mode=block",
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
@@ -157,11 +158,14 @@ export async function proxy(request: NextRequest) {
     response.headers.set(key, value);
   }
 
-  // RSC payload (text/x-component): Safari iOS memperlakukan tipe ini sebagai unduhan
-  // ketika dikombinasikan dengan X-Content-Type-Options: nosniff. Payload RSC hanya
-  // dikonsumsi internal oleh router Next di halaman yang sah (same-origin, JS aktif),
-  // jadi nosniff tidak menambah keamanan di sini — tapi tetap dipertahankan untuk
-  // semua respons lain. (Akar masalah dialog download "BIKE.JK" di iPhone, 12 Okt.)
+  // nosniff untuk semua respons KECUALI RSC payload (header RSC: 1) — text/x-component
+  // + nosniff memicu dialog download di Safari iOS (insiden BIKE.JK 12 Okt).
+  // RSC payload hanya dikonsumsi internal oleh router Next di halaman yang sah
+  // (same-origin, JS aktif), jadi nosniff tidak menambah keamanan di sana.
+  // HTML utama, JSON API, dan static assets tetap dapat nosniff (parity hivepos.id).
+  if (!request.headers.get("rsc")) {
+    response.headers.set("X-Content-Type-Options", "nosniff");
+  }
 
   const pathname = request.nextUrl.pathname;
 
