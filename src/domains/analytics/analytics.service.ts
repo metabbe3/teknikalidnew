@@ -100,6 +100,15 @@ export interface SectionEntry {
   uniqueVisitors: number;
 }
 
+export interface LivePulseBucket {
+  /** "HH:MM" WIB — menit awal bucket (mis. 20:05 = bucket 20:05-20:10). */
+  label: string;
+  /** Epoch ms awal bucket. */
+  bucketStart: number;
+  views: number;
+  uniqueVisitors: number;
+}
+
 export interface ComprehensiveAnalytics {
   overview: {
     totalViews: number;
@@ -136,6 +145,8 @@ export interface ComprehensiveAnalytics {
     time: Date;
     isBot: boolean;
   }[];
+  /** Live Pulse — 12 bucket 5-menit (60 mnt terakhir), WIB. */
+  livePulse: LivePulseBucket[];
   comparison: {
     currentViews: number;
     previousViews: number;
@@ -953,6 +964,12 @@ export const analyticsService = {
             isBot: v.isBot,
           };
         }),
+
+      // ─── Live Pulse (owner 17 Okt: overview kurang realtime) ─────────────────
+      // Last 60 min in 5-min buckets (12 titik), WIB clock. Satu query tambahan
+      // di endpoint yang sudah 30s auto-refresh — tanpa infra baru (API Reuse Rule:
+      // improve analytics.service, bukan endpoint baru).
+      livePulse: await this.getLivePulse(),
       comparison: {
         currentViews: totalViews,
         previousViews: prevViews,
@@ -962,6 +979,51 @@ export const analyticsService = {
         uniqueChangePct,
       },
     };
+  },
+
+  /**
+   * Live Pulse (owner 17 Okt: "overview kurang realtime dan detail").
+   * 12 bucket × 5 menit = 60 menit terakhir. Bot di-count terpisah supaya
+   * lonjakan crawler tidak menutupi traffic manusia. Satu findMany take 2000.
+   */
+  async getLivePulse(): Promise<LivePulseBucket[]> {
+    const now = Date.now();
+    const BUCKET_MS = 5 * 60 * 1000;
+    const start = now - 12 * BUCKET_MS;
+    const views = await prisma.pageView.findMany({
+      where: { createdAt: { gte: new Date(start) } },
+      select: { ip: true, isBot: true, createdAt: true },
+      orderBy: { createdAt: "desc" },
+      take: 2000,
+    });
+    // snap bucket ke grid 5 mnt
+    const gridStart = Math.floor(start / BUCKET_MS) * BUCKET_MS;
+    const buckets = new Map<number, { views: number; ips: Set<string> }>();
+    for (let i = 0; i < 12; i++) {
+      const t = gridStart + i * BUCKET_MS;
+      buckets.set(t, { views: 0, ips: new Set() });
+    }
+    for (const v of views) {
+      if (v.isBot) continue; // manusia saja di pulse utama
+      const t = Math.floor(v.createdAt.getTime() / BUCKET_MS) * BUCKET_MS;
+      const b = buckets.get(t);
+      if (!b) continue;
+      b.views++;
+      if (v.ip) b.ips.add(v.ip);
+    }
+    return [...buckets.entries()]
+      .sort(([a], [b]) => a - b)
+      .map(([t, b]) => ({
+        label: new Date(t).toLocaleTimeString("id-ID", {
+          timeZone: "Asia/Jakarta",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }),
+        bucketStart: t,
+        views: b.views,
+        uniqueVisitors: b.ips.size,
+      }));
   },
 
   /**

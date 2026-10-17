@@ -9,7 +9,7 @@ import { FunnelSection } from "./funnel-section";
 import {
   Eye, Users, TrendingUp, Clock, Search, Share2, Globe2,
   ArrowUpRight, ArrowDownRight, Monitor, Smartphone, Tablet,
-  Wifi, MapPin, Target, Hash, ExternalLink, ArrowRightLeft,
+  Wifi, MapPin, Target, Hash, ExternalLink, ArrowRightLeft, Activity,
 } from "lucide-react";
 import { formatVolume } from "@/lib/utils";
 import { wibDayStart, wibNextDayStart } from "@/lib/datetime-wib";
@@ -63,6 +63,12 @@ interface AnalyticsData {
       prefixes: Array<{ prefix: string; hits: number }>;
     }>;
   };
+  livePulse: Array<{
+    label: string;
+    bucketStart: number;
+    views: number;
+    uniqueVisitors: number;
+  }>;
   realtime: Array<{
     ip: string | null;
     path: string;
@@ -430,6 +436,44 @@ export function AnalyticsTab() {
           )}
         </CardContent>
       </Card>
+
+      {/* Live Pulse — 60 menit terakhir per 5 menit (owner 17 Okt) */}
+      {data?.livePulse && data.livePulse.some((b) => b.views > 0) && (() => {
+        const max = Math.max(...data.livePulse.map((b) => b.views), 1);
+        const total = data.livePulse.reduce((s, b) => s + b.views, 0);
+        return (
+          <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+            <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-emerald-50 to-white rounded-t-lg">
+              <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
+                <Activity className="h-4 w-4 text-emerald-500" />
+                Live Pulse — 60 menit terakhir
+                <span className="text-xs font-normal text-gray-400">
+                  ({total} views · per 5 menit · auto-refresh 30s)
+                </span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-3">
+              <div className="flex items-end gap-1 h-24">
+                {data.livePulse.map((b, i) => (
+                  <div key={i} className="flex-1 flex flex-col items-center gap-1 group relative">
+                    <div
+                      className="w-full rounded-t bg-gradient-to-t from-emerald-500 to-emerald-300 transition-all group-hover:from-emerald-600"
+                      style={{ height: `${Math.max((b.views / max) * 100, b.views > 0 ? 6 : 2)}%` }}
+                      title={`${b.label} — ${b.views} views · ${b.uniqueVisitors} unik`}
+                    />
+                    <span className="text-[9px] text-gray-400 tabular-nums">
+                      {b.label.slice(0, 2)}
+                    </span>
+                    <span className="absolute -top-7 hidden group-hover:block bg-gray-900 text-white text-[10px] px-1.5 py-0.5 rounded whitespace-nowrap z-10">
+                      {b.label} · {b.views}v · {b.uniqueVisitors}ip
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })()}
 
       {/* Realtime Visitors */}
       {data?.realtime && data.realtime.length > 0 && (
