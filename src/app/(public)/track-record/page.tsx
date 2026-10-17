@@ -7,7 +7,7 @@ import {
   type WindowStat,
   type TrackRecordData,
 } from "@/lib/track-record.service";
-import { formatPercent } from "@/lib/utils";
+import { dateLabel, formatPercent  } from "@/lib/utils";
 
 // 516k rows di-aggregate — ISR 1 jam cukup (data harian, bukan intraday).
 // Trust: ISR prerender saat build bisa membekukan fallback "diperbarui" kalau DB
@@ -38,16 +38,6 @@ const rateColor = (v: number | null) =>
 const monthLabel = (ym: string) => {
   if (ym === "all") return "Agregat";
   return new Date(`${ym}-01`).toLocaleDateString("id-ID", {
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-};
-
-const dateLabel = (iso: string | null) => {
-  if (!iso) return "—";
-  return new Date(`${iso}T00:00:00Z`).toLocaleDateString("id-ID", {
-    day: "numeric",
     month: "long",
     year: "numeric",
     timeZone: "UTC",

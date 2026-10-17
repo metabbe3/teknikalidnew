@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHero } from "@/components/layout/page-hero";
 import { pasarLiveService, isLiveWindow, isMarketHours, wibNow, wibHHMM } from "@/domains/stock/pasar-live.service";
 import { prisma } from "@/lib/prisma";
-import { formatPrice, formatPercent, formatVolume, stripJk } from "@/lib/utils";
+import { dateLabel, formatPrice, formatPercent, formatVolume, stripJk  } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { TrendingUp, TrendingDown, Newspaper, AlertTriangle, Clock } from "lucide-react";
 
@@ -161,7 +161,7 @@ export default async function PasarPage() {
             </Link>
           )}
           {snap.sessionDate && (
-            <span className="text-sm text-text-tertiary font-mono">sesi data {snap.sessionDate}</span>
+            <span className="text-sm text-text-tertiary font-mono">sesi data {dateLabel(snap.sessionDate)}</span>
           )}
         </div>
       </PageHero>
@@ -329,7 +329,7 @@ function RecapBlock({
     <>
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">IHSG — sesi {sessionDate ?? "terakhir"}</CardTitle>
+          <CardTitle className="text-base">IHSG — sesi {dateLabel(sessionDate)}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap items-end gap-x-6 gap-y-2">

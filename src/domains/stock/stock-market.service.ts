@@ -452,9 +452,31 @@ export const stockMarketService = {
 
     const withChange = stockChanges.filter((s): s is StockChange & { changePercent: number } => s.changePercent !== null);
 
-    const gainers = [...withChange].sort((a, b) => b.changePercent - a.changePercent).slice(0, 5);
+    // Trust: leaderboard (gainers/losers/most-active) hanya saham yg benar-benar
+    // transaksi di SESI TERAKHIR pasar. Saham beku/suspend (tanpa bar di sesi itu)
+    // punya % vs sesi trade terakhirnya — masuk leaderboard = menyesatkan
+    // (kasus AKKU +34,62% ARA 17 Okt: benar aritmetikanya, salah konteksnya).
+    const marketDateMs = stocks.reduce<number>((mx, st) => {
+      const d = st.prices[0]?.date;
+      return d ? Math.max(mx, d.getTime()) : mx;
+    }, 0);
+    // index withChange ≠ index stocks (filter) — pakai map ticker→date.
+    const lastBarDateByTicker = new Map<string, number>(
+      stocks.flatMap((st) => {
+        const d = st.prices[0]?.date;
+        return d ? [[st.ticker, d.getTime()] as [string, number]] : [];
+      })
+    );
+    const sessionStocks = withChange.filter(
+      (s) =>
+        !s.ticker.startsWith("^") && // indeks (^JKSE) bukan saham — jangan ikut leaderboard
+        lastBarDateByTicker.get(s.ticker) === marketDateMs
+    );
+    const leaderboard = sessionStocks.length >= 5 ? sessionStocks : withChange;
+
+    const gainers = [...leaderboard].sort((a, b) => b.changePercent - a.changePercent).slice(0, 5);
     const gainerSet = new Set(gainers.map((g) => g.ticker));
-    const losers = [...withChange]
+    const losers = [...leaderboard]
       .filter((s) => !gainerSet.has(s.ticker))
       .sort((a, b) => a.changePercent - b.changePercent)
       .slice(0, 5);

@@ -189,3 +189,14 @@ export function healthScoreMeta(score: number): { color: string; bg: string; lab
   if (score >= 20) return { color: "#b45309", bg: "rgba(180,83,9,0.10)", label: "Lemah" };
   return { color: "#dc2626", bg: "rgba(220,38,38,0.10)", label: "Berisiko" };
 }
+
+// Tanggal ISO (YYYY-MM-DD) → "16 Oktober 2026" (UTC-safe, id-ID).
+export function dateLabel(iso: string | null): string {
+  if (!iso) return "—";
+  return new Date(`${iso}T00:00:00Z`).toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}

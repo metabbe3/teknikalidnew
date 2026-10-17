@@ -619,13 +619,13 @@ export default async function StockDetailPage({
                     <span className="font-mono font-semibold text-text-secondary tabular-nums">{latestVolume > 0 ? formatVolume(latestVolume) : "—"}</span>
                   </div>
                   <div>
-                    <span className="text-text-tertiary block">Rentang 52mgg</span>
+                    <span className="text-text-tertiary block">Rentang 52 Minggu</span>
                     <span className="font-mono font-semibold text-text-secondary tabular-nums">
                       {detail.week52Low !== null && detail.week52High !== null ? `${formatPrice(detail.week52Low)} – ${formatPrice(detail.week52High)}` : "—"}
                     </span>
                   </div>
                   <div>
-                    <span className="text-text-tertiary block">Posisi 52mgg</span>
+                    <span className="text-text-tertiary block">Posisi di 52 Minggu</span>
                     {detail.week52Low !== null && detail.week52High !== null && detail.week52High > detail.week52Low ? (
                       <div className="flex items-center gap-2">
                         <div className="h-1.5 flex-1 min-w-[48px] rounded-full bg-bg-hover overflow-hidden" role="img" aria-label={`Posisi harga dalam rentang 52 minggu: ${Math.round(((close - detail.week52Low) / (detail.week52High - detail.week52Low)) * 100)}%`}>
