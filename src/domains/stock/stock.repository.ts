@@ -107,6 +107,36 @@ export const stockRepository = {
     return prisma.stock.findMany({ orderBy: { ticker: "asc" } });
   },
 
+  /** Universe trust utk halaman agregat (market-structure, dsb): N saham equity terlikuid
+   *  di sesi terakhir — bar terakhir HARUS volume > 0 (beku/suspend/carry-forward terkecualikan). */
+  async findMostLiquidEquities(take: number, latestDate?: Date): Promise<
+    { ticker: string; name: string; close: number | null; volume: number | null }[]
+  > {
+    const date = latestDate ?? (await this.findLatestPriceDate()) ?? new Date();
+    const rows = await prisma.stock.findMany({
+      where: { isActive: true, assetClass: "EQUITY" },
+      select: {
+        ticker: true,
+        name: true,
+        prices: {
+          where: { date, volume: { gt: 0 } },
+          select: { close: true, volume: true },
+          take: 1,
+        },
+      },
+    });
+    return rows
+      .filter((r) => r.prices.length > 0)
+      .map((r) => ({
+        ticker: r.ticker,
+        name: r.name,
+        close: r.prices[0].close != null ? Number(r.prices[0].close) : null,
+        volume: r.prices[0].volume != null ? Number(r.prices[0].volume) : null,
+      }))
+      .sort((a, b) => (b.volume ?? 0) - (a.volume ?? 0))
+      .slice(0, take);
+  },
+
   findActiveStocksWithPrices(where?: { sector?: string; assetClass?: "EQUITY" | "CRYPTO" }, includeIndicators = true) {
     return prisma.stock.findMany({
       where: { isActive: true, ...where },
