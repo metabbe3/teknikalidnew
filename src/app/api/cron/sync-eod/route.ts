@@ -3,6 +3,7 @@ import { dataSyncService } from "@/domains/stock/data-sync.service";
 import { technicalAnalysisService } from "@/domains/stock/technical-analysis.service";
 import { thesisService } from "@/domains/thesis/thesis.service";
 import { withCronLogging } from "@/domains/cron-monitoring/with-cron-logging";
+import { clearEodCaches } from "@/domains/stock/eod-cache";
 
 export async function GET(request: NextRequest) {
   const auth = request.headers.get("authorization");
@@ -26,6 +27,8 @@ export async function GET(request: NextRequest) {
       } catch (e) {
         console.error("[thesis-breach-scan]", e);
       }
+      // Pasca-sync: segarkan cache EOD screener/radar instan (ref-2026-10-17-03).
+      try { clearEodCaches(); } catch (e) { console.error("[eod-cache-clear]", e); }
       return { status: 200, body: { success: true } };
     });
     return NextResponse.json(body, { status });

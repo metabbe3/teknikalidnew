@@ -3,11 +3,18 @@ import { computeChange, decimalToNumber, bigIntToNumber } from "@/lib/serialize"
 import { calculatePivotPoints } from "@/lib/indicators";
 import { stockRepository } from "./stock.repository";
 import { buildIndicatorWhere, VOLUME_SPIKE_MULTIPLIER, VALID_PRESETS } from "./indicator.service";
+import { cachedEod, eodKey } from "./eod-cache";
 
 export const screenerAnalysisService = {
   async screenerQuery(preset: string, assetClass: "EQUITY" | "CRYPTO" = "EQUITY") {
     if (!VALID_PRESETS.has(preset)) return { error: "Invalid preset" };
 
+    // EOD data — cached 5 menit (ref-2026-10-17-03): 9 signal pages + /screener
+    // + API konsumen semuanya query identik per request sebelum ini.
+    return cachedEod(eodKey("screener", preset, assetClass), async () => this._screenerQueryUncached(preset, assetClass));
+  },
+
+  async _screenerQueryUncached(preset: string, assetClass: "EQUITY" | "CRYPTO" = "EQUITY") {
     const latestDateRow = await stockRepository.getLatestIndicatorDate(assetClass);
     if (!latestDateRow) return [];
     const latestDate = latestDateRow.date;
@@ -176,7 +183,11 @@ export const screenerAnalysisService = {
     return stocks;
   },
 
-  async getBottomFishingRadar(assetClass?: "EQUITY" | "CRYPTO"): Promise<{
+  async getBottomFishingRadar(assetClass?: "EQUITY" | "CRYPTO") {
+    return cachedEod(eodKey("radar", assetClass ?? "ALL"), async () => this._radarUncached(assetClass));
+  },
+
+  async _radarUncached(assetClass?: "EQUITY" | "CRYPTO"): Promise<{
     ticker: string;
     name: string;
     sector: string;
