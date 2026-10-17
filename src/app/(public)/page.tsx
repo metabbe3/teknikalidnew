@@ -22,7 +22,6 @@ import { ThesisCard } from "@/components/home/thesis-card";
 import { PersonalizedGreeting } from "@/components/home/personalized-greeting";
 import { WelcomeCard } from "@/components/home/welcome-card";
 import { ClaimStreakButton } from "@/components/home/claim-streak-button";
-import { ForYouSignals } from "@/components/home/for-you-signals";
 import { reputationRepository } from "@/domains/reputation/reputation.repository";
 import { articleRepository } from "@/domains/article/article.repository";
 import { SnapshotCard, type SnapshotCardData } from "@/components/berita/snapshot-card";
@@ -305,7 +304,7 @@ async function WelcomeLoopSection({ currentUser }: { currentUser: WelcomeLoopUse
         </>
       ) : (
         <>
-          <ForYouSignals userId={currentUser.id} />
+          <MorningDeltaCard />
           <ClaimStreakButton initialStreak={streak} claimedToday={claimedToday} />
         </>
       )}
@@ -388,7 +387,6 @@ export default async function HomePage() {
               + streak claim; day-2+ (or checklist complete) -> "Sinyal untukmu".
               All derives are fire-safe (failure hides the card, never errors home). */}
           <WelcomeLoopSection currentUser={currentUser} />
-          <MorningDeltaCard />
           <Suspense fallback={<FeaturedSkeleton />}>
             <FeaturedStocksSection gainers={gainers} losers={losers} isMarketOpen={!isClosed} />
           </Suspense>
