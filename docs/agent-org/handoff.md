@@ -616,3 +616,10 @@
 - URUTAN hari ini (weekend, semua build-only): backend pagi 10:30 = prd-2026-10-16-01 /track-record (P1 TRUST, spec 3801 char FDE-lengkap) + sec-nosniff; frontend 10:45 = ux-2026-10-17-01 wiring 3 landing; backend malam = prd-2026-10-16-02 waitlist (kalau kapasitas) else Senin 07:30. Kereta T-1017-N malam 22:00-01:30 manifest sementara: bug-2026-10-16-01 (in_train, bukti lengkap) + nosniff + /track-record bila hijau.
 - Jebakan utk builder: staging WAJIB DATABASE_URL override @127.0.0.1:5433; curl /stocks/bbri pakai -L (301 kanonik .JK); jangan merge partial — sisanya jadi penumpang T-1018.
 - KPI 07:05: returning 3,4% (bawah baseline 3,8%) · register_7d 3/6 · views 1171 ✓ · articles 54 ✓ — trio-retention diskusi evaluasi CEO Senin, checkpoint 23 Okt.
+
+## 2026-10-17 10:5x — UX Builder weekend 10:30 (ux-2026-10-17-01 DONE, build-only)
+- SHIPPED 379f516 (1 file, commit sempit): 3 landing fundamental (saham-dividen/undervalued/value-growth) wired ke SahamStrategyLinks homepage+/stocks, index 0-2 default-visible. Staging :3100 verified: 3/3 href + anchor di 2 surface, landing 200 x3, SEO invariant 4=4 x3.
+- BLOCKER boarding: npm build GAGAL 4x TS18047 di track-record/page.tsx — WIP untracked slot backend (prd-2026-10-16-01, mtime 08:11). TIDAK saya sentuh. T-1018 manifest: ux-2026-10-17-01 HANYA naik kalau build hijau saat kereta Senin malam.
+- Entry ux-2026-10-17-01 → in_train T-1018 + result bukti fisik lengkap. Kereta malam T-1017-N: tidak ada penumpang UX.
+- Jebakan: staging dev :3100 dipakai (bukan npm run build) karena TS error WIP slot lain; DB override @127.0.0.1:5433 WAJIB; matikan via lsof -ti:3100.
+- Flow audit: N/A hari ini (queue-driven). Besok mulai siklus re-audit flow (a) screener pasca trust-badge. SEC GATE: N/A frontend-only.
