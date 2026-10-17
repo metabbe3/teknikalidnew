@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createHash } from "crypto";
 import { prisma } from "@/lib/prisma";
 import { getClientIp } from "@/lib/ip-asn";
+import { sanitizeWaitlistSource, normalizeWa, EMAIL_RE } from "@/lib/waitlist";
 
 export const dynamic = "force-dynamic";
 
@@ -21,20 +21,6 @@ function rateLimited(ip: string): boolean {
   return entry.count > RATE_LIMIT;
 }
 
-const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,255}\.[^\s@]{2,24}$/;
-
-/** Normalisasi nomor WA Indonesia -> hash (privasi: nomor plain tidak disimpan
- *  untuk channel wa; email disimpan plain karena diperlukan utk kirim). */
-function normalizeWa(raw: string): { ok: boolean; hashed?: string; pretty?: string } {
-  let digits = raw.replace(/[^\d+]/g, "");
-  if (digits.startsWith("+")) digits = digits.slice(1);
-  if (digits.startsWith("0")) digits = "62" + digits.slice(1);
-  if (!digits.startsWith("62")) digits = "62" + digits;
-  if (!/^62\d{8,13}$/.test(digits)) return { ok: false };
-  const hashed = createHash("sha256").update(digits).digest("hex");
-  return { ok: true, hashed, pretty: "+" + digits };
-}
-
 export async function POST(req: NextRequest) {
   // CSRF: POST wajib same-origin (doctrine site).
   const origin = req.headers.get("origin");
@@ -46,7 +32,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, reason: "rate" }, { status: 429 });
   }
 
-  let body: { channel?: string; value?: string };
+  let body: { channel?: string; value?: string; source?: string };
   try {
     body = await req.json();
   } catch {
@@ -73,6 +59,10 @@ export async function POST(req: NextRequest) {
     stored = wa.hashed!; // nomor plain tidak pernah disimpan
   }
 
+  // AC2: attribution UTM — client kirim utm_source dari URL params; server
+  // whitelist-sanitize (tidak trust client). Tanpa/invalid → "direct".
+  const source = sanitizeWaitlistSource(body.source);
+
   try {
     const existing = await prisma.waitlistSubscriber.findUnique({ where: { value: stored } });
     if (existing) {
@@ -83,7 +73,7 @@ export async function POST(req: NextRequest) {
       );
     }
     const created = await prisma.waitlistSubscriber.create({
-      data: { channel, value: stored, source: "waitlist-landing" },
+      data: { channel, value: stored, source },
     });
     const position = await prisma.waitlistSubscriber.count();
     return NextResponse.json({ ok: true, position, id: created.id });
