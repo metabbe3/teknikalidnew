@@ -553,7 +553,7 @@ export default async function StockDetailPage({
               </div>
               {close !== null && (
                 <div className="text-right shrink-0">
-                  <p data-live-price={ticker} className="text-2xl sm:text-3xl font-bold tracking-tight leading-none tabular-nums text-text-primary">{formatPrice(close)}</p>
+                  <p data-live-price={ticker} className="text-xl sm:text-3xl font-bold tracking-tight leading-none tabular-nums text-text-primary">{formatPrice(close)}</p>
                   {changePercent !== null && (
                     <p data-live-percent={ticker} className={`text-sm mt-1 tabular-nums ${
                       changePercent === 0
@@ -598,49 +598,49 @@ export default async function StockDetailPage({
 
             {/* OHLC + 52-week strip — anon-visible (SEO + first impression; data sudah SSR di page) */}
             {close !== null && (
-              <div className="mt-5 pt-4 border-t border-border">
+              <div className="mt-4 pt-3 border-t border-border">
                 {/* Section nav dipindah ke sticky bar tunggal di bawah (dedupe 15 Okt — dulu 2 baris identik) */}
 
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-x-4 gap-y-2 text-xs" aria-label="Statistik harga hari ini">
-                  <div>
-                    <span className="text-text-tertiary block">Buka</span>
+              <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1.5 text-xs" aria-label="Statistik harga hari ini">
+                  <span className="inline-flex items-baseline gap-1.5">
+                    <span className="text-text-tertiary">Buka</span>
                     <span className="font-mono font-semibold text-text-secondary tabular-nums">{latest ? formatPrice(decimalToNumber(latest.open) ?? close) : "—"}</span>
-                  </div>
-                  <div>
-                    <span className="text-text-tertiary block">Tertinggi</span>
+                  </span>
+                  <span className="inline-flex items-baseline gap-1.5">
+                    <span className="text-text-tertiary">Tertinggi</span>
                     <span className="font-mono font-semibold text-text-secondary tabular-nums">{latestHigh !== null ? formatPrice(latestHigh) : "—"}</span>
-                  </div>
-                  <div>
-                    <span className="text-text-tertiary block">Terendah</span>
+                  </span>
+                  <span className="inline-flex items-baseline gap-1.5">
+                    <span className="text-text-tertiary">Terendah</span>
                     <span className="font-mono font-semibold text-text-secondary tabular-nums">{latestLow !== null ? formatPrice(latestLow) : "—"}</span>
-                  </div>
-                  <div>
-                    <span className="text-text-tertiary block">Volume</span>
+                  </span>
+                  <span className="inline-flex items-baseline gap-1.5">
+                    <span className="text-text-tertiary">Volume</span>
                     <span className="font-mono font-semibold text-text-secondary tabular-nums">{latestVolume > 0 ? formatVolume(latestVolume) : "—"}</span>
-                  </div>
-                  <div>
-                    <span className="text-text-tertiary block">Rentang 52 Minggu</span>
+                  </span>
+                  <span className="inline-flex items-baseline gap-1.5">
+                    <span className="text-text-tertiary">52mgg</span>
                     <span className="font-mono font-semibold text-text-secondary tabular-nums">
-                      {detail.week52Low !== null && detail.week52High !== null ? `${formatPrice(detail.week52Low)} – ${formatPrice(detail.week52High)}` : "—"}
+                      {detail.week52Low !== null && detail.week52High !== null ? `${formatPrice(detail.week52Low)}–${formatPrice(detail.week52High)}` : "—"}
                     </span>
-                  </div>
-                  <div>
-                    <span className="text-text-tertiary block">Posisi di 52 Minggu</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 basis-full sm:basis-auto">
+                    <span className="text-text-tertiary">Posisi</span>
                     {detail.week52Low !== null && detail.week52High !== null && detail.week52High > detail.week52Low ? (
-                      <div className="flex items-center gap-2">
-                        <div className="h-1.5 flex-1 min-w-[48px] rounded-full bg-bg-hover overflow-hidden" role="img" aria-label={`Posisi harga dalam rentang 52 minggu: ${Math.round(((close - detail.week52Low) / (detail.week52High - detail.week52Low)) * 100)}%`}>
+                      <>
+                        <div className="h-1 w-16 rounded-full bg-bg-hover overflow-hidden" role="img" aria-label={`Posisi harga dalam rentang 52 minggu: ${Math.round(((close - detail.week52Low) / (detail.week52High - detail.week52Low)) * 100)}%`}>
                           <div className={`h-full rounded-full ${changePercent !== null && changePercent < 0 ? "bg-bearish" : "bg-bullish"}`} style={{ width: `${Math.min(100, Math.max(0, ((close - detail.week52Low) / (detail.week52High - detail.week52Low)) * 100))}%` }} />
                         </div>
                         <span className="font-mono font-semibold text-text-secondary tabular-nums">{Math.round(((close - detail.week52Low) / (detail.week52High - detail.week52Low)) * 100)}%</span>
-                      </div>
+                      </>
                     ) : (
                       <span className="font-mono text-text-secondary">—</span>
                     )}
-                  </div>
+                  </span>
                 </div>
                 {latest && (
-                  <p className="mt-3 text-[11px] text-text-tertiary font-mono">
-                    Harga EOD {new Date(latest.date).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })} · <span data-live-fresh data-fresh-eod="live saat pasar buka">live saat pasar buka</span>
+                  <p className="mt-2 text-[10px] text-text-tertiary font-mono">
+                    EOD {new Date(latest.date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })} · <span data-live-fresh data-fresh-eod="live saat pasar buka">live saat pasar buka</span>
                   </p>
                 )}
               </div>

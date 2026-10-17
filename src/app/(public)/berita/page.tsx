@@ -9,7 +9,10 @@ import { weeklyReportService } from "@/domains/stock/weekly-report.service";
 import { articleRepository } from "@/domains/article/article.repository";
 import { DailyBriefHero } from "@/components/berita/daily-brief-hero";
 
-export const revalidate = 300;
+// force-dynamic (RCA 17 Okt): ISR prerender fire-soft saat build tanpa DB membekukan
+// "Belum ada brief" selamanya — revalidate 300s tidak pernah mengisi karena cache
+// prerender di-serve tanpa regenerasi. Data-driven harian → render per-request.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const title = "Brief Pasar Saham Hari Ini — Berita & Analisa IDX";

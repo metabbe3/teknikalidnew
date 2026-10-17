@@ -52,12 +52,12 @@ function MarketStatus({ marketStatus, latestPrice }: { marketStatus: MarketStatu
   if (marketStatus.isOpen) {
     return (
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
-        <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5">
+        <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1">
           <span className="relative flex h-2 w-2" aria-hidden="true">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
           </span>
-          <span className="font-mono text-xs font-semibold uppercase tracking-[0.15em] text-emerald-700">Pasar Buka</span>
+          <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-700">Pasar Buka</span>
         </span>
         {dateStr && (
           <span className="font-mono text-xs text-text-tertiary">Harga EOD {dateStr} · <span data-live-fresh data-fresh-eod="live saat pasar buka">live saat pasar buka</span></span>
@@ -72,28 +72,17 @@ function MarketStatus({ marketStatus, latestPrice }: { marketStatus: MarketStatu
       ? "Hari Libur Nasional"
       : "Sesi Berakhir";
 
-  const reasonDesc = marketStatus.reason === "weekend"
-    ? "Bursa Efek Indonesia tutup pada hari Sabtu & Minggu."
-    : marketStatus.reason === "holiday"
-      ? "Hari libur nasional — tidak ada sesi perdagangan."
-      : "Sesi perdagangan hari ini telah berakhir.";
-
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
-        <span className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5">
-          <span className="h-2 w-2 rounded-full bg-amber-500" aria-hidden="true" />
-          <span className="font-mono text-xs font-semibold uppercase tracking-[0.15em] text-amber-800">Pasar Tutup · {reasonLabel}</span>
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+      <span className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1">
+        <span className="h-1.5 w-1.5 rounded-full bg-amber-500" aria-hidden="true" />
+        <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-800">Tutup · {reasonLabel}</span>
+      </span>
+      {dateStr && (
+        <span className="font-mono text-xs text-text-tertiary">
+          Data sesi terakhir: <span className="font-medium text-text-secondary">{dateStr}</span>
         </span>
-        {dateStr && (
-          <span className="font-mono text-xs text-text-tertiary">
-            Data sesi terakhir: <span className="font-medium text-text-secondary">{dateStr}</span>
-          </span>
-        )}
-      </div>
-      <p className="text-xs leading-relaxed text-text-tertiary max-w-2xl">
-        {reasonDesc} Data yang ditampilkan berasal dari sesi perdagangan terakhir.
-      </p>
+      )}
     </div>
   );
 }
@@ -177,15 +166,15 @@ export default async function StocksPage() {
     <div className="fade-in">
       {/* ── Editorial header ── */}
       <section className="border-b border-border bg-bg-card">
-        <div className="max-w-7xl mx-auto px-4 py-5 sm:py-7">
+        <div className="max-w-7xl mx-auto px-4 py-4 sm:py-5">
           <MarketStatus marketStatus={marketInfo.marketStatus} latestPrice={latestPrice} />
-          <h1 className="mt-4 font-serif text-3xl sm:text-4xl font-semibold tracking-tight text-text-primary leading-[1.05]">
+          <h1 className="mt-3 font-serif text-2xl sm:text-3xl font-semibold tracking-tight text-text-primary">
             Radar Saham IDX
           </h1>
-          <p className="mt-2 text-sm text-text-secondary max-w-2xl leading-relaxed">
-            Harga &amp; sinyal {IDX_STOCKS.length}+ saham IDX — cari langsung di bawah, atau saring sesuai strategi.
+          <p className="mt-1 text-xs text-text-tertiary">
+            {IDX_STOCKS.length}+ saham — cari langsung di bawah, atau saring sesuai strategi.
           </p>
-          <div className="mt-4">
+          <div className="mt-3">
             <MarketBreathStrip
               data={{
                 advancersCount: gainers,
@@ -198,7 +187,7 @@ export default async function StocksPage() {
           </div>
 
           {/* Quick discovery pills → screener tab */}
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-3 flex flex-wrap gap-2">
             {[
               { label: "📈 Lagi Naik", href: "/stocks?view=screener&tab=swing-trade&preset=macd_bullish" },
               { label: "📉 Lagi Murah", href: "/stocks?view=screener&tab=bottom-fishing&preset=rsi_oversold" },

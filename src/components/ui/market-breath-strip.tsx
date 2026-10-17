@@ -21,7 +21,7 @@ export function MarketBreathStrip({ data, className }: { data: BreathData; class
   const { advancersCount, declinersCount, unchangedCount, topGainer, topLoser, ihsg } = data;
 
   return (
-    <div className={cn("flex flex-wrap items-center gap-x-5 gap-y-2 text-sm", className)}>
+    <div className={cn("flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm", className)}>
       {ihsg && ihsg.close !== null && (
         <span className="inline-flex items-center gap-1.5 font-mono w-full sm:w-auto">
           <span className="text-text-tertiary text-xs">IHSG</span>
@@ -35,15 +35,15 @@ export function MarketBreathStrip({ data, className }: { data: BreathData; class
       )}
       <span className="hidden sm:inline text-border" aria-hidden>|</span>
       <span className="inline-flex items-center gap-1.5 font-semibold text-bullish">
-        <TrendingUp className="h-4 w-4" aria-hidden />
+        <TrendingUp className="h-3.5 w-3.5" aria-hidden />
         <span className="font-mono tabular-nums">{advancersCount}</span> naik
       </span>
       <span className="inline-flex items-center gap-1.5 font-semibold text-bearish">
-        <TrendingDown className="h-4 w-4" aria-hidden />
+        <TrendingDown className="h-3.5 w-3.5" aria-hidden />
         <span className="font-mono tabular-nums">{declinersCount}</span> turun
       </span>
       <span className="inline-flex items-center gap-1.5 text-text-tertiary">
-        <Minus className="h-4 w-4" aria-hidden />
+        <Minus className="h-3.5 w-3.5" aria-hidden />
         <span className="font-mono tabular-nums">{unchangedCount}</span> stagnan
       </span>
       {topGainer && (
