@@ -15,9 +15,7 @@ import { ArrowUpRight } from "lucide-react";
 import { SahamStrategyLinks } from "@/components/seo/saham-strategy-links";
 import { LoginGate } from "@/components/auth/login-gate";
 import { WeeklySignalWidget } from "@/components/signal/weekly-signal-widget";
-import { DailyRadar } from "@/components/stock/daily-radar";
 import { ChannelCta } from "@/components/stock/channel-cta";
-import { dailyRadarService } from "@/domains/stock/screener-analysis.service";
 
 export const dynamic = "force-dynamic";
 
@@ -101,11 +99,10 @@ function MarketStatus({ marketStatus, latestPrice }: { marketStatus: MarketStatu
 }
 
 export default async function StocksPage() {
-  const [rows, latestPrice, marketInfo, radar] = await Promise.all([
+  const [rows, latestPrice, marketInfo] = await Promise.all([
     stockMarketService.getStockList(),
     stockMarketService.getLatestPriceDate(),
     stockMarketService.getMarketStatusForPage(),
-    dailyRadarService.getDailyRadar(5),
   ]);
 
   const sectors = [...new Set(rows.map((s) => s.sector))].sort();
@@ -180,15 +177,15 @@ export default async function StocksPage() {
     <div className="fade-in">
       {/* ── Editorial header ── */}
       <section className="border-b border-border bg-bg-card">
-        <div className="max-w-7xl mx-auto px-4 py-10 sm:py-12">
+        <div className="max-w-7xl mx-auto px-4 py-5 sm:py-7">
           <MarketStatus marketStatus={marketInfo.marketStatus} latestPrice={latestPrice} />
-          <h1 className="mt-5 font-serif text-4xl sm:text-5xl font-semibold tracking-tight text-text-primary leading-[1.05]">
+          <h1 className="mt-4 font-serif text-3xl sm:text-4xl font-semibold tracking-tight text-text-primary leading-[1.05]">
             Radar Saham IDX
           </h1>
-          <p className="mt-3 text-sm sm:text-base text-text-secondary max-w-2xl leading-relaxed">
-            Radar pasar saham IDX hari ini — harga, sinyal teknikal, dan analisa untuk {IDX_STOCKS.length}+ saham IDX. Mulai dari top mover hari ini, atau saring sesuai strategi Anda.
+          <p className="mt-2 text-sm text-text-secondary max-w-2xl leading-relaxed">
+            Harga &amp; sinyal {IDX_STOCKS.length}+ saham IDX — cari langsung di bawah, atau saring sesuai strategi.
           </p>
-          <div className="mt-6">
+          <div className="mt-4">
             <MarketBreathStrip
               data={{
                 advancersCount: gainers,
@@ -201,7 +198,7 @@ export default async function StocksPage() {
           </div>
 
           {/* Quick discovery pills → screener tab */}
-          <div className="mt-6 flex flex-wrap gap-2">
+          <div className="mt-4 flex flex-wrap gap-2">
             {[
               { label: "📈 Lagi Naik", href: "/stocks?view=screener&tab=swing-trade&preset=macd_bullish" },
               { label: "📉 Lagi Murah", href: "/stocks?view=screener&tab=bottom-fishing&preset=rsi_oversold" },
@@ -218,18 +215,6 @@ export default async function StocksPage() {
             ))}
           </div>
 
-          {/* Compact signup CTA — anon conversion */}
-          <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-accent/30 bg-accent/5 px-4 py-3">
-            <p className="text-xs sm:text-sm text-text-secondary">
-              🚀 Simpan watchlist, aktifkan alert sinyal, dan buka chart 5 tahun — gratis.
-            </p>
-            <Link
-              href="/auth/register"
-              className="inline-flex items-center justify-center bg-accent text-white rounded-lg px-4 py-2 text-sm font-semibold hover:bg-accent/90 transition-colors press-scale whitespace-nowrap"
-            >
-              Daftar Gratis
-            </Link>
-          </div>
         </div>
       </section>
 
@@ -241,15 +226,15 @@ export default async function StocksPage() {
             title="Semua Saham IDX"
             description="Cari, saring per sektor, urutkan 900+ saham — atau gunakan Screener untuk filter sinyal teknikal."
           />
-          {/* Daily Radar — fresh golden cross, alasan balik harian (Retention Loop v1) */}
-          <DailyRadar date={radar.date} items={radar.items} />
-          {/* Weekly SMA-cross signals — SSR, guest-visible */}
-          <WeeklySignalWidget />
-          {/* Discovery chips: feed topical signal pages (wid-2026-09-27-1) */}
-          <SignalLinks />
           <Suspense fallback={<div className="p-8 text-center text-text-secondary">Memuat…</div>}>
             <SahamView stocks={rows} sectors={sectors} assetClass="EQUITY" linkBase="/stocks" />
           </Suspense>
+
+          {/* Discovery section — DIPINDAH ke bawah tabel (owner 18 Okt: tabel harus langsung kelihatan) */}
+          <div className="mt-10 space-y-6">
+            <WeeklySignalWidget />
+            <SignalLinks />
+          </div>
         </section>
 
         {/* Signup CTA — watchlist & signal alerts */}
