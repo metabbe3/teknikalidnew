@@ -1147,3 +1147,15 @@ model BlockedIp {
 
   @@index([ip])
 }
+
+/// Waitlist "Brief Pasar 06:30" (prd-2026-10-16-02). value = email plain
+/// (untuk kirim) atau nomor WA ter-normalisasi (hash utk privasi publik).
+model WaitlistSubscriber {
+  id        Int      @id @default(autoincrement())
+  channel   String   @db.VarChar(8)  // "wa" | "email"
+  value     String   @unique @db.VarChar(255)
+  source    String   @default("waitlist-landing") @db.VarChar(64)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
