@@ -6,7 +6,9 @@ import { SectionHeading } from "@/components/ui/section-heading";
 
 /**
  * Cross-link cluster to the screener-strategy landing pages (saham-oversold,
- * overbought, golden-cross, blue-chip, broker). These pages target commercial
+ * overbought, golden-cross, blue-chip, broker) plus the 3 fundamental landings
+ * (saham-dividen, undervalued, value-growth — ux-2026-10-17-01, 0 views orphan).
+ * These pages target commercial
  * keywords but were orphaned (only in sitemap, no inbound links) — which is why
  * they earned ~0 organic. Rendering this on high-traffic surfaces (home, screener)
  * passes link equity so Google indexes + ranks them.
@@ -14,6 +16,21 @@ import { SectionHeading } from "@/components/ui/section-heading";
  * Descriptive anchor text (not "klik di sini") — each link carries the target keyword.
  */
 const STRATEGY_PAGES = [
+  {
+    href: "/saham-dividen",
+    title: "Saham Dividen Tinggi",
+    desc: "Daftar saham dividen tinggi Indonesia — yield terbaru.",
+  },
+  {
+    href: "/saham-undervalued",
+    title: "Saham Undervalued",
+    desc: "PE di bawah 15 & PB di bawah 1.5 — murah fundamental.",
+  },
+  {
+    href: "/saham-value-growth",
+    title: "Saham Value Growth",
+    desc: "Murah sekaligus bertumbuh — screener fundamental.",
+  },
   {
     href: "/saham-oversold",
     title: "Saham Oversold Hari Ini",
