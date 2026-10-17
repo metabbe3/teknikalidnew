@@ -14,6 +14,7 @@ import { SectionHeading } from "@/components/ui/section-heading";
 import { ArrowUpRight } from "lucide-react";
 import { SahamStrategyLinks } from "@/components/seo/saham-strategy-links";
 import { LoginGate } from "@/components/auth/login-gate";
+import { auth } from "@/lib/auth";
 import { WeeklySignalWidget } from "@/components/signal/weekly-signal-widget";
 import { ChannelCta } from "@/components/stock/channel-cta";
 
@@ -88,6 +89,7 @@ function MarketStatus({ marketStatus, latestPrice }: { marketStatus: MarketStatu
 }
 
 export default async function StocksPage() {
+  const session = await auth().catch(() => null);
   const [rows, latestPrice, marketInfo] = await Promise.all([
     stockMarketService.getStockList(),
     stockMarketService.getLatestPriceDate(),
@@ -220,17 +222,21 @@ export default async function StocksPage() {
           </Suspense>
 
           {/* Discovery section — DIPINDAH ke bawah tabel (owner 18 Okt: tabel harus langsung kelihatan) */}
-          <div className="mt-10 space-y-6">
+          <div className="mt-10 space-y-8">
+            <SahamStrategyLinks />
             <WeeklySignalWidget />
             <SignalLinks />
           </div>
         </section>
 
-        {/* Signup CTA — watchlist & signal alerts */}
-        <LoginGate
-          feature="Watchlist & Alert Sinyal"
-          message="Daftar gratis untuk menyimpan watchlist, alert golden cross/oversold, dan trading plan otomatis untuk 950+ saham IDX."
-        />
+        {/* Signup CTA — watchlist & signal alerts (ANON SAJA — owner 18 Okt:
+            kartu ini muncul padahal sudah login) */}
+        {!session?.user && (
+          <LoginGate
+            feature="Watchlist & Alert Sinyal"
+            message="Daftar gratis untuk menyimpan watchlist, alert golden cross/oversold, dan trading plan otomatis untuk 950+ saham IDX."
+          />
+        )}
 
         {/* Channel CTA — owned audience, retention tanpa gesekan register */}
         <div className="mt-4 flex justify-center">
@@ -292,8 +298,6 @@ export default async function StocksPage() {
             </div>
           </div>
 
-          {/* Strategy links — passes equity to commercial pages */}
-          <SahamStrategyLinks />
         </section>
       </div>
     </div>

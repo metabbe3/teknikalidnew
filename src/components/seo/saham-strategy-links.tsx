@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { SectionHeading } from "@/components/ui/section-heading";
 
@@ -88,38 +87,39 @@ const STRATEGY_PAGES = [
 const VISIBLE = 4;
 
 export function SahamStrategyLinks({ compact = false }: { compact?: boolean }) {
-  const [expanded, setExpanded] = useState(false);
+  const visible = STRATEGY_PAGES.slice(0, VISIBLE);
+  const rest = STRATEGY_PAGES.slice(VISIBLE);
   return (
-    <section className={compact ? "space-y-3" : "space-y-4"}>
+    <section aria-label="Screener strategi saham" className={compact ? "space-y-3" : "space-y-3"}>
       <SectionHeading
-        className={compact ? "mb-3" : "mb-4"}
+        className="mb-3"
         eyebrow="update real-time"
         title="Screener Strategi Saham"
       />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {STRATEGY_PAGES.map((p, i) => (
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+        {visible.map((p) => (
           <Link
             key={p.href}
             href={p.href}
-            data-idx={i}
-            className={`group block rounded-xl border border-border bg-bg-card p-4 hover:depth-shadow-hover transition-all ${!expanded && i >= VISIBLE ? "hidden sm:block lg:hidden xl:block" : ""}`}
+            className="group block rounded-xl border border-border bg-bg-card p-3 hover:depth-shadow-hover transition-all"
           >
-            <p className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors">
+            <p className="text-[13px] font-semibold text-text-primary group-hover:text-accent transition-colors leading-snug">
               {p.title}
             </p>
-            <p className="mt-1 text-xs text-text-secondary leading-relaxed">{p.desc}</p>
+            <p className="mt-0.5 text-[11px] text-text-tertiary leading-snug line-clamp-2">{p.desc}</p>
           </Link>
         ))}
       </div>
-      <button
-        type="button"
-        onClick={() => setExpanded((v) => !v)}
-        aria-expanded={expanded}
-        className="mx-auto flex items-center gap-1 rounded-full border border-border bg-bg-card px-4 py-1.5 text-xs font-medium text-text-secondary hover:text-accent transition-colors"
-      >
-        {expanded ? "Sembunyikan" : `Lihat ${STRATEGY_PAGES.length - VISIBLE} strategi lainnya`}
-        <span aria-hidden className={`transition-transform ${expanded ? "rotate-180" : ""}`}>▾</span>
-      </button>
+      {rest.length > 0 && (
+        <div className="flex flex-wrap gap-x-3 gap-y-1.5 text-[11px] text-text-tertiary">
+          <span className="uppercase tracking-[0.1em] font-semibold">Lainnya</span>
+          {rest.map((p) => (
+            <Link key={p.href} href={p.href} className="hover:text-accent transition-colors">
+              {p.title}
+            </Link>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
