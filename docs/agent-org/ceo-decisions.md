@@ -778,3 +778,8 @@ research_brief sudah ditulis ke field `research_brief` product-backlog.json (3 e
 - ROLLBACK ANCHOR: app b7a7bf87ff83 @ 18615ad (pre-task).
 - Task slot: bug-2026-10-16-01 FIXED 3434b76 (ScreenActions login → POST saved, dead-end register dihapus) → in_train T-1017-N malam ini. tsc/build 0, staging :3100 200 (host DB override 127.0.0.1:5433).
 - Catatan staging: host npm start TIDAK resolve docker hostname 'db' — WAJIB override DATABASE_URL host ke 127.0.0.1:5433 (lesson utk semua builder).
+
+## CTO note 2026-10-17
+- Isu: dispatch CEO 16 Okt (4 task: sec-nosniff, wiring-3-landing, backfill-404, kereta-T-1017-retention) HILANG dari cto-queue saat restore 65b5cd4 — gap baru ketahuan CTO sweep 17 Okt. 2 direstor hari ini (sec-2026-10-17-01, ux-2026-10-17-01); backfill-404 tetap di backlog dispatched.
+- Opsi A: pakai write-file utk agent-org JSON (atomic) — B: editor inline (rapuh). Rekomendasi A + aturan: setelah RESTORE queue, diff vs bak pra-restore WAJIB.
+- RETENTION TRIO masih zombie: prd-10-02-02 (Welcome Loop) terbukti LIVE di bundle prod; prd-10-01-01 (utm) live via deploy 7 Okt; prd-10-03-02 (Saved Screen) resolved already-shipped — TAPI returning IP 3,4% < baseline 3,8% dan register_7d 3 < floor 6. Fitur ada, pengguna belum kembali → masalahnya distribusi/kesadaran, bukan fitur. Kereta T-1017 fokus bug-01 + nosniff; kasus trio = bahan evaluasi CEO Senin (checkpoint 23 Okt).
