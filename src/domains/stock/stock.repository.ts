@@ -7,6 +7,8 @@ import { toDateKey } from "@/lib/utils";
 export const stockRepository = {
   // ── Stock ──
 
+  /** Tanggal bar EOD terbaru level pasar (basis sesi terakhir untuk stale-badge saham). */
+  findLatestPriceDate,
   // Crypto tickers are stored bare (BTC, ETH, …); IDX with .JK suffix.
   // Try exact first (crypto), fall back to .JK (IDX) — works for any coin without a static set.
   // The .JK-strip fallback catches crypto tickers the proxy canonicalized to {TICKER}.JK.
@@ -900,6 +902,15 @@ export const stockRepository = {
 // Batch EOD prev-close: close TERAKHIR sebelum startOfToday utk daftar ticker.
 // Dipakai live-quotes — prev Yahoo/TV utk saham illiquid bisa basi (bandingkan
 // ke session terakhir saham itu trade, bukan kemarin) → percent bohong ±30%.
+/** Tanggal bar EOD terbaru level pasar (basis sesi terakhir untuk stale-badge saham). */
+export async function findLatestPriceDate(): Promise<Date | null> {
+  const row = await prisma.stockPrice.findFirst({
+    orderBy: { date: "desc" },
+    select: { date: true },
+  });
+  return row?.date ?? null;
+}
+
 export async function findPrevClosesByTicker(tickers: string[]) {
   if (tickers.length === 0) return new Map<string, number>();
   const today = startOfDay(new Date());

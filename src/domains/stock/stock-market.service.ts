@@ -419,6 +419,15 @@ export const stockMarketService = {
     }));
   },
 
+  /** Tanggal bar EOD terakhir level pasar (basis "sesi terakhir" untuk stale-badge saham). */
+  async getMarketLatestPriceDate(): Promise<Date | null> {
+    const cached = stockCache.get("market-latest-price-date");
+    if (cached instanceof Date) return cached;
+    const d = await stockRepository.findLatestPriceDate();
+    if (d) stockCache.set("market-latest-price-date", d, 300_000);
+    return d ?? null;
+  },
+
   async getMarketOverview(): Promise<{
     gainers: { ticker: string; name: string; sector: string; close: number | null; changePercent: number }[];
     losers: { ticker: string; name: string; sector: string; close: number | null; changePercent: number }[];

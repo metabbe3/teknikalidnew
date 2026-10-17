@@ -10,6 +10,23 @@
  *    is left untouched.
  */
 export function sanitizeGeneratedContent(content: string): string {
+  // Trust: LLM kadang mengirim body yang sudah JSON-escape dua kali — literal "\n",
+  // "\u2014" dsb. tampil mentah di artikel (kejadian brief 16 Okt / rekap 17 Okt).
+  // Un-escape SEKALI hanya jika pola literal terdeteksi, lalu sanitizer konten biasa.
+  if (/\\n|\\u[0-9a-fA-F]{4}/.test(content)) {
+    try {
+      const unescaped = JSON.parse(`"${content.replace(/"/g, '\\"')}"`) as string;
+      if (unescaped && unescaped.length >= content.length * 0.5) content = unescaped;
+    } catch {
+      // fallback: ganti pola paling umum secara literal
+      content = content
+        .replace(/\\n/g, "\n")
+        .replace(/\\u2014/g, "—")
+        .replace(/\\u2013/g, "–")
+        .replace(/\\u00e9/g, "é")
+        .replace(/\\"/g, '"');
+    }
+  }
   return content
     .replace(/\bsaam\b/g, "saham")
     .replace(/\b(\d[\d.,]*)\s*(juta|ribu|miliar)\s+lot\b/g, "$1 $2 saham");

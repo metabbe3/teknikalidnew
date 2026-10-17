@@ -256,6 +256,16 @@ export default async function StockDetailPage({
   const latestLow = latest ? decimalToNumber(latest.low) ?? close : null;
 
   const latestVolume = latest ? bigIntToNumber(latest.volume) ?? 0 : 0;
+  // Trust: bar terakhir saham < bar terakhir pasar = saham tidak trade di sesi
+  // terakhir (beku/ARA/suspend) — % hero = vs sesi trade terakhirnya (perlu badge).
+  // Basis "sesi terakhir pasar" = tanggal indikator pasar (dihitung dari semua saham).
+  const marketLatestDate = await stockMarketService
+    .getMarketLatestPriceDate()
+    .catch(() => null);
+  const latestStale =
+    latest?.date != null && marketLatestDate != null
+      ? latest.date.getTime() < marketLatestDate.getTime()
+      : false;
   const avgVolume = prices.length > 1
     ? prices.slice(1).reduce((sum, p) => sum + (bigIntToNumber(p.volume) ?? 0), 0) / (prices.length - 1)
     : 0;
@@ -556,6 +566,13 @@ export default async function StockDetailPage({
                           ({isPositive ? "+" : ""}{formatPrice(change)})
                         </span>
                       )}
+                      {/* Trust: saham tanpa transaksi di sesi terakhir (mis. beku/ARA) —
+                          % = vs sesi trade terakhirnya, bukan kemarin. Jujurkan. */}
+                      {latestStale && (
+                        <span className="block text-[10px] font-normal text-text-tertiary">
+                          tidak diperdagangkan di sesi terakhir — % vs sesi trade terakhir
+                        </span>
+                      )}
                     </p>
                   )}
                   <div className="mt-3 flex flex-wrap items-center justify-end gap-2 opacity-90">
@@ -649,7 +666,7 @@ export default async function StockDetailPage({
                   <span className="font-mono font-semibold text-text-secondary">
                     Sinyal: {indicators.signalLabel ?? "—"}
                   </span>
-                  <Link href="/daftar" className="text-[11px] text-primary hover:underline ml-1">
+                  <Link href="/auth/register" className="text-[11px] text-primary hover:underline ml-1">
                     narasi lengkap →
                   </Link>
                 </div>
