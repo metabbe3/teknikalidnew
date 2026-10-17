@@ -127,9 +127,8 @@ export const marketStructureService = {
       }
     }
 
-    // Ensure SL < entry and TP > entry
+    // Ensure SL < entry (TP JANGAN dipaksa di atas ARA — harga mustahil; ARA-lock ditangani di bawah)
     if (sl >= entry) sl = Math.round(entry * 0.97);
-    if (tp1 <= entry) tp1 = Math.round(entry * 1.03);
 
     // ── IDX Fraksi Harga & ARA/ARB ──
     entry = roundToIdxFraction(entry, "ENTRY");
@@ -141,6 +140,31 @@ export const marketStructureService = {
     if (tp1 > ara) { tp1 = ara; tp1Source = "ARA"; }
     if (tp2 && tp2 > ara) { tp2 = ara; tp2Source = "ARA"; }
     if (sl < arb) { sl = arb; slSource = "ARB"; }
+
+    // ── ARA-LOCK GUARD (RCA ABDA 17 Okt: close == ARA → TP di-cap == entry, plan degenerate) ──
+    if (currentPrice >= ara || tp1 <= entry) {
+      return {
+        strategy: "WAIT_AND_SEE",
+        status: "NOT_IDEAL",
+        entry: currentPrice,
+        entryZone: "Saham terkunci di ARA — tidak ada ruang target hari ini",
+        tp1: ara,
+        tp1Source: "ARA",
+        tp2: null,
+        tp2Source: "ARA",
+        sl: arb,
+        slSource: "ARB",
+        riskReward: 0,
+        confidence: "low",
+        warnings: [
+          "Harga sudah di batas atas harian (ARA). Tidak bisa naik lebih tinggi sesi ini — rencana dihitung ulang setelah sesi berikutnya.",
+        ],
+        suggestion:
+          "Saham ARA: jangan kejar. Catat level ini, evaluasi pembukaan besok — gap turun = peluang antri, gap naik = biarkan.",
+        marketEntryPrice: currentPrice,
+      };
+    }
+    if (tp2 !== null && tp2 <= tp1) tp2 = null;
 
     // ── Risk/Reward ──
     const risk = entry - sl;

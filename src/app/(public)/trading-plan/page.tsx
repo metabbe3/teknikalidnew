@@ -5,9 +5,12 @@ import { PageHero } from "@/components/layout/page-hero";
 import { AskAiCta } from "@/components/seo/ask-ai-cta";
 import { TradingPlanPicker } from "@/components/trading-plan/plan-picker";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
+import { stockRepository } from "@/domains/stock/stock.repository";
+import { monteCarloTpFirst } from "@/lib/monte-carlo";
 import { auth } from "@/lib/auth";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { IDX_STOCKS } from "@/lib/constants";
+import { subDays } from "date-fns";
 
 export const revalidate = 60;
 
@@ -79,9 +82,21 @@ export default async function TradingPlanPage({
   const selected = tickers.length > 0 ? tickers : ["BBCA.JK"];
   const filter = (TIERS as string[]).includes(params.f ?? "") ? (params.f as Tier) : "semua";
 
-  const details = (await Promise.all(
-    selected.map((t) => stockMarketService.getStockOgData(t).catch(() => null)),
-  )).map((d, i) => ({ ticker: selected[i], d, tier: d ? tierOf(d) : null }));
+  const [ogList, closesList] = await Promise.all([
+    Promise.all(selected.map((t) => stockMarketService.getStockOgData(t).catch(() => null))),
+    Promise.all(selected.map((t) =>
+      stockRepository.findPricesByTicker(t, { date: { gte: subDays(new Date(), 150) } })
+        .then((ps) => ps.map((x) => Number(x.close)))
+        .catch(() => [] as number[]),
+    )),
+  ]);
+
+  const details = ogList.map((d, i) => {
+    const mc = d && d.entryPrice != null && d.tp1 != null && d.sl != null
+      ? monteCarloTpFirst(closesList[i], d.entryPrice, d.tp1, d.sl, { seedKey: d.ticker })
+      : null;
+    return { ticker: selected[i], d, tier: d ? tierOf(d) : null, mc };
+  });
 
   const counts = TIERS.reduce<Record<string, number>>((acc, t) => {
     acc[t] = details.filter((x) => x.tier === t).length;
@@ -140,7 +155,7 @@ export default async function TradingPlanPage({
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">
-            {shown.map(({ ticker, d, tier }) => {
+            {shown.map(({ ticker, d, tier, mc }) => {
               if (!d || d.close == null) {
                 return (
                   <div key={ticker} className="rounded-xl border border-border bg-bg-card p-5 text-sm text-text-secondary">
@@ -213,6 +228,25 @@ export default async function TradingPlanPage({
                     </div>
                   </div>
 
+                  {mc && (
+                    <div className="rounded-lg bg-bg-hover px-3 py-2.5 space-y-1.5">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-text-secondary">Probabilitas kena TP dulu (Monte Carlo, {mc.simulations}x simulasi / {mc.horizonDays} hari)</span>
+                        <span className={`font-mono font-bold tabular-nums ${mc.winRate >= 0.5 ? "text-bullish" : "text-bearish"}`}>
+                          {(mc.winRate * 100).toFixed(0)}%
+                        </span>
+                      </div>
+                      <div className="h-1.5 rounded-full bg-border overflow-hidden">
+                        <div
+                          className={`h-full rounded-full ${mc.winRate >= 0.5 ? "bg-bullish" : "bg-bearish"}`}
+                          style={{ width: `${Math.min(100, Math.max(2, mc.winRate * 100))}%` }}
+                        />
+                      </div>
+                      <div className="text-[10px] text-text-tertiary">
+                        Expected value: {mc.evPerShare >= 0 ? "+" : "−"}Rp{Math.abs(Math.round(mc.evPerShare)).toLocaleString("id-ID")}/lembar · bootstrap 150 hari
+                      </div>
+                    </div>
+                  )}
                   {rr != null && (
                     <div className="text-xs text-text-secondary">
                       Risk-Reward:{" "}
