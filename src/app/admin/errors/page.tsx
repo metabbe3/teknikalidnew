@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AdminKpiCard } from "@/components/admin/admin-kpi-card";
 import { AdminDataTable } from "@/components/admin/admin-data-table";
@@ -14,11 +15,13 @@ import {
   Clock,
   Search,
   AlertCircle,
+  RotateCcw,
 } from "lucide-react";
 import { timeAgo } from "@/lib/time";
 
 interface ErrorEntry {
   id: string;
+  jobId?: string;
   source: "cron" | "agent";
   sourceName: string;
   message: string;
@@ -28,6 +31,8 @@ interface ErrorEntry {
     durationMs?: number;
     triggeredBy?: string;
     priority?: number;
+    attempts?: number;
+    maxAttempts?: number;
   };
 }
 
@@ -71,6 +76,25 @@ export default function ErrorHubPage() {
   });
 
   const overview = data?.overview;
+
+  const queryClient = useQueryClient();
+  const retryMutation = useMutation({
+    mutationFn: async (jobId: string) => {
+      const r = await fetch(`/api/admin/agent-hub/jobs/${jobId}/retry`, {
+        method: "POST",
+      });
+      if (!r.ok) {
+        const json = await r.json().catch(() => null);
+        throw new Error(json?.error ?? "Gagal retry job");
+      }
+      return r.json();
+    },
+    onSuccess: () => {
+      toast.success("Job requeued");
+      queryClient.invalidateQueries({ queryKey: ["admin-errors"] });
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
 
   const errorColumns = [
     {
@@ -123,10 +147,28 @@ export default function ErrorHubPage() {
           );
         }
         if (entry.source === "agent" && entry.context.priority != null) {
+          const maxed =
+            entry.context.attempts != null &&
+            entry.context.maxAttempts != null &&
+            entry.context.attempts >= entry.context.maxAttempts;
+          const { jobId } = entry;
           return (
-            <span className="text-xs text-gray-500">
-              P{entry.context.priority}
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs text-gray-500">
+                P{entry.context.priority}
+              </span>
+              {jobId && (
+                <button
+                  onClick={() => retryMutation.mutate(jobId)}
+                  disabled={retryMutation.isPending || maxed}
+                  title={maxed ? "Max attempts" : "Retry job"}
+                  aria-label={maxed ? "Max attempts" : "Retry job"}
+                  className="text-gray-400 hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-gray-400"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
           );
         }
         return <span className="text-xs text-gray-300">-</span>;

@@ -76,6 +76,19 @@ export const agentHubRepository = {
     });
   },
 
+  // Flip a failed job back to pending so findAndClaim() re-executes it.
+  // updatedAt is set automatically by @updatedAt.
+  async retryJob(id: string): Promise<void> {
+    await prisma.agentJob.update({
+      where: { id },
+      data: {
+        status: "pending",
+        completedAt: null,
+        error: null,
+      },
+    });
+  },
+
   async getJobById(id: string): Promise<AgentJobRow | null> {
     const job = await prisma.agentJob.findUnique({ where: { id } });
     return job ? toRow(job) : null;

@@ -3,6 +3,7 @@ import { AGENT_TYPES, AGENT_META } from "./agent-hub.types";
 import type { AgentType, AgentJobPayload, AgentHubStats, AgentConfigRow } from "./agent-hub.types";
 import type { Prisma } from "@/generated/prisma/client";
 import { InvalidAgentTypeError, AgentJobNotFoundError, AgentAlreadyRunningError } from "./agent-hub.errors";
+import { DomainError } from "@/lib/domain-error";
 
 function validateAgentType(type: string): asserts type is AgentType {
   if (!AGENT_TYPES.includes(type as AgentType)) {
@@ -50,6 +51,18 @@ export const agentHubService = {
       throw new Error(`Cannot cancel job with status: ${job.status}`);
     }
     await agentHubRepository.cancelJob(id);
+  },
+
+  async retryJob(id: string) {
+    const job = await agentHubRepository.getJobById(id);
+    if (!job) throw new AgentJobNotFoundError(id);
+    if (job.status !== "failed") {
+      throw new DomainError("Job tidak failed", 400);
+    }
+    if (job.attempts >= job.maxAttempts) {
+      throw new DomainError("Max attempts tercapai", 409);
+    }
+    await agentHubRepository.retryJob(id);
   },
 
   async getJob(id: string) {

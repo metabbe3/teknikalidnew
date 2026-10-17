@@ -27,10 +27,14 @@ export async function GET(request: NextRequest) {
       since.setDate(since.getDate() - 1);
     }
 
+    // Unresolved = stuck in pending/running for >30min (worker not picking up)
+    const thirtyMinAgo = new Date(now);
+    thirtyMinAgo.setMinutes(thirtyMinAgo.getMinutes() - 30);
+
     // Query CronLog and AgentJob in parallel.
     // take caps the fetch — an incident burst must not pull the whole table
     // before the in-JS filter/slice below runs.
-    const [cronLogs, agentJobs] = await Promise.all([
+    const [cronLogs, agentJobs, unresolvedAgentJobs] = await Promise.all([
       prisma.cronLog.findMany({
         where: {
           status: "failed",
@@ -46,6 +50,12 @@ export async function GET(request: NextRequest) {
         },
         orderBy: { createdAt: "desc" },
         take: 500,
+      }),
+      prisma.agentJob.count({
+        where: {
+          status: { in: ["pending", "running"] },
+          createdAt: { lt: thirtyMinAgo },
+        },
       }),
     ]);
 
@@ -64,8 +74,10 @@ export async function GET(request: NextRequest) {
     }));
 
     // Build unified error entries from AgentJob
+    // jobId/attempts/maxAttempts feed the retry action on the errors page
     const agentErrors = agentJobs.map((job) => ({
       id: job.id,
+      jobId: job.id,
       source: "agent" as const,
       sourceName: job.agentType,
       message: job.error ?? "Unknown error",
@@ -73,6 +85,8 @@ export async function GET(request: NextRequest) {
       createdAt: job.createdAt.toISOString(),
       context: {
         priority: job.priority,
+        attempts: job.attempts,
+        maxAttempts: job.maxAttempts,
       },
     }));
 
@@ -102,6 +116,7 @@ export async function GET(request: NextRequest) {
       totalErrors,
       cronErrors: cronErrors.length,
       agentErrors: agentErrors.length,
+      unresolvedAgentJobs,
     };
 
     return NextResponse.json({ data: { overview, errors } });
