@@ -80,7 +80,7 @@ export default function ErrorHubPage() {
   const queryClient = useQueryClient();
   const retryMutation = useMutation({
     mutationFn: async (jobId: string) => {
-      const r = await fetch(`/api/admin/agent-hub/jobs/${jobId}/retry`, {
+      const r = await fetch(`/api/admin/agent-hub/jobs/${jobId}`, {
         method: "POST",
       });
       if (!r.ok) {
