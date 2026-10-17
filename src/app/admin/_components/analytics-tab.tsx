@@ -202,12 +202,18 @@ export function AnalyticsTab() {
     // Throw (don't return undefined): a silent undefined cached by React Query
     // rendered as "No data" during API outages — the chart looked permanently
     // empty with no error hint. Throwing lets RQ retry + surface isError.
+    // 401/404 = sesi admin habis (proxy blind-404 utk anon) — pesan spesifik supaya
+    // owner tahu LOGIN ULANG, bukan mengira datanya kosong (kasus "Traffic by Hour
+    // kosong" 17 Okt: JWTSessionError → semua card No data tanpa penjelasan).
+    if (r.status === 401 || r.status === 404) {
+      throw new Error("SESSION_EXPIRED");
+    }
     if (!r.ok) throw new Error(`Analytics API ${r.status}`);
     const json = await r.json();
     return json.data;
   };
 
-  const { data, isLoading } = useQuery<AnalyticsData>({
+  const { data, isLoading, isError, error } = useQuery<AnalyticsData>({
     queryKey: [
       "admin-analytics",
       activeRange.start.toISOString(),
@@ -288,8 +294,23 @@ export function AnalyticsTab() {
   const daily = data?.daily ?? [];
   const maxDaily = Math.max(1, ...daily.map((d) => d.views));
 
+  const sessionExpired = isError && (error as Error)?.message === "SESSION_EXPIRED";
+
   return (
     <div className="space-y-6">
+      {sessionExpired && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 flex items-center justify-between gap-3 flex-wrap">
+          <span>
+            <strong>Sesi admin habis</strong> — data analytics tidak bisa dimuat. Login ulang untuk melihat traffic.
+          </span>
+          <a
+            href="/admin/login"
+            className="shrink-0 rounded-md bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-700"
+          >
+            Login ulang
+          </a>
+        </div>
+      )}
       {/* Filters Bar */}
       <div className="flex flex-wrap items-center gap-3">
         {/* Quick Date Range */}
