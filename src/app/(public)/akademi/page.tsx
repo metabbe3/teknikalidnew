@@ -75,7 +75,18 @@ export default async function AkademiPage({
     },
   });
 
-  const allTags = [...new Set(allArticles.flatMap((a) => a.tags))].sort();
+  // Tag strip simple (owner 18 Okt: 47 pill terlalu banyak): tampilkan HANYA tag
+  // yang benar-benar berisi (>= 3 artikel); tag 1-2 artikel = noise yang bikin strip panjang.
+  const tagCounts = new Map<string, number>();
+  for (const a of allArticles) {
+    for (const t of a.tags) tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1);
+  }
+  const allTags = [...tagCounts.entries()]
+    .filter(([, n]) => n >= 3)
+    .map(([t]) => t)
+    .sort();
+  // Tag lama (<3 artikel) tetap valid kalau di-URL langsung (dari SEO/link lama) —
+  // hanya tidak ditampilkan di strip.
   const articles = activeTag
     ? allArticles.filter((a) => a.tags.includes(activeTag))
     : allArticles;

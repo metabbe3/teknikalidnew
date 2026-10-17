@@ -7,7 +7,10 @@ import { stockRepository } from "@/domains/stock/stock.repository";
 import { formatPrice, formatVolume, stripJk } from "@/lib/utils";
 import { SITE_URL } from "@/lib/constants";
 
-export const revalidate = 300;
+
+// force-dynamic (RCA 18 Okt): prerender build-time tanpa DB membekukan empty state
+// ("Data sedang diperbarui") — ISR revalidate tidak pernah mengisi (pola /berita).
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Market Structure — Struktur Tren Saham IDX Terlikuid",

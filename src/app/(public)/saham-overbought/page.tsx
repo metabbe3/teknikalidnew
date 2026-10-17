@@ -6,7 +6,11 @@ import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { formatPrice, formatPercent, stripJk, changeColor, rsiColor } from "@/lib/utils";
 import { SITE_URL } from "@/lib/constants";
 
-export const revalidate = 30; // 12 Okt: failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal
+ // 12 Okt: failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal
+
+// force-dynamic (RCA 18 Okt): prerender build-time tanpa DB membekukan empty state
+// ("Data sedang diperbarui") — ISR revalidate tidak pernah mengisi (pola /berita).
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Saham Overbought Hari Ini — RSI Diatas 70",
