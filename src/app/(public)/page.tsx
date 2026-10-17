@@ -54,7 +54,7 @@ export const dynamic = "force-dynamic";
 function FeaturedSkeleton() {
   return (
     <section className="space-y-5">
-      <SectionHeading title="Saham Paling Aktif Hari Ini" />
+      <SectionHeading title="Saham Paling Aktif" />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
         {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="h-[120px] bg-bg-card rounded-xl animate-pulse" />
@@ -114,9 +114,11 @@ type FeaturedItem = {
 async function FeaturedStocksSection({
   gainers,
   losers,
+  isMarketOpen,
 }: {
   gainers: OverviewStock[];
   losers: OverviewStock[];
+  isMarketOpen: boolean;
 }) {
   const [sparklineMap, oversoldRaw] = await Promise.all([
     stockMarketService.getSparklines(),
@@ -181,7 +183,7 @@ async function FeaturedStocksSection({
   return (
     <section className="space-y-5">
       <SectionHeading
-        title="Saham Paling Aktif Hari Ini"
+        title={isMarketOpen ? "Saham Paling Aktif Hari Ini" : "Saham Paling Aktif — Sesi Terakhir"}
         action={
           <span className="text-xs text-text-tertiary font-mono tabular-nums">{featured.length} saham</span>
         }
@@ -387,11 +389,11 @@ export default async function HomePage() {
               All derives are fire-safe (failure hides the card, never errors home). */}
           <WelcomeLoopSection currentUser={currentUser} />
           <MorningDeltaCard />
+          <Suspense fallback={<FeaturedSkeleton />}>
+            <FeaturedStocksSection gainers={gainers} losers={losers} isMarketOpen={!isClosed} />
+          </Suspense>
           <ThesisCard />
           <PersonalizedBeranda />
-          <Suspense fallback={<FeaturedSkeleton />}>
-            <FeaturedStocksSection gainers={gainers} losers={losers} />
-          </Suspense>
           <Suspense fallback={<SectorSkeleton />}>
             <SectorHeatmap sectors={sectors} />
           </Suspense>
@@ -529,7 +531,7 @@ export default async function HomePage() {
 
         {/* Featured Stocks — the single proper movers showcase */}
         <Suspense fallback={<FeaturedSkeleton />}>
-          <FeaturedStocksSection gainers={gainers} losers={losers} />
+          <FeaturedStocksSection gainers={gainers} losers={losers} isMarketOpen={!isClosed} />
         </Suspense>
 
         {/* Sector Heatmap */}

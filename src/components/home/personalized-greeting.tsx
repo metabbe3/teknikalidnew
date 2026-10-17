@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { formatPercentPlain } from "@/lib/utils";
 
 function getGreeting(): string {
@@ -31,19 +30,9 @@ export function PersonalizedGreeting({
   ihsg: { close: number; change: number | null; changePercent: number | null } | null;
 }) {
   const isClosed = !marketInfo.marketStatus.isOpen;
-  const topGainer = overview.gainers[0];
-  const topLoser = overview.losers[0];
-
   const sectorEntries = Object.values(overview.sectors);
   const positiveSectors = sectorEntries.filter((s) => s.avgChange > 0).length;
   const totalSectors = sectorEntries.length;
-
-  const navLinks = [
-    { label: "Screener", href: "/screener" },
-    { label: "Watchlist", href: "/watchlist" },
-    { label: "Paper Trading", href: "/paper-trading" },
-    { label: "Komunitas", href: "/community" },
-  ];
 
   return (
     <section className="bg-bg-card border-b border-border">
@@ -72,20 +61,6 @@ export function PersonalizedGreeting({
               </span>
             )}
           </span>
-          {topGainer && (
-            <span className="text-text-secondary">
-              Top Gainer{" "}
-              <span className="font-mono font-semibold text-text-primary">{topGainer.ticker.replace(".JK", "")}</span>{" "}
-              <span className="font-mono font-semibold text-bullish">+{formatPercentPlain(topGainer.changePercent)}%</span>
-            </span>
-          )}
-          {topLoser && (
-            <span className="text-text-secondary">
-              Top Loser{" "}
-              <span className="font-mono font-semibold text-text-primary">{topLoser.ticker.replace(".JK", "")}</span>{" "}
-              <span className="font-mono font-semibold text-bearish">-{formatPercentPlain(topLoser.changePercent)}%</span>
-            </span>
-          )}
           <span className="text-text-secondary">
             Sektor{" "}
             <span className={`font-mono font-semibold ${positiveSectors > totalSectors / 2 ? "text-bullish" : "text-bearish"}`}>
@@ -94,18 +69,6 @@ export function PersonalizedGreeting({
           </span>
         </div>
 
-        {/* Nav pills */}
-        <div className="flex items-center gap-2 flex-wrap">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="px-4 py-2.5 rounded-lg text-xs font-medium bg-bg-hover border border-border text-text-secondary hover:text-text-primary hover:bg-bg-card transition-all press-scale"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </div>
       </div>
     </section>
   );
