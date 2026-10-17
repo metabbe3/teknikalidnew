@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { buildStockAiContext } from "./context";
+import { withTicket, QueueFullError, configurePool } from "@/domains/ai/ai-gate.service";
+
+// MLX serial ±7s/request — gate FIFO (ref-2026-10-17-04)
+configurePool("mlx", { maxConcurrent: 1, maxQueueDepth: 6, maxWaitMs: 25_000 });
 
 /**
  * AI ringkasan saham — proxy ke model MLX lokal (gemma-3-4b-it-4bit) di Mac mini host.
@@ -95,29 +99,35 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 60_000);
-    const res = await fetch(`${MLX_URL}/${mode}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...context, question }),
-      signal: controller.signal,
+    // Waiting room (ref-2026-10-17-04): slot MLX via gate FIFO — bukan hit
+    // MLX bersamaan. summarize ticker sama = single-flight utk dedupe.
+    const data = await withTicket(`mlx`, async () => {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 60_000);
+      const res = await fetch(`${MLX_URL}/${mode}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...context, question }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+      if (!res.ok) {
+        const errText = await res.text().catch(() => "");
+        throw new Error(`AI server error (${res.status}) ${errText.slice(0, 200)}`);
+      }
+      return (await res.json()) as { ok: boolean; text?: string; ms?: number };
     });
-    clearTimeout(timeout);
-
-    if (!res.ok) {
-      const errText = await res.text().catch(() => "");
-      return NextResponse.json(
-        { error: `AI server error (${res.status})`, detail: errText.slice(0, 200) },
-        { status: 502 },
-      );
-    }
-    const data = (await res.json()) as { ok: boolean; text?: string; ms?: number };
     if (!data.ok || !data.text) {
       return NextResponse.json({ error: "AI tidak menghasilkan jawaban" }, { status: 502 });
     }
     return NextResponse.json({ ok: true, text: data.text, ms: data.ms });
   } catch (e) {
+    if (e instanceof QueueFullError) {
+      return NextResponse.json(
+        { error: "AI sedang melayani antrean — coba lagi sebentar.", retryAfterMs: e.retryAfterMs, queueDepth: e.queueDepth },
+        { status: 429, headers: { "Retry-After": String(Math.ceil(e.retryAfterMs / 1000)) } },
+      );
+    }
     const msg = e instanceof Error ? e.message : "unknown";
     return NextResponse.json(
       { error: "AI sedang tidak tersedia (server MLX lokal mati?)", detail: msg.slice(0, 150) },
