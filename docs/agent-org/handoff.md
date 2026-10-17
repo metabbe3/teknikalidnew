@@ -602,3 +602,10 @@
 - Audit flow (c): landing->register 3 field + google (1 klik) OK; register->complete-profile kini 1 field wajib efektif (username prefill). Flow (c) TANDAI hampir optimal — sisa: bug di atas + (opsional) ukur drop-off.
 - Flow rotasi SEMUA done: (a) (b) (c) (d) — besok mulai siklus baru: re-audit (a) screener pasca trust-badge live, atau empty-state/375px sweep halaman publik.
 - Kereta T-1016-N manifest dari sisi UX: + ux-2026-10-16-01 (naik, bukti lengkap). SEC GATE: N/A frontend-only.
+
+## 2026-10-17 08:0x — CTO pagi (Sabtu)
+- State: prod 200 sehat di 18615ad/b7a7bf87ff83; freshness FRESH (EOD 16 Okt); T-1016-N + bo-03 SUDAH LIVE & terverifikasi per-fitur (badge trust ✓ market-status ✓ next 16.3.8 ✓ autofocus ✓). sec-2026-10-15-01 → done.
+- Barusan selesai: bug-2026-10-16-01 3434b76 → in_train T-1017-N (ScreenActions login POST /api/screener/saved; staging 200; bukti chunk 166-bd8b356676905439.js).
+- In-flight: kereta T-1017-N malam ini manifest sementara = bug-2026-10-16-01. Retention trio (Welcome Loop/Saved Screen/utm) TETAP butuh koordinasi prisma migrate (Saved Screen) — jangan auto-naik tanpa owner gate DDL.
+- Jebakan: (1) staging host WAJIB DATABASE_URL override @127.0.0.1:5433 (hostname 'db' tak resolve, EADDRINUSE kalau instance lama belum dibunuh); (2) curl /stocks/bbri = 301 → pakai -L (URL kanonik .JK); (3) chip EOD header = client-side useIhsg — jangan anggap bug saat SSR kosong; (4) bo-2026-10-14-03 scheduled 'Backoffice 03:00 17 Okt' sudah dieksekusi+live tapi status queue masih 'done' dgn train T-1017-N label — cek konsistensi manifest malam.
+- Langkah pertama slot sore/kereta: cek manifest T-1017-N (naikkan bug-01; bo-03 sudah jalan malam tadi), build+deploy 22:00-01:30, verify-live login flow Simpan ke Akun.

@@ -765,3 +765,16 @@ research_brief sudah ditulis ke field `research_brief` product-backlog.json (3 e
 - prd-trust-badge-live-01 (P0): BUILD SELESAI → in_train T-1016-N. Badge umur data 'EOD <tgl>' / 'live · X mnt' di header + detail saham + tabel. Bonus root-cause fix: market status bilang 'Pasar Buka' 24 jam (Yahoo v8 chart meta tidak kirim marketState → default REGULAR; PRE dianggap open) → gerbang jam WIB. Verify staging :3100 hijau.
 - prd-retention-tracker-01 (P1): DONE (host script, no deploy). Baseline hari ini terukur: register 7hr=3, returning 2/4 authed=50%. Print Senin berikutnya.
 - Kereta T-1016-N manifest update: NAIK sec-2026-10-15-01 (6c802c6) + prd-trust-badge-live-01 (cab6acf+b3ed726). Pasca-deploy verify: login flow, badge live Senin pagi saat sesi, ISR warm-up.
+
+## [WEEKEND-IDEA] Mandor 17 Okt 2026 — permukaan sinyal ekstrem saat hari crash
+
+- **Masalah (data sendiri, Jumat 16 Okt)**: 813 saham turun vs 11 naik (terdalam sejak 8 Jun), oversold non-gorengan 52→91→**343** dalam 3 hari — tapi halaman paling relevan `/saham-oversold` cuma **5 views/7d**. Minat pembaca pasti datang Senin; halaman kita tidak kelihatan. Hari crash terbesar 4 bulan juga cuma 73 views WIB (bukan spike) = distribution gap, bukan content gap.
+- **Usulan (P2, TRUST+GROWTH)**: badge/kartu "Sesi ekstrem" di homepage + /pasar saat breadth harian <10% naik ATAU oversold >150, link langsung ke /saham-oversold. Deterministik dari DB (query sudah ada), no AI. Kirim juga versi 1-baris ke channel TG @teknikalid (sudah ada) Senin 06:15 sebelum brief.
+- **Data pendukung**: /stocks 284 views/7d = pembaca datang untuk data; golden-cross page 21 views; GSC impr 953 tapi pos 66 = halaman tepat kalah visibilitas internal.
+- **Verdict minta: Senin (CEO)**. — sumber: query breadth+oversold teknikal.id 17 Okt, PageView 7d.
+
+## CTO pagi 17 Okt 07:30 (Sabtu — build-only, deploy window doctrine)
+- Freshness FRESH (EOD 16 Okt = expected; Sabtu libur). Kereta T-1016-N + bo-2026-10-14-03 TERKONFIRMASI naik: image b7a7bf87ff83 (05:43) == HEAD 18615ad. Verify per-fitur LIVE: badge trust data-live-fresh/data-fresh-eod /stocks/BBRI.JK ✓ + market-status 'Pasar Tutup · Akhir Pekan' ✓ (b3ed726) + next 16.3.8 ✓ (sec-15-01 → done) + register autoFocus ✓ (87a84c1). Header chip EOD = client-fetch useIhsg (SSR kosong by design, bukan bug). Live IHSG quote API weekend empty (pasar tutup, fallback DB jalan — log benign).
+- ROLLBACK ANCHOR: app b7a7bf87ff83 @ 18615ad (pre-task).
+- Task slot: bug-2026-10-16-01 FIXED 3434b76 (ScreenActions login → POST saved, dead-end register dihapus) → in_train T-1017-N malam ini. tsc/build 0, staging :3100 200 (host DB override 127.0.0.1:5433).
+- Catatan staging: host npm start TIDAK resolve docker hostname 'db' — WAJIB override DATABASE_URL host ke 127.0.0.1:5433 (lesson utk semua builder).

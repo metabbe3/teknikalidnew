@@ -512,3 +512,11 @@
 - verify: RETENTION_PRINT=1 output 'register kemarin 1 · register 7hr 3 · returning 2/4 authed = 50.0%' exit 0 · silent run exit 0 tanpa output
 - QA: self-check · impact_check_due: Senin 20 Okt (first scheduled print)
 - KPI: STICKY (ukur pemulihan returning post live-price fix)
+
+## 2026-10-17 — bug-2026-10-16-01 (P2 bug, in_train T-1017-N)
+- task-id: bug-2026-10-16-01 · type: bugfix · PRD: n/a (ops/bug — dispatch UX Builder 16 Okt 19:4x)
+- change: ScreenActions 'Simpan ke Akun' logged-in kini POST /api/screener/saved langsung (state saving, disabled, toast sukses/gagal); hapus dead-end sessionStorage pending_post_register + redirect /auth/register; cabang guest TIDAK tersentuh
+- commit: 3434b76 · deploy: kereta malam T-1017-N (build-only slot pagi, deploy window doctrine)
+- verify: tsc --noEmit 0 · npm run build 0 · staging :3100 /stocks 200 + 'Pasar Tutup' 2 · chunk 166-bd8b356676905439.js 'Screen tersimpan ke akun' · 'stocks_screener&utm_medium=save_screen' 0 hit di semua chunks (dead-end hilang)
+- QA: kereta malam cek manifest + verify-live pasca naik (login user → klik Simpan ke Akun → row ScreenerSaved) · impact_check_due: 2026-10-20
+- KPI: STICKY + GROWTH (Retention Loop AC2 utk user login berfungsi)
