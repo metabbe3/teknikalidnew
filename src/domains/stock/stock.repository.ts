@@ -916,12 +916,17 @@ export async function findPrevClosesByTicker(tickers: string[]) {
   const out = new Map<string, number>();
   if (!prevDateRow) return out;
   const idByTicker = new Map(stocks.map((s) => [s.ticker, s.id]));
-  const rows = await prisma.stockPrice.findMany({
-    where: { date: prevDateRow.date, stockId: { in: stocks.map((s) => s.id) } },
-    select: { stockId: true, close: true },
-  });
+  // Close TERAKHIR per saham <= prevDate — saham yang tidak trade di prevDate
+  // (mis. beku/ARA, tanpa bar hari itu) harus pakai close terakhirnyanya sendiri,
+  // BUKAN jatuh ke fallback feed (Yahoo prev bisa basis beda → phantom ±30%, AKKU 17 Okt).
+  const rows = await prisma.$queryRaw<{ stockId: number; close: unknown }[]>`
+    SELECT DISTINCT ON ("stockId") "stockId", "close"
+    FROM "StockPrice"
+    WHERE "stockId" IN (${Prisma.join(stocks.map((s) => s.id))})
+      AND date <= ${prevDateRow.date}
+    ORDER BY "stockId", date DESC`;
   const closeById = new Map<number, number>();
-  for (const r of rows) closeById.set(r.stockId, r.close.toNumber());
+  for (const r of rows) closeById.set(r.stockId, Number(r.close));
   const result = new Map<string, number>();
   for (const [ticker, id] of idByTicker) {
     const c = closeById.get(id);

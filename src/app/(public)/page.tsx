@@ -321,7 +321,7 @@ export default async function HomePage() {
   const currentUser = await authService.getCurrentUser();
 
   // Fast cached calls only — hero renders immediately
-  const [overview, marketInfo, ihsgPrices, homeBrief] = await Promise.all([
+  const [overview, marketInfo, ihsgPrices, homeBrief, oversoldCount] = await Promise.all([
     stockMarketService.getMarketOverview(),
     stockMarketService.getMarketStatusForPage(),
     prisma.stock.findUnique({ where: { ticker: "^JKSE" } })
@@ -330,6 +330,24 @@ export default async function HomePage() {
     // Latest daily brief — 1-click editorial surface for anonymous visitors
     // (flow landing→berita→artikel was 2 clicks + required knowing the nav).
     articleRepository.findLatestDailyBrief().catch(() => null),
+    // Extreme-session badge (ceo-idea 17 Okt): oversold breadth count, same
+    // criteria as /saham-oversold (RSI<30, non-gorengan, active equities).
+    prisma.stockIndicator
+      .aggregate({ _max: { date: true }, where: { interval: "1d" } })
+      .then((a) =>
+        a._max.date
+          ? prisma.stockIndicator.count({
+              where: {
+                interval: "1d",
+                date: a._max.date,
+                rsi14: { lt: 30 },
+                isGorengan: false,
+                stock: { isActive: true, assetClass: "EQUITY" },
+              },
+            })
+          : 0,
+      )
+      .catch(() => 0),
   ]);
 
   // Compute IHSG change
@@ -423,6 +441,16 @@ export default async function HomePage() {
               <span className={`w-1.5 h-1.5 rounded-full ${isClosed ? "bg-amber-500" : "bg-bullish animate-pulse"}`} aria-hidden />
               {isClosed ? "Pasar Tutup — Data Sesi Terakhir" : "Pasar Buka — Data Real-time"}
             </div>
+            {oversoldCount >= 150 && (
+              <Link
+                href="/saham-oversold"
+                className="inline-flex items-center gap-2 text-xs font-semibold px-3 py-1 rounded-full border text-red-700 bg-red-500/10 border-red-500/25 hover:bg-red-500/15 transition-colors"
+                aria-label={`${oversoldCount} saham oversold — lihat daftar lengkap`}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" aria-hidden />
+                ⚡ Sesi Ekstrem: {oversoldCount} saham oversold (RSI&lt;30) — lihat daftar
+              </Link>
+            )}
             <h1 className="mt-5 font-serif text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.03] text-text-primary">
               TeknikalID
             </h1>

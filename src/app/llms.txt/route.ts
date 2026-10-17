@@ -88,6 +88,10 @@ export async function GET() {
   lines.push(`- Komunitas: ${SITE_URL}/community`);
   lines.push(`- Watchlist: ${SITE_URL}/watchlist`);
   lines.push(`- Berita: ${SITE_URL}/berita`);
+  lines.push(`- Pasar Hari Ini (live): ${SITE_URL}/pasar`);
+  lines.push(`- Saham Oversold Hari Ini: ${SITE_URL}/saham-oversold`);
+  lines.push(`- Saham Volume Spike: ${SITE_URL}/saham-volume-spike`);
+  lines.push(`- Saham Golden Cross: ${SITE_URL}/saham-golden-cross`);
   lines.push("");
 
   const body = lines.join("\n");

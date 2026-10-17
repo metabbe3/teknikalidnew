@@ -351,6 +351,10 @@ export async function fetchChart(
 
   return quotes
     .filter((q) => q.close !== null)
+    // Non-traded sessions (Yahoo emits OHLC=prev flat with volume 0, or odd
+    // partial bars) must not enter EOD — they mint phantom moves/duplicate
+    // rows that corrupt breadth + percent-change (AKKU +36% phantom, 17 Okt).
+    .filter((q) => (q.volume ?? 0) > 0)
     .map((q) => ({
       date: typeof q.date === "string" ? new Date(q.date) : q.date,
       open: q.open ?? 0,

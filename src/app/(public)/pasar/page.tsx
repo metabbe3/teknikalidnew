@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHero } from "@/components/layout/page-hero";
 import { pasarLiveService, isLiveWindow, isMarketHours, wibNow, wibHHMM } from "@/domains/stock/pasar-live.service";
+import { prisma } from "@/lib/prisma";
 import { formatPrice, formatPercent, formatVolume, stripJk } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { TrendingUp, TrendingDown, Newspaper, AlertTriangle, Clock } from "lucide-react";
@@ -58,6 +59,23 @@ export default async function PasarPage() {
   // ── Pre-open / weekend: rekap kemarin (cheap path, no news fetch) ──
   if (!live) {
     const recap = await pasarLiveService.getYesterdayRecap();
+    // Extreme-session badge (ceo-idea 17 Okt) — same criteria as /saham-oversold.
+    const latestIndWeekend = await prisma.stockIndicator
+      .aggregate({ _max: { date: true }, where: { interval: "1d" } })
+      .catch(() => null);
+    const oversoldCountWeekend = latestIndWeekend?._max.date
+      ? await prisma.stockIndicator
+          .count({
+            where: {
+              interval: "1d",
+              date: latestIndWeekend._max.date,
+              rsi14: { lt: 30 },
+              isGorengan: false,
+              stock: { isActive: true, assetClass: "EQUITY" },
+            },
+          })
+          .catch(() => 0)
+      : 0;
     return (
       <>
         <PageHero eyebrow="Live" title="Koran Saham Live" description="Pasar belum buka — rekap sesi terakhir di bawah ini. Live update mulai 06:30 WIB.">
@@ -66,6 +84,14 @@ export default async function PasarPage() {
               🌙 Pasar belum buka
             </span>
             <WibClock />
+            {oversoldCountWeekend >= 150 && (
+              <Link
+                href="/saham-oversold"
+                className="inline-flex items-center gap-1.5 rounded-full border border-red-500/25 bg-red-500/10 px-3 py-1 text-sm font-semibold text-red-600 hover:bg-red-500/15 transition-colors"
+              >
+                ⚡ Sesi Ekstrem: {oversoldCountWeekend} saham oversold
+              </Link>
+            )}
           </div>
         </PageHero>
         <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
@@ -91,6 +117,23 @@ export default async function PasarPage() {
   // ── Live window (06:30–18:30 WIB weekday) ──
   const snap = await pasarLiveService.getSnapshot(true);
   const ihsg = snap.ihsg;
+  // Extreme-session badge (ceo-idea 17 Okt) — same criteria as /saham-oversold.
+  const latestInd = await prisma.stockIndicator
+    .aggregate({ _max: { date: true }, where: { interval: "1d" } })
+    .catch(() => null);
+  const oversoldCount = latestInd?._max.date
+    ? await prisma.stockIndicator
+        .count({
+          where: {
+            interval: "1d",
+            date: latestInd._max.date,
+            rsi14: { lt: 30 },
+            isGorengan: false,
+            stock: { isActive: true, assetClass: "EQUITY" },
+          },
+        })
+        .catch(() => 0)
+    : 0;
 
   return (
     <>
@@ -109,6 +152,14 @@ export default async function PasarPage() {
             {marketOpen ? "🟢 PASAR BUKA" : "⚪ di luar sesi"}
           </span>
           <WibClock />
+          {oversoldCount >= 150 && (
+            <Link
+              href="/saham-oversold"
+              className="inline-flex items-center gap-1.5 rounded-full border border-red-500/25 bg-red-500/10 px-3 py-1 text-sm font-semibold text-red-600 hover:bg-red-500/15 transition-colors"
+            >
+              ⚡ Sesi Ekstrem: {oversoldCount} saham oversold
+            </Link>
+          )}
           {snap.sessionDate && (
             <span className="text-sm text-text-tertiary font-mono">sesi data {snap.sessionDate}</span>
           )}
