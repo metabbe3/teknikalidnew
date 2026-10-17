@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { SahamView } from "@/components/stock/saham-view";
-import { SignalLinks } from "@/components/stock/signal-links";
 import { IDX_STOCKS } from "@/lib/constants";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale/id";
@@ -225,7 +224,6 @@ export default async function StocksPage() {
           <div className="mt-10 space-y-8">
             <SahamStrategyLinks />
             <WeeklySignalWidget />
-            <SignalLinks />
           </div>
         </section>
 
