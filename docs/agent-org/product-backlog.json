@@ -263,7 +263,9 @@
     "reg_view_ip_also_stocks_since_hooks": "7/7",
     "utm_live": "2026-10-07 deploy; hanya row QA, 0 organik (0 register-view sejak 5 Okt)",
     "verdict": "belum lolos, 12 hari tersisa; lever = saved-screen deploy 8 Okt"
-   }
+   },
+   "review_date": "2026-10-23",
+   "review_note": "CEO 16 Okt: tetap live_monitoring sampai retention trio live (18 Okt); impact review pasca-checkpoint 23 Okt → close/superseded ke retention loop."
   },
   {
    "id": "prod-2026-09-17-02",
@@ -998,7 +1000,11 @@
    "shipped_via": "cto sec-2026-10-10-01: next 16.2.6->16.3.8 + proxy-addr 2.0.8 (7f80091, image dce76ef1f881, deploy 10 Okt 13:30); critical non-auth 5->0",
    "residual": "auth-family (next-auth 5.0.0-beta.31) tetap owner gate",
    "ceo_decision_pending": false,
-   "lifecycle": "spec_ready"
+   "lifecycle": "spec_ready",
+   "verdict": "approve",
+   "verdict_by": "owner",
+   "verdict_date": "2026-10-17",
+   "verdict_note": "Owner APPROVE via Telegram 17 Okt. Dep-bump next 16.3.8 + next-auth LIVE via T-1016-N (CTO verified 0 CRITICAL). Sisa vuln transitive = hygiene P2 berjalan."
   },
   {
    "id": "sec-2026-10-09-01",
@@ -1039,7 +1045,8 @@
    "recommendation": "TUNGGU verdict AC5 prd-17-01 (20 Okt) dulu — funnel save_prompt sedang diukur, jangan kontaminasi. Pasca-AC5 opsi: (a) tombol top bar guest = localStorage save + CTA sekunder \"sinkron antar perangkat → daftar\"; (b) samakan copy. Keputusan CEO/owner (tradeoff konversi vs trust).",
    "evidence": "QA interaktif 10 Okt: klik Simpan Screen → location.href /auth/register?utm_source=stocks_screener&utm_medium=save_prompt (save-screen-prompt.tsx L28); klik Simpan preset ini → teknikal_saved_screens +1, toast sukses.",
    "ceo_verdict": "DEFER (CEO 11 Okt): jangan kontaminasi funnel AC5 prd-17-01 yang sedang diukur (impact check 20 Okt) — rekomendasi QA sendiri. Pasca-AC5 pilih (a) top bar guest = localStorage + CTA sync, atau (b) samakan copy.",
-   "review_date": "2026-10-20"
+   "review_date": "2026-10-20",
+   "research_brief": "RESEARCH BRIEF (Researcher 15 Okt 2026) — VERDICT: MODIFIKASI (BUILD-AFTER-PRD + tetap gate AC5 prd-17-01 dulu 20 Okt sesuai defer CEO 11 Okt). Alasan: inkonsistensi 2 tombol simpan = pelanggaran heuristic 'consistency & standards' (Nielsen #4) + copy yang menyesatkan = riset TRUST (north star). Pola industri jelas: 'lazy/deferred registration' — beri value dulu (localStorage save instan), minta akun nanti saat kebutuhan nyata muncul (sync antar-perangkat); register-wall dipakai publisher (The Audiencers/Poool benchmarks) selalu dengan value-exchange jelas, bukan copy yang menyembunyikan redirect. Best practice pasca-AC5: (1) pilih opsi (a) — guest top bar = localStorage save + copy jujur 'Tersimpan di browser ini', CTA sekunder 'Sinkron antar perangkat → daftar'; (2) copy kedua tombol HARUS menggambarkan outcome nyata (satu = lokal, satu = akun); (3) jangan ubah apapun sebelum 20 Okt agar funnel AC5 tidak terkontaminasi; (4) ukur pasca-fix: save_success rate guest + register conversion dari CTA sync vs baseline save_prompt; (5) satukan source of truth simpan screen (localStorage vs DB) agar migrasi guest->user tidak kehilangan data. Anti-pattern: register-wall yang menyembunyikan redirect di balik copy fungsional (distrust), 2 affordance utk aksi yang sama dengan perilaku beda, dan mengubah funnel saat sedang diukur. Sumber: GGV Capital 'To wall or not to wall' (medium.com/ggv-capital), theaudiencers.com registration-wall benchmarks, blog.poool.fr registration-wall checklist, creative-tim UI patterns 'deferred registration', Nielsen heuristik #4. BUKTI: SEDANG — pola lazy-registration = konsensus industri kuat, tapi tidak ada benchmark publik spesifik B2C finance-content Indonesia; keputusan final (a) vs (b) tetap pakai data funnel AC5 internal."
   },
   {
    "id": "idea-2026-10-12-2",
@@ -1089,7 +1096,7 @@
    "id": "idea-2026-10-12-3",
    "date": "2026-10-12",
    "priority": "P3",
-   "status": "spec_ready",
+   "status": "dispatched",
    "source": "QA pagi 12 Okt (minor berulang ke-3) + riset Product Agent buffer-keeper 12 Okt malam",
    "title": "Tutup jalur internal-link 404 edu: backfill 16 link di 4 artikel + gate publish validasi prefix /akademi/",
    "north_star": "consistency·trust (SEO crawl equity + user tidak jatuh ke 404 dari artikel edu baru)",
@@ -1123,7 +1130,10 @@
    "research_basis": "tree teknikalidnew @ 399f0cd; DB read-only 12 Okt; live curl teknikal.id",
    "research_note": "Product Agent 12 Okt 22:0x: scan penuh 126 artikel — 16 link 404 terkonfirmasi exact (daftar per artikel di AC1). Superlatif/breadth qa-30-01 dipenuhi: ranking/link dihitung query asli scan penuh, bukan manual.",
    "prd_id": "prd-2026-10-12-02",
-   "research_brief": "RESEARCH BRIEF (Researcher 13 Okt 2026) — VERDICT: BUILD. Alasan: broken internal links = clean-up standar dengan konsensus industry kuat — membuang crawl budget, memutus link equity, dan sinyal pemeliharaan buruk; fix-nya low-risk (backfill 16 link + publish gate), bukan eksperimen. Konteks penting: 126 artikel published dgn 16 link 404 (3,1% dari 524 link) dan 4 artikel affected — dampak ranking individual kecil, tapi ini kerusakan berulang (kambuh ke-3) → gate publish (AC3) = bagian paling berharga, bukan cuma backfill. Best practice: (1) prioritas fix internal 404 di halaman ber-authority (artikel edu dgn traffic) — sudah tepat; (2) publish-gate 2 arah: validasi prefix /akademi/ utk slug edu + verifikasi target resolve 200 (hardcoded prefix saja bisa tertukar slug); (3) sertakan regression parity (AC4) agar patch SQL tidak menyentuh artikel lain; (4) monitor kambuh via cron scan bulanan md-links (murah, mencegah repeat); (5) gunakan 301 hanya jika slug memang pindah permanen — di sini backfill langsung ke URL benar lebih tepat daripada redirect. Anti-pattern: membiarkan 404 mengendap krn 'SEO impact kecil' — biaya bukan ranking tapi crawl equity + trust pembaca; patch berulang manual tanpa gate (sudah 3x minor berulang — QA benar menandai); redirect massal 301 utk menyembunyikan bug generator (menutup akar masalah AC5). SUMBER: developers.google.com/search/docs/crawling-indexing (duplicate/crawl budget doc); similarweb.com blog 404-not-found (crawl budget); hostinger.com tutorial fix-404 (link equity); pantra.io/issues/broken-internal-links; tangence.in internal-linking-mistakes. BUKTI: KUAT utk diagnosis & tindakan (konsensus multi-sumber); KUAT via bukti internal juga (curl 404 vs 200 terverifikasi 12 Okt)."
+   "research_brief": "RESEARCH BRIEF (Researcher 13 Okt 2026) — VERDICT: BUILD. Alasan: broken internal links = clean-up standar dengan konsensus industry kuat — membuang crawl budget, memutus link equity, dan sinyal pemeliharaan buruk; fix-nya low-risk (backfill 16 link + publish gate), bukan eksperimen. Konteks penting: 126 artikel published dgn 16 link 404 (3,1% dari 524 link) dan 4 artikel affected — dampak ranking individual kecil, tapi ini kerusakan berulang (kambuh ke-3) → gate publish (AC3) = bagian paling berharga, bukan cuma backfill. Best practice: (1) prioritas fix internal 404 di halaman ber-authority (artikel edu dgn traffic) — sudah tepat; (2) publish-gate 2 arah: validasi prefix /akademi/ utk slug edu + verifikasi target resolve 200 (hardcoded prefix saja bisa tertukar slug); (3) sertakan regression parity (AC4) agar patch SQL tidak menyentuh artikel lain; (4) monitor kambuh via cron scan bulanan md-links (murah, mencegah repeat); (5) gunakan 301 hanya jika slug memang pindah permanen — di sini backfill langsung ke URL benar lebih tepat daripada redirect. Anti-pattern: membiarkan 404 mengendap krn 'SEO impact kecil' — biaya bukan ranking tapi crawl equity + trust pembaca; patch berulang manual tanpa gate (sudah 3x minor berulang — QA benar menandai); redirect massal 301 utk menyembunyikan bug generator (menutup akar masalah AC5). SUMBER: developers.google.com/search/docs/crawling-indexing (duplicate/crawl budget doc); similarweb.com blog 404-not-found (crawl budget); hostinger.com tutorial fix-404 (link equity); pantra.io/issues/broken-internal-links; tangence.in internal-linking-mistakes. BUKTI: KUAT utk diagnosis & tindakan (konsensus multi-sumber); KUAT via bukti internal juga (curl 404 vs 200 terverifikasi 12 Okt).",
+   "dispatched_at": "2026-10-16",
+   "queue_id": "prd-2026-10-16-03",
+   "scheduled_slot": "2026-10-17/18 SQL patch jalur QA + gate T-1017-4"
   },
   {
    "id": "idea-2026-10-13-1",
@@ -1137,7 +1147,9 @@
    "first_step": "ANALISIS DATA (no deploy): SQL read-only PageView 7 hari pasca-live (13-19 Okt) per-path landing fundamental vs baseline pre-live; GSC impressions/click per-URL kalau API siap; dwell pada CTA Tanya AI. Output = insight entry ini + rekomendasi scale/iterate/kill. DONE WHEN: tabel kontribusi views 7d per landing baru (min 3 baris) + keputusan scale/iterate/kill tertulis di insight.",
    "data_evidence": "Brief 13 Okt: traffic 924v 7d (+36% WoW dari 679); top-pages masih /stocks 380v; landing baru belum muncul di top-10 — wajar, umur <1 hari.",
    "research_note": "Riset nightly 13 Okt 21:3x (buffer-keeper): landing fundamental + CTA Tanya AI baru live <24 jam. Baseline 7d pre/full-week: total 1093 views; top paths /stocks 356, / 95, /saham-golden-cross 23; register 4 minggu terakhir = 1/3/3/1 (8 total, stagnan); /auth/signin hanya 10 views 7d. Sinyal baru terukur: referrer ai-search chatgpt.com 8 views 7d, SEMUA jatuh ke 2 halaman: /saham-golden-cross 4 + /stocks 4. Verifikasi dampak entry ini tetap menunggu jendela 7-hari penuh (19-20 Okt) — jangan dipromote sebelum baseline lengkap. Spin-off PRD terpisah: idea-2026-10-13-2 (ai-search visibility + CTA register di halaman AI-landing).",
-   "research_brief": "RESEARCH BRIEF (Researcher 13 Okt 2026) — VERDICT: BUILD (sebagai evaluasi terjadwal, bukan build baru). Alasan: item ini = verifikasi dampak fitur yang SUDAH live (landing fundamental af0706f + CTA Tanya AI a00e562) — prosedurnya benar (baseline 7d + decision gate scale/iterate/kill). Bukti eksternal: indeks halaman baru umumnya butuh beberapa hari s/d berminggu-minggu (John Mueller: 'several hours to several weeks'; konvensi SEO 30-60 hari utk halaman baru) — JANGAN menilai landing baru dari minggu-1 GSC saja; window eval minimal 2-4 minggu. Best practice utk CTO/evaluator: (1) pisahkan metrik indexation (GSC coverage/URL Inspection) dari metrik demand (impressions/clicks per-URL) — jangan campur dgn traffic situs-situs; (2) bandingkan page-level 7d vs 28d delta, bukan absolute minggu-1; (3) CTA Tanya AI ukur dwell+click event terpisah dari pageview; (4) guard bot-traffic di perbandingan (isBot=false). Anti-pattern: menilai kegagalan landing <7 hari umur (false kill); menarik kesimpulan +36% WoW sebagai kontribusi landing baru tanpa breakdown per-path. SUMBER: searchenginejournal.com/how-long-before-google-indexes-my-new-page/464309/; monsterinsights.com/google-index (kutipan Mueller); developers.google.com/search/docs (GSC performance doc). BUKTI: SEDANG — timeline indeks Google kuat terdokumentasi; dampak CTA AI di konten saham B2C tidak ada studi spesifik (putuskan dari data internal D+7 s/d D+28)."
+   "research_brief": "RESEARCH BRIEF (Researcher 13 Okt 2026) — VERDICT: BUILD (sebagai evaluasi terjadwal, bukan build baru). Alasan: item ini = verifikasi dampak fitur yang SUDAH live (landing fundamental af0706f + CTA Tanya AI a00e562) — prosedurnya benar (baseline 7d + decision gate scale/iterate/kill). Bukti eksternal: indeks halaman baru umumnya butuh beberapa hari s/d berminggu-minggu (John Mueller: 'several hours to several weeks'; konvensi SEO 30-60 hari utk halaman baru) — JANGAN menilai landing baru dari minggu-1 GSC saja; window eval minimal 2-4 minggu. Best practice utk CTO/evaluator: (1) pisahkan metrik indexation (GSC coverage/URL Inspection) dari metrik demand (impressions/clicks per-URL) — jangan campur dgn traffic situs-situs; (2) bandingkan page-level 7d vs 28d delta, bukan absolute minggu-1; (3) CTA Tanya AI ukur dwell+click event terpisah dari pageview; (4) guard bot-traffic di perbandingan (isBot=false). Anti-pattern: menilai kegagalan landing <7 hari umur (false kill); menarik kesimpulan +36% WoW sebagai kontribusi landing baru tanpa breakdown per-path. SUMBER: searchenginejournal.com/how-long-before-google-indexes-my-new-page/464309/; monsterinsights.com/google-index (kutipan Mueller); developers.google.com/search/docs (GSC performance doc). BUKTI: SEDANG — timeline indeks Google kuat terdokumentasi; dampak CTA AI di konten saham B2C tidak ada studi spesifik (putuskan dari data internal D+7 s/d D+28).",
+   "interim_verdict_d3": "WAIT — demand belum terukur karena discovery-path belum terpasang; fix wiring dulu (idea-2026-10-15-1), eval penuh 16-22 Okt",
+   "review_date": "2026-10-20"
   },
   {
    "id": "sec-2026-10-13-01",
@@ -1168,7 +1180,9 @@
    "target_files": [
     "infra lokal PC — bukan repo teknikalidnew"
    ],
-   "prd_id": null
+   "prd_id": null,
+   "research_brief": "RESEARCH BRIEF (Researcher 15 Okt 2026) — VERDICT: BUILD (sebagai evaluasi 1-run berbiaya-terkendali, bukan komit quarterly; kill/scale diputuskan dari evaluasi tertulis — sudah sesuai AC5 item). Alasan: README resmi vxcontrol/pentagi konfirmasi semua premis item: self-hosted Docker Compose, sandbox isolated, 20+ tools (nmap/metasploit/sqlmap), memory pgvector, GLM (z.ai) = provider native (cocok dgn plan owner), Ollama/vLLM utk mode lokal, assistant-guided mode ada, MIT + EULA acceptable-use (authorized testing only). Dokumentasi 'Current Capability Boundaries' resmi: BUKAN BAS/adversary-emulation — cocok dgn catatan review pihak-3. Trade-off terdokumentasi: mode planner/mentor = token 2-3x + waktu 2-3x (kualitas +2x) → wajib budget cap. Konsensus industri (Reflectiz, Simbian, Netragard, Matproof 2026): pentest AI/agentic = COMPLEMENT bukan pengganti pentest manual; FP butuh triage manusia; business-logic flaw butuh manusia. Best practice: (1) run pertama = STAGING only + scope whitelist eksplisit di prompt flow (template examples/prompts/base_web_pentest.md sebagai baseline); (2) assistant-guided mode (bukan full-autonomous) utk run pertama; (3) budget cap token per-run (pakai angka 2-3x planner sebagai planning number; kalau biaya besar → Ollama lokal); (4) semua temuan WAJIB manual triage benar/FP — report = input, bukan kesimpulan; (5) jalankan di luar jam market 09:00-16:15 (sudah ada di risk) + PC 3090/Ollama utk tau-tau air-gap. Anti-pattern: memperlakukan report otomatis sebagai final (FP rate alat AI pentest tinggi), full-autonomous tanpa monitoring lawan aset hidup, dan scope melenceng ke aset non-milik (DANA = dilarang mutlak, sudah di AC). Sumber: github.com/vxcontrol/pentagi (README+EULA, dicek 15 Okt), reflectiz.com/blog/pentesting-evolution-manual-agentic, simbian.ai/learning-center/ai-pentest, netragard.com/blog/manual-vs-automated-pentesting. BUKTI: SEDANG — kapabilitas & batasan terverifikasi dari sumber primer; belum ada kasus publik terverifikasi PentAGI menghasilkan temuan valid pada web app kecil — itu tepatnya yang dijawab oleh evaluasi 1-run ini.",
+   "review_date": "2026-10-18"
   },
   {
    "id": "idea-2026-10-14-01",
@@ -1267,6 +1281,118 @@
    "approved_by": "owner",
    "approved_at": "2026-10-15T07:30+07:00",
    "decision_source": "owner-digest-2026-10-15:approve-semua"
+  },
+  {
+   "id": "idea-2026-10-15-1",
+   "date": "2026-10-15",
+   "priority": "P2",
+   "status": "dispatched",
+   "type": "feature",
+   "source": "Product Agent 15 Okt — interim survey idea-2026-10-13-1 (CEO mandate): 3 landing fundamental 0 views D+3, root cause orphan",
+   "title": "P2 GROWTH: Wiring internal-link 3 landing fundamental (orphan island) — masukkan ke signal-links (nav ticker) + saham-strategy-links (SEO anchor)",
+   "north_star": "GROWTH (traffic & register) — 3 pintu masuk query mapas (dividen 198/undervalued 219/value-growth 362 ticker di TV live) tersambung ke jalur discovery terbukti; CONSISTENCY — halaman baru muncul di nav yang sama seperti sibling sinyal",
+   "user_story": "Sebagai pengunjung halaman saham/sinyal, saya menemukan landing Saham Dividen/Undervalued/Value-Growth lewat navigasi yang sudah ada (SignalLinks di halaman ticker + strategy links) — sama seperti saya menemukan Golden Cross; dan sebagai crawler, halaman baru punya internal-link path untuk dinilai (bukan sitemap-saja).",
+   "acceptance_criteria": [
+    "AC1 NAV TICKER: src/components/stock/signal-links.tsx array berisi 3 entri baru (/saham-dividen 'Saham Dividen', /saham-undervalued 'Saham Undervalued', /saham-value-growth 'Saham Value Growth') — bukti: grep 3 href + tsc 0.",
+    "AC2 SEO ANCHOR: src/components/seo/saham-strategy-links.tsx array berisi 3 entri dengan title pola sibling ('Saham Dividen Hari Ini', 'Saham Undervalued Hari Ini', 'Saham Value Growth Hari Ini') — bukti: grep + live curl.",
+    "AC3 LIVE VERIFY: pasca-deploy curl -A Mozilla /stocks/BBCA.JK dan /saham-golden-cross memuat href 3 landing; masing-masing resolve 200.",
+    "AC4 TERTESTABLE DATA: D+7 pasca-wiring (window 16-22 Okt): PageView human ke 3 landing > 0 DAN >= 1 dengan referrer teknikal.id internal (bukti nav dipakai); bila masih 0 → verdict iterate (cek GSC indexation terpisah), bukan deploy tambahan.",
+    "AC5 NO-REGRESI: 10 entri link lama signal-links utuh; LCP halaman ticker tidak regresi >10% (array statis, tanpa fetch baru)."
+   ],
+   "data_evidence": {
+    "query_date": "2026-10-15 (SQL read-only teknikalidnew-db-1, non-bot)",
+    "zero_demand": "Views human ke 3 landing sejak live 12 Okt 17:00 WIB = 0; bot hanya 1 (saham-dividen, 14 Okt). Kontrol window sama: /stocks 79, / 27, /saham-golden-cross 5, /saham-oversold 2.",
+    "orphan_proof": "rg repo: 3 landing hanya dirujuk sitemap.ts + llms.txt + self-link antar-3-nya (page.tsx). TIDAK ADA di signal-links.tsx (10 link, render via /stocks + halaman ticker) maupun saham-strategy-links.tsx (SEO anchor) — dua jalur discovery halaman sinyal lama.",
+    "internal_link_works": "Referrer /saham-golden-cross 7d (8-15 Okt): 8/21 views dari https://teknikal.id/stocks + 1 dari berita listicle = 43% traffic halaman sinyal ter-trafik datang via internal-link, bukan sitemap.",
+    "grounding": "Konsensus SEO (Google Search Central + Mueller): sitemap hanya membuat URL diketahui; internal link = signal relevansi + jalur crawl — orphan (sitemap-saja) sulit dinilai/diranking."
+   },
+   "impact": 3,
+   "effort": 1,
+   "target_files": [
+    "src/components/stock/signal-links.tsx",
+    "src/components/seo/saham-strategy-links.tsx"
+   ],
+   "db_migrations": false,
+   "dependencies": [
+    "none"
+   ],
+   "risk": "low",
+   "estimate_tool_calls": 5,
+   "research_basis": "SQL read-only 15 Okt + rg repo @ HEAD 15 Okt + live curl 3 landing = 200",
+   "sec_review": "Tidak menyentuh auth/input/db/money — pure static href array. Dicek: (1) href konstanta statis, bukan user-supplied → no XSS/open-redirect; (2) tidak tambah route/middleware → no privilege surface; (3) canonical tiap landing sudah self → no duplicate-content confusion.",
+   "dispatched_at": "2026-10-16",
+   "queue_id": "prd-2026-10-16-02",
+   "scheduled_slot": "2026-10-17 build + kereta T-1017-2",
+   "research_brief": "RESEARCH BRIEF (Researcher 16 Okt 2026) — VERDICT: BUILD. Alasan: aturan 'halaman penting wajib reachable via internal link, sitemap saja tidak cukup' = konsensus resmi Google Search Central (Link best practices + SEO Starter Guide: discovery halaman utamanya via link), didukung dokumentasi Moz (internal link menyebarkan equity) & pola audit enterprise (halaman ranking = punya banyak link internal relevan). Bukti internal entry ini LEBIH KUAT dari internet: 43% traffic /saham-golden-cross via referrer internal /stocks. Effort 1, 2 array statis, AC5 no-regresi = risiko rendah, atribusi bersih. BEST PRACTICE: (1) anchor deskriptif ber-query konsisten sibling ('Saham Dividen Hari Ini') — anchor = sinyal relevansi; (2) link SSR/di HTML (array statis server component), bukan client-JS-only — crawler harus melihat; (3) jangan mencurah >10-15 link baru sekali jalan — 3 entri baru di 2 komponen aman; (4) jangan deploy perubahan nav/traffic lain di window D+7 agar atribusi AC4 bersih; (5) kalau D+7 masih 0 views: cek GSC indexation ('Discovered/Crawled - not indexed') dulu — masalah biasanya indexasi, bukan wiring; iterate via GSC, jangan tambah link lagi. ANTI-PATTERN: (a) halaman programmatic baru orphan-by-default (sitemap-only) — persis pola yang mau difix; (b) sekalian masukkan ke nav global sitewide → atribusi kacau + nav spam; (c) link nofollow/JS-only = tidak dihitung crawler. SUMBER: https://developers.google.com/search/docs/crawling-indexing/links-crawlable ; https://developers.google.com/search/docs/fundamentals/seo-starter-guide ; https://moz.com/learn/seo/internal-link. BUKTI: KUAT (dok resmi Google + data internal sendiri). CATATAN PRD: dependencies=[] (array kosong) membuat gate harian flag 'missing' — bila memang tanpa dependensi, isi string 'none' supaya tidak repeat flag; substansi 7 field PRD sudah lengkap → FDE-READY setelah itu."
+  },
+  {
+   "id": "sec-2026-10-15-01",
+   "status": "dispatched",
+   "source": "itsec-blue",
+   "exploitability": "rendah",
+   "title": "[BLUE] teknikal.id header X-Content-Type-Options: nosniff MISSING (hivepos.id punya; live-curl 15 Okt) — tambahkan di next.config headers/Caddy",
+   "data": {
+    "evidence": "curl -sI https://teknikal.id -> hanya x-frame-options DENY, tidak ada nosniff",
+    "probe": "2026-10-15 21:35 WIB"
+   },
+   "priority": "P2",
+   "dispatched_at": "2026-10-16",
+   "queue_id": "sec-2026-10-16-01",
+   "done_when": "curl -sI https://teknikal.id memuat X-Content-Type-Options: nosniff"
+  },
+  {
+   "id": "sec-2026-10-15-02",
+   "status": "rejected",
+   "source": "itsec-blue",
+   "exploitability": "rendah",
+   "title": "[BLUE] ARDAgent (macOS Remote Management) LISTEN *:3283 semua interface, uptime 35 hari — kalau ARD tidak dipakai, matikan (System Settings -> Sharing -> Remote Management)",
+   "data": {
+    "evidence": "lsof -nP -iTCP:3283 -> ARDAgent pid 1028 *:3283 (LISTEN), etime 35-07:04",
+    "scope": "host-wide (berlaku utk kedua org)"
+   },
+   "priority": "P3",
+   "ceo_verdict": "REJECT dari build queue 16 Okt: host-level Mac setting (System Settings → Sharing → Remote Management) = tindakan manual owner 1-klik, bukan task repo; dicatat sebagai owner checklist. Kalau ARD dipakai owner utk remote, abaikan."
+  },
+  {
+   "id": "sec-2026-10-15-03",
+   "status": "rejected",
+   "source": "itsec-red",
+   "exploitability": "rendah",
+   "title": "[RED][BERSIH] SEO canonical 308 indikator (31a94d9+47918b4): redirect target = data.tickerJK dari loadHistory server-side, BUKAN input user -> tidak ada open-redirect; diff 8ee3cb2/7e2e004/1b2fe6c UI+docs saja",
+   "data": {
+    "evidence": "git show: permanentRedirect(`/stocks/${data.tickerJK}/indikator`) — tickerJK dari DB lookup, param [ticker] hanya boolean check"
+   },
+   "priority": "P3",
+   "ceo_verdict": "CLOSE-CLEAN 16 Okt: redirect target = data.tickerJK dari DB lookup (bukan input user) — bukti git show, tidak ada open-redirect. No action."
+  },
+  {
+   "id": "idea-2026-10-16-1",
+   "date": "2026-10-16",
+   "priority": "P2",
+   "status": "idea",
+   "source": "CEO mandate 16 Okt (Researcher: INTAKE GAP — stok spec_ready 2 < target 8-12)",
+   "title": "PRODUCT MANDATE: refill pipeline spec_ready 8-12 — generate kandidat product dari data (user feedback, funnel anomaly, competitor gap)",
+   "north_star": "semua pilar — pipeline kereta 4-8 task/hari butuh stok; kualitas gate #1 (done_when wajib)",
+   "user_story": "Sebagai CEO, setiap pagi dispatch 2-4 entry butuh minimal 8 spec_ready solid agar kereta tidak kosong.",
+   "first_step": "ANALISIS DATA (no deploy): (1) audit funnel anomaly 30d — mana page high-views tanpa konversi/register; (2) kelompok user feedback/keluhan berulang (QA minor notes); (3) competitor gap quick-scan (fitur analisa gratisan lokal). Output: 3-5 kandidat entry backlog status idea → research_brief → spec_ready, masing-masing wajib done_when testable.",
+   "acceptance_criteria": [
+    "≥3 kandidat baru status spec_ready dgn research_brief + done_when dalam 2 sprint Product Agent (19 + 23 Okt)",
+    "0 kandidat tanpa done_when lolos gate"
+   ],
+   "DONE-WHEN": "backlog berisi ≥8 entry spec_ready (cek SQL/JSON count) tercatat di insight entry ini."
+  },
+  {
+   "id": "idea-2026-10-16-track1",
+   "date": "2026-10-16",
+   "priority": "P1",
+   "status": "dispatched",
+   "type": "feature",
+   "source": "roadmap-pro-2026-10-15 fase-1 trust assets (owner direction 15 Okt) — entry hilang saat drift backlog 16-17 Okt; direstore CTO 17 Okt dari spec kanonik di cto-queue prd-2026-10-16-01 (Product Agent nightly buffer-keeper 16 Okt 22:05, riset DB read-only + tree main@994af4f).",
+   "title": "P1 TRUST ASSET: /track-record — scoreboard akurasi sinyal autohitung dari DB (689 hari), komitmen 60-hari verifikasi",
+   "north_star": "TRUST — menutup 'kenapa harus percaya' sebelum monetisasi Pro; prasyarat gate fase-2 300-subscriber",
+   "queue_id": "prd-2026-10-16-01",
+   "dispatched_at": "2026-10-17",
+   "done_when": "staging :3100/track-record 200 + angka akurasi >=1 window + label 'data s/d <snapshot max>' + noindex; selftest window-return fixture N/N PASS; tsc 0; pasca-deploy curl prod sama."
   }
  ],
  "items": [
@@ -1299,6 +1425,126 @@
     }
    ],
    "not_now": "TIDAK build Pro sebelum gate fase 2 tercapai — hindari monetize-too-early."
+  },
+  {
+   "id": "idea-2026-10-16-1",
+   "date": "2026-10-16",
+   "type": "feature",
+   "priority": "P1",
+   "status": "spec_ready",
+   "source": "roadmap-pro-2026-10-15 fase-1 trust assets (owner direction 15 Okt)",
+   "north_star": "trust/consistency + growth traffic (north star #90) + fundament monetisasi fase-3",
+   "title": "P1 TRUST ASSET: /track-record — scoreboard akurasi brief & sinyal autohitung dari DB (689 hari), komitmen 60-hari verifikasi",
+   "hypothesis": "Roadmap Pro fase-1 gate: 'track-record page live + 60 hari brief tanpa miss'. Sinyal terjadwal (golden cross pagi, plan sore) vs realisasi close = backbone trust utk berani bayar; 689 hari histori StockIndicator+StockPrice cukup utk backfill jujur (bukan cherry-pick).",
+   "prd": {
+    "title": "/track-record — halaman track-record publik auto-computed (plan-vs-aktual + sinyal windows) dari StockIndicator/StockPrice",
+    "date": "2026-10-16",
+    "user_story": [
+     "Sebagai calon subscriber Pro, saya ingin melihat halaman /track-record berisi riwayat akurasi terhitung (mis 'golden cross 5 hari lalu: rata-rata +2,1%'), supaya saya punya dasar percaya sebelum bayar.",
+     "Sebagai visitor yang ragu pada klaim AI, saya ingin melihat metodologi + disclaimer + tanggal data, supaya saya bisa menilai apakah angka itu jujur."
+    ],
+    "acceptance_criteria": [
+     "AC1 LIVE SSR: curl -A Mozilla https://teknikal.id/track-record -> 200; HTML memuat angka akurasi non-kosong (>=1 window 5d/20d) + label 'data s/d <tanggal snapshot max>' (stale-guard konsisten standar site; snapshot 1d hari ini = 2026-10-16).",
+     "AC2 Deterministik & testable: unit test hitung window-return dari fixture (golden_cross @2026-10-01 -> close D+5 vs close D0) == angka render; superlatif WAJIB query ranking (qa-30-01), dilarang hitung sendiri di narasi.",
+     "AC3 Backfill jujur: render >=90 hari historis windows; windows tanpa data close D+N (NBD) = di-skip tampil 'n/a', tidak dihapus diam-diam.",
+     "AC4 Metodologi + disclaimer: section 'Cara menghitung' (sinyal hari-T, close T vs T+5/20 hari bisnis, tanpa survivorship-bias: SEMUA sinyal masuk, tak ada penghapusan) + disclaimer 'bukan rekomendasi jual beli'.",
+     "AC5 Index policy: /track-record noindex saat awal (konsisten /pasar noindex) — diindeks belakangan setelah QA verdict stabil.",
+     "AC6 Metric gate (4 minggu): views /track-record >=50 nobot/30d ATAU >=3 register-attributed views (referer /track-record -> /auth/register). Gagal -> iterasi copy/placement, bukan hapus halaman."
+    ],
+    "data_evidence": {
+     "query_date": "2026-10-16 22:0x WIB (DB teknikalidnew-db-1, read-only)",
+     "histori": "StockIndicator interval=1d: 516.331 rows, 689 hari unik, max 2026-10-16",
+     "konteks_traffic": "/stocks 283v/7d halaman terpopuler; organic 90v/7d naik dari 10-14v/mgg survey 5 Okt",
+     "roadmap": "items roadmap-pro-2026-10-15 fase-1 gate: track-record live + 60 hari brief tanpa miss",
+     "infra_existing": "Stock/StockPrice/StockIndicator + signalScore/signalLabel; brief harian pipeline existing (gen_daily_brief); tidak ada tabel baru"
+    },
+    "impact": 4,
+    "impact_note": "Gate eksplisit roadmap Pro fase-1->2 milik owner. Trust asset = prasyarat 300-subscriber (fase-2) dan free->paid >=3% (fase-3). Tidak langsung register, tapi menutup 'kenapa harus percaya'.",
+    "effort": 3,
+    "effort_note": "Query aggregate + 1 halaman SSR + unit test; tanpa tabel/migrasi baru (reStockIndicator/StockPrice penuh). Estimasi 1 slot CTO.",
+    "non_goals": [
+     "Premium tier/gating apapun (roadmap: tidak build Pro sebelum gate fase-2)",
+     "Backtest intraday / TekTrader integration",
+     "Angka akurasi 'AI narrative' (hanya sinyal deterministik DB)"
+    ],
+    "metadata_v2": {
+     "target_files": [
+      "src/app/(public)/track-record/page.tsx (baru)",
+      "src/lib/track-record.service.ts (baru)",
+      "src/lib/__tests__/track-record.test.ts (baru)"
+     ],
+     "db_migrations": false,
+     "dependencies": [],
+     "risk": "low",
+     "estimate_tool_calls": 22
+    },
+    "sec_review": "(1) Injection: read-only aggregate, param literal; tanpa input user. (2) Logic/stale-data: label 'data s/d' WAJIB (AC1) dari max(date) interval 1d. (3) Perf: aggregate 516k rows — pakai @@index([interval,date]) existing + cache ISR revalidate 1h; EXPLAIN sekali saat build. (4) XSS: angka+label via React auto-escape. (5) IDOR: n/a publik read-only.",
+    "build_note_for_cto": "Basis riset tree main@994af4f. Window-return D+5/D+20 hari-bisnis via StockPrice close; skip-window n/a. Superlatif = ranking query, bukan hitungan manual narasi.",
+    "gate": "spec_ready 16 Okt 22:05 WIB oleh Product Agent nightly (buffer-keeper). Dispatch engineering via prd_id=idea-2026-10-16-1 SETELAH CEO ritual pagi."
+   },
+   "prd_id": "idea-2026-10-16-1",
+   "research_note": "CHECKPOINT PA nightly 16 Okt 22:0x WIB: tree DEPLOYED = teknikalidnew main@994af4f (git log 16 Okt; /pasar live pagi ini commit 6528d86). Data DB read-only (teknikalidnew-db-1): ind_1d max=2026-10-16, 516.331 rows interval=1d, 689 hari histori; brief-pasar 7d=5/6 slot; reg 30d=9 User; returning IP 7d=6; /pasar since-live=4 views/1 IP (baseline); waitlist=0 (grep schema+src: tidak ada model/halaman); KPI 7d: /stocks 283v, organic 90v, ai-search 3v."
+  },
+  {
+   "id": "idea-2026-10-16-2",
+   "date": "2026-10-16",
+   "type": "feature",
+   "priority": "P1",
+   "status": "spec_ready",
+   "source": "roadmap-pro-2026-10-15 fase-2 waitlist (owner direction 15 Okt) + PRD pasar-live premium_path",
+   "north_star": "growth register/lead + monetisasi fase-3 pipeline (owner mandate)",
+   "title": "P1 LEAD ENGINE: Brief 06:30 digest WA/email GRATIS — waitlist landing + capture nomor via WA deep-link (existing gateway, no-install)",
+   "hypothesis": "Roadmap fase-2: 'WA/email digest GRATIS Brief Pasar 06:30 = trust+lead engine; CTA di 40 artikel/hari'. Diferensiasi owner: WA no-install + independen cross-broker. Infra WA-gateway & push koran sudah ada; yang belum ada hanyalah capture (waitlist=0 di codebase).",
+   "prd": {
+    "title": "Waitlist 'Brief Pasar 06:30' — landing + capture nomor WA/email via deep-link gateway existing",
+    "date": "2026-10-16",
+    "user_story": [
+     "Sebagai pembaca artikel harian (40/hari pipeline), saya ingin mendaftar 1-klik via WA (klik -> chat terbuka, nomor terisi) supaya tiap pagi dapat brief tanpa install aplikasi.",
+     "Sebagai calon subscriber Pro, saya ingin tahu posisi antrean waitlist (mis '#37 dari 300'), supaya saya ikut mendorong target 300 tercapai."
+    ],
+    "acceptance_criteria": [
+     "AC1 LIVE landing /waitlist: curl anon -> 200; form email validasi server + tombol 'Daftar via WhatsApp' = deep-link wa.me gateway existing dengan text prefilled.",
+     "AC2 Data reliable: setiap submit tercatat row WaitlistSubscriber {id, channel enum(wa|email), value (hashed utk wa? plain email), source, createdAt}; duplikat = 409 + pesan jelas (pola register UX idea-2026-09-26-2).",
+     "AC3 CTA placement: module CTA waitlist render di footer Artikel/brief templates (SSR guest-visible, tanpa gating konten).",
+     "AC4 Sekuriti input publik: rate-limit burst (pola /api/public/engagement 65/min/IP->429), validasi enum+length cap, hash/normalisasi nomor WA (bukan PII plain bila bisa), honeypot anti-bot.",
+     "AC5 Counter transparan: halaman menampilkan jumlah subscriber live (SELECT count; superlatif = query, bukan angka narasi).",
+     "AC6 Metric gate (4 minggu): >=100 subscriber waitlist/30d menuju target 300 (gate fase-3); monitor: duplikat-rate <20%."
+    ],
+    "wait_no_build": "TIDAK mengirim digest otomatis pada fase ini — hanya capture. Pengiriman = fase-2b setelah waitlist >=100 & owner approve isi template (PRD pasar-live premium_path konsisten).",
+    "data_evidence": {
+     "query_date": "2026-10-16 22:0x WIB (read-only)",
+     "infra_existing": "WA gateway teknikal (teknikalid_channel_post.py + bot token) sudah ada & terpakai channel; pasar_live_push.py siap (dry-run OFF menunggu owner); model Waitlist TIDAK ada di schema.prisma (grep waitlist=0 hasil)",
+     "konteks_demand": "40 artikel/hari + 5 brief terbit 7d terakhir; traffic 7d 825v (internal 483, direct 249, organic 90, ai-search 3); reg 30d=9 User",
+     "roadmap": "fase-2 gate >=300 subscriber aktif (buka WA) -> Pro launch Q1'27"
+    },
+    "impact": 4,
+    "impact_note": "Membuka jalur lead terukur menuju gate 300-subscriber fase-2->3 (owner mandate). Menangkap intent dari 825v/7d traffic yang kini mati tanpa capture.",
+    "effort": 2,
+    "effort_note": "Landing + model + endpoint + CTA module; WA deep-link reuse gateway existing. Estimasi 1 slot CTO.",
+    "non_goals": [
+     "Pengiriman digest otomatis (fase-2b, PRD terpisah setelah waitlist >=100 + owner approve)",
+     "Payment/Pro tier apapun",
+     "Push WhatsApp via pasar_live_push.py ON (tetap menunggu owner approve terpisah)"
+    ],
+    "metadata_v2": {
+     "target_files": [
+      "src/app/(public)/waitlist/page.tsx (baru)",
+      "src/app/api/public/waitlist/route.ts (baru)",
+      "prisma/schema.prisma (+model WaitlistSubscriber, additive)",
+      "src/components/waitlist-cta.tsx (baru)"
+     ],
+     "db_migrations": true,
+     "dependencies": [],
+     "risk": "med",
+     "risk_note": "Input publik PII (nomor WA/email) — mitigasi AC4 (rate-limit, validasi, hash bila memungkinkan, honeypot); pola endpoint publik sudah preseden /api/public/engagement.",
+     "estimate_tool_calls": 26
+    },
+    "sec_review": "(1) Input publik PII: validasi strict (E.164 utk WA, email regex), length cap, rate-limit 65/min/IP, honeypot; simpan hash nomor bila flow tidak butuh plain. (2) Injection: zod/prisma parameterized. (3) Enumeration: 409 generik-dengan-pesan (preseden 409 register); jangan expose daftar subscriber. (4) Perf: counter via cache 5m. (5) Migrasi additive-only.",
+    "build_note_for_cto": "Basis riset tree main@994af4f. CTA module jangan gate konten (verdict CEO 17 Sep no-gating). Counter = live query + cache.",
+    "gate": "spec_ready 16 Okt 22:05 WIB oleh Product Agent nightly (buffer-keeper). Dispatch via prd_id=idea-2026-10-16-2 SETELAH CEO ritual pagi."
+   },
+   "prd_id": "idea-2026-10-16-2",
+   "research_note": "CHECKPOINT PA nightly 16 Okt 22:0x WIB: tree DEPLOYED = teknikalidnew main@994af4f (git log 16 Okt; /pasar live pagi ini commit 6528d86). Data DB read-only (teknikalidnew-db-1): ind_1d max=2026-10-16, 516.331 rows interval=1d, 689 hari histori; brief-pasar 7d=5/6 slot; reg 30d=9 User; returning IP 7d=6; /pasar since-live=4 views/1 IP (baseline); waitlist=0 (grep schema+src: tidak ada model/halaman); KPI 7d: /stocks 283v, organic 90v, ai-search 3v."
   }
  ]
 }
