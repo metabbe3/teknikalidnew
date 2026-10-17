@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { formatPercentPlain } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
@@ -54,7 +55,7 @@ export function Header() {
               <span data-live-price="^JKSE" className="font-mono font-semibold text-text-primary tabular-nums">{ihsg.close.toLocaleString("id-ID", { minimumFractionDigits: 2 })}</span>
               {ihsg.changePercent !== null && (
                 <span data-live-percent="^JKSE" className={`font-mono font-bold tabular-nums ${ihsg.changePercent >= 0 ? "text-bullish" : "text-bearish"}`}>
-                  {ihsg.changePercent >= 0 ? "+" : ""}{ihsg.changePercent.toFixed(2)}%
+                  {ihsg.changePercent >= 0 ? "+" : "-"}{formatPercentPlain(ihsg.changePercent)}%
                 </span>
               )}
               {ihsg?.date && (() => {
@@ -76,7 +77,7 @@ export function Header() {
               <span className="text-text-secondary font-medium">IHSG</span>
               {ihsg.changePercent !== null && (
                 <span data-live-percent="^JKSE" className={`font-mono font-bold tabular-nums ${ihsg.changePercent >= 0 ? "text-bullish" : "text-bearish"}`}>
-                  {ihsg.changePercent >= 0 ? "+" : ""}{ihsg.changePercent.toFixed(2)}%
+                  {ihsg.changePercent >= 0 ? "+" : "-"}{formatPercentPlain(ihsg.changePercent)}%
                 </span>
               )}
               {ihsg?.date && (() => {

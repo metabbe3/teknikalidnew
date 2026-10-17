@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { stripJk, changeColor } from "@/lib/utils";
+import { stripJk, changeColor, formatPercentPlain } from "@/lib/utils";
 
 interface TickerItem {
   ticker: string;
@@ -27,7 +27,7 @@ export function TickerTape({ items }: { items: TickerItem[] }) {
             {s.changePercent !== null && (
               <span className={changeColor(s.changePercent)}>
                 {s.changePercent >= 0 ? "+" : ""}
-                {s.changePercent.toFixed(2)}%
+                {formatPercentPlain(s.changePercent)}%
               </span>
             )}
           </Link>
@@ -46,7 +46,7 @@ export function TickerTape({ items }: { items: TickerItem[] }) {
             {s.changePercent !== null && (
               <span className={changeColor(s.changePercent)}>
                 {s.changePercent >= 0 ? "+" : ""}
-                {s.changePercent.toFixed(2)}%
+                {formatPercentPlain(s.changePercent)}%
               </span>
             )}
           </Link>

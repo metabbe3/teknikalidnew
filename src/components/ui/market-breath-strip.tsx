@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatPercentPlain } from "@/lib/utils";
 import { stripJk, formatPrice } from "@/lib/utils";
 
 export interface BreathData {
@@ -28,7 +28,7 @@ export function MarketBreathStrip({ data, className }: { data: BreathData; class
           <span data-live-price="^JKSE" className="font-bold tabular-nums text-text-primary">{formatPrice(ihsg.close)}</span>
           {ihsg.changePercent !== null && (
             <span data-live-percent="^JKSE" className={cn("font-semibold tabular-nums", ihsg.changePercent >= 0 ? "text-bullish" : "text-bearish")}>
-              {ihsg.changePercent >= 0 ? "+" : ""}{ihsg.changePercent.toFixed(2)}%
+              {ihsg.changePercent >= 0 ? "+" : "-"}{formatPercentPlain(ihsg.changePercent)}%
             </span>
           )}
         </span>
@@ -53,7 +53,7 @@ export function MarketBreathStrip({ data, className }: { data: BreathData; class
         >
           Top Gainer
           <span className="font-mono font-bold text-bullish">{stripJk(topGainer.ticker)}</span>
-          <span className="font-mono text-bullish">+{topGainer.changePercent.toFixed(2)}%</span>
+          <span className="font-mono text-bullish">+{formatPercentPlain(topGainer.changePercent)}%</span>
         </Link>
       )}
       {topLoser && (
@@ -63,7 +63,7 @@ export function MarketBreathStrip({ data, className }: { data: BreathData; class
         >
           Top Loser
           <span className="font-mono font-bold text-bearish">{stripJk(topLoser.ticker)}</span>
-          <span className="font-mono text-bearish">{topLoser.changePercent.toFixed(2)}%</span>
+          <span className="font-mono text-bearish">-{formatPercentPlain(topLoser.changePercent)}%</span>
         </Link>
       )}
     </div>

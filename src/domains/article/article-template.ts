@@ -199,9 +199,10 @@ function signalLabelToId(label: string | null): string {
 
 function formatVolumeHuman(vol: number | null): string {
   if (vol === null) return "N/A";
-  if (vol >= 1e9) return `${(vol / 1e9).toFixed(1)} miliar saham`;
-  if (vol >= 1e6) return `${(vol / 1e6).toFixed(1)} juta saham`;
-  if (vol >= 1e3) return `${(vol / 1e3).toFixed(1)} ribu saham`;
+  const id = (n: number) => n.toFixed(1).replace(".", ",");
+  if (vol >= 1e9) return `${id(vol / 1e9)} miliar saham`;
+  if (vol >= 1e6) return `${id(vol / 1e6)} juta saham`;
+  if (vol >= 1e3) return `${id(vol / 1e3)} ribu saham`;
   return `${vol} saham`;
 }
 

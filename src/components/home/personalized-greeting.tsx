@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { formatPercentPlain } from "@/lib/utils";
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -67,7 +68,7 @@ export function PersonalizedGreeting({
             </span>
             {ihsg?.changePercent !== null && ihsg?.changePercent !== undefined && (
               <span data-live-percent="^JKSE" className={`ml-1 font-mono font-semibold tabular-nums ${ihsg.changePercent >= 0 ? "text-bullish" : "text-bearish"}`}>
-                {ihsg.changePercent >= 0 ? "+" : ""}{ihsg.changePercent.toFixed(2)}%
+                {ihsg.changePercent >= 0 ? "+" : "-"}{formatPercentPlain(ihsg.changePercent)}%
               </span>
             )}
           </span>
@@ -75,14 +76,14 @@ export function PersonalizedGreeting({
             <span className="text-text-secondary">
               Top Gainer{" "}
               <span className="font-mono font-semibold text-text-primary">{topGainer.ticker.replace(".JK", "")}</span>{" "}
-              <span className="font-mono font-semibold text-bullish">+{topGainer.changePercent.toFixed(2)}%</span>
+              <span className="font-mono font-semibold text-bullish">+{formatPercentPlain(topGainer.changePercent)}%</span>
             </span>
           )}
           {topLoser && (
             <span className="text-text-secondary">
               Top Loser{" "}
               <span className="font-mono font-semibold text-text-primary">{topLoser.ticker.replace(".JK", "")}</span>{" "}
-              <span className="font-mono font-semibold text-bearish">{topLoser.changePercent.toFixed(2)}%</span>
+              <span className="font-mono font-semibold text-bearish">-{formatPercentPlain(topLoser.changePercent)}%</span>
             </span>
           )}
           <span className="text-text-secondary">

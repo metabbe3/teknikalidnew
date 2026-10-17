@@ -40,22 +40,34 @@ export function formatPercent(value: number): string {
 
 export function formatVolume(value: number): string {
   if (!Number.isFinite(value) || value === 0) return "0";
-  if (value >= 1e9) return `${trimDecimal(value / 1e9)}B`;
-  if (value >= 1e6) return `${trimDecimal(value / 1e6)}M`;
-  if (value >= 1e3) return `${trimDecimal(value / 1e3)}K`;
-  return Math.round(value).toString();
+  if (value >= 1e9) return `${trimDecimalId(value / 1e9)} M`;
+  if (value >= 1e6) return `${trimDecimalId(value / 1e6)} jt`;
+  if (value >= 1e3) return `${trimDecimalId(value / 1e3)} rb`;
+  return priceFormatter.format(Math.round(value));
+}
+
+// ── Trust: formatter % TANPA tanda (utk tempat yg prefix +/- manual) ──
+// id-ID (koma desimal) supaya konsisten dgn formatPercent — jangan toFixed (titik).
+export function formatPercentPlain(value: number): string {
+  if (!Number.isFinite(value)) return "0,00";
+  return percentFormatter.format(Math.abs(value)).replace("+", "");
+}
+
+function trimDecimalId(n: number): string {
+  return n
+    .toFixed(2)
+    .replace(/0+$/, "")
+    .replace(/\.$/, "")
+    .replace(".", ",");
 }
 
 export function formatMarketCap(v: number): string {
-  if (v >= 1e12) return `${trimDecimal(v / 1e12)}T`;
-  if (v >= 1e9) return `${trimDecimal(v / 1e9)}B`;
-  if (v >= 1e6) return `${trimDecimal(v / 1e6)}M`;
+  if (v >= 1e12) return `${trimDecimalId(v / 1e12)} T`;
+  if (v >= 1e9) return `${trimDecimalId(v / 1e9)} M`;
+  if (v >= 1e6) return `${trimDecimalId(v / 1e6)} jt`;
   return v.toLocaleString("id-ID");
 }
 
-function trimDecimal(n: number): string {
-  return n.toFixed(2).replace(/\.?0+$/, "");
-}
 
 export function toDateKey(d: Date): string {
   const yyyy = d.getUTCFullYear();

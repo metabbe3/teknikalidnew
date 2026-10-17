@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
+import { formatPercentPlain, formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { HealthScoreBadge } from "@/components/stock/health-score-badge";
 import { Sparkline } from "@/components/stock/sparkline";
 import { StockAiModal } from "@/components/stock/stock-ai-modal";
@@ -44,7 +44,7 @@ export function StockCard({ ticker, name, sector, close, change, changePercent, 
       href={`/stocks/${ticker}`}
       prefetch={false}
       className={`block rounded-xl ${bgTint} depth-shadow p-4 hover:depth-shadow-hover transition-all duration-200 press-scale ${colorAccent}`}
-      aria-label={`${stripJk(ticker)} — ${name}, ${close !== null ? formatPrice(close) : "no price"}${changePercent !== null ? `, ${changePercent >= 0 ? "+" : ""}${changePercent.toFixed(2)}%` : ""}`}
+      aria-label={`${stripJk(ticker)} — ${name}, ${close !== null ? formatPrice(close) : "no price"}${changePercent !== null ? `, ${changePercent >= 0 ? "+" : "-"}${formatPercentPlain(changePercent)}%` : ""}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">

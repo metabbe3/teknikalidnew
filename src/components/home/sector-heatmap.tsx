@@ -1,4 +1,5 @@
 import { SectionHeading } from "@/components/ui/section-heading";
+import { formatPercentPlain } from "@/lib/utils";
 
 interface SectorData {
   avgChange: number;
@@ -47,7 +48,7 @@ export function SectorHeatmap({ sectors }: { sectors: Record<string, SectorData>
                 }`}
               >
                 {isPositive ? "+" : ""}
-                {avgChange.toFixed(2)}%
+                {formatPercentPlain(avgChange)}%
               </p>
               <p className="text-[10px] text-text-tertiary mt-1">{count} saham</p>
             </div>

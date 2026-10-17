@@ -3,7 +3,7 @@ import { ArrowUpRight, AlertTriangle } from "lucide-react";
 import { MiniSparkline } from "@/components/chart/mini-sparkline";
 import { HealthScoreBadge } from "@/components/stock/health-score-badge";
 import { KeyStatistics } from "@/components/stock/key-statistics";
-import { formatPrice, stripJk } from "@/lib/utils";
+import { formatPercentPlain, formatPrice, stripJk } from "@/lib/utils";
 
 /**
  * SnapshotBriefing — the data dashboard rendered above the analysis prose on
@@ -109,7 +109,7 @@ export function SnapshotBriefing({ data }: { data: SnapshotBriefingData }) {
                 {changePercent !== null && (
                   <span className={`flex items-center gap-1 font-mono text-sm font-semibold tabular-nums ${changeColor}`}>
                         <span aria-hidden>{up ? "▲" : "▼"}</span>
-                    {up ? "+" : ""}{changePercent.toFixed(2)}%
+                    {up ? "+" : "-"}{formatPercentPlain(changePercent)}%
                     {change !== null && (
                       <span className="hidden sm:inline opacity-70">({up ? "+" : ""}{change.toFixed(0)})</span>
                     )}

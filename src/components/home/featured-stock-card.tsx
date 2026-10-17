@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
+import { formatPercentPlain, formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { MiniSparkline } from "@/components/chart/mini-sparkline";
 
 type BadgeTone = "bullish" | "bearish" | "neutral";
@@ -46,7 +46,7 @@ export function FeaturedStockCard({
       href={`/stocks/${ticker}`}
       className="featured-stock-card p-4 pl-5 block"
       style={{ "--card-accent": accentVar } as React.CSSProperties}
-      aria-label={`${stripJk(ticker)} — ${name}, ${close !== null ? formatPrice(close) : "no price"}${changePercent !== null ? `, ${changePercent >= 0 ? "+" : ""}${changePercent.toFixed(2)}%` : ""}`}
+      aria-label={`${stripJk(ticker)} — ${name}, ${close !== null ? formatPrice(close) : "no price"}${changePercent !== null ? `, ${changePercent >= 0 ? "+" : "-"}${formatPercentPlain(changePercent)}%` : ""}`}
     >
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="min-w-0">

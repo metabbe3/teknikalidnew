@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { MiniSparkline } from "@/components/chart/mini-sparkline";
-import { formatPrice, stripJk, signalToHealthScore, healthScoreMeta } from "@/lib/utils";
+import { formatPercentPlain, formatPrice, stripJk, signalToHealthScore, healthScoreMeta } from "@/lib/utils";
 
 /**
  * SnapshotCard — a "Saham Hari Ini" signal tile.
@@ -46,7 +46,7 @@ export function SnapshotCard({
   const score = signalToHealthScore(signalScore);
   const meta = score !== null ? healthScoreMeta(score) : null;
   const rsi = rsiTone(rsi14);
-  const chgPct = changePercent !== null ? `${up ? "+" : ""}${changePercent.toFixed(2)}%` : null;
+  const chgPct = changePercent !== null ? `${up ? "+" : "-"}${formatPercentPlain(changePercent)}%` : null;
 
   return (
     <Link

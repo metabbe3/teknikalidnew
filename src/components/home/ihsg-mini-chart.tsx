@@ -1,4 +1,5 @@
 import { decimalToNumber } from "@/lib/serialize";
+import { formatPercentPlain } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
 import { MiniSparkline } from "@/components/chart/mini-sparkline";
 
@@ -78,7 +79,7 @@ export async function IhsgMiniChart() {
             style={{ color }}
           >
             {isPositive ? "+" : ""}
-            {changePercent.toFixed(2)}%
+            {formatPercentPlain(changePercent)}%
           </p>
         )}
       </div>
