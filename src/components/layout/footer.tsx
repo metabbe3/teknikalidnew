@@ -11,6 +11,8 @@ const footerLinks = [
   { href: "/compare", label: "Bandingkan Saham" },
   { href: "/paper-trading", label: "Latihan Trading" },
   { href: "/laporan-pasar", label: "Laporan Pasar Mingguan" },
+  { href: "/pasar", label: "Koran Pasar Live" },
+  { href: "/track-record", label: "Track Record" },
 ];
 
 const legalLinks = [

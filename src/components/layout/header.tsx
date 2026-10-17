@@ -21,6 +21,11 @@ const navLinks = [
 
 // Tools demoted from main nav (low use: compare 2 views, paper-trading 13). Kept reachable.
 const toolLinks = [
+  { href: "/pasar", label: "Koran Pasar Live" },
+  { href: "/track-record", label: "Track Record" },
+  { href: "/trading-plan", label: "Trading Plan" },
+  { href: "/market-structure", label: "Market Structure" },
+  { href: "/bottom-fishing", label: "Bottom Fishing" },
   { href: "/compare", label: "Bandingkan Saham" },
   { href: "/paper-trading", label: "Latihan Trading" },
 ];
@@ -220,6 +225,23 @@ export function Header() {
           {session?.user ? (
             <>
               <Link
+                href={`/profile/${session.user.username}`}
+                onClick={() => setMenuOpen(false)}
+                className="block py-2.5 px-3 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
+              >
+Tools
+              </Link>
+          {toolLinks.map((t) => (
+            <Link
+              key={t.href}
+              href={t.href}
+              onClick={() => setMenuOpen(false)}
+              className="block py-2.5 px-3 pl-6 rounded-lg text-sm text-text-tertiary hover:text-text-primary hover:bg-bg-hover transition-colors"
+            >
+              {t.label}
+            </Link>
+          ))}
+          <Link
                 href={`/profile/${session.user.username}`}
                 onClick={() => setMenuOpen(false)}
                 className="block py-2.5 px-3 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
