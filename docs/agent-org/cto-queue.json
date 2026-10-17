@@ -48,7 +48,7 @@
    "created_at": "2026-10-17T22:10+07:00",
    "branch": "night/prd-2026-10-17-01",
    "north_star": "GROWTH (konversi visitor→subscriber) + TRUST (counter live jujur, WA hashed)",
-   "verify_evidence": "NIGHT 17 Okt 23:2x: tsc --noEmit exit 0; node:test 11/11 baru (sanitizeWaitlistSource AC2 x6, normalizeWa AC1 x5) + full suite 105/105 hijau; sdlc_lint 0 error (5 file). Commits: test failing-first + fix. Branch night/prd-2026-10-17-01 dari origin/main@3e7f1eb. Tak ada migrasi (kolom source sudah ada). POST live belum dites (DB read-only malam) — CTO pagi: review+merge+deploy lalu curl POST smoke utm_source=test + SQL count source='test'.",
+   "verify_evidence": "NIGHT 17 Okt 23:3x. Commits (urutan failing-first): f4a1521 test-gagal-dulu → b29bdd3 fix → f597079 docs-queue. tsc --noEmit exit 0; node:test baru 11/11 + full suite 105/105; sdlc_lint 0 error (5 file). Rate-limit 10/60s + duplicate-409 SUDAH ada di route (line 9/31/71) — anti-spam ter-cover. CATATAN (verifier kirim-dengan-catatan conf 55): POST live belum pernah dieksekusi nyata (DB read-only malam) — CTO pagi: review+merge+deploy lalu smoke POST utm_source=test + SQL count source='test'; dup-submit email sama harus 409 duplicate.",
    "estimate_review_min": 15,
    "result": "night_ready — siap review CTO pagi 07:30"
   },
