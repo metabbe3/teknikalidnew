@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { IDX_STOCKS } from "@/lib/constants";
 
 interface Props {
@@ -19,6 +19,7 @@ interface Props {
  */
 export function TradingPlanPicker({ selected, onChange, maxStocks = 6 }: Props) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -45,9 +46,11 @@ export function TradingPlanPicker({ selected, onChange, maxStocks = 6 }: Props) 
     (next: string[]) => {
       if (onChange) { onChange(next); return; }
       const qs = next.map((t) => `t=${encodeURIComponent(t.replace(/\.JK$/, ""))}`).join("&");
-      router.push(qs ? `/trading-plan?${qs}` : "/trading-plan", { scroll: false });
+      const f = searchParams.get("f");
+      const tail = f ? `&f=${encodeURIComponent(f)}` : "";
+      router.push(qs ? `/trading-plan?${qs}${tail}` : "/trading-plan", { scroll: false });
     },
-    [onChange, router],
+    [onChange, router, searchParams],
   );
 
   const add = (ticker: string) => {
