@@ -783,3 +783,144 @@ research_brief sudah ditulis ke field `research_brief` product-backlog.json (3 e
 - Isu: dispatch CEO 16 Okt (4 task: sec-nosniff, wiring-3-landing, backfill-404, kereta-T-1017-retention) HILANG dari cto-queue saat restore 65b5cd4 — gap baru ketahuan CTO sweep 17 Okt. 2 direstor hari ini (sec-2026-10-17-01, ux-2026-10-17-01); backfill-404 tetap di backlog dispatched.
 - Opsi A: pakai write-file utk agent-org JSON (atomic) — B: editor inline (rapuh). Rekomendasi A + aturan: setelah RESTORE queue, diff vs bak pra-restore WAJIB.
 - RETENTION TRIO masih zombie: prd-10-02-02 (Welcome Loop) terbukti LIVE di bundle prod; prd-10-01-01 (utm) live via deploy 7 Okt; prd-10-03-02 (Saved Screen) resolved already-shipped — TAPI returning IP 3,4% < baseline 3,8% dan register_7d 3 < floor 6. Fitur ada, pengguna belum kembali → masalahnya distribusi/kesadaran, bukan fitur. Kereta T-1017 fokus bug-01 + nosniff; kasus trio = bahan evaluasi CEO Senin (checkpoint 23 Okt).
+
+## [RESEARCHER] 2026-10-17
+- idea-2026-10-16-1 (mandate refill spec_ready): VERDICT BUILD-AFTER-PRD — pola refill dari data+feedback = best practice industry (Torres continuous discovery, Cagan discovery anti-patterns, kanban WIP/refinement). BUKTI: KUAT utk pola umum; angka 8-12 = keputusan internal (konsumsi kereta 4-8/hari), bukan dari riset internet. research_brief sudah ditulis ke field entry (atomic, backup .bak-20261017-researcher).
+- TEMUAN INTAKE (17 Okt pagi): cto-queue.json live KOSONG (0 task) dan backlog spec_ready = 0/51 — stok jauh di bawah target 8-12. Angka "queue pending 4" di brief script tidak match live saat eksekusi (kemungkinan sudah diangkat kereta malam 16 Okt). Kandidat product-shaped baru tanpa research_brief: hanya idea-2026-10-16-1 itu sendiri (meta-mandate) — sudah dibrief hari ini.
+- FDE audit live (5 entry dicek ulang): sec-2026-10-13-01 FDE-READY (verdict BUILD); idea-2026-10-13-1 missing user_story/acceptance_criteria/target_files/effort/risk/dependencies; idea-2026-09-23-1 & ux-2026-10-10-02 (keduanya deferred) missing 7 field PRD; idea-2026-10-16-1 missing target_files/effort/risk/dependencies.
+- Rekomendasi prioritas CEO: eksekusi mandate idea-2026-10-16-1 hari ini juga — gap bukan sekadar "<8" tapi 0; Product Agent nightly perlu diarahkan menghasilkan >=8 kandidat dengan done_when dalam 2 sprint sesuai acceptance criteria entry.
+
+## 2026-10-17 08:15 — CEO pagi (ritual 0 pending; 0 dispatch baru — stok spec_ready 0; kereta T-1017-N 2 penumpang; nudge#1; 2 verdict defer)
+- 08:15 | RITUAL [PRODUCT]: 0 entry pending (owner/Product Agent). STANDING GUARD dipatuhi (IG pause 17 Sep, crypto by-design — 0 task fix). | grep ceo-decisions.md
+- 08:20 | METRIK: Returning IP 9.0% >= target 8% (baseline 3.8% 14 Okt) — north-star metric HIJAU lebih cepat dari jadwal (target 25 Nov); basis masih kecil (25 engaged IP), treat as early-signal bukan victory. Views 7d 836 vs 947 (-11.7%) — GSC reindex belum, flat=expected. Register 7d=3 (lemah). Data FRESH: EOD+indicators 16 Okt, watchdog TRUST green. | ceo_brief.py
+- 08:25 | DISPATCH HARI INI: 0 entry baru — stok spec_ready = 0 (FDE gate melarang dispatch dari idea mentah). BUKAN anti-loop: intake gap sudah punya mandate idea-2026-10-16-1 (refill 8-12, research_brief verdict BUILD-AFTER-PRD ada) — menunggu Product Agent Senin 10:15 lengkapi PRD. Kereta malam T-1017-N: bug-2026-10-16-01 (screener save login-path) + sec-2026-10-17-01 (nosniff) = 2 penumpang, CTO wajib cek MANIFEST bukti fisik pre-boarding. | cto-queue audit
+- 08:30 | NUDGE #1: idea-2026-10-12-3 (backfill 16 internal-link 404 edu) dispatched 5 hari tanpa output — nudge lane konten hari ini, eskalasi jika tetap kosong setelah nudge#2. | backlog audit
+- 08:35 | VERDICT idea-2026-10-13-1 (verify dampak landing fundamental + CTA): DEFER → review 20 Okt — wiring internal-link (ux-2026-10-17-01) baru naik kereta T-1018 Senin; verifikasi dampak baru bermakna pasca live. Pilar GROWTH+CONTENT.
+- 08:35 | VERDICT sec-2026-10-13-01 (evaluasi PentAGI self-hosted pentest): DEFER → review 24 Okt, tetap P3 — melayani TRUST tidak langsung, bukan prioritas vs polish UX north-star; cek lagi setelah wave STICKY jalan.
+- 08:40 | WARN PIPELINE: throughput target 4-8/hari tak terkejar awal pekan jika Senin pagi spec_ready masih 0 (kereta T-1018 baru 1 penumpang: ux-2026-10-17-01). Jika Senin 10:30 stok masih 0 pasca sesi Product Agent → eskalasi owner (intake bottleneck). | backlog audit
+- STATUS: ok — ritual tuntas, data fresh, north-star metric hijau, kereta malam terisi 2 penumpang; 0 dispatch by design (stok spec_ready 0, bukan crash).
+
+
+## 2026-10-17 09:0x WIB — REVIEWER QA pagi (sweep 44 artikel/24jm)
+- [REVIEWER] FATAL 4 klaim salah angka vs DB → task P1 **qa-2026-10-17-01** queue CTO: (1) brief 16 Okt "119 naik/592 turun" vs DB Kamis 593 turun; (2) rekap mingguan "11 saham naik" disalin ke Senin–Kamis (DB: 115/351/292/119); (3) superlatif "terbanyak sejak 8 Juni" vs DB 24 Jun 947 & 24 Jul 820 → benar "sejak 25 Juli"; (4) brief golden/death cross 15 Okt 0/0 vs DB 3/2 (FORU watchlist kontradiktif). 39 artikel saham: title price/pct/label 100% match DB. Live 4/4 200. Fix via queue, konten tidak disentuh langsung (read-only).
+- [REVIEWER] Verify kereta T-1017-N: bug-2026-10-16-01 + sec-nosniff slot kereta MALAM INI (scheduled_slot tertulis) → bukan utang deploy; verifikasi ulang pagi Senin (manifest + curl nosniff pasca-naik).
+- Pola berulang #3 salah-salin breadth antar-hari → lessons-learned.md ditulis: guard qa-27-01/qa-30-01 belum menutup jalur generator.
+
+## [OWNER-WEEKEND 17 Okt] Konten TRUST fix — 4 FATAL qa-2026-10-17-01
+- rekap-pasar-mingguan-2026-10-17: angka naik per hari diperbaiki (115/351/292/119/11 — sebelumnya "11" disalin ke semua hari); "terbanyak sejak 8 Juni" → "sejak 25 Juli 2026" (SQL 1 thn: 813 belum pecah rekor 24 Jul 820). LIVE verified.
+- brief-pasar-idx-2026-10-16: basis Kamis dikonfirmasi benar (962/593↓/119↑/250; GC 3/DC 2 — awalnya 0/0 salah). Koreksi pertama agent (pasang angka Jumat) SALAH — dibalik ke angka Kamis sesuai disclaimer basis artikel. LIVE verified.
+- Lesson: agent konten menulis breadth dari memori brief sebelumnya (copy-carry). Guard qa-27-01 (breadth wajib SQL hari-sama) menutup jalur ini — prioritas naik kereta.
+
+## [OWNER-WEEKEND 17 Okt ~13:00] TRUST-ONLY MODE (owner directive)
+- Weekend ini fokus TRUST: data akurat + pages cepat. SEMUA slot build/fitur teknikal PAUSED sampai trust hijau: weekend pagi 82003fb55db0, weekend siang2 e1473241c915, weekend sore a6e53a0ca214, pagi 0f2dc95e24af, malam 6cc47b7ca833.
+- Yang tetap jalan: watchdog, DB backup, CEO review (read-only), eod-sync.
+- 4 audit agent paralel dispatched (deleg_58396f24): data-integrity DB / akurasi angka semua pages vs DB+Pluang / UI-display bug / perf+caching. Laporan di ~/.hermes/data/teknikalid-growth/audit-*.md.
+- Setelah audit masuk: prioritas fix SEV1 (data salah) → SEV2 → deploy SATU kereta per hari verify per-fix. Caching/waiting-room boleh asal kebenaran data tidak dikorbankan.
+
+## [TRUST WEEKEND] Hasil audit batch-1 (17 Okt)
+AUDIT UI (audit-ui-display.md) — 11 temuan:
+- SEV1: (1) artikel brief 16 Okt render markdown mentah (\n 178x, |---| tabel, ## heading); (2) link mati /daftar 404 dari CTA stocks detail.
+- SEV2: persen locale campur (formatter ganda SSR id vs client en), Rp spasi inkonsisten, track-record SSR loading tanpa empty-state, /pasar tanggal ISO mentah, AKKU EOD stale tanpa badge usia, volume suffix en (6412.5M).
+- SEV3: screener SSR "Memuat", judul "Live" saat tutup, "52mgg".
+- BERSIH: 0 NaN/NULL bocor, 0 error boundary, title/meta/h1 ok, mobile ok, 10 halaman verified.
+AUDIT PERF (audit-perf-cache.md):
+- Cloudflare DYNAMIC semua HTML/API (s-maxage mati); /api/* tanpa cache-control; 12 halaman screener revalidate=30 melayani EOD beku (boros 120x); /screener redirect buang RTT; cold stock detail 1.4-2.4s.
+- Quick-win: (1) CF Cache Rule API+TTL origin; (2) hapus redirect /screener; (3) revalidate weekend 30→3600 + Suspense shell detail.
+ANTRIAN FIX TRUST (SEV1 dulu, SATU kereta/hari, builders paused sampai owner review):
+1. [SEV1] markdown renderer pipeline brief (articles body)
+2. [SEV1] /daftar → /auth/register (stocks detail CTA)
+3. [SEV1-pending-audit] ^JKSE bar 16 Okt + sumber IHSG -11,57% di /pasar
+4. [SEV1-pending-audit] signal pages intermittent failed-notice + track-record kosong
+5. [SEV2] satu helper formatPercent/formatPrice id-ID global (single source, hapus formatter ganda)
+6. [SEV2-perf] CF cache rule + revalidate weekend + hapus redirect screener
+
+## [TRUST-FIX EKSEKUSI 17 Okt ~12:00] Data SEV1+SEV2 selesai (owner-directed, bukan fitur)
+1. ^JKSE bar 16 Okt DI-INSERT dari Yahoo (O5393,92/H5404,51/L=C5185,10 V650,9jt) — crash MSCI halt nyata; /pasar -11,57% kini dari bar asli DB (bukan angka luar).
+2. 127 indikator yatim 16 Okt DIHAPUS (110/128 duplikat 15 Okt tampil sbg hari ini = trust violation; invariant baru: indikator hanya utk saham dgn bar harga hari sama).
+3. recalculate-indicators dijalankan via worker (JELI/PRDL/RANS skip: <20 bar histori — saham baru, wajar).
+4. Verifikasi: ind_tanpa_harga=0, ind_total=829, harga_total=835 (6 diff = saham <20 bar histori, sah). /pasar 5.185,10 -11,57% verified.
+SISA ANTRIAN (belum dieksekusi, builders paused): SEV1 markdown renderer brief + link /daftar 404; SEV2 formatter locale tunggal; perf CF-cache quick-wins. Menunggu audit pages (deleg_43dbf5ae) utk lead signal-pages intermittent + track-record.
+
+## [TRUST-FIX BATCH-1 SHIPPED 17 Okt ~13:45] commit 87ec87b
+SEV1 semua clear:
+1. track-record force-dynamic (akar: ISR beku fallback build-time) — verified live "Ringkasan 3 Bulan"
+2. Artikel markdown mentah: 2 artikel di-un-escape di DB + sanitizer permanen anti double-JSON-escape — verified "593 saham turun" render
+3. /daftar → /auth/register — verified 0 kemunculan
+SEV2: stale-badge saham beku (bar saham < sesi pasar) — AKKU verified badge, BBCA verified tanpa badge (via findLatestPriceDate + cache 5mnt).
+Note verify: literal \n tersisa di halaman artikel = RSC flight data di script (bukan user-facing) — bukan bug.
+Sisa antrian: SEV2 formatter locale tunggal + SEV3 minor + perf quick-wins (CF cache rule perlu owner login CF; redirect /screener; revalidate weekend). Builders tetap paused.
+
+## [TRUST-FIX BATCH-2 SHIPPED 17 Okt ~15:20] commit 9f1af4e — SEV2 locale unified
+- formatPercentPlain (id-ID, abs) + formatVolume id (6,41 M / 291,6 jt / rb) + formatMarketCap id + article-template juta koma.
+- 10 komponen high-traffic dimigrasi dari toFixed-%: breath-strip, ticker-tape, ihsg-mini, heatmap, greeting, header, featured-card, stock-card, snapshot×2.
+- Verified live: homepage 0 persen-titik; /pasar volume '2,5 jt' style en-style hilang; smoke 4 pages 200.
+- Sisa SEV2 (scheduled next): portfolio holdings/shareholders tabs M-suffix lokal; SEV3 minor (52mgg label, ISO date /pasar). Perf quick-wins: redirect /screener + revalidate weekend + CF Cache Rule (owner klik).
+
+## [TRUST-FIX BATCH-3 SHIPPED 17 Okt ~17:10] commit e047348 — leaderboard honesty
+Laporan owner "Top Gainer AKKU / paling aktif error" → TIGA akar ketemu & fixed:
+1. Leaderboard overview ikutkan saham beku (% vs sesi trade terakhir sendiri) → session-filter: hanya saham dgn bar == sesi pasar terakhir; bug index-filter (withChange vs stocks) diperbaiki dgn Map ticker→date; ^-index dikecualikan.
+2. ^JKSE -20,65% phantom Top Loser: bar backfill ku bawa volume 650jt → lolos filter volume>0 → prev melompat ke 14 Sep. DB fixed (volume=0 konsisten seri indeks). LESSON: bar INDEKS Yahoo bawa volume agregat — set 0 saat ingest indeks.
+3. Label 52mgg → "52 Minggu"; dateLabel shared utk /pasar ISO mentah.
+Verified: AKKU 0 di homepage; BSWD +25/APIC -15 legit; IHSG -11,57 benar; smoke 200.
+Sisa perf: CF Cache Rule (owner klik), Suspense shell stock detail, revalidate weekend screener.
+
+## [CLEANUP CARRY-FORWARD 17 Okt ~18:00] owner "bersihkan skrg"
+- Pattern: bar suspensi/beku di DB volume>0 (carry-forward close+vol identik) padahal Yahoo vol=0. Sampling 4/4 konfirmasi (GTBO/DIGI/HILL/TPMA — TPMA bahkan duplikat bar 14 Agu ke 17 Agu).
+- UPDATE 6.937 bar (equity, sejak Jan 2025): volume → 0. Backup: db-20260917-stockprice-carryforward.sql.gz (repo + /tmp container).
+- Verified: sisa carry-forward = 0; BSWD 13-14 Okt kini vol 0 (15-16 Okt transaksi nyata tetap); leaderboard homepage tetap BSWD +25/APIC -15 (benar — filter sesi pakai bar 16 Okt); breadth 15/814/11; /pasar 200; invariant indikator=0.
+- FOLLOW-UP utk kereta Senin: (1) pipeline eod-sync: bar indeks Yahoo bawa volume agregat → SET 0 utk ^-ticker; (2) ingest carry-forward: kalau Yahoo vol=0/null → simpan vol 0, JANGAN copy volume kemarin; (3) tambah guard harian: count bar vol>0 dgn close+vol == prev > threshold → alarm.
+
+## [QUICK TOOLS SHIPPED 17 Okt ~19:30] commit setelah e047348
+3 stub Coming Soon jadi halaman nyata (owner request): bottom-fishing (rsi_oversold + trust filter volume>0), market-structure (service existing + universe terlikuid 40 — findMostLiquidEquities BARU di repository, pattern trust), trading-plan (getStockOgData + form ?t=). Verified live: Coming Soon 0 di 3 page; BF 49 baris; MS 3 struktur render; TP BBCA plan render dgn Wait&See. Smoke 200. North star: fitur platform konsisten & terpakai — dead link 'coming soon' = trust leak, fixed.
+## [TRADING PLAN v2 17 Okt ~21:00] commit setelah 46f16f1
+Owner request: login-only + cari saham gampang + multi saham. (1) auth() gate redirect /auth/signin + noindex (pattern watchlist). (2) plan-picker.tsx baru: search ticker/nama, chips, Enter/Backspace, max 6. (3) state via URL ?t=A&t=B shareable. Anon 307 verified; smoke 4 page 200.
+## [TRADING PLAN v3 17 Okt ~22:00]
+Owner request: filter mana-yang-oke + warna. Tambah verdict tier objektif (Layak=RR>=1.5&conf Tinggi / Menengah / Tunggu=W&S), color coding border+badge+tint TP/SL, filter pills ?f= dgn count, picker preserve filter. Anon 307 tetap; smoke 200.
+## [TRADING PLAN v4 17 Okt ~23:30] ARA-lock + Monte Carlo
+RCA ABDA owner: close==ARA → TP di-cap == entry → plan degenerate tampil. Fix: ARA-lock guard (W&S jujur, RR 0, panduan besok), hapus fake TP*1.03, tp2 dedup. MC baru (monte-carlo.ts): bootstrap 1000 sims/10 hari, P(TP dulu)+EV/lembar, deterministic seed, null utk degenerate. Validasi arah 1.00/0.00/0.13 benar. Commit + push.
+## [/stocks REDESIGN 18 Okt ~01:00]
+Owner: tabel harus langsung kelihatan + tanya Radar 5 Emiten perlu? Keputusan: hero compact (-180px), banner signup hero dihapus (duplikat), DailyRadar DIHAPUS dr /stocks (duplikat /harga-saham-hari-ini — konten retention loop pindah fokus ke halaman itu), Weekly+SignalLinks pindah bawah tabel. Tabel kini ~1 layar pertama.
+## [BERITA ISR TRAP + UX COMPACT 18 Okt ~01:30]
+Owner: /berita semua brief tidak muncul. RCA: ISR prerender fire-soft beku (pola track-record) — force-dynamic, brief 17/16 Okt tampil lagi. Sisa halaman fire-soft revalidate (laporan-pasar, signal pages) = kandidat audit Senin. UX: hero /stocks compact, stock-card statistik inline, alert card layout vertikal.
+## [ISR TRAP MASSAL 18 Okt ~03:00]
+Owner: golden-cross dst "data sedang diperbarui". Sweep 13 halaman: 11 kena ISR trap (pola /berita) → force-dynamic massal, semua verified ada data. Akademi tag strip 47→7 pill (tag >=3 artikel; tag kecil via URL tetap valid). LESSON FIRE-SOFT: build tanpa DB + revalidate = empty state beku selamanya — halaman data-driven WAJIB force-dynamic, audit sisa (laporan-pasar/[minggu], saham-dividen, saham-blue-chip, saham-value-growth, saham-undervalued, indeks, crypto) masuk queue Senin.
+## [/stocks v3 18 Okt ~04:30] commit f836f47
+Owner: LoginGate muncul padahal login + Screener Strategi terlalu bawah/banyak. Fix: auth() gate kartu daftar (anon-only), Screener Strategi pindah bawah tabel, 4 kartu compact + link teks sisanya. Sweep sisa fire-soft SELESAI (bukan Senin): dividen/blue-chip/undervalued/value-growth/sektor/indeks/crypto/laporan-pasar SEMUA ada data nyata; /crypto & /screener redirect intentional; blue-chip 40 emiten penuh.
+## [HOME DEREDUNDANSI 18 Okt ~06:00]
+Owner: home login banyak redundant. Analisa 1-1: nav pills greeting = dobel header → dihapus; top gainer/loser inline = dobel kartu movers → dihapus; movers naik sebelum kartu personal; judul 'Paling Aktif Hari Ini' → kondisional 'Sesi Terakhir' saat tutup (trust queue cleared). Tetap: MorningDelta/Thesis/PersonalizedBeranda/SectorHeatmap (konten unik).
+## [HOME DEDUP-2 18 Okt ~07:00]
+Owner: 'Sinyal untukmu' = dobel 'Sejak kemarin' (dua-duanya watchlist+sinyal). ForYouSignals DIHAPUS; MorningDelta masuk grid WelcomeLoop. Komponen for-you-signals.tsx dibiarkan (unreferenced, reusable). Home login: greeting → delta+streak → movers → tesis → portofolio → heatmap.
+## [HOME PORTOFOLIO-FIRST 18 Okt ~08:00]
+Owner: portofolio harus paling atas + trading plan di home. Reorder logged-in: PersonalizedBeranda (porto+watchlist+paper) ke atas, komponen BARU HoldingTradingPlans (plan per holding max 4, engine /trading-plan + MC). Anon unchanged. Smoke 200x4.
+## [DEV RESUME + QA P1 FIX 17 Okt 18:15]
+Owner: "Continue development tonight, data its fine for now" → unpause 5 builder cron (weekend siang/sore terlewat hari ini, next fire besok 08:00). QA qa-2026-10-17-01 F1 hotfix: brief 16 Okt '592 turun' → SQL breadth 15 Okt = 119|593|250 → UPDATE content+excerpt → live 11x '593', 0x '592'. F2/F3 verified already-correct. Queue entry → done (deploy budget exception #146, owner-directed). DISPATCH: subagent /track-record (prd-2026-10-16-01 P1) full SDLC malam ini; waitlist WA (prd-2026-10-16-02) next.
+## [/TRACK-RECORD LIVE 17 Okt 18:35]
+PRD prd-2026-10-16-01 done: commit 3519c78. force-dynamic, unit test 19 pass, live 200 + noindex + data s/d 16 Okt. Subagent kena timeout pas docker build → main-agent finish (pola /pasar). Deploy owner-directed (budget exception). Next: waitlist WA prd-2026-10-16-02.
+## [/WAITLIST LIVE 17 Okt 18:55]
+PRD prd-2026-10-16-02 done: commit 912aa6c. E2E full hijau (200/409/400/403). WA hash bukan plain. TRAP BARU dicatat: app start = prisma migrate deploy — DDL manual mendahului = P3009 failed-migration restart-loop 502; fix = UPDATE _prisma_migrations finished_at. Follow-up: CTA waitlist di footer artikel.
+## [MARKET-SNAPSHOT UNIFY LIVE 17 Okt 19:40]
+Owner "jadikan 1 API" → betulan akarnya 4 jalur compute paralel. commit 9fd708a: market-snapshot.service satu pintu (doctrine trust baked). Cross-page proof: PTSP +6,91 identik HOME/STOCKS/PASAR/API. Consistency test NANGKAP bug terakhir (stocks masih jalur lama) — test jadi bagian verify permanen. Sisa: worker generator artikel (jalur ke-5) besok.
+## [API AUDIT COMPLETE 17 Okt 20:00 — ref-2026-10-17-02, commit b16a617]
+Owner: "scan semua API, combine yang bisa, rule: reuse/improve jangan buat baru".
+HASIL: 133 route di-audit fokus market cluster. FIX: /api/market/ihsg (computeChange baris-2 array → delegate snapshot LATERAL, shape dipertahankan; revalidate 300 → force-dynamic, cache tetap di snapshot 60s).
+STATUS BENAR (tidak digabung, beda domain): live-quotes (intraday TradingView/Yahoo, TTL 60s) vs market-snapshot (EOD session) vs screener/radar (technicalAnalysisService) vs stocks list/detail (stockMarketService). /api/market = wrapper getMarketOverview (sudah delegate snapshot) utk 2 komponen client.
+admin/tickers masih computeChange lokal = admin-only low-traffic, tidak prioritas (dicatat, bukan bug publik).
+RULE PERMANEN → AGENTS.md repo: API Reuse Rule 4 poin (reuse dulu / improve bukan duplikat / compute di luar snapshot dilarang / endpoint baru hanya domain baru + wajib alasan). Semua builder agent baca AGENTS.md.
+## [JALUR-5 FIXED 17 Okt 20:15 — "fix skrg semua"]
+Worker generator brief = teknikalid_growth.py market-brief-data (Hermes-side, bukan repo). Breadth SQL lama (MAX-date global join + semua assetClass + include ^) = sumber drift 592-vs-593.
+FIX (reuse rule): breadth PRIMARY dari https://teknikal.id/api/market (market-snapshot satu pintu); fallback SQL mirror EXACT doctrine snapshot (LATERAL per-saham, sesi ber-volume, EQUITY only, isActive, exclude ^). _fetch_breadth (fact-checker verifier) disamakan.
+E2E PROOF: market-brief-data → 11 naik/812 turun/11 stagnan source=market-snapshot-api == /api/market == fallback SQL mirror (11|812|11). test-factcheck ok:true.
+Tidak perlu rebuild worker (script bukan bagian image).
+## [EOD CACHE LIVE 17 Okt 20:40 — ref-2026-10-17-03, commit b5337bc]
+Owner: "cari API/data yang bisa di-optimized/caching" → audit: lubang besar = screener+radar+9 signal pages query DB penuh per request (data EOD cuma ganti sore). FIX: eod-cache.ts (TTL 5 mnt, key per preset, error tak dicache) + clearEodCaches() hook di cron sync-eod. LATENCY PROOF: radar API 2.57s→0.25s (10x), volume-spike page 2.03s→0.43s, golden-cross 1.39s→0.19s. Yang sudah bagus dibiarkan: Yahoo 2-layer, stockList 5mnt, snapshot 60s, og-image CDN 5mnt.
+## [PT SCHEMA KANON FIX 17 Okt 21:15 — cron evening "0g protein"]
+Owner: "keep error" (cron PT Evening bilang 0g protein padahal P87). Akar: cron baca field "protein_g"/"est_protein_g" (schema lama), log kanon = "protein" (TANPA _g — sementara carbs_g/fat_g pakai _g). FIX menyeluruh: (1) pt_evening_close.py + pt_budget + pt_chart + pt_dashboard + pt_habit_analyzer + pt_weekly_retro — urutan fallback jadi protein → protein_g → est_protein_g; (2) pt_core.append_log = NORMALIZER pintu: entry protein_g/est_protein_g dikonversi ke "protein" sekali di sini, CLI lama otomatis kanon; (3) verify: evening 87g benar, day card FAIR benar, dry-run CLI lama OK.
+## [AI GATE + INFRA RECOVERY 17 Okt 21:30 — commit e0c8a92]
+(1) AI Gate (owner waiting-room idea) committed+pushed: ai-gate.service.ts, wired /api/ai/screener + /api/ai/stock; unit 4/4; live FIFO proof 7/13/19/25s stagger. (2) MLX server ketemu MATI diam-diam → dihidupkan + watchdog +health-check 8765 (3b). (3) 9Router hang silent (port 20128 dead, proses tak ada) → restart --tray --skip-update; verify /v1/models OK + watchdog SILENT = router+worker+db+mlx semua sehat. Pool gate reusable utk API berat berikutnya.
+## [AGENT RESUME 17 Okt 22:40 — owner: "banyak agent off, nyalakan yang terpakai"]
+6 builder teknikal ON lagi: Backend pagi 07:30 + malam 18:30 (weekdays), siang 09:30, weekend pagi/siang/sore — semua paused 11:30 tadi. TETAP OFF by design: IG Carousel (IG STOP owner 17 Sep), AegisGo x3 (owner pensiunkan 15 Okt), one-shot Koran Saham (completed). 2 error job dicatat: Growth Weekly Retro (Gemini 429 — kalau Senin depan masih 429, ganti provider) + Backoffice Builder (RuntimeError parse — di queue Script Doctor).
+
+### 2026-10-17 20:4x — CTO weekend sore (verify+debt+bookkeeping)
+- T-1017-N manifest final: SEMUA penumpang (bug-16-01 + nosniff) SUDAH TERANGKAT via owner-directed rebuild ~20:00 (image 0ff307bda6d3, 3519c78-ancestor) — kereta malam tidak perlu berangkat kosong; ux-17-01 turun dari T-1018 karena sudah live duluan (379f516 ancestor HEAD).
+- sec-17-01 selesai verify-only: nosniff live via proxy.ts conditional — spec CEO 'next.config headers' dikoreksi (implementasi proxy lebih aman utk Safari iOS RSC).
+- DEBT KRITIS dilunasi f2ba159: 3519c78 lupa commit 2 file di-import page.tsx /track-record — live hanya selamat karena build dari worktree kotor. Lesson: builder commit page baru WAJIB `git add` seluruh import baru (grep import path dulu).

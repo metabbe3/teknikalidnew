@@ -272,3 +272,9 @@ Ke-3 kalinya klaim kesegaran sinyal lolos generator Mandor: qa-2026-09-27-01 (hi
 2. Untuk QA numerik live-website: worker deterministik (curl+psql) = 100% cukup, 0 token, 90 detik utk 42 artikel × 3 checks. LLM hanya perlu di verifier stage (kritik metode) + deteksi semantik (narasi cross-day — 2 FATAL Reviewer 15 Okt yang TIDAK bisa ditangkap angka).
 3. 2 slug "saham-overbought/oversold-*" = artikel edukasi, bukan ticker — filter regex perlu whitelist pattern ticker 4 huruf.
 **Rule**: swarm = lapisan NUMERIK (skala besar, murah, exact); reviewer LLM = lapisan SEMANTIK. Jangan digabung/digantikan.
+
+## 2026-10-17 — Pola berulang #3: angka breadth/superlatif tersalin antar-hari (qa-2026-10-17-01, P1)
+- Rekap mingguan 17 Okt menulis "11 saham naik" untuk SEMUA hari (Senin–Kamis seharusnya 115/351/292/119); brief 16 Okt menulis turun=592 (angka versi Rabu) vs DB Kamis=593; superlatif "terbanyak sejak 8 Juni" padahal 24 Jun (947) & 24 Jul (820) lebih tinggi → benar "sejak 25 Juli"; klaim golden/death cross 15 Okt 0/0 vs DB 3/2.
+- Akar masalah: guard deterministik (qa-27-01, qa-30-01) diterapkan di jalur review manual, tapi GENERATOR artikel belum punya assertion — narasi tetap bisa mengambil angka dari hari/template lain. Angka hari-sama ≠ angka hari-lain yang "mirip".
+- Pelajaran: superlatif & breadth WAJIB di-generate dari SQL berparameter tanggal di jalur generator itu sendiri (bukan diverifikasi belakangan), plus assertion pra-publish: dua hari berbeda tidak boleh menghasilkan angka breadth identik; klaim "sejak <tgl>" wajib dibuktikan query sebelum dirangkai ke kalimat.
+- Cek rutin reviewer: untuk tiap artikel multi-hari, cocokkan angka per-nama-hari ke snapshot DB hari itu — bukan hari publikasi.

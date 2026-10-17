@@ -623,3 +623,10 @@
 - Entry ux-2026-10-17-01 → in_train T-1018 + result bukti fisik lengkap. Kereta malam T-1017-N: tidak ada penumpang UX.
 - Jebakan: staging dev :3100 dipakai (bukan npm run build) karena TS error WIP slot lain; DB override @127.0.0.1:5433 WAJIB; matikan via lsof -ti:3100.
 - Flow audit: N/A hari ini (queue-driven). Besok mulai siklus re-audit flow (a) screener pasca trust-badge. SEC GATE: N/A frontend-only.
+
+## 2026-10-17 20:4x — CTO weekend sore (verify+debt; 0 deploy baru)
+- State: prod 200 sehat image 0ff307bda6d3 (owner-directed rebuild ~20:00 ⊃ 3519c78 track-record + nosniff + 379f516 wiring + 3434b76 bugfix); EOD 16 Okt benar (Sabtu); tsc 0.
+- Barusan: sec-17-01 done verify-only (nosniff live 2/2 via proxy.ts conditional, spec dikoreksi) · bug-16-01 + ux-17-01 flip done (live-verified, terangkat via rebuild) · DEBT f2ba159: 2 file track-record untracked di-commit (3519c78 import-nya putus di clean checkout).
+- In-flight: ops-13-01 nunggu owner TCC (verify Senin 20 Okt 06:00) — satu-satunya pending; kereta T-1018 Senin malam = manifest KOSONG (semua backlog naik duluan); re-EVAL returning 19 Okt; GSC re-audit; SEO eval 22 Okt; AC5 register 20 Okt.
+- Jebakan: (1) builder commit page baru WAJIB git add semua file import baru — grep import path sebelum commit; (2) deploy.log stale Mei = deploy.sh 'Already up to date' path, bukan sumber kebenaran — bukti live = image sha + chunk grep; (3) queue masih simpan .bak drift berjamaah di untracked — kandidat hygiene backoffice.
+- Langkah pertama slot berikutnya: baca queue → entry CEO baru Senin 08:15? → kalau kosong: health + re-EVAL returning 19 Okt pakai EngagementEvent + QA /track-record D+1 (angka akurasi vs DB sampel).

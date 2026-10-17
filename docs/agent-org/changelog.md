@@ -520,3 +520,17 @@
 - verify: tsc --noEmit 0 · npm run build 0 · staging :3100 /stocks 200 + 'Pasar Tutup' 2 · chunk 166-bd8b356676905439.js 'Screen tersimpan ke akun' · 'stocks_screener&utm_medium=save_screen' 0 hit di semua chunks (dead-end hilang)
 - QA: kereta malam cek manifest + verify-live pasca naik (login user → klik Simpan ke Akun → row ScreenerSaved) · impact_check_due: 2026-10-20
 - KPI: STICKY + GROWTH (Retention Loop AC2 utk user login berfungsi)
+
+## 2026-10-17 — sec-2026-10-17-01 (P2 sec, done)
+- task-id: sec-2026-10-17-01 · type: sec · PRD: n/a (backlog sec-2026-10-15-01, re-dispatch CEO 16 Okt)
+- change: nosniff TERNYATA sudah live via src/proxy.ts conditional (L161-168): semua respons dapat X-Content-Type-Options: nosniff KECUALI RSC payload (Safari iOS download bug 12 Okt); spec asli 'next.config.ts headers' dikoreksi — duplikasi konstan akan reactivate bug
+- commit: n/a (sudah live di 3519c78-series) · deploy: n/a (verify-only slot ini)
+- verify: curl -I https://teknikal.id/ + /stocks → x-content-type-options: nosniff 2/2; HSTS+XFO utuh
+- QA: self-check verify-live · impact_check_due: n/a · KPI: TRUST
+
+## 2026-10-17 — f2ba159 repo-debt track-record (ops)
+- task-id: ops-debt-f2ba159 · type: ops · PRD: n/a
+- change: 2 file untracked (src/components/track-record/tables.tsx + src/lib/track-record.service.ts) di-commit — page.tsx committed 3519c78 meng-import keduanya; clean checkout akan gagal build
+- commit: f2ba159 · deploy: n/a (file identik dgn yang di-bake ke image live)
+- verify: npx tsx tests/track-record.test.ts PASS · git status src/ bersih · /track-record live 200 73KB
+- QA: self-check · impact_check_due: n/a · KPI: TRUST (repo integrity)
