@@ -18,6 +18,8 @@ import { TradingPlanCard } from "@/components/stock/trading-plan-card";
 import { WelcomeBackBanner } from "@/components/ui/welcome-back-banner";
 import { PersonalizedBeranda } from "@/components/home/personalized-beranda";
 import { MorningDeltaCard } from "@/components/home/morning-delta-card";
+import { HoldingTradingPlans } from "@/components/home/holding-trading-plans";
+import { portfolioRepository } from "@/domains/portfolio/portfolio.repository";
 import { ThesisCard } from "@/components/home/thesis-card";
 import { PersonalizedGreeting } from "@/components/home/personalized-greeting";
 import { WelcomeCard } from "@/components/home/welcome-card";
@@ -377,21 +379,25 @@ export default async function HomePage() {
   // ── Logged-in: personalized beranda ──────────────────────────────
   if (currentUser) {
     const userName = currentUser.username ?? currentUser.name ?? "Trader";
+    const holdings = await portfolioRepository
+      .findUserHoldings(currentUser.id)
+      .catch(() => [] as { stockTicker: string }[]);
 
     return (
       <div className="fade-in">
         <TickerTape items={tickerItems} />
         <PersonalizedGreeting name={userName} marketInfo={marketInfo} overview={overview} ihsg={ihsg} />
         <div className="max-w-7xl mx-auto px-4 py-10 space-y-14">
-          {/* First-Session Welcome Loop (PRD idea-2026-10-02-2): day-1..7 checklist
-              + streak claim; day-2+ (or checklist complete) -> "Sinyal untukmu".
-              All derives are fire-safe (failure hides the card, never errors home). */}
+          {/* Owner 18 Okt: PORTOFOLIO dulu — seperti dashboard pribadi.
+              Urutan: portofolio+watchlist → trading plan holdings → delta+streak
+              → movers → tesis → quick tools → heatmap. */}
+          <PersonalizedBeranda />
+          <HoldingTradingPlans tickers={holdings.map((h) => h.stockTicker)} />
           <WelcomeLoopSection currentUser={currentUser} />
           <Suspense fallback={<FeaturedSkeleton />}>
             <FeaturedStocksSection gainers={gainers} losers={losers} isMarketOpen={!isClosed} />
           </Suspense>
           <ThesisCard />
-          <PersonalizedBeranda />
           <Suspense fallback={<SectorSkeleton />}>
             <SectorHeatmap sectors={sectors} />
           </Suspense>
