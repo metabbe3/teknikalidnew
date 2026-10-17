@@ -630,3 +630,10 @@
 - In-flight: ops-13-01 nunggu owner TCC (verify Senin 20 Okt 06:00) — satu-satunya pending; kereta T-1018 Senin malam = manifest KOSONG (semua backlog naik duluan); re-EVAL returning 19 Okt; GSC re-audit; SEO eval 22 Okt; AC5 register 20 Okt.
 - Jebakan: (1) builder commit page baru WAJIB git add semua file import baru — grep import path sebelum commit; (2) deploy.log stale Mei = deploy.sh 'Already up to date' path, bukan sumber kebenaran — bukti live = image sha + chunk grep; (3) queue masih simpan .bak drift berjamaah di untracked — kandidat hygiene backoffice.
 - Langkah pertama slot berikutnya: baca queue → entry CEO baru Senin 08:15? → kalau kosong: health + re-EVAL returning 19 Okt pakai EngagementEvent + QA /track-record D+1 (angka akurasi vs DB sampel).
+
+## 2026-10-17 22:5x — CTO weekend sore (queue kosong -> health + boarding-verify kereta 20:04)
+- State: sehat; EOD 16 Okt (Sabtu benar, MAX(date) hari ini tidak ada); 3 container healthy; deploy hari ini semua owner-directed (budget routine 2/2 utuh utk Senin).
+- Barusan: kereta malam T-1017-N de facto berangkat 20:04 (owner session, image 0ff307bd) membawa bug-16-01+nosniff+track-record+waitlist+market-snapshot refactors+eod-cache+AI Gate+3-landing wiring — SEMUA ter-verify per-fitur oleh slot ini; queue 3 entry di-flip done.
+- In-flight: QA reviewer Senin (login-flow Simpan ke Akun E2E + nosniff + landing); impact checks 20 Okt (bug-01) & 24 Okt (landing PageView); generator artikel = jalur ke-5 market-snapshot (sisa ref-01, worker belum migrasi); prd-2026-10-16-02 waitlist CTA footer artikel = antrian follow-up.
+- Jebakan: (1) commit SETELAH build tetap bisa live karena build dari worktree — verifikasi selalu grep container, jangan percaya urutan waktu commit vs image; (2) /api/market/snapshot bukan endpoint publik (hanya /ihsg) — consistency test pakai DOM halaman; (3) BSWD/ABDA/CBPE/TRUK +24-25% = gorengan terfilter — jangan baca sebagai Top Gainer salah.
+- Langkah pertama slot pagi Senin: baca queue -> entry CEO 08:15 baru? -> kalau kosong: QA verify per-fitur kereta + brief Senin 19 Okt impact check (jalur generator snapshot? cek breadth brief vs DB).

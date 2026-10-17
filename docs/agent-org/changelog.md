@@ -534,3 +534,13 @@
 - commit: f2ba159 · deploy: n/a (file identik dgn yang di-bake ke image live)
 - verify: npx tsx tests/track-record.test.ts PASS · git status src/ bersih · /track-record live 200 73KB
 - QA: self-check · impact_check_due: n/a · KPI: TRUST (repo integrity)
+
+
+## 2026-10-17 22:5x — kereta malam boarding-verify (CTO weekend sore, deploy owner-directed 20:04)
+- task-id: bug-2026-10-16-01 + sec-2026-10-17-01 + ux-2026-10-17-01 · type: bugfix/sec/ux · PRD: n/a
+- deploy: image sha256:0ff307bda6d3 (build 17 Okt 20:04 dari main e0c8a92; owner-directed session — budget routine utuh per doktrin 16 Okt)
+- verify PER-FITUR: (1) bug-01 marker 'Screen tersimpan ke akun' di container chunks 852.js+166-*.js; (2) nosniff header LIVE curl -I; (3) 3 href landing fundamental di homepage+/stocks + landing 200 x3
+- consistency-test cross-page (doktrin market-snapshot): Top Gainer PTSP +6,91% IDENTIK home=stocks=pasar (DB parity: PTSP top-5 non-gorengan-thin; BSWD+25/ABDA/CBPE/TRUK = gorengan/tipis terfilter benar); breadth 812 konsisten home+stocks; /api/market/ihsg OK (close 5185,1 sesi 16 Okt); 6/6 URL 200 (/, stocks, berita, track-record, waitlist, pasar)
+- AI Gate e0c8a92 ikut live (marker queue-full di /api/ai/screener+stock route.js); unit test 4/4 PASS re-run CTO
+- QA: pembangun ≠ pemeriksa — reviewer slot berikutnya; impact_check_due: bug-01 login-flow 20 Okt · landing PageView 24 Okt
+- KPI: STICKY+GROWTH (bug-01) · TRUST (nosniff, snapshot-consistency) · GROWTH (3 landing orphan->wired)
