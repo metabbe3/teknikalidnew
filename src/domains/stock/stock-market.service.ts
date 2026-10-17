@@ -7,6 +7,7 @@ import { toDateKey } from "@/lib/utils";
 import { getCompareColor } from "@/lib/compare-colors";
 import { stockRepository } from "./stock.repository";
 import { technicalAnalysisService } from "./technical-analysis.service";
+import { marketSnapshotService } from "./market-snapshot.service";
 import { StockNotFoundError } from "./stock.errors";
 import { stockCache } from "@/lib/cache";
 import { getMarketStatusWithFallback } from "@/lib/market-hours";
@@ -436,76 +437,21 @@ export const stockMarketService = {
     declinersCount: number;
     unchangedCount: number;
   }> {
-    const cached = stockCache.get("market-overview");
-    if (cached) return cached as Awaited<ReturnType<typeof this.getMarketOverview>>;
-
-    // EQUITY only — IHSG breadth/gainers must not mix the dormant crypto rows.
-    const stocks = await stockRepository.findActiveStocksWithPrices({ assetClass: "EQUITY" }, false);
-
-    type StockChange = { ticker: string; name: string; sector: string; close: number | null; changePercent: number | null; volume: number | null };
-    const stockChanges: StockChange[] = stocks.map((stock) => {
-      const prices = dedupeStalePrices(stock.prices);
-      const { close, changePercent } = computeChange(prices[0], prices[1]);
-      const volume = prices[0] ? bigIntToNumber(prices[0].volume) : null;
-      return { ticker: stock.ticker, name: stock.name, sector: stock.sector, close, changePercent, volume };
-    });
-
-    const withChange = stockChanges.filter((s): s is StockChange & { changePercent: number } => s.changePercent !== null);
-
-    // Trust: leaderboard (gainers/losers/most-active) hanya saham yg benar-benar
-    // transaksi di SESI TERAKHIR pasar. Saham beku/suspend (tanpa bar di sesi itu)
-    // punya % vs sesi trade terakhirnya — masuk leaderboard = menyesatkan
-    // (kasus AKKU +34,62% ARA 17 Okt: benar aritmetikanya, salah konteksnya).
-    const marketDateMs = stocks.reduce<number>((mx, st) => {
-      const d = st.prices[0]?.date;
-      return d ? Math.max(mx, d.getTime()) : mx;
-    }, 0);
-    // index withChange ≠ index stocks (filter) — pakai map ticker→date.
-    const lastBarDateByTicker = new Map<string, number>(
-      stocks.flatMap((st) => {
-        const d = st.prices[0]?.date;
-        return d ? [[st.ticker, d.getTime()] as [string, number]] : [];
-      })
-    );
-    const sessionStocks = withChange.filter(
-      (s) =>
-        !s.ticker.startsWith("^") && // indeks (^JKSE) bukan saham — jangan ikut leaderboard
-        lastBarDateByTicker.get(s.ticker) === marketDateMs
-    );
-    const leaderboard = sessionStocks.length >= 5 ? sessionStocks : withChange;
-
-    const gainers = [...leaderboard].sort((a, b) => b.changePercent - a.changePercent).slice(0, 5);
-    const gainerSet = new Set(gainers.map((g) => g.ticker));
-    const losers = [...leaderboard]
-      .filter((s) => !gainerSet.has(s.ticker))
-      .sort((a, b) => a.changePercent - b.changePercent)
-      .slice(0, 5);
-
-    // ponytail: simple arithmetic mean (not market-cap-weighted). A small-cap
-    // moving 50% affects this as much as BBCA moving 0.5%. Upgrade path: weight
-    // by marketCap when fundamental data is available in this query path.
-    const sectorMap = new Map<string, { total: number; sum: number }>();
-    for (const s of withChange) {
-      const existing = sectorMap.get(s.sector) ?? { total: 0, sum: 0 };
-      existing.total++;
-      existing.sum += s.changePercent;
-      sectorMap.set(s.sector, existing);
-    }
-
-    const sectors: Record<string, { avgChange: number; count: number }> = {};
-    for (const [sector, { total, sum }] of sectorMap) {
-      sectors[sector] = { avgChange: Number((sum / total).toFixed(2)), count: total };
-    }
-
-    // Market breadth: only count stocks that actually traded (volume > 0).
-    // Suspended/halted stocks show 0% but aren't trading — exclude from breadth.
-    const tradingStocks = withChange.filter((s) => s.volume !== null && s.volume > 0);
-    const advancersCount = tradingStocks.filter((s) => s.changePercent > 0).length;
-    const declinersCount = tradingStocks.filter((s) => s.changePercent < 0).length;
-    const unchangedCount = tradingStocks.filter((s) => s.changePercent === 0).length;
-
-    const result = { gainers, losers, sectors, advancersCount, declinersCount, unchangedCount };
-    stockCache.set("market-overview", result, 300_000);
+    // ref-2026-10-17-01: SATU PINTU — this method is now a thin adapter over
+    // marketSnapshotService (raw-SQL prev-close via JOIN LATERAL, session =
+    // last volume>0 date). The old in-memory computeChange/dedupeStalePrices
+    // sweep was one of four parallel paths that drifted (PTMR +55,83 vs BSWD
+    // +25; 592 vs 593). Public shape kept identical so home/berita/api/market
+    // and community-agent keep compiling unchanged.
+    const snap = await marketSnapshotService.getSnapshot();
+    const result = {
+      gainers: snap.gainers,
+      losers: snap.losers,
+      sectors: snap.sectors,
+      advancersCount: snap.breadth.advancers,
+      declinersCount: snap.breadth.decliners,
+      unchangedCount: snap.breadth.unchanged,
+    };
     return result;
   },
 

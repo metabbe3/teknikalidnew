@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { INTERVAL } from "@/lib/constants";
 import { fetchQuote } from "@/lib/yahoo-finance";
 import { bigIntToNumber, decimalToNumber } from "@/lib/serialize";
+import { marketSnapshotService, type Mover } from "./market-snapshot.service";
 
 /**
  * pasar-live.service — deterministic data assembly for /pasar (Koran Saham Live)
@@ -217,51 +218,29 @@ async function getWatchlist(sessionDate: Date): Promise<PasarWatchlistItem[]> {
 }
 
 /**
- * Top movers from the latest session: real % change on the two most recent
- * closes, liquidity floor volume ≥ 1M shares (broadcaster --brief pattern).
- * Gainers/losers disjoint (a ticker can't be both).
+ * Top movers — ref-2026-10-17-01: SATU PINTU. Delegates to
+ * marketSnapshotService (same raw JOIN-LATERAL prev-close + vol ≥ 1M floor
+ * this function used to run itself) so /pasar can never drift from home /
+ * /stocks / /berita again. Signature/shape unchanged for the /pasar page.
  */
 async function getMovers(sessionDate: Date): Promise<{ gainers: PasarMover[]; losers: PasarMover[] }> {
-  const prevDateRow = await prisma.stockPrice.findFirst({
-    where: { date: { lt: sessionDate } },
-    orderBy: { date: "desc" },
-    select: { date: true },
-  });
-  if (!prevDateRow) return { gainers: [], losers: [] };
-
-  const rows = await prisma.$queryRaw<Array<{ ticker: string; name: string; close: number; prev: number; volume: bigint }>>`
-    SELECT s.ticker, s.name, sp.close::float8 AS close, p.close::float8 AS prev, sp.volume
-    FROM "StockPrice" sp
-    JOIN "Stock" s ON s.id = sp."stockId"
-    JOIN LATERAL (
-      SELECT close FROM "StockPrice"
-      WHERE "stockId" = sp."stockId" AND date < sp.date
-      ORDER BY date DESC LIMIT 1
-    ) p ON true
-    WHERE sp.date = ${sessionDate} AND sp.volume >= 1000000 AND s."isActive" = true AND s."assetClass" = 'EQUITY'
-  `;
-
-  const movers: PasarMover[] = [];
-  for (const r of rows) {
-    if (r.prev === 0) continue;
-    const pct = ((r.close - r.prev) / r.prev) * 100;
-    if (!Number.isFinite(pct)) continue;
-    movers.push({
-      ticker: r.ticker,
-      name: r.name,
-      close: r.close,
-      changePercent: pct,
-      volumeShares: bigIntToNumber(r.volume),
-    });
+  const snap = await marketSnapshotService.getSnapshot();
+  // Only serve movers when the snapshot describes the SAME session the caller
+  // resolved — a stale/empty snapshot must not fabricate data for another day.
+  if (!snap.sessionDate || snap.sessionDate !== sessionDate.toISOString().slice(0, 10)) {
+    return { gainers: [], losers: [] };
   }
-
-  const gainers = [...movers].sort((a, b) => (b.changePercent ?? 0) - (a.changePercent ?? 0)).slice(0, 5);
-  const gainerSet = new Set(gainers.map((g) => g.ticker));
-  const losers = movers
-    .filter((m) => !gainerSet.has(m.ticker))
-    .sort((a, b) => (a.changePercent ?? 0) - (b.changePercent ?? 0))
-    .slice(0, 5);
-  return { gainers, losers };
+  const toPasarMover = (m: Mover): PasarMover => ({
+    ticker: m.ticker,
+    name: m.name,
+    close: m.close,
+    changePercent: m.changePercent,
+    volumeShares: m.volumeShares,
+  });
+  return {
+    gainers: snap.gainers.map(toPasarMover),
+    losers: snap.losers.map(toPasarMover),
+  };
 }
 
 /** Google News RSS — one query per watchlist ticker, newest first, deduped. Max 3 per ticker. */

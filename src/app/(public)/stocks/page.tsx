@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
+import { marketSnapshotService } from "@/domains/stock/market-snapshot.service";
 import { SahamView } from "@/components/stock/saham-view";
 import { IDX_STOCKS } from "@/lib/constants";
 import { format } from "date-fns";
@@ -97,15 +98,19 @@ export default async function StocksPage() {
 
   const sectors = [...new Set(rows.map((s) => s.sector))].sort();
 
-  const withChange = rows.filter((s) => s.changePercent !== null);
-  const gainers = withChange.filter((s) => s.changePercent! > 0).length;
-  const losers = withChange.filter((s) => s.changePercent! < 0).length;
-  const unchanged = withChange.length - gainers - losers;
+  // ref-2026-10-17-01: breadth + top movers dari SATU pintu (market-snapshot),
+  // identik dengan home/pasar/berita. Tidak lagi dihitung lokal dari getStockList.
+  const snap = await marketSnapshotService.getSnapshot();
+  const gainers = snap.breadth.advancers;
+  const losers = snap.breadth.decliners;
+  const unchanged = snap.breadth.unchanged;
 
-  const sortedDesc = [...withChange].sort((a, b) => b.changePercent! - a.changePercent!);
-  const sortedAsc = [...withChange].sort((a, b) => a.changePercent! - b.changePercent!);
-  const topGainer = sortedDesc[0] ? { ticker: sortedDesc[0].ticker, changePercent: sortedDesc[0].changePercent! } : undefined;
-  const topLoser = sortedAsc[0] ? { ticker: sortedAsc[0].ticker, changePercent: sortedAsc[0].changePercent! } : undefined;
+  const topGainer = snap.gainers[0]
+    ? { ticker: snap.gainers[0].ticker, changePercent: snap.gainers[0].changePercent }
+    : undefined;
+  const topLoser = snap.losers[0]
+    ? { ticker: snap.losers[0].ticker, changePercent: snap.losers[0].changePercent }
+    : undefined;
 
   const faqJsonLd = {
     "@context": "https://schema.org",
