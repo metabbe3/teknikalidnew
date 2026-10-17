@@ -6,7 +6,6 @@
  * SSR-safe: semua state render hanya setelah mounted (useEffect), 0 hydration mismatch.
  */
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useSavedScreens } from "@/hooks/use-saved-screens";
 
@@ -32,7 +31,6 @@ function StarIcon({ filled }: { filled: boolean }) {
 }
 
 export function ScreenActions({ currentUrl, shareQuery, saveLabel }: { currentUrl: string; shareQuery: string; saveLabel: string }) {
-  const router = useRouter();
   const { data: session } = useSession();
   const isGuest = !session?.user;
   const { save, screens } = useSavedScreens();
@@ -40,6 +38,7 @@ export function ScreenActions({ currentUrl, shareQuery, saveLabel }: { currentUr
   const [mounted, setMounted] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [justSaved, setJustSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const fullUrl = typeof window !== "undefined" ? `${window.location.origin}/stocks?${shareQuery}` : `/stocks?${shareQuery}`;
 
@@ -89,6 +88,26 @@ export function ScreenActions({ currentUrl, shareQuery, saveLabel }: { currentUr
     setToast(result ? "Preset tersimpan di perangkat ini" : "Gagal menyimpan preset");
   };
 
+  const handleSaveToAccount = async () => {
+    const qs = shareQuery.startsWith("?") ? shareQuery.slice(1) : shareQuery;
+    const filters = Object.fromEntries(new URLSearchParams(qs));
+    setSaving(true);
+    try {
+      const res = await fetch("/api/screener/saved", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: saveLabel, filters }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setJustSaved(true);
+      setToast("Screen tersimpan ke akun");
+    } catch {
+      setToast("Gagal menyimpan — coba lagi");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (!mounted) return null;
 
   const qs = shareQuery.startsWith("?") ? shareQuery.slice(1) : shareQuery;
@@ -126,19 +145,13 @@ export function ScreenActions({ currentUrl, shareQuery, saveLabel }: { currentUr
         </button>
       ) : (
         <button
-          onClick={() => {
-            try {
-              sessionStorage.setItem("pending_post_register", JSON.stringify({ type: "save_screen", filters: { preset: qs }, next: currentUrl }));
-            } catch {
-              // ignore storage errors
-            }
-            router.push("/auth/register?utm_source=stocks_screener&utm_medium=save_screen_button");
-          }}
-          className="flex items-center gap-1.5 px-3 py-2.5 min-h-11 text-xs font-medium rounded-lg border border-accent/30 bg-accent/10 text-accent hover:bg-accent/20 transition-colors cursor-pointer"
+          onClick={handleSaveToAccount}
+          disabled={saving || justSaved}
+          className="flex items-center gap-1.5 px-3 py-2.5 min-h-11 text-xs font-medium rounded-lg border border-accent/30 bg-accent/10 text-accent hover:bg-accent/20 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
           aria-label="Simpan screen ke akun"
         >
           <StarIcon filled={false} />
-          Simpan ke Akun
+          {saving ? "Menyimpan…" : "Simpan ke Akun"}
         </button>
       )}
     </div>
