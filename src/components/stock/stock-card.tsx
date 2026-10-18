@@ -9,6 +9,7 @@ import { HealthScoreBadge } from "@/components/stock/health-score-badge";
 import { Sparkline } from "@/components/stock/sparkline";
 import { StockAiModal } from "@/components/stock/stock-ai-modal";
 import type { StockRow } from "@/components/stock/stock-table";
+import { Sparkles } from "lucide-react";
 
 interface StockCardProps {
   ticker: string;
@@ -89,7 +90,7 @@ export function StockCard({ ticker, name, sector, close, change, changePercent, 
           aria-label={`Analisa AI ${name}`}
           title="Analisa AI"
         >
-          ✨
+          <Sparkles className="h-4 w-4" aria-hidden />
         </button>
         </div>
       </div>

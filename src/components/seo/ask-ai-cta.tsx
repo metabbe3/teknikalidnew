@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Sparkles } from "lucide-react";
 
 /**
  * Blok CTA "Tanya AI" untuk landing SEO — server component (no JS needed).
@@ -9,7 +10,7 @@ export function AskAiCta({ question }: { question: string }) {
   return (
     <div className="mt-8 rounded-lg border border-purple-200 bg-purple-50 p-5 dark:border-purple-900 dark:bg-purple-950">
       <div className="flex items-start gap-3">
-        <span className="text-2xl" aria-hidden>✨</span>
+        <Sparkles className="text-2xl h-8 w-8 text-accent" aria-hidden />
         <div className="flex-1">
           <p className="font-semibold">Tanya AI — gratis, tanpa login</p>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -21,7 +22,7 @@ export function AskAiCta({ question }: { question: string }) {
               href={href}
               className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700"
             >
-              ✨ {question}
+              {question}
             </Link>
             <Link
               href="/stocks?view=screener"
