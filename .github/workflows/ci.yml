@@ -43,8 +43,8 @@ jobs:
           npx prisma validate
           npx prisma generate
 
-      - name: Push schema to CI database
-        run: npx prisma db push --skip-generate
+      - name: Apply migrations to CI database
+        run: npx prisma migrate deploy
 
       - name: Typecheck (tsc --noEmit)
         run: npx tsc --noEmit
