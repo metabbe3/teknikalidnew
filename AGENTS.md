@@ -16,3 +16,32 @@ Market data = SATU PINTU. Sebelum membuat endpoint/service/fungsi data baru:
 2. **IMPROVE, BUKAN DUPLIKAT** — kalau endpoint lama kurang (field/filter/cache), extend responsenya dengan backward-compatible shape; konsumen lama tidak boleh putus.
 3. **Compute change/breadth/movers DI LUAR snapshot service = DILARANG** — semua prev-close via doctrine LATERAL per-saham, sesi ber-volume asli, EQUITY only, exclude `^` (kecuali IHSG row). Konsistensi cross-page = invariant; tiap deploy market-related WAJIB consistency-test (curl home+/stocks+/api/market, angka Top Gainer identik).
 4. Endpoint baru hanya kalau domain benar-benar baru (bentuk data/freshness/konsumen beda) — dan wajib catat alasan di header comment route.
+
+## Project overview
+
+**teknikal.id** — IDX stock data platform (Next.js 16 App Router + React 19 + TypeScript + Prisma + PostgreSQL). Public pages: homepage radar, `/stocks` screener, `/saham/[ticker]` (incl. `kenapa-naik-hari-ini`), `/akademi`, `/pasar` (Koran Saham Live, noindex). Prod = docker compose (`teknikalidnew-app-1`, `-worker-1`, `-db-1`), served at https://teknikal.id.
+
+## Build & test commands
+
+- `npm run dev` — dev server
+- `npm run build` — production build (needs DATABASE_URL; most pages are force-dynamic)
+- `npm run lint` — eslint
+- `npx tsc --noEmit` — typecheck
+- `npx prisma validate && npx prisma generate` — schema
+- CI runs: install -> prisma validate/generate/db-push -> tsc -> lint -> build (`.github/workflows/ci.yml`)
+- Deploy prod: `/deploy` (`.claude/commands/deploy.md`); verify `/qa-check` (`.claude/commands/qa-check.md`)
+
+## Architecture
+
+- `src/domains/stock/` — data layer services (single source of truth for market data)
+- `src/app/(public)/` — public routes; `src/app/api/` — REST endpoints
+- Worker (separate container, image baked) computes indicators; rebuild required when worker code changes
+- DB: PostgreSQL, camelCase tables (`PageView`, `Stock`, `StockPrice`, `createdAt`)
+
+## Conventions
+
+- Agent-org docs live in `docs/agent-org/` (ceo-decisions.md, cto-queue.json, handoff.md) — update bookkeeping on every deploy
+- Deploy budget: 2/day routine (owner-directed hotfixes excluded)
+- Night train T-MMDD-N: board only verified tasks (DONE-WHEN green with physical proof: curl/grep/SQL count)
+- DB access: `docker exec teknikalidnew-db-1 psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"` (role "postgres" does not exist)
+- Destructive SQL: conditional — requires fresh backup <24h (`~/backups/teknikalid/`), SELECT COUNT first, narrow WHERE, log rowcount to docs/agent-org/decisions.md. Never touch auth/payments/security/env.

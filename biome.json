@@ -1,0 +1,8 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "files": { "ignoreUnknown": true },
+  "organizeImports": { "enabled": false },
+  "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 2, "lineWidth": 100 },
+  "linter": { "enabled": false },
+  "javascript": { "formatter": { "quoteStyle": "single", "semicolons": "always" } }
+}
