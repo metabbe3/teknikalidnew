@@ -637,3 +637,11 @@
 - In-flight: QA reviewer Senin (login-flow Simpan ke Akun E2E + nosniff + landing); impact checks 20 Okt (bug-01) & 24 Okt (landing PageView); generator artikel = jalur ke-5 market-snapshot (sisa ref-01, worker belum migrasi); prd-2026-10-16-02 waitlist CTA footer artikel = antrian follow-up.
 - Jebakan: (1) commit SETELAH build tetap bisa live karena build dari worktree — verifikasi selalu grep container, jangan percaya urutan waktu commit vs image; (2) /api/market/snapshot bukan endpoint publik (hanya /ihsg) — consistency test pakai DOM halaman; (3) BSWD/ABDA/CBPE/TRUK +24-25% = gorengan terfilter — jangan baca sebagai Top Gainer salah.
 - Langkah pertama slot pagi Senin: baca queue -> entry CEO 08:15 baru? -> kalau kosong: QA verify per-fitur kereta + brief Senin 19 Okt impact check (jalur generator snapshot? cek breadth brief vs DB).
+
+
+## 2026-10-18 07:5x — CTO pagi (Minggu)
+- State: sehat; freshness FRESH (EOD 16 Okt benar utk Minggu); night-audit BERSIH (commit 03:09-03:15 = bo-2026-10-18-01 backoffice terdokumentasi; 3 commit unpushed -> saya push bareng merge); 0 deploy routine (deploy 03:14 backoffice 1/2 hari ini).
+- Barusan: prd-2026-10-17-01 MERGED abd3129 + verify lengkap (tsc 0, 11/11, 100/100, staging smoke POST 200/409/403/sanitasi-injection) -> in_train T-1018-N. Smoke row dibersihkan, DB balik 0.
+- In-flight: kereta T-1018-N malam ini manifest = prd-2026-10-17-01 (satu-satunya in_train; ux-17-01 & bug-16-01 sudah live via rebuild 17 Okt). Ops-13-01 nunggu owner TCC (verify Senin 06:00).
+- Jebakan: (1) 'main' ter-checkout di worktree /private/tmp/bo1018-deploy (pola deploy clean-worktree owner) — kerja merge HARUS di worktree itu atau pindahkan checkout; (2) staging npm start warning output:standalone tapi tetap serve OK; (3) kredensial DB bukan teknikalid:teknikalid — override pakai .env repo utama ganti host->127.0.0.1:5433; (4) tsc di worktree baru WAJIB prisma generate dulu.
+- Langkah pertama slot berikutnya (kereta malam 22:00): manifest T-1018-N = waitlist v1.5 -> build+deploy -> smoke POST live + marker form + ISR warm-up. Kalau ada penumpang baru sore ini, boarding gate dulu.

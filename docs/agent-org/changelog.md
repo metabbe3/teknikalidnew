@@ -1,3 +1,12 @@
+## [2026-10-18 07:5x] cto-pagi — prd-2026-10-17-01: waitlist lead-capture v1.5 MERGED+STAGING-VERIFIED (in_train T-1018-N, belum deploy)
+- Type: prd (fitur GROWTH)  |  PRD: idea-2026-10-17-1b / prd-2026-10-17-01 (night_ready CTO Night 17 Okt)
+- Deploy: PENDING — kereta malam T-1018-N (window 22:00-01:30; slot pagi = BUILD-ONLY)  |  Rollback anchor: git revert abd3129 (merge waitlist v1.5), image pre-deploy = 88612073f083 (deploy bo-03:14)
+- Merge: abd3129 merge --no-ff night/prd-2026-10-17-01 ke main ad69069 (0 conflict, SCHEMA-SHIELD 0 DDL, .night_failed.json tidak ada). Kandungan: f4a1521 test failing-first -> b29bdd3 feat -> docs queue.
+- Verify bukti fisik: tsc --noEmit EXIT-0 (pasca prisma generate); waitlist.test 11/11 tsx; full suite 100/100. Staging :3100 (build EXIT-0, DATABASE_URL @127.0.0.1:5433): GET /waitlist 200 + 'Jadi yang pertama' x2 + role=tablist. SMOKE POST: email+utm test 200 pos:1 · duplikat 409 · WA 081234567890 200 value=dd7526..(sha256) · source '<script>' injection -> 'direct' (sanitasi) · cross-origin 403 CSRF. Row smoke id 2,3 di-DELETE (backup 18 Okt 01:15 valid), count balik 0.
+- QA: pasca-deploy kereta WAJIB smoke ulang POST live + grep marker form live; QA reviewer Senin (boarding gate sudah hijau staging).
+- SEC GATE: PASS — injection sanitized (bukti POST), rate-limit 10/60s aktif, CSRF 403 verified, WA hash-only, IDOR N/A. Log eksekusi SQL delete ada di decisions.md.
+- impact_check_due: 2026-11-01 (AC5 gate 14 hari: >=5 subscriber baru ATAU bounce-rate waitlist turun; baseline PV /waitlist 1/7d + 0 subscriber)
+
 ## [2026-10-18 03:1x] backoffice-builder — bo-2026-10-18-01: /admin/errors KPI Unresolved live + tombol Retry AgentJob gagal
 - Type: backoffice (API extend + service + UI)  |  PRD: bo-2026-10-18-01 (AUDIT ronde-2 rotasi alfabetis; owner mandat 12 Okt 'atur dari backoffice, data reliable')
 - Deploy: 18 Okt 03:14 WIB (Minggu, pasar tutup; docker compose build app dari clean worktree c9306fc && up -d app)  |  Rollback anchor: git revert c9306fc+18e3613, image pre-deploy sha256:88612073f083

@@ -744,3 +744,10 @@ commit pre-deploy live-unknown; merge HEAD: 1e4d517
 ## 2026-10-16 18:35 — CTO sore: slot build trust-badge + retention-tracker
 - ROLLBACK ANCHOR pra-kereta T-1016-N: git HEAD pra-task + image app live (dicatat utk kereta malam, deploy bukan slot ini — window doctrine).
 - Task diambil: prd-trust-badge-live-01 (P0) + prd-retention-tracker-01 (P1) PARALEL (non-overlap: src/ vs ~/.hermes/scripts/).
+
+
+## 2026-10-18 07:4x — CTO pagi (Minggu) — night-audit + merge prd-2026-10-17-01 + SQL cleanup smoke
+- Night-audit: commit main 21:45-07:00 TIDAK ADA (terakhir 20:45 kemarin; commit 03:09-03:15 = bo-2026-10-18-01 backoffice, changelog terdokumentasi, deploy 03:14 sah) → BERSIH, bukan bypass. Catatan: 3 commit main (18e3613/c9306fc/ad69069) belum ter-push saat slot mulai → di-push bersama merge commit abd3129.
+- Merge prd-2026-10-17-01: dry-run exit 0 → merge --no-ff abd3129; SCHEMA-SHIELD 0 file DDL; tsc 0; test 11/11 + 100/100; staging :3100 smoke POST lengkap (200/409/403/injection->direct). Status → in_train T-1018-N (BUILD-ONLY slot pagi; deploy = kereta malam).
+- ROLLBACK ANCHOR: image ID pre-deploy teknikalidnew-app sha256:88612073f083 (dari changelog bo-2026-10-18-01 03:14); git revert abd3129.
+- SQL DESTRUCTIVE LOG (policy 14 Sep): DELETE FROM "WaitlistSubscriber" WHERE id IN (2,3) AND (value LIKE 'smoke-test-cto@%' OR channel='wa') → DELETE 2 (row smoke-test sendiri, dibuat 3 menit sebelumnya via staging; backup valid 2026-10-18 01:15 ~/backups/teknikalid/last-success; SELECT COUNT WHERE sama = 2 preview). Post-check count=0 = baseline.
