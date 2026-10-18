@@ -88,7 +88,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   [...avgValueByTicker.values()]
     .map((a) => ({ ...a, value: a.value / 21 })) // avg per hari-trading
     .sort((a, b) => b.value - a.value)
-    .slice(0, 500)
+    // seo-2026-10-18-03: 500→580 — ekspansi batch-1 halaman /saham/* (+80 saham likuid yang
+    // belum di-sitemap; halamannya sudah 200 deterministik). Gate rollout programmatic:
+    // batch 50-100, monitor GSC 2-4 minggu sebelum batch-2 (target akhir 962 aktif).
+    .slice(0, 580)
     .forEach((r) => sitemapTickers.add(r.ticker));
   gscIntentTickers.forEach((t) => sitemapTickers.add(t));
 

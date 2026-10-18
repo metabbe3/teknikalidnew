@@ -35,6 +35,17 @@ async function loadKenapaData(tickerRaw: string) {
     changePercent,
   });
 
+  // seo-2026-10-18-03: related same-sector via getStockList REUSE (cache 5 mnt service) — API Reuse Rule.
+  let related: Array<{ ticker: string; name: string; changePercent: number | null }> = [];
+  if (base.stock.sector) {
+    const peers = (await stockMarketService.getStockList(base.stock.sector))
+      .filter((s) => s.ticker !== tickerJK && s.changePercent !== null)
+      .sort((a, b) => Math.abs(a.changePercent! - (changePercent ?? 0)) - Math.abs(b.changePercent! - (changePercent ?? 0)))
+      .slice(0, 4)
+      .map((s) => ({ ticker: s.ticker, name: s.name, changePercent: s.changePercent }));
+    related = peers;
+  }
+
   const article = await prisma.article.findFirst({
     where: {
       articleType: ArticleType.MOVEMENT_ANALYSIS,
@@ -63,6 +74,7 @@ async function loadKenapaData(tickerRaw: string) {
     week52High: base.week52High,
     week52Low: base.week52Low,
     asOfDate: base.latest?.date ?? null,
+    related,
     article,
   };
 }
@@ -91,13 +103,26 @@ export async function generateMetadata({
   const { name, tickerClean, explainer, article } = data;
   const dir = directionLabel(explainer?.direction);
 
+  // seo-2026-10-18-03 (gate metadata-shape): variasikan modifiers per arah × sektor
+  // supaya 499 URL tidak berbagi 1 generated title shape (scaled-content gate).
+  const dirWord = dir === "Datar" ? null : dir.toLowerCase();
+  const sectorMod = data.sector ? ` Sektor ${data.sector}` : "";
   const title = article?.title
-    ?? (dir === "Datar"
-      ? `Analisis Teknikal Saham ${name} (${tickerClean}) Hari Ini`
-      : `Kenapa Saham ${name} ${dir} Hari Ini — Analisis Teknikal ${tickerClean}`);
+    ?? (dirWord === "naik"
+      ? `Kenapa Saham ${name} Naik Hari Ini — Analisis ${tickerClean}${sectorMod}`
+      : dirWord === "turun"
+        ? `${name} Turun Hari Ini: Penyebab Teknikal ${tickerClean}${sectorMod}`
+        : dirWord
+          ? `Saham ${name} ${dir} Hari Ini — Ringkasan Teknikal ${tickerClean}`
+          : `Analisis Teknikal ${name} (${tickerClean}) Hari Ini${sectorMod}`);
 
+  const descLead = dirWord === "naik"
+    ? `Penyebab saham ${name} naik hari ini berdasarkan indikator`
+    : dirWord === "turun"
+      ? `Alasan ${name} melemah hari ini dari sisi teknikal`
+      : `Ringkasan pergerakan dan sinyal teknikal ${name}`;
   const description =
-    article?.excerpt ?? explainer?.prose.slice(0, 160) ?? `Analisis teknikal dan pergerakan harga saham ${name} hari ini.`;
+    article?.excerpt ?? explainer?.prose.slice(0, 160) ?? `${descLead}${sectorMod} — RSI, MACD, volume, dan posisi tren ${tickerClean}.`;
 
   const ogImage = `${SITE_URL}/api/og?title=${encodeURIComponent(title)}&type=movement&ticker=${tickerClean}`;
 
@@ -135,7 +160,7 @@ export default async function MovementAnalysisPage({
   const data = await loadKenapaData(ticker);
   if (!data) notFound();
 
-  const { tickerClean, tickerJK, name, explainer, asOfDate, article } = data;
+  const { tickerClean, tickerJK, name, explainer, asOfDate, article, related } = data;
   const dir = directionLabel(explainer?.direction);
   const isNaik = dir === "Naik";
   const isDatar = dir === "Datar";
@@ -309,6 +334,38 @@ export default async function MovementAnalysisPage({
               Angka rentang 52 minggu lengkap ({tickerClean}) tersedia di{" "}
               <Link href={`/stocks/${tickerJK}`} className="text-primary hover:underline">halaman saham {tickerClean}</Link>.
             </p>
+          </div>
+        </section>
+      )}
+
+      {/* seo-2026-10-18-03: Related same-sector — internal linking gate (3-5 per halaman) */}
+      {related.length > 0 && (
+        <section className="mx-auto max-w-4xl px-4 pb-8">
+          <div className="rounded-xl border border-border bg-card p-6">
+            <h2 className="text-xl font-bold mb-3">Saham {data.sector} yang Bergerak Serupa</h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              Pergerakan hari ini di sektor {data.sector} — pembanding konteks sebelum menilai {tickerClean}.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {related.map((r) => {
+                const up = (r.changePercent ?? 0) >= 0;
+                return (
+                  <Link
+                    key={r.ticker}
+                    href={`/saham/${r.ticker.replace(/\.JK$/, "").toLowerCase()}/kenapa-naik-hari-ini`}
+                    className="flex items-center justify-between gap-3 rounded-lg border border-border px-4 py-3 text-sm hover:border-primary/40 transition"
+                  >
+                    <span className="min-w-0">
+                      <span className="font-semibold text-foreground">{r.ticker.replace(/\.JK$/, "")}</span>
+                      <span className="block truncate text-muted-foreground">{r.name}</span>
+                    </span>
+                    <span className={`font-mono font-semibold ${up ? "text-bullish" : "text-bearish"}`}>
+                      {up ? "+" : ""}{r.changePercent?.toFixed(2)}%
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         </section>
       )}
