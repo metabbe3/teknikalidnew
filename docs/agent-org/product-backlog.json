@@ -265,7 +265,10 @@
     "verdict": "belum lolos, 12 hari tersisa; lever = saved-screen deploy 8 Okt"
    },
    "review_date": "2026-10-23",
-   "review_note": "CEO 16 Okt: tetap live_monitoring sampai retention trio live (18 Okt); impact review pasca-checkpoint 23 Okt → close/superseded ke retention loop."
+   "review_note": "CEO 16 Okt: tetap live_monitoring sampai retention trio live (18 Okt); impact review pasca-checkpoint 23 Okt → close/superseded ke retention loop.",
+   "verdict_council_2026-10-18": "VERDICT Council 18 Okt: KEEP live_monitoring — retention trio belum diverifikasi live (jadwal live 18 Okt hari ini; review checkpoint pasca-impact 23 Okt sudah terjadwal di review_note). Data hook sejauh ini: register_ip_stocks 30d=8 (target >=10, missing 2) — belum gagal, belum lolos; jangan bunuh sebelum checkpoint 23 Okt. Post-23 Okt wajib close/supersede ke retention loop (sudah dilarang menggantung lagi). Pilar: GROWTH (register) + STICKY (retention). NO-GATE screener tetap berlaku (jangan bunuh 272 views/pekan screener).",
+   "next_action": "CEO 23 Okt: impact review pasca retention-trio checkpoint → close atau supersede ke retention loop",
+   "next_action_due": "2026-10-23"
   },
   {
    "id": "prod-2026-09-17-02",
@@ -1152,7 +1155,7 @@
    "id": "idea-2026-10-13-1",
    "date": "2026-10-13",
    "priority": "P2",
-   "status": "idea",
+   "status": "live_monitoring",
    "source": "CEO pagi 13 Okt — follow-up mandate owner 12 Okt (SEO expansion + AI)",
    "title": "Verifikasi dampak landing fundamental (3 halaman baru 12 Okt malam) + CTA Tanya AI 13 landing — baseline 7-hari & decision gate scale",
    "north_star": "growth (traffic & register) — landing fundamental = pintu masuk query mapas (198 dividen/219 undervalued/362 growth di TV live 12 Okt)",
@@ -1162,8 +1165,21 @@
    "research_note": "Riset nightly 13 Okt 21:3x (buffer-keeper): landing fundamental + CTA Tanya AI baru live <24 jam. Baseline 7d pre/full-week: total 1093 views; top paths /stocks 356, / 95, /saham-golden-cross 23; register 4 minggu terakhir = 1/3/3/1 (8 total, stagnan); /auth/signin hanya 10 views 7d. Sinyal baru terukur: referrer ai-search chatgpt.com 8 views 7d, SEMUA jatuh ke 2 halaman: /saham-golden-cross 4 + /stocks 4. Verifikasi dampak entry ini tetap menunggu jendela 7-hari penuh (19-20 Okt) — jangan dipromote sebelum baseline lengkap. Spin-off PRD terpisah: idea-2026-10-13-2 (ai-search visibility + CTA register di halaman AI-landing).",
    "research_brief": "RESEARCH BRIEF (Researcher 13 Okt 2026) — VERDICT: BUILD (sebagai evaluasi terjadwal, bukan build baru). Alasan: item ini = verifikasi dampak fitur yang SUDAH live (landing fundamental af0706f + CTA Tanya AI a00e562) — prosedurnya benar (baseline 7d + decision gate scale/iterate/kill). Bukti eksternal: indeks halaman baru umumnya butuh beberapa hari s/d berminggu-minggu (John Mueller: 'several hours to several weeks'; konvensi SEO 30-60 hari utk halaman baru) — JANGAN menilai landing baru dari minggu-1 GSC saja; window eval minimal 2-4 minggu. Best practice utk CTO/evaluator: (1) pisahkan metrik indexation (GSC coverage/URL Inspection) dari metrik demand (impressions/clicks per-URL) — jangan campur dgn traffic situs-situs; (2) bandingkan page-level 7d vs 28d delta, bukan absolute minggu-1; (3) CTA Tanya AI ukur dwell+click event terpisah dari pageview; (4) guard bot-traffic di perbandingan (isBot=false). Anti-pattern: menilai kegagalan landing <7 hari umur (false kill); menarik kesimpulan +36% WoW sebagai kontribusi landing baru tanpa breakdown per-path. SUMBER: searchenginejournal.com/how-long-before-google-indexes-my-new-page/464309/; monsterinsights.com/google-index (kutipan Mueller); developers.google.com/search/docs (GSC performance doc). BUKTI: SEDANG — timeline indeks Google kuat terdokumentasi; dampak CTA AI di konten saham B2C tidak ada studi spesifik (putuskan dari data internal D+7 s/d D+28).",
    "interim_verdict_d3": "WAIT — demand belum terukur karena discovery-path belum terpasang; fix wiring dulu (idea-2026-10-15-1), eval penuh 16-22 Okt",
-   "review_date": "2026-10-20",
-   "insight": "CEO 17 Okt: DEFER review 20 Okt — wiring internal-link landing (ux-2026-10-17-01) baru naik kereta T-1018 Senin; verifikasi dampak baru bermakna pasca-live. Pilar GROWTH+CONTENT."
+   "review_date": "2026-10-22",
+   "insight": "PRODUCT MODE CTO weekend sore 18 Okt 08:2x — VERDICT DINI D+1 PASCA-WIRING: ITERATE (belum layak scale/kill). DATA (SQL nobot 12-18 Okt): (1) LANDING FUNDAMENTAL: /saham-dividen 1v/1IP + /saham-undervalued 1v/1IP (kunjungan 17 Okt 07:31 WIB, 1 IP 114.12.1.248 Safari macOS, direct — kemungkinan QA/owner sendiri), /saham-value-growth 0v. PRE-LIVE = 0 semua (baseline bersih). (2) WIRING ux-17-01 live 17 Okt ~20:04 — 0 referral homepage//stocks → landing pasca-wiring; sinyal terlalu dini (D+0.5). (3) CTA TANYA AI: cta_click 0 sejak 13 Okt — BUKAN user tak klik, tapi telemetri buta: ctaLabel() di engagement-instrument.tsx hanya match data-engagement/GuestStar/copy-link/SaveScreen — CTA 'Tanya AI' tidak terlacak. Bukti beacon hidup: dwell_tick 642 + scroll_max 336 s.d. 17 Okt. (4) KONTEKS 7d: /stocks 297v/29IP tetap #1; landing baru 0.06% dari traffic — belum berkontribusi. (5) 3/3 URL landing ADA di sitemap.xml. NEXT: (a) patch kecil ctaLabel → tambah selector CTA AI (kandidat task ops P3, 1 baris closest('[data-engagement]') di komponen CTA AI); (b) verdict penuh TETAP 22-25 Okt (window 2-4 minggu riset brief — jangan kill <7 hari); (c) scale decision butuh GSC impressions (landing belum terindeks — cek coverage D+14/D+30). Pilar: GROWTH.",
+   "data_evidence_d1": {
+    "sql_window": "2026-10-12 20:00 s.d. 18 Okt 08:20 WIB, isBot=false",
+    "landing_views": {
+     "/saham-dividen": "1v/1IP",
+     "/saham-undervalued": "1v/1IP (IP sama 114.12.1.248, direct, Safari macOS — suspicious QA/owner)",
+     "/saham-value-growth": "0v"
+    },
+    "wiring_referrals_post_17Okt2000": 0,
+    "ai_cta_clicks_since_13Okt": "0 (cta_click total DB cuma 2 row = E2E test 10 Okt; telemetri ctaLabel tidak match CTA AI — instrumen buta, bukan sinyal user)",
+    "beacon_alive": "dwell_tick 642 / scroll_max 336 s.d. 17 Okt",
+    "top7d": "/stocks 297v/29IP, / 158v/29IP, /saham-golden-cross 24v/7IP",
+    "sitemap": "3/3 landing URL ada di sitemap.xml"
+   }
   },
   {
    "id": "sec-2026-10-13-01",
