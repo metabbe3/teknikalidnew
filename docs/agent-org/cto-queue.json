@@ -1879,6 +1879,92 @@
    "estimate": "1 slot",
    "result": "PASS-1 DONE owner-directed 18 Okt 21:10: emoji->Lucide di halaman inti (home/stocks/detail/oversold/waitlist) + 8 komponen (AI modal/panel/stock-card/thesis/screener/ask-ai-cta). PROD VERIFIED: 200 semua, emoji inti 0 (BBCA: 4->0). Audit skor awal: home 72, stocks 68, detail 70 (lensa ui-craft: font 3-kelas perlu dirapatin jadi 2, shadow 0 di home, radius variatif sudah oke, tracking-tight sudah oke, accent disiplin 1-2 hue = bagus). PASS-2 tersisa: halaman SEO niche (💡🔍⚠ di saham-oversold/pasar/waitlist emojis, ~20 file) + font spine (serif usage audit) + layered shadow home cards.",
    "scheduled_slot": "pass-2 T-1019-N kereta 22:00 19 Okt"
+  },
+  {
+   "id": "prd-2026-10-18-01",
+   "date": "2026-10-18",
+   "type": "prd",
+   "priority": "P2",
+   "status": "spec_ready",
+   "title": "P2 GROWTH: Register funnel 2-step progressive disclosure — 18 views/10 IP /auth/register 30d vs 8 user baru; drop-off form penuh",
+   "prd_id": "idea-2026-10-18-1",
+   "source": "Product Agent nightly 18 Okt (mandate idea-2026-10-16-1 funnel anomaly 30d)",
+   "north_star": "growth register + traffic (north star #90)",
+   "created_at": "2026-10-18T22:10:00+07:00",
+   "spec": {
+    "title": "Register funnel 2-step progressive disclosure + social-proof inline",
+    "date": "2026-10-18",
+    "user_story": [
+     "Sebagai visitor di /auth/register, saya ingin mulai hanya dengan email (1 field) supaya commit kecil dulu sebelum form penuh.",
+     "Sebagai calon user, saya ingin melihat bukti aktivitas live (counter user/screener) supaya percaya layanan ini hidup."
+    ],
+    "acceptance_criteria": [
+     "AC1 LIVE: curl -A Mozilla https://teknikal.id/auth/register -> 200, HTML memuat step-1 (input email + tombol lanjut) BUKAN 3-field satu layar; tsc+build hijau.",
+     "AC2 FUNNEL: 14 hari pasca-deploy, SQL User(createdAt>=deploy)/PageView(/auth/register,isBot=false,>=deploy) >= 1.25x baseline 30d (8/18=44%) — query SQL dilampirkan di result.",
+     "AC3 NO REGRESI: jalur pre-fill landing (ux-2026-10-16-01) tetap jalan — register akun test sukses end-to-end.",
+     "AC4 TELEMETRY: EngagementEvent cta_click register_step1_submit + register_completed > 0 setelah uji."
+    ],
+    "data_evidence": "Query asli teknikalidnew-db-1 30d (2026-09-18..2026-10-18): PageView /auth/register isBot=false 18 views/10 IP; User baru 8 (first-path 5x '/', 1x /auth/register, 2x /auth/complete-profile); WaitlistSubscriber 0 rows.",
+    "impact": 4,
+    "effort": 2,
+    "target_files": [
+     "src/app/auth/register/page.tsx",
+     "src/app/api/auth/register/route.ts (estimasi)",
+     "src/components/auth (estimasi)"
+    ],
+    "db_migrations": false,
+    "dependencies": [
+     "none baru"
+    ],
+    "risk": "low",
+    "estimate_tool_calls": 30,
+    "DONE-WHEN": "AC1+AC3 hijau saat deploy; AC2 dicek 14 hari (SQL count dilampirkan); gagal -> post-mortem singkat di entry.",
+    "tree_basis": "teknikalidnew night/prd-2026-10-17-01 @ 89d696c (riset 18 Okt)"
+   }
+  },
+  {
+   "id": "prd-2026-10-18-02",
+   "date": "2026-10-18",
+   "type": "prd",
+   "priority": "P2",
+   "status": "spec_ready",
+   "title": "P2 REVIVE: Ask-AI mati total (Question 115 semua Juni, 0 sejak Juli; QuestionFeedback 0 selamanya) — diagnose + quality loop + re-expose CTA",
+   "prd_id": "idea-2026-10-18-2",
+   "source": "Product Agent nightly 18 Okt (mandate idea-2026-10-16-1: fitur dipakai lalu mati)",
+   "north_star": "returning users + time spent (north star #90)",
+   "created_at": "2026-10-18T22:10:00+07:00",
+   "spec": {
+    "title": "Ask-AI revive — root-cause + feedback loop + re-expose di permukaan traffic terbesar",
+    "date": "2026-10-18",
+    "user_story": [
+     "Sebagai user di halaman saham, saya ingin tombol Tanya AI yang selalu berfungsi, supaya pertanyaan saya tidak hilang diam-diam.",
+     "Sebagai penerima jawaban AI, saya ingin thumbs up/down + sumber data terlihat, supaya bisa percaya atau koreksi jawaban."
+    ],
+    "acceptance_criteria": [
+     "AC1 DIAGNOSE: root-cause kematian ask-AI terdokumentasi (route hidup/mati, error log, gating) — bukti: curl endpoint + query AgentJob/ErrorLog periode Juli.",
+     "AC2 QUALITY LOOP: thumbs up/down menulis QuestionFeedback (SQL count > 0 setelah uji manual).",
+     "AC3 RE-EXPOSE: CTA Tanya AI live SSR di >= 2 halaman traffic terbesar (curl menemukan CTA di HTML /stocks dan /stocks/[ticker]).",
+     "AC4 USAGE: 14 hari pasca-deploy Question >= 10 baru DAN QuestionFeedback >= 5 (SQL count, bukti fisik)."
+    ],
+    "data_evidence": "Query asli teknikalidnew-db-1: Question 115 total — pekan 2026-06-08: 81, 06-15: 10, 06-22: 1, 06-01: 23; 0 sejak Juli. QuestionFeedback 0 rows SELAMANYA. PageView path ask/tanya: 2 views (older). /stocks = 1228 views/111 IP 30d.",
+    "impact": 3,
+    "effort": 3,
+    "target_files": [
+     "src/app/api/ai/ (estimasi)",
+     "prisma/schema.prisma (QuestionFeedback existing — verify only)",
+     "komponen ask-ai CTA (estimasi src/components/ai)",
+     "src/app/stocks/page.tsx + detail ticker (estimasi)"
+    ],
+    "db_migrations": false,
+    "dependencies": [
+     "z.ai LLM existing (GLM)",
+     "QuestionFeedback table existing"
+    ],
+    "risk": "med",
+    "estimate_tool_calls": 50,
+    "DONE-WHEN": "AC1-AC3 hijau saat deploy; AC4 dicek 14 hari (SQL count dilampirkan); gagal -> verdict di entry.",
+    "tree_basis": "teknikalidnew night/prd-2026-10-17-01 @ 89d696c (riset 18 Okt)"
+   }
   }
  ],
  "tasks": []
