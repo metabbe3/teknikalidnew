@@ -667,3 +667,9 @@
 1. Returning IP 8.6% > ratchet 7.3% — north-star trend sehat; register 2/7d masih merah, tunggu dampak waitlist-fix + perf diet 1-2 minggu.
 2. Kereta T-1021-N Senin 19 Okt: ops-2026-18-c1 (Gemini 429→fallback) + dat-2026-18-c1 (definisi returning dobel 3.4% vs 9.6% — tanpa deploy, laporan formula untuk owner).
 3. Backlog bersih: PentAGI rejected (bukan pilar KPI), 3 drift shipped/monitoring; stok spec_ready 0 — Researcher Senin wajib isi 8-12.
+
+## 2026-10-18 sore (main agent) — qa-2026-10-18-01 CLOSED
+- Rekap mingguan + listicle energy patch DB live-verified: Energy -17,7 terparah · 11 GC/12 DC · 131/31 · oversold 331 (curl /berita 200×2, kontrol minggu lalu utuh, 0 deploy).
+- Queue flip done + commit 0bb9db1 branch night/prd-2026-10-17-01 (bookkeeping CTO sore yang hilang oleh git checkout — LUNAS).
+- sisa bookkeeping CTO (changelog/decisions append) opsional — konten inti sudah tercatat di queue result.
+- Kereta T-1018-N 22:00: hanya prd-2026-10-17-01 (waitlist v1.5); qa-1018 tidak naik (closed tanpa deploy).
