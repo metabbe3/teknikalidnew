@@ -18,10 +18,18 @@ const WA_TEXT = encodeURIComponent(
 );
 
 async function QueuePosition() {
+  // AC3: social proof jujur — count live dari DB, bukan angka statis.
   const count = await prisma.waitlistSubscriber.count().catch(() => 0);
+  if (count === 0) {
+    return (
+      <p className="text-xs text-text-tertiary font-mono">
+        ✨ <span className="text-text-primary font-bold">Jadi yang pertama</span> — antrean dibuka hari ini
+      </p>
+    );
+  }
   return (
     <p className="text-xs text-text-tertiary font-mono">
-      Antrean: <span className="text-text-primary font-bold">#{count + 1}</span> dari target 300 awal
+      Antrean: <span className="text-text-primary font-bold">#{count + 1}</span> dari target 300 awal · {count} sudah bergabung
     </p>
   );
 }
