@@ -3,7 +3,7 @@
 - Audit: GET lama hanya return isActive=true -> 2 saham inactive (964 EQUITY: 962 aktif) HILANG dari tabel & tak bisa di-reactivate dari backoffice (wajib SQL manual). Header hardcode 'IDX40', tanpa sinyal stale, toggle tanpa warning dampak market-snapshot (satu pintu movers/breadth).
 - Perubahan (2 file, API REUSE): route.ts GET dukung ?all=1 (findMany EQUITY tanpa filter isActive, pola findActiveStocksWithPrices) + summary {total,active,inactive}; page.tsx fetch ?all=1, tab Active/Inactive/All (default Active, count dari summary), description dinamis, kolom Last Update + badge stale >72 jam, confirm saat deactivate ('keluar dari movers/breadth homepage').
 - Verify bukti fisik: tsc --noEmit EXIT-0 di worktree; grep all=1/summary/tab/stale/confirm di kedua file; psql EQUITY 964/962/2 = sumber angka summary.
-- Deploy: image pre-deploy = 608cd49e8d10 (up 18 Okt 21:09). Rollback anchor: git revert <merge-commit> / redeploy image lama.
+- Deploy: image pre-deploy = 608cd49e8d10 (up 18 Okt 21:09). Rollback anchor: git revert 5644ad9 / redeploy image 608cd49e8d10.
 ## [2026-10-18 07:5x] cto-pagi — prd-2026-10-17-01: waitlist lead-capture v1.5 MERGED+STAGING-VERIFIED (in_train T-1018-N, belum deploy)
 - Type: prd (fitur GROWTH)  |  PRD: idea-2026-10-17-1b / prd-2026-10-17-01 (night_ready CTO Night 17 Okt)
 - Deploy: PENDING — kereta malam T-1018-N (window 22:00-01:30; slot pagi = BUILD-ONLY)  |  Rollback anchor: git revert abd3129 (merge waitlist v1.5), image pre-deploy = 88612073f083 (deploy bo-03:14)
