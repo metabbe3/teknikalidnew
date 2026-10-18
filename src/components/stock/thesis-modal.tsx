@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useTheses, useUpsertThesis, useDeleteThesis, type ThesisBias } from "@/hooks/use-thesis";
+import { Target } from "lucide-react";
 
 const BIASES: { value: ThesisBias; label: string; active: string }[] = [
   { value: "BULLISH", label: "Bullish", active: "bg-bullish text-white border-bullish" },
@@ -150,7 +151,7 @@ export function ThesisButton({ ticker }: { ticker: string }) {
         href="/auth/signin"
         className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium border border-border text-text-tertiary hover:bg-bg-hover hover:text-text-primary transition-all press-scale"
       >
-        🎯 Kunci tesis
+        <Target className="inline h-4 w-4" aria-hidden /> Kunci tesis
       </Link>
     );
   }
@@ -161,7 +162,7 @@ export function ThesisButton({ ticker }: { ticker: string }) {
         onClick={() => setOpen(true)}
         className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium border border-border text-text-tertiary hover:bg-bg-hover hover:text-text-primary transition-all press-scale"
       >
-        🎯 Kunci tesis
+        <Target className="inline h-4 w-4" aria-hidden /> Kunci tesis
       </button>
       {open && mounted && createPortal(<ThesisForm ticker={ticker} onClose={() => setOpen(false)} />, document.body)}
     </>

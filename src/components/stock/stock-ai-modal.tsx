@@ -31,7 +31,7 @@ function StructuredSummary({ summary, ticker, name }: { summary: string; ticker:
       {parsed.ringkasan && (
         <div>
           <div className="flex items-center gap-1.5 mb-1.5">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-accent">✨ AI Summary</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-accent flex items-center gap-1"><Sparkles className="h-3 w-3" aria-hidden /> AI Summary</span>
           </div>
           <p className="text-sm text-text-secondary leading-relaxed">{parsed.ringkasan}</p>
         </div>
