@@ -46,7 +46,7 @@ export function parseAiText(raw: string): ParsedAi {
 /** Bagikan ringkasan — Web Share API, fallback copy-to-clipboard + dialog native share teks. */
 export async function shareAiStock(name: string, ticker: string, parsed: ParsedAi): Promise<"shared" | "copied" | "failed"> {
   const lines = [
-    `✨ Analisa AI — ${name} (${ticker})`,
+    `Analisa AI — ${name} (${ticker})`,
     "",
     parsed.ringkasan ?? "",
     "",

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { parseAiText, shareAiStock } from "@/components/stock/stock-ai-shared";
+import { Sparkles } from "lucide-react";
 
 /**
  * Modal AI untuk stock-card di halaman /stocks — analisa + tanya saham
@@ -90,7 +91,7 @@ export function StockAiModalButton({ ticker, name }: { ticker: string; name: str
         className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium border border-accent/30 text-accent hover:bg-accent/10 transition-all press-scale"
         aria-label={`Analisa AI ${name}`}
       >
-        <span aria-hidden="true">✨</span> Analisa AI
+        <Sparkles aria-hidden="true" className="inline h-4 w-4" /> Analisa AI
       </button>
       {open && <StockAiModal ticker={ticker} name={name} onClose={() => setOpen(false)} />}
     </>
@@ -177,7 +178,7 @@ export function StockAiModal({ ticker, name, onClose }: { ticker: string; name: 
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0">
           <div className="flex items-center gap-2">
-            <span className="text-base font-semibold">✨ Analisa AI</span>
+            <span className="text-base font-semibold flex items-center gap-1.5"><Sparkles className="h-4 w-4" /> Analisa AI</span>
             <span className="text-[10px] px-1.5 py-0.5 rounded bg-accent/10 text-accent font-medium">AI</span>
           </div>
           <button
