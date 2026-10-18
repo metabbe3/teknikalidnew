@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useToast } from "@/components/paper-trading/toast";
 import { parseAiText, shareAiStock } from "@/components/stock/stock-ai-shared";
+import { Sparkles } from "lucide-react";
 
 /**
  * Tombol "✨ Ringkas AI" + panel "Tanya saham ini" — halaman detail saham.
@@ -178,7 +179,7 @@ export function StockAiPanel({ data }: { data: StockAiData }) {
     <div className="mt-3 rounded-xl bg-bg-card border border-border p-4">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-text-primary">✨ Analisa AI</span>
+          <span className="text-sm font-semibold text-text-primary flex items-center gap-1.5"><Sparkles className="h-4 w-4" /> Analisa AI</span>
           <span className="text-[10px] px-1.5 py-0.5 rounded bg-accent/10 text-accent font-medium">
             AI
           </span>

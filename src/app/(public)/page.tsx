@@ -30,6 +30,7 @@ import { SnapshotCard, type SnapshotCardData } from "@/components/berita/snapsho
 import { DailyBriefHero } from "@/components/berita/daily-brief-hero";
 import { MarketBreathStrip } from "@/components/ui/market-breath-strip";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { Zap } from "lucide-react";
 
 const MiniScreenerPreview = dynamicImport(
   () => import("@/components/home/mini-screener-preview").then((m) => ({ default: m.MiniScreenerPreview })),
@@ -454,7 +455,7 @@ export default async function HomePage() {
                 aria-label={`${oversoldCount} saham oversold — lihat daftar lengkap`}
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" aria-hidden />
-                ⚡ Sesi Ekstrem: {oversoldCount} saham oversold (RSI&lt;30) — lihat daftar
+                <Zap className="inline h-4 w-4 text-amber-500" /> Sesi Ekstrem: {oversoldCount} saham oversold (RSI&lt;30) — lihat daftar
               </Link>
             )}
             <h1 className="mt-5 font-serif text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.03] text-text-primary">

@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { WaitlistForm } from "@/components/waitlist/waitlist-form";
+import { Sparkles } from "lucide-react";
 
 export const dynamic = "force-dynamic"; // ISR trap doctrine + posisi antrean live
 
@@ -14,7 +15,7 @@ export const metadata = {
 
 const WA_GATEWAY = "https://wa.me/62809917356"; // channel @teknikalid gateway
 const WA_TEXT = encodeURIComponent(
-  "Halo, saya mau ikut waitlist Brief Pasar 06:30 TeknikalID 📈",
+  "Halo, saya mau ikut waitlist Brief Pasar 06:30 TeknikalID ⚡",
 );
 
 async function QueuePosition() {
@@ -23,7 +24,7 @@ async function QueuePosition() {
   if (count === 0) {
     return (
       <p className="text-xs text-text-tertiary font-mono">
-        ✨ <span className="text-text-primary font-bold">Jadi yang pertama</span> — antrean dibuka hari ini
+        <Sparkles className="inline h-4 w-4" /> <span className="text-text-primary font-bold">Jadi yang pertama</span> — antrean dibuka hari ini
       </p>
     );
   }

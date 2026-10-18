@@ -6,6 +6,7 @@ import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { formatPrice, formatPercent, stripJk, changeColor, rsiColor } from "@/lib/utils";
 import { SITE_URL } from "@/lib/constants";
+import { Target, TrendingUp } from "lucide-react";
 
  // 12 Okt: failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal // 5 min ISR
 
@@ -239,13 +240,13 @@ export default async function SahamOversoldPage() {
             🔍 Screener Lengkap
           </Link>
           <Link href="/saham-golden-cross" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">
-            📈 Saham Golden Cross
+            <TrendingUp className="inline h-4 w-4" /> Saham Golden Cross
           </Link>
           <Link href="/saham-macd-bullish" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">
-            📈 Saham MACD Bullish
+            <TrendingUp className="inline h-4 w-4" /> Saham MACD Bullish
           </Link>
           <Link href="/saham-stochastic-oversold" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">
-            🎯 Saham Stochastic Oversold
+            <Target className="inline h-4 w-4" /> Saham Stochastic Oversold
           </Link>
           <Link href="/saham-overbought" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">
             ⚠️ Saham Overbought

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { Sparkles } from "lucide-react";
 
 /**
  * Tanya AI Screener — tombol di /stocks, modal chat bahasa manusia.
@@ -142,7 +143,7 @@ export function ScreenerAiButton() {
         aria-label="Tanya AI"
         className="inline-flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-3.5 py-2 text-xs font-semibold text-accent hover:bg-accent/20 transition-colors press-scale"
       >
-        ✨ Tanya AI
+        <Sparkles className="h-3.5 w-3.5" aria-hidden /> Tanya AI
       </button>
     );
   }
@@ -158,7 +159,7 @@ export function ScreenerAiButton() {
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0">
           <div>
-            <p className="text-sm font-bold">✨ Tanya AI</p>
+            <p className="text-sm font-bold"><Sparkles className="h-3.5 w-3.5" aria-hidden /> Tanya AI</p>
             <p className="text-[11px] text-text-tertiary">Screener bahasa manusia</p>
           </div>
           <button

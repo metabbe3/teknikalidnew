@@ -46,6 +46,7 @@ import { portfolioService } from "@/domains/portfolio/portfolio.service";
 import DailyAnalysisSection from "@/components/stock/daily-analysis-section";
 import { LoginGate } from "@/components/auth/login-gate";
 import { auth } from "@/lib/auth";
+import { Newspaper } from "lucide-react";
 
 // ponytail: page is per-request SSR (auth-gated data varies by session — can't be SSG).
 export const dynamic = "force-dynamic";
@@ -754,10 +755,10 @@ export default async function StockDetailPage({
         <div className="sticky top-[57px] z-40 border-b border-border bg-bg-primary/95 backdrop-blur">
           <div className="max-w-7xl mx-auto px-4 py-1.5 flex gap-1 overflow-x-auto">
             {[
-              ["chart", "📈 Chart"],
-              ["indikator", "🧭 Indikator"],
-              ["ai", "✨ AI"],
-              ...(isAuthed ? [["plan", "🎯 Trading Plan"]] : []),
+              ["chart", "Chart"],
+              ["indikator", "Indikator"],
+              ["ai", "AI"],
+              ...(isAuthed ? [["plan", "Trading Plan"]] : []),
             ].map(([id, label]) => (
               <a
                 key={id}
@@ -853,7 +854,7 @@ export default async function StockDetailPage({
                 href={`/berita/${brief.slug}`}
                 className="group flex items-start gap-3 rounded-xl border border-accent/25 bg-accent/5 p-4 hover:depth-shadow-hover transition-all"
               >
-                <span className="shrink-0 text-lg" aria-hidden>📰</span>
+                <span className="shrink-0 text-lg" aria-hidden><Newspaper className="inline h-4 w-4" /></span>
                 <div className="min-w-0">
                   <p className="text-[10px] font-bold uppercase tracking-wider text-accent">Disebut di Brief Pasar Hari Ini</p>
                   <p className="mt-0.5 text-sm font-semibold text-text-primary leading-snug group-hover:text-accent transition-colors">
