@@ -278,3 +278,6 @@ Ke-3 kalinya klaim kesegaran sinyal lolos generator Mandor: qa-2026-09-27-01 (hi
 - Akar masalah: guard deterministik (qa-27-01, qa-30-01) diterapkan di jalur review manual, tapi GENERATOR artikel belum punya assertion — narasi tetap bisa mengambil angka dari hari/template lain. Angka hari-sama ≠ angka hari-lain yang "mirip".
 - Pelajaran: superlatif & breadth WAJIB di-generate dari SQL berparameter tanggal di jalur generator itu sendiri (bukan diverifikasi belakangan), plus assertion pra-publish: dua hari berbeda tidak boleh menghasilkan angka breadth identik; klaim "sejak <tgl>" wajib dibuktikan query sebelum dirangkai ke kalimat.
 - Cek rutin reviewer: untuk tiap artikel multi-hari, cocokkan angka per-nama-hari ke snapshot DB hari itu — bukan hari publikasi.
+
+- 18 Okt (Council): job LLM yang 4 pekan error 429 dan fungsi overlap dgn job lain harus di-supersede di pekan PERTAMA error, bukan dibiarkan makan slot Senin pagi (Growth Weekly Retro vs Council). Duplikasi LLM = spend dobel utk output dobel.
+- 18 Okt (Council): dua script retro/KPI menghasilkan angka berbeda utk metric yang sama (returning 3.4% vs 9.6%) — setiap metric North Star wajib punya SATU definisi tertulis sebelum baseline/ratchet dipasang; kalau tidak, ratchet men-target angka yang salah.

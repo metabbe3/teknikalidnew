@@ -662,3 +662,8 @@
 - In-flight: kereta T-1018-N 22:00 = prd-2026-10-17-01 waitlist v1.5 (SATU-SATUNYA in_train); ops-13-01 nunggu owner TCC (verify Senin 06:00); FE Monday = register-conversion audit READ-ONLY (CTO note 18 Okt).
 - Jebakan: (1) kolom mixed-case WAJIB quote "isBot" (kena LAGI slot ini); (2) ctaLabel fallback selector tidak menutup CTA AI → jangan baca cta_click=0 sebagai 'user tak klik' sebelum patch; (3) repo ~/Documents di branch night/prd-2026-10-17-01 — main commit WAJIB via worktree /tmp/bo1018-deploy.
 - Langkah pertama slot berikutnya: baca queue → boarding gate T-1018-N final → build+deploy 22:00-01:30 + smoke POST live + ISR warm-up.
+
+### 2026-10-18 (Minggu) — CEO pagi
+1. Returning IP 8.6% > ratchet 7.3% — north-star trend sehat; register 2/7d masih merah, tunggu dampak waitlist-fix + perf diet 1-2 minggu.
+2. Kereta T-1021-N Senin 19 Okt: ops-2026-18-c1 (Gemini 429→fallback) + dat-2026-18-c1 (definisi returning dobel 3.4% vs 9.6% — tanpa deploy, laporan formula untuk owner).
+3. Backlog bersih: PentAGI rejected (bukan pilar KPI), 3 drift shipped/monitoring; stok spec_ready 0 — Researcher Senin wajib isi 8-12.
