@@ -53,11 +53,24 @@ async function loadKenapaData(tickerRaw: string) {
     tickerJK,
     tickerClean,
     name: base.stock.name,
+    sector: base.stock.sector,
+    industry: base.stock.industry,
+    businessActivity: base.stock.businessActivity,
+    listingBoard: base.stock.listingBoard,
     changePercent,
     explainer,
+    close: base.close,
+    week52High: base.week52High,
+    week52Low: base.week52Low,
     asOfDate: base.latest?.date ?? null,
     article,
   };
+}
+
+/** seo-2026-10-18-02: posisi harga sekarang dalam range 52 minggu (prose kualitatif, tanpa desimal gated). */
+function rangePositionPct(close: number | null, low: number | null, high: number | null): number | null {
+  if (close === null || low === null || high === null || high <= low) return null;
+  return ((close - low) / (high - low)) * 100;
 }
 
 function directionLabel(d: MoveExplainer["direction"] | undefined): string {
@@ -132,6 +145,31 @@ export default async function MovementAnalysisPage({
       ? "bg-muted text-muted-foreground"
       : "bg-bearish/15 text-bearish";
   const DirIcon = isNaik ? TrendingUp : isDatar ? Activity : TrendingDown;
+
+  // seo-2026-10-18-02: section tambahan (YMYL depth) — semua dari data yang sudah di-fetch.
+  const rangePos = rangePositionPct(data.close, data.week52Low, data.week52High);
+  const rangeLabel =
+    rangePos === null ? null
+    : rangePos >= 80 ? "dekat puncak 52 minggu"
+    : rangePos >= 60 ? "di paruh atas rentang 52 minggu"
+    : rangePos >= 40 ? "di tengah rentang 52 minggu"
+    : rangePos >= 20 ? "di paruh bawah rentang 52 minggu"
+    : "dekat dasar 52 minggu";
+
+  const faqItems = [
+    {
+      q: `Kenapa saham ${name} (${tickerClean}) ${dir.toLowerCase()} hari ini?`,
+      a: explainer?.prose ?? `Pergerakan harga ${name} hari ini dianalisis dari indikator teknikal utama — RSI, MACD, posisi harga terhadap SMA/EMA, dan aktivitas volume. Ringkasan driver ada di bagian Analisis Teknikal di atas.`,
+    },
+    {
+      q: `Apakah ${tickerClean} layak dibeli setelah ${dir.toLowerCase()}?`,
+      a: `Analisa TeknikalID bersifat deskriptif, bukan rekomendasi beli/jual. ${tickerClean} ${dir.toLowerCase()} dengan kondisi indikator yang dijelaskan di atas — keputusan beli sebaiknya mempertimbangkan toleransi risiko, rencana trading, dan konteks fundamental. Baca ${`metodologi kami`} untuk memahami bagaimana angka ini dihitung.`,
+    },
+    {
+      q: `Bagaimana cara membaca posisi ${tickerClean} terhadap rata-rata harga?`,
+      a: `Posisi harga terhadap SMA 20/50 dan EMA menunjukkan arah tren jangka pendek-menengah: harga di atas rata-rata = tekanan beli dominan; di bawah = tekanan jual. Detail status tren ${tickerClean} tersedia gratis di halaman sahamnya.`,
+    },
+  ];
 
   const readingTime = article ? estimateReadingTime(article.content) : null;
 
@@ -219,6 +257,91 @@ export default async function MovementAnalysisPage({
           <ArticleContent content={article.content} />
         </div>
       )}
+
+      {/* seo-2026-10-18-02: Ringkasan perusahaan — konteks YMYL unik per halaman */}
+      {(data.businessActivity || data.sector) && (
+        <section className="mx-auto max-w-4xl px-4 pb-8">
+          <div className="rounded-xl border border-border bg-card p-6">
+            <h2 className="text-xl font-bold mb-3">Tentang {name} ({tickerClean})</h2>
+            {data.businessActivity && (
+              <p className="text-base text-foreground/90 leading-relaxed mb-4">{data.businessActivity}</p>
+            )}
+            <div className="flex flex-wrap gap-2 text-sm">
+              {data.sector && (
+                <span className="rounded-full bg-muted px-3 py-1 text-muted-foreground">
+                  Sektor: {data.sector}
+                </span>
+              )}
+              {data.industry && (
+                <span className="rounded-full bg-muted px-3 py-1 text-muted-foreground">
+                  Industri: {data.industry}
+                </span>
+              )}
+              {data.listingBoard && (
+                <span className="rounded-full bg-muted px-3 py-1 text-muted-foreground">
+                  Papan Pencatatan: {data.listingBoard}
+                </span>
+              )}
+            </div>
+            {data.sector && (
+              <p className="mt-4 text-sm text-muted-foreground">
+                Perbandingan dengan saham sektor {data.sector} lainnya:{" "}
+                <Link href={`/sektor`} className="text-primary hover:underline">lihat performa sektor</Link>.
+              </p>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* seo-2026-10-18-02: Posisi dalam rentang 52 minggu */}
+      {rangeLabel && (
+        <section className="mx-auto max-w-4xl px-4 pb-8">
+          <div className="rounded-xl border border-border bg-card p-6">
+            <h2 className="text-xl font-bold mb-3">Posisi Harga dalam Rentang 52 Minggu</h2>
+            <p className="text-base text-foreground/90 leading-relaxed">
+              Saat analisa ini dibuat, harga {name} berada <strong>{rangeLabel}</strong> — perbandingan
+              terhadap harga tertinggi dan terendah dalam setahun terakhir. Saham yang bergerak mendekati
+              puncak rentang umumnya sedang dalam tren naik jangka menengah, sementara yang mendekati dasar
+              rentang bisa berada dalam fase akumulasi atau tekanan jual berkepanjangan — konteks penting
+              sebelum menilai arti pergerakan hari ini.
+            </p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              Angka rentang 52 minggu lengkap ({tickerClean}) tersedia di{" "}
+              <Link href={`/stocks/${tickerJK}`} className="text-primary hover:underline">halaman saham {tickerClean}</Link>.
+            </p>
+          </div>
+        </section>
+      )}
+
+      {/* seo-2026-10-18-02: FAQ — FAQPage schema untuk rich result */}
+      <section className="mx-auto max-w-4xl px-4 pb-8">
+        <div className="rounded-xl border border-border bg-card p-6">
+          <h2 className="text-xl font-bold mb-4">Pertanyaan Umum tentang {tickerClean}</h2>
+          <div className="space-y-5">
+            {faqItems.map((f) => (
+              <div key={f.q}>
+                <h3 className="font-semibold text-foreground mb-1.5">{f.q}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{f.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: faqItems.map((f) => ({
+                "@type": "Question",
+                name: f.q,
+                acceptedAnswer: { "@type": "Answer", text: f.a },
+              })),
+            }),
+          }}
+        />
+      </section>
+
 
       {/* CTA: Link to stock page */}
       <div className="mx-auto max-w-4xl px-4 py-8">

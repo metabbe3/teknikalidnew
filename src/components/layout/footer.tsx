@@ -19,6 +19,8 @@ const legalLinks = [
   { href: "/disclaimer", label: "Disclaimer" },
   { href: "/privacy", label: "Privasi" },
   { href: "/terms", label: "Ketentuan" },
+  { href: "/metodologi", label: "Metodologi" },
+  { href: "/about", label: "Tentang Kami" },
 ];
 
 export function Footer() {

@@ -173,11 +173,12 @@ export default async function StocksPage() {
       <section className="border-b border-border bg-bg-card">
         <div className="max-w-7xl mx-auto px-4 py-4 sm:py-5">
           <MarketStatus marketStatus={marketInfo.marketStatus} latestPrice={latestPrice} />
-          <h1 className="mt-3 font-serif text-2xl sm:text-3xl font-semibold tracking-tight text-text-primary">
+          <h1 id="radar" className="mt-3 font-serif text-2xl sm:text-3xl font-semibold tracking-tight text-text-primary">
             Radar Saham IDX
           </h1>
           <p className="mt-1 text-xs text-text-tertiary">
-            {IDX_STOCKS.length}+ saham — cari langsung di bawah, atau saring sesuai strategi.
+            {IDX_STOCKS.length}+ saham — cari langsung di bawah, atau saring sesuai strategi. IDX Radar
+            TeknikalID memantau harga, RSI, MACD, dan volume seluruh saham BEI setiap hari bursa.
           </p>
           <div className="mt-3">
             <MarketBreathStrip
