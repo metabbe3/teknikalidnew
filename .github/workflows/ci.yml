@@ -43,8 +43,15 @@ jobs:
           npx prisma validate
           npx prisma generate
 
-      - name: Apply migrations to CI database
-        run: npx prisma migrate deploy
+      - name: Install psql client
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
+
+      - name: Materialize schema on CI database (diff, migration-history agnostic)
+        run: |
+          npx prisma migrate diff \
+            --from-empty --to-schema-datamodel prisma/schema.prisma --script > /tmp/schema.sql
+          docker exec -i ${{ job.services.postgres.id }} true 2>/dev/null || true
+          PGPASSWORD=ci psql -h 127.0.0.1 -U ci -d teknikalid_ci < /tmp/schema.sql
 
       - name: Typecheck (tsc --noEmit)
         run: npx tsc --noEmit
