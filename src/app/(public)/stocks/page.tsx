@@ -90,13 +90,12 @@ function MarketStatus({ marketStatus, latestPrice }: { marketStatus: MarketStatu
 
 export default async function StocksPage() {
   const session = await auth().catch(() => null);
-  const [rows, latestPrice, marketInfo] = await Promise.all([
-    stockMarketService.getStockList(),
+  // perf-2026-10-18-01: daftar saham (962 baris) tidak lagi di-serialize ke HTML/RSC flight
+  // (~977KB → shell) — SahamView fetch /api/stocks client-side (cache 5 mnt, endpoint lama).
+  const [latestPrice, marketInfo] = await Promise.all([
     stockMarketService.getLatestPriceDate(),
     stockMarketService.getMarketStatusForPage(),
   ]);
-
-  const sectors = [...new Set(rows.map((s) => s.sector))].sort();
 
   // ref-2026-10-17-01: breadth + top movers dari SATU pintu (market-snapshot),
   // identik dengan home/pasar/berita. Tidak lagi dihitung lokal dari getStockList.
@@ -222,7 +221,7 @@ export default async function StocksPage() {
             description="Cari, saring per sektor, urutkan 900+ saham — atau gunakan Screener untuk filter sinyal teknikal."
           />
           <Suspense fallback={<div className="p-8 text-center text-text-secondary">Memuat…</div>}>
-            <SahamView stocks={rows} sectors={sectors} assetClass="EQUITY" linkBase="/stocks" />
+            <SahamView assetClass="EQUITY" linkBase="/stocks" />
           </Suspense>
 
           {/* Discovery section — DIPINDAH ke bawah tabel (owner 18 Okt: tabel harus langsung kelihatan) */}
