@@ -936,3 +936,35 @@ Konsensus 2026: E-E-A-T+CWV+intent top-3; AIO potong CTR; YMYL finance wajib aut
 - Rekomendasi: B terbatas — audit READ-ONLY saja di slot Frontend Builder Senin 19:15 (bukan build); keputusan build SETELAH checkpoint 23 Okt. Register = pemicu GROWTH termurah (views 1.266/minggu sudah ada, konversinya yang bocor); returning butuh siklus mingguan penuh dulu.
 ## [SEO BATCH "LAKUKAN SEMUA" 18 Okt 08:1x — commit 92783a5 — owner-directed deploy]
 4 prioritas riset SEO dieksekusi sekaligus: (1) /metodologi BARU (YMYL trust: sumber data, formula, update, QA, batasan) + footer links; (2) /saham/* programmatic 218→438+ kata via Tentang-perusahaan + rentang-52-minggu + FAQ w/ FAQPage JSON-LD — 0 compute baru (data dari getStockDetailForPage existing, patuh API Reuse); (3) IDX Radar anchor+keyword (brand query pos 12); (4) Brief backlink Threads founder-led tersimpan utk Mandor (policy SOSMED aman). Live-verified: metodologi 200/57KB, aadi 438 kata+schema, stocks tetap 75KB, home 200, tsc 0. Budget: owner-directed (routine utuh).
+
+## [COUNCIL] Minggu 2026-10-12..18 — retro & arah pekan 19-25 Okt
+**Skor pekan**: views 901 (WoW +15.5% dari 780) · register views 1 (WoW 6→1) · new users 2 (WoW 3→2) · returning IP 9.6% (83 IP; ⚠ definisi metric dobel vs dashboard 3.4% — task dat-2026-10-18-c1) · North Star STICKY returning 3.4% vs target 8% per 25 Nov.
+
+**✅ WORKS**
+- Screener /stocks = 272 views/pekan (30% traffic) — usage kuat, NO-GATE tetap.
+- Signal pages naik: golden-cross 20→24, oversold 1→7, volume-spike 1→4 — sinyal = discovery engine.
+- Konten: listicle > brief — listicle-konsumsi 5v, listicle-energy 4v, brief terbaik cuma 3v. Brief 6-9 Okt semua 0v.
+
+**❌ DOESN'T WORK**
+- Register funnel 6→1 views (data tak konsisten dgn new users 2 — perlu verifikasi tracking).
+- Konten brief harian pada hari merah justru 0v (6-9 Okt) — momentum views datang dari listicle.
+- Senin traffic spike 274 lalu runtuh 46 (Jumat) — volatil, tiang tunggal.
+
+**❓ CONFUSING (observasi 1 pekan lagi)**
+- Pekan 12-18 Okt = pekan GSC reindex + retention-trio live — naik 15.5% belum bisa dibilang trend; tunggu 1 pekan bersih.
+- new users 2 vs register views 1 — definisi/register tracking perlu dicek (gabung dgn task metric dobel).
+
+**🛑 STOP**
+- Job 'Growth Weekly Retro' (Senin 08:20) — error Gemini 429 selama 4 pekan, duplikasi Council → supersede (task ops-2026-10-18-c1, disable jangan delete).
+- Tidak ada konten yang perlu dihentikan; brief tetap jalan (mesin DAILY_SNAPSHOT 40/pekan sehat).
+
+**🎯 3 PRIORITAS PEKAN 19-25 OKT** (pilar KPI dilayani)
+1. **Samakan definisi returning-visitor** → satu angka North Star (dat-2026-10-18-c1) — target: 1 definisi resmi di north-star.md. [TRUST]
+2. **Verifikasi live retention trio + checkpoint 23 Okt** → keputusan close/supersede prod-2026-09-17-01. [STICKY+GROWTH]
+3. **Mandor: naikkan listicle 2→3/pekan (jangan kurangi brief)** — satu listicle friksi-rendah per hari pasar merah (format 'konsumsi/energy' terbukti). Target: views/pekan ≥1.000 dan register views ≥3. [GROWTH+CONTENT]
+
+**Mandor baca ini tiap 06:30**: mix konten pekan depan = brief harian TETAP + listicle 3x (Sel/Kam/Sab), topik prioritas: sektor konsumsi & energy (bukti views 5+4). JANGAN sentuh brief/preset apa pun.
+
+**@owner (FYI, bukan blocking)**: retention trio menyentuh register flow (bukan core auth) — sesuai verdict CEO 17 Sep, bukan owner-only. Metric dobel returning 3.4% vs 9.6% akan diselesaikan agent; definisi final = keputusan owner.
+## [SEO AGENT SKILLS MANDATE 18 Okt 09:1x — owner gw 30182 "pastikan agent urus SEO pakai skills baru + selalu research"]
+(1) Skill mktg-seo-programmatic v2.4.2 vendored (AgriciDaniel/claude-seo MIT, 19.1k★, injection-scan clean) — gates: uniqueness ≥40%, metadata shape variasi, rollout 50-100/batch. (2) 3 job SEO di-patch prompt: Keyword Researcher (Selasa) + Skills WAJIB blok + riset best-practice mingguan (web_search tiap run, [SEO-ALERT] kalau core update); Content Generator Tue/Thu + answer-block 40-60 kata wajib; SEO Health Monitor + gates checklist. (3) Eksekusi gate-pass terdeploy 4356268: metadata 4-shape×sektor, related same-sector linking (reuse getStockList), sitemap batch-1 +80 (1780→2017 URL, 578 /saham/*). Owner-directed deploy. Batch-2 setelah GSC 2-4 minggu.
