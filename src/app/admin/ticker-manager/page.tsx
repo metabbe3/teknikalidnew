@@ -25,35 +25,56 @@ interface TickerEntry {
 
 interface TickersData {
   tickers: TickerEntry[];
+  summary: { total: number; active: number; inactive: number };
+}
+
+// ponytail: 72h cutoff ≈ weekend gap; proper WIB trading-calendar check if this misfires
+const STALE_MS = 72 * 60 * 60 * 1000;
+
+function isStale(lastUpdate: string | null) {
+  if (!lastUpdate) return false;
+  return Date.now() - new Date(lastUpdate).getTime() > STALE_MS;
 }
 
 export default function TickerManagerPage() {
   const [search, setSearch] = useState("");
+  const [tab, setTab] = useState<"active" | "inactive" | "all">("active");
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery<TickersData>({
     queryKey: ["admin-tickers"],
     queryFn: async () => {
-      const r = await fetch("/api/admin/tickers");
+      const r = await fetch("/api/admin/tickers?all=1");
       if (!r.ok) return undefined;
       return r.json();
     },
     refetchInterval: 60_000,
   });
 
+  const summary = data?.summary;
+
   const filtered = useMemo(() => {
     if (!data?.tickers) return [];
+    let rows = data.tickers;
+    if (tab === "active") rows = rows.filter((t) => t.isActive);
+    if (tab === "inactive") rows = rows.filter((t) => !t.isActive);
     const q = search.toLowerCase();
-    if (!q) return data.tickers;
-    return data.tickers.filter(
+    if (!q) return rows;
+    return rows.filter(
       (t) =>
         t.ticker.toLowerCase().includes(q) ||
         t.name.toLowerCase().includes(q) ||
         t.sector.toLowerCase().includes(q),
     );
-  }, [data?.tickers, search]);
+  }, [data?.tickers, tab, search]);
 
   async function toggleActive(ticker: string, currentActive: boolean) {
+    if (currentActive) {
+      const ok = window.confirm(
+        `Saham keluar dari movers/breadth homepage (market-snapshot). Non-aktifkan ${ticker}?`,
+      );
+      if (!ok) return;
+    }
     try {
       const res = await fetch("/api/admin/tickers", {
         method: "PATCH",
@@ -99,6 +120,23 @@ export default function TickerManagerPage() {
       },
     },
     {
+      header: "Last Update",
+      cell: (r: TickerEntry) => {
+        if (!r.lastUpdate) return <span className="text-xs text-gray-400">-</span>;
+        const stale = isStale(r.lastUpdate);
+        return (
+          <span className="flex items-center gap-1.5">
+            <span className={`text-xs tabular-nums ${stale ? "text-amber-600 font-semibold" : "text-gray-500"}`}>
+              {new Date(r.lastUpdate).toLocaleDateString("id-ID", { day: "2-digit", month: "short" })}
+            </span>
+            {stale && (
+              <Badge variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200">stale</Badge>
+            )}
+          </span>
+        );
+      },
+    },
+    {
       header: "Status",
       cell: (r: TickerEntry) => (
         <Button
@@ -118,7 +156,7 @@ export default function TickerManagerPage() {
     <div className="space-y-6 fade-in">
       <AdminPageHeader
         title="Ticker Manager"
-        description={`${data?.tickers.length ?? 40} IDX40 stocks with live market data`}
+        description={`${summary?.active ?? 0} aktif / ${summary?.total ?? 0} saham universe IDX`}
         icon={BarChart3}
         actions={
           <Input
@@ -129,6 +167,24 @@ export default function TickerManagerPage() {
           />
         }
       />
+
+      <div className="flex gap-2">
+        {([
+          ["active", `Active (${summary?.active ?? 0})`],
+          ["inactive", `Inactive (${summary?.inactive ?? 0})`],
+          ["all", `All (${summary?.total ?? 0})`],
+        ] as const).map(([value, label]) => (
+          <Button
+            key={value}
+            size="sm"
+            variant={tab === value ? "default" : "outline"}
+            onClick={() => setTab(value)}
+            className={`h-7 text-xs ${tab === value ? "bg-blue-500 hover:bg-blue-600 text-white" : "border-gray-300 text-gray-500"}`}
+          >
+            {label}
+          </Button>
+        ))}
+      </div>
 
       <AdminDataTable
         columns={columns}

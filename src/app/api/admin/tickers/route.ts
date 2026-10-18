@@ -4,14 +4,33 @@ import { handleApiError } from "@/lib/api-error";
 import { prisma } from "@/lib/prisma";
 import { stockRepository } from "@/domains/stock/stock.repository";
 import { computeChange, bigIntToNumber } from "@/lib/serialize";
-import { decimalToNumber } from "@/lib/serialize";
+import { Prisma } from "@/generated/prisma/client";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+// Common shape of both query branches (prices-only include)
+type StockRow = {
+  id: number;
+  ticker: string;
+  name: string;
+  sector: string;
+  isActive: boolean;
+  prices: { close: Prisma.Decimal; volume: bigint; date: Date }[] | undefined;
+};
+
+export async function GET(request: NextRequest) {
   try {
     await requireAdmin();
-    const stocks = await stockRepository.findActiveStocksWithPrices(undefined, false);
+    const includeInactive = request.nextUrl.searchParams.get("all") === "1";
+
+    const stocks: StockRow[] = includeInactive
+      ? // Same shape as findActiveStocksWithPrices, minus the isActive filter
+        await prisma.stock.findMany({
+          where: { assetClass: "EQUITY" },
+          orderBy: { ticker: "asc" },
+          include: { prices: { where: { volume: { gt: 0 } }, orderBy: { date: "desc" }, take: 6 } },
+        })
+      : await stockRepository.findActiveStocksWithPrices(undefined, false);
 
     const tickers = stocks.map((stock) => {
       const prices = stock.prices ?? [];
@@ -33,7 +52,11 @@ export async function GET() {
       };
     });
 
-    return NextResponse.json({ tickers });
+    const active = tickers.filter((t) => t.isActive).length;
+    return NextResponse.json({
+      tickers,
+      summary: { total: tickers.length, active, inactive: tickers.length - active },
+    });
   } catch (error) {
     return handleApiError(error, "fetch admin tickers");
   }
