@@ -278,3 +278,8 @@ Ke-3 kalinya klaim kesegaran sinyal lolos generator Mandor: qa-2026-09-27-01 (hi
 - Akar masalah: guard deterministik (qa-27-01, qa-30-01) diterapkan di jalur review manual, tapi GENERATOR artikel belum punya assertion — narasi tetap bisa mengambil angka dari hari/template lain. Angka hari-sama ≠ angka hari-lain yang "mirip".
 - Pelajaran: superlatif & breadth WAJIB di-generate dari SQL berparameter tanggal di jalur generator itu sendiri (bukan diverifikasi belakangan), plus assertion pra-publish: dua hari berbeda tidak boleh menghasilkan angka breadth identik; klaim "sejak <tgl>" wajib dibuktikan query sebelum dirangkai ke kalimat.
 - Cek rutin reviewer: untuk tiap artikel multi-hari, cocokkan angka per-nama-hari ke snapshot DB hari itu — bukan hari publikasi.
+
+## 19 Okt 2026 — cherry-pick jatuh di branch salah (CTO sore)
+- Gejala: `git worktree add /tmp/cto1019 main` FATAL (main masih ter-checkout di /tmp/hs1018 yang SUDAH TERHAPUS dari disk tapi ref worktree belum di-prune) → `cd /tmp/cto1019` gagal → perintah berikutnya (cherry-pick) tereksekusi di repo utama branch night/prd-18-01.
+- Dampak: 2 commit emoji sempat menempel di branch salah; 0 kehilangan data (file dirty utuh, reset --mixed + restore pulihkan).
+- Aturan baru: (1) SELALU `git worktree prune` SEBELUM add; (2) verifikasi `git branch --show-current` + `pwd` SEBELUM operasi mutasi (cherry-pick/merge/commit); (3) jangan chain `cd X && cmd` dalam satu shell call tanpa guard — pisahkan navigasi dari mutasi.
