@@ -2,11 +2,25 @@
  "protocol": "CTO task queue — dibaca CTO agent (slot 07:30 pagi & 16:45 sore; quiet zone BARU 11:00-18:00 = larang deploy+LLM, owner 16 Sep), ditulis CEO (08:15) / Council (Min 08:00). Entry: {id, date, spec, priority (P0 darurat/P1 tinggi/P2 normal), north_star, status (pending/done/failed/blocked_for_owner), result}. CTO: max 1 deploy per slot (2/hari total), eksekusi claude code pipeline, update status + verify evidence.",
  "entries": [
   {
+   "id": "bo-2026-10-19-01",
+   "date": "2026-10-19",
+   "type": "backoffice",
+   "priority": "P2",
+   "status": "done",
+   "scheduled_slot": "Backoffice Builder 03:00 19 Okt (dieksekusi malam ini)",
+   "title": "BACKOFFICE MATANGKAN+KUASAI: ticker-manager — filter Active/Inactive/All (fix stock hilang permanen), count dinamis, stale-price signal, confirm dampak market-snapshot",
+   "north_star": "TRUST + KUASAI (kontrol data market yang reliable, tanpa SQL manual)",
+   "spec": "Audit bo ronde-2 halaman ticker-manager (terakhir disentuh 31 Mei): GET /api/admin/tickers pakai findActiveStocksWithPrices → hanya return isActive=true, sehingga stock yang di-deactivate HILANG dari tabel dan tidak bisa di-reactivate dari backoffice (wajib SQL manual — melanggar mandat KUASAI). Header juga hardcode 'IDX40 stocks' padahal universe nyata 962 aktif/1451 total; toggle deactivate menyentuh Stock.isActive yang menggerakkan market-snapshot.service (SATU PINTU movers/breadth/sektor) tanpa warning dampak publik; tidak ada sinyal harga stale. Fix (reuse route existing, API REUSE RULE): (1) GET /api/admin/tickers dukung ?all=1 → return semua stock dgn flag isActive + counts summary; (2) page: tab/filter Active/Inactive/All, description count dinamis dari data, badge stale jika lastUpdate >3 hari bursa, confirm dialog saat deactivate berisi warning 'stock keluar dari movers/breadth public'. DB write tetap via PATCH prisma existing. DONE-WHEN: (a) tsc+build hijau, (b) grep bukti ?all=1 & filter & confirm di kode, (c) curl /api/admin/tickers?all=1 (401 unauth = guard hidup) + psql count 1451 match respons route logic, (d) deployed + live /admin/ticker-manager 200, changelog entry, rollback anchor dicatat.",
+   "result": "DONE 19 Okt 03:0x-03:2x backoffice slot (deploy 1/2 org hari ini). Pipeline: claude code (worktree /private/tmp/bo1019) + verify sendiri. KANDUNGAN: d360bd2 feat (route GET ?all=1 + summary counts; page tab Active/Inactive/All, description dinamis, kolom Last Update + badge stale >72j, confirm dampak market-snapshot saat deactivate) + 8c3f1c0 docs anchor. MERGE 5644ad9 ke main (changelog==merge invariant terpenuhi). BUKTI FISIK: tsc --noEmit EXIT-0; grep all/summary/searchParams di route+page; psql EQUITY 964 total/962 aktif/2 inactive (=2 saham yang sebelumnya hilang dari backoffice, kini recoverable via tab Inactive); DEPLOY image 71272a7abd00 up 03:08 healthy; container route.js compiled memuat kode baru (grep summary & all PASS); /admin/ticker-manager 307 login-guard (proxy.ts masking 404 utk /api/admin/* unauth = guard hidup, berlaku semua endpoint admin, bukan regression); homepage 200. ROLLBACK ANCHOR: git revert 5644ad9 / redeploy image 608cd49e8d10 (pre-deploy up 18 Okt 21:09). Catatan: kereta malam CTO branch night/prd-2026-10-18-01 TIDAK tersentuh (worktree terpisah + stash/restore bersih).",
+   "qa_verified": true,
+   "qa_note": "QA verify 19 Okt 03:3x WIB (independen, read-only): PASS — image live 71272a7abd00 (up 03:08 WIB, =klaim); route.js compiled memuat summary+searchParams; SQL assetClass=EQUITY 962 aktif|2 inactive|964 total (=klaim); /admin/ticker-manager 307 login-guard; homepage 200; d360bd2+8c3f1c0+merge 5644ad9 di main."
+  },
+  {
    "id": "prd-2026-10-18-01",
    "date": "2026-10-18",
    "type": "prd",
    "priority": "P2",
-   "status": "night_ready",
+   "status": "done",
    "title": "P2 GROWTH: Register funnel 2-step progressive disclosure — 18 views/10 IP /auth/register 30d vs 8 user baru; drop-off form penuh",
    "prd_id": "idea-2026-10-18-1",
    "source": "Product Agent nightly 18 Okt (mandate idea-2026-10-16-1 funnel anomaly 30d)",
@@ -43,7 +57,9 @@
     "tree_basis": "teknikalidnew night/prd-2026-10-17-01 @ 89d696c (riset 18 Okt)"
    },
    "branch": "night/prd-2026-10-18-01",
-   "verify_evidence": "NIGHT 18 Okt 23:5x. Failing-test-first: commit test 8 asersi dulu (gagal modul belum ada), lalu implementasi. Commits (urutan failing-first): c0df007 test-gagal-dulu -> feat 2-step. tsc --noEmit exit 0; LINT 0 error (ruff/tsc via sdlc_lint.py); suite node:test 113/113 (105 lama + 8 baru register-funnel); next build 194/194 route sukses; BUKTI FISIK AC1: prerender .next/server/app/auth/register.html memuat data-step=\"1\" + input email + tombol 'Lanjut' + data-engagement=register_step1_submit, TANPA field password di layar pertama; grep count=1. AC3 no-regresi: diff src/app/auth hanya page.tsx register (complete-profile pre-fill utuh, autoFocus tetap). AC2+AC4 cek 14 hari pasca-deploy (SQL count + EngagementEvent). Baseline terverifikasi ulang malam ini: users_30d=8, pv_register_30d=18 (docker exec teknikalidnew-db-1 read-only). Estimasi review: 10-15 mnt."
+   "verify_evidence": "NIGHT 18 Okt 23:5x. Failing-test-first: commit test 8 asersi dulu (gagal modul belum ada), lalu implementasi. Commits (urutan failing-first): c0df007 test-gagal-dulu -> feat 2-step. tsc --noEmit exit 0; LINT 0 error (ruff/tsc via sdlc_lint.py); suite node:test 113/113 (105 lama + 8 baru register-funnel); next build 194/194 route sukses; BUKTI FISIK AC1: prerender .next/server/app/auth/register.html memuat data-step=\"1\" + input email + tombol 'Lanjut' + data-engagement=register_step1_submit, TANPA field password di layar pertama; grep count=1. AC3 no-regresi: diff src/app/auth hanya page.tsx register (complete-profile pre-fill utuh, autoFocus tetap). AC2+AC4 cek 14 hari pasca-deploy (SQL count + EngagementEvent). Baseline terverifikasi ulang malam ini: users_30d=8, pv_register_30d=18 (docker exec teknikalidnew-db-1 read-only). Estimasi review: 10-15 mnt.",
+   "scheduled_slot": "2026-10-19 07:30 slot pagi",
+   "result": "CTO pagi 19 Okt: MERGE dry-run CLEAN exit 0 -> merge --no-ff 70ee7be (schema-shield PASS 0 DDL) -> PUSH origin/main (0c16c9f..70ee7be). VERIFY tsc --noEmit exit 0 (repo utama, prisma generate); test register-funnel PASS via tsx --test; bukti fisik LIVE image 154712c147f9 (build worktree 05:59, sebelum slot — pola build-dari-worktree): curl -A Mozilla https://teknikal.id/auth/register -> 200 (31426B), before data-step=0 / after data-step=\"1\"=1 + register_step1_submit=1 + autofocus=1; step-2 hidden client-side (data-step=2 = 0 di SSR, benar). AC1 PASS (live marker+tsc); AC3 autoFocus email step-1 utuh (grep line119) — pre-fill landing jalan; AC4 telemetry label register_step1_submit+register_completed ada di zod schema (validation.ts diff); AC2 funnel 1.25x = cek 14 hari (due 2026-11-02, SQL: User(createdAt>=deploy)/PageView register nobot). Ikut merge: rate-limit 600->3000 req/min owner-directed cc60c26 (night branch commit) + c0df007 failing-first test. 0 deploy routine slot ini (BUILD-ONLY window)."
   },
   {
    "id": "prd-2026-10-17-01",
@@ -127,8 +143,9 @@
    },
    "created_at": "2026-10-17 08:5x WIB",
    "result": "BUKTI FISIK 17 Okt 18:1x WIB: (F1) brief 16 Okt '592 turun' → SQL verify breadth 15 Okt = 119|593|250 → UPDATE REPLACE content+excerpt → live grep = 11x '593 saham turun', 0x 592. (F2) rekap mingguan ALREADY FIXED sebelum sesi ini: live grep '11 saham naik'=2 (intro+Jumat saja), per-hari 115/351/292/119 = match DB. (F3) 'sejak 8 Juni' = 0 live. (F4) golden/death cross 0 → diverifikasi queue lain. Generator guard: dilaporkan ke CEO utk dispatch job terpisah (bukan scope hotfix ini).",
-   "qa_note": "P1 hotfix owner-directed (deploy budget exception #146)",
-   "done_at": "2026-10-17T18:15+07:00"
+   "qa_note": "QA verify 19 Okt 03:3x WIB (independen, read-only): PASS — live brief 16 Okt: \"593 saham turun\" x11, \"592 saham turun\" x0, \"sejak 8 Juni\" x0; rekap mingguan 17 Okt: \"11 saham naik\" x2 (intro+Jumat), \"592 turun\" x0. F4 golden/death cross diverifikasi entry lain.",
+   "done_at": "2026-10-17T18:15+07:00",
+   "qa_verified": true
   },
   {
    "id": "prd-2026-10-16-01",
@@ -1760,7 +1777,9 @@
    "pillar": "TRUST",
    "assigned_to": "cto-weekend-pagi",
    "result": "DONE WHEN terpenuhi: header nosniff LIVE di prod (curl -I 17 Okt 22:5x); implement via src/proxy.ts conditional (bukan next.config — RSC payload Safari iOS trap 12 Okt); naik deploy owner-directed 17 Okt 20:04.",
-   "done_at": "2026-10-17T22:5x+07:00"
+   "done_at": "2026-10-17T22:5x+07:00",
+   "qa_verified": true,
+   "qa_note": "QA verify 19 Okt 03:3x WIB (independen, read-only): PASS — curl -I live: x-content-type-options: nosniff ada (bersama HSTS + XFO DENY). DONE-WHEN terpenuhi fisik."
   },
   {
    "id": "ux-2026-10-17-01",
@@ -1775,7 +1794,9 @@
    "spec": "Masukkan 3 landing fundamental (0 views = orphan) ke blok signal-links yang sudah ada di homepage + /stocks. Link internal dofollow, anchor deskriptif. DONE WHEN: staging DOM menampilkan 3 link; pasca-deploy curl homepage memuat 3 href; PageView 7d landing > 0 minggu depan.",
    "pillar": "GROWTH",
    "train": "T-1018",
-   "result": "DONE 17 Okt UX Builder 10:30 (build-only). commit 379f516: 3 landing fundamental (saham-dividen/undervalued/value-growth) masuk STRATEGY_PAGES SahamStrategyLinks (blok signal-links homepage + /stocks) di posisi index 0-2 = default-visible mobile. Anchor deskriptif keyword. BUKTI STAGING :3100 (DATABASE_URL override 127.0.0.1:5433, dev server): homepage grep href /saham-dividen 1, /saham-undervalued 1, /saham-value-growth 1 + anchor text masing-masing 1; /stocks 3/3 href; landing 200 x3; SEO invariant verbatim grep before=after (Daftar Saham Dividen Tinggi Indonesia 4=4, Undervalued 4=4, Value Growth 4=4). tsc: 0 error di file ini; full build DIBLOK 4 error TS18047 di track-record/page.tsx = WIP untracked slot backend (prd-2026-10-16-01, bukan milik UX, tidak disentuh) — boarding gate T-1018: build harus hijau SETELAH track-record selesai/di-stash oleh ownernya sebelum naik. Pasca-deploy verify: curl homepage 3 href + PageView 7d landing > 0 (cek 24 Okt). || DEPLOYED+LIVE-VERIFIED CTO weekend sore 17 Okt: curl homepage — 3/3 href baru live (/saham-dividen, /saham-undervalued, /saham-value-growth) + 7 landing lain utuh (total 10 saham-* href). Naik duluan via rebuild 20:00 (379f516 ancestor HEAD image); turun dari kereta T-1018 karena sudah terangkat. || CTO weekend sore 22:5x BOARDING-CLEAR: blocker build (TS18047 WIP track-record) SUDAH selesai — build hijau + deploy owner-directed 20:04 (image 0ff307bd ⊃ 379f516). VERIFY LIVE PASCA-DEPLOY: 3/3 href (/saham-dividen, /saham-undervalued, /saham-value-growth) di homepage+/stocks + landing 200 x3. DONE WHEN deploy-clause terpenuhi; PageView 7d landing > 0 cek 24 Okt."
+   "result": "DONE 17 Okt UX Builder 10:30 (build-only). commit 379f516: 3 landing fundamental (saham-dividen/undervalued/value-growth) masuk STRATEGY_PAGES SahamStrategyLinks (blok signal-links homepage + /stocks) di posisi index 0-2 = default-visible mobile. Anchor deskriptif keyword. BUKTI STAGING :3100 (DATABASE_URL override 127.0.0.1:5433, dev server): homepage grep href /saham-dividen 1, /saham-undervalued 1, /saham-value-growth 1 + anchor text masing-masing 1; /stocks 3/3 href; landing 200 x3; SEO invariant verbatim grep before=after (Daftar Saham Dividen Tinggi Indonesia 4=4, Undervalued 4=4, Value Growth 4=4). tsc: 0 error di file ini; full build DIBLOK 4 error TS18047 di track-record/page.tsx = WIP untracked slot backend (prd-2026-10-16-01, bukan milik UX, tidak disentuh) — boarding gate T-1018: build harus hijau SETELAH track-record selesai/di-stash oleh ownernya sebelum naik. Pasca-deploy verify: curl homepage 3 href + PageView 7d landing > 0 (cek 24 Okt). || DEPLOYED+LIVE-VERIFIED CTO weekend sore 17 Okt: curl homepage — 3/3 href baru live (/saham-dividen, /saham-undervalued, /saham-value-growth) + 7 landing lain utuh (total 10 saham-* href). Naik duluan via rebuild 20:00 (379f516 ancestor HEAD image); turun dari kereta T-1018 karena sudah terangkat. || CTO weekend sore 22:5x BOARDING-CLEAR: blocker build (TS18047 WIP track-record) SUDAH selesai — build hijau + deploy owner-directed 20:04 (image 0ff307bd ⊃ 379f516). VERIFY LIVE PASCA-DEPLOY: 3/3 href (/saham-dividen, /saham-undervalued, /saham-value-growth) di homepage+/stocks + landing 200 x3. DONE WHEN deploy-clause terpenuhi; PageView 7d landing > 0 cek 24 Okt.",
+   "qa_verified": true,
+   "qa_note": "QA verify 19 Okt 03:3x WIB (independen, read-only): PASS — homepage 3/3 href (/saham-dividen, /saham-undervalued, /saham-value-growth) + /stocks 3/3 + landing 200 x3; 379f516 ancestor main. PageView sejak 17 Okt: dividen 1, undervalued 1, value-growth 0 — klausa growth >0 memang dijadwalkan cek 24 Okt (bukan kriteria malam ini)."
   },
   {
    "id": "ref-2026-10-17-01",
@@ -1808,7 +1829,9 @@
    "assigned_to": "cto-weekend-pagi",
    "created_at": "2026-10-17T19:05+07:00",
    "result": "BUKTI FISIK: commit 9fd708a. Cross-page live: Top Gainer PTSP +6,91% IDENTIK di HOME=STOCKS=API(/api/market)=PASAR (sebelumnya /stocks masih PTMR +55,83 jalur lama — ditangkap consistency test lalu dipatch main-agent). breadth API 11 naik/812 turun/11 stagnan (satu sumber). Worker generator = follow-up besok (jalur ke-5).",
-   "done_at": "2026-10-17T19:40+07:00"
+   "done_at": "2026-10-17T19:40+07:00",
+   "qa_verified": true,
+   "qa_note": "QA verify 19 Okt 03:3x WIB (independen, read-only): PASS — 9fd708a di main; Top Gainer PTSP konsisten 4 permukaan: /api/market gainers[0]=PTSP.JK +6,907% (=+6,91), HOME, /pasar, /stocks (PTMR lama tidak ada); breadth API 11 naik|812 turun|11 stagnan satu sumber."
   },
   {
    "id": "perf-2026-10-18-01",
@@ -1825,7 +1848,8 @@
    "verify_evidence": "curl -L /stocks 74.402B; curl /api/stocks row-1 AADI.JK close 9900 changePercent -12.39; changelog buku ceo-decisions [perf-2026-10-18-01]",
    "train": "D-1018 (owner-directed, luar kereta malam)",
    "scheduled_slot": "-",
-   "qa_note": "hotfix-owner: self-check live curl (bukti fisik di result); QA Verifier boleh sampel ulang. SEC GATE: N/A (payload split, no auth/input/db/money)"
+   "qa_note": "QA verify 19 Okt 03:3x WIB (independen, read-only): PASS — sampel ulang: /stocks 200 75.206B 0,47s (klaim 74.402B 0,35s — sama ballpark, diet dari 977KB terkonfirmasi); /api/stocks 962 rows head AADI.JK; ef471fb di main.",
+   "qa_verified": true
   },
   {
    "id": "bo-2026-10-18-01",
@@ -1842,7 +1866,8 @@
    "verify_evidence": "git log main 18e3613 c9306fc ad69069; changelog ad69069 'errors KPI live + retry (deploy 03:14)'",
    "train": "D-1018 (deploy 03:14 backoffice)",
    "scheduled_slot": "Backoffice Builder 03:00 18 Okt (dieksekusi)",
-   "qa_note": "reconstructed: bukti fisik = commit di main + changelog entry. QA Verifier sampel ulang /admin/errors bila perlu."
+   "qa_note": "QA verify 19 Okt 03:3x WIB (independen, read-only): PASS — 3 commit (18e3613+c9306fc+ad69069) di main; page.tsx L83 POST /api/admin/agent-hub/jobs/${jobId} (fix 404); container compiled errors/page.js memuat unresolved + agent-hub/jobs/; /admin/errors 307 guard.",
+   "qa_verified": true
   }
  ],
  "tasks": []
