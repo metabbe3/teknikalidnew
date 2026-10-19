@@ -936,3 +936,15 @@ Konsensus 2026: E-E-A-T+CWV+intent top-3; AIO potong CTR; YMYL finance wajib aut
 - Rekomendasi: B terbatas — audit READ-ONLY saja di slot Frontend Builder Senin 19:15 (bukan build); keputusan build SETELAH checkpoint 23 Okt. Register = pemicu GROWTH termurah (views 1.266/minggu sudah ada, konversinya yang bocor); returning butuh siklus mingguan penuh dulu.
 ## [SEO BATCH "LAKUKAN SEMUA" 18 Okt 08:1x — commit 92783a5 — owner-directed deploy]
 4 prioritas riset SEO dieksekusi sekaligus: (1) /metodologi BARU (YMYL trust: sumber data, formula, update, QA, batasan) + footer links; (2) /saham/* programmatic 218→438+ kata via Tentang-perusahaan + rentang-52-minggu + FAQ w/ FAQPage JSON-LD — 0 compute baru (data dari getStockDetailForPage existing, patuh API Reuse); (3) IDX Radar anchor+keyword (brand query pos 12); (4) Brief backlink Threads founder-led tersimpan utk Mandor (policy SOSMED aman). Live-verified: metodologi 200/57KB, aadi 438 kata+schema, stocks tetap 75KB, home 200, tsc 0. Budget: owner-directed (routine utuh).
+
+## 2026-10-19 07:3x — CTO pagi (bukti untuk CEO)
+- prd-2026-10-18-01 register funnel 2-step: merged main 70ee7be + LIVE ter-verify (image 154712c147f9 05:59; data-step=1 + step1_submit + autofocus). AC2 funnel gate due 2 Nov (1.25x baseline 44%).
+- Waitlist QueuePosition honest-null saat 0 subscriber = by design (social proof jujur, line 21-23 page.tsx) — jangan dibaca sebagai fitur rusak.
+- Owner rate-limit 600→3000 (cc60c26) ikut ter-merge — owner kena /akses-dibatasi via CGNAT.
+
+## CTO note 2026-10-19
+- Konteks: main divergen diam-diam — local 8c3f1c0 (ticker-manager bo-1019, deploy 03:08) vs origin 978e2a4 (register funnel + rate-limit, deploy 05:59). Deploy 05:59 menimpa image 03:08 → ticker-manager (done + QA-verified 03:3x) HILANG dari prod sekarang; funnel/waitlist/stocks-diet aman. Akar: dua jalur merge ke main tanpa satu pintu (worktree ganda), tanpa invariant pre-deploy.
+- Opsi A: malam ini Backend Builder 18:30 reconcile merge local↔origin → SATU build dari main hasil reconcile → kereta T-1019-N 22:00 deploy 1x, verify per-fitur (funnel + ticker-manager + waitlist smoke + emoji pass-2 ikut jika bersih). Budget routine 1/2 tersedia.
+- Opsi B: revert mental — anggap ticker-manager "besok saja", origin/main jadi kanonik. Murah tapi fitur done+verified hilang ≥1 hari & mengajarkan pola "deploy terakhir menang" (anti-TRUST utk tim).
+- Rekomendasi: A. Plus invariant permanen (ke AGENTS.md): sebelum build, `git fetch && git merge-base --is-ancestor origin/main HEAD` wajib exit 0 — deploy hanya dari HEAD yang memuat origin/main penuh. Ini mencegah kambuh, bukan cuma menambal.
+- Isu ke-2 (owner action, TCC): idx-sync gagal LAGI Senin 06:00 (exit 1, log beku 12 Okt, Stock.updatedAt 12 Okt = 7 hari basi). Grant Full Disk Access utk node/launchd atau pindah cwd non-TCC — ops-13-01 sudah saya update bukti hari ini.
