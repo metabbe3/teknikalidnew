@@ -2,6 +2,50 @@
  "protocol": "CTO task queue — dibaca CTO agent (slot 07:30 pagi & 16:45 sore; quiet zone BARU 11:00-18:00 = larang deploy+LLM, owner 16 Sep), ditulis CEO (08:15) / Council (Min 08:00). Entry: {id, date, spec, priority (P0 darurat/P1 tinggi/P2 normal), north_star, status (pending/done/failed/blocked_for_owner), result}. CTO: max 1 deploy per slot (2/hari total), eksekusi claude code pipeline, update status + verify evidence.",
  "entries": [
   {
+   "id": "prd-2026-10-18-01",
+   "date": "2026-10-18",
+   "type": "prd",
+   "priority": "P2",
+   "status": "night_ready",
+   "title": "P2 GROWTH: Register funnel 2-step progressive disclosure — 18 views/10 IP /auth/register 30d vs 8 user baru; drop-off form penuh",
+   "prd_id": "idea-2026-10-18-1",
+   "source": "Product Agent nightly 18 Okt (mandate idea-2026-10-16-1 funnel anomaly 30d)",
+   "north_star": "growth register + traffic (north star #90)",
+   "created_at": "2026-10-18T22:10:00+07:00",
+   "spec": {
+    "title": "Register funnel 2-step progressive disclosure + social-proof inline",
+    "date": "2026-10-18",
+    "user_story": [
+     "Sebagai visitor di /auth/register, saya ingin mulai hanya dengan email (1 field) supaya commit kecil dulu sebelum form penuh.",
+     "Sebagai calon user, saya ingin melihat bukti aktivitas live (counter user/screener) supaya percaya layanan ini hidup."
+    ],
+    "acceptance_criteria": [
+     "AC1 LIVE: curl -A Mozilla https://teknikal.id/auth/register -> 200, HTML memuat step-1 (input email + tombol lanjut) BUKAN 3-field satu layar; tsc+build hijau.",
+     "AC2 FUNNEL: 14 hari pasca-deploy, SQL User(createdAt>=deploy)/PageView(/auth/register,isBot=false,>=deploy) >= 1.25x baseline 30d (8/18=44%) — query SQL dilampirkan di result.",
+     "AC3 NO REGRESI: jalur pre-fill landing (ux-2026-10-16-01) tetap jalan — register akun test sukses end-to-end.",
+     "AC4 TELEMETRY: EngagementEvent cta_click register_step1_submit + register_completed > 0 setelah uji."
+    ],
+    "data_evidence": "Query asli teknikalidnew-db-1 30d (2026-09-18..2026-10-18): PageView /auth/register isBot=false 18 views/10 IP; User baru 8 (first-path 5x '/', 1x /auth/register, 2x /auth/complete-profile); WaitlistSubscriber 0 rows.",
+    "impact": 4,
+    "effort": 2,
+    "target_files": [
+     "src/app/auth/register/page.tsx",
+     "src/app/api/auth/register/route.ts (estimasi)",
+     "src/components/auth (estimasi)"
+    ],
+    "db_migrations": false,
+    "dependencies": [
+     "none baru"
+    ],
+    "risk": "low",
+    "estimate_tool_calls": 30,
+    "DONE-WHEN": "AC1+AC3 hijau saat deploy; AC2 dicek 14 hari (SQL count dilampirkan); gagal -> post-mortem singkat di entry.",
+    "tree_basis": "teknikalidnew night/prd-2026-10-17-01 @ 89d696c (riset 18 Okt)"
+   },
+   "branch": "night/prd-2026-10-18-01",
+   "verify_evidence": "NIGHT 18 Okt 23:5x. Failing-test-first: commit test 8 asersi dulu (gagal modul belum ada), lalu implementasi. Commits (urutan failing-first): c0df007 test-gagal-dulu -> feat 2-step. tsc --noEmit exit 0; LINT 0 error (ruff/tsc via sdlc_lint.py); suite node:test 113/113 (105 lama + 8 baru register-funnel); next build 194/194 route sukses; BUKTI FISIK AC1: prerender .next/server/app/auth/register.html memuat data-step=\"1\" + input email + tombol 'Lanjut' + data-engagement=register_step1_submit, TANPA field password di layar pertama; grep count=1. AC3 no-regresi: diff src/app/auth hanya page.tsx register (complete-profile pre-fill utuh, autoFocus tetap). AC2+AC4 cek 14 hari pasca-deploy (SQL count + EngagementEvent). Baseline terverifikasi ulang malam ini: users_30d=8, pv_register_30d=18 (docker exec teknikalidnew-db-1 read-only). Estimasi review: 10-15 mnt."
+  },
+  {
    "id": "prd-2026-10-17-01",
    "date": "2026-10-17",
    "type": "prd",
