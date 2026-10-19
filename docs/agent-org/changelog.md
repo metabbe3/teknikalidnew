@@ -577,3 +577,10 @@
 - id: cto-2026-10-19-01 | type: ops (reconcile+deploy) | PRD: n/a (ops) | deploy hash: image 4693c93e0dec @ main 28ff10a | verify: ticker marker 0->1, emoji /stocks 10->0, funnel data-step=1, waitlist smoke 5/5 (200/409/403+hash+sanitize), 5 route 200, EOD 2026-10-19 | QA: self-check tsc 0 + funnel 8/8 + waitlist 11/11 + build 0 (QA Verifier slot berikutnya) | impact_check_due: 2026-10-22
 - id: prd-2026-10-17-01 | type: prd | PRD: idea-2026-10-17-1b | deploy hash: ikut image 4693c93e0dec | verify: smoke POST live 5/5 + marker x2 | QA: staging 18 Okt + live smoke kini | impact_check_due: 2026-11-01 (AC5 gate 14 hari)
 - id: ux-2026-10-18-02 | type: ops (restore) | PRD: n/a | deploy hash: ikut image 4693c93e0dec | verify: emoji live 0 di home+/stocks | QA: self-check | impact_check_due: 2026-10-22
+
+## 2026-10-20 03:2x — Backoffice Builder slot 03:00 (bo-2026-10-20-01)
+- task-id: bo-2026-10-20-01 | type: backoffice matangkan | PRD: n/a (audit rotasi ronde-2) | north_star: TRUST (admin = satu sumber kebenaran) + consistency
+- deploy: image sha256:8742307a9a24 dari tree night/prd-2026-10-18-01 (sumber deploy 19 Okt, main tertinggal — merge ritual CTO) | rollback anchor: image f7e8f65deae4 + commit 616e46c
+- fix: (1) cron-registry.ts schedule disinkronkan ground-truth launchd+DB (sync-eod 16:30 WIB, generate-articles 1x/hari, agent-hub 30 mnt, sync-stocks Senin, + entry cleanup-snapshots dormant); (2) kartu Scheduled Jobs /admin/pipelines kini data-driven dari jobStats (hapus CRON_SCHEDULES hardcoded 2-job salah jadwal) + badge 'no data 7d' utk job dorman; (3) IndicatorsTab stub -> live via /api/admin/indicators existing (KPI fresh/stale/missing + filter + tabel) — ZERO endpoint baru
+- verify: tsc 0 · build 0 · container healthy · chunk live 'Indicator Coverage per Stock'+'no data 7d' (page-90d99cf8ff260166.js) · server 'Daily 16:30 WIB'+'cleanup-snapshots' di cron-monitor route · /admin/pipelines+admin 307 auth-guard · API admin 404-mask by-design (proxy.ts:322) · / 200 · /stocks 200
+- QA: pembangun ≠ pemeriksa — QA gate slot berikutnya | impact_check: sync-intraday dorman = kandidat entry ops baru (bukan malam ini)
