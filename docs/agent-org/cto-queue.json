@@ -2,17 +2,31 @@
   "protocol": "CTO task queue — dibaca CTO agent (slot 07:30 pagi & 16:45 sore; quiet zone BARU 11:00-18:00 = larang deploy+LLM, owner 16 Sep), ditulis CEO (08:15) / Council (Min 08:00). Entry: {id, date, spec, priority (P0 darurat/P1 tinggi/P2 normal), north_star, status (pending/done/failed/blocked_for_owner), result}. CTO: max 1 deploy per slot (2/hari total), eksekusi claude code pipeline, update status + verify evidence.",
   "entries": [
     {
+      "id": "ux-2026-10-18-02",
+      "date": "2026-10-18",
+      "type": "ops",
+      "priority": "P2",
+      "status": "done",
+      "train": "T-1019-N",
+      "title": "UX: emoji-as-icons -> Lucide SVG halaman inti (pass-1 ed4bd82 + pass-2 ed30f77) — entry hilang dari queue, di-restore 19 Okt",
+      "north_star": "STICKY + TRUST — konsistensi visual ui-craft rule #4",
+      "spec": "RESTORED by CTO 19 Okt (entry asli hilang, commit 89d696c 11:46 kembaran). Diangkat via cherry-pick b493863+9fa0d38 pada reconcile cto-2026-10-19-01.",
+      "created_by": "CTO sore 19 Okt (restore + bukti live)",
+      "result": "DONE 19 Okt 18:5x via reconcile cto-1019-01: emoji pass-1/2 cherry-picked ke main 28ff10a, deploy image 4693c93e0dec, verify live /stocks emoji 0 (before 10), home 0, tsc 0, 0 conflict. Halaman inti 0 emoji (ui-craft rule #4)."
+    },
+    {
       "id": "cto-2026-10-19-01",
       "date": "2026-10-19",
       "type": "ops",
       "priority": "P1",
-      "status": "pending",
+      "status": "done",
       "scheduled_slot": "Backend Builder malam 18:30 19 Okt (reconcile+build) -> kereta T-1019-N 22:00 deploy",
       "train": "T-1019-N",
       "title": "P1 REGRESI LIVE: main divergen (local 8c3f1c0 vs origin 978e2a4 sejak 0c16c9f) — deploy funnel 05:59 menimpa image bo-1019 03:08, ticker-manager hilang dari prod",
       "north_star": "TRUST + data reliable — fitur 'done+QA-verified' tadi malam TIDAK ada di prod sekarang; deploy harus dari satu main yang sync",
       "spec": "BUKTI (CTO sweep 19 Okt 07:45): (1) local main=8c3f1c0 memuat merge bo-2026-10-19-01 ticker-manager 5644ad9 (deploy 03:08, image 71272a7abd00, QA verify 03:3x jujur); (2) origin/main=978e2a4 memuat funnel prd-18-01 70ee7be + rate-limit cc60c26 TANPA 5644ad9; (3) image live sekarang 154712c147f9 (created 06:00 WIB, dari origin/main) -> marker bo-1019 HILANG: grep 'inactive' api/admin/tickers/route.js = 0-hit (halaman tab filter tak berfungsi tanpa API ?all=1); funnel & waitlist & /stocks-diet OK di image ini. (4) emoji-Lucide ed4bd82+ed30f77 (pass-1/2) hanya di branch night/prd-2026-10-17-01, tak ter-merge kemanapun. FIX: (a) git fetch; merge local main ke origin/main (file disjoint: admin/tickers route+page vs auth/register+stocks rate-limit -> conflict kecil); (b) merge/juga bawa night/prd-2026-10-17-01 (emoji) bila bersih; (c) SATU build dari main hasil reconcile -> deploy kereta T-1019-N 22:00-01:30 (budget routine 1/2 tersisa); (d) verify PER-FITUR pasca-deploy: funnel data-step=1 + ticker-manager inactive marker di route.js + waitlist smoke POST live (200/409/403) + flip prd-2026-10-17-01 done + emoji-inti 0. DONE-WHEN: main tunggal di origin+local, image live memuat SEMUA marker, changelog==merge. PENCEGAHAN: pre-deploy invariant baru — sebelum build, WAJIB `git fetch && git merge-base --is-ancestor origin/main HEAD` exit 0 (deploy dari HEAD yang memuat origin/main penuh); catat invariant ke AGENTS.md repo.",
-      "created_by": "CTO Tech Lead 07:45 19 Okt (sweep bukti fisik: docker inspect + grep container + git merge-base)"
+      "created_by": "CTO Tech Lead 07:45 19 Okt (sweep bukti fisik: docker inspect + grep container + git merge-base)",
+      "result": "DONE 19 Okt 18:5x WIB CTO sore (deploy routine 2/2). RECONCILE: worktree /tmp/cto1019 ff ke origin d09be5b + cherry-pick emoji b493863/9fa0d38 (0 conflict) + funnel-test fix 380eef0 + decisions doc 28ff10a -> PUSH main tunggal. VERIFY: tsc 0, funnel 8/8, waitlist 11/11, build exit 0, ancestor ALL PASS. DEPLOY image 4693c93e0dec up 18:47 healthy. PASCA-DEPLOY PER-FITUR (before->after): ticker inactive marker container route.js 0->1 (REGRESI PULIH), emoji /stocks 10->0 & home 0, funnel data-step=1 utuh, waitlist 'Jadi yang pertama' x2 utuh, smoke POST live 200/409/403-CSRF + WA sha256-hash + injection->direct, 5 route 200, EOD 2026-10-19. Smoke rows id 4-6 dihapus (backup 01:15 valid, count balik 0). INVARIANT pre-deploy baru dicatat ke decisions.md (AGENTS.md protected utk agent). ROLLBACK: git revert b493863 9fa0d38 380eef0 + rebuild."
     },
     {
       "id": "bo-2026-10-19-01",
@@ -79,7 +93,7 @@
       "date": "2026-10-17",
       "type": "prd",
       "priority": "P1",
-      "status": "in_train",
+      "status": "done",
       "title": "P1 LEAD-CAPTURE FIX: waitlist konversi 0 — social-proof counter + inline email capture di /waitlist (fallback WA deep-link), attribution UTM",
       "prd_id": "idea-2026-10-17-1b",
       "spec": {
@@ -123,7 +137,7 @@
       "north_star": "GROWTH (konversi visitor→subscriber) + TRUST (counter live jujur, WA hashed)",
       "verify_evidence": "NIGHT 17 Okt 23:3x. Commits (urutan failing-first): f4a1521 test-gagal-dulu → b29bdd3 fix → f597079 docs-queue. tsc --noEmit exit 0; node:test baru 11/11 + full suite 105/105; sdlc_lint 0 error (5 file). Rate-limit 10/60s + duplicate-409 SUDAH ada di route (line 9/31/71) — anti-spam ter-cover. CATATAN (verifier kirim-dengan-catatan conf 55): POST live belum pernah dieksekusi nyata (DB read-only malam) — CTO pagi: review+merge+deploy lalu smoke POST utm_source=test + SQL count source='test'; dup-submit email sama harus 409 duplicate.",
       "estimate_review_min": 15,
-      "result": "CTO pagi 18 Okt 07:3x: MERGED abd3129 (merge --no-ff night/prd-2026-10-17-01 ke main ad69069, conflict 0, SCHEMA-SHIELD bersih 0 DDL). VERIFY: tsc --noEmit exit 0 (pasca prisma generate); test waitlist 11/11 PASS tsx; full suite 100/100 PASS. STAGING :3100 (npm run build exit 0 + npm start, DATABASE_URL override @127.0.0.1:5433): GET /waitlist 200, marker 'Jadi yang pertama' x2 + role=tablist x1 (AC1+AC3). SMOKE POST (gap night conf-55 ditutup): email+source=test -> 200 {ok:true,position:1}; duplikat -> 409 {reason:duplicate}; WA 081234567890 -> 200, DB value=dd7526...(sha256 hash, plain tidak disimpan); source injection '<script>alert(1)</script> INJECTION' -> tersanitasi jadi 'direct' (parseUtmParam whitelist); cross-origin POST -> 403 CSRF block. 2 row smoke di-DELETE (WHERE id IN (2,3), backup 18 Okt 01:15 valid), count balik 0=baseline. DONE WHEN AC1-AC4 hijau fisik; AC5 metric gate 14 hari (impact_check_due 1 Nov). Deploy = kereta malam T-1018-N (window 22:00-01:30).",
+      "result": "CTO pagi 18 Okt 07:3x: MERGED abd3129 (merge --no-ff night/prd-2026-10-17-01 ke main ad69069, conflict 0, SCHEMA-SHIELD bersih 0 DDL). VERIFY: tsc --noEmit exit 0 (pasca prisma generate); test waitlist 11/11 PASS tsx; full suite 100/100 PASS. STAGING :3100 (npm run build exit 0 + npm start, DATABASE_URL override @127.0.0.1:5433): GET /waitlist 200, marker 'Jadi yang pertama' x2 + role=tablist x1 (AC1+AC3). SMOKE POST (gap night conf-55 ditutup): email+source=test -> 200 {ok:true,position:1}; duplikat -> 409 {reason:duplicate}; WA 081234567890 -> 200, DB value=dd7526...(sha256 hash, plain tidak disimpan); source injection '<script>alert(1)</script> INJECTION' -> tersanitasi jadi 'direct' (parseUtmParam whitelist); cross-origin POST -> 403 CSRF block. 2 row smoke di-DELETE (WHERE id IN (2,3), backup 18 Okt 01:15 valid), count balik 0=baseline. DONE WHEN AC1-AC4 hijau fisik; AC5 metric gate 14 hari (impact_check_due 1 Nov). Deploy = kereta malam T-1018-N (window 22:00-01:30). | FLIP DONE 19 Okt 18:5x WIB: naik kereta T-1019-N via reconcile deploy image 4693c93e0dec; BOARDING GATE hijau — bukti fisik smoke POST live 5/5 (200 posisi / 409 duplicate / 403 CSRF evil-origin; WA disimpan sha256-hash dd7526..., injection source->'direct' sanitize), marker form x2, AC1-AC4 verified live. AC5 metric gate 14 hari (impact_check_due 1 Nov).",
       "train": "T-1018-N",
       "scheduled_slot": "2026-10-18 07:30 slot pagi (merge+verify+staging smoke — BUILD-ONLY)",
       "qa_note": "SEC-REVIEW: injection source tersanitasi server-side (bukti: injection POST -> direct); IDOR N/A (tabel tunggal tanpa relasi user); rate-limit 10/60s per-IP aktif; CSRF same-origin 403 terverifikasi; dup-submit 409. Privasi: WA sha256-hash, email plain by design utk kirim."
@@ -1552,7 +1566,8 @@
       "north_star": "data reliable — daftar emiten IDX basi (listing baru/delisting tak tersync); eod-sync tidak terdampak",
       "spec": "BUKTI: idx-sync.log mtime 12 Okt 08:20 berisi EPERM: process.cwd failed uv_cwd (node v25) — launchd worker kehilangan akses cwd repo (TCC Documents). Plist com.teknikalid.idx-sync Day=1/06:00 (Senin saja). FIX (owner action, TCC = security domain): grant Full Disk Access utk node/launchd ATAU pindah log+cwd ke path non-TCC; verify: Senin depan 06:00 log bersih + sync row baru. Bukan kerja builder (TCC interactive prompt). [UPDATE CTO 19 Okt 07:45: gagal LAGI Senin 19 Okt 06:00 — launchctl exit 1, idx-sync.log beku 12 Okt (bahkan penulisan log kena TCC), MAX(Stock.updatedAt)=2026-10-12 01:09 = beku 7 hari; daftar emiten basi; TETAP butuh owner TCC grant — di luar domain CTO/builder]",
       "scheduled_slot": "owner TCC grant; verify Senin 20 Okt 06:00",
-      "train": "T-1020-N"
+      "train": "T-1020-N",
+      "blocked_checked_at": "2026-10-19 18:50 WIB"
     },
     {
       "id": "qa-2026-10-13-01",
