@@ -751,3 +751,26 @@ commit pre-deploy live-unknown; merge HEAD: 1e4d517
 - Merge prd-2026-10-17-01: dry-run exit 0 → merge --no-ff abd3129; SCHEMA-SHIELD 0 file DDL; tsc 0; test 11/11 + 100/100; staging :3100 smoke POST lengkap (200/409/403/injection->direct). Status → in_train T-1018-N (BUILD-ONLY slot pagi; deploy = kereta malam).
 - ROLLBACK ANCHOR: image ID pre-deploy teknikalidnew-app sha256:88612073f083 (dari changelog bo-2026-10-18-01 03:14); git revert abd3129.
 - SQL DESTRUCTIVE LOG (policy 14 Sep): DELETE FROM "WaitlistSubscriber" WHERE id IN (2,3) AND (value LIKE 'smoke-test-cto@%' OR channel='wa') → DELETE 2 (row smoke-test sendiri, dibuat 3 menit sebelumnya via staging; backup valid 2026-10-18 01:15 ~/backups/teknikalid/last-success; SELECT COUNT WHERE sama = 2 preview). Post-check count=0 = baseline.
+
+### 19 Okt malam — Header UX + insiden migrate P3009 (3 deploy, ±15 mnt downtime)
+
+**Fitur (owner directive 'icon bell & save tidak berguna'):** commit 1dc78a3 + f105175 —
+(1) ticker tape minus fix + auto-refresh 60s; (2) icon watchlist duplikat dihapus dari header;
+(3) bell = saluran SITE_ANNOUNCEMENT (broadcast admin, banner global P0/warning) — migration
+schema.prisma SITE_ANNOUNCEMENT + actorId nullable; endpoint POST /api/admin/announcements
+admin-only; broadcast pertama 'sempat down mohon maaf' terkirim ke 26 user.
+
+**INSIDEN P3009 (22:00-22:15):** deploy#1 crash-loop — prisma migrate entrypoint menolak
+jalan karena migration SQL invalid (2 kali salah: `ALTER CONSTRAINT ... ON DELETE SET NULL`
+bukan syntax postgres → harus DROP+ADD; `pg_enum.typname` kolomnya salah). Fix final
+(deploy#4 d02d531+0272822): schema diapply manual psql → migration file jadi NO-OP SELECT 1
+→ docker build **--no-cache** (cache layer COPY membake file migration lama walau file lokal
+sudah benar — deploy#3 tetap bawa DO-block lama).
+
+**LESSON PENTING:** (a) JANGAN pernah tulis migration Prisma tanpa tes jalankan persis
+statement-nya di psql dulu; (b) prisma migrate menjalankan statement satu-per-satu — DO $$
+block & conditional idempotent TIDAK reliable; kalau schema sudah manual-applied, migration
+file = komentar + SELECT 1, hapus row failed di _prisma_migrations; (c) docker layer cache
+untuk prisma/migrations/ menuntut --no-cache saat hot-fix file migration di hari sama.
+
+**Deploy count 19 Okt teknikal: 4** (1 kereta + 3 insiden) — di atas budget normal, insiden-driven.
