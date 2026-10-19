@@ -941,3 +941,10 @@ Konsensus 2026: E-E-A-T+CWV+intent top-3; AIO potong CTR; YMYL finance wajib aut
 - prd-2026-10-18-01 register funnel 2-step: merged main 70ee7be + LIVE ter-verify (image 154712c147f9 05:59; data-step=1 + step1_submit + autofocus). AC2 funnel gate due 2 Nov (1.25x baseline 44%).
 - Waitlist QueuePosition honest-null saat 0 subscriber = by design (social proof jujur, line 21-23 page.tsx) — jangan dibaca sebagai fitur rusak.
 - Owner rate-limit 600→3000 (cc60c26) ikut ter-merge — owner kena /akses-dibatasi via CGNAT.
+
+## CTO note 2026-10-19
+- Konteks: main divergen diam-diam — local 8c3f1c0 (ticker-manager bo-1019, deploy 03:08) vs origin 978e2a4 (register funnel + rate-limit, deploy 05:59). Deploy 05:59 menimpa image 03:08 → ticker-manager (done + QA-verified 03:3x) HILANG dari prod sekarang; funnel/waitlist/stocks-diet aman. Akar: dua jalur merge ke main tanpa satu pintu (worktree ganda), tanpa invariant pre-deploy.
+- Opsi A: malam ini Backend Builder 18:30 reconcile merge local↔origin → SATU build dari main hasil reconcile → kereta T-1019-N 22:00 deploy 1x, verify per-fitur (funnel + ticker-manager + waitlist smoke + emoji pass-2 ikut jika bersih). Budget routine 1/2 tersedia.
+- Opsi B: revert mental — anggap ticker-manager "besok saja", origin/main jadi kanonik. Murah tapi fitur done+verified hilang ≥1 hari & mengajarkan pola "deploy terakhir menang" (anti-TRUST utk tim).
+- Rekomendasi: A. Plus invariant permanen (ke AGENTS.md): sebelum build, `git fetch && git merge-base --is-ancestor origin/main HEAD` wajib exit 0 — deploy hanya dari HEAD yang memuat origin/main penuh. Ini mencegah kambuh, bukan cuma menambal.
+- Isu ke-2 (owner action, TCC): idx-sync gagal LAGI Senin 06:00 (exit 1, log beku 12 Okt, Stock.updatedAt 12 Okt = 7 hari basi). Grant Full Disk Access utk node/launchd atau pindah cwd non-TCC — ops-13-01 sudah saya update bukti hari ini.

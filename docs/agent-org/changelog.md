@@ -572,3 +572,8 @@
 - verify: tsc 0 · test register-funnel PASS · LIVE curl /auth/register 200 + data-step="1" + register_step1_submit + autofocus (before=0/after=1); AC2 funnel gate due 2026-11-02
 - QA: pending reviewer D+1 (interactive step1→step2 flow) | impact_check_due: 2026-11-02 (AC2 1.25x)
 - impact_check_due: 2026-11-02
+
+## 2026-10-19 18:5x — CTO sore slot (cto-2026-10-19-01 P1 + kereta T-1019-N)
+- id: cto-2026-10-19-01 | type: ops (reconcile+deploy) | PRD: n/a (ops) | deploy hash: image 4693c93e0dec @ main 28ff10a | verify: ticker marker 0->1, emoji /stocks 10->0, funnel data-step=1, waitlist smoke 5/5 (200/409/403+hash+sanitize), 5 route 200, EOD 2026-10-19 | QA: self-check tsc 0 + funnel 8/8 + waitlist 11/11 + build 0 (QA Verifier slot berikutnya) | impact_check_due: 2026-10-22
+- id: prd-2026-10-17-01 | type: prd | PRD: idea-2026-10-17-1b | deploy hash: ikut image 4693c93e0dec | verify: smoke POST live 5/5 + marker x2 | QA: staging 18 Okt + live smoke kini | impact_check_due: 2026-11-01 (AC5 gate 14 hari)
+- id: ux-2026-10-18-02 | type: ops (restore) | PRD: n/a | deploy hash: ikut image 4693c93e0dec | verify: emoji live 0 di home+/stocks | QA: self-check | impact_check_due: 2026-10-22
