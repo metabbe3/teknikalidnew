@@ -4,19 +4,39 @@ import { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Users } from "lucide-react";
 import { AuthBrandPanel } from "@/components/auth/auth-brand-panel";
+import { isEmailLoose, passwordChecks, step2Ready } from "@/lib/register-funnel";
 
+/**
+ * Register funnel 2-step progressive disclosure (prd-2026-10-18-01).
+ * Step-1 = satu field email (commit kecil); step-2 = password + konfirmasi.
+ * Logika password identik dengan form lama — diekstrak ke @/lib/register-funnel
+ * (dites node:test). Pre-fill landing (ux-2026-10-16-01) tetap jalan: autoFocus
+ * email step-1; email dibawa lintas step via state.
+ * Telemetry AC4: data-engagement register_step1_submit / register_completed
+ * ditangkap listener global engagement-instrument (beacon /api/public/engagement).
+ */
 export default function RegisterPage() {
   const router = useRouter();
+  const [step, setStep] = useState<1 | 2>(1);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const longEnough = password.length >= 8;
-  const matches = confirmPassword.length > 0 && password === confirmPassword;
+  const { longEnough, matches } = passwordChecks(password, confirmPassword);
+
+  function goStep2(e: React.FormEvent) {
+    e.preventDefault();
+    if (!isEmailLoose(email)) {
+      setError("Masukkan email yang valid.");
+      return;
+    }
+    setError("");
+    setStep(2);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -89,6 +109,121 @@ export default function RegisterPage() {
               </p>
             </div>
 
+            {step === 1 ? (
+              <form onSubmit={goStep2} className="space-y-4" noValidate data-step="1">
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium mb-1.5 text-text-primary">Email</label>
+                  <input
+                    id="email"
+                    type="email"
+                    autoFocus
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    autoComplete="email"
+                    className="w-full bg-bg-card border border-border rounded-xl px-3.5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent/40 transition-colors"
+                    placeholder="nama@email.com"
+                  />
+                </div>
+
+                {error && (
+                  <p role="alert" className="text-sm text-bearish bg-bearish/5 border border-bearish/20 rounded-lg px-3 py-2">
+                    {error}
+                  </p>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={!isEmailLoose(email)}
+                  data-engagement="register_step1_submit"
+                  className="w-full bg-accent text-white rounded-xl px-4 py-3 text-sm font-semibold hover:bg-accent/90 transition-colors press-scale disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
+                >
+                  Lanjut
+                  <ArrowRight className="h-4 w-4" aria-hidden />
+                </button>
+
+                <p className="text-center text-xs text-text-tertiary flex items-center justify-center gap-1.5">
+                  <Users className="h-3.5 w-3.5" aria-hidden />
+                  Gratis · 1 menit · Tanpa kartu kredit
+                </p>
+              </form>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4" noValidate data-step="2">
+                <div className="flex items-center justify-between rounded-xl bg-bg-card border border-border px-3.5 py-2.5">
+                  <span className="text-sm text-text-primary truncate" data-testid="step2-email">{email}</span>
+                  <button
+                    type="button"
+                    onClick={() => { setStep(1); setError(""); }}
+                    className="inline-flex items-center gap-1 text-xs text-accent font-medium hover:underline shrink-0"
+                  >
+                    <ArrowLeft className="h-3 w-3" aria-hidden />
+                    Ubah
+                  </button>
+                </div>
+
+                <div>
+                  <label htmlFor="password" className="block text-sm font-medium mb-1.5 text-text-primary">Password</label>
+                  <input
+                    id="password"
+                    type="password"
+                    autoFocus
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={8}
+                    autoComplete="new-password"
+                    className="w-full bg-bg-card border border-border rounded-xl px-3.5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent/40 transition-colors"
+                    placeholder="Minimal 8 karakter"
+                  />
+                  <p className={`mt-1.5 text-xs flex items-center gap-1 ${longEnough ? "text-bullish" : "text-text-tertiary"}`}>
+                    {longEnough && <Check className="h-3 w-3" aria-hidden />}
+                    Minimal 8 karakter
+                  </p>
+                </div>
+                <div>
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium mb-1.5 text-text-primary">Konfirmasi Password</label>
+                  <input
+                    id="confirmPassword"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    minLength={8}
+                    autoComplete="new-password"
+                    className="w-full bg-bg-card border border-border rounded-xl px-3.5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent/40 transition-colors"
+                    placeholder="Ulangi password"
+                  />
+                  {confirmPassword.length > 0 && (
+                    <p className={`mt-1.5 text-xs flex items-center gap-1 ${matches ? "text-bullish" : "text-bearish"}`}>
+                      {matches && <Check className="h-3 w-3" aria-hidden />}
+                      {matches ? "Password cocok" : "Belum cocok"}
+                    </p>
+                  )}
+                </div>
+
+                {error && (
+                  <p role="alert" className="text-sm text-bearish bg-bearish/5 border border-bearish/20 rounded-lg px-3 py-2">
+                    {error}
+                  </p>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading || !step2Ready(password, confirmPassword)}
+                  data-engagement="register_completed"
+                  className="w-full bg-accent text-white rounded-xl px-4 py-3 text-sm font-semibold hover:bg-accent/90 transition-colors press-scale disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? "Memproses…" : "Mulai Analisa Gratis"}
+                </button>
+              </form>
+            )}
+
+            <div className="flex items-center gap-3 pt-2">
+              <div className="flex-1 h-px bg-border" />
+              <span className="text-xs text-text-tertiary">atau</span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
+
             <button
               onClick={() => signIn("google", { callbackUrl: "/auth/complete-profile" })}
               className="w-full flex items-center justify-center gap-3 bg-bg-card border border-border rounded-xl px-4 py-3 text-sm font-medium hover:bg-bg-hover hover:border-accent/30 transition-colors"
@@ -101,81 +236,6 @@ export default function RegisterPage() {
               </svg>
               Daftar dengan Google
             </button>
-
-            <div className="flex items-center gap-3">
-              <div className="flex-1 h-px bg-border" />
-              <span className="text-xs text-text-tertiary">atau dengan email</span>
-              <div className="flex-1 h-px bg-border" />
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium mb-1.5 text-text-primary">Email</label>
-                <input
-                  id="email"
-                  type="email"
-                  autoFocus
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  autoComplete="email"
-                  className="w-full bg-bg-card border border-border rounded-xl px-3.5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent/40 transition-colors"
-                  placeholder="nama@email.com"
-                />
-              </div>
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium mb-1.5 text-text-primary">Password</label>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={8}
-                  autoComplete="new-password"
-                  className="w-full bg-bg-card border border-border rounded-xl px-3.5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent/40 transition-colors"
-                  placeholder="Minimal 8 karakter"
-                />
-                <p className={`mt-1.5 text-xs flex items-center gap-1 ${longEnough ? "text-bullish" : "text-text-tertiary"}`}>
-                  {longEnough && <Check className="h-3 w-3" aria-hidden />}
-                  Minimal 8 karakter
-                </p>
-              </div>
-              <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium mb-1.5 text-text-primary">Konfirmasi Password</label>
-                <input
-                  id="confirmPassword"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  minLength={8}
-                  autoComplete="new-password"
-                  className="w-full bg-bg-card border border-border rounded-xl px-3.5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent/40 transition-colors"
-                  placeholder="Ulangi password"
-                />
-                {confirmPassword.length > 0 && (
-                  <p className={`mt-1.5 text-xs flex items-center gap-1 ${matches ? "text-bullish" : "text-bearish"}`}>
-                    {matches && <Check className="h-3 w-3" aria-hidden />}
-                    {matches ? "Password cocok" : "Belum cocok"}
-                  </p>
-                )}
-              </div>
-
-              {error && (
-                <p role="alert" className="text-sm text-bearish bg-bearish/5 border border-bearish/20 rounded-lg px-3 py-2">
-                  {error}
-                </p>
-              )}
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-accent text-white rounded-xl px-4 py-3 text-sm font-semibold hover:bg-accent/90 transition-colors press-scale disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? "Memproses…" : "Mulai Analisa Gratis"}
-              </button>
-            </form>
 
             <p className="text-center text-xs text-text-tertiary">
               Gratis · Tanpa kartu kredit · Kami tidak menjual data Anda.

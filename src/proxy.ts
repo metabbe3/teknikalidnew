@@ -53,7 +53,7 @@ const REGISTER_RATE_WINDOW = 60 * 60_000;
 // CGNAT Indonesia = ribuan user share 1 IP; limit 60 req/mnt mem-block manusia asli.
 // Yang tersisa hanya blocklist manual (blockedIps oleh admin) — auto-escalation dimatikan.
 const stockApiRateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const STOCK_API_RATE_LIMIT = 600; // req/min/IP — praktis unlimited utk manusia
+const STOCK_API_RATE_LIMIT = 3000; // req/min/IP — dinaikkan 19 Okt (owner kena limit via CGNAT shared; 600 masih kepenuhan ribuan user/IP)
 const stockApiViolations = new Map<string, { count: number; resetAt: number }>();
 const STOCK_API_VIOLATION_WINDOW = 10 * 60_000;
 const STOCK_API_BLOCK_WINDOW = 60 * 60_000;
@@ -61,7 +61,7 @@ const blockedIps = new Map<string, number>(); // ip → unblockAt (ms)
 
 // Rate-limit + blocklist for the public /stocks/* HTML pages (the scrape surface).
 const stockPageRateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const STOCK_PAGE_RATE_LIMIT = 600; // req/min/IP — praktis unlimited; admin blocklist utk scraper berat
+const STOCK_PAGE_RATE_LIMIT = 3000; // req/min/IP — dinaikkan 19 Okt (owner-directed; CGNAT shared ribuan user, 600 masih kena)
 const stockPageViolations = new Map<string, { count: number; resetAt: number }>();
 const STOCK_PAGE_VIOLATION_WINDOW = 10 * 60_000; // track repeat offenders over 10 min
 const STOCK_PAGE_BLOCK_WINDOW = 60 * 60_000; // 1h cooldown after 3 violations

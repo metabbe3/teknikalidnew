@@ -570,3 +570,11 @@
 - AI Gate e0c8a92 ikut live (marker queue-full di /api/ai/screener+stock route.js); unit test 4/4 PASS re-run CTO
 - QA: pembangun ≠ pemeriksa — reviewer slot berikutnya; impact_check_due: bug-01 login-flow 20 Okt · landing PageView 24 Okt
 - KPI: STICKY+GROWTH (bug-01) · TRUST (nosniff, snapshot-consistency) · GROWTH (3 landing orphan->wired)
+
+## 2026-10-19 07:30 — CTO pagi (slot 1)
+- task-id: prd-2026-10-18-01 (register funnel 2-step progressive disclosure)
+- type: fitur | PRD: idea-2026-10-18-1 | north_star: GROWTH register (north star #90)
+- deploy: 0 deploy routine (BUILD-ONLY window pagi) — kode live via image 154712c147f9 (owner/backoffice build 05:59 dari worktree night branch); merge resmi ke main 70ee7be pushed
+- verify: tsc 0 · test register-funnel PASS · LIVE curl /auth/register 200 + data-step="1" + register_step1_submit + autofocus (before=0/after=1); AC2 funnel gate due 2026-11-02
+- QA: pending reviewer D+1 (interactive step1→step2 flow) | impact_check_due: 2026-11-02 (AC2 1.25x)
+- impact_check_due: 2026-11-02
