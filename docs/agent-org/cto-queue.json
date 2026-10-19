@@ -2,6 +2,22 @@
   "protocol": "CTO task queue — dibaca CTO agent (slot 07:30 pagi & 16:45 sore; quiet zone BARU 11:00-18:00 = larang deploy+LLM, owner 16 Sep), ditulis CEO (08:15) / Council (Min 08:00). Entry: {id, date, spec, priority (P0 darurat/P1 tinggi/P2 normal), north_star, status (pending/done/failed/blocked_for_owner), result}. CTO: max 1 deploy per slot (2/hari total), eksekusi claude code pipeline, update status + verify evidence.",
   "entries": [
     {
+      "id": "test-2026-10-19-01",
+      "date": "2026-10-19",
+      "type": "test",
+      "priority": "P2",
+      "status": "night_ready",
+      "train": "T-1020-N",
+      "north_star": "TRUST — signal-score engine = label publik di halaman saham + feed track-record/verdict-prose; kini ada regression-net",
+      "title": "Test coverage: indicator-score engine (computeSignalScore + detectGorengan) — pure fn inti trust, sebelumnya ZERO test",
+      "spec": "CTO Night 19 Okt (pilihan #3 test-coverage dari prioritas misi malam). signal-score engine dipakai 3 konsumer (stocks/[ticker]/page, community signal-detector, technical-analysis.service) + men-charge feed verdict-prose & track-record — tanpa test, regresi translator bobot/bobot-sentimen berubah diam-diam dan merusak label trust. 15 assert: bobot 9 indikator = 1.00, mapping label (-0.6/-0.2/0.2/0.6), quirk peredam (bearish+ADX kuat+stoch oversold = -0.58 Bearish BUKAN Strong — pin by-design), null-safety penuh, detectGorengan >=2-flag threshold + guard div-0.",
+      "branch": "night/test-2026-10-19-01",
+      "verify": "tsx node:test 15/15 PASS · npx tsc --noEmit 0 error · sdlc_lint 0 error · 11 suite repo lain tetap PASS (track-record, ai-gate, waitlist, register-funnel, article x4, sanitizer, register-cta) · selftest-verdict-prose PASS",
+      "estimate_review_min": 5,
+      "result": "NIGHT-READY 19 Okt 23:4x WIB. Test-only, 1 file baru +174 baris, tanpa sentuh kode prod. Commit 4a4e12c di night/test-2026-10-19-01 (dari origin/main 4c1dae2). Merge = fast-forward biasa.",
+      "created_by": "CTO Night 19 Okt (cron prep-only)"
+    },
+    {
       "id": "ux-2026-10-18-02",
       "date": "2026-10-18",
       "type": "ops",
