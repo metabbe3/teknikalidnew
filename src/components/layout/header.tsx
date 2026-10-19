@@ -153,14 +153,6 @@ export function Header() {
 
         {/* Right side */}
         <div className="flex items-center gap-2">
-          {session?.user && (
-            <Link href="/watchlist" className="p-2 text-text-secondary hover:text-text-primary hover:bg-bg-hover rounded-lg transition-colors" aria-label="Daftar Pantauan">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-              </svg>
-            </Link>
-          )}
-
           <NotificationBell />
 
           <div className="hidden sm:block">

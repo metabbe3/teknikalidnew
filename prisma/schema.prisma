@@ -665,6 +665,7 @@ enum NotificationType {
   AGENT_ALERT
   RE_ENGAGE
   SCREENER_MATCH
+  SITE_ANNOUNCEMENT
   THESIS_BREACH
 }
 
@@ -672,7 +673,7 @@ model Notification {
   id          String           @id @default(cuid())
   type        NotificationType
   recipientId String
-  actorId     String
+  actorId     String?
   postId      String?
   commentId   String?
   ticker      String?          @db.VarChar(20)
@@ -681,7 +682,7 @@ model Notification {
   createdAt   DateTime         @default(now())
 
   recipient User     @relation("Notifications", fields: [recipientId], references: [id], onDelete: Cascade)
-  actor     User     @relation("NotificationActions", fields: [actorId], references: [id], onDelete: Cascade)
+  actor     User?    @relation("NotificationActions", fields: [actorId], references: [id], onDelete: SetNull)
   post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
   comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
 
