@@ -28,8 +28,9 @@ describe("isEmailLoose — gate step-1 (AC1)", () => {
     assert.equal(isEmailLoose("a@b@c.com"), false);
   });
 
-  it("lebih dari 255 char → ditolak (paritas zod max(255))", () => {
-    assert.equal(isEmailLoose(`${"a".repeat(250)}@x.co`), false);
+  it("lebih dari 255 char → ditolak (paritas zod max(255)); 255 persis → lolos", () => {
+    assert.equal(isEmailLoose(`${"a".repeat(251)}@x.co`), false); // 256 char
+    assert.equal(isEmailLoose(`${"a".repeat(250)}@x.co`), true); // 255 char
   });
 
   it("uppercase tetap lolos (dinormalisasi nanti, bukan ditolak)", () => {
