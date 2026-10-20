@@ -47,6 +47,7 @@ import DailyAnalysisSection from "@/components/stock/daily-analysis-section";
 import { LoginGate } from "@/components/auth/login-gate";
 import { GuestStockTracker } from "@/components/ui/guest-stock-tracker";
 import { GuestOverlimitBanner } from "@/components/ui/guest-overlimit-banner";
+import { guestHasQuota } from "@/lib/guest-pass";
 import { auth } from "@/lib/auth";
 
 // ponytail: page is per-request SSR (auth-gated data varies by session — can't be SSG).
@@ -136,6 +137,10 @@ export default async function StockDetailPage({
   // in the anon HTML.
   const session = await auth();
   const isAuthed = !!session?.user;
+  // Guest pass v2.1 (owner 20 Okt): dalam kuota gratis (≤5 ticker unik/hari)
+  // anon melihat konten penuh — indikator, trading plan, fundamentals, data perusahaan.
+  const guestPass = !isAuthed ? await guestHasQuota() : false;
+  const fullAccess = isAuthed || guestPass;
 
   let detail;
   try {
@@ -649,7 +654,7 @@ export default async function StockDetailPage({
             )}
 
             {/* Indicator strip — authed: penuh; anon: teaser angka real (value first) */}
-            {indicators && close !== null && !isAuthed && (
+            {indicators && close !== null && !fullAccess && (
               <div className="border-t border-border mt-5 pt-4">
                 <div className="flex items-center gap-2.5 flex-wrap text-sm">
                   <span className={`font-mono font-semibold inline-flex items-center gap-1 ${rsiColor(indicators.rsi14) || "text-text-secondary"}`}>
@@ -674,7 +679,7 @@ export default async function StockDetailPage({
                 </div>
               </div>
             )}
-            {isAuthed && indicators && close !== null && (
+            {fullAccess && indicators && close !== null && (
               <div className="border-t border-border mt-5 pt-4">
                 <div className="flex items-center justify-between gap-4 flex-wrap">
                   <div className="flex items-center gap-2.5 flex-wrap text-sm">
@@ -759,7 +764,7 @@ export default async function StockDetailPage({
               ["chart", "📈 Chart"],
               ["indikator", "🧭 Indikator"],
               ["ai", "✨ AI"],
-              ...(isAuthed ? [["plan", "🎯 Trading Plan"]] : []),
+              ...(fullAccess ? [["plan", "🎯 Trading Plan"]] : []),
             ].map(([id, label]) => (
               <a
                 key={id}
@@ -775,7 +780,7 @@ export default async function StockDetailPage({
 
 
       {/* Alert preview CTA — anon only: tunjukkan value tersembunyi (alert sinyal) saat saham PUNYA sinyal aktif */}
-      {!isAuthed && (
+      {!fullAccess && (
         <AlertPreviewCard
           ticker={ticker}
           signalLabel={indicators?.signalLabel ?? null}
@@ -799,7 +804,7 @@ export default async function StockDetailPage({
             { label: stripJk(ticker) },
           ]}
         />
-        {!isAuthed && (
+        {!fullAccess && (
           <div className="space-y-3">
             <GuestStockTracker ticker={ticker} />
             <GuestOverlimitBanner ticker={stripJk(ticker)} />
@@ -807,7 +812,7 @@ export default async function StockDetailPage({
         )}
         {/* ── SEO Teaser: Technical analysis summary for crawlers (anon only) ── */}
         {/* Renders server-side text that Google can index — real indicator values, not gate copy. */}
-        {!isAuthed && indicators && close !== null && (
+        {!fullAccess && indicators && close !== null && (
           <section className="bg-bg-card rounded-xl border border-border p-5 space-y-4" aria-label="Ringkasan analisa teknikal">
             <h2 className="font-serif text-base font-semibold text-text-primary">Ringkasan Analisa Teknikal {stripJk(ticker)}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -876,7 +881,7 @@ export default async function StockDetailPage({
 
         {/* Daily Analysis — auth-gated (embeds indicator values in narrative) */}
         <span id="analisa" className="block scroll-mt-24" />
-        {isAuthed && close !== null ? (
+        {fullAccess && close !== null ? (
             <DailyAnalysisSection
               ticker={ticker}
               stockName={stock.name}
@@ -962,7 +967,7 @@ export default async function StockDetailPage({
             )}
           </div>
           <div className="space-y-4">
-            {isAuthed ? (
+            {fullAccess ? (
               <KeyStatistics
                 open={latest ? decimalToNumber(latest.open) : null}
                 high={latest ? decimalToNumber(latest.high) : null}
@@ -981,7 +986,7 @@ export default async function StockDetailPage({
                 message="Daftar gratis untuk membuka data statistik lengkap — OHLC harian, volume, SMA, dan range 52 minggu."
               />
             )}
-            {isAuthed ? (
+            {fullAccess ? (
               <div className="space-y-4">
                 <span id="plan" className="block scroll-mt-24" />
                 {tradingPlan && <TradingPlanCard plan={tradingPlan} />}
@@ -1001,7 +1006,7 @@ export default async function StockDetailPage({
         </div>
 
         {/* IDX Company Data Tabs — auth-gated */}
-        {isAuthed ? (
+        {fullAccess ? (
           <CompanyDataTabs
             profile={idxProfile}
             commissioners={idxCommissionersSerialized}

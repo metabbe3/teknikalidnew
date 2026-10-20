@@ -49,6 +49,15 @@ export function GuestStockTracker({ ticker }: { ticker: string }) {
         } catch {
           // ignore
         }
+        // Server-side quota claim (cookie) — supaya RSC page render konten penuh
+        // selama kuota tersisa (guest pass v2.1). Fire-and-forget.
+        try {
+          const gpBody = JSON.stringify({ ticker });
+          if (navigator.sendBeacon) navigator.sendBeacon("/api/track/guest-pass", new Blob([gpBody], { type: "application/json" }));
+          else fetch("/api/track/guest-pass", { method: "POST", headers: { "Content-Type": "application/json" }, body: gpBody, keepalive: true }).catch(() => {});
+        } catch {
+          // ignore
+        }
       }
     } catch {
       // ignore private mode
