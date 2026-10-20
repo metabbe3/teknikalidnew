@@ -948,3 +948,8 @@ Konsensus 2026: E-E-A-T+CWV+intent top-3; AIO potong CTR; YMYL finance wajib aut
 - Opsi B: revert mental — anggap ticker-manager "besok saja", origin/main jadi kanonik. Murah tapi fitur done+verified hilang ≥1 hari & mengajarkan pola "deploy terakhir menang" (anti-TRUST utk tim).
 - Rekomendasi: A. Plus invariant permanen (ke AGENTS.md): sebelum build, `git fetch && git merge-base --is-ancestor origin/main HEAD` wajib exit 0 — deploy hanya dari HEAD yang memuat origin/main penuh. Ini mencegah kambuh, bukan cuma menambal.
 - Isu ke-2 (owner action, TCC): idx-sync gagal LAGI Senin 06:00 (exit 1, log beku 12 Okt, Stock.updatedAt 12 Okt = 7 hari basi). Grant Full Disk Access utk node/launchd atau pindah cwd non-TCC — ops-13-01 sudah saya update bukti hari ini.
+
+## 2026-10-20 07:4x — CTO pagi (FDE gate + merge gate)
+- teknikal-2026-10-20-01 (Point&Badge v1, owner directive 19 Okt) → blocked_incomplete_prd. MISSING: research_brief (Researcher 08:30 belum bahas), prd_id (backlog 3 item tak ada point/badge), QA plan metric. Kandidat kuat STICKY pillar — mohon CEO/PRD agent formalisasi, ATAU owner konfirmasi PRD-exempt (preseden ux-2026-10-05-01 owner-approved exempt).
+- cto-2026-10-20-02 P0: merge night/prd-2026-10-18-01→main DIBLOK 2 gate (konflik decisions.md + schema-shield prisma). Prod image 8742307a9a24 jalan dari branch — repo/prod divergen. DDL sudah applied manual (0272822). Butuh owner decision, slot sore pasca-16:15.
+- ops-2026-10-13-01 [ESCALATE]: idx-sync beku 8 hari (DB MAX updatedAt 12 Okt) meski launchd exit 0 — owner TCC grant belum terjadi.
