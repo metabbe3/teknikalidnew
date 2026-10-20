@@ -171,26 +171,32 @@ export function StockCardList({ stocks, linkBase = "/stocks" }: StockCardListPro
           }`}
           onClick={() => router.push(`${linkBase}/${stock.ticker}`)}
         >
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center min-w-0">
-              <span className="font-semibold text-accent">{stripJk(stock.ticker)}</span>
-              {stock.listingBoard && stock.listingBoard !== "Utama" && (
-                <ListingBoardBadge board={stock.listingBoard} />
-              )}
+          {/* Layout 2-kolom sejajar (owner 20 Okt: nama & harga harus segaris di mobile,
+              font dikecilkan biar nama panjang aman): kiri ticker+nama, kanan %+harga */}
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm font-semibold text-accent leading-tight">{stripJk(stock.ticker)}</span>
+                {stock.listingBoard && stock.listingBoard !== "Utama" && (
+                  <ListingBoardBadge board={stock.listingBoard} />
+                )}
+              </div>
+              <div className="text-xs text-text-secondary truncate leading-tight">{stock.name}</div>
             </div>
-            <span className={`shrink-0 font-mono tabular-nums font-medium ${changeColor(stock.changePercent)}`}>
-              {stock.changePercent !== null ? formatPercent(stock.changePercent) : "—"}
-            </span>
+            <div className="shrink-0 text-right space-y-0.5">
+              <div className={`text-xs font-mono tabular-nums font-medium ${changeColor(stock.changePercent)}`}>
+                {stock.changePercent !== null ? formatPercent(stock.changePercent) : "—"}
+              </div>
+              <div className="text-sm font-mono tabular-nums font-medium leading-tight">
+                {stock.close !== null ? formatPrice(stock.close) : "—"}
+              </div>
+            </div>
           </div>
-          <div className="mt-0.5 text-sm text-text-secondary truncate">{stock.name}</div>
-          <div className="mt-1 flex items-center justify-between gap-2">
-            <span className="font-mono tabular-nums font-medium">
-              {stock.close !== null ? formatPrice(stock.close) : "—"}
-            </span>
-            {sparklines?.[stock.ticker] && sparklines[stock.ticker].length >= 2 && (
+          {sparklines?.[stock.ticker] && sparklines[stock.ticker].length >= 2 && (
+            <div className="mt-1 flex justify-end">
               <Sparkline data={sparklines[stock.ticker]} positive={(stock.changePercent ?? 0) >= 0} />
-            )}
-          </div>
+            </div>
+          )}
         </button>
       ))}
     </div>
