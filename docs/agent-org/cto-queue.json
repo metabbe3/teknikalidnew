@@ -2,6 +2,19 @@
  "protocol": "CTO task queue — dibaca CTO agent (slot 07:30 pagi & 16:45 sore; quiet zone BARU 11:00-18:00 = larang deploy+LLM, owner 16 Sep), ditulis CEO (08:15) / Council (Min 08:00). Entry: {id, date, spec, priority (P0 darurat/P1 tinggi/P2 normal), north_star, status (pending/done/failed/blocked_for_owner), result}. CTO: max 1 deploy per slot (2/hari total), eksekusi claude code pipeline, update status + verify evidence.",
  "entries": [
   {
+   "id": "bo-2026-10-21-01",
+   "date": "2026-10-21",
+   "type": "backoffice",
+   "priority": "P2",
+   "status": "done",
+   "scheduled_slot": "Backoffice Builder 03:00 21 Okt (dieksekusi malam ini)",
+   "title": "BACKOFFICE KUASAI+INSIGHT: agent-hub list — render status Enabled/Disabled dari configs (API sudah kirim, page diam), toggle langsung dari list, badge stale >14 hari",
+   "north_star": "TRUST + KUASAI (kontrol orkestrasi 22 agent dari backoffice tanpa buka 22 halaman detail; data reliable = tahu agent mana stale/matot)",
+   "spec": "Audit bo ronde-3 halaman agent-hub (list page; detail [agentType] 8cde57e 7 Jun sudah punya toggle/prompt/schedule/config lengkap). Temuan: GET /api/admin/agent-hub via getHubStats SUDAH return configs (AgentConfig isEnabled+scheduleCron per agent, service line 100-108) tapi page.tsx list TIDAK PERNAH merendernya — grid 22 kartu tanpa indikator Enabled/Disabled atau jadwal; owner harus klik 22 detail page satu-satu untuk tahu scheduler akan skip agent mana (scheduler agent-hub-scheduler memakai AgentConfig.isEnabled sebagai kunci; DB saat ini gen_evergreen+gen_trending_news disabled). Tombol Run tampil sama untuk agent disabled (membingungkan). Tidak ada sinyal stale: DB AgentJob gen_movement_analysis last_created 10 Sep (41 hari), gen_sourced_news 10 Jun, gen_faq 15 Jun — tak terlihat. Fix (API REUSE RULE, tanpa endpoint baru): (1) hub page konsumsi stats.configs → badge Enabled/Disabled per kartu (disabled = kartu dim + keterangan scheduler-skip, tombol Run tetap utk manual trigger); (2) toggle enable/disable langsung dari kartu via PUT /api/admin/agent-hub/[agentType] existing (pola toggleEnabledMutation detail page) dengan confirm; (3) badge amber 'stale' bila lastRun >14 hari dan agent enabled; (4) header count dinamis 'X of Y agents enabled'. DONE-WHEN: (a) tsc+build hijau; (b) grep bukti configs/isEnabled/stale/toggle di page.tsx list; (c) deployed + live /admin/agent-hub 200 login-guard (307 unauth = guard hidup); (d) changelog entry + rollback anchor dicatat.",
+   "created_by": "Backoffice Builder audit 21 Okt 03:0x (bukti: service getHubStats return configs; grep page.tsx list 0 hit isEnabled; psql AgentJob staleness)",
+   "result": "DONE 21 Okt 03:0x-03:2x backoffice slot (deploy 1/2 org). Pipeline: claude code worktree origin/main e601902 + verify sendiri. KANDUNGAN: cedae7b feat (agent-hub list render configs: badge Enabled/Disabled + dim + Scheduler-skip subtitle; toggle dari kartu via PUT /api/admin/agent-hub/[agentType] existing; badge stale >14hari; header X-of-Y agents enabled) + d358ca7 changelog. MERGE ff ke main d358ca7, PUSH origin (changelog==merge terpenuhi). BUKTI FISIK: tsc --noEmit EXIT-0 (pasca prisma generate); next build EXIT-0 (catatan: node_modules wajib cp -Rc clone, symlink ditolak Turbopack); container .next memuat marker (Scheduler skip + agents enabled) di page.js server+client chunk; /admin/agent-hub 307 login-guard (guard hidup); homepage 200 + live teknikal.id 200. ROLLBACK ANCHOR: image sha256:42d42a02b9a9 (pre-deploy, up 20 Okt 21:20 WIB) — rollback = docker tag + up -d ATAU git revert d358ca7. Catatan insiden kecil: git stash -u saat switch branch membawa queue file uncommitted; queue di-recover dari stash lalu di-commit — kedepannya commit queue SEBELUM checkout."
+  },
+  {
    "id": "ux-2026-10-18-02",
    "date": "2026-10-18",
    "type": "ops",
@@ -147,7 +160,7 @@
    "date": "2026-10-17",
    "type": "ops",
    "priority": "P1",
-   "status": "done",
+   "status": "qa_pass",
    "north_star": "TRUST (data reliable — konten salah angka = trust runtuh)",
    "title": "P1 QA FATAL post-publish: brief 16 Okt + rekap mingguan — 4 klaim angka salah vs DB (breadth '11 naik' disalin antar-hari, '592 turun Rabu', superlatif 'sejak 8 Juni', '0 golden/death cross')",
    "source": "REVIEWER QA 17 Okt 07:00 — sweep 44 artikel/24jm; verifikasi SQL StockPrice/StockIndicator (read-only)",
@@ -1943,7 +1956,7 @@
    "date": "2026-10-20",
    "type": "backoffice",
    "priority": "P2",
-   "status": "done",
+   "status": "qa_pass",
    "assigned_to": "backoffice-builder",
    "north_star": "TRUST (data reliable — admin jadi satu sumber kebenaran) + APLIKASI consistency",
    "title": "Backoffice MATANGKAN /admin/pipelines: buang CRON_SCHEDULES hardcoded basi (2 job, jadwal salah) + Indicators stub -> live dari endpoint existing",
@@ -1980,6 +1993,49 @@
    ],
    "deploy_note": "SATU kereta dengan teknikal-2026-10-20-01 (point+badge) — deploy batching doctrine, cap 2/hari teknikal.",
    "result": "DONE 19 Okt 22:15 oleh main session (bukan night org — owner minta 'fix skrg saja'): f105175 ticker minus+refresh60s + 1dc78a3 bell announcement system. Insiden P3009 (migration syntax) → downtime 15 mnt → fix 0272822 no-op migration + no-cache rebuild. Verified: home 200, api/market 200, losers render −, broadcast 26 user, banner component live."
+  },
+  {
+   "id": "seo-2026-10-20-01",
+   "date": "2026-10-20",
+   "type": "ops",
+   "priority": "P1",
+   "status": "pending",
+   "train": "T-1021-N",
+   "scheduled_slot": "Backend Builder 20 Okt 18:30 build-only -> kereta T-1021-N (21 Okt malam) deploy; JANGAN gabung kereta T-1020-N malam ini (merge P0 = 1 deploy 1 eksperimen)",
+   "north_star": "GROWTH (7 klik/minggu gratis dari query pos-12 CTR 100%) + TRUST (404 = trust bocor)",
+   "source": "KEYWORD-RESEARCH 20 Okt 08:15 (P1 OPS); CEO verify live 20 Okt: curl -A Mozilla https://teknikal.id/idx-radar = 404 tanpa redirect",
+   "spec": "INTENT (CEO 20 Okt): query GSC 'idx radar' 7 klik/7d pos 12 CTR 100% (14-20 Okt) mendarat ke /idx-radar yang 404 — verified live oleh CEO pagi ini (404, no redirect). Trafik gratis bocor setiap minggu. EKSEKUSI (ops routing kecil, 0 halaman baru — API REUSE RULE): (1) TENTUKAN target resmi: cek GSC/sc util URL asli yang dirank Google utk query ini; kandidat = permukaan radar existing (screener /stocks momentum ATAU blok 'Radar 5 Emiten' di home/stocks — verifikasi mana yang paling cocok intent 'idx radar'); (2) tambahkan redirect 301 PERMANENT /idx-radar -> target (next.config redirects atau routing map pola existing — konsisten dgn 308 pattern lama /berita/saham-X); (3) pastikan target ada di sitemap.xml; (4) kalau ternyata Google merank URL yang memang tak pernah ada (canonical gaib), pastikan canonical target jelas supaya ranking berpindah bukan hilang. DILARANG: buat halaman/content baru (itu lane Product/Mandor), ubah schema/DB. DONE WHEN: (a) curl -I https://teknikal.id/idx-radar = 301 + Location target yang 200 anon; (b) target URL muncul di sitemap.xml live (curl grep); (c) keputusan target + alasan dicatat ke decisions.md di slot yang sama; (d) 7 hari pasca-deploy: GSC query 'idx radar' 0 klik jatuh-404 dan posisi bertahan top-20 (cek snapshot mingguan).",
+   "done_when": "curl -I /idx-radar = 301 ke target 200 + target di sitemap.xml live + GSC 7d berikutnya 0 klik-404."
+  },
+  {
+   "id": "qa-2026-10-20-01",
+   "date": "2026-10-20",
+   "type": "qa-fix",
+   "priority": "P1",
+   "status": "pending",
+   "north_star": "TRUST (angka salah vs DB = trust runtuh; north star #90)",
+   "title": "P1 QA FATAL post-publish: brief 19 Okt — 4 klaim angka/definisi salah vs DB (breadth >10%, 'terdalam sejak 8 Juni', 'nol cross baru', sektor Infra -11,9)",
+   "spec": "INTENT: koreksi brief-pasar-idx-2026-10-19-oversold-bank-jenuh-jual agar semua angka replikasi-able dari DB per 16 Okt. Temuan reviewer 20 Okt (bukti SQL): (1) '812 saham turun lebih dari 10%' SALAH — DB 557 saham turun >10% (close-basis); 812 = TOTAL saham turun; angka 208 turun >14,5% non-gorengan benar. (2) 'sesi terdalam sejak 8 Juni' MENYESATKAN dgn basis jumlah — 24 Jun 947 & 24 Jul 820 lebih dalam; yang benar hanya bila pakai rasio (16 Okt 97,4% saham turun vs 75,8% 8 Jun) atau %IHSG (-11,57% memang terdalam setahun) — rumuskan eksplisit basisnya. (3) 'nol sinyal cross baru terbentuk Jumat' SALAH — DB 3 saham flip ke golden + 75 cross EMA baru 16 Okt; angka 131 golden/31 death = jumlah STATE, bukan yang baru. (4) 'Infrastructures -11,9%' vs DB -11,8% (rounding; minor, perbaiki sekalian). ACCEPTANCE: (a) koreksi terbit (edit artikel oleh CTO via pipeline yang sah / editor backoffice bo-2026-10-14-02); (b) generator brief tambah assertion pra-publish: hitungan 'turun >X%' wajib dari SQL berparameter tanggal (bukan dipinjam field lain), klaim 'sejak <tgl>' wajib punya query pembuktian, 'cross baru' wajib definisi flip-vs-hari-sebelumnya."
+  },
+  {
+   "id": "qa-2026-10-20-02",
+   "date": "2026-10-20",
+   "type": "qa-fix",
+   "priority": "P1",
+   "status": "pending",
+   "north_star": "TRUST (superlatif tidak replikasi-able = qa-27-01 violation)",
+   "title": "P1 QA FATAL post-publish: brief 20 Okt — superlatif volume INCO salah ranking ('terbesar di antara saham yang menguat' = rank #11)",
+   "spec": "INTENT: koreksi klaim superlatif di brief-pasar-idx-2026-10-20-ihsg-break-5000 (paragraf 'Yang bertahan: energi'). Temuan reviewer 20 Okt: artikel menyebut volume INCO 38,8 juta 'terbesar di antara seluruh saham yang menguat Senin (non-gorengan, volume di atas 1 juta)' — DB 19 Okt ada 10 gainer non-gorengan >1jt dengan volume lebih besar: DSSA 1,09 miliar, BUKA 316 jt, DMAS 277 jt, NAYZ 141 jt, PTBA 106 jt (disebut artikel sendiri 2 kalimat berikutnya), NCKL 100 jt, KAQI 82 jt, PGAS 63,6 jt (juga disebut artikel), RMKE 59 jt, AADI 44 jt. INCO hanya rank #4 kenaikan % di antara gainer likuid non-gorengan (TIFA 25%, GRIA 14,3%, VISI 6,1%, INCO 4,93%). ACCEPTANCE: (a) reformulasi klaim jadi yang benar dan tetap menarik, mis. 'kenaikan terbesar di antara gainer likuid bervolume >40 juta' ATAU ganti sudut ke relative-strength; (b) generator brief wajib generate superlatif dari SQL ranking ORDER BY pada hari yang sama + assertion rank-#1-sebelum-klaim (qa-27-01)."
+  },
+  {
+   "id": "qa-2026-10-20-03",
+   "date": "2026-10-20",
+   "type": "bugfix",
+   "priority": "P1",
+   "status": "pending",
+   "north_star": "TRUST (data reliable — 40 artikel/hari memuat Market Cap stale 1 hari)",
+   "title": "P1 BUG worker fundamental: marketCap 19 Okt dihitung dari close 16 Okt (stale 1 hari, campur sumber dgn P/E) — 40 artikel template ikut salah",
+   "spec": "INTENT: StockFundamental.marketCap per tanggal T wajib = sharesOutstanding x close T. Temuan reviewer 20 Okt: row 2026-10-19 semua ticker dihitung dari close 16 Okt — BBCA 637,9 T (123,28M x 5.175) padahal close 19 Okt 4.820 -> benar 594 T (+7,3% salah); TLKM 188,2 T (x 1.900) vs benar 183,9 T; UNVR 52,8 T (x 1.390) vs benar 52,4 T. Bukti campur sumber: P/E 10,22 & P/B 2,11 di row yang sama KONSISTEN dgn close 19 Okt — jadi marketCap saja pakai close T-1. Dampak publish: 40 artikel saham template 20 Okt memuat tabel Fundamental 'Market Cap' salah semua (contoh BBCA Rp 637,9 T). ACCEPTANCE: (a) fix worker sync fundamental (jalur-5 sisa: worker generator artikel) agar marketCap pakai close hari yang sama dgn date row; (b) backfill row 19 Okt (dan audit: sejak kapan pola ini ada — cek 2-3 tanggal sebelumnya); (c) 40 artikel 20 Okt regenerasi field fundamental ATAU koreksi massal via editor; (d) assertion worker: marketCap/close(equals date) == price article table."
   }
  ],
  "tasks": []
