@@ -45,6 +45,8 @@ import { prisma } from "@/lib/prisma";
 import { portfolioService } from "@/domains/portfolio/portfolio.service";
 import DailyAnalysisSection from "@/components/stock/daily-analysis-section";
 import { LoginGate } from "@/components/auth/login-gate";
+import { GuestStockTracker } from "@/components/ui/guest-stock-tracker";
+import { GuestOverlimitBanner } from "@/components/ui/guest-overlimit-banner";
 import { auth } from "@/lib/auth";
 
 // ponytail: page is per-request SSR (auth-gated data varies by session — can't be SSG).
@@ -797,6 +799,12 @@ export default async function StockDetailPage({
             { label: stripJk(ticker) },
           ]}
         />
+        {!isAuthed && (
+          <div className="space-y-3">
+            <GuestStockTracker ticker={ticker} />
+            <GuestOverlimitBanner ticker={stripJk(ticker)} />
+          </div>
+        )}
         {/* ── SEO Teaser: Technical analysis summary for crawlers (anon only) ── */}
         {/* Renders server-side text that Google can index — real indicator values, not gate copy. */}
         {!isAuthed && indicators && close !== null && (
