@@ -76,7 +76,7 @@ export function TopPredictorList({ users }: { users: TopPredictor[] }) {
                 </p>
               </div>
               <div className="text-right">
-                <span className={`text-[13px] font-bold ${
+                <span className={`text-sm font-bold ${
                   user.accuracyPct >= 70
                     ? "text-emerald-600"
                     : user.accuracyPct >= 50

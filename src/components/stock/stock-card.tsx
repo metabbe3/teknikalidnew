@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { formatPercentPlain, formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { HealthScoreBadge } from "@/components/stock/health-score-badge";
@@ -49,7 +49,7 @@ export function StockCard({ ticker, name, sector, close, change, changePercent, 
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <p className="font-semibold text-[15px] tracking-tight">{stripJk(ticker)}</p>
+            <p className="font-semibold text-sm tracking-tight">{stripJk(ticker)}</p>
             {signalLabel && (
               <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded ${SIGNAL_STYLES[signalLabel] ?? "bg-gray-200 text-gray-500"}`}>
                 {signalLabel === "Strong Bullish" ? "▲▲" : signalLabel === "Bullish" ? "▲" : signalLabel === "Strong Bearish" ? "▼▼" : signalLabel === "Bearish" ? "▼" : "◆"}
@@ -64,7 +64,7 @@ export function StockCard({ ticker, name, sector, close, change, changePercent, 
         </div>
         <div className="text-right shrink-0 tabular-nums">
           {close != null ? (
-            <p data-live-price={ticker} className="font-semibold text-[15px] tracking-tight">{formatPrice(close)}</p>
+            <p data-live-price={ticker} className="font-semibold text-sm tracking-tight">{formatPrice(close)}</p>
           ) : (
             <p className="font-semibold text-text-tertiary">—</p>
           )}
@@ -121,6 +121,9 @@ export interface StockCardListProps {
 
 export function StockCardList({ stocks, linkBase = "/stocks" }: StockCardListProps) {
   const router = useRouter();
+  const [visibleCount, setVisibleCount] = useState(40);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const hasMore = stocks.length > visibleCount;
 
   // Same queryKey as stock-table — React Query shares the cache, no extra fetch
   const { data: sparklines } = useQuery<Record<string, number[]>>({
@@ -133,6 +136,18 @@ export function StockCardList({ stocks, linkBase = "/stocks" }: StockCardListPro
     staleTime: 5 * 60 * 1000,
   });
 
+  // Progressive auto-load — silent failure if IO unavailable, cleaned up on unmount
+  useEffect(() => {
+    if (!hasMore || typeof IntersectionObserver === "undefined") return;
+    const el = sentinelRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) setVisibleCount((v) => v + 40);
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [hasMore, visibleCount]);
+
   if (stocks.length === 0) {
     return (
       <div className="rounded-xl depth-shadow border border-border/60 text-center text-text-tertiary py-20">
@@ -142,8 +157,12 @@ export function StockCardList({ stocks, linkBase = "/stocks" }: StockCardListPro
   }
 
   return (
+    <>
+    {hasMore && (
+      <p className="text-xs text-text-tertiary mt-2">{visibleCount} dari {stocks.length} saham</p>
+    )}
     <div className="rounded-xl depth-shadow border border-border/60 overflow-hidden">
-      {stocks.map((stock, i) => (
+      {stocks.slice(0, visibleCount).map((stock, i) => (
         <button
           key={stock.ticker}
           type="button"
@@ -175,5 +194,17 @@ export function StockCardList({ stocks, linkBase = "/stocks" }: StockCardListPro
         </button>
       ))}
     </div>
+    {hasMore && (
+      <button
+        type="button"
+        className="block w-full rounded-lg border border-border bg-bg-card my-3 py-3 active:bg-accent/[0.06] transition-colors"
+        onClick={() => setVisibleCount((v) => v + 40)}
+      >
+        <span className="font-medium">Muat 40 lagi</span>{" "}
+        <span className="text-sm text-text-secondary">{stocks.length - visibleCount} saham tersisa</span>
+      </button>
+    )}
+    {hasMore && <div ref={sentinelRef} className="h-8" />}
+    </>
   );
 }

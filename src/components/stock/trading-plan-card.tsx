@@ -131,7 +131,7 @@ function Row({ label, value, detail, valueClass }: { label: string; value: strin
     <div className="flex items-center justify-between">
       <span className="text-xs text-text-secondary">{label}</span>
       <div className="flex items-center gap-2">
-        <span className={`text-[13px] font-mono tabular-nums font-semibold ${valueClass}`}>{value}</span>
+        <span className={`text-sm font-mono tabular-nums font-semibold ${valueClass}`}>{value}</span>
         <span className="text-[10px] text-text-tertiary">{detail}</span>
       </div>
     </div>

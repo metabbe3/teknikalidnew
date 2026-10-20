@@ -103,7 +103,7 @@ export function SahamStrategyLinks({ compact = false }: { compact?: boolean }) {
             href={p.href}
             className="group block rounded-xl border border-border bg-bg-card p-3 hover:depth-shadow-hover transition-all"
           >
-            <p className="text-[13px] font-semibold text-text-primary group-hover:text-accent transition-colors leading-snug">
+            <p className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors leading-snug">
               {p.title}
             </p>
             <p className="mt-0.5 text-[11px] text-text-tertiary leading-snug line-clamp-2">{p.desc}</p>

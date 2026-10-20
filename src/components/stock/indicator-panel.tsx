@@ -63,7 +63,7 @@ function ValueRow({ label, value, className, children }: { label: string; value:
   return (
     <div className="flex items-center justify-between gap-1">
       <span className="text-[12px] text-text-secondary">{label}</span>
-      <span className={`text-[13px] font-mono tabular-nums font-medium flex items-center gap-1 ${className ?? ""}`}>
+      <span className={`text-sm font-mono tabular-nums font-medium flex items-center gap-1 ${className ?? ""}`}>
         {value}
         {children}
       </span>
@@ -335,7 +335,7 @@ export function IndicatorPanel({
               <div className="flex items-center justify-between gap-1">
                 <span className="text-[12px] text-text-secondary">SMA 20</span>
                 <span className="flex items-center gap-1.5">
-                  <span className="text-[13px] font-mono tabular-nums font-medium">
+                  <span className="text-sm font-mono tabular-nums font-medium">
                     {sma20 !== null ? formatNumber(sma20) : "—"}
                   </span>
                   <DeltaArrow current={sma20} prev={p("sma20") as number | null} />
@@ -345,7 +345,7 @@ export function IndicatorPanel({
               <div className="flex items-center justify-between gap-1">
                 <span className="text-[12px] text-text-secondary">SMA 50</span>
                 <span className="flex items-center gap-1.5">
-                  <span className="text-[13px] font-mono tabular-nums font-medium">
+                  <span className="text-sm font-mono tabular-nums font-medium">
                     {sma50 !== null ? formatNumber(sma50) : "—"}
                   </span>
                   <DeltaArrow current={sma50} prev={p("sma50") as number | null} />
@@ -355,7 +355,7 @@ export function IndicatorPanel({
               <div className="flex items-center justify-between gap-1">
                 <span className="text-[12px] text-text-secondary">SMA 200</span>
                 <span className="flex items-center gap-1.5">
-                  <span className="text-[13px] font-mono tabular-nums font-medium">
+                  <span className="text-sm font-mono tabular-nums font-medium">
                     {sma200 !== null ? formatNumber(sma200) : "—"}
                   </span>
                   <DeltaArrow current={sma200} prev={p("sma200") as number | null} />
@@ -380,7 +380,7 @@ export function IndicatorPanel({
               <div className="flex items-center justify-between gap-1">
                 <span className="text-[12px] text-text-secondary">EMA 12</span>
                 <span className="flex items-center gap-1.5">
-                  <span className="text-[13px] font-mono tabular-nums font-medium">
+                  <span className="text-sm font-mono tabular-nums font-medium">
                     {ema12 !== null ? formatNumber(ema12) : "—"}
                   </span>
                   <DeltaArrow current={ema12} prev={p("ema12") as number | null} />
@@ -390,7 +390,7 @@ export function IndicatorPanel({
               <div className="flex items-center justify-between gap-1">
                 <span className="text-[12px] text-text-secondary">EMA 26</span>
                 <span className="flex items-center gap-1.5">
-                  <span className="text-[13px] font-mono tabular-nums font-medium">
+                  <span className="text-sm font-mono tabular-nums font-medium">
                     {ema26 !== null ? formatNumber(ema26) : "—"}
                   </span>
                   <DeltaArrow current={ema26} prev={p("ema26") as number | null} />

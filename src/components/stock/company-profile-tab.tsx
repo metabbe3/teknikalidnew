@@ -53,7 +53,7 @@ export function CompanyProfileTab({ data }: { data: CompanyProfileData }) {
           <h3 className="text-[11px] font-semibold text-text-tertiary uppercase tracking-wider mb-2">
             Kegiatan Usaha Utama
           </h3>
-          <p className="text-[13px] text-text-secondary leading-relaxed">{data.businessActivity}</p>
+          <p className="text-sm text-text-secondary leading-relaxed">{data.businessActivity}</p>
         </div>
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -64,7 +64,7 @@ export function CompanyProfileTab({ data }: { data: CompanyProfileData }) {
             </h3>
             <div className="space-y-0" role="list">
               {classificationRows.map(([label, value]) => (
-                <div key={label} className="flex justify-between py-2 text-[13px] border-b border-border/30 last:border-0" role="listitem">
+                <div key={label} className="flex justify-between py-2 text-sm border-b border-border/30 last:border-0" role="listitem">
                   <span className="text-text-secondary">{label}</span>
                   <span className="font-medium text-right font-mono text-[12px]">{value ?? "—"}</span>
                 </div>
@@ -81,7 +81,7 @@ export function CompanyProfileTab({ data }: { data: CompanyProfileData }) {
                 </h3>
                 <div className="space-y-0" role="list">
                   {tradingRows.map(([label, value]) => (
-                    <div key={label} className="flex justify-between py-2 text-[13px] border-b border-border/30 last:border-0" role="listitem">
+                    <div key={label} className="flex justify-between py-2 text-sm border-b border-border/30 last:border-0" role="listitem">
                       <span className="text-text-secondary">{label}</span>
                       <span className="font-medium text-right font-mono text-[12px]">{value ?? "—"}</span>
                     </div>
@@ -96,7 +96,7 @@ export function CompanyProfileTab({ data }: { data: CompanyProfileData }) {
                 </h3>
                 <div className="space-y-0" role="list">
                   {contactRows.map(([label, value, type]) => (
-                    <div key={label} className="flex justify-between py-2 text-[13px] border-b border-border/30 last:border-0 gap-4" role="listitem">
+                    <div key={label} className="flex justify-between py-2 text-sm border-b border-border/30 last:border-0 gap-4" role="listitem">
                       <span className="text-text-secondary shrink-0">{label}</span>
                       {type === "email" && value ? (
                         <a href={`mailto:${value}`} className="text-accent hover:underline truncate text-right">{value}</a>

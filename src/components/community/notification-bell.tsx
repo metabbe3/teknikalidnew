@@ -73,7 +73,7 @@ export function NotificationBell() {
                         <span className="text-xs" aria-hidden="true">{meta.severity === "critical" ? "🚨" : meta.severity === "warning" ? "⚠️" : "📣"}</span>
                         <p className="text-sm font-semibold text-text-primary">{meta.title ?? "Info TeknikalID"}</p>
                       </div>
-                      <p className="text-[13px] leading-snug text-text-secondary">{meta.body}</p>
+                      <p className="text-sm leading-snug text-text-secondary">{meta.body}</p>
                       <p className="text-[10px] text-text-tertiary mt-1.5">
                         {new Date(n.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
                       </p>
