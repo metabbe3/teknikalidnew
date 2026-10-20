@@ -173,21 +173,23 @@ export function StockCardList({ stocks, linkBase = "/stocks" }: StockCardListPro
         >
           {/* Layout 2-kolom sejajar (owner 20 Okt: nama & harga harus segaris di mobile,
               font dikecilkan biar nama panjang aman): kiri ticker+nama, kanan %+harga */}
-          <div className="flex items-center justify-between gap-3">
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5">
-                <span className="text-sm font-semibold text-accent leading-tight">{stripJk(stock.ticker)}</span>
+          {/* Grid 2 baris eksplisit dgn line-height SERAGAM (leading-5) — baris kiri & kanan
+              mulai di Y identik (fix offset harga vs nama yang terlihat di iPhone 390px) */}
+          <div className="grid grid-cols-[1fr_auto] gap-x-3 items-start">
+            <div className="min-w-0 leading-5">
+              <div className="flex items-center gap-1.5 h-5">
+                <span className="text-sm font-semibold text-accent">{stripJk(stock.ticker)}</span>
                 {stock.listingBoard && stock.listingBoard !== "Utama" && (
                   <ListingBoardBadge board={stock.listingBoard} />
                 )}
               </div>
-              <div className="text-xs text-text-secondary truncate leading-tight">{stock.name}</div>
+              <div className="text-xs text-text-secondary truncate h-5">{stock.name}</div>
             </div>
-            <div className="shrink-0 text-right space-y-0.5">
-              <div className={`text-xs font-mono tabular-nums font-medium ${changeColor(stock.changePercent)}`}>
+            <div className="text-right leading-5">
+              <div className={`text-xs font-mono tabular-nums font-medium h-5 ${changeColor(stock.changePercent)}`}>
                 {stock.changePercent !== null ? formatPercent(stock.changePercent) : "—"}
               </div>
-              <div className="text-sm font-mono tabular-nums font-medium leading-tight">
+              <div className="text-sm font-mono tabular-nums font-medium h-5">
                 {stock.close !== null ? formatPrice(stock.close) : "—"}
               </div>
             </div>
