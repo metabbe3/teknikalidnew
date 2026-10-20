@@ -6,6 +6,7 @@ import { technicalAnalysisService } from "./technical-analysis.service";
 import { pushActivity } from "@/lib/activity-log";
 import { stockAlertService } from "./stock-alert.service";
 import { prisma } from "@/lib/prisma";
+import { deriveFundamentalRow, type FundamentalQuoteInput } from "./fundamental-row";
 
 const BATCH_SIZE = 50;
 const BATCH_DELAY_MS = 500;
@@ -82,26 +83,39 @@ function buildPriceItems(
 }
 
 function buildFundamentalItems(
-  quoteResults: { ticker: string; quote: { trailingPE?: number | null; forwardPE?: number | null; priceToBook?: number | null; trailingEps?: number | null; dividendYield?: number | null; marketCap?: number | null } | null }[],
+  quoteResults: FundamentalQuoteInput[],
   stockLookup: Map<string, { id: number }>,
+  impliedShares: Map<number, number>,
 ) {
+  // qa-2026-10-20-03: derive via fundamental-row.ts — date distamp dari market
+  // time quote (BUKAN wall clock; run weekend jadi no-op ke tanggal sesi nyata)
+  // dan marketCap = shares × close hari-yang-sama (provider cap pernah lag 1
+  // sesi). Baris tanpa market-time/cap yang bisa dipertanggungjawabkan
+  // dilewati (fail-safe) — lihat fundamental-row.test.ts.
   return quoteResults
-    .filter((r): r is { ticker: string; quote: NonNullable<typeof r.quote> } => r.quote !== null)
     .map((r) => {
       const stock = stockLookup.get(r.ticker);
       if (!stock) return null;
-      return {
-        stockId: stock.id,
-        date: new Date(),
-        pe: r.quote.trailingPE ?? null,
-        forwardPe: r.quote.forwardPE ?? null,
-        pb: r.quote.priceToBook ?? null,
-        eps: r.quote.trailingEps ?? null,
-        dividendYield: r.quote.dividendYield ?? null,
-        marketCap: BigInt(Math.round(r.quote.marketCap ?? 0)),
+      const shares = impliedShares.get(stock.id);
+      const enriched: FundamentalQuoteInput = {
+        ticker: r.ticker,
+        quote: r.quote
+          ? { ...r.quote, sharesOutstanding: shares ?? r.quote.sharesOutstanding ?? null }
+          : null,
       };
+      return deriveFundamentalRow(enriched, stockLookup);
     })
-    .filter((r): r is NonNullable<typeof r> => r !== null);
+    .filter((r): r is NonNullable<typeof r> => r !== null)
+    .map((r) => ({
+      stockId: r.stockId,
+      date: r.date,
+      pe: r.pe,
+      forwardPe: r.forwardPe,
+      pb: r.pb,
+      eps: r.eps,
+      dividendYield: r.dividendYield,
+      marketCap: r.marketCap,
+    }));
 }
 
 export const dataSyncService = {
@@ -114,6 +128,8 @@ export const dataSyncService = {
 
     const stocks = await stockRepository.findStocksByTickers(allTickers);
     const stockLookup = new Map(stocks.map((s) => [s.ticker, s]));
+    // Shares implisit dari riwayat (provider IDX tak supli share count) — satu query.
+    const impliedShares = await stockRepository.findImpliedShares(stocks.map((s) => s.id));
 
     const indicatorAccumulator: { stockId: number; date: Date; interval: string; data: Record<string, unknown> }[] = [];
     let pricesWritten = 0;
@@ -132,7 +148,7 @@ export const dataSyncService = {
         console.error(`[DataSync]   Batch price write failed — ${msg}`);
       }
 
-      const fundamentalItems = buildFundamentalItems(quoteResults, stockLookup);
+      const fundamentalItems = buildFundamentalItems(quoteResults, stockLookup, impliedShares);
       try {
         await stockRepository.batchUpsertFundamentals(fundamentalItems);
       } catch (error: unknown) {
@@ -247,7 +263,8 @@ export const dataSyncService = {
 
     const result = await stockRepository.batchUpsertPricesAndIndicators(priceItems, validIndicators);
 
-    const fundamentalItems = buildFundamentalItems(quoteResults, stockLookup);
+    const impliedShares = await stockRepository.findImpliedShares(stocks.map((s) => s.id));
+    const fundamentalItems = buildFundamentalItems(quoteResults, stockLookup, impliedShares);
     await stockRepository.batchUpsertFundamentals(fundamentalItems);
 
     const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);

@@ -850,6 +850,57 @@ export const stockRepository = {
     });
   },
 
+  /** Shares outstanding implisit per saham = MEDIAN (marketCap/close) dari 45
+   * baris fundamental terakhir. Provider IDX scanner tidak menyuplai share
+   * count, dan marketCap provider sistemik lag (cap = shares × close(T-1),
+   * terverifikasi live 20 Okt: TV BBCA cap 594,19T = 123,28 miliar × 4.820
+   * [close kemarin] saat close hari ini 5.200) — implied shares per-hari jadi
+   * true_shares × close(T-1)/close(T), noise simetris ~±2%/hari yang dimedian
+   * habis. Validasi BBCA: median-45 = 123,31 miliar vs resmi 123,28 miliar
+   * (+0,02%). Split/stock-split terdeteksi via median separuh-awal vs
+   * separuh-akhir ratio >1,5 → saham di-skip (tanpa anchor). */
+  async findImpliedShares(stockIds: number[]): Promise<Map<number, number>> {
+    const map = new Map<number, number>();
+    if (stockIds.length === 0) return map;
+    const rows = await prisma.$queryRaw<{ stockId: number; date: Date; close: number; marketCap: bigint }[]>`
+      SELECT "stockId", date, close, "marketCap" FROM (
+        SELECT sf."stockId" AS "stockId", sf.date AS date, sf."marketCap" AS "marketCap", sp.close AS close,
+               row_number() OVER (PARTITION BY sf."stockId" ORDER BY sf.date DESC) AS rn
+        FROM "StockFundamental" sf
+        JOIN LATERAL (
+          SELECT sp2.close AS close FROM "StockPrice" sp2
+          WHERE sp2."stockId" = sf."stockId" AND sp2.date = sf.date
+          LIMIT 1
+        ) sp ON true
+        WHERE sf."stockId" IN (${Prisma.join(stockIds)})
+      ) t
+      WHERE rn <= 45 AND close > 0 AND "marketCap" > 0`;
+    const byStock = new Map<number, number[]>();
+    for (const r of rows) {
+      const sh = Number(r.marketCap) / r.close;
+      if (!Number.isFinite(sh) || sh <= 0) continue;
+      let arr = byStock.get(r.stockId);
+      if (!arr) byStock.set(r.stockId, (arr = []));
+      arr.push(sh); // urut date DESC dari query
+    }
+    const median = (a: number[]) => {
+      const s = [...a].sort((x, y) => x - y);
+      const m = Math.floor(s.length / 2);
+      return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+    };
+    for (const [stockId, arr] of byStock) {
+      if (arr.length < 8) continue; // riwayat terlalu pendek → tak bisa median
+      const half = Math.floor(arr.length / 2);
+      const mOld = median(arr.slice(half));      // separuh lama
+      const mNew = median(arr.slice(0, half));   // separuh baru
+      if (!Number.isFinite(mOld) || !Number.isFinite(mNew)) continue;
+      const ratio = Math.max(mOld, mNew) / Math.min(mOld, mNew);
+      if (ratio > 1.5) continue; // split/break → tanpa anchor
+      map.set(stockId, median(arr));
+    }
+    return map;
+  },
+
   // ── StockFundamental writes ──
 
   async batchUpsertFundamentals(

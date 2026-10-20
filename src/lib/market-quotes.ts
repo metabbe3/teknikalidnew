@@ -18,7 +18,7 @@ const CHUNK_SIZE = 150;
 const TV_COLUMNS = [
   "close", "change", "volume", "high", "low", "open",
   "price_earnings_ttm", "market_cap_basic", "description", "currency", "dividends_yield_current",
-  "price_book_ratio", "earnings_per_share_basic_ttm",
+  "price_book_ratio", "earnings_per_share_basic_ttm", "update_time",
 ];
 
 /** Map "BBCA.JK" → "IDX:BBCA" (scanner symbol space). */
@@ -31,7 +31,7 @@ interface TvRow { s: string; d: (number | string | null)[] }
 function mapRow(ticker: string, row: TvRow): StockQuote {
   const [
     close, changePct, volume, high, low, open,
-    pe, marketCap, description, currency, divYield, pb, eps,
+    pe, marketCap, description, currency, divYield, pb, eps, updateTime,
   ] = row.d;
   const price = typeof close === "number" ? close : null;
   const pct = typeof changePct === "number" ? changePct : null;
@@ -49,7 +49,11 @@ function mapRow(ticker: string, row: TvRow): StockQuote {
     regularMarketDayLow: typeof low === "number" ? low : null,
     regularMarketOpen: typeof open === "number" ? open : null,
     regularMarketPreviousClose: prevClose,
-    regularMarketTime: null, // scanner has no trade timestamp — write-guard handles dating
+    // "update_time" (unix sec) is the scanner's row-update stamp — last session
+    // close re-served outside hours re-serves its OWN session time, so weekend/
+    // holiday runs date-stamp into the real trading date (upsert = no-op) instead
+    // of minting wall-clock rows (qa-2026-10-20-03 contamination sibling).
+    regularMarketTime: typeof updateTime === "number" && updateTime > 0 ? updateTime : null,
     currency: typeof currency === "string" ? currency : "IDR",
     marketState: "REGULAR", // placeholder — consumers gate writes via market-hours, not this
     shortName: typeof description === "string" ? description : null,
