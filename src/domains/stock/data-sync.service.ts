@@ -16,7 +16,8 @@ function sleep(ms: number) {
 }
 
 /** The TradingView scanner (market-quotes.ts) carries no trade timestamp
- * (regularMarketTime is always null, marketState is hardcoded 'REGULAR'), and it
+ * (marketState is hardcoded 'REGULAR'; regularMarketTime kini terisi dari
+ * kolom update_time scanner — sebelumnya null, lihat market-quotes.ts), and it
  * re-serves the last session's data with full volume outside exchange hours. The
  * old POSTPOST filter + quote-time stamping therefore never fire, and the
  * 5-minute intraday cron mints fantasy rows stamped with the wall-clock date —
