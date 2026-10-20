@@ -35,7 +35,20 @@ export function GuestStockTracker({ ticker }: { ticker: string }) {
         seen.tickers.push(ticker);
         if (seen.tickers.length > 50) seen.tickers.shift();
         localStorage.setItem(SEEN_KEY, JSON.stringify(seen));
-        bumpGuestQuota();
+        const q = bumpGuestQuota();
+        // Beacon event utk admin analytics (Retention Loop v2): quotaViews = hitungan
+        // ke-n hari itu. Fire-and-forget, gagal = diam.
+        try {
+          const body = JSON.stringify({
+            target: "guest_quota",
+            context: String(q.count),
+            path: `/stocks/${ticker}`,
+          });
+          if (navigator.sendBeacon) navigator.sendBeacon("/api/track/share", body);
+          else fetch("/api/track/share", { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true }).catch(() => {});
+        } catch {
+          // ignore
+        }
       }
     } catch {
       // ignore private mode
