@@ -147,7 +147,7 @@
    "date": "2026-10-17",
    "type": "ops",
    "priority": "P1",
-   "status": "done",
+   "status": "qa_pass",
    "north_star": "TRUST (data reliable — konten salah angka = trust runtuh)",
    "title": "P1 QA FATAL post-publish: brief 16 Okt + rekap mingguan — 4 klaim angka salah vs DB (breadth '11 naik' disalin antar-hari, '592 turun Rabu', superlatif 'sejak 8 Juni', '0 golden/death cross')",
    "source": "REVIEWER QA 17 Okt 07:00 — sweep 44 artikel/24jm; verifikasi SQL StockPrice/StockIndicator (read-only)",
@@ -1943,7 +1943,7 @@
    "date": "2026-10-20",
    "type": "backoffice",
    "priority": "P2",
-   "status": "done",
+   "status": "qa_pass",
    "assigned_to": "backoffice-builder",
    "north_star": "TRUST (data reliable — admin jadi satu sumber kebenaran) + APLIKASI consistency",
    "title": "Backoffice MATANGKAN /admin/pipelines: buang CRON_SCHEDULES hardcoded basi (2 job, jadwal salah) + Indicators stub -> live dari endpoint existing",
@@ -1980,6 +1980,53 @@
    ],
    "deploy_note": "SATU kereta dengan teknikal-2026-10-20-01 (point+badge) — deploy batching doctrine, cap 2/hari teknikal.",
    "result": "DONE 19 Okt 22:15 oleh main session (bukan night org — owner minta 'fix skrg saja'): f105175 ticker minus+refresh60s + 1dc78a3 bell announcement system. Insiden P3009 (migration syntax) → downtime 15 mnt → fix 0272822 no-op migration + no-cache rebuild. Verified: home 200, api/market 200, losers render −, broadcast 26 user, banner component live."
+  },
+  {
+   "id": "seo-2026-10-20-01",
+   "date": "2026-10-20",
+   "type": "ops",
+   "priority": "P1",
+   "status": "pending",
+   "train": "T-1021-N",
+   "scheduled_slot": "Backend Builder 20 Okt 18:30 build-only -> kereta T-1021-N (21 Okt malam) deploy; JANGAN gabung kereta T-1020-N malam ini (merge P0 = 1 deploy 1 eksperimen)",
+   "north_star": "GROWTH (7 klik/minggu gratis dari query pos-12 CTR 100%) + TRUST (404 = trust bocor)",
+   "source": "KEYWORD-RESEARCH 20 Okt 08:15 (P1 OPS); CEO verify live 20 Okt: curl -A Mozilla https://teknikal.id/idx-radar = 404 tanpa redirect",
+   "spec": "INTENT (CEO 20 Okt): query GSC 'idx radar' 7 klik/7d pos 12 CTR 100% (14-20 Okt) mendarat ke /idx-radar yang 404 — verified live oleh CEO pagi ini (404, no redirect). Trafik gratis bocor setiap minggu. EKSEKUSI (ops routing kecil, 0 halaman baru — API REUSE RULE): (1) TENTUKAN target resmi: cek GSC/sc util URL asli yang dirank Google utk query ini; kandidat = permukaan radar existing (screener /stocks momentum ATAU blok 'Radar 5 Emiten' di home/stocks — verifikasi mana yang paling cocok intent 'idx radar'); (2) tambahkan redirect 301 PERMANENT /idx-radar -> target (next.config redirects atau routing map pola existing — konsisten dgn 308 pattern lama /berita/saham-X); (3) pastikan target ada di sitemap.xml; (4) kalau ternyata Google merank URL yang memang tak pernah ada (canonical gaib), pastikan canonical target jelas supaya ranking berpindah bukan hilang. DILARANG: buat halaman/content baru (itu lane Product/Mandor), ubah schema/DB. DONE WHEN: (a) curl -I https://teknikal.id/idx-radar = 301 + Location target yang 200 anon; (b) target URL muncul di sitemap.xml live (curl grep); (c) keputusan target + alasan dicatat ke decisions.md di slot yang sama; (d) 7 hari pasca-deploy: GSC query 'idx radar' 0 klik jatuh-404 dan posisi bertahan top-20 (cek snapshot mingguan).",
+   "done_when": "curl -I /idx-radar = 301 ke target 200 + target di sitemap.xml live + GSC 7d berikutnya 0 klik-404."
+  },
+  {
+   "id": "qa-2026-10-20-01",
+   "date": "2026-10-20",
+   "type": "qa-fix",
+   "priority": "P1",
+   "status": "pending",
+   "north_star": "TRUST (angka salah vs DB = trust runtuh; north star #90)",
+   "title": "P1 QA FATAL post-publish: brief 19 Okt — 4 klaim angka/definisi salah vs DB (breadth >10%, 'terdalam sejak 8 Juni', 'nol cross baru', sektor Infra -11,9)",
+   "spec": "INTENT: koreksi brief-pasar-idx-2026-10-19-oversold-bank-jenuh-jual agar semua angka replikasi-able dari DB per 16 Okt. Temuan reviewer 20 Okt (bukti SQL): (1) '812 saham turun lebih dari 10%' SALAH — DB 557 saham turun >10% (close-basis); 812 = TOTAL saham turun; angka 208 turun >14,5% non-gorengan benar. (2) 'sesi terdalam sejak 8 Juni' MENYESATKAN dgn basis jumlah — 24 Jun 947 & 24 Jul 820 lebih dalam; yang benar hanya bila pakai rasio (16 Okt 97,4% saham turun vs 75,8% 8 Jun) atau %IHSG (-11,57% memang terdalam setahun) — rumuskan eksplisit basisnya. (3) 'nol sinyal cross baru terbentuk Jumat' SALAH — DB 3 saham flip ke golden + 75 cross EMA baru 16 Okt; angka 131 golden/31 death = jumlah STATE, bukan yang baru. (4) 'Infrastructures -11,9%' vs DB -11,8% (rounding; minor, perbaiki sekalian). ACCEPTANCE: (a) koreksi terbit (edit artikel oleh CTO via pipeline yang sah / editor backoffice bo-2026-10-14-02); (b) generator brief tambah assertion pra-publish: hitungan 'turun >X%' wajib dari SQL berparameter tanggal (bukan dipinjam field lain), klaim 'sejak <tgl>' wajib punya query pembuktian, 'cross baru' wajib definisi flip-vs-hari-sebelumnya."
+  },
+  {
+   "id": "qa-2026-10-20-02",
+   "date": "2026-10-20",
+   "type": "qa-fix",
+   "priority": "P1",
+   "status": "pending",
+   "north_star": "TRUST (superlatif tidak replikasi-able = qa-27-01 violation)",
+   "title": "P1 QA FATAL post-publish: brief 20 Okt — superlatif volume INCO salah ranking ('terbesar di antara saham yang menguat' = rank #11)",
+   "spec": "INTENT: koreksi klaim superlatif di brief-pasar-idx-2026-10-20-ihsg-break-5000 (paragraf 'Yang bertahan: energi'). Temuan reviewer 20 Okt: artikel menyebut volume INCO 38,8 juta 'terbesar di antara seluruh saham yang menguat Senin (non-gorengan, volume di atas 1 juta)' — DB 19 Okt ada 10 gainer non-gorengan >1jt dengan volume lebih besar: DSSA 1,09 miliar, BUKA 316 jt, DMAS 277 jt, NAYZ 141 jt, PTBA 106 jt (disebut artikel sendiri 2 kalimat berikutnya), NCKL 100 jt, KAQI 82 jt, PGAS 63,6 jt (juga disebut artikel), RMKE 59 jt, AADI 44 jt. INCO hanya rank #4 kenaikan % di antara gainer likuid non-gorengan (TIFA 25%, GRIA 14,3%, VISI 6,1%, INCO 4,93%). ACCEPTANCE: (a) reformulasi klaim jadi yang benar dan tetap menarik, mis. 'kenaikan terbesar di antara gainer likuid bervolume >40 juta' ATAU ganti sudut ke relative-strength; (b) generator brief wajib generate superlatif dari SQL ranking ORDER BY pada hari yang sama + assertion rank-#1-sebelum-klaim (qa-27-01)."
+  },
+  {
+   "id": "qa-2026-10-20-03",
+   "date": "2026-10-20",
+   "type": "bugfix",
+   "priority": "P1",
+   "status": "night_ready",
+   "north_star": "TRUST (data reliable — 40 artikel/hari memuat Market Cap stale 1 hari)",
+   "title": "P1 BUG worker fundamental: marketCap 19 Okt dihitung dari close 16 Okt (stale 1 hari, campur sumber dgn P/E) — 40 artikel template ikut salah",
+   "spec": "INTENT: StockFundamental.marketCap per tanggal T wajib = sharesOutstanding x close T. Temuan reviewer 20 Okt: row 2026-10-19 semua ticker dihitung dari close 16 Okt — BBCA 637,9 T (123,28M x 5.175) padahal close 19 Okt 4.820 -> benar 594 T (+7,3% salah); TLKM 188,2 T (x 1.900) vs benar 183,9 T; UNVR 52,8 T (x 1.390) vs benar 52,4 T. Bukti campur sumber: P/E 10,22 & P/B 2,11 di row yang sama KONSISTEN dgn close 19 Okt — jadi marketCap saja pakai close T-1. Dampak publish: 40 artikel saham template 20 Okt memuat tabel Fundamental 'Market Cap' salah semua (contoh BBCA Rp 637,9 T). ACCEPTANCE: (a) fix worker sync fundamental (jalur-5 sisa: worker generator artikel) agar marketCap pakai close hari yang sama dgn date row; (b) backfill row 19 Okt (dan audit: sejak kapan pola ini ada — cek 2-3 tanggal sebelumnya); (c) 40 artikel 20 Okt regenerasi field fundamental ATAU koreksi massal via editor; (d) assertion worker: marketCap/close(equals date) == price article table.",
+   "branch": "night/qa-2026-10-20-03",
+   "estimate_review_min": 15,
+   "verify_evidence": "NIGHT 20 Okt 23:5x WIB. Failing-test-first: test f5d59b3 (Backend Builder 18:50, cherry-pick 5c24db4) diverifikasi GAGAL dulu (modul belum ada), TIDAK diedit saat fix. FIX commit (worktree /tmp/qa102003, base origin/main e601902): fundamental-row.ts BARU (deriveFundamentalRow: date dari regularMarketTime, marketCap=shares×price hari-sama, fallback cap provider hanya tanpa shares, skip fail-safe) + stock.repository.findImpliedShares (MEDIAN cap/close 45 baris; guard split median-half ratio>1,5) + market-quotes.ts kolom update_time→regularMarketTime + data-sync.service 2 call-site. VERIFY: tsc --noEmit EXIT 0; LINT 0 error; suite 118/118 (113 lama + 5 baru). AUDIT SQL read-only (penting utk CTO pagi): kontaminasi SISTEMIK sejak ~13 Okt (implied shares BBCA melompat 114→145 miliar/hari, cv 8-10%/minggu vs ~1%/minggu era sebelumnya) — bukan cuma 19 Okt; TV cap lag T-1 TERVERIFIKASI LIVE malam ini (BBCA cap 594,19T = 123,28 miliar × 4.820 close-kemarin saat close hari ini 5.200). Median-45 akurat: BBCA 123,31 miliar vs resmi 123,28 (+0,02%), TLKM 99,06 miliar; cakupan anchor 924/962 saham.",
+   "night_result": "SIAP MERGE (kode fix + test + verify hijau: tsc 0, 118/118, LINT 0). TINGGAL CTO PAGI (DB write = larangan malam): (1) BACKFILL marketCap baris 2026-10-13..2026-10-20 = median_shares(stockId) × close(T) — protokol backup<24jm+COUNT preview+transaksi; scope ~8 hari × ~950 saham; PE/PB/EPS TIDAK disentuh (sudah konsisten close T); SQL sketch di decisions.md; (2) koreksi 40 artikel template 20 Okt field Market Cap (editor bo-2026-10-14-02 ATAU regen pasca-deploy worker); (3) DEPLOY worker+app setelah merge (worker = generator artikel jalur-5); (4) AC-d assertion pasca-deploy: marketCap/close artikel == price table tanggal sama. Catatan desain: baris fundamental tanpa market-time kini SKIP fail-safe — jalur batch scanner dapat waktu via update_time (probe live OK); sync EOD 16:30 tak terdampak; run weekend jadi no-op jujur."
   }
  ],
  "tasks": []
