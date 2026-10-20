@@ -1567,8 +1567,8 @@
    "spec": "BUKTI: idx-sync.log mtime 12 Okt 08:20 berisi EPERM: process.cwd failed uv_cwd (node v25) — launchd worker kehilangan akses cwd repo (TCC Documents). Plist com.teknikalid.idx-sync Day=1/06:00 (Senin saja). FIX (owner action, TCC = security domain): grant Full Disk Access utk node/launchd ATAU pindah log+cwd ke path non-TCC; verify: Senin depan 06:00 log bersih + sync row baru. Bukan kerja builder (TCC interactive prompt). [UPDATE CTO 19 Okt 07:45: gagal LAGI Senin 19 Okt 06:00 — launchctl exit 1, idx-sync.log beku 12 Okt (bahkan penulisan log kena TCC), MAX(Stock.updatedAt)=2026-10-12 01:09 = beku 7 hari; daftar emiten basi; TETAP butuh owner TCC grant — di luar domain CTO/builder]",
    "scheduled_slot": "owner TCC grant; verify Senin 20 Okt 06:00",
    "train": "T-1020-N",
-   "blocked_checked_at": "2026-10-20 07:35 WIB",
-   "verify_201020": "launchd LastExitStatus=0 TAPI idx-sync.log beku 12 Okt + MAX(Stock.updatedAt)=2026-10-12 01:09 (beku 8 hari) - script exit-0 tanpa sync; TETAP owner TCC. ESCALATE >2 slot."
+   "blocked_checked_at": "2026-10-20 07:55 WIB",
+   "verify_201020": "launchd LastExitStatus=0 TAPI idx-sync.log beku 12 Okt + MAX(Stock.updatedAt)=2026-10-12 01:09 (beku 8 hari) - script exit-0 tanpa sync; TETAP owner TCC. ESCALATE >2 slot. | CTO lead 20 Okt 07:5x: idx-sync Senin 20 Okt 06:00 GAGAL LAGI (bukti: Stock.updatedAt MAX=2026-10-12 = 8 hari beku; log mtime 12 Okt). Fail Senin ke-3 konsekutif. TETAP owner-only (TCC security domain)."
   },
   {
    "id": "qa-2026-10-13-01",
@@ -1906,7 +1906,25 @@
    "priority": "P1",
    "status": "blocked_incomplete_prd",
    "blocked_checked_at": "2026-10-20 07:45 WIB",
-   "fde_missing": "research_brief (Researcher 08:30 belum verdict), prd_id (product-backlog 3 item, tak ada point/badge), QA plan metric baseline->target"
+   "fde_missing": "research_brief (Researcher 08:30 belum verdict), prd_id (product-backlog 3 item, tak ada point/badge), QA plan metric baseline->target",
+   "context": "Owner directive 19 Okt: 'daily point otomatis nambah tanpa claim' + 'new user badge apa + terlihat di home saat login'. SCOPE v1 HANYA sistem point+badge (owner: 'paling buat sistem point dan badge dulu aja' — redeem/utility LATER, community masih sepi). Baseline kode: reputation.service.ts claimDailyReward (klaim manual), badge.ts BADGE_TIERS (Pemula 10 slate / Pengamat 25 cyan / Analis 50 indigo / Trader Aktif 100 blue / Senior Analyst 200 teal / Expert 500 gold / Master Trader 1000 purple / Legend 2000 amber), home page.tsx WelcomeLoopSection sudah load reputation + ClaimStreakButton.",
+   "spec": [
+    "1) reputationService.maybeAwardDaily(userId) — idempotent (unique constraint daily-key existing), award +5 otomatis saat visit, streak logic existing dipertahankan (streak nambah kalau kunjungan kemarin; reset kalau bolong)",
+    "2) Panggil maybeAwardDaily di jalur render home saat login (server component WelcomeLoopSection SEBELUM baca reputation, atau parallel lalu re-read) — JANGAN di middleware (DB call per request semua route)",
+    "3) UI: ClaimStreakButton dihapus/diganti kartu kecil '🔥 streak N hari · +5 hari ini' state otomatis (sudah/belum visit hari ini)",
+    "4) Badge chip di home utk user login: nama level (Pemula dst) + warna tier + progress ke tier berikut (mis. '18/25 → Pengamat') — komponen kecil di area welcome",
+    "5) New user: mulai 0 poin = Pemula slate; auto +5 → Pengamat di hari ke-2 (early win onboarding)",
+    "6) toast/pill non-blocking saat award terjadi (client event optional — v1 bolev server-render state saja)"
+   ],
+   "acceptance": [
+    "Login → buka home → refresh: poin +5 tepat sekali sehari (cek DB), tidak double award",
+    "Streak bertambah consecutive days, reset saat bolong 1 hari (unit test)",
+    "Badge 'Pemula' tampil utk user baru di home + progress 'x/25 → Pengamat'",
+    "Tombol claim manual TIDAK ada lagi (atau sudah auto-disabled state baru)",
+    "User lama dengan reputation existing: badge sesuai tier (regression)"
+   ],
+   "deploy_note": "Ikut slot deploy teknikal BESOK (cap 2/hari) — via night org. DONE-WHEN + bukti fisik (DB diff, screenshot home) sebelum naik kereta (BOARDING GATE doctrine).",
+   "scheduled_slot": "FDE-BLOCKED: tunggu Researcher 08:30 verdict + PRD 7-field + QA plan; kalau lengkap -> Backend malam 18:30 build-only -> naik T-1021 bukan T-1020 (kereta tidak nunggu penumpang)"
   },
   {
    "id": "cto-2026-10-20-02",
@@ -1916,7 +1934,52 @@
    "title": "[ESCALATE] Merge night/prd-2026-10-18-01 -> main: KONFLIK decisions.md + SCHEMA-SHIELD (schema.prisma + migrations/20261019220000_site_announcement) - prod image 8742307a9a24 jalan dari branch, main 4c1dae2 tertinggal",
    "evidence": "dry-run merge worktree: CONFLICT docs/agent-org/decisions.md; schema diff = enum NotificationType +SITE_ANNOUNCEMENT + actorId String->String?; DDL sudah applied manual ke prod (commit 0272822 no-op) jadi merge = repo paperwork, tapi gate permanen owner",
    "needs": "owner: (a) resolve konflik decisions.md manual ATAU izinkan CTO ambil sisi night utk block konten saja, (b) approve merge schema.prisma (DDL sudah live, tanpa table-lock baru) - eksekusi slot sore pasca-16:15",
-   "north_star_pillar": "TRUST (repo=prod single source)"
+   "north_star_pillar": "TRUST (repo=prod single source)",
+   "scheduled_slot": "OWNER GATE (CEO 08:15 present) -> kalau approve: Backend malam 18:30 merge+build -> kereta T-1020-N 22:00-01:30 deploy + verify per-fitur (ticker/emoji/funnel)",
+   "train": "T-1020-N"
+  },
+  {
+   "id": "bo-2026-10-20-01",
+   "date": "2026-10-20",
+   "type": "backoffice",
+   "priority": "P2",
+   "status": "done",
+   "assigned_to": "backoffice-builder",
+   "north_star": "TRUST (data reliable — admin jadi satu sumber kebenaran) + APLIKASI consistency",
+   "title": "Backoffice MATANGKAN /admin/pipelines: buang CRON_SCHEDULES hardcoded basi (2 job, jadwal salah) + Indicators stub -> live dari endpoint existing",
+   "spec": "AUDIT rotasi alfabetis ronde-2 (setelah agent-hub 7 Jun, api-keys 12 Jun, articles done, auth-health 12 Jun, community 12 Jun, cron-* 12 Jun, eod-logs 12 Jun, errors done 18 Okt, indicators 12 Jun) sampai huruf P: /admin/pipelines (1102 baris, tersentuh terakhir 12 Jun — konsolidator 12 halaman shim). Temuan: (1) Tab Services & Config kartu 'Scheduled Jobs' render CRON_SCHEDULES const HARDCODED hanya 2 job dengan jadwal salah ('16:30' vs launchd plist eod-sync Hour16 Min30 = betul kebetulan, tapi sync-intraday 'every 15 min' vs DB 1 run/30 hari = dorman; registry cron-registry.ts sendiri basi: sync-eod 'Weekdays 17:00' salah, generate-articles '3x daily' vs DB 1x/hari 17-18 WIB). (2) Tab Indicators = stub statis 'IDX40' sejak Juni padahal endpoint /api/admin/indicators SUDAH ADA lengkap (fresh/stale/missing per saham + summary) dan TIDAK PERNAH dipanggil siapa pun (grep 0 caller) = fitur setengah jadi klasik. FIX: (a) registry disinkronkan ground-truth launchd+DB; (b) kartu Scheduled Jobs render dari jobStats API (satu sumber kebenaran), hapus const; (c) IndicatorsTab render live endpoint existing (KPI fresh/stale/missing + tabel + filter ticker) — API REUSE RULE: zero endpoint baru. DONE-WHEN: tsc 0 + build 0 + chunk live memuat data-driven job cards & tabel indikator (marker grep) + /admin/* tetap 307 auth-guard + registry jadwal == launchd plist + changelog entry.",
+   "scheduled_slot": "2026-10-20 03:00 Backoffice Builder",
+   "evidence": {
+    "db_2026_10_20_03xx_wib": "CronLog distinct jobName 8 (sync-eod/intraday/stocks, generate-articles, community-agent, agent-hub-scheduler, resolve-predictions, cleanup-snapshots); sync-intraday 30d = 1 run; sync-eod harian 16:30 WIB (UTC 09:30); cleanup-snapshots mati sejak 11 Jun",
+    "code": "pipelines/page.tsx CRON_SCHEDULES const L177-192 (2 job); IndicatorsTab stub L~850-900 tanpa useQuery; /api/admin/indicators route lengkap 0 caller",
+    "launchd": "com.teknikalid.eod-sync.plist StartCalendarInterval Hour16 Minute30"
+   },
+   "result": "DONE 20 Okt 03:2x WIB. AUDIT pipelines (ronde-2 huruf P) -> 3 fix deploy: (1) cron-registry sinkron ground-truth launchd+DB (8 job termasuk cleanup-snapshots dormant, hapus klaim basi '3x daily'/'every 5 min'/'17:00'); (2) kartu Scheduled Jobs data-driven jobStats (CRON_SCHEDULES const dihapus) + badge 'no data 7d' job dorman; (3) IndicatorsTab stub->live via /api/admin/indicators existing (KPI fresh/stale/missing+filter+tabel) ZERO endpoint baru. VERIFY: tsc 0, build 0, container healthy, chunk live 'Indicator Coverage per Stock'+'no data 7d' (page-90d99cf8ff260166.js), server route 'Daily 16:30 WIB'+'cleanup-snapshots', /admin/* 307 auth-guard, / + /stocks 200. DEPLOY image 8742307a9a24; rollback anchor f7e8f65deae4+616e46c. Commit sempit 3 file (pipelines/page.tsx, cron-registry.ts, changelog.md). Catatan: claude code mati autocompact-thrash setelah FIX1 -> dilanjut python-patch presisi marker-count=1. Follow-up ops: sync-intraday dorman 1 run/30d (kandidat entry baru, keputusan CTO).",
+   "qa_verified": true,
+   "qa_note": "QA PASS 20 Okt (independen, read-only). Bukti fisik: commit 946d3a5 di main (3 file: pipelines/page.tsx+cron-registry.ts+changelog.md) LIVE di container 8742307a9a24. (1) Registry 8 job = DB ground-truth persis (cleanup-snapshots 4 run last 11 Jun; sync-intraday 1 run/30d; generate-articles 30 run/30d=1x/hari; sync-eod 16:30 == launchd plist Hour16 Min30). (2) CRON_SCHEDULES const 0x di repo+chunk live; kartu render jobStats (service join registry+DB) + marker \"no data 7d\" ada di chunk page-90d99cf8ff260166.js. (3) IndicatorsTab useQuery /api/admin/indicators (endpoint pre-existing 80d33b2, zero baru) + marker \"Indicator Coverage per Stock\" live. Guard: /admin+pipelines 307, api-admin 404-mask by-design (proxy.ts), / dan /stocks 200. Changelog L581 ada. Catatan ops: sync-intraday dorman sudah dicatat builder sebagai kandidat entry baru — setuju, keputusan CTO."
+  },
+  {
+   "id": "teknikal-2026-10-20-02",
+   "priority": "P1",
+   "status": "done",
+   "created": "2026-10-19T22:50:00+07:00",
+   "title": "Ticker tape: fix tanda minus hilang + auto-refresh (menuju realtime)",
+   "context": "Owner 19 Okt: 'banner saham berjalan — + nya bener? show saham ramai saja, - atau + ikutin harga realtime'. BUG DITEMUKAN: ticker-tape.tsx merender `{changePercent >= 0 ? '+' : ''}{formatPercentPlain(x)}%` — formatPercentPlain pakai Math.abs → nilai NEGATIF tampil TANPA minus (mis. '-2.5%' jadi '2.50%' merah). Konten ticker sudah benar (top gainers+losers market-snapshot, floor volume ≥1jt) — tapi datanya EOD cache 60s, bukan realtime jam pasar.",
+   "spec": [
+    "1) FIX SIGN: tampilkan '+' utk positif dan '−' (atau '-') utk negatif — cek juga pemakaian formatPercentPlain di komponen lain (FeaturedStockCard, dsb) utk bug serupa",
+    "2) AUTO-REFRESH: TickerTape jadi client component yang poll endpoint movers EXISTING (REUSE — jangan bikin endpoint baru; market-snapshot SATU PINTU TTL 60s) tiap 60s saat tab aktif → angka update sendiri pasca EOD sync tanpa reload",
+    "3) REALTIME (nilai plus, kerjakan kalau mudah): selama jam pasar buka, blend live quote utk ~20 ticker di tape via jalur live quote yang sudah dipakai pasar-live/stock detail — kalau berat/butuh endpoint baru, TULIS CATATAN keputusan dan skip (deploy cap 2/hari jangan dibakar)",
+    "4) Stale indicator kecil opsional: 'EOD' vs 'LIVE' badge di ujung tape biar jujur data-trust"
+   ],
+   "acceptance": [
+    "Saham turun tampil '-2.50%' (ada minus), saham naik '+2.50%'",
+    "grep: tidak ada lagi kombinasi Math.abs + prefix kosong utk nilai negatif di utils consumers",
+    "Tape update otomatis ≤90s tanpa reload (devtools network tab bukti poll)",
+    "Jika realtime dikerjakan: angka ticker == live quote saat pasar buka (sampling 3 saham)",
+    "DONE-WHEN + bukti fisik sebelum naik kereta (BOARDING GATE)"
+   ],
+   "deploy_note": "SATU kereta dengan teknikal-2026-10-20-01 (point+badge) — deploy batching doctrine, cap 2/hari teknikal.",
+   "result": "DONE 19 Okt 22:15 oleh main session (bukan night org — owner minta 'fix skrg saja'): f105175 ticker minus+refresh60s + 1dc78a3 bell announcement system. Insiden P3009 (migration syntax) → downtime 15 mnt → fix 0272822 no-op migration + no-cache rebuild. Verified: home 200, api/market 200, losers render −, broadcast 26 user, banner component live."
   }
  ],
  "tasks": []
