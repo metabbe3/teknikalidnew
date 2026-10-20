@@ -120,7 +120,7 @@ export default async function IndicatorHistoryPage({
 
   return (
     <div className="min-h-screen bg-background">
-      <nav className="mx-auto max-w-4xl px-4 py-3 text-sm text-muted-foreground">
+      <nav className="mx-auto max-w-7xl px-4 py-3 text-sm text-muted-foreground">
         <ol className="flex items-center gap-1.5 flex-wrap">
           <li><Link href="/stocks" className="hover:text-foreground">Saham</Link></li>
           <ChevronRight className="h-3 w-3" />
@@ -130,7 +130,7 @@ export default async function IndicatorHistoryPage({
         </ol>
       </nav>
 
-      <header className="mx-auto max-w-4xl px-4 pb-4">
+      <header className="mx-auto max-w-7xl px-4 pb-4">
         <p className="text-xs font-mono uppercase tracking-wider text-muted-foreground mb-1">Arsip Indikator Teknikal</p>
         <h1 className="text-2xl md:text-3xl font-black tracking-tight">Riwayat Indikator {name} ({tickerClean})</h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -139,7 +139,7 @@ export default async function IndicatorHistoryPage({
       </header>
 
       {/* RSI trajectory (public, visual) */}
-      <section className="mx-auto max-w-4xl px-4 pb-6">
+      <section className="mx-auto max-w-7xl px-4 pb-6">
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground mb-1">Tren RSI selama tersedia</p>
           <RsiSparkline rows={spark} />
@@ -147,7 +147,7 @@ export default async function IndicatorHistoryPage({
       </section>
 
       {/* Public history table — server-rendered rows, one anchor per date (the SEO core) */}
-      <section className="mx-auto max-w-4xl px-4 pb-6">
+      <section className="mx-auto max-w-7xl px-4 pb-6">
         <div className="rounded-xl border border-border bg-card overflow-hidden">
           <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
             <Activity className="h-4 w-4 text-primary" />
@@ -193,7 +193,7 @@ export default async function IndicatorHistoryPage({
       </section>
 
       {/* Gated CTA — full numeric values live on the stock page (freemium) */}
-      <section className="mx-auto max-w-4xl px-4 pb-10">
+      <section className="mx-auto max-w-7xl px-4 pb-10">
         <Link
           href={`/stocks/${tickerJK}`}
           className="flex items-center gap-3 rounded-xl border border-border bg-card p-5 hover:border-primary/50 transition"
@@ -208,7 +208,7 @@ export default async function IndicatorHistoryPage({
       </section>
 
       {/* Internal links */}
-      <section className="mx-auto max-w-4xl px-4 pb-12 flex flex-wrap gap-4 text-sm">
+      <section className="mx-auto max-w-7xl px-4 pb-12 flex flex-wrap gap-4 text-sm">
         <Link href={`/stocks/${tickerJK}`} className="inline-flex items-center gap-1 font-semibold text-primary hover:underline">
           <TrendingUp className="h-4 w-4" /> Halaman {tickerClean}
         </Link>
