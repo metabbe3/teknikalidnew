@@ -35,6 +35,20 @@ export function GuestStockTracker({ ticker }: { ticker: string }) {
         seen.tickers.push(ticker);
         if (seen.tickers.length > 50) seen.tickers.shift();
         localStorage.setItem(SEEN_KEY, JSON.stringify(seen));
+        // Sinyal aktivitas nyata utk wizard (score step): stockVisits di teknikal:visitor.
+        // use-registration-prompt hanya trackPageView() tanpa ticker, jadi jalur ini
+        // yang mengisi stockVisits utk anon di halaman saham.
+        try {
+          const vraw = localStorage.getItem("teknikal:visitor");
+          const v = vraw ? JSON.parse(vraw) : { firstVisitAt: Date.now(), totalPageViews: 1, stockVisits: {}, lastVisitedTickers: [] };
+          if (typeof v.stockVisits !== "object" || v.stockVisits === null) v.stockVisits = {};
+          v.stockVisits[ticker] = (v.stockVisits[ticker] ?? 0) + 1;
+          v.lastVisitAt = Date.now();
+          localStorage.setItem("teknikal:visitor", JSON.stringify(v));
+          window.dispatchEvent(new Event("tek:visitor-updated"));
+        } catch {
+          // ignore
+        }
         const q = bumpGuestQuota();
         // Beacon event utk admin analytics (Retention Loop v2): quotaViews = hitungan
         // ke-n hari itu. Fire-and-forget, gagal = diam.
