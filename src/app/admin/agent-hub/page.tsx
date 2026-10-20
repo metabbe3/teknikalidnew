@@ -21,7 +21,10 @@ import {
   Bell,
   MessageSquare,
   Users,
+  Power,
 } from "lucide-react";
+
+const STALE_THRESHOLD_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
 
 const AGENT_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   seo_optimizer: Search,
@@ -62,6 +65,13 @@ interface JobRow {
   error: string | null;
 }
 
+interface AgentConfigRow {
+  agentType: string;
+  isEnabled: boolean;
+  scheduleCron: string | null;
+  updatedAt: string;
+}
+
 interface HubStats {
   totalJobs: number;
   pendingJobs: number;
@@ -70,6 +80,7 @@ interface HubStats {
   failedJobs: number;
   agents: AgentStat[];
   recentJobs: JobRow[];
+  configs: AgentConfigRow[];
 }
 
 export default function AgentHubPage() {
@@ -100,9 +111,29 @@ export default function AgentHubPage() {
     },
   });
 
+  const toggleMutation = useMutation({
+    mutationFn: async (v: { agentType: string; isEnabled: boolean }) => {
+      const r = await fetch(`/api/admin/agent-hub/${v.agentType}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isEnabled: v.isEnabled }),
+      });
+      if (!r.ok) throw new Error("Failed to update agent config");
+      return r.json();
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["agent-hub-stats"] });
+    },
+    onError: (e) => alert(e instanceof Error ? e.message : "Failed to toggle agent"),
+  });
+
   const stats = data?.data;
   const agents = stats?.agents ?? [];
   const recentJobs = stats?.recentJobs ?? [];
+  const configs = stats?.configs ?? [];
+  const enabledCount = agents.filter(
+    (a) => configs.find((c) => c.agentType === a.type)?.isEnabled ?? true
+  ).length;
 
   if (isLoading) {
     return (
@@ -124,9 +155,14 @@ export default function AgentHubPage() {
           </h1>
           <p className="text-sm text-gray-500 mt-1">Centralized agent orchestration — monitor, trigger, and manage AI agents</p>
         </div>
-        <Badge variant="outline" className="text-xs">
-          {stats?.runningJobs ?? 0} running
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="text-xs">
+            {enabledCount} of {agents.length} agents enabled
+          </Badge>
+          <Badge variant="outline" className="text-xs">
+            {stats?.runningJobs ?? 0} running
+          </Badge>
+        </div>
       </div>
 
       {/* KPI Cards */}
@@ -165,9 +201,16 @@ export default function AgentHubPage() {
             const Icon = AGENT_ICONS[agent.type] ?? Bot;
             const isRunning = agent.lastStatus === "running";
             const triggerLoading = triggerMutation.isPending && triggerMutation.variables === agent.type;
+            const config = configs.find((c) => c.agentType === agent.type);
+            const isEnabled = config?.isEnabled ?? true;
+            const toggleLoading = toggleMutation.isPending && toggleMutation.variables?.agentType === agent.type;
+            const isStale =
+              isEnabled &&
+              !!agent.lastRun &&
+              Date.now() - new Date(agent.lastRun).getTime() > STALE_THRESHOLD_MS;
 
             return (
-              <Card key={agent.type} className="hover:shadow-md transition-shadow">
+              <Card key={agent.type} className={`hover:shadow-md transition-shadow ${isEnabled ? "" : "opacity-60"}`}>
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -175,23 +218,69 @@ export default function AgentHubPage() {
                         <Icon className="h-5 w-5 text-indigo-600" />
                       </div>
                       <div>
-                        <CardTitle className="text-base">{agent.label}</CardTitle>
+                        <div className="flex items-center gap-2">
+                          <CardTitle className="text-base">{agent.label}</CardTitle>
+                          {isEnabled ? (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              Enabled
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                              Disabled
+                            </span>
+                          )}
+                          {isStale && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                              <AlertTriangle className="h-3 w-3 mr-1" />
+                              stale
+                            </span>
+                          )}
+                        </div>
                         <p className="text-xs text-gray-400">{agent.type}</p>
+                        {!isEnabled && (
+                          <p className="text-xs text-gray-500">Scheduler skip — manual only</p>
+                        )}
                       </div>
                     </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => triggerMutation.mutate(agent.type)}
-                      disabled={isRunning || triggerLoading}
-                    >
-                      {triggerLoading ? (
-                        <Loader2 className="h-3 w-3 animate-spin mr-1" />
-                      ) : (
-                        <Play className="h-3 w-3 mr-1" />
-                      )}
-                      Run
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          const label = agent.label;
+                          const ok = isEnabled
+                            ? window.confirm(
+                                `Disable ${label}? Scheduler will stop creating jobs for this agent. Manual Run stays available.`
+                              )
+                            : window.confirm(
+                                `Enable ${label}? Scheduler will start creating jobs for this agent again.`
+                              );
+                          if (ok) toggleMutation.mutate({ agentType: agent.type, isEnabled: !isEnabled });
+                        }}
+                        disabled={toggleLoading}
+                        title={isEnabled ? "Disable agent" : "Enable agent"}
+                        aria-label={isEnabled ? `Disable ${agent.label}` : `Enable ${agent.label}`}
+                      >
+                        {toggleLoading ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <Power className="h-3 w-3" />
+                        )}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => triggerMutation.mutate(agent.type)}
+                        disabled={isRunning || triggerLoading}
+                      >
+                        {triggerLoading ? (
+                          <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                        ) : (
+                          <Play className="h-3 w-3 mr-1" />
+                        )}
+                        Run
+                      </Button>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
