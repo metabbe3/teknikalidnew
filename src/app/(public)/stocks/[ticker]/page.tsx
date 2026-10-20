@@ -16,7 +16,6 @@ import { StockDiscussion } from "@/components/community/stock-discussion";
 import { RegistrationInlinePrompt } from "@/components/ui/registration-inline-prompt";
 import { StockActionBadge } from "@/components/stock/stock-action-badge";
 import { AlertPreviewCard } from "@/components/stock/alert-preview-card";
-import { ThesisButton } from "@/components/stock/thesis-modal";
 import { SentimentGauge } from "@/components/stock/sentiment-gauge";
 import { PresenceBadge } from "@/components/stock/presence-badge";
 import { StockAlertBanner } from "@/components/stock/stock-alert-banner";
@@ -586,17 +585,6 @@ export default async function StockDetailPage({
                     <span id="ai" className="block scroll-mt-24" />
                     <StockAiModalButton ticker={ticker} name={stock.name} />
                     <StockActionBadge ticker={ticker} />
-                    <ThesisButton ticker={ticker} />
-                    <Link
-                      href={`/compare?s=${ticker}`}
-                      prefetch={false}
-                      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium border border-border text-text-tertiary hover:bg-bg-hover hover:text-text-primary transition-all press-scale"
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
-                      </svg>
-                      Bandingkan
-                    </Link>
                   </div>
                 </div>
               )}
