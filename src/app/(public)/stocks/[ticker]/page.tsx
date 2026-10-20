@@ -804,10 +804,12 @@ export default async function StockDetailPage({
             { label: stripJk(ticker) },
           ]}
         />
-        {!fullAccess && (
+        {/* Tracker harus jalan utk SEMUA anon (guest pass v2.1): beacon-nya yang
+            men-claim quota server-side. Banner overlimit hanya saat gate aktif. */}
+        {!isAuthed && (
           <div className="space-y-3">
             <GuestStockTracker ticker={ticker} />
-            <GuestOverlimitBanner ticker={stripJk(ticker)} />
+            {!fullAccess && <GuestOverlimitBanner ticker={stripJk(ticker)} />}
           </div>
         )}
         {/* ── SEO Teaser: Technical analysis summary for crawlers (anon only) ── */}
