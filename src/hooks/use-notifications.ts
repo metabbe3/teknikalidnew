@@ -19,10 +19,10 @@ interface NotificationActor {
 
 interface NotificationData {
   id: string;
-  type: "LIKE" | "COMMENT" | "MENTION" | "FOLLOW" | "STOCK_POST" | "REACTION" | "STOCK_ALERT" | "AGENT_ALERT" | "RE_ENGAGE" | "SCREENER_MATCH" | "THESIS_BREACH";
+  type: "LIKE" | "COMMENT" | "MENTION" | "FOLLOW" | "STOCK_POST" | "REACTION" | "STOCK_ALERT" | "AGENT_ALERT" | "RE_ENGAGE" | "SCREENER_MATCH" | "THESIS_BREACH" | "SITE_ANNOUNCEMENT";
   read: boolean;
   createdAt: string;
-  actor: NotificationActor;
+  actor: NotificationActor | null;
   ticker: string | null;
   meta: { breachKind?: string } | null;
   post: { id: string; content: string } | null;
@@ -60,6 +60,10 @@ export function useMarkNotificationsRead() {
 }
 
 export function notificationText(n: NotificationData): string {
+  if (n.type === "SITE_ANNOUNCEMENT" || !n.actor) {
+    const meta = (n.meta ?? {}) as { title?: string };
+    return meta.title ?? "Pengumuman TeknikalID";
+  }
   const name = n.actor.name || `@${n.actor.username}`;
   if (n.type === "THESIS_BREACH") {
     const t = n.ticker ? n.ticker.replace(/\.JK$/i, "") : "Saham";

@@ -145,6 +145,7 @@ export function StockTable({ stocks, sectors, linkBase = "/stocks" }: StockTable
               type="search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => { try { window.dispatchEvent(new Event("tek:search-focus")); } catch { /* SSR guard */ } }}
               placeholder="Cari saham..."
               aria-label="Cari saham berdasarkan ticker atau nama"
               className="w-full bg-bg-card border border-border rounded-lg pl-9 pr-3 py-2.5 text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent/40 depth-shadow transition-all"

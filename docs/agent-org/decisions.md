@@ -752,8 +752,25 @@ commit pre-deploy live-unknown; merge HEAD: 1e4d517
 - ROLLBACK ANCHOR: image ID pre-deploy teknikalidnew-app sha256:88612073f083 (dari changelog bo-2026-10-18-01 03:14); git revert abd3129.
 - SQL DESTRUCTIVE LOG (policy 14 Sep): DELETE FROM "WaitlistSubscriber" WHERE id IN (2,3) AND (value LIKE 'smoke-test-cto@%' OR channel='wa') → DELETE 2 (row smoke-test sendiri, dibuat 3 menit sebelumnya via staging; backup valid 2026-10-18 01:15 ~/backups/teknikalid/last-success; SELECT COUNT WHERE sama = 2 preview). Post-check count=0 = baseline.
 
-## 2026-10-19 18:5x WIB — CTO sore: cto-2026-10-19-01 reconcile main (P1)
-- ROLLBACK ANCHOR pre-merge: local main 98185cd / origin d09be5b; image live 154712c147f9 (created 05:59). Rollback: git revert b493863 9fa0d38 380eef0 di main + rebuild.
-- RECONCILE: worktree /tmp/cto1019 dari main → ff ke origin d09be5b (backlog itsec) → cherry-pick emoji pass-1/2 (b493863+9fa0d38, 15 file UI, 0 conflict, auto-merge waitlist) + test fix boundary funnel 380eef0 (uncommitted fix builder diangkat). VERIFY: tsc exit 0; test funnel 8/8 + waitlist 11/11; build exit 0; ancestor ALL PASS (origin/main, 5644ad9, 70ee7be, cc60c26, abd3129 ⊆ HEAD 380eef0). PUSH main → tunggu kereta T-1019-N 22:00.
-- INVARIANT BARU (pre-deploy): `git fetch && git merge-base --is-ancestor origin/main HEAD` exit 0 sebelum build/deploy. Catatan: AGENTS.md write-DIBLOK utk agent (protected) — invariant dicatat di sini + handoff; eskalasi owner utk menambahkannya ke AGENTS.md.
-- INSIDEN PROSEDUR (lesson): worktree add gagal karena ref main masih nempel di /tmp/hs1018 terhapus → cherry-pick sempat jatuh di branch salah (night/prd-18-01); pulih dgn git reset --mixed e13d11b + restore 5 dirty file utuh. Pembelajaran: SELALU `git worktree prune` sebelum add, dan verifikasi `branch --show-current` SEBELUM cherry-pick.
+### 19 Okt malam — Header UX + insiden migrate P3009 (3 deploy, ±15 mnt downtime)
+
+**Fitur (owner directive 'icon bell & save tidak berguna'):** commit 1dc78a3 + f105175 —
+(1) ticker tape minus fix + auto-refresh 60s; (2) icon watchlist duplikat dihapus dari header;
+(3) bell = saluran SITE_ANNOUNCEMENT (broadcast admin, banner global P0/warning) — migration
+schema.prisma SITE_ANNOUNCEMENT + actorId nullable; endpoint POST /api/admin/announcements
+admin-only; broadcast pertama 'sempat down mohon maaf' terkirim ke 26 user.
+
+**INSIDEN P3009 (22:00-22:15):** deploy#1 crash-loop — prisma migrate entrypoint menolak
+jalan karena migration SQL invalid (2 kali salah: `ALTER CONSTRAINT ... ON DELETE SET NULL`
+bukan syntax postgres → harus DROP+ADD; `pg_enum.typname` kolomnya salah). Fix final
+(deploy#4 d02d531+0272822): schema diapply manual psql → migration file jadi NO-OP SELECT 1
+→ docker build **--no-cache** (cache layer COPY membake file migration lama walau file lokal
+sudah benar — deploy#3 tetap bawa DO-block lama).
+
+**LESSON PENTING:** (a) JANGAN pernah tulis migration Prisma tanpa tes jalankan persis
+statement-nya di psql dulu; (b) prisma migrate menjalankan statement satu-per-satu — DO $$
+block & conditional idempotent TIDAK reliable; kalau schema sudah manual-applied, migration
+file = komentar + SELECT 1, hapus row failed di _prisma_migrations; (c) docker layer cache
+untuk prisma/migrations/ menuntut --no-cache saat hot-fix file migration di hari sama.
+
+**Deploy count 19 Okt teknikal: 4** (1 kereta + 3 insiden) — di atas budget normal, insiden-driven.

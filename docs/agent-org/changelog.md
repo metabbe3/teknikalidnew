@@ -1,9 +1,3 @@
-## [2026-10-19 03:2x] backoffice — bo-2026-10-19-01: ticker-manager matang (filter Inactive, count dinamis, stale badge, confirm dampak market-snapshot) DEPLOYED
-- Type: backoffice (MATANGKAN+KUASAI)  |  Pilar: TRUST + KUASAI  |  North star: consistency-trust-reliable
-- Audit: GET lama hanya return isActive=true -> 2 saham inactive (964 EQUITY: 962 aktif) HILANG dari tabel & tak bisa di-reactivate dari backoffice (wajib SQL manual). Header hardcode 'IDX40', tanpa sinyal stale, toggle tanpa warning dampak market-snapshot (satu pintu movers/breadth).
-- Perubahan (2 file, API REUSE): route.ts GET dukung ?all=1 (findMany EQUITY tanpa filter isActive, pola findActiveStocksWithPrices) + summary {total,active,inactive}; page.tsx fetch ?all=1, tab Active/Inactive/All (default Active, count dari summary), description dinamis, kolom Last Update + badge stale >72 jam, confirm saat deactivate ('keluar dari movers/breadth homepage').
-- Verify bukti fisik: tsc --noEmit EXIT-0 di worktree; grep all=1/summary/tab/stale/confirm di kedua file; psql EQUITY 964/962/2 = sumber angka summary.
-- Deploy: image pre-deploy = 608cd49e8d10 (up 18 Okt 21:09). Rollback anchor: git revert 5644ad9 / redeploy image 608cd49e8d10.
 ## [2026-10-18 07:5x] cto-pagi — prd-2026-10-17-01: waitlist lead-capture v1.5 MERGED+STAGING-VERIFIED (in_train T-1018-N, belum deploy)
 - Type: prd (fitur GROWTH)  |  PRD: idea-2026-10-17-1b / prd-2026-10-17-01 (night_ready CTO Night 17 Okt)
 - Deploy: PENDING — kereta malam T-1018-N (window 22:00-01:30; slot pagi = BUILD-ONLY)  |  Rollback anchor: git revert abd3129 (merge waitlist v1.5), image pre-deploy = 88612073f083 (deploy bo-03:14)
@@ -584,8 +578,9 @@
 - id: prd-2026-10-17-01 | type: prd | PRD: idea-2026-10-17-1b | deploy hash: ikut image 4693c93e0dec | verify: smoke POST live 5/5 + marker x2 | QA: staging 18 Okt + live smoke kini | impact_check_due: 2026-11-01 (AC5 gate 14 hari)
 - id: ux-2026-10-18-02 | type: ops (restore) | PRD: n/a | deploy hash: ikut image 4693c93e0dec | verify: emoji live 0 di home+/stocks | QA: self-check | impact_check_due: 2026-10-22
 
-## 2026-10-21 03:0x — Backoffice Builder slot malam (bo-2026-10-21-01)
-- id: bo-2026-10-21-01 | type: backoffice | PRD: n/a | north_star: TRUST + KUASAI
-- feat: agent-hub list render configs (badge Enabled/Disabled + dim), toggle langsung via PUT existing, badge stale >14 hari, header 'X of Y agents enabled'
-- verify: tsc --noEmit exit 0 + next build exit 0 (worktree origin/main e601902 + prisma generate)
-- QA: reviewer slot berikutnya | impact_check_due: n/a (kontrol ops)
+## 2026-10-20 03:2x — Backoffice Builder slot 03:00 (bo-2026-10-20-01)
+- task-id: bo-2026-10-20-01 | type: backoffice matangkan | PRD: n/a (audit rotasi ronde-2) | north_star: TRUST (admin = satu sumber kebenaran) + consistency
+- deploy: image sha256:8742307a9a24 dari tree night/prd-2026-10-18-01 (sumber deploy 19 Okt, main tertinggal — merge ritual CTO) | rollback anchor: image f7e8f65deae4 + commit 616e46c
+- fix: (1) cron-registry.ts schedule disinkronkan ground-truth launchd+DB (sync-eod 16:30 WIB, generate-articles 1x/hari, agent-hub 30 mnt, sync-stocks Senin, + entry cleanup-snapshots dormant); (2) kartu Scheduled Jobs /admin/pipelines kini data-driven dari jobStats (hapus CRON_SCHEDULES hardcoded 2-job salah jadwal) + badge 'no data 7d' utk job dorman; (3) IndicatorsTab stub -> live via /api/admin/indicators existing (KPI fresh/stale/missing + filter + tabel) — ZERO endpoint baru
+- verify: tsc 0 · build 0 · container healthy · chunk live 'Indicator Coverage per Stock'+'no data 7d' (page-90d99cf8ff260166.js) · server 'Daily 16:30 WIB'+'cleanup-snapshots' di cron-monitor route · /admin/pipelines+admin 307 auth-guard · API admin 404-mask by-design (proxy.ts:322) · / 200 · /stocks 200
+- QA: pembangun ≠ pemeriksa — QA gate slot berikutnya | impact_check: sync-intraday dorman = kandidat entry ops baru (bukan malam ini)

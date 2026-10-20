@@ -173,24 +173,6 @@ function serviceStatusIcon(status: string) {
   return <div className="h-4 w-4 rounded-full bg-gray-300" />;
 }
 
-const CRON_SCHEDULES = [
-  {
-    name: "EOD Sync",
-    schedule: "16:30 WIB (market close)",
-    route: "/api/cron/sync-eod",
-    description:
-      "Fetches end-of-day prices and calculates technical indicators for all active stocks",
-    color: "blue",
-  },
-  {
-    name: "Intraday Sync",
-    schedule: "Every 15 min during market hours",
-    route: "/api/cron/sync-intraday",
-    description: "Updates real-time prices for IDX40 + watchlisted stocks",
-    color: "emerald",
-  },
-];
-
 // ===========================================================================
 // Main Page Component
 // ===========================================================================
@@ -837,38 +819,166 @@ function SyncLogsTab() {
 // Tab 3: Indicators
 // ===========================================================================
 
+interface IndicatorRow {
+  ticker: string;
+  name: string;
+  date: string | null;
+  interval: string | null;
+  status: "fresh" | "stale" | "missing";
+  fieldsPopulated: number;
+  totalFields: number;
+}
+
+interface IndicatorsData {
+  indicators: IndicatorRow[];
+  summary: { total: number; fresh: number; stale: number; missing: number };
+}
+
 function IndicatorsTab() {
+  const [search, setSearch] = useState("");
+
+  const { data, isLoading } = useQuery<IndicatorsData>({
+    queryKey: ["admin-indicators"],
+    queryFn: async () => {
+      const r = await fetch("/api/admin/indicators");
+      if (!r.ok) return undefined;
+      return r.json();
+    },
+    refetchInterval: 60_000,
+  });
+
+  const summary = data?.summary;
+  const q = search.trim().toLowerCase();
+  const filtered = (data?.indicators ?? []).filter(
+    (i) =>
+      q === "" ||
+      i.ticker.toLowerCase().includes(q) ||
+      i.name.toLowerCase().includes(q)
+  );
+
+  const columns = [
+    {
+      header: "Ticker",
+      cell: (r: IndicatorRow) => (
+        <span className="font-mono font-bold text-sm text-gray-900">
+          {r.ticker}
+        </span>
+      ),
+    },
+    {
+      header: "Name",
+      cell: (r: IndicatorRow) => (
+        <span className="text-xs text-gray-600">{r.name}</span>
+      ),
+    },
+    {
+      header: "Date",
+      cell: (r: IndicatorRow) => (
+        <span className="text-xs text-gray-500 font-mono">
+          {r.date ? r.date.slice(0, 10) : "-"}
+        </span>
+      ),
+    },
+    {
+      header: "Interval",
+      cell: (r: IndicatorRow) => (
+        <span className="text-xs text-gray-400 font-mono">
+          {r.interval ?? "-"}
+        </span>
+      ),
+    },
+    {
+      header: "Fields",
+      cell: (r: IndicatorRow) => (
+        <span className="text-xs tabular-nums text-blue-600">
+          {r.fieldsPopulated}/{r.totalFields}
+        </span>
+      ),
+    },
+    {
+      header: "Status",
+      cell: (r: IndicatorRow) => (
+        <Badge
+          variant={
+            r.status === "fresh"
+              ? "default"
+              : r.status === "stale"
+              ? "secondary"
+              : "outline"
+          }
+          className={
+            r.status === "fresh"
+              ? "bg-emerald-500 hover:bg-emerald-600"
+              : r.status === "stale"
+              ? "bg-amber-500 hover:bg-amber-600 text-white"
+              : "text-gray-500"
+          }
+        >
+          {r.status}
+        </Badge>
+      ),
+    },
+  ];
+
   return (
     <div className="space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <AdminKpiCard
+          title="Active Stocks"
+          icon={Activity}
+          value={summary?.total ?? 0}
+          loading={isLoading}
+          gradient="blue"
+        />
+        <AdminKpiCard
+          title="Fresh (&lt;2d)"
+          icon={CheckCircle}
+          value={summary?.fresh ?? 0}
+          status={summary && summary.fresh < summary.total ? "warning" : "success"}
+          loading={isLoading}
+          gradient="emerald"
+        />
+        <AdminKpiCard
+          title="Stale (&gt;2d)"
+          icon={Clock}
+          value={summary?.stale ?? 0}
+          status={summary && summary.stale > 0 ? "stale" : "safe"}
+          loading={isLoading}
+          gradient="amber"
+        />
+        <AdminKpiCard
+          title="Missing"
+          icon={XCircle}
+          value={summary?.missing ?? 0}
+          status={summary && summary.missing > 0 ? "missing" : "safe"}
+          loading={isLoading}
+          gradient="rose"
+        />
+      </div>
+
       <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
         <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
-          <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
-            <Activity className="h-4 w-4 text-violet-500" />
-            Technical Indicator Management
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="py-8">
-          <div className="text-center space-y-3">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-violet-50">
-              <Activity className="h-6 w-6 text-violet-500" />
-            </div>
-            <p className="text-sm text-gray-600">
-              Technical indicators are recalculated automatically during EOD sync.
-            </p>
-            <p className="text-xs text-gray-400">
-              Indicators include RSI, MACD, SMA (20/50/200), EMA, Bollinger Bands,
-              Stochastic, ADX, and ATR for all IDX40 stocks.
-            </p>
-            <p className="text-xs text-gray-400">
-              Use the{" "}
-              <span className="font-semibold text-gray-500">Manual Triggers</span>{" "}
-              in the Cron Jobs tab to force a recalculation via{" "}
-              <code className="text-[11px] font-mono bg-gray-100 px-1.5 py-0.5 rounded">
-                recalculate-indicators
-              </code>
-              .
-            </p>
+          <div className="flex items-center justify-between w-full">
+            <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
+              <Activity className="h-4 w-4 text-violet-500" />
+              Indicator Coverage per Stock
+            </CardTitle>
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Filter ticker / nama..."
+              className="text-xs border border-gray-200 rounded-md px-2 py-1 bg-white text-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-400 w-48"
+            />
           </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          <AdminDataTable
+            columns={columns}
+            data={filtered}
+            loading={isLoading}
+            emptyMessage="No indicator data available"
+            keyFn={(r) => r.ticker}
+          />
         </CardContent>
       </Card>
     </div>
@@ -888,6 +998,17 @@ function ServicesConfigTab() {
       return r.json();
     },
     refetchInterval: 60_000,
+  });
+
+  const cronQuery = useQuery<CronMonitorData>({
+    queryKey: ["admin-cron-monitor"],
+    queryFn: async () => {
+      const r = await fetch("/api/admin/cron-monitor");
+      if (!r.ok) return undefined;
+      const json = await r.json();
+      return json.data;
+    },
+    refetchInterval: 30_000,
   });
 
   const services = [
@@ -1073,28 +1194,55 @@ function ServicesConfigTab() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 pt-4">
-          {CRON_SCHEDULES.map((cron) => (
-            <div
-              key={cron.name}
-              className={`flex items-start justify-between p-4 rounded-xl border border-gray-200/80 bg-white shadow-md shadow-gray-200/30 admin-accent-${cron.color}-left`}
-            >
-              <div>
-                <p className="text-sm font-bold text-gray-800">{cron.name}</p>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  {cron.description}
-                </p>
-                <p className="text-xs font-mono text-gray-400 mt-1">
-                  {cron.route}
-                </p>
-              </div>
-              <Badge
-                variant="secondary"
-                className="bg-violet-50 text-violet-700 border-violet-200 shrink-0"
-              >
-                {cron.schedule}
-              </Badge>
+          {cronQuery.isLoading ? (
+            <div className="space-y-3">
+              {[1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="h-16 bg-gray-50 rounded-xl animate-pulse"
+                />
+              ))}
             </div>
-          ))}
+          ) : cronQuery.data?.jobStats && cronQuery.data.jobStats.length > 0 ? (
+            cronQuery.data.jobStats.map((job) => (
+              <div
+                key={job.jobName}
+                className="flex items-start justify-between p-4 rounded-xl border border-gray-200/80 bg-white shadow-md shadow-gray-200/30 admin-accent-blue-left"
+              >
+                <div>
+                  <p className="text-sm font-bold text-gray-800">
+                    {job.displayName}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    {job.description}
+                  </p>
+                  <p className="text-xs font-mono text-gray-400 mt-1">
+                    {job.route}
+                  </p>
+                </div>
+                <div className="flex flex-col items-end gap-1 shrink-0">
+                  <Badge
+                    variant="secondary"
+                    className="bg-violet-50 text-violet-700 border-violet-200"
+                  >
+                    {job.schedule}
+                  </Badge>
+                  {!job.hasData && (
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] px-1.5 py-0 text-amber-600 border-amber-300"
+                    >
+                      no data 7d
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-sm text-gray-400 py-4 text-center">
+              No cron jobs registered
+            </p>
+          )}
         </CardContent>
       </Card>
     </div>

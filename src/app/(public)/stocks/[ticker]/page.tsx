@@ -4,7 +4,7 @@ import Link from "next/link";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { StockNotFoundError } from "@/domains/stock/stock.errors";
 import { bigIntToNumber, decimalToNumber } from "@/lib/serialize";
-import { formatPrice, formatPercent, formatVolume, stripJk, changeColor, rsiColor } from "@/lib/utils";
+import {formatPrice, formatPercent, formatVolume, stripJk, changeColor, rsiColor, signalToHealthScore, healthScoreMeta} from "@/lib/utils";
 import { normalizeTickerTitle } from "@/lib/normalize-ticker-title";
 import { ChartSection } from "@/components/chart/chart-section";
 import { IndicatorPanel } from "@/components/stock/indicator-panel";
@@ -16,7 +16,6 @@ import { StockDiscussion } from "@/components/community/stock-discussion";
 import { RegistrationInlinePrompt } from "@/components/ui/registration-inline-prompt";
 import { StockActionBadge } from "@/components/stock/stock-action-badge";
 import { AlertPreviewCard } from "@/components/stock/alert-preview-card";
-import { ThesisButton } from "@/components/stock/thesis-modal";
 import { SentimentGauge } from "@/components/stock/sentiment-gauge";
 import { PresenceBadge } from "@/components/stock/presence-badge";
 import { StockAlertBanner } from "@/components/stock/stock-alert-banner";
@@ -45,6 +44,9 @@ import { prisma } from "@/lib/prisma";
 import { portfolioService } from "@/domains/portfolio/portfolio.service";
 import DailyAnalysisSection from "@/components/stock/daily-analysis-section";
 import { LoginGate } from "@/components/auth/login-gate";
+import { GuestStockTracker } from "@/components/ui/guest-stock-tracker";
+import { GuestOverlimitBanner } from "@/components/ui/guest-overlimit-banner";
+import { guestHasQuota } from "@/lib/guest-pass";
 import { auth } from "@/lib/auth";
 import { Newspaper } from "lucide-react";
 
@@ -135,6 +137,10 @@ export default async function StockDetailPage({
   // in the anon HTML.
   const session = await auth();
   const isAuthed = !!session?.user;
+  // Guest pass v2.1 (owner 20 Okt): dalam kuota gratis (≤5 ticker unik/hari)
+  // anon melihat konten penuh — indikator, trading plan, fundamentals, data perusahaan.
+  const guestPass = !isAuthed ? await guestHasQuota() : false;
+  const fullAccess = isAuthed || guestPass;
 
   let detail;
   try {
@@ -580,22 +586,45 @@ export default async function StockDetailPage({
                     <span id="ai" className="block scroll-mt-24" />
                     <StockAiModalButton ticker={ticker} name={stock.name} />
                     <StockActionBadge ticker={ticker} />
-                    <ThesisButton ticker={ticker} />
-                    <Link
-                      href={`/compare?s=${ticker}`}
-                      prefetch={false}
-                      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium border border-border text-text-tertiary hover:bg-bg-hover hover:text-text-primary transition-all press-scale"
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
-                      </svg>
-                      Bandingkan
-                    </Link>
                   </div>
                 </div>
               )}
               {close === null && <StockActionBadge ticker={ticker} />}
             </div>
+
+            {/* Skor Sinyal hero — verdict instan (riset NBER: 6 menit riset, verdict dulu baru data).
+                SSR utk semua visitor: trust builder + rich answer utk crawler. */}
+            {indicators && indicators.signalScore !== null && indicators.signalScore !== undefined && (() => {
+              const score = signalToHealthScore(indicators.signalScore);
+              if (score === null) return null;
+              const meta = healthScoreMeta(score);
+              const outlook = indicators.signalLabel ?? "Netral";
+              const isBull = /bullish|beli|accumulate/i.test(outlook);
+              const isBear = /bearish|jual|sell/i.test(outlook);
+              return (
+                <div className="mt-4 rounded-xl border border-border bg-bg-card p-4 depth-shadow" aria-label="Skor sinyal teknikal">
+                  <div className="flex items-center gap-4">
+                    <div className="flex flex-col items-center shrink-0">
+                      <span className="text-3xl font-extrabold tabular-nums leading-none" style={{ color: meta.color }}>
+                        {score}
+                      </span>
+                      <span className="text-[10px] font-semibold text-text-tertiary mt-0.5">dari 100</span>
+                    </div>
+                    <div className="h-10 w-px bg-border shrink-0" aria-hidden="true" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-text-primary flex items-center gap-2 flex-wrap">
+                        Sinyal: <span style={{ color: isBull ? "var(--color-bullish)" : isBear ? "var(--color-bearish)" : meta.color }}>{outlook}</span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: meta.bg, color: meta.color }}>{meta.label}</span>
+                      </p>
+                      <div className="mt-2 h-2 rounded-full bg-bg-hover overflow-hidden relative" role="meter" aria-valuenow={score} aria-valuemin={0} aria-valuemax={100} aria-label={`Skor kesehatan teknikal ${score} dari 100`}>
+                        <div className="h-full rounded-full transition-all duration-700" style={{ width: `${score}%`, backgroundColor: meta.color }} />
+                      </div>
+                      <p className="mt-1.5 text-[11px] text-text-tertiary">Gabungan 12 indikator teknikal — RSI, MACD, tren, momentum, volume</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* OHLC + 52-week strip — anon-visible (SEO + first impression; data sudah SSR di page) */}
             {close !== null && (
@@ -647,64 +676,13 @@ export default async function StockDetailPage({
               </div>
             )}
 
-            {/* Indicator strip — authed: penuh; anon: teaser angka real (value first) */}
-            {indicators && close !== null && !isAuthed && (
+            {/* Indicator strip anon DIHAPUS (20 Okt) — redundan: Skor Sinyal hero SSR
+                (sinyal+gauge) + 4 kartu indikator hero di bawah + guest meter CTA register */}
+            {fullAccess && indicators && close !== null && (
               <div className="border-t border-border mt-5 pt-4">
-                <div className="flex items-center gap-2.5 flex-wrap text-sm">
-                  <span className={`font-mono font-semibold inline-flex items-center gap-1 ${rsiColor(indicators.rsi14) || "text-text-secondary"}`}>
-                    RSI {indicators.rsi14?.toFixed(0) ?? "—"}
-                    <IndicatorTooltip indicator="RSI" />
-                  </span>
-                  <Dot />
-                  <span className="font-mono font-semibold text-text-secondary">
-                    MACD {indicators.macdHist !== null && indicators.macdHist !== undefined ? (indicators.macdHist > 0 ? "↑" : "↓") : "—"}
-                  </span>
-                  <Dot />
-                  <span className="font-mono font-semibold text-text-secondary">
-                    ADX {indicators.adx?.toFixed(0) ?? "—"}
-                  </span>
-                  <Dot />
-                  <span className="font-mono font-semibold text-text-secondary">
-                    Sinyal: {indicators.signalLabel ?? "—"}
-                  </span>
-                  <Link href="/auth/register" className="text-[11px] text-primary hover:underline ml-1">
-                    narasi lengkap →
-                  </Link>
-                </div>
-              </div>
-            )}
-            {isAuthed && indicators && close !== null && (
-              <div className="border-t border-border mt-5 pt-4">
-                <div className="flex items-center justify-between gap-4 flex-wrap">
-                  <div className="flex items-center gap-2.5 flex-wrap text-sm">
-                    <span className={`font-mono font-semibold inline-flex items-center gap-1 ${rsiColor(indicators.rsi14) || "text-text-secondary"}`}>
-                      RSI {indicators.rsi14?.toFixed(0) ?? "—"}
-                      <IndicatorTooltip indicator="RSI" />
-                    </span>
-                    <Dot />
-                    {indicators.macdHist !== null && (
-                      <>
-                        <span className={`font-mono font-semibold inline-flex items-center gap-1 ${indicators.macdHist >= 0 ? "text-bullish" : "text-bearish"}`}>
-                          MACD {indicators.macdHist >= 0 ? "▲" : "▼"}
-                          <IndicatorTooltip indicator="MACD" />
-                        </span>
-                        <Dot />
-                      </>
-                    )}
-                    {indicators.atr !== null && (
-                      <>
-                        <span className="font-mono text-text-secondary inline-flex items-center gap-1">Vol {(indicators.atr / close * 100).toFixed(1)}%<IndicatorTooltip indicator="Volatilitas" /></span>
-                        <Dot />
-                      </>
-                    )}
-                    {indicators.adx !== null && (
-                      <span className={`font-mono font-semibold inline-flex items-center gap-1 ${indicators.adx > 25 ? "text-accent" : "text-text-tertiary"}`}>
-                        {indicators.adx > 25 ? "Tren Kuat" : "Tren Lemah"}
-                        <IndicatorTooltip indicator="ADX" />
-                      </span>
-                    )}
-                  </div>
-
+                {/* Chips RSI/MACD/Vol/Tren DIHAPUS (20 Okt) — duplikat skor hero + kartu indikator.
+                    Sisa: cross-badge, freshness, presence (fungsional, bukan duplikasi). */}
+                <div className="flex items-center justify-end gap-2 flex-wrap">
                   <div className="flex items-center gap-2 flex-wrap justify-end">
                     {smaCrossText && (
                       <CrossBadge text={smaCrossText} isBullish={indicators?.smaCrossSignal === "golden_cross"} />
@@ -755,10 +733,10 @@ export default async function StockDetailPage({
         <div className="sticky top-[57px] z-40 border-b border-border bg-bg-primary/95 backdrop-blur">
           <div className="max-w-7xl mx-auto px-4 py-1.5 flex gap-1 overflow-x-auto">
             {[
-              ["chart", "Chart"],
-              ["indikator", "Indikator"],
-              ["ai", "AI"],
-              ...(isAuthed ? [["plan", "Trading Plan"]] : []),
+              ["chart", "📈 Chart"],
+              ["indikator", "🧭 Indikator"],
+              ["ai", "✨ AI"],
+              ...(fullAccess ? [["plan", "🎯 Trading Plan"]] : []),
             ].map(([id, label]) => (
               <a
                 key={id}
@@ -774,7 +752,7 @@ export default async function StockDetailPage({
 
 
       {/* Alert preview CTA — anon only: tunjukkan value tersembunyi (alert sinyal) saat saham PUNYA sinyal aktif */}
-      {!isAuthed && (
+      {!fullAccess && (
         <AlertPreviewCard
           ticker={ticker}
           signalLabel={indicators?.signalLabel ?? null}
@@ -798,9 +776,17 @@ export default async function StockDetailPage({
             { label: stripJk(ticker) },
           ]}
         />
+        {/* Tracker harus jalan utk SEMUA anon (guest pass v2.1): beacon-nya yang
+            men-claim quota server-side. Banner overlimit hanya saat gate aktif. */}
+        {!isAuthed && (
+          <div className="space-y-3">
+            <GuestStockTracker ticker={ticker} />
+            {!fullAccess && <GuestOverlimitBanner ticker={stripJk(ticker)} />}
+          </div>
+        )}
         {/* ── SEO Teaser: Technical analysis summary for crawlers (anon only) ── */}
         {/* Renders server-side text that Google can index — real indicator values, not gate copy. */}
-        {!isAuthed && indicators && close !== null && (
+        {!fullAccess && indicators && close !== null && (
           <section className="bg-bg-card rounded-xl border border-border p-5 space-y-4" aria-label="Ringkasan analisa teknikal">
             <h2 className="font-serif text-base font-semibold text-text-primary">Ringkasan Analisa Teknikal {stripJk(ticker)}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -869,7 +855,7 @@ export default async function StockDetailPage({
 
         {/* Daily Analysis — auth-gated (embeds indicator values in narrative) */}
         <span id="analisa" className="block scroll-mt-24" />
-        {isAuthed && close !== null ? (
+        {fullAccess && close !== null ? (
             <DailyAnalysisSection
               ticker={ticker}
               stockName={stock.name}
@@ -955,7 +941,7 @@ export default async function StockDetailPage({
             )}
           </div>
           <div className="space-y-4">
-            {isAuthed ? (
+            {fullAccess ? (
               <KeyStatistics
                 open={latest ? decimalToNumber(latest.open) : null}
                 high={latest ? decimalToNumber(latest.high) : null}
@@ -974,7 +960,7 @@ export default async function StockDetailPage({
                 message="Daftar gratis untuk membuka data statistik lengkap — OHLC harian, volume, SMA, dan range 52 minggu."
               />
             )}
-            {isAuthed ? (
+            {fullAccess ? (
               <div className="space-y-4">
                 <span id="plan" className="block scroll-mt-24" />
                 {tradingPlan && <TradingPlanCard plan={tradingPlan} />}
@@ -994,7 +980,7 @@ export default async function StockDetailPage({
         </div>
 
         {/* IDX Company Data Tabs — auth-gated */}
-        {isAuthed ? (
+        {fullAccess ? (
           <CompanyDataTabs
             profile={idxProfile}
             commissioners={idxCommissionersSerialized}

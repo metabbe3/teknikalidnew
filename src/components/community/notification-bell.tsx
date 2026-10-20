@@ -60,21 +60,42 @@ export function NotificationBell() {
                 Belum ada notifikasi
               </div>
             ) : (
-              data?.data.map((n) => (
+              data?.data.map((n) => {
+                if (n.type === "SITE_ANNOUNCEMENT") {
+                  const meta = (n.meta ?? {}) as { title?: string; body?: string; severity?: string };
+                  const sev = meta.severity === "critical" ? "border-bearish/40 bg-bearish/[0.04]" : meta.severity === "warning" ? "border-amber-500/40 bg-amber-500/[0.04]" : "border-accent/30 bg-accent/[0.04]";
+                  return (
+                    <div
+                      key={n.id}
+                      className={`mx-2 my-1.5 rounded-lg border px-3 py-2.5 ${sev} ${n.read ? "opacity-70" : ""}`}
+                    >
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <span className="text-xs" aria-hidden="true">{meta.severity === "critical" ? "🚨" : meta.severity === "warning" ? "⚠️" : "📣"}</span>
+                        <p className="text-sm font-semibold text-text-primary">{meta.title ?? "Info TeknikalID"}</p>
+                      </div>
+                      <p className="text-sm leading-snug text-text-secondary">{meta.body}</p>
+                      <p className="text-[10px] text-text-tertiary mt-1.5">
+                        {new Date(n.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                      </p>
+                    </div>
+                  );
+                }
+                const actor = n.actor ?? { image: null, name: "Pengguna", username: "user" };
+                return (
                 <Link
                   key={n.id}
-                  href={n.type === "THESIS_BREACH" && n.ticker ? `/stocks/${n.ticker}` : n.type === "SCREENER_MATCH" ? "/screener" : n.post ? `/community/post/${n.post.id}` : `/profile/${n.actor.username}`}
+                  href={n.type === "THESIS_BREACH" && n.ticker ? `/stocks/${n.ticker}` : n.type === "SCREENER_MATCH" ? "/screener" : n.post ? `/community/post/${n.post.id}` : `/profile/${actor.username}`}
                   onClick={() => setOpen(false)}
                   className={`block px-3 py-2.5 text-sm transition-colors ${
                     n.read ? "text-text-secondary" : "text-text-primary bg-accent/[0.03]"
                   } hover:bg-bg-hover`}
                 >
                   <div className="flex items-start gap-2.5">
-                    {n.actor.image ? (
-                      <img src={n.actor.image} alt="" className="w-7 h-7 rounded-full object-cover shrink-0 mt-0.5" loading="lazy" />
+                    {actor.image ? (
+                      <img src={actor.image} alt="" className="w-7 h-7 rounded-full object-cover shrink-0 mt-0.5" loading="lazy" />
                     ) : (
                       <div className="w-7 h-7 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xs font-semibold shrink-0 mt-0.5">
-                        {(n.actor.name || n.actor.username).charAt(0).toUpperCase()}
+                        {(actor.name || actor.username).charAt(0).toUpperCase()}
                       </div>
                     )}
                     <div className="min-w-0 flex-1">
@@ -85,7 +106,8 @@ export function NotificationBell() {
                     </div>
                   </div>
                 </Link>
-              ))
+                );
+              })
             )}
           </div>
         </>

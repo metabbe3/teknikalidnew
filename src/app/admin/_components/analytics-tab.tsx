@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AdminKpiCard } from "@/components/admin/admin-kpi-card";
 import { FunnelSection } from "./funnel-section";
+import { GuestQuotaSection } from "./guest-quota-section";
 import {
   Eye, Users, TrendingUp, Clock, Search, Share2, Globe2,
   ArrowUpRight, ArrowDownRight, Monitor, Smartphone, Tablet,
@@ -413,6 +414,9 @@ export function AnalyticsTab() {
 
       {/* Conversion funnel — views → /auth → signups (auth tracking 2026-09-07+) */}
       <FunnelSection />
+
+      {/* Retention Loop v2 — anon browsing depth vs 5/day quota (owner 20 Okt) */}
+      <GuestQuotaSection />
 
       {/* Traffic by Section — which content drives visits (news vs stocks vs home) */}
       <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">

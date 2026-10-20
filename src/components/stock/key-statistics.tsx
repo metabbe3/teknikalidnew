@@ -57,7 +57,7 @@ export function KeyStatistics({ open, high, low, close, volume, week52High, week
           ["Range", dailyRange !== null ? `${dailyRange.toFixed(2)}%` : null],
           ["Volume", volume !== null ? formatVolume(volume) : null],
         ] as [string, string | null][]).map(([label, value]) => (
-          <div key={label} className="flex justify-between py-2 text-[13px] border-b border-border/30 last:border-0" role="listitem">
+          <div key={label} className="flex justify-between py-2 text-sm border-b border-border/30 last:border-0" role="listitem">
             <span className="text-text-secondary">{label}</span>
             <span className="font-mono tabular-nums font-medium">{value ?? "—"}</span>
           </div>
@@ -74,7 +74,7 @@ export function KeyStatistics({ open, high, low, close, volume, week52High, week
               ["SMA 50", sma50],
               ["SMA 200", sma200],
             ] as [string, number | null][]).map(([label, value]) => (
-              <div key={label} className="flex justify-between py-1.5 text-[13px]">
+              <div key={label} className="flex justify-between py-1.5 text-sm">
                 <span className="text-text-secondary">{label}</span>
                 <div className="flex items-center gap-2">
                   {value !== null && close !== null && (

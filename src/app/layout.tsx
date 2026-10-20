@@ -9,6 +9,7 @@ import { AuthProvider } from "@/components/providers/auth-provider";
 import { ConditionalSocketProvider as SocketProvider } from "@/components/providers/socket-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { SiteAnnouncementBanner } from "@/components/layout/site-announcement-banner";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
@@ -145,6 +146,7 @@ export default function RootLayout({
           <AuthProvider>
             <SocketProvider>
               <TooltipProvider>
+                <SiteAnnouncementBanner />
                 <main id="main-content" className="flex-1 flex flex-col">{children}</main>
               </TooltipProvider>
             </SocketProvider>

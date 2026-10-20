@@ -87,7 +87,7 @@ function StructuredPanelSummary({ summary, ticker, name }: { summary: string; ti
           <p className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary mb-2">Insight</p>
           <ul className="space-y-1.5">
             {parsed.insights.map((i, idx) => (
-              <li key={idx} className="text-[13px] text-text-secondary leading-relaxed flex gap-1.5">
+              <li key={idx} className="text-sm text-text-secondary leading-relaxed flex gap-1.5">
                 <span className="text-accent shrink-0">•</span>
                 <span>{i}</span>
               </li>
@@ -101,7 +101,7 @@ function StructuredPanelSummary({ summary, ticker, name }: { summary: string; ti
           <p className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary mb-2">Key Drivers</p>
           <ul className="space-y-1.5">
             {parsed.drivers.map((d, idx) => (
-              <li key={idx} className="text-[13px] text-text-secondary leading-relaxed flex gap-1.5">
+              <li key={idx} className="text-sm text-text-secondary leading-relaxed flex gap-1.5">
                 <span className="text-bullish shrink-0">▸</span>
                 <span>{d}</span>
               </li>

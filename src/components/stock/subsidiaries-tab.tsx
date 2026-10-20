@@ -24,7 +24,7 @@ export function SubsidiariesTab({ subsidiaries }: { subsidiaries: SubsidiaryData
   return (
     <div className="indicator-card depth-shadow overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full text-[13px]">
+        <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border/40">
               <th className="text-left text-[11px] font-semibold text-text-tertiary uppercase tracking-wider py-3 px-4">Nama</th>

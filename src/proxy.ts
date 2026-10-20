@@ -374,6 +374,9 @@ export async function proxy(request: NextRequest) {
     if (!isCanonical) {
       const url = request.nextUrl.clone();
       url.pathname = `/stocks/${ticker}.JK`;
+      // Strip query on canonical redirect — RSC prefetch tokens (_rsc=…) must not
+      // leak into the address bar when a client-side nav hits the 301 (owner 20 Okt).
+      url.search = "";
       return NextResponse.redirect(url, 301);
     }
   }

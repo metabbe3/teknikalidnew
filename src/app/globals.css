@@ -121,30 +121,30 @@ button:focus-visible,
 
 .depth-shadow {
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.03),
-    0 1px 3px rgba(0, 0, 0, 0.05),
-    0 6px 16px rgba(0, 0, 0, 0.04);
+    0 0 0 1px rgba(0, 0, 0, 0.02),
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
 .depth-shadow-hover {
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.04),
-    0 2px 4px rgba(0, 0, 0, 0.05),
-    0 8px 24px rgba(0, 0, 0, 0.07);
+    0 0 0 1px rgba(0, 0, 0, 0.03),
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 .depth-shadow-strong {
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.04),
-    0 2px 4px rgba(0, 0, 0, 0.06),
-    0 8px 24px rgba(0, 0, 0, 0.06),
-    0 16px 48px rgba(0, 0, 0, 0.04);
+    0 0 0 1px rgba(0, 0, 0, 0.03),
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 4px 14px rgba(0, 0, 0, 0.04),
+    0 8px 24px rgba(0, 0, 0, 0.03);
 }
 
 .depth-shadow-inner {
   box-shadow:
-    inset 0 0 0 1px rgba(0, 0, 0, 0.04),
-    inset 0 1px 4px rgba(0, 0, 0, 0.03);
+    inset 0 0 0 1px rgba(0, 0, 0, 0.03),
+    inset 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
 .press-scale {
@@ -460,9 +460,9 @@ button:focus-visible,
 .akademi-card:hover {
   transform: translateY(-2px);
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.04),
-    0 2px 4px rgba(0, 0, 0, 0.05),
-    0 8px 24px rgba(0, 0, 0, 0.07);
+    0 0 0 1px rgba(0, 0, 0, 0.03),
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 /* ─── Akademi Featured Card ─── */
@@ -666,15 +666,15 @@ button:focus-visible,
 .screener-preset-card:hover {
   transform: translateY(-2px);
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.04),
-    0 2px 4px rgba(0, 0, 0, 0.05),
-    0 8px 24px rgba(0, 0, 0, 0.07);
+    0 0 0 1px rgba(0, 0, 0, 0.03),
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.04);
 }
 .screener-preset-card[data-active="true"] {
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.04),
-    0 2px 4px rgba(0, 0, 0, 0.05),
-    0 8px 24px rgba(0, 0, 0, 0.07);
+    0 0 0 1px rgba(0, 0, 0, 0.03),
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
 /* ─── Screener range slider — 44px touch target, visual stays 6px track + 20px dot ─── */
@@ -808,9 +808,9 @@ button:focus-visible,
 }
 .indicator-card:hover {
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.04),
-    0 4px 12px rgba(0, 0, 0, 0.06),
-    0 12px 28px rgba(0, 0, 0, 0.04);
+    0 0 0 1px rgba(0, 0,  0, 0.03),
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 6px 16px rgba(0, 0, 0, 0.03);
   border-color: transparent;
 }
 .terminal-stat:hover {
@@ -1176,9 +1176,9 @@ button:focus-visible,
 }
 .trade-card:hover {
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.04),
-    0 4px 12px rgba(0, 0, 0, 0.06),
-    0 12px 28px rgba(0, 0, 0, 0.04);
+    0 0 0 1px rgba(0, 0,  0, 0.03),
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 6px 16px rgba(0, 0, 0, 0.03);
   border-color: transparent;
 }
 
@@ -1309,9 +1309,9 @@ button:focus-visible,
 }
 .holding-card:hover {
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.04),
-    0 4px 12px rgba(0, 0, 0, 0.06),
-    0 12px 28px rgba(0, 0, 0, 0.04);
+    0 0 0 1px rgba(0, 0,  0, 0.03),
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 6px 16px rgba(0, 0, 0, 0.03);
   border-color: transparent;
 }
 .holding-card-bullish {

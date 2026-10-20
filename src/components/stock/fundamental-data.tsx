@@ -31,7 +31,7 @@ export function FundamentalData({ data }: FundamentalDataProps) {
       <h2 className="text-sm font-semibold text-text-primary mb-3">Fundamentals</h2>
       <div className="space-y-0" role="list">
         {rows.map(([label, value]) => (
-          <div key={label} className="flex justify-between py-2 text-[13px] border-b border-border/30 last:border-0" role="listitem">
+          <div key={label} className="flex justify-between py-2 text-sm border-b border-border/30 last:border-0" role="listitem">
             <span className="text-text-secondary">{label}</span>
             <span className="font-mono tabular-nums font-medium">{value ?? "—"}</span>
           </div>

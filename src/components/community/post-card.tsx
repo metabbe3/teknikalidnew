@@ -344,7 +344,7 @@ export function PostCard({ post, repostedBy }: PostCardProps) {
               <div className="flex items-center gap-1.5 min-w-0">
                 <Link
                   href={`/profile/${post.author.username}`}
-                  className="text-[13px] font-bold text-gray-900 hover:underline truncate"
+                  className="text-sm font-bold text-gray-900 hover:underline truncate"
                 >
                   {post.author.name ?? post.author.username}
                 </Link>
@@ -381,7 +381,7 @@ export function PostCard({ post, repostedBy }: PostCardProps) {
                   Disematkan
                 </div>
               )}
-              <p className="text-[13px] text-gray-900 leading-relaxed whitespace-pre-wrap">
+              <p className="text-sm text-gray-900 leading-relaxed whitespace-pre-wrap">
                 {renderContent(post.content)}
               </p>
             </div>

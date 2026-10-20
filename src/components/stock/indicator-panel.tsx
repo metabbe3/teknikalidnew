@@ -63,7 +63,7 @@ function ValueRow({ label, value, className, children }: { label: string; value:
   return (
     <div className="flex items-center justify-between gap-1">
       <span className="text-[12px] text-text-secondary">{label}</span>
-      <span className={`text-[13px] font-mono tabular-nums font-medium flex items-center gap-1 ${className ?? ""}`}>
+      <span className={`text-sm font-mono tabular-nums font-medium flex items-center gap-1 ${className ?? ""}`}>
         {value}
         {children}
       </span>
@@ -136,6 +136,7 @@ export function IndicatorPanel({
   sma20, sma50, sma200, ema12, ema26, prevIndicator,
 }: IndicatorPanelProps) {
   const [plainMode, setPlainMode] = useState(false);
+  const [showAll, setShowAll] = useState(false);
 
   const prev = prevIndicator;
   const p = (key: keyof IndicatorValues) => prev?.[key] ?? null;
@@ -171,7 +172,7 @@ export function IndicatorPanel({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* RSI */}
+                {/* RSI */}
         <IndicatorCard label="RSI (14)" tip="RSI">
           {plainMode ? (
             <div className="space-y-2">
@@ -216,7 +217,7 @@ export function IndicatorPanel({
           )}
         </IndicatorCard>
 
-        {/* MACD */}
+                {/* MACD */}
         <IndicatorCard label="MACD" tip="MACD">
           {plainMode ? (
             <div className="space-y-2">
@@ -253,7 +254,52 @@ export function IndicatorPanel({
           )}
         </IndicatorCard>
 
-        {/* Bollinger Bands */}
+                {/* SMA */}
+        <IndicatorCard label="SMA (20/50/200)" tip="SMA">
+          {plainMode ? (
+            <div className="space-y-2">
+              <SentimentBadge sentiment={translateSMA(sma20, sma50, sma200, close).sentiment}>
+                {translateSMA(sma20, sma50, sma200, close).short}
+              </SentimentBadge>
+              <PlainText t={translateSMA(sma20, sma50, sma200, close)} />
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-1">
+                <span className="text-[12px] text-text-secondary">SMA 20</span>
+                <span className="flex items-center gap-1.5">
+                  <span className="text-sm font-mono tabular-nums font-medium">
+                    {sma20 !== null ? formatNumber(sma20) : "—"}
+                  </span>
+                  <DeltaArrow current={sma20} prev={p("sma20") as number | null} />
+                  <AboveBelowBadge price={close} level={sma20} />
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-1">
+                <span className="text-[12px] text-text-secondary">SMA 50</span>
+                <span className="flex items-center gap-1.5">
+                  <span className="text-sm font-mono tabular-nums font-medium">
+                    {sma50 !== null ? formatNumber(sma50) : "—"}
+                  </span>
+                  <DeltaArrow current={sma50} prev={p("sma50") as number | null} />
+                  <AboveBelowBadge price={close} level={sma50} />
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-1">
+                <span className="text-[12px] text-text-secondary">SMA 200</span>
+                <span className="flex items-center gap-1.5">
+                  <span className="text-sm font-mono tabular-nums font-medium">
+                    {sma200 !== null ? formatNumber(sma200) : "—"}
+                  </span>
+                  <DeltaArrow current={sma200} prev={p("sma200") as number | null} />
+                  <AboveBelowBadge price={close} level={sma200} />
+                </span>
+              </div>
+            </div>
+          )}
+        </IndicatorCard>
+
+                {/* Bollinger Bands */}
         <IndicatorCard label="Bollinger Bands" tip="Bollinger Bands">
           {plainMode ? (
             <div className="space-y-2">
@@ -292,8 +338,24 @@ export function IndicatorPanel({
             </>
           )}
         </IndicatorCard>
+      </div>
 
-        {/* Stochastic */}
+      <button
+        onClick={() => setShowAll(!showAll)}
+        aria-expanded={showAll}
+        className="mt-4 w-full min-h-11 flex items-center justify-center gap-1.5 rounded-lg border border-border bg-bg-card text-xs font-semibold text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
+      >
+        {showAll ? "Sembunyikan detail indikator" : "Tampilkan 7 indikator lainnya"}
+        <span className={`transition-transform duration-300 ${showAll ? "rotate-180" : ""}`} aria-hidden>&#9662;</span>
+      </button>
+
+      <div className={showAll ? "" : "hidden"} aria-label="Indikator lengkap">
+        <div className="mt-5">
+          <p className="text-[11px] font-semibold text-text-tertiary uppercase tracking-wider mb-2">
+            Momentum <span className="normal-case font-normal">&middot; kecepatan &amp; arah pergerakan</span>
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Stochastic */}
         <IndicatorCard label="Stochastic" tip="Stochastic">
           {plainMode ? (
             <div className="space-y-2">
@@ -321,94 +383,7 @@ export function IndicatorPanel({
           )}
         </IndicatorCard>
 
-        {/* SMA */}
-        <IndicatorCard label="SMA (20/50/200)" tip="SMA">
-          {plainMode ? (
-            <div className="space-y-2">
-              <SentimentBadge sentiment={translateSMA(sma20, sma50, sma200, close).sentiment}>
-                {translateSMA(sma20, sma50, sma200, close).short}
-              </SentimentBadge>
-              <PlainText t={translateSMA(sma20, sma50, sma200, close)} />
-            </div>
-          ) : (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between gap-1">
-                <span className="text-[12px] text-text-secondary">SMA 20</span>
-                <span className="flex items-center gap-1.5">
-                  <span className="text-[13px] font-mono tabular-nums font-medium">
-                    {sma20 !== null ? formatNumber(sma20) : "—"}
-                  </span>
-                  <DeltaArrow current={sma20} prev={p("sma20") as number | null} />
-                  <AboveBelowBadge price={close} level={sma20} />
-                </span>
-              </div>
-              <div className="flex items-center justify-between gap-1">
-                <span className="text-[12px] text-text-secondary">SMA 50</span>
-                <span className="flex items-center gap-1.5">
-                  <span className="text-[13px] font-mono tabular-nums font-medium">
-                    {sma50 !== null ? formatNumber(sma50) : "—"}
-                  </span>
-                  <DeltaArrow current={sma50} prev={p("sma50") as number | null} />
-                  <AboveBelowBadge price={close} level={sma50} />
-                </span>
-              </div>
-              <div className="flex items-center justify-between gap-1">
-                <span className="text-[12px] text-text-secondary">SMA 200</span>
-                <span className="flex items-center gap-1.5">
-                  <span className="text-[13px] font-mono tabular-nums font-medium">
-                    {sma200 !== null ? formatNumber(sma200) : "—"}
-                  </span>
-                  <DeltaArrow current={sma200} prev={p("sma200") as number | null} />
-                  <AboveBelowBadge price={close} level={sma200} />
-                </span>
-              </div>
-            </div>
-          )}
-        </IndicatorCard>
-
-        {/* EMA */}
-        <IndicatorCard label="EMA (12/26)" tip="EMA">
-          {plainMode ? (
-            <div className="space-y-2">
-              <SentimentBadge sentiment={translateEMA(ema12, ema26, close).sentiment}>
-                {translateEMA(ema12, ema26, close).short}
-              </SentimentBadge>
-              <PlainText t={translateEMA(ema12, ema26, close)} />
-            </div>
-          ) : (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between gap-1">
-                <span className="text-[12px] text-text-secondary">EMA 12</span>
-                <span className="flex items-center gap-1.5">
-                  <span className="text-[13px] font-mono tabular-nums font-medium">
-                    {ema12 !== null ? formatNumber(ema12) : "—"}
-                  </span>
-                  <DeltaArrow current={ema12} prev={p("ema12") as number | null} />
-                  <AboveBelowBadge price={close} level={ema12} />
-                </span>
-              </div>
-              <div className="flex items-center justify-between gap-1">
-                <span className="text-[12px] text-text-secondary">EMA 26</span>
-                <span className="flex items-center gap-1.5">
-                  <span className="text-[13px] font-mono tabular-nums font-medium">
-                    {ema26 !== null ? formatNumber(ema26) : "—"}
-                  </span>
-                  <DeltaArrow current={ema26} prev={p("ema26") as number | null} />
-                  <AboveBelowBadge price={close} level={ema26} />
-                </span>
-              </div>
-              {ema12 !== null && ema26 !== null && (
-                <div className="pt-1">
-                  <SignalBadge variant={ema12 > ema26 ? "bullish" : "bearish"}>
-                    {ema12 > ema26 ? "Bullish Cross" : "Bearish Cross"}
-                  </SignalBadge>
-                </div>
-              )}
-            </div>
-          )}
-        </IndicatorCard>
-
-        {/* OBV */}
+          {/* OBV */}
         <IndicatorCard label="OBV" tip="OBV">
           {plainMode ? (
             <div className="space-y-2">
@@ -437,7 +412,81 @@ export function IndicatorPanel({
           )}
         </IndicatorCard>
 
-        {/* Supertrend */}
+          {/* VWAP */}
+        <IndicatorCard label="VWAP" tip="VWAP">
+          {plainMode ? (
+            <div className="space-y-2">
+              <SentimentBadge sentiment={translateVWAP(close, vwap).sentiment}>
+                {translateVWAP(close, vwap).short}
+              </SentimentBadge>
+              <PlainText t={translateVWAP(close, vwap)} />
+            </div>
+          ) : (
+            <>
+              <div className="flex items-baseline justify-between gap-2">
+                <p className="text-lg font-bold tabular-nums">{vwap !== null ? formatNumber(vwap) : "—"}</p>
+                {vwap !== null && close !== null && (
+                  <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                    close > vwap ? "bg-bullish-bg text-bullish" : "bg-bearish-bg text-bearish"
+                  }`}>
+                    {close > vwap ? "Above" : "Below"}
+                  </span>
+                )}
+              </div>
+              <p className="text-[10px] text-text-tertiary">Volume Weighted Avg Price</p>
+            </>
+          )}
+        </IndicatorCard>
+          </div>
+        </div>
+        <div className="mt-5">
+          <p className="text-[11px] font-semibold text-text-tertiary uppercase tracking-wider mb-2">
+            Tren &amp; Kekuatan <span className="normal-case font-normal">&middot; arah tren dan seberapa kuat</span>
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* EMA */}
+        <IndicatorCard label="EMA (12/26)" tip="EMA">
+          {plainMode ? (
+            <div className="space-y-2">
+              <SentimentBadge sentiment={translateEMA(ema12, ema26, close).sentiment}>
+                {translateEMA(ema12, ema26, close).short}
+              </SentimentBadge>
+              <PlainText t={translateEMA(ema12, ema26, close)} />
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-1">
+                <span className="text-[12px] text-text-secondary">EMA 12</span>
+                <span className="flex items-center gap-1.5">
+                  <span className="text-sm font-mono tabular-nums font-medium">
+                    {ema12 !== null ? formatNumber(ema12) : "—"}
+                  </span>
+                  <DeltaArrow current={ema12} prev={p("ema12") as number | null} />
+                  <AboveBelowBadge price={close} level={ema12} />
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-1">
+                <span className="text-[12px] text-text-secondary">EMA 26</span>
+                <span className="flex items-center gap-1.5">
+                  <span className="text-sm font-mono tabular-nums font-medium">
+                    {ema26 !== null ? formatNumber(ema26) : "—"}
+                  </span>
+                  <DeltaArrow current={ema26} prev={p("ema26") as number | null} />
+                  <AboveBelowBadge price={close} level={ema26} />
+                </span>
+              </div>
+              {ema12 !== null && ema26 !== null && (
+                <div className="pt-1">
+                  <SignalBadge variant={ema12 > ema26 ? "bullish" : "bearish"}>
+                    {ema12 > ema26 ? "Bullish Cross" : "Bearish Cross"}
+                  </SignalBadge>
+                </div>
+              )}
+            </div>
+          )}
+        </IndicatorCard>
+
+          {/* Supertrend */}
         <IndicatorCard label="Supertrend" tip="Supertrend">
           {plainMode ? (
             <div className="space-y-2">
@@ -466,7 +515,7 @@ export function IndicatorPanel({
           )}
         </IndicatorCard>
 
-        {/* ADX */}
+          {/* ADX */}
         <IndicatorCard label="ADX (14)" tip="ADX">
           {plainMode ? (
             <div className="space-y-2">
@@ -494,34 +543,14 @@ export function IndicatorPanel({
             </>
           )}
         </IndicatorCard>
-
-        {/* VWAP */}
-        <IndicatorCard label="VWAP" tip="VWAP">
-          {plainMode ? (
-            <div className="space-y-2">
-              <SentimentBadge sentiment={translateVWAP(close, vwap).sentiment}>
-                {translateVWAP(close, vwap).short}
-              </SentimentBadge>
-              <PlainText t={translateVWAP(close, vwap)} />
-            </div>
-          ) : (
-            <>
-              <div className="flex items-baseline justify-between gap-2">
-                <p className="text-lg font-bold tabular-nums">{vwap !== null ? formatNumber(vwap) : "—"}</p>
-                {vwap !== null && close !== null && (
-                  <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
-                    close > vwap ? "bg-bullish-bg text-bullish" : "bg-bearish-bg text-bearish"
-                  }`}>
-                    {close > vwap ? "Above" : "Below"}
-                  </span>
-                )}
-              </div>
-              <p className="text-[10px] text-text-tertiary">Volume Weighted Avg Price</p>
-            </>
-          )}
-        </IndicatorCard>
-
-        {/* ATR */}
+          </div>
+        </div>
+        <div className="mt-5">
+          <p className="text-[11px] font-semibold text-text-tertiary uppercase tracking-wider mb-2">
+            Volatilitas <span className="normal-case font-normal">&middot; seberapa liar harga bergerak</span>
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* ATR */}
         <IndicatorCard label="ATR (14)" tip="ATR">
           {plainMode ? (
             <div className="space-y-2">
@@ -545,6 +574,8 @@ export function IndicatorPanel({
             </>
           )}
         </IndicatorCard>
+          </div>
+        </div>
       </div>
 
       {/* Cross Signals */}
