@@ -675,64 +675,13 @@ export default async function StockDetailPage({
               </div>
             )}
 
-            {/* Indicator strip — authed: penuh; anon: teaser angka real (value first) */}
-            {indicators && close !== null && !fullAccess && (
-              <div className="border-t border-border mt-5 pt-4">
-                <div className="flex items-center gap-2.5 flex-wrap text-sm">
-                  <span className={`font-mono font-semibold inline-flex items-center gap-1 ${rsiColor(indicators.rsi14) || "text-text-secondary"}`}>
-                    RSI {indicators.rsi14?.toFixed(0) ?? "—"}
-                    <IndicatorTooltip indicator="RSI" />
-                  </span>
-                  <Dot />
-                  <span className="font-mono font-semibold text-text-secondary">
-                    MACD {indicators.macdHist !== null && indicators.macdHist !== undefined ? (indicators.macdHist > 0 ? "↑" : "↓") : "—"}
-                  </span>
-                  <Dot />
-                  <span className="font-mono font-semibold text-text-secondary">
-                    ADX {indicators.adx?.toFixed(0) ?? "—"}
-                  </span>
-                  <Dot />
-                  <span className="font-mono font-semibold text-text-secondary">
-                    Sinyal: {indicators.signalLabel ?? "—"}
-                  </span>
-                  <Link href="/auth/register" className="text-[11px] text-primary hover:underline ml-1">
-                    narasi lengkap →
-                  </Link>
-                </div>
-              </div>
-            )}
+            {/* Indicator strip anon DIHAPUS (20 Okt) — redundan: Skor Sinyal hero SSR
+                (sinyal+gauge) + 4 kartu indikator hero di bawah + guest meter CTA register */}
             {fullAccess && indicators && close !== null && (
               <div className="border-t border-border mt-5 pt-4">
-                <div className="flex items-center justify-between gap-4 flex-wrap">
-                  <div className="flex items-center gap-2.5 flex-wrap text-sm">
-                    <span className={`font-mono font-semibold inline-flex items-center gap-1 ${rsiColor(indicators.rsi14) || "text-text-secondary"}`}>
-                      RSI {indicators.rsi14?.toFixed(0) ?? "—"}
-                      <IndicatorTooltip indicator="RSI" />
-                    </span>
-                    <Dot />
-                    {indicators.macdHist !== null && (
-                      <>
-                        <span className={`font-mono font-semibold inline-flex items-center gap-1 ${indicators.macdHist >= 0 ? "text-bullish" : "text-bearish"}`}>
-                          MACD {indicators.macdHist >= 0 ? "▲" : "▼"}
-                          <IndicatorTooltip indicator="MACD" />
-                        </span>
-                        <Dot />
-                      </>
-                    )}
-                    {indicators.atr !== null && (
-                      <>
-                        <span className="font-mono text-text-secondary inline-flex items-center gap-1">Vol {(indicators.atr / close * 100).toFixed(1)}%<IndicatorTooltip indicator="Volatilitas" /></span>
-                        <Dot />
-                      </>
-                    )}
-                    {indicators.adx !== null && (
-                      <span className={`font-mono font-semibold inline-flex items-center gap-1 ${indicators.adx > 25 ? "text-accent" : "text-text-tertiary"}`}>
-                        {indicators.adx > 25 ? "Tren Kuat" : "Tren Lemah"}
-                        <IndicatorTooltip indicator="ADX" />
-                      </span>
-                    )}
-                  </div>
-
+                {/* Chips RSI/MACD/Vol/Tren DIHAPUS (20 Okt) — duplikat skor hero + kartu indikator.
+                    Sisa: cross-badge, freshness, presence (fungsional, bukan duplikasi). */}
+                <div className="flex items-center justify-end gap-2 flex-wrap">
                   <div className="flex items-center gap-2 flex-wrap justify-end">
                     {smaCrossText && (
                       <CrossBadge text={smaCrossText} isBullish={indicators?.smaCrossSignal === "golden_cross"} />
