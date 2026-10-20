@@ -35,7 +35,9 @@ const ANON_RANGES: DateRange[] = ["1D", "5D", "1mo", "3mo"];
 export function ChartSection({ ticker }: ChartSectionProps) {
   const { status } = useSession();
   const isAuthed = status === "authenticated";
-  const [range, setRange] = useState<DateRange>("6mo");
+  // Default 1D (owner directive, NBER: 70% user gak pernah ganti default lookback —
+  // match perilaku crowd: buka halaman = lihat pergerakan hari ini dulu)
+  const [range, setRange] = useState<DateRange>("1D");
   const [chartType, setChartType] = useState<"candlestick" | "line" | "area">("candlestick");
   const [logScale, setLogScale] = useState(false);
   const [showSma20, setShowSma20] = useState(false);
