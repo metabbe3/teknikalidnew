@@ -136,6 +136,7 @@ export function IndicatorPanel({
   sma20, sma50, sma200, ema12, ema26, prevIndicator,
 }: IndicatorPanelProps) {
   const [plainMode, setPlainMode] = useState(false);
+  const [showAll, setShowAll] = useState(false);
 
   const prev = prevIndicator;
   const p = (key: keyof IndicatorValues) => prev?.[key] ?? null;
@@ -171,7 +172,7 @@ export function IndicatorPanel({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* RSI */}
+                {/* RSI */}
         <IndicatorCard label="RSI (14)" tip="RSI">
           {plainMode ? (
             <div className="space-y-2">
@@ -216,7 +217,7 @@ export function IndicatorPanel({
           )}
         </IndicatorCard>
 
-        {/* MACD */}
+                {/* MACD */}
         <IndicatorCard label="MACD" tip="MACD">
           {plainMode ? (
             <div className="space-y-2">
@@ -253,75 +254,7 @@ export function IndicatorPanel({
           )}
         </IndicatorCard>
 
-        {/* Bollinger Bands */}
-        <IndicatorCard label="Bollinger Bands" tip="Bollinger Bands">
-          {plainMode ? (
-            <div className="space-y-2">
-              <SentimentBadge sentiment={translateBB(bbPosition).sentiment}>
-                {translateBB(bbPosition).short}
-              </SentimentBadge>
-              <PlainText t={translateBB(bbPosition)} />
-            </div>
-          ) : (
-            <>
-              <div className="space-y-1.5">
-                <ValueRow label="Upper" value={bbUpper !== null ? formatNumber(bbUpper) : "—"} />
-                <ValueRow label="Middle" value={bbMiddle !== null ? formatNumber(bbMiddle) : "—"} />
-                <ValueRow label="Lower" value={bbLower !== null ? formatNumber(bbLower) : "—"} />
-              </div>
-              {bbPosition !== null && (
-                <div className="space-y-1.5">
-                  <div
-                    className="w-full h-2 bg-bg-hover rounded-full overflow-hidden relative"
-                    role="meter"
-                    aria-valuenow={bbPosition}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-label="Price position within Bollinger Bands"
-                  >
-                    <div
-                      className="absolute top-0 h-full w-2 bg-accent rounded-full transition-all duration-300"
-                      style={{ left: `${Math.min(Math.max(bbPosition, 2), 92)}%` }}
-                    />
-                  </div>
-                  <p className="text-[10px] text-text-tertiary text-center tabular-nums">
-                    {bbPosition.toFixed(0)}% of band
-                  </p>
-                </div>
-              )}
-            </>
-          )}
-        </IndicatorCard>
-
-        {/* Stochastic */}
-        <IndicatorCard label="Stochastic" tip="Stochastic">
-          {plainMode ? (
-            <div className="space-y-2">
-              <SentimentBadge sentiment={translateStochastic(stochK, stochD).sentiment}>
-                {translateStochastic(stochK, stochD).short}
-              </SentimentBadge>
-              <PlainText t={translateStochastic(stochK, stochD)} />
-            </div>
-          ) : (
-            <>
-              <div className="space-y-1.5">
-                <ValueRow label="%K" value={stochK !== null ? stochK.toFixed(1) : "—"}>
-                  <DeltaArrow current={stochK} prev={p("stochK") as number | null} invert />
-                </ValueRow>
-                <ValueRow label="%D" value={stochD !== null ? stochD.toFixed(1) : "—"} />
-              </div>
-              {stochK !== null && stochD !== null && (
-                <SignalBadge
-                  variant={stochK > 80 ? "bearish" : stochK < 20 ? "bullish" : stochK > stochD ? "bullish" : "bearish"}
-                >
-                  {stochK > 80 ? "Overbought" : stochK < 20 ? "Oversold" : stochK > stochD ? "Bullish Cross" : "Bearish Cross"}
-                </SignalBadge>
-              )}
-            </>
-          )}
-        </IndicatorCard>
-
-        {/* SMA */}
+                {/* SMA */}
         <IndicatorCard label="SMA (20/50/200)" tip="SMA">
           {plainMode ? (
             <div className="space-y-2">
@@ -366,7 +299,152 @@ export function IndicatorPanel({
           )}
         </IndicatorCard>
 
-        {/* EMA */}
+                {/* Bollinger Bands */}
+        <IndicatorCard label="Bollinger Bands" tip="Bollinger Bands">
+          {plainMode ? (
+            <div className="space-y-2">
+              <SentimentBadge sentiment={translateBB(bbPosition).sentiment}>
+                {translateBB(bbPosition).short}
+              </SentimentBadge>
+              <PlainText t={translateBB(bbPosition)} />
+            </div>
+          ) : (
+            <>
+              <div className="space-y-1.5">
+                <ValueRow label="Upper" value={bbUpper !== null ? formatNumber(bbUpper) : "—"} />
+                <ValueRow label="Middle" value={bbMiddle !== null ? formatNumber(bbMiddle) : "—"} />
+                <ValueRow label="Lower" value={bbLower !== null ? formatNumber(bbLower) : "—"} />
+              </div>
+              {bbPosition !== null && (
+                <div className="space-y-1.5">
+                  <div
+                    className="w-full h-2 bg-bg-hover rounded-full overflow-hidden relative"
+                    role="meter"
+                    aria-valuenow={bbPosition}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label="Price position within Bollinger Bands"
+                  >
+                    <div
+                      className="absolute top-0 h-full w-2 bg-accent rounded-full transition-all duration-300"
+                      style={{ left: `${Math.min(Math.max(bbPosition, 2), 92)}%` }}
+                    />
+                  </div>
+                  <p className="text-[10px] text-text-tertiary text-center tabular-nums">
+                    {bbPosition.toFixed(0)}% of band
+                  </p>
+                </div>
+              )}
+            </>
+          )}
+        </IndicatorCard>
+      </div>
+
+      <button
+        onClick={() => setShowAll(!showAll)}
+        aria-expanded={showAll}
+        className="mt-4 w-full min-h-11 flex items-center justify-center gap-1.5 rounded-lg border border-border bg-bg-card text-xs font-semibold text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
+      >
+        {showAll ? "Sembunyikan detail indikator" : "Tampilkan 7 indikator lainnya"}
+        <span className={`transition-transform duration-300 ${showAll ? "rotate-180" : ""}`} aria-hidden>&#9662;</span>
+      </button>
+
+      <div className={showAll ? "" : "hidden"} aria-label="Indikator lengkap">
+        <div className="mt-5">
+          <p className="text-[11px] font-semibold text-text-tertiary uppercase tracking-wider mb-2">
+            Momentum <span className="normal-case font-normal">&middot; kecepatan &amp; arah pergerakan</span>
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Stochastic */}
+        <IndicatorCard label="Stochastic" tip="Stochastic">
+          {plainMode ? (
+            <div className="space-y-2">
+              <SentimentBadge sentiment={translateStochastic(stochK, stochD).sentiment}>
+                {translateStochastic(stochK, stochD).short}
+              </SentimentBadge>
+              <PlainText t={translateStochastic(stochK, stochD)} />
+            </div>
+          ) : (
+            <>
+              <div className="space-y-1.5">
+                <ValueRow label="%K" value={stochK !== null ? stochK.toFixed(1) : "—"}>
+                  <DeltaArrow current={stochK} prev={p("stochK") as number | null} invert />
+                </ValueRow>
+                <ValueRow label="%D" value={stochD !== null ? stochD.toFixed(1) : "—"} />
+              </div>
+              {stochK !== null && stochD !== null && (
+                <SignalBadge
+                  variant={stochK > 80 ? "bearish" : stochK < 20 ? "bullish" : stochK > stochD ? "bullish" : "bearish"}
+                >
+                  {stochK > 80 ? "Overbought" : stochK < 20 ? "Oversold" : stochK > stochD ? "Bullish Cross" : "Bearish Cross"}
+                </SignalBadge>
+              )}
+            </>
+          )}
+        </IndicatorCard>
+
+          {/* OBV */}
+        <IndicatorCard label="OBV" tip="OBV">
+          {plainMode ? (
+            <div className="space-y-2">
+              <SentimentBadge sentiment={translateOBV(obvTrend).sentiment}>
+                {translateOBV(obvTrend).short}
+              </SentimentBadge>
+              <PlainText t={translateOBV(obvTrend)} />
+            </div>
+          ) : (
+            <>
+              <div className="flex items-baseline justify-between gap-2">
+                <p className="text-lg font-bold tabular-nums">
+                  {obv !== null ? (obv / 1e6).toFixed(1) + "M" : "—"}
+                  <DeltaArrow current={obv} prev={p("obv") as number | null} />
+                </p>
+                {obvTrend !== null && (
+                  <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                    obvTrend === "Accumulation" ? "bg-bullish-bg text-bullish" : "bg-bearish-bg text-bearish"
+                  }`}>
+                    {obvTrend === "Accumulation" ? "Accumulation" : "Distribution"}
+                  </span>
+                )}
+              </div>
+              <p className="text-[10px] text-text-tertiary">On-Balance Volume</p>
+            </>
+          )}
+        </IndicatorCard>
+
+          {/* VWAP */}
+        <IndicatorCard label="VWAP" tip="VWAP">
+          {plainMode ? (
+            <div className="space-y-2">
+              <SentimentBadge sentiment={translateVWAP(close, vwap).sentiment}>
+                {translateVWAP(close, vwap).short}
+              </SentimentBadge>
+              <PlainText t={translateVWAP(close, vwap)} />
+            </div>
+          ) : (
+            <>
+              <div className="flex items-baseline justify-between gap-2">
+                <p className="text-lg font-bold tabular-nums">{vwap !== null ? formatNumber(vwap) : "—"}</p>
+                {vwap !== null && close !== null && (
+                  <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                    close > vwap ? "bg-bullish-bg text-bullish" : "bg-bearish-bg text-bearish"
+                  }`}>
+                    {close > vwap ? "Above" : "Below"}
+                  </span>
+                )}
+              </div>
+              <p className="text-[10px] text-text-tertiary">Volume Weighted Avg Price</p>
+            </>
+          )}
+        </IndicatorCard>
+          </div>
+        </div>
+        <div className="mt-5">
+          <p className="text-[11px] font-semibold text-text-tertiary uppercase tracking-wider mb-2">
+            Tren &amp; Kekuatan <span className="normal-case font-normal">&middot; arah tren dan seberapa kuat</span>
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* EMA */}
         <IndicatorCard label="EMA (12/26)" tip="EMA">
           {plainMode ? (
             <div className="space-y-2">
@@ -408,36 +486,7 @@ export function IndicatorPanel({
           )}
         </IndicatorCard>
 
-        {/* OBV */}
-        <IndicatorCard label="OBV" tip="OBV">
-          {plainMode ? (
-            <div className="space-y-2">
-              <SentimentBadge sentiment={translateOBV(obvTrend).sentiment}>
-                {translateOBV(obvTrend).short}
-              </SentimentBadge>
-              <PlainText t={translateOBV(obvTrend)} />
-            </div>
-          ) : (
-            <>
-              <div className="flex items-baseline justify-between gap-2">
-                <p className="text-lg font-bold tabular-nums">
-                  {obv !== null ? (obv / 1e6).toFixed(1) + "M" : "—"}
-                  <DeltaArrow current={obv} prev={p("obv") as number | null} />
-                </p>
-                {obvTrend !== null && (
-                  <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
-                    obvTrend === "Accumulation" ? "bg-bullish-bg text-bullish" : "bg-bearish-bg text-bearish"
-                  }`}>
-                    {obvTrend === "Accumulation" ? "Accumulation" : "Distribution"}
-                  </span>
-                )}
-              </div>
-              <p className="text-[10px] text-text-tertiary">On-Balance Volume</p>
-            </>
-          )}
-        </IndicatorCard>
-
-        {/* Supertrend */}
+          {/* Supertrend */}
         <IndicatorCard label="Supertrend" tip="Supertrend">
           {plainMode ? (
             <div className="space-y-2">
@@ -466,7 +515,7 @@ export function IndicatorPanel({
           )}
         </IndicatorCard>
 
-        {/* ADX */}
+          {/* ADX */}
         <IndicatorCard label="ADX (14)" tip="ADX">
           {plainMode ? (
             <div className="space-y-2">
@@ -494,34 +543,14 @@ export function IndicatorPanel({
             </>
           )}
         </IndicatorCard>
-
-        {/* VWAP */}
-        <IndicatorCard label="VWAP" tip="VWAP">
-          {plainMode ? (
-            <div className="space-y-2">
-              <SentimentBadge sentiment={translateVWAP(close, vwap).sentiment}>
-                {translateVWAP(close, vwap).short}
-              </SentimentBadge>
-              <PlainText t={translateVWAP(close, vwap)} />
-            </div>
-          ) : (
-            <>
-              <div className="flex items-baseline justify-between gap-2">
-                <p className="text-lg font-bold tabular-nums">{vwap !== null ? formatNumber(vwap) : "—"}</p>
-                {vwap !== null && close !== null && (
-                  <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
-                    close > vwap ? "bg-bullish-bg text-bullish" : "bg-bearish-bg text-bearish"
-                  }`}>
-                    {close > vwap ? "Above" : "Below"}
-                  </span>
-                )}
-              </div>
-              <p className="text-[10px] text-text-tertiary">Volume Weighted Avg Price</p>
-            </>
-          )}
-        </IndicatorCard>
-
-        {/* ATR */}
+          </div>
+        </div>
+        <div className="mt-5">
+          <p className="text-[11px] font-semibold text-text-tertiary uppercase tracking-wider mb-2">
+            Volatilitas <span className="normal-case font-normal">&middot; seberapa liar harga bergerak</span>
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* ATR */}
         <IndicatorCard label="ATR (14)" tip="ATR">
           {plainMode ? (
             <div className="space-y-2">
@@ -545,6 +574,8 @@ export function IndicatorPanel({
             </>
           )}
         </IndicatorCard>
+          </div>
+        </div>
       </div>
 
       {/* Cross Signals */}
