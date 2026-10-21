@@ -56,6 +56,7 @@ interface AnalyticsData {
   browsers: Array<{ category: string; count: number; percentage: number }>;
   topReferrers: Array<{ referrer: string; source: string; count: number }>;
   geo: Array<{ label: string; count: number; percentage: number }>;
+  crawlerSeo?: { views: number; ips: number; humanGeoViews: number };
   apiTraffic: {
     windowMinutes: number;
     topConsumers: Array<{
@@ -947,6 +948,11 @@ export function AnalyticsTab() {
             <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
               <MapPin className="h-4 w-4 text-purple-500" />
               Top Locations
+              {data?.crawlerSeo && data.crawlerSeo.views > 0 && (
+                <span className="ml-auto text-[10px] font-normal text-gray-400">
+                  🕷 crawler/SEO: {data.crawlerSeo.views} views · {data.crawlerSeo.ips} IP · manusia: {data.crawlerSeo.humanGeoViews}
+                </span>
+              )}
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-4">

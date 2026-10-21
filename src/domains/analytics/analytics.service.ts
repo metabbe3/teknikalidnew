@@ -136,6 +136,8 @@ export interface ComprehensiveAnalytics {
   browsers: DeviceBreakdown[];
   topReferrers: { referrer: string; source: TrafficSource; count: number }[];
   geo: GeoEntry[];
+  /** Views dari datacenter/scanner/crawler — dipisah dari human geo (owner 21 Okt). */
+  crawlerSeo: { views: number; ips: number; humanGeoViews: number };
   apiTraffic: ApiTrafficSummary;
   realtime: {
     ip: string | null;
@@ -418,6 +420,41 @@ interface AnalyticsRow {
  * human double-loading 3+ distinct pages in <2s each is implausible. Upgrade
  * path: keep a short per-IP request log + rate limit at write time.
  */
+/**
+ * Datacenter/scanner IPv4+IPv6 prefixes seen probing teknikal.id (Cloudflare
+ * edge passes them through). These are crawlers/SEO-rank-trackers, not humans:
+ * GeoIP fails on them → they surface as "Unknown" in the location panel.
+ * IPv6 matched on leftmost /48-ish prefix.
+ */
+const DATACENTER_PREFIXES: Array<{ p: string; label: string }> = [
+  { p: "195.54.", label: "scanner" },       // EU probe network
+  { p: "38.72.", label: "hosting" },        // US hosting (Cogent)
+  { p: "103.176.98.", label: "hosting" },   // APNIC hosting
+  { p: "103.85.62.", label: "hosting" },    // APNIC hosting
+  { p: "157.66.", label: "hosting" },       // BR hosting
+  { p: "202.137.11.", label: "hosting" },   // ID hosting
+  { p: "64.62.", label: "hosting" },        // Hurricane Electric
+  { p: "159.223.", label: "hosting" },      // DigitalOcean
+  { p: "167.71.", label: "hosting" },       // DigitalOcean
+  { p: "170.64.", label: "hosting" },       // DigitalOcean
+  { p: "45.79.", label: "hosting" },        // Linode
+  { p: "172.233.", label: "hosting" },      // Linode
+];
+
+/** Honest AI/SEO crawler UAs (they don't always spoof). */
+const CRAWLER_UA_RE =
+  /bot|crawler|spider|slurp|bingpreview|facebookexternalhit|mediapartners|python-requests|curl\/|wget|headlesschrome|phantomjs|gptbot|claudebot|perplexitybot|bytespider|baiduspider|yandex|ahrefs|semrush|mj12bot|dotbot|petalbot|dataforseo|serpstat| screaming frog/i;
+
+export function classifyCrawler(ip: string | null, ua: string | null): string | null {
+  if (ua && CRAWLER_UA_RE.test(ua)) return "seo-bot";
+  if (ip) {
+    for (const { p, label } of DATACENTER_PREFIXES) {
+      if (ip.startsWith(p)) return label === "scanner" ? "scanner" : "seo-bot";
+    }
+  }
+  return null;
+}
+
 function detectSuspectedBotIps(rows: AnalyticsRow[]): Set<string> {
   const byIp = new Map<string, Map<string, Date[]>>();
   for (const r of rows) {
@@ -881,8 +918,24 @@ export const analyticsService = {
       }
     }
 
+    // Crawler/SEO separation (owner 21 Okt): datacenter/scanner IPs & honest crawler
+    // UAs get their own bucket instead of polluting "Unknown"/city stats.
+    const ipUaMap = new Map<string, string>();
+    for (const v of pageViews) {
+      if (v.ip && v.userAgent && !ipUaMap.has(v.ip)) ipUaMap.set(v.ip, v.userAgent);
+    }
+    let crawlerViews = 0;
+    const crawlerIps = new Set<string>();
     const geoCounts: Record<string, number> = {};
     for (const row of geoIPs) {
+      const crawlerKind = classifyCrawler(row.ip, ipUaMap.get(row.ip) ?? null);
+      if (crawlerKind) {
+        crawlerViews += Number(row.cnt);
+        crawlerIps.add(row.ip);
+        geoCounts[`🕷 Crawler/SEO (${crawlerKind})`] =
+          (geoCounts[`🕷 Crawler/SEO (${crawlerKind})`] || 0) + Number(row.cnt);
+        continue;
+      }
       const loc = locations[row.ip];
       const label = loc ? `${loc.city}, ${loc.country}` : "Unknown";
       geoCounts[label] = (geoCounts[label] || 0) + Number(row.cnt);
@@ -950,6 +1003,11 @@ export const analyticsService = {
       browsers,
       topReferrers,
       geo,
+      crawlerSeo: {
+        views: crawlerViews,
+        ips: crawlerIps.size,
+        humanGeoViews: totalGeo - crawlerViews,
+      },
       apiTraffic,
       realtime: realtimeViews
         .filter((v) => !isExcluded(v.ip))
