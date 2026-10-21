@@ -592,3 +592,11 @@
 - **QA**: self-check (script-only, non-trivial → QA Verifier sampling slot berikutnya); silent-healthy pattern sesuai automation-watchdogs skill
 - **impact_check_due**: 2026-10-24 — cek watchdog.log murni OK-lines (tidak ada false alert) + job last_status ok
 - **KPI**: TRUST (detection 19-Okt gap → ≤5 mnt)
+
+## 2026-10-21 — ops-2026-10-21-01 (UX Builder 19:15, build-only in_train T-1021-N)
+- **task-id**: ops-2026-10-21-01 · **type**: ops-fix display (frontend-only) · **PRD**: idea-2026-10-21-1 (CEO APPROVE 21 Okt)
+- **commit**: 4c5b4d8 (1 file, market-breath-strip.tsx) | rollback anchor: git revert 4c5b4d8
+- **fix**: IHSG MarketBreathStrip homepage `Rp5.328` → poin `5.328,36` (toLocaleString id-ID 2-des) — konsisten header.tsx/personalized-greeting//pasar/live-price isIndex yang sudah benar. Saham individual TETAP Rp.
+- **verify bukti**: tsc exit 0 · build hijau BUILD_ID cJ6QMp0P7tXtUAmaWoRga 19:06 · staging :3100 home ^JKSE=TANPA Rp + BBCA.JK=TETAP Rp5.275 + / /stocks /pasar 200 · prod /stocks tak render JKSE strip (parity by-design)
+- **deploy**: build-only (window sore 18:30 slot FE) → naik kereta T-1021-N malam; verify prod pasca: curl home grep data-live-price="^JKSE" tanpa 'Rp'
+- **KPI**: TRUST (angka benar di permukaan paling dilihat) · SEC GATE: N/A (frontend-only, tak sentuh auth/db/API)
