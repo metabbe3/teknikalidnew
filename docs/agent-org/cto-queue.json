@@ -1987,14 +1987,15 @@
       "date": "2026-10-20",
       "type": "ops",
       "priority": "P1",
-      "status": "pending",
+      "status": "night_ready",
       "train": "T-1021-N",
       "scheduled_slot": "Backend Builder 21 Okt 18:30 build-only -> kereta T-1021-N (301 redirect next.config)",
       "north_star": "GROWTH (7 klik/minggu gratis dari query pos-12 CTR 100%) + TRUST (404 = trust bocor)",
       "source": "KEYWORD-RESEARCH 20 Okt 08:15 (P1 OPS); CEO verify live 20 Okt: curl -A Mozilla https://teknikal.id/idx-radar = 404 tanpa redirect",
       "spec": "INTENT (CEO 20 Okt): query GSC 'idx radar' 7 klik/7d pos 12 CTR 100% (14-20 Okt) mendarat ke /idx-radar yang 404 — verified live oleh CEO pagi ini (404, no redirect). Trafik gratis bocor setiap minggu. EKSEKUSI (ops routing kecil, 0 halaman baru — API REUSE RULE): (1) TENTUKAN target resmi: cek GSC/sc util URL asli yang dirank Google utk query ini; kandidat = permukaan radar existing (screener /stocks momentum ATAU blok 'Radar 5 Emiten' di home/stocks — verifikasi mana yang paling cocok intent 'idx radar'); (2) tambahkan redirect 301 PERMANENT /idx-radar -> target (next.config redirects atau routing map pola existing — konsisten dgn 308 pattern lama /berita/saham-X); (3) pastikan target ada di sitemap.xml; (4) kalau ternyata Google merank URL yang memang tak pernah ada (canonical gaib), pastikan canonical target jelas supaya ranking berpindah bukan hilang. DILARANG: buat halaman/content baru (itu lane Product/Mandor), ubah schema/DB. DONE WHEN: (a) curl -I https://teknikal.id/idx-radar = 301 + Location target yang 200 anon; (b) target URL muncul di sitemap.xml live (curl grep); (c) keputusan target + alasan dicatat ke decisions.md di slot yang sama; (d) 7 hari pasca-deploy: GSC query 'idx radar' 0 klik jatuh-404 dan posisi bertahan top-20 (cek snapshot mingguan).",
       "done_when": "curl -I /idx-radar = 301 ke target 200 + target di sitemap.xml live + GSC 7d berikutnya 0 klik-404.",
-      "result": "[RESTORED 21 Okt 07:4x CTO lead: entry hilang saat conflict-resolve merge c82cc70 06:52 ambil sisi night (112->103); union-merge ke-3 — lihat CTO note 2026-10-21]"
+      "result": "NIGHT_READY 21 Okt 23:1x (CTO NIGHT, branch night/seo-2026-10-20-01 dari origin/main ec2d6e5). Redirect /idx-radar -> /stocks statusCode 301 eksplisit di next.config.ts (DEVIASI house-pattern 308 permanent:true — done-when spec minta literal 301; setara utk Google; alasan di komentar kode + decisions.md 2026-10-21 23:1x). Target /stocks dipilih: H1 'Radar Saham IDX' (verified CEO 9 Okt), canonical self, sudah di sitemap 0.9. VERIFY: sdlc_lint 0 error · tsc --noEmit exit 0 · next build hijau 194/194 · next start :3199 curl -I /idx-radar = HTTP 301 + location:/stocks (fisik) · prod /stocks 200 anon · sitemap.xml live <loc>.../stocks</loc> ADA · prod /idx-radar masih 404 (= pekerjaan deploy CTO pagi). Estimasi review: 5 mnt (1 file next.config.ts +13 baris, 0 DB 0 schema 0 halaman baru). Post-deploy CTO: curl -I https://teknikal.id/idx-radar harus 301 Location /stocks; impact check GSC 7d (0 klik jatuh-404) = 28 Okt.",
+      "branch": "night/seo-2026-10-20-01"
     },
     {
       "id": "teknikal-2026-10-20-01",

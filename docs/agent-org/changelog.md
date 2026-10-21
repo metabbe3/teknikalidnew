@@ -601,3 +601,11 @@
 - **verify bukti**: tsc exit 0 · build hijau BUILD_ID cJ6QMp0P7tXtUAmaWoRga 19:06 · staging :3100 home ^JKSE=TANPA Rp + BBCA.JK=TETAP Rp5.275 + / /stocks /pasar 200 · prod /stocks tak render JKSE strip (parity by-design)
 - **deploy**: build-only (window sore 18:30 slot FE) → naik kereta T-1021-N malam; verify prod pasca: curl home grep data-live-price="^JKSE" tanpa 'Rp'
 - **KPI**: TRUST (angka benar di permukaan paling dilihat) · SEC GATE: N/A (frontend-only, tak sentuh auth/db/API)
+
+## 2026-10-21 23:1x — seo-2026-10-20-01 (CTO NIGHT, build-only in_train T-1021-N)
+- **task-id**: seo-2026-10-20-01 · **type**: ops routing kecil (SEO, 0 halaman baru) · **PRD**: keyword-research CEO 20 Okt
+- **commit**: night/seo-2026-10-20-01 (1 file: next.config.ts +13 baris) | rollback: git revert
+- **fix**: /idx-radar 404 -> 301 ke /stocks (query GSC 'idx radar' pos-12 CTR 100%, 7 klik/7d bocor tiap minggu). Target decision + alasan di decisions.md.
+- **verify bukti**: LINT 0 · tsc 0 · build hijau 194/194 · curl -I localhost/idx-radar = 301 location:/stocks · prod /stocks 200 + sitemap live memuat /stocks
+- **deploy**: build-only malam (hard-gate 21:45) -> naik kereta T-1021-N; CTO pagi merge+deploy+verify prod 301
+- **KPI**: GROWTH (7 klik/minggu gratis) + TRUST (404 brand-query = trust bocor) · SEC GATE: N/A (routing only)

@@ -63,6 +63,17 @@ const nextConfig: NextConfig = {
         destination: "/stocks",
         permanent: true,
       },
+      // "idx radar" brand query (GSC: pos ~12, CTR 100% — 7 klik/7d) lands on /idx-radar
+      // which has never existed (404). The ranked intent = our radar surface: /stocks
+      // (H1 "Radar Saham IDX"). DEVIATION from house permanent:true (308) pattern:
+      // spec done-when requires a literal 301 (curl -I check) — statusCode explicit.
+      // SEO-equivalent to 308 for Google equity; seo-2026-10-20-01, decision logged
+      // in docs/agent-org/decisions.md.
+      {
+        source: "/idx-radar",
+        destination: "/stocks",
+        statusCode: 301,
+      },
     ];
   },
   async headers() {

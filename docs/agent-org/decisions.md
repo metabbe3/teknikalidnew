@@ -774,3 +774,25 @@ file = komentar + SELECT 1, hapus row failed di _prisma_migrations; (c) docker l
 untuk prisma/migrations/ menuntut --no-cache saat hot-fix file migration di hari sama.
 
 **Deploy count 19 Okt teknikal: 4** (1 kereta + 3 insiden) — di atas budget normal, insiden-driven.
+
+## 2026-10-21 23:1x — CTO NIGHT: seo-2026-10-20-01 target decision (/idx-radar → /stocks)
+
+**Keputusan target redirect = `/stocks`** (bukan /stocks?view=screener, bukan blok Radar-5 home).
+
+Alasan (data, bukan selera):
+1. Query GSC "idx radar" = brand/navi intent ke fitur radar kita; permukaan radar kanonik = halaman
+   /stocks — H1 literal **"Radar Saham IDX"** (live-verified CEO 9 Okt saat seo-2026-10-08-01).
+2. `/stocks` sudah canonical self (`alternates.canonical: "/stocks"`) + sudah di sitemap.xml
+   (priority 0.9, daily) → syarat spec (b) terpenuhi tanpa kerja tambahan; ranking berpindah
+   ke target yang jelas, bukan hilang.
+3. Screener-view ditolak: `/stocks?view=screener` bukan URL kanonik (param view) — redirect
+   ke non-canonical = equity bocor, melanggar intent spec poin (4) "canonical target jelas".
+
+Eksekusi: next.config.ts redirects `source:"/idx-radar"` → `destination:"/stocks"`
+**statusCode: 301 eksplisit** — DEVIASI dari house-pattern `permanent:true` (308) karena
+done-when spec menuntut literal 301 (`curl -I`). Setara bagi Google. 0 halaman baru, 0 DB,
+0 schema (patuh API REUSE RULE + larangan halaman-baru di spec).
+
+Verify lokal (branch night/seo-2026-10-20-01): lint 0 · tsc 0 · build hijau 194/194 ·
+`next start` curl -I /idx-radar = **301 + location:/stocks** (bukti fisik). Prod saat
+penulisan masih 404 (deploy di kereta T-1021-N / CTO pagi).
