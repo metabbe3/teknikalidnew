@@ -631,31 +631,32 @@ export default async function StockDetailPage({
               <div className="mt-4 pt-3 border-t border-border">
                 {/* Section nav dipindah ke sticky bar tunggal di bawah (dedupe 15 Okt — dulu 2 baris identik) */}
 
-              <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1.5 text-xs" aria-label="Statistik harga hari ini">
+              <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2 text-xs" aria-label="Statistik harga hari ini">
                   <span className="inline-flex items-baseline gap-1.5">
-                    <span className="text-text-tertiary">Buka</span>
+                    <span className="text-[10px] uppercase tracking-wider font-medium text-text-tertiary">Buka</span>
                     <span className="font-mono font-semibold text-text-secondary tabular-nums">{latest ? formatPrice(decimalToNumber(latest.open) ?? close) : "—"}</span>
                   </span>
                   <span className="inline-flex items-baseline gap-1.5">
-                    <span className="text-text-tertiary">Tertinggi</span>
+                    <span className="text-[10px] uppercase tracking-wider font-medium text-text-tertiary">Tertinggi</span>
                     <span className="font-mono font-semibold text-text-secondary tabular-nums">{latestHigh !== null ? formatPrice(latestHigh) : "—"}</span>
                   </span>
                   <span className="inline-flex items-baseline gap-1.5">
-                    <span className="text-text-tertiary">Terendah</span>
+                    <span className="text-[10px] uppercase tracking-wider font-medium text-text-tertiary">Terendah</span>
                     <span className="font-mono font-semibold text-text-secondary tabular-nums">{latestLow !== null ? formatPrice(latestLow) : "—"}</span>
                   </span>
                   <span className="inline-flex items-baseline gap-1.5">
-                    <span className="text-text-tertiary">Volume</span>
+                    <span className="text-[10px] uppercase tracking-wider font-medium text-text-tertiary">Volume</span>
                     <span className="font-mono font-semibold text-text-secondary tabular-nums">{latestVolume > 0 ? formatVolume(latestVolume) : "—"}</span>
                   </span>
+                  <span className="hidden sm:inline-block self-center w-px h-3.5 bg-border" aria-hidden="true" />
                   <span className="inline-flex items-baseline gap-1.5">
-                    <span className="text-text-tertiary">52mgg</span>
+                    <span className="text-[10px] uppercase tracking-wider font-medium text-text-tertiary">52mgg</span>
                     <span className="font-mono font-semibold text-text-secondary tabular-nums">
                       {detail.week52Low !== null && detail.week52High !== null ? `${formatPrice(detail.week52Low)}–${formatPrice(detail.week52High)}` : "—"}
                     </span>
                   </span>
                   <span className="inline-flex items-center gap-1.5 basis-full sm:basis-auto">
-                    <span className="text-text-tertiary">Posisi</span>
+                    <span className="text-[10px] uppercase tracking-wider font-medium text-text-tertiary">Posisi</span>
                     {detail.week52Low !== null && detail.week52High !== null && detail.week52High > detail.week52Low ? (
                       <>
                         <div className="h-1 w-16 rounded-full bg-bg-hover overflow-hidden" role="img" aria-label={`Posisi harga dalam rentang 52 minggu: ${Math.round(((close - detail.week52Low) / (detail.week52High - detail.week52Low)) * 100)}%`}>
