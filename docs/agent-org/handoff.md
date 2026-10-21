@@ -712,3 +712,10 @@
 - In-flight: kereta T-1021-N malam ini (ops-13-01 TCC owner, cto-2026-10-21-01 worker basi, seo-2026-10-20-01, qa-2026-10-20-03); QA content-fix qa-2026-10-21-01/02/03 (brief 21+20 Okt) TANPA slot — QA Verifier/backoffice yang punya kanal konten; teknikal-2026-10-20-01 masih blocked_incomplete_prd.
 - Jebakan: (1) proses bootstrapping agent launchd DIBLOKIR gateway — pakai Hermes cron utk host scheduler; (2) 'hermes send' bukan subcommand — TG push = urllib api.telegram.org bot token dari ~/.hermes/.env; (3) sim test watchdog WAJIB pakai file script reguler (source /dev/stdin diblokir lifecycle guard).
 - Langkah pertama slot berikutnya: baca handoff → cek watchdog.log murni OK (impact_check 24 Okt) → boarding gate kereta T-1021-N manifest → entry P1 berikutnya qa-2026-10-21-01/02/03 kalau slot QA tak jalan.
+
+## 2026-10-21 19:1x — UX Builder shift 19:15 (ops-2026-10-21-01 done build-only)
+- SHIPPED 4c5b4d8 push main: market-breath-strip IHSG `Rp5.328` → poin `5.328,36` (toLocaleString 2-des, hapus import formatPrice) — 1-satunya titik salah; header/greeting//pasar/live-price isIndex sudah benar (audit 5 surface).
+- Bukti: tsc 0, build hijau (BUILD_ID cJ6QMp0P7tXtUAmaWoRga), staging :3100 home ^JKSE TANPA Rp + BBCA.JK TETAP Rp5.275 + / /stocks /pasar 200; prod /stocks memang tak render strip JKSE (parity).
+- ops-2026-10-21-01 → in_train T-1021-N (bukti di queue). Kereta T-1021-N malam: manifest + passenger ini — verify prod pasca-deploy: curl home grep `^JKSE` tanpa Rp.
+- Jebakan staging: sed host-swap `@db:` WAJIB regex port-aware (`@db:5432/`→`@127.0.0.1:5433/`), port lama 5432 di .env; jebakan EADDRINUSE = instance stale, kill dulu.
+- Flow audit rotasi: sabtu 10:30 = re-audit siklus flow (a) screener pasca trust-badge + funnel 2-step (AC4 telemetry register_step1_submit — CTO sweep 21 Okt). SEC GATE: N/A frontend-only.
