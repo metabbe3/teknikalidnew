@@ -2067,13 +2067,14 @@
       "date": "2026-10-21",
       "type": "ops",
       "priority": "P2",
-      "status": "pending",
-      "train": "T-1021-N kalau slot FE muat, else T-1022",
+      "status": "in_train",
+      "train": "T-1021-N",
       "scheduled_slot": "Frontend Builder 21 Okt 19:15 build-only (staging :3100 verify) → kereta malam",
       "title": "OPS-FIX display: header IHSG ^JKSE tampil 'Rp5.279' — indeks = poin, bukan rupiah (idea-2026-10-21-1 CEO APPROVE)",
       "north_star": "TRUST — angka benar di permukaan paling dilihat (homepage header)",
       "spec": "INTENT: formatPrice/helper homepage header: ticker prefix '^' (indeks) tampil angka poin TANPA 'Rp' (5.279); saham individual TETAP 'Rp'. Bukti live 21 Okt CEO: <span data-live-price=\"^JKSE\">Rp5.279</span>. Cek konsistensi /indeks + ticker-tape. DONE WHEN: curl homepage grep data-live-price=\"^JKSE\" TANPA 'Rp' + /stocks/BBCA.JK MASIH 'Rp' + tsc 0 + staging :3100 pass.",
-      "source": "cto-idle candidate → CEO verdict 21 Okt"
+      "source": "cto-idle candidate → CEO verdict 21 Okt",
+      "result": "FE 19:15 21 Okt: commit 4c5b4d8 (market-breath-strip.tsx formatPrice->toLocaleString poin 2-des). BUKTI: tsc exit 0; build hijau BUILD_ID cJ6QMp0P7tXtUAmaWoRga 19:06; staging :3100 home data-live-price=^JKSE = 5.328,36 (TANPA Rp, sebelumnya Rp5.328); /stocks/BBCA.JK TETAP Rp5.275; / /stocks /pasar 200. Audit konsistensi: header.tsx, personalized-greeting, /pasar, live-price.tsx(isIndex) sudah benar — hanya 1 titik bug. SEO invariant N/A (bukan halaman keyword). Verify prod pasca-kereta: curl home grep ^JKSE tanpa Rp."
     },
     {
       "id": "sre-2026-10-21-01",
