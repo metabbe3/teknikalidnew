@@ -907,7 +907,7 @@ export default async function StockDetailPage({
           </Link>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-3 space-y-4">
             {indicators ? (
               <IndicatorPanel
                 close={close}
@@ -942,25 +942,31 @@ export default async function StockDetailPage({
             )}
           </div>
           <div className="space-y-4">
-            {fullAccess ? (
-              <KeyStatistics
-                open={latest ? decimalToNumber(latest.open) : null}
-                high={latest ? decimalToNumber(latest.high) : null}
-                low={latest ? decimalToNumber(latest.low) : null}
-                close={close}
-                volume={latest ? bigIntToNumber(latest.volume) : null}
-                week52High={detail.week52High}
-                week52Low={detail.week52Low}
-                sma20={indicators?.sma20 ?? null}
-                sma50={indicators?.sma50 ?? null}
-                sma200={indicators?.sma200 ?? null}
-              />
-            ) : (
-              <LoginGate
-                feature="Key Statistics"
-                message="Daftar gratis untuk membuka data statistik lengkap — OHLC harian, volume, SMA, dan range 52 minggu."
-              />
-            )}
+            {/* Key Stats + Fundamentals pindah ke kiri (owner 21 Okt): rail kanan
+                terlalu panjang (4 card stacked 1.809px) sementara kolom kiri
+                menyisakan ~1.500px kosong di bawah IndicatorPanel. */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+              {fullAccess ? (
+                <KeyStatistics
+                  open={latest ? decimalToNumber(latest.open) : null}
+                  high={latest ? decimalToNumber(latest.high) : null}
+                  low={latest ? decimalToNumber(latest.low) : null}
+                  close={close}
+                  volume={latest ? bigIntToNumber(latest.volume) : null}
+                  week52High={detail.week52High}
+                  week52Low={detail.week52Low}
+                  sma20={indicators?.sma20 ?? null}
+                  sma50={indicators?.sma50 ?? null}
+                  sma200={indicators?.sma200 ?? null}
+                />
+              ) : (
+                <LoginGate
+                  feature="Key Statistics"
+                  message="Daftar gratis untuk membuka data statistik lengkap — OHLC harian, volume, SMA, dan range 52 minggu."
+                />
+              )}
+              {fullAccess && <FundamentalData data={fundamentals} />}
+            </div>
             {fullAccess ? (
               <div className="space-y-4">
                 <span id="plan" className="block scroll-mt-24" />
@@ -969,7 +975,6 @@ export default async function StockDetailPage({
                   signalScore={indicators?.signalScore ?? null}
                   breakdown={signalBreakdown}
                 />
-                <FundamentalData data={fundamentals} />
               </div>
             ) : (
               <LoginGate
