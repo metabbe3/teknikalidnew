@@ -1917,7 +1917,8 @@
       },
       "result": "DONE 20 Okt 03:2x WIB. AUDIT pipelines (ronde-2 huruf P) -> 3 fix deploy: (1) cron-registry sinkron ground-truth launchd+DB (8 job termasuk cleanup-snapshots dormant, hapus klaim basi '3x daily'/'every 5 min'/'17:00'); (2) kartu Scheduled Jobs data-driven jobStats (CRON_SCHEDULES const dihapus) + badge 'no data 7d' job dorman; (3) IndicatorsTab stub->live via /api/admin/indicators existing (KPI fresh/stale/missing+filter+tabel) ZERO endpoint baru. VERIFY: tsc 0, build 0, container healthy, chunk live 'Indicator Coverage per Stock'+'no data 7d' (page-90d99cf8ff260166.js), server route 'Daily 16:30 WIB'+'cleanup-snapshots', /admin/* 307 auth-guard, / + /stocks 200. DEPLOY image 8742307a9a24; rollback anchor f7e8f65deae4+616e46c. Commit sempit 3 file (pipelines/page.tsx, cron-registry.ts, changelog.md). Catatan: claude code mati autocompact-thrash setelah FIX1 -> dilanjut python-patch presisi marker-count=1. Follow-up ops: sync-intraday dorman 1 run/30d (kandidat entry baru, keputusan CTO). [RESTORED 21 Okt 07:4x CTO lead: entry hilang saat conflict-resolve merge c82cc70 06:52 ambil sisi night (112->103); union-merge ke-3 — lihat CTO note 2026-10-21]",
       "qa_verified": true,
-      "qa_note": "QA PASS 20 Okt (independen, read-only). Bukti fisik: commit 946d3a5 di main (3 file: pipelines/page.tsx+cron-registry.ts+changelog.md) LIVE di container 8742307a9a24. (1) Registry 8 job = DB ground-truth persis (cleanup-snapshots 4 run last 11 Jun; sync-intraday 1 run/30d; generate-articles 30 run/30d=1x/hari; sync-eod 16:30 == launchd plist Hour16 Min30). (2) CRON_SCHEDULES const 0x di repo+chunk live; kartu render jobStats (service join registry+DB) + marker \"no data 7d\" ada di chunk page-90d99cf8ff260166.js. (3) IndicatorsTab useQuery /api/admin/indicators (endpoint pre-existing 80d33b2, zero baru) + marker \"Indicator Coverage per Stock\" live. Guard: /admin+pipelines 307, api-admin 404-mask by-design (proxy.ts), / dan /stocks 200. Changelog L581 ada. Catatan ops: sync-intraday dorman sudah dicatat builder sebagai kandidat entry baru — setuju, keputusan CTO."
+      "qa_note": "QA PASS 20 Okt (independen, read-only). Bukti fisik: commit 946d3a5 di main (3 file: pipelines/page.tsx+cron-registry.ts+changelog.md) LIVE di container 8742307a9a24. (1) Registry 8 job = DB ground-truth persis (cleanup-snapshots 4 run last 11 Jun; sync-intraday 1 run/30d; generate-articles 30 run/30d=1x/hari; sync-eod 16:30 == launchd plist Hour16 Min30). (2) CRON_SCHEDULES const 0x di repo+chunk live; kartu render jobStats (service join registry+DB) + marker \"no data 7d\" ada di chunk page-90d99cf8ff260166.js. (3) IndicatorsTab useQuery /api/admin/indicators (endpoint pre-existing 80d33b2, zero baru) + marker \"Indicator Coverage per Stock\" live. Guard: /admin+pipelines 307, api-admin 404-mask by-design (proxy.ts), / dan /stocks 200. Changelog L581 ada. Catatan ops: sync-intraday dorman sudah dicatat builder sebagai kandidat entry baru — setuju, keputusan CTO.",
+      "qa_verified_by": "reviewer 21 Okt (independen: live marker IndicatorsTab+cron-monitor, 307 auth-guard, git fda5558/b85d3ac)"
     },
     {
       "id": "bo-2026-10-21-01",
@@ -2022,7 +2023,8 @@
       ],
       "deploy_note": "Ikut slot deploy teknikal BESOK (cap 2/hari) — via night org. DONE-WHEN + bukti fisik (DB diff, screenshot home) sebelum naik kereta (BOARDING GATE doctrine).",
       "scheduled_slot": "FDE-BLOCKED: tunggu Researcher 08:30 verdict + PRD 7-field + QA plan; kalau lengkap -> Backend malam 18:30 build-only -> naik T-1021 bukan T-1020 (kereta tidak nunggu penumpang)",
-      "result": "[RESTORED 21 Okt 07:4x CTO lead: entry hilang saat conflict-resolve merge c82cc70 06:52 ambil sisi night (112->103); union-merge ke-3 — lihat CTO note 2026-10-21]"
+      "result": "[RESTORED 21 Okt 07:4x CTO lead: entry hilang saat conflict-resolve merge c82cc70 06:52 ambil sisi night (112->103); union-merge ke-3 — lihat CTO note 2026-10-21]",
+      "research_brief": "RESEARCH BRIEF (Researcher 21 Okt 2026 08:40) — VERDICT: BUILD-AFTER-PRD (7 field PRD belum ada di backlog; isi dulu oleh Product Agent — material siap: user_story+AC di entry ini, sisanya diusulkan di brief; setelah PRD 7-field + prd_id backlog entry ada -> FDE-READY -> build slot Backend malam, kereta T-1022+). Pilar: STICKY — pendukung returning 7d 4,4% -> target 8% per 25 Nov. Alasan: auto daily-point + streak + badge progress = mekanik retensi terkuat yang terdokumentasi: Duolingo — learner streak 7+ hari 2,4x lebih mungkin kembali besok; memisahkan streak dari daily goal +3,3% D14; visible progress selalu-on-screen +3% DAU/+1% D14 (semua internal A/B). Guardrail WAJIB (finance + gamification research): (1) poin HANYA untuk kunjungan/belajar, JANGAN pernah untuk aksi trading/eksekusi — Robinhood bayar $7,5jt (Massachusetts 2024) & hapus confetti 2021 karena gamification yang reward perilaku trading; teknikal.id tidak mem-fasilitasi transaksi jadi risiko jauh lebih rendah, tapi prinsipnya tetap: no reward trading-adjacent, no framing 'game'. (2) NO leaderboard di v1 — BPL triad (badges-points-leaderboard) = elemen paling sering dilaporkan berdampak negatif (87 paper: no-effect, demotivasi, gaming/cheating; arXiv 2305.08346) + komunitas masih sepi = papan kosong memperlihatkan produk mati. (3) Pointsification/overjustification: +5 otomatis utk perilaku intrinsik (cek pasar) harus diframe PROGRES (streak/tier) bukan reward generik; poin tanpa makna -> inflasi -> mati (PMC9562056). (4) Streak reset terasa hukuman = counterproductive (Habitica study); Duolingo: fleksibilitas (freeze) malah naikkan DAU — v1 minimal: copy netral saat reset, freeze = kandidat v2. (5) Streak TIDAK menyelamatkan produk lemah (Duolingo PM: 'streaks can't make up for weak product') — funnel register MATI (1-2/7d) adalah masalah terpisah; evaluasi funnel AC2 s/d 2 Nov JANGAN disentuh fitur ini: award hanya di jalur user-login home. BEST PRACTICE CTO: idempotent via unique constraint DB level (bukan cek aplikasi); panggil maybeAwardDaily hanya di render home login (sesuai spec — bukan middleware); copy jujur tanpa konfetti/perayaan ala kemenangan trading; badge = progress ladder eksplisit '18/25 -> Pengamat' dgn tier existing BADGE_TIERS; QA plan: baseline returning 7d 4,4% (KPI 07:05) + observational D7-return kohort streak-vs-tanpa, review kill/iterate 30 hari; regression user lama (tier sesuai poin existing). ANTI-PATTERN: leaderboard publik; poin utk trading; confetti; poin tanpa tujuan; streak-hukuman kaku; sentuh funnel register. SUMBER: blog.duolingo.com/improving-the-streak; blog.duolingo.com/how-duolingo-streak-builds-habit; lennysnewsletter.com/p/behind-the-product-duolingo-streaks; velaw.com (Robinhood $7,5M); press.farm/the-confetti-ban; btlj.org gamification US/EU comparative; arxiv.org/pdf/2305.08346; pmc.ncbi.nlm.nih.gov/articles/PMC9562056; sciencedirect.com Habitica counterproductive. BUKTI: KUAT utk mekanik streak/retention (multi A/B Duolingo); SEDANG utk guardrail finance (Robinhood terdokumentasi tapi konteks broker, bukan content site); TIDAK ADA studi spesifik audience finance-content Indonesia -> keputusan akhir pakai data internal pasca-deploy (QA plan di atas)."
     },
     {
       "id": "teknikal-2026-10-20-02",
@@ -2078,13 +2080,48 @@
       "date": "2026-10-21",
       "type": "ops",
       "priority": "P1",
-      "status": "pending",
+      "status": "done",
       "train": "T-1022 (host script, di luar kereta app)",
       "scheduled_slot": "CTO sore 21 Okt 14:30 — host script, no app deploy",
       "title": "SRE P0-incident followup: watchdog 502-detection teknikal.id+hivepos.id (Docker Desktop SPOF, insiden 19 Okt market-open)",
       "north_star": "TRUST — uptime; insiden 19 Okt = 2 org prod 502 jam buka pasar, RTO >7mnt, detection 0",
       "spec": "INTENT (backlog sec-2026-10-19-01 CEO APPROVE): (1) watchdog-host.sh: curl -f teknikal.id + hivepos.id tiap 5 mnt; 2x fail → insiden log + notifikasi kanal existing; (2) branch selfheal.sh: 'docker daemon not reachable' >10 mnt → alert CRITICAL (JANGAN auto open -a Docker — blocked_for_owner); (3) runbook docs/agent-org/runbook-docker-down.md. DONE WHEN: watchdog jalan via launchd/timer + simulasi (container staging stop / fake-url) menghasilkan alert <10 mnt + runbook ada. No app deploy.",
-      "source": "backlog sec-2026-10-19-01 (candidate 2d, verdict WAJIB hari ini)"
+      "source": "backlog sec-2026-10-19-01 (candidate 2d, verdict WAJIB hari ini)",
+      "result": "DONE 21 Okt 18:4x WIB (CTO sore 16:45-mandate, eksekusi pasca 18:30 window). Watchdog host-only: ~/.hermes/scripts/site-502-watchdog.sh — cek https://teknikal.id/ + https://hivepos.id/ tiap 5 mnt via Hermes cron no_agent 'Site 502 Watchdog (teknikal+hivepos)' (deliver telegram owner 500212724). Alert !=200 dedup 30mnt/state-file; docker daemon UNREACHABLE >=1jam -> CRITICAL owner action (NO auto open -a Docker — blocked_for_owner honored). BUKTI: (1) cron job aktif run 18:40:02 ok SILENT saat kedua site 200 (silent-healthy pattern); (2) SIMULASI fail-test: URL 404 -> alert path fire + run-2 dedup skip (scratch sim-502-test.sh, state dibersihkan); (3) jalur notifikasi verified live sendMessage ok=True 21 Okt 18:3x; (4) runbook docs/agent-org/runbook-docker-down.md (gejala->langkah A docker down/B edge down, batas agent). launchd plist di-archive ke docs/agent-org/archive/launchagents/ (bootstrap diblokir gateway; Hermes cron = single source, Hindari dobel scheduler saat reboot — automation-watchdogs pitfall #8). 0 app deploy, 0 DB write. KPI: TRUST (detection gap insiden 19 Okt RTO>7mnt detection=0 -> kini <=5mnt).",
+      "evidence": "cron run 18:40:02 ok silent-healthy; sim 404→alert+dedup OK; TG sendMessage ok=True"
+    },
+    {
+      "id": "qa-2026-10-21-01",
+      "date": "2026-10-21",
+      "priority": "P1",
+      "type": "content-fix",
+      "status": "pending",
+      "title": "FIX brief-pasar-idx-2026-10-21: angka fiktif \"137 saham berhenti persis di -15%\" (DB 16 Okt = 28 close-basis / 47 low-basis) + 2x link internal salah route (/berita/ utk artikel EDUCATIONAL harus /akademi/)",
+      "spec": "INTENT: hilangkan angka ngarang & link mati di artikel edukasi auto-reject terkait. BUKTI (reviewer 21 Okt, SQL): claim \"137 saham berhenti persis di -15%\" tidak ada varian yang menghasilkan 137 (persis -15% close-basis=28, round1=39, low-basis exact=47, low<=floor 1-tick=624); benar utk close-basis: 28. BUKTI link: /berita/auto-reject-ara-arb-dan-trading-halt-aturan-dan-contoh-nyatanya live 404 (artikel EDUCATIONAL kanonik /akademi/... = 200; 2 kemunculan: intro + penutup brief-21). ACCEPTANCE: (1) kalimat 137 diganti angka berbasis DB (close-basis 28 atau low-basis 47, sebutkan basisnya) di /akademi/...; (2) 2 link di brief-21 diarahkan ke /akademi/...; (3) curl kedua URL 200, angka baru match SQL ulang. Cara fix via jalur konten yang ada (bukan edit DB langsung).",
+      "created_by": "reviewer 21 Okt 07:0x (post-publish QA)",
+      "north_star": "TRUST — angka salah di artikel edukasi = trust runtuh; link mati = UX/bounce"
+    },
+    {
+      "id": "qa-2026-10-21-02",
+      "date": "2026-10-21",
+      "priority": "P1",
+      "type": "content-fix",
+      "status": "pending",
+      "title": "FIX brief-pasar-idx-2026-10-21 superlatif mover: \"Mover terkuat\" memunculkan BRPT +20,08% #1 padahal per DB 20 Okt non-gorengan #1=MKNT +50% (#2 ATLA +33%, #3 BBSS +25%, #4 SHID, #5 SOTS) — BRPT sebenarnya rank #6",
+      "spec": "INTENT: superlative table harus sesuai ranking DB hari sama (qa-27-01). BUKTI (SQL ORDER BY pct DESC, non-gorengan, 20 Okt): MKNT +50,00 (vol 6,0jt), ATLA +33,33 (92,3jt), BBSS +25,45 (34,0jt), SHID +25,00 (1,7jt), SOTS +25,00 (2,4jt) — persis top-5 di /pasar (satu pintu); BRPT +20,08 rank #6 (CBRE +24,78 vol 42jt rank #5.5 di atasnya juga). ACCEPTANCE: (1) ganti judul/judul-tabel atau tampilkan BRPT dgn peringkat exact (mis. \"Big-cap terkuat\", atau top-5 sesuai /pasar + BRPT sebagai big-cap gainer); (2) verify ulang SQL ranking hari sama; (3) angka lain di artikel (breadth 694/111/156, IHSG 5.278,89 +5,65%, harga big-cap) SUDAH terverifikasi benar — jangan diubah.",
+      "created_by": "reviewer 21 Okt 07:0x (post-publish QA)",
+      "north_star": "TRUST — superlatif = klaim ranking, salah = data tidak reliable"
+    },
+    {
+      "id": "qa-2026-10-21-03",
+      "date": "2026-10-21",
+      "priority": "P1",
+      "type": "content-fix",
+      "status": "pending",
+      "title": "FIX brief-pasar-idx-2026-10-20 superlatif volume: \"INCO volume 38,8jt terbesar di antara saham yang menguat (non-gorengan, >1jt)\" padahal DB 19 Okt #1=DSSA 1,098M, #2 BUKA 316jt, #3 DMAS 277jt, #4 NAYZ 141jt, #5 PTBA 106jt — INCO rank #13",
+      "spec": "INTENT: superlatif volume harus ranking DB (qa-27-01). BUKTI (SQL rank volume DESC, saham CLOSE>prev 19 Okt, non-gorengan, vol>1jt): DSSA 1.098.784.200 (+2,10%), BUKA 316.354.400, DMAS 276.578.200, NAYZ 140.959.200, PTBA 106.399.200; INCO 38.837.500 rank #13 (+4,93%). ACCEPTANCE: (1) ganti klaim jadi akurat (contoh: \"volume terbesar di antara saham naik ber-ESG/blue-chip\" — harus dibuktikan dulu — atau tulis INCO muncul dgn volume X tanpa klaim terbesar); (2) jangan sentuh angka lain artikel (semua sudah match DB: IHSG 4.996,61 -3,64%, breadth 103/691/167, 409 oversold, GC140/DC40, BRIS RSI 7,65, BBCA/TLKM/ISAT/ICBP, BBRI 2.540 -3,79%, PGAS/PTBA, INCO +4,93% 38,8jt, harga watchlist).",
+      "created_by": "reviewer 21 Okt 07:0x (post-publish QA)",
+      "north_star": "TRUST — superlatif palsu ditemukan pembaca = credibility loss"
     }
   ],
   "tasks": []

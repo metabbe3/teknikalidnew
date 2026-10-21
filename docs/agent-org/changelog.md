@@ -584,3 +584,11 @@
 - fix: (1) cron-registry.ts schedule disinkronkan ground-truth launchd+DB (sync-eod 16:30 WIB, generate-articles 1x/hari, agent-hub 30 mnt, sync-stocks Senin, + entry cleanup-snapshots dormant); (2) kartu Scheduled Jobs /admin/pipelines kini data-driven dari jobStats (hapus CRON_SCHEDULES hardcoded 2-job salah jadwal) + badge 'no data 7d' utk job dorman; (3) IndicatorsTab stub -> live via /api/admin/indicators existing (KPI fresh/stale/missing + filter + tabel) — ZERO endpoint baru
 - verify: tsc 0 · build 0 · container healthy · chunk live 'Indicator Coverage per Stock'+'no data 7d' (page-90d99cf8ff260166.js) · server 'Daily 16:30 WIB'+'cleanup-snapshots' di cron-monitor route · /admin/pipelines+admin 307 auth-guard · API admin 404-mask by-design (proxy.ts:322) · / 200 · /stocks 200
 - QA: pembangun ≠ pemeriksa — QA gate slot berikutnya | impact_check: sync-intraday dorman = kandidat entry ops baru (bukan malam ini)
+
+## 2026-10-21 — sre-2026-10-21-01 (CTO sore)
+- **task-id**: sre-2026-10-21-01 · **type**: ops (host, no app deploy) · **PRD**: backlog sec-2026-10-19-01 (CEO APPROVE)
+- **deploy hash**: n/a (host script + Hermes cron, bukan container)
+- **verify bukti**: Hermes cron 'Site 502 Watchdog (teknikal+hivepos)' run 18:40:02 ok SILENT (kedua site 200); sim fail-test 404 → alert fire + run-2 dedup-skip OK; TG sendMessage ok=True; runbook-docker-down.md live
+- **QA**: self-check (script-only, non-trivial → QA Verifier sampling slot berikutnya); silent-healthy pattern sesuai automation-watchdogs skill
+- **impact_check_due**: 2026-10-24 — cek watchdog.log murni OK-lines (tidak ada false alert) + job last_status ok
+- **KPI**: TRUST (detection 19-Okt gap → ≤5 mnt)

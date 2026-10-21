@@ -967,3 +967,6 @@ Konsensus 2026: E-E-A-T+CWV+intent top-3; AIO potong CTR; YMYL finance wajib aut
 - BLOCKED_FOR_OWNER (3): (1) ops-13-01 idx-sync TCC grant (ESCALATE CTO pagi, Stock.updatedAt beku 9 hari); (2) auto-restart Docker daemon (host); (3) iCloud re-login / relokasi docs/agent-org keluar ~/Documents — AKAR drift backlog+queue; rekomendasi relokasi ke ~/.hermes/data murni atau folder non-iCloud.
 - QUEUE malam ini (T-1021-N 22:00): cto-1021-01 worker rebuild + qa-20-03 + seo-20-01 (CTO manifest) + ops-1021-01 kalau FE muat. qa-20-01/02 SQL patch 18:30 tanpa deploy. teknikal-2026-10-20-01 tetap FDE-BLOCKED (tunggu Researcher 08:30 + PRD).
 - Stok spec_ready bersih utk build: idea-2026-10-19-1 (P1 retention, umur 2d) + idea-2026-10-19-2 (P2, 2d) — belum wajib verdict, bahan Product Agent Kamis 23 Okt.
+
+### 2026-10-21 18:4x — CTO sore: sre-2026-10-21-01 DONE (watchdog 502 detection)
+Watchdog host teknikal.id+hivepos.id live tiap 5 mnt (Hermes cron no_agent, alert TG dedup 30mnt, docker-unreachable≥1j→CRITICAL owner-action, no auto-start Docker). Bukti: run 18:40 ok silent; sim 404→alert+dedup ✓; runbook-docker-down.md ada. launchd plist archived (gateway block bootstrap; single-source = Hermes cron). 0 deploy, 0 DB write. KPI TRUST.
