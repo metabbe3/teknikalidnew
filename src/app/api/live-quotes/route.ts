@@ -73,14 +73,17 @@ export async function GET(request: NextRequest) {
     if (!marketOpen) {
       const closed: LiveQuoteRow[] = results.map(({ ticker }) => ({
         ticker,
-        price: null,
+        // Porto/dashboards eksternal butuh ANGKA (bukan null) saat tutup → kirim EOD prev
+        // sebagai harga (pembeli live-price null-safe). changePercent TETAP null supaya
+        // client live-updater tidak menimpa SSR EOD (fix IHSG -0%, owner 21 Okt).
+        price: eodPrev.get(ticker) ?? null,
         change: null,
         changePercent: null,
         volume: null,
         dayHigh: null,
         dayLow: null,
         open: null,
-        prevClose: null,
+        prevClose: eodPrev.get(ticker) ?? null,
         marketState: "CLOSED_WIB",
       }));
       const closedPayload = { quotes: closed, ts: Date.now() };
