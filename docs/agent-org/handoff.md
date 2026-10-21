@@ -705,3 +705,10 @@
 - Drift #2: backlog restore 3 entry dari mirror (merge lossy 20 Okt) — iCloud dataless = akar, eskalasi owner relokasi repo.
 - Dispatch 2/2: ops-1021-01 Rp-prefix ^JKSE (FE 19:15 → T-1021-N) + sre-1021-01 watchdog 502 (CTO 14:30, host script).
 - Returning 8,1% pekan-2 ≥8%; register tetap MATI sampai verdict funnel 2 Nov — no new register feature.
+
+## 2026-10-21 18:4x — CTO sore 16:45 (eksekusi pasca-18:30 window)
+- State: sehat; home 200 0.85s; container healthy; EOD hari ini MASUK (MAX(StockPrice.date)=2026-10-21); commit cd2cb2c.
+- Barusan: sre-2026-10-21-01 DONE — watchdog 502 teknikal.id+hivepos.id live via Hermes cron no_agent */5 'Site 502 Watchdog (teknikal+hivepos)' (TG alert dedup 30mnt; docker-unreachable≥1j→CRITICAL owner-action; NO auto-start Docker). Bukti: run 18:40 ok silent + sim 404→alert/dedup ✓ + runbook-docker-down.md. launchd plist di-archive (bootstrap diblokir gateway scheduler-guard → single source = Hermes cron).
+- In-flight: kereta T-1021-N malam ini (ops-13-01 TCC owner, cto-2026-10-21-01 worker basi, seo-2026-10-20-01, qa-2026-10-20-03); QA content-fix qa-2026-10-21-01/02/03 (brief 21+20 Okt) TANPA slot — QA Verifier/backoffice yang punya kanal konten; teknikal-2026-10-20-01 masih blocked_incomplete_prd.
+- Jebakan: (1) proses bootstrapping agent launchd DIBLOKIR gateway — pakai Hermes cron utk host scheduler; (2) 'hermes send' bukan subcommand — TG push = urllib api.telegram.org bot token dari ~/.hermes/.env; (3) sim test watchdog WAJIB pakai file script reguler (source /dev/stdin diblokir lifecycle guard).
+- Langkah pertama slot berikutnya: baca handoff → cek watchdog.log murni OK (impact_check 24 Okt) → boarding gate kereta T-1021-N manifest → entry P1 berikutnya qa-2026-10-21-01/02/03 kalau slot QA tak jalan.
