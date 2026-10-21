@@ -719,3 +719,10 @@
 - ops-2026-10-21-01 → in_train T-1021-N (bukti di queue). Kereta T-1021-N malam: manifest + passenger ini — verify prod pasca-deploy: curl home grep `^JKSE` tanpa Rp.
 - Jebakan staging: sed host-swap `@db:` WAJIB regex port-aware (`@db:5432/`→`@127.0.0.1:5433/`), port lama 5432 di .env; jebakan EADDRINUSE = instance stale, kill dulu.
 - Flow audit rotasi: sabtu 10:30 = re-audit siklus flow (a) screener pasca trust-badge + funnel 2-step (AC4 telemetry register_step1_submit — CTO sweep 21 Okt). SEC GATE: N/A frontend-only.
+
+## 2026-10-21 21:0x — UX Builder shift 19:15 run-2 (ux-2026-10-21-02 done build-only)
+- SHIPPED e2bfdc1 push main: emoji->Lucide pass-3 — 71 emoji/19 file (15 landing saham-*, /pasar chip status, tab sticky-nav stock detail, sentiment-gauge, stock-card+trading-plan-card gap pass-1/2). 0 emoji sitewide kecuali emoji-picker/reaction-bar (fitur by design).
+- Bukti: tsc 0, build EXIT 0 194/194, staging :3100 (DB 127.0.0.1:5433) — 16/16 landing 200 emoji 0 H1 utuh; /stocks/bbri emoji 0 + 4 tab label bersih; lucide-search aria render.
+- ux-2026-10-21-02 in_train T-1021-N (naik kereta MALAM INI bersama ops-1021-01 Rp-prefix). Verify prod pasca-deploy: curl landing sampel emoji=0.
+- Bug baru: 0. Temuan: klaim lama ux-18-02 "stock detail 0 emoji" tidak utuh (⚠ dari stock-card/trading-plan-card lolos) — kini ditutup. Kandidat pass-4 (P4, non-blocker): auth/error, about, guest-quota-meter, notification-bell, announcement-banner, onboarding-wizard.
+- Impact check 21 Okt dilunasi: brief-from-home views 4→0→2/hari (strip belum mengangkat — butuh konten/CTA copy, bukan layout); AC4 telemetry HIDUP (189 dwell/110 scroll) tapi 0 register_step1_submit = 0 visitor submit (bukan bug, register_7d=1 konsisten).

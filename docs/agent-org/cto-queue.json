@@ -2123,6 +2123,19 @@
       "spec": "INTENT: superlatif volume harus ranking DB (qa-27-01). BUKTI (SQL rank volume DESC, saham CLOSE>prev 19 Okt, non-gorengan, vol>1jt): DSSA 1.098.784.200 (+2,10%), BUKA 316.354.400, DMAS 276.578.200, NAYZ 140.959.200, PTBA 106.399.200; INCO 38.837.500 rank #13 (+4,93%). ACCEPTANCE: (1) ganti klaim jadi akurat (contoh: \"volume terbesar di antara saham naik ber-ESG/blue-chip\" — harus dibuktikan dulu — atau tulis INCO muncul dgn volume X tanpa klaim terbesar); (2) jangan sentuh angka lain artikel (semua sudah match DB: IHSG 4.996,61 -3,64%, breadth 103/691/167, 409 oversold, GC140/DC40, BRIS RSI 7,65, BBCA/TLKM/ISAT/ICBP, BBRI 2.540 -3,79%, PGAS/PTBA, INCO +4,93% 38,8jt, harga watchlist).",
       "created_by": "reviewer 21 Okt 07:0x (post-publish QA)",
       "north_star": "TRUST — superlatif palsu ditemukan pembaca = credibility loss"
+    },
+    {
+      "id": "ux-2026-10-21-02",
+      "date": "2026-10-21",
+      "type": "ux",
+      "priority": "P3",
+      "status": "in_train",
+      "train": "T-1021-N",
+      "title": "UX: emoji-as-icons -> Lucide SVG pass-3 (15 landing saham-*/pasar/laporan + gauge + stock-card gap pass-1/2)",
+      "north_star": "STICKY + TRUST — konsistensi visual sitewide (ui-craft rule #4)",
+      "spec": "Lanjutan b493863+9fa0d38: 71 emoji di 19 file dibersihkan (CTA landing, chip status pasar, tab sticky-nav stock, sentiment-gauge, stock-card/trading-plan-card). Emoji-picker/reaction-bar = fitur konten user, TIDAK disentuh. SEO invariant: H1 0 berubah.",
+      "created_by": "UX Builder 19:15 shift 21 Okt (run-2)",
+      "result": "DONE build-only 21 Okt 21:0x: commit e2bfdc1 push main; tsc 0; build EXIT 0 (194/194); staging :3100 verify — 16/16 landing 200 emoji-body=0, /stocks/bbri 200 emoji=0 tab Chart/Indikator/AI/Trading Plan 1=1, lucide-search render di GC, H1 16/16 utuh. Verify prod pasca-kereta: emoji=0 di landing sampel."
     }
   ],
   "tasks": []

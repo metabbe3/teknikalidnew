@@ -585,6 +585,7 @@
 - verify: tsc 0 · build 0 · container healthy · chunk live 'Indicator Coverage per Stock'+'no data 7d' (page-90d99cf8ff260166.js) · server 'Daily 16:30 WIB'+'cleanup-snapshots' di cron-monitor route · /admin/pipelines+admin 307 auth-guard · API admin 404-mask by-design (proxy.ts:322) · / 200 · /stocks 200
 - QA: pembangun ≠ pemeriksa — QA gate slot berikutnya | impact_check: sync-intraday dorman = kandidat entry ops baru (bukan malam ini)
 
+- 2026-10-21 e2bfdc1 ux-2026-10-21-02: emoji->Lucide pass-3 (15 landing + pasar + gauge + stock-card gap) — staging 16/16 200 emoji 0, H1 utuh, in_train T-1021-N (UX Builder)
 ## 2026-10-21 — sre-2026-10-21-01 (CTO sore)
 - **task-id**: sre-2026-10-21-01 · **type**: ops (host, no app deploy) · **PRD**: backlog sec-2026-10-19-01 (CEO APPROVE)
 - **deploy hash**: n/a (host script + Hermes cron, bukan container)
