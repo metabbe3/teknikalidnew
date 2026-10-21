@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { signalToHealthScore, healthScoreMeta } from "@/lib/utils";
 import { IndicatorTooltip } from "@/components/ui/indicator-tooltip";
 
@@ -42,6 +43,7 @@ function ExplanationText({ score }: { score: number }) {
 
 export function HealthScoreDetail({ signalScore, breakdown }: HealthScoreDetailProps) {
   const score = signalToHealthScore(signalScore);
+  const [showDetail, setShowDetail] = useState(false);
   if (score === null) return null;
 
   const meta = healthScoreMeta(score);
@@ -102,9 +104,20 @@ export function HealthScoreDetail({ signalScore, breakdown }: HealthScoreDetailP
       {/* Explanation */}
       <ExplanationText score={score} />
 
-      {/* Breakdown bars */}
+      {/* Breakdown bars — collapsed by default (owner 21 Okt): 9 baris menjulang;
+          konten tetap di DOM (CSS-hidden) demi SEO. */}
       {grouped.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-border/50 space-y-4">
+        <div className="mt-4 pt-4 border-t border-border/50">
+        <button
+          type="button"
+          onClick={() => setShowDetail((v) => !v)}
+          className="w-full flex items-center justify-center gap-1.5 text-xs font-semibold text-text-secondary hover:text-text-primary py-1.5 transition-colors"
+          aria-expanded={showDetail}
+        >
+          {showDetail ? "Sembunyikan rincian indikator" : `Lihat rincian ${breakdown.length} indikator`}
+          <span className={`transition-transform duration-200 ${showDetail ? "rotate-180" : ""}`} aria-hidden="true">▾</span>
+        </button>
+        <div className={`${showDetail ? "" : "hidden"} space-y-4 pt-2`}>
           {grouped.map(({ group, items }) => (
             <div key={group}>
               <p className="text-[10px] font-mono font-semibold uppercase tracking-wider text-text-tertiary mb-2">
@@ -146,6 +159,7 @@ export function HealthScoreDetail({ signalScore, breakdown }: HealthScoreDetailP
               </div>
             </div>
           ))}
+        </div>
         </div>
       )}
     </div>

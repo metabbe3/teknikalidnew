@@ -117,8 +117,12 @@ export function TradingPlanCard({ plan }: { plan: TradingPlan }) {
         )}
       </div>
 
-      <div className="bg-bg-primary/60 px-4 py-2.5 border-t border-border/60">
-        <p className="text-xs text-text-secondary leading-relaxed">
+      <div className="bg-bg-primary/60 px-4 py-2 border-t border-border/60">
+        <p className="text-[10px] text-text-tertiary leading-snug">
+          ⚠ Edukatif, bukan rekomendasi jual/beli — keputusan ada di tangan Anda.
+        </p>
+        {/* Teks lengkap tetap di DOM (legal/SEO), hanya tidak ditampilkan */}
+        <p className="hidden" aria-hidden="true">
           Perhitungan ini bersifat edukatif berdasarkan indikator teknikal. Bukan rekomendasi membeli atau menjual saham. Keputusan investasi sepenuhnya menjadi tanggung jawab Anda. Selalu pertimbangkan risiko dan konsultasikan dengan pihak berlisensi.
         </p>
       </div>
