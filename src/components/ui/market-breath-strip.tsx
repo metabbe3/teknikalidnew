@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { cn, formatPercentPlain } from "@/lib/utils";
-import { stripJk, formatPrice } from "@/lib/utils";
+import { stripJk } from "@/lib/utils";
 
 export interface BreathData {
   advancersCount: number;
@@ -25,7 +25,7 @@ export function MarketBreathStrip({ data, className }: { data: BreathData; class
       {ihsg && ihsg.close !== null && (
         <span className="inline-flex items-center gap-1.5 font-mono w-full sm:w-auto">
           <span className="text-text-tertiary text-xs">IHSG</span>
-          <span data-live-price="^JKSE" className="font-bold tabular-nums text-text-primary">{formatPrice(ihsg.close)}</span>
+          <span data-live-price="^JKSE" className="font-bold tabular-nums text-text-primary">{ihsg.close.toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           {ihsg.changePercent !== null && (
             <span data-live-percent="^JKSE" className={cn("font-semibold tabular-nums", ihsg.changePercent >= 0 ? "text-bullish" : "text-bearish")}>
               {ihsg.changePercent >= 0 ? "+" : "-"}{formatPercentPlain(ihsg.changePercent)}%
