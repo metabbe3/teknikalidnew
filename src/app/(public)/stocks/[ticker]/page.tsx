@@ -23,6 +23,7 @@ import { StockFAQWidget } from "@/components/faq/stock-faq-widget";
 import { CompanyDataTabs } from "@/components/stock/company-data-tabs";
 import { StockPaperPosition } from "@/components/paper-trading/stock-paper-position";
 import { HealthScoreDetail } from "@/components/stock/health-score-detail";
+import { SignalBreakdownDetails } from "@/components/stock/signal-breakdown-details";
 import { StockLogo } from "@/components/stock/stock-logo";
 import { RelatedStocks } from "@/components/stock/related-stocks";
 import { StockAiModalButton } from "@/components/stock/stock-ai-modal";
@@ -622,6 +623,7 @@ export default async function StockDetailPage({
                       <p className="mt-1.5 text-[11px] text-text-tertiary">Gabungan 12 indikator teknikal — RSI, MACD, tren, momentum, volume</p>
                     </div>
                   </div>
+                  <SignalBreakdownDetails breakdown={signalBreakdown} />
                 </div>
               );
             })()}
@@ -963,7 +965,6 @@ export default async function StockDetailPage({
                   message="Daftar gratis untuk membuka data statistik lengkap — OHLC harian, volume, SMA, dan range 52 minggu."
                 />
               )}
-              {fullAccess && <FundamentalData data={fundamentals} />}
             </div>
           </div>
           <div className="space-y-4">
@@ -971,15 +972,12 @@ export default async function StockDetailPage({
               <div className="space-y-4">
                 <span id="plan" className="block scroll-mt-24" />
                 {tradingPlan && <TradingPlanCard plan={tradingPlan} />}
-                <HealthScoreDetail
-                  signalScore={indicators?.signalScore ?? null}
-                  breakdown={signalBreakdown}
-                />
+                <FundamentalData data={fundamentals} />
               </div>
             ) : (
               <LoginGate
-                feature="Health Score & Fundamental"
-                message="Daftar gratis untuk membuka Health Score detail, data fundamental, dan trading plan lengkap."
+                feature="Trading Plan & Fundamental"
+                message="Daftar gratis untuk membuka kalkulator trading plan dan data fundamental saham."
               />
             )}
           </div>
