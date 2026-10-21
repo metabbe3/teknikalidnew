@@ -1620,6 +1620,13 @@
       },
       "prd_id": "idea-2026-10-16-2",
       "research_note": "CHECKPOINT PA nightly 16 Okt 22:0x WIB: tree DEPLOYED = teknikalidnew main@994af4f (git log 16 Okt; /pasar live pagi ini commit 6528d86). Data DB read-only (teknikalidnew-db-1): ind_1d max=2026-10-16, 516.331 rows interval=1d, 689 hari histori; brief-pasar 7d=5/6 slot; reg 30d=9 User; returning IP 7d=6; /pasar since-live=4 views/1 IP (baseline); waitlist=0 (grep schema+src: tidak ada model/halaman); KPI 7d: /stocks 283v, organic 90v, ai-search 3v."
+    },
+    {
+      "id": "idea-2026-10-21-1",
+      "status": "candidate",
+      "source": "cto-idle",
+      "title": "Header IHSG pakai prefix Rp utk poin indeks (5.279) — drop Rp utk ^JKSE, match konvensi index",
+      "data": "Bukti fisik 21 Okt 07:3x: homepage header <span data-live-price=\"^JKSE\">Rp5.279</span> (grep /tmp/home.html) — indeks ditulis Rp padahal itu poin; DB StockPrice ^JKSE 20 Okt close=5278.89 (+5,65% vs 4996.61 cocok judul brief hari ini). Saham individual tetap Rp. KPI: TRUST (data tampil benar)."
     }
   ]
 }

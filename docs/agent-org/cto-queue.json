@@ -1567,7 +1567,9 @@
       "spec": "BUKTI: idx-sync.log mtime 12 Okt 08:20 berisi EPERM: process.cwd failed uv_cwd (node v25) — launchd worker kehilangan akses cwd repo (TCC Documents). Plist com.teknikalid.idx-sync Day=1/06:00 (Senin saja). FIX (owner action, TCC = security domain): grant Full Disk Access utk node/launchd ATAU pindah log+cwd ke path non-TCC; verify: Senin depan 06:00 log bersih + sync row baru. Bukan kerja builder (TCC interactive prompt). [UPDATE CTO 19 Okt 07:45: gagal LAGI Senin 19 Okt 06:00 — launchctl exit 1, idx-sync.log beku 12 Okt (bahkan penulisan log kena TCC), MAX(Stock.updatedAt)=2026-10-12 01:09 = beku 7 hari; daftar emiten basi; TETAP butuh owner TCC grant — di luar domain CTO/builder]",
       "scheduled_slot": "owner TCC grant; verify Senin 20 Okt 06:00",
       "train": "T-1020-N",
-      "blocked_checked_at": "2026-10-19 18:50 WIB"
+      "blocked_checked_at": "2026-10-21 07:5x WIB (CTO pagi — slot ke-3+, ESCALATE)",
+      "needs": "Owner: System Settings > Privacy & Security > Files and Folders (atau Full Disk Access) utk launchd com.teknikalid.idx-sync ke ~/Documents — TCC prompt muncul sekali, atau grant manual.",
+      "owner_brief": "READ-ONLY evidence 21 Okt 07:35: launchctl print = runs 0 / never exited; idx-sync.log beku 12 Okt 08:20 (EPERM uv_cwd TCC ~/Documents); Stock.updatedAt MAX=2026-10-12 (1451 rows); launchctl list kolom exit 0 = misleading (wrapper tidak pernah sampai node). YANG DIBUTUHKAN OWNER: approve TCC prompt utk launchd idx-sync (System Settings > Privacy & Security), atau jalankan sekali manual: bash ~/.hermes/scripts/teknikal_idx_sync.sh lalu tekan \"Allow\" di dialog TCC. File yang disentuh: TIDAK ADA (murni macOS permission, bukan kode). Risiko: rendah — sync idempotent upsert daftar emiten IDX; rollback: n/a (tidak ada perubahan kode/DB destruktif). Verifikasi pasca-grant: launchctl kickstart gui/$(id -u)/com.teknikalid.idx-sync lalu cek idx-sync.log fresh + Stock.updatedAt > 20 Okt."
     },
     {
       "id": "qa-2026-10-13-01",

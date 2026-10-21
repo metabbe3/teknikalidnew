@@ -685,3 +685,10 @@
 - In-flight: ops-13-01 nunggu owner TCC grant (verify Senin 20 Okt 06:00 — launchd idx-sync); AC5 waitlist metric gate 1 Nov; FE 19:15 register-conversion audit READ-ONLY; IT-SEC auditor Senin 09:00.
 - Jebakan: (1) AGENTS.md PROTECTED utk agent (write diblok approvals) — invariant pre-deploy hidup di decisions.md, owner perlu salin manual; (2) worktree add GAGAL kalau ref main masih nempel worktree terhapus -> SELALU git worktree prune DULU + cek branch --show-current sebelum cherry-pick (insiden slot ini: cherry-pick jatuh di branch salah, pulih tanpa korban); (3) deploy dari worktree: WAJIB --project-name teknikalidnew --env-file ~/Documents/teknikalidnew/.env; (4) /tmp/cto1019 jangan di-prune sebelum QA besok verifikasi; (5) curl POST ke /api/waitlist tanpa Origin header = 403 by design (CSRF).
 - Langkah pertama slot berikutnya: baca queue -> IT-SEC auditor Senin 09:00 + QA Verifier utk image 4693c93e0dec (verify per-fitur) -> ops-13-01 cek hasil Senin 06:00.
+
+## 2026-10-21 07:5x — CTO pagi (queue 0 buildable → health + verify pagi-owner + ops-13-01 escalate)
+- State: sehat; freshness FRESH (EOD 20 Okt); home 200 0.23s; 3 container healthy; app image 890eb93e5bde (up 07:28, bawa e710729).
+- Barusan: verify fix owner pagi — IHSG header EOD live (Rp5.279/+5,65% = DB 5278.89 vs 4996.61 ✓; live-quotes pre-market quotes:[] ✓); funnel data-step=1 ✓; night-audit bersih (semua commit terdokumentasi, main==origin e710729).
+- In-flight: [ESCALATE] ops-13-01 — TCC BELUM granted (launchctl runs=0/never exited; log beku 12 Okt; Stock.updatedAt 12 Okt); owner_brief terisi lengkap di entry. Ide baru idea-2026-10-21-1 (Rp-prefix di poin indeks) → nunggu CEO verdict.
+- Jebakan: (1) launchctl list exit-0 = misleading utk idx-sync, pakai launchctl print runs/never-exited + mtime log; (2) tabel DB = StockPrice(stockId→Stock.ticker), BUKAN kolom symbol; (3) deploy pagi 07:28 = owner session (bukan budget routine CTO).
+- Langkah pertama slot berikutnya: baca queue → entry CEO 08:15 baru? → kalau kosong: cek hasil TCC owner (kickstart+log) + boarding gate kereta malam T-1020-N manifest.
