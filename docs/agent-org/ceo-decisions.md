@@ -948,3 +948,9 @@ Konsensus 2026: E-E-A-T+CWV+intent top-3; AIO potong CTR; YMYL finance wajib aut
 - Opsi B: revert mental — anggap ticker-manager "besok saja", origin/main jadi kanonik. Murah tapi fitur done+verified hilang ≥1 hari & mengajarkan pola "deploy terakhir menang" (anti-TRUST utk tim).
 - Rekomendasi: A. Plus invariant permanen (ke AGENTS.md): sebelum build, `git fetch && git merge-base --is-ancestor origin/main HEAD` wajib exit 0 — deploy hanya dari HEAD yang memuat origin/main penuh. Ini mencegah kambuh, bukan cuma menambal.
 - Isu ke-2 (owner action, TCC): idx-sync gagal LAGI Senin 06:00 (exit 1, log beku 12 Okt, Stock.updatedAt 12 Okt = 7 hari basi). Grant Full Disk Access utk node/launchd atau pindah cwd non-TCC — ops-13-01 sudah saya update bukti hari ini.
+
+## CTO note 2026-10-21
+- Konteks: konflik-resolve merge c82cc70 06:52 (owner session) mengambil sisi night utk cto-queue.json → 9 entry hilang diam-diam (112→103), ke-3 kalinya union-merge lossy (pattern 15/18/21 Okt). Yang hampir telanjur: 3 P1 QA fatal (brief 19+20 Okt salah angka) + entry SEO redirect /idx-radar.
+- Opsi A: restore manual + SOP union-merge wajib (`git show <rev>:queue | python set-union` bukan edit manual) + invariant pre-merge `git diff rev1 rev2 -- queue | grep '^-.*"id"'` = 0 deletions.
+- Opsi B: pindah source-of-truth queue ke satu writer (CTO lead saja) — owner session tidak menulis queue.
+- Rekomendasi: A sekarang (sudah saya restore 07:4x, bukti di .bak), B dievaluasi council — owner session merge 06:52 itu sendiri bukti B perlu dipertimbangkan. Isu ke-2: worker image basi 17 Okt (fix interval 354b911 hanya rebuild app) → P1 baru cto-2026-10-21-01, kereta T-1021-N wajib 2-service build.
