@@ -30,7 +30,7 @@ export class StockAlertAgent extends BaseAgent {
 
     // Fetch today's indicators with stock info
     const todayIndicators = await prisma.stockIndicator.findMany({
-      where: { date: today, interval: "daily" },
+      where: { date: today, interval: "1d" },
       include: {
         stock: { select: { ticker: true, id: true } },
       },
@@ -38,7 +38,7 @@ export class StockAlertAgent extends BaseAgent {
 
     // Fetch yesterday's indicators for comparison
     const yesterdayIndicators = await prisma.stockIndicator.findMany({
-      where: { date: yesterday, interval: "daily" },
+      where: { date: yesterday, interval: "1d" },
       include: {
         stock: { select: { ticker: true } },
       },

@@ -441,7 +441,7 @@ export const paperTradingService = {
         select: { averageDailyVolume3Month: true },
       }),
       prisma.stockIndicator.findFirst({
-        where: { stock: { ticker }, interval: "daily" },
+        where: { stock: { ticker }, interval: "1d" },
         orderBy: { date: "desc" },
         select: { isGorengan: true },
       }),

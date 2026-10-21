@@ -50,7 +50,7 @@ export class AnomalyDetectionAgent extends BaseAgent {
 
     // Fetch today's indicators
     const todayIndicators = await prisma.stockIndicator.findMany({
-      where: { date: today, interval: "daily" },
+      where: { date: today, interval: "1d" },
       include: { stock: { select: { ticker: true } } },
     });
 
@@ -58,7 +58,7 @@ export class AnomalyDetectionAgent extends BaseAgent {
     const fiveDaysAgo = new Date(today);
     fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
     const pastIndicators = await prisma.stockIndicator.findMany({
-      where: { date: fiveDaysAgo, interval: "daily" },
+      where: { date: fiveDaysAgo, interval: "1d" },
       include: { stock: { select: { ticker: true } } },
     });
     const pastIndicatorMap = new Map(pastIndicators.map((i) => [i.stock.ticker, i]));

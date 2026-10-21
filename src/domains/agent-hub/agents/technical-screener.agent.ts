@@ -58,7 +58,7 @@ Gaya:
 
     // 1. Fetch today's indicators with stock info
     const todayIndicators = await prisma.stockIndicator.findMany({
-      where: { date: today, interval: "daily" },
+      where: { date: today, interval: "1d" },
       include: { stock: { select: { ticker: true, name: true, id: true } } },
     });
 
@@ -68,7 +68,7 @@ Gaya:
 
     // 2. Fetch yesterday's indicators for crossover detection
     const yesterdayIndicators = await prisma.stockIndicator.findMany({
-      where: { date: yesterday, interval: "daily" },
+      where: { date: yesterday, interval: "1d" },
       include: { stock: { select: { ticker: true } } },
     });
     const yesterdayMap = new Map(yesterdayIndicators.map((i) => [i.stockId, i]));
