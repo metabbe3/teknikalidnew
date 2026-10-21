@@ -283,3 +283,5 @@ Ke-3 kalinya klaim kesegaran sinyal lolos generator Mandor: qa-2026-09-27-01 (hi
 - Gejala: `git worktree add /tmp/cto1019 main` FATAL (main masih ter-checkout di /tmp/hs1018 yang SUDAH TERHAPUS dari disk tapi ref worktree belum di-prune) → `cd /tmp/cto1019` gagal → perintah berikutnya (cherry-pick) tereksekusi di repo utama branch night/prd-18-01.
 - Dampak: 2 commit emoji sempat menempel di branch salah; 0 kehilangan data (file dirty utuh, reset --mixed + restore pulihkan).
 - Aturan baru: (1) SELALU `git worktree prune` SEBELUM add; (2) verifikasi `git branch --show-current` + `pwd` SEBELUM operasi mutasi (cherry-pick/merge/commit); (3) jangan chain `cd X && cmd` dalam satu shell call tanpa guard — pisahkan navigasi dari mutasi.
+
+## 2026-10-21 | org-infra | Backlog drift #2 (merge lossy membunuh entry backlog, bukan cuma queue) | Pencegahan: mirror product-backlog.mirror.json HARUS di-update tiap malam (sudah ada) + CEO run WAJIB diff programatik mirror-vs-current sebelum analisis; merge konflik docs = union-merge script (SOP CTO 21 Okt) berlaku juga utk backlog; solusi akar = relokasi docs/agent-org keluar ~/Documents (iCloud dataless) — menunggu owner.

@@ -1431,8 +1431,8 @@
     {
       "id": "sec-2026-10-19-01",
       "date": "2026-10-19",
-      "priority": "P0",
-      "status": "candidate",
+      "priority": "P1",
+      "status": "dispatched",
       "type": "security",
       "source": "itsec-blue",
       "title": "INSIDEN LIVE: Docker daemon mati ~09:37 → teknikal.id + hivepos.id 502 di jam buka pasar (Senin)",
@@ -1447,13 +1447,15 @@
         "selfheal.log 09:38:51+ 'docker daemon not reachable'",
         "curl 3x 502 kedua domain @09:42-45 WIB",
         "log show Docker Desktop exit handler 09:40:30"
-      ]
+      ],
+      "ceo_verdict": "APPROVE 21 Okt — SPOF Docker Desktop = 2 org prod 502 market-open Senin; detection+alert malam ini; auto open -a Docker = owner gate",
+      "insight": "Pilar TRUST. Split: (1) watchdog 502-detection → dispatch sre-2026-10-21-01; (2) auto-restart daemon = blocked_for_owner."
     },
     {
       "id": "sec-2026-10-19-02",
       "date": "2026-10-19",
-      "priority": "P2",
-      "status": "candidate",
+      "priority": "P3",
+      "status": "blocked_for_owner",
       "type": "security",
       "source": "itsec-blue",
       "title": "Host drift: iCloud Drive logged-out (FS EINTR) + LAN-exposed http.server :8791",
@@ -1467,7 +1469,120 @@
         "brctl BRCloudDocsErrorDomain Code=2",
         "lsof -p 6077 http.server cwd warungqr 3d19h",
         "netstat tcp46 *.8791 LISTEN"
-      ]
+      ],
+      "ceo_verdict": "HOLD 21 Okt — port 8791 zombie SUDAH MATI (lsof kosong, verified 08:4x); sisa iCloud re-login/relokasi repo = owner-only",
+      "ceo_decision_pending": true,
+      "insight": "Akar backlog/queue drift kemungkinan iCloud dataless FS — owner re-login ATAU relokasi docs/agent-org keluar ~/Documents."
+    },
+    {
+      "id": "idea-2026-10-19-1",
+      "date": "2026-10-19",
+      "priority": "P1",
+      "status": "spec_ready",
+      "promoted_date": "2026-10-19",
+      "type": "feature",
+      "source": "Product Agent nightly buffer-keeper 19 Okt (SQL teknikalidnew-db-1 read-only via docker exec psql; teknikalid_growth.py kpis; grep repo @ 4c1dae2 / night-prd-2026-10-18-01)",
+      "title": "P1 RETENTION: user baru 90% one-and-done (9/10 tak pernah kembali setelah hari register) — day-2 pull email ringkasan pantauan + sinyal mingguan",
+      "north_star": "returning users + time spent — funnel register 2-step & Retention Loop v1 sudah live tapi retensi 0: hanya 1/10 user baru kembali hari berikutnya; register tanpa kembali = north star stagnan",
+      "user_story": "Sebagai user baru yang mendaftar & memantau saham (watchlist/guest-star), saya menerima email ringkas 1-2 hari kemudian berisi pergerakan emiten pantauan saya + 3 sinyal mingguan teratas, supaya saya punya alasan konkret untuk kembali ke teknikal.id alih-alih sekadar menerima email verifikasi lalu pergi selamanya.",
+      "acceptance_criteria": [
+        "AC1 INFRA: mailer terpusat (1 file util) via SMTP provider ATAU API (Resend dsb, 0 dep berbayar wajib; keputusan CTO) dikonfigurasi via env; log kirim per email (tabel EmailLog baru ATAU reuse CronLog). Bukti: grep util + env var terpasang di .env.production (nilai disamarkan) + 1 email uji sampai owner.",
+        "AC2 JADWAL: job harian (cron internal ATAU launchd script ~/.hermes/scripts, pola idx-sync) memilih penerima = user dengan createdAt 1-2 hari lalu DAN (Watchlist>0 ATAU PageView userId day-0 >1 view ATAU event star_add); query SQL terdokumentasi di spec. Bukti: log job menampilkan daftar penerima + alasan seleksi.",
+        "AC3 KONTEN: template email statis berisi sapaan nama, per-ticker pantauan (close + chg% vs hari sebelumnya, sumber StockPrice existing) + link deep /stocks/{ticker}?utm_source=retention&utm_medium=email, dan 3 tautan sinyal (golden-cross/oversold/volume-spike — daftar sama dengan for-you-signals.tsx). Bukti: preview HTML ter-render + grep utm.",
+        "AC4 TERTESTABLE: pasca-live 14 hari, returning-user harian (SQL PageView distinct userId dgn last_view > day-0 register) naik dari baseline 1/10 → target >=3/10 user baru; bila tetap <=1/10 setelah 14 hari penuh → catat verdict iterate/kill di entry ini, bukan deploy tambahan.",
+        "AC5 NO-REGRESI & GUARDRAIL: dedupe kirim (max 1 email per user, bukan loop mingguan); unsubscribe link statis mailto; verifikasi SPF/DKIM header sebelum kirim massal; register funnel 2-step & GuestStar tak tersentuh."
+      ],
+      "data_evidence": "SQL teknikalidnew-db-1 19 Okt 22:0x WIB read-only: (1) one-and-done — JOIN User x PageView last-day: 10 user baru 45d, 9 hanya last view di hari yang sama dengan createdAt, hanya 1 (cmv6oulab..., Tri Sulardi 13 Okt) kembali setelah day-0; (2) register 7d = 2, 28d = 8, total 28 user; (3) /auth/signin 16 view/14d vs /auth/register 7 view/14d; (4) EngagementEvent cta_click 30d total = 2 (star_add 1, preset_copy 1); (5) Watchlist DB total 12 row / 4 user; guest-star retention loop v1 live (guest-star.tsx + auth-provider migrator batch) tapi tanpa day-2 pull; (6) kpis growth: views_7d 817, register stagnan 2/minggu.",
+      "impact": 5,
+      "effort": 3,
+      "target_files": [
+        "src/lib/mailer.ts (estimasi baru — util kirim terpusat)",
+        "scripts/ atau ~/.hermes/scripts/teknikalid_retention_email.py (estimasi baru — job harian)",
+        "prisma/schema.prisma (bila EmailLog baru — keputusan CTO)",
+        "src/components/home/for-you-signals.tsx (referensi konten sinyal, read-only)"
+      ],
+      "db_migrations": false,
+      "db_migrations_note": "bila EmailLog tabel baru dipilih → jadi true; rekomendasi reuse CronLog agar 0 migrasi",
+      "dependencies": [
+        "nodemailer (evaluasi; SMTP) ATAU fetch API provider (0 dep baru bila HTTP)",
+        "env: SMTP_HOST/SMTP_USER/SMTP_PASS atau API_KEY provider email (owner-gated)"
+      ],
+      "risk": "med",
+      "risk_note": "email keluar atas nama domain teknikal.id → deliverability/spam; env credentials & verifikasi domain = owner-gated; kode, template, job = agent",
+      "estimate_tool_calls": 22,
+      "research_basis": "tree deployed teknikalidnew main 4c1dae2 (= origin/main; image live 4693c93e0dec hasil reconcile cto-2026-10-19-01; handoff 19 Okt 18:52); SQL teknikalidnew-db-1 read-only 19 Okt 22:0x",
+      "research_note": "Pola satu-malam: verifikasi/login Google (accounts.google.com 22 referral/7d) lalu hilang. Retention Loop v1 menyelesaikan penyimpanan tapi bukan alasan kembali. Email = satu-satunya saluran re-engagement yang dimiliki (28 alamat user nyata di DB), belum pernah dipakai. prd-2026-10-18-01 funnel 2-step menyentuh pintu masuk, bukan pintu keluar.",
+      "created_at": "2026-10-19T22:08+07:00",
+      "research_brief": "RESEARCH BRIEF (Researcher 20 Okt 2026) — VERDICT: BUILD (FDE-READY; PRD lengkap). Day-2 digest personal (isi watchlist user + sinyal produk, bukan blast promosi) = pola terbukti industri: (1) Airship lifecycle benchmarks: app dengan onboarding campaign day-2 activation 20% vs 16% tanpa; kategori Finance day-2 median 13-18%, top performer 33-39% — 1/10 teknikal.id jauh di bawah pasar; (2) Tickertape (Amplitude case): market summary pre-open + portfolio summary = engine retensi, renewal rate naik ke 65%; (3) Simply Wall St: feed update portofolio (kategori 'Monitoring' jobs) = prediktor tunggal terbesar retensi paid & free; (4) playbook wealth-tech India: laporan personal dengan angka milik user CTR 3x vs alert generik, weekly active login +42%; (5) PLG checklist: day-2 return email ke non-returning user = best practice standar; onboarding series 1-3 pesan open/click tertinggi (GetResponse via Stripo). BEST PRACTICE: (1) TAMBAHKAN suppress rule di seleksi AC2: exclude user yang SUDAH kembali di day+1 (email hanya untuk one-and-done) — anti-fatigue, sesuai framework 'react, don't broadcast'; (2) jaga konten murni service (data watchlist + sinyal dari produk sendiri, TANPA materi promosi) — di bawah UU PDP 27/2022 email transaksional/service dikecualikan dari consent, tetapi konten promosi di dalamnya mereklassifikasi jadi marketing yang wajib consent eksplisit; wajib identitas pengirim jelas + unsubscribe berfungsi; (3) jam kirim pagi sebelum open (coba 08:30-08:45 WIB) — ketepatan waktu terhadap sesi market adalah bagian dari nilai (Tickertape); (4) ukur CLICK/return SQL, bukan open rate (Apple MPP menggelembungkan open — Stripo); (5) mulai series pendek: day-2 digest + weekly digest saja, jangan 5+ email (open rate turun ke 25-35% di email ke-5/6). ANTI-PATTERN: batch-and-blast satu template seragam (triggered mengalahkan broadcast; Epsilon: open triggered +72,6%); alert pasar generik fear-based ('IHSG anjlok, invest sekarang!') — playbook India menunjukkan pola ini GAGAL vs personalisasi; welcome-only tanpa follow-up terjadwal (gap terlalu panjang → user lupa registrasi — Teradata); optimisasi subject line berdasarkan open rate. SUMBER: growth.airship.com lifecycle-benchmarks-activation (PDF); amplitude.com/blog/tickertape-smarter-analytics; infinitenuance.com/2024/11/27 case-study-simply-wall-st; productgrowth.in/resources/playbooks/retention/portfolio-insights-retention; getfairview.com/blog/plg-onboarding-checklist; research.stripo.email/welcome-email-open-rates; courier.com/blog/onboarding-notifications-first-48-hours; aisend.app/compliance/email-laws-in-indonesia; UU 27/2022 (jdih.kemenkeu.go.id). BUKTI: KUAT — multi-sumber konsisten, ada benchmark langsung kategori Finance & kasus stock-platform (Tickertape, Simply Wall St, Bridgewise 2x logins).",
+      "restored_from": "mirror-2026-10-20 (backlog drift #2, CEO 21 Okt: hilang pasca merge lossy 20 Okt)"
+    },
+    {
+      "id": "idea-2026-10-19-2",
+      "date": "2026-10-19",
+      "priority": "P2",
+      "status": "spec_ready",
+      "promoted_date": "2026-10-19",
+      "target": "Retention Loop v1",
+      "type": "feature",
+      "source": "Product Agent nightly buffer-keeper 19 Okt (follow-up Retention Loop v1 idea-2026-10-09-1; EngagementEvent SQL 30d; grep repo @ 4c1dae2)",
+      "title": "P2 STICKINESS: guest-star dipakai 1x/30d meski live di 2 permukaan — tak ada feedback 'tersimpan' & tak ada panel 'Pantauan Perangkat' utk guest",
+      "north_star": "returning users + time spent — guest-star = lock-in termurah (0 akun, localStorage), tapi tanpa permukaan daftar = tak ada loop kembali",
+      "user_story": "Sebagai pengunjung anonim yang menandai saham dengan bintang (GuestStar), saya ingin melihat daftar 'Pantauan perangkat ini' saat kembali (panel di /stocks) dengan status bintang tersinkron, supaya investasi klik pertama saya terlihat tersimpan dan saya punya alasan kembali besok tanpa akun.",
+      "acceptance_criteria": [
+        "AC1 PERMUKAAN DAFTAR: panel 'Pantauan perangkat ini' render di /stocks untuk guest; item = ticker + close + chg% (reuse market-snapshot.service SATU PINTU — DILARANG compute movers/breadth baru). Bukti: grep komponen + script/e2e render list setelah toggle star.",
+        "AC2 FEEDBACK SAAT TOGGLE: saat star aktif, chip inline 'Tersimpan — N emiten dipantau di perangkat ini' muncul <=2s (tanpa lib toast baru). Bukti: grep copy + e2e visibility.",
+        "AC3 HUBUNGAN AKUN: CTA 'Simpan permanen + lintas perangkat' di panel → /auth/register; pasca-register migrasi batch existing (auth-provider.tsx) tetap jalan tanpa regresi (e2e: toggle 2 star → register → Watchlist DB 2 row utk user baru).",
+        "AC4 TERTESTABLE: pasca-live 14 hari, EngagementEvent cta_click label star_add naik dari baseline 1/30d → >=8/30d DAN distinct anonId >=5; bila <3 setelah 14 hari penuh → verdict iterate/kill dicatat di entry ini.",
+        "AC5 NO-REGRESI: LoginGate/screener tak berubah perilaku; LCP /stocks tidak regresi >10% (panel below-the-fold/lazy); 0 dependency baru; GuestStar tetap SSR-safe."
+      ],
+      "surface_check": {
+        "guest_star_live_at": [
+          "src/components/stock/stock-action-badge.tsx (halaman detail)",
+          "src/components/screener/screener-results.tsx (list screener)"
+        ],
+        "missing_surface": "daftar pantauan perangkat utk guest — grep readGuestWatchlist hanya dipakai hook use-guest-watchlist + migrator auth-provider = 0 permukaan list"
+      },
+      "data_evidence": "SQL+grep 19 Okt: EngagementEvent cta_click 30d = 2 total (star_add 1, preset_copy 1) — fitur live di 2 permukaan sejak idea-2026-10-09-1 tapi nyaris tak terpakai & hasilnya tak terlihat; dwell_tick 689/49 anonId & scroll_max 365/41 (14d) = perhatian ada, konversi aksi nyaris 0; Watchlist DB 12 row/4 user; one-and-done 9/10 user baru (SQL join User x PageView). Hook: src/hooks/use-guest-watchlist.ts aktif hanya unauthenticated, CustomEvent GUEST_WATCHLIST_EVENT sync lintas komponen; readGuestWatchlist dipakai HANYA hook + migrator (grep) = tidak ada permukaan list.",
+      "impact": 4,
+      "effort": 2,
+      "target_files": [
+        "src/app/(public)/stocks/page.tsx (rail/panel pantauan guest — estimasi modifikasi)",
+        "src/components/screener/ (komponen panel guest-watchlist baru — komposit GuestStar + data market-snapshot)",
+        "src/components/stock/guest-star.tsx (feedback chip — modifikasi kecil)",
+        "src/hooks/use-guest-watchlist.ts (referensi; kemungkinan expose count helper)"
+      ],
+      "deterministic_v2_note": "target_files estimasi berbasis grep tree 4c1dae2; dependencies & risk dicek ulang CTO saat spec teknis",
+      "dependencies": [
+        "unknown (0 paket baru direncanakan — reuse CustomEvent + market-snapshot.service)"
+      ],
+      "risk": "low",
+      "risk_note": "read-mostly UI; jaga SATU PINTU market-snapshot (qa-30-01) — jangan compute movers sendiri; LCP jaga via lazy render",
+      "estimate_tool_calls": 16,
+      "research_basis": "tree deployed teknikalidnew main 4c1dae2 (= origin/main; image live 4693c93e0dec; handoff 19 Okt 18:52); SQL teknikalidnew-db-1 read-only 19 Okt 22:0x; grep src/ 19 Okt",
+      "research_note": "Adopsi GuestStar 1 klik/30 hari padahal 2 permukaan = masalah visibilitas feedback, bukan fitur. Panel daftar = loop tertutup pertama utk guest (star → lihat hasil → kembali). Prasyarat murah bagi idea-2026-10-19-1 (email day-2): panel membuat 'pantauan' nyata sebelum jadi isi email.",
+      "created_at": "2026-10-19T22:08+07:00",
+      "db_migrations": false,
+      "research_brief": "RESEARCH BRIEF (Researcher 20 Okt 2026) — VERDICT: BUILD (FDE-READY). Pola guest-state (localStorage) + daftar tersimpan TERLIHAT saat kembali + merge saat register = playbook mapan guest-wishlist e-commerce: guest yang boleh menyimpan tanpa akun menyimpan lebih banyak ('Require sign-in means fewer shoppers save anything at all' — Wishlist Notify); save-and-return loop butuh permukaan daftar (WooCommerce SaveTo Wishlist); merge-on-registration = standar industri; feedback inline saat aksi simpan = microinteraction standar; guest star = fase 'investment' Hooked model (data yang user tanam membuat produk makin sulit ditinggalkan — getfairview). Catatan jujur: bukti terkuat datang dari e-commerce wishlist; bukti langsung di finance/stock-content lebih tipis → perlakukan target AC4 sebagai hipotesis terukur dengan iterate/kill, bukan kepastian. BEST PRACTICE: (1) feedback simpan + counter ('N emiten dipantau') tampil pada toggle PERTAMA, bukan hanya di panel; (2) CTA register kontekstual dengan value nyata lintas perangkat (sudah benar di AC3) — jangan popup paksa; setelah user dismiss, diamkan minimal 30 hari (pola Wishlist Notify); (3) merge-on-register idempoten — 0 duplikat row Watchlist (e2e AC3 sudah mensyaratkan; tambahkan kasus star sama saat register ulang); (4) panel lazy/below-fold sesuai AC5, jangan sentuh LCP /stocks; (5) metrik wajib server-side (EngagementEvent anonId, AC4 sudah benar) — localStorage bukan sumber metrik retensi. ANTI-PATTERN: memaksa login untuk bisa star (membunuh save rate — mode 'Allow' mengalahkan 'Require sign-in'); prompt register pada SETIAP toggle (pengalaman tidak relevan sekali saja sudah merusak persepsi seluruh flow — Encharge); menghitung bintang tersimpan dari localStorage sebagai metrik retensi (hilang saat clear storage). SUMBER: wishlistnotify.com/help/settings-guest-experience-tab; savetowishlist.com/woocommerce-guest-wishlist; developers.customerfields.com/front-end-api/guest-data; getfairview.com/blog/plg-onboarding-checklist (Hooked investment). BUKTI: SEDANG — pola terbukti lintas industri e-commerce; bukti langsung finance lemah → biarkan AC4 (iterate/kill 14 hari) jadi hakim dengan data internal.",
+      "restored_from": "mirror-2026-10-20 (backlog drift #2, CEO 21 Okt: hilang pasca merge lossy 20 Okt)"
+    },
+    {
+      "id": "idea-2026-10-20-1",
+      "date": "2026-10-20",
+      "type": "feature",
+      "priority": "P2",
+      "status": "idea",
+      "source": "KEYWORD-RESEARCH mingguan 20 Okt (sample 8 halaman /saham/*; GSC diff 14-20 vs 7-13 Okt)",
+      "title": "AEO + programmatic quality /saham/*/kenapa-naik-hari-ini: FAQPage+Article schema 0% + uniqueness 39% (gagal gate 40%; pasangan terburuk PTRO<->BRIS similarity 0.80) — halaman moat AI-search tapi tak layak direkomendasikan AI crawler",
+      "north_star": "AI_SEARCH (referrer AI 3 views/7d chatgpt.com — satu-satunya jalur AI) + CONTENT",
+      "hypothesis": "Halaman kenapa-naik = intent AI-answer-friendly, tapi tanpa schema + konten template kembar, AI crawler tak punya alasan memilih kita. variasi per arah-gerak/sektor = naikkan uniqueness & chance sitasi AI.",
+      "first_step": "ANALISIS DATA (no deploy): (1) ukur similarity full-population /saham/*/kenapa-naik (bukan sample 8); (2) audit schema JSON-LD per halaman; (3) formulan N variasi template (arah gerak x sektor x sinyal dominan) dari data StockIndicator existing; output 3-5 kandidat spec dgn done_when.",
+      "acceptance_criteria": [
+        "laporan coverage similarity + schema utk populasi penuh",
+        ">=1 kandidat spec_ready dgn done_when testable dalam 2 sprint"
+      ],
+      "assigned": "Product Agent Kamis 23 Okt 10:15",
+      "created": "2026-10-20",
+      "restored_from": "mirror-2026-10-20 (backlog drift #2, CEO 21 Okt: hilang pasca merge lossy 20 Okt)"
     }
   ],
   "items": [
@@ -1623,10 +1738,13 @@
     },
     {
       "id": "idea-2026-10-21-1",
-      "status": "candidate",
+      "status": "dispatched",
       "source": "cto-idle",
       "title": "Header IHSG pakai prefix Rp utk poin indeks (5.279) — drop Rp utk ^JKSE, match konvensi index",
-      "data": "Bukti fisik 21 Okt 07:3x: homepage header <span data-live-price=\"^JKSE\">Rp5.279</span> (grep /tmp/home.html) — indeks ditulis Rp padahal itu poin; DB StockPrice ^JKSE 20 Okt close=5278.89 (+5,65% vs 4996.61 cocok judul brief hari ini). Saham individual tetap Rp. KPI: TRUST (data tampil benar)."
+      "data": "Bukti fisik 21 Okt 07:3x: homepage header <span data-live-price=\"^JKSE\">Rp5.279</span> (grep /tmp/home.html) — indeks ditulis Rp padahal itu poin; DB StockPrice ^JKSE 20 Okt close=5278.89 (+5,65% vs 4996.61 cocok judul brief hari ini). Saham individual tetap Rp. KPI: TRUST (data tampil benar).",
+      "priority": "P2",
+      "ceo_verdict": "APPROVE 21 Okt — bug data display homepage (Rp utk poin indeks ^JKSE), verified live Rp5.279. Pilar TRUST",
+      "queue_id": "ops-2026-10-21-01"
     }
   ]
 }

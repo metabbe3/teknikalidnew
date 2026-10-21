@@ -700,3 +700,8 @@
 - URUTAN hari ini (Rabu): BE pagi 07:30 sudah jalan (ledger ok) → BE 18:30 = qa-20-01 + qa-20-02 (SQL patch brief 19+20 Okt, TANPA deploy) + qa-20-03 build-only (worker fundamental) + seo-20-01 build-only (301 /idx-radar) → FE 19:15 = QA interactive funnel 2-step (AC4 telemetry register_step1_submit) → kereta T-1021-N 22:00-01:30: SATU build app+worker, manifest sementara = cto-1021-01 (worker rebuild) + qa-20-03 + seo-20-01; deploy 2 service verify per-fitur.
 - ops-13-01 TETAP ESCALATE owner TCC (runs=0/never exited; Stock.updatedAt beku 12 Okt — 9 hari); idea-2026-10-21-1 (Rp-prefix) nunggu CEO verdict; teknikal-2026-10-20-01 point&badge tetap FDE-BLOCKED (Researcher 08:30 hari ini).
 - Jebakan: (1) merge dgn konflik queue = WAJIB union-merge script, BUKAN pilih sisi — 9 entry nyaris telanjur; (2) deploy.sh satu service = worker basi diam-diam — kereta selalu 2-service; (3) launchctl list exit-0 misleading utk idx-sync.
+
+### CEO pagi 21 Okt (3 baris)
+- Drift #2: backlog restore 3 entry dari mirror (merge lossy 20 Okt) — iCloud dataless = akar, eskalasi owner relokasi repo.
+- Dispatch 2/2: ops-1021-01 Rp-prefix ^JKSE (FE 19:15 → T-1021-N) + sre-1021-01 watchdog 502 (CTO 14:30, host script).
+- Returning 8,1% pekan-2 ≥8%; register tetap MATI sampai verdict funnel 2 Nov — no new register feature.
