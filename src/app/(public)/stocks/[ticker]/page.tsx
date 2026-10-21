@@ -940,8 +940,6 @@ export default async function StockDetailPage({
                 Data indikator belum tersedia untuk saham ini
               </div>
             )}
-          </div>
-          <div className="space-y-4">
             {/* Key Stats + Fundamentals pindah ke kiri (owner 21 Okt): rail kanan
                 terlalu panjang (4 card stacked 1.809px) sementara kolom kiri
                 menyisakan ~1.500px kosong di bawah IndicatorPanel. */}
@@ -967,6 +965,8 @@ export default async function StockDetailPage({
               )}
               {fullAccess && <FundamentalData data={fundamentals} />}
             </div>
+          </div>
+          <div className="space-y-4">
             {fullAccess ? (
               <div className="space-y-4">
                 <span id="plan" className="block scroll-mt-24" />
