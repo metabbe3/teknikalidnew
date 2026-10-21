@@ -5,6 +5,7 @@ import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { SITE_URL } from "@/lib/constants";
+import { BarChart3, Search, TrendingUp } from "lucide-react";
 
  // 12 Okt: failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal
 
@@ -80,7 +81,7 @@ export default async function SahamPullbackSma20Page() {
       />
       <div className="mx-auto max-w-5xl px-4 py-8">
         <div className="mt-4 rounded-lg border border-border bg-bg-card p-4 text-sm text-text-secondary">
-          <strong className="text-text-primary">🎯 Mengapa pullback SMA20 penting?</strong> Trader disiplin tidak
+          <strong className="text-text-primary"> Mengapa pullback SMA20 penting?</strong> Trader disiplin tidak
           mengejar harga yang sudah naik. Membeli saat pullback di tren naik memberi entry lebih baik, stop loss
           lebih ketat, dan risk-reward lebih menguntungkan.
         </div>
@@ -136,13 +137,13 @@ export default async function SahamPullbackSma20Page() {
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/stocks?view=screener" className="rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-accent/90">
-            🔍 Screener Lengkap
+            <Search className="inline h-4 w-4" /> Screener Lengkap
           </Link>
           <Link href="/saham-golden-cross" className="rounded-lg border border-border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
-            📈 Saham Golden Cross
+            <TrendingUp className="inline h-4 w-4" /> Saham Golden Cross
           </Link>
           <Link href="/saham-volume-spike" className="rounded-lg border border-border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
-            📊 Saham Volume Spike
+            <BarChart3 className="inline h-4 w-4" /> Saham Volume Spike
           </Link>
         </div>
       </div>

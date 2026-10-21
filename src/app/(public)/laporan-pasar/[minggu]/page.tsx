@@ -6,6 +6,7 @@ import { MarketBreathStrip } from "@/components/ui/market-breath-strip";
 import { weeklyReportService, toMonday } from "@/domains/stock/weekly-report.service";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { SITE_URL } from "@/lib/constants";
+import { Gem, TrendingUp } from "lucide-react";
 
 export const revalidate = 3600;
 
@@ -259,10 +260,10 @@ export default async function LaporanMingguPage({
         {/* Cross-links + prev week */}
         <div className="flex flex-wrap gap-3 border-t border-border pt-6">
           <Link href="/saham-golden-cross" className="rounded-lg border border-border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
-            📈 Saham Golden Cross Hari Ini
+            <TrendingUp className="inline h-4 w-4" /> Saham Golden Cross Hari Ini
           </Link>
           <Link href="/saham-oversold" className="rounded-lg border border-border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
-            💎 Saham Oversold
+            <Gem className="inline h-4 w-4" /> Saham Oversold
           </Link>
           <Link href={`/laporan-pasar/${prevSlug}`} className="rounded-lg border border-border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
             ← Laporan minggu sebelumnya

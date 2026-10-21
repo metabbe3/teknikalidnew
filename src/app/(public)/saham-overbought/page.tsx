@@ -5,6 +5,7 @@ import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { formatPrice, formatPercent, stripJk, changeColor, rsiColor } from "@/lib/utils";
 import { SITE_URL } from "@/lib/constants";
+import { Gem, Search, TrendingUp } from "lucide-react";
 
  // 12 Okt: failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal
 
@@ -79,7 +80,7 @@ export default async function SahamOverboughtPage() {
       />
       <div className="mx-auto max-w-5xl px-4 py-8">
         <div className="mt-4 rounded-lg border border-orange-200 bg-orange-50 p-4 text-sm dark:border-orange-900 dark:bg-orange-950">
-          <strong>⚠️ Perhatian:</strong> Saham overbought bukan sinyal jual pasti. Dalam tren kuat, RSI bisa bertahan
+          <strong> Perhatian:</strong> Saham overbought bukan sinyal jual pasti. Dalam tren kuat, RSI bisa bertahan
           diatas 70. Gunakan bersama indikator lain.
         </div>
         <div className="mt-6 overflow-x-auto">
@@ -119,9 +120,9 @@ export default async function SahamOverboughtPage() {
         <AskAiCta question="Saham overbought ada?" />
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/saham-oversold" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">💎 Saham Oversold</Link>
-          <Link href="/saham-golden-cross" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">📈 Saham Golden Cross</Link>
-          <Link href="/screener" className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">🔍 Screener Lengkap</Link>
+          <Link href="/saham-oversold" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted"><Gem className="inline h-4 w-4" /> Saham Oversold</Link>
+          <Link href="/saham-golden-cross" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted"><TrendingUp className="inline h-4 w-4" /> Saham Golden Cross</Link>
+          <Link href="/screener" className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700"><Search className="inline h-4 w-4" /> Screener Lengkap</Link>
         </div>
       </div>
     </>

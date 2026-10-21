@@ -5,6 +5,7 @@ import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { formatPrice, formatPercent, stripJk, changeColor, rsiColor } from "@/lib/utils";
 import { SITE_URL } from "@/lib/constants";
+import { BookOpen, Search, Target, TrendingUp } from "lucide-react";
 
  // 12 Okt: failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal // 5 min ISR
 
@@ -104,7 +105,7 @@ export default async function SahamMacdBullishPage() {
       <div className="mx-auto max-w-5xl px-4 py-8">
 
         <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm dark:border-blue-900 dark:bg-blue-950">
-          <strong>📈 Apa itu MACD bullish?</strong> MACD (Moving Average Convergence Divergence) bullish terjadi
+          <strong> Apa itu MACD bullish?</strong> MACD (Moving Average Convergence Divergence) bullish terjadi
           ketika histogram MACD berada di atas nol — artinya garis MACD berada di atas garis sinyal dan momentum
           beli sedang menguat.
         </div>
@@ -241,16 +242,16 @@ export default async function SahamMacdBullishPage() {
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/screener" className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">
-            🔍 Screener Lengkap
+            <Search className="inline h-4 w-4" /> Screener Lengkap
           </Link>
           <Link href="/saham-golden-cross" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">
-            📈 Saham Golden Cross
+            <TrendingUp className="inline h-4 w-4" /> Saham Golden Cross
           </Link>
           <Link href="/saham-oversold" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">
-            🎯 Saham Oversold (RSI &lt; 30)
+            <Target className="inline h-4 w-4" /> Saham Oversold (RSI &lt; 30)
           </Link>
           <Link href="/akademi/cara-membaca-macd-saham-panduan-trader-pemula" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">
-            📚 Belajar MACD
+            <BookOpen className="inline h-4 w-4" /> Belajar MACD
           </Link>
         </div>
       </div>

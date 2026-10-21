@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { TrendingDown, TrendingUp } from "lucide-react";
 
 interface SentimentData {
   bullish: number;
@@ -55,7 +56,7 @@ export function SentimentGauge({ ticker }: { ticker: string }) {
       {/* Labels */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
-          <span className="text-sm">📉</span>
+          <span className="text-sm"><TrendingDown className="inline h-4 w-4" /></span>
           <span className="text-xs font-medium text-gray-500">Bearish</span>
           <span className="text-xs text-gray-400">({data.bearish})</span>
         </div>
@@ -67,13 +68,13 @@ export function SentimentGauge({ ticker }: { ticker: string }) {
             ? "bg-red-50 text-red-700"
             : "bg-gray-50 text-gray-600"
         }`}>
-          {data.sentiment === "bullish" ? "📈 Bullish" : data.sentiment === "bearish" ? "📉 Bearish" : "⚖️ Netral"}
+          {data.sentiment === "bullish" ? "Bullish" : data.sentiment === "bearish" ? "Bearish" : "Netral"}
         </span>
 
         <div className="flex items-center gap-1.5">
           <span className="text-xs text-gray-400">({data.bullish})</span>
           <span className="text-xs font-medium text-gray-500">Bullish</span>
-          <span className="text-sm">📈</span>
+          <span className="text-sm"><TrendingUp className="inline h-4 w-4" /></span>
         </div>
       </div>
 

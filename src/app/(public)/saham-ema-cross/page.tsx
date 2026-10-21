@@ -5,6 +5,7 @@ import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { SITE_URL } from "@/lib/constants";
+import { Search, Star, TrendingUp } from "lucide-react";
 
  // 12 Okt: failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal
 
@@ -80,7 +81,7 @@ export default async function SahamEmaCrossPage() {
       />
       <div className="mx-auto max-w-5xl px-4 py-8">
         <div className="mt-4 rounded-lg border border-border bg-bg-card p-4 text-sm text-text-secondary">
-          <strong className="text-text-primary">⚡ Mengapa EMA cross penting?</strong> EMA cross adalah detektor
+          <strong className="text-text-primary"> Mengapa EMA cross penting?</strong> EMA cross adalah detektor
           perubahan momentum paling awal di antara moving average. Trader aktif memakainya untuk menangkap awal
           pergerakan sebelum tren besar terbentuk.
         </div>
@@ -136,13 +137,13 @@ export default async function SahamEmaCrossPage() {
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/stocks?view=screener" className="rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-accent/90">
-            🔍 Screener Lengkap
+            <Search className="inline h-4 w-4" /> Screener Lengkap
           </Link>
           <Link href="/saham-macd-bullish" className="rounded-lg border border-border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
-            📈 Saham MACD Bullish
+            <TrendingUp className="inline h-4 w-4" /> Saham MACD Bullish
           </Link>
           <Link href="/saham-golden-cross" className="rounded-lg border border-border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
-            🌟 Saham Golden Cross
+            <Star className="inline h-4 w-4" /> Saham Golden Cross
           </Link>
         </div>
       </div>

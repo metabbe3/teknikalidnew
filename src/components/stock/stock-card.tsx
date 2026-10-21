@@ -57,7 +57,7 @@ export function StockCard({ ticker, name, sector, close, change, changePercent, 
               </span>
             )}
             {isGorengan && (
-              <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-500">⚠</span>
+              <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-500">!</span>
             )}
             <HealthScoreBadge signalScore={signalScore ?? null} size="sm" />
           </div>

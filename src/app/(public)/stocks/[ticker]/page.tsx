@@ -49,7 +49,7 @@ import { GuestStockTracker } from "@/components/ui/guest-stock-tracker";
 import { GuestOverlimitBanner } from "@/components/ui/guest-overlimit-banner";
 import { guestHasQuota } from "@/lib/guest-pass";
 import { auth } from "@/lib/auth";
-import { Newspaper } from "lucide-react";
+import { AlertTriangle, Newspaper } from "lucide-react";
 
 // ponytail: page is per-request SSR (auth-gated data varies by session — can't be SSG).
 export const dynamic = "force-dynamic";
@@ -550,7 +550,7 @@ export default async function StockDetailPage({
                   <h1 className="text-2xl font-bold tracking-tight text-text-primary">{stripJk(ticker)}</h1>
                   {indicators?.isGorengan && (
                     <span className="text-sm font-bold px-3 py-1 rounded-lg bg-amber-500/15 text-amber-600 border border-amber-500/30 inline-flex items-center gap-1">
-                      ⚠ Gorengan
+                      <AlertTriangle className="inline h-4 w-4" /> Gorengan
                       <IndicatorTooltip indicator="Gorengan" className="opacity-60 hover:opacity-100" />
                     </span>
                   )}
@@ -736,10 +736,10 @@ export default async function StockDetailPage({
         <div className="sticky top-[57px] z-40 border-b border-border bg-bg-primary/95 backdrop-blur">
           <div className="max-w-7xl mx-auto px-4 py-1.5 flex gap-1 overflow-x-auto">
             {[
-              ["chart", "📈 Chart"],
-              ["indikator", "🧭 Indikator"],
-              ["ai", "✨ AI"],
-              ...(fullAccess ? [["plan", "🎯 Trading Plan"]] : []),
+              ["chart", "Chart"],
+              ["indikator", "Indikator"],
+              ["ai", "AI"],
+              ...(fullAccess ? [["plan", "Trading Plan"]] : []),
             ].map(([id, label]) => (
               <a
                 key={id}

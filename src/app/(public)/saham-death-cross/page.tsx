@@ -5,6 +5,7 @@ import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { SITE_URL } from "@/lib/constants";
+import { Gem, Search, TrendingUp } from "lucide-react";
 
  // 12 Okt: failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal
 
@@ -80,7 +81,7 @@ export default async function SahamDeathCrossPage() {
       />
       <div className="mx-auto max-w-5xl px-4 py-8">
         <div className="mt-4 rounded-lg border border-border bg-bg-card p-4 text-sm text-text-secondary">
-          <strong className="text-text-primary">⚠️ Mengapa death cross penting?</strong> Death cross menandakan
+          <strong className="text-text-primary"> Mengapa death cross penting?</strong> Death cross menandakan
           tren turun jangka panjang terkonfirmasi. Bagi investor, ini saat meninjau ulang posisi; bagi trader,
           peluang short-term rebound biasanya lemah sampai tren berbalik.
         </div>
@@ -136,13 +137,13 @@ export default async function SahamDeathCrossPage() {
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/stocks?view=screener" className="rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-accent/90">
-            🔍 Screener Lengkap
+            <Search className="inline h-4 w-4" /> Screener Lengkap
           </Link>
           <Link href="/saham-golden-cross" className="rounded-lg border border-border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
-            📈 Saham Golden Cross
+            <TrendingUp className="inline h-4 w-4" /> Saham Golden Cross
           </Link>
           <Link href="/saham-oversold" className="rounded-lg border border-border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
-            💎 Saham Oversold
+            <Gem className="inline h-4 w-4" /> Saham Oversold
           </Link>
         </div>
       </div>

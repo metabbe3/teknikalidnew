@@ -8,6 +8,7 @@ import { DailyRadar } from "@/components/stock/daily-radar";
 import { stockRepository } from "@/domains/stock/stock.repository";
 import { dailyRadarService } from "@/domains/stock/screener-analysis.service";
 import { SITE_URL } from "@/lib/constants";
+import { Search, TrendingUp } from "lucide-react";
 
 // PRD idea-2026-10-10-1 AC3 — pattern /saham-golden-cross (ISR 5 menit).
 export const revalidate = 30; // 12 Okt: failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal
@@ -111,13 +112,13 @@ export default async function HargaSahamHariIniPage() {
             href="/stocks"
             className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700"
           >
-            🔍 Lihat semua di screener
+            <Search className="inline h-4 w-4" /> Lihat semua di screener
           </Link>
           <Link
             href="/saham-golden-cross"
             className="rounded-lg border border-border px-4 py-3 text-sm font-semibold hover:bg-muted"
           >
-            📈 Saham Golden Cross Hari Ini
+            <TrendingUp className="inline h-4 w-4" /> Saham Golden Cross Hari Ini
           </Link>
         </div>
 

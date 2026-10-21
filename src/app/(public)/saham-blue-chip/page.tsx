@@ -5,6 +5,7 @@ import Link from "next/link";
 import { IDX_STOCKS, IDX40_TICKERS } from "@/lib/constants";
 import { SITE_URL } from "@/lib/constants";
 import { stripJk } from "@/lib/utils";
+import { Gem, Landmark, Search } from "lucide-react";
 
 export const revalidate = 3600;
 
@@ -86,7 +87,7 @@ export default function SahamBlueChipPage() {
       <div className="mx-auto max-w-5xl px-4 py-8">
 
         <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm dark:border-blue-900 dark:bg-blue-950">
-          <strong>💡 Apa itu blue chip?</strong> Saham blue chip adalah saham perusahaan raksasa dengan likuiditas tinggi,
+          <strong> Apa itu blue chip?</strong> Saham blue chip adalah saham perusahaan raksasa dengan likuiditas tinggi,
           fundamental kuat, dan historis pembagian dividen rutin. Contoh: BBCA, BBRI, TLKM.
         </div>
 
@@ -113,9 +114,9 @@ export default function SahamBlueChipPage() {
         <AskAiCta question="Blue chip yang lagi oke?" />
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/screener" className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">🔍 Screener Lengkap</Link>
-          <Link href="/saham-oversold" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">💎 Saham Oversold</Link>
-          <Link href="/broker-saham-terbaik" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">🏦 Broker Saham Terbaik</Link>
+          <Link href="/screener" className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700"><Search className="inline h-4 w-4" /> Screener Lengkap</Link>
+          <Link href="/saham-oversold" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted"><Gem className="inline h-4 w-4" /> Saham Oversold</Link>
+          <Link href="/broker-saham-terbaik" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted"><Landmark className="inline h-4 w-4" /> Broker Saham Terbaik</Link>
         </div>
       </div>
     </>

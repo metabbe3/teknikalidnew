@@ -6,7 +6,7 @@ import { pasarLiveService, isLiveWindow, isMarketHours, wibNow, wibHHMM } from "
 import { prisma } from "@/lib/prisma";
 import { dateLabel, formatPrice, formatPercent, formatVolume, stripJk  } from "@/lib/utils";
 import { cn } from "@/lib/utils";
-import { TrendingUp, TrendingDown, Newspaper, AlertTriangle, Clock } from "lucide-react";
+import { AlertTriangle, Clock, Moon, Newspaper, TrendingDown, TrendingUp, Zap } from "lucide-react";
 
 /**
  * /pasar — Koran Saham Live (PRD prd-pasar-live-01).
@@ -81,7 +81,7 @@ export default async function PasarPage() {
         <PageHero eyebrow="Live" title="Koran Saham Live" description="Pasar belum buka — rekap sesi terakhir di bawah ini. Live update mulai 06:30 WIB.">
           <div className="flex flex-wrap items-center gap-3">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-bg px-3 py-1 text-sm font-medium">
-              🌙 Pasar belum buka
+              <Moon className="inline h-4 w-4" /> Pasar belum buka
             </span>
             <WibClock />
             {oversoldCountWeekend >= 150 && (
@@ -89,7 +89,7 @@ export default async function PasarPage() {
                 href="/saham-oversold"
                 className="inline-flex items-center gap-1.5 rounded-full border border-red-500/25 bg-red-500/10 px-3 py-1 text-sm font-semibold text-red-600 hover:bg-red-500/15 transition-colors"
               >
-                ⚡ Sesi Ekstrem: {oversoldCountWeekend} saham oversold
+                <Zap className="inline h-4 w-4" /> Sesi Ekstrem: {oversoldCountWeekend} saham oversold
               </Link>
             )}
           </div>
@@ -149,7 +149,7 @@ export default async function PasarPage() {
               marketOpen ? "border-bullish/30 bg-bullish/10 text-bullish" : "border-border bg-bg text-text-secondary",
             )}
           >
-            {marketOpen ? "🟢 PASAR BUKA" : "⚪ di luar sesi"}
+            {marketOpen ? "● PASAR BUKA" : "○ di luar sesi"}
           </span>
           <WibClock />
           {oversoldCount >= 150 && (
@@ -157,7 +157,7 @@ export default async function PasarPage() {
               href="/saham-oversold"
               className="inline-flex items-center gap-1.5 rounded-full border border-red-500/25 bg-red-500/10 px-3 py-1 text-sm font-semibold text-red-600 hover:bg-red-500/15 transition-colors"
             >
-              ⚡ Sesi Ekstrem: {oversoldCount} saham oversold
+              <Zap className="inline h-4 w-4" /> Sesi Ekstrem: {oversoldCount} saham oversold
             </Link>
           )}
           {snap.sessionDate && (

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { SITE_URL } from "@/lib/constants";
+import { Gem, Search, TrendingUp } from "lucide-react";
 
  // 12 Okt: failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal
 
@@ -82,7 +83,7 @@ export default async function SahamVolumeSpikePage() {
       />
       <div className="mx-auto max-w-5xl px-4 py-8">
         <div className="mt-4 rounded-lg border border-border bg-bg-card p-4 text-sm text-text-secondary">
-          <strong className="text-text-primary">📊 Mengapa volume spike penting?</strong> Pergerakan harga tanpa
+          <strong className="text-text-primary"> Mengapa volume spike penting?</strong> Pergerakan harga tanpa
           volume mudah berbalik. Volume spike menandakan uang besar masuk — konfirmasi terkuat untuk breakout,
           akumulasi, atau perubahan tren.
         </div>
@@ -140,13 +141,13 @@ export default async function SahamVolumeSpikePage() {
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/stocks?view=screener" className="rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-accent/90">
-            🔍 Screener Lengkap
+            <Search className="inline h-4 w-4" /> Screener Lengkap
           </Link>
           <Link href="/saham-golden-cross" className="rounded-lg border border-border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
-            📈 Saham Golden Cross
+            <TrendingUp className="inline h-4 w-4" /> Saham Golden Cross
           </Link>
           <Link href="/saham-oversold" className="rounded-lg border border-border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
-            💎 Saham Oversold
+            <Gem className="inline h-4 w-4" /> Saham Oversold
           </Link>
         </div>
       </div>

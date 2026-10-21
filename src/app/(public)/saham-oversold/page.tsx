@@ -6,7 +6,7 @@ import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { formatPrice, formatPercent, stripJk, changeColor, rsiColor } from "@/lib/utils";
 import { SITE_URL } from "@/lib/constants";
-import { Target, TrendingUp } from "lucide-react";
+import { AlertTriangle, Search, Target, TrendingUp } from "lucide-react";
 
  // 12 Okt: failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal // 5 min ISR
 
@@ -102,7 +102,7 @@ export default async function SahamOversoldPage() {
       <div className="mx-auto max-w-5xl px-4 py-8">
 
         <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm dark:border-blue-900 dark:bg-blue-950">
-          <strong>💡 Apa itu saham oversold?</strong> Saham dikatakan oversold ketika RSI (Relative Strength Index)
+          <strong> Apa itu saham oversold?</strong> Saham dikatakan oversold ketika RSI (Relative Strength Index)
           dibawah 30. Ini berarti harga turun terlalu cepat dan berpotensi naik kembali (rebound).
         </div>
 
@@ -237,7 +237,7 @@ export default async function SahamOversoldPage() {
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/screener" className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">
-            🔍 Screener Lengkap
+            <Search className="inline h-4 w-4" /> Screener Lengkap
           </Link>
           <Link href="/saham-golden-cross" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">
             <TrendingUp className="inline h-4 w-4" /> Saham Golden Cross
@@ -249,7 +249,7 @@ export default async function SahamOversoldPage() {
             <Target className="inline h-4 w-4" /> Saham Stochastic Oversold
           </Link>
           <Link href="/saham-overbought" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">
-            ⚠️ Saham Overbought
+            <AlertTriangle className="inline h-4 w-4" /> Saham Overbought
           </Link>
         </div>
       </div>

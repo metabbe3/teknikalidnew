@@ -5,6 +5,7 @@ import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { formatPrice, formatPercent, stripJk, changeColor, rsiColor } from "@/lib/utils";
 import { SITE_URL } from "@/lib/constants";
+import { BookOpen, Search, Target, TrendingUp } from "lucide-react";
 
  // 12 Okt: failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal // 5 min ISR
 
@@ -104,7 +105,7 @@ export default async function SahamStochasticOversoldPage() {
       <div className="mx-auto max-w-5xl px-4 py-8">
 
         <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm dark:border-blue-900 dark:bg-blue-950">
-          <strong>🎯 Apa itu stochastic oversold?</strong> Stochastic Oscillator mengukur di mana harga tertutup
+          <strong> Apa itu stochastic oversold?</strong> Stochastic Oscillator mengukur di mana harga tertutup
           relatif terhadap range tinggi–rendah tertentu. Bila %K dan %D dibawah 20, harga tertutup di bagian
           bawah range — tekanan jual berlebih dan potensi rebound mulai muncul.
         </div>
@@ -239,16 +240,16 @@ export default async function SahamStochasticOversoldPage() {
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/screener" className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">
-            🔍 Screener Lengkap
+            <Search className="inline h-4 w-4" /> Screener Lengkap
           </Link>
           <Link href="/saham-oversold" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">
-            🎯 Saham RSI Oversold (&lt; 30)
+            <Target className="inline h-4 w-4" /> Saham RSI Oversold (&lt; 30)
           </Link>
           <Link href="/saham-macd-bullish" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">
-            📈 Saham MACD Bullish
+            <TrendingUp className="inline h-4 w-4" /> Saham MACD Bullish
           </Link>
           <Link href="/akademi/stochastic-oscillator-cara-membaca-dan-strategi" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">
-            📚 Belajar Stochastic
+            <BookOpen className="inline h-4 w-4" /> Belajar Stochastic
           </Link>
         </div>
       </div>

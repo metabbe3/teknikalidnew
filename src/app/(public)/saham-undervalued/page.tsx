@@ -5,6 +5,7 @@ import { screenerAnalysisService } from "@/domains/stock/screener-analysis.servi
 import { SITE_URL } from "@/lib/constants";
 import { stripJk } from "@/lib/utils";
 import Link from "next/link";
+import { Landmark, PiggyBank, Search } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -93,7 +94,7 @@ export default async function SahamUndervaluedPage() {
       <div className="mx-auto max-w-5xl px-4 py-8">
 
         <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm dark:border-blue-900 dark:bg-blue-950">
-          <strong>💡 Cara baca:</strong> PE rendah = harga murah dibanding laba per tahun. PB rendah = harga
+          <strong> Cara baca:</strong> PE rendah = harga murah dibanding laba per tahun. PB rendah = harga
           murah dibanding nilai perusahaan. Keduanya rendah = kandidat undervalued — tapi tetap cek tren
           harganya dan kesehatan bisnisnya.
         </div>
@@ -135,9 +136,9 @@ export default async function SahamUndervaluedPage() {
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/screener" className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">🔍 Screener Lengkap</Link>
-          <Link href="/saham-dividen" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">💰 Saham Dividen Tinggi</Link>
-          <Link href="/saham-blue-chip" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">🏦 Saham Blue Chip</Link>
+          <Link href="/screener" className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700"><Search className="inline h-4 w-4" /> Screener Lengkap</Link>
+          <Link href="/saham-dividen" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted"><PiggyBank className="inline h-4 w-4" /> Saham Dividen Tinggi</Link>
+          <Link href="/saham-blue-chip" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted"><Landmark className="inline h-4 w-4" /> Saham Blue Chip</Link>
         </div>
       </div>
     </>

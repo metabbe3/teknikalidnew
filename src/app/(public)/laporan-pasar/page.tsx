@@ -3,6 +3,7 @@ import Link from "next/link";
 import { PageHero } from "@/components/layout/page-hero";
 import { weeklyReportService } from "@/domains/stock/weekly-report.service";
 import { SITE_URL } from "@/lib/constants";
+import { Search, TrendingUp } from "lucide-react";
 
 export const revalidate = 3600;
 
@@ -70,10 +71,10 @@ export default async function LaporanPasarHubPage() {
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/stocks?view=screener" className="rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-accent/90">
-            🔍 Screener Saham
+            <Search className="inline h-4 w-4" /> Screener Saham
           </Link>
           <Link href="/saham-golden-cross" className="rounded-lg border border-border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
-            📈 Saham Golden Cross
+            <TrendingUp className="inline h-4 w-4" /> Saham Golden Cross
           </Link>
         </div>
       </div>

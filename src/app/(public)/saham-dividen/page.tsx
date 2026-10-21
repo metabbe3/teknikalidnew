@@ -5,6 +5,7 @@ import { screenerAnalysisService } from "@/domains/stock/screener-analysis.servi
 import { SITE_URL } from "@/lib/constants";
 import { stripJk } from "@/lib/utils";
 import Link from "next/link";
+import { Gem, Landmark, Search } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -96,7 +97,7 @@ export default async function SahamDividenPage() {
       <div className="mx-auto max-w-5xl px-4 py-8">
 
         <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm dark:border-blue-900 dark:bg-blue-950">
-          <strong>💡 Apa itu dividend yield?</strong> Yield = besarnya dividen setahun dibagi harga saham.
+          <strong> Apa itu dividend yield?</strong> Yield = besarnya dividen setahun dibagi harga saham.
           Yield 8% artinya setiap Rp100 yang Anda investasikan memberi sekitar Rp8 dividen per tahun —
           asalkan dividen dan harga bertahan.
         </div>
@@ -142,9 +143,9 @@ export default async function SahamDividenPage() {
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/screener" className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">🔍 Screener Lengkap</Link>
-          <Link href="/saham-blue-chip" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">🏦 Saham Blue Chip</Link>
-          <Link href="/saham-undervalued" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">💎 Saham Undervalued</Link>
+          <Link href="/screener" className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700"><Search className="inline h-4 w-4" /> Screener Lengkap</Link>
+          <Link href="/saham-blue-chip" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted"><Landmark className="inline h-4 w-4" /> Saham Blue Chip</Link>
+          <Link href="/saham-undervalued" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted"><Gem className="inline h-4 w-4" /> Saham Undervalued</Link>
         </div>
       </div>
     </>

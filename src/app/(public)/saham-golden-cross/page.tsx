@@ -6,6 +6,7 @@ import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { SITE_URL } from "@/lib/constants";
+import { AlertTriangle, Gem, Search } from "lucide-react";
 
  // 12 Okt: failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal
 
@@ -85,7 +86,7 @@ export default async function SahamGoldenCrossPage() {
       <div className="mx-auto max-w-5xl px-4 py-8">
 
         <div className="mt-4 rounded-lg border border-green-200 bg-green-50 p-4 text-sm dark:border-green-900 dark:bg-green-950">
-          <strong>📈 Mengapa golden cross penting?</strong> Golden cross adalah salah satu sinyal bullish paling
+          <strong> Mengapa golden cross penting?</strong> Golden cross adalah salah satu sinyal bullish paling
           diandalkan. Statistik menunjukkan saham setelah golden cross cenderung naik dalam 2-4 minggu berikutnya.
         </div>
 
@@ -142,13 +143,13 @@ export default async function SahamGoldenCrossPage() {
 
         <div className="mt-8 flex flex-wrap gap-3">
           <Link href="/screener" className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">
-            🔍 Screener Lengkap
+            <Search className="inline h-4 w-4" /> Screener Lengkap
           </Link>
           <Link href="/saham-oversold" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">
-            💎 Saham Oversold
+            <Gem className="inline h-4 w-4" /> Saham Oversold
           </Link>
           <Link href="/saham-overbought" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">
-            ⚠️ Saham Overbought
+            <AlertTriangle className="inline h-4 w-4" /> Saham Overbought
           </Link>
         </div>
       </div>
