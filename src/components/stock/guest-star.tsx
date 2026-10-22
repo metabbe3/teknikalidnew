@@ -6,6 +6,7 @@
  * SSR-safe: state aktif hanya dirender pasca-mount.
  */
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useGuestWatchlist } from "@/hooks/use-guest-watchlist";
 
 export function GuestStar({ ticker, compact = false }: { ticker: string; compact?: boolean }) {
@@ -51,8 +52,10 @@ export function GuestStar({ ticker, compact = false }: { ticker: string; compact
         </svg>
       )}
       {!compact && (active ? "Dipantau" : "Pantau")}
-      {!compact && justToggled && !active && (
-        <span className="text-[10px] text-text-tertiary">(tersimpan di perangkat)</span>
+      {!compact && justToggled && active && (
+        <span className="text-[10px] text-text-tertiary">
+          (tersimpan di perangkat · <Link href="/watchlist" className="underline hover:text-accent">lihat pantauan</Link>)
+        </span>
       )}
     </button>
   );

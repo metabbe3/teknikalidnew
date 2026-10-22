@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import { computeChange } from "@/lib/serialize";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
+import { GuestWatchlistView } from "@/components/watchlist/guest-watchlist-view";
 
 export const metadata: Metadata = {
   title: "Watchlist Saham — TeknikalID",
@@ -15,7 +15,21 @@ export const revalidate = 60;
 
 export default async function WatchlistPage() {
   const session = await auth();
-  if (!session?.user?.id) redirect("/auth/signin");
+
+  // Guest: watchlist perangkat (localStorage), tanpa redirect — Retention Loop v1.
+  if (!session?.user?.id) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-8 space-y-6 fade-in">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold">Watchlist Saham</h1>
+          <p className="text-text-secondary text-sm">
+            Pantau pergerakan saham pilihan kamu
+          </p>
+        </div>
+        <GuestWatchlistView />
+      </div>
+    );
+  }
 
   const watchlist = await prisma.watchlist.findMany({
     where: { userId: session.user.id },

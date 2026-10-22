@@ -75,7 +75,9 @@ const WHITELIST_IPS = new Set(
     .filter(Boolean),
 );
 
-const PROTECTED_PREFIXES = ["/watchlist", "/profile"];
+// /watchlist dihapus 22 Okt (ux-2026-10-22-01): guest kini render device-watchlist
+// (localStorage) di page itu; jalur DB user login tetap auth-gated server-side di page.tsx.
+const PROTECTED_PREFIXES = ["/profile"];
 const ADMIN_LOGIN_ROUTE = "/admin/login";
 
 // Known tickers for the /berita/saham-<ticker> → /stocks/<TICKER>.JK redirect.
