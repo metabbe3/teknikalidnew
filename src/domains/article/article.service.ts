@@ -841,4 +841,9 @@ export const articleService = {
   async approveArticle(articleId: string, editorId: string): Promise<void> {
     await articleRepository.markReviewed(articleId, editorId);
   },
+
+  // Reject: artikel keluar dari antrian review dan turun ke DRAFT agar bisa diedit ulang.
+  async rejectArticle(articleId: string, editorId: string, note?: string): Promise<void> {
+    await articleRepository.markRejected(articleId, editorId, note);
+  },
 };

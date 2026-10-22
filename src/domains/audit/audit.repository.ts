@@ -19,4 +19,14 @@ export const auditRepository = {
       include: { user: { select: { username: true, email: true, name: true } } },
     });
   },
+
+  // Review-history helpers (bo-2026-10-22-01): keputusan editor dari AuditLog.
+  findRecentByActions(actions: string[], limit: number, since?: Date) {
+    return prisma.auditLog.findMany({
+      where: { action: { in: actions }, ...(since ? { createdAt: { gte: since } } : {}) },
+      take: limit,
+      orderBy: { createdAt: "desc" },
+      include: { user: { select: { username: true, email: true, name: true } } },
+    });
+  },
 };

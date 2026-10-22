@@ -256,6 +256,25 @@ export const articleRepository = {
     });
   },
 
+  // Reject: keluarkan dari antrian review -> DRAFT utk diedit ulang.
+  // reviewLog tetap append-only; reviewedById dibiarkan null agar bisa di-review ulang.
+  async markRejected(id: string, editorId: string, note?: string): Promise<void> {
+    const existing = await prisma.article.findUnique({
+      where: { id },
+      select: { generationMeta: true },
+    });
+    const meta = (existing?.generationMeta as Record<string, unknown> | null) ?? {};
+    const reviewLog = Array.isArray(meta.reviewLog) ? [...(meta.reviewLog as unknown[])] : [];
+    reviewLog.push({ at: new Date().toISOString(), by: editorId, action: "rejected", note: note ?? null });
+    await prisma.article.update({
+      where: { id },
+      data: {
+        status: ArticleStatus.DRAFT,
+        generationMeta: { ...meta, reviewLog } as Prisma.InputJsonValue,
+      },
+    });
+  },
+
   /** Fetch recent article titles for dedup checking */
   findRecentTitles(limit: number = 30) {
     return prisma.article
