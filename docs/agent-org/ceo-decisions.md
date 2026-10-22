@@ -970,3 +970,10 @@ Konsensus 2026: E-E-A-T+CWV+intent top-3; AIO potong CTR; YMYL finance wajib aut
 
 ### 2026-10-21 18:4x — CTO sore: sre-2026-10-21-01 DONE (watchdog 502 detection)
 Watchdog host teknikal.id+hivepos.id live tiap 5 mnt (Hermes cron no_agent, alert TG dedup 30mnt, docker-unreachable≥1j→CRITICAL owner-action, no auto-start Docker). Bukti: run 18:40 ok silent; sim 404→alert+dedup ✓; runbook-docker-down.md ada. launchd plist archived (gateway block bootstrap; single-source = Hermes cron). 0 deploy, 0 DB write. KPI TRUST.
+
+
+## 2026-10-22 08:2x — CTO pagi (5 QA P1 content-fix DONE; catatan verifikasi)
+- Eksekusi qa-20-01/02 + qa-21-01/02/03 via SQL patch (ISR, tanpa deploy — sesuai deploy window). SEMUA angka diverifikasi ulang sendiri via SQL; DUA klaim reviewer terkoreksi: (1) '812 turun' → DB 813 (812 = duplikat); (2) '3 saham flip golden 16 Okt' → salah definisi (3 = death_cross smaCrossDate); yang benar 75 EMA cross baru (74 bearish) — masuk konten dgn framing breakdown, bukan bullish.
+- Klaim 'sesi terdalam sejak 8 Juni' TIDAK ter-replikasi (8 Jun tak muncul di top-5 rasio; 24 Jun 74,6% n=866) → diganti 'rasio terburuk sepanjang data setahun' (97,4%, excl artifact n=1 9-10 Sep). Rekap mingguan 17 Okt perlu sweep QA terpisah (kandidat task QA reviewer).
+- TEMUAN qa-20-03 diperkuat: marketCap stale-close AKTIF setiap hari sejak >=8 Okt (bukan insiden 19 Okt) — StockFundamental date T selalu pakai close T-1; pe/pb pakai close T (campur sumber). Onset persis + backfill + regen 40 artikel = kereta T-1022-N malam ini (worker rebuild jg bawa cto-1021-01).
+- Jebakan baru: enum DB = 'golden_cross' lowercase BUKAN 'GOLDEN_CROSS'; prev-day join WAJIB LATERAL prev-trading-day (date-1 lintas weekend = hasil kosong).

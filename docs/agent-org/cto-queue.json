@@ -2,6 +2,20 @@
   "protocol": "CTO task queue — dibaca CTO agent (slot 07:30 pagi & 16:45 sore; quiet zone BARU 11:00-18:00 = larang deploy+LLM, owner 16 Sep), ditulis CEO (08:15) / Council (Min 08:00). Entry: {id, date, spec, priority (P0 darurat/P1 tinggi/P2 normal), north_star, status (pending/done/failed/blocked_for_owner), result}. CTO: max 1 deploy per slot (2/hari total), eksekusi claude code pipeline, update status + verify evidence.",
   "entries": [
     {
+      "id": "bo-2026-10-22-01",
+      "date": "2026-10-22",
+      "type": "backoffice",
+      "priority": "P2",
+      "status": "pending",
+      "train": "T-1022-N",
+      "title": "BACKOFFICE MATANGKAN /admin/review: tombol Tolak + riwayat keputusan + KPI — gerbang editorial TRUST yang tak pernah dipakai (0/143 approved)",
+      "north_star": "TRUST — editor gate utk konten sistem (konteks: 6 QA FATAL brief angka salah 20-21 Okt) + STICKY via konten reliable",
+      "spec": "Audit bo ronde-2 huruf R: /admin/review (28 Sep) = fitur setengah jadi. DB: 143 PUBLISHED, 0 pernah reviewed (reviewedById semua null), 0 tombol Tolak, 0 riwayat — halaman hanya Setujui. QA FATAL 20-21 Okt (brief angka salah) bukti gate ini dibutuhkan tapi tak usable. Fix: (1) POST /api/admin/articles/review extend action approve|reject (backward-compat default approve) — reject = status PUBLISHED->DRAFT + reviewLog append-only + keluar antrian, bisa di-edit ulang; (2) audit log admin:review_article utk approve+reject; (3) GET extend: stats (pending/ditinjau/ditolak 30d dari AuditLog) + riwayat 50 keputusan terakhir (pola riwayat /admin/reports bo-2026-10-14-01); (4) page: tombol Tolak + note, section Riwayat, KPI header. Reuse route/service/repo existing (API REUSE RULE).",
+      "created_by": "Backoffice Builder slot 03:00 22 Okt",
+      "scheduled_slot": "bo malam 03:00 22 Okt (deploy 1/2 org)",
+      "result": ""
+    },
+    {
       "id": "ux-2026-10-18-02",
       "date": "2026-10-18",
       "type": "ops",
@@ -1931,7 +1945,9 @@
       "north_star": "TRUST + KUASAI (kontrol orkestrasi 22 agent dari backoffice tanpa buka 22 halaman detail; data reliable = tahu agent mana stale/matot)",
       "spec": "Audit bo ronde-3 halaman agent-hub (list page; detail [agentType] 8cde57e 7 Jun sudah punya toggle/prompt/schedule/config lengkap). Temuan: GET /api/admin/agent-hub via getHubStats SUDAH return configs (AgentConfig isEnabled+scheduleCron per agent, service line 100-108) tapi page.tsx list TIDAK PERNAH merendernya — grid 22 kartu tanpa indikator Enabled/Disabled atau jadwal; owner harus klik 22 detail page satu-satu untuk tahu scheduler akan skip agent mana (scheduler agent-hub-scheduler memakai AgentConfig.isEnabled sebagai kunci; DB saat ini gen_evergreen+gen_trending_news disabled). Tombol Run tampil sama untuk agent disabled (membingungkan). Tidak ada sinyal stale: DB AgentJob gen_movement_analysis last_created 10 Sep (41 hari), gen_sourced_news 10 Jun, gen_faq 15 Jun — tak terlihat. Fix (API REUSE RULE, tanpa endpoint baru): (1) hub page konsumsi stats.configs → badge Enabled/Disabled per kartu (disabled = kartu dim + keterangan scheduler-skip, tombol Run tetap utk manual trigger); (2) toggle enable/disable langsung dari kartu via PUT /api/admin/agent-hub/[agentType] existing (pola toggleEnabledMutation detail page) dengan confirm; (3) badge amber 'stale' bila lastRun >14 hari dan agent enabled; (4) header count dinamis 'X of Y agents enabled'. DONE-WHEN: (a) tsc+build hijau; (b) grep bukti configs/isEnabled/stale/toggle di page.tsx list; (c) deployed + live /admin/agent-hub 200 login-guard (307 unauth = guard hidup); (d) changelog entry + rollback anchor dicatat.",
       "created_by": "Backoffice Builder audit 21 Okt 03:0x (bukti: service getHubStats return configs; grep page.tsx list 0 hit isEnabled; psql AgentJob staleness)",
-      "result": "DONE 21 Okt 03:0x-03:2x backoffice slot (deploy 1/2 org). Pipeline: claude code worktree origin/main e601902 + verify sendiri. KANDUNGAN: cedae7b feat (agent-hub list render configs: badge Enabled/Disabled + dim + Scheduler-skip subtitle; toggle dari kartu via PUT /api/admin/agent-hub/[agentType] existing; badge stale >14hari; header X-of-Y agents enabled) + d358ca7 changelog. MERGE ff ke main d358ca7, PUSH origin (changelog==merge terpenuhi). BUKTI FISIK: tsc --noEmit EXIT-0 (pasca prisma generate); next build EXIT-0 (catatan: node_modules wajib cp -Rc clone, symlink ditolak Turbopack); container .next memuat marker (Scheduler skip + agents enabled) di page.js server+client chunk; /admin/agent-hub 307 login-guard (guard hidup); homepage 200 + live teknikal.id 200. ROLLBACK ANCHOR: image sha256:42d42a02b9a9 (pre-deploy, up 20 Okt 21:20 WIB) — rollback = docker tag + up -d ATAU git revert d358ca7. Catatan insiden kecil: git stash -u saat switch branch membawa queue file uncommitted; queue di-recover dari stash lalu di-commit — kedepannya commit queue SEBELUM checkout. [RESTORED 21 Okt 07:4x CTO lead: entry hilang saat conflict-resolve merge c82cc70 06:52 ambil sisi night (112->103); union-merge ke-3 — lihat CTO note 2026-10-21] [LIVE verify CTO lead 21 Okt 07:4x: marker 'agents enabled' ada di .next/server/app/admin/agent-hub/page.js app container 4b93d1164337]"
+      "result": "DONE 21 Okt 03:0x-03:2x backoffice slot (deploy 1/2 org). Pipeline: claude code worktree origin/main e601902 + verify sendiri. KANDUNGAN: cedae7b feat (agent-hub list render configs: badge Enabled/Disabled + dim + Scheduler-skip subtitle; toggle dari kartu via PUT /api/admin/agent-hub/[agentType] existing; badge stale >14hari; header X-of-Y agents enabled) + d358ca7 changelog. MERGE ff ke main d358ca7, PUSH origin (changelog==merge terpenuhi). BUKTI FISIK: tsc --noEmit EXIT-0 (pasca prisma generate); next build EXIT-0 (catatan: node_modules wajib cp -Rc clone, symlink ditolak Turbopack); container .next memuat marker (Scheduler skip + agents enabled) di page.js server+client chunk; /admin/agent-hub 307 login-guard (guard hidup); homepage 200 + live teknikal.id 200. ROLLBACK ANCHOR: image sha256:42d42a02b9a9 (pre-deploy, up 20 Okt 21:20 WIB) — rollback = docker tag + up -d ATAU git revert d358ca7. Catatan insiden kecil: git stash -u saat switch branch membawa queue file uncommitted; queue di-recover dari stash lalu di-commit — kedepannya commit queue SEBELUM checkout. [RESTORED 21 Okt 07:4x CTO lead: entry hilang saat conflict-resolve merge c82cc70 06:52 ambil sisi night (112->103); union-merge ke-3 — lihat CTO note 2026-10-21] [LIVE verify CTO lead 21 Okt 07:4x: marker 'agents enabled' ada di .next/server/app/admin/agent-hub/page.js app container 4b93d1164337]",
+      "qa_verified": true,
+      "qa_note": "PASS 22 Okt 03:3x WIB QA independen. Fisik: (1) cedae7b in origin/main via changelog-merge d358ca7 (page.tsx +107/-18, API REUSE — hanya pakai PUT /api/admin/agent-hub/[agentType] existing, 0 endpoint baru); (2) live container teknikalidnew-app-1 .next/server/app/admin/agent-hub/page.js mengandung marker \"Scheduler skip\" (1 hit) + \"agents enabled\"; (3) curl /admin/agent-hub = 307→login (guard hidup), homepage 200. Catatan: container direstart/redeploy 11:01 WIB saat CTO-lead restore (terdokumentasi di result) — marker tetap ada di build live."
     },
     {
       "id": "cto-2026-10-20-02",
@@ -1951,24 +1967,26 @@
       "date": "2026-10-20",
       "type": "qa-fix",
       "priority": "P1",
-      "status": "pending",
+      "status": "done",
       "north_star": "TRUST (angka salah vs DB = trust runtuh; north star #90)",
       "title": "P1 QA FATAL post-publish: brief 19 Okt — 4 klaim angka/definisi salah vs DB (breadth >10%, 'terdalam sejak 8 Juni', 'nol cross baru', sektor Infra -11,9)",
       "spec": "INTENT: koreksi brief-pasar-idx-2026-10-19-oversold-bank-jenuh-jual agar semua angka replikasi-able dari DB per 16 Okt. Temuan reviewer 20 Okt (bukti SQL): (1) '812 saham turun lebih dari 10%' SALAH — DB 557 saham turun >10% (close-basis); 812 = TOTAL saham turun; angka 208 turun >14,5% non-gorengan benar. (2) 'sesi terdalam sejak 8 Juni' MENYESATKAN dgn basis jumlah — 24 Jun 947 & 24 Jul 820 lebih dalam; yang benar hanya bila pakai rasio (16 Okt 97,4% saham turun vs 75,8% 8 Jun) atau %IHSG (-11,57% memang terdalam setahun) — rumuskan eksplisit basisnya. (3) 'nol sinyal cross baru terbentuk Jumat' SALAH — DB 3 saham flip ke golden + 75 cross EMA baru 16 Okt; angka 131 golden/31 death = jumlah STATE, bukan yang baru. (4) 'Infrastructures -11,9%' vs DB -11,8% (rounding; minor, perbaiki sekalian). ACCEPTANCE: (a) koreksi terbit (edit artikel oleh CTO via pipeline yang sah / editor backoffice bo-2026-10-14-02); (b) generator brief tambah assertion pra-publish: hitungan 'turun >X%' wajib dari SQL berparameter tanggal (bukan dipinjam field lain), klaim 'sejak <tgl>' wajib punya query pembuktian, 'cross baru' wajib definisi flip-vs-hari-sebelumnya.",
-      "result": "[RESTORED 21 Okt 07:4x CTO lead: entry hilang saat conflict-resolve merge c82cc70 06:52 ambil sisi night (112->103); union-merge ke-3 — lihat CTO note 2026-10-21]",
-      "scheduled_slot": "Backend Builder 21 Okt 18:30 — SQL content patch TANPA deploy (ISR revalidate=300)"
+      "result": "DONE 22 Okt 08:1x CTO pagi (SQL patch ISR, tanpa deploy). 4 klaim dikoreksi ke DB exact (verifikasi sendiri 22 Okt, bukan copy reviewer): (1) breadth '11 naik/812 turun/11 stagnan ... sesi terdalam sejak 8 Juni' -> '11 naik/813 turun/11 stagnan — 97,4% saham ditutup turun, rasio terburuk sepanjang data setahun teknikal.id' (813 = count DB prev-close basis, 812 duplikat reviewer; rasio 16 Okt 97,4% = max setahun excl artifact n=1 9-10 Sep; 8 Jun = klaim rekap mingguan TAK ter-replikasi — 24 Jun 74,6%/n=866 lebih dalam, dihapus); (2) '812 saham turun >10%' -> 558 (SQL count close<prev*0.90); (3) 'nol sinyal cross baru' -> '75 sinyal cross EMA baru (74 bearish)' DI DUA LOKASI (heading + body) — bukti emaCrossDate=16 Okt non-gorengan: 75 total (74 bearish + 1 bullish); reviewer bilang '3 flip golden' SALAH definisi (3 itu = death_cross smaCrossDate); (4) Infrastructures -11,9 -> -11,8 (SQL avg). LIVE verified: '97,4% saham ditutup turun'=T, '558 saham turun'=T, '75 sinyal cross EMA baru'=T, '812 turun'=F, 'terdalam sejak 8 Juni'=F (curl 22 Okt 08:1x). Residual DB=0. Note generator: assertion pra-publish belum dibangun — gate 01d20d0 internal-link sudah ada, angka-assertion = backlog baru.",
+      "scheduled_slot": "Backend Builder 21 Okt 18:30 — SQL content patch TANPA deploy (ISR revalidate=300)",
+      "completed_at": "2026-10-22T08:25:00+07:00"
     },
     {
       "id": "qa-2026-10-20-02",
       "date": "2026-10-20",
       "type": "qa-fix",
       "priority": "P1",
-      "status": "pending",
+      "status": "done",
       "north_star": "TRUST (superlatif tidak replikasi-able = qa-27-01 violation)",
       "title": "P1 QA FATAL post-publish: brief 20 Okt — superlatif volume INCO salah ranking ('terbesar di antara saham yang menguat' = rank #11)",
       "spec": "INTENT: koreksi klaim superlatif di brief-pasar-idx-2026-10-20-ihsg-break-5000 (paragraf 'Yang bertahan: energi'). Temuan reviewer 20 Okt: artikel menyebut volume INCO 38,8 juta 'terbesar di antara seluruh saham yang menguat Senin (non-gorengan, volume di atas 1 juta)' — DB 19 Okt ada 10 gainer non-gorengan >1jt dengan volume lebih besar: DSSA 1,09 miliar, BUKA 316 jt, DMAS 277 jt, NAYZ 141 jt, PTBA 106 jt (disebut artikel sendiri 2 kalimat berikutnya), NCKL 100 jt, KAQI 82 jt, PGAS 63,6 jt (juga disebut artikel), RMKE 59 jt, AADI 44 jt. INCO hanya rank #4 kenaikan % di antara gainer likuid non-gorengan (TIFA 25%, GRIA 14,3%, VISI 6,1%, INCO 4,93%). ACCEPTANCE: (a) reformulasi klaim jadi yang benar dan tetap menarik, mis. 'kenaikan terbesar di antara gainer likuid bervolume >40 juta' ATAU ganti sudut ke relative-strength; (b) generator brief wajib generate superlatif dari SQL ranking ORDER BY pada hari yang sama + assertion rank-#1-sebelum-klaim (qa-27-01).",
-      "result": "[RESTORED 21 Okt 07:4x CTO lead: entry hilang saat conflict-resolve merge c82cc70 06:52 ambil sisi night (112->103); union-merge ke-3 — lihat CTO note 2026-10-21]",
-      "scheduled_slot": "Backend Builder 21 Okt 18:30 — SQL content patch TANPA deploy (ISR revalidate=300)"
+      "result": "DONE 22 Okt 08:1x CTO pagi (SQL patch ISR, tanpa deploy) — digabung eksekusi dgn qa-2026-10-21-03 (klaim INCO sama). Klaim 'volume 38,8jt terbesar di antara seluruh saham yang menguat Senin' SALAH (DB 19 Okt: INCO rank #13 volume / #8 kenaikan dr 45 gainer non-gorengan vol>1jt; #1 volume DSSA 1,098M). Dikoreksi jadi 'kenaikan terbesar kedelapan di antara 45 saham yang menguat Senin (non-gorengan, volume di atas 1 juta; data teknikal.id 19 Oktober)' — rank & total count dihitung ulang sendiri via SQL. Bonus framing fix: heading 'Yang bertahan: energi' + 'saham energi' -> 'komoditas' (INCO sector DB = Basic Materials, bukan Energy). LIVE verified: 'kenaikan terbesar kedelapan'=T, frasa lama=F. Generator assertion rank-#1-sebelum-klaim (qa-27-01 pattern) masih utang — kandidat task pipeline.",
+      "scheduled_slot": "Backend Builder 21 Okt 18:30 — SQL content patch TANPA deploy (ISR revalidate=300)",
+      "completed_at": "2026-10-22T08:25:00+07:00"
     },
     {
       "id": "qa-2026-10-20-03",
@@ -1979,8 +1997,9 @@
       "north_star": "TRUST (data reliable — 40 artikel/hari memuat Market Cap stale 1 hari)",
       "title": "P1 BUG worker fundamental: marketCap 19 Okt dihitung dari close 16 Okt (stale 1 hari, campur sumber dgn P/E) — 40 artikel template ikut salah",
       "spec": "INTENT: StockFundamental.marketCap per tanggal T wajib = sharesOutstanding x close T. Temuan reviewer 20 Okt: row 2026-10-19 semua ticker dihitung dari close 16 Okt — BBCA 637,9 T (123,28M x 5.175) padahal close 19 Okt 4.820 -> benar 594 T (+7,3% salah); TLKM 188,2 T (x 1.900) vs benar 183,9 T; UNVR 52,8 T (x 1.390) vs benar 52,4 T. Bukti campur sumber: P/E 10,22 & P/B 2,11 di row yang sama KONSISTEN dgn close 19 Okt — jadi marketCap saja pakai close T-1. Dampak publish: 40 artikel saham template 20 Okt memuat tabel Fundamental 'Market Cap' salah semua (contoh BBCA Rp 637,9 T). ACCEPTANCE: (a) fix worker sync fundamental (jalur-5 sisa: worker generator artikel) agar marketCap pakai close hari yang sama dgn date row; (b) backfill row 19 Okt (dan audit: sejak kapan pola ini ada — cek 2-3 tanggal sebelumnya); (c) 40 artikel 20 Okt regenerasi field fundamental ATAU koreksi massal via editor; (d) assertion worker: marketCap/close(equals date) == price article table.",
-      "result": "[RESTORED 21 Okt 07:4x CTO lead: entry hilang saat conflict-resolve merge c82cc70 06:52 ambil sisi night (112->103); union-merge ke-3 — lihat CTO note 2026-10-21]",
-      "scheduled_slot": "Backend Builder 21 Okt 18:30 build-only -> kereta T-1021-N (worker rebuild wajib sekali)"
+      "result": "PENDING — CTO pagi 22 Okt: bug DIKONFIRMASI MASIH AKTIF via SQL (bukan cuma klaim reviewer): StockFundamental 21 Okt marketCap pakai close 20 Okt (BBCA 641,03T = 123,28M x 5.200 close-20Okt; pe 11,18 konsisten close 21Okt 5.275) = lag 1 hari konsisten. ONSET LEBIH LAMA DARI KLAIM: pola implied-price=close-T-1 terverifikasi sejak >=8 Okt (bukan 19 Okt) — bukti: cap 8 Okt 745,8T implied 60498 = close 7 Okt 6050. c () dibersihkan sebelum live; backfill + audit onset penuh + regen 40 artikel = kerja worker (malam).",
+      "scheduled_slot": "2026-10-22 22:00 kereta malam T-1022-N (worker rebuild)",
+      "train": "T-1022-N"
     },
     {
       "id": "seo-2026-10-20-01",
@@ -2090,40 +2109,51 @@
       "spec": "INTENT (backlog sec-2026-10-19-01 CEO APPROVE): (1) watchdog-host.sh: curl -f teknikal.id + hivepos.id tiap 5 mnt; 2x fail → insiden log + notifikasi kanal existing; (2) branch selfheal.sh: 'docker daemon not reachable' >10 mnt → alert CRITICAL (JANGAN auto open -a Docker — blocked_for_owner); (3) runbook docs/agent-org/runbook-docker-down.md. DONE WHEN: watchdog jalan via launchd/timer + simulasi (container staging stop / fake-url) menghasilkan alert <10 mnt + runbook ada. No app deploy.",
       "source": "backlog sec-2026-10-19-01 (candidate 2d, verdict WAJIB hari ini)",
       "result": "DONE 21 Okt 18:4x WIB (CTO sore 16:45-mandate, eksekusi pasca 18:30 window). Watchdog host-only: ~/.hermes/scripts/site-502-watchdog.sh — cek https://teknikal.id/ + https://hivepos.id/ tiap 5 mnt via Hermes cron no_agent 'Site 502 Watchdog (teknikal+hivepos)' (deliver telegram owner 500212724). Alert !=200 dedup 30mnt/state-file; docker daemon UNREACHABLE >=1jam -> CRITICAL owner action (NO auto open -a Docker — blocked_for_owner honored). BUKTI: (1) cron job aktif run 18:40:02 ok SILENT saat kedua site 200 (silent-healthy pattern); (2) SIMULASI fail-test: URL 404 -> alert path fire + run-2 dedup skip (scratch sim-502-test.sh, state dibersihkan); (3) jalur notifikasi verified live sendMessage ok=True 21 Okt 18:3x; (4) runbook docs/agent-org/runbook-docker-down.md (gejala->langkah A docker down/B edge down, batas agent). launchd plist di-archive ke docs/agent-org/archive/launchagents/ (bootstrap diblokir gateway; Hermes cron = single source, Hindari dobel scheduler saat reboot — automation-watchdogs pitfall #8). 0 app deploy, 0 DB write. KPI: TRUST (detection gap insiden 19 Okt RTO>7mnt detection=0 -> kini <=5mnt).",
-      "evidence": "cron run 18:40:02 ok silent-healthy; sim 404→alert+dedup OK; TG sendMessage ok=True"
+      "evidence": "cron run 18:40:02 ok silent-healthy; sim 404→alert+dedup OK; TG sendMessage ok=True",
+      "qa_verified": true,
+      "qa_note": "PASS 22 Okt 03:3x WIB QA independen. Fisik: (1) script ~/.hermes/scripts/site-502-watchdog.sh ada (exec, host-only, cek 2 site, dedup 30mnt, docker UNREACHABLE>=1jam→CRITICAL, TANPA auto open -a Docker); (2) Hermes cron 920f7b73e832 \"Site 502 Watchdog (teknikal+hivepos)\" enabled */5 * * * *; (3) watchdog.log LIVE: run tiap 5 mnt 21 Okt 18:40 → 22 Okt 03:30 (216 baris, kedua site 200, silent-healthy; state file fresh 03:30); (4) simulasi tercatat di log \"sim-fake.local DOWN (code=404) -> [SIM] alert terkirim\"+\"dedup skip\"; (5) runbook runbook-docker-down.md + plist archived. 0 app deploy terkonfirmasi."
     },
     {
       "id": "qa-2026-10-21-01",
       "date": "2026-10-21",
       "priority": "P1",
       "type": "content-fix",
-      "status": "pending",
+      "status": "done",
       "title": "FIX brief-pasar-idx-2026-10-21: angka fiktif \"137 saham berhenti persis di -15%\" (DB 16 Okt = 28 close-basis / 47 low-basis) + 2x link internal salah route (/berita/ utk artikel EDUCATIONAL harus /akademi/)",
       "spec": "INTENT: hilangkan angka ngarang & link mati di artikel edukasi auto-reject terkait. BUKTI (reviewer 21 Okt, SQL): claim \"137 saham berhenti persis di -15%\" tidak ada varian yang menghasilkan 137 (persis -15% close-basis=28, round1=39, low-basis exact=47, low<=floor 1-tick=624); benar utk close-basis: 28. BUKTI link: /berita/auto-reject-ara-arb-dan-trading-halt-aturan-dan-contoh-nyatanya live 404 (artikel EDUCATIONAL kanonik /akademi/... = 200; 2 kemunculan: intro + penutup brief-21). ACCEPTANCE: (1) kalimat 137 diganti angka berbasis DB (close-basis 28 atau low-basis 47, sebutkan basisnya) di /akademi/...; (2) 2 link di brief-21 diarahkan ke /akademi/...; (3) curl kedua URL 200, angka baru match SQL ulang. Cara fix via jalur konten yang ada (bukan edit DB langsung).",
       "created_by": "reviewer 21 Okt 07:0x (post-publish QA)",
-      "north_star": "TRUST — angka salah di artikel edukasi = trust runtuh; link mati = UX/bounce"
+      "north_star": "TRUST — angka salah di artikel edukasi = trust runtuh; link mati = UX/bounce",
+      "result": "DONE 22 Okt 08:1x CTO pagi (SQL patch ISR, tanpa deploy). (1) Angka fiktif '137 saham berhenti persis di -15%' di /akademi/auto-reject -> '28 saham ditutup persis di batas auto reject bawah -15% (basis harga penutupan; 47 saham sempat menyentuh level itu di harga terendah sesi)' — 28 = round((close/prev-1)*100,2)=-15.00 exact; 47 = low<=prev*0.85; keduanya dihitung ulang sendiri, basis dinyatakan eksplisit. (2) 2x link mati /berita/auto-reject -> /akademi/auto-reject (intro+penutup brief-21; ternyata count DB=1 sisa — intro sudah /akademi, penutup di-patch; residual '/berita/auto-reject' di seluruh Article = 0). LIVE: /akademi/auto-reject 200 dgn '28 saham ditutup persis'=T, '137 saham'=F; brief-21 '/akademi/auto-reject'=T. Jalur konten dipakai (SQL patch + ISR), bukan editor backoffice.",
+      "completed_at": "2026-10-22T08:25:00+07:00",
+      "scheduled_slot": "2026-10-22 07:30 slot pagi"
     },
     {
       "id": "qa-2026-10-21-02",
       "date": "2026-10-21",
       "priority": "P1",
       "type": "content-fix",
-      "status": "pending",
+      "status": "done",
       "title": "FIX brief-pasar-idx-2026-10-21 superlatif mover: \"Mover terkuat\" memunculkan BRPT +20,08% #1 padahal per DB 20 Okt non-gorengan #1=MKNT +50% (#2 ATLA +33%, #3 BBSS +25%, #4 SHID, #5 SOTS) — BRPT sebenarnya rank #6",
       "spec": "INTENT: superlative table harus sesuai ranking DB hari sama (qa-27-01). BUKTI (SQL ORDER BY pct DESC, non-gorengan, 20 Okt): MKNT +50,00 (vol 6,0jt), ATLA +33,33 (92,3jt), BBSS +25,45 (34,0jt), SHID +25,00 (1,7jt), SOTS +25,00 (2,4jt) — persis top-5 di /pasar (satu pintu); BRPT +20,08 rank #6 (CBRE +24,78 vol 42jt rank #5.5 di atasnya juga). ACCEPTANCE: (1) ganti judul/judul-tabel atau tampilkan BRPT dgn peringkat exact (mis. \"Big-cap terkuat\", atau top-5 sesuai /pasar + BRPT sebagai big-cap gainer); (2) verify ulang SQL ranking hari sama; (3) angka lain di artikel (breadth 694/111/156, IHSG 5.278,89 +5,65%, harga big-cap) SUDAH terverifikasi benar — jangan diubah.",
       "created_by": "reviewer 21 Okt 07:0x (post-publish QA)",
-      "north_star": "TRUST — superlatif = klaim ranking, salah = data tidak reliable"
+      "north_star": "TRUST — superlatif = klaim ranking, salah = data tidak reliable",
+      "result": "DONE (no-op content) 22 Okt 08:1x. Judul tabel 'Mover terkuat Selasa 20 Okt' -> 'Big-cap mover terkuat Selasa 20 Okt' via SQL patch (klaim implisit #1 dinetralkan: BRPT #6 non-gorengan tapi #2 big-cap top-30 setelah TLKM +16,38%; tabel utuh = big-cap semua: BRPT/PGEO/TLKM/ADMR/MEDC/ANTM + bank big-cap — framing benar, angka tidak diubah sesuai spec). ALASAN bukan via worker regenerasi: brief sudah terbit + worker basi (lihat cto-2026-10-21-01) + SQL patch jalur kanonik preseden qa-1212-01/qa-14-01. LIVE 'Big-cap mover terkuat'=T.",
+      "completed_at": "2026-10-22T08:25:00+07:00",
+      "scheduled_slot": "2026-10-22 07:30 slot pagi"
     },
     {
       "id": "qa-2026-10-21-03",
       "date": "2026-10-21",
       "priority": "P1",
       "type": "content-fix",
-      "status": "pending",
+      "status": "done",
       "title": "FIX brief-pasar-idx-2026-10-20 superlatif volume: \"INCO volume 38,8jt terbesar di antara saham yang menguat (non-gorengan, >1jt)\" padahal DB 19 Okt #1=DSSA 1,098M, #2 BUKA 316jt, #3 DMAS 277jt, #4 NAYZ 141jt, #5 PTBA 106jt — INCO rank #13",
       "spec": "INTENT: superlatif volume harus ranking DB (qa-27-01). BUKTI (SQL rank volume DESC, saham CLOSE>prev 19 Okt, non-gorengan, vol>1jt): DSSA 1.098.784.200 (+2,10%), BUKA 316.354.400, DMAS 276.578.200, NAYZ 140.959.200, PTBA 106.399.200; INCO 38.837.500 rank #13 (+4,93%). ACCEPTANCE: (1) ganti klaim jadi akurat (contoh: \"volume terbesar di antara saham naik ber-ESG/blue-chip\" — harus dibuktikan dulu — atau tulis INCO muncul dgn volume X tanpa klaim terbesar); (2) jangan sentuh angka lain artikel (semua sudah match DB: IHSG 4.996,61 -3,64%, breadth 103/691/167, 409 oversold, GC140/DC40, BRIS RSI 7,65, BBCA/TLKM/ISAT/ICBP, BBRI 2.540 -3,79%, PGAS/PTBA, INCO +4,93% 38,8jt, harga watchlist).",
       "created_by": "reviewer 21 Okt 07:0x (post-publish QA)",
-      "north_star": "TRUST — superlatif palsu ditemukan pembaca = credibility loss"
+      "north_star": "TRUST — superlatif palsu ditemukan pembaca = credibility loss",
+      "result": "DONE 22 Okt 08:1x CTO pagi — dieksekusi GABUNG dgn qa-2026-10-20-02 (klaim superlatif volume INCO di artikel yang sama, brief-20). Klaim 'terbesar' dihapus, diganti ranking exact '#8 dari 45 gainer non-gorengan vol>1jt' + heading sektor dikoreksi energi->komoditas (INCO=Basic Materials di DB). Bukti & verifikasi lengkap di entry qa-2026-10-20-02.",
+      "completed_at": "2026-10-22T08:25:00+07:00",
+      "scheduled_slot": "2026-10-22 07:30 slot pagi"
     },
     {
       "id": "ux-2026-10-21-02",

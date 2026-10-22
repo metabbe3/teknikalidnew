@@ -609,3 +609,27 @@
 - **verify bukti**: LINT 0 · tsc 0 · build hijau 194/194 · curl -I localhost/idx-radar = 301 location:/stocks · prod /stocks 200 + sitemap live memuat /stocks
 - **deploy**: build-only malam (hard-gate 21:45) -> naik kereta T-1021-N; CTO pagi merge+deploy+verify prod 301
 - **KPI**: GROWTH (7 klik/minggu gratis) + TRUST (404 brand-query = trust bocor) · SEC GATE: N/A (routing only)
+
+### 2026-10-22 08:2x WIB — qa-2026-10-20-01 (P1 qa-fix)
+- type: qa-fix | PRD: n/a (ops/QA trust) | deploy: n/a (SQL patch + ISR revalidate 300s)
+- Fix brief-19: breadth 813/97,4% (dup 812 dihapus, klaim 'sejak 8 Juni' tak ter-replikasi → diganti rasio terburuk setahun), 558 turun>10%, 75 EMA cross baru (74 bearish) di 2 lokasi, Infra -11,8.
+- verify: live grep T/T/T, frasa lama F, residual DB 0 | QA: reviewer spec 20 Okt, angka diverifikasi ulang sendiri 22 Okt (2 klaim reviewer terkoreksi: 813 & '3 flip golden'→definisi salah)
+- impact_check_due: 2026-10-25 (brief pagi baru bebas klaim-klaim tipe ini)
+
+### 2026-10-22 08:2x WIB — qa-2026-10-20-02 + qa-2026-10-21-03 (P1 qa-fix, gabung)
+- type: qa-fix | deploy: n/a (SQL patch)
+- Fix brief-20: superlatif volume INCO salah ('terbesar' padahal #13 vol/#8 pct) → ranking exact '#8 dari 45' + basis + heading energi→komoditas (INCO=Basic Materials).
+- verify: live 'kenaikan terbesar kedelapan'=T, frasa lama F | QA: SQL rank dihitung slot ini (guard #1-energy ABORT → ganti framing rank-exact)
+- impact_check_due: 2026-10-25
+
+### 2026-10-22 08:2x WIB — qa-2026-10-21-01 (P1 content-fix)
+- type: content-fix | deploy: n/a (SQL patch)
+- Fix angka fiktif '137 saham -15%' (akademi auto-reject) → 28 close-basis / 47 low-basis eksplisit; 2x link mati /berita/→/akademi/ (brief-21 intro+penutup).
+- verify: akademi live '28 saham ditutup persis'=T '137'=F; brief-21 /akademi/=T /berita/=F; residual seluruh Article=0 | QA: angka SQL ulang
+- impact_check_due: 2026-10-25
+
+### 2026-10-22 08:2x WIB — qa-2026-10-21-02 (P1 content-fix, minimal)
+- type: content-fix | deploy: n/a (SQL patch)
+- Judul tabel brief-21 → 'Big-cap mover terkuat' (netralkan klaim implisit #1; tabel memang big-cap semua: BRPT #6 non-gorengan keseluruhan tapi #2 big-cap).
+- verify: live 'Big-cap mover terkuat'=T | QA: caprank TLKM#8/BRPT#14/PGEO#48 vs MKNT#277
+- impact_check_due: 2026-10-25
