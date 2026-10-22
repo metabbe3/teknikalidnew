@@ -633,3 +633,9 @@
 - Judul tabel brief-21 → 'Big-cap mover terkuat' (netralkan klaim implisit #1; tabel memang big-cap semua: BRPT #6 non-gorengan keseluruhan tapi #2 big-cap).
 - verify: live 'Big-cap mover terkuat'=T | QA: caprank TLKM#8/BRPT#14/PGEO#48 vs MKNT#277
 - impact_check_due: 2026-10-25
+
+### 2026-10-22 13:0x WIB — perf-2026-10-22-01 (P1 db-perf, owner-directed)
+- type: perf-fix | PRD: n/a (db_guard slow-query audit) | commit: edb29bb
+- Fix: resolve-predictions fetch latest price `stockId IN + orderBy date desc` TANPA limit (15,5jt rows/50 calls, mean 1,3s) → `distinct per stockId` (1 baris close terbaru/saham, pola findStockIdsWithCrossSignal). Semantik identik.
+- verify: tsc 0 error, next build hijau, push main edb29bb. Deploy: naik kereta T-1022-N (app build malam ini).
+- Konteks: db_guard false-alarm COPY pg_dump (excluded di monitor 22 Okt); query app ini temuan sisa audit.

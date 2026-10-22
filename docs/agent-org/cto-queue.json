@@ -2241,6 +2241,19 @@
       "result": "",
       "scheduled_slot": "slot BE/Reviewer berikutnya",
       "qa_verified": false
+    },
+    {
+      "id": "perf-2026-10-22-01",
+      "date": "2026-10-22",
+      "type": "perf-fix",
+      "priority": "P1",
+      "spec": "PERF (owner-directed 'fix', 22 Okt): resolve-predictions latest-price fetch boros (15,5jt rows/50 calls) sudah diperbaiki di main edb29bb (distinct per stockId). Tersisa: ikut build+deploy kereta malam ini + verifikasi cron resolve-predictions berjalan normal (log 200, angka resolved wajar).",
+      "status": "in_train",
+      "train": "T-1022-N",
+      "done_when": "cron resolve-predictions post-deploy return 200 dgn resolved count wajar; pg_stat_statements 24h berikutnya varian query boros tidak muncul lagi",
+      "result": "commit edb29bb pushed main; tsc+build hijau; await deploy T-1022-N",
+      "north_star": "TRUST (stabilitas DB) + growth infrastructure",
+      "scheduled_slot": "2026-10-22 22:00 kereta"
     }
   ],
   "tasks": []
