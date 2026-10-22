@@ -977,3 +977,10 @@ Watchdog host teknikal.id+hivepos.id live tiap 5 mnt (Hermes cron no_agent, aler
 - Klaim 'sesi terdalam sejak 8 Juni' TIDAK ter-replikasi (8 Jun tak muncul di top-5 rasio; 24 Jun 74,6% n=866) → diganti 'rasio terburuk sepanjang data setahun' (97,4%, excl artifact n=1 9-10 Sep). Rekap mingguan 17 Okt perlu sweep QA terpisah (kandidat task QA reviewer).
 - TEMUAN qa-20-03 diperkuat: marketCap stale-close AKTIF setiap hari sejak >=8 Okt (bukan insiden 19 Okt) — StockFundamental date T selalu pakai close T-1; pe/pb pakai close T (campur sumber). Onset persis + backfill + regen 40 artikel = kereta T-1022-N malam ini (worker rebuild jg bawa cto-1021-01).
 - Jebakan baru: enum DB = 'golden_cross' lowercase BUKAN 'GOLDEN_CROSS'; prev-day join WAJIB LATERAL prev-trading-day (date-1 lintas weekend = hasil kosong).
+
+## CTO note 2026-10-22
+- Isu teknis #1: kereta malam T-1021-N (21 Okt) TIDAK berangkat — bukti fisik: app image df26c95a65e4 = build 21 Okt ~11:00 (PRE semua kode malam), worker MASIH d70f999178b7 (19 Okt, basi 3 hari, marker 'daily' masih hidup). 5 penumpang di-reslot T-1022-N malam ini. Pola berulang: slot malam tak ada pengecek "kereta jalan/tidak" — kepemilikan window 22:00-01:30 menggantung saat owner/CTO tidak online.
+- Opsi A: status quo (manual check) — murah tapi kemarin terbukti gagal; setiap missed-train menumpuk debt deploy + fitur terkatung (register funnel verdict 2 Nov bisa telat kalau kereta kering lagi).
+- Opsi B: train-watchdog — extend Hermes cron watchdog 502 yang SUDAH live (tiap 5 mnt, 0 deploy app): cek 22:30 WIB = ada entry in_train di cto-queue + docker image created-at < 22:00 → alert TG "KERETA TIDAK BERANGKAT + manifest". Host-script ~30 mnt, sekali pasang selamanya.
+- Rekomendasi: B — kecil, bukti-fisik (image sha), langsung pilar TRUST (deploy reliability). Kalau setuju: CTO sore dispatch sre P2 hari ini.
+- Konteks KPI: returning 3,2% (spike GempaID memudar; minggu-2 8,1% tetap sahih utk ratchet) — bukan hari decision, fokus hari ini = reliabilitas rilis.

@@ -1998,7 +1998,7 @@
       "title": "P1 BUG worker fundamental: marketCap 19 Okt dihitung dari close 16 Okt (stale 1 hari, campur sumber dgn P/E) — 40 artikel template ikut salah",
       "spec": "INTENT: StockFundamental.marketCap per tanggal T wajib = sharesOutstanding x close T. Temuan reviewer 20 Okt: row 2026-10-19 semua ticker dihitung dari close 16 Okt — BBCA 637,9 T (123,28M x 5.175) padahal close 19 Okt 4.820 -> benar 594 T (+7,3% salah); TLKM 188,2 T (x 1.900) vs benar 183,9 T; UNVR 52,8 T (x 1.390) vs benar 52,4 T. Bukti campur sumber: P/E 10,22 & P/B 2,11 di row yang sama KONSISTEN dgn close 19 Okt — jadi marketCap saja pakai close T-1. Dampak publish: 40 artikel saham template 20 Okt memuat tabel Fundamental 'Market Cap' salah semua (contoh BBCA Rp 637,9 T). ACCEPTANCE: (a) fix worker sync fundamental (jalur-5 sisa: worker generator artikel) agar marketCap pakai close hari yang sama dgn date row; (b) backfill row 19 Okt (dan audit: sejak kapan pola ini ada — cek 2-3 tanggal sebelumnya); (c) 40 artikel 20 Okt regenerasi field fundamental ATAU koreksi massal via editor; (d) assertion worker: marketCap/close(equals date) == price article table.",
       "result": "PENDING — CTO pagi 22 Okt: bug DIKONFIRMASI MASIH AKTIF via SQL (bukan cuma klaim reviewer): StockFundamental 21 Okt marketCap pakai close 20 Okt (BBCA 641,03T = 123,28M x 5.200 close-20Okt; pe 11,18 konsisten close 21Okt 5.275) = lag 1 hari konsisten. ONSET LEBIH LAMA DARI KLAIM: pola implied-price=close-T-1 terverifikasi sejak >=8 Okt (bukan 19 Okt) — bukti: cap 8 Okt 745,8T implied 60498 = close 7 Okt 6050. c () dibersihkan sebelum live; backfill + audit onset penuh + regen 40 artikel = kerja worker (malam).",
-      "scheduled_slot": "2026-10-22 22:00 kereta malam T-1022-N (worker rebuild)",
+      "scheduled_slot": "kereta malam T-1022-N 22:00-01:30 (SATU build app+worker, verify per-fitur)",
       "train": "T-1022-N"
     },
     {
@@ -2007,8 +2007,8 @@
       "type": "ops",
       "priority": "P1",
       "status": "night_ready",
-      "train": "T-1021-N",
-      "scheduled_slot": "Backend Builder 21 Okt 18:30 build-only -> kereta T-1021-N (301 redirect next.config)",
+      "train": "T-1022-N",
+      "scheduled_slot": "kereta malam T-1022-N 22:00-01:30 (SATU build app+worker, verify per-fitur)",
       "north_star": "GROWTH (7 klik/minggu gratis dari query pos-12 CTR 100%) + TRUST (404 = trust bocor)",
       "source": "KEYWORD-RESEARCH 20 Okt 08:15 (P1 OPS); CEO verify live 20 Okt: curl -A Mozilla https://teknikal.id/idx-radar = 404 tanpa redirect",
       "spec": "INTENT (CEO 20 Okt): query GSC 'idx radar' 7 klik/7d pos 12 CTR 100% (14-20 Okt) mendarat ke /idx-radar yang 404 — verified live oleh CEO pagi ini (404, no redirect). Trafik gratis bocor setiap minggu. EKSEKUSI (ops routing kecil, 0 halaman baru — API REUSE RULE): (1) TENTUKAN target resmi: cek GSC/sc util URL asli yang dirank Google utk query ini; kandidat = permukaan radar existing (screener /stocks momentum ATAU blok 'Radar 5 Emiten' di home/stocks — verifikasi mana yang paling cocok intent 'idx radar'); (2) tambahkan redirect 301 PERMANENT /idx-radar -> target (next.config redirects atau routing map pola existing — konsisten dgn 308 pattern lama /berita/saham-X); (3) pastikan target ada di sitemap.xml; (4) kalau ternyata Google merank URL yang memang tak pernah ada (canonical gaib), pastikan canonical target jelas supaya ranking berpindah bukan hilang. DILARANG: buat halaman/content baru (itu lane Product/Mandor), ubah schema/DB. DONE WHEN: (a) curl -I https://teknikal.id/idx-radar = 301 + Location target yang 200 anon; (b) target URL muncul di sitemap.xml live (curl grep); (c) keputusan target + alasan dicatat ke decisions.md di slot yang sama; (d) 7 hari pasca-deploy: GSC query 'idx radar' 0 klik jatuh-404 dan posisi bertahan top-20 (cek snapshot mingguan).",
@@ -2079,8 +2079,8 @@
       "created_by": "CTO lead 21 Okt 07:45 (spot-check bukti fisik: app 0 daily/14 1d vs worker 1 daily/13 1d)",
       "north_star": "data reliable — query interval daily = 0 rows silent (DB StockIndicator SEMUA 518.116 rows interval='1d'); anomaly-detection agent buta isGoreng -> sinyal salah kualitas",
       "spec": "BUKTI 21 Okt 07:4x: docker exec worker grep 'interval:\"daily\"' .next/server/chunks/3149.js = 1 hit (findFirst isGoreng, anomaly-detection.agent.ts) sedangkan app container = 0 hit; commit 354b911 07:39 mengubah 4 file (3 agent-hub + paper-trading) tapi hanya image APP di-rebuild 07:40 (4b93d1164337); worker image d70f999178b7 created 17 Okt = 3 job patch窗口 lewat (kembaran insiden qa-2026-10-24-01 worker basi). FIX: kereta T-1021-N malam ini build ulang WORKER dari main 354b911 (satu build sama app — deploy.sh/workflow wajib kedua service), lalu verify: docker exec worker grep 'interval:\"daily\"' .next/server = 0 hit DAN log agent-hub anomaly-detection jalan tanpa 0-row. DONE-WHEN: worker container image id baru + grep 0 'daily' + anomaly agent run log ada row 21 Okt.",
-      "scheduled_slot": "kereta malam T-1021-N 22:00-01:30 (deploy 2 service app+worker SATU kereta)",
-      "train": "T-1021-N"
+      "scheduled_slot": "kereta malam T-1022-N 22:00-01:30 (SATU build app+worker, verify per-fitur)",
+      "train": "T-1022-N"
     },
     {
       "id": "ops-2026-10-21-01",
@@ -2088,8 +2088,8 @@
       "type": "ops",
       "priority": "P2",
       "status": "in_train",
-      "train": "T-1021-N",
-      "scheduled_slot": "Frontend Builder 21 Okt 19:15 build-only (staging :3100 verify) → kereta malam",
+      "train": "T-1022-N",
+      "scheduled_slot": "kereta malam T-1022-N 22:00-01:30 (SATU build app+worker, verify per-fitur)",
       "title": "OPS-FIX display: header IHSG ^JKSE tampil 'Rp5.279' — indeks = poin, bukan rupiah (idea-2026-10-21-1 CEO APPROVE)",
       "north_star": "TRUST — angka benar di permukaan paling dilihat (homepage header)",
       "spec": "INTENT: formatPrice/helper homepage header: ticker prefix '^' (indeks) tampil angka poin TANPA 'Rp' (5.279); saham individual TETAP 'Rp'. Bukti live 21 Okt CEO: <span data-live-price=\"^JKSE\">Rp5.279</span>. Cek konsistensi /indeks + ticker-tape. DONE WHEN: curl homepage grep data-live-price=\"^JKSE\" TANPA 'Rp' + /stocks/BBCA.JK MASIH 'Rp' + tsc 0 + staging :3100 pass.",
@@ -2161,12 +2161,13 @@
       "type": "ux",
       "priority": "P3",
       "status": "in_train",
-      "train": "T-1021-N",
+      "train": "T-1022-N",
       "title": "UX: emoji-as-icons -> Lucide SVG pass-3 (15 landing saham-*/pasar/laporan + gauge + stock-card gap pass-1/2)",
       "north_star": "STICKY + TRUST — konsistensi visual sitewide (ui-craft rule #4)",
       "spec": "Lanjutan b493863+9fa0d38: 71 emoji di 19 file dibersihkan (CTA landing, chip status pasar, tab sticky-nav stock, sentiment-gauge, stock-card/trading-plan-card). Emoji-picker/reaction-bar = fitur konten user, TIDAK disentuh. SEO invariant: H1 0 berubah.",
       "created_by": "UX Builder 19:15 shift 21 Okt (run-2)",
-      "result": "DONE build-only 21 Okt 21:0x: commit e2bfdc1 push main; tsc 0; build EXIT 0 (194/194); staging :3100 verify — 16/16 landing 200 emoji-body=0, /stocks/bbri 200 emoji=0 tab Chart/Indikator/AI/Trading Plan 1=1, lucide-search render di GC, H1 16/16 utuh. Verify prod pasca-kereta: emoji=0 di landing sampel."
+      "result": "DONE build-only 21 Okt 21:0x: commit e2bfdc1 push main; tsc 0; build EXIT 0 (194/194); staging :3100 verify — 16/16 landing 200 emoji-body=0, /stocks/bbri 200 emoji=0 tab Chart/Indikator/AI/Trading Plan 1=1, lucide-search render di GC, H1 16/16 utuh. Verify prod pasca-kereta: emoji=0 di landing sampel.",
+      "scheduled_slot": "kereta malam T-1022-N 22:00-01:30 (SATU build app+worker, verify per-fitur)"
     }
   ],
   "tasks": []
