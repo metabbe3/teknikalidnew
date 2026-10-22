@@ -634,6 +634,13 @@
 - verify: live 'Big-cap mover terkuat'=T | QA: caprank TLKM#8/BRPT#14/PGEO#48 vs MKNT#277
 - impact_check_due: 2026-10-25
 
+
+### 2026-10-23 03:0x WIB — bo-2026-10-22-01 (P2 backoffice MATANGKAN, TRUST)
+- type: feat | PRD: bo-2026-10-22-01 | commit: 7c3be63 (merge ke main)
+- Fix: gerbang editorial /admin/review setengah jadi (146 PUBLISHED, 0 pernah direview, hanya tombol Setujui). POST /api/admin/articles/review kini dukung action approve|reject (backward-compat default approve) + note; reject = PUBLISHED->DRAFT + reviewLog append-only + audit admin:review_article; GET + stats 30d (pending/approved/rejected, sumber AuditLog SATU PINTU) + riwayat 50 keputusan; page + KPI 3 kartu + tombol Tolak + section Riwayat.
+- verify: tsc --noEmit EXIT-0 (0 error); grep markRejected/rejectArticle/admin:review_article/findRecentByActions/Tolak PASS; 0 migrasi, 0 dep baru.
+- Deploy: backoffice slot 03:00 23 Okt (deploy 1/2 org).
+
 ### 2026-10-22 13:0x WIB — perf-2026-10-22-01 (P1 db-perf, owner-directed)
 - type: perf-fix | PRD: n/a (db_guard slow-query audit) | commit: edb29bb
 - Fix: resolve-predictions fetch latest price `stockId IN + orderBy date desc` TANPA limit (15,5jt rows/50 calls, mean 1,3s) → `distinct per stockId` (1 baris close terbaru/saham, pola findStockIdsWithCrossSignal). Semantik identik.
