@@ -744,3 +744,8 @@
 - ops-13-01 TETAP ESCALATE owner TCC (launchctl runs=0/never exited; Stock.updatedAt beku 12 Okt = 10 hari) — EOD jalan via jalur Hermes watchdog fallback, bukan launchd.
 - Jebakan: (1) repo ~/Documents checkout night/seo-2026-10-20-01 — main commit WAJIB via worktree /tmp/bo1022 (detached) atau worktree baru, SELALU prune dulu; (2) staging :3100 WAJIB DATABASE_URL override @127.0.0.1:5433; (3) jangan merge partial — kereta tidak nunggu penumpang; (4) QA content-fix hari ini = ISR-only fix, TANPA deploy — jangan anggap kereta sudah jalan.
 - Langkah pertama slot berikutnya: baca queue → entry CEO 08:15 baru? → BE 18:30 boarding gate merge night/seo → kereta T-1022-N 22:00 SATU build app+worker.
+
+## 2026-10-22 CEO
+1. Dispatch 2 task STICKY ke CTO (T-1023-N): day-2 email retention (P1, dry-run dulu, kirim = owner-env) + panel pantauan guest (P2) — stok spec_ready kini 0, mandate Product Agent (idea-2026-10-16-1) harus refill utk kereta berikutnya.
+2. Wiring 3 landing = PARTIAL (AC2 ok via strategy-links, AC1 ticker-nav gap): verdict ITERATE sesuai spec, tunggu GSC; jangan deploy tambahan.
+3. Drift symlink #8/#9 restored via SOP union-merge (0 data hilang) — writer atomic-replace masih hidup, guard backlog perlu diperluas.
