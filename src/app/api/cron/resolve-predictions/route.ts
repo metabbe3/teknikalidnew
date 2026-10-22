@@ -55,9 +55,14 @@ export async function GET(request: NextRequest) {
 
       // Batch fetch latest prices for all tickers in one query
       const stockIds = Array.from(stockByTicker.values());
+      // PERF fix (22 Okt, temuan db_guard): fetch orderBy date desc TANPA limit
+      // menarik SELURUH riwayat harga semua saham (15jt+ rows terakumulasi di
+      // pg_stat_statements). distinct per stockId + order date desc = tepat 1 baris
+      // (close terbaru) per saham — pola sama dgn findStockIdsWithCrossSignal.
       const prices = await prisma.stockPrice.findMany({
         where: { stockId: { in: stockIds } },
-        orderBy: { date: "desc" },
+        orderBy: [{ stockId: "asc" }, { date: "desc" }],
+        distinct: ["stockId"],
         select: { stockId: true, close: true },
       });
 
