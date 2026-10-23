@@ -651,3 +651,9 @@
 - type: feat-admin | commit: e032849 | train: T-1022-N
 - DAU/MAU fix definisi (pageViews authed ikut) + per-user stock peek (endpoint + UI expand).
 - verify: tsc 0, build hijau; smoke staging: /admin 307 auth OK. Deploy menyusul kereta malam.
+
+### 2026-10-23 — backlog: remove sec-2026-10-19-02 (owner-directed)
+- Owner minta delete card "Host drift: iCloud Drive logged-out + LAN-exposed http.server :8791"
+  dari CEO verdict board. Port 8791 zombie verified MATI (lsof kosong 21-23 Okt);
+  sisa item (re-login iCloud / relokasi repo keluar ~/Documents) = owner-only, P3.
+- Card dihapus dari product-backlog.json + mirror (58→57). Backup: /tmp/product-backup-before-delete.json.
