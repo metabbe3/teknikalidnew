@@ -2350,7 +2350,7 @@
     },
     {
       "id": "ux-2026-10-23-01",
-      "status": "pending",
+      "status": "in_train",
       "priority": "P2",
       "kpi": "STICKY",
       "title": "P2 UX FLOW-B: brief pasar naik ke viewport #1 landing (dari y~1000px) + telemetry brief_open — data: home 136v/7d vs brief 5v, kartu lama terkubur di bawah 3 section, 0 klik terlacak",
@@ -2358,7 +2358,15 @@
       "spec": "File: src/components/berita/daily-brief-hero.tsx + src/app/(public)/page.tsx (anonymous branch). (1) Tambah variant 'compact' (default tetap 'full' utk /berita): link 1 baris — badge kecil 'Brief Hari Ini' + title line-clamp-1 + panah, p-3 rounded-xl, hover accent, TANPA excerpt (accent budget: badge accent saja); (2) home anon: render DailyBriefHero compact DI DALAM hero section tepat setelah MarketBreathStrip, HAPUS render full di main content (anti-dobel); (3) wire data-engagement=brief_open pada Link utama kedua variant (beacon ctaLabel closest [data-engagement], label 10 char < varchar 32). Frontend-only.",
       "assigned_slot": "UX Builder 19:15 Jumat 23 Okt (build-only → kereta T-1023-N 22:00)",
       "created_by": "ux-builder",
-      "created_at": "2026-10-23T19:40:00+07:00"
+      "created_at": "2026-10-23T19:40:00+07:00",
+      "train": "T-1023-N",
+      "result": "BUILD-ONLY DONE 23 Okt 19:5x. Bukti: tsc 0 error; next build EXIT 0 (195 pages); staging :3100 (DB 127.0.0.1:5433) — home SSR: brief link pos 14615 < hero grid 15403 (DALAM hero, 1 link saja anti-dobel), data-engagement=brief_open x1, badge 'Brief Hari Ini' ada, full-card footer lama hilang; SEO verbatim utuh 3/3 ('Trading tanpa nebak-nebak', 'Chart profesional, 12 indikator teknikal', 'Analisa Sekarang'); /berita variant full utuh + brief_open wired. Commit 83a253f push main. Deploy oleh kereta T-1023-N 22:00; verify prod: curl home -> anchor brief-pasar dalam hero section. Impact D+7: cta_click brief_open > 0, views brief dari home naik vs baseline 2/hari.",
+      "boarding": {
+        "tsc": "0 error",
+        "build": "EXIT 0, 195 pages",
+        "staging_3100": "PASS — brief dalam hero, 1 link, SEO utuh, /berita tak berubah",
+        "commit": "83a253f (main, pushed)"
+      }
     }
   ],
   "tasks": []
