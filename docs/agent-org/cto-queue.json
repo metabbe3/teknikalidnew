@@ -2347,6 +2347,18 @@
       "result": "commit e032849 pushed main; tsc 0 error; next build hijau; staging 3100 smoke: /admin 307 auth-redirect benar (DB dev unreachable by known .env pitfall, bukan regression). Await deploy T-1022-N.",
       "north_star": "TRUST (angka admin jujur) + STICKY (retention targeting per-user)",
       "scheduled_slot": "2026-10-22 22:00 kereta (reslot T-1022-N malam 23 Okt)"
+    },
+    {
+      "id": "ux-2026-10-23-01",
+      "status": "pending",
+      "priority": "P2",
+      "kpi": "STICKY",
+      "title": "P2 UX FLOW-B: brief pasar naik ke viewport #1 landing (dari y~1000px) + telemetry brief_open — data: home 136v/7d vs brief 5v, kartu lama terkubur di bawah 3 section, 0 klik terlacak",
+      "done_when": "Staging :3100 & prod pasca-kereta: (1) anchor brief-pasar muncul DALAM hero section (sebelum grid heroCards / sebelum TickerTape) di HTML SSR home anon; (2) kartu full lama TIDAK dobel render (1 link brief saja di main content); (3) data-engagement=brief_open ada di link; (4) keyword hero verbatim utuh (grep 'Trading tanpa nebak-nebak', 'Chart profesional, 12 indikator teknikal'); (5) tsc 0 + build hijau; (6) D+7: cta_click brief_open > 0 dan views brief dari home naik vs baseline 2/hari",
+      "spec": "File: src/components/berita/daily-brief-hero.tsx + src/app/(public)/page.tsx (anonymous branch). (1) Tambah variant 'compact' (default tetap 'full' utk /berita): link 1 baris — badge kecil 'Brief Hari Ini' + title line-clamp-1 + panah, p-3 rounded-xl, hover accent, TANPA excerpt (accent budget: badge accent saja); (2) home anon: render DailyBriefHero compact DI DALAM hero section tepat setelah MarketBreathStrip, HAPUS render full di main content (anti-dobel); (3) wire data-engagement=brief_open pada Link utama kedua variant (beacon ctaLabel closest [data-engagement], label 10 char < varchar 32). Frontend-only.",
+      "assigned_slot": "UX Builder 19:15 Jumat 23 Okt (build-only → kereta T-1023-N 22:00)",
+      "created_by": "ux-builder",
+      "created_at": "2026-10-23T19:40:00+07:00"
     }
   ],
   "tasks": []

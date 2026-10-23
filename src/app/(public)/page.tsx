@@ -507,6 +507,11 @@ export default async function HomePage() {
                 ihsg,
               }}
             />
+            {homeBrief && (
+              <div className="mt-5">
+                <DailyBriefHero brief={homeBrief} variant="compact" />
+              </div>
+            )}
             {heroCards.length > 0 && (
               <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                 {heroCards.map((c) => (
@@ -523,9 +528,6 @@ export default async function HomePage() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-10 space-y-14">
-        {/* Latest daily brief — 1 click from landing (flow b) */}
-        <DailyBriefHero brief={homeBrief} />
-
         {/* Welcome Back Banner for returning anonymous visitors */}
         <WelcomeBackBanner />
 
