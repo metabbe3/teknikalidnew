@@ -1,3 +1,11 @@
+## [2026-10-24 03:0x] backoffice-builder — bo-2026-10-24-01: /admin/shares pisahkan beacon kuota tamu dari share nyata
+- Type: backoffice (service extend + UI)  |  PRD: bo-2026-10-24-01 (AUDIT ronde-2 rotasi alfabetis huruf S; owner mandat 12 Okt 'data reliable, satu sumber kebenaran')
+- Deploy: 24 Okt 03:xx WIB (Sabtu, pasar tutup; docker compose build app && up -d app)  |  Rollback anchor: git revert fc40f06 / redeploy image pre-deploy 79ca9b6a2111
+- AUDIT TEMUAN: (a) /admin/shares (last touch 28 Jul) masih dipakai, struktur sehat (guard, WIB range, 90d cap). (b) DATA TERCEMAR: tabel ShareEvent menampung beacon telemetri kuota tamu (target=guest_quota dari guest-stock-tracker via /api/track/share) dan dihitung sebagai 'Total Shares — real clicks'; filter isBot=false 30d: 31/34 event (91%) beacon kuota, share nyata hanya 3 (story 2, copy 1). (c) KPI 'Top Context' menampilkan '1' (angka kuota ke-n), bukan label konteks.
+- FIX (0 migrasi, 0 dependency, API REUSE): getShareAnalytics split satu findMany jadi dua populasi in-memory: realShares (target != guest_quota) vs quotaBeacons; byContext buang context numerik /^\d+$/ (artefak kuota); response tambah blok quota {total, byDay, uniqueContexts=proxy perangkat anon}. UI: KPI 1 'Total Shares (nyata)' subtitle jujur; KPI 4 'Guest quota beacons' (icon Gauge) dgn 'N perangkat unik (proxy)'; topPaths/daily hanya share nyata.
+- Verify: npx tsc --noEmit EXIT-0 (worktree clean + prisma generate); grep marker realShares+quotaBeacons di analytics.service.ts; DB cross-check: 30d real=3/quota=31/uniq-context=4 = logika baru; pre-deploy invariant PASS (origin/main ancestor HEAD fc40f06); smoke pasca-deploy di bawah.
+- Dampak North Star: TRUST (admin satu sumber kebenaran) + STICKY (sinyal share nyata tak tertutup noise kuota tamu).
+
 ## [2026-10-18 07:5x] cto-pagi — prd-2026-10-17-01: waitlist lead-capture v1.5 MERGED+STAGING-VERIFIED (in_train T-1018-N, belum deploy)
 - Type: prd (fitur GROWTH)  |  PRD: idea-2026-10-17-1b / prd-2026-10-17-01 (night_ready CTO Night 17 Okt)
 - Deploy: PENDING — kereta malam T-1018-N (window 22:00-01:30; slot pagi = BUILD-ONLY)  |  Rollback anchor: git revert abd3129 (merge waitlist v1.5), image pre-deploy = 88612073f083 (deploy bo-03:14)
