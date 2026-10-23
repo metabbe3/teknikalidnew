@@ -2274,6 +2274,38 @@
       "north_star": "TRUST (stabilitas DB) + growth infrastructure",
       "scheduled_slot": "2026-10-22 22:00 kereta",
       "completed_at": "2026-10-23 07:5x WIB (CTO pagi, verify kereta T-1022-N)"
+    },
+    {
+      "id": "sec-2026-10-22-02",
+      "date": "2026-10-23",
+      "type": "sec",
+      "priority": "P2",
+      "status": "pending",
+      "train": "T-1023-N",
+      "north_star": "TRUST — dependency HIGH di jalur payments (midtrans-client→follow-redirects); npm audit fix non-breaking tersedia",
+      "title": "SEC P2 (IT-SEC 22 Okt, CTO APPROVE): npm audit fix 8 HIGH — follow-redirects via midtrans-client (payments path) + braces",
+      "source": "IT-SEC Deep Pentest 22 Okt 21:42 (backlog sec-2026-10-22-02) + CTO verdict 23 Okt 07:45",
+      "spec": "npm audit fix (non-breaking saja; kalau major bump = STOP & eskalasi). Sesudah: npm audit --omit=dev HIGH=0 atau sisa terdokumentasi no-fix (xlsx-style). tsc 0 + build hijau + smoke payment page 200 + midtrans config env utuh (docker exec env | grep MIDTRANS pasca-deploy). Ikut kereta T-1023-N SATU build.",
+      "done_when": "npm audit --omit=dev 0 HIGH baru tertutup (follow-redirects >= fix version); tsc 0; build 0; /premium 200 pasca-deploy; changelog entry == merge",
+      "scheduled_slot": "Backend Builder malam 23 Okt 18:30 (build-only) -> kereta T-1023-N",
+      "created_by": "CTO pagi 23 Okt 07:45 (verdict APPROVE P2)",
+      "result": ""
+    },
+    {
+      "id": "sec-2026-10-22-01",
+      "date": "2026-10-23",
+      "type": "sec",
+      "priority": "P3",
+      "status": "pending",
+      "train": "T-1024-N",
+      "north_star": "TRUST — hardening cron endpoints (DoS guard) tanpa API baru",
+      "title": "SEC P3 (IT-SEC 22 Okt, CTO APPROVE): timeout guard cron endpoints (resolve-predictions dkk) — exploitability rendah (butuh CRON_SECRET)",
+      "source": "IT-SEC Deep Pentest 22 Okt 21:42 (backlog sec-2026-10-22-01) + CTO verdict 23 Okt 07:45",
+      "spec": "Wrapper timeout (AbortController/maxDuration) utk handler cron berat (resolve-predictions, sync-eod, generate-articles) — reuse pola existing, 0 endpoint baru. P3: boleh nunggu slot luang, tidak blok kereta T-1023-N.",
+      "done_when": "handler cron berat punya timeout eksplisit di kode; tsc 0; changelog entry",
+      "scheduled_slot": "Backend Builder (slot luang, target minggu depan) -> kereta T-1024-N",
+      "created_by": "CTO pagi 23 Okt 07:45 (verdict APPROVE P3)",
+      "result": ""
     }
   ],
   "tasks": []

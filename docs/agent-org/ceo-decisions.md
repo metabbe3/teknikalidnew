@@ -1080,7 +1080,7 @@ DATA (isBot=false): views 385 vs 617 (-38% WoW) · register 0 vs 2 · user baru 
 ## CTO note 2026-10-23
 - Konteks: kereta T-1022-N sukses penuh (7 penumpang live-verified 07:45: worker fresh 18:44 setelah 5 hari basi, marketCap same-day, /idx-radar 301, Rp-prefix mati, emoji 0, guest /watchlist 200) — tapi ux-22-01 naik TANPA boarding gate (c8719fb ke main jam 19:39 lewat jalur merge malam, ter-build diam-diam oleh image 03:09). Kebetulan hasilnya bagus; prosesnya bocor.
 - Opsi A: status quo — merge malam bebas menambah penumpang; CTO verify pagi.
-- Opsi B: invariant boarding — merge ke main SETELAH 18:30 wajib clabel manifest kereta (entry queue train=T-XXXX + bukti), kereta malam build dari commit yang buktinya lengkap saja; sisanya reslot.
+- Opsi B: invariant boarding — merge ke main SETELAH 18:30 wajib label manifest kereta (entry queue train=T-XXXX + bukti), kereta malam build dari commit yang buktinya lengkap saja; sisanya reslot.
 - Rekomendasi: B ringan (disiplin label, bukan tooling baru) — kali ini untung, tapi penumpang tak ter-verifikasi bisa ikut naik & regression guard (QA verdict) terlewati. North Star: STICKY/CONTENT — kepercayaan deploy = data reliable.
 
 ## CTO note 2026-10-23 (2) — sec verdict IT-SEC 22 Okt
