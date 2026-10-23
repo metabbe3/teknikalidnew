@@ -646,3 +646,8 @@
 - Fix: resolve-predictions fetch latest price `stockId IN + orderBy date desc` TANPA limit (15,5jt rows/50 calls, mean 1,3s) → `distinct per stockId` (1 baris close terbaru/saham, pola findStockIdsWithCrossSignal). Semantik identik.
 - verify: tsc 0 error, next build hijau, push main edb29bb. Deploy: naik kereta T-1022-N (app build malam ini).
 - Konteks: db_guard false-alarm COPY pg_dump (excluded di monitor 22 Okt); query app ini temuan sisa audit.
+
+### 2026-10-23 11:0x WIB — adm-2026-10-23-01 (P1 admin analytics, owner-directed)
+- type: feat-admin | commit: e032849 | train: T-1022-N
+- DAU/MAU fix definisi (pageViews authed ikut) + per-user stock peek (endpoint + UI expand).
+- verify: tsc 0, build hijau; smoke staging: /admin 307 auth OK. Deploy menyusul kereta malam.
