@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AdminKpiCard } from "@/components/admin/admin-kpi-card";
-import { Share2, Link2, MessageCircle, Send } from "lucide-react";
+import { Share2, Link2, MessageCircle, Send, Gauge } from "lucide-react";
 import { wibDayStart, wibNextDayStart } from "@/lib/datetime-wib";
 
 interface ShareData {
@@ -14,6 +14,8 @@ interface ShareData {
   byContext: { context: string; count: number }[];
   daily: { date: string; count: number }[];
   topPaths: { path: string; count: number }[];
+  // Beacon kuota tamu — telemetri terpisah, bukan share nyata.
+  quota?: { total: number; byDay: { date: string; count: number }[]; uniqueContexts: number };
 }
 
 const QUICK_RANGES = [
@@ -65,15 +67,16 @@ export function SharesView() {
   const byContext = data?.byContext ?? [];
   const daily = data?.daily ?? [];
   const topPaths = data?.topPaths ?? [];
+  const quota = data?.quota;
   const count = (t: string) => byTarget.find((x) => x.target === t)?.count ?? 0;
   const maxDaily = Math.max(1, ...daily.map((d) => d.count));
   const maxTarget = Math.max(1, ...byTarget.map((t) => t.count));
 
   const kpis = [
-    { title: "Total Shares", icon: Share2, value: total, subtitle: "real clicks (bots excluded)", gradient: "blue" as const },
+    { title: "Total Shares (nyata)", icon: Share2, value: total, subtitle: "klik share nyata — beacon kuota tamu dikecualikan", gradient: "blue" as const },
     { title: "WhatsApp", icon: MessageCircle, value: count("whatsapp"), subtitle: undefined, gradient: "emerald" as const },
     { title: "Copy Link", icon: Link2, value: count("copy"), subtitle: undefined, gradient: "amber" as const },
-    { title: "Top Context", icon: Share2, value: byContext[0]?.context ?? "-", subtitle: byContext[0] ? `${byContext[0].count} clicks` : undefined, gradient: "rose" as const },
+    { title: "Guest quota beacons", icon: Gauge, value: quota?.total ?? 0, subtitle: quota ? `${quota.uniqueContexts} perangkat unik (proxy)` : undefined, gradient: "rose" as const },
   ];
 
   return (

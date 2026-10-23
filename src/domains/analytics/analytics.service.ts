@@ -36,6 +36,13 @@ export interface ShareAnalytics {
   byContext: { context: string; count: number }[];
   daily: { date: string; count: number }[];
   topPaths: { path: string; count: number }[];
+  // Beacon kuota tamu (target='guest_quota') dipisah dari share nyata.
+  quota: {
+    total: number;
+    byDay: { date: string; count: number }[];
+    // Jumlah context unik = proxy jumlah perangkat anonim.
+    uniqueContexts: number;
+  };
 }
 
 export type TrafficSource =
@@ -1103,17 +1110,33 @@ export const analyticsService = {
       orderBy: { createdAt: "desc" },
     });
 
+    // Pisahkan dua populasi: share klik nyata vs beacon kuota tamu (telemetri
+    // guest-stock-tracker yang menumpang tabel ini; context = hitungan kuota ke-n).
+    const realShares = events.filter((e) => e.target !== "guest_quota");
+    const quotaBeacons = events.filter((e) => e.target === "guest_quota");
+
     const byTarget = new Map<string, number>();
     const byContext = new Map<string, number>();
     const daily = new Map<string, number>();
     const topPaths = new Map<string, number>();
 
-    for (const e of events) {
+    for (const e of realShares) {
       byTarget.set(e.target, (byTarget.get(e.target) ?? 0) + 1);
-      byContext.set(e.context, (byContext.get(e.context) ?? 0) + 1);
+      // Konteks numerik = artefak kuota tamu, buang dari share nyata.
+      if (!/^\d+$/.test(e.context)) {
+        byContext.set(e.context, (byContext.get(e.context) ?? 0) + 1);
+      }
       const key = wibDayKey(e.createdAt);
       daily.set(key, (daily.get(key) ?? 0) + 1);
       topPaths.set(e.path, (topPaths.get(e.path) ?? 0) + 1);
+    }
+
+    const quotaDaily = new Map<string, number>();
+    const quotaContexts = new Set<string>();
+    for (const e of quotaBeacons) {
+      const key = wibDayKey(e.createdAt);
+      quotaDaily.set(key, (quotaDaily.get(key) ?? 0) + 1);
+      quotaContexts.add(e.context);
     }
 
     const ranked = (m: Map<string, number>) =>
@@ -1122,7 +1145,7 @@ export const analyticsService = {
         .sort((a, b) => b.count - a.count);
 
     return {
-      total: events.length,
+      total: realShares.length,
       byTarget: ranked(byTarget).map(({ k, count }) => ({ target: k, count })),
       byContext: ranked(byContext).map(({ k, count }) => ({ context: k, count })),
       daily: [...daily.entries()]
@@ -1131,6 +1154,13 @@ export const analyticsService = {
       topPaths: ranked(topPaths)
         .slice(0, 10)
         .map(({ k, count }) => ({ path: k, count })),
+      quota: {
+        total: quotaBeacons.length,
+        byDay: [...quotaDaily.entries()]
+          .sort(([a], [b]) => (a < b ? -1 : 1))
+          .map(([date, count]) => ({ date, count })),
+        uniqueContexts: quotaContexts.size,
+      },
     };
   },
 };
