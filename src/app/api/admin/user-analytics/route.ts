@@ -17,8 +17,12 @@ export async function GET() {
   const monthStart = new Date(todayStart.getTime() - 30 * 24 * 60 * 60 * 1000);
   const fourteenDaysAgo = new Date(todayStart.getTime() - 14 * 24 * 60 * 60 * 1000);
 
+  // 23 Okt fix: DAU/MAU dulu hanya posts/comments — user yang tiap hari browsing
+  // /stocks/berita terhitung "inactive" (angka misleadingly rendah). Aktivitas =
+  // page views (authed) ATAU posts ATAU comments. PageView ter-index di createdAt.
   const activeWhere = (since: Date) => ({
     OR: [
+      { pageViews: { some: { createdAt: { gte: since }, isBot: false } } },
       { posts: { some: { createdAt: { gte: since } } } },
       { comments: { some: { createdAt: { gte: since } } } },
     ],

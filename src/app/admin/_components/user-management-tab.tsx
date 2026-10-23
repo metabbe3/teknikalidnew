@@ -35,6 +35,56 @@ interface UsersData {
   totalPages: number;
 }
 
+function UserStocksPeek({ userId }: { userId: string }) {
+  const [open, setOpen] = useState(false);
+  const { data, isLoading } = useQuery({
+    queryKey: ["admin-user-stocks", userId],
+    queryFn: async () => {
+      const r = await fetch(`/api/admin/user-analytics/${userId}/stocks`);
+      if (!r.ok) return undefined;
+      return r.json();
+    },
+    enabled: open,
+    staleTime: 60_000,
+  });
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="mt-1 text-[11px] font-semibold text-blue-600 hover:text-blue-700 underline decoration-dotted underline-offset-2"
+      >
+        Lihat saham yang dibuka (30 hari)
+      </button>
+    );
+  }
+  if (isLoading || !data) {
+    return <div className="mt-1 text-[11px] text-gray-400 animate-pulse">Memuat…</div>;
+  }
+  if (!data.stocks?.length) {
+    return (
+      <div className="mt-1 text-[11px] text-gray-400">
+        Belum ada view saham tercatat (30 hari) ·{" "}
+        <button type="button" onClick={() => setOpen(false)} className="text-blue-600 underline">tutup</button>
+      </div>
+    );
+  }
+  return (
+    <div className="mt-1 flex flex-wrap items-center gap-1">
+      {data.stocks.map((s: { ticker: string; views: number }) => (
+        <span key={s.ticker} className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-bold text-blue-700 tabular-nums">
+          {s.ticker}<span className="text-blue-400 font-medium">×{s.views}</span>
+        </span>
+      ))}
+      <span className="text-[11px] text-gray-400">
+        · terakhir aktif {data.lastActive ? new Date(data.lastActive).toLocaleDateString("id-ID") : "—"} ·{" "}
+        <button type="button" onClick={() => setOpen(false)} className="text-blue-600 underline">tutup</button>
+      </span>
+    </div>
+  );
+}
+
 export function UserManagementTab() {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
@@ -220,7 +270,9 @@ export function UserManagementTab() {
                     </div>
                     <div className="text-xs text-gray-500 truncate">
                       @{user.username} · {user.email}
-                    </div>
+                      <UserStocksPeek userId={user.id} />
+                  </div>
+                    <UserStocksPeek userId={user.id} />
                   </div>
 
                   <div className="hidden sm:flex items-center gap-4 text-xs text-gray-500 shrink-0">
