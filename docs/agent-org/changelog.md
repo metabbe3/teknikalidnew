@@ -657,3 +657,11 @@
   dari CEO verdict board. Port 8791 zombie verified MATI (lsof kosong 21-23 Okt);
   sisa item (re-login iCloud / relokasi repo keluar ~/Documents) = owner-only, P3.
 - Card dihapus dari product-backlog.json + mirror (58→57). Backup: /tmp/product-backup-before-delete.json.
+
+### 2026-10-23 18:5x WIB — qa-2026-10-23-01 + qa-2026-10-23-02 (P1 content-fix x2, minimal)
+- type: content-fix | deploy: n/a (SQL patch via fetch-replace-write)
+- brief-23: superlatif MAPI "gainer terkuat di antara saham big-cap likuid" SALAH (#7 non-gorengan; MKNT/BUKK/PTSN/OASA/ASLI/TEBE di atas) → rank-exact "#7 non-gorengan + #1 big-cap ≥Rp10T (kriteria eksplisit)"; heading → "MAPI bintang big-cap"; header tabel → "Top gainers big-cap ... kapitalisasi di atas Rp10 triliun"; AADI "paling banyak dilihat pekan ini" → "#3 tersibuk 7d (14 pv, setelah MKNT 23 & BBCA 19)".
+- akademi gorengan: agregat fiktif 139/180/16/9% (tak ter-reproduksi tanggal mana pun) → 134/160/23/14% "per 22 Oktober 2026" (2 lokasi); studi kasus BSWD/CSMI/SMLE/ASPI/SEMA/MPXL diverifikasi INTACT 0 sentuh.
+- verify bukti: replay SQL (StockPrice 22-vs-21 + StockIndicator DISTINCT ON + StockFundamental cap; PageView nobot 7d & kalender-week) | live 200: frasa baru x2-4 render, frasa lama 0, kontrol utuh (5.387,91/489/10,76%/Rp1.390/+485%)
+- QA: reviewer 23 Okt (sumber spec); replay CTO independen konfirmasi | impact_check_due: 2026-10-26 (brief Senin 26 Okt bebas superlatif tanpa basis + akademi baru bebas agregat statis)
+- rollback: fullrow /tmp/qa23-{brief,akademi}-backup-*.json + backup db-20261023.sql.gz

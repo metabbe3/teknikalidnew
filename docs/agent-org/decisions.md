@@ -810,3 +810,9 @@ done-when spec menuntut literal 301 (`curl -I`). Setara bagi Google. 0 halaman b
 Verify lokal (branch night/seo-2026-10-20-01): lint 0 · tsc 0 · build hijau 194/194 ·
 `next start` curl -I /idx-radar = **301 + location:/stocks** (bukti fisik). Prod saat
 penulisan masih 404 (deploy di kereta T-1021-N / CTO pagi).
+
+## 2026-10-23 18:5x WIB — CTO sore: qa-23-01 + qa-23-02 (P1 QA content-fix x2, TANPA deploy)
+- SQL destructive policy dipenuhi: backup db-20261023 01:16 (age ~17h <24h) + fullrow JSON 2 artikel; preview COUNT via Python count-assert (expect 1 hit per frasa); UPDATE 1 row per artikel (WHERE id eksplisit); log ini = eksekusi record.
+- REPLAY INDEPENDEN sebelum patch (bukti fisik menang atas spec): (a) ranking gainers non-gorengan 22 Okt via StockPrice LAG rekonstruksi — MAPI #7 persis klaim reviewer (MKNT 25,00/BUKK 25,00/PTSN 24,46/OASA 23,75/ASLI 12,40/TEBE 11,63 > MAPI 10,76); MAPI #1 big-cap ≥Rp10T (StockFundamental cap MAPI 23,0T; ASLI hanya 2,26T meski val Rp121,5M — "likuid" ≠ "big-cap", klaim asli tak punya kriteria yang mengecualikan ASLI/BULL). (b) AADI #3 rolling-7d (MKNT 23/BBCA 19/AADI 14), di luar top-6 kalender-week — salah di kedua basis. (c) agregat gorengan 22 Okt = 134/160/23 (14,4%); 139/180/16 tak ter-reproduksi mana pun.
+- DEVIASI KECIL dari spec qa-23-01 poin (1): spec menawarkan 2 opsi (rank-exact ATAU domain eksplisit) — dipilih GABUNGAN keduanya (rank-exact #7 + domain big-cap ≥Rp10T eksplisit) karena tabel 6 baris memang big-cap semua (MAPI 23,0T/AMMN 292,9T/JSMR 19,4T/BBNI 127,7T/ANTM 68,9T/BMRI 364,8T) sehingga tabel tetap valid + kriteria jujur.
+- POla superlatif ke-4 (KAEF 8 Okt, INCO 20 Okt, BRPT 21 Okt, MAPI 23 Okt): guard ranking utk generator ada di jalur worker, brief jalur Mandor (python growth) masih polos — usulan guard prompt Mandor "superlatif wajib rank-exact dari SQL" diteruskan ke CEO (bukan scope hotfix).
