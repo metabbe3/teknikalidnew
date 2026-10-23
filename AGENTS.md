@@ -45,3 +45,4 @@ Market data = SATU PINTU. Sebelum membuat endpoint/service/fungsi data baru:
 - Night train T-MMDD-N: board only verified tasks (DONE-WHEN green with physical proof: curl/grep/SQL count)
 - DB access: `docker exec teknikalidnew-db-1 psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"` (role "postgres" does not exist)
 - Destructive SQL: conditional — requires fresh backup <24h (`~/backups/teknikalid/`), SELECT COUNT first, narrow WHERE, log rowcount to docs/agent-org/decisions.md. Never touch auth/payments/security/env.
+- **GATEGUARD pre-flight (wajib sebelum deploy prod / push-force / destructive SQL / sentuh auth)** — tulis di deliverable dulu, baru eksekusi: `targets:` (ls/SQL eksplisit), `blast:` (apa yang rusak kalau salah), `rollback:` (commit SHA / backup file / image lama). Tanpa blok ini task tidak boleh naik DONE. "Are you sure?" tidak dihitung — hanya fakta.
