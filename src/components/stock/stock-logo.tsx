@@ -31,16 +31,22 @@ export function StockLogo({ name, ticker, size = 32 }: StockLogoProps) {
       width={size}
       height={size}
       className="rounded-md flex-shrink-0 object-cover"
-      // rantai fallback: .jpg asli (IDX mirror 25 Okt, 425 emiten) → .svg monogram → tile huruf
+      // rantai fallback: .jpg asli (IDX mirror 25 Okt, 425 emiten) → .png favicon
+      // website resmi (Google s2, 24 Okt, 389 emiten) → .svg monogram → tile huruf
       onError={(e) => {
         const img = e.currentTarget;
-        if (img.dataset.fallback === "2") return;
+        if (img.dataset.fallback === "3") return;
         if (!img.dataset.fallback) {
           img.dataset.fallback = "1";
+          img.src = `/logos/${base}.png`;
+          return;
+        }
+        if (img.dataset.fallback === "1") {
+          img.dataset.fallback = "2";
           img.src = `/logos/${base}.svg`;
           return;
         }
-        img.dataset.fallback = "2";
+        img.dataset.fallback = "3";
         const parent = img.parentElement;
         if (parent) {
           const tile = document.createElement("div");
