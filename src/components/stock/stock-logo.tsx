@@ -35,6 +35,10 @@ export function StockLogo({ name, ticker, size = 32 }: StockLogoProps) {
       // website resmi (Google s2, 24 Okt, 389 emiten) → .svg monogram → tile huruf
       onError={(e) => {
         const img = e.currentTarget;
+        // WAJIB: next/image set srcset — kalau tidak dihapus, srcset lama (404)
+        // override src baru yang kita set, chain tidak pernah jalan.
+        img.removeAttribute("srcset");
+        img.removeAttribute("sizes");
         if (img.dataset.fallback === "3") return;
         if (!img.dataset.fallback) {
           img.dataset.fallback = "1";
