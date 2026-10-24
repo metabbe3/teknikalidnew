@@ -54,7 +54,7 @@ export function TopUpModal({ currentBalance, onClose }: TopUpModalProps) {
 
         {/* Dark header */}
         <div className="relative overflow-hidden rounded-t-2xl sm:rounded-t-2xl">
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-800" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0f2a3d] to-[#123548]" />
           <div
             className="absolute inset-0 opacity-[0.06]"
             style={{

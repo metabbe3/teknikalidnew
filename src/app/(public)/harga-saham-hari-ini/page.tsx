@@ -110,7 +110,7 @@ export default async function HargaSahamHariIniPage() {
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <Link
             href="/stocks"
-            className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700"
+            className="rounded-lg bg-teal-600 px-4 py-3 text-sm font-semibold text-white hover:bg-teal-700"
           >
             <Search className="inline h-4 w-4" /> Lihat semua di screener
           </Link>

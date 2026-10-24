@@ -192,6 +192,21 @@ export default async function StocksPage() {
             />
           </div>
 
+          {/* Owner 24 Okt: funnel simulasi di tiap page utama */}
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-gradient-to-r from-[#0f2a3d] to-[#123548] px-4 py-3">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-slate-100">Latih strategi tanpa risiko 🎮</p>
+              <p className="text-xs text-slate-400">Paper trading dengan Rp 10.000.000 virtual — gratis.</p>
+            </div>
+            <Link
+              href="/paper-trading"
+              data-engagement="funnel_paper_banner_stocks"
+              className="press-scale inline-flex items-center gap-1.5 text-xs font-bold bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors shrink-0"
+            >
+              Mulai Simulasi Gratis
+            </Link>
+          </div>
+
           {/* Quick discovery pills → screener tab */}
           <div className="mt-3 flex flex-wrap gap-2">
             {[

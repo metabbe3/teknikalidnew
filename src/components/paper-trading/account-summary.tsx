@@ -27,7 +27,7 @@ export function AccountSummary({ account }: { account: PaperAccountSummary }) {
     <>
       <div className="relative rounded-2xl overflow-hidden">
         {/* Dark background with grid */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0f2a3d] via-[#123548] to-[#0f2a3d]" />
         <div
           className="absolute inset-0 opacity-[0.07]"
           style={{

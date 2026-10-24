@@ -160,7 +160,7 @@ export function HoldingsTable({ holdings, onEdit, onDelete }: HoldingsTableProps
   if (holdings.length === 0) {
     return (
       <div className="relative rounded-2xl overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-800" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0f2a3d] to-[#123548]" />
         <div
           className="absolute inset-0 opacity-[0.06]"
           style={{

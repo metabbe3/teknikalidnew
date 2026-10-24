@@ -250,7 +250,7 @@ export const schemas = {
   engagement: z.object({
     events: z.array(z.object({
       type: z.enum(["dwell_tick", "scroll_max", "cta_click"]),
-      label: z.enum(["star_add", "preset_copy", "radar_open", "preset_save", "register_step1_submit", "register_completed", "funnel_edu", "funnel_compare_open", "funnel_compare_pick", "funnel_paper_click", "funnel_home_pasar", "funnel_home_paper", "funnel_home_akademi", "funnel_akademi_portfolio", "funnel_peer_card", "funnel_peer_chip"]).nullish(),
+      label: z.enum(["star_add", "preset_copy", "radar_open", "preset_save", "register_step1_submit", "register_completed", "funnel_edu", "funnel_compare_open", "funnel_compare_pick", "funnel_paper_click", "funnel_home_pasar", "funnel_home_paper", "funnel_home_akademi", "funnel_akademi_portfolio", "funnel_peer_card", "funnel_peer_chip", "funnel_paper_banner_stocks", "funnel_paper_banner_akademi"]).nullish(),
       valueNum: z.number().int().min(0).max(86400).nullish(),
       path: z.string().min(1).max(255),
       ts: z.number().int().min(0).nullish(),

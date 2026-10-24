@@ -187,7 +187,20 @@ export default async function AkademiPage({
             />
           ) : (
             <>
-              <LearningPath />
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-gradient-to-r from-[#0f2a3d] to-[#123548] px-4 py-3">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-slate-100">Dari teori ke praktik 🎮</p>
+                <p className="text-xs text-slate-400">Coba paper trading Rp 10.000.000 virtual sambil belajar.</p>
+              </div>
+              <Link
+                href="/paper-trading"
+                data-engagement="funnel_paper_banner_akademi"
+                className="press-scale inline-flex items-center gap-1.5 text-xs font-bold bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors shrink-0"
+              >
+                Mulai Simulasi Gratis
+              </Link>
+            </div>
+            <LearningPath />
 
               {/* Tag filter strip */}
               {allTags.length > 0 && (

@@ -71,7 +71,7 @@ function PortfolioRouter() {
     return (
       <div className="max-w-3xl mx-auto px-4 py-20 text-center">
         <div className="relative rounded-2xl overflow-hidden inline-block">
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-800" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0f2a3d] to-[#123548]" />
           <div
             className="absolute inset-0 opacity-[0.06]"
             style={{

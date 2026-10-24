@@ -239,7 +239,7 @@ export default async function SahamStochasticOversoldPage() {
         <AskAiCta question="Stochastic oversold ada?" />
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/screener" className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700">
+          <Link href="/screener" className="rounded-lg bg-teal-600 px-4 py-3 text-sm font-semibold text-white hover:bg-teal-700">
             <Search className="inline h-4 w-4" /> Screener Lengkap
           </Link>
           <Link href="/saham-oversold" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">

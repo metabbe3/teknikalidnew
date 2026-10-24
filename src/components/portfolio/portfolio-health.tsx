@@ -37,7 +37,7 @@ export function PortfolioHealth({ summary }: PortfolioHealthProps) {
     <div className="health-card">
       {/* Dark header */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-900 to-slate-800" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0f2a3d] to-[#123548]" />
         <div
           className="absolute inset-0 opacity-[0.06]"
           style={{

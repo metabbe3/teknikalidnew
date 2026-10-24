@@ -116,7 +116,7 @@ export function QuestionSubmitForm({ onSuccess }: QuestionSubmitFormProps) {
           <button
             type="submit"
             disabled={!question.trim() || submitMutation.isPending}
-            className="ml-auto px-4 py-1.5 rounded-md text-xs font-medium bg-blue-600 text-white hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="ml-auto px-4 py-1.5 rounded-md text-xs font-medium bg-teal-600 text-white hover:bg-teal-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             {submitMutation.isPending ? "Mengirim..." : "Kirim Pertanyaan"}
           </button>
