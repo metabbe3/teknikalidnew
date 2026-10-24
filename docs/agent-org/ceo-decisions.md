@@ -1143,3 +1143,13 @@ DATA (isBot=false): views 385 vs 617 (-38% WoW) · register 0 vs 2 · user baru 
 - ❌ FATAL → queue: (1) qa-24-01 rekap: "oversold non-gorengan 485→65" — 485/65 = basis SEMUA; NG = 409→54 (pola agregat+label tak-match ke-3); (2) qa-24-02 rekap: "Senin hanya 506 saham naik" — Senin = 103; 506/507 = angka Jumat (cross-day copy); (3) qa-24-03 brief-23: "3 GC & 3 DC baru Kamis" — DB 6/6 NG (basis av20 2jt-10jt pun 4/4); fix kemarin (qa-23-01) cuma sentuh MAPI/AADI, frasa ini lolos; (4) qa-24-04 brief-23: tabel "Top gainers big-cap ≥10T >+4%" cuma muat 6 dari 16 kandidat — 7 teratas hilang (PACK +9,52; BFIN +9,40; SMMT +9,03; MAPA +7,34; SGER +5,96; NSSS +5,83; TSPC +5,42; MBMA +4,62; DMAS +4,81; SIDO +4,17 juga kandidat valid); BREN wajar dikeluar (gorengan 22 Okt). CTO slot 07:30 pasca-jam — eksekusi via claude code, READ-ONLY dari reviewer.
 - 🔧 Deploy verify independen (kereta T-1024-N → prod): ux-23-01 brief viewport#1 ✅ (hero home render "Brief Hari Ini" + telemetry brief_open live); bo-24-01 /admin/shares ✅ 200; adm-23-01 /admin/review ✅ 200 (auth-gate normal); seo-20-01 /idx-radar 301→/stocks ✅ masih jalan; BUILD_ID A231vRve5HptnjRkho6OJ. bug-2026-10-22-01 (watchlist hapus) in_progress — commit remove-watchlist-button.tsx sudah ada di worktree WIP, belum deploy → biarkan in_progress, bukan utang.
 - Commit docs: mengikuti (qa_growt... 08:41; repo dirty dg WIP org lain — hanya docs queue+decisions yang kusentuh).
+
+
+## [OWNER-DISPATCH] 24 Okt 2026 — USP positioning + steal-list kompetitor (riset owner-request "Boleh")
+- Riset lengkap: `~/.hermes/data/teknikalid-growth/research/usp-kompetitor-teardown-2026-10-24.md` (5 kompetitor dibedah: indostock.ai, screener.id, prismaai.id, telmi.id, datasaham.id).
+- USP resmi (evaluasi north-star PASS): (1) verdict-first + gratis + tanpa login + 968 emiten — kombinasi tak dimiliki siapa pun; (2) edu riset-orisinal dari data internal (trust+SEO moat); (3) transparansi metode. Gunakan sebagai jangkar brief konten growth.
+- KANDIDAT BACKLOG (masuk SDLC normal: research_brief → PRD → kereta; CEO jadwalkan):
+  - usp-2026-10-24-01 P2 "ticker-tape" — strip movers SSR+CSS di semua page, data market-snapshot.service (SATU PINTU, no compute baru), internal-link ke /stocks/*. Kandidat slot build-only siang. Bukti: 3/5 kompetitor punya.
+  - usp-2026-10-24-02 P2 "top-20-harian" — tabel ranking skor di /pasar tiap bursa (pola indostock skor komposit). Konten fresh harian.
+  - usp-2026-10-24-03 P3 "sinyal-jual-mode" — extend verdict ke sisi exit (checklist 8 auto + 2 manual). Diferensiasi exit-discipline, gratisan nihil.
+- DO-NOT-STEAL (keputusan riset): paper trading/journal, bandarmologi, intraday 5m, AI berbayar — lawan pivot TRAFFIC atau arms race kalah.
