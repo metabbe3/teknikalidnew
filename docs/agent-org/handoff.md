@@ -860,3 +860,7 @@
 - Bug: getStockIntradayHistory period1=now-1d → Sabtu sore window mulai SETELAH close Jumat → 0 bar. Kena SEMUA saham, bukan cuma RUNS; juga Senin 00:00-09:00 WIB.
 - Fix: days=1 fetch 5 hari lalu slice hari terakhir. RUNS 29 bar, BBCA 54 bar, render browser OK.
 - Lesson: default range UI = 1D (owner directive NBER) → jalur intraday jadi critical path; bug kalender weekend gak kelihatan di QA weekdays.
+
+## 24 Okt 17:50 — KEY STATS FULL-WIDTH (owner "boxnya diperlebar? sebelah kanan kosong", deploy ke-9 owner-directed)
+- Dead space: wrapper sm:grid-cols-2 punya 1 anak sejak Fundamentals pindah (21 Okt) → kolom kanan kosong.
+- Fix: card full-width + internal 2 kolom (stats | MA). Verify 932px=100%, 433+433.
