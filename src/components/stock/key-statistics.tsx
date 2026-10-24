@@ -48,47 +48,49 @@ export function KeyStatistics({ open, high, low, close, volume, week52High, week
         </div>
       )}
 
-      {/* Stats rows */}
-      <div className="space-y-0" role="list">
-        {([
-          ["Open", open !== null ? formatPrice(open) : null],
-          ["Day High", high !== null ? formatPrice(high) : null],
-          ["Day Low", low !== null ? formatPrice(low) : null],
-          ["Range", dailyRange !== null ? `${dailyRange.toFixed(2)}%` : null],
-          ["Volume", volume !== null ? formatVolume(volume) : null],
-        ] as [string, string | null][]).map(([label, value]) => (
-          <div key={label} className="flex justify-between py-2 text-sm border-b border-border/30 last:border-0" role="listitem">
-            <span className="text-text-secondary">{label}</span>
-            <span className="font-mono tabular-nums font-medium">{value ?? "—"}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Moving averages section */}
-      {([sma20, sma50, sma200].some(v => v !== null)) && (
-        <div className="mt-3 pt-3 border-t border-border/40">
-          <p className="text-[10px] text-text-tertiary font-medium uppercase tracking-wider mb-2 flex items-center gap-1">Moving Averages <IndicatorTooltip indicator="SMA" /></p>
-          <div className="space-y-0">
-            {([
-              ["SMA 20", sma20],
-              ["SMA 50", sma50],
-              ["SMA 200", sma200],
-            ] as [string, number | null][]).map(([label, value]) => (
-              <div key={label} className="flex justify-between py-1.5 text-sm">
-                <span className="text-text-secondary">{label}</span>
-                <div className="flex items-center gap-2">
-                  {value !== null && close !== null && (
-                    <span className={`text-[10px] font-medium ${close > value ? "text-bullish" : "text-bearish"}`}>
-                      {close > value ? "Above" : "Below"}
-                    </span>
-                  )}
-                  <span className="font-mono tabular-nums font-medium">{value !== null ? formatPrice(value) : "—"}</span>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Owner 24 Okt: card full-width — kolom kanan lama kosong (Fundamentals
+          pindah rail kanan 21 Okt). Internal: stats kiri, MA kanan. */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8">
+        <div className="space-y-0" role="list">
+          {([
+            ["Open", open !== null ? formatPrice(open) : null],
+            ["Day High", high !== null ? formatPrice(high) : null],
+            ["Day Low", low !== null ? formatPrice(low) : null],
+            ["Range", dailyRange !== null ? `${dailyRange.toFixed(2)}%` : null],
+            ["Volume", volume !== null ? formatVolume(volume) : null],
+          ] as [string, string | null][]).map(([label, value]) => (
+            <div key={label} className="flex justify-between py-2 text-sm border-b border-border/30 sm:last:border-0" role="listitem">
+              <span className="text-text-secondary">{label}</span>
+              <span className="font-mono tabular-nums font-medium">{value ?? "—"}</span>
+            </div>
+          ))}
         </div>
-      )}
+
+        {([sma20, sma50, sma200].some(v => v !== null)) && (
+          <div className="mt-3 pt-3 border-t border-border/40 sm:mt-0 sm:pt-0 sm:border-t-0">
+            <p className="text-[10px] text-text-tertiary font-medium uppercase tracking-wider mb-2 flex items-center gap-1">Moving Averages <IndicatorTooltip indicator="SMA" /></p>
+            <div className="space-y-0">
+              {([
+                ["SMA 20", sma20],
+                ["SMA 50", sma50],
+                ["SMA 200", sma200],
+              ] as [string, number | null][]).map(([label, value]) => (
+                <div key={label} className="flex justify-between py-1.5 text-sm">
+                  <span className="text-text-secondary">{label}</span>
+                  <div className="flex items-center gap-2">
+                    {value !== null && close !== null && (
+                      <span className={`text-[10px] font-medium ${close > value ? "text-bullish" : "text-bearish"}`}>
+                        {close > value ? "Above" : "Below"}
+                      </span>
+                    )}
+                    <span className="font-mono tabular-nums font-medium">{value !== null ? formatPrice(value) : "—"}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

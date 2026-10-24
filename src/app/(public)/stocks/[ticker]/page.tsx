@@ -1022,7 +1022,7 @@ export default async function StockDetailPage({
             {/* Key Stats + Fundamentals pindah ke kiri (owner 21 Okt): rail kanan
                 terlalu panjang (4 card stacked 1.809px) sementara kolom kiri
                 menyisakan ~1.500px kosong di bawah IndicatorPanel. */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+            <div className="grid grid-cols-1 gap-4 items-start">
               {fullAccess ? (
                 <KeyStatistics
                   open={latest ? decimalToNumber(latest.open) : null}
@@ -1038,6 +1038,7 @@ export default async function StockDetailPage({
                 />
               ) : (
                 <LoginGate
+                  className="w-full"
                   feature="Key Statistics"
                   message="Daftar gratis untuk membuka data statistik lengkap — OHLC harian, volume, SMA, dan range 52 minggu."
                 />
