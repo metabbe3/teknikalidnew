@@ -15,6 +15,7 @@ import { ArrowUpRight } from "lucide-react";
 import { SahamStrategyLinks } from "@/components/seo/saham-strategy-links";
 import { LoginGate } from "@/components/auth/login-gate";
 import { auth } from "@/lib/auth";
+import { GuestWatchlistPanel } from "@/components/stock/guest-watchlist-panel";
 import { WeeklySignalWidget } from "@/components/signal/weekly-signal-widget";
 import { ChannelCta } from "@/components/stock/channel-cta";
 
@@ -227,6 +228,12 @@ export default async function StocksPage() {
 
         </div>
       </section>
+
+      <div id="pantauan" className="max-w-7xl mx-auto px-4 pt-6 scroll-mt-20">
+        {/* PRD idea-2026-10-19-2 AC1: panel pantauan guest (guest-only, SSR-safe null,
+            lazy mount — tak menyentuh first paint/LCP) */}
+        {!session?.user && <GuestWatchlistPanel />}
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Browse | Screener (merged) */}

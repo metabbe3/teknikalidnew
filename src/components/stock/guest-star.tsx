@@ -5,17 +5,16 @@
  * Dipakai di stock-action-badge (halaman detail) & screener-results (list).
  * SSR-safe: state aktif hanya dirender pasca-mount.
  */
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useGuestWatchlist } from "@/hooks/use-guest-watchlist";
 
 export function GuestStar({ ticker, compact = false }: { ticker: string; compact?: boolean }) {
   const { tickers, toggle, mounted } = useGuestWatchlist();
-  const [justToggled, setJustToggled] = useState(false);
-
-  useEffect(() => {
-    setJustToggled(false);
-  }, [ticker]);
+  // PRD idea-2026-10-19-2 AC2: chip 'Tersimpan — N emiten' auto-hide ~2s.
+  // State hanya di-set dari event handler (bukan effect) — bebas cascading render;
+  // keyed by ticker sehingga chip otomatis tak berlaku saat prop ticker berganti.
+  const [flash, setFlash] = useState<{ ticker: string } | null>(null);
 
   if (!mounted) {
     return compact ? (
@@ -31,13 +30,19 @@ export function GuestStar({ ticker, compact = false }: { ticker: string; compact
 
   const handleClick = () => {
     const result = toggle(ticker);
-    if (result) setJustToggled(true);
+    if (result?.added) {
+      setFlash({ ticker });
+      window.setTimeout(
+        () => setFlash((f) => (f && f.ticker === ticker ? null : f)),
+        2000,
+      );
+    }
   };
 
   return (
     <button
       onClick={handleClick}
-      className={compact ? "relative p-1.5 rounded-md transition-colors cursor-pointer before:absolute before:-inset-2 before:content-['']" : "inline-flex items-center gap-1.5 rounded-full px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium transition-all press-scale cursor-pointer"}
+      className={compact ? "relative p-1.5 rounded-md transition-colors cursor-pointer before:absolute before:-inset-2 before:content-['']" : "relative inline-flex items-center gap-1.5 rounded-full px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium transition-all press-scale cursor-pointer"}
       aria-pressed={active}
       aria-label={active ? `Hapus ${ticker} dari pantauan` : `Pantau ${ticker} (disimpan di perangkat)`}
       title={active ? "Ada di pantauan perangkat ini" : "Simpan ke pantauan di perangkat ini (tanpa akun)"}
@@ -52,9 +57,14 @@ export function GuestStar({ ticker, compact = false }: { ticker: string; compact
         </svg>
       )}
       {!compact && (active ? "Dipantau" : "Pantau")}
-      {!compact && justToggled && active && (
-        <span className="text-[10px] text-text-tertiary">
-          (tersimpan di perangkat · <Link href="/watchlist" className="underline hover:text-accent">lihat pantauan</Link>)
+      {/* PRD idea-2026-10-19-2 AC2: chip inline 'Tersimpan — N emiten' <=2s, tanpa lib toast */}
+      {flash?.ticker === ticker && active && (
+        <span
+          role="status"
+          className="absolute left-1/2 top-full z-10 mt-1 -translate-x-1/2 whitespace-nowrap rounded-full bg-bg-card border border-border px-2.5 py-1 text-[10px] font-medium text-text-secondary depth-shadow"
+        >
+          Tersimpan — {tickers.length} emiten dipantau di perangkat ini ·{" "}
+          <Link href="/stocks#pantauan" className="underline hover:text-accent">lihat pantauan</Link>
         </span>
       )}
     </button>

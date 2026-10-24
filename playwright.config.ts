@@ -9,7 +9,7 @@ export default defineConfig({
   reporter: "html",
   timeout: 30_000,
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: process.env.E2E_BASE_URL ?? "http://localhost:3000",
     trace: "on-first-retry",
     extraHTTPHeaders: {
       "x-rate-limit-bypass": "e2e-test-bypass-2024",

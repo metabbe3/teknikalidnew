@@ -7,7 +7,10 @@ test.describe("Stock Detail Page", () => {
   });
 
   test("loads stock detail with header", async ({ page }) => {
-    await expect(page.getByRole("heading", { name: TEST_TICKER.replace(".JK", "") })).toBeVisible({ timeout: 10_000 });
+    // exact:true — FAQ h2 "Pertanyaan Umum saham BBCA" ikut match tanpa exact (sejak ec65941)
+    await expect(
+      page.getByRole("heading", { name: TEST_TICKER.replace(".JK", ""), exact: true })
+    ).toBeVisible({ timeout: 10_000 });
   });
 
   test("shows stock name", async ({ page }) => {
