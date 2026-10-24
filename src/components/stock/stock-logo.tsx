@@ -1,3 +1,7 @@
+"use client";
+
+import Image from "next/image";
+
 interface StockLogoProps {
   name: string;
   ticker: string;
@@ -9,21 +13,43 @@ interface StockLogoProps {
    * unused.
    */
   src?: string | null;
+  size?: number;
 }
 
 /**
- * Stock emblem — a branded monogram tile (first letter of the ticker).
- * Guarantees no broken image and no console errors next to the ticker h1.
+ * Stock emblem — issuer logo dari /public/logos (mirror lokal, weekend 24 Okt 2026:
+ * 47 logo asli big-caps + fallback monogram tile utk sisanya).
+ * Logo file tak ada → monogram tile (tanpa broken image / request gagal).
  */
-export function StockLogo({ name, ticker }: StockLogoProps) {
-  const letter = (ticker.replace(/\.JK$/i, "").charAt(0) || name.charAt(0) || "?").toUpperCase();
+export function StockLogo({ name, ticker, size = 32 }: StockLogoProps) {
+  const base = ticker.replace(/\.JK$/i, "");
+  const letter = (base.charAt(0) || name.charAt(0) || "?").toUpperCase();
   return (
-    <div
-      className="w-8 h-8 rounded-md flex items-center justify-center bg-accent-muted text-accent font-bold text-sm flex-shrink-0"
-      role="img"
-      aria-label={`${name} logo`}
-    >
-      {letter}
-    </div>
+    <Image
+      src={`/logos/${base}.svg`}
+      alt={`${name} logo`}
+      width={size}
+      height={size}
+      className="rounded-md flex-shrink-0 object-cover"
+      // logo hilang (404 utk ticker tanpa file) → fallback monogram via onError
+      onError={(e) => {
+        const img = e.currentTarget;
+        if (img.dataset.fallback) return;
+        img.dataset.fallback = "1";
+        const parent = img.parentElement;
+        if (parent) {
+          const tile = document.createElement("div");
+          tile.className =
+            "flex items-center justify-center bg-accent-muted text-accent font-bold flex-shrink-0";
+          tile.style.width = `${size}px`;
+          tile.style.height = `${size}px`;
+          tile.style.fontSize = `${Math.round(size * 0.45)}px`;
+          tile.textContent = letter;
+          tile.setAttribute("role", "img");
+          tile.setAttribute("aria-label", `${name} logo`);
+          parent.replaceChild(tile, img);
+        }
+      }}
+    />
   );
 }
