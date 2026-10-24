@@ -178,7 +178,7 @@ export function StockAiModal({ ticker, name, onClose }: { ticker: string; name: 
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0">
           <div className="flex items-center gap-2">
-            <span className="text-base font-semibold flex items-center gap-1.5"><Sparkles className="h-4 w-4" /> Analisa AI</span>
+            <span className="text-base font-semibold flex items-center gap-1.5"><Sparkles className={loading ? "h-4 w-4 sparkle-working" : "h-4 w-4"} aria-hidden /> Analisa AI</span>
             <span className="text-[10px] px-1.5 py-0.5 rounded bg-accent/10 text-accent font-medium">AI</span>
           </div>
           <button

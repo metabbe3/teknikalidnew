@@ -1384,3 +1384,36 @@ button:focus-visible,
 @media (prefers-reduced-motion: reduce) {
   .beam-ring { animation: none; background: linear-gradient(90deg, var(--beam-from), var(--beam-to)); opacity: 0.5; }
 }
+
+/* ─── Sparkle glow saat AI bekerja (modal Analisa AI) ─── */
+.sparkle-working {
+  position: relative;
+  color: var(--color-accent, #38bdf8);
+  filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.65));
+  animation: sparkle-pulse 1.6s ease-in-out infinite;
+}
+.sparkle-working::after {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    rgba(56, 189, 248, 0.28) 0%,
+    rgba(129, 140, 248, 0.12) 45%,
+    transparent 70%
+  );
+  pointer-events: none;
+  animation: sparkle-breathe 1.6s ease-in-out infinite;
+}
+@keyframes sparkle-pulse {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  50% { transform: scale(1.18) rotate(12deg); scale: 1.18; filter: drop-shadow(0 0 7px rgba(56, 189, 248, 0.95)); }
+}
+@keyframes sparkle-breathe {
+  0%, 100% { opacity: 0.35; transform: scale(0.9); }
+  50% { opacity: 0.9; transform: scale(1.15); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sparkle-working, .sparkle-working::after { animation: none; }
+}
