@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { parseAiText, shareAiStock } from "@/components/stock/stock-ai-shared";
 import { Sparkles } from "lucide-react";
-import { BorderBeam } from "@/components/ui/border-beam";
 
 /**
  * Modal AI untuk stock-card di halaman /stocks — analisa + tanya saham
@@ -172,7 +171,6 @@ export function StockAiModal({ ticker, name, onClose }: { ticker: string; name: 
       aria-modal="true"
       aria-label={`Analisa AI ${name}`}
     >
-      <BorderBeam active={loading} size={2} duration={6}>
       <div
         ref={dialogRef}
         className="bg-bg-card w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl border border-border shadow-2xl max-h-[85vh] flex flex-col animate-in"
@@ -246,7 +244,6 @@ export function StockAiModal({ ticker, name, onClose }: { ticker: string; name: 
           )}
         </div>
       </div>
-      </BorderBeam>
     </div>,
     document.body
   );
