@@ -855,3 +855,8 @@
 - Jebakan: (1) WIP divergen day2-email repo utama SUDAH dihapus — jangan pulihkan dari scratch backup, versi benar = night branch (merged); (2) .next/types bisa stale setelah hapus route — clean build kereta berikutnya regenerasi otomatis; (3) `links: 1` dari grep -c di /berita = grep multi-line artifact, links aktual 13 via warmup script.
 - Langkah pertama slot berikutnya: baca queue → teknikal-24-02 fundamental-v2 (spec belum ada — tulis DONE WHEN + PLAN dulu) atau prd-22-02/sec-22-02 kalau BE malam tidak eksekusi → boarding gate kereta berikutnya.
 - Rollback anchor: app dd4007b7d9c6 + git revert 0ade887.
+
+## 24 Okt 17:25 — FIX CHART 1D WEEKEND KOSONG (owner "kenapa RUNS.JK no charts", deploy ke-8 owner-directed)
+- Bug: getStockIntradayHistory period1=now-1d → Sabtu sore window mulai SETELAH close Jumat → 0 bar. Kena SEMUA saham, bukan cuma RUNS; juga Senin 00:00-09:00 WIB.
+- Fix: days=1 fetch 5 hari lalu slice hari terakhir. RUNS 29 bar, BBCA 54 bar, render browser OK.
+- Lesson: default range UI = 1D (owner directive NBER) → jalur intraday jadi critical path; bug kalender weekend gak kelihatan di QA weekdays.
