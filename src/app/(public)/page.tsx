@@ -472,6 +472,7 @@ export default async function HomePage() {
           style={{ backgroundImage: "radial-gradient(circle at 1px 1px, #1c1917 1px, transparent 0)", backgroundSize: "22px 22px" }}
         />
         <div className="relative max-w-7xl mx-auto px-4 py-12 sm:py-16 lg:py-20">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_400px] gap-10 lg:gap-14 items-start">
           <div className="max-w-3xl">
             <div className={`inline-flex items-center gap-2 text-xs font-medium px-3 py-1 rounded-full border ${isClosed ? "text-amber-700 bg-amber-500/10 border-amber-500/20" : "text-bullish bg-bullish/10 border-bullish/20"}`}>
               <span className={`w-1.5 h-1.5 rounded-full ${isClosed ? "bg-amber-500" : "bg-bullish animate-pulse"}`} aria-hidden />
@@ -535,7 +536,17 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* Market breath + hero signal grid */}
+          {/* Owner 25 Okt: kolom kanan hero — movers 2x2 (sebelumnya area kosong di desktop) */}
+          {heroCards.length > 0 && (
+            <div className="hidden lg:grid grid-cols-2 gap-3 sm:gap-4 content-start">
+              {heroCards.map((c) => (
+                <SnapshotCard key={c.ticker} {...c} />
+              ))}
+            </div>
+          )}
+          </div>
+
+          {/* Market breath strip (full width) */}
           <div className="mt-10 pt-8 border-t border-border">
             <MarketBreathStrip
               data={{
@@ -553,7 +564,7 @@ export default async function HomePage() {
               </div>
             )}
             {heroCards.length > 0 && (
-              <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+              <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 lg:hidden">
                 {heroCards.map((c) => (
                   <SnapshotCard key={c.ticker} {...c} />
                 ))}
