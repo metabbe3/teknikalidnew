@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MiniSparkline } from "@/components/chart/mini-sparkline";
+import { StockLogo } from "@/components/stock/stock-logo";
 import { formatPercentPlain, formatPrice, stripJk, signalToHealthScore, healthScoreMeta } from "@/lib/utils";
 
 /**
@@ -15,7 +15,7 @@ export interface SnapshotCardData {
   slug: string;
   close: number | null;
   changePercent: number | null;
-  sparkline: number[];
+  sparkline?: number[]; // deprecated — kartu kini pakai logo (owner 24 Okt)
   signalScore: number | null;
   signalLabel: string | null;
   rsi14: number | null;
@@ -54,15 +54,18 @@ export function SnapshotCard({
       className="group relative flex flex-col bg-bg-card rounded-xl p-4 border border-border/60 hover:border-accent/30 hover:depth-shadow-hover transition-all duration-200 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
       aria-label={`${stripJk(ticker)} ${name}${close !== null ? `, harga ${formatPrice(close)}` : ""}${chgPct ? `, ${chgPct}` : ""}`}
     >
-      {/* Top: ticker + signal pill */}
+      {/* Top: logo + ticker + signal pill (owner 24 Okt: ganti sparkline dgn logo, persimple) */}
       <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <span className="font-mono text-sm font-bold text-text-primary tabular-nums">
-            {stripJk(ticker)}
-          </span>
-          <p className="text-[11px] text-text-tertiary leading-tight line-clamp-2 mt-0.5">
-            {name}
-          </p>
+        <div className="flex items-start gap-2.5 min-w-0">
+          <div className="shrink-0 mt-0.5"><StockLogo name={name} ticker={ticker} size={28} /></div>
+          <div className="min-w-0">
+            <span className="font-mono text-sm font-bold text-text-primary tabular-nums">
+              {stripJk(ticker)}
+            </span>
+            <p className="text-[11px] text-text-tertiary leading-tight line-clamp-2 mt-0.5">
+              {name}
+            </p>
+          </div>
         </div>
         {meta && (
           <span
@@ -89,11 +92,6 @@ export function SnapshotCard({
             </div>
           )}
         </div>
-        {sparkline.length >= 2 && (
-          <div className="shrink-0" aria-hidden>
-            <MiniSparkline data={sparkline} width={72} height={34} />
-          </div>
-        )}
       </div>
 
       {/* Bottom: RSI tone + sector / gorengan */}

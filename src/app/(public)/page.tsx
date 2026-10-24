@@ -426,10 +426,7 @@ export default async function HomePage() {
 
   // Hero signal cards — top movers (anonymous landing)
   const heroMovers = [...gainers.slice(0, 4), ...losers.slice(0, 4)];
-  const [heroSparkMap, heroBatch] = await Promise.all([
-    stockMarketService.getSparklines(),
-    stockMarketService.getStockBatchWithIndicators(heroMovers.map((m) => m.ticker)),
-  ]);
+  const heroBatch = await stockMarketService.getStockBatchWithIndicators(heroMovers.map((m) => m.ticker));
   const heroBatchMap = new Map(heroBatch.map((b) => [b.ticker, b]));
   const heroCards: SnapshotCardData[] = heroMovers.slice(0, 4).map((m) => {
     const b = heroBatchMap.get(m.ticker);
@@ -440,7 +437,6 @@ export default async function HomePage() {
       sector: m.sector,
       close: m.close,
       changePercent: m.changePercent,
-      sparkline: heroSparkMap[m.ticker] ?? [],
       signalScore: b?.signalScore ?? null,
       signalLabel: b?.signalLabel ?? null,
       rsi14: b?.rsi14 ?? null,
