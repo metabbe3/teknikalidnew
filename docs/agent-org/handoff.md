@@ -864,3 +864,8 @@
 ## 24 Okt 17:50 — KEY STATS FULL-WIDTH (owner "boxnya diperlebar? sebelah kanan kosong", deploy ke-9 owner-directed)
 - Dead space: wrapper sm:grid-cols-2 punya 1 anak sejak Fundamentals pindah (21 Okt) → kolom kanan kosong.
 - Fix: card full-width + internal 2 kolom (stats | MA). Verify 932px=100%, 433+433.
+
+## 24 Okt 18:05 — ALIRAN ASING: DIVERGING BARS (owner "bar aneh di tengah, mungkin history/chart?", deploy ke-10 owner-directed)
+- Bar vertikal 1-sesi mengambang → ganti diverging horizontal bars (sumbu tengah, kiri=merah jual, kanan=hijau beli, tanggal+nilai per baris, sesi terakhir bold, Σ saat ≥2 sesi).
+- Data seed: ForeignFlow cuma 1 sesi (23 Okt); baris bertambah tiap cron 17:20 weekday. Blank-value row ("—") untuk sesi tanpa close.
+- Verify browser: BBCA −763M bar merah kiri full-width.
