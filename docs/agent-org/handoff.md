@@ -827,3 +827,11 @@
 - Verify browser real (cache disabled): AADI/AGAR render logos/*.png ✅, BBCA optimizer jpg ✅ regression-clean. home 200, 3 container healthy.
 - Budget: deploy routine org 2/2 HABIS (03:14 bo + 14:11 QA) — ketiga deploy di atas owner-directed per doctrine #146, TIDAK menghabiskan kuota; kereta 22:00 tetap jalan.
 - Logos 16MB di public/ — ikut build; image optimizer OK (png w=48/64/96 → 200).
+
+
+## 24 Okt 16:05 — Top-20 Skor Sinyal /pasar LIVE (owner-directed "Lakukan skrg yang bisa dicolong", deploy ke-4 hari ini, LUAR budget)
+- usp-2026-10-24-02 SELESAI (bd5e4a6): getTopSignals (signalScore desc, non-gorengan, likuid ≥Rp1M, batch N+1-safe) + TopSignalsSection live+recap mode + tooltip edukasi bukan-rekomendasi. Verify browser 20 rows/link, MMIX 0.66 Strong Bullish #1, regression 200 semua.
+- KOREKSI RISET: usp-24-01 ticker-tape DIBATALKAN sebagai "steal" — ternyata SUDAH ADA (5c35ba2, 19 Okt, live). Lesson: cek inventory sendiri sebelum klaim gap.
+- usp-24-03 (sinyal-jual/exit-mode) TIDAK dikerjakan sesi ini — effort M, jalur SDLC normal via CEO dispatch.
+- Budget: 4 deploy hari ini SEMUA owner-directed (logo x2 + handoff docs + top-20), routine 2/2 tetap utuh utk kereta 22:00.
+- Trap teknis: pattern grep `group-hover:text-accent` match MoversCard juga — verifikasi ranking harus via id section (#topsignals-heading), bukan grep global.
