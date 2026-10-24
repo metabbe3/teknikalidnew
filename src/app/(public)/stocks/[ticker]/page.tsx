@@ -257,6 +257,27 @@ export default async function StockDetailPage({
       : [],
   ]);
 
+  // Aliran dana asing 5 sesi terakhir (usp-2026-10-24-04) — graceful: kosong → section hidden.
+  const foreignRows = detail
+    ? await prisma.foreignFlow.findMany({
+        where: { stockId: detail.stock.id },
+        orderBy: { date: "desc" },
+        take: 5,
+      }).catch(() => [])
+    : [];
+  const foreignWithPx = await Promise.all(
+    foreignRows.map(async (f) => {
+      const px = await prisma.stockPrice.findUnique({
+        where: { stockId_date: { stockId: f.stockId, date: f.date } },
+        select: { close: true },
+      }).catch(() => null);
+      const close = px?.close ? Number(px.close) : null;
+      const netShares = Number(f.foreignBuy) - Number(f.foreignSell);
+      return { date: f.date, netValue: close !== null ? netShares * close : null };
+    })
+  );
+  const foreignLatest = foreignWithPx.find((f) => f.netValue !== null) ?? null;
+
   const socialScore = (socialData._sum.likesCount ?? 0) * 0.5
     + (socialData._sum.commentsCount ?? 0) * 1
     + socialData._count * 1;
@@ -833,6 +854,38 @@ export default async function StockDetailPage({
             <div className="border-t border-border pt-3">
               <RegistrationInlinePrompt ticker={ticker} />
             </div>
+          </section>
+        )}
+
+        {/* Aliran Dana Asing 5 sesi (usp-2026-10-24-04) — guest-visible, graceful hidden */}
+        {foreignLatest && (
+          <section className="bg-bg-card rounded-xl border border-border p-5 space-y-3" aria-label="Aliran dana asing">
+            <div className="flex items-baseline justify-between">
+              <h2 className="font-serif text-base font-semibold text-text-primary">Aliran Dana Asing</h2>
+              <span className="text-xs text-text-tertiary">5 sesi terakhir · net (beli − jual) asing</span>
+            </div>
+            <div className="flex items-end gap-2 h-16" aria-hidden>
+              {foreignWithPx.slice().reverse().map((f, i) => {
+                const max = Math.max(...foreignWithPx.filter((x) => x.netValue !== null).map((x) => Math.abs(x.netValue as number)), 1);
+                const v = f.netValue ?? 0;
+                const h = Math.max(4, Math.round((Math.abs(v) / max) * 56));
+                return (
+                  <div key={i} className="flex-1 flex flex-col justify-end items-center gap-0.5" title={`${f.date.toLocaleDateString("id-ID", { day: "numeric", month: "short" })}: ${v >= 0 ? "+" : "−"}Rp${(Math.abs(v) / 1_000_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })} M`}>
+                    <div className={v >= 0 ? "w-full rounded-t bg-bullish/70" : "w-full rounded-b bg-bearish/70 self-end"} style={{ height: `${h}px` }} />
+                  </div>
+                );
+              })}
+            </div>
+            <p className="text-sm text-text-secondary">
+              Sesi terakhir ({foreignLatest.date.toLocaleDateString("id-ID", { day: "numeric", month: "short" })}):{' '}
+              <span className={foreignLatest.netValue! >= 0 ? "font-semibold text-bullish" : "font-semibold text-bearish"}>
+                {foreignLatest.netValue! >= 0 ? "+" : "−"}Rp{(Math.abs(foreignLatest.netValue!) / 1_000_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })} M
+              </span>{' '}
+              {foreignLatest.netValue! >= 0 ? "akumulasi asing" : "distribusi asing"}.
+            </p>
+            <p className="text-xs text-text-tertiary">
+              Jejak dana institusi asing = konteks informasi, bukan rekomendasi beli/jual. Lihat agregat pasar di <a className="text-accent hover:underline" href="/pasar">Koran Saham Live</a>.
+            </p>
           </section>
         )}
 
