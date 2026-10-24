@@ -26,16 +26,21 @@ export function StockLogo({ name, ticker, size = 32 }: StockLogoProps) {
   const letter = (base.charAt(0) || name.charAt(0) || "?").toUpperCase();
   return (
     <Image
-      src={`/logos/${base}.svg`}
+      src={`/logos/${base}.jpg`}
       alt={`${name} logo`}
       width={size}
       height={size}
       className="rounded-md flex-shrink-0 object-cover"
-      // logo hilang (404 utk ticker tanpa file) → fallback monogram via onError
+      // rantai fallback: .jpg asli (IDX mirror 25 Okt, 425 emiten) → .svg monogram → tile huruf
       onError={(e) => {
         const img = e.currentTarget;
-        if (img.dataset.fallback) return;
-        img.dataset.fallback = "1";
+        if (img.dataset.fallback === "2") return;
+        if (!img.dataset.fallback) {
+          img.dataset.fallback = "1";
+          img.src = `/logos/${base}.svg`;
+          return;
+        }
+        img.dataset.fallback = "2";
         const parent = img.parentElement;
         if (parent) {
           const tile = document.createElement("div");
