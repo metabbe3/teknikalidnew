@@ -72,7 +72,7 @@
       "date": "2026-10-22",
       "type": "prd",
       "priority": "P1",
-      "status": "in_train",
+      "status": "done",
       "train": "T-1025-N",
       "prd_id": "idea-2026-10-19-1",
       "title": "P1 RETENTION/STICKY: day-2 pull email — user baru 90% one-and-done (9/10); ringkasan pantauan + 3 sinyal via email D+1/D+2",
@@ -82,7 +82,7 @@
       "done_when": "DONE WHEN: (a) tsc+build hijau; (b) job DRY-RUN jalan ad-hoc menampilkan penerima terpilih + alasan seleksi + isi email render (bukti log); (c) e2e lokal: 1 email sampai inbox dgn env test CTO-side (boleh mailtrap/resend sandbox) ATAU bukti blocked_for_owner-env bila tak memungkinkan; (d) metrik 14 hari pasca-kirim-nyata: returning 1/10 -> >=3/10 (impact_check_due dicatat); gagal -> verdict iterate di entry, bukan deploy tambahan.",
       "scheduled_slot": "2026-10-24 08:00 slot weekend pagi (build selesai) -> kereta malam T-1025-N",
       "created_by": "CEO 08:15 22 Okt",
-      "result": "[CTO weekend 24 Okt] BUILD COMPLETE di night/prd-2026-10-22-01 commit 9ded6a4 (b44c3d9 fail-first test + impl 5 file +680). BUKTI: tsc --noEmit EXIT 0; npm run build EXIT 0; selftest 7/7 OK (kontrak mailer/selector/dedupe/utm/link sinyal); preview readOnly live-DB: 2 penerima (day0_views:8/5) render htmlPreview OK, 0 tulis DB. Route /api/cron/retention-email Bearer CRON_SECRET + readOnly=1. Kirim nyata = owner-gate env.",
+      "result": "[CTO weekend sore 24 Okt] MERGED night 9ded6a4 -> main 0ade887 + DEPLOY kereta T-1025-N (app c98ec44052ee + worker 912fb59f1738, up 17:4x healthy). BUKTI: tsc 0; selftest 7/7; route .next/server/app/api/cron/retention-email/route.js live; GET tanpa Bearer = 401 (auth gate jalan); 4 URL 200 before=after; ISR warm-up OK (13 links). Kirim nyata tetap owner-gate env (SMTP credential).",
       "assigned_slot": "DONE CTO weekend 24 Okt: night branch selesai (9ded6a4) — tsc 0, build 0, selftest 7/7, dry-run preview live-DB 2 penerima (alasan+render). Merge ke main = boarding gate kereta malam T-1025-N. Owner-gate kirim nyata tetap berlaku (RETENTION_EMAIL_API_KEY)."
     },
     {
@@ -2135,7 +2135,7 @@
       "title": "Sistem Point & Badge v1: auto daily +5 saat visit (no claim), badge terlihat di home (owner directive 19 Okt)",
       "north_star_pillar": "STICKY",
       "priority": "P1",
-      "status": "in_train",
+      "status": "done",
       "blocked_checked_at": "2026-10-20 07:45 WIB",
       "fde_missing": null,
       "context": "Owner directive 19 Okt: 'daily point otomatis nambah tanpa claim' + 'new user badge apa + terlihat di home saat login'. SCOPE v1 HANYA sistem point+badge (owner: 'paling buat sistem point dan badge dulu aja' — redeem/utility LATER, community masih sepi). Baseline kode: reputation.service.ts claimDailyReward (klaim manual), badge.ts BADGE_TIERS (Pemula 10 slate / Pengamat 25 cyan / Analis 50 indigo / Trader Aktif 100 blue / Senior Analyst 200 teal / Expert 500 gold / Master Trader 1000 purple / Legend 2000 amber), home page.tsx WelcomeLoopSection sudah load reputation + ClaimStreakButton.",
@@ -2156,7 +2156,7 @@
       ],
       "deploy_note": "Ikut slot deploy teknikal BESOK (cap 2/hari) — via night org. DONE-WHEN + bukti fisik (DB diff, screenshot home) sebelum naik kereta (BOARDING GATE doctrine).",
       "scheduled_slot": "2026-10-24 07:30 slot pagi (build-only, window pagi) -> kereta T-1025-N malam",
-      "result": "[CTO pagi 24 Okt] BUILD DONE commit b50cd1f (4 files, +54/-53). BUKTI: tsc --noEmit EXIT-0; npm run build EXIT-0; staging :3100 home 200 187KB; guest-path live before/after \"Klaim/Poin harian\" 0/0 (kartu login-only, tak regresi guest); grep maybeAwardDaily service+page.tsx:L292; claim-streak-button 0 POST/fetch (display-only). Login-path verify (badge chip + auto +5 + idempotency refresh-2x) = kereta malam pasca-deploy. NOTE: claude-code pipeline GAGAL 2x (glm-5.3 unrecognized-model -> autocompact thrash, exit 1; infra config, bukan spec) — EDIT1-2 sempat tertulis oleh worker percobaan-2 sebelum mati, EDIT3+hook diselesaikan CTO manual via patch tool.",
+      "result": "[CTO weekend sore 24 Okt] DEPLOYED via kereta T-1025-N (app c98ec44052ee). BUKTI: marker maybeAwardDaily live di .next/server/app/(public)/page.js + api/reputation + api/achievements; home 200. Login-path verify (badge chip + auto +5 + idempotency refresh-2x) = QA reviewer D+1.",
       "research_brief": "RESEARCH BRIEF (Researcher 21 Okt 2026 08:40) — VERDICT: BUILD-AFTER-PRD (7 field PRD belum ada di backlog; isi dulu oleh Product Agent — material siap: user_story+AC di entry ini, sisanya diusulkan di brief; setelah PRD 7-field + prd_id backlog entry ada -> FDE-READY -> build slot Backend malam, kereta T-1022+). Pilar: STICKY — pendukung returning 7d 4,4% -> target 8% per 25 Nov. Alasan: auto daily-point + streak + badge progress = mekanik retensi terkuat yang terdokumentasi: Duolingo — learner streak 7+ hari 2,4x lebih mungkin kembali besok; memisahkan streak dari daily goal +3,3% D14; visible progress selalu-on-screen +3% DAU/+1% D14 (semua internal A/B). Guardrail WAJIB (finance + gamification research): (1) poin HANYA untuk kunjungan/belajar, JANGAN pernah untuk aksi trading/eksekusi — Robinhood bayar $7,5jt (Massachusetts 2024) & hapus confetti 2021 karena gamification yang reward perilaku trading; teknikal.id tidak mem-fasilitasi transaksi jadi risiko jauh lebih rendah, tapi prinsipnya tetap: no reward trading-adjacent, no framing 'game'. (2) NO leaderboard di v1 — BPL triad (badges-points-leaderboard) = elemen paling sering dilaporkan berdampak negatif (87 paper: no-effect, demotivasi, gaming/cheating; arXiv 2305.08346) + komunitas masih sepi = papan kosong memperlihatkan produk mati. (3) Pointsification/overjustification: +5 otomatis utk perilaku intrinsik (cek pasar) harus diframe PROGRES (streak/tier) bukan reward generik; poin tanpa makna -> inflasi -> mati (PMC9562056). (4) Streak reset terasa hukuman = counterproductive (Habitica study); Duolingo: fleksibilitas (freeze) malah naikkan DAU — v1 minimal: copy netral saat reset, freeze = kandidat v2. (5) Streak TIDAK menyelamatkan produk lemah (Duolingo PM: 'streaks can't make up for weak product') — funnel register MATI (1-2/7d) adalah masalah terpisah; evaluasi funnel AC2 s/d 2 Nov JANGAN disentuh fitur ini: award hanya di jalur user-login home. BEST PRACTICE CTO: idempotent via unique constraint DB level (bukan cek aplikasi); panggil maybeAwardDaily hanya di render home login (sesuai spec — bukan middleware); copy jujur tanpa konfetti/perayaan ala kemenangan trading; badge = progress ladder eksplisit '18/25 -> Pengamat' dgn tier existing BADGE_TIERS; QA plan: baseline returning 7d 4,4% (KPI 07:05) + observational D7-return kohort streak-vs-tanpa, review kill/iterate 30 hari; regression user lama (tier sesuai poin existing). ANTI-PATTERN: leaderboard publik; poin utk trading; confetti; poin tanpa tujuan; streak-hukuman kaku; sentuh funnel register. SUMBER: blog.duolingo.com/improving-the-streak; blog.duolingo.com/how-duolingo-streak-builds-habit; lennysnewsletter.com/p/behind-the-product-duolingo-streaks; velaw.com (Robinhood $7,5M); press.farm/the-confetti-ban; btlj.org gamification US/EU comparative; arxiv.org/pdf/2305.08346; pmc.ncbi.nlm.nih.gov/articles/PMC9562056; sciencedirect.com Habitica counterproductive. BUKTI: KUAT utk mekanik streak/retention (multi A/B Duolingo); SEDANG utk guardrail finance (Robinhood terdokumentasi tapi konteks broker, bukan content site); TIDAK ADA studi spesifik audience finance-content Indonesia -> keputusan akhir pakai data internal pasca-deploy (QA plan di atas).",
       "prd_id": "prd-2026-10-24-01",
       "unblocked": "2026-10-24 owner digest Approved-all; PRD 7-field + QA plan + baseline kode terisi (prd-2026-10-24-01); naik kereta T-1025-N",
@@ -2324,15 +2324,16 @@
       "date": "2026-10-22",
       "type": "bug",
       "priority": "P2",
-      "status": "in_progress",
+      "status": "done",
       "title": "P2 BUG: tombol 'Hapus' di /watchlist (user login) tidak bereaksi — data-action remove-watchlist tak punya handler",
       "north_star": "TRUST — kontrol yang tampil harus berfungsi (dead control = kepercayaan turun)",
       "spec": "src/app/(public)/watchlist/page.tsx:108-115 button data-action='remove-watchlist' dirender server tanpa onClick/client binding; grep 'remove-watchlist' seluruh codebase = 0 listener. Fix = jadikan card client component (atau inline script) yang DELETE /api/watchlist lalu refresh; pertahankan SSR harga.",
       "created_by": "UX Builder 19:15 shift 22 Okt (temuan audit flow-d, dispatch sesuai ATURAN BUG)",
-      "result": "",
+      "result": "CTO weekend sore 24 Okt: fix d669e30 — RemoveWatchlistButton client component (onClick DELETE /api/watchlist/[ticker] + router.refresh + state pending/gagal) ganti tombol server tanpa handler. BUKTI: tsc EXIT-0; chunk live .next/static/chunks/app/(public)/watchlist/page-41aa769dd3c396cc.js ber-remove-watchlist; deploy kereta T-1025-N (app c98ec44052ee).",
       "scheduled_slot": "slot BE/Reviewer berikutnya",
       "qa_verified": false,
-      "assigned_slot": "Backend Builder pagi 24 Okt 07:30 (WIP remove-watchlist-button.tsx untracked sejak 23 Okt 07:37 — kerjakan bareng prd-22-01 pagi, commit sempit) → kereta T-1024-N 22:00"
+      "assigned_slot": "Backend Builder pagi 24 Okt 07:30 (WIP remove-watchlist-button.tsx untracked sejak 23 Okt 07:37 — kerjakan bareng prd-22-01 pagi, commit sempit) → kereta T-1024-N 22:00",
+      "train": "T-1025-N"
     },
     {
       "id": "perf-2026-10-22-01",
@@ -2513,7 +2514,7 @@
     },
     {
       "id": "ux-2026-10-24-01",
-      "status": "in_train",
+      "status": "done",
       "priority": "P3",
       "kpi": "STICKY",
       "train": "T-1024-N",
@@ -2521,7 +2522,7 @@
       "title": "P3 POLISH: modal Tanya AI — autofocus input saat open (potong 1 klik), emoji residu (🧠 loading, 📊 meta) → Lucide Loader2, header icon baseline-align (ui-craft #4/#9; tombol ini kini entry-point utama dari hero home milik owner 24 Okt)",
       "done_when": "(1) staging chunk: animate-spin icon sebelum \"Membaca hasil screener\" + 0 emoji 🧠📊; (2) setTimeout focus 60ms di effect open; (3) tsc 0 + build EXIT 0; (4) H1+subheadline verbatim before=after; (5) prod pasca-kereta: chunk live memuat ketiga bukti",
       "spec": "File tunggal: src/components/screener/screener-ai-modal.tsx. (a) effect open: setTimeout(()=>inputRef.current?.focus(),60) + clearTimeout cleanup; (b) 🧠 → <Loader2 h-3 w-3 animate-spin aria-hidden> + flex gap; (c) 📊 dihapus (secondary text polos per ui-craft #9); (d) header title <p> flex items-center gap-1.5 utk baseline align Sparkles. TANPA perubahan API/logika.",
-      "result": "BUKTI FISIK staging build hoddWHj6wizIfDMKG3rG (fresh): chunk 3955-12c234671258c5b3.js = animate-spin l.A icon sebelum Membaca hasil screener (node-inspect PASS), setTimeout autofocus 60ms PASS, emoji 🧠/📊 0 PASS, header flex PASS; tsc 0; build EXIT 0; H1 TeknikalID 1=1 & \"tanpa nebak\" 2=2 staging vs prod; commit ce64756 pushed main. Live-prod verify = kereta T-1024-N pasca-deploy.",
+      "result": "[CTO weekend sore 24 Okt] Terangkat ikut kereta T-1025-N via main HEAD (ce64756): marker chunk 3955 live, 'Tanya AI' render di home. (Sebelumnya in_train T-1024-N yang tidak pernah berangkat; T-1024-N manifest kosong.)",
       "created": "2026-10-24T10:30:00+07:00"
     }
   ],

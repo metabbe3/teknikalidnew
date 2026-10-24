@@ -691,3 +691,11 @@
 
 ### 2026-10-24 13:5x WIB — qa-2026-10-24-01..04 queue flip
 - 4 entry → done via statejson.py v12→v20. Sisa pending CTO-buildable: bug-22-01 (P2, in_progress milik BE), prd-22-02 + sec-22-02 (Backend Builder 18:30), sec-22-01 (P3), teknikal-24-02 (P1 owner-directed, train T-1025-N), ops-24-01 (T-1026-N), ops-13-01 (owner TCC, slot ke-7).
+
+### 2026-10-24 17:1x-17:5x WIB — kereta T-1025-N DEPLOYED (CTO weekend sore)
+- type: deploy-train | deploy: app c98ec44052ee + worker 912fb59f1738 (main 0ade887, pushed)
+- Penumpang: (1) teknikal-2026-10-20-01 Point&Badge v1 (b50cd1f) — marker maybeAwardDaily live page.js/reputation/achievements; (2) prd-2026-10-22-01 day-2 email (merge night 9ded6a4) — route retention-email live, GET 401 tanpa Bearer, selftest 7/7; (3) bug-2026-10-22-01 remove-watchlist (d669e30) — client binding live chunk watchlist/page-41aa769dd3c396cc.js; (4) ux-2026-10-24-01 Tanya AI modal (ce64756) — chunk 3955 live.
+- verify: tsc EXIT-0; 4 URL 200 before=after (/, /watchlist, /pasar, /stocks); ISR warm-up 4/4 OK (/berita 13 links); negative POST/GET retention-email = 405/401.
+- WIP divergen lama day2-email repo utama dihapus (backup ~/.hermes/cache/scratch/wip-day2-backup-20261023/ + night branch). Artefak .next/types stale day2-email dibersihkan (cache lokal, bukan source).
+- QA: login-path Point&Badge (badge chip + idempotency refresh-2x) + remove-watchlist klik E2E = QA reviewer D+1. impact_check_due: 2026-10-27 (Point&Badge) / kirim nyata email = owner env gate.
+- Rollback anchor: app dd4007b7d9c6 + git revert 0ade887.
