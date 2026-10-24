@@ -7,6 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { ArticleContent, extractHeadings, estimateReadingTime, extractTickers } from "@/components/article/article-renderer";
 import { ArrowLeft, BookOpen, Clock, User, ChevronRight, ArrowRight, TrendingUp, BarChart3 } from "lucide-react";
 import { ShareButtons } from "@/components/ui/share-buttons";
+import dynamicImport from "next/dynamic";
+const ArticleQuiz = dynamicImport(
+  () => import("@/components/akademi/article-quiz").then((m) => ({ default: m.ArticleQuiz })),
+  { loading: () => null },
+);
 import { LiveIndicatorExample } from "@/components/akademi/live-indicator-example";
 
 export async function generateMetadata({
@@ -232,6 +237,8 @@ export default async function ArticlePage({
 
               {/* Article body */}
               <ArticleContent content={article.content} />
+              {/* Owner 24 Okt: quiz belajar aktif */}
+              <ArticleQuiz slug={article.slug} />
 
               {/* Live example — deterministic verdict for the first ticker the
                   article mentions; turns the static pillar into a daily-refreshing

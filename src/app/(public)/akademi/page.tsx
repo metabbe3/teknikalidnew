@@ -7,6 +7,11 @@ import { PageHero } from "@/components/layout/page-hero";
 import { FAQTabSection } from "@/components/faq/faq-tab-section";
 import { QuestionStatus } from "@/generated/prisma/client";
 import { AkademiGrid } from "./akademi-grid";
+import dynamicImport from "next/dynamic";
+const LearningPath = dynamicImport(
+  () => import("@/components/akademi/learning-path").then((m) => ({ default: m.LearningPath })),
+  { loading: () => <div className="mb-12 h-40 animate-pulse rounded-xl bg-bg-card" /> },
+);
 
 export const metadata: Metadata = {
   title: "Belajar Analisis Teknikal Saham — Panduan RSI, MACD & Strategi Trading",
@@ -182,6 +187,8 @@ export default async function AkademiPage({
             />
           ) : (
             <>
+              <LearningPath />
+
               {/* Tag filter strip */}
               {allTags.length > 0 && (
                 <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">

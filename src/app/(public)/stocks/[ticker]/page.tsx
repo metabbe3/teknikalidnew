@@ -8,6 +8,7 @@ import {formatPrice, formatPercent, formatVolume, stripJk, changeColor, rsiColor
 import { normalizeTickerTitle } from "@/lib/normalize-ticker-title";
 import { ChartSection } from "@/components/chart/chart-section";
 import { IndicatorPanel } from "@/components/stock/indicator-panel";
+import { EduCard } from "@/components/akademi/edu-card";
 import { KeyStatistics } from "@/components/stock/key-statistics";
 import { FundamentalData } from "@/components/stock/fundamental-data";
 import { TradingPlanCard } from "@/components/stock/trading-plan-card";
@@ -942,6 +943,17 @@ export default async function StockDetailPage({
                 Data indikator belum tersedia untuk saham ini
               </div>
             )}
+            {/* Owner 24 Okt: funnel belajar — EduCard kontekstual (RSI/MACD → akademi) */}
+            <EduCard
+              rsi14={indicators?.rsi14 ?? null}
+              macdSignal={
+                indicators?.macdLine != null && indicators?.macdSignal != null
+                  ? indicators.macdLine >= indicators.macdSignal
+                    ? "bullish"
+                    : "bearish"
+                  : null
+              }
+            />
             {/* Key Stats + Fundamentals pindah ke kiri (owner 21 Okt): rail kanan
                 terlalu panjang (4 card stacked 1.809px) sementara kolom kiri
                 menyisakan ~1.500px kosong di bawah IndicatorPanel. */}
