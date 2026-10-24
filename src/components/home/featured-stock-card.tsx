@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { formatPercentPlain, formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
-import { MiniSparkline } from "@/components/chart/mini-sparkline";
+import { StockLogo } from "@/components/stock/stock-logo";
 
 type BadgeTone = "bullish" | "bearish" | "neutral";
 
@@ -28,7 +28,6 @@ export function FeaturedStockCard({
   sector,
   close,
   changePercent,
-  sparklineData,
   badge,
   badgeTone,
 }: FeaturedStockCardProps) {
@@ -49,7 +48,9 @@ export function FeaturedStockCard({
       aria-label={`${stripJk(ticker)} — ${name}, ${close !== null ? formatPrice(close) : "no price"}${changePercent !== null ? `, ${changePercent >= 0 ? "+" : "-"}${formatPercentPlain(changePercent)}%` : ""}`}
     >
       <div className="flex items-start justify-between gap-2 mb-2">
-        <div className="min-w-0">
+        <div className="min-w-0 flex items-start gap-2.5">
+          <div className="shrink-0 mt-0.5"><StockLogo name={name} ticker={ticker} size={28} /></div>
+          <div className="min-w-0">
           <div className="flex items-center gap-2">
             <p className="font-mono font-semibold text-sm tabular-nums">{stripJk(ticker)}</p>
             {badge && (
@@ -59,6 +60,7 @@ export function FeaturedStockCard({
             )}
           </div>
           <p className="text-[11px] text-text-secondary truncate leading-tight">{name}</p>
+          </div>
         </div>
         <div className="text-right shrink-0 tabular-nums">
           {close != null ? (
@@ -73,23 +75,13 @@ export function FeaturedStockCard({
           )}
         </div>
       </div>
-      {sparklineData && sparklineData.length >= 2 && (
-        <div className="mt-1 mb-2">
-          <MiniSparkline data={sparklineData} width={160} height={36} />
-        </div>
-      )}
-      <div className="flex items-center justify-between mt-auto">
-        <span className="text-[10px] text-text-tertiary font-medium uppercase tracking-wider bg-bg-primary px-2 py-0.5 rounded-full">
+      <div className="flex items-center justify-between mt-auto pt-1">
+        <span className="text-[10px] text-text-tertiary font-medium uppercase tracking-wider truncate">
           {sector}
         </span>
         {changePercent !== null && (
-          <span
-            className={`flex items-center justify-center w-8 h-8 sm:w-5 sm:h-5 rounded-full text-white text-[9px] font-bold ${
-              isPositive ? "bg-bullish" : "bg-bearish"
-            }`}
-            aria-hidden="true"
-          >
-            {isPositive ? "↑" : "↓"}
+          <span className={`text-[10px] font-bold ${changeColor(changePercent)}`} aria-hidden="true">
+            {isPositive ? "▲" : "▼"}
           </span>
         )}
       </div>

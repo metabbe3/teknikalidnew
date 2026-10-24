@@ -132,8 +132,7 @@ async function FeaturedStocksSection({
   losers: OverviewStock[];
   isMarketOpen: boolean;
 }) {
-  const [sparklineMap, volumeLeaders] = await Promise.all([
-    stockMarketService.getSparklines(),
+  const [volumeLeaders] = await Promise.all([
     // Owner 24 Okt: "Paling Aktif" jangan duplikat movers % (ticker tape + hero
     // sudah menampilkan gainers/losers) — sumbernya top VOLUME transaksi.
     prisma.$queryRaw<Array<{
@@ -207,10 +206,7 @@ async function FeaturedStocksSection({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 stagger-grid">
         {featured.map((s, i) => (
           <div key={s.ticker} style={{ "--stagger-i": i } as React.CSSProperties}>
-            <FeaturedStockCard
-              {...s}
-              sparklineData={sparklineMap[s.ticker]}
-            />
+            <FeaturedStockCard {...s} />
           </div>
         ))}
       </div>
