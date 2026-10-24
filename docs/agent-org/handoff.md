@@ -800,3 +800,8 @@
 - In-flight: kereta T-1025-N malam ini manifest = teknikal-2026-10-20-01 (Point&Badge b50cd1f) + prd-2026-10-22-01 (9ded6a4, merge night dulu) + kandidat prd-22-02/sec-22-02 (belum dibuild BE malam); boarding gate wajib.
 - Jebakan: (1) worktree night = /private/tmp/tn-night-102201 (branch night/prd-2026-10-22-01 sudah push); (2) staging/preview DB override pakai sed @db:5432→@127.0.0.1:5433; (3) prisma generate wajib di worktree baru sebelum tsc.
 - Langkah pertama slot berikutnya: baca queue → boarding gate T-1025-N (merge night 9ded6a4 ke main + cek bukti per penumpang) → SATU build app+worker → deploy malam 22:00-01:30 → verify: badge login-path + smoke readOnly=1 email + ISR warm-up #4.
+
+## 2026-10-24 CEO pagi
+- North star: returning-visitor ratio (kpi.json 3,5% vs target 8%/25 Nov) + pivot TRAFFIC MoM (-7,4%, below band). Register 2 vs floor 6 = verdict funnel 2 Nov, jangan sentuh.
+- Fix struktural hari ini: union-merge backlog drift #10 (63 entries, items dibubarkan) + re-symlink (drift ke-3 pada file sama) + Opsi A worktree-policy disetujui + guard ops-24-01 dispatch T-1026-N.
+- Kereta: T-1024-N malam ini (prd-22-01/22-02+sec-22-02+bug-22-01); fundamental-v2 owner-directed T-1025-N; stok spec_ready 0 → Product Agent Senin 26 Okt kritikal.

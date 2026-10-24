@@ -2421,7 +2421,20 @@
       ],
       "qa_plan": "SQL count per kolom: 0 kolom yang masih 0% selain memang tak tersedia di Yahoo (catat daftar); regresi: market-snapshot consistency-test + /saham/BBCA render SSR contain beta+ROE; valura: PBSA split Okt ada di CorpAction table",
       "estimate": "M",
-      "context": "Sumber = Yahoo Finance quoteSummary (unofficial tapi stabil bertahun-tahun; crumb dance verified dari Mac mini 24 Okt: chart 200 tanpa crumb, quoteSummary 401 Invalid Crumb, setelah fc.yahoo.com cookie + getcrumb = 200 penuh field). Corp action = valura.id (agregator BEI, curl 200 polos, filter ?jenis= tersedia, PBSA split 1:2 Okt 2026 verified). IDX.co.id sendiri = Cloudflare hard-block semua jalur (curl/API/browser CDP) — JANGAN buang waktu crawal IDX. Kolom beta/bookValue/sharesOutstanding/averageDailyVolume3Month SUDAH ada di schema tapi tak pernah terisi (0/965) — job lama hanya pakai v8 chart endpoint. StockDividend 151 rows terakhir Juni = stale. Ticker fundamental pakai format .JK (BBCA.JK)."
+      "context": "Sumber = Yahoo Finance quoteSummary (unofficial tapi stabil bertahun-tahun; crumb dance verified dari Mac mini 24 Okt: chart 200 tanpa crumb, quoteSummary 401 Invalid Crumb, setelah fc.yahoo.com cookie + getcrumb = 200 penuh field). Corp action = valura.id (agregator BEI, curl 200 polos, filter ?jenis= tersedia, PBSA split 1:2 Okt 2026 verified). IDX.co.id sendiri = Cloudflare hard-block semua jalur (curl/API/browser CDP) — JANGAN buang waktu crawal IDX. Kolom beta/bookValue/sharesOutstanding/averageDailyVolume3Month SUDAH ada di schema tapi tak pernah terisi (0/965) — job lama hanya pakai v8 chart endpoint. StockDividend 151 rows terakhir Juni = stale. Ticker fundamental pakai format .JK (BBCA.JK).",
+      "note_logo": "DONE weekend 24 Okt: 961 SVG di public/logos (47 asli + badge), StockLogo next/image, staging verified — kereta tinggal review+deploy window"
+    },
+    {
+      "id": "ops-2026-10-24-01",
+      "date": "2026-10-24",
+      "type": "ops",
+      "priority": "P3",
+      "status": "pending",
+      "train": "T-1026-N",
+      "title": "OPS GUARD: backlog_health.py deteksi schema-split product-backlog.json (blok `items` non-kosong / `entries` hilang) -> exit 1 ALERT",
+      "north_star": "TRUST — satu sumber kebenaran backlog utk semua agent + owner digest (drift #10: digest items-first buta 58 entry riwayat)",
+      "spec": "Tambah check di backlog_health.py: load product-backlog.json; jika dict TIDAK punya list `entries` ATAU blok `items` non-kosong -> cetak baris ALERT schema-split + exit 1. Sehat = silent exit 0 (perilaku monitor-gated existing). Uji via copy file dgn items non-kosong, JANGAN mutasi file asli.",
+      "done_when": "DONE WHEN: (1) backlog_health.py pada file sehat = silent exit 0; (2) pada copy backlog berisi blok items non-kosong = exit 1 + baris ALERT berisi 'schema-split'; (3) uji dijalankan dgn file copy /tmp, file kanonik tak tersentuh."
     }
   ],
   "tasks": []

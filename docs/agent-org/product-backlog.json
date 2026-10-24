@@ -1,7 +1,7 @@
 {
   "protocol": {
     "purpose": "Product discovery backlog — CEO/CTO dispatch dari sini saat engineering queue kosong. Bukan commitment deploy.",
-    "rules": "Tide-first: setiap entry WAJIB mulai dari DATA (traffic/search/funnel) sebelum spec. Output = insight + spec berbasis bukti, bukan fitur tergesa-gesa. Max 1 survey/dispatch per slot kosong.",
+    "rules": "Tide-first: setiap entry WAJIB mulai dari DATA (traffic/search/funnel) sebelum spec. Output = insight + spec berbasis bukti, bukan fitur tergesa-gesa. Max 1 survey/dispatch per slot kosong. | SCHEMA (CEO 24 Okt, drift #10 fix): SATU blok `entries` kanonik. Writer WAJIB read-modify-write union-merge ke entries; DILARANG membuat blok `items` baru. Guard: ops-2026-10-24-01.",
     "lifecycle": "idea -> researching -> spec_ready (wajib: user_story, acceptance_criteria, data_evidence, impact, effort). CTO hanya boleh bangun entry spec_ready (via prd_id di cto-queue). type=ops exempt."
   },
   "entries": [
@@ -1220,7 +1220,7 @@
       "id": "sec-2026-10-13-01",
       "date": "2026-10-13",
       "title": "Evaluasi PentAGI (self-hosted AI pentest) untuk pentest aset sendiri (teknikal.id + hivepos.id)",
-      "status": "idea",
+      "status": "rejected",
       "priority": "P3",
       "source": "owner-idea",
       "hypothesis": "PentAGI (vxcontrol/pentagi, MIT, 25k stars) multi-agent pentest self-hosted bisa memproduksi vulnerability report untuk teknikal.id & hivepos.id lebih murah+cepat daripada pentest manual, sebagai layer keamanan pra-rilis/quarterly. Assistant-guided mode = aman (agent usul, owner approve).",
@@ -1248,7 +1248,7 @@
       "prd_id": null,
       "research_brief": "RESEARCH BRIEF (Researcher 15 Okt 2026) — VERDICT: BUILD (sebagai evaluasi 1-run berbiaya-terkendali, bukan komit quarterly; kill/scale diputuskan dari evaluasi tertulis — sudah sesuai AC5 item). Alasan: README resmi vxcontrol/pentagi konfirmasi semua premis item: self-hosted Docker Compose, sandbox isolated, 20+ tools (nmap/metasploit/sqlmap), memory pgvector, GLM (z.ai) = provider native (cocok dgn plan owner), Ollama/vLLM utk mode lokal, assistant-guided mode ada, MIT + EULA acceptable-use (authorized testing only). Dokumentasi 'Current Capability Boundaries' resmi: BUKAN BAS/adversary-emulation — cocok dgn catatan review pihak-3. Trade-off terdokumentasi: mode planner/mentor = token 2-3x + waktu 2-3x (kualitas +2x) → wajib budget cap. Konsensus industri (Reflectiz, Simbian, Netragard, Matproof 2026): pentest AI/agentic = COMPLEMENT bukan pengganti pentest manual; FP butuh triage manusia; business-logic flaw butuh manusia. Best practice: (1) run pertama = STAGING only + scope whitelist eksplisit di prompt flow (template examples/prompts/base_web_pentest.md sebagai baseline); (2) assistant-guided mode (bukan full-autonomous) utk run pertama; (3) budget cap token per-run (pakai angka 2-3x planner sebagai planning number; kalau biaya besar → Ollama lokal); (4) semua temuan WAJIB manual triage benar/FP — report = input, bukan kesimpulan; (5) jalankan di luar jam market 09:00-16:15 (sudah ada di risk) + PC 3090/Ollama utk tau-tau air-gap. Anti-pattern: memperlakukan report otomatis sebagai final (FP rate alat AI pentest tinggi), full-autonomous tanpa monitoring lawan aset hidup, dan scope melenceng ke aset non-milik (DANA = dilarang mutlak, sudah di AC). Sumber: github.com/vxcontrol/pentagi (README+EULA, dicek 15 Okt), reflectiz.com/blog/pentesting-evolution-manual-agentic, simbian.ai/learning-center/ai-pentest, netragard.com/blog/manual-vs-automated-pentesting. BUKTI: SEDANG — kapabilitas & batasan terverifikasi dari sumber primer; belum ada kasus publik terverifikasi PentAGI menghasilkan temuan valid pada web app kecil — itu tepatnya yang dijawab oleh evaluasi 1-run ini.",
       "review_date": "2026-10-18",
-      "insight": "CEO 17 Okt: DEFER review 24 Okt — TRUST tidak langsung, kalah vs polish UX north-star saat ini."
+      "insight": "CEO REJECT 24 Okt (stagnation 11 hari, review-date jatuh tempo): PentAGI = tooling internal, tak menyentuh pilar north-star langsung (IT-SEC sweep manual jalan + 0 P0). Pivot owner 23 Okt = TRAFFIC dulu. Re-entry: hanya bila insiden security nyata atau owner minta."
     },
     {
       "id": "idea-2026-10-14-01",
@@ -1463,7 +1463,8 @@
       "north_star": "TRUST — menutup 'kenapa harus percaya' sebelum monetisasi Pro; prasyarat gate fase-2 300-subscriber",
       "queue_id": "prd-2026-10-16-01",
       "dispatched_at": "2026-10-17",
-      "done_when": "staging :3100/track-record 200 + angka akurasi >=1 window + label 'data s/d <snapshot max>' + noindex; selftest window-return fixture N/N PASS; tsc 0; pasca-deploy curl prod sama."
+      "done_when": "staging :3100/track-record 200 + angka akurasi >=1 window + label 'data s/d <snapshot max>' + noindex; selftest window-return fixture N/N PASS; tsc 0; pasca-deploy curl prod sama.",
+      "research_brief": "RESEARCH BRIEF (Researcher 24 Okt 2026): VERDICT: BUILD — dengan PRD dilengkapi dulu (missing user_story/target_files/effort/risk/dependencies → BUILD-AFTER-PRD). Trust-page berbasis bukti terukur = best practice kuat fintech/finance-content: halaman trust harus konten-substansi bukan stub marketing (utsubo.com: trust as content destination; Plaid /safety), 'data milik sendiri yang dikutip orang = proof terkuat' (petrbilek.com), transparency sbg single-source-of-truth (Monzo). Konteks YMYL: E-E-A-T menuntut klaim akurasi yang terverifikasi + metodologi + tanggal — /track-record autohitung dari DB persis memenuhi itu dan jadi pendulum North Star TRUST + gate roadmap Pro fase 1. BEST PRACTICE: (1) angka WAJIB autohitung dari DB + metodologi hitung (definisi akurat/miss) + window periode tampil di halaman; (2) tampilkan miss rate juga — track record yang dikurasi sepihak merusak trust begitu ketahuan; (3) last-updated + versi metode; (4) disclaimer bukan-rekomendasi dekat angka; (5) link dari halaman sinyal/brief (bukan footer saja). ANTI-PATTERN: big numbers tanpa konteks ('X% akurat' sejak kapan, dihitung siapa); stub 200 kata; angka manual yang stale — outdated transparency lebih buruk dari tidak ada. SUMBER: petrbilek.com/blog/what-makes-a-fintech-website-trustworthy, monzo.com/blog/2018/11/08/monzo-transparency, utsubo.com/blog/fintech-website-design-patterns, accuracast.com fintech E-E-A-T. BUKTI: KUAT utk pola trust-page substansi (multi sumber sependapat); dampak ke returning-ratio internal = ukur sendiri."
     },
     {
       "id": "sec-2026-10-19-01",
@@ -1626,7 +1627,8 @@
       ],
       "qa_plan": "Metric baseline→target: DAU revisit-rate (admin user-analytics) baseline ambil 7d pre-deploy; target +2pp dalam 14d. QA gate: idempotency test 2x hit, badge SSR render, regresi /profile 307.",
       "estimate": "S (1 slot CTO)",
-      "owner_approval": "2026-10-24 digest 'Approved all' — FDE block di-override owner; research_brief = baseline kode inline di atas"
+      "owner_approval": "2026-10-24 digest 'Approved all' — FDE block di-override owner; research_brief = baseline kode inline di atas",
+      "research_brief": "RESEARCH BRIEF (Researcher 24 Okt 2026; non-blocking — item sudah dispatched & owner-approved): VERDICT: BUILD. Auto-claim point harian (hapus friction klik) + badge visible di home = pola industri retention yang sehat: reward otomatis tanpa aksi user adalah inti habit loop (Duolingo: user streak ≥7 hari 3,6x lebih mungkin bertahan; streak freeze turunkan churn 21%; Streak Wager naikkan D1/D7/D14 signifikan). BEST PRACTICE: (1) reward muncul TANPA aksi user — sudah sesuai scope v1; (2) idempotency race-safe: unique constraint di log harian / redis SETNX, bukan sekadar cache read-then-write; (3) reward tak terlihat = reward kosong → badge chip + tooltip di home (sudah di scope); (4) ukur: DAU revisit-rate baseline 7d pre-deploy, target +2pp/14d (sudah di qa_plan); (5) jangan sentuh ekonomi point/redeem/leaderboard di v1 — out_of_scope sudah benar. ANTI-PATTERN: gamifikasi dekoratif (point tanpa makna); reward yang bisa di-farm via refresh (idempotency wajib); menunda reward sampai user 'claim' (friction = loop putus, justru masalah yang mau diperbaiki). SUMBER: strivecloud.io/blog/gamification-examples-boost-user-retention-duolingo, trophy.so/blog/duolingo-gamification-case-study, sayangupta.substack.com Duolingo playbook. BUKTI: SEDANG — bukti pola reward-otomatis menaikkan retensi kuat di edtech/Duolingo; transfer ke situs konten finansial belum teruji publik → andalkan qa_plan +2pp sbg pemutus."
     },
     {
       "id": "prd-2026-10-24-02",
@@ -1649,10 +1651,9 @@
       "done_when": "lihat cto-queue teknikal-2026-10-24-02 (9 butir verifiable)",
       "qa_plan": "SQL coverage count + SSR render check + consistency-test market + PBSA di CorpAction",
       "estimate": "M",
-      "owner_approval": "owner 24 Okt minta lengkapin data fundamental per saham teknikal"
-    }
-  ],
-  "items": [
+      "owner_approval": "owner 24 Okt minta lengkapin data fundamental per saham teknikal",
+      "research_brief": "RESEARCH BRIEF (Researcher 24 Okt 2026) — VERDICT: MODIFIKASI. Nilai datanya tinggi (4 kolom kosong 0/965 + dividen stale Juni = luka TRUST nyata) tapi 2 ketergantungan harus diubah dulu: (1) Yahoo quoteSummary = API tak resmi; hardening 2025 mewajibkan cookie+crumb (401/403 tanpa itu), rate limit tak terdokumentasi, breaking changes berulang (gadicc/yahoo-finance2 issue #764 invalid-crumb, fix via /v1/test/getcrumb) → PAKSA pakai library ter-maintain (node yahoo-finance2), DILARANG tulis crumb fetcher DIY; wajib circuit breaker + fallback stale-data agar cron 02:00 tidak merusak halaman; (2) valura.id BUKAN vendor data/API — verifikasi langsung 24 Okt: ini kompetitor langsung (situs analisa saham IDX: harga wajar, penyaring, kalender dividen/RUPS; /api → 404; tidak ada indikasi akses data publik). Scraping situs kompetitor = rapuh + salah posisi. GANTI sumber corp-action ke yang terdokumentasi: kalender idx.co.id (listed-company-calendar / dividend-announcement), mirror new.sahamidx.com (deviden/stock-split), sectors.app v2 corporate-actions (berbayar, 1 credit/call), ticmidata API, atau RapidAPI indonesia-stock-exchange (getDividendCalendar + getTodayCorporateActions). BEST PRACTICE: (1) library maintained utk Yahoo, bukan DIY; (2) semua sumber eksternal lewat satu pintu market-snapshot.service + circuit breaker + graceful degradation (aturan AGENTS.md API-REUSE); (3) mulai dari dividend calendar (cum/ex/pay) — paling stabil; split/HMETD belakangan; (4) cron jam sepi + jitter + politeness rate; (5) QA per-field: SQL coverage count per kolom (pertahankan yang sudah ada). ANTI-PATTERN: scraping kompetitor sbg pipeline inti; DIY crumb yang mati tiap Yahoo rotasi cookie; backfill 965 saham sekaligus tanpa throttle (429 massal). SUMBER: github.com/gadicc/yahoo-finance2 (issue #764), stackoverflow.com/questions/76059562, marketxls.com/blog/yahoo-finance-api-ultimate-guide, docs.sectors.app (v2 corporate-actions), ohlc.dev (IDX dividend calendar), idx.co.id listed-company-calendar. BUKTI: KUAT utk risiko Yahoo crumb/rate-limit (terdokumentasi luas) dan KUAT utk temuan valura (verifikasi langsung 24 Okt)."
+    },
     {
       "id": "roadmap-pro-2026-10-15",
       "date": "2026-10-15",
@@ -1681,14 +1682,17 @@
           "gate_ke_pro": "free→paid ≥3%"
         }
       ],
-      "not_now": "TIDAK build Pro sebelum gate fase 2 tercapai — hindari monetize-too-early."
+      "not_now": "TIDAK build Pro sebelum gate fase 2 tercapai — hindari monetize-too-early.",
+      "priority": "P2",
+      "status": "idea",
+      "insight": "Umbrella roadmap Pro (owner direction 15 Okt). Fase-1/2 asset LIVE (/track-record + /waitlist). Monetisasi fase-3 = OWNER GATE — jangan dispatch tanpa owner."
     },
     {
-      "id": "idea-2026-10-16-1",
+      "id": "idea-2026-10-16-1b",
       "date": "2026-10-16",
       "type": "feature",
       "priority": "P1",
-      "status": "spec_ready",
+      "status": "done",
       "source": "roadmap-pro-2026-10-15 fase-1 trust assets (owner direction 15 Okt)",
       "north_star": "trust/consistency + growth traffic (north star #90) + fundament monetisasi fase-3",
       "title": "P1 TRUST ASSET: /track-record — scoreboard akurasi brief & sinyal autohitung dari DB (689 hari), komitmen 60-hari verifikasi",
@@ -1741,14 +1745,15 @@
       },
       "prd_id": "idea-2026-10-16-1",
       "research_note": "CHECKPOINT PA nightly 16 Okt 22:0x WIB: tree DEPLOYED = teknikalidnew main@994af4f (git log 16 Okt; /pasar live pagi ini commit 6528d86). Data DB read-only (teknikalidnew-db-1): ind_1d max=2026-10-16, 516.331 rows interval=1d, 689 hari histori; brief-pasar 7d=5/6 slot; reg 30d=9 User; returning IP 7d=6; /pasar since-live=4 views/1 IP (baseline); waitlist=0 (grep schema+src: tidak ada model/halaman); KPI 7d: /stocks 283v, organic 90v, ai-search 3v.",
-      "dispatch_note_20261022": "PA nightly 22 Okt: JANGAN dispatch ulang — sudah tercatat DONE di cto-queue (prd-2026-10-16-01 / prd-2026-10-16-02, verified read-back queue). Status spec_ready di backlog = stale drift; buffer spec_ready efektif teknikal = 0. Idea bank kosong — CEO perlu mandate baru."
+      "dispatch_note_20261022": "PA nightly 22 Okt: JANGAN dispatch ulang — sudah tercatat DONE di cto-queue (prd-2026-10-16-01 / prd-2026-10-16-02, verified read-back queue). Status spec_ready di backlog = stale drift; buffer spec_ready efektif teknikal = 0. Idea bank kosong — CEO perlu mandate baru.",
+      "insight": "Re-keyed dari blok items (collision id dgn mandate idea-2026-10-16-1, CEO 24 Okt). LIVE 200 verified Researcher 23 Okt (window/akurasi/metodologi render); cto-queue prd-2026-10-16-01 DONE. Jangan dispatch ulang."
     },
     {
       "id": "idea-2026-10-16-2",
       "date": "2026-10-16",
       "type": "feature",
       "priority": "P1",
-      "status": "spec_ready",
+      "status": "done",
       "source": "roadmap-pro-2026-10-15 fase-2 waitlist (owner direction 15 Okt) + PRD pasar-live premium_path",
       "north_star": "growth register/lead + monetisasi fase-3 pipeline (owner mandate)",
       "title": "P1 LEAD ENGINE: Brief 06:30 digest WA/email GRATIS — waitlist landing + capture nomor via WA deep-link (existing gateway, no-install)",
@@ -1803,17 +1808,20 @@
       },
       "prd_id": "idea-2026-10-16-2",
       "research_note": "CHECKPOINT PA nightly 16 Okt 22:0x WIB: tree DEPLOYED = teknikalidnew main@994af4f (git log 16 Okt; /pasar live pagi ini commit 6528d86). Data DB read-only (teknikalidnew-db-1): ind_1d max=2026-10-16, 516.331 rows interval=1d, 689 hari histori; brief-pasar 7d=5/6 slot; reg 30d=9 User; returning IP 7d=6; /pasar since-live=4 views/1 IP (baseline); waitlist=0 (grep schema+src: tidak ada model/halaman); KPI 7d: /stocks 283v, organic 90v, ai-search 3v.",
-      "dispatch_note_20261022": "PA nightly 22 Okt: JANGAN dispatch ulang — sudah tercatat DONE di cto-queue (prd-2026-10-16-01 / prd-2026-10-16-02, verified read-back queue). Status spec_ready di backlog = stale drift; buffer spec_ready efektif teknikal = 0. Idea bank kosong — CEO perlu mandate baru."
+      "dispatch_note_20261022": "PA nightly 22 Okt: JANGAN dispatch ulang — sudah tercatat DONE di cto-queue (prd-2026-10-16-01 / prd-2026-10-16-02, verified read-back queue). Status spec_ready di backlog = stale drift; buffer spec_ready efektif teknikal = 0. Idea bank kosong — CEO perlu mandate baru.",
+      "insight": "LIVE 200 verified 23 Okt (wa.me deep-link + form email). cto-queue prd-2026-10-16-02 DONE. Fase-2b kirim-digest = entry baru bila jadi (opt-in policy Meta, brief Researcher 23 Okt)."
     },
     {
       "id": "idea-2026-10-21-1",
-      "status": "dispatched",
+      "status": "done",
       "source": "cto-idle",
       "title": "Header IHSG pakai prefix Rp utk poin indeks (5.279) — drop Rp utk ^JKSE, match konvensi index",
       "data": "Bukti fisik 21 Okt 07:3x: homepage header <span data-live-price=\"^JKSE\">Rp5.279</span> (grep /tmp/home.html) — indeks ditulis Rp padahal itu poin; DB StockPrice ^JKSE 20 Okt close=5278.89 (+5,65% vs 4996.61 cocok judul brief hari ini). Saham individual tetap Rp. KPI: TRUST (data tampil benar).",
       "priority": "P2",
       "ceo_verdict": "APPROVE 21 Okt — bug data display homepage (Rp utk poin indeks ^JKSE), verified live Rp5.279. Pilar TRUST",
-      "queue_id": "ops-2026-10-21-01"
+      "queue_id": "ops-2026-10-21-01",
+      "insight": "Live via ops-2026-10-21-01; CTO verify 23 Okt 'Rp-prefix mati' (poin indeks tampil angka murni). Merge items->entries CEO 24 Okt."
     }
-  ]
+  ],
+  "items": []
 }
