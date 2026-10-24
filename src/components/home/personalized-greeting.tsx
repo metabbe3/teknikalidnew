@@ -1,6 +1,10 @@
 import { formatPercentPlain } from "@/lib/utils";
 import dynamicImport from "next/dynamic";
 
+const ScreenerAiButton = dynamicImport(
+  () => import("@/components/screener/screener-ai-modal").then((m) => ({ default: m.ScreenerAiButton })),
+  { loading: () => <span className="h-[34px] w-[120px] animate-pulse rounded-full" /> },
+);
 const HeroSearch = dynamicImport(
   () => import("@/components/home/hero-search").then((m) => ({ default: m.HeroSearch })),
   { loading: () => <div className="h-[52px] bg-bg-primary rounded-xl animate-pulse" /> },
@@ -76,7 +80,10 @@ export function PersonalizedGreeting({
         </div>
 
         {/* Owner 24 Okt: cari saham langsung dari beranda — hemat 1 step */}
-        <HeroSearch />
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex-1 min-w-[240px]"><HeroSearch /></div>
+          <ScreenerAiButton />
+        </div>
 
       </div>
     </section>
