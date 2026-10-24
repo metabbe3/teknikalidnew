@@ -67,6 +67,18 @@ export function LearningPath() {
         </div>
       </div>
 
+      {totalDone >= 1 && (
+        <Link
+          href="/portfolio"
+          className="mb-6 flex items-center justify-between gap-3 p-4 rounded-xl bg-accent/[0.07] border border-accent/25 hover:border-accent/50 transition-colors"
+        >
+          <div>
+            <p className="text-sm font-semibold text-text-primary">Sudah {totalDone} materi selesai — langkah berikutnya?</p>
+            <p className="text-xs text-text-tertiary mt-0.5">Simulasikan portofolio pertamamu di Portfolio Tracker.</p>
+          </div>
+          <ChevronRight className="h-4 w-4 text-accent shrink-0" />
+        </Link>
+      )}
       <div className="grid gap-4 md:grid-cols-3">
         {LEARNING_TRACKS.map((track, ti) => {
           const trackDone = track.steps.filter((s) => done.includes(s.slug)).length;

@@ -9,6 +9,11 @@ import { normalizeTickerTitle } from "@/lib/normalize-ticker-title";
 import { ChartSection } from "@/components/chart/chart-section";
 import { IndicatorPanel } from "@/components/stock/indicator-panel";
 import { EduCard } from "@/components/akademi/edu-card";
+import dynamicImport from "next/dynamic";
+const TickerFunnelActions = dynamicImport(
+  () => import("@/components/stock/ticker-funnel-actions").then((m) => ({ default: m.TickerFunnelActions })),
+  { loading: () => <div className="h-[52px] rounded-xl bg-bg-card animate-pulse" /> },
+);
 import { KeyStatistics } from "@/components/stock/key-statistics";
 import { FundamentalData } from "@/components/stock/fundamental-data";
 import { TradingPlanCard } from "@/components/stock/trading-plan-card";
@@ -943,6 +948,8 @@ export default async function StockDetailPage({
                 Data indikator belum tersedia untuk saham ini
               </div>
             )}
+            {/* Owner 24 Okt: funnel aksi — compare (modal pilih pembanding) + paper-trading */}
+            <TickerFunnelActions ticker={ticker} />
             {/* Owner 24 Okt: funnel belajar — EduCard kontekstual (RSI/MACD → akademi) */}
             <EduCard
               rsi14={indicators?.rsi14 ?? null}

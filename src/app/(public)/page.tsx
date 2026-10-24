@@ -276,6 +276,24 @@ async function TradingPlanPreview() {
         </div>
         <RadarPreview />
       </div>
+      {/* Owner 24 Okt: funnel fitur tersembunyi — /pasar 10 views, /paper-trading 10, /akademi 14 vs home 398 */}
+      <div className="grid grid-cols-3 gap-3 pt-1">
+        <Link href="/pasar" className="group flex flex-col items-center gap-1.5 p-3.5 rounded-xl bg-bg-card border border-border hover:border-accent/40 depth-shadow transition-all">
+          <span className="text-lg" aria-hidden>📰</span>
+          <span className="text-xs font-semibold text-text-secondary group-hover:text-accent transition-colors">Koran Pasar Live</span>
+          <span className="text-[10px] text-text-tertiary text-center leading-tight">Ringkasan hari ini</span>
+        </Link>
+        <Link href="/paper-trading" className="group flex flex-col items-center gap-1.5 p-3.5 rounded-xl bg-bg-card border border-border hover:border-accent/40 depth-shadow transition-all">
+          <span className="text-lg" aria-hidden>🎮</span>
+          <span className="text-xs font-semibold text-text-secondary group-hover:text-accent transition-colors">Simulasi Trading</span>
+          <span className="text-[10px] text-text-tertiary text-center leading-tight">Latihan tanpa risiko</span>
+        </Link>
+        <Link href="/akademi" className="group flex flex-col items-center gap-1.5 p-3.5 rounded-xl bg-bg-card border border-border hover:border-accent/40 depth-shadow transition-all">
+          <span className="text-lg" aria-hidden>🎓</span>
+          <span className="text-xs font-semibold text-text-secondary group-hover:text-accent transition-colors">Akademi</span>
+          <span className="text-[10px] text-text-tertiary text-center leading-tight">Belajar 5 menit/hari</span>
+        </Link>
+      </div>
     </section>
   );
 }
