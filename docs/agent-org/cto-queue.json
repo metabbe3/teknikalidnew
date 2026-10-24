@@ -2,11 +2,55 @@
   "protocol": "CTO task queue — dibaca CTO agent (slot 07:30 pagi & 16:45 sore; quiet zone BARU 11:00-18:00 = larang deploy+LLM, owner 16 Sep), ditulis CEO (08:15) / Council (Min 08:00). Entry: {id, date, spec, priority (P0 darurat/P1 tinggi/P2 normal), north_star, status (pending/done/failed/blocked_for_owner), result}. CTO: max 1 deploy per slot (2/hari total), eksekusi claude code pipeline, update status + verify evidence.",
   "entries": [
     {
+      "date": "2026-10-24",
+      "priority": "P1",
+      "type": "content-fix",
+      "status": "pending",
+      "source": "reviewer QA 24 Okt 08:4x (SQL replay StockPrice/StockIndicator interval=1d, flag isGorengan per-hari, StockFundamental per-tanggal)",
+      "id": "qa-2026-10-24-01",
+      "title": "FIX rekap-pasar-mingguan-2026-10-24: oversold \"485→65\" dilabel non-gorengan padahal 485/65 = basis SEMUA saham (NG = 409→54)",
+      "spec": "INTENT: label definisi harus match angka. BUKTI (replay rsi14<30, interval=1d, 19 vs 23 Okt): semua saham 485→65; non-gorengan 409→54. Tidak ada basis yang menghasilkan 485 NG. Pola berulang ke-3 (qa-2026-10-21-01 agregat akademi, qa-2026-10-23-02 agregat akademi). ACCEPTANCE: (1) pasangan angka+label konsisten — pilih salah satu: hapus frasa \"non-gorengan\" dari kalimat 485→65, ATAU ganti angka jadi 409→54; (2) replay SQL ulang = angka di artikel; (3) klaim lain rekap TIDAK disentuh (breadth tabel 103/692/167 dst sudah terverifikasi benar, top movers benar, 22 GC/59 DC benar).",
+      "north_star": "TRUST"
+    },
+    {
+      "date": "2026-10-24",
+      "priority": "P1",
+      "type": "content-fix",
+      "status": "pending",
+      "source": "reviewer QA 24 Okt 08:4x (SQL replay StockPrice/StockIndicator interval=1d, flag isGorengan per-hari, StockFundamental per-tanggal)",
+      "id": "qa-2026-10-24-02",
+      "title": "FIX rekap-pasar-mingguan-2026-10-24: \"Senin hanya 506 saham naik\" tidak ter-replikasi DB mana pun (Senin = 103; 507 = angka Jumat)",
+      "spec": "INTENT: hapus angka fiktif/salah-hari. BUKTI (replay LAG close 16→19 Okt, basis snapshot all-stock): Senin naik 103 (102 pairwise +1 non-aktif), bukan 506; 507 = jumlah naik Jumat 23 Okt → indikasi cross-day copy. ACCEPTANCE: (1) kalimat diganti angka Senin yang valid (103, basis snapshot) atau kalimat dihapus; (2) replay SQL breadth Senin = angka di artikel; (3) baris tabel breadth & klaim lain tak berubah.",
+      "north_star": "TRUST"
+    },
+    {
+      "date": "2026-10-24",
+      "priority": "P1",
+      "type": "content-fix",
+      "status": "pending",
+      "source": "reviewer QA 24 Okt 08:4x (SQL replay StockPrice/StockIndicator interval=1d, flag isGorengan per-hari, StockFundamental per-tanggal)",
+      "id": "qa-2026-10-24-03",
+      "title": "FIX brief-pasar-idx-2026-10-23-rotasi-bank-bumn: \"3 golden cross dan 3 death cross baru Kamis\" salah — DB = 6/6 (non-gorengan, interval 1d)",
+      "spec": "INTENT: angka cross baru = replay SQL. BUKTI (replay smaCrossDate=2026-10-22, interval=1d, isGorengan=false): 6 golden & 6 death; dengan filter likuiditas av20>2jt/3jt/5jt/10jt pun 4/4 — tidak ada basis yang menghasilkan 3/3. Catatan: changelog qa-2026-10-23-01 kemarin menulis replay CTO 6/6, tapi teks artikel masih 3/3 → fix kemarin tidak apply ke frasa ini. ACCEPTANCE: (1) angka di artikel = 6 golden & 6 death (basis non-gorengan) dengan replay SQL match; (2) klaim AADI & MAPI (sudah difix qa-23-01) tetap utuh.",
+      "north_star": "TRUST"
+    },
+    {
+      "date": "2026-10-24",
+      "priority": "P1",
+      "type": "content-fix",
+      "status": "pending",
+      "source": "reviewer QA 24 Okt 08:4x (SQL replay StockPrice/StockIndicator interval=1d, flag isGorengan per-hari, StockFundamental per-tanggal)",
+      "id": "qa-2026-10-24-04",
+      "title": "FIX brief-pasar-idx-2026-10-23-rotasi-bank-bumn: tabel \"Top gainers big-cap ≥Rp10T di atas +4%\" salah isi — 7 dari 10 teratas hilang (PACK/BFIN/SMMT/MAPA/SGER/NSSS/TSPC)",
+      "spec": "INTENT: tabel superlatif harus = hasil replay SQL top-N. BUKTI (replay pct 21→22 Okt join flag isGorengan 22 Okt + marketCap baris 22 Okt, ≥Rp10T, >+4%): urutan benar = MAPI +10,76; PACK +9,52 (13,8T); BFIN +9,40 (11,5T); SMMT +9,03 (11,2T); MAPA +7,34 (16,7T); SGER +5,96 (12,4T); NSSS +5,83 (13,1T); AMMN +5,61; TSPC +5,42 (11,3T); JSMR +5,11; lalu BBNI 4,92; DMAS 4,81; MBMA 4,62; ANTM 4,41; SIDO 4,17; BMRI 4,05. Artikel hanya memuat MAPI, AMMN, JSMR, BBNI, ANTM, BMRI — 7 teratas (di luar MAPI) hilang; BREN +7,41 memang wajar dikeluarkan (flag gorengan 22 Okt). ACCEPTANCE: (1) rebuild tabel dari SQL kanonik (join StockPrice 21→22, StockIndicator NG per-22-Okt, StockFundamental cap per-22-Okt), minimal top-10, urut pct desc; (2) setiap baris replay-match close & pct; (3) header/kriteria tabel tetap eksplisit.",
+      "north_star": "TRUST"
+    },
+    {
       "id": "bo-2026-10-24-01",
       "date": "2026-10-24",
       "type": "backoffice",
       "priority": "P2",
-      "status": "done",
+      "status": "qa_pass",
       "train": "T-1024-N",
       "title": "BACKOFFICE MATANGKAN /admin/shares: pisahkan telemetri guest_quota dari share nyata — 83% event (53/64 30d) adalah beacon kuota tamu, bukan share",
       "north_star": "TRUST — admin satu sumber kebenaran (data share jujur utk owner); STICKY — sinyal story/copy tak tertutup noise kuota tamu",
@@ -14,7 +58,10 @@
       "created_by": "Backoffice Builder slot 03:00 24 Okt",
       "scheduled_slot": "bo malam 03:00 24 Okt (deploy 1/2 org; Sabtu non-market-hours)",
       "result": "DONE 03:0x-03:2x bo slot (deploy 1/2 org 24 Okt, image 53d26faa4b6d up 03:15). VERIFY CTO 24 Okt pagi: marker guest_quota compiled live chunk 1373.js; DB cross-check 30d real=11 (story 7+copy 4) / quota=54 / uniq-context=4 = logika split real-vs-quota MATCH (angka bo 03:0x 3/31 dgn filter isBot=false — filter beda, konsisten); tsc EXIT-0 + ancestor PASS di changelog. Spot-check klaim hari ini: PASS.",
-      "completed_at": "2026-10-24 08:0x WIB (CTO pagi, verify live)"
+      "completed_at": "2026-10-24 08:0x WIB (CTO pagi, verify live)",
+      "qa_verified": true,
+      "qa_verified_by": "reviewer",
+      "qa_verified_at": "2026-10-24T08:50+07:00"
     },
     {
       "id": "prd-2026-10-22-01",
@@ -2373,16 +2420,19 @@
       "type": "feat-admin",
       "priority": "P1",
       "spec": "Owner 23 Okt: DAU/MAU di Users tab tidak mencerminkan aktivitas browsing + ingin lihat saham yang dilihat per user. SUDAH DIKERJAKAN di main e032849: (1) activeWhere DAU/MAU kini include pageViews authed non-bot; (2) endpoint /api/admin/user-analytics/[userId]/stocks (top 10 ticker 30 hari + last active); (3) UserManagementTab expandable 'Lihat saham yang dibuka'. Per-user dwell tracking di-skip (privacy).",
-      "status": "done",
+      "status": "qa_pass",
       "train": "T-1024-N",
       "done_when": "post-deploy: /admin Users tab DAU/MAU > 0 konsisten dgn realita (ada authed views harian); klik 'Lihat saham yang dibuka' di user dgn views menampilkan chips ticker; curl endpoint 401 tanpa admin session",
       "result": "DONE + LIVE-VERIFIED CTO 24 Okt pagi (deploy via build backoffice 03:14 image 53d26faa4b6d): marker user-analytics/${userId}/stocks route.js + admin/page.js compiled di container; tsc 0 + build hijau di changelog 23 Okt 11:0x. Terkatung di T-1022-N yang sudah verified 23 Okt — kini闭合. Impact: DAU/MAU jujur utk KPI STICKY.",
       "north_star": "TRUST (angka admin jujur) + STICKY (retention targeting per-user)",
-      "scheduled_slot": "2026-10-22 22:00 kereta (reslot T-1022-N malam 23 Okt)"
+      "scheduled_slot": "2026-10-22 22:00 kereta (reslot T-1022-N malam 23 Okt)",
+      "qa_verified": true,
+      "qa_verified_by": "reviewer",
+      "qa_verified_at": "2026-10-24T08:50+07:00"
     },
     {
       "id": "ux-2026-10-23-01",
-      "status": "done",
+      "status": "qa_pass",
       "priority": "P2",
       "kpi": "STICKY",
       "title": "P2 UX FLOW-B: brief pasar naik ke viewport #1 landing (dari y~1000px) + telemetry brief_open — data: home 136v/7d vs brief 5v, kartu lama terkubur di bawah 3 section, 0 klik terlacak",
@@ -2398,7 +2448,10 @@
         "build": "EXIT 0, 195 pages",
         "staging_3100": "PASS — brief dalam hero, 1 link, SEO utuh, /berita tak berubah",
         "commit": "83a253f (main, pushed)"
-      }
+      },
+      "qa_verified": true,
+      "qa_verified_by": "reviewer",
+      "qa_verified_at": "2026-10-24T08:50+07:00"
     },
     {
       "id": "teknikal-2026-10-24-02",
@@ -2435,6 +2488,24 @@
       "north_star": "TRUST — satu sumber kebenaran backlog utk semua agent + owner digest (drift #10: digest items-first buta 58 entry riwayat)",
       "spec": "Tambah check di backlog_health.py: load product-backlog.json; jika dict TIDAK punya list `entries` ATAU blok `items` non-kosong -> cetak baris ALERT schema-split + exit 1. Sehat = silent exit 0 (perilaku monitor-gated existing). Uji via copy file dgn items non-kosong, JANGAN mutasi file asli.",
       "done_when": "DONE WHEN: (1) backlog_health.py pada file sehat = silent exit 0; (2) pada copy backlog berisi blok items non-kosong = exit 1 + baris ALERT berisi 'schema-split'; (3) uji dijalankan dgn file copy /tmp, file kanonik tak tersentuh."
+    },
+    {
+      "id": "teknikal-2026-10-24-03",
+      "created": "2026-10-24T09:05:00+07:00",
+      "title": "BLOCKER day2-email: nodemailer (7.0.13 & 8.0.11) bikin next build --webpack crash uncaughtException undefined length — perlu transport alternatif (fetch SMTP API / resend / brevo) ATAU dynamic import terisolasi",
+      "north_star_pillar": "TRUST",
+      "priority": "P1",
+      "status": "blocked",
+      "train": null,
+      "prd_id": null,
+      "done_when": [
+        "Pilih transport email yang tidak merusak webpack build (kandidat: HTTP API provider, atau nodemailer via await import() di runtime saja + serverExternalPackages)",
+        "Bukti: npm run build exit 0 DENGAN fitur email aktif",
+        "mailer.ts WIP (untracked) diintegrasikan atau diparkir dengan keputusan tertulis"
+      ],
+      "qa_plan": "build hijau + send test email ke alias owner",
+      "estimate": "S",
+      "context": "Bukti isolasi 24 Okt: tree bersih + nodemailer → crash; tree bersih tanpa nodemailer → exit 0; perubahanku (sector-heatmap+beam) tidak berpengaruh. package.json sudah dibersihkan dari nodemailer oleh agent-utama. WIP: src/lib/mailer.ts, src/app/api/cron/day2-email/, scripts/selftest-day2-email.ts (untracked, milik agent day2-email)."
     }
   ],
   "tasks": []
