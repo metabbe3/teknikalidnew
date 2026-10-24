@@ -805,3 +805,10 @@
 - North star: returning-visitor ratio (kpi.json 3,5% vs target 8%/25 Nov) + pivot TRAFFIC MoM (-7,4%, below band). Register 2 vs floor 6 = verdict funnel 2 Nov, jangan sentuh.
 - Fix struktural hari ini: union-merge backlog drift #10 (63 entries, items dibubarkan) + re-symlink (drift ke-3 pada file sama) + Opsi A worktree-policy disetujui + guard ops-24-01 dispatch T-1026-N.
 - Kereta: T-1024-N malam ini (prd-22-01/22-02+sec-22-02+bug-22-01); fundamental-v2 owner-directed T-1025-N; stok spec_ready 0 → Product Agent Senin 26 Okt kritikal.
+
+## 2026-10-24 10:3x — UX Builder weekend 10:30 (ux-2026-10-24-01 in_train T-1024-N)
+- SHIPPED ce64756 push main: modal Tanya AI polish — autofocus input saat open (potong 1 klik ketik), emoji 🧠→Lucide Loader2 spin + 📊→plain, header icon align. Titik entry kini dari hero home (owner pagi ini).
+- Bukti: tsc 0, build EXIT 0 (BUILD_ID hoddWHj6), staging :3100 fresh-build chunk 3955-12c234671258c5b3.js node-inspect PASS (animate-spin+focus60ms+emoji 0), H1/sub verbatim 1=1/2=2 vs prod.
+- Apersepsi task slot: landing hero post-owner-5-commits SEHAT (HeroSearch/TanyaAI/snapshot logo cards live di prod 200); Point&Badge card sudah polish (Lucide, mono points) — 0 perubahan perlu.
+- Jebakan: .agents/ symlink tree TERPUTUS di worktree ini (ui-craft kebaca via git show 216e090) — vendor symlinks perlu di-relink; claude-pipeline masih mati utk glm-5.3, patch manual jalan baik.
+- Next rotasi: flow (a) screener re-audit pasca trust-badge + hero baru; sisa emoji pass-4 kandidat (auth/error, about, guest-quota-meter).
