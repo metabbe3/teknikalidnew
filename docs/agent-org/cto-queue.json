@@ -2,6 +2,24 @@
   "protocol": "CTO task queue — dibaca CTO agent (slot 07:30 pagi & 16:45 sore; quiet zone BARU 11:00-18:00 = larang deploy+LLM, owner 16 Sep), ditulis CEO (08:15) / Council (Min 08:00). Entry: {id, date, spec, priority (P0 darurat/P1 tinggi/P2 normal), north_star, status (pending/done/failed/blocked_for_owner), result}. CTO: max 1 deploy per slot (2/hari total), eksekusi claude code pipeline, update status + verify evidence.",
   "entries": [
     {
+      "id": "bo-2026-10-25-01",
+      "date": "2026-10-25",
+      "type": "backoffice-audit",
+      "priority": "P2",
+      "status": "pending",
+      "assigned_to": "backoffice-builder",
+      "scheduled_slot": "audit rotasi Backoffice Builder 03:00 25 Okt (no deploy — menunggu owner verdict)",
+      "north_star": "MATANGKAN/BUANG (owner 12 Okt 'buang yang tak berguna') — pilar tidak langsung: mengurangi permukaan admin mati = consistency admin sebagai satu sumber kebenaran",
+      "title": "AUDIT ronde-2 /admin/social-cards -> CANDIDATE-REMOVE: generator kartu TikTok/Reels (Jun 13) utk workflow IG yang STOP by owner 17 Sep",
+      "spec": "AUDIT (a) Masih dipakai? Teknis sehat tapi bisnis mati: tujuan halaman = membuat gambar IG/TikTok carousel; IG Carousel STOP by owner 17 Sep (decisions.md L409/L480 'IG stop BY DESIGN — tidak disentuh'); zero telemetry & zero DB trace pemakaian; satu-satunya inbound link = sidebar admin. (b) Data relevan? API /api/admin/social-cards/articles masih jalan (verify live 25 Okt 03:0x: proxy disguised-404 utk anonim = by-design anti-recon, route + handler + build chunk ada; pipeline NEWS aktif 30 artikel/30d sehingga data feed tak basi). (c) Kontrol kurang? N/A — murni client-side image generator (html2canvas-pro, localStorage presets), tanpa persistensi. KLASIFIKASI: CANDIDATE-REMOVE P3 eksekusi — 73 baris page + generator ~600 baris + dep html2canvas-pro (satu-satunya konsumen) melayani workflow yang tidak jalan lagi. Per ronde-1 rule: JANGAN hapus sebelum owner approve. Alternatif jika owner ingin simpan: repostool utk kanal lain (Telegram Koran Saham pakai teks, bukan kartu).",
+      "done_when": [
+        "Owner verdict via morning-digest approve/reject",
+        "Jika APPROVE remove: entry bo- eksekusi baru — hapus src/app/admin/social-cards + api/admin/social-cards + sidebar nav + dep html2canvas-pro; tsc EXIT-0; curl /admin/social-cards 404 & sidebar tanpa link; deploy + changelog + rollback anchor",
+        "Jika KEEP: status -> keep-by-design + catat alasan owner di entry ini"
+      ],
+      "audit_evidence": "2026-10-25 03:00 WIB: file page.tsx mtime Jun 13 (daftar '12 halaman tak tersentuh sejak Juni'); git log social-cards = 2 commit terakhir Jun 13 + snapshot Sep; LIVE: teknikal.id/admin/social-cards 307 auth-guard OK, /api/admin/social-cards/articles 404-anonim (disguise by design, proxy.ts L324-331); grep html2canvas = 1 konsumen; DB read-only: NEWS published 46 total / 7 baru 7d (feed hidup, bukan basi)."
+    },
+    {
       "date": "2026-10-24",
       "priority": "P1",
       "type": "content-fix",
