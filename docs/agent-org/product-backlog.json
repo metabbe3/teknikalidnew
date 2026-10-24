@@ -1605,6 +1605,28 @@
       "created": "2026-10-20",
       "restored_from": "mirror-2026-10-20 (backlog drift #2, CEO 21 Okt: hilang pasca merge lossy 20 Okt)",
       "research_brief": "RESEARCH BRIEF (Researcher 22 Okt 2026) — VERDICT: BUILD-AFTER-PRD (PRD missing user_story/target_files/effort/risk/dependencies; assigned Product Agent 23 Okt 10:15). Arah masuk akal tapi URUTAN DIBALIK: uniqueness dulu (risiko Google scaled-content abuse = site-wide), schema belakangan. BUKTI SCHEMA: TIDAK KUAT sbg driver sitasi AI — Ahrefs DiD 1.885 halaman + 4.000 kontrol: no uplift (AIO -4.6%, AI Mode +2.4%, ChatGPT +2.2%, semua ~nol); studi 730 sitasi/1.006 halaman: schema presence OR null p=.296, driver dominan = organic rank (OR 0.762/posisi); RCT Gemini (synthetic brands): no effect, halaman low-authority tak pernah di-retrieve; test searchVIU: 5 AI engine abaikan JSON-LD saat fetch, ekstrak visible HTML saja. Studi GEO 158k jawaban/468k sitasi: yang mengangkat sitasi = title+paragraf yang match pertanyaan user; retrieval menjelaskan 32% varians vs page-properties 2.8%. RISIKO KEPATUHAN: Google scaled content abuse (Mar 2024) menyebut eksplisit 'pages that pretend to have answers to popular searches but fail to deliver helpful content' + doorway 'substantially similar pages' = spam apapun cara buatnya; uniqueness 39% & pasangan 0.80 = zona risiko ini, jadi perbaikan uniqueness juga compliance. BUKTI UNIQUENESS: SEDANG-KUAT (policy resmi Google + playbook pSEO finance + case study praktisi). Klaim 'moat AI-search' di market IDX: tidak ditemukan bukti spesifik internet — putuskan dari data internal (GSC position + AI referrer views before/after). BEST PRACTICE: (1) Fase 1 = variasi template data-driven dari StockIndicator, target similarity antar-pasangan <0.7 + minimal 1 blok editorial unik >=80 kata per halaman; Fase 2 baru schema. (2) FAQPage+Article boleh sbg clarifier murah (valid Rich Results Test), bukan KPI; KPI = GSC position/cited + AI referrer views; schema harus mirror konten visible. (3) Answer-first: TL;DR 2-3 kalimat di atas yang mengulang pertanyaan persis 'kenapa [TICKER] naik hari ini' — faktor terbukti paling berpengaruh. (4) Freshness terlihat: tanggal data + jam penutupan IDX per halaman (AI engine prioritas konten segar). (5) Baseline SEBELUM deploy: ukur full-population similarity + distribusi GSC position sbg kontrol, deploy bertahap. ANTI-PATTERN: (1) schema dulu lalu klaim menang AEO — terbantahkan empiris, risiko buang sprint; (2) variasi sinonim kosong/template spin = definisi persis scaled content abuse; (3) FAQ markup isinya tak tampil di halaman (hidden content); (4) ribuan halaman serentak tanpa prune halaman tanpa impresi; (5) klaim moat tanpa baseline AI referrer. SUMBER: ahrefs.com/blog/schema-ai-citations/; doi.org/10.5281/zenodo.18728696; arxiv.org/abs/2610.15033; rucforsk.ruc.dk (Bouet RCT Gemini); developers.google.com/search/docs/essentials/spam-policies; gemeosagency.com pSEO finance playbook; davidpaterni.com case study pSEO. BUKTI: SEDANG (schema=TIDAK KUAT; uniqueness=SEDANG-KUAT; IDX-specific=TIDAK ADA bukti eksternal — internal data)."
+    },
+    {
+      "id": "prd-2026-10-24-01",
+      "title": "Point & Badge v1 — auto daily +5 visit + badge di home (owner approve 24 Okt)",
+      "north_star_pillar": "STICKY",
+      "problem": "Daily point butuh klik claim (friction); badge tak terlihat di home → loop reward putus, visit tak terganjar.",
+      "scope_v1": [
+        "Auto +5 point sekali/hari saat visit TERAUTENTIKASI (middleware/first-session-hit), tanpa tombol claim",
+        "Badge (existing badge.ts/achievements.ts) muncul di home logged-in (chip kecil + tooltip)",
+        "Idempotent: 1x/hari/user regardless refresh (key tanggal WIB)"
+      ],
+      "out_of_scope": "redeem/katalog point, leaderboard, badge baru, community",
+      "baseline_kode": "reputation.service.ts claimDailyReward() L46 (claim-based, redis cacheKey); User.reputation Int schema.prisma L251; badge.ts+achievements.ts existing.",
+      "done_when": [
+        "Login user pagi → +5 otomatis (SQL: reputation bertambah 5, log row created_at hari itu)",
+        "Home menampilkan badge user (DOM: data-badge / komponen badge render SSR)",
+        "Refresh ke-2 hari sama: TIDAK +5 lagi (SQL count log harian = 1)",
+        "tsc hijau + build hijau + staging verify"
+      ],
+      "qa_plan": "Metric baseline→target: DAU revisit-rate (admin user-analytics) baseline ambil 7d pre-deploy; target +2pp dalam 14d. QA gate: idempotency test 2x hit, badge SSR render, regresi /profile 307.",
+      "estimate": "S (1 slot CTO)",
+      "owner_approval": "2026-10-24 digest 'Approved all' — FDE block di-override owner; research_brief = baseline kode inline di atas"
     }
   ],
   "items": [
