@@ -201,7 +201,7 @@ export default async function StocksPage() {
             <Link
               href="/paper-trading"
               data-engagement="funnel_paper_banner_stocks"
-              className="press-scale inline-flex items-center gap-1.5 text-xs font-bold bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors shrink-0"
+              className="press-scale inline-flex items-center gap-1.5 text-xs font-bold bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent/90 transition-colors shrink-0"
             >
               Mulai Simulasi Gratis
             </Link>

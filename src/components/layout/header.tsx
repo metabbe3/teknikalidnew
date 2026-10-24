@@ -138,7 +138,9 @@ export function Header() {
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={() => setToolsOpen(false)}
                     className={`block px-3 py-2 text-sm rounded mx-1 transition-colors ${
-                      pathname.startsWith(t.href)
+                      t.href === "/paper-trading"
+                        ? "font-semibold text-accent hover:bg-accent/10"
+                        : pathname.startsWith(t.href)
                         ? "text-text-primary bg-bg-hover"
                         : "text-text-secondary hover:text-text-primary hover:bg-bg-hover"
                     }`}

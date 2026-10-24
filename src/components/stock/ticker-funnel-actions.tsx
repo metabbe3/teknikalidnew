@@ -57,7 +57,7 @@ export function TickerFunnelActions({ ticker }: { ticker: string }) {
         <Link
           href={`/paper-trading?ticker=${encodeURIComponent(base)}`}
           data-engagement="funnel_paper_click"
-          className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-accent/[0.08] border border-accent/25 hover:border-accent/50 text-sm font-medium text-accent transition-all press-scale"
+          className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-accent text-white hover:bg-accent/90 border border-transparent depth-shadow text-sm font-medium transition-all press-scale shadow-sm shadow-accent/20"
         >
           <Rocket className="h-4 w-4" />
           Simulasi Beli
