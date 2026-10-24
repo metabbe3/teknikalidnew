@@ -1149,7 +1149,7 @@ DATA (isBot=false): views 385 vs 617 (-38% WoW) · register 0 vs 2 · user baru 
 - Riset lengkap: `~/.hermes/data/teknikalid-growth/research/usp-kompetitor-teardown-2026-10-24.md` (5 kompetitor dibedah: indostock.ai, screener.id, prismaai.id, telmi.id, datasaham.id).
 - USP resmi (evaluasi north-star PASS): (1) verdict-first + gratis + tanpa login + 968 emiten — kombinasi tak dimiliki siapa pun; (2) edu riset-orisinal dari data internal (trust+SEO moat); (3) transparansi metode. Gunakan sebagai jangkar brief konten growth.
 - KANDIDAT BACKLOG (masuk SDLC normal: research_brief → PRD → kereta; CEO jadwalkan):
-  - usp-2026-10-24-01 P2 "ticker-tape" — strip movers SSR+CSS di semua page, data market-snapshot.service (SATU PINTU, no compute baru), internal-link ke /stocks/*. Kandidat slot build-only siang. Bukti: 3/5 kompetitor punya.
-  - usp-2026-10-24-02 P2 "top-20-harian" — tabel ranking skor di /pasar tiap bursa (pola indostock skor komposit). Konten fresh harian.
+  - usp-2026-10-24-01 P2 "ticker-tape" — ❌ DIBATALKAN: ternyata SUDAH ADA (ticker-tape.tsx 5c35ba2, 19 Okt, live homepage). Riset keliru klaim gap; koreksi di file riset.
+  - usp-2026-10-24-02 P2 "top-20-harian" — ✅ SUDAH DIEKSEKUSI owner-directed 24 Okt 16:00 (bd5e4a6, live, verified browser). JANGAN dispatch ulang — tinggal masuk backlog done. Detail di handoff.md §24 Okt 16:05.
   - usp-2026-10-24-03 P3 "sinyal-jual-mode" — extend verdict ke sisi exit (checklist 8 auto + 2 manual). Diferensiasi exit-discipline, gratisan nihil.
 - DO-NOT-STEAL (keputusan riset): paper trading/journal, bandarmologi, intraday 5m, AI berbayar — lawan pivot TRAFFIC atau arms race kalah.
