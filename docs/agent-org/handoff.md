@@ -842,3 +842,8 @@
 - TRAP UNIT: ForeignBuy/Sell IDX = LEMBAR bukan Rupiah (sanity: BBCA -3,2M lembar × Rp9.850 = -Rp763M — naive -Rp3,2M SALAH). TRAP CF: urllib POST ke teknikal.id 403 — wajib curl UA browser.
 - First sync: 962/963 matched (1 skipped: ticker tanpa row Stock). Verify browser: 10+10 rows, DSSA +Rp71,5M #1 beli, BBCA -Rp763M #1 jual. Regression 200 semua.
 - SCHEDULING PENDING: launchctl diblokir gateway — cron Hermes no_agent perlu dibuat (jam 17:20 weekdays, script ~/.hermes/scripts/idx_foreign_sync.py, watchdog fail→alert owner). Agent berikutnya tolong buatkan via cronjob_manage.
+
+## 24 Okt 16:50 — FOREIGN PER-SAHAM LIVE (owner "sudah di masukan ke ticker stocks masing?", deploy ke-6 owner-directed)
+- Section "Aliran Dana Asing" di halaman saham (guest-visible, graceful hidden): mini bar 5 sesi + verdict akumulasi/distribusi + link /pasar. History tumbuh otomatis tiap cron foreign-sync 17:20 (8b459dd0bc65).
+- Verify: BBCA -Rp763M distribusi 23 Okt (SSR + browser). Regression 200.
+- Cron first-fire Senin 17:20; weekend tetap render sesi Jumat.
