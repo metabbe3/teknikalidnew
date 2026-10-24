@@ -819,3 +819,11 @@
 - In-flight: kereta T-1025-N malam 22:00 manifest = teknikal-20-01 Point&Badge (b50cd1f) + prd-22-01 day-2 email (9ded6a4 night, merge dulu) + kandidat prd-22-02/sec-22-02 (BE 18:30) + bug-22-01 (kalau BE selesai); teknikal-24-02 fundamental-v2 owner-directed.
 - Jebakan: (1) isGorengan ada di StockIndicator BUKAN Stock (kena LAGI 24 Okt — kolom kanonik si.isGorengan + smaCrossSignal); (2) repo kini di MAIN (bukan night) — commit docs aman langsung; (3) queue .bak untracked jangan ikut commit.
 - Langkah pertama slot berikutnya: baca queue → boarding gate T-1025-N (merge night/prd-22-01 → SATU build app+worker → deploy 22:00-01:30 → verify badge login-path + smoke readOnly day-2 email + ISR warm-up #4) → impact_check 26 Okt brief Senin.
+
+## 24 Okt 15:15 — Logo emiten massal (owner-directed "Lakukan", 3 deploy, LUAR budget routine)
+- Favicon: idx_fetch_favicons.py selesai — 389 PNG valid dari website resmi (Google s2 64px, skip globe-default). Coverage logo: 425 JPG IDX + 389 PNG = **814/961 (85%)**, sisanya 148 svg monogram.
+- Deploy 14:57 (800e235): chain StockLogo jpg→**png**→svg→monogram + 389 file PNG.
+- Deploy 15:09 (daec8b9): FIX BUG KRITIS — next/image srcset 404 mengunci fallback (browser tetap pakai candidate srcset lama meski img.src diganti); removeAttribute srcset+sizes WAJIB sebelum set src fallback. Bug ini juga yang selama ini bikin 961 svg monogram tak pernah muncul.
+- Verify browser real (cache disabled): AADI/AGAR render logos/*.png ✅, BBCA optimizer jpg ✅ regression-clean. home 200, 3 container healthy.
+- Budget: deploy routine org 2/2 HABIS (03:14 bo + 14:11 QA) — ketiga deploy di atas owner-directed per doctrine #146, TIDAK menghabiskan kuota; kereta 22:00 tetap jalan.
+- Logos 16MB di public/ — ikut build; image optimizer OK (png w=48/64/96 → 200).
