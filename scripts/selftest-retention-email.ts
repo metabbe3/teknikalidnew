@@ -24,6 +24,7 @@ import {
   recipientKey,
 } from "../src/lib/retention-email.service";
 
+async function main() {
 let failures = 0;
 function assert(cond: boolean, msg: string) {
   if (cond) console.log("  ✓ " + msg);
@@ -48,7 +49,7 @@ async function testSendDryRun() {
   assert(res.id === null, "dry_run tidak punya provider id");
 }
 
-testSendDryRun();
+await testSendDryRun();
 
 console.log("\n[3] renderRetentionEmail — template AC3");
 {
@@ -68,7 +69,10 @@ console.log("\n[3] renderRetentionEmail — template AC3");
   assert(html.includes("+2,4%"), "chg% naik 1 desimal koma-ID (4200 vs 4100 = +2,4%)");
   assert(html.includes("-4,0%"), "chg% turun (2400 vs 2500 = -4,0%)");
   assert(html.includes("0,0%"), "chg% flat render");
-  assert(html.includes("/stocks/BBRI.JK?utm_source=retention&utm_medium=email"), "deep-link utm AC3");
+  assert(
+    html.includes("/stocks/BBRI.JK?utm_source=retention&amp;utm_medium=email"),
+    "deep-link utm AC3 (HTML-escaped &amp; — client render = &)",
+  );
   assert(html.includes("/saham-golden-cross"), "link sinyal 1 (daftar sama for-you-signals.tsx)");
   assert(html.includes("/saham-oversold"), "link sinyal 2");
   assert(html.includes("/saham-volume-spike"), "link sinyal 3");
@@ -83,10 +87,10 @@ console.log("\n[5] selectDay2Recipients — pure selector + alasan seleksi");
 {
   const now = new Date("2026-10-22T02:00:00Z"); // 09:00 WIB
   const users = [
-    { id: "u1", name: "Baru Kemarin", createdAt: new Date("2026-10-21T03:00:00Z") },   // offset 1d — in
-    { id: "u2", name: "Baru 2 Hari", createdAt: new Date("2026-10-20T03:00:00Z") },    // offset 2d — in
-    { id: "u3", name: "Baru 3 Hari", createdAt: new Date("2026-10-19T03:00:00Z") },    // offset 3d — out
-    { id: "u4", name: "Hari Ini", createdAt: new Date("2026-10-22T01:00:00Z") },       // offset 0d — out
+    { id: "u1", name: "Baru Kemarin", email: "u1@x.c", username: "u1x", createdAt: new Date("2026-10-21T03:00:00Z") }, // offset 1d — in
+    { id: "u2", name: "Baru 2 Hari", email: "u2@x.c", username: "u2x", createdAt: new Date("2026-10-20T03:00:00Z") }, // offset 2d — in
+    { id: "u3", name: "Baru 3 Hari", email: "u3@x.c", username: "u3x", createdAt: new Date("2026-10-19T03:00:00Z") }, // offset 3d — out
+    { id: "u4", name: "Hari Ini", email: "u4@x.c", username: "u4x", createdAt: new Date("2026-10-22T01:00:00Z") }, // offset 0d — out
   ];
   const watchCounts: Record<string, number> = { u1: 2 };
   const day0Views: Record<string, number> = { u2: 3, u3: 5 };
@@ -117,11 +121,14 @@ async function testBuildData() {
   assert(!!nopec && nopec.close === null && nopec.prevClose === null, "ticker tanpa harga → close null (line 'harga belum tersedia')");
 }
 
-testBuildData();
+await testBuildData();
 
 console.log("\n[7] recipientKey — dedupe AC5");
 assert(recipientKey("u1", "2026-10-22") === "u1:2026-10-22", "key = userId:date");
 assert(recipientKey("u1", "2026-10-23") !== recipientKey("u1", "2026-10-22"), "hari beda = key beda (kirim ulang besok tak diblok)");
 
 console.log(`\n${failures === 0 ? "SELFTEST OK" : "SELFTEST FAIL: " + failures}`);
-process.exit(failures ? 1 : 0);
+  if (failures) process.exit(1);
+}
+
+main().then(() => process.exit(0)).catch(e => { console.error(e); process.exit(1); });
