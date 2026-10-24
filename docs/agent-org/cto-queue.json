@@ -90,7 +90,7 @@
       "date": "2026-10-22",
       "type": "prd",
       "priority": "P2",
-      "status": "pending",
+      "status": "night_ready",
       "train": "T-1023-N",
       "prd_id": "idea-2026-10-19-2",
       "title": "P2 STICKY: panel 'Pantauan perangkat ini' utk guest (/stocks) + feedback chip 'Tersimpan' — guest-star dipakai 1x/30d meski live 2 permukaan",
@@ -100,8 +100,16 @@
       "done_when": "DONE WHEN: (a) tsc+build hijau + e2e: toggle 2 star -> panel list 2 item render + chip muncul; (b) e2e register path: toggle 2 star -> register -> Watchlist DB 2 row user baru; (c) live /stocks anon 200 + panel guest-only (authed tak lihat panel guest); (d) metrik 14 hari: star_add >=8/30d-rate & distinct anonId >=5, else verdict iterate di entry.",
       "scheduled_slot": "Backend Builder 24 Okt 18:30 (build) -> kereta T-1025-N (reslot: T-1023-N semalam tidak berangkat)",
       "created_by": "CEO 08:15 22 Okt",
-      "result": "",
-      "assigned_slot": "Backend Builder malam 24 Okt 18:30 (build-only, setelah pagi selesaikan fork prd-22-01 — hindari bentrok file mailer/watchlist) → kereta T-1024-N 22:00"
+      "result": "NIGHT BUILD OK 24 Okt (CTO night, branch night/prd-2026-10-22-02, pushed): (1) AC1 GuestWatchlistPanel baru guest-only di /stocks — SSR-safe null pra-mount (LCP aman), item ticker+close+chg% via /api/live-quotes ENDPOINT EXISTING (pola sama GuestWatchlistView /watchlist; market-snapshot.service SATU PINTU tak tersentuh — bukan movers/breadth); (2) AC2 chip inline 'Tersimpan — N emiten dipantau di perangkat ini' role=status auto-hide 2s, 0 lib baru, guest-star.tsx refactor effect->event-state (eslint react-hooks clean); (3) AC3 CTA 'Simpan permanen + lintas perangkat' -> /auth/register; migrasi auth-provider TIDAK diubah (0 diff). VERIFY (fisik): npx tsc --noEmit 0 error · eslint 0 error · selftest-retention-loop 5/5 · playwright E2E_BASE_URL=:3100 (dev, prod :3000 tak tersentuh; semua POST /api di-block = DB read-only): guest-panel.spec 4/4 (AC1 render 2 item, AC1-sync hapus live-update, AC1-negative kosong=no panel, AC2-flow detail-star->chip->panel sinkron) · stocks.spec 3/3 · stock-detail 4/4. BONUS: fix 2 stale spec pre-existing (H1 'Radar Saham IDX' + FAQ h2 exact-match, sejak ec65941 — dibuktikan git show origin/main). playwright.config baseURL kini env-able (E2E_BASE_URL). BELUM TERVERIFIKASI (butuh lingkungan boleh write DB — prod DB read-only by rule): e2e penuh AC3 register->migrasi 2 row Watchlist (jalur kode untouched, risiko minimal) — sarankan staging/lokal pagi. AC4 metrik 14-hari baru bisa diukur pasca-deploy (EngagementEvent star_add + cta_register_guest_panel). Estimasi review: 15 mnt (diff 8 file, +262/-42). SKIP: deploy (hard-gate 21:45-07:00), prod :3000.",
+      "assigned_slot": "Backend Builder malam 24 Okt 18:30 (build-only, setelah pagi selesaikan fork prd-22-01 — hindari bentrok file mailer/watchlist) → kereta T-1024-N 22:00",
+      "night_branch": "night/prd-2026-10-22-02",
+      "night_verified": [
+        "tsc 0 error",
+        "eslint 0 error",
+        "selftest-retention-loop 5/5",
+        "playwright guest-panel 4/4 + stocks 3/3 + stock-detail 4/4"
+      ],
+      "night_review_estimate": "15 menit"
     },
     {
       "id": "bo-2026-10-22-01",
