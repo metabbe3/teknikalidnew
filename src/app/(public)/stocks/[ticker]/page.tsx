@@ -1165,6 +1165,7 @@ export default async function StockDetailPage({
                   <Link
                     key={peer}
                     href={`/stocks/${peer}`}
+                    data-engagement="funnel_peer_card"
                     className="group bg-bg-card rounded-lg depth-shadow px-3 py-2.5 hover:border-accent/30 hover:depth-shadow-hover transition-all"
                   >
                     <div className="flex items-center justify-between gap-2">
@@ -1192,6 +1193,7 @@ export default async function StockDetailPage({
                   <Link
                     key={peer}
                     href={`/stocks/${peer}`}
+                    data-engagement="funnel_peer_chip"
                     className="text-xs font-mono font-semibold px-3 py-1.5 rounded-full bg-bg-card depth-shadow text-text-secondary hover:text-accent hover:border-accent/20 transition-colors"
                   >
                     {stripJk(peer)}

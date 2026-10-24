@@ -48,6 +48,7 @@ export function TickerFunnelActions({ ticker }: { ticker: string }) {
       <div className="grid grid-cols-2 gap-3">
         <button
           onClick={() => setOpen(true)}
+          data-engagement="funnel_compare_open"
           className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-bg-card border border-border hover:border-accent/40 depth-shadow text-sm font-medium text-text-primary transition-all press-scale"
         >
           <Scale className="h-4 w-4 text-accent" />
@@ -55,6 +56,7 @@ export function TickerFunnelActions({ ticker }: { ticker: string }) {
         </button>
         <Link
           href={`/paper-trading?ticker=${encodeURIComponent(base)}`}
+          data-engagement="funnel_paper_click"
           className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-accent/[0.08] border border-accent/25 hover:border-accent/50 text-sm font-medium text-accent transition-all press-scale"
         >
           <Rocket className="h-4 w-4" />
@@ -95,6 +97,7 @@ export function TickerFunnelActions({ ticker }: { ticker: string }) {
                 <button
                   key={t}
                   onClick={() => goCompare(t)}
+                  data-engagement="funnel_compare_pick"
                   className="px-2 py-2.5 rounded-lg bg-bg-primary border border-border hover:border-accent/50 hover:bg-accent/[0.06] font-mono text-sm font-semibold text-text-secondary hover:text-accent transition-colors"
                 >
                   {t}

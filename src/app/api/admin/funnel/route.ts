@@ -92,7 +92,27 @@ export async function GET(request: NextRequest) {
       views: Number(r.views),
     }));
 
-    return NextResponse.json({ data: { series, totals, registerByUtm } });
+    // Owner 24 Okt: internal funnel clicks (funnel_* labels) — mana funnel
+    // yang dipakai user nyata → prioritas improve. cta_click per label 30d.
+    const funnelRows = await prisma.$queryRaw<
+      { label: string; clicks: bigint; uniq: bigint; convPath: string | null }[]
+    >`
+      SELECT e."label", count(*) AS clicks, count(DISTINCT e."anonId") AS uniq,
+             mode() WITHIN GROUP (ORDER BY e."path") AS "convPath"
+      FROM "EngagementEvent" e
+      WHERE e.type = 'cta_click' AND e."label" LIKE 'funnel\_%'
+        AND e."createdAt" >= (now() - (${days} || ' days')::interval)
+      GROUP BY e."label"
+      ORDER BY clicks DESC
+    `;
+    const internalFunnel = funnelRows.map((r) => ({
+      label: r.label,
+      clicks: Number(r.clicks),
+      uniq: Number(r.uniq),
+      topPath: r.convPath,
+    }));
+
+    return NextResponse.json({ data: { series, totals, registerByUtm, internalFunnel } });
   } catch (error) {
     return handleApiError(error, "fetch funnel analytics");
   }

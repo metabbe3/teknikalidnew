@@ -70,6 +70,7 @@ export function LearningPath() {
       {totalDone >= 1 && (
         <Link
           href="/portfolio"
+          data-engagement="funnel_akademi_portfolio"
           className="mb-6 flex items-center justify-between gap-3 p-4 rounded-xl bg-accent/[0.07] border border-accent/25 hover:border-accent/50 transition-colors"
         >
           <div>

@@ -17,6 +17,7 @@ export function EduCard({ rsi14, macdSignal }: { rsi14: number | null; macdSigna
       href={`/akademi/${suggestion.slug}`}
       className="group flex items-start gap-3 p-4 rounded-xl bg-bg-card border border-border hover:border-accent/40 depth-shadow transition-all"
       aria-label={`Belajar: ${suggestion.title}`}
+      data-engagement="funnel_edu"
     >
       <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-accent/10 text-accent shrink-0">
         <GraduationCap className="h-5 w-5" />

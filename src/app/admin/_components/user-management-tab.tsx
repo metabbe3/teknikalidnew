@@ -270,8 +270,7 @@ export function UserManagementTab() {
                     </div>
                     <div className="text-xs text-gray-500 truncate">
                       @{user.username} · {user.email}
-                      <UserStocksPeek userId={user.id} />
-                  </div>
+                    </div>
                     <UserStocksPeek userId={user.id} />
                   </div>
 

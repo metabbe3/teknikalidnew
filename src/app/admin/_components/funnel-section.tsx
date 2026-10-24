@@ -18,6 +18,7 @@ interface FunnelData {
   series: FunnelDay[];
   totals: { views: number; signin: number; register: number; complete: number; signups: number };
   registerByUtm?: { utmSource: string | null; views: number }[];
+  internalFunnel?: { label: string; clicks: number; uniq: number; topPath: string | null }[];
 }
 
 /**
@@ -125,6 +126,29 @@ export function FunnelSection() {
                   </span>
                 ))}
               </div>
+            )}
+
+            {/* Owner 24 Okt: internal funnel clicks — mana funnel yang dipakai */}
+            {data.internalFunnel && data.internalFunnel.length > 0 && (
+              <div className="border-t border-gray-100 pt-3">
+                <p className="text-xs font-semibold text-gray-600 mb-2">
+                  Internal Funnel Clicks (klik CTA funnel, {data.internalFunnel.length} jalur)
+                </p>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+                  {data.internalFunnel.map((f) => (
+                    <span key={f.label} className="font-mono text-gray-600" title={f.topPath ?? ""}>
+                      {f.label.replace("funnel_", "")}:{" "}
+                      <strong className="text-gray-800">{f.clicks.toLocaleString("id-ID")}</strong>
+                      <span className="text-gray-400"> ({f.uniq} org)</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {data.internalFunnel && data.internalFunnel.length === 0 && (
+              <p className="border-t border-gray-100 pt-3 text-xs text-gray-400">
+                Belum ada klik funnel internal (tracking baru aktif).
+              </p>
             )}
 
             {/* Recent days table */}
