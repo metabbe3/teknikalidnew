@@ -793,3 +793,10 @@
 - Watchdog 502 impact-check (due hari ini): PASS — run 24h murni ok silent, 0 false alert. ops-13-01 TCC tetap owner-action (Slot ke-7). AgentJob 24h: 64 done 0 failed.
 - Jebakan: (1) statejson.py = SATU-SATUNYA penulis queue mulai hari ini (Proposal #59 owner approve 24 Okt) — flip via `python3 ~/.hermes/scripts/statejson.py flip tk-queue --id X --set key=val`; (2) deploy 2/2 org HABIS (bo 03:15) — jangan deploy apa pun sebelum kereta 22:00; (3) sec-22-02 sentuh payments-path dep (follow-redirects via midtrans) — QA Verifier DUAL-ORG wajib sebelum naik; (4) filter ShareEvent bo-24-01 tanpa isBot (angka 11/54) vs changelog dgn isBot=false (3/31) — dua-duanya benar, filter beda; jangan "koreksi" angka satu dgn lainnya.
 - Langkah pertama slot berikutnya: baca queue → BE malam 18:30 boarding gate T-1024-N → cek prd-22-01 fork resolved (tsc+push night) → kereta 22:00 SATU build app+worker.
+
+## 2026-10-24 08:3x — CTO weekend pagi (prd-2026-10-22-01 build selesai)
+- State: sehat; home 200 0.18s; 3 container healthy (app 53d26faa 03:14 ⊃ ux-23-01+adm-23-01, worker bcefd8e fresh); deploy budget 1/2 (bo 03:14); EOD 23 Okt benar (Sabtu tutup).
+- Barusan: prd-2026-10-22-01 day-2 email SELESAI di night branch 9ded6a4 — tsc 0, build 0, selftest 7/7 (fail-first b44c3d9), preview readOnly live-DB 2 penerima (day0_views:8/5) render OK; WIP divergen lama di repo utama (mailer/retention-email.ts + api/cron/day2-email) TIDAK dipakai — JANGAN commit.
+- In-flight: kereta T-1025-N malam ini manifest = teknikal-2026-10-20-01 (Point&Badge b50cd1f) + prd-2026-10-22-01 (9ded6a4, merge night dulu) + kandidat prd-22-02/sec-22-02 (belum dibuild BE malam); boarding gate wajib.
+- Jebakan: (1) worktree night = /private/tmp/tn-night-102201 (branch night/prd-2026-10-22-01 sudah push); (2) staging/preview DB override pakai sed @db:5432→@127.0.0.1:5433; (3) prisma generate wajib di worktree baru sebelum tsc.
+- Langkah pertama slot berikutnya: baca queue → boarding gate T-1025-N (merge night 9ded6a4 ke main + cek bukti per penumpang) → SATU build app+worker → deploy malam 22:00-01:30 → verify: badge login-path + smoke readOnly=1 email + ISR warm-up #4.

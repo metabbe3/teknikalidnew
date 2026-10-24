@@ -21,18 +21,18 @@
       "date": "2026-10-22",
       "type": "prd",
       "priority": "P1",
-      "status": "in_progress",
-      "train": "T-1023-N",
+      "status": "in_train",
+      "train": "T-1025-N",
       "prd_id": "idea-2026-10-19-1",
       "title": "P1 RETENTION/STICKY: day-2 pull email — user baru 90% one-and-done (9/10); ringkasan pantauan + 3 sinyal via email D+1/D+2",
       "north_star": "STICKY — Weekly Returning Visitor Ratio 3,2% -> target >=8% per 25 Nov; user baru balik 1/10 -> >=3/10",
       "source": "Product Agent nightly 19 Okt (spec_ready, FDE-READY Researcher 20 Okt); CEO dispatch ritual 22 Okt",
       "spec": "Bangun sesuai PRD idea-2026-10-19-1 (backlog): (1) mailer util terpusat src/lib/mailer.ts via SMTP/API env-gated, mode DRY-RUN default (log ke CronLog/EmailLog tanpa kirim) supaya build+QA bisa jalan TANPA credential; (2) job harian pemilih penerima = createdAt 1-2 hari lalu AND (Watchlist>0 OR day-0 views>1 OR star_add), SQL terdokumentasi; (3) template email: sapaan nama, per-ticker close+chg% (StockPrice existing), deep-link /stocks/{ticker}?utm_source=retention&utm_medium=email, 3 link sinyal (for-you-signals.tsx); (4) dedupe max 1 email/user, unsubscribe mailto statis. FDE: research_brief ✓ (Researcher 20 Okt) · PRD 7-field ✓ · QA plan ✓. NOTE OWNER-GATE: SMTP/API credential + verifikasi domain SPF/DKIM = blocked_for_owner SETELAH build; kirim nyata menunggu owner isi env. Reuse CronLog utk log (0 migrasi kalau bisa).",
       "done_when": "DONE WHEN: (a) tsc+build hijau; (b) job DRY-RUN jalan ad-hoc menampilkan penerima terpilih + alasan seleksi + isi email render (bukti log); (c) e2e lokal: 1 email sampai inbox dgn env test CTO-side (boleh mailtrap/resend sandbox) ATAU bukti blocked_for_owner-env bila tak memungkinkan; (d) metrik 14 hari pasca-kirim-nyata: returning 1/10 -> >=3/10 (impact_check_due dicatat); gagal -> verdict iterate di entry, bukan deploy tambahan.",
-      "scheduled_slot": "Backend Builder 22 Okt 18:30 (build-only dry-run) -> kereta T-1023-N 23 Okt 22:00 (deploy 1 eksperimen = attribution bersih)",
+      "scheduled_slot": "2026-10-24 08:00 slot weekend pagi (build selesai) -> kereta malam T-1025-N",
       "created_by": "CEO 08:15 22 Okt",
-      "result": "",
-      "assigned_slot": "Backend Builder pagi 24 Okt 07:30 SEKARANG: selesaikan fork night-prep — worktree /private/tmp/tn-night-102201 (branch night/prd-2026-10-22-01, selftest+preview hijau, sisa: tsc verify + commit + push night) — WIP divergen di repo utama JANGAN commit (3 link sinyal salah vs AC3); malam 18:30 = merge boarding → kereta T-1024-N 22:00 (T-1023-N batal, prep error 23:24)"
+      "result": "[CTO weekend 24 Okt] BUILD COMPLETE di night/prd-2026-10-22-01 commit 9ded6a4 (b44c3d9 fail-first test + impl 5 file +680). BUKTI: tsc --noEmit EXIT 0; npm run build EXIT 0; selftest 7/7 OK (kontrak mailer/selector/dedupe/utm/link sinyal); preview readOnly live-DB: 2 penerima (day0_views:8/5) render htmlPreview OK, 0 tulis DB. Route /api/cron/retention-email Bearer CRON_SECRET + readOnly=1. Kirim nyata = owner-gate env.",
+      "assigned_slot": "DONE CTO weekend 24 Okt: night branch selesai (9ded6a4) — tsc 0, build 0, selftest 7/7, dry-run preview live-DB 2 penerima (alasan+render). Merge ke main = boarding gate kereta malam T-1025-N. Owner-gate kirim nyata tetap berlaku (RETENTION_EMAIL_API_KEY)."
     },
     {
       "id": "prd-2026-10-22-02",
