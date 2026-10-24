@@ -20,32 +20,32 @@ export function CtaSection() {
   const secondaryLabel = isAuthed ? "Coba Paper Trading" : "Jelajahi Saham Dulu";
 
   return (
-    <div className="relative overflow-hidden rounded-xl bg-[#0f172a] p-8 sm:p-10">
+    <div className="relative overflow-hidden rounded-xl bg-accent-muted p-8 sm:p-10">
       {/* Subtle grid pattern */}
       <div
-        className="absolute inset-0 opacity-[0.03]"
+        className="absolute inset-0 opacity-[0.05]"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
+            "linear-gradient(rgba(3,105,161,0.35) 1px, transparent 1px), linear-gradient(90deg, rgba(3,105,161,0.35) 1px, transparent 1px)",
           backgroundSize: "32px 32px",
         }}
         aria-hidden="true"
       />
       <div className="relative z-10 max-w-lg space-y-4">
-        <p className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+        <p className="text-2xl sm:text-3xl font-bold text-text-primary tracking-tight">
           {headline}
         </p>
-        <p className="text-gray-400 text-sm leading-relaxed">{sub}</p>
+        <p className="text-text-secondary text-sm leading-relaxed">{sub}</p>
         <div className="flex flex-wrap gap-3 pt-2">
           <Link
             href={primaryHref}
-            className="bg-white text-text-primary hover:bg-white/90 px-5 py-2.5 min-h-11 sm:min-h-0 rounded-lg font-medium text-sm transition-colors press-scale"
+            className="bg-accent text-white hover:bg-accent-bright px-5 py-2.5 min-h-11 sm:min-h-0 rounded-lg font-medium text-sm transition-colors press-scale shadow-sm"
           >
             {primaryLabel}
           </Link>
           <Link
             href={secondaryHref}
-            className="border border-white/20 text-white px-5 py-2.5 min-h-11 sm:min-h-0 rounded-lg font-medium text-sm hover:bg-white/10 transition-all press-scale"
+            className="border border-accent/25 text-accent px-5 py-2.5 min-h-11 sm:min-h-0 rounded-lg font-medium text-sm hover:bg-accent/10 transition-all press-scale"
           >
             {secondaryLabel}
           </Link>

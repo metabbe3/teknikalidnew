@@ -405,7 +405,7 @@ button:focus-visible,
 
 /* ─── Akademi Hero ─── */
 .akademi-hero {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: linear-gradient(135deg, #0f2a3d 0%, #123548 100%);
   position: relative;
   overflow: hidden;
 }
@@ -520,7 +520,7 @@ button:focus-visible,
 
 /* ─── Akademi CTA Banner ─── */
 .akademi-cta-banner {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: linear-gradient(135deg, #0f2a3d 0%, #123548 100%);
   border-radius: 1rem;
   position: relative;
   overflow: hidden;
@@ -537,7 +537,7 @@ button:focus-visible,
 
 /* ─── Screener Hero ─── */
 .screener-hero {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: linear-gradient(135deg, #0f2a3d 0%, #123548 100%);
   position: relative;
   overflow: hidden;
 }
@@ -565,7 +565,7 @@ button:focus-visible,
 
 /* ─── Community Hero ─── */
 .community-hero {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: linear-gradient(135deg, #0f2a3d 0%, #123548 100%);
   position: relative;
   overflow: hidden;
 }
@@ -593,7 +593,7 @@ button:focus-visible,
 
 /* ─── Compare Hero ─── */
 .compare-hero {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: linear-gradient(135deg, #0f2a3d 0%, #123548 100%);
   position: relative;
   overflow: hidden;
 }
@@ -757,7 +757,7 @@ button:focus-visible,
 
 /* ─── Stocks Page: Terminal Hero ─── */
 .stocks-hero {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: linear-gradient(135deg, #0f2a3d 0%, #123548 100%);
   position: relative;
   overflow: hidden;
 }
@@ -964,7 +964,7 @@ button:focus-visible,
 }
 .article-prose pre {
   @apply rounded-lg overflow-hidden my-4;
-  background: #0f172a;
+  background: #0f2a3d;
   color: #e2e8f0;
   padding: 0;
   position: relative;
@@ -1009,7 +1009,7 @@ button:focus-visible,
 /* Article CTA — terminal-style call-to-action */
 .article-prose .cta-box {
   @apply rounded-xl my-6 overflow-hidden;
-  background: linear-gradient(135deg, #0f172a, #1e293b);
+  background: linear-gradient(135deg, #0f2a3d, #123548);
   color: white;
   padding: 1.5rem;
   border: 1px solid rgba(13, 148, 136, 0.2);
@@ -1074,7 +1074,7 @@ button:focus-visible,
 /* Formula box — terminal prompt */
 .article-prose .formula-box {
   @apply rounded-lg my-5 overflow-hidden font-mono text-sm;
-  background: #0f172a;
+  background: #0f2a3d;
   color: #4ade80;
   padding: 1.25rem;
   border: 1px solid rgba(74, 222, 128, 0.15);
@@ -1139,7 +1139,7 @@ button:focus-visible,
 
 /* ─── Paper Trading: Simulation Hero ─── */
 .sim-hero {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: linear-gradient(135deg, #0f2a3d 0%, #123548 100%);
   position: relative;
   overflow: hidden;
 }
@@ -1271,7 +1271,7 @@ button:focus-visible,
 
 /* ─── Portfolio: Summary Hero ─── */
 .portfolio-hero {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: linear-gradient(135deg, #0f2a3d 0%, #123548 100%);
   position: relative;
   overflow: hidden;
   border-radius: 1rem;
