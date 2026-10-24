@@ -11,11 +11,11 @@ import { Sparkles } from "lucide-react";
 
 const DEFAULT_QUESTIONS = [
   "Saham apa yang lagi oke hari ini?",
-  "Ada yang oversold murah?",
-  "Volume lagi ramai di mana?",
-  "Golden cross ada nggak?",
-  "Saham blue chip yang aman?",
-  "Dividen tinggi ada?",
+  "Ada saham yang turun terlalu jauh (murah)?",
+  "Saham apa yang paling ramai dibeli hari ini?",
+  "Ada saham yang baru mulai naik trennya?",
+  "Saham perusahaan besar yang stabil aja?",
+  "Yang bagi hasil (dividen) tinggi ada?",
   "Yang lagi hype apa aja?",
 ];
 
