@@ -864,18 +864,52 @@ export default async function StockDetailPage({
               <h2 className="font-serif text-base font-semibold text-text-primary">Aliran Dana Asing</h2>
               <span className="text-xs text-text-tertiary">5 sesi terakhir · net (beli − jual) asing</span>
             </div>
-            <div className="flex items-end gap-2 h-16" aria-hidden>
-              {foreignWithPx.slice().reverse().map((f, i) => {
-                const max = Math.max(...foreignWithPx.filter((x) => x.netValue !== null).map((x) => Math.abs(x.netValue as number)), 1);
-                const v = f.netValue ?? 0;
-                const h = Math.max(4, Math.round((Math.abs(v) / max) * 56));
-                return (
-                  <div key={i} className="flex-1 flex flex-col justify-end items-center gap-0.5" title={`${f.date.toLocaleDateString("id-ID", { day: "numeric", month: "short" })}: ${v >= 0 ? "+" : "−"}Rp${(Math.abs(v) / 1_000_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })} M`}>
-                    <div className={v >= 0 ? "w-full rounded-t bg-bullish/70" : "w-full rounded-b bg-bearish/70 self-end"} style={{ height: `${h}px` }} />
-                  </div>
-                );
-              })}
-            </div>
+            {/* Owner 24 Okt: bar vertikal 1-sesi tampak mengambang aneh —
+                ganti diverging horizontal bars (sumbu tengah: merah kiri=jual,
+                hijau kanan=beli). Rapi di jumlah sesi apapun, makin lama makin
+                seperti history chart. */}
+            {(() => {
+              const valid = foreignWithPx.filter((x) => x.netValue !== null) as { date: Date; netValue: number }[];
+              const max = Math.max(...valid.map((x) => Math.abs(x.netValue)), 1);
+              const total = valid.reduce((a, b) => a + b.netValue, 0);
+              const ordered = foreignWithPx.slice().reverse();
+              return (
+                <div className="space-y-1.5" role="img" aria-label={`Net aliran dana asing ${valid.length} sesi terakhir`}>
+                  {ordered.map((f, i) => {
+                    const v = f.netValue;
+                    const isLatest = i === ordered.length - 1;
+                    return (
+                      <div key={i} className="flex items-center gap-2">
+                        <span className={`w-12 shrink-0 text-[10px] ${isLatest ? "text-text-primary font-semibold" : "text-text-tertiary"}`}>
+                          {f.date.toLocaleDateString("id-ID", { weekday: "short", day: "numeric" })}
+                        </span>
+                        <div className="flex-1 h-2.5 relative bg-bg-hover/40 rounded-full overflow-hidden">
+                          <div className="absolute inset-y-0 left-1/2 w-px bg-border" aria-hidden />
+                          {v !== null && v !== 0 && (
+                            <div
+                              className={`absolute inset-y-[3px] rounded-full ${v >= 0 ? "left-1/2 bg-bullish/80" : "right-1/2 bg-bearish/80"} ${isLatest ? "" : "opacity-60"}`}
+                              style={{ width: `${Math.max(1.5, (Math.abs(v) / max) * 48)}%` }}
+                            />
+                          )}
+                        </div>
+                        <span className={`w-16 shrink-0 text-right font-mono tabular-nums text-[11px] ${v === null ? "text-text-tertiary" : v >= 0 ? "text-bullish" : "text-bearish"} ${isLatest ? "font-semibold" : ""}`}>
+                          {v === null ? "—" : `${v >= 0 ? "+" : "−"}${(Math.abs(v) / 1_000_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })} M`}
+                        </span>
+                      </div>
+                    );
+                  })}
+                  {valid.length > 1 && (
+                    <div className="flex items-center gap-2 pt-1 border-t border-border/30">
+                      <span className="w-12 shrink-0 text-[10px] text-text-secondary font-medium">Σ {valid.length}s</span>
+                      <span className="flex-1 text-[10px] text-text-tertiary">total net</span>
+                      <span className={`w-16 shrink-0 text-right font-mono tabular-nums text-[11px] font-semibold ${total >= 0 ? "text-bullish" : "text-bearish"}`}>
+                        {`${total >= 0 ? "+" : "−"}Rp${(Math.abs(total) / 1_000_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })} M`}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
             <p className="text-sm text-text-secondary">
               Sesi terakhir ({foreignLatest.date.toLocaleDateString("id-ID", { day: "numeric", month: "short" })}):{' '}
               <span className={foreignLatest.netValue! >= 0 ? "font-semibold text-bullish" : "font-semibold text-bearish"}>
