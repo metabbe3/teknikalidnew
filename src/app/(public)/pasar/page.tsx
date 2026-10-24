@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHero } from "@/components/layout/page-hero";
-import { pasarLiveService, isLiveWindow, isMarketHours, wibNow, wibHHMM } from "@/domains/stock/pasar-live.service";
+import { pasarLiveService, isLiveWindow, isMarketHours, wibNow, wibHHMM, type PasarTopSignal } from "@/domains/stock/pasar-live.service";
 import { prisma } from "@/lib/prisma";
 import { dateLabel, formatPrice, formatPercent, formatVolume, stripJk  } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -104,6 +104,7 @@ export default async function PasarPage() {
           )}
           <RecapBlock
             ihsg={recap.ihsg}
+            topSignals={recap.topSignals}
             gainers={recap.gainers}
             losers={recap.losers}
             sessionDate={recap.sessionDate}
@@ -226,6 +227,9 @@ export default async function PasarPage() {
           )}
         </section>
 
+        {/* ── Top-20 Skor Sinyal (usp-2026-10-24-02) ── */}
+        <TopSignalsSection items={snap.topSignals} sessionDate={snap.sessionDate} />
+
         {/* ── Top Movers ── */}
         <section aria-labelledby="movers-heading" className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <MoversCard id="movers-heading" title="Top Gainers" icon={<TrendingUp className="h-4 w-4 text-bullish" />} items={snap.gainers} />
@@ -316,11 +320,13 @@ function MoversCard({
 
 function RecapBlock({
   ihsg,
+  topSignals,
   gainers,
   losers,
   sessionDate,
 }: {
   ihsg: { close: number | null; changePercent: number | null; change: number | null };
+  topSignals: PasarTopSignal[];
   gainers: { ticker: string; close: number | null; changePercent: number | null; volumeShares: number | null; name: string }[];
   losers: { ticker: string; close: number | null; changePercent: number | null; volumeShares: number | null; name: string }[];
   sessionDate: string | null;
@@ -344,7 +350,58 @@ function RecapBlock({
         <MoversCard title="Gainers kemarin" icon={<TrendingUp className="h-4 w-4 text-bullish" />} items={gainers} />
         <MoversCard title="Losers kemarin" icon={<TrendingDown className="h-4 w-4 text-bearish" />} items={losers} />
       </div>
+      <TopSignalsSection items={topSignals} sessionDate={sessionDate} />
     </>
+  );
+}
+
+/**
+ * Top-20 Skor Sinyal harian (usp-2026-10-24-02, owner-directed 24 Okt).
+ * Ranking skor sinyal teknikal universe non-gorengan + liquidity floor Rp1B —
+ * pola "skor komposit" kompetitor, tapi dari skor sendiri yang bisa ditelusuri
+ * ke halaman saham. Edukasi: skor = rangkuman indikator, bukan rekomendasi.
+ */
+function TopSignalsSection({ items, sessionDate }: { items: PasarTopSignal[]; sessionDate: string | null }) {
+  if (items.length === 0) return null;
+  return (
+    <section aria-labelledby="topsignals-heading">
+      <div className="flex items-baseline justify-between mb-3">
+        <h2 id="topsignals-heading" className="text-lg font-semibold">Top-20 Skor Sinyal</h2>
+        <span className="text-xs text-text-tertiary">sesi {dateLabel(sessionDate)} · non-gorengan · likuid ≥ Rp1 M</span>
+      </div>
+      <Card>
+        <CardContent className="py-2">
+          <ul className="divide-y divide-border">
+            {items.map((t, i) => (
+              <li key={t.ticker}>
+                <Link href={`/stocks/${t.ticker}`} className="flex items-center gap-3 py-2.5 group">
+                  <span className="w-5 text-xs text-text-tertiary tabular-nums">{i + 1}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-semibold group-hover:text-accent">{stripJk(t.ticker)}</span>
+                    <span className="block text-xs text-text-tertiary truncate">{t.name}</span>
+                  </span>
+                  <span className="text-right">
+                    <span className="block text-sm font-mono tabular-nums">{t.close !== null ? formatPrice(t.close) : "—"}</span>
+                    {t.volumeShares !== null && <span className="block text-xs text-text-tertiary">vol {formatVolume(t.volumeShares)}</span>}
+                  </span>
+                  <ChangeBadge pct={t.changePercent} className="w-20 text-right" />
+                  <span
+                    className="w-24 text-right text-xs font-semibold tabular-nums"
+                    title={`Skor sinyal ${t.signalScore !== null ? t.signalScore.toFixed(2) : "—"} — rangkuman indikator teknikal, bukan rekomendasi`}
+                  >
+                    {t.signalScore !== null ? t.signalScore.toFixed(2) : "—"}
+                    {t.signalLabel && <span className="block text-[10px] font-normal text-text-tertiary">{t.signalLabel}</span>}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </CardContent>
+      </Card>
+      <p className="mt-2 text-xs text-text-tertiary">
+        Skor sinyal (−1 s.d. +1) adalah rangkuman otomatis indikator teknikal — bukan rekomendasi beli. Klik emiten untuk melihat rincian indikator di balik skornya.
+      </p>
+    </section>
   );
 }
 

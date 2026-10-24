@@ -37,6 +37,16 @@ export interface PasarWatchlistItem {
   signalLabel: string | null;
 }
 
+export interface PasarTopSignal {
+  ticker: string; // with .JK
+  name: string;
+  close: number | null;
+  changePercent: number | null;
+  volumeShares: number | null;
+  signalScore: number | null; // -1..1 normalized composite
+  signalLabel: string | null;
+}
+
 export interface PasarMover {
   ticker: string; // with .JK
   name: string;
@@ -57,6 +67,7 @@ export interface PasarNewsItem {
 export interface PasarSnapshot {
   ihsg: PasarIhsg;
   watchlist: PasarWatchlistItem[];
+  topSignals: PasarTopSignal[];
   gainers: PasarMover[];
   losers: PasarMover[];
   news: PasarNewsItem[];
@@ -243,6 +254,72 @@ async function getMovers(sessionDate: Date): Promise<{ gainers: PasarMover[]; lo
   };
 }
 
+/**
+ * Top-20 skor sinyal harian (owner-directed 24 Okt, usp-2026-10-24-02 — pola
+ * "Skor Komposit" indostock, dibangun dari skor sinyal teknikal sendiri).
+ * Ranking penuh universe non-gorengan + liquidity floor nilai transaksi
+ * ≥ Rp1 miliar (sama dengan watchlist) — bukan filtered watchlist, jadi
+ * emiten tanpa sinyal "segar" tetap bisa masuk kalau skornya tinggi.
+ * Satu query indikator + satu batch harga terakhir (pola N+1-safe watchlist).
+ */
+const TOP_SIGNALS_MAX = 20;
+
+async function getTopSignals(sessionDate: Date): Promise<PasarTopSignal[]> {
+  const rows = await prisma.stockIndicator.findMany({
+    where: {
+      interval: INTERVAL.DAY,
+      date: sessionDate,
+      isGorengan: { not: true },
+      stock: { isActive: true, assetClass: "EQUITY" },
+      signalScore: { not: null },
+    },
+    include: { stock: { select: { ticker: true, name: true } } },
+    orderBy: [{ signalScore: "desc" }],
+    take: 60,
+  });
+
+  // Batch latest close+volume+prev untuk kandidat (hindari N+1 per row).
+  const stockIds = rows.map((r) => r.stockId);
+  const priceRows = await prisma.stockPrice.findMany({
+    where: { stockId: { in: stockIds } },
+    orderBy: { date: "desc" },
+    // 2 baris per stock tidak bisa di Prisma take; ambil window terakhir lalu
+    // kelompokkan — stockIds ≤ 60 aman.
+    take: stockIds.length * 2,
+    select: { stockId: true, close: true, volume: true, date: true },
+  });
+  const latestByStock = new Map<number, { close: number; prev: number; volume: number }>();
+  const seen = new Set<number>();
+  for (const p of priceRows) {
+    if (seen.has(p.stockId)) continue; // first seen = latest (ordered desc)
+    seen.add(p.stockId);
+    const prev = priceRows.find((q) => q.stockId === p.stockId && q.date < p.date);
+    const close = decimalToNumber(p.close);
+    const prevClose = prev ? decimalToNumber(prev.close) : null;
+    const volume = bigIntToNumber(p.volume);
+    if (close === null || prevClose === null || prevClose === 0 || volume === null) continue;
+    latestByStock.set(p.stockId, { close, prev: prevClose, volume });
+  }
+
+  const items: PasarTopSignal[] = [];
+  for (const r of rows) {
+    const px = latestByStock.get(r.stockId);
+    if (!px) continue;
+    if (px.close * px.volume < 1_000_000_000) continue; // liquidity floor Rp1B
+    items.push({
+      ticker: r.stock.ticker,
+      name: r.stock.name,
+      close: px.close,
+      changePercent: ((px.close - px.prev) / px.prev) * 100,
+      volumeShares: px.volume,
+      signalScore: decimalToNumber(r.signalScore),
+      signalLabel: r.signalLabel,
+    });
+    if (items.length >= TOP_SIGNALS_MAX) break;
+  }
+  return items;
+}
+
 /** Google News RSS — one query per watchlist ticker, newest first, deduped. Max 3 per ticker. */
 export async function fetchWatchlistNews(tickers: string[]): Promise<PasarNewsItem[]> {
   const out: PasarNewsItem[] = [];
@@ -300,15 +377,16 @@ export const pasarLiveService = {
 
     const ihsg = await getIhsg();
     if (!sessionDate) {
-      return { ihsg, watchlist: [], gainers: [], losers: [], news: [], sessionDate: null, generatedAt: new Date().toISOString() };
+      return { ihsg, watchlist: [], topSignals: [], gainers: [], losers: [], news: [], sessionDate: null, generatedAt: new Date().toISOString() };
     }
 
-    const [watchlist, movers] = await Promise.all([getWatchlist(sessionDate), getMovers(sessionDate)]);
+    const [watchlist, topSignals, movers] = await Promise.all([getWatchlist(sessionDate), getTopSignals(sessionDate), getMovers(sessionDate)]);
     const news = withNews ? await fetchWatchlistNews(watchlist.map((w) => w.ticker)) : [];
 
     return {
       ihsg,
       watchlist,
+      topSignals,
       gainers: movers.gainers,
       losers: movers.losers,
       news,
@@ -318,15 +396,15 @@ export const pasarLiveService = {
   },
 
   /** Previous session recap (page shown before 06:30 / off-hours): IHSG + movers of sessionDate. */
-  async getYesterdayRecap(): Promise<{ ihsg: PasarIhsg; gainers: PasarMover[]; losers: PasarMover[]; sessionDate: string | null }> {
+  async getYesterdayRecap(): Promise<{ ihsg: PasarIhsg; topSignals: PasarTopSignal[]; gainers: PasarMover[]; losers: PasarMover[]; sessionDate: string | null }> {
     const ihsg = await getIhsg();
     const sessionRow = await prisma.stockPrice.findFirst({
       where: { stock: { assetClass: "EQUITY" } },
       orderBy: { date: "desc" },
       select: { date: true },
     });
-    if (!sessionRow) return { ihsg, gainers: [], losers: [], sessionDate: null };
-    const { gainers, losers } = await getMovers(sessionRow.date);
-    return { ihsg, gainers, losers, sessionDate: sessionRow.date.toISOString().slice(0, 10) };
+    if (!sessionRow) return { ihsg, topSignals: [], gainers: [], losers: [], sessionDate: null };
+    const [movers, topSignals] = await Promise.all([getMovers(sessionRow.date), getTopSignals(sessionRow.date)]);
+    return { ihsg, topSignals, gainers: movers.gainers, losers: movers.losers, sessionDate: sessionRow.date.toISOString().slice(0, 10) };
   },
 };
