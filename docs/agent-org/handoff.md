@@ -835,3 +835,10 @@
 - usp-24-03 (sinyal-jual/exit-mode) TIDAK dikerjakan sesi ini — effort M, jalur SDLC normal via CEO dispatch.
 - Budget: 4 deploy hari ini SEMUA owner-directed (logo x2 + handoff docs + top-20), routine 2/2 tetap utuh utk kereta 22:00.
 - Trap teknis: pattern grep `group-hover:text-accent` match MoversCard juga — verifikasi ranking harus via id section (#topsignals-heading), bukan grep global.
+
+## 24 Okt 16:20 — ALIRAN DANA ASING LIVE /pasar (owner "wner foreign gimana", deploy ke-5 owner-directed, usp-2026-10-24-04)
+- Endpoint IDX BARU ketemu: /primary/TradingSummary/GetStockSummary?length=9999 (963 emiten, OHLC+ForeignBuy/Sell LEMBAR). Endpoint StockData lama MATI (503). Jalur akses: Playwright warm-session (curl/CDP diblokir CF) — pola idx_fetch_logos.
+- Stack: model ForeignFlow + migration additive (entrypoint auto-deploy OK) + /api/cron/sync-foreign (Bearer, upsert idempoten) + getForeignFlow (net lembar × close = Rp) + section 2 kartu Top-10 net beli/jual di /pasar live+recap.
+- TRAP UNIT: ForeignBuy/Sell IDX = LEMBAR bukan Rupiah (sanity: BBCA -3,2M lembar × Rp9.850 = -Rp763M — naive -Rp3,2M SALAH). TRAP CF: urllib POST ke teknikal.id 403 — wajib curl UA browser.
+- First sync: 962/963 matched (1 skipped: ticker tanpa row Stock). Verify browser: 10+10 rows, DSSA +Rp71,5M #1 beli, BBCA -Rp763M #1 jual. Regression 200 semua.
+- SCHEDULING PENDING: launchctl diblokir gateway — cron Hermes no_agent perlu dibuat (jam 17:20 weekdays, script ~/.hermes/scripts/idx_foreign_sync.py, watchdog fail→alert owner). Agent berikutnya tolong buatkan via cronjob_manage.
