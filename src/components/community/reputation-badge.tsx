@@ -22,9 +22,12 @@ const SHORT_NAMES: Record<string, string> = {
 export function ReputationBadge({
   reputation,
   customTitle,
+  forceShow = false,
 }: {
   reputation: number;
   customTitle?: string | null;
+  /** Point & Badge v1: render tier Pemula even below min threshold (home card). */
+  forceShow?: boolean;
 }) {
   if (customTitle) {
     return (
@@ -40,7 +43,7 @@ export function ReputationBadge({
     );
   }
 
-  if (reputation < BADGE_TIERS[BADGE_TIERS.length - 1].min) return null;
+  if (reputation < BADGE_TIERS[BADGE_TIERS.length - 1].min && !forceShow) return null;
 
   const { level, color } = getBadge(reputation);
   const styles = COLOR_STYLES[color];

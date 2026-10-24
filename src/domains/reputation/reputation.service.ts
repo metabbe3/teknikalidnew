@@ -75,6 +75,23 @@ export const reputationService = {
     return { awarded: true, streak: newStreak };
   },
 
+  /**
+   * Point & Badge v1 (PRD prd-2026-10-24-01) — SSR auto-award.
+   * Award +5 silently; "already claimed today" is a normal outcome, not an error.
+   */
+  async maybeAwardDaily(userId: string): Promise<{ awarded: boolean; streak: number }> {
+    try {
+      const result = await this.claimDailyReward(userId);
+      return { awarded: true, streak: result.streak };
+    } catch (error) {
+      if (error instanceof DailyAlreadyClaimedError) {
+        const user = await reputationRepository.findUserReputation(userId);
+        return { awarded: false, streak: user?.dailyStreak ?? 0 };
+      }
+      throw error;
+    }
+  },
+
   subscribeToEvents() {
     eventBus.on("community:comment-created", async (payload) => {
       if (payload.postAuthorId && payload.postAuthorId !== payload.authorId) {

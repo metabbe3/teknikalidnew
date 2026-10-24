@@ -25,6 +25,8 @@ import { PersonalizedGreeting } from "@/components/home/personalized-greeting";
 import { WelcomeCard } from "@/components/home/welcome-card";
 import { ClaimStreakButton } from "@/components/home/claim-streak-button";
 import { reputationRepository } from "@/domains/reputation/reputation.repository";
+import { reputationService } from "@/domains/reputation/reputation.service";
+import { getBadge } from "@/domains/reputation/badge";
 import { articleRepository } from "@/domains/article/article.repository";
 import { SnapshotCard, type SnapshotCardData } from "@/components/berita/snapshot-card";
 import { DailyBriefHero } from "@/components/berita/daily-brief-hero";
@@ -285,6 +287,10 @@ async function WelcomeLoopSection({ currentUser }: { currentUser: WelcomeLoopUse
   const userCreatedAt = new Date(currentUser.createdAt);
   const daysSinceRegister = Math.floor((Date.now() - userCreatedAt.getTime()) / 86_400_000);
 
+  // Point & Badge v1 (PRD prd-2026-10-24-01): auto +5 once per day on any
+  // authenticated home visit — fire-safe, never blocks the page.
+  await reputationService.maybeAwardDaily(currentUser.id).catch(() => null);
+
   const [reputation, latestBrief] = await Promise.all([
     reputationRepository.findUserReputation(currentUser.id).catch(() => null),
     articleRepository.findLatestDailyBrief().catch(() => null),
@@ -293,22 +299,23 @@ async function WelcomeLoopSection({ currentUser }: { currentUser: WelcomeLoopUse
   const streak = reputation?.dailyStreak ?? 0;
   const isNewUser = daysSinceRegister < 7;
 
-  // Same-day claim check (server calendar day) so the claim button never renders
-  // in a state where clicking it is guaranteed to fail (DailyAlreadyClaimedError).
+  // Same-day claim check (server calendar day) — informational only now that
+  // the award is automatic (Point & Badge v1); kept for potential UX nuance.
   const lastClaim = reputation?.lastDailyClaimAt ? new Date(reputation.lastDailyClaimAt) : null;
   const claimedToday = lastClaim !== null && lastClaim.toDateString() === new Date().toDateString();
+  const totalPoints = reputation?.reputation ?? 0;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       {isNewUser ? (
         <>
           <WelcomeCard userId={currentUser.id} userCreatedAt={userCreatedAt} latestBriefSlug={latestBrief?.slug ?? null} />
-          <ClaimStreakButton initialStreak={streak} claimedToday={claimedToday} />
+          <ClaimStreakButton initialStreak={streak} claimedToday={claimedToday} reputation={totalPoints} />
         </>
       ) : (
         <>
           <MorningDeltaCard />
-          <ClaimStreakButton initialStreak={streak} claimedToday={claimedToday} />
+          <ClaimStreakButton initialStreak={streak} claimedToday={claimedToday} reputation={totalPoints} />
         </>
       )}
     </div>
