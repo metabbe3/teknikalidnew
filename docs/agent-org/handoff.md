@@ -812,3 +812,10 @@
 - Apersepsi task slot: landing hero post-owner-5-commits SEHAT (HeroSearch/TanyaAI/snapshot logo cards live di prod 200); Point&Badge card sudah polish (Lucide, mono points) — 0 perubahan perlu.
 - Jebakan: .agents/ symlink tree TERPUTUS di worktree ini (ui-craft kebaca via git show 216e090) — vendor symlinks perlu di-relink; claude-pipeline masih mati utk glm-5.3, patch manual jalan baik.
 - Next rotasi: flow (a) screener re-audit pasca trust-badge + hero baru; sisa emoji pass-4 kandidat (auth/error, about, guest-quota-meter).
+
+## 2026-10-24 13:5x — CTO weekend sore 15:30-run (qa-2026-10-24-01..04 DONE)
+- State: sehat; home 200 0.61s; 3 container healthy; EOD 23 Okt benar (Sabtu); backup fresh 01:16; 0 deploy (SQL patch ISR).
+- Barusan: 4 QA P1 content-fix — rekap-mingguan-24 (oversold 485→65 lepas label NG salah; Senin 506→103) + brief-23 (cross 3/3→6/6; tabel top gainers big-cap rebuild top-10 PACK/BFIN/SMMT/MAPA/SGER/NSSS/TSPC masuk). Replay 8/8 exact, live curl render, klaim lain utuh; commit di main.
+- In-flight: kereta T-1025-N malam 22:00 manifest = teknikal-20-01 Point&Badge (b50cd1f) + prd-22-01 day-2 email (9ded6a4 night, merge dulu) + kandidat prd-22-02/sec-22-02 (BE 18:30) + bug-22-01 (kalau BE selesai); teknikal-24-02 fundamental-v2 owner-directed.
+- Jebakan: (1) isGorengan ada di StockIndicator BUKAN Stock (kena LAGI 24 Okt — kolom kanonik si.isGorengan + smaCrossSignal); (2) repo kini di MAIN (bukan night) — commit docs aman langsung; (3) queue .bak untracked jangan ikut commit.
+- Langkah pertama slot berikutnya: baca queue → boarding gate T-1025-N (merge night/prd-22-01 → SATU build app+worker → deploy 22:00-01:30 → verify badge login-path + smoke readOnly day-2 email + ISR warm-up #4) → impact_check 26 Okt brief Senin.
