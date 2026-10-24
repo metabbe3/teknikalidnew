@@ -31,7 +31,6 @@ import { StockPaperPosition } from "@/components/paper-trading/stock-paper-posit
 import { HealthScoreDetail } from "@/components/stock/health-score-detail";
 import { SignalBreakdownDetails } from "@/components/stock/signal-breakdown-details";
 import { StockLogo } from "@/components/stock/stock-logo";
-import { RelatedStocks } from "@/components/stock/related-stocks";
 import { StockAiModalButton } from "@/components/stock/stock-ai-modal";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { IndicatorTooltip } from "@/components/ui/indicator-tooltip";
@@ -221,7 +220,7 @@ export default async function StockDetailPage({
 
   // Owner 24 Okt: chips sektor "terlalu simple" → 6 peer pertama jadi mini-cards dgn harga+%
   const peerBatch = sectorPeers.length
-    ? await stockMarketService.getStockBatchWithIndicators(sectorPeers.slice(0, 6)).catch(() => [])
+    ? await stockMarketService.getStockBatchWithIndicators(sectorPeers.slice(0, 8)).catch(() => [])
     : [];
   const peerMap = new Map(peerBatch.map((b) => [b.ticker, b]));
 
@@ -1149,9 +1148,6 @@ export default async function StockDetailPage({
           </div>
         )}
 
-        {/* Internal-link mesh: ranked same-sector cards (verdict + %change) */}
-        <RelatedStocks ticker={ticker} />
-
         {/* ── SEO Internal Links: Sector peers + sector page ── */}
         {stock.sector && (
           <div className="space-y-3">
@@ -1159,7 +1155,7 @@ export default async function StockDetailPage({
               Saham Sektor {sectorToBahasa(stock.sector)} Lainnya
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-              {sectorPeers.slice(0, 6).map((peer) => {
+              {sectorPeers.slice(0, 8).map((peer) => {
                 const b = peerMap.get(peer);
                 return (
                   <Link
@@ -1187,9 +1183,9 @@ export default async function StockDetailPage({
                 );
               })}
             </div>
-            {sectorPeers.length > 6 && (
+            {sectorPeers.length > 8 && (
               <div className="flex flex-wrap gap-2">
-                {sectorPeers.slice(6, 14).map((peer) => (
+                {sectorPeers.slice(8, 16).map((peer) => (
                   <Link
                     key={peer}
                     href={`/stocks/${peer}`}
