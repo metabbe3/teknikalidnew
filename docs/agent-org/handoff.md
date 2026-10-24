@@ -847,3 +847,11 @@
 - Section "Aliran Dana Asing" di halaman saham (guest-visible, graceful hidden): mini bar 5 sesi + verdict akumulasi/distribusi + link /pasar. History tumbuh otomatis tiap cron foreign-sync 17:20 (8b459dd0bc65).
 - Verify: BBCA -Rp763M distribusi 23 Okt (SSR + browser). Regression 200.
 - Cron first-fire Senin 17:20; weekend tetap render sesi Jumat.
+
+## 2026-10-24 17:5x — CTO weekend sore (kereta T-1025-N DEPLOYED)
+- State: sehat; home 200; 3 container healthy; EOD 23 Okt benar (Sabtu); deploy kereta ini = routine pertama hari ini (sisanya owner-directed luar budget).
+- Barusan: kereta T-1025-N angkat SORE (17:4x, window pasca-16:15) — app c98ec44052ee + worker 912fb59f1738 (main 0ade887 pushed): Point&Badge b50cd1f + day-2 email merge-night 9ded6a4 + bugfix remove-watchlist d669e30 + ux-24-01 Tanya AI ce64756. Semua flip done + changelog (a86d9c2).
+- In-flight: QA reviewer D+1 (login-path Point&Badge idempotency + remove-watchlist E2E klik + badge SSR); day-2 email kirim nyata = owner env gate (SMTP credential); teknikal-2026-10-24-02 fundamental-v2 (P1 owner-directed) TETAP pending — belum dibuild, kandidat BE malam/slot berikutnya; prd-22-02 + sec-22-02 masih menunggu Backend Builder 18:30 (reslot bila tak jalan).
+- Jebakan: (1) WIP divergen day2-email repo utama SUDAH dihapus — jangan pulihkan dari scratch backup, versi benar = night branch (merged); (2) .next/types bisa stale setelah hapus route — clean build kereta berikutnya regenerasi otomatis; (3) `links: 1` dari grep -c di /berita = grep multi-line artifact, links aktual 13 via warmup script.
+- Langkah pertama slot berikutnya: baca queue → teknikal-24-02 fundamental-v2 (spec belum ada — tulis DONE WHEN + PLAN dulu) atau prd-22-02/sec-22-02 kalau BE malam tidak eksekusi → boarding gate kereta berikutnya.
+- Rollback anchor: app dd4007b7d9c6 + git revert 0ade887.
