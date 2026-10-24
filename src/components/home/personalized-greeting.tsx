@@ -1,4 +1,10 @@
 import { formatPercentPlain } from "@/lib/utils";
+import dynamicImport from "next/dynamic";
+
+const HeroSearch = dynamicImport(
+  () => import("@/components/home/hero-search").then((m) => ({ default: m.HeroSearch })),
+  { loading: () => <div className="h-[52px] bg-bg-primary rounded-xl animate-pulse" /> },
+);
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -68,6 +74,9 @@ export function PersonalizedGreeting({
             </span>
           </span>
         </div>
+
+        {/* Owner 24 Okt: cari saham langsung dari beranda — hemat 1 step */}
+        <HeroSearch />
 
       </div>
     </section>

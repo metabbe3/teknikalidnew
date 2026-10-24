@@ -34,6 +34,10 @@ import { MarketBreathStrip } from "@/components/ui/market-breath-strip";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Zap } from "lucide-react";
 
+const HeroSearch = dynamicImport(
+  () => import("@/components/home/hero-search").then((m) => ({ default: m.HeroSearch })),
+  { loading: () => <div className="h-[52px] bg-bg-card rounded-xl animate-pulse" /> },
+);
 const MiniScreenerPreview = dynamicImport(
   () => import("@/components/home/mini-screener-preview").then((m) => ({ default: m.MiniScreenerPreview })),
   { loading: () => <div className="h-[200px] bg-bg-card rounded-xl animate-pulse" /> },
@@ -479,7 +483,13 @@ export default async function HomePage() {
               Chart profesional, 12 indikator teknikal, dan screener untuk{" "}
               <span className="font-semibold text-text-primary">{totalStocks}+ saham IDX</span>. Gratis.
             </p>
-            <div className="mt-7 flex flex-wrap items-center gap-3">
+
+            {/* Owner 24 Okt: cari saham langsung dari homepage — hemat 1 step ke /stocks */}
+            <div className="mt-7">
+              <HeroSearch />
+            </div>
+
+            <div className="mt-4 flex flex-wrap items-center gap-3">
               <Link
                 href="/stocks"
                 className="inline-flex items-center gap-2 bg-text-primary text-white px-6 py-3 rounded-xl font-semibold hover:bg-text-primary/90 transition-colors press-scale"
