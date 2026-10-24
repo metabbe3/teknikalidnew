@@ -680,3 +680,14 @@
 - verify: tsc 0 error; build hijau; staging :3100 200; live guest-path 0/0 (tak regresi); login-path pasca-deploy kereta malam.
 - QA: idempotency refresh-2x + badge SSR render = verify kereta malam | impact_check_due: 2026-10-27 (reputasi harian rata2 naik ~+5/user aktif; streak berjalan normal)
 - deploy: build-only slot pagi -> kereta T-1025-N (window malam). Rollback: git revert b50cd1f.
+
+### 2026-10-24 13:5x WIB — qa-2026-10-24-01..04 (P1 content-fix x4, SQL patch ISR)
+- type: content-fix | deploy: n/a (patch DB via fetch-replace-write, ISR self-serve)
+- rekap-mingguan-24: (1) hapus label "non-gorengan" dari oversold "485→65" (basis all-stock; NG = 409→54); (2) "Senin hanya 506 saham naik" → "103" (506 fiktif; 507 = Jumat; Senin pairwise 102 + 1 non-aktif = 103, konsisten tabel breadth).
+- brief-23: (3) cross baru Kamis "3 golden cross dan 3 death cross" → 6/6 (replay smaCrossDate=2026-10-22 NG); (4) tabel top gainers big-cap ≥Rp10T >+4% rebuild top-10 dari SQL kanonik — PACK +9,52 / BFIN +9,40 / SMMT +9,03 / MAPA +7,34 / SGER +5,96 / NSSS +5,83 / TSPC +5,42 masuk (7 teratas sebelumnya hilang), BREN tetap keluar (flag gorengan 22 Okt).
+- verify bukti: replay SQL exact 8/8 (oversold all/NG, breadth Senin pairwise, cross 6/6, top-16 pct+cap) | DB residual 0 (grep 506/non-gorengan-runtuh/3-golden/BREN = 0) | live curl query-bust: frasa baru render x2, klaim lain utuh (MAPI #7 non-gorengan, AADI #3 tersibuk, breadth 103/692/167, 22GC/59DC).
+- QA: reviewer 24 Okt (sumber spec); replay CTO independen konfirmasi | impact_check_due: 2026-10-26 (brief Senin 26 Okt bebas pola superlatif/copy-day)
+- rollback: fullrow .hermes/cache/scratch/qa24-backup/{rekap-row,brief23-row}.bak.md + backup db-20261024.sql.gz (01:16)
+
+### 2026-10-24 13:5x WIB — qa-2026-10-24-01..04 queue flip
+- 4 entry → done via statejson.py v12→v20. Sisa pending CTO-buildable: bug-22-01 (P2, in_progress milik BE), prd-22-02 + sec-22-02 (Backend Builder 18:30), sec-22-01 (P3), teknikal-24-02 (P1 owner-directed, train T-1025-N), ops-24-01 (T-1026-N), ops-13-01 (owner TCC, slot ke-7).
