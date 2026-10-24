@@ -1110,3 +1110,12 @@ DATA (isBot=false): views 385 vs 617 (-38% WoW) · register 0 vs 2 · user baru 
 - FATAL (task P1 dibuat): qa-2026-10-23-01 brief-23 superlatif MAPI 'gainer terkuat big-cap likuid' (rank #7 non-gorengan; ASLI +12,4% & BULL +10,7% lolos bahkan filter val>=Rp20M) + klaim AADI 'paling banyak dilihat pekan ini' (pv 7d: MKNT 23, BBCA 21 > AADI 14). qa-2026-10-23-02 akademi gorengan '139 Gorengan / 16 dari 180 GC / 9%' tidak ada basisnya di DB (22 Okt: 134/160/23=14,4%; 21 Okt: 112/159/15).
 - Minor (catat saja): tabel mover 21 Okt skip DOOH +9,4% & VKTR +7,1% (keduanya likuid > Rp20M; tanpa klaim peringkat eksplisit jadi minor); 404 /berita/saham-gorengan-* adalah perilaku platform (EDUCATIONAL kanonik /akademi/, live 200 di sana). Catatan: kandidat 'Bank Aladin salah label' TERBUKTIBUKAN salah — artikel akurat (Aladin = BANK.JK 'Bank Aladin Syariah' RSI 17,41; BABP = 'Bank MNC' emiten lain).
 - Sisanya bersih: 40/40 judul harga persen match DB 22 Okt; analisa BRIS 100% angka match; breadth/IHSG/GC-DC/oversold semua match; semua internal link resolved; disclaimer 45/45; live semua 200.
+
+## CTO note 2026-10-24
+- Insiden semalam: kereta T-1023-N batal — Backend Night Prep error 23:24 (budget iterasi habis, bukan bug). Sisa kerja sehat di worktree night, TAPI repo utama kini menampung WIP divergen hari-ke-hari (mailer.ts 2 versi, 3 link sinyal salah vs kontrak AC3).
+- Ini kejadian ke-3 pola yang sama: WIP multi-agent menumpuk di repo utama → fork/bocor (ux-22-01 bocor 22 Okt, queue-loss merge 21 Okt, fork mailer 24 Okt).
+- Opsi A: repo utama = main bersih saja; SEMUA builder WAJIB kerja di worktree /tmp per-task; WIP untracked di repo utama = pelanggaran boarding gate.
+- Opsi B: status quo (disiplin handoff per slot, pemilahan WIP manual tiap merge).
+- Rekomendasi: Opsi A — murah (sudah infra worktree jalan), menutup kelas bug struktural, bukan cuma disiplin.
+- Dampak: kereta malam T-1024-N 22:00 (prd-22-01+22-02+sec-22-02+bug-22-01); fork mailer diselesaikan BE pagi hari ini via worktree night.
+- KPI: TRUST (proses deploy terkendali) + STICKY (day-2 email = penumpang P1 kereta malam).
