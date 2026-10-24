@@ -1348,3 +1348,39 @@ button:focus-visible,
 .ai-progress {
   animation: ai-progress-sweep 1.6s ease-in-out infinite;
 }
+
+/* ─── BorderBeam (port ringan border-beam libraries.dev — AI modal loading) ─── */
+.beam-wrap {
+  position: relative;
+  isolation: isolate;
+}
+.beam-ring {
+  position: absolute;
+  inset: calc(var(--beam-size, 2px) * -1);
+  border-radius: inherit;
+  padding: var(--beam-size, 2px);
+  background: conic-gradient(
+    from var(--beam-angle, 0deg),
+    transparent 0deg 300deg,
+    var(--beam-from, #38bdf8) 330deg,
+    var(--beam-to, #818cf8) 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: -1;
+  animation: beam-spin var(--beam-duration, 6s) linear infinite;
+}
+@property --beam-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes beam-spin {
+  to { --beam-angle: 360deg; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .beam-ring { animation: none; background: linear-gradient(90deg, var(--beam-from), var(--beam-to)); opacity: 0.5; }
+}
