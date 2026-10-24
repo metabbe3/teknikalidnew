@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHero } from "@/components/layout/page-hero";
-import { pasarLiveService, isLiveWindow, isMarketHours, wibNow, wibHHMM, type PasarTopSignal } from "@/domains/stock/pasar-live.service";
+import { pasarLiveService, isLiveWindow, isMarketHours, wibNow, wibHHMM, type PasarTopSignal, type PasarForeignItem } from "@/domains/stock/pasar-live.service";
 import { prisma } from "@/lib/prisma";
 import { dateLabel, formatPrice, formatPercent, formatVolume, stripJk  } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -105,6 +105,7 @@ export default async function PasarPage() {
           <RecapBlock
             ihsg={recap.ihsg}
             topSignals={recap.topSignals}
+            foreign={recap.foreign}
             gainers={recap.gainers}
             losers={recap.losers}
             sessionDate={recap.sessionDate}
@@ -230,6 +231,9 @@ export default async function PasarPage() {
         {/* ── Top-20 Skor Sinyal (usp-2026-10-24-02) ── */}
         <TopSignalsSection items={snap.topSignals} sessionDate={snap.sessionDate} />
 
+        {/* ── Aliran Dana Asing (usp-2026-10-24-04) ── */}
+        <ForeignFlowSection foreign={snap.foreign} />
+
         {/* ── Top Movers ── */}
         <section aria-labelledby="movers-heading" className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <MoversCard id="movers-heading" title="Top Gainers" icon={<TrendingUp className="h-4 w-4 text-bullish" />} items={snap.gainers} />
@@ -321,12 +325,14 @@ function MoversCard({
 function RecapBlock({
   ihsg,
   topSignals,
+  foreign,
   gainers,
   losers,
   sessionDate,
 }: {
   ihsg: { close: number | null; changePercent: number | null; change: number | null };
   topSignals: PasarTopSignal[];
+  foreign: { netBuy: PasarForeignItem[]; netSell: PasarForeignItem[] };
   gainers: { ticker: string; close: number | null; changePercent: number | null; volumeShares: number | null; name: string }[];
   losers: { ticker: string; close: number | null; changePercent: number | null; volumeShares: number | null; name: string }[];
   sessionDate: string | null;
@@ -351,7 +357,55 @@ function RecapBlock({
         <MoversCard title="Losers kemarin" icon={<TrendingDown className="h-4 w-4 text-bearish" />} items={losers} />
       </div>
       <TopSignalsSection items={topSignals} sessionDate={sessionDate} />
+      <ForeignFlowSection foreign={foreign} />
     </>
+  );
+}
+
+/**
+ * Aliran dana asing sesi terakhir (usp-2026-10-24-04): Top-10 net beli + net jual.
+ * Net = beli − jual (Rp). Edukasi: jejak asing = konteks, bukan sinyal beli/jual.
+ */
+function ForeignFlowSection({ foreign }: { foreign: { netBuy: PasarForeignItem[]; netSell: PasarForeignItem[] } }) {
+  if (foreign.netBuy.length === 0 && foreign.netSell.length === 0) return null;
+  const fmtRp = (n: number) => {
+    const abs = Math.abs(n);
+    const s = abs >= 1_000_000_000_000 ? `${(abs / 1_000_000_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })} T`
+      : abs >= 1_000_000_000 ? `${(abs / 1_000_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })} M`
+      : `${(abs / 1_000_000).toLocaleString("id-ID", { maximumFractionDigits: 0 })} jt`;
+    return `${n < 0 ? "−" : ""}Rp${s}`;
+  };
+  const Row = ({ t }: { t: PasarForeignItem }) => (
+    <li>
+      <Link href={`/stocks/${t.ticker}`} className="flex items-center gap-3 py-2 group">
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-semibold group-hover:text-accent">{stripJk(t.ticker)}</span>
+          <span className="block text-xs text-text-tertiary truncate">{t.name}</span>
+        </span>
+        <span className={`text-sm font-mono tabular-nums ${t.netValue >= 0 ? "text-bullish" : "text-bearish"}`}>{fmtRp(t.netValue)}</span>
+      </Link>
+    </li>
+  );
+  return (
+    <section aria-labelledby="foreign-heading">
+      <div className="flex items-baseline justify-between mb-3">
+        <h2 id="foreign-heading" className="text-lg font-semibold">Aliran Dana Asing</h2>
+        <span className="text-xs text-text-tertiary">net beli − jual · sesi terakhir</span>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader className="pb-2"><CardTitle className="text-base">Top Net Beli Asing 🟢</CardTitle></CardHeader>
+          <CardContent><ul className="divide-y divide-border">{foreign.netBuy.map((t) => <Row key={t.ticker} t={t} />)}</ul></CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2"><CardTitle className="text-base">Top Net Jual Asing 🔴</CardTitle></CardHeader>
+          <CardContent><ul className="divide-y divide-border">{foreign.netSell.map((t) => <Row key={t.ticker} t={t} />)}</ul></CardContent>
+        </Card>
+      </div>
+      <p className="mt-2 text-xs text-text-tertiary">
+        Net asing = nilai beli asing − jual asing per sesi. Jejak dana institusi asing adalah konteks informasi — bukan rekomendasi beli/jual.
+      </p>
+    </section>
   );
 }
 

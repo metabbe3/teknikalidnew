@@ -37,6 +37,12 @@ export interface PasarWatchlistItem {
   signalLabel: string | null;
 }
 
+export interface PasarForeignItem {
+  ticker: string; // with .JK
+  name: string;
+  netValue: number; // Rp; positif = net beli asing
+}
+
 export interface PasarTopSignal {
   ticker: string; // with .JK
   name: string;
@@ -68,6 +74,7 @@ export interface PasarSnapshot {
   ihsg: PasarIhsg;
   watchlist: PasarWatchlistItem[];
   topSignals: PasarTopSignal[];
+  foreign: { netBuy: PasarForeignItem[]; netSell: PasarForeignItem[] };
   gainers: PasarMover[];
   losers: PasarMover[];
   news: PasarNewsItem[];
@@ -255,6 +262,51 @@ async function getMovers(sessionDate: Date): Promise<{ gainers: PasarMover[]; lo
 }
 
 /**
+ * Top net foreign flow sesi terakhir (usp-2026-10-24-04, owner-directed 24 Okt).
+ * Source: tabel ForeignFlow (sync idx_foreign_sync.py dari IDX TradingSummary).
+ * ForeignBuy/Sell IDX dalam LEMBAR — nilai Rupiah = (buy − sell) × close sesi
+ * (join StockPrice sessionDate). Cukup filter universe aktif supaya delisted
+ * tidak muncul; asing memang bermain di big-caps.
+ */
+const FOREIGN_MAX = 10;
+
+async function getForeignFlow(sessionDate: Date): Promise<{ netBuy: PasarForeignItem[]; netSell: PasarForeignItem[] }> {
+  const rows = await prisma.foreignFlow.findMany({
+    where: {
+      date: sessionDate,
+      stock: { isActive: true, assetClass: "EQUITY" },
+    },
+    include: { stock: { select: { ticker: true, name: true } } },
+    take: 1000,
+  });
+  // Close sesi untuk konversi lembar → Rupiah (satu batch query).
+  const ids = rows.map((r) => r.stockId);
+  const prices = await prisma.stockPrice.findMany({
+    where: { stockId: { in: ids }, date: sessionDate },
+    select: { stockId: true, close: true },
+  });
+  const closeByStock = new Map<number, number>();
+  for (const p of prices) {
+    const c = decimalToNumber(p.close);
+    if (c !== null) closeByStock.set(p.stockId, c);
+  }
+  const items = rows
+    .map((r) => {
+      const buy = decimalToNumber(r.foreignBuy) ?? 0;
+      const sell = decimalToNumber(r.foreignSell) ?? 0;
+      const close = closeByStock.get(r.stockId);
+      if (close === undefined) return null; // tanpa harga sesi → tidak bisa dinilai Rp
+      return { ticker: r.stock.ticker, name: r.stock.name, netValue: (buy - sell) * close };
+    })
+    .filter((x): x is PasarForeignItem => x !== null && x.netValue !== 0)
+    .sort((a, b) => b.netValue - a.netValue);
+  return {
+    netBuy: items.slice(0, FOREIGN_MAX),
+    netSell: items.slice(-FOREIGN_MAX).reverse(),
+  };
+}
+
+/**
  * Top-20 skor sinyal harian (owner-directed 24 Okt, usp-2026-10-24-02 — pola
  * "Skor Komposit" indostock, dibangun dari skor sinyal teknikal sendiri).
  * Ranking penuh universe non-gorengan + liquidity floor nilai transaksi
@@ -377,16 +429,17 @@ export const pasarLiveService = {
 
     const ihsg = await getIhsg();
     if (!sessionDate) {
-      return { ihsg, watchlist: [], topSignals: [], gainers: [], losers: [], news: [], sessionDate: null, generatedAt: new Date().toISOString() };
+      return { ihsg, watchlist: [], topSignals: [], foreign: { netBuy: [], netSell: [] }, gainers: [], losers: [], news: [], sessionDate: null, generatedAt: new Date().toISOString() };
     }
 
-    const [watchlist, topSignals, movers] = await Promise.all([getWatchlist(sessionDate), getTopSignals(sessionDate), getMovers(sessionDate)]);
+    const [watchlist, topSignals, foreign, movers] = await Promise.all([getWatchlist(sessionDate), getTopSignals(sessionDate), getForeignFlow(sessionDate), getMovers(sessionDate)]);
     const news = withNews ? await fetchWatchlistNews(watchlist.map((w) => w.ticker)) : [];
 
     return {
       ihsg,
       watchlist,
       topSignals,
+      foreign,
       gainers: movers.gainers,
       losers: movers.losers,
       news,
@@ -396,15 +449,15 @@ export const pasarLiveService = {
   },
 
   /** Previous session recap (page shown before 06:30 / off-hours): IHSG + movers of sessionDate. */
-  async getYesterdayRecap(): Promise<{ ihsg: PasarIhsg; topSignals: PasarTopSignal[]; gainers: PasarMover[]; losers: PasarMover[]; sessionDate: string | null }> {
+  async getYesterdayRecap(): Promise<{ ihsg: PasarIhsg; topSignals: PasarTopSignal[]; foreign: { netBuy: PasarForeignItem[]; netSell: PasarForeignItem[] }; gainers: PasarMover[]; losers: PasarMover[]; sessionDate: string | null }> {
     const ihsg = await getIhsg();
     const sessionRow = await prisma.stockPrice.findFirst({
       where: { stock: { assetClass: "EQUITY" } },
       orderBy: { date: "desc" },
       select: { date: true },
     });
-    if (!sessionRow) return { ihsg, topSignals: [], gainers: [], losers: [], sessionDate: null };
-    const [movers, topSignals] = await Promise.all([getMovers(sessionRow.date), getTopSignals(sessionRow.date)]);
-    return { ihsg, topSignals, gainers: movers.gainers, losers: movers.losers, sessionDate: sessionRow.date.toISOString().slice(0, 10) };
+    if (!sessionRow) return { ihsg, topSignals: [], foreign: { netBuy: [], netSell: [] }, gainers: [], losers: [], sessionDate: null };
+    const [movers, topSignals, foreign] = await Promise.all([getMovers(sessionRow.date), getTopSignals(sessionRow.date), getForeignFlow(sessionRow.date)]);
+    return { ihsg, topSignals, foreign, gainers: movers.gainers, losers: movers.losers, sessionDate: sessionRow.date.toISOString().slice(0, 10) };
   },
 };

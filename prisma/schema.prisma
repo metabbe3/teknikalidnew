@@ -8,51 +8,52 @@ datasource db {
 }
 
 model Stock {
-  id        Int       @id @default(autoincrement())
-  ticker    String    @unique @db.VarChar(20)
-  name      String    @db.VarChar(255)
-  sector    String    @db.VarChar(100)
-  listingBoard String? @db.VarChar(50)
-  assetClass AssetClass @default(EQUITY)
-  isActive  Boolean   @default(true)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id           Int        @id @default(autoincrement())
+  ticker       String     @unique @db.VarChar(20)
+  name         String     @db.VarChar(255)
+  sector       String     @db.VarChar(100)
+  listingBoard String?    @db.VarChar(50)
+  assetClass   AssetClass @default(EQUITY)
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
   // Company profile (from IDX)
-  subSector    String?   @db.VarChar(100)
-  listingDate  DateTime? @db.Date
-  address      String?   @db.VarChar(500)
-  website      String?   @db.VarChar(255)
-  phone        String?   @db.VarChar(50)
-  email        String?   @db.VarChar(100)
-  logo         String?   @db.VarChar(500)
+  subSector   String?   @db.VarChar(100)
+  listingDate DateTime? @db.Date
+  address     String?   @db.VarChar(500)
+  website     String?   @db.VarChar(255)
+  phone       String?   @db.VarChar(50)
+  email       String?   @db.VarChar(100)
+  logo        String?   @db.VarChar(500)
 
   // Enhanced profile (from IDX detail API)
-  industry     String?   @db.VarChar(100)
-  subIndustry  String?   @db.VarChar(100)
-  fax          String?   @db.VarChar(50)
-  npwp         String?   @db.VarChar(50)
+  industry         String? @db.VarChar(100)
+  subIndustry      String? @db.VarChar(100)
+  fax              String? @db.VarChar(50)
+  npwp             String? @db.VarChar(50)
   businessActivity String? @db.VarChar(500)
 
   // Trading info (from IDX trading API)
-  listedShares             BigInt?
-  foreignOwnershipPercent  Decimal? @db.Decimal(6, 2)
-  isinCode                 String?  @db.VarChar(20)
+  listedShares            BigInt?
+  foreignOwnershipPercent Decimal? @db.Decimal(6, 2)
+  isinCode                String?  @db.VarChar(20)
 
-  prices       StockPrice[]
-  indicators   StockIndicator[]
-  fundamentals StockFundamental[]
-  shareholders StockShareholder[]
-  directors    StockDirector[]
-  commissioners StockCommissioner[]
-  subsidiaries   StockSubsidiary[]
-  dividends      StockDividend[]
-  watchlist    Watchlist[]
-  paperPositions PaperPosition[]
-  paperOrders    PaperOrder[]
+  prices            StockPrice[]
+  indicators        StockIndicator[]
+  fundamentals      StockFundamental[]
+  shareholders      StockShareholder[]
+  directors         StockDirector[]
+  commissioners     StockCommissioner[]
+  subsidiaries      StockSubsidiary[]
+  dividends         StockDividend[]
+  watchlist         Watchlist[]
+  paperPositions    PaperPosition[]
+  paperOrders       PaperOrder[]
   portfolioHoldings PortfolioHolding[]
-  @@index([isinCode])
+  foreignFlows      ForeignFlow[]
 
+  @@index([isinCode])
   @@index([sector])
   @@index([isActive])
   @@index([listingBoard])
@@ -77,42 +78,42 @@ model StockPrice {
 }
 
 model StockIndicator {
-  id         Int      @id @default(autoincrement())
-  stockId    Int
-  date       DateTime @db.Date
-  interval   String   @db.VarChar(10)
+  id       Int      @id @default(autoincrement())
+  stockId  Int
+  date     DateTime @db.Date
+  interval String   @db.VarChar(10)
 
-  sma20      Decimal? @db.Decimal(12, 2)
-  sma50      Decimal? @db.Decimal(12, 2)
-  sma200     Decimal? @db.Decimal(12, 2)
-  ema12      Decimal? @db.Decimal(12, 2)
-  ema26      Decimal? @db.Decimal(12, 2)
+  sma20  Decimal? @db.Decimal(12, 2)
+  sma50  Decimal? @db.Decimal(12, 2)
+  sma200 Decimal? @db.Decimal(12, 2)
+  ema12  Decimal? @db.Decimal(12, 2)
+  ema26  Decimal? @db.Decimal(12, 2)
 
   rsi14      Decimal? @db.Decimal(8, 2)
   macdLine   Decimal? @db.Decimal(12, 4)
   macdSignal Decimal? @db.Decimal(12, 4)
   macdHist   Decimal? @db.Decimal(12, 4)
 
-  bbUpper    Decimal? @db.Decimal(12, 2)
-  bbMiddle   Decimal? @db.Decimal(12, 2)
-  bbLower    Decimal? @db.Decimal(12, 2)
+  bbUpper  Decimal? @db.Decimal(12, 2)
+  bbMiddle Decimal? @db.Decimal(12, 2)
+  bbLower  Decimal? @db.Decimal(12, 2)
 
-  stochK          Decimal?  @db.Decimal(8, 2)
-  stochD          Decimal?  @db.Decimal(8, 2)
-  adx             Decimal?  @db.Decimal(8, 2)
-  vwap            Decimal?  @db.Decimal(12, 2)
-  atr             Decimal?  @db.Decimal(12, 2)
-  obv             Decimal?  @db.Decimal(16, 2)
-  obvTrend        String?   @db.VarChar(15)
-  supertrend      Decimal?  @db.Decimal(12, 2)
-  smaCrossSignal  String?   @db.VarChar(20)
-  smaCrossDate    DateTime? @db.Date
-  emaCrossSignal  String?   @db.VarChar(20)
-  emaCrossDate    DateTime? @db.Date
+  stochK         Decimal?  @db.Decimal(8, 2)
+  stochD         Decimal?  @db.Decimal(8, 2)
+  adx            Decimal?  @db.Decimal(8, 2)
+  vwap           Decimal?  @db.Decimal(12, 2)
+  atr            Decimal?  @db.Decimal(12, 2)
+  obv            Decimal?  @db.Decimal(16, 2)
+  obvTrend       String?   @db.VarChar(15)
+  supertrend     Decimal?  @db.Decimal(12, 2)
+  smaCrossSignal String?   @db.VarChar(20)
+  smaCrossDate   DateTime? @db.Date
+  emaCrossSignal String?   @db.VarChar(20)
+  emaCrossDate   DateTime? @db.Date
 
-  signalScore     Decimal?  @db.Decimal(5, 2)
-  signalLabel     String?   @db.VarChar(20)
-  isGorengan      Boolean   @default(false)
+  signalScore Decimal? @db.Decimal(5, 2)
+  signalLabel String?  @db.VarChar(20)
+  isGorengan  Boolean  @default(false)
 
   stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
 
@@ -135,9 +136,9 @@ model StockFundamental {
 
   // Extended fields (from Yahoo Finance)
   sharesOutstanding        BigInt?
-  beta                     Decimal?  @db.Decimal(8, 4)
+  beta                     Decimal? @db.Decimal(8, 4)
   averageDailyVolume3Month BigInt?
-  bookValue                Decimal?  @db.Decimal(12, 2)
+  bookValue                Decimal? @db.Decimal(12, 2)
 
   stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
 
@@ -202,6 +203,22 @@ model StockSubsidiary {
   @@index([stockId])
 }
 
+/// Aliran dana asing per saham per sesi (source: IDX TradingSummary GetStockSummary,
+/// di-sync via idx_foreign_sync.py — usp-2026-10-24-04, owner-directed 24 Okt).
+model ForeignFlow {
+  id          Int      @id @default(autoincrement())
+  stockId     Int
+  date        DateTime @db.Date
+  foreignBuy  Decimal  @db.Decimal(20, 2) // LEMBAR beli asing (IDX TradingSummary)
+  foreignSell Decimal  @db.Decimal(20, 2) // LEMBAR jual asing (IDX TradingSummary)
+
+  stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+
+  @@unique([stockId, date])
+  @@index([date, foreignBuy(sort: Desc)])
+  @@index([date, foreignSell(sort: Desc)])
+}
+
 model StockDividend {
   id          Int       @id @default(autoincrement())
   stockId     Int
@@ -236,63 +253,63 @@ model CachedApiCall {
 // ── Auth (NextAuth) ──────────────────────────────────────
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  emailVerified DateTime?
-  name          String?
-  username      String    @unique
-  image         String?
-  bio           String?   @db.VarChar(200)
-  socialLinks   Json?
-  role          Role      @default(USER)
-  isPremium     Boolean   @default(false)
-  premiumPlan   String?   @db.VarChar(20)
+  id               String    @id @default(cuid())
+  email            String    @unique
+  emailVerified    DateTime?
+  name             String?
+  username         String    @unique
+  image            String?
+  bio              String?   @db.VarChar(200)
+  socialLinks      Json?
+  role             Role      @default(USER)
+  isPremium        Boolean   @default(false)
+  premiumPlan      String?   @db.VarChar(20)
   premiumExpiresAt DateTime?
-  reputation   Int       @default(0)
+  reputation       Int       @default(0)
   lastDailyClaimAt DateTime?
-  dailyStreak      Int      @default(0)
-  customTitle   String?  @db.VarChar(30)
-  bannedAt      DateTime?
-  signupIp      String?   @db.VarChar(45)
-  signupAsn     String?   @db.VarChar(20)
-  flaggedAt     DateTime?
-  sessionVersion Int      @default(0)
-  portfolioPublic Boolean @default(false)
-  createdAt     DateTime  @default(now())
+  dailyStreak      Int       @default(0)
+  customTitle      String?   @db.VarChar(30)
+  bannedAt         DateTime?
+  signupIp         String?   @db.VarChar(45)
+  signupAsn        String?   @db.VarChar(20)
+  flaggedAt        DateTime?
+  sessionVersion   Int       @default(0)
+  portfolioPublic  Boolean   @default(false)
+  createdAt        DateTime  @default(now())
 
-  accounts           Account[]
-  sessions           Session[]
-  posts              Post[]
-  comments           Comment[]
-  watchlist          Watchlist[]
-  likes              Like[]
-  reports            Report[]
-  following          Follow[]          @relation("Following")
-  followers          Follow[]          @relation("Followers")
-  blocking           Block[]           @relation("Blocking")
-  blocked            Block[]           @relation("Blocked")
-  stockFollows       StockFollow[]
-  notifications      Notification[]    @relation("Notifications")
-  notificationActions Notification[]   @relation("NotificationActions")
-  bookmarks          Bookmark[]
-  reposts            Repost[]
-  reactions          Reaction[]
-  pollVotes          PollVote[]
-  articles           Article[]
-  reviewedArticles  Article[]      @relation("ReviewedArticles")
-  auditLogs          AuditLog[]
-  imageGenJobs       ImageGenerationJob[]
-  portfolioHoldings  PortfolioHolding[]
-  achievements       Achievement[]
-  paperAccount       PaperAccount?
-  submittedQuestions Question[]
-  questionFeedback   QuestionFeedback[]
-  payments           Payment[]
-  pageViews          PageView[]
-  shareEvents        ShareEvent[]
-  savedScreeners     SavedScreener[]
-  screenerAlerts     ScreenerAlert[]
-  theses             StockThesis[]
+  accounts            Account[]
+  sessions            Session[]
+  posts               Post[]
+  comments            Comment[]
+  watchlist           Watchlist[]
+  likes               Like[]
+  reports             Report[]
+  following           Follow[]             @relation("Following")
+  followers           Follow[]             @relation("Followers")
+  blocking            Block[]              @relation("Blocking")
+  blocked             Block[]              @relation("Blocked")
+  stockFollows        StockFollow[]
+  notifications       Notification[]       @relation("Notifications")
+  notificationActions Notification[]       @relation("NotificationActions")
+  bookmarks           Bookmark[]
+  reposts             Repost[]
+  reactions           Reaction[]
+  pollVotes           PollVote[]
+  articles            Article[]
+  reviewedArticles    Article[]            @relation("ReviewedArticles")
+  auditLogs           AuditLog[]
+  imageGenJobs        ImageGenerationJob[]
+  portfolioHoldings   PortfolioHolding[]
+  achievements        Achievement[]
+  paperAccount        PaperAccount?
+  submittedQuestions  Question[]
+  questionFeedback    QuestionFeedback[]
+  payments            Payment[]
+  pageViews           PageView[]
+  shareEvents         ShareEvent[]
+  savedScreeners      SavedScreener[]
+  screenerAlerts      ScreenerAlert[]
+  theses              StockThesis[]
 }
 
 enum Role {
@@ -306,7 +323,7 @@ enum AssetClass {
 }
 
 model Account {
-  id                String   @id @default(cuid())
+  id                String  @id @default(cuid())
   userId            String
   type              String
   provider          String
@@ -318,17 +335,17 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
 
 model Session {
-  id           String @id @default(cuid())
-  sessionToken String @unique
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
   userId       String
   expires      DateTime
-  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
@@ -342,22 +359,22 @@ model VerificationToken {
 // ── Community ────────────────────────────────────────────
 
 model Post {
-  id            String   @id @default(cuid())
-  content       String   @db.VarChar(1000)
-  tickerTag     String?  @db.VarChar(20)
-  authorId      String
-  imageUrl      String?  @db.VarChar(1000)
-  likesCount         Int      @default(0)
-  commentsCount      Int      @default(0)
-  repostsCount       Int      @default(0)
-  predictionTarget    Decimal?  @db.Decimal(12, 2)
-  predictionDirection String?   @db.VarChar(10)
-  predictionOutcome   String?   @db.VarChar(10)
+  id                   String    @id @default(cuid())
+  content              String    @db.VarChar(1000)
+  tickerTag            String?   @db.VarChar(20)
+  authorId             String
+  imageUrl             String?   @db.VarChar(1000)
+  likesCount           Int       @default(0)
+  commentsCount        Int       @default(0)
+  repostsCount         Int       @default(0)
+  predictionTarget     Decimal?  @db.Decimal(12, 2)
+  predictionDirection  String?   @db.VarChar(10)
+  predictionOutcome    String?   @db.VarChar(10)
   predictionResolvedAt DateTime?
-  createdAt           DateTime  @default(now())
-  pinned              Boolean   @default(false)
+  createdAt            DateTime  @default(now())
+  pinned               Boolean   @default(false)
 
-  author             User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  author        User                 @relation(fields: [authorId], references: [id], onDelete: Cascade)
   comments      Comment[]
   likes         Like[]
   bookmarks     Bookmark[]
@@ -366,7 +383,7 @@ model Post {
   tags          PostTag[]
   reposts       Repost[]
   reactions     Reaction[]
-  poll         Poll?
+  poll          Poll?
 
   @@index([tickerTag])
   @@index([createdAt(sort: Desc)])
@@ -402,21 +419,21 @@ model Repost {
 }
 
 model ImageGenerationJob {
-  id               String    @id @default(cuid())
-  prompt           String    @db.VarChar(2000)
-  source           String    @db.VarChar(20)
-  status           String    @default("pending")
-  comfyuiPromptId  String?
-  outputFilename   String?   @db.VarChar(500)
-  imageUrl         String?   @db.VarChar(1000)
-  error            String?   @db.VarChar(500)
-  requestedBy      String
-  postId           String?
-  createdAt        DateTime  @default(now())
-  completedAt      DateTime?
+  id              String    @id @default(cuid())
+  prompt          String    @db.VarChar(2000)
+  source          String    @db.VarChar(20)
+  status          String    @default("pending")
+  comfyuiPromptId String?
+  outputFilename  String?   @db.VarChar(500)
+  imageUrl        String?   @db.VarChar(1000)
+  error           String?   @db.VarChar(500)
+  requestedBy     String
+  postId          String?
+  createdAt       DateTime  @default(now())
+  completedAt     DateTime?
 
-  requester User?  @relation(fields: [requestedBy], references: [id], onDelete: Cascade)
-  post      Post?  @relation(fields: [postId], references: [id], onDelete: SetNull)
+  requester User? @relation(fields: [requestedBy], references: [id], onDelete: Cascade)
+  post      Post? @relation(fields: [postId], references: [id], onDelete: SetNull)
 
   @@index([status])
   @@index([requestedBy])
@@ -424,18 +441,18 @@ model ImageGenerationJob {
 }
 
 model Comment {
-  id          String    @id @default(cuid())
-  content     String    @db.VarChar(500)
+  id          String   @id @default(cuid())
+  content     String   @db.VarChar(500)
   authorId    String
   postId      String?
-  stockTicker String?   @db.VarChar(20)
+  stockTicker String?  @db.VarChar(20)
   parentId    String?
-  createdAt   DateTime  @default(now())
+  createdAt   DateTime @default(now())
 
-  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  post        Post?     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  parent      Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
-  replies     Comment[] @relation("CommentReplies")
+  author        User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  post          Post?          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  parent        Comment?       @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies       Comment[]      @relation("CommentReplies")
   notifications Notification[]
 
   @@index([postId])
@@ -452,8 +469,8 @@ model Watchlist {
   stockTicker String
   createdAt   DateTime @default(now())
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  stock       Stock    @relation(fields: [stockTicker], references: [ticker], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stock Stock @relation(fields: [stockTicker], references: [ticker], onDelete: Cascade)
 
   @@unique([userId, stockTicker])
   @@index([userId])
@@ -462,16 +479,16 @@ model Watchlist {
 // A user's committed directional thesis on a stock (target/stop/rationale).
 // Breach state is computed on-demand against live price + signal (no cron).
 model StockThesis {
-  id          String   @id @default(cuid())
-  userId      String
-  ticker      String   @db.VarChar(20)
-  bias        String   @db.VarChar(10) // BULLISH | BEARISH | NEUTRAL
-  targetPrice Decimal? @db.Decimal(12, 2)
-  stopLoss    Decimal? @db.Decimal(12, 2)
-  rationale   String?  @db.VarChar(280)
-  lastNotifiedBreach String? @db.VarChar(20)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                 String   @id @default(cuid())
+  userId             String
+  ticker             String   @db.VarChar(20)
+  bias               String   @db.VarChar(10) // BULLISH | BEARISH | NEUTRAL
+  targetPrice        Decimal? @db.Decimal(12, 2)
+  stopLoss           Decimal? @db.Decimal(12, 2)
+  rationale          String?  @db.VarChar(280)
+  lastNotifiedBreach String?  @db.VarChar(20)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -491,8 +508,8 @@ model PortfolioHolding {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  stock       Stock    @relation(fields: [stockTicker], references: [ticker], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stock Stock @relation(fields: [stockTicker], references: [ticker], onDelete: Cascade)
 
   @@unique([userId, stockTicker])
   @@index([userId])
@@ -504,8 +521,8 @@ model Like {
   userId String
   postId String
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId])
 }
@@ -587,7 +604,7 @@ model Report {
   status     ReportStatus @default(PENDING)
   createdAt  DateTime     @default(now())
 
-  reporter   User         @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  reporter User @relation(fields: [reporterId], references: [id], onDelete: Cascade)
 
   @@index([status])
   @@index([createdAt(sort: Desc)])
@@ -628,10 +645,10 @@ model Follow {
 }
 
 model Block {
-  id         String   @id @default(cuid())
-  blockerId  String
-  blockedId  String
-  createdAt  DateTime @default(now())
+  id        String   @id @default(cuid())
+  blockerId String
+  blockedId String
+  createdAt DateTime @default(now())
 
   blocker User @relation("Blocking", fields: [blockerId], references: [id], onDelete: Cascade)
   blocked User @relation("Blocked", fields: [blockedId], references: [id], onDelete: Cascade)
@@ -728,29 +745,29 @@ enum WaveStatus {
 }
 
 model Article {
-  id             String        @id @default(cuid())
-  slug           String        @unique @db.VarChar(255)
-  title          String        @db.VarChar(255)
-  excerpt        String        @db.VarChar(500)
-  coverImageUrl  String?       @db.VarChar(1000)
-  content        String        @db.Text
-  authorId       String
-  reviewedById   String?
-  tags           String[]      @default([])
-  status         ArticleStatus @default(DRAFT)
-  articleType    ArticleType   @default(STOCK_ANALYSIS)
-  aiProvider     String?       @db.VarChar(20)
-  tickerTag      String?       @db.VarChar(20)
-  generationMeta Json?
+  id              String        @id @default(cuid())
+  slug            String        @unique @db.VarChar(255)
+  title           String        @db.VarChar(255)
+  excerpt         String        @db.VarChar(500)
+  coverImageUrl   String?       @db.VarChar(1000)
+  content         String        @db.Text
+  authorId        String
+  reviewedById    String?
+  tags            String[]      @default([])
+  status          ArticleStatus @default(DRAFT)
+  articleType     ArticleType   @default(STOCK_ANALYSIS)
+  aiProvider      String?       @db.VarChar(20)
+  tickerTag       String?       @db.VarChar(20)
+  generationMeta  Json?
   version         Int           @default(1)
   lastGeneratedAt DateTime      @default(now())
   isListed        Boolean       @default(true)
-  publishedAt    DateTime      @default(now())
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  publishedAt     DateTime      @default(now())
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
-  author         User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  reviewedBy     User?         @relation("ReviewedArticles", fields: [reviewedById], references: [id], onDelete: NoAction)
+  author     User  @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  reviewedBy User? @relation("ReviewedArticles", fields: [reviewedById], references: [id], onDelete: NoAction)
 
   @@index([reviewedById])
   @@index([publishedAt])
@@ -760,13 +777,13 @@ model Article {
 }
 
 model WaveAssignment {
-  id               String      @id @default(cuid())
-  ticker           String      @unique @db.VarChar(20)
+  id               String     @id @default(cuid())
+  ticker           String     @unique @db.VarChar(20)
   waveNumber       Int
-  status           WaveStatus  @default(PENDING)
-  archetype        String      @db.VarChar(30)
-  landingArticleId String?     @unique
-  rankedAt         DateTime    @default(now())
+  status           WaveStatus @default(PENDING)
+  archetype        String     @db.VarChar(30)
+  landingArticleId String?    @unique
+  rankedAt         DateTime   @default(now())
   promotedAt       DateTime?
 
   @@index([waveNumber, status])
@@ -832,46 +849,46 @@ enum PaperMood {
 }
 
 model PaperAccount {
-  id              String   @id @default(cuid())
-  userId          String   @unique
-  balance         Decimal  @db.Decimal(16, 2)
-  initialBalance  Decimal  @db.Decimal(16, 2)
-  isPublic        Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  balance        Decimal  @db.Decimal(16, 2)
+  initialBalance Decimal  @db.Decimal(16, 2)
+  isPublic       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  positions  PaperPosition[]
-  orders     PaperOrder[]
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  positions PaperPosition[]
+  orders    PaperOrder[]
 
   @@index([userId])
 }
 
 model PaperPosition {
-  id              String   @id @default(cuid())
-  accountId       String
-  stockTicker     String
-  side            PaperTradeSide   @default(BUY)
-  entryPrice      Decimal  @db.Decimal(12, 2)
-  quantity        Int
-  status          PaperPositionStatus @default(OPEN)
+  id          String              @id @default(cuid())
+  accountId   String
+  stockTicker String
+  side        PaperTradeSide      @default(BUY)
+  entryPrice  Decimal             @db.Decimal(12, 2)
+  quantity    Int
+  status      PaperPositionStatus @default(OPEN)
 
   stopLossPrice   Decimal? @db.Decimal(12, 2)
   takeProfitPrice Decimal? @db.Decimal(12, 2)
 
-  reason          String?  @db.VarChar(500)
-  strategyTags    Json?
-  mood            PaperMood?
+  reason       String?    @db.VarChar(500)
+  strategyTags Json?
+  mood         PaperMood?
 
-  closePrice      Decimal? @db.Decimal(12, 2)
-  realizedPnl     Decimal? @db.Decimal(16, 2)
-  realizedPnlPct  Decimal? @db.Decimal(8, 2)
+  closePrice     Decimal? @db.Decimal(12, 2)
+  realizedPnl    Decimal? @db.Decimal(16, 2)
+  realizedPnlPct Decimal? @db.Decimal(8, 2)
 
-  openedAt        DateTime @default(now())
-  closedAt        DateTime?
+  openedAt DateTime  @default(now())
+  closedAt DateTime?
 
-  account         PaperAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  stock           Stock        @relation(fields: [stockTicker], references: [ticker], onDelete: Cascade)
+  account PaperAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  stock   Stock        @relation(fields: [stockTicker], references: [ticker], onDelete: Cascade)
 
   @@index([accountId])
   @@index([stockTicker])
@@ -879,29 +896,29 @@ model PaperPosition {
 }
 
 model PaperOrder {
-  id           String          @id @default(cuid())
-  accountId    String
-  stockTicker  String
-  side         PaperTradeSide
-  orderType    PaperOrderType
-  quantity     Int
-  targetPrice  Decimal         @db.Decimal(12, 2)
-  status       PaperOrderStatus @default(PENDING)
+  id          String           @id @default(cuid())
+  accountId   String
+  stockTicker String
+  side        PaperTradeSide
+  orderType   PaperOrderType
+  quantity    Int
+  targetPrice Decimal          @db.Decimal(12, 2)
+  status      PaperOrderStatus @default(PENDING)
 
-  positionId   String?
+  positionId String?
 
-  reason       String?         @db.VarChar(500)
+  reason       String?    @db.VarChar(500)
   strategyTags Json?
   mood         PaperMood?
 
-  filledAt     DateTime?
-  filledPrice  Decimal?        @db.Decimal(12, 2)
+  filledAt    DateTime?
+  filledPrice Decimal?  @db.Decimal(12, 2)
 
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  account      PaperAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  stock        Stock        @relation(fields: [stockTicker], references: [ticker], onDelete: Cascade)
+  account PaperAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  stock   Stock        @relation(fields: [stockTicker], references: [ticker], onDelete: Cascade)
 
   @@index([accountId])
   @@index([status])
@@ -909,20 +926,20 @@ model PaperOrder {
 }
 
 model AgentJob {
-  id           String   @id @default(cuid())
-  agentType    String   @db.VarChar(50)
-  status       String   @default("pending") @db.VarChar(20)
-  priority     Int      @default(5)
-  payload      Json
-  result       Json?
-  error        String?  @db.Text
-  attempts     Int      @default(0)
-  maxAttempts  Int      @default(3)
-  parentJobId  String?
-  startedAt    DateTime?
-  completedAt  DateTime?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          String    @id @default(cuid())
+  agentType   String    @db.VarChar(50)
+  status      String    @default("pending") @db.VarChar(20)
+  priority    Int       @default(5)
+  payload     Json
+  result      Json?
+  error       String?   @db.Text
+  attempts    Int       @default(0)
+  maxAttempts Int       @default(3)
+  parentJobId String?
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   @@index([status, priority])
   @@index([agentType, status])
@@ -952,7 +969,7 @@ model CronLog {
   durationMs   Int
   result       Json?
   errorMessage String?  @db.Text
-  triggeredBy  String   @db.VarChar(20) @default("cron")
+  triggeredBy  String   @default("cron") @db.VarChar(20)
 
   @@index([jobName, startedAt(sort: Desc)])
   @@index([startedAt])
@@ -978,30 +995,30 @@ enum QuestionFormat {
 }
 
 model Question {
-  id              String          @id @default(cuid())
-  slug            String          @unique @db.VarChar(255)
-  question        String          @db.VarChar(500)
-  shortAnswer     String          @db.VarChar(1000)
-  longAnswer      String?         @db.Text
-  format          QuestionFormat  @default(FAQ)
-  category        String          @db.VarChar(50)
-  tags            String[]        @default([])
-  relatedTickers  String[]        @default([])
-  source          QuestionSource  @default(AI_GENERATED)
-  status          QuestionStatus  @default(ANSWERED)
+  id              String         @id @default(cuid())
+  slug            String         @unique @db.VarChar(255)
+  question        String         @db.VarChar(500)
+  shortAnswer     String         @db.VarChar(1000)
+  longAnswer      String?        @db.Text
+  format          QuestionFormat @default(FAQ)
+  category        String         @db.VarChar(50)
+  tags            String[]       @default([])
+  relatedTickers  String[]       @default([])
+  source          QuestionSource @default(AI_GENERATED)
+  status          QuestionStatus @default(ANSWERED)
   submittedById   String?
-  aiProvider      String?         @db.VarChar(20)
+  aiProvider      String?        @db.VarChar(20)
   generationMeta  Json?
-  views           Int             @default(0)
-  helpfulVotes    Int             @default(0)
-  unhelpfulVotes  Int             @default(0)
-  metaDescription String?         @db.VarChar(300)
-  publishedAt     DateTime        @default(now())
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  views           Int            @default(0)
+  helpfulVotes    Int            @default(0)
+  unhelpfulVotes  Int            @default(0)
+  metaDescription String?        @db.VarChar(300)
+  publishedAt     DateTime       @default(now())
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 
-  submittedBy     User?           @relation(fields: [submittedById], references: [id], onDelete: SetNull)
-  feedback        QuestionFeedback[]
+  submittedBy User?              @relation(fields: [submittedById], references: [id], onDelete: SetNull)
+  feedback    QuestionFeedback[]
 
   @@index([status, category])
   @@index([status, publishedAt(sort: Desc)])
@@ -1009,31 +1026,31 @@ model Question {
 }
 
 model QuestionFeedback {
-  id          String   @id @default(cuid())
-  questionId  String
-  userId      String
-  isHelpful   Boolean
-  createdAt   DateTime @default(now())
+  id         String   @id @default(cuid())
+  questionId String
+  userId     String
+  isHelpful  Boolean
+  createdAt  DateTime @default(now())
 
-  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, questionId])
   @@index([questionId])
 }
 
 model Payment {
-  id          String   @id @default(cuid())
-  orderId     String   @unique
+  id          String    @id @default(cuid())
+  orderId     String    @unique
   userId      String?
-  planId      String   @db.VarChar(20)
+  planId      String    @db.VarChar(20)
   amount      Int
-  status      String   @db.VarChar(20)
-  paymentType String?  @db.VarChar(30)
+  status      String    @db.VarChar(20)
+  paymentType String?   @db.VarChar(30)
   paidAt      DateTime?
   expiresAt   DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
@@ -1054,7 +1071,7 @@ model PageView {
   isBot     Boolean  @default(false)
   createdAt DateTime @default(now())
 
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([path])
   @@index([createdAt])
@@ -1075,7 +1092,7 @@ model ShareEvent {
   isBot     Boolean  @default(false)
   createdAt DateTime @default(now())
 
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([createdAt])
   @@index([target, createdAt(sort: Desc)])
@@ -1090,7 +1107,7 @@ model EngagementEvent {
   path      String   @db.VarChar(255)
   type      String   @db.VarChar(16) // dwell_tick | scroll_max | cta_click
   label     String?  @db.VarChar(32) // star_add | preset_copy | radar_open | preset_save
-  valueNum  Int?     // detik utk dwell_tick, persen utk scroll_max
+  valueNum  Int? // detik utk dwell_tick, persen utk scroll_max
   createdAt DateTime @default(now())
 
   @@index([createdAt])
@@ -1100,38 +1117,38 @@ model EngagementEvent {
 }
 
 model SavedScreener {
-  id              String   @id @default(cuid())
+  id              String    @id @default(cuid())
   userId          String
-  name            String   @db.VarChar(100)
-  description     String?  @db.VarChar(255)
+  name            String    @db.VarChar(100)
+  description     String?   @db.VarChar(255)
   filters         Json
-  tradingStyle    String?  @db.VarChar(30)
-  isDefault       Boolean  @default(false)
+  tradingStyle    String?   @db.VarChar(30)
+  isDefault       Boolean   @default(false)
   lastRunAt       DateTime?
   lastResultCount Int?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  alert           ScreenerAlert?
+  user  User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  alert ScreenerAlert?
 
   @@unique([userId, name])
   @@index([userId])
 }
 
 model ScreenerAlert {
-  id              String   @id @default(cuid())
+  id              String    @id @default(cuid())
   userId          String
-  savedScreenerId String   @unique
-  isEnabled       Boolean  @default(true)
-  frequency       String   @default("daily") @db.VarChar(20)
+  savedScreenerId String    @unique
+  isEnabled       Boolean   @default(true)
+  frequency       String    @default("daily") @db.VarChar(20)
   lastTriggeredAt DateTime?
   lastMatchCount  Int?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  savedScreener   SavedScreener   @relation(fields: [savedScreenerId], references: [id], onDelete: Cascade)
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  savedScreener SavedScreener @relation(fields: [savedScreenerId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([isEnabled, frequency])
@@ -1153,7 +1170,7 @@ model BlockedIp {
 /// (untuk kirim) atau nomor WA ter-normalisasi (hash utk privasi publik).
 model WaitlistSubscriber {
   id        Int      @id @default(autoincrement())
-  channel   String   @db.VarChar(8)  // "wa" | "email"
+  channel   String   @db.VarChar(8) // "wa" | "email"
   value     String   @unique @db.VarChar(255)
   source    String   @default("waitlist-landing") @db.VarChar(64)
   createdAt DateTime @default(now())
