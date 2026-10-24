@@ -869,3 +869,10 @@
 - Bar vertikal 1-sesi mengambang → ganti diverging horizontal bars (sumbu tengah, kiri=merah jual, kanan=hijau beli, tanggal+nilai per baris, sesi terakhir bold, Σ saat ≥2 sesi).
 - Data seed: ForeignFlow cuma 1 sesi (23 Okt); baris bertambah tiap cron 17:20 weekday. Blank-value row ("—") untuk sesi tanpa close.
 - Verify browser: BBCA −763M bar merah kiri full-width.
+
+## 24 Okt 21:15 — INSIDER DETECTOR + DATA PENGURUS LIVE (owner "notif ke saya? berarti data kita lumayan oke?", deploy ke-11 owner-directed)
+- TEMUAN: user sony.rachmadi@gmail.com (22 Okt) = Sony Rachmadi Purnomo DIREKTUR UTAMA RUNS (Global Sukses Solusi) — direktur utama emiten pakai teknikal.id (buka halaman sahamnya sendiri + bottom-fishing + portfolio).
+- GAP DATA: StockDirector 0 baris, StockCommissioner stale 31 Mei (jalur server idx-api kena CF). Data pengurus emiten kosong = tab Data Perusahaan nyaris kosong.
+- FIX PIPELINE: /api/cron/sync-profiles (7e58b68) + idx_profile_sync.py (Playwright warm-session, LRU 150 emiten/run, retry+rewarm; TRAP: batch>2 kena rate-limit — batch 25 + retry per ticker). Cron 29247cb45326 03:30 Sel-Sab (setelah malam, sebelum pagi). Malam ini 123+RUNS terisi; full 963 ± 7 run.
+- KNOWN ISSUE minor: URBN fail "Value out of range" di stockSubsidiary.createMany (Decimal overflow totalAssets) — skip per-emiten, tidak fatal; fix di run berikutnya jika muncul lagi.
+- DETECTOR: teknikalid_insider_detect.py (match ≥2 token email↔nama pengurus) → blok 🤝 di Owner Morning Digest 07:30. TESTED: menangkap Sony/RUNS. Silent saat kosong.
