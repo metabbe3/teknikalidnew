@@ -54,7 +54,7 @@ export function SectorHeatmap({ sectors }: { sectors: Record<string, SectorData>
                   isPositive ? "text-bullish" : "text-bearish"
                 }`}
               >
-                {isPositive ? "+" : ""}
+                {isPositive ? "+" : "−"}
                 {formatPercentPlain(avgChange)}%
               </span>
             </>
