@@ -219,6 +219,12 @@ export default async function StockDetailPage({
     ? IDX_STOCKS.filter((s) => s.sector === stock.sector && s.ticker !== ticker).map((s) => s.ticker)
     : [];
 
+  // Owner 24 Okt: chips sektor "terlalu simple" → 6 peer pertama jadi mini-cards dgn harga+%
+  const peerBatch = sectorPeers.length
+    ? await stockMarketService.getStockBatchWithIndicators(sectorPeers.slice(0, 6)).catch(() => [])
+    : [];
+  const peerMap = new Map(peerBatch.map((b) => [b.ticker, b]));
+
   const [socialData, { structure: marketStructure }, fundamentalRow, idxCommissioners, idxDirectors, idxShareholders, idxSubsidiaries, idxDividends, relatedArticles, sectorArticles] = await Promise.all([
     prisma.post.aggregate({
       where: { tickerTag: ticker, createdAt: { gte: subDays(new Date(), 7) } },
@@ -1152,17 +1158,47 @@ export default async function StockDetailPage({
             <p className="text-sm font-semibold text-text-primary">
               Saham Sektor {sectorToBahasa(stock.sector)} Lainnya
             </p>
-            <div className="flex flex-wrap gap-2">
-              {sectorPeers.slice(0, 10).map((peer) => (
-                <Link
-                  key={peer}
-                  href={`/stocks/${peer}`}
-                  className="text-xs font-mono font-semibold px-3 py-1.5 rounded-full bg-bg-card depth-shadow text-text-secondary hover:text-accent hover:border-accent/20 transition-colors"
-                >
-                  {stripJk(peer)}
-                </Link>
-              ))}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+              {sectorPeers.slice(0, 6).map((peer) => {
+                const b = peerMap.get(peer);
+                return (
+                  <Link
+                    key={peer}
+                    href={`/stocks/${peer}`}
+                    className="group bg-bg-card rounded-lg depth-shadow px-3 py-2.5 hover:border-accent/30 hover:depth-shadow-hover transition-all"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-mono text-xs font-bold text-text-primary group-hover:text-accent transition-colors">
+                        {stripJk(peer)}
+                      </span>
+                      {b?.changePercent !== null && b?.changePercent !== undefined && (
+                        <span className={`text-[10px] font-semibold tabular-nums ${changeColor(b.changePercent)}`}>
+                          {b.changePercent >= 0 ? "▲" : "▼"} {Math.abs(b.changePercent).toFixed(1)}%
+                        </span>
+                      )}
+                    </div>
+                    {b?.close !== null && b?.close !== undefined ? (
+                      <p className="text-[11px] text-text-secondary tabular-nums mt-0.5">{formatPrice(b.close)}</p>
+                    ) : (
+                      <p className="text-[11px] text-text-tertiary mt-0.5">Analisa →</p>
+                    )}
+                  </Link>
+                );
+              })}
             </div>
+            {sectorPeers.length > 6 && (
+              <div className="flex flex-wrap gap-2">
+                {sectorPeers.slice(6, 14).map((peer) => (
+                  <Link
+                    key={peer}
+                    href={`/stocks/${peer}`}
+                    className="text-xs font-mono font-semibold px-3 py-1.5 rounded-full bg-bg-card depth-shadow text-text-secondary hover:text-accent hover:border-accent/20 transition-colors"
+                  >
+                    {stripJk(peer)}
+                  </Link>
+                ))}
+              </div>
+            )}
             {/* Sector page link for SEO */}
             <Link
               href={`/sektor/${getSectorSlug(stock.sector)}`}
