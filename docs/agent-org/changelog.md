@@ -673,3 +673,10 @@
 - verify bukti: replay SQL (StockPrice 22-vs-21 + StockIndicator DISTINCT ON + StockFundamental cap; PageView nobot 7d & kalender-week) | live 200: frasa baru x2-4 render, frasa lama 0, kontrol utuh (5.387,91/489/10,76%/Rp1.390/+485%)
 - QA: reviewer 23 Okt (sumber spec); replay CTO independen konfirmasi | impact_check_due: 2026-10-26 (brief Senin 26 Okt bebas superlatif tanpa basis + akademi baru bebas agregat statis)
 - rollback: fullrow /tmp/qa23-{brief,akademi}-backup-*.json + backup db-20261023.sql.gz
+
+### 2026-10-24 08:0x WIB — teknikal-2026-10-20-01 (P1 Point & Badge v1, STICKY)
+- type: feat | PRD: prd-2026-10-24-01 (owner approved-all 24 Okt) | commit: b50cd1f | train: T-1025-N
+- Auto +5 poin/hari saat visit login (SSR WelcomeLoopSection -> reputationService.maybeAwardDaily, idempotent via cacheKey harian existing) + kartu display-only (streak, "+5 poin otomatis tersimpan", badge tier forceShow + total poin). Tombol claim dihapus dari kartu; endpoint /api/reputation backward-compat tak disentuh.
+- verify: tsc 0 error; build hijau; staging :3100 200; live guest-path 0/0 (tak regresi); login-path pasca-deploy kereta malam.
+- QA: idempotency refresh-2x + badge SSR render = verify kereta malam | impact_check_due: 2026-10-27 (reputasi harian rata2 naik ~+5/user aktif; streak berjalan normal)
+- deploy: build-only slot pagi -> kereta T-1025-N (window malam). Rollback: git revert b50cd1f.

@@ -776,3 +776,10 @@
 - Bukti: tsc 0, build EXIT 0 195p, staging :3100 — brief pos 14615 < heroGrid 15403 (dalam hero), 1 link saja, SEO verbatim 3/3 utuh, /berita full variant tak berubah. Data dasar: home 136v/34vis 7d vs brief 5v (100% direct, 0 dari kartu) — diagnosa 21 Okt "butuh konten/CTA" DIPERBAIKI jadi "urutan elemen".
 - Flow (b) audit: artikel brief sehat (51 link /stocks, Sinyal Terkait ada, 1 CTA register) — bottleneck memang discoverability di home. Impact check D+7 (30 Okt): cta_click brief_open > 0 + views brief dari home.
 - Queue: ux-2026-10-23-01 in_train T-1023-N (boarding bukti lengkap di entry) — kereta malam ambil bersama prd-22-01/02 + sec-22-02. Bug baru: 0. SEC GATE: N/A frontend-only.
+
+## 2026-10-24 08:1x — CTO pagi
+- State: FRESH (EOD 23 Okt, 835 rows); site 200 0.35s; docker 4 healthy; kereta T-1023-N SEMALAM TIDAK JALAN (ux-23-01 + adm-23-01 masih in_train — cek slot sore/backoffice malam, jangan double-deploy).
+- Barusan: teknikal-2026-10-20-01 Point&Badge v1 BUILD DONE commit b50cd1f pushed main (tsc 0, build hijau, staging 200, guest 0/0) -> in_train T-1025-N; plist idx-sync Day->Weekday fix (reload = owner manual, lihat decisions.md).
+- In-flight: T-1025-N manifest sementara = teknikal-2026-10-20-01; kandidat join: sec-2026-10-22-02 (npm audit fix, Backend Builder belum eksekusi), prd-2026-10-22-02 (belum dibuild).
+- Jebakan: (1) claude-code pipeline MATI utk glm-5.3 (autocompact thrash) — jangan pakai sampai config window di-fix, patch manual saja utk edit kecil; (2) kartu Daily Reward lama di personalized-beranda masih gated canClaim -> pasca auto-award tampil "Sudah diklaim" (konsisten, biarkan); (3) staging :3100 sudah dimatikan.
+- Langkah pertama slot berikutnya: baca queue -> kereta malam T-1025-N boarding-gate check (login-path verify pasca-deploy: badge render + refresh-2x idempotent + SQL count log harian = 1/user) -> baru task baru.
