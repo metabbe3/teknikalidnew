@@ -398,14 +398,19 @@ export const stockMarketService = {
       }
     }
 
-    const period1 = subDays(new Date(), days);
+    // 1D weekend/pre-market trap (owner 24 Okt: RUNS.JK "no charts"): subDays(now,1)
+    // on Sat evening lands AFTER Friday's close → Yahoo window misses the last
+    // session entirely → 0 bars → empty chart. Same Monday pre-open. Fix: widen
+    // the fetch window for 1D, then slice to the last trading day (WIB).
+    const fetchDays = days === 1 ? 5 : days;
+    const period1 = subDays(new Date(), fetchDays);
     const raw = await fetchChart(ticker, {
       period1,
       period2: new Date(),
       interval,
     });
 
-    return raw.map((row) => ({
+    const mapped = raw.map((row) => ({
       date: (() => {
         const ms = row.date instanceof Date ? row.date.getTime() : new Date(row.date).getTime();
         // Shift UTC→WIB (+7h) so TradingView (which treats all times as UTC) shows Jakarta time
@@ -418,6 +423,12 @@ export const stockMarketService = {
       volume: row.volume,
       adjClose: row.adjClose ?? null,
     }));
+
+    if (days !== 1 || mapped.length === 0) return mapped;
+    // Keep only bars from the last trading day (date field is WIB-shifted).
+    const wibDay = (tsSec: number) => new Date(tsSec * 1000).toISOString().slice(0, 10);
+    const lastDay = wibDay(mapped[mapped.length - 1].date);
+    return mapped.filter((r) => wibDay(r.date) === lastDay);
   },
 
   /** Tanggal bar EOD terakhir level pasar (basis "sesi terakhir" untuk stale-badge saham). */
