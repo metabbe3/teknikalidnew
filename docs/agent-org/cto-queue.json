@@ -2399,6 +2399,29 @@
         "staging_3100": "PASS — brief dalam hero, 1 link, SEO utuh, /berita tak berubah",
         "commit": "83a253f (main, pushed)"
       }
+    },
+    {
+      "id": "teknikal-2026-10-24-02",
+      "created": "2026-10-24T08:40:00+07:00",
+      "title": "Fundamental per-saham v2: isi kolom kosong StockFundamental (beta/bookValue/shares/ROE/margin/EBITDA/debt/cash/target price) + refresh dividend + kalender corp-action valura",
+      "north_star_pillar": "TRUST",
+      "priority": "P1",
+      "status": "pending",
+      "train": "T-1025-N",
+      "prd_id": "prd-2026-10-24-02",
+      "done_when": [
+        "Yahoo quoteSummary crumb-dance fetcher (fc.yahoo.com cookie -> getcrumb -> quoteSummary modules=defaultKeyStatistics,summaryDetail,financialData) jalan utk 965 ticker .JK — VERIFIED live dari Mac mini 24 Okt: beta/bookValue/sharesOutstanding/dividendYield TLKM+BBCA return angka",
+        "Backfill kolom kosong: beta + bookValue + sharesOutstanding + averageDailyVolume3Month (saat ini 0/965 terisi) ke StockFundamental; error per-ticker di-skip dengan log, bukan abort batch",
+        "Field BARU via financialData module: returnOnEquity, profitMargins, ebitda, totalDebt, totalCash, revenueGrowth, earningsGrowth, targetMeanPrice — butuh migration schema (StockFundamental add 8 kolom Decimal/BusinessInt nullable) + generate prisma",
+        "Refresh StockDividend (151 rows stale Juni) via quoteSummary modules=calendar-events (dividends array: exDate, amount)",
+        "Fetcher valura corp-action: curl polos valura.id/kalender?jenis=split|dividen|hak (anti-crawl friendly, verified 24 Okt) -> tabel CorpAction baru (ticker, jenis, rincian, cumDate, recordingDate, efektifDate) -> tampil di halaman saham",
+        "Cron nightly job sync fundamental 02:00 (window kereta) — rate limit Yahoo: batch 965 ticker + sleep 0.5s antar request (~8 menit), crumb refresh tiap 50 ticker",
+        "Screener /stocks bisa filter by PB < x, ROE > y, DER < z (reuses field baru)",
+        "Halaman saham /saham/{ticker} render section Fundamental lengkap (pe/pb/eps/dy/beta/roe/margin/ebitda/debt/cash/target) SSR"
+      ],
+      "qa_plan": "SQL count per kolom: 0 kolom yang masih 0% selain memang tak tersedia di Yahoo (catat daftar); regresi: market-snapshot consistency-test + /saham/BBCA render SSR contain beta+ROE; valura: PBSA split Okt ada di CorpAction table",
+      "estimate": "M",
+      "context": "Sumber = Yahoo Finance quoteSummary (unofficial tapi stabil bertahun-tahun; crumb dance verified dari Mac mini 24 Okt: chart 200 tanpa crumb, quoteSummary 401 Invalid Crumb, setelah fc.yahoo.com cookie + getcrumb = 200 penuh field). Corp action = valura.id (agregator BEI, curl 200 polos, filter ?jenis= tersedia, PBSA split 1:2 Okt 2026 verified). IDX.co.id sendiri = Cloudflare hard-block semua jalur (curl/API/browser CDP) — JANGAN buang waktu crawal IDX. Kolom beta/bookValue/sharesOutstanding/averageDailyVolume3Month SUDAH ada di schema tapi tak pernah terisi (0/965) — job lama hanya pakai v8 chart endpoint. StockDividend 151 rows terakhir Juni = stale. Ticker fundamental pakai format .JK (BBCA.JK)."
     }
   ],
   "tasks": []

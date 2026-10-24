@@ -1627,6 +1627,29 @@
       "qa_plan": "Metric baseline→target: DAU revisit-rate (admin user-analytics) baseline ambil 7d pre-deploy; target +2pp dalam 14d. QA gate: idempotency test 2x hit, badge SSR render, regresi /profile 307.",
       "estimate": "S (1 slot CTO)",
       "owner_approval": "2026-10-24 digest 'Approved all' — FDE block di-override owner; research_brief = baseline kode inline di atas"
+    },
+    {
+      "id": "prd-2026-10-24-02",
+      "title": "Fundamental v2 — data per saham lengkap (Yahoo quoteSummary crumb + valura corp-action)",
+      "north_star_pillar": "TRUST",
+      "problem": "Halaman saham cuma punya pe/pb/eps/dy; 4 kolom schema kosong 0/965; dividen stale Juni; tak ada aksi korporasi (split/HMETD). Investor serius butuh ROE/margin/leverage/target.",
+      "scope_v1": [
+        "Yahoo crumb fetcher + backfill kolom kosong",
+        "8 field financialData baru (migration)",
+        "dividend refresh calendar-events",
+        "CorpAction table via valura.id",
+        "render SSR section Fundamental",
+        "cron 02:00"
+      ],
+      "out_of_scope": [
+        "laporan keuangan historis (balance sheet 4 thn)",
+        "rating analis non-Yahoo",
+        "crawling idx.co.id (hard-block)"
+      ],
+      "done_when": "lihat cto-queue teknikal-2026-10-24-02 (9 butir verifiable)",
+      "qa_plan": "SQL coverage count + SSR render check + consistency-test market + PBSA di CorpAction",
+      "estimate": "M",
+      "owner_approval": "owner 24 Okt minta lengkapin data fundamental per saham teknikal"
     }
   ],
   "items": [
