@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { computeChange } from "@/lib/serialize";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { GuestWatchlistView } from "@/components/watchlist/guest-watchlist-view";
+import { RemoveWatchlistButton } from "@/components/watchlist/remove-watchlist-button";
 
 export const metadata: Metadata = {
   title: "Watchlist Saham — TeknikalID",
@@ -119,14 +120,7 @@ export default async function WatchlistPage() {
                 <span className="text-[10px] text-text-secondary bg-bg-hover px-2 py-0.5 rounded-full uppercase tracking-wide">
                   {item.sector}
                 </span>
-                <button
-                  data-action="remove-watchlist"
-                  data-ticker={item.ticker}
-                  className="text-xs text-text-secondary hover:text-bearish transition-colors press-scale"
-                  aria-label={`Hapus ${stripJk(item.ticker)} dari daftar pantauan`}
-                >
-                  Hapus
-                </button>
+                <RemoveWatchlistButton ticker={item.ticker} />
               </div>
             </div>
           ))}
