@@ -104,13 +104,20 @@ export function Header() {
               <Link
                 key={link.href}
                 href={link.href}
+                aria-current={active ? "page" : undefined}
                 className={`relative px-3 py-1.5 rounded-md transition-colors duration-150 ${
                   active
-                    ? "text-text-primary bg-bg-hover"
+                    ? "text-accent font-semibold"
                     : "text-text-secondary hover:text-text-primary hover:bg-bg-hover/50"
                 }`}
               >
                 {link.label}
+                {active && (
+                  <span
+                    aria-hidden
+                    className="absolute left-2 right-2 -bottom-[7px] h-[2.5px] rounded-full bg-accent"
+                  />
+                )}
               </Link>
             );
           })}
@@ -206,11 +213,12 @@ export function Header() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
-                className={`block py-2.5 px-3 rounded-lg text-sm font-medium transition-colors ${
+                className={`block py-2.5 px-3 rounded-lg text-sm font-medium transition-colors border-l-[3px] ${
                   active
-                    ? "text-text-primary bg-bg-hover"
-                    : "text-text-secondary hover:text-text-primary hover:bg-bg-hover"
+                    ? "text-accent font-semibold bg-accent/10 border-accent"
+                    : "text-text-secondary hover:text-text-primary hover:bg-bg-hover border-transparent"
                 }`}
+                aria-current={active ? "page" : undefined}
               >
                 {link.label}
               </Link>
