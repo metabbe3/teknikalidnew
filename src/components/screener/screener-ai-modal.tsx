@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Loader2 } from "lucide-react";
 
 /**
  * Tanya AI Screener — tombol di /stocks, modal chat bahasa manusia.
@@ -104,9 +104,13 @@ export function ScreenerAiButton() {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
     window.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
+    // ux-2026-10-24-01: autofocus input saat modal terbuka — user langsung
+    // bisa ngetik tanpa klik input dulu (potong 1 klik, preseden ux-16-01).
+    const t = setTimeout(() => inputRef.current?.focus(), 60);
     return () => {
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
+      clearTimeout(t);
     };
   }, [open]);
 
@@ -159,7 +163,7 @@ export function ScreenerAiButton() {
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0">
           <div>
-            <p className="text-sm font-bold"><Sparkles className="h-3.5 w-3.5" aria-hidden /> Tanya AI</p>
+            <p className="text-sm font-bold flex items-center gap-1.5"><Sparkles className="h-3.5 w-3.5" aria-hidden /> Tanya AI</p>
             <p className="text-[11px] text-text-tertiary">Screener bahasa manusia</p>
           </div>
           <button
@@ -193,7 +197,10 @@ export function ScreenerAiButton() {
               </div>
               <div className="h-3 bg-bg-tertiary rounded animate-pulse w-full" />
               <div className="h-3 bg-bg-tertiary rounded animate-pulse w-11/12" />
-              <p className="text-[11px] text-text-tertiary pt-1">🧠 Membaca hasil screener… ±8 dtk</p>
+              <p className="text-[11px] text-text-tertiary pt-1 flex items-center gap-1.5">
+                <Loader2 className="h-3 w-3 animate-spin" aria-hidden />
+                Membaca hasil screener… ±8 dtk
+              </p>
             </div>
           )}
 
@@ -203,7 +210,7 @@ export function ScreenerAiButton() {
             <div className="space-y-3">
               {meta && (
                 <p className="text-[11px] text-text-tertiary">
-                  📊 Berdasarkan preset {meta.presetLabel} · {meta.matched} saham lolos
+                  Berdasarkan preset {meta.presetLabel} · {meta.matched} saham lolos
                 </p>
               )}
               <AiAnswer text={answer} tickers={tableStocks.map((s) => s.ticker)} />
