@@ -67,7 +67,7 @@ export function TickerTape({ items }: { items: TickerItem[] }) {
           className="ticker-item"
           tabIndex={hidden ? -1 : undefined}
         >
-          <span className="text-gray-400 font-semibold">{stripJk(s.ticker)}</span>
+          <span className="text-text-secondary font-semibold">{stripJk(s.ticker)}</span>
           {s.changePercent !== null && (
             <span className={changeColor(s.changePercent)}>
               {s.changePercent >= 0 ? "+" : "−"}

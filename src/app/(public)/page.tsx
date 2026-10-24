@@ -58,7 +58,7 @@ export const dynamic = "force-dynamic";
 function FeaturedSkeleton() {
   return (
     <section className="space-y-5">
-      <SectionHeading title="Saham Paling Aktif" />
+      <SectionHeading title="Paling Banyak Diperdagangkan" />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
         {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="h-[120px] bg-bg-card rounded-xl animate-pulse" />
@@ -84,7 +84,7 @@ function SectorSkeleton() {
 function PreviewSkeleton() {
   return (
     <section className="space-y-5">
-      <SectionHeading eyebrow="live preview" title="Coba Fitur Analisa" />
+      <SectionHeading eyebrow="coba gratis" title="Coba Fitur Analisa" />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {Array.from({ length: 3 }).map((_, i) => (
           <div key={i} className="h-[200px] bg-bg-card rounded-xl animate-pulse" />
@@ -124,29 +124,50 @@ async function FeaturedStocksSection({
   losers: OverviewStock[];
   isMarketOpen: boolean;
 }) {
-  const [sparklineMap, oversoldRaw] = await Promise.all([
+  const [sparklineMap, volumeLeaders] = await Promise.all([
     stockMarketService.getSparklines(),
-    prisma.stockIndicator
-      .findMany({
-        where: {
-          interval: "1d",
-          rsi14: { lt: 35 },
-          stock: { isActive: true, assetClass: "EQUITY" },
-        },
-        include: {
-          stock: {
-            include: {
-              prices: { orderBy: { date: "desc" }, take: 2 },
-            },
-          },
-        },
-        orderBy: { rsi14: "asc" },
-        take: 6,
-      })
-      .catch(() => []),
+    // Owner 24 Okt: "Paling Aktif" jangan duplikat movers % (ticker tape + hero
+    // sudah menampilkan gainers/losers) — sumbernya top VOLUME transaksi.
+    prisma.$queryRaw<Array<{
+      ticker: string; name: string; sector: string;
+      close: number | null; prev: number | null; volume: bigint;
+    }>>`
+      SELECT s.ticker, s.name, s.sector,
+             sp.close::float8 AS close, p.close::float8 AS prev,
+             sp.volume::bigint AS volume
+      FROM "StockPrice" sp
+      JOIN "Stock" s ON s.id = sp."stockId"
+      JOIN LATERAL (
+        SELECT close FROM "StockPrice"
+        WHERE "stockId" = sp."stockId" AND date < sp.date
+        ORDER BY date DESC LIMIT 1
+      ) p ON true
+      WHERE sp.date = (SELECT MAX(date) FROM "StockPrice" sp2
+                       JOIN "Stock" s2 ON s2.id = sp2."stockId"
+                       WHERE s2."assetClass" = 'EQUITY' AND s2."isActive" = true AND sp2.volume > 0)
+        AND s."assetClass" = 'EQUITY' AND s."isActive" = true AND sp.volume > 0
+      ORDER BY sp.volume DESC
+      LIMIT 5
+    `.catch(() => []),
   ]);
 
   const featuredRaw: FeaturedItem[] = [
+    // Owner 24 Okt: kartu utama = top VOLUME (aktif diperdagangkan), bukan movers %
+    ...volumeLeaders.map((v) => {
+      const changePct = v.close !== null && v.prev !== null && v.prev !== 0
+        ? ((v.close - v.prev) / v.prev) * 100
+        : null;
+      return {
+        ticker: v.ticker,
+        name: v.name,
+        sector: v.sector,
+        close: v.close,
+        change: v.close !== null && v.prev !== null ? v.close - v.prev : null,
+        changePercent: changePct,
+        badge: "Teraktif",
+        badgeTone: "neutral" as const,
+      };
+    }),
     ...gainers.slice(0, 2).map((s) => ({
       ...s,
       change: null as number | null,
@@ -159,23 +180,6 @@ async function FeaturedStocksSection({
       badge: "Top Mover",
       badgeTone: "bearish" as const,
     })),
-    ...oversoldRaw.slice(0, 2).map((oi) => {
-      const s = oi.stock;
-      const prev = s.prices[1];
-      const close = s.prices[0] ? decimalToNumber(s.prices[0].close) : null;
-      const prevClose = prev ? decimalToNumber(prev.close) : null;
-      const changePct = close && prevClose ? ((close - prevClose) / prevClose) * 100 : null;
-      return {
-        ticker: s.ticker,
-        name: s.name,
-        sector: s.sector,
-        close,
-        change: close && prevClose ? close - prevClose : null,
-        changePercent: changePct,
-        badge: "Oversold",
-        badgeTone: "neutral" as const,
-      };
-    }),
   ];
   const seen = new Set<string>();
   const featured = featuredRaw.filter((s) => {
@@ -187,7 +191,7 @@ async function FeaturedStocksSection({
   return (
     <section className="space-y-5">
       <SectionHeading
-        title={isMarketOpen ? "Saham Paling Aktif Hari Ini" : "Saham Paling Aktif — Sesi Terakhir"}
+        title={isMarketOpen ? "Paling Banyak Diperdagangkan Hari Ini" : "Paling Banyak Diperdagangkan — Sesi Terakhir"}
         action={
           <span className="text-xs text-text-tertiary font-mono tabular-nums">{featured.length} saham</span>
         }
@@ -236,7 +240,7 @@ async function TradingPlanPreview() {
 
   return (
     <section className="space-y-5 content-auto">
-      <SectionHeading eyebrow="live preview" title="Coba Fitur Analisa" />
+      <SectionHeading eyebrow="coba gratis" title="Coba Fitur Analisa" />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <MiniScreenerPreview />
         <div className="space-y-4">

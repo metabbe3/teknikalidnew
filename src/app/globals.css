@@ -714,8 +714,8 @@ button:focus-visible,
 .ticker-tape {
   overflow: hidden;
   white-space: nowrap;
-  background: #0f172a;
-  border-bottom: 1px solid rgba(13, 148, 136, 0.15);
+  background: var(--color-bg-card, #fafaf9);
+  border-bottom: 1px solid var(--color-border, #e7e5e4);
 }
 .ticker-tape-inner {
   display: inline-flex;
@@ -736,11 +736,11 @@ button:focus-visible,
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.04em;
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  border-right: 1px solid var(--color-border, #e7e5e4);
   transition: background 150ms;
 }
 .ticker-item:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(0, 0, 0, 0.04);
 }
 
 /* ─── Homepage: Terminal Stats ─── */
