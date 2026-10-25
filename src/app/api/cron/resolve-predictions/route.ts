@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { PREDICTION_OUTCOME, PREDICTION_DIRECTION } from "@/lib/constants";
 import { withCronLogging } from "@/domains/cron-monitoring/with-cron-logging";
+import { withTimeout } from "@/domains/cron-monitoring/with-timeout";
+
+// sec-2026-10-22-01: hard ceiling agar handler tidak menggantung tanpa batas.
+// 60s ≈ 3000x durasi historis max (20ms, CronLog 30d) — job idempotent & re-run otomatis.
+export const maxDuration = 300;
 
 export async function GET(request: NextRequest) {
   const auth = request.headers.get("authorization");
@@ -10,7 +15,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const { status, body } = await withCronLogging("resolve-predictions", async () => {
+    const { status, body } = await withCronLogging("resolve-predictions", () =>
+      withTimeout(async () => {
       const now = new Date();
       const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
       const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
@@ -121,7 +127,8 @@ export async function GET(request: NextRequest) {
           incorrect,
         } as Record<string, unknown>,
       };
-    });
+      }, 60_000, "resolve-predictions"),
+    );
     return NextResponse.json(body, { status });
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : String(error);

@@ -3,6 +3,7 @@ import { handleApiError } from "@/lib/api-error";
 import { agentHubService } from "@/domains/agent-hub/agent-hub.service";
 import { agentHubRepository } from "@/domains/agent-hub/agent-hub.repository";
 import { withCronLogging } from "@/domains/cron-monitoring/with-cron-logging";
+import { withTimeout } from "@/domains/cron-monitoring/with-timeout";
 import type { AgentType } from "@/domains/agent-hub/agent-hub.types";
 
 /**
@@ -11,6 +12,9 @@ import type { AgentType } from "@/domains/agent-hub/agent-hub.types";
  * Generates DAILY_SNAPSHOT for all IDX tickers + trending news articles.
  * Old snapshots auto-deleted daily at 01:30 via cleanup cron.
  */
+// sec-2026-10-22-01: ceiling runtime (historis 30d: max 23ms → 60s sangat longgar).
+export const maxDuration = 300;
+
 export async function POST(request: NextRequest) {
   const auth = request.headers.get("authorization");
   if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -21,7 +25,8 @@ export async function POST(request: NextRequest) {
   const isWeekend = now.getDay() === 0 || now.getDay() === 6;
 
   try {
-    const { status, body } = await withCronLogging("generate-articles", async () => {
+    const { status, body } = await withCronLogging("generate-articles", () =>
+      withTimeout(async () => {
       const dispatched: string[] = [];
       const skipped: string[] = [];
 
@@ -85,7 +90,8 @@ export async function POST(request: NextRequest) {
           },
         } as Record<string, unknown>,
       };
-    });
+      }, 60_000, "generate-articles"),
+    );
     return NextResponse.json(body, { status });
   } catch (error) {
     return handleApiError(error, "article generation dispatch");
