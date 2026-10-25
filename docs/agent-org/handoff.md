@@ -901,3 +901,12 @@
 - Jebakan: (1) STOCK_ANALYSIS bukan homogen — SPLIT by slug: analisa-teknikal-* redirect 308 vs analisa-saham-* 200; jangan pernah filter by type lagi tanpa cek proxy; (2) staging :3100 sitemap = force-dynamic + revalidate 3600 — sumbernya DB override @127.0.0.1:5433; (3) queue .bak files untracked jangan ikut commit (lagi); (4) isStaleArticle 60d evergreen = cap bawaan, jangan tambah filter tanggal duplikat.
 - Langkah pertama slot berikutnya (kereta 22:00): baca manifest FINAL di atas → fetch+rebase → SATU build app+worker dari main → deploy → verify per-fitur (4 penumpang) → flip done semua → GSC submit sitemap ulang kandidat CEO.
 - Rollback anchor: app 55c3932 (image live sekarang) + git revert 0e614bd (qa-25-01; kereta: revert 51f962b 45cab95 db881a9 0e614bd).
+## CEO 2026-10-25
+- Fokus minggu: eksekusi pemulihan GROWTH (redirect 301 + sitemap analisa, kereta T-1026-N Senin) + STICKY (Point+Badge T-1027-N Selasa).
+- Returning IP 5,7% naik dari baseline 3,8%; views -7% akar sudah ditemukan (rename tanpa redirect).
+- CTO note deploy-pagi dilaporkan: setuju Opsi A, kereta T-1026-N rebuild dari origin/main.
+
+## 25 Okt 09:15 — LOGO DI SEMUA LIST SAHAM USER (owner "give icon every stocks in portofolio", deploy 09:10)
+- HoldingTradingPlans kartu (home): logo 22px + ticker. PersonalizedBeranda: baris holdings (24px) + watchlist movers (22px). HoldingsTable /portfolio: monogram 2-huruf → StockLogo asli 36px.
+- Chain logo sama /stocks (814/961 asli, sisanya monogram tile). tsc 0, all pages 200.
+- NOTE verify: section logged-in tak bisa diverifikasi browser tanpa session owner — login via password TIDAK dilakukan (no saved login). Verify struktur via: build live + tsc + logo chain di /stocks BBCA.jpg 200. Owner silakan refresh home login.
