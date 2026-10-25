@@ -969,3 +969,8 @@
 - Fix 3 lapis: (1) sips resize 89 file max 128px q80 → 16MB→7,8MB repo; (2) /logos/* cache-control immutable 1 tahun (exclude dari rule generic — TRAP: Next append semua matching rules, cache-control ganda); (3) images.minimumCacheTTL 31 hari + AVIF/WebP.
 - Verified live: /logos/AADI.png max-age=31536000 immutable + CF HIT di 2nd request; optimizer path TTL 31 hari.
 - SW sengaja TIDAK dipakai (kill-switch v2 12 Okt) — cache HTTP murni.
+
+## 25 Okt 15:25 — KARTU OS DI ADMIN ANALYTICS (owner "biar bisa bantu analisa", 719ac94)
+- UA + IP + referrer + UTM sudah tercapture dari dulu (PageView 18k rows, 100% UA terisi); Devices/Browsers/Geo/Referrers sudah live di /admin → Analytics.
+- Tambahan: kartu "Sistem Operasi" (parseUserAgent os field → osCounts → operatingSystems → grid emerald). Route guard requireAdmin (404 tanpa session, by design).
+- Data prod (non-bot): Android 72% · Linux 10% (crawl-ish/scanner) · macOS 7% · Windows 7% · iOS 5%. → mobile-first validated: Android Chrome = browser utama.
