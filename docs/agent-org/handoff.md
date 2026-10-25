@@ -974,3 +974,8 @@
 - UA + IP + referrer + UTM sudah tercapture dari dulu (PageView 18k rows, 100% UA terisi); Devices/Browsers/Geo/Referrers sudah live di /admin → Analytics.
 - Tambahan: kartu "Sistem Operasi" (parseUserAgent os field → osCounts → operatingSystems → grid emerald). Route guard requireAdmin (404 tanpa session, by design).
 - Data prod (non-bot): Android 72% · Linux 10% (crawl-ish/scanner) · macOS 7% · Windows 7% · iOS 5%. → mobile-first validated: Android Chrome = browser utama.
+
+## 25 Okt 16:20 — HERO DESKRIPSI BIDANG USAHA (owner "lakukan, pastikan UI/UX bagus", 25 Okt)
+- Baris nama halaman saham kini: [Nama medium] · [deskripsi tertiary] — fallback businessActivity→subSector (962+754 dari 1.451; sisanya tanpa render null).
+- Pembeda visual: nama font-medium warna secondary vs deskripsi font-normal warna tertiary (lebih pudar) + separator titik tengah.
+- TRAP verifikasi: curl -o /tmp diblokir (300B); /stocks/ACST redirect 307 → ACST.JK; cache s-maxage=300 → bypass pakai ?cb=random. Verified: SSR live + mobile 390px 1 baris (40px) tidak overflow.
