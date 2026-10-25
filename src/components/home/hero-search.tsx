@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
+import { StockLogo } from "@/components/stock/stock-logo";
 import type { StockRow } from "@/components/stock/stock-table";
 
 /**
@@ -140,11 +141,14 @@ export function HeroSearch() {
                   i === active ? "bg-accent/10" : "hover:bg-bg-hover"
                 } ${i > 0 ? "border-t border-border/50" : ""}`}
               >
-                <span className="min-w-0">
+                <span className="min-w-0 flex items-center gap-2.5">
+                  <StockLogo name={s.name} ticker={s.ticker} size={24} />
+                  <span className="min-w-0">
                   <span className="font-mono font-semibold text-sm text-text-primary">
                     {s.ticker.replace(".JK", "")}
                   </span>
                   <span className="ml-2 text-xs text-text-secondary truncate">{s.name}</span>
+                  </span>
                 </span>
                 {s.changePercent !== null && (
                   <span

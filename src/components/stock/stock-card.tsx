@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { StockLogo } from "@/components/stock/stock-logo";
 import { formatPercentPlain, formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { HealthScoreBadge } from "@/components/stock/health-score-badge";
 import { Sparkline } from "@/components/stock/sparkline";
@@ -177,7 +178,9 @@ export function StockCardList({ stocks, linkBase = "/stocks" }: StockCardListPro
           {/* Grid 2 baris eksplisit dgn line-height SERAGAM (leading-5) — baris kiri & kanan
               mulai di Y identik (fix offset harga vs nama yang terlihat di iPhone 390px) */}
           <div className="grid grid-cols-[1fr_auto] gap-x-3 items-start">
-            <div className="min-w-0 leading-5">
+            <div className="min-w-0 leading-5 flex items-center gap-2.5">
+              <StockLogo name={stock.name} ticker={stock.ticker} size={28} />
+              <div className="min-w-0 leading-5">
               <div className="flex items-center gap-1.5 h-5">
                 <span className="text-sm font-semibold text-accent">{stripJk(stock.ticker)}</span>
                 {stock.listingBoard && stock.listingBoard !== "Utama" && (
@@ -185,6 +188,7 @@ export function StockCardList({ stocks, linkBase = "/stocks" }: StockCardListPro
                 )}
               </div>
               <div className="text-xs text-text-secondary truncate h-5">{stock.name}</div>
+              </div>
             </div>
             <div className="text-right leading-5">
               <div className={`text-xs font-mono tabular-nums font-medium h-5 ${changeColor(stock.changePercent)}`}>
