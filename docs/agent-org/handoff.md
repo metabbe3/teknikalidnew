@@ -938,3 +938,9 @@
 - Fix: kolom ticker 100→132px + min-width 900→932 (stock-table) & 100→132 + 986→1018 (screener-results). Header & rows konsisten.
 - Verify browser live: grid-cols-[132px...] + shell 932 aktif; desktop 18 rows logo 24px muncul normal.
 - Catatan verifikasi: emulation mobile di tool browser bikin virtualizer stuck "Memuat" (artefak throttling, API 197KB/0.19s normal) — geometry fix diverifikasi via layout live desktop + matematika kolom.
+
+## 25 Okt 12:50 — MOBILE + SEARCH LOGO FIX 2 (owner "masih sama, cmn ticker harga", 0acdfda)
+- AKAR SEJATI: /stocks mobile TIDAK pakai grid table — pakai StockCardList render terpisah (button rows) yang belum kena logo. Fix kemarin (kolom 132px) hanya untuk tablet/desktop table.
+- StockCardList: logo 28px per baris. Verified emulation 390px: 40 kartu, AADI.png 28x28 live.
+- hero-search (dropdown home): logo 24px + ticker + nama. Verified: ketik "BBCA" → 1 opsi "BBCA Bank Central Asia −2.90%" logo 24px live.
+- Catatan: /stocks search box = filter tabel (bukan dropdown), ikut logo via card list.
