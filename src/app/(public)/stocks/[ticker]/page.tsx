@@ -17,6 +17,7 @@ const TickerFunnelActions = dynamicImport(
 import { KeyStatistics } from "@/components/stock/key-statistics";
 import { FundamentalData } from "@/components/stock/fundamental-data";
 import { TradingPlanCard } from "@/components/stock/trading-plan-card";
+import { monteCarloTpFirst } from "@/lib/monte-carlo";
 import { HypeWarningBadge } from "@/components/stock/hype-warning-badge";
 import { StockDiscussion } from "@/components/community/stock-discussion";
 import { RegistrationInlinePrompt } from "@/components/ui/registration-inline-prompt";
@@ -354,6 +355,19 @@ export default async function StockDetailPage({
         stochD: indicators?.stochD ?? null,
         adx: indicators?.adx ?? null,
       })
+    : null;
+
+  // Monte Carlo probability (10.000 jalur / 20 hari) — bootstrap return 150 hari.
+  // Angka deterministic per ticker (seed) — stabil seharian, konsisten dgn /trading-plan.
+  const mcProbability = tradingPlan && close !== null
+    ? await stockRepository
+        .findPricesByTicker(stock.ticker, { date: { gte: subDays(new Date(), 150) }, volume: { gt: 0 } })
+        .then((ps) =>
+          monteCarloTpFirst(ps.map((x) => Number(x.close)), tradingPlan.entry, tradingPlan.tp1, tradingPlan.sl, {
+            seedKey: stock.ticker,
+          }),
+        )
+        .catch(() => null)
     : null;
 
   // Serialize IDX company data for client component
@@ -1095,7 +1109,7 @@ export default async function StockDetailPage({
             {fullAccess ? (
               <div className="space-y-4">
                 <span id="plan" className="block scroll-mt-24" />
-                {tradingPlan && <TradingPlanCard plan={tradingPlan} />}
+                {tradingPlan && <TradingPlanCard plan={tradingPlan} mc={mcProbability} />}
                 <FundamentalData data={fundamentals} />
               </div>
             ) : (

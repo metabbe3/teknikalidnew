@@ -1,6 +1,7 @@
 /**
  * Monte Carlo TP-before-SL estimator (owner request 17 Okt: "bikin lebih
- * akurat, pakai monte carlo jika perlu").
+ * akurat, pakai monte carlo jika perlu"; 25 Okt: naikkan presisi & tampilkan
+ * di halaman saham — "probabilitasnya gimana, biar orang melihat trading plan").
  *
  * Metode: bootstrap historis — ambil return harian log-price N sesi
  * terakhir, sampel dgn penggantian utk b simulasi x H horizon hari,
@@ -13,6 +14,8 @@ export interface McResult {
   evPerShare: number;   // expected value (Rp) per saham: p*reward - (1-p)*risk
   simulations: number;
   horizonDays: number;
+  slRate: number;       // P(SL kena duluan), 0-1
+  neitherRate: number;  // P(tidak keduanya dalam horizon), 0-1
 }
 
 function mulberry32(seed: number) {
@@ -42,8 +45,8 @@ export function monteCarloTpFirst(
   sl: number,
   opts?: { simulations?: number; horizonDays?: number; seedKey?: string },
 ): McResult | null {
-  const sims = opts?.simulations ?? 1000;
-  const horizon = opts?.horizonDays ?? 10;
+  const sims = opts?.simulations ?? 10_000;
+  const horizon = opts?.horizonDays ?? 20;
 
   // Guard: plan degenerate (ARA-lock dsb) — jangan dikasih angka palsu
   if (!(entry > 0) || tp <= entry || sl >= entry || closes.length < 30) return null;
@@ -60,6 +63,7 @@ export function monteCarloTpFirst(
   const rand = mulberry32(hashSeed([opts?.seedKey ?? "", entry.toFixed(0), tp.toFixed(0), sl.toFixed(0)]));
 
   let wins = 0;
+  let slHits = 0;
   let pnlSum = 0;
   const reward = tp - entry;
   const risk = entry - sl;
@@ -74,15 +78,16 @@ export function monteCarloTpFirst(
       if (price <= sl) { outcome = "sl"; break; }
     }
     if (outcome === "tp") { wins++; pnlSum += reward; }
-    else if (outcome === "sl") { pnlSum -= risk; }
+    else if (outcome === "sl") { slHits++; pnlSum -= risk; }
     // timeout: P/L 0 utk konservatisme (posisi ditutup di entry ≈ netral)
   }
 
-  const winRate = wins / sims;
   return {
-    winRate,
+    winRate: wins / sims,
     evPerShare: pnlSum / sims,
     simulations: sims,
     horizonDays: horizon,
+    slRate: slHits / sims,
+    neitherRate: (sims - wins - slHits) / sims,
   };
 }

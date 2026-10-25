@@ -1,4 +1,5 @@
 import type { TradingPlan } from "@/lib/trading-plan";
+import type { McResult } from "@/lib/monte-carlo";
 import { formatRp } from "@/lib/utils";
 
 const confidenceStyles = {
@@ -13,7 +14,7 @@ const confidenceLabels = {
   low: "Rendah",
 };
 
-export function TradingPlanCard({ plan }: { plan: TradingPlan }) {
+export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult | null }) {
   const isBOW = plan.strategy === "BUY_ON_WEAKNESS";
   const isWaitAndSee = plan.strategy === "WAIT_AND_SEE";
 
@@ -64,6 +65,34 @@ export function TradingPlanCard({ plan }: { plan: TradingPlan }) {
           )}
           <Row label="Stop Loss" value={formatRp(plan.sl)} detail={`(${plan.slSource})`} valueClass="text-bearish" />
         </div>
+
+        {mc && !isWaitAndSee && (
+          <>
+            <div className="h-px bg-border/60" />
+            <div className="rounded-lg bg-bg-hover px-3 py-2.5 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-semibold text-text-secondary">Peluang TP tercapai duluan</span>
+                <span className={`text-lg font-mono font-bold tabular-nums ${mc.winRate >= 0.5 ? "text-bullish" : "text-bearish"}`}>
+                  {(mc.winRate * 100).toFixed(0)}%
+                </span>
+              </div>
+              {/* Stacked bar: TP | SL | keduanya tidak dalam horizon */}
+              <div className="h-2 rounded-full overflow-hidden flex" role="img" aria-label={`TP ${Math.round(mc.winRate * 100)}%, Stop Loss ${Math.round(mc.slRate * 100)}%, tidak keduanya ${Math.round(mc.neitherRate * 100)}%`}>
+                <div className="bg-bullish" style={{ width: `${mc.winRate * 100}%` }} />
+                <div className="bg-bearish" style={{ width: `${mc.slRate * 100}%` }} />
+                <div className="bg-border" style={{ width: `${mc.neitherRate * 100}%` }} />
+              </div>
+              <div className="flex items-center justify-between text-[10px]">
+                <span className="text-bullish">● TP dulu {(mc.winRate * 100).toFixed(0)}%</span>
+                <span className="text-bearish">● SL dulu {(mc.slRate * 100).toFixed(0)}%</span>
+                <span className="text-text-tertiary">● Sidang {(mc.neitherRate * 100).toFixed(0)}%</span>
+              </div>
+              <div className="text-[10px] text-text-tertiary leading-snug pt-0.5 border-t border-border/60">
+                Simulasi Monte Carlo {mc.simulations.toLocaleString("id-ID")}× jalur harga ({mc.horizonDays} hari ke depan) dari return historis · Expected value {mc.evPerShare >= 0 ? "+" : "−"}{formatRp(Math.abs(Math.round(mc.evPerShare)))}/lembar
+              </div>
+            </div>
+          </>
+        )}
 
         <div className="h-px bg-border/60" />
 
