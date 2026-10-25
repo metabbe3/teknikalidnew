@@ -2498,8 +2498,8 @@
       "title": "Fundamental per-saham v2: isi kolom kosong StockFundamental (beta/bookValue/shares/ROE/margin/EBITDA/debt/cash/target price) + refresh dividend + kalender corp-action valura",
       "north_star_pillar": "TRUST",
       "priority": "P1",
-      "status": "pending",
-      "train": "T-1025-N",
+      "status": "in_train",
+      "train": "T-1026-N",
       "prd_id": "prd-2026-10-24-02",
       "done_when": [
         "Yahoo quoteSummary crumb-dance fetcher (fc.yahoo.com cookie -> getcrumb -> quoteSummary modules=defaultKeyStatistics,summaryDetail,financialData) jalan utk 965 ticker .JK — VERIFIED live dari Mac mini 24 Okt: beta/bookValue/sharesOutstanding/dividendYield TLKM+BBCA return angka",
@@ -2515,19 +2515,21 @@
       "estimate": "M",
       "context": "Sumber = Yahoo Finance quoteSummary (unofficial tapi stabil bertahun-tahun; crumb dance verified dari Mac mini 24 Okt: chart 200 tanpa crumb, quoteSummary 401 Invalid Crumb, setelah fc.yahoo.com cookie + getcrumb = 200 penuh field). Corp action = valura.id (agregator BEI, curl 200 polos, filter ?jenis= tersedia, PBSA split 1:2 Okt 2026 verified). IDX.co.id sendiri = Cloudflare hard-block semua jalur (curl/API/browser CDP) — JANGAN buang waktu crawal IDX. Kolom beta/bookValue/sharesOutstanding/averageDailyVolume3Month SUDAH ada di schema tapi tak pernah terisi (0/965) — job lama hanya pakai v8 chart endpoint. StockDividend 151 rows terakhir Juni = stale. Ticker fundamental pakai format .JK (BBCA.JK).",
       "note_logo": "DONE weekend 24 Okt: 961 SVG di public/logos (47 asli + badge), StockLogo next/image, staging verified — kereta tinggal review+deploy window",
-      "scheduled_slot": "2026-10-25 07:30 slot pagi (mulai core fetcher Yahoo + backfill; DDL field baru = owner gate sebelum kereta)"
+      "scheduled_slot": "2026-10-25 07:30 slot pagi (mulai core fetcher Yahoo + backfill; DDL field baru = owner gate sebelum kereta)",
+      "result": "CORE BUILD OK 25 Okt slot pagi (build-only, non-DDL): (1) fetchFundamentalSummary() di src/lib/yahoo-finance.ts — Yahoo quoteSummary 3 module, per-ticker fail-safe (skip bukan abort), LIVE-VERIFIED 3 ticker: TLKM beta 0.148/bv 1200.364/shares 98.58B/ROE 0.177/target 3280; BBCA -0.017/2201.512/122.84B/0.218/7979; RUNS 0.318/53.52/980.87M/-0.154/-; (2) POST /api/cron/sync-fundamental (Bearer CRON_SECRET, idempoten updateMany where beta:null — backfill TIDAK menimpa nilai existing; BigInt shares/avgVol; dividendYield % normalize >1 -> /100); (3) driver host ~/.hermes/scripts/teknikalid_fundamental_sync.py (batch limit+sleep, --full loop, silent-ok). avgVol3M tidak diexpose Yahoo JK → pakai averageDailyVolume10Day proxy (dicatat). tsc EXIT-0, build EXIT-0 (route masuk build manifest). commit db881a9 pushed main. SISA (owner-gate/next): DDL 8 field financialData (ROE/margin/EBITDA/debt/cash/revenueGrowth/earningsGrowth/targetMeanPrice — butuh prisma migrate owner approve), CorpAction valura, dividend calendar-events refresh, screener filter PB/ROE/DER, cron nightly 02:00. SEC-REVIEW: endpoint auth Bearer CRON_SECRET + input ticker validated via prisma where-in; no PII; rate-limit via driver sleep; bukan jalur user-facing"
     },
     {
       "id": "ops-2026-10-24-01",
       "date": "2026-10-24",
       "type": "ops",
       "priority": "P3",
-      "status": "pending",
+      "status": "done",
       "train": "T-1026-N",
       "title": "OPS GUARD: backlog_health.py deteksi schema-split product-backlog.json (blok `items` non-kosong / `entries` hilang) -> exit 1 ALERT",
       "north_star": "TRUST — satu sumber kebenaran backlog utk semua agent + owner digest (drift #10: digest items-first buta 58 entry riwayat)",
       "spec": "Tambah check di backlog_health.py: load product-backlog.json; jika dict TIDAK punya list `entries` ATAU blok `items` non-kosong -> cetak baris ALERT schema-split + exit 1. Sehat = silent exit 0 (perilaku monitor-gated existing). Uji via copy file dgn items non-kosong, JANGAN mutasi file asli.",
-      "done_when": "DONE WHEN: (1) backlog_health.py pada file sehat = silent exit 0; (2) pada copy backlog berisi blok items non-kosong = exit 1 + baris ALERT berisi 'schema-split'; (3) uji dijalankan dgn file copy /tmp, file kanonik tak tersentuh."
+      "done_when": "DONE WHEN: (1) backlog_health.py pada file sehat = silent exit 0; (2) pada copy backlog berisi blok items non-kosong = exit 1 + baris ALERT berisi 'schema-split'; (3) uji dijalankan dgn file copy /tmp, file kanonik tak tersentuh.",
+      "result": "DONE 25 Okt slot pagi CTO: _schema_split_check() di backlog_health.py — check duluan di main() sebelum symlink guard; kondisi = dict tanpa list entries ATAU blok items non-kosong -> print ALERT schema-split + sys.exit(1); bare-list legacy hivePOS (format valid di main loop) = skip, bukan false-positive. FIXTURE 3/3 PASS: (1) healthy semua org = silent exit 0 tanpa false-positive; (2) copy /tmp dgn items non-kosong = exit 1 + ALERT label org jelas; (3) file kanonik tak tersentuh (teknikal entries=63 items=0 utuh). TEMPROLOSARI sampingan: healthy-run menangkap backlog teknikal 17>cap12 + 6 stale — pre-existing, lane CEO. Script host ~/.hermes/scripts/ (bukan repo — no deploy). Rollback: n/a (script ops host, revert = hapus blok _schema_split_check)"
     },
     {
       "id": "teknikal-2026-10-24-03",
