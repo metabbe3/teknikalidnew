@@ -81,6 +81,24 @@ export default function AboutPage() {
           </div>
         </section>
 
+        {/* PIC / Pembuat */}
+        <section>
+          <SectionHeading eyebrow="Di Balik Layar" title="Siapa yang Membuat" />
+          <div className="bg-bg-card rounded-xl depth-shadow p-6 border border-border/60 flex items-center gap-5">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-accent/10 border border-accent/30 text-lg font-bold text-accent font-serif">
+              NA
+            </div>
+            <div className="space-y-1">
+              <p className="font-semibold text-text-primary">Nicholas Andrian Surjadi</p>
+              <p className="text-sm text-text-secondary leading-relaxed">
+                Pendiri &amp; pengembang TeknikalID. Membangun platform ini sendirian — dari mesin
+                data IDX, perhitungan indikator, sampai desain — dengan satu tujuan: analisa
+                teknikal yang jujur dan gratis untuk trader Indonesia.
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* Data sources */}
         <section>
           <SectionHeading eyebrow="Transparansi" title="Sumber Data" />

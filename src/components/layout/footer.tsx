@@ -50,7 +50,20 @@ export function Footer() {
               </svg>
               Brief &amp; sinyal harian di Telegram
             </a>
-            <div className="flex items-center gap-3 pt-1">
+            <div className="flex items-center gap-2 pt-1">
+              <a
+                href="https://instagram.com/teknikal.id"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram teknikal.id"
+                className="inline-flex items-center justify-center rounded-md border border-border bg-surface p-2 text-text-secondary transition-colors hover:border-accent/60 hover:text-accent"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                </svg>
+              </a>
               <span className="text-[10px] text-text-tertiary font-mono uppercase tracking-wider">Bahasa chart untuk trader Indonesia</span>
             </div>
           </div>
