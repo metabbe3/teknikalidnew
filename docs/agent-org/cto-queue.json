@@ -1720,7 +1720,7 @@
       "spec": "BUKTI: idx-sync.log mtime 12 Okt 08:20 berisi EPERM: process.cwd failed uv_cwd (node v25) — launchd worker kehilangan akses cwd repo (TCC Documents). Plist com.teknikalid.idx-sync Day=1/06:00 (Senin saja). FIX (owner action, TCC = security domain): grant Full Disk Access utk node/launchd ATAU pindah log+cwd ke path non-TCC; verify: Senin depan 06:00 log bersih + sync row baru. Bukan kerja builder (TCC interactive prompt). [UPDATE CTO 19 Okt 07:45: gagal LAGI Senin 19 Okt 06:00 — launchctl exit 1, idx-sync.log beku 12 Okt (bahkan penulisan log kena TCC), MAX(Stock.updatedAt)=2026-10-12 01:09 =  [UPDATE CTO 23 Okt 07:5x: Stock.updatedAt MAX masih 2026-10-12 01:09 = beku 11 hari; launchctl runs=0/never exited; owner TCC grant BELUM. Emiten IDX basi — listing/delisting baru tak tersync. Tetap owner-only (TCC security domain).]",
       "scheduled_slot": "owner TCC grant; verify Senin 20 Okt 06:00",
       "train": "T-1020-N",
-      "blocked_checked_at": "2026-10-23 07:5x WIB (CTO pagi — slot ke-6, ESCALATE)",
+      "blocked_checked_at": "2026-10-25 08:0x WIB (slot pagi CTO)",
       "needs": "Owner: System Settings > Privacy & Security > Files and Folders (atau Full Disk Access) utk launchd com.teknikalid.idx-sync ke ~/Documents — TCC prompt muncul sekali, atau grant manual.",
       "owner_brief": "READ-ONLY evidence 21 Okt 07:35: launchctl print = runs 0 / never exited; idx-sync.log beku 12 Okt 08:20 (EPERM uv_cwd TCC ~/Documents); Stock.updatedAt MAX=2026-10-12 (1451 rows); launchctl list kolom exit 0 = misleading (wrapper tidak pernah sampai node). YANG DIBUTUHKAN OWNER: approve TCC prompt utk launchd idx-sync (System Settings > Privacy & Security), atau jalankan sekali manual: bash ~/.hermes/scripts/teknikal_idx_sync.sh lalu tekan \"Allow\" di dialog TCC. File yang disentuh: TIDAK ADA (murni macOS permission, bukan kode). Risiko: rendah — sync idempotent upsert daftar emiten IDX; rollback: n/a (tidak ada perubahan kode/DB destruktif). Verifikasi pasca-grant: launchctl kickstart gui/$(id -u)/com.teknikalid.idx-sync lalu cek idx-sync.log fresh + Stock.updatedAt > 20 Okt."
     },
@@ -2391,16 +2391,16 @@
       "date": "2026-10-23",
       "type": "sec",
       "priority": "P2",
-      "status": "pending",
-      "train": "T-1023-N",
+      "status": "in_train",
+      "train": "T-1026-N",
       "north_star": "TRUST — dependency HIGH di jalur payments (midtrans-client→follow-redirects); npm audit fix non-breaking tersedia",
       "title": "SEC P2 (IT-SEC 22 Okt, CTO APPROVE): npm audit fix 8 HIGH — follow-redirects via midtrans-client (payments path) + braces",
       "source": "IT-SEC Deep Pentest 22 Okt 21:42 (backlog sec-2026-10-22-02) + CTO verdict 23 Okt 07:45",
       "spec": "npm audit fix (non-breaking saja; kalau major bump = STOP & eskalasi). Sesudah: npm audit --omit=dev HIGH=0 atau sisa terdokumentasi no-fix (xlsx-style). tsc 0 + build hijau + smoke payment page 200 + midtrans config env utuh (docker exec env | grep MIDTRANS pasca-deploy). Ikut kereta T-1023-N SATU build.",
       "done_when": "npm audit --omit=dev 0 HIGH baru tertutup (follow-redirects >= fix version); tsc 0; build 0; /premium 200 pasca-deploy; changelog entry == merge",
-      "scheduled_slot": "Backend Builder 24 Okt 18:30 (build-only) -> kereta T-1025-N (reslot: T-1023-N semalam tidak berangkat)",
+      "scheduled_slot": "2026-10-25 07:30 slot pagi (build-only; naik kereta T-1026-N malam)",
       "created_by": "CTO pagi 23 Okt 07:45 (verdict APPROVE P2)",
-      "result": "",
+      "result": "BUILD OK 25 Okt 08:0x (CTO pagi, worktree cto1025-merge): npm audit --omit=dev 8 vuln (2 crit) -> 0. next 16.3.8->16.4.3 minor in-range (RCE image-optimization GHSA-2464 + DoS server-actions + use-cache RCE), @sentry/nextjs 10.55->10.76.2 (tunnel middleware-bypass GHSA-mchm), zod 4.4.3->4.6.7, follow-redirects 1.16.0->1.16.1 (midtrans payments-path), body-parser 2.4.0, fast-uri 3.1.9. tsc EXIT-0, build EXIT-0 (BUILD hijau full). commit 45cab95 pushed main (rebase di atas 476694a docs-session lain). SEC-REVIEW: dep-bump murni 0 kode app; attack surface = image optimizer (logo SVG chain) kini patched; tanpa DDL/schema",
       "assigned_slot": "Backend Builder malam 24 Okt 18:30 (build-only, bundle dgn prd-22-02) → kereta T-1024-N 22:00 — payments path (midtrans via follow-redirects), QA Verifier wajib"
     },
     {
@@ -2514,7 +2514,8 @@
       "qa_plan": "SQL count per kolom: 0 kolom yang masih 0% selain memang tak tersedia di Yahoo (catat daftar); regresi: market-snapshot consistency-test + /saham/BBCA render SSR contain beta+ROE; valura: PBSA split Okt ada di CorpAction table",
       "estimate": "M",
       "context": "Sumber = Yahoo Finance quoteSummary (unofficial tapi stabil bertahun-tahun; crumb dance verified dari Mac mini 24 Okt: chart 200 tanpa crumb, quoteSummary 401 Invalid Crumb, setelah fc.yahoo.com cookie + getcrumb = 200 penuh field). Corp action = valura.id (agregator BEI, curl 200 polos, filter ?jenis= tersedia, PBSA split 1:2 Okt 2026 verified). IDX.co.id sendiri = Cloudflare hard-block semua jalur (curl/API/browser CDP) — JANGAN buang waktu crawal IDX. Kolom beta/bookValue/sharesOutstanding/averageDailyVolume3Month SUDAH ada di schema tapi tak pernah terisi (0/965) — job lama hanya pakai v8 chart endpoint. StockDividend 151 rows terakhir Juni = stale. Ticker fundamental pakai format .JK (BBCA.JK).",
-      "note_logo": "DONE weekend 24 Okt: 961 SVG di public/logos (47 asli + badge), StockLogo next/image, staging verified — kereta tinggal review+deploy window"
+      "note_logo": "DONE weekend 24 Okt: 961 SVG di public/logos (47 asli + badge), StockLogo next/image, staging verified — kereta tinggal review+deploy window",
+      "scheduled_slot": "2026-10-25 07:30 slot pagi (mulai core fetcher Yahoo + backfill; DDL field baru = owner gate sebelum kereta)"
     },
     {
       "id": "ops-2026-10-24-01",
