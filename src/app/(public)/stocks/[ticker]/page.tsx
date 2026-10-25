@@ -20,6 +20,7 @@ import { TradingPlanCard } from "@/components/stock/trading-plan-card";
 import { monteCarloTpFirst } from "@/lib/monte-carlo";
 import { cachedEod, eodKey } from "@/domains/stock/eod-cache";
 import { HypeWarningBadge } from "@/components/stock/hype-warning-badge";
+import { isHscTicker } from "@/lib/hsc-stocks";
 import { StockDiscussion } from "@/components/community/stock-discussion";
 import { RegistrationInlinePrompt } from "@/components/ui/registration-inline-prompt";
 import { StockActionBadge } from "@/components/stock/stock-action-badge";
@@ -601,6 +602,12 @@ export default async function StockDetailPage({
                     <span className="text-sm font-bold px-3 py-1 rounded-lg bg-amber-500/15 text-amber-600 border border-amber-500/30 inline-flex items-center gap-1">
                       <AlertTriangle className="inline h-4 w-4" /> Gorengan
                       <IndicatorTooltip indicator="Gorengan" className="opacity-60 hover:opacity-100" />
+                    </span>
+                  )}
+                  {isHscTicker(ticker) && (
+                    <span className="text-sm font-bold px-3 py-1 rounded-lg bg-bearish-bg text-bearish border border-bearish/30 inline-flex items-center gap-1" title="Kepemilikan saham terkonsentrasi tinggi (penetapan BEI). Likuiditas efektif rendah; dikeluarkan dari perhitungan IHSG per 2 Nov 2026. Tetap dapat diperdagangkan — bukan delisting.">
+                      <AlertTriangle className="inline h-4 w-4" /> HSC
+                      <IndicatorTooltip indicator="HSC" className="opacity-60 hover:opacity-100" />
                     </span>
                   )}
                   <span className="text-text-tertiary" aria-hidden="true">·</span>

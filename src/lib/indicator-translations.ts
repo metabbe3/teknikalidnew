@@ -122,6 +122,7 @@ export const INDICATOR_TIPS: Record<string, string> = {
   ATR: "Average True Range — Mengukur volatilitas. Nilai tinggi = pergerakan besar, rendah = pergerakan kecil.",
   "Health Score": "Skor 0-100 berdasarkan 9 indikator teknikal. Mengukur kondisi keseluruhan saham: tren, momentum, dan volume.",
   Gorengan: "Saham dengan volatilitas tinggi dan volume tidak wajar — cenderung dimanipulasi. Hati-hati, bukan untuk pemula.",
+  HSC: "High Shareholding Concentration — kepemilikan saham terkonsentrasi tinggi pada segelintir pihak (penetapan BEI). Likuiditas efektif rendah dan risiko pergerakan harga tidak wajar lebih tinggi. Saham HSC dikeluarkan dari perhitungan IHSG per 2 Nov 2026 — tetap bisa diperdagangkan, bukan delisting.",
   Signal: "Sinyal gabungan dari semua indikator teknikal. Strong Bullish/Bearish = mayoritas indikator searah.",
   Volatilitas: "Persentase pergerakan harga harian berdasarkan ATR. Tinggi = risiko besar, rendah = pergerakan tenang.",
   "Golden Cross": "SMA 50 memotong SMA 200 ke atas — sinyal bullish jangka panjang.",
