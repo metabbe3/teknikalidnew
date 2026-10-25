@@ -699,3 +699,13 @@
 - WIP divergen lama day2-email repo utama dihapus (backup ~/.hermes/cache/scratch/wip-day2-backup-20261023/ + night branch). Artefak .next/types stale day2-email dibersihkan (cache lokal, bukan source).
 - QA: login-path Point&Badge (badge chip + idempotency refresh-2x) + remove-watchlist klik E2E = QA reviewer D+1. impact_check_due: 2026-10-27 (Point&Badge) / kirim nyata email = owner env gate.
 - Rollback anchor: app dd4007b7d9c6 + git revert 0ade887.
+
+### 2026-10-25 08:0x WIB — CTO pagi Minggu (build-only; 0 deploy — window malam)
+- type: build+ops | PRD: prd-2026-10-22-02 (idea-2026-10-19-2) merge; sec-2026-10-22-02; teknikal-2026-10-24-02 core; ops-2026-10-24-01
+- (1) prd-22-02 night_ready MERGED: dry-run bersih exit-0 → schema-shield PASS (0 file prisma/migrations) → merge --no-ff 51f962b (worktree /private/tmp/cto1025-merge, prisma generate dulu) → tsc EXIT-0 → push main → in_train T-1026-N. Deploy verify kereta malam: /stocks anon panel 'Pantauan perangkat ini' + chip Tersimpan; AC3 register-migrasi = QA staging.
+- (2) sec-22-02 npm audit fix: 8 vuln (2 critical) → 0. next 16.3.8→16.4.3 (GHSA-2464 RCE image-opt SVG — RELEVAN: logo chain pakai optimizer), @sentry/nextjs 10.55→10.76.2 (tunnel bypass GHSA-mchm), zod 4.6.7, follow-redirects 1.16.1 (midtrans payments), body-parser 2.4.0, fast-uri 3.1.9. tsc 0 + build 0. commit 45cab95 (rebase atas 476694a docs-session lain) → in_train T-1026-N.
+- (3) teknikal-24-02 core non-DDL: fetchFundamentalSummary() (quoteSummary 3 module, per-ticker fail-safe) LIVE 3/3 (TLKM/BBCA/RUNS angka masuk akal) + POST /api/cron/sync-fundamental (Bearer CRON_SECRET, updateMany where beta:null = backfill tak menimpa; dividendYield normalize) + driver host teknikalid_fundamental_sync.py. tsc 0 + build 0 (route di manifest). commit db881a9. DDL 8 field financialData TETAP owner gate. in_train T-1026-N (kode; DB backfill jalan pasca-deploy).
+- (4) ops-24-01 done: _schema_split_check() backlog_health.py (exit 1 + ALERT; bare-list hivePOS = skip by-design). Fixture 3/3 PASS di /tmp copy; kanonik utuh (63 entries, items 0). Temuan samping: backlog teknikal 17>cap12 + 6 stale = pre-existing lane CEO.
+- verify: tsc EXIT-0 x3 (merge, sec, fundamental); build EXIT-0 x2 (sec 45cab95, fundamental db881a9); Yahoo smoke 3/3; queue flip v22→(git commit 21dd1d4); night-audit CLEAN (owner-directed terdokumentasi handoff).
+- QA: kereta T-1026-N malam ini — boarding gate per penumpang; pasca-deploy: per-fitur curl (panel anon, npm audit di image, smoke sync-fundamental limit=5) + ISR warm-up #4 + login flow. impact_check_due: 2026-10-28 (panel guest star_add).
+- Rollback: app image 55c3932 (deploy 25 Okt 03:14 bo masih live) + git revert 51f962b/45cab95/db881a9 (berikut komit menumpuk).
