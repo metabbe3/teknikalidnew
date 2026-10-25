@@ -155,13 +155,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     select: { id: true, slug: true, updatedAt: true, articleType: true, tickerTag: true },
   });
 
-  // Exclude stale articles (auto-noindex — see article-freshness.ts), unpromoted
-  // wave landings, and per-ticker types now 308'd to /stocks (DAILY_SNAPSHOT via
-  // saham-<ticker>, STOCK_ANALYSIS via analisa-teknikal-<ticker> — their content
-  // lives on the stock page, so listing them here would advertise redirected URLs)
+  // Exclude stale articles (auto-noindex — see article-freshness.ts) and unpromoted
+  // wave landings. DAILY_SNAPSHOT (saham-<ticker>) and LEGACY per-ticker analyses
+  // (slug analisa-teknikal-<ticker>, 308'd to /stocks by proxy.ts) must stay out —
+  // listing them would advertise redirected URLs. The NEW per-stock analyses
+  // (slug analisa-saham-<ticker>-…, live 200 + "index, follow" since 11 Okt 2026)
+  // ARE included: qa-2026-10-25-01 — compounding GROWTH assets must be crawlable.
+  // Size bound: isStaleArticle drops STOCK_ANALYSIS older than 60d (evergreen
+  // bucket) — stricter than the 90d recency cap proposed in the spec.
   const articlePages = articles
     .filter((a) => a.articleType !== ArticleType.DAILY_SNAPSHOT)
-    .filter((a) => a.articleType !== ArticleType.STOCK_ANALYSIS)
+    .filter((a) => !a.slug.startsWith("analisa-teknikal-"))
     .filter((a) => !isStaleArticle(a))
     .filter((a) => !unpromotedLandingIds.has(a.id))
     .map((a) => {
