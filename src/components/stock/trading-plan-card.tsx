@@ -66,7 +66,7 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
           <Row label="Stop Loss" value={formatRp(plan.sl)} detail={`(${plan.slSource})`} valueClass="text-bearish" />
         </div>
 
-        {mc && !isWaitAndSee && (
+        {mc && (
           <>
             <div className="h-px bg-border/60" />
             <div className="rounded-lg bg-bg-hover px-3 py-2.5 space-y-2">
