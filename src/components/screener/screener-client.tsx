@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, Suspense } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
@@ -102,6 +102,31 @@ function ScreenerPageContent({ assetClass, linkBase = "/stocks" }: { assetClass?
     staleTime: 5 * 60 * 1000,
     retry: 1,
   });
+
+  // Auto-scroll to results once they arrive after a preset/custom screen is picked —
+  // mobile: hasil render ~500px di bawah preset cards, tanpa ini user harus scroll-hunt sendiri.
+  const resultsRef = useRef<HTMLDivElement>(null);
+  const prevFetchUrl = useRef<string | null>(null);
+  useEffect(() => {
+    // Screen dimatikan (toggle-off/reset) → hasil hilang, jangan biarkan user terdampar di posisi lama.
+    if (!fetchUrl) {
+      prevFetchUrl.current = null;
+      return;
+    }
+    if (isLoading) return;
+    // Hanya scroll saat ini adalah load BARU (bukan remount/refetch url sama) — cek perubahan url.
+    if (prevFetchUrl.current === fetchUrl) return;
+    prevFetchUrl.current = fetchUrl;
+    const el = resultsRef.current;
+    if (el) {
+      const top = el.getBoundingClientRect().top + window.scrollY - 96; // 96px offset utk sticky header
+      if (Math.abs(top - window.scrollY) > 80) {
+        // Instant (bukan smooth): animasi smooth kerap dibatalkan re-render saat hasil menggantikan
+        // radar/preset state (terukur: scrollTo smooth dipanggil tapi scrollY diam di 0).
+        window.scrollTo({ top });
+      }
+    }
+  }, [fetchUrl, isLoading]);
 
   const handleStyleChange = useCallback((style: TradingStyle) => {
     setActiveStyle(style);
@@ -300,7 +325,7 @@ function ScreenerPageContent({ assetClass, linkBase = "/stocks" }: { assetClass?
 
         {/* Results */}
         {fetchUrl && (
-          <section className="space-y-4">
+          <section className="space-y-4" ref={resultsRef}>
             <div className="flex flex-wrap items-center gap-3">
               <div className="w-1 h-6 rounded-full" style={{ background: styleDef.accentHex }} aria-hidden="true" />
               <ResultsHeader
