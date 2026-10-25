@@ -144,7 +144,7 @@ export function ResultsTable({ stocks, watchlistTickers, onToggleWatchlist, onRe
     overscan: 8,
   });
 
-  const gridCols = "grid-cols-[36px_100px_200px_130px_90px_80px_90px_80px_80px_1fr]";
+  const gridCols = "grid-cols-[36px_132px_200px_130px_90px_80px_90px_80px_80px_1fr]";
 
   if (stocks.length === 0) {
     return (
@@ -169,7 +169,7 @@ export function ResultsTable({ stocks, watchlistTickers, onToggleWatchlist, onRe
   return (
     <div className="overflow-x-auto rounded-xl depth-shadow-strong bg-bg-card relative">
       <div ref={scrollRef} className="max-h-[60vh] overflow-auto">
-        <div className={`glass-header sticky top-0 z-10 grid ${gridCols} text-text-tertiary text-[11px] uppercase tracking-wider min-w-[986px]`}>
+        <div className={`glass-header sticky top-0 z-10 grid ${gridCols} text-text-tertiary text-[11px] uppercase tracking-wider min-w-[1018px]`}>
           <div className="px-2 py-3 font-medium"></div>
           <div className="px-4 py-3 font-medium">Ticker</div>
           <div className="px-4 py-3 font-medium">Name</div>
@@ -181,7 +181,7 @@ export function ResultsTable({ stocks, watchlistTickers, onToggleWatchlist, onRe
           <div className="px-4 py-3 text-right font-medium">Signal</div>
           <div className="px-4 py-3 text-right font-medium">SMA 20</div>
         </div>
-        <div className="relative min-w-[986px]" style={{ height: `${virtualizer.getTotalSize()}px` }}>
+        <div className="relative min-w-[1018px]" style={{ height: `${virtualizer.getTotalSize()}px` }}>
           {virtualizer.getVirtualItems().map((virtualRow) => {
             const stock = stocks[virtualRow.index];
             const inWatchlist = watchlistTickers.has(stock.ticker);
