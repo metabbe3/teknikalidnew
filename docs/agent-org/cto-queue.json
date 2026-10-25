@@ -2411,7 +2411,7 @@
       "date": "2026-10-23",
       "type": "sec",
       "priority": "P3",
-      "status": "pending",
+      "status": "in_train",
       "train": "T-1026-N",
       "north_star": "TRUST — hardening cron endpoints (DoS guard) tanpa API baru",
       "title": "SEC P3 (IT-SEC 22 Okt, CTO APPROVE): timeout guard cron endpoints (resolve-predictions dkk) — exploitability rendah (butuh CRON_SECRET)",
@@ -2420,7 +2420,7 @@
       "done_when": "handler cron berat punya timeout eksplisit di kode; tsc 0; changelog entry",
       "scheduled_slot": "Backend Builder slot luang weekend 25 Okt -> kereta T-1025-N/T-1026-N (reslot dari T-1024-N)",
       "created_by": "CTO pagi 23 Okt 07:45 (verdict APPROVE P3)",
-      "result": ""
+      "result": "BUILD OK 25 Okt CTO weekend sore (build-only): helper src/domains/cron-monitoring/with-timeout.ts (Promise.race + clearTimeout) — 3 handler cron berat dibungkus DI DALAM withCronLogging supaya kena-timeout tercatat failed di CronLog: resolve-predictions 60s + sync-eod 120s + generate-articles 60s + maxDuration=300 (pola sync-fundamental). Nilai dari data CronLog 30d: sync-eod max 25,8s avg 22,3s → 120s ≈5x max; dua lain <25ms → 60s sangat longgar. tsc EXIT-0. Commit 1f51659 push main. Verify pasca-deploy kereta: 401 negative tetap + CronLog next-run success."
     },
     {
       "id": "qa-2026-10-23-01",

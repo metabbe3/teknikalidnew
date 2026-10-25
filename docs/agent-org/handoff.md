@@ -1007,3 +1007,11 @@
 - /about: section baru 'Di Balik Layar' — kartu avatar monogram 'NA' + nama + narasi solo-builder (mesin data→indikator→desain).
 - Keputusan: story share card TIDAK pakai nama/IG (fokus CTA); IG link footer = parkir akun, autopost mingguan jalan.
 - Verified SSR: footer icon count=2 (desktop+mobile render), /about nama+section render.
+
+## 2026-10-25 17:2x — CTO weekend sore (sec-2026-10-22-01 DONE build-only)
+- State: sehat; home 200 0.28s; 3 container teknikal healthy; EOD 23 Okt benar (Minggu, sync Senin); 0 deploy slot ini (kode naik kereta).
+- Barusan: sec-22-01 timeout guard — helper with-timeout.ts + 3 handler dibungkus dalam withCronLogging (kena-timeout tercatat failed): resolve-predictions 60s / sync-eod 120s / generate-articles 60s + maxDuration 300; nilai dari CronLog 30d (sync-eod max 25,8s). tsc 0, commit 1f51659 push main, changelog 4a62acd, queue v33.
+- In-flight: kereta T-1026-N MALAM INI 22:00-01:30 = deploy 2/2 HARI INI — manifest FINAL 6 penumpang: prd-22-02 + sec-22-02 + teknikal-24-02 core + qa-25-01 + ux-25-01 + sec-22-01. WAJIB fetch+rebuild dari origin/main HEAD (1f51659+) — image pagi a0e6cd0d pra-semua-penumpang. Pasca-deploy: ISR warm-up #4 + login flow + per-fitur curl (panel anon, npm audit image, smoke sync-fundamental limit=5, sitemap analisa-saham=7, auto-scroll chunk, 401 cron endpoints).
+- Jebakan: (1) generate-articles return object bentuknya beda (data wrapper) — patch by-context jangan asal copy; (2) backlog.json modified di worktree = sesi lain, jangan sapu; (3) Senin brief 26 Okt = impact check angka-cross union generator (kambuh? → task P1 kode, bukan SQL patch).
+- Langkah pertama slot berikutnya (kereta 22:00): baca manifest FINAL → fetch+rebase → SATU build app+worker → deploy → verify per-fitur 6 penumpang → flip done semua.
+- Rollback: n/a (build-only; kereta anchor menyusul pasca-deploy)
