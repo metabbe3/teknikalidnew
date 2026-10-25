@@ -57,7 +57,7 @@ import { GuestStockTracker } from "@/components/ui/guest-stock-tracker";
 import { GuestOverlimitBanner } from "@/components/ui/guest-overlimit-banner";
 import { guestHasQuota } from "@/lib/guest-pass";
 import { auth } from "@/lib/auth";
-import { AlertTriangle, Newspaper } from "lucide-react";
+import { AlertTriangle, Banknote, Newspaper } from "lucide-react";
 
 // ponytail: page is per-request SSR (auth-gated data varies by session — can't be SSG).
 export const dynamic = "force-dynamic";
@@ -429,6 +429,17 @@ export default async function StockDetailPage({
     paymentDate: d.paymentDate?.toISOString().split("T")[0] ?? null,
   }));
 
+  // Upcoming cash dividend (ex-date ≤45 hari ke depan) → badge hero.
+  // Sumber: StockDividend (IDX profile sync) — idempotent, updated per sync-profiles.
+  const todayStr = new Date().toISOString().split("T")[0];
+  const upcomingDividend = idxDividendsSerialized
+    .filter((d) => d.type === "cash" && d.exDate && d.exDate >= todayStr && d.amount !== null)
+    .sort((a, b) => (a.exDate! < b.exDate! ? -1 : 1))[0] ?? null;
+  const upcomingDividendSoon =
+    upcomingDividend && upcomingDividend.exDate! <= new Date(Date.now() + 45 * 86400_000).toISOString().split("T")[0]
+      ? upcomingDividend
+      : null;
+
   const ogImageUrl = `${SITE_URL}/api/og/stock?ticker=${encodeURIComponent(ticker)}`;
 
   // Single FAQ source — feeds both the FAQPage JSON-LD and the visible section
@@ -608,6 +619,12 @@ export default async function StockDetailPage({
                     <span className="text-sm font-bold px-3 py-1 rounded-lg bg-bearish-bg text-bearish border border-bearish/30 inline-flex items-center gap-1" title="Kepemilikan saham terkonsentrasi tinggi (penetapan BEI). Likuiditas efektif rendah; dikeluarkan dari perhitungan IHSG per 2 Nov 2026. Tetap dapat diperdagangkan — bukan delisting.">
                       <AlertTriangle className="inline h-4 w-4" /> HSC
                       <IndicatorTooltip indicator="HSC" className="opacity-60 hover:opacity-100" />
+                    </span>
+                  )}
+                  {upcomingDividendSoon && (
+                    <span className="text-sm font-bold px-3 py-1 rounded-lg bg-bullish-bg text-bullish border border-bullish/30 inline-flex items-center gap-1" title={`Dividen tunai Rp${upcomingDividendSoon.amount!.toLocaleString("id-ID")}/lembar. Tanggal ex: ${upcomingDividendSoon.exDate} — beli SETELAH tanggal ex TIDAK dapat dividen (harga biasanya disesuaikan turun di tanggal ex). Data: pengumuman emiten via IDX.`}>
+                      <Banknote className="inline h-4 w-4" /> Div {formatPrice(upcomingDividendSoon.amount!)} · Ex {new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short" }).format(new Date(upcomingDividendSoon.exDate!))}
+                      <IndicatorTooltip indicator="Dividen" className="opacity-60 hover:opacity-100" />
                     </span>
                   )}
                   <span className="text-text-tertiary" aria-hidden="true">·</span>
