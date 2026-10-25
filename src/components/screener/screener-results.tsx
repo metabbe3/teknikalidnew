@@ -315,9 +315,12 @@ export function ResultsCards({ stocks, styleDef, watchlistTickers, onToggleWatch
               className="block"
             >
             <div className="flex items-start justify-between pr-6">
-              <div>
-                <span className="font-bold text-accent group-hover:underline">{stripJk(stock.ticker)}</span>
-                <p className="text-[11px] text-text-secondary mt-0.5 truncate max-w-[180px]">{stock.name}</p>
+              <div className="flex items-start gap-2.5">
+                <StockLogo name={stock.name} ticker={stock.ticker} size={28} />
+                <div>
+                  <span className="font-bold text-accent group-hover:underline">{stripJk(stock.ticker)}</span>
+                  <p className="text-[11px] text-text-secondary mt-0.5 truncate max-w-[180px]">{stock.name}</p>
+                </div>
               </div>
               {stock.signalLabel ? (
                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${signalLabelColor(stock.signalLabel)}`}>
