@@ -75,9 +75,6 @@ export function UserMenu({ user }: { user: User | undefined | null }) {
         <DropdownMenuItem render={<Link href="/paper-trading" />}>
           Simulasi Trading
         </DropdownMenuItem>
-        <DropdownMenuItem render={<Link href="/bottom-fishing" />}>
-          Bottom Fishing
-        </DropdownMenuItem>
         <DropdownMenuItem render={<Link href="/trading-plan" />}>
           Trading Plan
         </DropdownMenuItem>

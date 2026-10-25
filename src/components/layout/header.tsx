@@ -38,6 +38,7 @@ function isActive(pathname: string, href: string) {
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
+  const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
   const pathname = usePathname();
   const { data: session } = useSession();
   const { data: ihsg } = useIhsg();
@@ -226,23 +227,35 @@ export function Header() {
           })}
           {session?.user ? (
             <>
-              <Link
-                href={`/profile/${session.user.username}`}
-                onClick={() => setMenuOpen(false)}
-                className="block py-2.5 px-3 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
-              >
-Tools
-              </Link>
-          {toolLinks.map((t) => (
-            <Link
-              key={t.href}
-              href={t.href}
-              onClick={() => setMenuOpen(false)}
-              className="block py-2.5 px-3 pl-6 rounded-lg text-sm text-text-tertiary hover:text-text-primary hover:bg-bg-hover transition-colors"
-            >
-              {t.label}
-            </Link>
-          ))}
+          <button
+            type="button"
+            onClick={() => setMobileToolsOpen((v) => !v)}
+            aria-expanded={mobileToolsOpen}
+            className="w-full flex items-center justify-between py-2.5 px-3 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
+          >
+            Tools
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={`transition-transform duration-200 ${mobileToolsOpen ? "rotate-180" : ""}`}>
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+          {mobileToolsOpen && (
+            <div className="space-y-0.5">
+              {toolLinks.map((t) => (
+                <Link
+                  key={t.href}
+                  href={t.href}
+                  onClick={() => setMenuOpen(false)}
+                  className={`block py-2.5 px-3 pl-6 rounded-lg text-sm transition-colors ${
+                    pathname.startsWith(t.href)
+                      ? "text-accent font-semibold bg-accent/10"
+                      : "text-text-tertiary hover:text-text-primary hover:bg-bg-hover"
+                  }`}
+                >
+                  {t.label}
+                </Link>
+              ))}
+            </div>
+          )}
           <Link
                 href={`/profile/${session.user.username}`}
                 onClick={() => setMenuOpen(false)}
@@ -263,13 +276,6 @@ Tools
                 className="block py-2.5 px-3 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
               >
                 Portofolio
-              </Link>
-              <Link
-                href="/bottom-fishing"
-                onClick={() => setMenuOpen(false)}
-                className="block py-2.5 px-3 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
-              >
-                Bottom Fishing
               </Link>
               <Link
                 href="/trading-plan"

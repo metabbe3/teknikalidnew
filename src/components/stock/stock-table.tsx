@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import { StockLogo } from "@/components/stock/stock-logo";
 import { formatPrice, formatPercent, formatVolume, stripJk, changeColor, rsiColor, rsiBgColor } from "@/lib/utils";
 import { Sparkline } from "@/components/stock/sparkline";
 import { StockCardList } from "@/components/stock/stock-card";
@@ -227,7 +228,8 @@ export function StockTable({ stocks, sectors, linkBase = "/stocks" }: StockTable
                     }}
                     onClick={() => router.push(`${linkBase}/${stock.ticker}`)}
                   >
-                    <div className="px-4 py-3">
+                    <div className="px-4 py-3 flex items-center gap-2">
+                      <StockLogo name={stock.name} ticker={stock.ticker} size={24} />
                       <Link href={`${linkBase}/${stock.ticker}`} className="font-semibold text-accent hover:underline" onClick={(e) => e.stopPropagation()}>
                         {stripJk(stock.ticker)}
                       </Link>
