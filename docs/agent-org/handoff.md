@@ -963,3 +963,9 @@
 - 20 preset rename label bahasa manfaat + desc 1 kalimat; istilah teknikal (RSI<30, MACD, P/E) pindah ke deskripsi. Key-based → URL/SEO saham-* pages tak tersentuh.
 - Verified live: tabs baru + preset "Jenuh Jual", "Jatuh Dalam", "Menyentuh Batas Bawah", "Ramai Saat Turun" render.
 - Custom builder ahli tetap utuh (opsi 2 — tanpa toggle Mode Ahli dulu; upgrade nanti kalau adoption naik).
+
+## 25 Okt 14:45 — PERF LOGO LOAD (owner "pastikan loadnya cepat, caching", 0d584eb)
+- Ukur dulu: /_next/image cf-cache-status DYNAMIC (CF tak cache query-URL) + browser cache cuma 4 jam + 89 file sumber gendut (660KB utk display 36px).
+- Fix 3 lapis: (1) sips resize 89 file max 128px q80 → 16MB→7,8MB repo; (2) /logos/* cache-control immutable 1 tahun (exclude dari rule generic — TRAP: Next append semua matching rules, cache-control ganda); (3) images.minimumCacheTTL 31 hari + AVIF/WebP.
+- Verified live: /logos/AADI.png max-age=31536000 immutable + CF HIT di 2nd request; optimizer path TTL 31 hari.
+- SW sengaja TIDAK dipakai (kill-switch v2 12 Okt) — cache HTTP murni.
