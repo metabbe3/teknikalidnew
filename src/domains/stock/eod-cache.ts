@@ -27,14 +27,14 @@ export function eodKey(...parts: (string | undefined | null)[]): string {
   return EOD_PREFIX + parts.filter((p) => p != null && p !== "").join(":");
 }
 
-export function cachedEod<T>(key: string, compute: () => Promise<T>): Promise<T> {
+export function cachedEod<T>(key: string, compute: () => Promise<T>, ttlMs: number = EOD_TTL_MS): Promise<T> {
   const hit = stockCache.get(key);
   if (hit !== undefined) return Promise.resolve(hit as T);
 
   return compute().then((result) => {
     // jangan cache hasil error/kosong-gagal — biarkan retry berikutnya query lagi
     if (result === null || result === undefined) return result;
-    stockCache.set(key, result, EOD_TTL_MS);
+    stockCache.set(key, result, ttlMs);
     return result;
   });
 }

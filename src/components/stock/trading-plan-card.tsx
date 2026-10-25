@@ -69,13 +69,19 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
         {mc && (
           <>
             <div className="h-px bg-border/60" />
-            <div className="rounded-lg bg-bg-hover px-3 py-2.5 space-y-2">
-              <div className="flex items-center justify-between">
+            <details className="group rounded-lg bg-bg-hover px-3 py-2.5">
+              <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                 <span className="text-[11px] font-semibold text-text-secondary">Peluang kena TP duluan</span>
-                <span className={`text-lg font-mono font-bold tabular-nums ${mc.winRate >= 0.5 ? "text-bullish" : "text-bearish"}`}>
-                  {(mc.winRate * 100).toFixed(0)}%
+                <span className="flex items-center gap-2">
+                  <span className={`text-lg font-mono font-bold tabular-nums ${mc.winRate >= 0.5 ? "text-bullish" : "text-bearish"}`}>
+                    {(mc.winRate * 100).toFixed(0)}%
+                  </span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-text-tertiary transition-transform group-open:rotate-180" aria-hidden="true">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
                 </span>
-              </div>
+              </summary>
+              <div className="space-y-2 pt-2.5 mt-2.5 border-t border-border/60">
               {/* Stacked bar: TP | SL | keduanya tidak dalam horizon */}
               <div className="h-2 rounded-full overflow-hidden flex" role="img" aria-label={`Kena TP duluan ${Math.round(mc.winRate * 100)}%, kena Stop Loss duluan ${Math.round(mc.slRate * 100)}%, tidak keduanya ${Math.round(mc.neitherRate * 100)}%`}>
                 <div className="bg-bullish" style={{ width: `${mc.winRate * 100}%` }} />
@@ -90,7 +96,8 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
               <div className="text-[10px] text-text-tertiary leading-snug pt-0.5 border-t border-border/60">
                 Simulasi Monte Carlo {mc.simulations.toLocaleString("id-ID")}× jalur harga ({mc.horizonDays} hari ke depan) dari pergerakan historis · Rata-rata hasil {mc.evPerShare >= 0 ? "+" : "−"}{formatRp(Math.abs(Math.round(mc.evPerShare)))}/lembar jika TP/SL disiplin dijalankan
               </div>
-            </div>
+              </div>
+            </details>
           </>
         )}
 

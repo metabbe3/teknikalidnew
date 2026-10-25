@@ -367,11 +367,11 @@ export default async function StockDetailPage({
     ? await cachedEod(eodKey("mc", stock.ticker), async () => {
         const ps = await stockRepository
           .findPricesByTicker(stock.ticker, { date: { gte: subDays(new Date(), 150) }, volume: { gt: 0 } })
-          .catch(() => []);
+          .catch(() => [] as Awaited<ReturnType<typeof stockRepository.findPricesByTicker>>);
         return monteCarloTpFirst(ps.map((x) => Number(x.close)), tradingPlan.entry, tradingPlan.tp1, tradingPlan.sl, {
           seedKey: stock.ticker,
         });
-      })
+      }, 24 * 60 * 60 * 1000) // TTL khusus MC: 24 jam — angka hanya berubah pasca eod-sync (clearEodCaches tetap memaksa refresh instan)
     : null;
 
   // Serialize IDX company data for client component
