@@ -932,3 +932,9 @@
 - Double Bottom Fishing: hapus dari mobile logged-in menu + avatar dropdown (Tools dropdown = satu pintu; desktop tak tersentuh).
 - BUG ketemu: label "Tools" mobile logged-in ternyata LINK ke /profile/username (sisa refactor) → diganti tombol disclosure collapsible (chevron, aria-expanded, active accent). Desktop sudah dropdown by design.
 - /stocks + /crypto browse (StockTable): logo 24px + ticker per baris. Verified browser: 18 rows rendered, 7 logo asli (WMUU.png dst), sisanya monogram tile.
+
+## 25 Okt 12:10 — MOBILE LOGO /stocks FIX (owner "di mobile logo tidak kelihatan", 2daf247)
+- Akar: kolom ticker grid cuma 100px, padding px-4=32px → konten 68px; logo 24+gap 8+ticker ~40 = overflow → logo/teks saling menindih/kepotong di mobile.
+- Fix: kolom ticker 100→132px + min-width 900→932 (stock-table) & 100→132 + 986→1018 (screener-results). Header & rows konsisten.
+- Verify browser live: grid-cols-[132px...] + shell 932 aktif; desktop 18 rows logo 24px muncul normal.
+- Catatan verifikasi: emulation mobile di tool browser bikin virtualizer stuck "Memuat" (artefak throttling, API 197KB/0.19s normal) — geometry fix diverifikasi via layout live desktop + matematika kolom.
