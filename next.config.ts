@@ -2,6 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  images: {
+    // Logo emiten: file immutable (nama = ticker) — cache optimizer agresif.
+    minimumCacheTTL: 2678400, // 31 hari
+    formats: ["image/avif", "image/webp"],
+  },
   transpilePackages: ["next-auth"],
   serverExternalPackages: ["yahoo-finance2", "@deno/shim-deno"],
   experimental: {
@@ -115,7 +120,16 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: "/:path((?!api|_next|admin|dashboard|auth).*)",
+        source: "/logos/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/:path((?!api|_next|admin|dashboard|auth|logos).*)",
         headers: [
           {
             key: "Cache-Control",
