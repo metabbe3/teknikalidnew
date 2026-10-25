@@ -277,13 +277,6 @@ export function Header() {
               >
                 Portofolio
               </Link>
-              <Link
-                href="/trading-plan"
-                onClick={() => setMenuOpen(false)}
-                className="block py-2.5 px-3 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
-              >
-                Trading Plan
-              </Link>
               <button
                 onClick={() => { setMenuOpen(false); signOut(); }}
                 className="w-full text-left py-2.5 px-3 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
