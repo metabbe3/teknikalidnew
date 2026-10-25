@@ -365,3 +365,63 @@ export async function fetchChart(
       adjClose: q.adjclose ?? undefined,
     }));
 }
+
+/* ── teknikal-2026-10-24-02: fundamental quoteSummary fetcher ──────────────
+ * Beta/bookValue/shares dari defaultKeyStatistics; avgVol10D dari
+ * summaryDetail (avgVol3M tidak diexpose Yahoo JK; 10D dipakai sebagai
+ * proxy likuiditas — kolom DB averageDailyVolume3Month tetap nama sama).
+ * financialData (ROE/margin/EBITDA/debt/cash/target) siap utk DDL bertahap.
+ */
+export interface FundamentalSummary {
+  beta?: number;
+  bookValue?: number;
+  sharesOutstanding?: number;
+  averageDailyVolume10Day?: number;
+  dividendYield?: number;
+  returnOnEquity?: number;
+  profitMargins?: number;
+  ebitda?: number;
+  totalDebt?: number;
+  totalCash?: number;
+  revenueGrowth?: number;
+  earningsGrowth?: number;
+  targetMeanPrice?: number;
+}
+
+const num = (v: unknown): number | undefined => {
+  if (typeof v === "number" && Number.isFinite(v)) return v;
+  return undefined;
+};
+
+export async function fetchFundamentalSummary(
+  ticker: string
+): Promise<FundamentalSummary | null> {
+  try {
+    const r = await limit(() =>
+      yahooFinance.quoteSummary(ticker, {
+        modules: ["defaultKeyStatistics", "summaryDetail", "financialData"],
+      })
+    );
+    const k = (r as { defaultKeyStatistics?: Record<string, unknown> }).defaultKeyStatistics ?? {};
+    const s = (r as { summaryDetail?: Record<string, unknown> }).summaryDetail ?? {};
+    const f = (r as { financialData?: Record<string, unknown> }).financialData ?? {};
+    const dyRaw = num(s.dividendYield);
+    return {
+      beta: num(k.beta),
+      bookValue: num(k.bookValue),
+      sharesOutstanding: num(k.sharesOutstanding),
+      averageDailyVolume10Day: num(s.averageDailyVolume10Day),
+      dividendYield: dyRaw !== undefined && dyRaw > 1 ? dyRaw / 100 : dyRaw,
+      returnOnEquity: num(f.returnOnEquity),
+      profitMargins: num(f.profitMargins),
+      ebitda: num(f.ebitda),
+      totalDebt: num(f.totalDebt),
+      totalCash: num(f.totalCash),
+      revenueGrowth: num(f.revenueGrowth),
+      earningsGrowth: num(f.earningsGrowth),
+      targetMeanPrice: num(f.targetMeanPrice),
+    };
+  } catch {
+    return null; // per-ticker skip, bukan abort batch (spec)
+  }
+}
