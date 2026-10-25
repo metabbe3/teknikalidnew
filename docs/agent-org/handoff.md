@@ -956,3 +956,10 @@
 - ResultsTable (view tabel) sudah kena logo di sweep pagi. Yang belum: ResultsCards (view kartu).
 - ResultsCards: logo 28px + ticker + nama. Verified live: preset RSI Oversold → 65 saham, 11 logo asli ter-render (WMUU.png, ARKO.png, BANK.svg) sisanya monogram tile.
 - Catatan: golden-cross preset via URL = 0 hasil (param preset beda nama — bukan regression, cek nanti kalau owner pakai).
+
+## 25 Okt 14:05 — SCREENER BAHASA MANUSIA (owner "terlalu ribet, istilah tak ngerti" → riset → "Lakukan", f16900d)
+- Riset: Pluang pakai preset bahasa manfaat; Trendlyne 3-mode; konsensus fintech 2026 "no jargon". Formula internal terbukti: slider home "Lagi Naik/Lagi Murah".
+- Tab: Bottom Fishing→Lagi Murah · Swing→Jangka Pendek · Momentum→Lagi Naik · Long→Jangka Panjang · Custom→Atur Sendiri.
+- 20 preset rename label bahasa manfaat + desc 1 kalimat; istilah teknikal (RSI<30, MACD, P/E) pindah ke deskripsi. Key-based → URL/SEO saham-* pages tak tersentuh.
+- Verified live: tabs baru + preset "Jenuh Jual", "Jatuh Dalam", "Menyentuh Batas Bawah", "Ramai Saat Turun" render.
+- Custom builder ahli tetap utuh (opsi 2 — tanpa toggle Mode Ahli dulu; upgrade nanti kalau adoption naik).
