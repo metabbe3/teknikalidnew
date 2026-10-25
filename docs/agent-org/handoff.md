@@ -918,3 +918,12 @@
 - DISPATCH bug-2026-10-25-01 (P2 TRUST, slot BE Senin 07:30): /api/stocks/radar row SUPR.JK rsi14=0/stoch=0 → kartu render "RSI 0.0" (mustahil) + lolos filter oversold. 131/132 row OK. Fix backend query/pipeline, bukan FE.
 - Jebakan: staging :3100 = 500 sampai .env di-sed @db→127.0.0.1:5433 (pola 24 Okt) — WAJIB pulihkan + kill proses setelah; CDP eval scrollTo smooth = hang timeout, selalu instant di harness.
 - Next rotasi: flow (a) sisa = hasil table→klik saham→register CTA wording; kandidat polish: count "N saham" sticky saat scroll hasil (mobile).
+
+## 25 Okt 09:55 — LOGO SWEEP 14 TITIK (owner "sweeping 1 1", deploy 09:50, dd62ae9)
+- Seklanjan pass pertama (home+portfolio): sekarang SEMUA titik list saham pakai StockLogo:
+  watchlist, trading-plan, bottom-fishing, pasar MoversCard (live+rekap+weekend share komponen),
+  screener ResultsTable (= /screener + /stocks browse + semua /saham-* SEO pages), radar-preview,
+  mini-screener-preview, for-you-signals, morning-delta, thesis-card, welcome-back-banner (ikon generik → logo saham terakhir), market-breath-strip.
+- ticker-tape SENGAJA tanpa logo (strip animasi → flicker).
+- Verify SSR guest: /pasar WMUU+FAST.jpg live, /bottom-fishing ARKO.jpg live, home breath-strip WMUU live. tsc 0.
+- Komponen client aman pakai StockLogo (sudah "use client").
