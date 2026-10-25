@@ -944,3 +944,10 @@
 - StockCardList: logo 28px per baris. Verified emulation 390px: 40 kartu, AADI.png 28x28 live.
 - hero-search (dropdown home): logo 24px + ticker + nama. Verified: ketik "BBCA" → 1 opsi "BBCA Bank Central Asia −2.90%" logo 24px live.
 - Catatan: /stocks search box = filter tabel (bukan dropdown), ikut logo via card list.
+
+## 25 Okt 13:10 — NAV DEDUP FINAL (owner "trading plan double juga, cek mana lagi double", 73793d5)
+- Map lengkap semua entry point nav: navLinks (Beranda/Saham/Berita/Akademi), toolLinks dropdown (7 tools), mobile logged-in, avatar dropdown, footer.
+- Duplikat dihapus: Trading Plan (tadinya 3 tempat: Tools + avatar + mobile) → kini Tools saja; Simulasi/Latihan Trading (Tools + avatar, label beda utk halaman sama) → kini Tools saja "Latihan Trading".
+- Bottom Fishing kemarin sudah. Avatar kini murni akun: Profil, Pantauan, Portofolio, Pengaturan, Moderasi (admin), Keluar.
+- Mobile logged-in: Profil, Pantauan, Portofolio + Tools collapsible + Keluar.
+- Footer beda konteks (SEO sitemap) — link tools di footer sengaja dibiarkan (konvensi umum, bukan duplikasi navigasi harian).
