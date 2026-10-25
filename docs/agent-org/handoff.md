@@ -951,3 +951,8 @@
 - Bottom Fishing kemarin sudah. Avatar kini murni akun: Profil, Pantauan, Portofolio, Pengaturan, Moderasi (admin), Keluar.
 - Mobile logged-in: Profil, Pantauan, Portofolio + Tools collapsible + Keluar.
 - Footer beda konteks (SEO sitemap) — link tools di footer sengaja dibiarkan (konvensi umum, bukan duplikasi navigasi harian).
+
+## 25 Okt 13:30 — SCREENER CARDS LOGO (owner "hasil screen tambah icon", e7bb31d)
+- ResultsTable (view tabel) sudah kena logo di sweep pagi. Yang belum: ResultsCards (view kartu).
+- ResultsCards: logo 28px + ticker + nama. Verified live: preset RSI Oversold → 65 saham, 11 logo asli ter-render (WMUU.png, ARKO.png, BANK.svg) sisanya monogram tile.
+- Catatan: golden-cross preset via URL = 0 hasil (param preset beda nama — bukan regression, cek nanti kalau owner pakai).
