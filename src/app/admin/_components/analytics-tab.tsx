@@ -53,6 +53,7 @@ interface AnalyticsData {
     changePct: number | null;
   }>;
   devices: Array<{ category: string; count: number; percentage: number }>;
+  operatingSystems: Array<{ category: string; count: number; percentage: number }>;
   browsers: Array<{ category: string; count: number; percentage: number }>;
   topReferrers: Array<{ referrer: string; source: string; count: number }>;
   geo: Array<{ label: string; count: number; percentage: number }>;
@@ -941,6 +942,36 @@ export function AnalyticsTab() {
             )}
           </CardContent>
         </Card>
+        {/* Operating Systems */}
+        <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+          <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-emerald-50 to-white rounded-t-lg">
+            <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
+              <Smartphone className="h-4 w-4 text-emerald-500" />
+              Sistem Operasi
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4">
+            {isLoading ? (
+              <div className="h-24 bg-gray-50 rounded animate-pulse" />
+            ) : (
+              <div className="space-y-3">
+                {(data?.operatingSystems ?? []).map((o) => (
+                  <div key={o.category} className="flex items-center gap-3">
+                    <span className="text-sm text-gray-700 w-20 font-medium">{o.category}</span>
+                    <div className="flex-1 h-5 bg-gray-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-emerald-500"
+                        style={{ width: `${o.percentage}%` }}
+                      />
+                    </div>
+                    <span className="text-xs font-bold text-gray-700 tabular-nums w-8 text-right">{o.percentage}%</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
 
         {/* Geo */}
         <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">

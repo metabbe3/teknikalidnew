@@ -141,6 +141,7 @@ export interface ComprehensiveAnalytics {
   topPages: PageAttraction[];
   devices: DeviceBreakdown[];
   browsers: DeviceBreakdown[];
+  operatingSystems: DeviceBreakdown[];
   topReferrers: { referrer: string; source: TrafficSource; count: number }[];
   geo: GeoEntry[];
   /** Views dari datacenter/scanner/crawler — dipisah dari human geo (owner 21 Okt). */
@@ -829,10 +830,12 @@ export const analyticsService = {
     // ─── Devices & Browsers ───────────────────────────────────────────────────
     const deviceCounts: Record<string, number> = {};
     const browserCounts: Record<string, number> = {};
+    const osCounts: Record<string, number> = {};
     for (const pv of realViews) {
       const parsed = parseUserAgent(pv.userAgent);
       deviceCounts[parsed.device] = (deviceCounts[parsed.device] || 0) + 1;
       browserCounts[parsed.browser] = (browserCounts[parsed.browser] || 0) + 1;
+      osCounts[parsed.os] = (osCounts[parsed.os] || 0) + 1;
     }
 
     const ua = realViews.length || 1;
@@ -845,6 +848,14 @@ export const analyticsService = {
       .sort((a, b) => b.count - a.count);
 
     const browsers: DeviceBreakdown[] = Object.entries(browserCounts)
+      .map(([category, count]) => ({
+        category,
+        count,
+        percentage: Math.round((count / ua) * 100),
+      }))
+      .sort((a, b) => b.count - a.count);
+
+    const operatingSystems: DeviceBreakdown[] = Object.entries(osCounts)
       .map(([category, count]) => ({
         category,
         count,
@@ -1008,6 +1019,7 @@ export const analyticsService = {
       topPages,
       devices,
       browsers,
+      operatingSystems,
       topReferrers,
       geo,
       crawlerSeo: {
