@@ -987,3 +987,9 @@
 - TRAP satori: (1) file .jpg ternyata WebP-mislabeled → "Invalid JPEG" 502; dikonversi 3 file; (2) SEMUA div multi-child wajib display:flex.
 - Web Share API level-2 sudah benar di share-buttons (mobile native share sheet; download hanya fallback) — persepsi "kayak download" berasal dari desain lama yang generic.
 - Verified: PNG 1080x1920 live + vision QA pass (7/7 elemen, no overlap/cut-off).
+
+## 25 Okt 17:55 — STORY "KURANG MENARIK" → HERO+ENERGI+MOMEN (owner feedback, 33bd196→HEAD)
+- Diagnosis vision: kartu lama = receipt (statik, flat, tanpa momen) — bukan trophy.
+- 3 fix tanpa nambah chart/data: (1) harga 190px gradient vertikal hijau/merah = angka jadi desain; (2) giant arrow polygon watermark + glow radial ikut arah harga = energi arah; (3) stamp dashed "SNAPSHOT {tanggal id-ID}" = momen.
+- TRAP satori: <text> node unsupported → path polygon utk watermark arrow.
+- Verified vision QA v3: hero gradient ✓ pill ✓ stamp ✓ watermark ✓ no bug — "premium and alive, ship it".
