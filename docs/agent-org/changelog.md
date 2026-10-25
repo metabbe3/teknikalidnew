@@ -727,3 +727,12 @@
 - QA: bukti fisik DONE-WHEN 3/3; pasca-deploy kereta wajib prod grep -c = 7
 - SEC GATE: N/A (sitemap read-only listing, no input/auth/db-write)
 - impact_check_due: 2026-10-28 (GSC: URL analisa-saham masuk Discovered; +sitemap-news? bukan scope)
+
+## 2026-10-25 — sec-2026-10-22-01 timeout guard cron endpoints (CTO weekend sore, build-only)
+- task-id: sec-2026-10-22-01 · type: sec (IT-SEC Deep Pentest 22 Okt, CTO APPROVE P3) · PRD: n/a (ops hardening)
+- deploy hash: n/a build-only — commit 1f51659 push main, naik kereta T-1026-N (deploy 2/2 hari ini)
+- verify bukti: helper with-timeout.ts baru (Promise.race, clearTimeout finally); grep withTimeout 2/2/2 di resolve-predictions/sync-eod/generate-articles + maxDuration=300 3/3; npx tsc --noEmit EXIT-0; nilai timeout dari data CronLog 30d (sync-eod max 25.769ms→120s ≈5x; resolve-predictions max 20ms→60s; generate-articles max 23ms→60s)
+- desain: timeout dibungkus DI DALAM withCronLogging → kena-timeout tercatat status=failed + errorMessage di CronLog (monitoring terlihat); pekerjaan telat dibiarkan selesai di background (idempotent: re-run/upsert/hasRunningJob dedupe)
+- QA: pasca-deploy kereta — curl 401 negative tetap jalan + CronLog next-run masih success (timeout tak memutus cron harian); impact_check_due: 2026-10-28 (3 cron log success pasca-deploy)
+- SEC GATE: task INI adalah hardening itu sendiri (auth Bearer CRON_SECRET existing utuh, 0 endpoint baru, 0 input baru) — attack-surface tidak bertambah
+- impact_check_due: 2026-10-28
