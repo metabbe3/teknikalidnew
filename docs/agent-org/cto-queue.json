@@ -124,7 +124,7 @@
       "source": "Product Agent nightly 19 Okt (spec_ready, FDE-READY Researcher 20 Okt); CEO dispatch ritual 22 Okt",
       "spec": "Bangun sesuai PRD idea-2026-10-19-2 (backlog): (1) panel 'Pantauan perangkat ini' render /stocks guest-only, item ticker+close+chg% WAJIB reuse market-snapshot.service SATU PINTU (DILARANG compute movers/breadth baru — market-snapshot rule); (2) chip inline 'Tersimpan — N emiten dipantau di perangkat ini' <=2s saat toggle star, tanpa lib toast baru; (3) CTA 'Simpan permanen + lintas perangkat' -> /auth/register, migrasi batch auth-provider tanpa regresi; (4) below-the-fold/lazy jaga LCP <=10% regresi; 0 dependency baru; SSR-safe. FDE: research_brief ✓ · PRD 7-field ✓ · QA plan ✓.",
       "done_when": "DONE WHEN: (a) tsc+build hijau + e2e: toggle 2 star -> panel list 2 item render + chip muncul; (b) e2e register path: toggle 2 star -> register -> Watchlist DB 2 row user baru; (c) live /stocks anon 200 + panel guest-only (authed tak lihat panel guest); (d) metrik 14 hari: star_add >=8/30d-rate & distinct anonId >=5, else verdict iterate di entry.",
-      "scheduled_slot": "Backend Builder 24 Okt 18:30 (build) -> kereta T-1025-N (reslot: T-1023-N semalam tidak berangkat)",
+      "scheduled_slot": "2026-10-25 07:30 slot pagi SELESAI (merge 51f962b; NOTE: image app a0e6cd0d6d69 ter-deploy 07:38 WIB — lihat audit CTO 08:2x; finalisasi verify per-fitur di kereta T-1026-N malam ini)",
       "created_by": "CEO 08:15 22 Okt",
       "result": "NIGHT BUILD OK 24 Okt (CTO night, branch night/prd-2026-10-22-02, pushed): (1) AC1 GuestWatchlistPanel baru guest-only di /stocks — SSR-safe null pra-mount (LCP aman), item ticker+close+chg% via /api/live-quotes ENDPOINT EXISTING (pola sama GuestWatchlistView /watchlist; market-snapshot.service SATU PINTU tak tersentuh — bukan movers/breadth); (2) AC2 chip inline 'Tersimpan — N emiten dipantau di perangkat ini' role=status auto-hide 2s, 0 lib baru, guest-star.tsx refactor effect->event-state (eslint react-hooks clean); (3) AC3 CTA 'Simpan permanen + lintas perangkat' -> /auth/register; migrasi auth-provider TIDAK diubah (0 diff). VERIFY (fisik): npx tsc --noEmit 0 error · eslint 0 error · selftest-retention-loop 5/5 · playwright E2E_BASE_URL=:3100 (dev, prod :3000 tak tersentuh; semua POST /api di-block = DB read-only): guest-panel.spec 4/4 (AC1 render 2 item, AC1-sync hapus live-update, AC1-negative kosong=no panel, AC2-flow detail-star->chip->panel sinkron) · stocks.spec 3/3 · stock-detail 4/4. BONUS: fix 2 stale spec pre-existing (H1 'Radar Saham IDX' + FAQ h2 exact-match, sejak ec65941 — dibuktikan git show origin/main). playwright.config baseURL kini env-able (E2E_BASE_URL). BELUM TERVERIFIKASI (butuh lingkungan boleh write DB — prod DB read-only by rule): e2e penuh AC3 register->migrasi 2 row Watchlist (jalur kode untouched, risiko minimal) — sarankan staging/lokal pagi. AC4 metrik 14-hari baru bisa diukur pasca-deploy (EngagementEvent star_add + cta_register_guest_panel). Estimasi review: 15 mnt (diff 8 file, +262/-42). SKIP: deploy (hard-gate 21:45-07:00), prod :3000.",
       "assigned_slot": "Backend Builder malam 24 Okt 18:30 (build-only, setelah pagi selesaikan fork prd-22-01 — hindari bentrok file mailer/watchlist) → kereta T-1024-N 22:00",
@@ -1720,7 +1720,7 @@
       "spec": "BUKTI: idx-sync.log mtime 12 Okt 08:20 berisi EPERM: process.cwd failed uv_cwd (node v25) — launchd worker kehilangan akses cwd repo (TCC Documents). Plist com.teknikalid.idx-sync Day=1/06:00 (Senin saja). FIX (owner action, TCC = security domain): grant Full Disk Access utk node/launchd ATAU pindah log+cwd ke path non-TCC; verify: Senin depan 06:00 log bersih + sync row baru. Bukan kerja builder (TCC interactive prompt). [UPDATE CTO 19 Okt 07:45: gagal LAGI Senin 19 Okt 06:00 — launchctl exit 1, idx-sync.log beku 12 Okt (bahkan penulisan log kena TCC), MAX(Stock.updatedAt)=2026-10-12 01:09 =  [UPDATE CTO 23 Okt 07:5x: Stock.updatedAt MAX masih 2026-10-12 01:09 = beku 11 hari; launchctl runs=0/never exited; owner TCC grant BELUM. Emiten IDX basi — listing/delisting baru tak tersync. Tetap owner-only (TCC security domain).]",
       "scheduled_slot": "owner TCC grant; verify Senin 20 Okt 06:00",
       "train": "T-1020-N",
-      "blocked_checked_at": "2026-10-25 08:0x WIB (slot pagi CTO)",
+      "blocked_checked_at": "2026-10-25 08:2x WIB (CTO shift 07:45): idx-sync.log TETAP beku 12 Okt 08:20 (EPERM uv_cwd, 637B, launchd runs=-); Stock.updatedAt MAX 24 Okt 13:37 UTC berasal dari sync-profiles manual malam 24 Okt (profile fields), BUKAN bukti listing-sync hidup — daftar emiten tetap basi 13 hari. Owner TCC grant masih satu-satunya fix.",
       "needs": "Owner: System Settings > Privacy & Security > Files and Folders (atau Full Disk Access) utk launchd com.teknikalid.idx-sync ke ~/Documents — TCC prompt muncul sekali, atau grant manual.",
       "owner_brief": "READ-ONLY evidence 21 Okt 07:35: launchctl print = runs 0 / never exited; idx-sync.log beku 12 Okt 08:20 (EPERM uv_cwd TCC ~/Documents); Stock.updatedAt MAX=2026-10-12 (1451 rows); launchctl list kolom exit 0 = misleading (wrapper tidak pernah sampai node). YANG DIBUTUHKAN OWNER: approve TCC prompt utk launchd idx-sync (System Settings > Privacy & Security), atau jalankan sekali manual: bash ~/.hermes/scripts/teknikal_idx_sync.sh lalu tekan \"Allow\" di dialog TCC. File yang disentuh: TIDAK ADA (murni macOS permission, bukan kode). Risiko: rendah — sync idempotent upsert daftar emiten IDX; rollback: n/a (tidak ada perubahan kode/DB destruktif). Verifikasi pasca-grant: launchctl kickstart gui/$(id -u)/com.teknikalid.idx-sync lalu cek idx-sync.log fresh + Stock.updatedAt > 20 Okt."
     },
@@ -2401,7 +2401,7 @@
       "scheduled_slot": "2026-10-25 07:30 slot pagi (build-only; naik kereta T-1026-N malam)",
       "created_by": "CTO pagi 23 Okt 07:45 (verdict APPROVE P2)",
       "result": "BUILD OK 25 Okt 08:0x (CTO pagi, worktree cto1025-merge): npm audit --omit=dev 8 vuln (2 crit) -> 0. next 16.3.8->16.4.3 minor in-range (RCE image-optimization GHSA-2464 + DoS server-actions + use-cache RCE), @sentry/nextjs 10.55->10.76.2 (tunnel middleware-bypass GHSA-mchm), zod 4.4.3->4.6.7, follow-redirects 1.16.0->1.16.1 (midtrans payments-path), body-parser 2.4.0, fast-uri 3.1.9. tsc EXIT-0, build EXIT-0 (BUILD hijau full). commit 45cab95 pushed main (rebase di atas 476694a docs-session lain). SEC-REVIEW: dep-bump murni 0 kode app; attack surface = image optimizer (logo SVG chain) kini patched; tanpa DDL/schema",
-      "assigned_slot": "Backend Builder malam 24 Okt 18:30 (build-only, bundle dgn prd-22-02) → kereta T-1024-N 22:00 — payments path (midtrans via follow-redirects), QA Verifier wajib"
+      "assigned_slot": "Backend Builder malam 18:30 25 Okt — REMINDER: kereta malam WAJIB rebuild image dari origin/main HEAD (45cab95+) — image live 07:38 dibangun sebelum sec-bump masuk; verify npm audit 0 + /billing 200 pasca-deploy"
     },
     {
       "id": "sec-2026-10-22-01",
@@ -2562,6 +2562,27 @@
       "spec": "File tunggal: src/components/screener/screener-ai-modal.tsx. (a) effect open: setTimeout(()=>inputRef.current?.focus(),60) + clearTimeout cleanup; (b) 🧠 → <Loader2 h-3 w-3 animate-spin aria-hidden> + flex gap; (c) 📊 dihapus (secondary text polos per ui-craft #9); (d) header title <p> flex items-center gap-1.5 utk baseline align Sparkles. TANPA perubahan API/logika.",
       "result": "[CTO weekend sore 24 Okt] Terangkat ikut kereta T-1025-N via main HEAD (ce64756): marker chunk 3955 live, 'Tanya AI' render di home. (Sebelumnya in_train T-1024-N yang tidak pernah berangkat; T-1024-N manifest kosong.)",
       "created": "2026-10-24T10:30:00+07:00"
+    },
+    {
+      "id": "qa-2026-10-25-01",
+      "date": "2026-10-25",
+      "type": "seo",
+      "priority": "P1",
+      "status": "pending",
+      "assigned_to": "backend-builder",
+      "scheduled_slot": "2026-10-25 18:30 slot BE malam (build-only; naik kereta T-1026-N)",
+      "train": "T-1026-N",
+      "north_star": "GROWTH — analisa saham = aset SEO compounding utama; sitemap exclude = halaman paling relevan tak pernah dikirim ke Google (GSC saham ptro pos 18,3; bris pos 70,8 — query ticker naik, URL analisa absen). Selaras pivot TRAFFIC owner 23 Okt.",
+      "title": "P1 SEO/GROWTH: sitemap.xml exclude STOCK_ANALYSIS — 0 URL analisa-saham masuk sitemap (2.021 URL), padahal compounding-asset utama",
+      "spec": "Temuan Mandor 06:40 25 Okt + VERIFY FISIK CTO 08:1x: curl localhost:3000/sitemap.xml | grep -c analisa-saham = 1 (hanya root pattern), 0 URL artikel STOCK_ANALYSIS live-200. Generator sitemap.ts recency-capped hanya include NEWS/EDUCATIONAL/DAILY_SNAPSHOT (BLOCKER #2 config lama: 719 URL vs 1.355 artikel). FIX: include articleType STOCK_ANALYSIS di generator sitemap.ts (filter 1 baris) + cap recency utk type itu (mis. 90d) jaga ukuran sitemap; verify pasca-build: grep analisa-saham >= 700 URL di sitemap live. Effort S, impact GSC langsung.",
+      "done_when": [
+        "curl live sitemap.xml post-deploy: count URL analisa-saham >= 700 (bukti grep count)",
+        "sitemap-news.xml tetap valid (URL NEWS masih masuk)",
+        "GSC resubmit via flow existing ATAU tercatat owner-gate kalau perlu login manual",
+        "tsc 0 + build hijau + changelog entry"
+      ],
+      "created_by": "CTO shift 07:45 25 Okt (temuan Mandor weekend-idea 06:40, verify fisik sendiri)",
+      "result": ""
     }
   ],
   "tasks": []

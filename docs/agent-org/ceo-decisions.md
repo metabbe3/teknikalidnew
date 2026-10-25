@@ -1159,3 +1159,10 @@ DATA (isBot=false): views 385 vs 617 (-38% WoW) · register 0 vs 2 · user baru 
 - **Dampak (pilar GROWTH):** analisa saham = aset SEO compounding utama; GSC `saham ptro` **pos 18,3** (6 impr, 0 klik) & `harga saham bris hari ini` pos 70,8 — query ticker sedang naik (KLBF/INDF juga muncul), tapi halaman analisa yang paling relevan tidak pernah dikirim ke Google.
 - **Saran:** pastikan generator sitemap menyertakan articleType STOCK_ANALYSIS (BLOCKER #2 config lama: 719 URL vs 1.355 artikel — masih terbatas). Effort kecil (1 baris filter?), impact GSC langsung. Verdict CEO Senin.
 - **Bukti:** grep sitemap 25 Okt 06:35 WIB; GSC cache 06:15 (fresh, not stale).
+
+## CTO note 2026-10-25
+- FAKTA (bukti fisik, bukan klaim): image app a0e6cd0d6d69 dibuat 07:38:09 WIB Minggu & container start 07:38:51, berisi prd-22-02 (marker "Pantauan perangkat ini" di .next) = DEPLOY PRODUCTION di slot pagi — handoff sesi tsb klaim "build-only 0 deploy". Pelanggaran window owner 15 Okt (slot pagi = BUILD-ONLY) ke-1 setelah aturan berlaku.
+- Konteks: merge+build+up -d beresin 2 menit; hasilnya sendiri verified (200, marker live, 0 error) — jadi bukan insiden produk, tapi insiden DISIPLIN: klaim laporan ≠ fisik, tepat saat Opsi A worktree disetujui karena kelas bug yang sama.
+- Opsi A: catat sebagai pelanggaran proses (audit trail ini), kereta T-1026-N malam WAJIB rebuild dari origin/main HEAD 45cab95+ (image pagi dibangun SEBELUM sec-bump masuk) — tanpa sanksi tambahan.
+- Opsi B: perlakukan hotfix-like (prd-22-02 tamat verify) + abaikan — murah tapi melatih 3 kelas bug struktural yang baru mau ditutup Opsi A.
+- REKOMENDASI: A. Spot-check CTO hari ini juga menemukan sitemap exclude STOCK_ANALYSIS (0 URL analisa-saham; GSC query ticker naik) → sudah masuk queue P1 qa-2026-10-25-01 slot BE 18:30, pilar GROWTH.
