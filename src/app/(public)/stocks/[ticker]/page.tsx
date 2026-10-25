@@ -18,6 +18,7 @@ import { KeyStatistics } from "@/components/stock/key-statistics";
 import { FundamentalData } from "@/components/stock/fundamental-data";
 import { TradingPlanCard } from "@/components/stock/trading-plan-card";
 import { monteCarloTpFirst } from "@/lib/monte-carlo";
+import { cachedEod, eodKey } from "@/domains/stock/eod-cache";
 import { HypeWarningBadge } from "@/components/stock/hype-warning-badge";
 import { StockDiscussion } from "@/components/community/stock-discussion";
 import { RegistrationInlinePrompt } from "@/components/ui/registration-inline-prompt";
@@ -359,15 +360,17 @@ export default async function StockDetailPage({
 
   // Monte Carlo probability (10.000 jalur / 20 hari) — bootstrap return 150 hari.
   // Angka deterministic per ticker (seed) — stabil seharian, konsisten dgn /trading-plan.
+  // cachedEod: on-demand compute sekali, TTL EOD (angka baru tiap sync sore; clearEodCaches
+  // dipanggil pasca sync-eod) — hemat query 150-bar + 34ms sim per pageview.
   const mcProbability = tradingPlan && close !== null
-    ? await stockRepository
-        .findPricesByTicker(stock.ticker, { date: { gte: subDays(new Date(), 150) }, volume: { gt: 0 } })
-        .then((ps) =>
-          monteCarloTpFirst(ps.map((x) => Number(x.close)), tradingPlan.entry, tradingPlan.tp1, tradingPlan.sl, {
-            seedKey: stock.ticker,
-          }),
-        )
-        .catch(() => null)
+    ? await cachedEod(eodKey("mc", stock.ticker), async () => {
+        const ps = await stockRepository
+          .findPricesByTicker(stock.ticker, { date: { gte: subDays(new Date(), 150) }, volume: { gt: 0 } })
+          .catch(() => []);
+        return monteCarloTpFirst(ps.map((x) => Number(x.close)), tradingPlan.entry, tradingPlan.tp1, tradingPlan.sl, {
+          seedKey: stock.ticker,
+        });
+      })
     : null;
 
   // Serialize IDX company data for client component
