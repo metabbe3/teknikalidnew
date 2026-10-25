@@ -2568,7 +2568,7 @@
       "date": "2026-10-25",
       "type": "seo",
       "priority": "P1",
-      "status": "pending",
+      "status": "in_train",
       "assigned_to": "backend-builder",
       "scheduled_slot": "2026-10-25 18:30 slot BE malam (build-only; naik kereta T-1026-N)",
       "train": "T-1026-N",
@@ -2582,7 +2582,7 @@
         "tsc 0 + build hijau + changelog entry"
       ],
       "created_by": "CTO shift 07:45 25 Okt (temuan Mandor weekend-idea 06:40, verify fisik sendiri)",
-      "result": ""
+      "result": "BUILD OK 25 Okt slot sore CTO (build-only, naik kereta T-1026-N): SPEC DIKOREKSI ke repo — bukan blanket-include by type. Bukti fisik: 23 STOCK_ANALYSIS PUBLISHED = 16 legacy analisa-teknikal-* (308 → /stocks via proxy.ts L428, tetap EXCLUDE) + 7 baru analisa-saham-* (live-200, robots index,follow — curl 3 sampel). Fix commit 0e614bd: filter slug StartsWith analisa-teknikal- menggantikan exclude-type; cap recency 90d spec → isStaleArticle 60d evergreen lebih ketat (0 kode duplikat). Staging :3100 DB-override verify: analisa-saham=7 == DB, analisa-teknikal=0, total 2021→2028. tsc 0. Verify pasca-deploy kereta: prod /sitemap.xml grep -c /berita/analisa-saham- = 7."
     }
   ],
   "tasks": []

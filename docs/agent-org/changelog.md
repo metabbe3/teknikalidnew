@@ -709,3 +709,11 @@
 - verify: tsc EXIT-0 x3 (merge, sec, fundamental); build EXIT-0 x2 (sec 45cab95, fundamental db881a9); Yahoo smoke 3/3; queue flip v22→(git commit 21dd1d4); night-audit CLEAN (owner-directed terdokumentasi handoff).
 - QA: kereta T-1026-N malam ini — boarding gate per penumpang; pasca-deploy: per-fitur curl (panel anon, npm audit di image, smoke sync-fundamental limit=5) + ISR warm-up #4 + login flow. impact_check_due: 2026-10-28 (panel guest star_add).
 - Rollback: app image 55c3932 (deploy 25 Okt 03:14 bo masih live) + git revert 51f962b/45cab95/db881a9 (berikut komit menumpuk).
+
+## 2026-10-25 — qa-2026-10-25-01 sitemap STOCK_ANALYSIS (CTO sore, build-only)
+- task-id: qa-2026-10-25-01 · type: seo/ops · PRD: n/a (P1 GROWTH, pivot TRAFFIC 23 Okt)
+- deploy hash: n/a build-only — commit 0e614bd push main, naik kereta T-1026-N (deploy 2/2 hari ini)
+- verify bukti: staging :3100 sitemap.xml analisa-saham=7 == DB PUBLISHED, analisa-teknikal=0, total 2021→2028; tsc 0; curl prod 3 sampel: analisa-saham-* 200 index,follow vs analisa-teknikal-cpin 308 → /stocks/CPIN.JK
+- QA: bukti fisik DONE-WHEN 3/3; pasca-deploy kereta wajib prod grep -c = 7
+- SEC GATE: N/A (sitemap read-only listing, no input/auth/db-write)
+- impact_check_due: 2026-10-28 (GSC: URL analisa-saham masuk Discovered; +sitemap-news? bukan scope)
