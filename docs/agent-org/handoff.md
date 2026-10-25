@@ -910,3 +910,11 @@
 - HoldingTradingPlans kartu (home): logo 22px + ticker. PersonalizedBeranda: baris holdings (24px) + watchlist movers (22px). HoldingsTable /portfolio: monogram 2-huruf → StockLogo asli 36px.
 - Chain logo sama /stocks (814/961 asli, sisanya monogram tile). tsc 0, all pages 200.
 - NOTE verify: section logged-in tak bisa diverifikasi browser tanpa session owner — login via password TIDAK dilakukan (no saved login). Verify struktur via: build live + tsc + logo chain di /stocks BBCA.jpg 200. Owner silakan refresh home login.
+
+## 2026-10-25 11:3x — UX Builder weekend 10:30 (ux-2026-10-25-01 in_train T-1026-N)
+- SHIPPED build-only 9308769 main: flow (a) screener auto-scroll ke hasil saat preset dipilih — mobile 375 hasil tadinya y≈1300-1480 TANPA scroll (scroll-hunt ~500px); kini header hasil mendarat top=102px. Instant scroll (smooth DIBATALKAN re-render — terukur scrollTo dipanggil tapi scrollY diam 0); reset prevFetchUrl saat toggle-off.
+- Bukti staging :3100 (DB sed 5433, SUDAH dipulihkan ke @db + proses dimatikan): ON/RE-ON/SWITCH top=102 (65/65/92 saham), OFF clear, tsc 0, build 0, H1/title/desc verbatim staging==prod.
+- Flow-a audit lain: slider thumb 44px LIVE (utang ux-05-01 flipped done, CSS verified prod); preset card + hasil + guest CTA sehat; empty state sudah ada tombol reset.
+- DISPATCH bug-2026-10-25-01 (P2 TRUST, slot BE Senin 07:30): /api/stocks/radar row SUPR.JK rsi14=0/stoch=0 → kartu render "RSI 0.0" (mustahil) + lolos filter oversold. 131/132 row OK. Fix backend query/pipeline, bukan FE.
+- Jebakan: staging :3100 = 500 sampai .env di-sed @db→127.0.0.1:5433 (pola 24 Okt) — WAJIB pulihkan + kill proses setelah; CDP eval scrollTo smooth = hang timeout, selalu instant di harness.
+- Next rotasi: flow (a) sisa = hasil table→klik saham→register CTA wording; kandidat polish: count "N saham" sticky saat scroll hasil (mobile).
