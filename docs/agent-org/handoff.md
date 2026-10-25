@@ -979,3 +979,11 @@
 - Baris nama halaman saham kini: [Nama medium] · [deskripsi tertiary] — fallback businessActivity→subSector (962+754 dari 1.451; sisanya tanpa render null).
 - Pembeda visual: nama font-medium warna secondary vs deskripsi font-normal warna tertiary (lebih pudar) + separator titik tengah.
 - TRAP verifikasi: curl -o /tmp diblokir (300B); /stocks/ACST redirect 307 → ACST.JK; cache s-maxage=300 → bypass pakai ?cb=random. Verified: SSR live + mobile 390px 1 baris (40px) tidak overflow.
+
+## 25 Okt 17:15 — STORY IMAGE REDESIGN TOTAL (owner: chart tidak perlu / jangan kasih semua data / putih biru muda, 080ba16)
+- Rewrite penuh /api/og/stock-story: dark→light putih-biru muda (tema situs), chart+indikator+trading-plan DIHAPUS dari gambar.
+- Struktur: brand header (logo+teknikal.id) → hero logo emiten 200px + ticker 150 + nama + sektor + pill sinyal → harga besar tunggal → teaser box ("Chart live · 9 indikator · Trading plan — gratis tanpa login") → footer QR + URL.
+- Dependency: qrcode@1.5.4 (QR server-side → data URL). StockOgData + logoFile (fs check png→jpg→svg).
+- TRAP satori: (1) file .jpg ternyata WebP-mislabeled → "Invalid JPEG" 502; dikonversi 3 file; (2) SEMUA div multi-child wajib display:flex.
+- Web Share API level-2 sudah benar di share-buttons (mobile native share sheet; download hanya fallback) — persepsi "kayak download" berasal dari desain lama yang generic.
+- Verified: PNG 1080x1920 live + vision QA pass (7/7 elemen, no overlap/cut-off).
