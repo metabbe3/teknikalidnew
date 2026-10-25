@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { StockLogo } from "@/components/stock/stock-logo";
 import { useTheses, type ThesisBreach } from "@/hooks/use-thesis";
 import { stripJk, formatRp } from "@/lib/utils";
 
@@ -43,7 +44,7 @@ export function ThesisCard() {
             >
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-mono text-sm font-semibold text-text-primary">{stripJk(t.ticker)}</span>
+                  <span className="flex items-center gap-1.5 font-mono text-sm font-semibold text-text-primary"><StockLogo name="" ticker={t.ticker} size={18} />{stripJk(t.ticker)}</span>
                   <span className="text-[11px] text-text-tertiary">{BIAS_LABEL[t.bias]}</span>
                   {breach && (
                     <span className={`text-[11px] font-medium px-1.5 py-0.5 rounded ${breach.cls}`}>

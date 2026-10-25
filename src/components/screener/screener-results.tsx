@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import { StockLogo } from "@/components/stock/stock-logo";
 import { formatPrice, formatPercent, formatVolume, stripJk, changeColor, rsiColor } from "@/lib/utils";
 import type { TradingStyleDef, ScreenerStock, ViewMode, SortField, SortOrder } from "./screener-types";
 import { SORT_OPTIONS, signalLabelColor } from "./screener-types";
@@ -218,12 +219,14 @@ export function ResultsTable({ stocks, watchlistTickers, onToggleWatchlist, onRe
                     <GuestStar ticker={stock.ticker} compact />
                   )}
                 </div>
-                <div className="px-4 py-3">
+                <div className="px-4 py-3 flex items-center gap-2">
+                  <StockLogo name={stock.name} ticker={stock.ticker} size={24} />
                   <Link href={`${linkBase}/${stock.ticker}`} className="font-semibold text-accent hover:underline" onClick={(e) => e.stopPropagation()}>
                     {stripJk(stock.ticker)}
                   </Link>
+                  <span className="text-text-tertiary truncate text-xs hidden lg:inline">{stock.name}</span>
                 </div>
-                <div className="px-4 py-3 text-text-secondary truncate text-xs">{stock.name}</div>
+                <div className="px-4 py-3 text-text-secondary truncate text-xs lg:hidden">{stock.name}</div>
                 <div className="px-4 py-3 text-text-tertiary text-[11px]">{stock.sector}</div>
                 <div className="px-4 py-3 text-right font-mono tabular-nums text-xs">{stock.close !== null ? formatPrice(stock.close) : "\u2014"}</div>
                 <div className={`px-4 py-3 text-right font-mono tabular-nums text-xs ${changeColor(stock.changePercent)}`}>

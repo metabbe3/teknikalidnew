@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { StockLogo } from "@/components/stock/stock-logo";
 import { stripJk, formatPrice } from "@/lib/utils";
 
 interface RadarStock {
@@ -59,7 +60,7 @@ export function RadarPreview() {
             className="flex items-center justify-between p-2 rounded-lg hover:bg-bg-hover transition-colors"
           >
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold font-mono tabular-nums">{stripJk(s.ticker)}</span>
+              <span className="flex items-center gap-1.5"><StockLogo name={s.name ?? ""} ticker={s.ticker} size={18} /><span className="text-xs font-semibold font-mono tabular-nums">{stripJk(s.ticker)}</span></span>
               <div className="flex gap-1">
                 {s.isDeepOversold && (
                   <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-bearish text-white">

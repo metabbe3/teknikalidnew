@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { StockLogo } from "@/components/stock/stock-logo";
 import Link from "next/link";
 
 interface VisitorState {
@@ -59,19 +60,8 @@ export function WelcomeBackBanner() {
   return (
     <div className="bg-accent/5 border border-accent/10 rounded-xl p-3 flex items-center justify-between gap-4">
       <div className="flex items-center gap-3 min-w-0">
-        <div className="shrink-0 w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className="w-4 h-4 text-accent"
-          >
-            <path
-              fillRule="evenodd"
-              d="M17 4.25A2.25 2.25 0 0014.75 2h-9.5A2.25 2.25 0 003 4.25v11.5A2.25 2.25 0 005.25 17.75h9.5A2.25 2.25 0 0017 15.75V4.25zm-7 2.5a.75.75 0 01.75.75v3.69l1.22-1.22a.75.75 0 111.06 1.06l-2.5 2.5a.75.75 0 01-1.06 0l-2.5-2.5a.75.75 0 011.06-1.06l1.22 1.22V7.5a.75.75 0 01.75-.75z"
-              clipRule="evenodd"
-            />
-          </svg>
+        <div className="shrink-0 w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center overflow-hidden">
+          <StockLogo name="" ticker={ticker} size={30} />
         </div>
         <p className="text-sm text-text-secondary truncate">
           Selamat datang kembali! Terakhir Anda melihat{" "}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { StockLogo } from "@/components/stock/stock-logo";
 import { PageHero } from "@/components/layout/page-hero";
 import { AskAiCta } from "@/components/seo/ask-ai-cta";
 import { TradingPlanPicker } from "@/components/trading-plan/plan-picker";
@@ -173,11 +174,14 @@ export default async function TradingPlanPage({
                   }`}
                 >
                   <div className="flex items-center justify-between flex-wrap gap-2">
-                    <div>
-                      <Link href={`/stocks/${ticker}`} className="font-mono font-bold text-lg text-text-primary hover:text-accent">
-                        {stripJk(ticker)}
-                      </Link>
-                      <span className="block text-xs text-text-tertiary">{d.name}</span>
+                    <div className="flex items-center gap-2.5">
+                      <StockLogo name={d.name} ticker={ticker} size={32} />
+                      <div>
+                        <Link href={`/stocks/${ticker}`} className="font-mono font-bold text-lg text-text-primary hover:text-accent">
+                          {stripJk(ticker)}
+                        </Link>
+                        <span className="block text-xs text-text-tertiary">{d.name}</span>
+                      </div>
                     </div>
                     <div className="text-right">
                       <div className="font-mono font-bold tabular-nums">{formatPrice(d.close)}</div>

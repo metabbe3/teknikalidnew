@@ -1,5 +1,6 @@
 "use client";
 
+import { StockLogo } from "@/components/stock/stock-logo";
 import type { CompareStock } from "@/hooks/use-compare-data";
 import type { TradingPlan } from "@/lib/trading-plan";
 import { formatRp, stripJk } from "@/lib/utils";
@@ -39,7 +40,7 @@ function PlanCard({ plan, ticker, color }: { plan: TradingPlan; ticker: string; 
     <div className={`card-gradient depth-shadow rounded-xl border overflow-hidden ${isWaitAndSee ? "border-bearish/30" : "border-border"}`}>
       <div className="p-3 space-y-2">
         <div className="flex items-center justify-between">
-          <span className={`text-sm font-bold ${color.text}`}>{stripJk(ticker)}</span>
+          <span className={`flex items-center gap-1.5 text-sm font-bold ${color.text}`}><StockLogo name={""} ticker={ticker} size={20} />{stripJk(ticker)}</span>
           <div className="flex items-center gap-1.5">
             <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${strategyStyles[plan.strategy]}`}>
               {strategyLabels[plan.strategy]}

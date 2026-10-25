@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { StockLogo } from "@/components/stock/stock-logo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHero } from "@/components/layout/page-hero";
 import { pasarLiveService, isLiveWindow, isMarketHours, wibNow, wibHHMM, type PasarTopSignal, type PasarForeignItem } from "@/domains/stock/pasar-live.service";
@@ -303,6 +304,7 @@ function MoversCard({
               <li key={m.ticker}>
                 <Link href={`/stocks/${m.ticker}`} className="flex items-center gap-3 py-2.5 group">
                   <span className="w-5 text-xs text-text-tertiary tabular-nums">{i + 1}</span>
+                  <StockLogo name={m.name} ticker={m.ticker} size={22} />
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm font-semibold group-hover:text-accent">{stripJk(m.ticker)}</span>
                     <span className="block text-xs text-text-tertiary truncate">{m.name}</span>

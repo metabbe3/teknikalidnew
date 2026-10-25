@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { StockLogo } from "@/components/stock/stock-logo";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { computeChange } from "@/lib/serialize";
@@ -96,14 +97,17 @@ export default async function WatchlistPage() {
               className="bg-bg-card depth-shadow rounded-xl p-4 hover:depth-shadow-hover transition-all duration-200"
             >
               <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <a
-                    href={`/stocks/${item.ticker}`}
-                    className="font-semibold hover:text-accent transition-colors"
-                  >
-                    {stripJk(item.ticker)}
-                  </a>
-                  <p className="text-xs text-text-secondary truncate">{item.name}</p>
+                <div className="min-w-0 flex items-center gap-2.5">
+                  <StockLogo name={item.name} ticker={item.ticker} size={28} />
+                  <div>
+                    <a
+                      href={`/stocks/${item.ticker}`}
+                      className="font-semibold hover:text-accent transition-colors"
+                    >
+                      {stripJk(item.ticker)}
+                    </a>
+                    <p className="text-xs text-text-secondary truncate">{item.name}</p>
+                  </div>
                 </div>
                 <div className="text-right shrink-0">
                   <p data-live-price={item.ticker} className="font-semibold font-mono text-sm">

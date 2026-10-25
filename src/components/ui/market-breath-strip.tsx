@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { StockLogo } from "@/components/stock/stock-logo";
 import { cn, formatPercentPlain } from "@/lib/utils";
 import { stripJk } from "@/lib/utils";
 
@@ -52,7 +53,7 @@ export function MarketBreathStrip({ data, className }: { data: BreathData; class
           className="hidden md:inline-flex items-center gap-1 text-text-secondary hover:text-bullish transition-colors ml-auto"
         >
           Top Gainer
-          <span className="font-mono font-bold text-bullish">{stripJk(topGainer.ticker)}</span>
+          <span className="flex items-center gap-1 font-mono font-bold text-bullish"><StockLogo name="" ticker={topGainer.ticker} size={16} />{stripJk(topGainer.ticker)}</span>
           <span className="font-mono text-bullish">+{formatPercentPlain(topGainer.changePercent)}%</span>
         </Link>
       )}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { StockLogo } from "@/components/stock/stock-logo";
 import { prisma } from "@/lib/prisma";
 import { decimalToNumber } from "@/lib/serialize";
 import { weeklySignalService } from "@/domains/stock/weekly-signal.service";
@@ -133,7 +134,8 @@ export async function ForYouSignals({ userId }: { userId: string }) {
         {data.rows.map((r) => (
           <li key={r.ticker}>
             <Link href={`/stocks/${r.ticker}`} className="group flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 bg-bg-hover/60 hover:bg-bg-hover transition-all">
-              <span className="font-mono text-sm font-semibold text-text-primary group-hover:text-accent transition-colors">
+              <span className="flex items-center gap-2 font-mono text-sm font-semibold text-text-primary group-hover:text-accent transition-colors">
+                <StockLogo name={""} ticker={r.ticker} size={20} />
                 {r.ticker.replace(".JK", "")}
               </span>
               {r.signal ? (

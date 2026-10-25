@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { StockLogo } from "@/components/stock/stock-logo";
 import { PageHero } from "@/components/layout/page-hero";
 import { AskAiCta } from "@/components/seo/ask-ai-cta";
 import { RegisterCta } from "@/components/signal/register-cta";
@@ -101,10 +102,15 @@ export default async function BottomFishingPage() {
                 {rows.map((s) => (
                   <tr key={s.ticker} className="border-b border-border/50 last:border-0 hover:bg-bg-hover/50">
                     <td className="px-4 py-3">
-                      <Link href={`/stocks/${s.ticker}`} className="font-mono font-semibold text-text-primary hover:text-accent">
-                        {stripJk(s.ticker)}
-                      </Link>
-                      <span className="block text-xs text-text-tertiary">{s.name}</span>
+                      <div className="flex items-center gap-2.5">
+                        <StockLogo name={s.name} ticker={s.ticker} size={28} />
+                        <div>
+                          <Link href={`/stocks/${s.ticker}`} className="font-mono font-semibold text-text-primary hover:text-accent">
+                            {stripJk(s.ticker)}
+                          </Link>
+                          <span className="block text-xs text-text-tertiary">{s.name}</span>
+                        </div>
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-right font-mono tabular-nums">{s.close != null ? formatPrice(s.close) : "—"}</td>
                     <td className={`px-4 py-3 text-right font-mono tabular-nums ${changeColor(s.changePercent)}`}>

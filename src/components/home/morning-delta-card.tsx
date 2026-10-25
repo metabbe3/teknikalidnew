@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { StockLogo } from "@/components/stock/stock-logo";
 import { useMorningDelta } from "@/hooks/use-morning-delta";
 import { stripJk, formatPercent } from "@/lib/utils";
 import type { DeltaBullet } from "@/domains/stock/morning-delta.service";
@@ -20,7 +21,7 @@ function Bullet({ b }: { b: DeltaBullet }) {
       <div className="min-w-0">
         <div className="flex items-center gap-2">
           <span className="font-mono text-sm font-semibold text-text-primary">
-            {stripJk(b.ticker)}
+            <span className="inline-flex items-center gap-1.5"><StockLogo name="" ticker={b.ticker} size={16} />{stripJk(b.ticker)}</span>
           </span>
           <span className={`text-sm font-medium ${TONE_TEXT[b.tone]}`}>
             {b.text}

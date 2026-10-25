@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { StockLogo } from "@/components/stock/stock-logo";
 import { stripJk, formatPrice, formatPercent, changeColor } from "@/lib/utils";
 
 const PRESETS = [
@@ -88,7 +89,7 @@ export function MiniScreenerPreview() {
                   className="flex items-center justify-between p-2 rounded-lg hover:bg-bg-hover transition-colors"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold font-mono tabular-nums">{stripJk(r.ticker)}</span>
+                    <span className="flex items-center gap-1.5"><StockLogo name={r.name ?? ""} ticker={r.ticker} size={18} /><span className="text-xs font-semibold font-mono tabular-nums">{stripJk(r.ticker)}</span></span>
                     <span className="text-[10px] text-text-tertiary truncate max-w-[100px]">{r.name}</span>
                   </div>
                   <div className="flex items-center gap-2 tabular-nums">
