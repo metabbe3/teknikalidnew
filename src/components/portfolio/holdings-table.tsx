@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { HoldingItem } from "@/hooks/use-portfolio";
+import { StockLogo } from "@/components/stock/stock-logo";
 
 interface HoldingsTableProps {
   holdings: HoldingItem[];
@@ -72,10 +73,8 @@ function HoldingCard({ h, onEdit, onDelete }: { h: HoldingItem; onEdit: (t: stri
       <Link href={`/stocks/${h.ticker}`} className="block px-4 py-3.5">
         <div className="flex items-start justify-between mb-2">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center border border-gray-100">
-              <span className="text-[10px] font-mono font-bold text-teal-600">
-                {h.ticker.replace(".JK", "").slice(0, 2)}
-              </span>
+            <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center border border-gray-100 overflow-hidden">
+              <StockLogo name={h.name} ticker={h.ticker} size={36} />
             </div>
             <div>
               <p className="font-semibold text-sm text-gray-900">

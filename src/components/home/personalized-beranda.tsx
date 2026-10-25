@@ -19,6 +19,7 @@ import {
   AlertTriangle,
   Shield,
 } from "lucide-react";
+import { StockLogo } from "@/components/stock/stock-logo";
 import { formatRp, formatPercent, changeColor, stripJk } from "@/lib/utils";
 
 // Reputation badge tints (light). Hues retained for tier distinction; all on
@@ -148,6 +149,8 @@ export function PersonalizedBeranda() {
                         {/* Signal dot */}
                         <span className={`shrink-0 w-1 h-8 rounded-full ${sigStyle.dot}`} />
 
+                        <StockLogo name={holding.name ?? ""} ticker={holding.ticker} size={24} />
+
                         {/* Ticker + Signal */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5 flex-wrap">
@@ -224,7 +227,8 @@ export function PersonalizedBeranda() {
                   href={`/stocks/${stripJk(stock.ticker)}`}
                   className="flex items-center justify-between py-2.5 first:pt-0 last:pb-0 hover:bg-bg-hover -mx-3 px-3 transition-colors"
                 >
-                  <div>
+                  <div className="flex items-center gap-2">
+                    <StockLogo name={stock.name} ticker={stock.ticker} size={22} />
                     <span className="text-sm font-semibold text-text-primary">{stripJk(stock.ticker)}</span>
                     <p className="text-[10px] text-text-tertiary truncate max-w-[160px]">{stock.name}</p>
                   </div>

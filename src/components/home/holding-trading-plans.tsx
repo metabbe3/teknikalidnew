@@ -7,6 +7,7 @@ import { monteCarloTpFirst } from "@/lib/monte-carlo";
 import { formatPrice, formatPercent, changeColor } from "@/lib/utils";
 import { subDays } from "date-fns";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { StockLogo } from "@/components/stock/stock-logo";
 
 type Tier = "layak" | "menengah" | "tunggu";
 
@@ -77,7 +78,8 @@ export async function HoldingTradingPlans({ tickers }: { tickers: string[] }) {
               className={`block rounded-xl border border-border border-l-4 ${meta.border} bg-bg-card p-4 space-y-3 hover:depth-shadow-hover transition-all`}
             >
               <div className="flex items-center justify-between">
-                <span className="font-mono font-bold text-text-primary">
+                <span className="flex items-center gap-2 font-mono font-bold text-text-primary">
+                  <StockLogo name="" ticker={ticker} size={22} />
                   {ticker.replace(/\.JK$/, "")}
                 </span>
                 <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${meta.badge}`}>
