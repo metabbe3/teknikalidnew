@@ -876,3 +876,11 @@
 - FIX PIPELINE: /api/cron/sync-profiles (7e58b68) + idx_profile_sync.py (Playwright warm-session, LRU 150 emiten/run, retry+rewarm; TRAP: batch>2 kena rate-limit — batch 25 + retry per ticker). Cron 29247cb45326 03:30 Sel-Sab (setelah malam, sebelum pagi). Malam ini 123+RUNS terisi; full 963 ± 7 run.
 - KNOWN ISSUE minor: URBN fail "Value out of range" di stockSubsidiary.createMany (Decimal overflow totalAssets) — skip per-emiten, tidak fatal; fix di run berikutnya jika muncul lagi.
 - DETECTOR: teknikalid_insider_detect.py (match ≥2 token email↔nama pengurus) → blok 🤝 di Owner Morning Digest 07:30. TESTED: menangkap Sony/RUNS. Silent saat kosong.
+
+## 2026-10-25 08:1x — CTO pagi (Minggu; build-only 0 deploy)
+- State: sehat; FRESH (EOD 23 Okt == expected Minggu); home 200 0.39s; 3 container healthy; backup fresh 01:16; night-audit CLEAN; symlinks 2/2 hidup.
+- Barusan: prd-22-02 night_ready MERGED 51f962b→main (tsc 0, schema-shield PASS) in_train T-1026-N; sec-22-02 npm audit 8→0 vuln (next 16.4.3 RCE image-opt + sentry tunnel) 45cab95 in_train; teknikal-24-02 core non-DDL (fetcher+route+driver host, Yahoo smoke 3/3) db881a9 in_train; ops-24-01 guard done (fixture 3/3). Queue v22 commit 21dd1d4 main.
+- In-flight: kereta T-1026-N malam 22:00-01:30 manifest = prd-22-02 + sec-22-02 + teknikal-24-02 (kode) + cek bo-2026-10-25-01 (backoffice 03:00 pagi: audit social-cards candidate-remove, nunggu owner verdict — jangan eksekusi remove tanpa approve). Pasca-deploy wajib: ISR warm-up #4 + login flow + smoke sync-fundamental limit=5 + per-fitur curl.
+- Jebakan: (1) queue json format = indent 2 — python json.dump indent=2 BUKAN 4 (full-file diff 5128 baris kalau salah); (2) avgVol3M tak diexpose Yahoo JK → proxy averageDailyVolume10Day (kolom DB nama sama); (3) worktree baru wajib prisma generate sebelum tsc; (4) 2 sesi lain menulis main pagi ini (476694a) — selalu fetch+rebase sebelum push.
+- Langkah pertama slot berikutnya: baca queue → boarding gate T-1026-N (bukti per penumpang) → SATU build app+worker dari main HEAD (21dd1d4) → deploy 22:00-01:30 → verify per-fitur → flip done.
+- Rollback anchor: app 55c3932 (live sekarang, deploy bo 03:14) + git revert 51f962b 45cab95 db881a9.
