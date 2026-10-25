@@ -993,3 +993,11 @@
 - 3 fix tanpa nambah chart/data: (1) harga 190px gradient vertikal hijau/merah = angka jadi desain; (2) giant arrow polygon watermark + glow radial ikut arah harga = energi arah; (3) stamp dashed "SNAPSHOT {tanggal id-ID}" = momen.
 - TRAP satori: <text> node unsupported → path polygon utk watermark arrow.
 - Verified vision QA v3: hero gradient ✓ pill ✓ stamp ✓ watermark ✓ no bug — "premium and alive, ship it".
+
+## 2026-10-25 15:55 — CTO weekend sore (qa-25-02/03/04 DONE, 0 deploy)
+- State: sehat; home 200 0.45s; 3 container healthy; EOD 23 Okt == benar (Minggu IDX tutup, sync Senin); repo main==origin 33bd196 (push setelah ini); backup fresh 01:16.
+- Barusan: 3 QA P1 content-fix SQL patch — rekap-24 cross 22/59→8/20 + brief-23 6/6→3/3 (pola union lintas snapshot ke-4, basis kanonik = unik per (stockId,smaCrossDate) snapshot=tgl cross NG) + dividen CPIN Rp3.860→Rp3.420 (off-by-one). Live verified ?cb bypass s-maxage; residual 0; row-backup TSV di db-1.
+- In-flight: kereta T-1026-N MALAM INI 22:00-01:30 = deploy 2/2 hari ini — manifest FINAL: prd-22-02 + sec-22-02 + teknikal-24-02 core + qa-25-01 + ux-25-01; WAJIB rebuild dari origin/main HEAD pasca-push ini (image pagi 07:38 pra-0e614bd); pasca-deploy ISR warm-up #4 + verify per-fitur + prod sitemap analisa-saham=7.
+- Jebakan: (1) generator agregat cross masih pakai union → brief Senin 26 Okt kemungkinan kambuh angka dobel; kalau ya = task P1 fix generator (kode), bukan SQL patch (impact_check 28 Okt); (2) worktree kotor: src/app/api/og/stock-story/route.tsx M + queue .bak untracked + '=2026-10-12/19' = milik sesi lain — jangan sapu; (3) heredoc psql kena scanner lagi — tulis file SQL lalu psql -f.
+- Langkah pertama slot berikutnya (kereta 22:00): baca manifest FINAL di atas → fetch+rebase → SATU build app+worker dari main → deploy → verify per-fitur (5 penumpang) → flip done semua.
+- Rollback: n/a (DB-only patch, row-backup /tmp/qa25_backup_1530.tsv + full backup 25 Okt 01:16)

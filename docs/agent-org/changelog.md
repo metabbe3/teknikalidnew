@@ -1,3 +1,13 @@
+## [2026-10-25 15:45] cto-weekend-sore — qa-2026-10-25-02/03/04: 3 QA P1 content-fix (SQL patch ISR, 0 deploy)
+- Type: qa content-fix  |  PRD: N/A (ops QA trust-debt, reviewer dispatch 24-25 Okt)  |  Pilar: TRUST (angka publik == DB)
+- Deploy: TIDAK ADA (SQL patch Article + ISR revalidate, by-design jalur QA)  |  Rollback: n/a (DB-only patch; row-backup /tmp/qa25_backup_1530.tsv di db-1 + full backup 25 Okt 01:16 valid)
+- qa-25-02 rekap-pasar-mingguan-2026-10-24: cross 22 GC/59 DC → **8 GC/20 DC** (heading + body + rasio) — basis kanonik non-gorengan unik per (stockId, smaCrossDate) snapshot=tgl cross; 22/59 = union mentah lintas snapshot (ke-4 kalinya keluarga agregat union). Replay per-hari 0/3+1/3+2/7+3/3+2/4 = 8/20 NG (ALL 9/21). Contoh ticker MITI/HADE/DAYA/PICO/CBUT/CLEO/NICE/STAA valid — dibiarkan.
+- qa-25-03 brief-pasar-idx-2026-10-23: "6 golden cross dan 6 death cross" → **"3 golden cross dan 3 death cross"** — union dobel 2 snapshot (22 Okt raw 6/6 baris vs 3/3 unik: CBUT/CLEO/HADE + APII/MDKA/RBMS; RGAS gorengan). Re-scan paragraf penuh: klaim tetangga 137 GC/47 DC aktif replay-exact → tak disentuh.
+- qa-25-04 akademi cara-dapat-dividen: CPIN record date 4 Jun Rp3.860 → **Rp3.420** (off-by-one-day, 3.860 = close 3 Jun). 4 tanggal lain exact.
+- Verify: residual DB 0 semua (SELECT COUNT LIKE); live curl -A Mozilla ?cb=$RANDOM bypass s-maxage=300: rekap "Sinyal Screener: 8 Golden Cross vs 20 Death Cross" ✓, brief "3 golden cross dan 3 death cross"+"137 sinyal" ✓, dividen Rp3.420 x2 / Rp3.860 0-hit ✓.
+- QA: reviewer re-replay basis kanonik (query di result entry queue). SEC GATE: N/A (content DB patch, no code/input/auth).
+- impact_check_due: 2026-10-28 — brief Senin 26 Okt & rekap minggu depan: agregat cross pakai basis unik (kalau generator masih union → task P1 baru utk fix generator, bukan SQL patch lagi).
+
 ## [2026-10-24 03:0x] backoffice-builder — bo-2026-10-24-01: /admin/shares pisahkan beacon kuota tamu dari share nyata
 - Type: backoffice (service extend + UI)  |  PRD: bo-2026-10-24-01 (AUDIT ronde-2 rotasi alfabetis huruf S; owner mandat 12 Okt 'data reliable, satu sumber kebenaran')
 - Deploy: 24 Okt 03:xx WIB (Sabtu, pasar tutup; docker compose build app && up -d app)  |  Rollback anchor: git revert fc40f06 / redeploy image pre-deploy 79ca9b6a2111
