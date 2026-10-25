@@ -1153,3 +1153,9 @@ DATA (isBot=false): views 385 vs 617 (-38% WoW) · register 0 vs 2 · user baru 
   - usp-2026-10-24-02 P2 "top-20-harian" — ✅ SUDAH DIEKSEKUSI owner-directed 24 Okt 16:00 (bd5e4a6, live, verified browser). JANGAN dispatch ulang — tinggal masuk backlog done. Detail di handoff.md §24 Okt 16:05.
   - usp-2026-10-24-03 P3 "sinyal-jual-mode" — extend verdict ke sisi exit (checklist 8 auto + 2 manual). Diferensiasi exit-discipline, gratisan nihil.
 - DO-NOT-STEAL (keputusan riset): paper trading/journal, bandarmologi, intraday 5m, AI berbayar — lawan pivot TRAFFIC atau arms race kalah.
+
+## [WEEKEND-IDEA] 2026-10-25 06:40 WIB — Mandor: sitemap exclude STOCK_ANALYSIS (semua 0 terindeks)
+- **Temuan (maintenance Minggu):** `sitemap.xml` (2.021 URL) **0 entri STOCK_ANALYSIS** — grep `analisa-saham-ptro/bris/klbf/indf` = 0/0/0/0, padahal semua live 200 dan `sitemap-news.xml` juga 0. Pattern recency-capped kemungkinan hanya menyertakan NEWS/EDUCATIONAL/DAILY_SNAPSHOT.
+- **Dampak (pilar GROWTH):** analisa saham = aset SEO compounding utama; GSC `saham ptro` **pos 18,3** (6 impr, 0 klik) & `harga saham bris hari ini` pos 70,8 — query ticker sedang naik (KLBF/INDF juga muncul), tapi halaman analisa yang paling relevan tidak pernah dikirim ke Google.
+- **Saran:** pastikan generator sitemap menyertakan articleType STOCK_ANALYSIS (BLOCKER #2 config lama: 719 URL vs 1.355 artikel — masih terbatas). Effort kecil (1 baris filter?), impact GSC langsung. Verdict CEO Senin.
+- **Bukti:** grep sitemap 25 Okt 06:35 WIB; GSC cache 06:15 (fresh, not stale).

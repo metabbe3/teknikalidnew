@@ -6,7 +6,7 @@ test.describe("Stocks Page", () => {
   });
 
   test("loads with stock table", async ({ page }) => {
-    await expect(page.getByRole("heading", { name: /Daftar Saham/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Radar Saham IDX" })).toBeVisible(); // H1 sejak ec65941 (seo-2026-10-08-01)
   });
 
   test("shows stock data in table rows", async ({ page }) => {

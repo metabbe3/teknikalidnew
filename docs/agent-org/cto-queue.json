@@ -2,6 +2,24 @@
   "protocol": "CTO task queue — dibaca CTO agent (slot 07:30 pagi & 16:45 sore; quiet zone BARU 11:00-18:00 = larang deploy+LLM, owner 16 Sep), ditulis CEO (08:15) / Council (Min 08:00). Entry: {id, date, spec, priority (P0 darurat/P1 tinggi/P2 normal), north_star, status (pending/done/failed/blocked_for_owner), result}. CTO: max 1 deploy per slot (2/hari total), eksekusi claude code pipeline, update status + verify evidence.",
   "entries": [
     {
+      "id": "bo-2026-10-25-01",
+      "date": "2026-10-25",
+      "type": "backoffice-audit",
+      "priority": "P2",
+      "status": "pending",
+      "assigned_to": "backoffice-builder",
+      "scheduled_slot": "audit rotasi Backoffice Builder 03:00 25 Okt (no deploy — menunggu owner verdict)",
+      "north_star": "MATANGKAN/BUANG (owner 12 Okt 'buang yang tak berguna') — pilar tidak langsung: mengurangi permukaan admin mati = consistency admin sebagai satu sumber kebenaran",
+      "title": "AUDIT ronde-2 /admin/social-cards -> CANDIDATE-REMOVE: generator kartu TikTok/Reels (Jun 13) utk workflow IG yang STOP by owner 17 Sep",
+      "spec": "AUDIT (a) Masih dipakai? Teknis sehat tapi bisnis mati: tujuan halaman = membuat gambar IG/TikTok carousel; IG Carousel STOP by owner 17 Sep (decisions.md L409/L480 'IG stop BY DESIGN — tidak disentuh'); zero telemetry & zero DB trace pemakaian; satu-satunya inbound link = sidebar admin. (b) Data relevan? API /api/admin/social-cards/articles masih jalan (verify live 25 Okt 03:0x: proxy disguised-404 utk anonim = by-design anti-recon, route + handler + build chunk ada; pipeline NEWS aktif 30 artikel/30d sehingga data feed tak basi). (c) Kontrol kurang? N/A — murni client-side image generator (html2canvas-pro, localStorage presets), tanpa persistensi. KLASIFIKASI: CANDIDATE-REMOVE P3 eksekusi — 73 baris page + generator ~600 baris + dep html2canvas-pro (satu-satunya konsumen) melayani workflow yang tidak jalan lagi. Per ronde-1 rule: JANGAN hapus sebelum owner approve. Alternatif jika owner ingin simpan: repostool utk kanal lain (Telegram Koran Saham pakai teks, bukan kartu).",
+      "done_when": [
+        "Owner verdict via morning-digest approve/reject",
+        "Jika APPROVE remove: entry bo- eksekusi baru — hapus src/app/admin/social-cards + api/admin/social-cards + sidebar nav + dep html2canvas-pro; tsc EXIT-0; curl /admin/social-cards 404 & sidebar tanpa link; deploy + changelog + rollback anchor",
+        "Jika KEEP: status -> keep-by-design + catat alasan owner di entry ini"
+      ],
+      "audit_evidence": "2026-10-25 03:00 WIB: file page.tsx mtime Jun 13 (daftar '12 halaman tak tersentuh sejak Juni'); git log social-cards = 2 commit terakhir Jun 13 + snapshot Sep; LIVE: teknikal.id/admin/social-cards 307 auth-guard OK, /api/admin/social-cards/articles 404-anonim (disguise by design, proxy.ts L324-331); grep html2canvas = 1 konsumen; DB read-only: NEWS published 46 total / 7 baru 7d (feed hidup, bukan basi)."
+    },
+    {
       "date": "2026-10-24",
       "priority": "P1",
       "type": "content-fix",
@@ -11,7 +29,9 @@
       "title": "FIX rekap-pasar-mingguan-2026-10-24: oversold \"485→65\" dilabel non-gorengan padahal 485/65 = basis SEMUA saham (NG = 409→54)",
       "spec": "INTENT: label definisi harus match angka. BUKTI (replay rsi14<30, interval=1d, 19 vs 23 Okt): semua saham 485→65; non-gorengan 409→54. Tidak ada basis yang menghasilkan 485 NG. Pola berulang ke-3 (qa-2026-10-21-01 agregat akademi, qa-2026-10-23-02 agregat akademi). ACCEPTANCE: (1) pasangan angka+label konsisten — pilih salah satu: hapus frasa \"non-gorengan\" dari kalimat 485→65, ATAU ganti angka jadi 409→54; (2) replay SQL ulang = angka di artikel; (3) klaim lain rekap TIDAK disentuh (breadth tabel 103/692/167 dst sudah terverifikasi benar, top movers benar, 22 GC/59 DC benar).",
       "north_star": "TRUST",
-      "result": "DONE 24 Okt 13:4x WIB (CTO weekend sore): SQL patch fetch-replace-write (pola qa-23). qa-01: hapus 'non-gorengan' dari oversold 485->65 (basis all-stock; NG=409->54 replay). qa-02: 'Senin hanya 506 saham naik' -> '103' (506 fiktif; 507=Jumat; Senin pairwise=102+1 nonaktif=103 == tabel breadth). qa-03: '3 golden cross dan 3 death cross' -> '6/6' (replay smaCrossDate=22 Okt NG exact). qa-04: tabel top gainers big-cap >=10T >+4% rebuild top-10 (MAPI/PACK/BFIN/SMMT/MAPA/SGER/NSSS/AMMN/TSPC/JSMR replay-match close+pct exact; BREN tetap keluar flag gorengan). BUKTI: DB residual 0 + live curl grep frasa baru x2 render + klaim lain utuh (MAPI #7, AADI #3, breadth tabel, 22GC/59DC). Impact_check: 2026-10-26 brief Senin."
+      "result": "DONE 24 Okt 13:4x WIB (CTO weekend sore): SQL patch fetch-replace-write (pola qa-23). qa-01: hapus 'non-gorengan' dari oversold 485->65 (basis all-stock; NG=409->54 replay). qa-02: 'Senin hanya 506 saham naik' -> '103' (506 fiktif; 507=Jumat; Senin pairwise=102+1 nonaktif=103 == tabel breadth). qa-03: '3 golden cross dan 3 death cross' -> '6/6' (replay smaCrossDate=22 Okt NG exact). qa-04: tabel top gainers big-cap >=10T >+4% rebuild top-10 (MAPI/PACK/BFIN/SMMT/MAPA/SGER/NSSS/AMMN/TSPC/JSMR replay-match close+pct exact; BREN tetap keluar flag gorengan). BUKTI: DB residual 0 + live curl grep frasa baru x2 render + klaim lain utuh (MAPI #7, AADI #3, breadth tabel, 22GC/59DC). Impact_check: 2026-10-26 brief Senin.",
+      "qa_verified": true,
+      "qa_note": "PASS 25 Okt (verifier): DB rekap 485 Senin->65 Jumat TANPA 'non-gorengan' (substring exact); live curl render frasa baru x2; replay RSI<30 all-stock 485/65 & NG 409/54 exact. Klaim lain utuh."
     },
     {
       "date": "2026-10-24",
@@ -23,7 +43,9 @@
       "title": "FIX rekap-pasar-mingguan-2026-10-24: \"Senin hanya 506 saham naik\" tidak ter-replikasi DB mana pun (Senin = 103; 507 = angka Jumat)",
       "spec": "INTENT: hapus angka fiktif/salah-hari. BUKTI (replay LAG close 16→19 Okt, basis snapshot all-stock): Senin naik 103 (102 pairwise +1 non-aktif), bukan 506; 507 = jumlah naik Jumat 23 Okt → indikasi cross-day copy. ACCEPTANCE: (1) kalimat diganti angka Senin yang valid (103, basis snapshot) atau kalimat dihapus; (2) replay SQL breadth Senin = angka di artikel; (3) baris tabel breadth & klaim lain tak berubah.",
       "north_star": "TRUST",
-      "result": "DONE 24 Okt 13:4x WIB (CTO weekend sore): SQL patch fetch-replace-write (pola qa-23). qa-01: hapus 'non-gorengan' dari oversold 485->65 (basis all-stock; NG=409->54 replay). qa-02: 'Senin hanya 506 saham naik' -> '103' (506 fiktif; 507=Jumat; Senin pairwise=102+1 nonaktif=103 == tabel breadth). qa-03: '3 golden cross dan 3 death cross' -> '6/6' (replay smaCrossDate=22 Okt NG exact). qa-04: tabel top gainers big-cap >=10T >+4% rebuild top-10 (MAPI/PACK/BFIN/SMMT/MAPA/SGER/NSSS/AMMN/TSPC/JSMR replay-match close+pct exact; BREN tetap keluar flag gorengan). BUKTI: DB residual 0 + live curl grep frasa baru x2 render + klaim lain utuh (MAPI #7, AADI #3, breadth tabel, 22GC/59DC). Impact_check: 2026-10-26 brief Senin."
+      "result": "DONE 24 Okt 13:4x WIB (CTO weekend sore): SQL patch fetch-replace-write (pola qa-23). qa-01: hapus 'non-gorengan' dari oversold 485->65 (basis all-stock; NG=409->54 replay). qa-02: 'Senin hanya 506 saham naik' -> '103' (506 fiktif; 507=Jumat; Senin pairwise=102+1 nonaktif=103 == tabel breadth). qa-03: '3 golden cross dan 3 death cross' -> '6/6' (replay smaCrossDate=22 Okt NG exact). qa-04: tabel top gainers big-cap >=10T >+4% rebuild top-10 (MAPI/PACK/BFIN/SMMT/MAPA/SGER/NSSS/AMMN/TSPC/JSMR replay-match close+pct exact; BREN tetap keluar flag gorengan). BUKTI: DB residual 0 + live curl grep frasa baru x2 render + klaim lain utuh (MAPI #7, AADI #3, breadth tabel, 22GC/59DC). Impact_check: 2026-10-26 brief Senin.",
+      "qa_verified": true,
+      "qa_note": "PASS 25 Okt (verifier): DB+live 'Senin hanya 103 saham naik'; residual '506 saham naik'=0 di seluruh Article; replay breadth Senin pairwise 102 naik (+1 nonaktif=103, basis snapshot tabel); Selasa 695/111/156 & Jumat 507/192/136 exact tabel."
     },
     {
       "date": "2026-10-24",
@@ -35,7 +57,9 @@
       "title": "FIX brief-pasar-idx-2026-10-23-rotasi-bank-bumn: \"3 golden cross dan 3 death cross baru Kamis\" salah — DB = 6/6 (non-gorengan, interval 1d)",
       "spec": "INTENT: angka cross baru = replay SQL. BUKTI (replay smaCrossDate=2026-10-22, interval=1d, isGorengan=false): 6 golden & 6 death; dengan filter likuiditas av20>2jt/3jt/5jt/10jt pun 4/4 — tidak ada basis yang menghasilkan 3/3. Catatan: changelog qa-2026-10-23-01 kemarin menulis replay CTO 6/6, tapi teks artikel masih 3/3 → fix kemarin tidak apply ke frasa ini. ACCEPTANCE: (1) angka di artikel = 6 golden & 6 death (basis non-gorengan) dengan replay SQL match; (2) klaim AADI & MAPI (sudah difix qa-23-01) tetap utuh.",
       "north_star": "TRUST",
-      "result": "DONE 24 Okt 13:4x WIB (CTO weekend sore): SQL patch fetch-replace-write (pola qa-23). qa-01: hapus 'non-gorengan' dari oversold 485->65 (basis all-stock; NG=409->54 replay). qa-02: 'Senin hanya 506 saham naik' -> '103' (506 fiktif; 507=Jumat; Senin pairwise=102+1 nonaktif=103 == tabel breadth). qa-03: '3 golden cross dan 3 death cross' -> '6/6' (replay smaCrossDate=22 Okt NG exact). qa-04: tabel top gainers big-cap >=10T >+4% rebuild top-10 (MAPI/PACK/BFIN/SMMT/MAPA/SGER/NSSS/AMMN/TSPC/JSMR replay-match close+pct exact; BREN tetap keluar flag gorengan). BUKTI: DB residual 0 + live curl grep frasa baru x2 render + klaim lain utuh (MAPI #7, AADI #3, breadth tabel, 22GC/59DC). Impact_check: 2026-10-26 brief Senin."
+      "result": "DONE 24 Okt 13:4x WIB (CTO weekend sore): SQL patch fetch-replace-write (pola qa-23). qa-01: hapus 'non-gorengan' dari oversold 485->65 (basis all-stock; NG=409->54 replay). qa-02: 'Senin hanya 506 saham naik' -> '103' (506 fiktif; 507=Jumat; Senin pairwise=102+1 nonaktif=103 == tabel breadth). qa-03: '3 golden cross dan 3 death cross' -> '6/6' (replay smaCrossDate=22 Okt NG exact). qa-04: tabel top gainers big-cap >=10T >+4% rebuild top-10 (MAPI/PACK/BFIN/SMMT/MAPA/SGER/NSSS/AMMN/TSPC/JSMR replay-match close+pct exact; BREN tetap keluar flag gorengan). BUKTI: DB residual 0 + live curl grep frasa baru x2 render + klaim lain utuh (MAPI #7, AADI #3, breadth tabel, 22GC/59DC). Impact_check: 2026-10-26 brief Senin.",
+      "qa_verified": true,
+      "qa_note": "PASS 25 Okt (verifier): DB+live '6 golden cross dan 6 death cross'; residual '3 golden cross dan 3 death cross'=0; replay smaCrossDate=22-Okt NG: 6/6 exact; klaim MAPI #7 & AADI #3 utuh."
     },
     {
       "date": "2026-10-24",
@@ -47,7 +71,9 @@
       "title": "FIX brief-pasar-idx-2026-10-23-rotasi-bank-bumn: tabel \"Top gainers big-cap ≥Rp10T di atas +4%\" salah isi — 7 dari 10 teratas hilang (PACK/BFIN/SMMT/MAPA/SGER/NSSS/TSPC)",
       "spec": "INTENT: tabel superlatif harus = hasil replay SQL top-N. BUKTI (replay pct 21→22 Okt join flag isGorengan 22 Okt + marketCap baris 22 Okt, ≥Rp10T, >+4%): urutan benar = MAPI +10,76; PACK +9,52 (13,8T); BFIN +9,40 (11,5T); SMMT +9,03 (11,2T); MAPA +7,34 (16,7T); SGER +5,96 (12,4T); NSSS +5,83 (13,1T); AMMN +5,61; TSPC +5,42 (11,3T); JSMR +5,11; lalu BBNI 4,92; DMAS 4,81; MBMA 4,62; ANTM 4,41; SIDO 4,17; BMRI 4,05. Artikel hanya memuat MAPI, AMMN, JSMR, BBNI, ANTM, BMRI — 7 teratas (di luar MAPI) hilang; BREN +7,41 memang wajar dikeluarkan (flag gorengan 22 Okt). ACCEPTANCE: (1) rebuild tabel dari SQL kanonik (join StockPrice 21→22, StockIndicator NG per-22-Okt, StockFundamental cap per-22-Okt), minimal top-10, urut pct desc; (2) setiap baris replay-match close & pct; (3) header/kriteria tabel tetap eksplisit.",
       "north_star": "TRUST",
-      "result": "DONE 24 Okt 13:4x WIB (CTO weekend sore): SQL patch fetch-replace-write (pola qa-23). qa-01: hapus 'non-gorengan' dari oversold 485->65 (basis all-stock; NG=409->54 replay). qa-02: 'Senin hanya 506 saham naik' -> '103' (506 fiktif; 507=Jumat; Senin pairwise=102+1 nonaktif=103 == tabel breadth). qa-03: '3 golden cross dan 3 death cross' -> '6/6' (replay smaCrossDate=22 Okt NG exact). qa-04: tabel top gainers big-cap >=10T >+4% rebuild top-10 (MAPI/PACK/BFIN/SMMT/MAPA/SGER/NSSS/AMMN/TSPC/JSMR replay-match close+pct exact; BREN tetap keluar flag gorengan). BUKTI: DB residual 0 + live curl grep frasa baru x2 render + klaim lain utuh (MAPI #7, AADI #3, breadth tabel, 22GC/59DC). Impact_check: 2026-10-26 brief Senin."
+      "result": "DONE 24 Okt 13:4x WIB (CTO weekend sore): SQL patch fetch-replace-write (pola qa-23). qa-01: hapus 'non-gorengan' dari oversold 485->65 (basis all-stock; NG=409->54 replay). qa-02: 'Senin hanya 506 saham naik' -> '103' (506 fiktif; 507=Jumat; Senin pairwise=102+1 nonaktif=103 == tabel breadth). qa-03: '3 golden cross dan 3 death cross' -> '6/6' (replay smaCrossDate=22 Okt NG exact). qa-04: tabel top gainers big-cap >=10T >+4% rebuild top-10 (MAPI/PACK/BFIN/SMMT/MAPA/SGER/NSSS/AMMN/TSPC/JSMR replay-match close+pct exact; BREN tetap keluar flag gorengan). BUKTI: DB residual 0 + live curl grep frasa baru x2 render + klaim lain utuh (MAPI #7, AADI #3, breadth tabel, 22GC/59DC). Impact_check: 2026-10-26 brief Senin.",
+      "qa_verified": true,
+      "qa_note": "PASS 25 Okt (verifier): tabel top gainers big-cap live render 10 baris; replay SQL (close 21->22 Okt, NG flag 22 Okt, cap>=10T 22 Okt, >+4%) = MAPI/PACK/BFIN/SMMT/MAPA/SGER/NSSS/AMMN/TSPC/JSMR close+pct exact; BREN isGorengan=t (exclusion legit)."
     },
     {
       "id": "bo-2026-10-24-01",
@@ -90,7 +116,7 @@
       "date": "2026-10-22",
       "type": "prd",
       "priority": "P2",
-      "status": "pending",
+      "status": "night_ready",
       "train": "T-1023-N",
       "prd_id": "idea-2026-10-19-2",
       "title": "P2 STICKY: panel 'Pantauan perangkat ini' utk guest (/stocks) + feedback chip 'Tersimpan' — guest-star dipakai 1x/30d meski live 2 permukaan",
@@ -100,8 +126,16 @@
       "done_when": "DONE WHEN: (a) tsc+build hijau + e2e: toggle 2 star -> panel list 2 item render + chip muncul; (b) e2e register path: toggle 2 star -> register -> Watchlist DB 2 row user baru; (c) live /stocks anon 200 + panel guest-only (authed tak lihat panel guest); (d) metrik 14 hari: star_add >=8/30d-rate & distinct anonId >=5, else verdict iterate di entry.",
       "scheduled_slot": "Backend Builder 24 Okt 18:30 (build) -> kereta T-1025-N (reslot: T-1023-N semalam tidak berangkat)",
       "created_by": "CEO 08:15 22 Okt",
-      "result": "",
-      "assigned_slot": "Backend Builder malam 24 Okt 18:30 (build-only, setelah pagi selesaikan fork prd-22-01 — hindari bentrok file mailer/watchlist) → kereta T-1024-N 22:00"
+      "result": "NIGHT BUILD OK 24 Okt (CTO night, branch night/prd-2026-10-22-02, pushed): (1) AC1 GuestWatchlistPanel baru guest-only di /stocks — SSR-safe null pra-mount (LCP aman), item ticker+close+chg% via /api/live-quotes ENDPOINT EXISTING (pola sama GuestWatchlistView /watchlist; market-snapshot.service SATU PINTU tak tersentuh — bukan movers/breadth); (2) AC2 chip inline 'Tersimpan — N emiten dipantau di perangkat ini' role=status auto-hide 2s, 0 lib baru, guest-star.tsx refactor effect->event-state (eslint react-hooks clean); (3) AC3 CTA 'Simpan permanen + lintas perangkat' -> /auth/register; migrasi auth-provider TIDAK diubah (0 diff). VERIFY (fisik): npx tsc --noEmit 0 error · eslint 0 error · selftest-retention-loop 5/5 · playwright E2E_BASE_URL=:3100 (dev, prod :3000 tak tersentuh; semua POST /api di-block = DB read-only): guest-panel.spec 4/4 (AC1 render 2 item, AC1-sync hapus live-update, AC1-negative kosong=no panel, AC2-flow detail-star->chip->panel sinkron) · stocks.spec 3/3 · stock-detail 4/4. BONUS: fix 2 stale spec pre-existing (H1 'Radar Saham IDX' + FAQ h2 exact-match, sejak ec65941 — dibuktikan git show origin/main). playwright.config baseURL kini env-able (E2E_BASE_URL). BELUM TERVERIFIKASI (butuh lingkungan boleh write DB — prod DB read-only by rule): e2e penuh AC3 register->migrasi 2 row Watchlist (jalur kode untouched, risiko minimal) — sarankan staging/lokal pagi. AC4 metrik 14-hari baru bisa diukur pasca-deploy (EngagementEvent star_add + cta_register_guest_panel). Estimasi review: 15 mnt (diff 8 file, +262/-42). SKIP: deploy (hard-gate 21:45-07:00), prod :3000.",
+      "assigned_slot": "Backend Builder malam 24 Okt 18:30 (build-only, setelah pagi selesaikan fork prd-22-01 — hindari bentrok file mailer/watchlist) → kereta T-1024-N 22:00",
+      "night_branch": "night/prd-2026-10-22-02",
+      "night_verified": [
+        "tsc 0 error",
+        "eslint 0 error",
+        "selftest-retention-loop 5/5",
+        "playwright guest-panel 4/4 + stocks 3/3 + stock-detail 4/4"
+      ],
+      "night_review_estimate": "15 menit"
     },
     {
       "id": "bo-2026-10-22-01",
