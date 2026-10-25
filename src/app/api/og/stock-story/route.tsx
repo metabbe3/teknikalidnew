@@ -115,8 +115,19 @@ export async function GET(request: NextRequest) {
                 <stop offset="0%" stopColor="#7dd3fc" stopOpacity="0.22" />
                 <stop offset="100%" stopColor="#f8fafc" stopOpacity="0" />
               </radialGradient>
+              <radialGradient id="hglow" cx="50%" cy="62%" r="46%">
+                <stop offset="0%" stopColor={isPositive ? "#34d399" : "#f87171"} stopOpacity="0.16" />
+                <stop offset="100%" stopColor="#f8fafc" stopOpacity="0" />
+              </radialGradient>
             </defs>
             <rect width="1080" height="1908" fill="url(#glow)" />
+            <rect width="1080" height="1908" fill="url(#hglow)" />
+            {/* Ikon arah besar transparan di belakang harga (polygon path — satori tanpa <text>) */}
+            {isPositive ? (
+              <path d="M540 880 L770 1160 L610 1160 L610 1330 L470 1330 L470 1160 L310 1160 Z" fill="#10b981" fillOpacity="0.06" />
+            ) : (
+              <path d="M540 1330 L310 1050 L470 1050 L470 880 L610 880 L610 1050 L770 1050 Z" fill="#ef4444" fillOpacity="0.06" />
+            )}
           </svg>
 
           {/* === Safe Zone === */}
@@ -192,20 +203,27 @@ export async function GET(request: NextRequest) {
             {/* ── Spacer ── */}
             <div style={{ display: "flex", flex: 1 }} />
 
-            {/* ── Harga — fokus tunggal ── */}
+            {/* ── Harga — HERO gradient besar ── */}
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <span style={{ color: "#0f172a", fontSize: 130, fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.05 }}>
+              <span style={{ fontSize: 190, fontWeight: 800, letterSpacing: "-0.04em", lineHeight: 1.0, backgroundImage: `linear-gradient(180deg, ${isPositive ? "#047857 0%, #10b981 78%" : "#b91c1c 0%, #ef4444 78%"})`, backgroundClip: "text", WebkitBackgroundClip: "text", color: "transparent" }}>
                 {data.close !== null ? fmtPrice(data.close) : "--"}
               </span>
-              <div style={{ display: "flex", alignItems: "center", marginTop: 14 }}>
-                <span style={{ color: changeColor, fontSize: 52, fontWeight: 800, letterSpacing: "-0.02em" }}>
+              <div style={{ display: "flex", alignItems: "center", marginTop: 18 }}>
+                <span style={{ display: "flex", alignItems: "center", paddingTop: 10, paddingBottom: 10, paddingLeft: 24, paddingRight: 24, borderRadius: 999, backgroundColor: isPositive ? "rgba(5,150,105,0.10)" : "rgba(220,38,38,0.08)", color: changeColor, fontSize: 46, fontWeight: 800, letterSpacing: "-0.02em" }}>
+                  <span style={{ fontSize: 34, marginRight: 12 }}>{isPositive ? "▲" : "▼"}</span>
                   {data.changePercent !== null ? fmtPercent(data.changePercent) : ""}
+                  {data.change !== null && (
+                    <span style={{ fontSize: 30, fontWeight: 600, marginLeft: 12, color: "#64748b" }}>
+                      {data.change >= 0 ? "+" : ""}{fmtPrice(Math.abs(data.change))}
+                    </span>
+                  )}
                 </span>
-                {data.change !== null && (
-                  <span style={{ color: "#64748b", fontSize: 38, fontWeight: 500, marginLeft: 18 }}>
-                    ({data.change >= 0 ? "+" : ""}{fmtPrice(Math.abs(data.change))})
-                  </span>
-                )}
+              </div>
+              {/* Stamp tanggal — momen */}
+              <div style={{ display: "flex", alignItems: "center", marginTop: 26, paddingTop: 10, paddingBottom: 10, paddingLeft: 22, paddingRight: 22, borderRadius: 12, border: "2px dashed #bae6fd", backgroundColor: "rgba(224,242,254,0.5)" }}>
+                <span style={{ color: "#0369a1", fontSize: 24, fontWeight: 700, letterSpacing: "0.06em" }}>
+                  SNAPSHOT {new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }).toUpperCase()}
+                </span>
               </div>
             </div>
 
