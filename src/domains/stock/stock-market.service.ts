@@ -65,10 +65,16 @@ async function fetchStockBase(ticker: string, priceTake: number) {
   return { stock, prices, latest, prev, prevClose, close, change, changePercent, week52, indicator, prevIndicator };
 }
 
+function stripJkExt(t: string): string {
+  return t.replace(/\.JK$/i, "");
+}
+
 export interface StockOgData {
   ticker: string;
   name: string;
   sector: string;
+  /** Local /logos file (png|jpg|svg) jika ada — untuk story image. */
+  logoFile: string | null;
   close: number | null;
   change: number | null;
   changePercent: number | null;
@@ -286,6 +292,18 @@ export const stockMarketService = {
     const base = await fetchStockBase(ticker, 31);
     const indicator = serializeIndicatorOrNull(base.indicator);
 
+    // Local logo file (same chain as StockLogo): png → jpg → svg (jpg palsu/WebP sudah dibersihkan)
+    const t = stripJkExt(base.stock.ticker);
+    const fs = await import("fs/promises");
+    let logoFile: string | null = null;
+    for (const ext of ["png", "jpg", "svg"]) {
+      try {
+        await fs.access(`public/logos/${t}.${ext}`);
+        logoFile = `/logos/${t}.${ext}`;
+        break;
+      } catch { /* next */ }
+    }
+
     // Serialize sparkline prices (last 30, oldest first)
     const sparkline = base.prices
       .slice(0, 30)
@@ -333,6 +351,7 @@ export const stockMarketService = {
     };
 
     return {
+      logoFile,
       ticker: base.stock.ticker,
       name: base.stock.name,
       sector: base.stock.sector ?? "",
