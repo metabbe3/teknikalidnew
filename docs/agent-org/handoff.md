@@ -927,3 +927,8 @@
 - ticker-tape SENGAJA tanpa logo (strip animasi → flicker).
 - Verify SSR guest: /pasar WMUU+FAST.jpg live, /bottom-fishing ARKO.jpg live, home breath-strip WMUU live. tsc 0.
 - Komponen client aman pakai StockLogo (sudah "use client").
+
+## 25 Okt 11:35 — NAV DEDUP + TOOLS COLLAPSIBLE + /STOCKS LOGO (owner 25 Okt, deploy 11:25, 26f3570)
+- Double Bottom Fishing: hapus dari mobile logged-in menu + avatar dropdown (Tools dropdown = satu pintu; desktop tak tersentuh).
+- BUG ketemu: label "Tools" mobile logged-in ternyata LINK ke /profile/username (sisa refactor) → diganti tombol disclosure collapsible (chevron, aria-expanded, active accent). Desktop sudah dropdown by design.
+- /stocks + /crypto browse (StockTable): logo 24px + ticker per baris. Verified browser: 18 rows rendered, 7 logo asli (WMUU.png dst), sisanya monogram tile.
