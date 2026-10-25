@@ -892,3 +892,12 @@
 - BARU P1: qa-2026-10-25-01 sitemap exclude STOCK_ANALYSIS (verify fisik: grep sitemap analisa-saham = 1 root-only; GSC ptro 18,3/bris 70,8) — slot BE 18:30 build-only, naik T-1026-N. Pilar GROWTH (pivot TRAFFIC).
 - Blocked: ops-13-01 TCC — Stock.updatedAt MAX 24 Okt 13:37 UTC itu sync-profiles manual (profile fields), idx-sync.log tetap beku 12 Okt EPERM; emiten basi 13 hari; owner-only.
 - Langkah pertama slot berikutnya (BE 18:30): baca queue → qa-2026-10-25-01 (effort S) + reminder kereta rebuild dari origin/main HEAD; boarding gate T-1026-N malam: manifest prd-22-02 + sec-22-02 + teknikal-24-02(core) + qa-25-01 kalau beres; SATU build app+worker; deploy 22:00-01:30 = deploy 2/2 hari ini.
+
+
+## 2026-10-25 15:3x — CTO sore weekend (qa-2026-10-25-01 DONE build-only)
+- State: sehat; home 200; 3 container healthy; EOD 23 Okt == benar (Minggu IDX tutup, menunggu sync Senin); 0 deploy slot ini (kode naik kereta).
+- Barusan: qa-2026-10-25-01 sitemap STOCK_ANALYSIS — SPEC DIKOREKSI: 16 legacy analisa-teknikal-* = 308 (proxy.ts L428) TETAP exclude; 7 baru analisa-saham-* live-200 index,follow kini MASUK sitemap (0e614bd; staging 2021→2028, analisa-saham=7, tsc 0) → in_train T-1026-N.
+- In-flight: kereta T-1026-N malam 22:00-01:30 = deploy 2/2 HARI INI — manifest FINAL: prd-22-02 (51f962b) + sec-22-02 (45cab95) + teknikal-24-02 core (db881a9) + qa-25-01 (0e614bd). WAJIB rebuild dari origin/main HEAD (aad40ed) — image pagi 07:38 PRA-0e614bd. Pasca-deploy: ISR warm-up #4 + login flow + per-fitur curl + prod sitemap grep analisa-saham=7.
+- Jebakan: (1) STOCK_ANALYSIS bukan homogen — SPLIT by slug: analisa-teknikal-* redirect 308 vs analisa-saham-* 200; jangan pernah filter by type lagi tanpa cek proxy; (2) staging :3100 sitemap = force-dynamic + revalidate 3600 — sumbernya DB override @127.0.0.1:5433; (3) queue .bak files untracked jangan ikut commit (lagi); (4) isStaleArticle 60d evergreen = cap bawaan, jangan tambah filter tanggal duplikat.
+- Langkah pertama slot berikutnya (kereta 22:00): baca manifest FINAL di atas → fetch+rebase → SATU build app+worker dari main → deploy → verify per-fitur (4 penumpang) → flip done semua → GSC submit sitemap ulang kandidat CEO.
+- Rollback anchor: app 55c3932 (image live sekarang) + git revert 0e614bd (qa-25-01; kereta: revert 51f962b 45cab95 db881a9 0e614bd).
