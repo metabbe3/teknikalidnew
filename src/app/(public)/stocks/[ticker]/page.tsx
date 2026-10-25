@@ -589,7 +589,19 @@ export default async function StockDetailPage({
                   <span className="text-text-tertiary" aria-hidden="true">·</span>
                   <span className="text-xs text-text-tertiary font-medium">{sectorToBahasa(stock.sector)}</span>
                 </div>
-                <p className="text-sm text-text-secondary mt-0.5">{stock.name}</p>
+                <p className="text-sm text-text-secondary mt-0.5 truncate">
+                  <span className="font-medium">{stock.name}</span>
+                  {(() => {
+                    const desc = stock.businessActivity?.trim() || stock.subSector?.trim();
+                    if (!desc) return null;
+                    return (
+                      <>
+                        <span className="text-text-tertiary" aria-hidden="true"> · </span>
+                        <span className="text-text-tertiary font-normal">{desc.charAt(0).toUpperCase() + desc.slice(1)}</span>
+                      </>
+                    );
+                  })()}
+                </p>
               </div>
               {close !== null && (
                 <div className="text-right shrink-0">
