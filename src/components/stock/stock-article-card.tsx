@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
+import { StockLogo } from "@/components/stock/stock-logo";
 
 interface StockArticleCardProps {
   ticker: string;
@@ -36,9 +37,12 @@ export function StockArticleCard({ ticker, name, sector, close, changePercent, r
       className="block bg-bg-card rounded-xl depth-shadow p-4 hover:depth-shadow-hover transition-all duration-200 press-scale"
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="font-semibold text-sm tracking-tight">{stripJk(ticker)}</p>
-          <p className="text-[11px] text-text-secondary truncate mt-0.5 leading-tight">{name}</p>
+        <div className="flex items-center gap-2.5 min-w-0">
+          <StockLogo name={name} ticker={ticker} size={36} />
+          <div className="min-w-0">
+            <p className="font-semibold text-sm tracking-tight">{stripJk(ticker)}</p>
+            <p className="text-[11px] text-text-secondary truncate mt-0.5 leading-tight">{name}</p>
+          </div>
         </div>
         <div className="text-right shrink-0 tabular-nums">
           {close != null ? (

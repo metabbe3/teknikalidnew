@@ -1281,16 +1281,20 @@ export default async function StockDetailPage({
                     data-engagement="funnel_peer_card"
                     className="group bg-bg-card rounded-lg depth-shadow px-3 py-2.5 hover:border-accent/30 hover:depth-shadow-hover transition-all"
                   >
-                    <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <StockLogo name={b?.name ?? stripJk(peer)} ticker={peer} size={26} />
                       <span className="font-mono text-xs font-bold text-text-primary group-hover:text-accent transition-colors">
                         {stripJk(peer)}
                       </span>
                       {b?.changePercent !== null && b?.changePercent !== undefined && (
-                        <span className={`text-[10px] font-semibold tabular-nums ${changeColor(b.changePercent)}`}>
+                        <span className={`text-[10px] font-semibold tabular-nums ml-auto ${changeColor(b.changePercent)}`}>
                           {b.changePercent >= 0 ? "▲" : "▼"} {Math.abs(b.changePercent).toFixed(1)}%
                         </span>
                       )}
                     </div>
+                    <p className="text-[11px] text-text-secondary truncate mt-1">
+                      {b?.name ?? "Analisa →"}
+                    </p>
                     {b?.close !== null && b?.close !== undefined ? (
                       <p className="text-[11px] text-text-secondary tabular-nums mt-0.5">{formatPrice(b.close)}</p>
                     ) : (
