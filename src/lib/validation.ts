@@ -111,15 +111,18 @@ export function extractPageviewAttribution(path: string): {
 } {
   const q = path.indexOf("?");
   const pathOnly = q === -1 ? path : path.slice(0, q);
-  if (q === -1 || !pathOnly.startsWith("/auth/")) {
+  // owner 27 Okt: attribution kept for /auth/ pages (conversion funnel) AND any
+  // path carrying utm_* (sosmed funnel — bio IG/Threads, QR slide, news CTA).
+  if (q === -1) {
     return { path: pathOnly, utmSource: null, utmMedium: null };
   }
   const params = new URLSearchParams(path.slice(q + 1));
-  return {
-    path: pathOnly,
-    utmSource: parseUtmParam(params.get("utm_source")),
-    utmMedium: parseUtmParam(params.get("utm_medium")),
-  };
+  const utmSource = parseUtmParam(params.get("utm_source"));
+  const utmMedium = parseUtmParam(params.get("utm_medium"));
+  if (!pathOnly.startsWith("/auth/") && !utmSource) {
+    return { path: pathOnly, utmSource: null, utmMedium: null };
+  }
+  return { path: pathOnly, utmSource, utmMedium };
 }
 
 /**
