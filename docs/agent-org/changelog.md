@@ -745,3 +745,24 @@
 - QA: pasca-deploy kereta — curl 401 negative tetap jalan + CronLog next-run masih success (timeout tak memutus cron harian); impact_check_due: 2026-10-28 (3 cron log success pasca-deploy)
 - SEC GATE: task INI adalah hardening itu sendiri (auth Bearer CRON_SECRET existing utuh, 0 endpoint baru, 0 input baru) — attack-surface tidak bertambah
 - impact_check_due: 2026-10-28
+
+## 2026-10-26 — CTO pagi 07:30 (T-1026-M: merge night + reconcile + radar fix)
+### seo-2026-10-25-02 (P1 GROWTH/SEO)
+- deploy hash: main 18d3af1 (merge b176944 ← night/seo-2026-10-25-02 8bd0ab5) · image app 4b9d4430070a
+- verify bukti: curl -A Mozilla /golden-cross→301 /saham-golden-cross · /oversold→301 · /volume-spike→301 (before 404/after 301)
+- QA: tsc 0 error worktree merge; sitemap 2028 URL utuh; home 200
+- SEC GATE: N/A (redirect statis next.config, no input/auth/db)
+- impact_check_due: 2026-10-29 (GSC: moat pages /saham-* rebound dari kolaps 24→2 WoW)
+### bo-2026-10-26-01 (P2 admin insight)
+- deploy hash: sama (18d3af1 memuat 6331697 North Star strip /admin Overview)
+- verify bukti: /admin 200; reuse /api/admin/retention (0 endpoint baru); changelog malam 71fba9a
+- impact_check_due: 2026-10-29 (strip terlihat owner di Dashboard)
+### bug-2026-10-25-01 (P2 TRUST — radar RSI 0.0)
+- type: bug · failing-test-first: scripts/selftest-radar-filter.ts RED (buggy predikat fail case-1) → GREEN 3/3
+- deploy hash: 18d3af1 · verify bukti: /api/stocks/radar 132→106 rows, SUPR.JK hilang, 0 baris rsi14 null/0 (curl live)
+- fix: radar-filter.ts isOversoldSignal guard >0 (ekstrak predikat + komentar history) + stock.repository findOversoldStocks gt:0 (2 lapis)
+- residual (bukan bug filter): MMIX/HITS/FASW/KARW lolos via RSI valid, stoch tampil 0/0 — display question → QA backlog; SUPR indikator kosong akan terisi sync normal
+- SEC GATE: N/A (pengetatan filter read-only)
+- impact_check_due: 2026-10-29 (radar pasca EOD sync Senin: tetap 0 rsi-0 rows)
+### Kereta malam T-1026-N (6 penumpang) — verifikasi pasca-deploy pagi ini
+- prd-22-02 'Pantauan perangkat' in-image ✓ · sec-22-02 follow-redirects 1.16.1 ✓ · sec-22-01 cron 401 ✓ · qa-25-01 sitemap analisa-saham 8 ✓ · ux-25-01/teknikal-24-02 in-image ✓ → semua flip done

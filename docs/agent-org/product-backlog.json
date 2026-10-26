@@ -508,7 +508,7 @@
       "id": "idea-2026-09-23-1",
       "date": "2026-09-23",
       "priority": "P3",
-      "status": "idea",
+      "status": "spec_ready",
       "source": "cto-idle",
       "title": "Cross-link ticker-detail -> signal pages (related-signals di /stocks/[ticker])",
       "hypothesis": "133 IP/30d baca detail ticker tapi cuma 15% sampai /saham-* — pola related-signals (komponen SUDAH ADA di artikel, council-13-02) tinggal dipasang di detail ticker utk ticker yg punya smaCrossSignal aktif. Effort 1 (reuse), menunggu prod-19-01 terukur dulu biar efek link-equity tak tercampur.",
@@ -517,7 +517,30 @@
       "review_date": "2026-10-26",
       "scheduled_slot": "2026-10-22",
       "research_brief": "RESEARCH BRIEF (Researcher 13 Okt 2026) — VERDICT: BUILD (konfirmasi pendekatan; jadwal tetap slot 2026-10-22 pasca gate AC6 widget — konsisten dgn keputusan defer yang sudah ada). Alasan: related-signals/internal-link module = pola terbukti di industri publisher: studi kasus & vendor data menunjukkan modul link internal/rekomendasi menaikkan pages/session ~6-25% dan session time secara konsisten; kondisi teknikal.id cocok (87% views /saham-golden-cross datang dari referrer /stocks = link nav proven; ticker-detail 133 IP tapi cuma 15% mengalir ke /saham-*). Komponen related-signals.tsx SUDAH ada (f75dd7d) → effort 1. Best practice: (1) hanya render related-signals utk ticker yg punya sinyal aktif (hindari empty-state/soft-404); (2) link SSR dofollow di HTML (bukan JS-only) — anchor terlihat crawler; (3) batas 3-5 link kontekstual, jangan link-farm; (4) ukur pasca-deploy via PageView referer ticker-detail -> /saham-* (baseline 15%); (5) jangan ubah halaman lain bersamaan agar atribusi bersih. Anti-pattern: render module dgn placeholder kosong saat 0 sinyal (buruk utk UX + crawl); menumpuk deploy dgn perubahan navigasi lain di /stocks (atribusi rusak — pelajaran defer asli). SUMBER: froomle.ai case study Nation News (+6% page views/session via recommendation modules); webselect.agency/internal-linking-user-engagement-signals (pages/session +15-25% dalam 2 bulan); developry.com case study internal linking 2->8 menit session. BUKTI: SEDANG-KUAT untuk efek engagement internal-linking umum (studi pihak-3/vendor, bukan RCT); untuk konteks spesifik IDX/finance-ID tak ada studi — verifikasi via gate internal.",
-      "insight": "CEO verdict 23 Okt (stagnation, review 22 Okt lewat): APPROVE-FOR-PRD — lensa north star lolos (STICKY+GROWTH: ticker pages = trafik terbesar MKNT 23v/BBCA 22v, signal pages = moat 7v; cross-link tutup gap AC1 verdict PARTIAL idea-10-15-1). FDE gate: tunggu PRD Product Agent Senin 26 Okt."
+      "insight": "CEO verdict 23 Okt (stagnation, review 22 Okt lewat): APPROVE-FOR-PRD — lensa north star lolos (STICKY+GROWTH: ticker pages = trafik terbesar MKNT 23v/BBCA 22v, signal pages = moat 7v; cross-link tutup gap AC1 verdict PARTIAL idea-10-15-1). FDE gate: tunggu PRD Product Agent Senin 26 Okt.",
+      "research_note": "2026-10-25 22:1x WIB PRD Agent: riset selesai, PRD ditulis. Baseline 30d: flow /stocks->/saham = 0 (gap absolut); 37% views ticker-detail di ticker bersinyal (512/1382). Original hypothesis 'cross 20 IP (15%)' usang — itu proxy lama 23 Sep; angka PAKE yang baru. Ukuran pasca-deploy: D_saham_from_stocks_ref_30d > 0 dan naik konsisten 2 minggu.",
+      "user_story": "Sebagai pembaca yang membuka /stocks/[ticker] dari hasil pencarian, saya ingin melihat kartu 'Sinyal terkait' berisi link internal ke halaman sinyal /saham-* yang relevan dengan ticker tersebut, agar saya bisa lanjut membaca analisa sinyal tanpa harus kembali ke navigasi.",
+      "acceptance_criteria": [
+        "AC1: /stocks/[ticker] merender modul related-signals (reuse komponen src/components/berita/related-signals.tsx) HANYA bila ticker punya sinyal aktif (smaCrossSignal != NONE dalam 14d terakhir, interval 1d) — 0 sinyal = modul tidak dirender sama sekali (no empty state)",
+        "AC2: Link SSR dofollow ada di HTML respons (curl -s /stocks/BBCA.JK | grep '/saham-' non-kosong tanpa mengeksekusi JS); maks 3-5 link kontekstual",
+        "AC3: Link hanya ke halaman sinyal yang benar-benar ada (path dihasilkan dari daftar halaman /saham-* yang live, bukan hardcode)",
+        "AC4: Tidak ada perubahan navigasi lain di /stocks pada deploy yang sama (atribusi bersih; pelajaran defer council 11 Okt)",
+        "AC5: tsc EXIT-0; build EXIT-0; halaman non-sinyal (mis. ticker tanpa sinyal 14d) tampil identik dengan sebelumnya (diff render minus modul)"
+      ],
+      "data_evidence": "Query asli teknikalidnew-db-1 25 Okt 22:0x WIB (PageView non-bot 30d): ticker-detail /stocks/* = 1.382 views, 186 IP unik; views /saham-* = 104; referrer /stocks/* -> /saham-* = 0 view (D_saham_from_stocks_ref_30d=0 — cross-flow NOL, tidak ada jalur internal); 512/1.382 (37%) views ticker-detail berada di ticker yang punya smaCrossSignal aktif 14d (G=512; F: 234 ticker bersinyal); top ticker-detail 30d: BBCA.JK 69, MEJA.JK 35, AADI.JK 34.",
+      "impact": 4,
+      "effort": 2,
+      "target_files": [
+        "src/app/(public)/stocks/[ticker]/page.tsx (mount modul)",
+        "src/components/berita/related-signals.tsx (reuse/extend prop ticker)",
+        "src/components/stocks/* (jika perlu wrapper kartu)",
+        "unknown: service query sinyal aktif per ticker — cek stockMarketService existing"
+      ],
+      "db_migrations": false,
+      "dependencies": [],
+      "risk": "med (link-farm bila >5 link / atribusi tercampur bila numpuk deploy lain — mitigasi AC2+AC4)",
+      "estimate_tool_calls": 4,
+      "research_basis": "teknikalidnew main @ 5b1477b (kereta T-1026-N merged; related-signals.tsx @ src/components/berita/, komponen live di /berita/[slug]) — research brief Researcher 13 Okt VERDICT BUILD (pages/session +6-25% via modul rekomendasi; froomle/webselect/developry) tersimpan di entry ini."
     },
     {
       "id": "prod-2026-09-24-01",
@@ -1592,20 +1615,38 @@
       "date": "2026-10-20",
       "type": "feature",
       "priority": "P2",
-      "status": "idea",
+      "status": "spec_ready",
       "source": "KEYWORD-RESEARCH mingguan 20 Okt (sample 8 halaman /saham/*; GSC diff 14-20 vs 7-13 Okt)",
       "title": "AEO + programmatic quality /saham/*/kenapa-naik-hari-ini: FAQPage+Article schema 0% + uniqueness 39% (gagal gate 40%; pasangan terburuk PTRO<->BRIS similarity 0.80) — halaman moat AI-search tapi tak layak direkomendasikan AI crawler",
       "north_star": "AI_SEARCH (referrer AI 3 views/7d chatgpt.com — satu-satunya jalur AI) + CONTENT",
       "hypothesis": "Halaman kenapa-naik = intent AI-answer-friendly, tapi tanpa schema + konten template kembar, AI crawler tak punya alasan memilih kita. variasi per arah-gerak/sektor = naikkan uniqueness & chance sitasi AI.",
       "first_step": "ANALISIS DATA (no deploy): (1) ukur similarity full-population /saham/*/kenapa-naik (bukan sample 8); (2) audit schema JSON-LD per halaman; (3) formulan N variasi template (arah gerak x sektor x sinyal dominan) dari data StockIndicator existing; output 3-5 kandidat spec dgn done_when.",
       "acceptance_criteria": [
-        "laporan coverage similarity + schema utk populasi penuh",
-        ">=1 kandidat spec_ready dgn done_when testable dalam 2 sprint"
+        "AC1: Laporan audit uniqueness FULL-POPULASI (bukan sample 8): skor rata-rata + pasangan paling-similar (target: tidak ada pasangan similarity >0.70; baseline sample: 0.80 PTRO<->BRIS)",
+        "AC2: Template narasi minimum N=6 variasi deterministik (arah gerak {naik,turun} x sektor-cluster x sinyal dominan {smaCross,macd,rsi}) dipilih dari data StockIndicator existing — tanpa LLM per-request",
+        "AC3: Pasca-implementasi, uniqueness full-populasi >= 60% (gate naik dari 39% baseline; fail-gate = 40%) dan TIDAK ada pasangan kembar similarity >0.70",
+        "AC4: 0 perubahan URL/sitemap (halaman deterministic tetap); FAQPage schema existing TIDAK disentuh (sudah live seo-2026-10-18-02)",
+        "AC5: tsc EXIT-0; build EXIT-0; smoke render 3 ticker beda cluster menghasilkan struktur narasi berbeda (diff section order/intro)"
       ],
       "assigned": "Product Agent Kamis 23 Okt 10:15",
       "created": "2026-10-20",
       "restored_from": "mirror-2026-10-20 (backlog drift #2, CEO 21 Okt: hilang pasca merge lossy 20 Okt)",
-      "research_brief": "RESEARCH BRIEF (Researcher 22 Okt 2026) — VERDICT: BUILD-AFTER-PRD (PRD missing user_story/target_files/effort/risk/dependencies; assigned Product Agent 23 Okt 10:15). Arah masuk akal tapi URUTAN DIBALIK: uniqueness dulu (risiko Google scaled-content abuse = site-wide), schema belakangan. BUKTI SCHEMA: TIDAK KUAT sbg driver sitasi AI — Ahrefs DiD 1.885 halaman + 4.000 kontrol: no uplift (AIO -4.6%, AI Mode +2.4%, ChatGPT +2.2%, semua ~nol); studi 730 sitasi/1.006 halaman: schema presence OR null p=.296, driver dominan = organic rank (OR 0.762/posisi); RCT Gemini (synthetic brands): no effect, halaman low-authority tak pernah di-retrieve; test searchVIU: 5 AI engine abaikan JSON-LD saat fetch, ekstrak visible HTML saja. Studi GEO 158k jawaban/468k sitasi: yang mengangkat sitasi = title+paragraf yang match pertanyaan user; retrieval menjelaskan 32% varians vs page-properties 2.8%. RISIKO KEPATUHAN: Google scaled content abuse (Mar 2024) menyebut eksplisit 'pages that pretend to have answers to popular searches but fail to deliver helpful content' + doorway 'substantially similar pages' = spam apapun cara buatnya; uniqueness 39% & pasangan 0.80 = zona risiko ini, jadi perbaikan uniqueness juga compliance. BUKTI UNIQUENESS: SEDANG-KUAT (policy resmi Google + playbook pSEO finance + case study praktisi). Klaim 'moat AI-search' di market IDX: tidak ditemukan bukti spesifik internet — putuskan dari data internal (GSC position + AI referrer views before/after). BEST PRACTICE: (1) Fase 1 = variasi template data-driven dari StockIndicator, target similarity antar-pasangan <0.7 + minimal 1 blok editorial unik >=80 kata per halaman; Fase 2 baru schema. (2) FAQPage+Article boleh sbg clarifier murah (valid Rich Results Test), bukan KPI; KPI = GSC position/cited + AI referrer views; schema harus mirror konten visible. (3) Answer-first: TL;DR 2-3 kalimat di atas yang mengulang pertanyaan persis 'kenapa [TICKER] naik hari ini' — faktor terbukti paling berpengaruh. (4) Freshness terlihat: tanggal data + jam penutupan IDX per halaman (AI engine prioritas konten segar). (5) Baseline SEBELUM deploy: ukur full-population similarity + distribusi GSC position sbg kontrol, deploy bertahap. ANTI-PATTERN: (1) schema dulu lalu klaim menang AEO — terbantahkan empiris, risiko buang sprint; (2) variasi sinonim kosong/template spin = definisi persis scaled content abuse; (3) FAQ markup isinya tak tampil di halaman (hidden content); (4) ribuan halaman serentak tanpa prune halaman tanpa impresi; (5) klaim moat tanpa baseline AI referrer. SUMBER: ahrefs.com/blog/schema-ai-citations/; doi.org/10.5281/zenodo.18728696; arxiv.org/abs/2610.15033; rucforsk.ruc.dk (Bouet RCT Gemini); developers.google.com/search/docs/essentials/spam-policies; gemeosagency.com pSEO finance playbook; davidpaterni.com case study pSEO. BUKTI: SEDANG (schema=TIDAK KUAT; uniqueness=SEDANG-KUAT; IDX-specific=TIDAK ADA bukti eksternal — internal data)."
+      "research_brief": "RESEARCH BRIEF (Researcher 22 Okt 2026) — VERDICT: BUILD-AFTER-PRD (PRD missing user_story/target_files/effort/risk/dependencies; assigned Product Agent 23 Okt 10:15). Arah masuk akal tapi URUTAN DIBALIK: uniqueness dulu (risiko Google scaled-content abuse = site-wide), schema belakangan. BUKTI SCHEMA: TIDAK KUAT sbg driver sitasi AI — Ahrefs DiD 1.885 halaman + 4.000 kontrol: no uplift (AIO -4.6%, AI Mode +2.4%, ChatGPT +2.2%, semua ~nol); studi 730 sitasi/1.006 halaman: schema presence OR null p=.296, driver dominan = organic rank (OR 0.762/posisi); RCT Gemini (synthetic brands): no effect, halaman low-authority tak pernah di-retrieve; test searchVIU: 5 AI engine abaikan JSON-LD saat fetch, ekstrak visible HTML saja. Studi GEO 158k jawaban/468k sitasi: yang mengangkat sitasi = title+paragraf yang match pertanyaan user; retrieval menjelaskan 32% varians vs page-properties 2.8%. RISIKO KEPATUHAN: Google scaled content abuse (Mar 2024) menyebut eksplisit 'pages that pretend to have answers to popular searches but fail to deliver helpful content' + doorway 'substantially similar pages' = spam apapun cara buatnya; uniqueness 39% & pasangan 0.80 = zona risiko ini, jadi perbaikan uniqueness juga compliance. BUKTI UNIQUENESS: SEDANG-KUAT (policy resmi Google + playbook pSEO finance + case study praktisi). Klaim 'moat AI-search' di market IDX: tidak ditemukan bukti spesifik internet — putuskan dari data internal (GSC position + AI referrer views before/after). BEST PRACTICE: (1) Fase 1 = variasi template data-driven dari StockIndicator, target similarity antar-pasangan <0.7 + minimal 1 blok editorial unik >=80 kata per halaman; Fase 2 baru schema. (2) FAQPage+Article boleh sbg clarifier murah (valid Rich Results Test), bukan KPI; KPI = GSC position/cited + AI referrer views; schema harus mirror konten visible. (3) Answer-first: TL;DR 2-3 kalimat di atas yang mengulang pertanyaan persis 'kenapa [TICKER] naik hari ini' — faktor terbukti paling berpengaruh. (4) Freshness terlihat: tanggal data + jam penutupan IDX per halaman (AI engine prioritas konten segar). (5) Baseline SEBELUM deploy: ukur full-population similarity + distribusi GSC position sbg kontrol, deploy bertahap. ANTI-PATTERN: (1) schema dulu lalu klaim menang AEO — terbantahkan empiris, risiko buang sprint; (2) variasi sinonim kosong/template spin = definisi persis scaled content abuse; (3) FAQ markup isinya tak tampil di halaman (hidden content); (4) ribuan halaman serentak tanpa prune halaman tanpa impresi; (5) klaim moat tanpa baseline AI referrer. SUMBER: ahrefs.com/blog/schema-ai-citations/; doi.org/10.5281/zenodo.18728696; arxiv.org/abs/2610.15033; rucforsk.ruc.dk (Bouet RCT Gemini); developers.google.com/search/docs/essentials/spam-policies; gemeosagency.com pSEO finance playbook; davidpaterni.com case study pSEO. BUKTI: SEDANG (schema=TIDAK KUAT; uniqueness=SEDANG-KUAT; IDX-specific=TIDAK ADA bukti eksternal — internal data).",
+      "research_note": "2026-10-25 22:1x WIB PRD Agent: koreksi scope penting — klaim 'FAQPage+Article schema 0%' di judul idea BASI (schema live sejak seo-2026-10-18-02, verify grep L373/L391). Scope PRD = uniqueness variasi template saja. Trafik populasi mini (18 views/30d) tapi risiko compliance = site-wide (traffic North Star), jadi tetap layak. H=0 artikel MOVEMENT_ANALYSIS published = halaman full-template.",
+      "user_story": "Sebagai pembaca (dan AI crawler) yang mendarat di /saham/[ticker]/kenapa-naik-hari-ini, saya ingin konten yang unik per ticker (struktur narasi bervariasi sesuai arah gerak x sektor x sinyal dominan), agar halaman layak direkomendasikan dan tidak berisiko dianggap scaled-content spam oleh Google.",
+      "data_evidence": "Query asli teknikalidnew-db-1 25 Okt 22:1x WIB: Article MOVEMENT_ANALYSIS PUBLISHED = 0 (halaman murni deterministic SSR tanpa artikel — konten 100% template = sumber similarity); trafik kenapa-naik 30d = 18 views / 17 IP non-bot (populasi mini, trafik belum jadi alasan — tapi risiko compliance SITE-WIDE); Stock = 1.451 ticker, URL kenapa dibatasi shortlist sitemap (IDX_STOCKS x sitemapTickers); data variasi tersedia: StockIndicator (smaCrossSignal, macdHist, rsi14 — 234 ticker smaCross aktif 14d) + StockPrice.changePercent. KLAIM LAMA 'schema 0%' BASI: FAQPage JSON-LD sudah live di page.tsx L373-391 (seo-2026-10-18-02) — scope PRD hanya uniqueness.",
+      "impact": 3,
+      "effort": 4,
+      "target_files": [
+        "src/app/(public)/saham/[ticker]/kenapa-naik-hari-ini/page.tsx (section narasi)",
+        "unknown: helper pembangun narasi — kemungkinan domains/stock service",
+        "unknown: script audit similarity (bisa tools/ atau docs/agent-org/ops)"
+      ],
+      "db_migrations": false,
+      "dependencies": [],
+      "risk": "high (Google scaled-content abuse policy Mar 2024: 'substantially similar pages' = spam site-wide; mitigasi AC1+AC3 gate objektif sebelum deploy)",
+      "estimate_tool_calls": 6,
+      "research_basis": "teknikalidnew main @ 5b1477b (kereta T-1026-N merged; related-signals.tsx @ src/components/berita/, komponen live di /berita/[slug]) — research brief Researcher 22 Okt VERDICT BUILD-AFTER-PRD (urutan DIBALIK: uniqueness dulu, schema belakangan; schema bukan driver sitasi — Ahrefs DiD 1.885 halaman no-uplift)."
     },
     {
       "id": "prd-2026-10-24-01",

@@ -319,3 +319,8 @@ Ke-3 kalinya klaim kesegaran sinyal lolos generator Mandor: qa-2026-09-27-01 (hi
 - (1) qa-25-02/03: "22/59" (rekap mingguan) dan "6/6" (brief-23, hasil fix qa-24-03!) sama-sama berasal dari menjumlahkan smaCrossSignal lintas snapshot harian — satu cross (mis. 22 Okt: 3/3 NG) terbawa di snapshot 22 DAN 23 sehingga union mentah = 6/6; window sepekan = 8/20 NG kanonik. RULE generator: count cross WAJIB DISTINCT per (stockId, smaCrossDate) dengan snapshot = tanggal cross (atau satu snapshot akhir + window), NEVER union raw rows lintas snapshot.
 - (2) META qa-24-03: fix kemarin diverifikasi "replay 6/6 exact" padahal 6/6 justru angka salah — verifier qa_note tanpa query+hasil bisa mengonfirmasi angka yang sama-sama fiktif. RULE reviewer: qa_note wajib memuat SQL replay + hasil mentahnya; klaim "exact" tanpa query diperlakukan belum terverifikasi.
 - (3) Tabel timeline per-tanggal (kasus CPIN 4 Jun): sel harga = close tanggal baris, generator rawan off-by-one-day — replay per-sel wajib bandingkan (tanggal, nilai) berpasangan, bukan nilai saja.
+
+## 2026-10-26 — Divergen night-deploy vs main (ke-2 kalinya)
+- Pola: kereta malam deploy dari kondisi repo SAAT ITU, lalu agent night membuat branch night/* SETELAH deploy dengan basis info basi → entry mengklaim 'sudah live' padahal belum.
+- Aturan: (1) agent night wajib cek `docker inspect <app> --format '{{.Image}}'` vs usia branch-nya sebelum menulis klaim live; (2) CTO pagi wajib treat klaim 'live' di night_ready sebagai hipotesis — verify fisik (curl) dulu, baru flip done; (3) merge night/* pagi = jalan reconcile, bukan opsional.
+- Deteksi cepat: commit timestamp branch vs StartedAt container.

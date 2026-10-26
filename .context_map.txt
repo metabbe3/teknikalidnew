@@ -138,6 +138,7 @@ src/lib/geo-prefixes.ts
 src/lib/glossary-terms.ts
 src/lib/guest-pass.ts
 src/lib/guest-storage.ts
+src/lib/hsc-stocks.ts
 src/lib/idx-api.ts
 src/lib/idx-indices.ts
 src/lib/idx-stocks.ts
@@ -205,8 +206,8 @@ src/app/(public)/berita/berita-grid.tsx:25:export function BeritaPagination({
 src/app/(public)/berita/berita-grid.tsx:5:export function buildBeritaUrl(page → number, trend?: string, q?: string): string {
 src/app/(public)/berita/page.tsx:15:export const dynamic = "force-dynamic";
 src/app/(public)/berita/page.tsx:17:export async function generateMetadata() → Promise<Metadata> {
-src/app/(public)/bottom-fishing/page.tsx:13:export const dynamic = "force-dynamic";
-src/app/(public)/bottom-fishing/page.tsx:15:export const metadata → Metadata = {
+src/app/(public)/bottom-fishing/page.tsx:14:export const dynamic = "force-dynamic";
+src/app/(public)/bottom-fishing/page.tsx:16:export const metadata → Metadata = {
 src/app/(public)/broker-saham-terbaik/page.tsx:6:export const metadata → Metadata = {
 src/app/(public)/community/page.tsx:18:export const revalidate = 300;
 src/app/(public)/community/page.tsx:24:export const metadata → Metadata = {
@@ -236,8 +237,8 @@ src/app/(public)/metodologi/page.tsx:15:export const metadata → Metadata = {
 src/app/(public)/page.tsx:54:export const metadata → Metadata = {
 src/app/(public)/page.tsx:62:export const dynamic = "force-dynamic";
 src/app/(public)/paper-trading/layout.tsx:3:export const metadata → Metadata = {
-src/app/(public)/pasar/page.tsx:23:export const dynamic = "force-dynamic";  // SSR per-request; build tak butuh DB (pola page.tsx utama)
-src/app/(public)/pasar/page.tsx:25:export const metadata → Metadata = {
+src/app/(public)/pasar/page.tsx:24:export const dynamic = "force-dynamic";  // SSR per-request; build tak butuh DB (pola page.tsx utama)
+src/app/(public)/pasar/page.tsx:26:export const metadata → Metadata = {
 src/app/(public)/payment/error/route.ts:3:export async function GET(request → NextRequest) {
 src/app/(public)/payment/finish/route.ts:4:export async function GET(request → NextRequest) {
 src/app/(public)/payment/pending/route.ts:3:export async function GET(request → NextRequest) {
@@ -283,21 +284,21 @@ src/app/(public)/sektor/page.tsx:6:export const revalidate = 3600;
 src/app/(public)/sektor/page.tsx:8:export const metadata → Metadata = {
 src/app/(public)/stocks/[ticker]/indikator/page.tsx:12:export const revalidate = 3600; // ISR — past rows immutable, latest day refreshes hourly
 src/app/(public)/stocks/[ticker]/indikator/page.tsx:69:export async function generateMetadata({
-src/app/(public)/stocks/[ticker]/page.tsx:60:export const dynamic = "force-dynamic";
-src/app/(public)/stocks/[ticker]/page.tsx:76:export async function generateMetadata({
+src/app/(public)/stocks/[ticker]/page.tsx:63:export const dynamic = "force-dynamic";
+src/app/(public)/stocks/[ticker]/page.tsx:79:export async function generateMetadata({
 src/app/(public)/stocks/page.tsx:22:export const dynamic = "force-dynamic";
 src/app/(public)/stocks/page.tsx:24:export const metadata → Metadata = {
 src/app/(public)/terms/page.tsx:10:export const revalidate = 86400;
 src/app/(public)/terms/page.tsx:4:export const metadata → Metadata = {
 src/app/(public)/track-record/page.tsx:10:export const dynamic = "force-dynamic";
 src/app/(public)/track-record/page.tsx:13:export const metadata → Metadata = {
-src/app/(public)/trading-plan/page.tsx:15:export const revalidate = 60;
-src/app/(public)/trading-plan/page.tsx:17:export const metadata → Metadata = {
+src/app/(public)/trading-plan/page.tsx:16:export const revalidate = 60;
+src/app/(public)/trading-plan/page.tsx:18:export const metadata → Metadata = {
 src/app/(public)/waitlist/page.tsx:7:export const dynamic = "force-dynamic"; // ISR trap doctrine + posisi antrean live
 src/app/(public)/waitlist/page.tsx:9:export const metadata = {
-src/app/(public)/watchlist/page.tsx:15:export const revalidate = 60;
-src/app/(public)/watchlist/page.tsx:9:export const metadata → Metadata = {
-src/app/admin/_components/analytics-tab.tsx:167:export function AnalyticsTab() {
+src/app/(public)/watchlist/page.tsx:10:export const metadata → Metadata = {
+src/app/(public)/watchlist/page.tsx:16:export const revalidate = 60;
+src/app/admin/_components/analytics-tab.tsx:168:export function AnalyticsTab() {
 src/app/admin/_components/auth-tab.tsx:32:export function AuthTab() {
 src/app/admin/_components/community-tab.tsx:69:export function CommunityTab() {
 src/app/admin/_components/funnel-section.tsx:28:export function FunnelSection() {
@@ -411,12 +412,18 @@ src/app/api/comments/[id]/route.ts:6:export async function DELETE(
 src/app/api/comments/route.ts:7:export async function POST(request → NextRequest) {
 src/app/api/cron/agent-hub-scheduler/route.ts:69:export async function POST(request → NextRequest) {
 src/app/api/cron/community-agent/route.ts:6:export async function POST(request → NextRequest) {
-src/app/api/cron/generate-articles/route.ts:14:export async function POST(request → NextRequest) {
-src/app/api/cron/resolve-predictions/route.ts:6:export async function GET(request → NextRequest) {
+src/app/api/cron/generate-articles/route.ts:16:export const maxDuration = 300;
+src/app/api/cron/generate-articles/route.ts:18:export async function POST(request → NextRequest) {
+src/app/api/cron/resolve-predictions/route.ts:11:export async function GET(request → NextRequest) {
+src/app/api/cron/resolve-predictions/route.ts:9:export const maxDuration = 300;
 src/app/api/cron/retention-email/route.ts:16:export async function GET(request → NextRequest) {
-src/app/api/cron/sync-eod/route.ts:8:export async function GET(request → NextRequest) {
+src/app/api/cron/sync-eod/route.ts:11:export const maxDuration = 300;
+src/app/api/cron/sync-eod/route.ts:13:export async function GET(request → NextRequest) {
 src/app/api/cron/sync-foreign/route.ts:11:export async function POST(request → NextRequest) {
 src/app/api/cron/sync-foreign/route.ts:4:export const dynamic = "force-dynamic";
+src/app/api/cron/sync-fundamental/route.ts:16:export async function POST(request → NextRequest) {
+src/app/api/cron/sync-fundamental/route.ts:5:export const dynamic = "force-dynamic";
+src/app/api/cron/sync-fundamental/route.ts:6:export const maxDuration = 300;
 src/app/api/cron/sync-intraday/route.ts:5:export async function GET(request → NextRequest) {
 src/app/api/cron/sync-profiles/route.ts:14:export async function POST(request → NextRequest) {
 src/app/api/cron/sync-profiles/route.ts:6:export const dynamic = "force-dynamic";
@@ -446,8 +453,8 @@ src/app/api/notifications/route.ts:16:export async function PUT(request → Requ
 src/app/api/notifications/route.ts:6:export async function GET() {
 src/app/api/og/route.tsx:45:export async function GET(request → NextRequest) {
 src/app/api/og/route.tsx:4:export const runtime = "nodejs";
-src/app/api/og/stock-story/route.tsx:178:export async function GET(request → NextRequest) {
-src/app/api/og/stock-story/route.tsx:6:export const runtime = "nodejs";
+src/app/api/og/stock-story/route.tsx:71:export async function GET(request → NextRequest) {
+src/app/api/og/stock-story/route.tsx:8:export const runtime = "nodejs";
 src/app/api/og/stock/route.tsx:122:export async function GET(request → NextRequest) {
 src/app/api/og/stock/route.tsx:6:export const runtime = "nodejs";
 src/app/api/paper-trading/account/route.ts:23:export async function GET() {
@@ -581,9 +588,3 @@ src/components/berita/daily-brief-hero.tsx:4:export interface DailyBriefHeroData
 src/components/berita/related-signals.tsx:14:export async function RelatedSignals({ ticker } → { ticker: string | null }) {
 src/components/berita/snapshot-briefing.tsx:13:export interface BriefingIndicator {
 src/components/berita/snapshot-briefing.tsx:31:export interface SnapshotBriefingData {
-src/components/berita/snapshot-briefing.tsx:72:export function SnapshotBriefing({ data } → { data: SnapshotBriefingData }) {
-src/components/berita/snapshot-card.tsx:11:export interface SnapshotCardData {
-src/components/berita/snapshot-card.tsx:32:export function SnapshotCard({
-src/components/chart/candlestick-chart.tsx:101:export function CandlestickChart({
-src/components/chart/chart-section.tsx:35:export function ChartSection({ ticker } → ChartSectionProps) {
-src/components/chart/mini-sparkline.tsx:14:export function MiniSparkline({ data, width = 80, height = 40, color, responsive = false } → MiniSparklineProps) {

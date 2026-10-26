@@ -116,7 +116,7 @@
       "date": "2026-10-22",
       "type": "prd",
       "priority": "P2",
-      "status": "in_train",
+      "status": "done",
       "train": "T-1026-N",
       "prd_id": "idea-2026-10-19-2",
       "title": "P2 STICKY: panel 'Pantauan perangkat ini' utk guest (/stocks) + feedback chip 'Tersimpan' — guest-star dipakai 1x/30d meski live 2 permukaan",
@@ -2394,7 +2394,7 @@
       "date": "2026-10-23",
       "type": "sec",
       "priority": "P2",
-      "status": "in_train",
+      "status": "done",
       "train": "T-1026-N",
       "north_star": "TRUST — dependency HIGH di jalur payments (midtrans-client→follow-redirects); npm audit fix non-breaking tersedia",
       "title": "SEC P2 (IT-SEC 22 Okt, CTO APPROVE): npm audit fix 8 HIGH — follow-redirects via midtrans-client (payments path) + braces",
@@ -2411,7 +2411,7 @@
       "date": "2026-10-23",
       "type": "sec",
       "priority": "P3",
-      "status": "in_train",
+      "status": "done",
       "train": "T-1026-N",
       "north_star": "TRUST — hardening cron endpoints (DoS guard) tanpa API baru",
       "title": "SEC P3 (IT-SEC 22 Okt, CTO APPROVE): timeout guard cron endpoints (resolve-predictions dkk) — exploitability rendah (butuh CRON_SECRET)",
@@ -2501,7 +2501,7 @@
       "title": "Fundamental per-saham v2: isi kolom kosong StockFundamental (beta/bookValue/shares/ROE/margin/EBITDA/debt/cash/target price) + refresh dividend + kalender corp-action valura",
       "north_star_pillar": "TRUST",
       "priority": "P1",
-      "status": "in_train",
+      "status": "done",
       "train": "T-1026-N",
       "prd_id": "prd-2026-10-24-02",
       "done_when": [
@@ -2532,7 +2532,10 @@
       "north_star": "TRUST — satu sumber kebenaran backlog utk semua agent + owner digest (drift #10: digest items-first buta 58 entry riwayat)",
       "spec": "Tambah check di backlog_health.py: load product-backlog.json; jika dict TIDAK punya list `entries` ATAU blok `items` non-kosong -> cetak baris ALERT schema-split + exit 1. Sehat = silent exit 0 (perilaku monitor-gated existing). Uji via copy file dgn items non-kosong, JANGAN mutasi file asli.",
       "done_when": "DONE WHEN: (1) backlog_health.py pada file sehat = silent exit 0; (2) pada copy backlog berisi blok items non-kosong = exit 1 + baris ALERT berisi 'schema-split'; (3) uji dijalankan dgn file copy /tmp, file kanonik tak tersentuh.",
-      "result": "DONE 25 Okt slot pagi CTO: _schema_split_check() di backlog_health.py — check duluan di main() sebelum symlink guard; kondisi = dict tanpa list entries ATAU blok items non-kosong -> print ALERT schema-split + sys.exit(1); bare-list legacy hivePOS (format valid di main loop) = skip, bukan false-positive. FIXTURE 3/3 PASS: (1) healthy semua org = silent exit 0 tanpa false-positive; (2) copy /tmp dgn items non-kosong = exit 1 + ALERT label org jelas; (3) file kanonik tak tersentuh (teknikal entries=63 items=0 utuh). TEMPROLOSARI sampingan: healthy-run menangkap backlog teknikal 17>cap12 + 6 stale — pre-existing, lane CEO. Script host ~/.hermes/scripts/ (bukan repo — no deploy). Rollback: n/a (script ops host, revert = hapus blok _schema_split_check)"
+      "result": "DONE 25 Okt slot pagi CTO: _schema_split_check() di backlog_health.py — check duluan di main() sebelum symlink guard; kondisi = dict tanpa list entries ATAU blok items non-kosong -> print ALERT schema-split + sys.exit(1); bare-list legacy hivePOS (format valid di main loop) = skip, bukan false-positive. FIXTURE 3/3 PASS: (1) healthy semua org = silent exit 0 tanpa false-positive; (2) copy /tmp dgn items non-kosong = exit 1 + ALERT label org jelas; (3) file kanonik tak tersentuh (teknikal entries=63 items=0 utuh). TEMPROLOSARI sampingan: healthy-run menangkap backlog teknikal 17>cap12 + 6 stale — pre-existing, lane CEO. Script host ~/.hermes/scripts/ (bukan repo — no deploy). Rollback: n/a (script ops host, revert = hapus blok _schema_split_check)",
+      "qa_verified": true,
+      "qa_note": "PASS 26 Okt QA: grep script host ~/.hermes/scripts/backlog_health.py — _schema_split_check() ada (L106), dipanggil di main() L283 SEBELUM symlink guard L291, sys.exit(1)+print 'SCHEMA-SPLIT ALERT'. Fixture replay import-module (file kanonik tak tersentuh, md5 before==after): healthy(dict entries+items kosong)=alerts[] silent; dict tanpa entries+items non-kosong=ALERT 'schema-split testorg/...'; entries-OK+items-non-kosong=ALERT; bare-list legacy=skip (no false-positive). 3/3 DONE-WHEN hijau.",
+      "qa_at": "2026-10-26 03:34"
     },
     {
       "id": "teknikal-2026-10-24-03",
@@ -2571,7 +2574,7 @@
       "date": "2026-10-25",
       "type": "seo",
       "priority": "P1",
-      "status": "qa_pass",
+      "status": "done",
       "assigned_to": "backend-builder",
       "scheduled_slot": "2026-10-25 18:30 slot BE malam (build-only; naik kereta T-1026-N)",
       "train": "T-1026-N",
@@ -2594,15 +2597,15 @@
     {
       "id": "seo-2026-10-25-02",
       "title": "P1 SEO/GROWTH: 301 redirect path sinyal lama → baru (/golden-cross→/saham-golden-cross, /oversold→/saham-oversold, /volume-spike→/saham-volume-spike, /screener→/stocks?view=screener) — moat pages kolaps 24→2 WoW karena URL lama 404 tanpa redirect",
-      "status": "night_ready",
+      "status": "done",
       "priority": "P1",
       "pilar": "GROWTH+AI-SEARCH",
       "note": "[COUNCIL 25 Okt] Bukti: curl 404 semua path lama 25 Okt; PageView /saham-golden-cross 24(prev)→1(now), landing saham-* 49→3. Implement di next.config redirects (permanent:true), verify curl -I 301 + lokasi tujuan 200",
       "scheduled_slot": "READY utk Senin 26 Okt 07:30 slot pagi (review+merge+deploy)",
-      "train": "T-1026-N",
+      "train": "T-1026-M",
       "north_star": "GROWTH",
       "branch": "night/seo-2026-10-25-02",
-      "result": "NIGHT READY 25 Okt 23:1x WIB (CTO night PREP-ONLY): +3 redirect 301 di next.config.ts redirects() (/golden-cross->/saham-golden-cross, /oversold->/saham-oversold, /volume-spike->/saham-volume-spike; statusCode:301 literal per done-when, preseden deviation /idx-radar seo-2026-10-20-01, comment di config). CATATAN SCOPE: /screener SUDAH 308->/stocks?view=screener live (verify curl 25 Okt 23:02; tidak diduplikasi); /stochastic-oversold juga 404 (pola rename sama) tapi DI LUAR spec — dilaporkan ke Council, tidak ditambah diam-diam. VERIFY FISIK: build EXIT 0 (next build --webpack) · npx tsc --noEmit 0 error · sdlc_lint 0 error · next start :3131 curl -I: 3x HTTP 301 + Location benar, query ?tab=x ikut ter-forward, tujuan /saham-golden-cross 200. 0 dependency, 0 DB, 0 deploy (hard-gate malam). Estimasi review CTO pagi: ~5 mnt (diff 21 baris, preseden ada) + merge + deploy slot 07:30."
+      "result": "DONE CTO pagi 26 Okt: merge night/seo-2026-10-25-02 ke main 18d3af1 (merge b176944); deploy app-only image 4b9d4430070a 08:2x WIB pre-market. VERIFY LIVE: 3x 301 golden-cross/oversold/volume-spike → /saham-* (curl -A Mozilla). Prod≡main reconcile divergen night ke-2."
     },
     {
       "id": "ops-2026-10-25-03",
@@ -2637,7 +2640,10 @@
       "title": "FIX rekap-pasar-mingguan-2026-10-24: \"22 golden cross baru vs 59 death cross\" tak ter-replikasi DB basis mana pun (replay kanonik NG = 8 GC/20 DC; ALL = 9/20)",
       "spec": "INTENT: agregat cross mingguan = replay kanonik, bukan union lintas snapshot. BUKTI (replay 25 Okt): smaCrossDate per-snapshot hari-nya sendiri 19-23 Okt NG = 0/3+1/3+2/7+3/3+2/4 = 8 GC/20 DC; snapshot-23 window 19-23 = 8/16 NG, 9/20 ALL; MA-direct 16→23 = 8/16 NG, 9/20 ALL; window 7/10/14/30 hari = 8/16, 14/22, 19/26, 61/30 — TIDAK ADA basis = 22/59. pola berulang ke-4 keluarga agregat: union tanpa DISTINCT lintas snapshot (satu smaCrossDate terbawa ≥2 snapshot; cross-22 = 3/3 NG muncul di snapshot 22 DAN 23 → union mentah = 6/6, persis angka salah di brief-23 qa-25-03). Contoh ticker valid (MITI/PICO/DAYA memang cross minggu itu — jangan dihapus). ACCEPTANCE: (1) pilih SATU basis kanonik — rekomendasi: golden_cross/death_cross unik per (stockId, smaCrossDate) dengan snapshot = tanggal cross, NG → tulis \"8 golden cross dan 20 death cross\" ATAU basis semua saham \"9/20\"; (2) replay ulang reviewer = angka artikel exact; (3) klaim lain rekap TIDAK disentuh (breadth 5 hari, 485→65, top movers, loser MMIX -28,9%, tabel bank, outlook 65 — semua replay-exact).",
       "north_star": "TRUST — konten salah angka = trust runtuh (pilar TRUST; GROWTH/CONTENT ikut)",
-      "result": "DONE 25 Okt 15:30 CTO-weekend: rekap-mingguan-24 cross 22/59 → 8/20 (heading+body+rasio) basis kanonik NG unik per (stockId,smaCrossDate) snapshot=tgl cross. Bukti replay: per-hari 0/3+1/3+2/7+3/3+2/4 = 8 GC/20 DC NG (ALL=9/21); 22/59 = union mentah lintas snapshot (22 Okt raw 6/6 baris dobel vs 3/3 unik). Contoh ticker MITI/HADE/DAYA/PICO/CBUT/NICE/STAA/CLEO semua valid (dibiarkan). Klaim tetangga replay-exact tak disentuh. Live: curl ?cb bypass s-maxage → \"Sinyal Screener: 8 Golden Cross vs 20 Death Cross\" + \"8 golden cross baru\" + \"20 death cross\". Residual DB 0. Row-backup /tmp/qa25_backup_1530.tsv + full backup 25 Okt 01:16."
+      "result": "DONE 25 Okt 15:30 CTO-weekend: rekap-mingguan-24 cross 22/59 → 8/20 (heading+body+rasio) basis kanonik NG unik per (stockId,smaCrossDate) snapshot=tgl cross. Bukti replay: per-hari 0/3+1/3+2/7+3/3+2/4 = 8 GC/20 DC NG (ALL=9/21); 22/59 = union mentah lintas snapshot (22 Okt raw 6/6 baris dobel vs 3/3 unik). Contoh ticker MITI/HADE/DAYA/PICO/CBUT/NICE/STAA/CLEO semua valid (dibiarkan). Klaim tetangga replay-exact tak disentuh. Live: curl ?cb bypass s-maxage → \"Sinyal Screener: 8 Golden Cross vs 20 Death Cross\" + \"8 golden cross baru\" + \"20 death cross\". Residual DB 0. Row-backup /tmp/qa25_backup_1530.tsv + full backup 25 Okt 01:16.",
+      "qa_verified": true,
+      "qa_note": "PASS 26 Okt QA: SQL replay StockIndicator interval=1d NG (isGorengan=false), smaCrossDate=date, window 19-23 Okt GROUP BY date+signal: 19/10=0gc/3dc, 20/10=1gc/3dc, 21/10=2gc/7dc, 22/10=3gc/3dc, 23/10=2gc/4dc → SUM=8 GC/20 DC exact. DB content + live curl ?cb: '8 Golden Cross vs 20 Death Cross' 4 hit, '8 golden cross baru' 2, '20 death cross' 2; residual '22 golden cross'=0, '59 death'=0. Konten=ticker MITI/HADE/DAYA/PICO/CBUT ada di body, klaim tetangga utuh.",
+      "qa_at": "2026-10-26 03:34"
     },
     {
       "id": "qa-2026-10-25-03",
@@ -2649,7 +2655,10 @@
       "title": "FIX brief-pasar-idx-2026-10-23-rotasi-bank-bumn: \"6 golden cross dan 6 death cross\" = union dobel 2 snapshot — replay kanonik 22 Okt NG = 3/3",
       "spec": "INTENT: angka cross 22 Okt = replay kanonik. BUKTI: baris smaCrossDate=22 Okt NG hanya 6 emiten: CBUT/CLEO/HADE (golden) + APII/MDKA/RBMS (death); RGAS excluded (isGorengan 22 Okt) → 3 GC/3 DC; identik di snapshot 22 DAN 23 (stabil); MA-direct 21→22 NG = 3/3; union mentah 2 snapshot = 6/6 = angka artikel sekarang (generator menjumlahkan snapshot ganda, bukan DISTINCT per emiten). CATATAN PROSES: qa_note verifier 24 Okt klaim 'replay 6/6 exact' SALAH — replay ulang 25 Okt tidak match basis mana pun; pelajaran dicatat lessons-learned (verifier qa_note wajib lampirkan query+hasil, bukan angka solo). ACCEPTANCE: (1) frasa diganti \"3 golden cross dan 3 death cross\" (basis NG) dgn replay exact — ATAU \"3/4 basis semua saham\" konsisten pilihan qa-25-02; (2) klaim lain brief tak disentuh (MAPI #7, AADI #3, tabel gainers top-10 big-cap, breadth); (3) re-sscan SELURUH paragraf sinyal (pelajaran qa-24: fix satu frasa, tetangganya lolos).",
       "north_star": "TRUST",
-      "result": "DONE 25 Okt 15:30 CTO-weekend: brief-23 \"6 golden cross dan 6 death cross\" → \"3 golden cross dan 3 death cross\" (union dobel 2 snapshot → unik per emiten). Replay basis A (snapshot=tgl cross, NG): 22 Okt = CBUT/CLEO/HADE gc + APII/MDKA/RBMS dc = 3/3; RGAS gorengan dikecualikan; raw union = 6/6 = angka salah. Re-scan paragraf sinyal penuh (pelajaran qa-24): klaim tetangga \"137 sinyal GC aktif vs 47 DC aktif\" replay-exact (DB 137/47) — tidak disentuh. Live curl ?cb: \"3 golden cross dan 3 death cross\" + \"137 sinyal\". Residual 0. Row-backup TSV."
+      "result": "DONE 25 Okt 15:30 CTO-weekend: brief-23 \"6 golden cross dan 6 death cross\" → \"3 golden cross dan 3 death cross\" (union dobel 2 snapshot → unik per emiten). Replay basis A (snapshot=tgl cross, NG): 22 Okt = CBUT/CLEO/HADE gc + APII/MDKA/RBMS dc = 3/3; RGAS gorengan dikecualikan; raw union = 6/6 = angka salah. Re-scan paragraf sinyal penuh (pelajaran qa-24): klaim tetangga \"137 sinyal GC aktif vs 47 DC aktif\" replay-exact (DB 137/47) — tidak disentuh. Live curl ?cb: \"3 golden cross dan 3 death cross\" + \"137 sinyal\". Residual 0. Row-backup TSV.",
+      "qa_verified": true,
+      "qa_note": "PASS 26 Okt QA: SQL replay StockIndicator 1d date=2026-10-22 smaCrossDate=cross NG: CBUT/CLEO/HADE golden + APII/MDKA/RBMS death = 3 GC/3 DC exact (RGAS.JK ada di raw tapi isGorengan → terkecuali, sesuai klaim). Live curl ?cb: '3 golden cross dan 3 death cross' 2 hit; '6 golden cross' 0 hit. Klaim tetangga '137 sinyal golden cross aktif vs 47 death cross' replay-exact (count DISTINCT stockId smaCrossSignal 22 Okt NG = golden_cross 137 / death_cross 47). Re-scan paragraf sinyal OK.",
+      "qa_at": "2026-10-26 03:34"
     },
     {
       "id": "qa-2026-10-25-04",
@@ -2661,7 +2670,10 @@
       "title": "FIX cara-dapat-dividen-saham-4-tanggal-penting-ex-date-dan-pajaknya: tabel timeline CPIN — harga penutupan 4 Jun (record date) tertulis Rp3.860, DB = Rp3.420 (3.860 = harga 3 Jun; off-by-one-day)",
       "spec": "INTENT: setiap sel harga di tabel timeline = close StockPrice tanggal baris tsb. BUKTI (DB): CPIN close 28 Mei 4270 ✓, 1 Jun 4270 ✓, 2 Jun 4060 ✓ (ex, -210 = dividen ✓, -4,9% ✓), 3 Jun 3860, 4 Jun 3420 — artikel menulis Rp3.860 di baris 4 Jun = angka baris 3 Jun (shift satu hari). Narasi lain CPIN benar. ACCEPTANCE: (1) sel harga 4 Jun diganti Rp3.420 (atau baris dihapus jika tak inti); (2) replay 4 tanggal lain tetap exact; (3) klaim lain artikel dividen tak disentuh (KLBF 745→730 ✓, MPMX 1090→1070 ✓, tabel yield 23 Okt 6/6 exact — hanya timing narasi MPMX 'empat hari' yang minor, tak wajib di task ini).",
       "north_star": "TRUST",
-      "result": "DONE 25 Okt 15:30 CTO-weekend: tabel timeline CPIN record date 4 Jun Rp3.860 → Rp3.420 (off-by-one-day; 3.860 = close 3 Jun). Replay 4 tanggal lain exact: 28 Mei 4270, 1 Jun 4270 (cum), 2 Jun 4060 (ex, -210 = dividen Rp180, -4,9%), 4 Jun 3420. Klaim lain (KLBF, MPMX, tabel yield 23 Okt, narasi ex-date -4,9%) tak disentuh. Live curl ?cb /akademi/: Rp3.420 x2, Rp3.860 = 0 hit. Residual 0. Row-backup TSV."
+      "result": "DONE 25 Okt 15:30 CTO-weekend: tabel timeline CPIN record date 4 Jun Rp3.860 → Rp3.420 (off-by-one-day; 3.860 = close 3 Jun). Replay 4 tanggal lain exact: 28 Mei 4270, 1 Jun 4270 (cum), 2 Jun 4060 (ex, -210 = dividen Rp180, -4,9%), 4 Jun 3420. Klaim lain (KLBF, MPMX, tabel yield 23 Okt, narasi ex-date -4,9%) tak disentuh. Live curl ?cb /akademi/: Rp3.420 x2, Rp3.860 = 0 hit. Residual 0. Row-backup TSV.",
+      "qa_verified": true,
+      "qa_note": "PASS 26 Okt QA: SQL replay StockPrice CPIN.JK Mei-Jun 2026: 28 Mei close=4270, 1 Jun=4270, 2 Jun=4060, 3 Jun=3860, 4 Jun=3420 — tabel artikel 4 Jun (Record date)=Rp3.420 EXACT (3.860 memang close 3 Jun; off-by-one-day terkonfirmasi). Live curl ?cb /akademi/: 'Rp3.420' 2 hit, 'Rp3.860' 0 hit, 'Rp4.270' 4, 'Rp4.060' 2. Residual 3.860 di DB content=0. Klaim tetangga (KLBF/MPMX/ex-date -4,9%) utuh.",
+      "qa_at": "2026-10-26 03:34"
     },
     {
       "id": "bug-2026-10-25-01",
@@ -2671,9 +2683,11 @@
       "north_star": "TRUST",
       "title": "BUG DATA: radar pantulan tampilkan RSI 0.0 utk indikator kosong (SUPR.JK) — lolos filter oversold",
       "spec": "REPRO (3 baris): (1) buka https://teknikal.id/stocks?view=screener tab Bottom / preset Radar Pantulan; (2) kartu #1 = SUPR.JK render badge RSI 0.0 + Stoch 0/0 + Rp43.850 0,00%; (3) API /api/stocks/radar → row SUPR.JK rsi14=0, stochK=0, stochD=0 (131/132 row lain OK). SEVERITY: P2 TRUST — user melihat indikator bohong (RSI 0 tidak pernah valid); sumber: indikator null/0 di StockIndicator dipakai langsung kondisi <30 → lolos filter. SEVERITY note: 1 emiten saja hari ini tapi pola bisa berulang tiap sync. Fix hint backend: exclude rsi14 IS NULL OR rsi14 <= 0 dari radar query + pastikan pipeline indikator mengisi SUPR. Dispatch by UX Builder 25 Okt (aturan: nemu bug = dispatch, jangan fix sendiri — ini data/query backend, bukan frontend).",
-      "status": "pending",
+      "status": "done",
       "scheduled_slot": "BE pagi 07:30 Senin 26 Okt",
-      "source": "ux-builder flow-a audit 25 Okt 10:30"
+      "source": "ux-builder flow-a audit 25 Okt 10:30",
+      "train": "T-1026-M",
+      "result": "DONE CTO pagi 26 Okt failing-test-first: selftest-radar-filter RED→GREEN 3/3; fix 2 lapis — radar-filter.ts isOversoldSignal guard >0 + repo findOversoldStocks gt:0 (commit 18d3af1). VERIFY LIVE: radar 132→106 rows, SUPR.JK hilang, 0 baris rsi14 null/0. Residual kosmetik: 4 baris (MMIX/HITS/FASW/KARW) lolos via RSI valid dengan stoch tampil 0/0 — display, bukan filter; SUPR indikator akan terisi sync normal."
     },
     {
       "id": "ux-2026-10-25-01",
@@ -2684,10 +2698,49 @@
       "title": "UX FLOW (a): screener auto-scroll ke hasil saat preset dipilih — potong scroll-hunt ~500px mobile",
       "spec": "Flow (a) audit mobile 375: klik preset → hasil render di y≈1300-1480 (viewport 812) TANPA scroll/feedback → user harus scroll-hunt sendiri. Fix: useEffect auto-scroll instant ke section hasil (offset 96px sticky header) saat fetchUrl baru selesai load; reset prevFetchUrl saat screen dimatikan (re-toggle re-scroll). File: screener-client.tsx. DONE WHEN: (1) staging :3100 mobile 375 klik preset → header hasil (\"N saham\") di top<200px viewport; (2) toggle-off → hasil hilang tanpa stranded; (3) re-on + switch preset → scroll ulang; (4) tsc 0 + build 0 + H1/title/desc verbatim identik prod.",
       "result": "BUILD-ONLY 25 Okt 11:2x UX Builder weekend: commit 9308769 di main. Bukti staging :3100 (DB override 5433): ON y0→1381 top=102 (65 saham); RE-ON top=102; SWITCH top=102 (92 saham); OFF hasil clear. tsc 0, build EXIT 0. SEO verbatim: H1/title/desc staging==prod. Root-cause terukur: scrollTo smooth DIPANGGIL (top 1380) tapi scrollY diam 0 — smooth animation dibatalkan re-render hasil; instant scroll deterministik.",
-      "status": "in_train",
+      "status": "done",
       "train": "T-1026-N",
       "scheduled_slot": "kereta malam T-1026-N 22:00 (deploy 2/2 hari ini) — manifest +1 penumpang",
       "source": "ux-builder daily 25 Okt 10:30 (ritual flow-a re-audit pasca trust-badge+hero baru)"
+    },
+    {
+      "id": "bo-2026-10-26-01",
+      "date": "2026-10-26",
+      "type": "backoffice",
+      "priority": "P2",
+      "status": "done",
+      "assigned_to": "backoffice-builder",
+      "title": "BACKOFFICE INSIGHT: North Star strip di Dashboard /admin Overview tab — KPI #1 org (Weekly Returning Visitor %) kini halaman-depan admin, bukan 3 klik jauh",
+      "north_star": "STICKY/INSIGHT — Weekly Returning Visitor Ratio (North Star org, target >=8% per 25 Nov) terlihat owner dalam 1 detik buka /admin; admin = satu sumber kebenaran",
+      "spec": "AUDIT ronde-2 Dashboard /admin (8 tab): (a) tab default Overview hanya infra-monitoring (DB/Yahoo/QStash/Sentry/EOD) — metric inti org TIDAK ada di Dashboard, hanya di /admin/retention terpisah; (b) Community+Predictions tab = telemetri fitur 0 pemakaian (lihat entry audit bo-2026-10-26-02). FIX (API REUSE, 0 endpoint/service/schema/dependency baru): Overview tab + North Star strip paling atas — angka besar returningPct + sub N/M IP nobot minggu WIB, badge OK/BELOW GUARD (guard 12%, netral abu saat loading), sparkline SVG inline 8 minggu garis guard putus, link Detail Retensi. Data via GET /api/admin/retention EXISTING.",
+      "done_when": [
+        "CTO pagi 07:30: checkout main di repo utama, merge night/bo-2026-10-26-01 (fast-forward — branch = origin/main 5b1477b + 8bd0ab5 seo-301 + c73e7f3 MC [KEDUANYA SUDAH LIVE di image e24578ed2be5 via branch night/seo-2026-10-25-02] + 6331697 feat + 71fba9a changelog)",
+        "push origin main (jam >07:00, hard-gate lewat), docker compose build app && up -d app",
+        "verify: /admin 307 auth-guard; grep 'Weekly Returning Visitor' di chunk container; tsc 0; changelog==merge",
+        "rollback anchor: git revert 6331697 / redeploy image e24578ed2be5 (up 25 Okt 21:34 WIB)"
+      ],
+      "created_by": "Backoffice Builder slot 03:00 26 Okt",
+      "scheduled_slot": "bo malam 03:00 26 Okt — BUILD+VERIFY SELESAI (tsc EXIT-0), DEPLOY DITAHAN hard-gate owner 30 Sep (push main 21:45-07:00 prep-only); CTO pagi 07:30 merge+deploy",
+      "result": "DONE CTO pagi 26 Okt: merge night/bo-2026-10-26-01 (6331697 North Star strip /admin + changelog 71fba9a); live via image 4b9d4430070a, /admin 200. KOREKSI klaim entry: prod malam TIDAK memuat commit ini (branch 03:5x > deploy 21:34) — deploy pagi ini yang menjadikannya live.",
+      "train": "T-1026-M"
+    },
+    {
+      "id": "bo-2026-10-26-02",
+      "date": "2026-10-26",
+      "type": "backoffice-audit",
+      "priority": "P2",
+      "status": "pending",
+      "assigned_to": "backoffice-builder",
+      "scheduled_slot": "menunggu owner verdict (morning digest) — JANGAN hapus sebelum approve",
+      "north_star": "MATANGKAN/BUANG (owner 12 Okt) — mengurangi permukaan admin yang menampilkan data mati = consistency admin sebagai satu sumber kebenaran",
+      "title": "AUDIT Dashboard /admin: tab Community + Predictions = telemetri fitur komunitas 0 pemakaian — kandidat demote/sembunyikan (bukan hapus) sampai komunitas hidup",
+      "spec": "AUDIT (a) Masih dipakai? Tab Community (6 KPI + 4 section) dan Predictions (5 KPI) di Dashboard /admin menampilkan data FITUR KOMUNITAS yang tak pernah dipakai: Post total 1 sepanjang sejarah (0 baru 30d), Comment 0/30d, Repost 0/30d, Like 0/30d, prediksi (predictionDirection) 0 sepanjang sejarah, Report moderasi 0 total. Halaman publik /community live 200 + link di footer, jadi fiturnya hidup tapi sunyi (bukan bug). StockFollow 6 row/0 30d — Stocks tab juga nyaris kosong tapi itu telemetri watchlist (Watchlist 12 row/4 user) yang lebih relevan. (b) Data relevan? Semua KPI permanen 0 = noise visual utk owner; moderation summary 'Pending 0/Reviewed 0/Dismissed 0' abadi. (c) Kontrol kurang? Bukan soal kontrol — soal sinyal-vs-noise. KLASIFIKASI: CANDIDATE-DEMOTE (bukan remove): opsi (1) sembunyikan tab Community/Predictions di Dashboard sampai Post count > threshold (mis. 50), pindahkan akses ke halaman /admin/community shim existing; opsi (2) tambah badge '0 aktivitas 30d' di tab; opsi (3) keep by-design kalau owner ingin memantau channel komunitas tetap terlihat. Per ronde-1 rule: owner verdict dulu.",
+      "done_when": [
+        "Owner verdict via morning digest: demote / badge / keep",
+        "Jika DEMOTE: entry bo- eksekusi baru — conditional render tab + changelog + deploy (slot bo berikutnya)",
+        "Jika KEEP: status -> keep-by-design + catat alasan owner"
+      ],
+      "audit_evidence": "2026-10-26 03:0x WIB: psql read-only — Post total=1/30d=0, Comment 30d=0, Repost 30d=0, Like 30d=0 (skema: model Post/Comment/Like/Repost), Post.predictionDirection NOT NULL count=0, Report total=0; /community live 200 (localhost+teknikal.id); footer link Komunitas ada; backlog product: tidak ada PRD komunitas aktif (hanya done_wave3 sidebar-mobile + point-badge prd-2026-10-24-01)."
     }
   ],
   "tasks": []

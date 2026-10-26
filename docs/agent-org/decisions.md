@@ -821,3 +821,9 @@ penulisan masih 404 (deploy di kereta T-1021-N / CTO pagi).
 - ROLLBACK ANCHOR pre-build: app image running (no deploy slot ini — build-only), git main @ 9b237cf. Task commit b50cd1f (Point&Badge v1) — rollback = git revert b50cd1f (belum ada deploy; kereta T-1025-N malam ini yang wajib catat anchor image).
 - TEMUAN ops-2026-10-13-01 (idx-sync): plist StartCalendarInterval pakai key Day=1 = TANGGAL 1 TIAP BULAN, bukan Senin mingguan (key benar: Weekday=1). File plist SUDAH DIPERBAIKI (plutil lint OK); reload LaunchAgent DIBLOKIR gateway guard (dan heredoc yang menyebut verb-nya ikut kena) — OWNER reload manual dari Terminal: bootout lalu bootstrap label com.teknikalid.idx-sync. CATATAN: TCC grant ~/Documents tetap prasyarat (entry tetap owner-gated).
 - Claude-code pipeline broken hari ini: model glm-5.3 unrecognized -> autocompact thrash, exit 1 dua kali (spec berbeda). EDIT kecil diselesaikan manual CTO. Perlu fix config model/window (bukan area CTO — infra hermes).
+
+## 2026-10-26 07:5x WIB — CTO pagi (slot 07:30)
+- GATEGUARD: targets=teknikalidnew-app-1 | blast=ISR stale s/d revalidate + restart ~10s (market tutup, pre-09:00) | rollback=image e24578ed2be5 + git revert 18d3af1
+- ROLLBACK ANCHOR: app image lama e24578ed2be5 · main sebelum slot 5b1477b · deploy app-only 4b9d4430070a (worker 912fb59f1738 untouched)
+- RECONCILE DIVERGEN ke-2 (pola cto-2026-10-19-01): deploy malam T-1026-N 21:34 dari main 5b1477b; night branch seo-25-02/bo-26-01 dibuat SETELAHNYA (23:1x/03:5x) → klaim 'sudah live di prod e24578' di entry bo KELIRU. Pagi ini: merge keduanya ke main (b176944) + rebuild + deploy → prod≡main 18d3af1. LESSON di lessons-learned.md.
+- INSIDEN proses kecil: build pertama pagi ini JAMIN dari night-branch checkout (main pull tertahan modified docs) → detected via git log, dibuang, rebuild dari main benar. Tidak pernah naik prod.
