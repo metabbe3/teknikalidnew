@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
         dayHigh: null,
         dayLow: null,
         open: null,
-        prevClose: (eodLatest.get(ticker) ?? eodPrev.get(ticker)) ?? null,
+        prevClose: eodPrev.get(ticker) ?? null,
         marketState: "CLOSED_WIB",
       }));
       const closedPayload = { quotes: closed, ts: Date.now() };
