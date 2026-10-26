@@ -1215,3 +1215,9 @@ VERDICT BACKLOG: 9 item → 9 verdict (teknikal 6: 1 done-verified /saham track-
 - 3 QA P1 content-fix DONE (qa-25-02/03/04, SQL patch ISR 0 deploy): rekap-24 cross 22/59→8/20, brief-23 6/6→3/3, dividen CPIN Rp3.860→Rp3.420. Semua live-verified ?cb bypass.
 - BASIS KANONIK AGREGAT CROSS (final, konsisten qa-25-02/03): unik per (stockId, smaCrossDate), snapshot row = tanggal cross (si.date = si.smaCrossDate), non-gorengan. Union lintas snapshot = SALAH (kejadian ke-4: generator menjumlah snapshot ganda). Rekap 19-23 Okt = 8 GC/20 DC NG.
 - FOLLOW-UP P1 kandidat: generator agregat cross (jalur growth-mandor/worker) masih pakai union — brief Senin 26 Okt kemungkinan kambuh; kalau ya → fix generator (kode), bukan SQL patch lagi. Reviewer re-replay dgn query di result entry.
+
+## CTO note 2026-10-26
+- Konteks: badge dividen (fitur TRUST baru 25 Okt) cuma punya 2 baris upcoming di DB (max ex-date 3 Nov); Profile-Sync 05:20 error `ModuleNotFoundError: playwright` (script no_agent, venv path hilang) — tanpa fix, badge kosong/stale dalam hitungan hari, tepat saat pivot TRAFFIC butuh TRUST.
+- Opsi A: hotfix kecil — perbaiki shebang/venv playwright di idx_profile_sync.py (scraper tetap, ~15 mnt, BE slot malam). Opsi B: migrasi sumber dividen ke fundamental sync Yahoo quoteSummary (sudah live via teknikal-24-02, tapi coverage ex-date per-emiten belum dibuktikan; riset dulu).
+- Rekomendasi: A hari ini (18:30 sore, bareng ops-25-03 diag) + B masuk riset Researcher — jangan tukar sumber data tanpa bukti coverage.
+- Bonus state: T-1026-M berangkat pagi (deploy 1/2): 301 sinyal lama, North Star strip /admin, MC collapsible, radar RSI-0 fix, 6 penumpang T-1026-N semalam ter-verify live per-fitur; worker image sengaja tidak dibangun (0 perubahan jalur worker sejak 24 Okt).

@@ -2543,7 +2543,7 @@
       "title": "BLOCKER day2-email: nodemailer (7.0.13 & 8.0.11) bikin next build --webpack crash uncaughtException undefined length — perlu transport alternatif (fetch SMTP API / resend / brevo) ATAU dynamic import terisolasi",
       "north_star_pillar": "TRUST",
       "priority": "P1",
-      "status": "unblocked",
+      "status": "done",
       "train": null,
       "prd_id": null,
       "done_when": [
@@ -2554,7 +2554,8 @@
       "qa_plan": "build hijau + send test email ke alias owner",
       "estimate": "S",
       "context": "Bukti isolasi 24 Okt: tree bersih + nodemailer → crash; tree bersih tanpa nodemailer → exit 0; perubahanku (sector-heatmap+beam) tidak berpengaruh. package.json sudah dibersihkan dari nodemailer oleh agent-utama. WIP: src/lib/mailer.ts, src/app/api/cron/day2-email/, scripts/selftest-day2-email.ts (untracked, milik agent day2-email).",
-      "resolution": "Owner approve 25 Okt: blocker nodemailer SUDAH TIDAK ADA — WIP nodemailer dihapus (mailer.ts pakai HTTP API fetch 0 dep), build hijau 25 Okt 07:38, /api/cron/retention-email live (preview 3 kandidat, dry-run default, owner-gate RETENTION_EMAIL_API_KEY)."
+      "resolution": "Owner approve 25 Okt: blocker nodemailer SUDAH TIDAK ADA — WIP nodemailer dihapus (mailer.ts pakai HTTP API fetch 0 dep), build hijau 25 Okt 07:38, /api/cron/retention-email live (preview 3 kandidat, dry-run default, owner-gate RETENTION_EMAIL_API_KEY).",
+      "note": "CTO 26 Okt: label basi — selesai via day2-email/retention-email (lihat field resolution: blocker owner-approve 25 Okt, mailer.ts HTTP API 0-dep, build hijau, /api/cron/retention-email live dry-run default). Flip bookkeeping."
     },
     {
       "id": "ux-2026-10-24-01",
