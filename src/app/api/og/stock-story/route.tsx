@@ -68,6 +68,25 @@ function fallbackImage(ticker: string) {
 
 // --- Main route handler ---
 
+// Live quote overlay — harga story harus segar saat share (owner 26 Okt: "harga tidak update
+// harga latest di kita"). Sumber sama dengan LivePrice (/api/live-quotes → TradingView+Yahoo,
+// TTL memory 60s). Bila quote gagal/stale, harga EOD DB tetap dipakai (graceful).
+async function freshQuote(ticker: string): Promise<{ close: number | null; change: number | null; changePercent: number | null } | null> {
+  try {
+    const { fetchQuotesBatch } = await import("@/lib/yahoo-finance");
+    const rows = await fetchQuotesBatch([ticker]);
+    const q = rows[0]?.quote;
+    if (!q || q.regularMarketPrice == null) return null;
+    return {
+      close: q.regularMarketPrice,
+      change: q.regularMarketChange ?? null,
+      changePercent: q.regularMarketChangePercent ?? null,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const ticker = searchParams.get("ticker");
@@ -78,6 +97,14 @@ export async function GET(request: NextRequest) {
 
   try {
     const data = await stockMarketService.getStockOgData(ticker);
+
+    // Overlay harga live (bila tersedia & lebih segar dari EOD)
+    const quote = await freshQuote(ticker);
+    if (quote && quote.close !== null) {
+      data.close = quote.close;
+      data.change = quote.change;
+      data.changePercent = quote.changePercent;
+    }
 
     const [qr, emitLogo, logoB64] = await Promise.all([
       qrDataUrl(`https://teknikal.id/stocks/${stripJk(data.ticker)}`),
