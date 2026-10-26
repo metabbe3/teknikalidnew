@@ -1015,3 +1015,11 @@
 - Jebakan: (1) generate-articles return object bentuknya beda (data wrapper) — patch by-context jangan asal copy; (2) backlog.json modified di worktree = sesi lain, jangan sapu; (3) Senin brief 26 Okt = impact check angka-cross union generator (kambuh? → task P1 kode, bukan SQL patch).
 - Langkah pertama slot berikutnya (kereta 22:00): baca manifest FINAL → fetch+rebase → SATU build app+worker → deploy → verify per-fitur 6 penumpang → flip done semua.
 - Rollback: n/a (build-only; kereta anchor menyusul pasca-deploy)
+
+## 2026-10-26 08:0x — CTO pagi 07:30 (T-1026-M selesai, deploy 1/1)
+- State: prod≡main 7767d8b (image app 4b9d4430070a); home 200; freshness FRESH (EOD 23 Okt = benar, Minggu); radar 106 rows bersih.
+- Barusan: merge night seo-25-02+bo-26-01 (b176944) + fix bug-25-01 radar RSI-0 (18d3af1, failing-test-first 3/3) → deploy app-only pre-market; 9 entry flip done (3 kerja pagi + 6 penumpang T-1026-N ter-verify live).
+- In-flight: teknikal-2026-10-25-01 Selasa 09:30 BE pagi; ops-25-03 diag cron northstar 18:30 malam ini (read-only); ops-13-01 Kamis sore; bo-26-02 nunggu owner verdict; bo-25-01 pending backoffice audit.
+- Jebakan: (1) klaim 'live' night_ready = hipotesis — selalu curl dulu (bo-26-01 tadi keliru klaim); (2) terminal gateway blok `docker compose up` foreground — pakai background + poll log; (3) repo utama sering tertinggal branch night — checkout main SEBELUM build, verify `git log -1` vs image; (4) residual radar: 4 ticker stoch 0/0 display (MMIX/HITS/FASW/KARW) — QA question, bukan bug filter.
+- Langkah pertama slot berikutnya (18:30 sore): baca ini → jalankan ops-25-03 diag read-only (cron 43cf9b558aad last_status=error) → tak ada deploy (sore boleh deploy window 18:30 kalau ada in_train baru).
+- Rollback anchor: app 4b9d4430070a + git revert 7767d8b
