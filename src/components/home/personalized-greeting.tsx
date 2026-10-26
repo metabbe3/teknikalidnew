@@ -10,14 +10,6 @@ const HeroSearch = dynamicImport(
   { loading: () => <div className="h-[52px] bg-bg-primary rounded-xl animate-pulse" /> },
 );
 
-function getGreeting(): string {
-  const hour = new Date().getHours();
-  if (hour < 11) return "Selamat pagi";
-  if (hour < 15) return "Selamat siang";
-  if (hour < 18) return "Selamat sore";
-  return "Selamat malam";
-}
-
 interface MarketInfo {
   marketStatus: { isOpen: boolean };
 }
@@ -50,7 +42,9 @@ export function PersonalizedGreeting({
         {/* Greeting + market status */}
         <div className="flex items-center justify-between gap-4 flex-wrap mb-5">
           <h1 className="font-serif text-2xl sm:text-3xl font-semibold tracking-tight text-text-primary leading-tight">
-            {getGreeting()}, <span className="text-bullish">{name}</span>
+            {/* Owner 26 Okt: "Welcome" permanen — greeting per-jam server pakai UTC
+                container (WIB 11-18 selalu "Selamat pagi"); bebas timezone lebih jujur. */}
+            Welcome, <span className="text-bullish">{name}</span>
           </h1>
           <div className={`inline-flex items-center gap-2 text-xs font-medium px-3 py-1 rounded-full border ${isClosed ? "text-amber-700 bg-amber-500/10 border-amber-500/25" : "text-bullish bg-bullish-bg border-bullish/25"}`}>
             <span className={`w-1.5 h-1.5 rounded-full ${isClosed ? "bg-amber-500" : "bg-bullish animate-pulse"}`} aria-hidden="true" />
