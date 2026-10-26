@@ -766,3 +766,26 @@
 - impact_check_due: 2026-10-29 (radar pasca EOD sync Senin: tetap 0 rsi-0 rows)
 ### Kereta malam T-1026-N (6 penumpang) — verifikasi pasca-deploy pagi ini
 - prd-22-02 'Pantauan perangkat' in-image ✓ · sec-22-02 follow-redirects 1.16.1 ✓ · sec-22-01 cron 401 ✓ · qa-25-01 sitemap analisa-saham 8 ✓ · ux-25-01/teknikal-24-02 in-image ✓ → semua flip done
+### qa-2026-10-26-01 (P1 TRUST — brief judul dua-basis 507/506)
+- type: bugfix-generator · failing-test-first: selftest fixture a4 '600 Saham Naik Hari Ini' RED (judul tak tersentuh) → GREEN 11/11
+- fix host-script ~/.hermes/scripts/teknikalid_growth.py: _BREADTH_CLAIM re.IGNORECASE + db_n .lower() + _factcheck_title() write-back judul (casing dipertahankan)
+- SQL patch live (owner-approved destructive protocol; backup 2026-10-26T01:16; COUNT=1; UPDATE 1 row): title+excerpt+generationMeta.schemaJsonLd '507'→'506'
+- verify bukti: live <title> 506 · DB 0x 507 (title/meta/excerpt/content) · re-scan 5 brief terakhir = 1 basis/artikel (506/489/384/694/691)
+- deploy hash: 2ac532f (kereta audit; brief = DB+host-script, ISR rotate terverifikasi tanpa deploy khusus)
+- SEC GATE: N/A (regex fact-check + SQL patch 1 row, no input/auth baru)
+- impact_check_due: 2026-10-27 (brief Selasa 27 Okt: judul & body satu basis otomatis via generator)
+### ops-2026-10-26-01 (P1 TRUST — profile-sync playwright)
+- fix eksekusi-env saja: _ensure_playwright() re-exec guard (patch 05:41, diverifikasi slot ini)
+- verify bukti: python3 -S (emulasi runner tanpa playwright) → auto re-exec → 'SELESAI ok=1 fail=0' BBCA; StockDirector updatedAt 2026-10-26 11:54 UTC; dividen 2 rows utuh; badge /stocks/BBRI.JK 200 render 'dividen 11,87%'
+- deploy hash: n/a host-script (0 perubahan scraper — diff 0 baris scraper)
+- SEC GATE: N/A (env execution path)
+- impact_check_due: 2026-10-27 05:20 (cron run berikutnya exit 0 + upcoming dividen bertambah dari LRU-150)
+### fix-2026-10-26-01/02/03 (P1/P1/P2 TRUST — domain audit ultracode)
+- fix: audit.service log catch → console.error [audit] (jejak tak senyap); findRecent & findRecentByActions clamp take ≤200; user select tanpa email (PII) — impact-check: /admin/review page render 0 pakai email; audit.errors.ts AuditLogWriteError + service getRecentByActions
+- verify bukti: tsc --noEmit exit 0 · grep console.error=1/Math.min=2/email=0 · marker '[audit] log failed' live di container .next/server/app/api/admin/articles/review/route.js
+- deploy hash: 2ac532f (image up 19:03 WIB healthy; baseline 5 URL 200 before=after)
+- GATEGUARD: claude run#1 partial (thrash autocompact) + retry fail → fallback manual selesai sendiri (exit 3 protocol)
+- SEC GATE: PASS (PII email dihapus dari select; clamp anti unbounded take)
+- impact_check_due: 2026-10-29 (grep '[audit] log failed' docker logs saat kegagalan audit pertama)
+### Penumpang ikut kereta 2ac532f (commit owner-directed siang, deploy tertunda): a43c0ba greeting Welcome permanen + 4e07394/f82dbf2 live-quotes prevClose semantik EOD — verify: 'Welcome, ' live di page.js container; /api/live-quotes?s=BBRI.JK price=2910 prevClose=5025 BBCA (EOD prev murni) marketState=CLOSED_WIB
+### ops-2026-10-25-03 (P2 — cron northstar): RESOLVED-NOFIX — error 19 Okt = insiden 502 Docker-down (bukan bug job); run 26 Okt 08:40→08:50 completed OK + write ceo-decisions OK → self-healed. Flip done.

@@ -1023,3 +1023,16 @@
 - Jebakan: (1) klaim 'live' night_ready = hipotesis — selalu curl dulu (bo-26-01 tadi keliru klaim); (2) terminal gateway blok `docker compose up` foreground — pakai background + poll log; (3) repo utama sering tertinggal branch night — checkout main SEBELUM build, verify `git log -1` vs image; (4) residual radar: 4 ticker stoch 0/0 display (MMIX/HITS/FASW/KARW) — QA question, bukan bug filter.
 - Langkah pertama slot berikutnya (18:30 sore): baca ini → jalankan ops-25-03 diag read-only (cron 43cf9b558aad last_status=error) → tak ada deploy (sore boleh deploy window 18:30 kalau ada in_train baru).
 - Rollback anchor: app 4b9d4430070a + git revert 7767d8b
+
+## CEO 26 Okt 08:15
+- Fokus: TRUST hotfix — ops-26-01 playwright profile-sync slot 18:30 (badge dividen <10 hari kehabisan data); Opsi B jadi riset backlog, bukan migrasi buta.
+- Growth 7d +15% tapi register 3/9 & returning 6,1% — pantau rekap cross kambuh (union vs kanonik); kalau kambuh → fix generator, bukan SQL patch.
+- PA hari ini 10:15: lengkapi PRD idea-10-20-1 (eskalasi, review 29 Okt) + mandate refill ≥3 kandidat (review 30 Okt).
+
+## 2026-10-26 19:1x — CTO sore/malam (kereta 2ac532f, deploy 2/2 org)
+- State: sehat; app up 19:03 WIB healthy (image baru memuat 2ac532f + 3 commit owner siang a43c0ba/4e07394/f82dbf2 yang tadi tertunda); EOD 26 Okt in; 5 URL 200 before=after.
+- Barusan: qa-26-01 brief dua-basis FIXED (generator IGNORECASE+title write-back failing-first 11/11; SQL patch 507→506; live title=506; re-scan 5 brief=1 basis) · ops-26-01 profile-sync re-exec guard VERIFIED (python3 -S → SELESAI ok=1) · fix-26-01/02/03 audit domain (console.error + clamp200 + PII email) · ops-25-03 northstar cron = self-healed (error 19 Okt = insiden 502, run 26 Okt OK).
+- In-flight: 6 entry flip done (queue v: 12 pending). SLOT PAGI 27 OKT = fix-26-09 P0 security PALING UTAMA + fix-26-04 P0 + fix-26-05/06/07 P1 + fix-26-10 P0 refactor; teknikal-2026-10-25-01 Selasa 09:30 BE pagi (T-1027-N).
+- Jebakan: (1) claude glm-5.3 thrash autocompact — spec kecil + fallback manual (GateGuard exit 3 protocol bekerja); (2) growth-script write-back judul = casing dipertahankan, angka saja; (3) image build ≠ commit time — SELALU grep marker container; (4) kpi.json returning_ip 4,5% terkontaminasi IP owner (northstar review 08:50: exclude adm-IP → SRE/mandor).
+- Langkah pertama slot pagi 27: baca ini → fix-26-09 (P0 security) DONE-WHEN dulu → verify spec ke repo → GateGuard wrapper.
+- Rollback anchor: app f6a2382a3ea7 (image ID lama, pre-kereta) + git revert 2ac532f
