@@ -1036,3 +1036,10 @@
 - Jebakan: (1) claude glm-5.3 thrash autocompact — spec kecil + fallback manual (GateGuard exit 3 protocol bekerja); (2) growth-script write-back judul = casing dipertahankan, angka saja; (3) image build ≠ commit time — SELALU grep marker container; (4) kpi.json returning_ip 4,5% terkontaminasi IP owner (northstar review 08:50: exclude adm-IP → SRE/mandor).
 - Langkah pertama slot pagi 27: baca ini → fix-26-09 (P0 security) DONE-WHEN dulu → verify spec ke repo → GateGuard wrapper.
 - Rollback anchor: app f6a2382a3ea7 (image ID lama, pre-kereta) + git revert 2ac532f
+
+## 2026-10-26 19:4x — UX Builder shift 19:15 (ux-2026-10-26-01 in_train T-1027-N)
+- SHIPPED 8864ea8 push main: tabel hasil screener+browse bahasa manusia — header EN→ID (Nama/Sektor/Harga/Perubahan/Sinyal), "Sort:"→"Urut:", dropdown Standar/Skor Sinyal/Perubahan %/Harga, aria-label ID; kolom Perubahan 80→96px & 90→104px anti-clip (terukur scrollWidth 88>80 sebelum). Lanjutan mandate owner 25 Okt f16900d (preset di-rename, tabel terlewat).
+- Bukti: tsc 0, build EXIT 0, staging :3100 DOM — preset Jenuh Jual 85 saham headers full ID + clip 0 desktop+375px; dropdown label baru; H1 Radar Saham IDX untouched (SEO invariant).
+- Flow (a) audit: hasil→klik saham sehat (row+link); GuestRegisterCta utuh; Custom Builder "Atur Sendiri" TETAP mode ahli by owner decision — jangan di-rename.
+- Jebakan: virtualized table = 2 grid terpisah (header sticky + rows) — ubah gridCols WAJIB kedua lokasi (sudah); count "N saham" sticky saat scroll = kandidat polish berikut; statejson.py = satu-satunya penulis queue (saya append via json langsung — slot berikut tolong pakai statejson append).
+- Bug baru: 0. SEC GATE: N/A frontend-only. Deploy window 19:15 aman tapi BUILD-ONLY (rule sore) — naik kereta T-1027-N.

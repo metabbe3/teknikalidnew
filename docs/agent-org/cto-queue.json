@@ -2742,6 +2742,19 @@
         "Jika KEEP: status -> keep-by-design + catat alasan owner"
       ],
       "audit_evidence": "2026-10-26 03:0x WIB: psql read-only — Post total=1/30d=0, Comment 30d=0, Repost 30d=0, Like 30d=0 (skema: model Post/Comment/Like/Repost), Post.predictionDirection NOT NULL count=0, Report total=0; /community live 200 (localhost+teknikal.id); footer link Komunitas ada; backlog product: tidak ada PRD komunitas aktif (hanya done_wave3 sidebar-mobile + point-badge prd-2026-10-24-01)."
+    },
+    {
+      "id": "ux-2026-10-26-01",
+      "title": "UX: tabel hasil screener + browse bahasa manusia (header EN→ID + Sort→Urut + anti-clip kolom Perubahan) — lanjutan mandate owner 25 Okt",
+      "status": "in_train",
+      "assigned_to": "frontend-builder",
+      "priority": "P2",
+      "pillar": "TRUST (consistency) + STICKY",
+      "train": "T-1027-N",
+      "spec": "Flow (a) sisa: hasil screener browse/table header masih English (Name/Sector/Price/Change/Signal, Sort:, Default/Signal Score/Change %/Price) padahal preset sudah bahasa manusia (f16900d owner 25 Okt 'istilah tak ngerti'). Fix: header+sort+aria-label → ID, kolom Perubahan dilebarkan anti-clip.",
+      "done_when": "Label ID tampil di /stocks browse + screener results tanpa clip; tsc 0; build 0",
+      "result": "commit 8864ea8 push main. Bukti fisik: tsc EXIT 0, npm build EXIT 0; staging :3100 DOM verify — browse headers [Ticker,Nama,Sektor,Harga,7D,Perubahan,Volume,RSI], screener preset 'Jenuh Jual' 85 saham headers [Ticker,Nama,Sektor,Harga,Perubahan,Volume,RSI,Sinyal,SMA 20], dropdown [Standar,Skor Sinyal,RSI,Volume,Perubahan %,Harga], 'Urut:' label present, clip check desktop+375px = 0 overflow (sebelum: Perubahan scrollWidth 88 > clientWidth 80 = clip 8px). SEO invariant: H1 'Radar Saham IDX' prod 2=2 untouched. Custom Builder 'Atur Sendiri' sengaja tetap mode ahli (owner 25 Okt).",
+      "evidence_date": "2026-10-26"
     }
   ],
   "tasks": []
