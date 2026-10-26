@@ -2,6 +2,7 @@ import { reputationRepository } from "./reputation.repository";
 import { getBadge } from "./badge";
 import { ACHIEVEMENTS, type AchievementType } from "./achievements";
 import { UserNotFoundError, DailyAlreadyClaimedError } from "./reputation.errors";
+import { dailyCacheKey, dailyWindowExpiresAt, nextStreakFor } from "./daily-award";
 import { eventBus } from "@/lib/event-bus";
 
 export { BADGE_TIERS, getBadge } from "./badge";
@@ -44,10 +45,9 @@ export const reputationService = {
   },
 
   async claimDailyReward(userId: string) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const cacheKey = `daily-rep:${userId}:${today.toISOString().slice(0, 10)}`;
-    const expiresAt = new Date(today.getTime() + 48 * 60 * 60 * 1000);
+    const now = new Date();
+    const cacheKey = dailyCacheKey(userId, now);
+    const expiresAt = dailyWindowExpiresAt(now);
 
     try {
       await reputationRepository.claimDailyReward(userId, cacheKey, expiresAt);
@@ -59,17 +59,11 @@ export const reputationService = {
     const user = await reputationRepository.findUserReputation(userId);
     if (!user) return { awarded: true, streak: 1 };
 
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    let newStreak = 1;
-    if (user.lastDailyClaimAt) {
-      const lastDate = new Date(user.lastDailyClaimAt);
-      lastDate.setHours(0, 0, 0, 0);
-      if (lastDate.getTime() === yesterday.getTime()) {
-        newStreak = (user.dailyStreak ?? 0) + 1;
-      }
-    }
+    const newStreak = nextStreakFor(
+      user.lastDailyClaimAt ?? null,
+      user.dailyStreak ?? 0,
+      now
+    );
 
     await reputationRepository.updateStreak(userId, newStreak);
     return { awarded: true, streak: newStreak };
