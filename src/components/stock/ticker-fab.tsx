@@ -163,6 +163,7 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
       {sheet && (
         <div
           className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm"
+          style={{ marginBottom: "0px" }}
           onClick={() => setSheet(false)}
           role="dialog"
           aria-modal="true"
@@ -274,6 +275,7 @@ function TickerSearchModal({ onClose, currentTicker }: { onClose: () => void; cu
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm"
+      style={{ marginBottom: "0px" }}
       onClick={onClose}
       role="dialog"
       aria-modal="true"
