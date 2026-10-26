@@ -125,8 +125,9 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
         className={`md:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border bg-bg-card/95 backdrop-blur transition-transform duration-300 ${
           shown ? "translate-y-0" : "translate-y-full"
         }`}
+        style={{ paddingBottom: "0px" }}
       >
-        <div className="grid grid-cols-2 gap-3 px-4 py-3" style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom, 0px))" }}>
+        <div className="grid grid-cols-2 gap-3 px-4 pt-3" style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
           <button
             onClick={() => setSheet(true)}
             data-engagement="fab_share_click"
