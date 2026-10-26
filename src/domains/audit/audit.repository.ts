@@ -13,20 +13,22 @@ export const auditRepository = {
   },
 
   findRecent(limit: number) {
+    const take = Math.min(Math.max(1, Math.floor(limit)), 200);
     return prisma.auditLog.findMany({
-      take: limit,
+      take,
       orderBy: { createdAt: "desc" },
-      include: { user: { select: { username: true, email: true, name: true } } },
+      include: { user: { select: { username: true, name: true } } },
     });
   },
 
   // Review-history helpers (bo-2026-10-22-01): keputusan editor dari AuditLog.
   findRecentByActions(actions: string[], limit: number, since?: Date) {
+    const take = Math.min(Math.max(1, Math.floor(limit)), 200);
     return prisma.auditLog.findMany({
       where: { action: { in: actions }, ...(since ? { createdAt: { gte: since } } : {}) },
-      take: limit,
+      take,
       orderBy: { createdAt: "desc" },
-      include: { user: { select: { username: true, email: true, name: true } } },
+      include: { user: { select: { username: true, name: true } } },
     });
   },
 };
