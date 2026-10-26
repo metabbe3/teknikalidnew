@@ -79,6 +79,27 @@ const nextConfig: NextConfig = {
         destination: "/stocks",
         statusCode: 301,
       },
+
+      // Signal pages renamed bare -> /saham-* (e.g. /golden-cross -> /saham-golden-cross).
+      // Old URLs 404 hard since the rename (no route ever existed in this repo),
+      // collapsing moat-page traffic 49->3 WoW (Council 25 Oct). 301 literal per
+      // done-when (curl -I check) — same deviation precedent as /idx-radar above.
+      // seo-2026-10-25-02.
+      {
+        source: "/golden-cross",
+        destination: "/saham-golden-cross",
+        statusCode: 301,
+      },
+      {
+        source: "/oversold",
+        destination: "/saham-oversold",
+        statusCode: 301,
+      },
+      {
+        source: "/volume-spike",
+        destination: "/saham-volume-spike",
+        statusCode: 301,
+      },
     ];
   },
   async headers() {

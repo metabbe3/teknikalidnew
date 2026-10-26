@@ -2594,13 +2594,15 @@
     {
       "id": "seo-2026-10-25-02",
       "title": "P1 SEO/GROWTH: 301 redirect path sinyal lama → baru (/golden-cross→/saham-golden-cross, /oversold→/saham-oversold, /volume-spike→/saham-volume-spike, /screener→/stocks?view=screener) — moat pages kolaps 24→2 WoW karena URL lama 404 tanpa redirect",
-      "status": "pending",
+      "status": "night_ready",
       "priority": "P1",
       "pilar": "GROWTH+AI-SEARCH",
       "note": "[COUNCIL 25 Okt] Bukti: curl 404 semua path lama 25 Okt; PageView /saham-golden-cross 24(prev)→1(now), landing saham-* 49→3. Implement di next.config redirects (permanent:true), verify curl -I 301 + lokasi tujuan 200",
-      "scheduled_slot": "Senin 26 Okt 07:30 slot pagi (build-only; naik kereta T-1026-N malam) — keputusan Council 25 Okt #1",
+      "scheduled_slot": "READY utk Senin 26 Okt 07:30 slot pagi (review+merge+deploy)",
       "train": "T-1026-N",
-      "north_star": "GROWTH"
+      "north_star": "GROWTH",
+      "branch": "night/seo-2026-10-25-02",
+      "result": "NIGHT READY 25 Okt 23:1x WIB (CTO night PREP-ONLY): +3 redirect 301 di next.config.ts redirects() (/golden-cross->/saham-golden-cross, /oversold->/saham-oversold, /volume-spike->/saham-volume-spike; statusCode:301 literal per done-when, preseden deviation /idx-radar seo-2026-10-20-01, comment di config). CATATAN SCOPE: /screener SUDAH 308->/stocks?view=screener live (verify curl 25 Okt 23:02; tidak diduplikasi); /stochastic-oversold juga 404 (pola rename sama) tapi DI LUAR spec — dilaporkan ke Council, tidak ditambah diam-diam. VERIFY FISIK: build EXIT 0 (next build --webpack) · npx tsc --noEmit 0 error · sdlc_lint 0 error · next start :3131 curl -I: 3x HTTP 301 + Location benar, query ?tab=x ikut ter-forward, tujuan /saham-golden-cross 200. 0 dependency, 0 DB, 0 deploy (hard-gate malam). Estimasi review CTO pagi: ~5 mnt (diff 21 baris, preseden ada) + merge + deploy slot 07:30."
     },
     {
       "id": "ops-2026-10-25-03",
