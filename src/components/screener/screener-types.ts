@@ -230,12 +230,12 @@ export type SortField = "signalScore" | "rsi14" | "volume" | "changePercent" | "
 export type SortOrder = "asc" | "desc";
 
 export const SORT_OPTIONS: { value: SortField; label: string }[] = [
-  { value: "", label: "Default" },
-  { value: "signalScore", label: "Signal Score" },
+  { value: "", label: "Standar" },
+  { value: "signalScore", label: "Skor Sinyal" },
   { value: "rsi14", label: "RSI" },
   { value: "volume", label: "Volume" },
-  { value: "changePercent", label: "Change %" },
-  { value: "close", label: "Price" },
+  { value: "changePercent", label: "Perubahan %" },
+  { value: "close", label: "Harga" },
 ];
 
 // ── Helper Functions ──

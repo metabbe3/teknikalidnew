@@ -77,12 +77,12 @@ export function ResultsHeader({
         )}
         {/* Sort dropdown */}
         <div className="flex items-center gap-1 bg-bg-card border border-border rounded-lg px-2 py-1">
-          <span className="text-[10px] text-text-tertiary mr-1">Sort:</span>
+          <span className="text-[10px] text-text-tertiary mr-1">Urut:</span>
           <select
             value={sortBy}
             onChange={(e) => onSortChange(e.target.value as SortField, sortBy === e.target.value && sortOrder === "desc" ? "asc" : "desc")}
             className="text-xs bg-transparent text-text-primary border-none outline-none cursor-pointer pr-1 min-h-11"
-            aria-label="Sort by"
+            aria-label="Urutkan hasil"
           >
             {SORT_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -104,7 +104,7 @@ export function ResultsHeader({
           <button
             onClick={() => onViewChange("table")}
             className={`p-2.5 rounded-md transition-colors cursor-pointer ${viewMode === "table" ? "bg-bg-hover text-text-primary" : "text-text-tertiary hover:text-text-secondary"}`}
-            aria-label="Table view"
+            aria-label="Tampilan tabel"
             aria-pressed={viewMode === "table"}
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -114,7 +114,7 @@ export function ResultsHeader({
           <button
             onClick={() => onViewChange("cards")}
             className={`p-2.5 rounded-md transition-colors cursor-pointer ${viewMode === "cards" ? "bg-bg-hover text-text-primary" : "text-text-tertiary hover:text-text-secondary"}`}
-            aria-label="Card view"
+            aria-label="Tampilan kartu"
             aria-pressed={viewMode === "cards"}
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -144,7 +144,7 @@ export function ResultsTable({ stocks, watchlistTickers, onToggleWatchlist, onRe
     overscan: 8,
   });
 
-  const gridCols = "grid-cols-[36px_132px_200px_130px_90px_80px_90px_80px_80px_1fr]";
+  const gridCols = "grid-cols-[36px_132px_200px_130px_90px_96px_90px_80px_80px_1fr]";
 
   if (stocks.length === 0) {
     return (
@@ -169,19 +169,19 @@ export function ResultsTable({ stocks, watchlistTickers, onToggleWatchlist, onRe
   return (
     <div className="overflow-x-auto rounded-xl depth-shadow-strong bg-bg-card relative">
       <div ref={scrollRef} className="max-h-[60vh] overflow-auto">
-        <div className={`glass-header sticky top-0 z-10 grid ${gridCols} text-text-tertiary text-[11px] uppercase tracking-wider min-w-[1018px]`}>
+        <div className={`glass-header sticky top-0 z-10 grid ${gridCols} text-text-tertiary text-[11px] uppercase tracking-wider min-w-[1034px]`}>
           <div className="px-2 py-3 font-medium"></div>
           <div className="px-4 py-3 font-medium">Ticker</div>
-          <div className="px-4 py-3 font-medium">Name</div>
-          <div className="px-4 py-3 font-medium">Sector</div>
-          <div className="px-4 py-3 text-right font-medium">Price</div>
-          <div className="px-4 py-3 text-right font-medium">Change</div>
+          <div className="px-4 py-3 font-medium">Nama</div>
+          <div className="px-4 py-3 font-medium">Sektor</div>
+          <div className="px-4 py-3 text-right font-medium">Harga</div>
+          <div className="px-4 py-3 text-right font-medium">Perubahan</div>
           <div className="px-4 py-3 text-right font-medium">Volume</div>
           <div className="px-4 py-3 text-right font-medium">RSI</div>
-          <div className="px-4 py-3 text-right font-medium">Signal</div>
+          <div className="px-4 py-3 text-right font-medium">Sinyal</div>
           <div className="px-4 py-3 text-right font-medium">SMA 20</div>
         </div>
-        <div className="relative min-w-[1018px]" style={{ height: `${virtualizer.getTotalSize()}px` }}>
+        <div className="relative min-w-[1034px]" style={{ height: `${virtualizer.getTotalSize()}px` }}>
           {virtualizer.getVirtualItems().map((virtualRow) => {
             const stock = stocks[virtualRow.index];
             const inWatchlist = watchlistTickers.has(stock.ticker);

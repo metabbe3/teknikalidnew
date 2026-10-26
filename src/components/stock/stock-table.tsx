@@ -111,7 +111,7 @@ export function StockTable({ stocks, sectors, linkBase = "/stocks" }: StockTable
     virtualizer.scrollToOffset(0);
   }, [sectorFilter, debouncedQuery, sortKey, sortAsc, virtualizer]);
 
-  const gridCols = "grid-cols-[132px_220px_140px_90px_70px_90px_90px_1fr]";
+  const gridCols = "grid-cols-[132px_220px_140px_90px_70px_104px_90px_1fr]";
 
   function SortHeader({ label, colKey }: { label: string; colKey: SortKey }) {
     const active = sortKey === colKey;
@@ -196,20 +196,20 @@ export function StockTable({ stocks, sectors, linkBase = "/stocks" }: StockTable
           <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-bg-primary to-transparent md:hidden z-10" />
           <div ref={scrollRef} className="max-h-[70vh] overflow-y-auto overflow-x-hidden">
             {/* Header */}
-            <div className={`glass-header sticky top-0 z-20 grid ${gridCols} min-w-[932px] border-b border-border/80`}>
+            <div className={`glass-header sticky top-0 z-20 grid ${gridCols} min-w-[946px] border-b border-border/80`}>
               <SortHeader label="Ticker" colKey="ticker" />
-              <SortHeader label="Name" colKey="name" />
-              <SortHeader label="Sector" colKey="sector" />
-              <div className="px-4 py-3 text-right text-xs uppercase tracking-wide text-text-secondary">Price</div>
+              <SortHeader label="Nama" colKey="name" />
+              <SortHeader label="Sektor" colKey="sector" />
+              <div className="px-4 py-3 text-right text-xs uppercase tracking-wide text-text-secondary">Harga</div>
               <div className="px-4 py-3 text-right text-xs uppercase tracking-wide text-text-secondary">7D</div>
-              <SortHeader label="Change" colKey="changePercent" />
+              <SortHeader label="Perubahan" colKey="changePercent" />
               <SortHeader label="Volume" colKey="volume" />
               <SortHeader label="RSI" colKey="rsi14" />
             </div>
 
             {/* Virtual rows */}
             <div
-              className="relative min-w-[932px]"
+              className="relative min-w-[946px]"
               style={{ height: `${virtualizer.getTotalSize()}px` }}
             >
               {virtualizer.getVirtualItems().map((virtualRow) => {
