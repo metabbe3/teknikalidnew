@@ -212,13 +212,38 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
   );
 }
 
-/** Modal cari saham — reuse logika HeroSearch (/api/stocks + filter + keyboard nav). */
+/** Modal cari saham — reuse logika HeroSearch (/api/stocks + filter + keyboard nav).
+ * Owner 26 Okt malam: (1) sheet WAJIB nempel bawah SAAT keyboard kebuka — anchor ke
+ * visualViewport (overlay menutupi area terlihat persis, keyboard tak bisa dorong naik);
+ * (2) hasil "drop up" — input di BAWAH (nempel keyboard), list tumbuh ke ATAS. */
 function TickerSearchModal({ onClose, currentTicker }: { onClose: () => void; currentTicker: string }) {
   const router = useRouter();
   const [q, setQ] = useState("");
   const [all, setAll] = useState<StockRow[] | null>(null);
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [vv, setVv] = useState(() => ({
+    w: typeof window === "undefined" ? 390 : window.innerWidth,
+    h: typeof window === "undefined" ? 700 : window.innerHeight,
+    ox: 0,
+    oy: 0,
+  }));
+
+  // ikuti visualViewport — saat keyboard mobile buka, area terlihat menyusut; overlay + sheet
+  // menempel ke dasar AREA TERLIHAT (di atas keyboard), bukan layout viewport yang tertutup keyboard
+  useEffect(() => {
+    const vvh = window.visualViewport;
+    if (!vvh) return;
+    const upd = () =>
+      setVv({ w: vvh.width, h: vvh.height, ox: vvh.offsetLeft, oy: vvh.offsetTop });
+    vvh.addEventListener("resize", upd);
+    vvh.addEventListener("scroll", upd);
+    upd();
+    return () => {
+      vvh.removeEventListener("resize", upd);
+      vvh.removeEventListener("scroll", upd);
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -274,48 +299,32 @@ function TickerSearchModal({ onClose, currentTicker }: { onClose: () => void; cu
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm"
-      style={{ marginBottom: "0px" }}
+      className="fixed z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm"
+      style={{
+        left: vv.ox,
+        top: vv.oy,
+        width: vv.w,
+        height: vv.h,
+        marginBottom: "0px",
+      }}
       onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-label="Cari saham lain"
     >
       <div
-        className="w-full max-w-md bg-bg-card border border-border rounded-t-2xl depth-shadow px-5 pt-5"
-        style={{ marginBottom: "0px", paddingBottom: "max(1.5rem, env(safe-area-inset-bottom, 0.5rem))" }}
+        className="w-full max-w-md bg-bg-card border border-border rounded-t-2xl depth-shadow px-5 pt-5 flex flex-col"
+        style={{ marginBottom: "0px", paddingBottom: "max(1rem, env(safe-area-inset-bottom, 0.5rem))" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between mb-4">
+        {/* hasil DROP-UP: header+list di atas, input nempel bawah (dekat keyboard) */}
+        <div className="flex items-center justify-between mb-3">
           <h3 className="font-bold text-text-primary">Cari saham lain</h3>
           <button onClick={onClose} aria-label="Tutup" className="text-text-tertiary hover:text-text-primary">
             <X className="h-5 w-5" />
           </button>
         </div>
-        <div className="flex items-center gap-2 bg-bg-primary border border-border rounded-xl px-4 py-3 mb-3 focus-within:border-accent/50">
-          <Search className="h-5 w-5 text-text-tertiary shrink-0" aria-hidden />
-          <input
-            ref={inputRef}
-            type="text"
-            value={q}
-            onChange={(e) => {
-              setQ(e.target.value);
-              setActive(0);
-            }}
-            onKeyDown={onKeyDown}
-            placeholder="Ketik ticker atau nama… (mis. BBRI, bank)"
-            aria-label="Cari saham"
-            className="w-full bg-transparent text-base text-text-primary placeholder:text-text-tertiary focus:outline-none"
-            autoComplete="off"
-            enterKeyHint="go"
-          />
-          {q && (
-            <button onClick={() => setQ("")} className="text-text-tertiary hover:text-text-primary text-sm" aria-label="Hapus">
-              ✕
-            </button>
-          )}
-        </div>
-        <div className="max-h-80 overflow-y-auto -mx-1 px-1">
+        <div className="flex-1 min-h-0 overflow-y-auto -mx-1 px-1 flex flex-col justify-end">
           {q.trim().length >= MIN_CHARS && results.length === 0 && (
             <p className="px-4 py-6 text-sm text-text-tertiary text-center">
               {all === null ? "Memuat daftar saham…" : `Tidak ada hasil untuk "${q}"`}
@@ -347,7 +356,30 @@ function TickerSearchModal({ onClose, currentTicker }: { onClose: () => void; cu
             </button>
           ))}
         </div>
-        <p className="mt-3 text-[10px] text-text-tertiary">↑↓ navigasi · Enter buka · Esc tutup</p>
+        <div className="flex items-center gap-2 bg-bg-primary border border-border rounded-xl px-4 py-3 mt-3 focus-within:border-accent/50">
+          <Search className="h-5 w-5 text-text-tertiary shrink-0" aria-hidden />
+          <input
+            ref={inputRef}
+            type="text"
+            value={q}
+            onChange={(e) => {
+              setQ(e.target.value);
+              setActive(0);
+            }}
+            onKeyDown={onKeyDown}
+            placeholder="Ketik ticker atau nama… (mis. BBRI, bank)"
+            aria-label="Cari saham"
+            className="w-full bg-transparent text-base text-text-primary placeholder:text-text-tertiary focus:outline-none"
+            autoComplete="off"
+            enterKeyHint="go"
+          />
+          {q && (
+            <button onClick={() => setQ("")} className="text-text-tertiary hover:text-text-primary text-sm" aria-label="Hapus">
+              ✕
+            </button>
+          )}
+        </div>
+        <p className="mt-2 text-[10px] text-text-tertiary">↑↓ navigasi · Enter buka · Esc tutup</p>
       </div>
     </div>
   );
