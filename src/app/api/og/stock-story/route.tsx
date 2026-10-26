@@ -100,6 +100,7 @@ export async function GET(request: NextRequest) {
 
     // Overlay harga live (bila tersedia & lebih segar dari EOD)
     const quote = await freshQuote(ticker);
+    const ogSource = quote && quote.close !== null ? "live" : "eod";
     if (quote && quote.close !== null) {
       data.close = quote.close;
       data.change = quote.change;
@@ -249,7 +250,7 @@ export async function GET(request: NextRequest) {
               {/* Stamp tanggal — momen */}
               <div style={{ display: "flex", alignItems: "center", marginTop: 26, paddingTop: 10, paddingBottom: 10, paddingLeft: 22, paddingRight: 22, borderRadius: 12, border: "2px dashed #bae6fd", backgroundColor: "rgba(224,242,254,0.5)" }}>
                 <span style={{ color: "#0369a1", fontSize: 24, fontWeight: 700, letterSpacing: "0.06em" }}>
-                  SNAPSHOT {new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }).toUpperCase()}
+                  SNAPSHOT {new Date().toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }).toUpperCase()} · {ogSource === "live" ? "HARGA LIVE" : "EOD"}
                 </span>
               </div>
             </div>
