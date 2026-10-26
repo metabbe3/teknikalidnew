@@ -994,7 +994,7 @@ export async function findLatestPriceDate(): Promise<Date | null> {
   return row?.date ?? null;
 }
 
-export async function findPrevClosesByTicker(tickers: string[]) {
+export async function findPrevClosesByTicker(tickers: string[], opts?: { includeToday?: boolean }) {
   if (tickers.length === 0) return new Map<string, number>();
   const today = startOfDay(new Date());
   const stocks = await prisma.stock.findMany({
@@ -1002,9 +1002,12 @@ export async function findPrevClosesByTicker(tickers: string[]) {
     select: { id: true, ticker: true },
   });
   // prev trading day = tanggal EOD terbaru < hari ini (level pasar, bukan per-saham)
+  // includeToday: acuan = EOD terbaru <= hari ini (bukan < hari ini). Dipakai payload
+  // CLOSED_WIB live-quotes: setelah EOD sync hari ini masuk, price yang ditampilkan
+  // harus close HARI INI, bukan close kemarin (owner 26 Okt "masih tidak minus?").
   const prevDateRow = await prisma.stockPrice.findFirst({
     orderBy: { date: "desc" },
-    where: { date: { lt: today } },
+    where: opts?.includeToday ? { date: { lte: today } } : { date: { lt: today } },
     select: { date: true },
   });
   const out = new Map<string, number>();

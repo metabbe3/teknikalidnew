@@ -54,8 +54,12 @@ export async function GET(request: NextRequest) {
     // TV/Yahoo utk saham illiquid membandingkan ke session TERAKHIR saham trade,
     // bukan kemarin → saham tidak aktif tampil ±30% bohong. Prev kanonik = EOD DB.
     let eodPrev: Map<string, number> = new Map();
+    let eodLatest: Map<string, number> = new Map();
     try {
       eodPrev = await findPrevClosesByTicker(tickers);
+      // EOD terbaru <= hari ini: setelah EOD sync malam masuk, close hari INI jadi price
+      // saat pasar tutup (owner 26 Okt: header masih +0.95% Jumat padahal hari ini -1.22%).
+      eodLatest = await findPrevClosesByTicker(tickers, { includeToday: true });
     } catch (e) {
       console.error("[LiveQuotes] EOD prev lookup failed, fallback feed prev", e);
     }
@@ -73,17 +77,18 @@ export async function GET(request: NextRequest) {
     if (!marketOpen) {
       const closed: LiveQuoteRow[] = results.map(({ ticker }) => ({
         ticker,
-        // Porto/dashboards eksternal butuh ANGKA (bukan null) saat tutup → kirim EOD prev
-        // sebagai harga (pembeli live-price null-safe). changePercent TETAP null supaya
-        // client live-updater tidak menimpa SSR EOD (fix IHSG -0%, owner 21 Okt).
-        price: eodPrev.get(ticker) ?? null,
+        // Porto/dashboards eksternal butuh ANGKA (bukan null) saat tutup → kirim EOD
+        // TERBARU (close hari ini bila sudah sync; kemarin bila belum) sebagai harga.
+        // changePercent TETAP null supaya client live-updater tidak menimpa SSR EOD
+        // (fix IHSG -0%, owner 21 Okt); fix price stale Jumat (owner 26 Okt).
+        price: (eodLatest.get(ticker) ?? eodPrev.get(ticker)) ?? null,
         change: null,
         changePercent: null,
         volume: null,
         dayHigh: null,
         dayLow: null,
         open: null,
-        prevClose: eodPrev.get(ticker) ?? null,
+        prevClose: (eodLatest.get(ticker) ?? eodPrev.get(ticker)) ?? null,
         marketState: "CLOSED_WIB",
       }));
       const closedPayload = { quotes: closed, ts: Date.now() };
