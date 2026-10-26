@@ -159,8 +159,10 @@ export const stockRepository = {
           some: {
             interval: INTERVAL.DAY,
             OR: [
-              { rsi14: { lte: 30 } },
-              { AND: [{ stochK: { lte: 20 } }, { stochD: { lte: 20 } }] },
+              // bug-2026-10-25-01: gt 0 — nilai 0 = indikator kosong (SUPR.JK
+              // tampil RSI 0.0 di radar), bukan oversold sungguhan.
+              { rsi14: { gt: 0, lte: 30 } },
+              { AND: [{ stochK: { gt: 0, lte: 20 } }, { stochD: { gt: 0, lte: 20 } }] },
             ],
           },
         },

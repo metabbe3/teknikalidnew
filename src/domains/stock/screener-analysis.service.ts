@@ -4,6 +4,7 @@ import { calculatePivotPoints } from "@/lib/indicators";
 import { stockRepository } from "./stock.repository";
 import { buildIndicatorWhere, VOLUME_SPIKE_MULTIPLIER, VALID_PRESETS } from "./indicator.service";
 import { cachedEod, eodKey } from "./eod-cache";
+import { isOversoldSignal } from "./radar-filter";
 
 export const screenerAnalysisService = {
   async screenerQuery(preset: string, assetClass: "EQUITY" | "CRYPTO" = "EQUITY") {
@@ -232,8 +233,10 @@ export const screenerAnalysisService = {
         const stochK = decimalToNumber(indicator.stochK);
         const stochD = decimalToNumber(indicator.stochD);
 
-        const isRsiOversold = rsi14 !== null && rsi14 <= 30;
-        const isStochOversold = stochK !== null && stochD !== null && stochK <= 20 && stochD <= 20;
+        // bug-2026-10-25-01: nilai 0 = indikator kosong (bukan oversold) —
+        // predikat diekstrak ke radar-filter.ts (guard > 0, selftest 3/3).
+        const isRsiOversold = isOversoldSignal(rsi14, null, null);
+        const isStochOversold = isOversoldSignal(null, stochK, stochD);
 
         if (!isRsiOversold && !isStochOversold) return null;
 
