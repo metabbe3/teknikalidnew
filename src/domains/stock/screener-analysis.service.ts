@@ -5,6 +5,7 @@ import { stockRepository } from "./stock.repository";
 import { buildIndicatorWhere, VOLUME_SPIKE_MULTIPLIER, VALID_PRESETS } from "./indicator.service";
 import { cachedEod, eodKey } from "./eod-cache";
 import { isOversoldSignal } from "./radar-filter";
+import { marketEngine } from "./market-snapshot.service";
 
 export const screenerAnalysisService = {
   async screenerQuery(preset: string, assetClass: "EQUITY" | "CRYPTO" = "EQUITY") {
@@ -25,7 +26,7 @@ export const screenerAnalysisService = {
       return rows.map((r) => ({
         ticker: r.ticker, name: r.name, sector: r.sector,
         close: Number(r.close),
-        changePercent: r.prev_close ? ((Number(r.close) - Number(r.prev_close)) / Number(r.prev_close)) * 100 : null,
+        changePercent: marketEngine.pctChange(Number(r.close), Number(r.prev_close)),
         volume: Number(r.volume),
         rsi14: r.rsi14 ? Number(r.rsi14) : null,
         sma20: r.sma20 ? Number(r.sma20) : null,
@@ -38,13 +39,13 @@ export const screenerAnalysisService = {
       const rows = await stockRepository.findVolumeSpikes(latestDate, VOLUME_SPIKE_MULTIPLIER, assetClass);
       return rows
         .filter((r) => {
-          const changePct = r.prev_close ? ((Number(r.close) - Number(r.prev_close)) / Number(r.prev_close)) : 0;
+          const changePct = marketEngine.changeFraction(Number(r.close), Number(r.prev_close)) ?? 0;
           return changePct < 0;
         })
         .map((r) => ({
           ticker: r.ticker, name: r.name, sector: r.sector,
           close: Number(r.close),
-          changePercent: r.prev_close ? ((Number(r.close) - Number(r.prev_close)) / Number(r.prev_close)) * 100 : null,
+          changePercent: marketEngine.pctChange(Number(r.close), Number(r.prev_close)),
           volume: Number(r.volume),
           rsi14: r.rsi14 ? Number(r.rsi14) : null,
           sma20: r.sma20 ? Number(r.sma20) : null,
@@ -60,13 +61,13 @@ export const screenerAnalysisService = {
           const vol = Number(r.volume);
           const avgVol = Number(r.avg_volume);
           const volRatio = avgVol > 0 ? vol / avgVol : 0;
-          const changePct = r.prev_close ? ((Number(r.close) - Number(r.prev_close)) / Number(r.prev_close)) : 0;
+          const changePct = marketEngine.changeFraction(Number(r.close), Number(r.prev_close)) ?? 0;
           return volRatio >= 2 && changePct > 0.05;
         })
         .map((r) => ({
           ticker: r.ticker, name: r.name, sector: r.sector,
           close: Number(r.close),
-          changePercent: r.prev_close ? ((Number(r.close) - Number(r.prev_close)) / Number(r.prev_close)) * 100 : null,
+          changePercent: marketEngine.pctChange(Number(r.close), Number(r.prev_close)),
           volume: Number(r.volume),
           rsi14: r.rsi14 ? Number(r.rsi14) : null,
           signalScore: null as number | null,

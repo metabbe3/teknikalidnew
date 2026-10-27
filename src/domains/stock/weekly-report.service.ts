@@ -1,4 +1,5 @@
 import { stockRepository } from "./stock.repository";
+import { marketEngine } from "./market-snapshot.service";
 
 /**
  * Weekly market report (/laporan-pasar) — original-data SEO surface.
@@ -134,28 +135,16 @@ export const weeklyReportService = {
         name: r.name,
         sector: r.sector,
         close: Number(r.week_close),
-        changePercent: ((Number(r.week_close) - Number(r.prev_close)) / Number(r.prev_close)) * 100,
+        changePercent: marketEngine.pctChange(Number(r.week_close), Number(r.prev_close)) ?? 0,
       }));
 
-    const advancers = withChange.filter((s) => s.changePercent > 0).length;
-    const decliners = withChange.filter((s) => s.changePercent < 0).length;
-    const unchanged = withChange.filter((s) => s.changePercent === 0).length;
+    const breadth = marketEngine.breadth(withChange);
 
-    const sectorMap = new Map<string, { total: number; sum: number }>();
-    for (const s of withChange) {
-      const key = s.sector || "Lainnya";
-      const e = sectorMap.get(key) ?? { total: 0, sum: 0 };
-      e.total++;
-      e.sum += s.changePercent;
-      sectorMap.set(key, e);
-    }
-    const sectors: WeeklySectorRow[] = [...sectorMap.entries()]
-      .map(([sector, { total, sum }]) => ({ sector, avgChange: sum / total, count: total }))
+    const sectors: WeeklySectorRow[] = marketEngine
+      .sectorAverages(withChange.map((s) => ({ sector: s.sector || "Lainnya", changePercent: s.changePercent })))
       .sort((a, b) => b.avgChange - a.avgChange);
 
-    const sorted = [...withChange].sort((a, b) => b.changePercent - a.changePercent);
-    const topGainers = sorted.slice(0, 5);
-    const topLosers = sorted.slice(-5).reverse();
+    const { gainers: topGainers, losers: topLosers } = marketEngine.movers(withChange, 5);
 
     const goldenCrosses: WeeklyCrossRow[] = [];
     const deathCrosses: WeeklyCrossRow[] = [];
@@ -174,15 +163,13 @@ export const weeklyReportService = {
     }
 
     const ihsgChange =
-      idx?.close_in_week !== null && idx?.close_prev !== null && Number(idx.close_prev) > 0 && idx.close_in_week !== null
-        ? ((Number(idx.close_in_week) - Number(idx.close_prev)) / Number(idx.close_prev)) * 100
+      idx?.close_in_week != null && idx?.close_prev != null
+        ? marketEngine.pctChange(Number(idx.close_in_week), Number(idx.close_prev))
         : null;
 
-    const breadth = { advancers, decliners, unchanged, total: withChange.length };
     const bc = breadthCharacter(breadth);
 
-    const marketAvgChange =
-      withChange.length > 0 ? withChange.reduce((acc, s) => acc + s.changePercent, 0) / withChange.length : 0;
+    const marketAvgChange = marketEngine.meanChange(withChange);
 
     const ihsgStr =
       ihsgChange === null
@@ -191,7 +178,7 @@ export const weeklyReportService = {
 
     const intro =
       `Minggu ${weekLabel(weekStart, weekEnd)}: ${ihsgStr}. ` +
-      `Dari ${breadth.total} saham aktif, ${advancers} naik, ${decliners} turun, dan ${unchanged} stagnan — pasar ${bc}.`;
+      `Dari ${breadth.total} saham aktif, ${breadth.advancers} naik, ${breadth.decliners} turun, dan ${breadth.unchanged} stagnan — pasar ${bc}.`;
 
     const topSector = sectors[0];
     const bottomSector = sectors[sectors.length - 1];
