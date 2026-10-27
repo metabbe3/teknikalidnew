@@ -112,7 +112,15 @@ export function acquire(name: string): Promise<AcquireResult> {
           resolve({ ok: false, reason: "queue-full", retryAfterMs: 2_000, queueDepth: p.queue.length });
         }
       },
-      timer: setTimeout(() => waiter.resolve(false), p.maxWaitMs),
+      // fix-2026-10-26-04: waiter yang timeout WAJIB keluar dari queue.
+      // Kalau tidak, makeRelease() nanti shift waiter mati ini, resolve(true)
+      // no-op (promise sudah settled false), release-nya tak pernah dipanggil
+      // siapa pun → p.active tak turun → slot bocor permanen per timeout.
+      timer: setTimeout(() => {
+        const i = p.queue.indexOf(waiter);
+        if (i !== -1) p.queue.splice(i, 1);
+        waiter.resolve(false);
+      }, p.maxWaitMs),
       enqueuedAt: Date.now(),
     };
     p.queue.push(waiter);
