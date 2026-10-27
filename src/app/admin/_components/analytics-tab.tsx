@@ -56,6 +56,13 @@ interface AnalyticsData {
   operatingSystems: Array<{ category: string; count: number; percentage: number }>;
   browsers: Array<{ category: string; count: number; percentage: number }>;
   topReferrers: Array<{ referrer: string; source: string; count: number }>;
+  utmLinks: Array<{
+    campaign: string | null;
+    source: string | null;
+    medium: string | null;
+    views: number;
+    visitors: number;
+  }>;
   geo: Array<{ label: string; count: number; percentage: number }>;
   crawlerSeo?: { views: number; ips: number; humanGeoViews: number };
   apiTraffic: {
@@ -1031,6 +1038,44 @@ export function AnalyticsTab() {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Short Links (teknikal.id/s/*) — traffic per post/campaign */}
+      {data?.utmLinks && data.utmLinks.length > 0 && (
+      <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-blue-50 to-white rounded-t-lg">
+          <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
+            🔗 Short Links — teknikal.id/s/*
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-4">
+          {data.utmLinks.length ? (
+            <div className="space-y-2">
+              {data.utmLinks.map((u) => (
+                <div
+                  key={`${u.campaign}`}
+                  className="flex items-center justify-between rounded-lg border border-gray-100 bg-white px-3 py-2 text-sm"
+                >
+                  <div className="min-w-0">
+                    <span className="font-semibold text-gray-800">{u.campaign}</span>
+                    <span className="ml-2 text-xs text-gray-400">
+                      {u.source} · {u.medium}
+                    </span>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-3 text-xs">
+                    <span className="font-bold text-gray-700">{u.views} views</span>
+                    <span className="text-gray-400">{u.visitors} orang</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-400">
+              Belum ada klik short link / UTM di periode ini.
+            </p>
+          )}
+        </CardContent>
+      </Card>
       )}
     </div>
   );

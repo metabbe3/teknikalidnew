@@ -143,6 +143,13 @@ export interface ComprehensiveAnalytics {
   browsers: DeviceBreakdown[];
   operatingSystems: DeviceBreakdown[];
   topReferrers: { referrer: string; source: TrafficSource; count: number }[];
+  utmLinks: {
+    campaign: string | null;
+    source: string | null;
+    medium: string | null;
+    views: number;
+    visitors: number;
+  }[];
   geo: GeoEntry[];
   /** Views dari datacenter/scanner/crawler — dipisah dari human geo (owner 21 Okt). */
   crawlerSeo: { views: number; ips: number; humanGeoViews: number };
@@ -559,6 +566,9 @@ export const analyticsService = {
         ip: true,
         userAgent: true,
         isBot: true,
+        utmSource: true,
+        utmMedium: true,
+        utmCampaign: true,
         createdAt: true,
       },
       orderBy: { createdAt: "desc" },
@@ -884,6 +894,35 @@ export const analyticsService = {
       .sort((a, b) => b.count - a.count)
       .slice(0, 20);
 
+    // ─── Short links / UTM campaigns (owner 27 Okt — teknikal.id/s/*) ────────
+    // Views per utm_campaign (source/medium sebagai konteks). Klik /s/<code>
+    // redirect dengan utm lengkap; grouping ini = "post mana yang bawa orang".
+    const utmMap = new Map<
+      string,
+      { source: string | null; medium: string | null; views: number; ips: Set<string> }
+    >();
+    for (const pv of realViews) {
+      if (!pv.utmSource && !pv.utmCampaign) continue;
+      const key = pv.utmCampaign ?? `(${pv.utmSource ?? "?"}/no-campaign)`;
+      let e = utmMap.get(key);
+      if (!e) {
+        e = { source: pv.utmSource, medium: pv.utmMedium, views: 0, ips: new Set() };
+        utmMap.set(key, e);
+      }
+      e.views++;
+      if (pv.ip) e.ips.add(pv.ip);
+    }
+    const utmLinks = [...utmMap.entries()]
+      .map(([campaign, e]) => ({
+        campaign,
+        source: e.source,
+        medium: e.medium,
+        views: e.views,
+        visitors: e.ips.size,
+      }))
+      .sort((a, b) => b.views - a.views)
+      .slice(0, 15);
+
     // ─── Geographic (from IP via cached lookup) ───────────────────────────────
     // Exclude owner/internal + suspected-bot IPs so geo reflects real visitors.
     const geoExcludeList = [...new Set([...internalIps, ...suspectedBotIps])];
@@ -1021,6 +1060,7 @@ export const analyticsService = {
       browsers,
       operatingSystems,
       topReferrers,
+      utmLinks,
       geo,
       crawlerSeo: {
         views: crawlerViews,
