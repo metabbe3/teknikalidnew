@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
 
     // Path is stored query-free (old behavior); UTM attribution is only kept
     // for /auth/ pages. See extractPageviewAttribution in @/lib/validation.
-    const { path, utmSource, utmMedium } = extractPageviewAttribution(data.path);
+    const { path, utmSource, utmMedium, utmCampaign } = extractPageviewAttribution(data.path);
 
     // Skip internal / admin paths
     if (SKIP_PREFIXES.some((prefix) => data.path.startsWith(prefix))) {
@@ -147,6 +147,7 @@ export async function POST(request: NextRequest) {
         userAgent,
         utmSource,
         utmMedium,
+        utmCampaign,
         isBot: isBot || blocked,
       },
     });
