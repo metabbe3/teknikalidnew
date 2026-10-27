@@ -30,6 +30,9 @@ services:
       - MIDTRANS_SERVER_KEY=${MIDTRANS_SERVER_KEY:-}
       - MIDTRANS_IS_PRODUCTION=${MIDTRANS_IS_PRODUCTION:-false}
       - SCRAPER_WHITELIST_IPS=${SCRAPER_WHITELIST_IPS:-}
+      # Traffic Mac mini (CDP verify agent + owner browsing + docker bridge) — diexclude dari
+      # admin analytics "real visitors" (owner 28 Okt: verify HeadlessChrome kelihatan spt bot asing)
+      - ANALYTICS_EXCLUDE_IPS=${ANALYTICS_EXCLUDE_IPS:-}
       # Cap heap below the 2G container limit — saw a heap-FATAL crash 2026-09-07.
       - NODE_OPTIONS=--max-old-space-size=1536
     volumes:
