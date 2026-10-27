@@ -653,7 +653,13 @@ export const stockRepository = {
   updateStockProfile(stockId: number, data: { industry?: string | null; subIndustry?: string | null; fax?: string | null; npwp?: string | null }) {
     return prisma.stock.update({
       where: { id: stockId },
-      data,
+      // Guard panjang kolom varchar (28 Okt: data IDX bisa melebihi kapasitas → throw)
+      data: {
+        ...(data.industry && { industry: data.industry.slice(0, 100) }),
+        ...(data.subIndustry && { subIndustry: data.subIndustry.slice(0, 100) }),
+        ...(data.fax && { fax: data.fax.slice(0, 50) }),
+        ...(data.npwp && { npwp: data.npwp.slice(0, 50) }),
+      },
     });
   },
 

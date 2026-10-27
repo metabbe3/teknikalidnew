@@ -159,17 +159,21 @@ export const stockSyncService = {
     });
 
     // Also update address, phone, email, website if they came from IDX
+    // Guard panjang kolom (28 Okt: INKP email gabungan 4 alamat 127ch > varchar(100) →
+    // prisma throw "value too long" membatalkan seluruh emiten). Slice ke kapasitas kolom.
+    const fit = (v: string | null | undefined, max: number): string | undefined =>
+      v ? v.slice(0, max) : undefined;
     await prisma.stock.update({
       where: { id: stock.id },
       data: {
-        ...(profile.Alamat && { address: profile.Alamat.replace(/\r\n/g, ", ") }),
-        ...(profile.Telepon && { phone: profile.Telepon }),
-        ...(profile.Email && { email: profile.Email }),
-        ...(profile.Website && { website: profile.Website }),
-        ...(profile.SubSektor && { subSector: profile.SubSektor }),
-        ...(profile.PapanPencatatan && { listingBoard: profile.PapanPencatatan }),
+        ...(profile.Alamat && { address: fit(profile.Alamat.replace(/\r\n/g, ", "), 500) }),
+        ...(profile.Telepon && { phone: fit(profile.Telepon, 50) }),
+        ...(profile.Email && { email: fit(profile.Email, 100) }),
+        ...(profile.Website && { website: fit(profile.Website, 500) }),
+        ...(profile.SubSektor && { subSector: fit(profile.SubSektor, 100) }),
+        ...(profile.PapanPencatatan && { listingBoard: fit(profile.PapanPencatatan, 50) }),
         ...(profile.TanggalPencatatan && { listingDate: parseIdxDate(profile.TanggalPencatatan) }),
-        ...(profile.Logo && { logo: `https://www.idx.co.id${profile.Logo}` }),
+        ...(profile.Logo && { logo: fit(`https://www.idx.co.id${profile.Logo}`, 500) }),
         ...(profile.KegiatanUsahaUtama && { businessActivity: profile.KegiatanUsahaUtama }),
       },
     });
