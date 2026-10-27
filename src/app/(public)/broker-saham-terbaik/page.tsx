@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { safeJsonLd } from "@/lib/safe-json-ld";
 import { PageHero } from "@/components/layout/page-hero";
 import Link from "next/link";
 import { SITE_URL } from "@/lib/constants";
@@ -174,7 +175,7 @@ export default function BrokerComparisonPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
 
       <PageHero
         eyebrow="Broker"

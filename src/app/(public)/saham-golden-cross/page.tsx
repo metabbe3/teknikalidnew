@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { safeJsonLd } from "@/lib/safe-json-ld";
 import { PageHero } from "@/components/layout/page-hero";
 import { AskAiCta } from "@/components/seo/ask-ai-cta";
 import { RegisterCta } from "@/components/signal/register-cta";
@@ -76,7 +77,7 @@ export default async function SahamGoldenCrossPage() {
   return (
     <>
         {failed && <meta name="robots" content="noindex" />}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
 
       <PageHero
         eyebrow="Saham IDX"

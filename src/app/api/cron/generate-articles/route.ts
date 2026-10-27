@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireCronSecret } from "@/lib/cron-guard";
 import { handleApiError } from "@/lib/api-error";
 import { agentHubService } from "@/domains/agent-hub/agent-hub.service";
 import { agentHubRepository } from "@/domains/agent-hub/agent-hub.repository";
@@ -16,10 +17,8 @@ import type { AgentType } from "@/domains/agent-hub/agent-hub.types";
 export const maxDuration = 300;
 
 export async function POST(request: NextRequest) {
-  const auth = request.headers.get("authorization");
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const denied = requireCronSecret(request);
+  if (denied) return denied;
 
   const now = new Date();
   const isWeekend = now.getDay() === 0 || now.getDay() === 6;

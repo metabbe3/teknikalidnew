@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { safeJsonLd } from "@/lib/safe-json-ld";
 import { PageHero } from "@/components/layout/page-hero";
 import { ComparePageClient } from "@/components/compare/compare-page-client";
 import { SITE_URL } from "@/lib/constants";
@@ -43,7 +44,7 @@ export default function ComparePage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}
       />
       <PageHero
         eyebrow="Bandingkan"

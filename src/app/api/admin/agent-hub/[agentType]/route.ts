@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiError } from "@/lib/api-error";
+import { requireAdmin } from "@/lib/auth-guard";
 import { agentHubService } from "@/domains/agent-hub/agent-hub.service";
 
 export async function GET(
@@ -7,6 +8,7 @@ export async function GET(
   { params }: { params: Promise<{ agentType: string }> },
 ) {
   try {
+    await requireAdmin(); // security-audit 28 Okt
     const { agentType } = await params;
     const detail = await agentHubService.getAgentDetail(agentType);
     const jobs = await agentHubService.getJobs({ agentType, limit: 20 });
@@ -21,6 +23,7 @@ export async function POST(
   { params }: { params: Promise<{ agentType: string }> },
 ) {
   try {
+    await requireAdmin(); // security-audit 28 Okt
     const { agentType } = await params;
     const job = await agentHubService.triggerAgent(agentType);
     return NextResponse.json({ data: job }, { status: 201 });
@@ -34,6 +37,7 @@ export async function PUT(
   { params }: { params: Promise<{ agentType: string }> },
 ) {
   try {
+    await requireAdmin(); // security-audit 28 Okt
     const { agentType } = await params;
     const body = await request.json();
 

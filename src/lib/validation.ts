@@ -238,7 +238,10 @@ export const schemas = {
 
   // track/pageview - POST body
   pageview: z.object({
-    path: z.string().min(1),
+    // Security-audit 28 Okt: path harus site-relative (mulai "/") dan max 255
+    // (kapasitas kolom DB) — cegah "javascript:" URI tersimpan lalu jadi href
+    // XSS di admin analytics (analytics-tab.tsx merender <a href={path}>).
+    path: z.string().min(1).max(255).startsWith("/"),
     // Tolerate an empty referrer (document.referrer === "" on direct traffic);
     // the beacon is fire-and-forget and must never 400 on a blank referrer.
     referrer: z.union([z.string().url(), z.literal("")]).optional(),

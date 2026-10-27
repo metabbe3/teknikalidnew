@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireCronSecret } from "@/lib/cron-guard";
 import { handleApiError } from "@/lib/api-error";
 import { communityAgentService } from "@/domains/community-agent/community-agent.service";
 import { withCronLogging } from "@/domains/cron-monitoring/with-cron-logging";
 
 export async function POST(request: NextRequest) {
-  const auth = request.headers.get("authorization");
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const denied = requireCronSecret(request);
+  if (denied) return denied;
 
   // ponytail: feature flag off. teknikal_robo was 182 of 183 posts with 0 organic
   // engagement; stopped to cut token cost. To restart: flip to true AND set

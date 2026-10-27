@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireCronSecret } from "@/lib/cron-guard";
 import { handleApiError } from "@/lib/api-error";
 import { agentHubService } from "@/domains/agent-hub/agent-hub.service";
 import { agentHubRepository } from "@/domains/agent-hub/agent-hub.repository";
@@ -67,10 +68,8 @@ function shouldFireNow(cron: string): boolean {
 }
 
 export async function POST(request: NextRequest) {
-  const auth = request.headers.get("authorization");
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const denied = requireCronSecret(request);
+  if (denied) return denied;
 
   try {
     const { status, body } = await withCronLogging("agent-hub-scheduler", async () => {

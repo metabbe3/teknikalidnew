@@ -18,6 +18,7 @@ e2e/public/guest-panel.spec.ts
 e2e/public/home.spec.ts
 e2e/public/stock-detail.spec.ts
 e2e/public/stocks.spec.ts
+next-env.d.ts
 next.config.ts
 playwright.config.ts
 prisma.config.ts
@@ -58,6 +59,8 @@ scripts/selftest-retention.ts
 scripts/selftest-title.ts
 scripts/selftest-utm.ts
 scripts/selftest-verdict-prose.ts
+scripts/selftest/ai-gate-leak.selftest.ts
+scripts/selftest/article-sanitize.selftest.tsx
 scripts/smoke-ai.ts
 scripts/smoke-archive.ts
 scripts/sync-idx-stocks.ts
@@ -166,6 +169,7 @@ src/lib/retention-email.service.ts
 src/lib/retention.service.ts
 src/lib/sectors.ts
 src/lib/serialize.ts
+src/lib/short-links.ts
 src/lib/socket.ts
 src/lib/telemetry.ts
 src/lib/time.ts
@@ -235,8 +239,8 @@ src/app/(public)/laporan-pasar/page.tsx:8:export const revalidate = 3600;
 src/app/(public)/market-structure/page.tsx:13:export const dynamic = "force-dynamic";
 src/app/(public)/market-structure/page.tsx:15:export const metadata → Metadata = {
 src/app/(public)/metodologi/page.tsx:15:export const metadata → Metadata = {
-src/app/(public)/page.tsx:54:export const metadata → Metadata = {
-src/app/(public)/page.tsx:62:export const dynamic = "force-dynamic";
+src/app/(public)/page.tsx:55:export const metadata → Metadata = {
+src/app/(public)/page.tsx:63:export const dynamic = "force-dynamic";
 src/app/(public)/paper-trading/layout.tsx:3:export const metadata → Metadata = {
 src/app/(public)/pasar/page.tsx:24:export const dynamic = "force-dynamic";  // SSR per-request; build tak butuh DB (pola page.tsx utama)
 src/app/(public)/pasar/page.tsx:26:export const metadata → Metadata = {
@@ -248,6 +252,8 @@ src/app/(public)/privacy/page.tsx:10:export const revalidate = 86400;
 src/app/(public)/privacy/page.tsx:4:export const metadata → Metadata = {
 src/app/(public)/profile/[username]/page.tsx:16:export const revalidate = 60;
 src/app/(public)/profile/[username]/page.tsx:18:export async function generateMetadata({
+src/app/(public)/s/[code]/route.ts:10:export const dynamic = "force-dynamic";
+src/app/(public)/s/[code]/route.ts:12:export async function GET(
 src/app/(public)/saham-blue-chip/page.tsx:10:export const revalidate = 3600;
 src/app/(public)/saham-blue-chip/page.tsx:12:export const metadata → Metadata = {
 src/app/(public)/saham-death-cross/page.tsx:14:export const dynamic = "force-dynamic";
@@ -285,8 +291,8 @@ src/app/(public)/sektor/page.tsx:6:export const revalidate = 3600;
 src/app/(public)/sektor/page.tsx:8:export const metadata → Metadata = {
 src/app/(public)/stocks/[ticker]/indikator/page.tsx:12:export const revalidate = 3600; // ISR — past rows immutable, latest day refreshes hourly
 src/app/(public)/stocks/[ticker]/indikator/page.tsx:69:export async function generateMetadata({
-src/app/(public)/stocks/[ticker]/page.tsx:66:export const dynamic = "force-dynamic";
-src/app/(public)/stocks/[ticker]/page.tsx:82:export async function generateMetadata({
+src/app/(public)/stocks/[ticker]/page.tsx:68:export const dynamic = "force-dynamic";
+src/app/(public)/stocks/[ticker]/page.tsx:84:export async function generateMetadata({
 src/app/(public)/stocks/page.tsx:22:export const dynamic = "force-dynamic";
 src/app/(public)/stocks/page.tsx:24:export const metadata → Metadata = {
 src/app/(public)/terms/page.tsx:10:export const revalidate = 86400;
@@ -299,7 +305,7 @@ src/app/(public)/waitlist/page.tsx:7:export const dynamic = "force-dynamic"; // 
 src/app/(public)/waitlist/page.tsx:9:export const metadata = {
 src/app/(public)/watchlist/page.tsx:10:export const metadata → Metadata = {
 src/app/(public)/watchlist/page.tsx:16:export const revalidate = 60;
-src/app/admin/_components/analytics-tab.tsx:168:export function AnalyticsTab() {
+src/app/admin/_components/analytics-tab.tsx:175:export function AnalyticsTab() {
 src/app/admin/_components/auth-tab.tsx:32:export function AuthTab() {
 src/app/admin/_components/community-tab.tsx:69:export function CommunityTab() {
 src/app/admin/_components/funnel-section.tsx:28:export function FunnelSection() {
@@ -409,6 +415,8 @@ src/app/api/auth/register/route.ts:12:export async function POST(request → Nex
 src/app/api/block/route.ts:6:export async function POST(request → Request) {
 src/app/api/bookmarks/route.ts:16:export async function POST(request → Request) {
 src/app/api/bookmarks/route.ts:6:export async function GET() {
+src/app/api/brief/daily/route.ts:11:export const dynamic = "force-dynamic";
+src/app/api/brief/daily/route.ts:13:export async function GET() {
 src/app/api/comments/[id]/route.ts:6:export async function DELETE(
 src/app/api/comments/route.ts:7:export async function POST(request → NextRequest) {
 src/app/api/cron/agent-hub-scheduler/route.ts:69:export async function POST(request → NextRequest) {
@@ -515,6 +523,7 @@ src/app/api/stock-follow/route.ts:19:export async function GET(request → Reque
 src/app/api/stock-follow/route.ts:6:export async function POST(request → Request) {
 src/app/api/stocks/[ticker]/comments/route.ts:27:export async function POST(
 src/app/api/stocks/[ticker]/comments/route.ts:7:export async function GET(
+src/app/api/stocks/[ticker]/feedback/route.ts:11:export async function POST(
 src/app/api/stocks/[ticker]/history/route.ts:10:export const dynamic = "force-dynamic";
 src/app/api/stocks/[ticker]/history/route.ts:16:export async function GET(
 src/app/api/stocks/[ticker]/indicators/route.ts:15:export async function GET(
@@ -578,14 +587,9 @@ src/components/akademi/learning-path.tsx:15:export function readDone() → strin
 src/components/akademi/learning-path.tsx:24:export function LearningPath() {
 src/components/akademi/live-indicator-example.tsx:22:export async function LiveIndicatorExample({ ticker } → { ticker: string }) {
 src/components/article/article-feed.tsx:48:export function ArticleFeed({ initialArticles, initialCursor, activeTag, activeType } → ArticleFeedProps) {
-src/components/article/article-renderer.tsx:10:export function extractHeadings(content → string): { id: string; text: string }[] {
-src/components/article/article-renderer.tsx:25:export function estimateReadingTime(content → string): number {
-src/components/article/article-renderer.tsx:32:export function extractTickers(content → string): string[] {
-src/components/article/article-renderer.tsx:45:export function ArticleContent({ content } → { content: string }) {
+src/components/article/article-renderer.tsx:52:export function extractHeadings(content → string): { id: string; text: string }[] {
+src/components/article/article-renderer.tsx:67:export function estimateReadingTime(content → string): number {
+src/components/article/article-renderer.tsx:74:export function extractTickers(content → string): string[] {
+src/components/article/article-renderer.tsx:87:export function ArticleContent({ content } → { content: string }) {
 src/components/auth/auth-brand-panel.tsx:15:export function AuthBrandPanel() {
 src/components/auth/login-gate.tsx:11:export function LoginGate({
-src/components/berita/daily-brief-hero.tsx:26:export function DailyBriefHero({
-src/components/berita/daily-brief-hero.tsx:4:export interface DailyBriefHeroData {
-src/components/berita/related-signals.tsx:14:export async function RelatedSignals({ ticker } → { ticker: string | null }) {
-src/components/berita/snapshot-briefing.tsx:13:export interface BriefingIndicator {
-src/components/berita/snapshot-briefing.tsx:31:export interface SnapshotBriefingData {

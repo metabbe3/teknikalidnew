@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSnap } from "@/lib/midtrans";
+import { requireAuth } from "@/lib/auth-guard";
 
 export async function POST(request: NextRequest) {
   try {
+    // Auth hardening (security-audit 28 Okt): order attribution HARUS dari session,
+    // bukan body client — cegah attribution spoof + transaksi spam anonim.
+    const session = await requireAuth();
     const body = await request.json();
-    const { planId, userId, userEmail, userName } = body;
+    const { planId } = body;
+    const userId = session.id;
+    const userEmail = session.email;
+    const userName = session.name ?? undefined;
 
     // Validate plan
     const plans: Record<string, { name: string; price: number; duration: string }> = {

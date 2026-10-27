@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { safeJsonLd } from "@/lib/safe-json-ld";
 import Link from "next/link";
 import { StockLogo } from "@/components/stock/stock-logo";
 import { PageHero } from "@/components/layout/page-hero";
@@ -66,7 +67,7 @@ export default async function BottomFishingPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
       <PageHero
         eyebrow="Tools"
         title="Bottom Fishing Radar"

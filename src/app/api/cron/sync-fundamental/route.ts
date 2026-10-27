@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireCronSecret } from "@/lib/cron-guard";
 import { prisma } from "@/lib/prisma";
 import { fetchFundamentalSummary } from "@/lib/yahoo-finance";
 
@@ -14,10 +15,8 @@ export const maxDuration = 300;
  * menimpa nilai existing (backfill, bukan overwrite).
  */
 export async function POST(request: NextRequest) {
-  const auth = request.headers.get("authorization");
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const denied = requireCronSecret(request);
+  if (denied) return denied;
 
   let payload: { tickers?: string[]; date?: string; limit?: number };
   try {

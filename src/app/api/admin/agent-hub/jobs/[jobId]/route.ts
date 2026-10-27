@@ -9,6 +9,7 @@ export async function GET(
   { params }: { params: Promise<{ jobId: string }> },
 ) {
   try {
+    await requireAdmin(); // security-audit 28 Okt
     const { jobId } = await params;
     const job = await agentHubService.getJob(jobId);
     return NextResponse.json({ data: job });
@@ -22,6 +23,7 @@ export async function DELETE(
   { params }: { params: Promise<{ jobId: string }> },
 ) {
   try {
+    await requireAdmin(); // security-audit 28 Okt
     const { jobId } = await params;
     await agentHubService.cancelJob(jobId);
     return NextResponse.json({ data: { cancelled: true } });

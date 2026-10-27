@@ -3068,6 +3068,43 @@
       "result": "BUILD-ONLY DONE 19:5x WIB commit 1f8339a (belum deploy — naik kereta T-1027-N). BUKTI staging localhost:3100 (one-off container di network teknikalidnew_internal, image lama + mount standalone baru): bar sticky y=59 saat deep-scroll row-10 (header bottom=56), desktop 1280 display:none, sort dispatch -> fetch /api/screener?preset=rsi_oversold&sort_by=rsi14&sort_order=asc terverifikasi via fetch instrumentation, toggle bar 19 rows <-> 104 cards. tsc exit 0; NEXT_PUBLIC_API_BASE_URL=/api npm run build EXIT 0. H1 Radar Saham IDX grep verbatim di page.tsx untouched. Angka: 0 scroll-balik (~1400px) utk akses urutan/count saat menelusuri hasil; 1 komponen SortDropdown reuse 2 mount; 2 aria-label EN->ID.",
       "kpi_pillar": "STICKY (dwell/scroll depth saat menelusuri hasil screener mobile)",
       "qa_note": ""
+    },
+    {
+      "id": "bo-2026-10-28-01",
+      "date": "2026-10-28",
+      "type": "backoffice",
+      "priority": "P2",
+      "status": "in_train",
+      "assigned_to": "backoffice-builder",
+      "train": "T-1028-N",
+      "north_star": "TRUST — owner bisa broadcast bell+banner saat insiden/fitur baru tanpa curl manual = komunikasi cepat & jujur ke user (kasus nyata: 502 27 Okt 19:4x tak bisa diumumkan); STICKY tak langsung (banner sampai-dibaca)",
+      "title": "BACKOFFICE KUASAI: UI Broadcast /admin/announcements — POST existing (owner directive 19 Okt) live di situs tapi owner harus curl manual (1 broadcast sepanjang sejarah)",
+      "spec": "Audit ronde-3 permukaan API admin (rekomendasi bo-2026-10-27-01): 41 route di bawah /api/admin dipetakan ke konsumen UI. Temuan: POST /api/admin/announcements (bell SITE_ANNOUNCEMENT semua user aktif + banner P0 layout, owner directive 19 Okt) TIDAK punya UI pemicu — owner harus curl manual; 1 broadcast sepanjang sejarah (26 notif, 19 Okt = hari fitur dibuat); insiden 502 27 Okt 19:4x tidak bisa diumumkan cepat. FIX (API REUSE, 0 endpoint/service/schema/dependency baru): src/app/admin/announcements/page.tsx (server shell requireAdmin, pola shares) + announcements-view.tsx (client form judul/isi/severity pill/withBanner, counter 120/500, preview banner border per severity, submit 2-langkah window.confirm, hasil recipients inline) + nav 'Broadcast' Megaphone di layout setelah Review Artikel.",
+      "done_when": [
+        "tsc --noEmit EXIT-0 di worktree",
+        "grep api/admin/announcements di announcements-view.tsx (bukti REUSE)",
+        "grep announcements di layout.tsx >=2",
+        "deploy + changelog + rollback anchor (CTO pagi merge night/bo-2026-10-28-01)"
+      ],
+      "audit_note": "Route yatim lain (0 konsumen UI admin, klasifikasi lengkap): queue/status+indicators = config-stub by-design (pipelines konsolidasi ronde-1); faq/pending = redundant dgn /api/admin/articles/review (page review pakai itu; 0 pending Question); user-title = 1/31 user customTitle, dead custom feature; views-geo+engagement = kandidat INSIGHT (belum ada tab pemakai) — data utk pilar GROWTH/TRUST, jangan dihapus",
+      "created_by": "Backoffice Builder slot 03:00 28 Okt",
+      "scheduled_slot": "bo malam 28 Okt: BUILD selesai 03:30 di worktree /private/tmp/bo1028 branch night/bo-2026-10-28-01 (commit 626cb59), NO deploy — Rabu market-day + budget 1 deploy sisa utk fix-26-10 (P0 night_ready) + hard-gate push main 21:45-07:00; merge oleh CTO pagi (preseden bo-2026-10-26-01)",
+      "result": "BUILD SELESAI 03:17-03:30 WIB (claude gated run#1 files jadi lalu autocompact-thrash glm-5.3; verify sendiri: npx prisma generate di worktree lalu tsc --noEmit EXIT-0 [666 error awal = semua missing generated client gitignored, bukan kode]; grep REUSE line 42 view; layout diff 2 baris persis import+nav). Commit 626cb59 (3 file +205). Menunggu merge CTO pagi."
+    },
+    {
+      "id": "bo-2026-10-28-02",
+      "date": "2026-10-28",
+      "type": "backoffice-audit",
+      "priority": "P2",
+      "status": "done",
+      "assigned_to": "backoffice-builder",
+      "north_star": "MATANGKAN/BUANG (owner 12 Okt) — permukaan API admin = konsistensi satu sumber kebenaran",
+      "title": "AUDIT ronde-3 API admin: 41 route dipetakan — 6 tanpa konsumen UI (2 stub by-design, 1 redundant, 1 dead-feature, 2 kandidat INSIGHT)",
+      "spec": "Audit lanjutan bo-2026-10-27-01 (permukaan halaman selesai → API). Metode: grep konsumen tiap route /api/admin/* di src/app/admin + src/components + repo-wide + ~/.hermes scripts; git log per route; DB pemakaian nyata. HASIL (41 route): 0 konsumen = announcements[DIATASI bo-2026-10-28-01], queue/status+indicators [stub by-design konsolidasi pipelines ronde-1], faq/pending [redundant: /admin/review pakai articles/review; Question 115 semua ANSWERED, 0 pending], user-title [dead: 1/31 user punya customTitle, fitur custom legacy], views-geo + engagement [SEHAT data-nya tapi yatim UI: dwell/scroll/cta funnel + geo breakdown = pilar GROWTH+TRUST, kandidat tab INSIGHT berikutnya, JANGAN hapus]. Konsumen ganda sehat: agent-hub x3, articles x4, health-checks x2.",
+      "audit_evidence": "2026-10-28 03:0x WIB: find 41 route.ts; grep refs per route (sorted); site-announcement-banner.tsx + notification-bell.tsx konsumsi Notification SITE_ANNOUNCEMENT (layout L149); DB: SITE_ANNOUNCEMENT=26 notif 1 broadcast 19 Okt, user aktif 29; customTitle 1/31; Question 115 ANSWERED/0 PENDING; views-geo deploy 22:19 6e32d15 (ceo-decisions L217) tanpa UI lanjutan; engagement prd-2026-10-10-01 route overview tanpa tab pemakai.",
+      "done_when": [],
+      "result": "AUDIT SELESAI 03:1x (no deploy). Lintas-repo: queue datadir≡repo 173 entries 0 drift. Eksekusi gap terbesar langsung diambil: bo-2026-10-28-01 (UI Broadcast). Klasifikasi yatim dicatat di audit_note entry tsb; views-geo+engagement = kandidat tab INSIGHT slot berikutnya.",
+      "created_by": "Backoffice Builder slot 03:00 28 Okt"
     }
   ]
 }

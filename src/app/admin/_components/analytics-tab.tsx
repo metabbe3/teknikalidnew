@@ -750,9 +750,15 @@ export function AnalyticsTab() {
                   <div key={i} className="flex items-center gap-3 py-2 px-2 hover:bg-gray-50 rounded-lg border-b border-gray-50">
                     <span className="text-xs font-bold text-gray-400 w-5 shrink-0">#{i + 1}</span>
                     <div className="flex-1 min-w-0">
-                      <a href={page.path} className="text-sm text-blue-600 hover:underline font-medium truncate block">
-                        {page.path}
-                      </a>
+                      {/* Security-audit 28 Okt: hanya render link utk path site-relative —
+                          cegah "javascript:" URI dari beacon jadi href XSS (React tak sanitasi scheme). */}
+                      {page.path.startsWith("/") ? (
+                        <a href={page.path} className="text-sm text-blue-600 hover:underline font-medium truncate block">
+                          {page.path}
+                        </a>
+                      ) : (
+                        <span className="text-sm text-gray-700 font-medium truncate block">{page.path}</span>
+                      )}
                       {page.inferredKeywords.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-1">
                           {page.inferredKeywords.map((kw, j) => (
