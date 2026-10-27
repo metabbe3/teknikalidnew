@@ -1059,6 +1059,18 @@ model Payment {
   @@index([expiresAt])
 }
 
+// Feedback 👍/👎 pasif pada kartu verdict halaman saham (owner 27 Okt).
+// Anonymous (tanpa login) — dedup via hash IP+UA per ticker+harinya; pola FAQ vote.
+model SignalFeedback {
+  id        String   @id @default(cuid())
+  ticker    String   @db.VarChar(20)
+  isAccurate Boolean
+  ipHash    String   @db.VarChar(64)
+  createdAt DateTime @default(now())
+
+  @@index([ticker, createdAt])
+}
+
 model PageView {
   id        Int      @id @default(autoincrement())
   path      String   @db.VarChar(255)

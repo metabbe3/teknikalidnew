@@ -26,7 +26,7 @@ export async function GET() {
     };
     const history = historyAll.slice(0, 50).map((h) => ({
       at: h.createdAt.toISOString(),
-      editor: h.user?.username ?? h.user?.email ?? h.user?.name ?? "?",
+      editor: h.user?.username ?? h.user?.name ?? "?",
       action: actionOf(h),
       note: (h.details as { note?: string } | null)?.note ?? null,
       articleId: (h.details as { articleId?: string } | null)?.articleId ?? null,
