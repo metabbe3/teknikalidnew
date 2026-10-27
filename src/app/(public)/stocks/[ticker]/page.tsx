@@ -27,6 +27,7 @@ import { isHscTicker } from "@/lib/hsc-stocks";
 import { StockDiscussion } from "@/components/community/stock-discussion";
 import { RegistrationInlinePrompt } from "@/components/ui/registration-inline-prompt";
 import { StockActionBadge } from "@/components/stock/stock-action-badge";
+import { RepeatVisitHint } from "@/components/stock/repeat-visit-hint";
 import { VerdictFeedback } from "@/components/stock/verdict-feedback";
 import { AlertPreviewCard } from "@/components/stock/alert-preview-card";
 import { SentimentGauge } from "@/components/stock/sentiment-gauge";
@@ -677,9 +678,12 @@ export default async function StockDetailPage({
                     <StockAiModalButton ticker={ticker} name={stock.name} />
                     <StockActionBadge ticker={ticker} />
                   </div>
+                  {/* Nudge pasif: kunjungan ke-3 saham sama (guest) — hint simpan pantauan, bukan popup */}
+                  <RepeatVisitHint ticker={ticker} />
                 </div>
               )}
               {close === null && <StockActionBadge ticker={ticker} />}
+              {close === null && <RepeatVisitHint ticker={ticker} />}
             </div>
 
             {/* Skor Sinyal hero — verdict instan (riset NBER: 6 menit riset, verdict dulu baru data).
