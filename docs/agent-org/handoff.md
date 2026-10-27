@@ -1050,3 +1050,11 @@
 - DISPATCH BARU: ops-2026-10-27-01 (profile-sync fail=8/59 — prisma stock.update value-too-long, repro batch-0 DSFI di output cron 27 Okt 05:31) + ops-2026-10-27-02 (audit writer queue non-statejson).
 - WATCH: app container restart 07:49 (kemungkinan Docker VM resume pagi; healthy sejak, watchdog diam; EACCES .env warning lama muncul tiap start — bukan blocker). Image live = build 19:02 kemarin (2ac532f verified marker QA 03:41); commit utm 29a3247 belum naik — ikut kereta malam.
 - KPI 07:05: returning_ip 4,6%/8 target · dwell 60s ✅ · scroll 44% ✅ · views_7d 1348 ✅ · register 3/6 ⚠ · MoM +0,9% ⚠ · ai_search 0/10 ⚠.
+
+## 2026-10-27 09:2x — CTO pagi (fix-26-09 + fix-26-04 in_train; 3 blocked_for_owner)
+- State: sehat; freshness FRESH (EOD 26 Okt); prod≡main 8864ea8→kini b54f82b (2 commit baru BUILD-ONLY, image 62118200841f belum naik prod); 0 deploy pagi (2/2 utk hari ini utuh utk kereta).
+- Barusan: fix-26-09 stored-XSS sanitizer (b54f82b; selftest 21/21; staging 200) + fix-26-04 AI-pool slot-leak (a6bd26d; failing-first) — dua-duanya in_train T-1027-N. GateGuard exit 3 dua-duanya (glm-5.3 thrash) → manual fallback sukses.
+- In-flight: kereta T-1027-N MALAM INI manifest saat ini: teknikal-25-01 (night_ready) + ux-26-01 + fix-26-04 + fix-26-09 — WAJIB review diff teknikal-25-01 dulu (urutan pagi protocol), SATU build, verify per-fitur; fix-26-10 sore 18:30; ops-27-01/02 Backend Builder; fix-26-05/06/07 blocked_for_owner (owner_brief lengkap — fix-26-07 = 1 perintah launchd owner).
+- Jebakan: (1) rehype-sanitize v6 attributes = ARRAY — object-spread = keys numerik = attr ter-strip; (2) worker claude glm-5.3 thrash 2x hari ini lagi — spec kecil + siap fallback manual; (3) staging host npm start TAK BISA reach DB compose (db hostname + SASL) — pakai one-off container di network teknikalidnew_internal; (4) statejson --set butuh --python lambda "e: ..." (bukan bare statements); (5) 8a4ff28 CTO Lead masuk antara — SELALU re-read queue sebelum flip.
+- Langkah pertama slot sore/kereta: baca ini → review diff night/teknikal-25-01 (merge protocol dry-run) → SATU build app+worker dari main HEAD → deploy → verify per-fitur 4 penumpang (IHSG-story/ux-tabel-ID/sanitize/pool) → changelog + flip done.
+- Rollback anchor: app 62118200841f (container prod teknikalidnew-app-1) + git revert b54f82b a6bd26d

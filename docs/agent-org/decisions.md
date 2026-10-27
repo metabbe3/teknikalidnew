@@ -833,3 +833,10 @@ penulisan masih 404 (deploy di kereta T-1021-N / CTO pagi).
 - ROOT-CAUSE qa-26-01 (generator, FIXED): teknikalid_growth.py _BREADTH_CLAIM regex case-sensitive — judul Title-Case 'Saham Naik' lolos fact-check, body lowercase terkoreksi → 1 artikel 2 basis. Fix: re.IGNORECASE + db_n key .lower() + _factcheck_title() write-back judul di insert_article. Failing-test-first: selftest fixture a4 '600 Saham Naik Hari Ini' → pre-fix gagal (title tak tersentuh), post-fix 11/11 PASS.
 - ops-26-01 profile-sync: guard _ensure_playwright() re-exec terverifikasi — `python3 -S` (emulasi cron store-python tanpa playwright) → auto re-exec /usr/bin/python3 → SELESAI ok=1 fail=0 (BBCA), 0 ModuleNotFoundError. Side-effect fisik: StockDirector BBCA updatedAt 2026-10-26 11:54:32 UTC, dividen 2 rows utuh. Scraper logic 0 diff (eksekusi env saja).
 - ops-25-03 northstar cron: error 19 Okt = insiden 502 Docker-down (known, bukan bug job); run 26 Okt 08:40→08:50 COMPLETED + laporan penuh + write ceo-decisions OK → self-healed, flip done.
+
+## 2026-10-27 09:2x WIB — CTO pagi 07:30 (slot build-only; kereta T-1027-N malam)
+- ROLLBACK ANCHOR (pre-deploy): app image aktif 62118200841f-scope: container teknikalidnew-app-1 image ID 62118200841f (dibangun pagi ini BUILD-ONLY, identik kode prod); commit main sebelum-kerja = 8864ea8. Pasca-kereta revert: git revert a6bd26d b54f82b + rebuild.
+- fix-26-09 P0 XSS + fix-26-04 P0 AI-pool DIBANGUN & TERKOMIT (b54f82b, a6bd26d): 2 worker claude paralel non-overlap (renderer+dep vs ai-gate) — KEDUANYA thrash autocompact 2x → GateGuard exit 3 → fallback manual CTO (protocol #65 bekerja). Verify sendiri: selftest failing-first 21/21 + leak PASS/FAIL/PASS, tsc 0, build 0, staging one-off 200, DOM prod==staging.
+- TRAP rehype-sanitize v6: attributes = ARRAY; object-spread bikin keys numerik → src/href ter-strip. Extend harus concat array (catat lessons).
+- fix-26-05/06 blocked_for_owner (AREA AUTH); fix-26-07 plist 15:55 siap di disk, reload launchd diblok gateway cron → owner 1 perintah (owner_brief); fix-26-10 reslot sore 18:30.
+- prod SEHAT: home 200; deploy 0/2 hari ini (kereta T-1027-N = deploy 1).

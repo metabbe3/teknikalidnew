@@ -789,3 +789,22 @@
 - impact_check_due: 2026-10-29 (grep '[audit] log failed' docker logs saat kegagalan audit pertama)
 ### Penumpang ikut kereta 2ac532f (commit owner-directed siang, deploy tertunda): a43c0ba greeting Welcome permanen + 4e07394/f82dbf2 live-quotes prevClose semantik EOD — verify: 'Welcome, ' live di page.js container; /api/live-quotes?s=BBRI.JK price=2910 prevClose=5025 BBCA (EOD prev murni) marketState=CLOSED_WIB
 ### ops-2026-10-25-03 (P2 — cron northstar): RESOLVED-NOFIX — error 19 Okt = insiden 502 Docker-down (bukan bug job); run 26 Okt 08:40→08:50 completed OK + write ceo-decisions OK → self-healed. Flip done.
+
+
+### fix-2026-10-26-09 (P0 TRUST/SECURITY — stored-XSS artikel renderer) — in_train T-1027-N
+- fix: rehype-sanitize schema ketat array-concat di atas defaultSchema (img/figure/input GFM + className/id + td/th colSpan); urutan [rehypeRaw, sanitize, slug, stockLinker]; protokol tetap defaultSchema.protocols (no javascript:/data:)
+- TRAP baru terdokumentasi: attribute rehype-sanitize v6 = ARRAY names — object-spread {...array} -> keys numerik -> src/href ter-strip (kelihatan "aman" padahal gambar/artikel rusak)
+- verify bukti: selftest scripts/selftest/article-sanitize.selftest.tsx 21/21 (failing-first: no-sanitizer 3 marker lolos) · tsc 0 · build 0 · staging one-off container (jaringan compose) 200 · tabel raw-HTML 3 artikel utuh · /saham/BBRI/kenapa-naik-hari-ini 200 · DOM prod==staging sampel
+- dep baru: rehype-sanitize@^6.0.0 (npm audit 0 vuln)
+- SEC-REVIEW: payload script-tag/img-onerror/js-href/style-js hilang di output render; konsumen 5 halaman publik ter-cover satu pintu ArticleContent; input = konten DB (tidak baru); privilege n/a; rate-limit n/a
+- deploy hash: n/a build-only pagi — naik kereta T-1027-N malam ini
+- impact_check_due: 2026-10-30 (spot 3 artikel raw-HTML + brief terbaru pasca-deploy)
+### fix-2026-10-26-04 (P0 RELIABLE — AI pool slot-leak) — in_train T-1027-N
+- fix: waiter timeout di-splice dari p.queue sebelum resolve(false); makeRelease hanya shift waiter hidup -> p.active kembali turun
+- verify bukti: selftest ai-gate-leak failing-first (no-fix FAIL "task ketiga harus admitted" / fix PASS; 5x timeout berturut tak bocorkan slot, active=0 akhir) · tsc 0
+- deploy hash: n/a build-only — naik kereta T-1027-N
+- SEC GATE: N/A (internal concurrency pool, no input/auth/db)
+- impact_check_due: 2026-10-29 (gateStats mlx: rejected naik tanpa 429-menetap)
+### fix-2026-10-26-05/06/07 — blocked_for_owner (bukan gagal)
+- 05 rate-limit login + 06 DDD auth->social = AREA AUTH owner gate; owner_brief terisi lengkap (rencana+risiko+rollback) di queue
+- 07 eod-sync 15:55: plist SUDAH di-edit+lint+backup di disk; reload launchd diblokir gateway cron -> 1 perintah owner (tercatat di owner_brief); loaded lama 16:30 tetap jalan (no regresi)
