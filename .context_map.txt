@@ -18,7 +18,6 @@ e2e/public/guest-panel.spec.ts
 e2e/public/home.spec.ts
 e2e/public/stock-detail.spec.ts
 e2e/public/stocks.spec.ts
-next-env.d.ts
 next.config.ts
 playwright.config.ts
 prisma.config.ts
@@ -52,6 +51,7 @@ scripts/seed-faq.ts
 scripts/selftest-access-limit.ts
 scripts/selftest-factcheck-links.ts
 scripts/selftest-radar-filter.ts
+scripts/selftest-reputation-daily.ts
 scripts/selftest-retention-email.ts
 scripts/selftest-retention-loop.ts
 scripts/selftest-retention.ts

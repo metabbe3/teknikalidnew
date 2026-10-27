@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { AchievementType } from "./achievements";
+import { DAILY_AWARD_POINTS } from "./daily-award";
 
 export const reputationRepository = {
   // Cross-domain: reads User for reputation queries
@@ -39,7 +40,7 @@ export const reputationRepository = {
     return prisma.$transaction([
       prisma.user.update({
         where: { id: userId },
-        data: { reputation: { increment: 1 } },
+        data: { reputation: { increment: DAILY_AWARD_POINTS } },
       }),
       prisma.cachedApiCall.create({
         data: { cacheKey, data: { awarded: true }, expiresAt },
