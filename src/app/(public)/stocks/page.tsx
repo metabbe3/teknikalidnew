@@ -218,7 +218,7 @@ export default async function StocksPage() {
               <Link
                 key={p.label}
                 href={p.href}
-                className="inline-flex items-center gap-1 rounded-full border border-border bg-bg-card px-3.5 py-2 text-xs font-semibold text-text-secondary hover:border-accent/40 hover:text-accent transition-colors"
+                className="inline-flex min-h-11 items-center gap-1 rounded-full border border-border bg-bg-card px-3.5 py-2 text-xs font-semibold text-text-secondary hover:border-accent/40 hover:text-accent transition-colors active:scale-[0.98]"
               >
                 {p.label}
                 <ArrowUpRight className="h-3 w-3" aria-hidden />

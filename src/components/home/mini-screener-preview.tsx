@@ -121,7 +121,7 @@ export function MiniScreenerPreview() {
         {/* CTA */}
         <Link
           href="/screener"
-          className="flex items-center justify-center gap-2 w-full py-2 rounded-lg bg-text-primary text-white text-xs font-semibold hover:bg-text-primary/80 transition-colors press-scale"
+          className="flex min-h-11 items-center justify-center gap-2 w-full py-2 rounded-lg bg-text-primary text-white text-xs font-semibold hover:bg-text-primary/80 transition-colors press-scale"
         >
           Lihat 30+ strategi screener
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">

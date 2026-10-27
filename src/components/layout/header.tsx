@@ -173,7 +173,7 @@ export function Header() {
           {!session?.user && (
             <Link
               href="/auth/signin"
-              className="sm:hidden inline-flex items-center bg-text-primary text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-text-primary/90 transition-colors press-scale"
+              className="sm:hidden inline-flex min-h-11 items-center bg-text-primary text-white px-3.5 py-2 rounded-lg text-sm font-medium hover:bg-text-primary/90 transition-colors press-scale"
             >
               Masuk
             </Link>
@@ -289,7 +289,7 @@ export function Header() {
               <Link
                 href="/auth/signin"
                 onClick={() => setMenuOpen(false)}
-                className="text-center py-2.5 px-3 rounded-lg text-sm font-medium text-text-primary bg-bg-hover transition-colors"
+                className="text-center min-h-11 py-3 px-3 rounded-lg text-sm font-medium text-text-primary bg-bg-hover transition-colors"
               >
                 Masuk
               </Link>

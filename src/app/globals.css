@@ -732,7 +732,7 @@ button:focus-visible,
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 10px 24px;
+  padding: 14px 24px; /* min tap 44px (ux audit 27 Okt) */
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.04em;
