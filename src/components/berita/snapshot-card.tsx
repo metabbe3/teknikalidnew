@@ -44,7 +44,11 @@ export function SnapshotCard({
   const up = (changePercent ?? 0) >= 0;
   const changeColor = up ? "text-bullish" : "text-bearish";
   const score = signalToHealthScore(signalScore);
-  const meta = score !== null ? healthScoreMeta(score) : null;
+  // Anti-mislead (owner 27 Okt "KREN vs Kondisi Baik bentrok"): saham gorengan
+  // dengan spike 1 hari TIDAK boleh tampil badge "Kondisi Baik" dari indikator T-1 —
+  // skor teknikal bukan konteks utk momentum harian saham volatil.
+  const showHealth = score !== null && !isGorengan;
+  const meta = showHealth ? healthScoreMeta(score) : null;
   const rsi = rsiTone(rsi14);
   const chgPct = changePercent !== null ? `${up ? "+" : "-"}${formatPercentPlain(changePercent)}%` : null;
 

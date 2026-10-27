@@ -33,6 +33,8 @@ const SIGNAL_STYLES: Record<string, string> = {
 };
 
 export function StockCard({ ticker, name, sector, close, change, changePercent, signalLabel, signalScore, isGorengan }: StockCardProps) {
+  // Anti-mislead (owner 27 Okt): gorengan + badge skor bisa kontradiktif di kartu ber-%harian
+  const showScore = !isGorengan;
   const router = useRouter();
   const [aiOpen, setAiOpen] = useState(false);
   const isPositive = changePercent !== null && changePercent >= 0;
@@ -60,7 +62,7 @@ export function StockCard({ ticker, name, sector, close, change, changePercent, 
             {isGorengan && (
               <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-500">!</span>
             )}
-            <HealthScoreBadge signalScore={signalScore ?? null} size="sm" />
+            <HealthScoreBadge signalScore={showScore ? (signalScore ?? null) : null} size="sm" />
           </div>
           <p className="text-[11px] text-text-secondary truncate mt-0.5 leading-tight">{name}</p>
         </div>
