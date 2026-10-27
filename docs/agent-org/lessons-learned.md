@@ -324,3 +324,8 @@ Ke-3 kalinya klaim kesegaran sinyal lolos generator Mandor: qa-2026-09-27-01 (hi
 - Pola: kereta malam deploy dari kondisi repo SAAT ITU, lalu agent night membuat branch night/* SETELAH deploy dengan basis info basi → entry mengklaim 'sudah live' padahal belum.
 - Aturan: (1) agent night wajib cek `docker inspect <app> --format '{{.Image}}'` vs usia branch-nya sebelum menulis klaim live; (2) CTO pagi wajib treat klaim 'live' di night_ready sebagai hipotesis — verify fisik (curl) dulu, baru flip done; (3) merge night/* pagi = jalan reconcile, bukan opsional.
 - Deteksi cepat: commit timestamp branch vs StartedAt container.
+- 2026-10-26 | org-tools | statejson.py update --python menerima lambda(state) pada DICT state penuh dan mengabaikan return-None; lambda per-entry return dict → TypeError function not serializable (3x gagal, file aman karena atomic replace) | tulis body sebagai list-comprehension .update() per entry dibungkus (…, None)[1]; cek kontrak script sebelum pakai
+
+## 2026-10-26 | konten | StockPrice memuat baris indeks (^JKSE) — agregat breadth wajib eks '^%' dan SATU basis untuk title/body/meta
+- Brief 26 Okt: judul 507 (incl-idx) vs body/meta 506 (eks-idx) + "835 tercatat" vs rincian 834 — keluarga breadth-aggregate ke-5, varian baru: pemisahan basis antara field artikel yang sama.
+- RULE generator: breadth = exclude ticker LIKE '^%'; assert title==body==meta==excerpt memakai SATU basis (angka + total); superlatif mover tetap aman karena base saham.

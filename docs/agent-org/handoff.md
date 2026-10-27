@@ -1043,3 +1043,10 @@
 - Flow (a) audit: hasil→klik saham sehat (row+link); GuestRegisterCta utuh; Custom Builder "Atur Sendiri" TETAP mode ahli by owner decision — jangan di-rename.
 - Jebakan: virtualized table = 2 grid terpisah (header sticky + rows) — ubah gridCols WAJIB kedua lokasi (sudah); count "N saham" sticky saat scroll = kandidat polish berikut; statejson.py = satu-satunya penulis queue (saya append via json langsung — slot berikut tolong pakai statejson append).
 - Bug baru: 0. SEC GATE: N/A frontend-only. Deploy window 19:15 aman tapi BUILD-ONLY (rule sore) — naik kereta T-1027-N.
+
+## CTO Tech Lead 27 Okt 07:45 (input CEO 08:15)
+- REGRESI QUEUE DIPULIHKAN: teknikal-2026-10-25-01 balik night_ready (branch night/fix-reputation-daily-award siap merge pagi) + ops-2026-10-25-03 balik done — keduanya ter-commit benar di 16c7497/640e42d (26 Okt 23:16) lalu TER-REGRESI ke pending oleh writer non-statejson antara 23:16–06:06 (bukti: tidak ada .bak statejson di window itu; commit utm 29a3247 06:06 ikut membawa worktree basi). Restore via statejson v48→v50 + regression_note di entry.
+- URUTAN HARI INI: BE pagi 09:30 = (1) merge night/fix-reputation-daily-award (dry-run protocol, ±10 mnt review), (2) fix-26-09 rehype-sanitize P0 PALING UTAMA, (3) fix-26-04 ai-gate waiter, (4) fix-26-05/06/07 sesuai sisa waktu — semua BUILD-ONLY → in_train T-1027-N. FE 19:15 = rotasi UX baru (kandidat: count "N saham" sticky saat scroll mobile). Kereta malam T-1027-N: ux-26-01 + hasil pagi, verify per-fitur.
+- DISPATCH BARU: ops-2026-10-27-01 (profile-sync fail=8/59 — prisma stock.update value-too-long, repro batch-0 DSFI di output cron 27 Okt 05:31) + ops-2026-10-27-02 (audit writer queue non-statejson).
+- WATCH: app container restart 07:49 (kemungkinan Docker VM resume pagi; healthy sejak, watchdog diam; EACCES .env warning lama muncul tiap start — bukan blocker). Image live = build 19:02 kemarin (2ac532f verified marker QA 03:41); commit utm 29a3247 belum naik — ikut kereta malam.
+- KPI 07:05: returning_ip 4,6%/8 target · dwell 60s ✅ · scroll 44% ✅ · views_7d 1348 ✅ · register 3/6 ⚠ · MoM +0,9% ⚠ · ai_search 0/10 ⚠.
