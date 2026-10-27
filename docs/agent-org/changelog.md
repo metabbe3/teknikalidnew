@@ -808,3 +808,11 @@
 ### fix-2026-10-26-05/06/07 — blocked_for_owner (bukan gagal)
 - 05 rate-limit login + 06 DDD auth->social = AREA AUTH owner gate; owner_brief terisi lengkap (rencana+risiko+rollback) di queue
 - 07 eod-sync 15:55: plist SUDAH di-edit+lint+backup di disk; reload launchd diblokir gateway cron -> 1 perintah owner (tercatat di owner_brief); loaded lama 16:30 tetap jalan (no regresi)
+## 2026-10-27 18:5x — KERETA T-1027-N (CTO sore 16:45; deploy 1/2 org; image 8dcf5d01dc11)
+- id: teknikal-2026-10-25-01 | type: fitur-fix | PRD: prd-2026-10-24-01 | deploy: 8dcf5d01dc11 (merge 397a847)
+  verify: selftest-reputation-daily 5/5 PASS; marker daily-rep+WIB chunk 2623.js | QA: reviewer D+1 | impact_check_due: 2026-10-30 (daily award +5/user WIB-key, tak ada dobel award 00:00-07:00)
+- id: fix-2026-10-26-04 | type: bugfix (P0) | deploy: sama (a6bd26d) | verify: ai-gate-leak selftest PASS | QA: reviewer D+1 | impact_check_due: 2026-10-30
+- id: fix-2026-10-26-09 | type: security (P0 stored-XSS) | deploy: sama (b54f82b) | verify: sanitize selftest 21-check PASS + rehype-sanitize dep di image + /berita 200 | QA: IT-SEC Kamis re-test | impact_check_due: 2026-10-30
+- id: ux-2026-10-26-01 | type: ux | deploy: sama (8864ea8) | verify: chunk 3955-85c045a957d5209b.js live 'Urut' | QA: staging DOM 26 Okt | impact_check_due: 2026-10-30
+- id: straggler-0056106 (bukan entry queue) | type: fix | POST /api/stocks/[ticker]/feedback anonim + model SignalFeedback + admin PII | verify: POST live ok=true total=2, dedup flip t->f (DB 1+1 row), 403 tanpa Origin (CSRF guard jalan) | QA: reviewer D+1 | impact_check_due: 2026-10-30
+- id: build-hotfix-ef2ac33 | type: ops | restore dep compression (ponytail a388414 salah hapus; server.ts root masih import — esbuild gagal) | verify: docker build DONE + image baru | QA: n/a

@@ -840,3 +840,12 @@ penulisan masih 404 (deploy di kereta T-1021-N / CTO pagi).
 - TRAP rehype-sanitize v6: attributes = ARRAY; object-spread bikin keys numerik → src/href ter-strip. Extend harus concat array (catat lessons).
 - fix-26-05/06 blocked_for_owner (AREA AUTH); fix-26-07 plist 15:55 siap di disk, reload launchd diblok gateway cron → owner 1 perintah (owner_brief); fix-26-10 reslot sore 18:30.
 - prod SEHAT: home 200; deploy 0/2 hari ini (kereta T-1027-N = deploy 1).
+
+## 2026-10-27 18:5x WIB — CTO sore 16:45 → kereta T-1027-N (deploy 1/2 org)
+- ANOMALI DITEMUKAN pre-kereta: container prod 16:50 restart membawa kode sore (RepeatVisitHint 55dd0bc ter-grep di .next) PADAHAL image 62118200841f dibangun 08:00 & tak ada ledger deploy sore — indikasi deploy tak-tercatat oleh sesi lain (mungkin docker-cp .next / build host). TIDAK di-rollback (kode = main yang sah); kereta malam menimpa dengan build resmi. Flag ke owner: prosedur deploy satu pintu dilanggar.
+- ROLLBACK ANCHOR pre-deploy: app image aktif 62118200841f (container teknikalidnew-app-1, mulai 16:50) · main sebelum slot = 55dd0bc. Pasca-kereta revert: git revert 397a847 0056106 ef2ac33 (merge+straggler+build-fix) + rebuild.
+- KERETA T-1027-N berangkat 18:54, image 8dcf5d01dc11, manifest final: teknikal-25-01 + fix-26-04 + fix-26-09 + ux-26-01 (semua naik, bukti fisik per-fitur) + straggler feedback API (naik karena UI-nya ddac63e sudah di main & live) + build-hotfix compression. fix-26-10 RESLOT BE malam 19:15 (budget+NO-PANIC-REFACTOR).
+- STRAGGLER RESCUE: worktree sore tak-ter-commit (schema.prisma SignalFeedback + route feedback + admin PII) — kalau tak dinaikkan, tombol VerdictFeedback live = mati (404). Commit 0056106. Tabel DB SignalFeedback sudah dibuat sesi sore (aman, dipakai).
+- BUILD GAGAL ke-1: ponytail a388414 hapus 'compression' padahal server.ts (root, luar src/) import — audit 'zero import' hanya scan src/. FIX restore 1 dep (ef2ac33). Lesson: dependency audit WAJIB cakup server.ts/scripts/*.
+- STATEJSON BUG: subcommand `update --id X --set/--python` MENGABAIKAN --id → menulis top-level queue (bocoran key result/scheduled_slot/tasks — kemungkinan besar penyumbang drift ops-27-02). Hanya `flip --id` yang benar. Top-level sudah dibersihkan manual. → perlu entry perbaikan tools.
+- VERIFY PASCA-DEPLOY: home/stocks/berita/BBCA.JK 200 (before=after); feedback API: POST valid ok=true total=2, dedup flip t→f exact (DB BBCA.JK t=1 f=1), invalid-body 403/400-guard CSRF aktif; chunk UX 'Urut' terserved; selftest 3/3 hijau pre-deploy.

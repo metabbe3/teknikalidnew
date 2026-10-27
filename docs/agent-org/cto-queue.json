@@ -2634,7 +2634,8 @@
    "status": "night_ready",
    "source": "ceo-dispatch 2026-10-25 (owner approved 24 Okt, backlog prd-2026-10-24-01)",
    "night_branch": "night/fix-reputation-daily-award",
-   "regression_note": "ter-regresi ke pending oleh drift-merge 27 Okt pagi; restored CTO Tech Lead 27 Okt 07:5x (status benar di commit 16c7497/640e42d 26 Okt 23:16)"
+   "regression_note": "ter-regresi ke pending oleh drift-merge 27 Okt pagi; restored CTO Tech Lead 27 Okt 07:5x (status benar di commit 16c7497/640e42d 26 Okt 23:16)",
+   "{\"status\":\"done\",\"completed_at\":\"2026-10-27 18:5x WIB (kereta T-1027-N)\",\"result\":\"DONE 27 Okt 18:5x kereta T-1027-N: merge night/fix-reputation-daily-award ke main 397a847 (queue conflict di-resolve sisi main v49 — sudah berisi kedua flip; context_map union). Bukti: selftest-reputation-daily 5/5 PASS; marker daily-rep+WIB chunk 2623.js image 8dcf5d01dc11; home/stocks/berita/BBCA.JK 200 pasca-deploy 18:54. Bug +1-vs-+5 & key-UTC fixed (daily-award.ts satu sumber kebenaran).\"}": ""
   },
   {
    "id": "qa-2026-10-25-02",
@@ -2765,7 +2766,8 @@
    "spec": "Flow (a) sisa: hasil screener browse/table header masih English (Name/Sector/Price/Change/Signal, Sort:, Default/Signal Score/Change %/Price) padahal preset sudah bahasa manusia (f16900d owner 25 Okt 'istilah tak ngerti'). Fix: header+sort+aria-label → ID, kolom Perubahan dilebarkan anti-clip.",
    "done_when": "Label ID tampil di /stocks browse + screener results tanpa clip; tsc 0; build 0",
    "result": "commit 8864ea8 push main. Bukti fisik: tsc EXIT 0, npm build EXIT 0; staging :3100 DOM verify — browse headers [Ticker,Nama,Sektor,Harga,7D,Perubahan,Volume,RSI], screener preset 'Jenuh Jual' 85 saham headers [Ticker,Nama,Sektor,Harga,Perubahan,Volume,RSI,Sinyal,SMA 20], dropdown [Standar,Skor Sinyal,RSI,Volume,Perubahan %,Harga], 'Urut:' label present, clip check desktop+375px = 0 overflow (sebelum: Perubahan scrollWidth 88 > clientWidth 80 = clip 8px). SEO invariant: H1 'Radar Saham IDX' prod 2=2 untouched. Custom Builder 'Atur Sendiri' sengaja tetap mode ahli (owner 25 Okt).",
-   "evidence_date": "2026-10-26"
+   "evidence_date": "2026-10-26",
+   "{\"status\":\"done\",\"qa_verified\":true,\"completed_at\":\"2026-10-27 18:5x WIB (kereta T-1027-N)\",\"result\":\"DONE kereta T-1027-N: commit 8864ea8 dalam image 8dcf5d01dc11; chunk 3955-85c045a957d5209b.js live terserved (grep Urut": "1); /stocks 200.\"}"
   },
   {
    "id": "bo-2026-10-27-01",
@@ -2877,7 +2879,8 @@
    "spec": "src/domains/ai/ai-gate.service.ts L115+127-129: waiter yang timeout TIDAK dihapus dari queue → release berikutnya shift() waiter mati, resolve(true) no-op, active tidak turun. Slot concurrency bocor PERMANEN per timeout → pool lama-lama 429 semua. FIX: hapus waiter dari queue saat timeout (filter/splice sebelum resolve(false)).",
    "acceptance": "Simulasi/ut kecil: request timeout lalu release — pool kembali ke active=0, waiter queue kosong; tidak ada slot leak setelah N timeout berturut; tsc+build hijau.",
    "train": "T-1027-N",
-   "result": "commit a6bd26d: waiter timeout di-splice dari queue sebelum resolve(false). Selftest failing-first: no-fix FAIL slot-bocor / fix PASS (active=0 pasca 5x timeout berturut). tsc 0. Naik kereta T-1027-N."
+   "result": "commit a6bd26d: waiter timeout di-splice dari queue sebelum resolve(false). Selftest failing-first: no-fix FAIL slot-bocor / fix PASS (active=0 pasca 5x timeout berturut). tsc 0. Naik kereta T-1027-N.",
+   "{\"status\":\"done\",\"completed_at\":\"2026-10-27 18:5x WIB (kereta T-1027-N)\",\"result\":\"DONE kereta T-1027-N: commit a6bd26d dalam image 8dcf5d01dc11. Selftest ai-gate-leak PASS (slot tidak bocor pasca waiter timeout). Deploy 1/2 org 18:54.\"}": ""
   },
   {
    "id": "fix-2026-10-26-05",
@@ -2951,7 +2954,8 @@
    "acceptance": "Payload <script>/<img onerror>/javascript: di markdown artikel dirender HILANG (test render md berisi payload → output tersanitasi); tsc+build hijau; 4 halaman publik masih render normal.",
    "cto_note_1027": "27 Okt 07:35-07:56: diff rehype-sanitize SUDAH ADA di worktree oleh sesi lain (uncommitted: article-renderer.tsx +44, package.json +rehype-sanitize, review route) — builder WAJIB audit worktree dulu (git status/diff), lanjutkan bukan tulis ulang; commit sempit setelah tsc hijau; jangan buang hasil sesi lain",
    "train": "T-1027-N",
-   "result": "commit b54f82b: rehype-sanitize schema array-concat (v6 trap: object-spread {...array} = keys numerik, src/href malah ter-strip). Selftest 21/21: 4 payload XSS hilang; tabel/callout/img/heading-id selamat. Staging one-off container 200, DOM prod==staging sampel (tabel 3 artikel + kenapa-naik 200). Dep rehype-sanitize@^6, npm audit 0 vuln. Naik kereta T-1027-N."
+   "result": "commit b54f82b: rehype-sanitize schema array-concat (v6 trap: object-spread {...array} = keys numerik, src/href malah ter-strip). Selftest 21/21: 4 payload XSS hilang; tabel/callout/img/heading-id selamat. Staging one-off container 200, DOM prod==staging sampel (tabel 3 artikel + kenapa-naik 200). Dep rehype-sanitize@^6, npm audit 0 vuln. Naik kereta T-1027-N.",
+   "{\"status\":\"done\",\"completed_at\":\"2026-10-27 18:5x WIB (kereta T-1027-N)\",\"result\":\"DONE kereta T-1027-N: commit b54f82b dalam image 8dcf5d01dc11; rehype-sanitize dep ter-verify di image; selftest article-sanitize 21-check PASS; /berita 200. P0 stored-XSS closed.\"}": ""
   },
   {
    "id": "fix-2026-10-26-10",
@@ -2960,11 +2964,12 @@
    "priority": "P0",
    "status": "pending",
    "assigned_to": "cto",
-   "scheduled_slot": "CTO sore 27 Okt 18:30 (reslot dari pagi — budget pagi habis utk 2 P0)",
+   "scheduled_slot": "2026-10-27 19:15 slot BE malam (reslot sore — budget terpakai kereta T-1027-N + recovery anomali deploy 16:50)",
    "north_star": "CONSISTENCY — doktrin SATU PINTU dilanggar",
    "source": "plain audit 26 Okt malam (domain article/ & stock/)",
    "spec": "Compute movers/breadth/sektor di luar market-snapshot: (1) weekly-report.service.ts:137-156,181 engine breadth/movers/sektor lengkap; (2) screener-analysis.service.ts:28,41,47,63,69 hitung changePercent per-row preset. FIX: routing kalkulasi via market-snapshot.service (extend API-nya bila perlu), hapus compute duplikat.",
-   "acceptance": "grep compute breadth/movers/change% di weekly-report + screener-analysis = 0 (semua via snapshot); angka pasar konsisten test pass; tsc+build hijau."
+   "acceptance": "grep compute breadth/movers/change% di weekly-report + screener-analysis = 0 (semua via snapshot); angka pasar konsisten test pass; tsc+build hijau.",
+   "result": "RESLOT BE malam 19:15: P0 refactor movers/breadth dilarang di sisa slot sore (NO-PANIC-REFACTOR + BUDGET RESERVE); status tetap pending"
   },
   {
    "id": "fix-2026-10-26-11",
@@ -3047,6 +3052,5 @@
    "evidence": "StockPrice AADI.JK Okt 2026: 01=11.150, 02=11.550, 05=11.950, 06=12.125, 07=12.100, 08=11.725, 09=11.800, 12=11.700; artikel mengklaim 11.800/9 Okt sebagai 'penutupan tertinggi awal Oktober'",
    "created_by": "reviewer"
   }
- ],
- "tasks": []
+ ]
 }
