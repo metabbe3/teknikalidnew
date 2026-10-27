@@ -2629,7 +2629,7 @@
       "priority": "P1",
       "north_star": "STICKY",
       "spec": "INTENT (PRD prd-2026-10-24-01, owner approve digest 24 Okt 'Approved all'): Point and Badge v1 — auto +5 point/hari saat visit terautentikasi (middleware, key tanggal WIB, idempotent tanpa tombol claim) + badge existing muncul di home logged-in (chip + tooltip). Baseline kode: reputation.service.ts claimDailyReward() L46 (claim-based, redis), User.reputation schema.prisma L251, badge.ts/achievements.ts. Out of scope: redeem/leaderboard/badge baru. DONE WHEN: (1) login user pagi = reputation +5 otomatis, SQL log row created_at hari itu; (2) home logged-in render badge (DOM data-badge / SSR component); (3) refresh ke-2 hari sama TIDAK +5 lagi (SQL count log harian = 1); (4) tsc hijau + build hijau + staging :3100 verify. FDE: research_brief = baseline kode inline di PRD (owner override 24 Okt); PRD lengkap + qa_plan (revisit-rate +2pp/14d). SEC-REVIEW: N/A (tidak sentuh auth baru/input eksternal/money; reputasi internal read-modify-write, idempotency wajib).",
-      "scheduled_slot": "Selasa 27 Okt 09:30 slot BE pagi (build-only; naik kereta T-1027-N malam)",
+      "scheduled_slot": "Selasa 27 Okt sore 18:30 slot BE malam (merge night_ready night/fix-reputation-daily-award + build; slot pagi 07:30 tidak tercatat di ledger 27 Okt) -> kereta T-1027-N",
       "train": "T-1027-N",
       "status": "night_ready",
       "source": "ceo-dispatch 2026-10-25 (owner approved 24 Okt, backlog prd-2026-10-24-01)",
@@ -2940,7 +2940,8 @@
       "north_star": "TRUST/SECURITY — stored XSS di konten publik",
       "source": "plain audit 26 Okt malam (domain article/ & stock/)",
       "spec": "src/components/article/article-renderer.tsx:4,50 pakai rehype-raw TANPA sanitizer HTML. Konten artikel = LLM-generate (bisa prompt-inject via sumber berita) dirender raw HTML; sanitizeGeneratedContent bukan HTML sanitizer. Konsumen publik: berita/[slug]:328, akademi/[slug]:239, saham/[ticker]/kenapa-naik-hari-ini:282, admin preview:124. FIX: tambah rehype-sanitize (schema ketat) sebelum rehype-raw, ATAU buang rehype-raw.",
-      "acceptance": "Payload <script>/<img onerror>/javascript: di markdown artikel dirender HILANG (test render md berisi payload → output tersanitasi); tsc+build hijau; 4 halaman publik masih render normal."
+      "acceptance": "Payload <script>/<img onerror>/javascript: di markdown artikel dirender HILANG (test render md berisi payload → output tersanitasi); tsc+build hijau; 4 halaman publik masih render normal.",
+      "cto_note_1027": "27 Okt 07:35-07:56: diff rehype-sanitize SUDAH ADA di worktree oleh sesi lain (uncommitted: article-renderer.tsx +44, package.json +rehype-sanitize, review route) — builder WAJIB audit worktree dulu (git status/diff), lanjutkan bukan tulis ulang; commit sempit setelah tsc hijau; jangan buang hasil sesi lain"
     },
     {
       "id": "fix-2026-10-26-10",
