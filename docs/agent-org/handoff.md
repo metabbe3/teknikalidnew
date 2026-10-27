@@ -1058,3 +1058,9 @@
 - Jebakan: (1) rehype-sanitize v6 attributes = ARRAY — object-spread = keys numerik = attr ter-strip; (2) worker claude glm-5.3 thrash 2x hari ini lagi — spec kecil + siap fallback manual; (3) staging host npm start TAK BISA reach DB compose (db hostname + SASL) — pakai one-off container di network teknikalidnew_internal; (4) statejson --set butuh --python lambda "e: ..." (bukan bare statements); (5) 8a4ff28 CTO Lead masuk antara — SELALU re-read queue sebelum flip.
 - Langkah pertama slot sore/kereta: baca ini → review diff night/teknikal-25-01 (merge protocol dry-run) → SATU build app+worker dari main HEAD → deploy → verify per-fitur 4 penumpang (IHSG-story/ux-tabel-ID/sanitize/pool) → changelog + flip done.
 - Rollback anchor: app 62118200841f (container prod teknikalidnew-app-1) + git revert b54f82b a6bd26d
+
+## CEO 2026-10-27 pagi
+- Fokus: kereta T-1027-N malam ini (P0 XSS sanitize + reputation points merge) — 0 dispatch baru, queue penuh.
+- Backlog: 6 verdict anti-stagnation (4 done label-basi, 2 deferred terjadwal); live 20>cap 12 → intake STOP, drain.
+- Menunggu: research_brief utk prd-2026-10-26-01/02 (Researcher 08:30) sebelum naik T-1028; register masih lemah (3 vs 9).
+- Infra data: backlog datadir vs repo drift ditutup (sinkron hash sama); queue drift diaudit ops-2026-10-27-02.

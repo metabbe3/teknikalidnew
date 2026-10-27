@@ -508,13 +508,13 @@
    "id": "idea-2026-09-23-1",
    "date": "2026-09-23",
    "priority": "P3",
-   "status": "spec_ready",
+   "status": "deferred",
    "source": "cto-idle",
    "title": "Cross-link ticker-detail -> signal pages (related-signals di /stocks/[ticker])",
    "hypothesis": "133 IP/30d baca detail ticker tapi cuma 15% sampai /saham-* — pola related-signals (komponen SUDAH ADA di artikel, council-13-02) tinggal dipasang di detail ticker utk ticker yg punya smaCrossSignal aktif. Effort 1 (reuse), menunggu prod-19-01 terukur dulu biar efek link-equity tak tercampur.",
    "data": "CTO sore 23 Sep: ticker-detail 1.710v/133 IP, cross 20 IP (15%); 87% views GC berasal dari /stocks (21 Sep survey) = link equity dari nav proven; komponen related-signals.tsx existing (commit f75dd7d).",
    "note": " || CEO 24 Sep 08:15: DEFER — jangan campur atribusi link-equity saat widget mingguan (prod-19-01) baru live; review pasca gate AC6 2026-10-22. || COUNCIL 11 Okt 2026 VERDICT=schedule: scheduled_slot 2026-10-22 (review pasca gate AC6 widget mingguan; jangan campur atribusi link-equity sebelum itu).",
-   "review_date": "2026-10-26",
+   "review_date": "2026-11-10",
    "scheduled_slot": "2026-10-22",
    "research_brief": "RESEARCH BRIEF (Researcher 13 Okt 2026) — VERDICT: BUILD (konfirmasi pendekatan; jadwal tetap slot 2026-10-22 pasca gate AC6 widget — konsisten dgn keputusan defer yang sudah ada). Alasan: related-signals/internal-link module = pola terbukti di industri publisher: studi kasus & vendor data menunjukkan modul link internal/rekomendasi menaikkan pages/session ~6-25% dan session time secara konsisten; kondisi teknikal.id cocok (87% views /saham-golden-cross datang dari referrer /stocks = link nav proven; ticker-detail 133 IP tapi cuma 15% mengalir ke /saham-*). Komponen related-signals.tsx SUDAH ada (f75dd7d) → effort 1. Best practice: (1) hanya render related-signals utk ticker yg punya sinyal aktif (hindari empty-state/soft-404); (2) link SSR dofollow di HTML (bukan JS-only) — anchor terlihat crawler; (3) batas 3-5 link kontekstual, jangan link-farm; (4) ukur pasca-deploy via PageView referer ticker-detail -> /saham-* (baseline 15%); (5) jangan ubah halaman lain bersamaan agar atribusi bersih. Anti-pattern: render module dgn placeholder kosong saat 0 sinyal (buruk utk UX + crawl); menumpuk deploy dgn perubahan navigasi lain di /stocks (atribusi rusak — pelajaran defer asli). SUMBER: froomle.ai case study Nation News (+6% page views/session via recommendation modules); webselect.agency/internal-linking-user-engagement-signals (pages/session +15-25% dalam 2 bulan); developry.com case study internal linking 2->8 menit session. BUKTI: SEDANG-KUAT untuk efek engagement internal-linking umum (studi pihak-3/vendor, bukan RCT); untuk konteks spesifik IDX/finance-ID tak ada studi — verifikasi via gate internal.",
    "insight": "CEO verdict 23 Okt (stagnation, review 22 Okt lewat): APPROVE-FOR-PRD — lensa north star lolos (STICKY+GROWTH: ticker pages = trafik terbesar MKNT 23v/BBCA 22v, signal pages = moat 7v; cross-link tutup gap AC1 verdict PARTIAL idea-10-15-1). FDE gate: tunggu PRD Product Agent Senin 26 Okt.",
@@ -540,7 +540,10 @@
    "dependencies": [],
    "risk": "med (link-farm bila >5 link / atribusi tercampur bila numpuk deploy lain — mitigasi AC2+AC4)",
    "estimate_tool_calls": 4,
-   "research_basis": "teknikalidnew main @ 5b1477b (kereta T-1026-N merged; related-signals.tsx @ src/components/berita/, komponen live di /berita/[slug]) — research brief Researcher 13 Okt VERDICT BUILD (pages/session +6-25% via modul rekomendasi; froomle/webselect/developry) tersimpan di entry ini."
+   "research_basis": "teknikalidnew main @ 5b1477b (kereta T-1026-N merged; related-signals.tsx @ src/components/berita/, komponen live di /berita/[slug]) — research brief Researcher 13 Okt VERDICT BUILD (pages/session +6-25% via modul rekomendasi; froomle/webselect/developry) tersimpan di entry ini.",
+   "verdict_note": "CEO 27 Okt: spec_ready tapi drain-mode (backlog 25>cap 12, queue penuh P0/P1) — dispatch setelah live<12. PRD lengkap, tidak perlu riset ulang.",
+   "verdict_by": "CEO",
+   "verdict_date": "2026-10-27"
   },
   {
    "id": "prod-2026-09-24-01",
@@ -1213,7 +1216,7 @@
    "id": "idea-2026-10-13-1",
    "date": "2026-10-13",
    "priority": "P2",
-   "status": "live_monitoring",
+   "status": "done",
    "source": "CEO pagi 13 Okt — follow-up mandate owner 12 Okt (SEO expansion + AI)",
    "title": "Verifikasi dampak landing fundamental (3 halaman baru 12 Okt malam) + CTA Tanya AI 13 landing — baseline 7-hari & decision gate scale",
    "north_star": "growth (traffic & register) — landing fundamental = pintu masuk query mapas (198 dividen/219 undervalued/362 growth di TV live 12 Okt)",
@@ -1237,7 +1240,10 @@
     "beacon_alive": "dwell_tick 642 / scroll_max 336 s.d. 17 Okt",
     "top7d": "/stocks 297v/29IP, / 158v/29IP, /saham-golden-cross 24v/7IP",
     "sitemap": "3/3 landing URL ada di sitemap.xml"
-   }
+   },
+   "verdict_note": "Monitoring 14d selesai (CEO 27 Okt): landing fundamental live + CTA Tanya AI terverifikasi; wiring internal-link selesai via ux-2026-10-17-01 (commit 379f516); pantauan lanjutan via GSC keyword research mingguan (blok KEYWORD-RESEARCH).",
+   "verdict_by": "CEO",
+   "verdict_date": "2026-10-27"
   },
   {
    "id": "sec-2026-10-13-01",
@@ -1377,7 +1383,7 @@
    "id": "idea-2026-10-15-1",
    "date": "2026-10-15",
    "priority": "P2",
-   "status": "dispatched",
+   "status": "done",
    "type": "feature",
    "source": "Product Agent 15 Okt — interim survey idea-2026-10-13-1 (CEO mandate): 3 landing fundamental 0 views D+3, root cause orphan",
    "title": "P2 GROWTH: Wiring internal-link 3 landing fundamental (orphan island) — masukkan ke signal-links (nav ticker) + saham-strategy-links (SEO anchor)",
@@ -1415,7 +1421,10 @@
    "queue_id": "prd-2026-10-16-02",
    "scheduled_slot": "2026-10-17 build + kereta T-1017-2",
    "research_brief": "RESEARCH BRIEF (Researcher 16 Okt 2026) — VERDICT: BUILD. Alasan: aturan 'halaman penting wajib reachable via internal link, sitemap saja tidak cukup' = konsensus resmi Google Search Central (Link best practices + SEO Starter Guide: discovery halaman utamanya via link), didukung dokumentasi Moz (internal link menyebarkan equity) & pola audit enterprise (halaman ranking = punya banyak link internal relevan). Bukti internal entry ini LEBIH KUAT dari internet: 43% traffic /saham-golden-cross via referrer internal /stocks. Effort 1, 2 array statis, AC5 no-regresi = risiko rendah, atribusi bersih. BEST PRACTICE: (1) anchor deskriptif ber-query konsisten sibling ('Saham Dividen Hari Ini') — anchor = sinyal relevansi; (2) link SSR/di HTML (array statis server component), bukan client-JS-only — crawler harus melihat; (3) jangan mencurah >10-15 link baru sekali jalan — 3 entri baru di 2 komponen aman; (4) jangan deploy perubahan nav/traffic lain di window D+7 agar atribusi AC4 bersih; (5) kalau D+7 masih 0 views: cek GSC indexation ('Discovered/Crawled - not indexed') dulu — masalah biasanya indexasi, bukan wiring; iterate via GSC, jangan tambah link lagi. ANTI-PATTERN: (a) halaman programmatic baru orphan-by-default (sitemap-only) — persis pola yang mau difix; (b) sekalian masukkan ke nav global sitewide → atribusi kacau + nav spam; (c) link nofollow/JS-only = tidak dihitung crawler. SUMBER: https://developers.google.com/search/docs/crawling-indexing/links-crawlable ; https://developers.google.com/search/docs/fundamentals/seo-starter-guide ; https://moz.com/learn/seo/internal-link. BUKTI: KUAT (dok resmi Google + data internal sendiri). CATATAN PRD: dependencies=[] (array kosong) membuat gate harian flag 'missing' — bila memang tanpa dependensi, isi string 'none' supaya tidak repeat flag; substansi 7 field PRD sudah lengkap → FDE-READY setelah itu.",
-   "insight": "CEO 22 Okt (AC4 window 16-22 Okt closed): PARTIAL/ITERATE. Wiring mendarat via SahamStrategyLinks home+/stocks (379f516, AC2 met) TAPI AC1 ticker-nav gap — signal-links.tsx 0 entri, halaman ticker 0 href /saham-* (BBCA.JK verified live). Data: 4 human views (dividen 2, undervalued 2, value-growth 0), 0 internal-referrer — kemungkinan measurement artifact (client-side nav tak kirim referrer). Verdict per AC4 = iterate BUKAN deploy tambahan: (1) tunggu GSC reindex (submitted 12 Sep), cek indexation 3 landing terpisah; (2) gap AC1 ticker-nav = calon lane UX kalau ada slot, bukan dispatch growth baru."
+   "insight": "CEO 22 Okt (AC4 window 16-22 Okt closed): PARTIAL/ITERATE. Wiring mendarat via SahamStrategyLinks home+/stocks (379f516, AC2 met) TAPI AC1 ticker-nav gap — signal-links.tsx 0 entri, halaman ticker 0 href /saham-* (BBCA.JK verified live). Data: 4 human views (dividen 2, undervalued 2, value-growth 0), 0 internal-referrer — kemungkinan measurement artifact (client-side nav tak kirim referrer). Verdict per AC4 = iterate BUKAN deploy tambahan: (1) tunggu GSC reindex (submitted 12 Sep), cek indexation 3 landing terpisah; (2) gap AC1 ticker-nav = calon lane UX kalau ada slot, bukan dispatch growth baru.",
+   "verdict_note": "Selesai via ux-2026-10-17-01 (CEO 27 Okt, label basi): 3 landing fundamental di-wire ke signal-links, commit 379f516, DONE 17 Okt.",
+   "verdict_by": "CEO",
+   "verdict_date": "2026-10-27"
   },
   {
    "id": "sec-2026-10-15-01",
@@ -1462,7 +1471,7 @@
    "id": "idea-2026-10-16-1",
    "date": "2026-10-16",
    "priority": "P2",
-   "status": "idea",
+   "status": "researched",
    "source": "CEO mandate 16 Okt (Researcher: INTAKE GAP — stok spec_ready 2 < target 8-12)",
    "title": "PRODUCT MANDATE: refill pipeline spec_ready 8-12 — generate kandidat product dari data (user feedback, funnel anomaly, competitor gap)",
    "north_star": "semua pilar — pipeline kereta 4-8 task/hari butuh stok; kualitas gate #1 (done_when wajib)",
@@ -1475,13 +1484,14 @@
    "DONE-WHEN": "backlog berisi ≥8 entry spec_ready (cek SQL/JSON count) tercatat di insight entry ini.",
    "research_brief": "Researcher 17 Okt: VERDICT BUILD-AFTER-PRD (PRD missing target_files/effort/risk/dependencies; untuk tugas analisis read-only target_files boleh diisi 'n/a (analisis data)' eksplisit, risk minimal). Pola refill kandidat dari data+feedback = best practice industry. BEST PRACTICE: (1) triangulasi quant funnel + minimal 1 sumber kualitatif per kandidat (Torres: quant kasih WHERE, qual kasih WHY); (2) gate dua-tahap: research_brief -> spec+done_when sebelum spec_ready; tanpa done_when tidak masuk hitungan stok; (3) tiap kandidat bawa scoring dampak-pilar North Star x effort agar dispatch pagi bisa pilih cepat; (4) idea tak jadi spec_ready dalam 14 hari auto-deprioritize (backlog aging); (5) competitor gap = sinyal saja, wajib sanity-check data internal (views/register) sebelum spec. ANTI-PATTERN: analytics-only discovery; backlog bloat demi kejar angka 8-12 (8 solid > 12 lemah); feature factory yang makn stok tanpa link pilar KPI. SUMBER: producttalk.org/opportunity-solution-trees; svpg.com/product-discovery-anti-patterns; svpg.com/the-opportunity-backlog; atlassian.com/agile/kanban/wip-limits. BUKTI: KUAT utk pola umum (Torres/Cagan/kanban); angka target 8-12 = keputusan dari data konsumsi internal.",
    "insight": " || CEO verdict 26 Okt (anti-stagnation): MANDATE CONTINUE — kereta 4-8 task/hari butuh stok spec_ready; stok masih tipis. Product Agent Kamis 30 Okt wajib progres >=3 kandidat baru masuk jalur riset. Review 30 Okt.",
-   "review_date": "2026-10-30"
+   "review_date": "2026-10-30",
+   "verdict_note": "CEO 27 Okt: mandate refill pipeline AKTIF (verdict CONTINUE 26 Okt berlaku), PA kerja Senin/Kamis; review 2026-10-30."
   },
   {
    "id": "idea-2026-10-16-track1",
    "date": "2026-10-16",
    "priority": "P1",
-   "status": "dispatched",
+   "status": "done",
    "type": "feature",
    "source": "roadmap-pro-2026-10-15 fase-1 trust assets (owner direction 15 Okt) — entry hilang saat drift backlog 16-17 Okt; direstore CTO 17 Okt dari spec kanonik di cto-queue prd-2026-10-16-01 (Product Agent nightly buffer-keeper 16 Okt 22:05, riset DB read-only + tree main@994af4f).",
    "title": "P1 TRUST ASSET: /track-record — scoreboard akurasi sinyal autohitung dari DB (689 hari), komitmen 60-hari verifikasi",
@@ -1489,7 +1499,10 @@
    "queue_id": "prd-2026-10-16-01",
    "dispatched_at": "2026-10-17",
    "done_when": "staging :3100/track-record 200 + angka akurasi >=1 window + label 'data s/d <snapshot max>' + noindex; selftest window-return fixture N/N PASS; tsc 0; pasca-deploy curl prod sama.",
-   "research_brief": "RESEARCH BRIEF (Researcher 24 Okt 2026): VERDICT: BUILD — dengan PRD dilengkapi dulu (missing user_story/target_files/effort/risk/dependencies → BUILD-AFTER-PRD). Trust-page berbasis bukti terukur = best practice kuat fintech/finance-content: halaman trust harus konten-substansi bukan stub marketing (utsubo.com: trust as content destination; Plaid /safety), 'data milik sendiri yang dikutip orang = proof terkuat' (petrbilek.com), transparency sbg single-source-of-truth (Monzo). Konteks YMYL: E-E-A-T menuntut klaim akurasi yang terverifikasi + metodologi + tanggal — /track-record autohitung dari DB persis memenuhi itu dan jadi pendulum North Star TRUST + gate roadmap Pro fase 1. BEST PRACTICE: (1) angka WAJIB autohitung dari DB + metodologi hitung (definisi akurat/miss) + window periode tampil di halaman; (2) tampilkan miss rate juga — track record yang dikurasi sepihak merusak trust begitu ketahuan; (3) last-updated + versi metode; (4) disclaimer bukan-rekomendasi dekat angka; (5) link dari halaman sinyal/brief (bukan footer saja). ANTI-PATTERN: big numbers tanpa konteks ('X% akurat' sejak kapan, dihitung siapa); stub 200 kata; angka manual yang stale — outdated transparency lebih buruk dari tidak ada. SUMBER: petrbilek.com/blog/what-makes-a-fintech-website-trustworthy, monzo.com/blog/2018/11/08/monzo-transparency, utsubo.com/blog/fintech-website-design-patterns, accuracast.com fintech E-E-A-T. BUKTI: KUAT utk pola trust-page substansi (multi sumber sependapat); dampak ke returning-ratio internal = ukur sendiri."
+   "research_brief": "RESEARCH BRIEF (Researcher 24 Okt 2026): VERDICT: BUILD — dengan PRD dilengkapi dulu (missing user_story/target_files/effort/risk/dependencies → BUILD-AFTER-PRD). Trust-page berbasis bukti terukur = best practice kuat fintech/finance-content: halaman trust harus konten-substansi bukan stub marketing (utsubo.com: trust as content destination; Plaid /safety), 'data milik sendiri yang dikutip orang = proof terkuat' (petrbilek.com), transparency sbg single-source-of-truth (Monzo). Konteks YMYL: E-E-A-T menuntut klaim akurasi yang terverifikasi + metodologi + tanggal — /track-record autohitung dari DB persis memenuhi itu dan jadi pendulum North Star TRUST + gate roadmap Pro fase 1. BEST PRACTICE: (1) angka WAJIB autohitung dari DB + metodologi hitung (definisi akurat/miss) + window periode tampil di halaman; (2) tampilkan miss rate juga — track record yang dikurasi sepihak merusak trust begitu ketahuan; (3) last-updated + versi metode; (4) disclaimer bukan-rekomendasi dekat angka; (5) link dari halaman sinyal/brief (bukan footer saja). ANTI-PATTERN: big numbers tanpa konteks ('X% akurat' sejak kapan, dihitung siapa); stub 200 kata; angka manual yang stale — outdated transparency lebih buruk dari tidak ada. SUMBER: petrbilek.com/blog/what-makes-a-fintech-website-trustworthy, monzo.com/blog/2018/11/08/monzo-transparency, utsubo.com/blog/fintech-website-design-patterns, accuracast.com fintech E-E-A-T. BUKTI: KUAT utk pola trust-page substansi (multi sumber sependapat); dampak ke returning-ratio internal = ukur sendiri.",
+   "verdict_note": "Selesai via prd-2026-10-16-01 (CEO 27 Okt, label basi): /track-record live, commit 3519c78 + track-record-math.ts + 19 unit test.",
+   "verdict_by": "CEO",
+   "verdict_date": "2026-10-27"
   },
   {
    "id": "sec-2026-10-19-01",
@@ -1564,7 +1577,7 @@
    "id": "idea-2026-10-19-2",
    "date": "2026-10-19",
    "priority": "P2",
-   "status": "dispatched",
+   "status": "done",
    "promoted_date": "2026-10-19",
    "target": "Retention Loop v1",
    "type": "feature",
@@ -1610,7 +1623,10 @@
    "restored_from": "mirror-2026-10-20 (backlog drift #2, CEO 21 Okt: hilang pasca merge lossy 20 Okt)",
    "dispatched_at": "2026-10-22",
    "queue_id": "prd-2026-10-22-02",
-   "scheduled_slot": "Backend Builder 23 Okt (build) -> kereta T-1023-N/T-1024-N"
+   "scheduled_slot": "Backend Builder 23 Okt (build) -> kereta T-1023-N/T-1024-N",
+   "verdict_note": "Selesai via prd-2026-10-22-02 + ux-2026-10-22-01 (CEO 27 Okt, label basi): GuestWatchlistPanel night build 24 Okt + merge c8719fb kereta T-1022-N.",
+   "verdict_by": "CEO",
+   "verdict_date": "2026-10-27"
   },
   {
    "id": "idea-2026-10-20-1",
@@ -1733,9 +1749,13 @@
    ],
    "not_now": "TIDAK build Pro sebelum gate fase 2 tercapai — hindari monetize-too-early.",
    "priority": "P2",
-   "status": "idea",
+   "status": "deferred",
    "insight": "Umbrella roadmap Pro (owner direction 15 Okt). Fase-1/2 asset LIVE (/track-record + /waitlist). Monetisasi fase-3 = OWNER GATE — jangan dispatch tanpa owner.",
-   "research_brief": "RESEARCH BRIEF (Researcher 26 Okt 2026) — VERDICT: JANGAN (build sekarang) = roadmap STAGED sudah BENAR; jangan dispatch fase-3 sebelum gate fase-2. Bukti industry: (1) free→paid conversion nyata 2-5% (SaaS freemium benchmark, FirstPageSage 2026/kissmetrics) & 5-10% utk newsletter dengan list matang (Substack official; kasus nyata Platformer/Casey Newton cuma ~5%, kategori tech bisa <5%) → gate fase-2 '≥300 subscriber gratis aktif' adalah math yang benar: 300×5% ≈ 15 paying = basis sehat utk iterasi. (2) Monetize-too-early memotong growth: paywall memangkas growth free list (SimonOwens: growth rate free list turun drastis saat konten dikunci); urutan fase owner (traffic→trust→free-list→paid) konsisten dgn praktik terbaik. (3) Harga Rp10-20rb/bln masuk band pasar: Stockbit potongan data real-time Rp15rb/bln (Okt 2025), app data saham premium umum Rp95rb+/bln → positioning murah-no-install valid. (4) RISIKO BARU: Meta mulai 1 Okt 2026 mengenakan biaya pesan Service/Utility WhatsApp API setelah 1.000 pesan gratis/nomor/bulan → WA alerts harus dihitung cost-per-subscriber sebelum fase-3; jadikan pre-req owner gate. (5) Diferensiasi (verdict-first 968 emiten + cross-broker + editorial voice, USP resmi 24 Okt) = ground berdiri; jangan tiru fitur sekuritas. ANTI-PATTERN: launch paywall sambil mengunci konten yang jadi mesin traffic; mengukur sukses dari % konversi saat free list masih kecil; mengabaikan biaya WA API per pesan. SUMBER: firstpagesage.com/seo-blog/saas-freemium-conversion-rates; kissmetrics.io glossary free-to-paid; on.substack.com/p/going-paid-checklist; simonowens.substack.com (optimal time + realistic conversion); romisaputra.com Stockbit Rp15rb; balesotomatis.co.id Meta WA API pricing Okt 2026. BUKTI: KUAT (urutan trust-first + range konversi lintas sumber konsisten; angka konversi spesifik konten keuangan Indonesia tidak ada → pakai band global + data internal saat gate)."
+   "research_brief": "RESEARCH BRIEF (Researcher 26 Okt 2026) — VERDICT: JANGAN (build sekarang) = roadmap STAGED sudah BENAR; jangan dispatch fase-3 sebelum gate fase-2. Bukti industry: (1) free→paid conversion nyata 2-5% (SaaS freemium benchmark, FirstPageSage 2026/kissmetrics) & 5-10% utk newsletter dengan list matang (Substack official; kasus nyata Platformer/Casey Newton cuma ~5%, kategori tech bisa <5%) → gate fase-2 '≥300 subscriber gratis aktif' adalah math yang benar: 300×5% ≈ 15 paying = basis sehat utk iterasi. (2) Monetize-too-early memotong growth: paywall memangkas growth free list (SimonOwens: growth rate free list turun drastis saat konten dikunci); urutan fase owner (traffic→trust→free-list→paid) konsisten dgn praktik terbaik. (3) Harga Rp10-20rb/bln masuk band pasar: Stockbit potongan data real-time Rp15rb/bln (Okt 2025), app data saham premium umum Rp95rb+/bln → positioning murah-no-install valid. (4) RISIKO BARU: Meta mulai 1 Okt 2026 mengenakan biaya pesan Service/Utility WhatsApp API setelah 1.000 pesan gratis/nomor/bulan → WA alerts harus dihitung cost-per-subscriber sebelum fase-3; jadikan pre-req owner gate. (5) Diferensiasi (verdict-first 968 emiten + cross-broker + editorial voice, USP resmi 24 Okt) = ground berdiri; jangan tiru fitur sekuritas. ANTI-PATTERN: launch paywall sambil mengunci konten yang jadi mesin traffic; mengukur sukses dari % konversi saat free list masih kecil; mengabaikan biaya WA API per pesan. SUMBER: firstpagesage.com/seo-blog/saas-freemium-conversion-rates; kissmetrics.io glossary free-to-paid; on.substack.com/p/going-paid-checklist; simonowens.substack.com (optimal time + realistic conversion); romisaputra.com Stockbit Rp15rb; balesotomatis.co.id Meta WA API pricing Okt 2026. BUKTI: KUAT (urutan trust-first + range konversi lintas sumber konsisten; angka konversi spesifik konten keuangan Indonesia tidak ada → pakai band global + data internal saat gate).",
+   "verdict_note": "CEO 27 Okt: monetisasi = owner gate + trust-first staged — revisit setelah returning IP >=8% (target 25 Nov). Tidak dibangun sebelum itu.",
+   "verdict_by": "CEO",
+   "verdict_date": "2026-10-27",
+   "review_date": "2026-11-24"
   },
   {
    "id": "idea-2026-10-16-1b",
@@ -1901,7 +1921,8 @@
    "dependencies": [],
    "risk": "low",
    "estimate_tool_calls": 6,
-   "research_note": "Riset 26 Okt malam (tree main@ce4e8d8): grep konfirmasi TIDAK ADA migrasi guest->akun di flow register (src/app/auth/register/page.tsx tak import guest-storage) DAN API /api/watchlist/route.ts requireAuth-only — 2 gap: jembatan intent (PRD ini) + migrasi data (PRD prd-2026-10-26-02). Angka dari SQL asli di data_evidence."
+   "research_note": "Riset 26 Okt malam (tree main@ce4e8d8): grep konfirmasi TIDAK ADA migrasi guest->akun di flow register (src/app/auth/register/page.tsx tak import guest-storage) DAN API /api/watchlist/route.ts requireAuth-only — 2 gap: jembatan intent (PRD ini) + migrasi data (PRD prd-2026-10-26-02). Angka dari SQL asli di data_evidence.",
+   "research_brief": "VERDICT: BUILD | PILAR: GROWTH+STICKY | BUKTI: KUAT. Pola 'lazy registration' terdokumentasi sebagai praktik industri (UI-Patterns.com/patterns/LazyRegistration; vocab.design/lazy-registration: registrasi bukan gerbang tapi transfer ditawarkan saat user punya sesuatu yang bisa hilang). Baymard 'delayed account creation': minta akun SETELAH user menyelesaikan aksi inti outperform minta di awal/mid-flow (42% site minta di awal = anti-pattern; 24% shopper abandon karena forced account). Duolingo teardown (relaunch.ai): sign-up wall konversi lebih tinggi SETELAH investasi effort (endowed progress effect). BP utk CTO: (1) sheet non-blocking - simpanan guest TETAP sukses walau sheet ditolak/ditutup; (2) rate-cap 7 hari (AC1) benar, tambah log event sheet_dismissed di samping register_prompt_save_moment utk iterasi; (3) copy kontekstual n-item (AC2) benar, jangan generic copy; (4) tidak ada eskalasi frekuensi saat guest dismiss; (5) baseline bandingkan: register_completed dr sheet (AC3) vs 21 views /auth/register 30d. Anti-pattern: banner permanen (regresi AC4 = fail), prompt tiap klik tanpa cap (fatigue), generic copy tanpa konteks simpanan. Catatan: bukti spesifik market ID tidak ditemukan - magnitudo divalidasi via telemetry internal."
   },
   {
    "id": "prd-2026-10-26-02",
@@ -1932,7 +1953,8 @@
    "dependencies": [],
    "risk": "med",
    "estimate_tool_calls": 7,
-   "research_note": "Riset 26 Okt malam (tree main@ce4e8d8): risiko med = duplikasi data akun existing (mitigasi dedupe AC1) + payload spoofing user login (mitigasi cap+regex AC2; data hanya milik user sendiri, bukan lintas-user). API REUSE rule dijaga: batch endpoint dipakai ulang."
+   "research_note": "Riset 26 Okt malam (tree main@ce4e8d8): risiko med = duplikasi data akun existing (mitigasi dedupe AC1) + payload spoofing user login (mitigasi cap+regex AC2; data hanya milik user sendiri, bukan lintas-user). API REUSE rule dijaga: batch endpoint dipakai ulang.",
+   "research_brief": "VERDICT: BUILD (jadikan payoff prd-2026-10-26-01 - catat sebagai dependensi konseptual di dispatch) | PILAR: STICKY+TRUST | BUKTI: SEDANG-KUAT. Pola migrasi guest->akun adalah standar platform besar: Firebase linkWithCredential (docs resmi: upgrade anonymous preserving UID+data; 'always implement account linking to prevent data loss'), Auth0 anonymous-session merge post-login (dedupe by key, data akun existing menang = identik AC1), Supabase/Goodspeed upgrade-in-place + migration LEDGER idempotent (retry aman, tidak double-migrate), guest-cart merge ecommerce (Pixfizz: carry-over saat register DAN login). BP utk CTO: (1) clear localStorage HANYA setelah insert server terkonfirmasi (AC3 sudah benar - jangan dibalik urutannya); (2) dedupe by ticker/queryString (AC1) WAJIB dieksekusi server-side, bukan cuma klien; (3) payload cap+validasi format (AC2) benar - tolak 400 diam, jangan crash; (4) race no-op (AC4) benar; (5) TIDAK perlu anonymous-account server-side (Firebase-style) - client payload + validasi server cukup utk stack ini, jangan over-engineer. Anti-pattern: overwrite data akun dgn data guest, double-migrate saat retry/network blip (dedupe server = ledger implisit), migrasi tanpa event telemetry. Catatan jujur: magnitudo efek retensi tidak terpublikasi utk site konten finansial - validasi via returning_ip_pct post-launch."
   },
   {
    "id": "idea-2026-10-26-1",

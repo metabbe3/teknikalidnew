@@ -1265,3 +1265,54 @@ Konteks: outage 502 yang dilaporkan run 19 Okt = insiden 19 Okt (bukan berkelanj
 - Opsi B: buang rehype-raw total, render markdown murni — paling aman tapi rugi formatting yang jadi identitas artikel; regresi visual luas.
 - Rekomendasi: A — slot BE pagi 09:30 build-only, QA gate pra-naik, IT-SEC Kamis 21:30 re-test; sekalian fix-26-04 (ai-gate waiter leak → concurrency pool bocor permanen, ujungnya 429 massal).
 - Ops: queue pagi kena regresi drift (2 entry ter-commit night_ready/don balik ke pending antara 26 Okt 23:16–27 Okt 06:06, writer non-statejson) — sudah direstore + dispatch audit ops-2026-10-27-02. Tulis queue SELALU via statejson.
+
+
+## [KEYWORD-RESEARCH] 2026-10-27 — minggu 21–27 Okt (sumber: GSC gsc-keyword-history.jsonl)
+
+Brief 1 — P1 · Pilar GROWTH + AI-SEARCH
+- Keyword target: "harga saham bris hari ini" (impr 42/pekan, pos 70,8; plus cluster harga-hari-ini utk emiten lain)
+- Intent: cek harga BRIS hari ini — navigational-informasi, frekuensi harian tinggi
+- Angle/judul: perkuat SSR answer block 40–60 kata di /stocks/BRIS.JK (harga close + perubahan % + rentang harian + 52-mgg, angka SSR — saat ini cuma 2 token "Rp" di HTML, harga tak extractable); title/H2 bentuk pertanyaan "Berapa harga saham BRIS hari ini?"; Skor Sinyal sebagai pembeda dari Ajaib/Investing/TradingView (harga + sinyal teknikal satu rumah). Template ini berlaku lintas 956+ emiten → ikuti gate mktg-seo-programmatic: variasi metadata per emiten, batch 50–100, jangan mad-libs.
+- Internal link kandidat: /stocks (hub Radar Saham IDX) · /saham/bris/kenapa-naik-hari-ini · /berita/brief-pasar-idx-2026-10-26-breadth-bbca-bris
+
+Brief 2 — P1 · Pilar CONTENT + GROWTH (kandidat listicle Sabtu)
+- Keyword target: cluster "klbf" + "saham klbf" + "klbf saham" (total impr 206/pekan, pos 87–90, klik 0)
+- Intent: cari analisa/informasi saham Kalbe Farma
+- Angle/judul: "Analisa Saham KLBF (Kalbe Farma): Harga, Sinyal Teknikal & Skenario" — kompetitor (carisaham, sahamsp, Ajaib, Investing) ranking pakai profil fundamental; angle yang belum kita punya: teknikal-first dengan Skor Sinyal 9 indikator + riwayat kenapa-naik/turun + FAQ schema. Human-first: narasi skenario, bukan tabel angka mentah.
+- Internal link kandidat: /stocks/KLBF.JK · /saham/klbf/kenapa-naik-hari-ini · /berita/analisa-saham-klbf-dekat-terendah-setahun
+
+Brief 3 — P2 · Pilar GROWTH + AI-SEARCH
+- Keyword target: "daftar harga saham hari ini" (impr 49/pekan, pos 85,3; kompetitor: Investing, Pluang, Bareksa, TradingView)
+- Intent: daftar harga semua saham IDX hari ini — hub-level
+- Angle/judul: refresh hub /stocks — title sudah benar ("Harga Saham IDX Hari Ini…") tapi pos 85 → tambah intro answer block SSR 40–60 kata ("Harga saham IDX hari ini, [tanggal]: IHSG …, top movers …") + blok link ke 10 emiten terlaris dengan anchor bervariasi; perkuat tabel movers SSR.
+- Internal link kandidat: /stocks/BBCA.JK · /stocks/BRIS.JK · /stocks/KLBF.JK
+
+Catatan riset: keyword "eastspring idx esg leaders plus kelas a" (impr 209) = reksadana, di luar produk — tidak dibrief. "Diskusi investasi" (impr 175, pos 75,9) = intensi generik, belum ada konten cocok — parkir.
+
+## [RESEARCHER] 2026-10-27 — Gate riset pra-eksekusi (2 kandidat + audit PRD)
+
+- **prd-2026-10-26-01 [P1] Register CTA moment-of-intent — VERDICT: BUILD (bukti KUAT).** Pola "lazy registration" praktik industri mapan (UI-Patterns, vocab.design); Baymard: minta akun SETELAH aksi inti outperform di awal (42% site minta di awal = anti-pattern; 24% abandon karena forced account); Duolingo: konversi naik setelah investasi effort (endowed progress). research_brief sudah ditulis ke backlog JSON. FDE: 7 field PRD substantif lengkap → BUILD-AFTER-PRD tidak perlu — FDE-READY begitu research_brief ini masuk. Catatan audit: field literal `north_star` tidak ada, tapi `north_star_pillar` terisi (GROWTH+STICKY) — gate auditor sebaiknya menerima `north_star_pillar`.
+- **prd-2026-10-26-02 [P2] Migrasi guest watchlist+preset → akun — VERDICT: BUILD (bukti SEDANG-KUAT).** Pola standar platform besar: Firebase linkWithCredential (preserve data), Auth0 anonymous-session merge (dedupe, data akun menang — identik AC1), Supabase migration ledger idempotent; guest-cart merge ecommerce carry-over saat register & login. Wajib: clear localStorage HANYA setelah insert terkonfirmasi (AC3 sudah benar); dedupe server-side; jangan over-engineer ke anonymous-account server-side. Magnitudo efek retensi tidak terpublikasi untuk site konten finansial → validasi via returning_ip_pct. Saran: catat dependensi konseptual ke prd-01 saat dispatch (field dependencies=[] tidak salah, tapi urutan eksekusi 01 dulu baru 02).
+- **Audit tooling (temuan):** gate audit men-flag `dependencies` "missing" pada kedua PRD padahal `dependencies: []` (valid = tanpa dependensi) — false positive; sarannya auditor menerima empty-array dan `north_star_pillar` sebagai pemenuhan. Kedua PRD sebenarnya sudah 7/7 field substantif.
+- **idea-2026-10-26-1 [P2] (dividen/ex-date coverage): PRD INCOMPLETE — missing: user_story, acceptance_criteria, target_files, effort, risk, dependencies.** Status idea-lane (riset internal, bukan build) — tidak diriset internet (bukan kandidat product-shaped build); lengkapi PRD saat CEO promote.
+
+## [CEO] 2026-10-27 08:15 WIB — pagi Selasa (ritual [PRODUCT] 0 pending; standing guard crypto+IG BY DESIGN 0 task; backlog closure 6 verdict)
+- DATA 7d: views 1.136 vs 752 (+51% w/w, pivot TRAFFIC jalan) · returning IP 6,7% (kemarin 6,1%, target >=8% tgl 25 Nov) · register 3 vs baseline 9 = LEMAH (sudah jadi kerjaan prd-2026-10-26-01) · EOD+indicators fresh 26 Okt, 1.451 saham — TRUST sehat.
+- CTO note 27 Okt → CEO SETUJU OPSI A: fix-2026-10-26-09 (P0 XSS rehype-raw tanpa sanitizer) via rehype-sanitize schema ketat + payload-test, build-only slot pagi, QA gate pra-naik, naik kereta T-1027-N malam ini; bareng fix-26-04 (ai-gate waiter leak). IT-SEC Kamis 21:30 re-test. Bukan dispatch baru — entry sudah ada, konfirmasi arah.
+- KERETA T-1027-N (malam ini, manifest): teknikal-2026-10-25-01 (merge night_ready reputation points) · fix-26-04 · fix-26-09 · ux-2026-10-26-01. fix-26-10 reslot sore. Boarding gate: bukti fisik per-fitur sebelum naik.
+- DISPATCH BARU: 0 (budget pagi 2/2 terpakai P0; queue 8 pending + 3 in_train). prd-2026-10-26-01 (register CTA P1 GROWTH) + prd-2026-10-26-02 (guest migration P2 STICKY) MENUNGGU research_brief Researcher 08:30 — baru layak naik T-1028.
+- BACKLOG ANTI-STAGNATION verdict 6: 4 label basi/live_monitoring → done (selesai via ux-2026-10-17-01, prd-2026-10-16-01, prd-2026-10-22-02) · idea-2026-09-23-1 → deferred review 2026-11-10 (drain-mode) · roadmap-pro → deferred review 2026-11-24 (owner gate monetisasi). Live 25→20 — MASIH >cap 12: intake product STOP, drain lanjut.
+- DRIFT TEMUAN PAGI: (1) queue drift 26→27 Okt (night_ready balik pending, writer non-statejson) — CTO sudah restore + dispatch audit ops-2026-10-27-02. (2) product-backlog.json datadir = REGULAR FILE (symlink lama hilang, bukan ulah saya — terakhir symlink ok 22 Okt) → dua sumber truth terpisah; saya sinkron datadir→repo hari ini (hash identik, 66 entri) + semua flip verdict saya ter-verify di kedua salinan.
+- KEYWORD-RESEARCH 27 Okt (3 brief: BRIS harga-hari-ini SSR · KLBF analisa · hub /stocks) → lane KONTEN via decision log, tanpa dispatch engineering.
+- Hasil-verify: backlog 7 flip terbaca ulang (live-hard 20) · repo==datadir sha256 sama · decisions blok ini = append session yang sama.
+
+
+## [REVIEWER] 2026-10-27 09:0x WIB — QA post-publish pagi: 43 artikel/24jm — 1 FATAL → P1 qa-2026-10-27-01; deploy: tak ada yang perlu di-flip
+- Cakupan: 2 brief pasar + 1 analisa AADI + 1 BRIS + 39 halaman saham (semua terbit 24 jam, status PUBLISHED).
+- FATAL (1): analisa-saham-aadi-enam-sesi-naik — superlatif "penutupan tertinggi awal Oktober (Rp11.800 pada 9 Okt)" SALAH: DB StockPrice AADI 1–12 Okt tertinggi close = Rp12.125 (6 Okt), lalu 11.950 (5 Okt); 11.800 baru rank #3. P1 qa-2026-10-27-01 (queue), pillar TRUST.
+- VALID (dicek vs DB/StockIndicator kanonik): semua harga & chg% 41 halaman saham exact; RSI body vs StockIndicator 0 deviasi; skor sinyal vs signalScore 41/41 cocok; emoji judul = sinyal screener (🔴=BEARISH/🟡=NETRAL/🟢=BULLISH) konsisten 41/41 — bukan arah harga, flag kemarin ditarik; brief-27: RSI BBCA 29,47/18,89/30,73 ✓, oversold non-gorengan 69 (vs 54 Jumat) exact via isGorengan ✓, 4 golden cross LPIN/APII/GTRA/AXIO ✓; brief-26: BMRI +16,1%/BBRI +14,6% (Senin 19→Jumat 23) ✓, BBCA -2,90% koreksi terdalam value>1T ✓, BRIS oversold terdalam kedua (non-gorengan, 23 Okt) ✓.
+- MINOR (dicatat, tak ditask): (1) breadth brief-27 "542 turun/118 stagnan" vs hitungan close-to-close 543/116 — boundary klasifikasi generator (preseden qa-26-01 basis kanonik, selisih 1 saham); (2) body saham-* menyebut Rp high/low/level teknikal (support/resisten/BB) yang bukan close — bukan klaim close, OK; (3) volume body dibulatkan (2,5 miliar vs 2,451 miliar dst).
+- LIVE: 43/43 URL 200 + render + meta description + canonical benar (saham-* canonical ke /stocks/TICKER.JK by design).
+- SEO: title formula 41/41, slug kebab-case 43/43, excerpt ada 43/43, link internal semua /stocks/TICKER.JK.
+- DEPLOY SLOT: tak ada entry deployed/in_progress semalam — fix-26-04, fix-26-09, ux-26-01 status in_train kereta T-1027-N (naik malam ini); ops-25-03 sudah done-flip kemarin. ADMIN DEBT: 0.
+- EVAL & lessons: lihat laporan cron; superlatif tanpa ranking = RECURRENCE ke-3+ → lessons-learned diupdate.

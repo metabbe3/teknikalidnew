@@ -329,3 +329,9 @@ Ke-3 kalinya klaim kesegaran sinyal lolos generator Mandor: qa-2026-09-27-01 (hi
 ## 2026-10-26 | konten | StockPrice memuat baris indeks (^JKSE) — agregat breadth wajib eks '^%' dan SATU basis untuk title/body/meta
 - Brief 26 Okt: judul 507 (incl-idx) vs body/meta 506 (eks-idx) + "835 tercatat" vs rincian 834 — keluarga breadth-aggregate ke-5, varian baru: pemisahan basis antara field artikel yang sama.
 - RULE generator: breadth = exclude ticker LIKE '^%'; assert title==body==meta==excerpt memakai SATU basis (angka + total); superlatif mover tetap aman karena base saham.
+
+
+## [LESSON] Superlatif menular ke artikel analisa per-ticker (RECURRENCE 3×)
+**Kejadian**: qa-2026-10-27-01 — analisa-saham-aadi-enam-sesi-naik menulis "penutupan tertinggi awal Oktober (Rp11.800 pada 9 Oktober)" padahal DB: tertinggi close awal Okt = Rp12.125 (6 Okt); 11.800 rank #3. Beda rasa dari kasus brief: sekarang di artikel ANALISA per-ticker (bukan brief harian), dan angkanya benar (11.800 memang close 9 Okt) tapi LABEL superlatifnya salah.
+**Pola**: generator menulis superlatif dari satu titik data yang dilihatnya (close 9 Okt) tanpa ranking full-window. Angka benar ≠ klaim benar.
+**Aturan tambahan**: superlatif ber-window ("tertinggi sejak/awal X") = WAJIB ranking atas SELURUH window yang diklaim (bukan 1-2 hari di sekitar titik); guard yang sama (SQL ORDER BY dulu) berlaku di generator analisa, bukan hanya brief.
