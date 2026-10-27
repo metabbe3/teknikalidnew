@@ -1073,3 +1073,11 @@
 - Jebakan: (1) dependency audit harus cakup server.ts root (kasus compression); (2) feedback API butuh header Origin utk test (CSRF guard 403); (3) docker compose up -d mesti background=true via gateway; (4) merge queue SELALU conflict dgn write-back pagi — commit docs dulu, resolve sisi main.
 - Langkah pertama slot berikut: baca ini → fix-26-10 (DONE-WHEN dulu!) di BE malam → QA reviewer D+1 verifikasi 5 fitur kereta.
 - Rollback anchor: app 8dcf5d01dc11 + git revert 397a847 0056106 ef2ac33
+
+## 2026-10-27 19:5x — UX Builder shift 19:15 (ux-2026-10-27-01 in_train T-1027-N)
+- SHIPPED 1f8339a: sticky context bar hasil screener mobile — count "N saham" + dropdown Urut + toggle tabel/kartu menempel di bawah header (top-56px, glass-header, md:hidden). Kandidat resmi CTO Lead 27 Okt. Flow (a) audit: hasil→detail sehat; count+urutan kini 0 scroll-balik (dulu ~1400px utk 104 saham).
+- SortDropdown diekstrak (1 komponen, 2 mount: header+bar); aria-label sort EN→ID; H1 Radar Saham IDX verbatim.
+- TRAP BARU (catat skill): sticky dalam wrapper overflow-x-auto TIDAK PERNAH engage vs page scroll — bar drift -432px terukur; fix = drop overflow-x-auto (scroll-H sudah di scrollRef overflow-auto). React select: dispatch 'input'+'change' native setter utk test onChange.
+- INSIDEN INFRA: Docker Desktop daemon mati ~19:4x → prod 502 total (~7 mnt) — pulih via quit+restart Docker Desktop (semua container healthy, 200 verified). BUKAN kode; staging one-off container ikut mati. build EACCES .next/standalone/public = file handle com.apple (kill PID) setelah docker mount.
+- Jebakan: staging host npm start tak bisa DB (known) — pakai one-off container `node server.js` (override CMD custom-server.js) + mount standalone+static+public; image referensi teknikalidnew-app-1.
+- Queue: ux-2026-10-27-01 in_train T-1027-N (v55). Bug baru: 0. SEC GATE: N/A frontend-only.
