@@ -34,6 +34,8 @@ services:
       - NODE_OPTIONS=--max-old-space-size=1536
     volumes:
       - comfyui_images:/opt/comfyui/output
+      # Brief harian (owner 27 Okt): JSON hasil daily_brief_gen.py — read-only dari host
+      - /Users/nicholasandriansurjadi/.hermes/data/teknikalid-growth/daily-brief:/var/lib/teknikal-brief:ro
     depends_on:
       db:
         condition: service_healthy

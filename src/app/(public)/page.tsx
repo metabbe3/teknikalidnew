@@ -30,6 +30,7 @@ import { getBadge } from "@/domains/reputation/badge";
 import { articleRepository } from "@/domains/article/article.repository";
 import { SnapshotCard, type SnapshotCardData } from "@/components/berita/snapshot-card";
 import { DailyBriefHero } from "@/components/berita/daily-brief-hero";
+import { DailyBriefStrip } from "@/components/home/daily-brief-strip";
 import { MarketBreathStrip } from "@/components/ui/market-breath-strip";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Zap } from "lucide-react";
@@ -563,6 +564,10 @@ export default async function HomePage() {
                 <DailyBriefHero brief={homeBrief} variant="compact" />
               </div>
             )}
+            {/* Pasar 1 kalimat + chips Q&A (owner 27 Okt) — client fetch /api/brief/daily, fallback diam */}
+            <div className="mt-5">
+              <DailyBriefStrip />
+            </div>
             {heroCards.length > 0 && (
               <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 lg:hidden">
                 {heroCards.map((c) => (
