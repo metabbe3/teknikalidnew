@@ -1,6 +1,7 @@
 import { AlertTriangle, Flame } from "lucide-react";
 import { HealthScoreBadge } from "@/components/stock/health-score-badge";
 import { stripJk } from "@/lib/utils";
+import { VerdictFeedback } from "@/components/stock/verdict-feedback";
 
 export interface SignalVerdictProps {
   ticker: string;
@@ -73,6 +74,11 @@ export function SignalVerdict({ ticker, signalLabel, signalScore, outlook, rsi14
           <div className="self-start sm:self-auto">
             <HealthScoreBadge signalScore={signalScore} size="lg" />
           </div>
+        </div>
+
+        {/* Micro-feedback pasif: Akurat? (owner 27 Okt) */}
+        <div className="mt-3 sm:hidden">
+          <VerdictFeedback ticker={ticker} />
         </div>
       </div>
     </section>

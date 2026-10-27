@@ -56,7 +56,7 @@ export function DailyBriefStrip() {
               <button
                 type="button"
                 onClick={() => setOpen(open === i ? null : i)}
-                className="rounded-full border border-border px-2.5 py-1 text-[11px] text-text-secondary transition-colors hover:border-sky-400 hover:text-text-primary"
+                className="inline-flex min-h-11 items-center rounded-full border border-border px-3 py-2 text-xs text-text-secondary transition-colors hover:border-sky-400 hover:text-text-primary active:scale-[0.98]"
                 aria-expanded={open === i}
               >
                 {c.q}

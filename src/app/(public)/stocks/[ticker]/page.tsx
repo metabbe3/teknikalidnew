@@ -27,6 +27,7 @@ import { isHscTicker } from "@/lib/hsc-stocks";
 import { StockDiscussion } from "@/components/community/stock-discussion";
 import { RegistrationInlinePrompt } from "@/components/ui/registration-inline-prompt";
 import { StockActionBadge } from "@/components/stock/stock-action-badge";
+import { VerdictFeedback } from "@/components/stock/verdict-feedback";
 import { AlertPreviewCard } from "@/components/stock/alert-preview-card";
 import { SentimentGauge } from "@/components/stock/sentiment-gauge";
 import { PresenceBadge } from "@/components/stock/presence-badge";
@@ -880,6 +881,7 @@ export default async function StockDetailPage({
         {!fullAccess && indicators && close !== null && (
           <section className="bg-bg-card rounded-xl border border-border p-5 space-y-4" aria-label="Ringkasan analisa teknikal">
             <h2 className="font-serif text-base font-semibold text-text-primary">Ringkasan Analisa Teknikal {stripJk(ticker)}</h2>
+            <div className="mt-1"><VerdictFeedback ticker={ticker} /></div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div className="space-y-2">
                 <p className="text-text-secondary">
@@ -1244,6 +1246,11 @@ export default async function StockDetailPage({
         </section>
 
         <StockFAQWidget ticker={ticker} />
+
+        {/* Micro-feedback verdik: Akurat? — semua user (owner 27 Okt) */}
+        <div className="pb-2">
+          <VerdictFeedback ticker={ticker} />
+        </div>
 
 
         {/* Related articles */}
