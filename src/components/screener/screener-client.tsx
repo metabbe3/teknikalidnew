@@ -365,7 +365,7 @@ function ScreenerPageContent({ assetClass, linkBase = "/stocks" }: { assetClass?
             ) : (
               <>
                 {viewMode === "table" ? (
-                  <ResultsTable stocks={stocks} watchlistTickers={watchlistTickers} onToggleWatchlist={handleToggleWatchlist} onReset={handleReset} linkBase={linkBase} />
+                  <ResultsTable stocks={stocks} watchlistTickers={watchlistTickers} onToggleWatchlist={handleToggleWatchlist} onReset={handleReset} linkBase={linkBase} viewMode={viewMode} onViewChange={setViewMode} sortBy={sortBy} sortOrder={sortOrder} onSortChange={handleSortChange} />
                 ) : (
                   <ResultsCards stocks={stocks} styleDef={styleDef} watchlistTickers={watchlistTickers} onToggleWatchlist={handleToggleWatchlist} onReset={handleReset} linkBase={linkBase} />
                 )}

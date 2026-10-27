@@ -12,6 +12,37 @@ import { SORT_OPTIONS, signalLabelColor } from "./screener-types";
 import { BookmarkIcon } from "./screener-icons";
 import { GuestStar } from "@/components/stock/guest-star";
 
+// ── Sort dropdown (dipakai ResultsHeader + sticky context bar) ──
+
+function SortDropdown({ sortBy, sortOrder, onSortChange }: { sortBy: SortField; sortOrder: SortOrder; onSortChange: (field: SortField, order: SortOrder) => void }) {
+  return (
+    <div className="flex items-center gap-1 bg-bg-card border border-border rounded-lg px-2 py-1">
+      <span className="text-[10px] text-text-tertiary mr-1">Urut:</span>
+      <select
+        value={sortBy}
+        onChange={(e) => onSortChange(e.target.value as SortField, sortBy === e.target.value && sortOrder === "desc" ? "asc" : "desc")}
+        className="text-xs bg-transparent text-text-primary border-none outline-none cursor-pointer pr-1 min-h-11"
+        aria-label="Urutkan hasil"
+      >
+        {SORT_OPTIONS.map((opt) => (
+          <option key={opt.value} value={opt.value}>{opt.label}</option>
+        ))}
+      </select>
+      {sortBy && (
+        <button
+          onClick={() => onSortChange(sortBy, sortOrder === "desc" ? "asc" : "desc")}
+          className="p-0.5 text-text-tertiary hover:text-text-primary transition-colors cursor-pointer"
+          aria-label={sortOrder === "desc" ? "Urutkan dari terbesar" : "Urutkan dari terkecil"}
+        >
+          <svg className={`w-3.5 h-3.5 transition-transform ${sortOrder === "asc" ? "rotate-180" : ""}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+            <path d="M12 5v14M5 12l7-7 7 7" />
+          </svg>
+        </button>
+      )}
+    </div>
+  );
+}
+
 // ── Results Header ──
 
 export function ResultsHeader({
@@ -76,30 +107,7 @@ export function ResultsHeader({
           </>
         )}
         {/* Sort dropdown */}
-        <div className="flex items-center gap-1 bg-bg-card border border-border rounded-lg px-2 py-1">
-          <span className="text-[10px] text-text-tertiary mr-1">Urut:</span>
-          <select
-            value={sortBy}
-            onChange={(e) => onSortChange(e.target.value as SortField, sortBy === e.target.value && sortOrder === "desc" ? "asc" : "desc")}
-            className="text-xs bg-transparent text-text-primary border-none outline-none cursor-pointer pr-1 min-h-11"
-            aria-label="Urutkan hasil"
-          >
-            {SORT_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
-          </select>
-          {sortBy && (
-            <button
-              onClick={() => onSortChange(sortBy, sortOrder === "desc" ? "asc" : "desc")}
-              className="p-0.5 text-text-tertiary hover:text-text-primary transition-colors cursor-pointer"
-              aria-label={sortOrder === "desc" ? "Sort descending" : "Sort ascending"}
-            >
-              <svg className={`w-3.5 h-3.5 transition-transform ${sortOrder === "asc" ? "rotate-180" : ""}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-                <path d="M12 5v14M5 12l7-7 7 7" />
-              </svg>
-            </button>
-          )}
-        </div>
+        <SortDropdown sortBy={sortBy} sortOrder={sortOrder} onSortChange={onSortChange} />
         <div className="flex items-center gap-1 bg-bg-card border border-border rounded-lg p-0.5">
           <button
             onClick={() => onViewChange("table")}
@@ -130,7 +138,7 @@ export function ResultsHeader({
 
 // ── Results Table ──
 
-export function ResultsTable({ stocks, watchlistTickers, onToggleWatchlist, onReset, linkBase = "/stocks" }: { stocks: ScreenerStock[]; watchlistTickers: Set<string>; onToggleWatchlist: (ticker: string) => void; onReset: () => void; linkBase?: string }) {
+export function ResultsTable({ stocks, watchlistTickers, onToggleWatchlist, onReset, linkBase = "/stocks", viewMode, onViewChange, sortBy, sortOrder, onSortChange }: { stocks: ScreenerStock[]; watchlistTickers: Set<string>; onToggleWatchlist: (ticker: string) => void; onReset: () => void; linkBase?: string; viewMode: ViewMode; onViewChange: (v: ViewMode) => void; sortBy: SortField; sortOrder: SortOrder; onSortChange: (field: SortField, order: SortOrder) => void }) {
   const { data: session } = useSession();
   const isAuthenticated = !!session?.user;
   const router = useRouter();
@@ -167,7 +175,41 @@ export function ResultsTable({ stocks, watchlistTickers, onToggleWatchlist, onRe
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl depth-shadow-strong bg-bg-card relative">
+    <div className="rounded-xl depth-shadow-strong bg-bg-card relative">
+      {/* Sticky context bar — saat header hasil ter-scroll di atas, user tetap lihat
+          jumlah hasil + bisa ganti urutan/tampilan tanpa scroll balik (Pilar STICKY).
+          top-[56px] = tinggi site header sticky (h-14) + 1px hairline shadow.
+          NOTE: WAJIB di luar container overflow — sticky dalam scroll-container ancestor
+          tidak pernah engage vs page scroll (terukur: bar ikut melayang -432px). */}
+      <div className="glass-header sticky top-[56px] z-20 flex items-center justify-between gap-2 rounded-t-xl border-b border-border px-3 py-1.5 md:hidden">
+        <span className="text-xs text-text-secondary tabular-nums font-mono shrink-0">{stocks.length} saham</span>
+        <div className="flex items-center gap-1.5">
+          <SortDropdown sortBy={sortBy} sortOrder={sortOrder} onSortChange={onSortChange} />
+          <div className="flex items-center gap-1 bg-bg-card border border-border rounded-lg p-0.5">
+            <button
+              onClick={() => onViewChange("table")}
+              className={`p-2 rounded-md transition-colors cursor-pointer ${viewMode === "table" ? "bg-bg-hover text-text-primary" : "text-text-tertiary hover:text-text-secondary"}`}
+              aria-label="Tampilan tabel"
+              aria-pressed={viewMode === "table"}
+            >
+              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            </button>
+            <button
+              onClick={() => onViewChange("cards")}
+              className={`p-2 rounded-md transition-colors cursor-pointer ${viewMode === "cards" ? "bg-bg-hover text-text-primary" : "text-text-tertiary hover:text-text-secondary"}`}
+              aria-label="Tampilan kartu"
+              aria-pressed={viewMode === "cards"}
+            >
+              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
       <div ref={scrollRef} className="max-h-[60vh] overflow-auto">
         <div className={`glass-header sticky top-0 z-10 grid ${gridCols} text-text-tertiary text-[11px] uppercase tracking-wider min-w-[1034px]`}>
           <div className="px-2 py-3 font-medium"></div>
