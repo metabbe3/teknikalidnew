@@ -70,3 +70,4 @@ idx-sync.log
 social-auto-poster/
 social-auto-poster/sessions/
 cto-queue.json.bak*
+.env

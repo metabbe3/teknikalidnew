@@ -987,6 +987,20 @@ export default async function StockDetailPage({
           </section>
         )}
 
+        {/* Pantau via Telegram (retention-2026-10-28) — guest-visible, no-login, bahasa awam, tap target 44px */}
+        <section className="bg-bg-card rounded-xl border border-border p-5 space-y-2" aria-label="Pantau via Telegram">
+          <h2 className="font-serif text-base font-semibold text-text-primary">Pantau {ticker.replace(/\.JK$/, "")} tiap hari</h2>
+          <p className="text-sm text-text-secondary">Dapatkan ringkasan harga &amp; sinyal langsung di Telegram setelah pasar tutup — tanpa perlu login.</p>
+          <a
+            href={`https://t.me/TeknikalidBot?start=${encodeURIComponent(ticker.replace(/\.JK$/, "") + "_JK")}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90"
+          >
+            🔔 Pantau via Telegram
+          </a>
+        </section>
+
         {/* Chart — free for everyone (hybrid freemium). Anon fetches via API, range-clamped to ~90d; the OHLC series is still never SSR-embedded. */}
         <section id="chart" className="scroll-mt-24">
           <ChartSection ticker={ticker} />

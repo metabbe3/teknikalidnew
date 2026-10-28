@@ -1190,3 +1190,16 @@ model WaitlistSubscriber {
 
   @@index([createdAt])
 }
+
+model TelegramWatch {
+  id        String   @id @default(dbgenerated("gen_random_uuid()::text"))
+  chatId    String
+  ticker    String
+  lang      String?  @default("id")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("createdAt")
+
+  @@unique([chatId, ticker])
+  @@index([chatId])
+  @@map("TelegramWatch")
+}
