@@ -1088,3 +1088,10 @@
 - AUDIT ronde-3 API admin (bo-2026-10-28-02 done): 41 route dipetakan; yatim = queue/status+indicators (stub by-design pipelines), faq/pending (redundant dgn articles/review; 0 pending), user-title (dead 1/31), views-geo+engagement = kandidat tab INSIGHT slot bo berikutnya (dwell/scroll/cta+geo, pilar GROWTH/TRUST — jangan hapus).
 - Queue v58 (2 entry baru); datadir≡repo 0 drift sebelum tulis. Owner verdict MASIH pending: bo-25-01 social-cards remove + bo-26-02 Community/Predictions demote (jangan sentuh).
 - Jebakan: (1) worktree baru = symlink node_modules + npx prisma generate dulu atau tsc 666 error palsu; (2) jangan commit docs di branch night/bo (konflik write-back pagi) — queue via statejson, handoff append live.
+
+## 2026-10-28 07:5x — CTO pagi (BUILD-ONLY: merge night branches, 0 deploy)
+- State: main = 632abcc (pushed origin) — fix-26-10 SATU PINTU + security pack + micro-cache + nav tracking + fix-26-06/07 + bo-28-01 announcements UI. Prod = envsafe2 f1b16fb3f642 (BE deploy 07:03 owner-directed, membawa mayoritas; micro-cache TTFB 0.18s verified).
+- Barusan: queue repair v58→v65 (5 regresi ops-27-02 → done + fix-26-10/bo-28-01 merged-done + entry None→ux-27-01); sticky bar ux-27-01 verified live di chunk tersaji.
+- In-flight: kereta malam T-1028 HARUS deploy image baru (3 commit tracking fe97c7b/106d544/8679409 + announcements UI belum terserved — nav_click=0 di prod). qa-2026-10-27-01 dislot sore 16:45 (SQL patch AADI, no deploy).
+- Jebakan: (1) main worktree masih di branch night/fix-26-10-10 milik sesi BE AKTIF (commit 5c2ffad muncul jam 07:4x) — jangan checkout main di situ; pakai worktree /private/tmp/cto1028-main. (2) statejson CLI: `flip <file> --id X --set k=v` (positional file; tanpa --status/--result). (3) grep SSR /stocks tak menemukan UI client-fetch — verify via chunk JS.
+- Langkah pertama slot berikutnya: baca ini → kereta malam T-1028 deploy + verify per-fitur (nav_click di chunk, /admin/announcements 200) → changelog.

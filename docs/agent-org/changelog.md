@@ -816,3 +816,11 @@
 - id: ux-2026-10-26-01 | type: ux | deploy: sama (8864ea8) | verify: chunk 3955-85c045a957d5209b.js live 'Urut' | QA: staging DOM 26 Okt | impact_check_due: 2026-10-30
 - id: straggler-0056106 (bukan entry queue) | type: fix | POST /api/stocks/[ticker]/feedback anonim + model SignalFeedback + admin PII | verify: POST live ok=true total=2, dedup flip t->f (DB 1+1 row), 403 tanpa Origin (CSRF guard jalan) | QA: reviewer D+1 | impact_check_due: 2026-10-30
 - id: build-hotfix-ef2ac33 | type: ops | restore dep compression (ponytail a388414 salah hapus; server.ts root masih import — esbuild gagal) | verify: docker build DONE + image baru | QA: n/a
+
+## [2026-10-28 07:5x] cto-pagi — merge night branches ke main 632abcc (BUILD-ONLY, no deploy)
+- Type: merge/ops  |  PRD: N/A (fix-26-10 P0 refactor SATU PINTU + security pack run-1 owner-audit + micro-cache owner-directed + fix-26-06/07 owner-approved digest + bo-28-01 announcements UI)
+- Deploy: TIDAK ADA slot ini (window deploy = malam/sore; prod sudah membawa mayoritas via envsafe2 f1b16fb3f642 deploy sesi BE 07:03 owner-directed). Sisa 3 commit tracking (fe97c7b/106d544/8679409) + bo-28-01 UI naik kereta malam T-1028.
+- Verify: git merge --no-ff clean (dry-run protocol), schema-shield CLEAN (0 file migrations/prisma/sql), tsc --noEmit EXIT-0, npm run build EXIT-0 (route manifest penuh), marker grep: marketEngine satu pintu L70 + announcements fetch L42 + nav_click L21 + timingSafe x3. Sticky bar ux-27-01 verified LIVE di chunk tersaji /_next/static/chunks/3955-dcca41a1cddb2d1a.js.
+- QA: fix-26-10 parity DB 100% (verifier note 2c8c64f); QA reviewer D+1 utk nav-tracking + announcements UI pasca kereta malam.
+- SEC GATE: pack security audit run-1 (XSS zod, payment ownership, cron-guard timingSafe fail-closed, rate-limit edge IP, safeJsonLd 27 site, CRON_SECRET rotated) ikut ter-merge — sudah live via envsafe2.
+- impact_check_due: 2026-10-31 — /pasar TTFB post-micro-cache, cron routes fail-closed tidak false-block, nav_click telemetry masuk DB.

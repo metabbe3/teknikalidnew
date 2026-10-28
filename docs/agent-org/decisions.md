@@ -849,3 +849,11 @@ penulisan masih 404 (deploy di kereta T-1021-N / CTO pagi).
 - BUILD GAGAL ke-1: ponytail a388414 hapus 'compression' padahal server.ts (root, luar src/) import — audit 'zero import' hanya scan src/. FIX restore 1 dep (ef2ac33). Lesson: dependency audit WAJIB cakup server.ts/scripts/*.
 - STATEJSON BUG: subcommand `update --id X --set/--python` MENGABAIKAN --id → menulis top-level queue (bocoran key result/scheduled_slot/tasks — kemungkinan besar penyumbang drift ops-27-02). Hanya `flip --id` yang benar. Top-level sudah dibersihkan manual. → perlu entry perbaikan tools.
 - VERIFY PASCA-DEPLOY: home/stocks/berita/BBCA.JK 200 (before=after); feedback API: POST valid ok=true total=2, dedup flip t→f exact (DB BBCA.JK t=1 f=1), invalid-body 403/400-guard CSRF aktif; chunk UX 'Urut' terserved; selftest 3/3 hijau pre-deploy.
+
+## 2026-10-28 07:5x WIB — CTO pagi (slot BUILD-ONLY)
+- NIGHT AUDIT: origin/main bersih (terakhir 19:44 kemarin; 0 commit 21:45-07:00) — tidak ada bypass hard-gate.
+- MERGE 632abcc: night/fix-2026-10-26-10 (13 commit: marketEngine SATU PINTU + security pack + micro-cache + nav tracking + fix-26-06/07) + night/bo-2026-10-28-01 (via eb42d8e) → main, pushed origin. Dry-run clean, schema-shield clean, tsc 0, build 0. Rollback: git revert 632abcc (belum ada deploy dari merge ini).
+- PROD STATE: image aktif envsafe2 f1b16fb3f642 (up 07:03, sesi BE builder — deploy owner-directed, container up 32mnt saat cek 07:4x). BUKAN anomali: micro-cache TTFB /pasar 0.18s live ✓, timingSafe di container ✓; tapi envsafe2 dibangun SEBELUM 3 commit tracking + merge → kereta malam T-1028 wajib angkat sisa (nav_click belum terserved).
+- QUEUE REPAIR v58→v65: 5 flip regresi ops-27-02 dipulihkan (teknikal-25-01/fix-26-04/fix-26-09/ux-26-01 → done; bukti deploy T-1027-N 18:54 kemarin di decisions 27 Okt) + fix-26-10/bo-28-01 → done (merged). Entry id=None → ux-2026-10-27-01 done (sticky bar shipped 1f8339a, verified live di chunk). ROOT CAUSE ops-27-02 terkonfirmasi: write-back UX Builder 19:5x dari base stale (backup 19:44 sudah in_train).
+- MANIFEST KERETA T-1028-N (malam): sisa nav-tracking 3 commit + bo-28-01 announcements UI — verifikasi per-fitur pasca deploy.
+- Rollback anchor: app 8dcf5d01dc11 → envsafe2 f1b16fb3f642 (BE 07:03); revert merge = git revert 632abcc.

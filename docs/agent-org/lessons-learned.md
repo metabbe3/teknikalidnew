@@ -340,3 +340,8 @@ Ke-3 kalinya klaim kesegaran sinyal lolos generator Mandor: qa-2026-09-27-01 (hi
 - Dependency-removal audit yang hanya scan src/ = false negative: server.ts di root repo (custom router-server) di-bundle esbuild Docker dan import `compression` — ponytail a388414 hapus dep → docker build gagal 'Could not resolve'. RULE: audit import WAJIB cakup root *.ts + scripts/ + Dockerfile CMD target. Host `next build` TIDAK menangkap ini (jalur esbuild hanya di image) — build Docker = satu-satunya verify kebenaran dep server.
 - statejson.py `update --id <id> --set/--python` MENGABAIKAN --id → field ditulis ke TOP-LEVEL state, bukan entry. Hanya `flip --id` aman. Ini kemungkinan root cause drift ops-2026-10-27-02 (key tasks/result/scheduled_slot nyangkut di root + entry tak berubah). Perlu patch tools (assert --id dipakai) — entry baru.
 - Deploy tanpa ledger = utang kebenaran: container 16:50 membawa kode belum-ter-ledger; satu-satunya keselamatan = kereta resmi menimpa dgn build ter-verify. RULE tetap: semua deploy (termasuk via docker cp .next) WAJIB anchor di decisions.md.
+
+## 2026-10-28 — CTO pagi
+- Merge di repo yang worktree-utamanya DIPAKAI sesi lain: jangan paksa checkout (Aborting senyap di tengah `set -e` karena exit code tetap 0) — pakai `git worktree add /private/tmp/xxx main` lalu merge di sana (base = main tip → zero conflict).
+- Verify UI client-fetch (tabel screener) TIDAK bisa via grep HTML SSR — grep kumpulan chunk /_next/static/chunks/*.js tersaji.
+- statejson.py flip signature: `flip <file> --id <id> --set 'status=done'` — arg --status/--result tidak ada (result via edit json langsung).
