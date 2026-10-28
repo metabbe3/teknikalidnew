@@ -1,6 +1,8 @@
 // TeknikalidBot — polling handler (Mac mini). pg langsung, tanpa prisma client.
 // /start BBCA → subscribe · /stop <KODE> · /list · /help
-import pg from 'pg';
+import { createRequire } from 'node:module';
+const require = createRequire('/Users/nicholasandriansurjadi/.hermes/opt/tgbot/');
+const pg = require('pg');
 const { Client } = pg;
 const TOK = process.env.TELEGRAM_BOT_TOKEN;
 const API = `https://api.telegram.org/bot${TOK}`;

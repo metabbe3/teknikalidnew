@@ -1,6 +1,8 @@
 // Digest harian 16:50 WIB — kirim update semua pantauan aktif per chat.
 // Data: close kemarin vs hari ini (StockPrice 2 terakhir) + signalLabel terbaru. Angka dari DB saja.
-import pg from 'pg';
+import { createRequire } from 'node:module';
+const require = createRequire('/Users/nicholasandriansurjadi/.hermes/opt/tgbot/');
+const pg = require('pg');
 const { Client } = pg;
 const TOK = process.env.TELEGRAM_BOT_TOKEN;
 const API = `https://api.telegram.org/bot${TOK}`;
