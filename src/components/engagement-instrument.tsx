@@ -18,7 +18,7 @@ const ENDPOINT = "/api/public/engagement";
 const DWELL_TICKS = [15, 60, 180];
 const MAX_BATCH = 10;
 
-type EngEventType = "dwell_tick" | "scroll_max" | "cta_click";
+type EngEventType = "dwell_tick" | "scroll_max" | "cta_click" | "nav_click";
 
 interface QueuedEvent {
   type: EngEventType;
@@ -92,6 +92,41 @@ function ctaLabel(target: EventTarget | null): string | null {
   return null;
 }
 
+/**
+ * nav_click (28 Okt, owner: "semua button navigasi antar-page harus ter-track"):
+ * label utk KLIK yang meninggalkan/mengubah halaman — <a href> internal,
+ * <button> yang navigate (router.push/window.location), dan anchor in-page.
+ * Sistematis: satu titik ini menangkap SEMUA navigasi tanpa menandai tombol
+ * satu per satu. Label pendek = `nav:<action>→<dest>` (cap 32 char kolom).
+ */
+function navClickLabel(target: EventTarget | null): string | null {
+  const el = target instanceof Element ? target : null;
+  if (!el) return null;
+
+  // 1) Anchor internal (bukan external/href='#'/download)
+  const a = el.closest("a[href]");
+  if (a) {
+    const href = a.getAttribute("href") ?? "";
+    if (href && !/^(https?:|mailto:|tel:)/i.test(href) && !a.hasAttribute("download")) {
+      const clean = href.split(/[?#]/)[0] || "/";
+      const seg = clean.split("/").filter(Boolean).slice(0, 2).join("_");
+      return `nav:${seg || "home"}`;
+    }
+    return null;
+  }
+
+  // 2) Button yang navigate via JS — deteksi heuristik teks umum
+  const b = el.closest("button");
+  if (b) {
+    const t = (b.textContent ?? "").trim().toLowerCase();
+    if (/^(lihat|buka|mulai|daftar|login|masuk|lanjut|cari|bandingkan|pelajari|baca|lihat semua|selengkapnya|mulai gratis)/.test(t) || /lihat semua|selengkapnya|mulai gratis/.test(t)) {
+      const seg = t.replace(/[^a-z0-9 ]/g, "").slice(0, 20);
+      return `nav:${seg.replace(/\s+/g, "_").slice(0, 24)}`;
+    }
+  }
+  return null;
+}
+
 export function EngagementInstrument() {
   useEffect(() => {
     if (installed || typeof window === "undefined") return;
@@ -141,6 +176,10 @@ export function EngagementInstrument() {
         try {
           const label = ctaLabel(e.target);
           if (label) push({ type: "cta_click", label, path: currentPath() });
+          // nav_click — semua navigasi antar-page/anchor (28 Okt); cta_label
+          // eksplisit tetap menang utk tombol yang ter-tag.
+          const nav = navClickLabel(e.target);
+          if (nav) push({ type: "nav_click", label: nav.slice(0, 32), path: currentPath() });
         } catch {
           // silent
         }

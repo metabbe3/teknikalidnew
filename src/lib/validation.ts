@@ -257,8 +257,11 @@ export const schemas = {
   // public/engagement - POST body (dwell/scroll/cta telemetry beacon)
   engagement: z.object({
     events: z.array(z.object({
-      type: z.enum(["dwell_tick", "scroll_max", "cta_click"]),
-      label: z.enum(["star_add", "preset_copy", "radar_open", "preset_save", "register_step1_submit", "register_completed", "funnel_edu", "funnel_compare_open", "funnel_compare_pick", "funnel_paper_click", "funnel_home_pasar", "funnel_home_paper", "funnel_home_akademi", "funnel_akademi_portfolio", "funnel_peer_card", "funnel_peer_chip", "funnel_paper_banner_stocks", "funnel_paper_banner_akademi"]).nullish(),
+      type: z.enum(["dwell_tick", "scroll_max", "cta_click", "nav_click"]),
+      // nav_click (28 Okt): label = "nav:<dest>" generatif dari href — free-form
+      // string cap-32, bukan enum (setiap page baru otomatis ter-track tanpa
+      // update schema). Enum lama utk cta_click tetap ketat.
+      label: z.string().max(32).nullish(),
       valueNum: z.number().int().min(0).max(86400).nullish(),
       path: z.string().min(1).max(255),
       ts: z.number().int().min(0).nullish(),
