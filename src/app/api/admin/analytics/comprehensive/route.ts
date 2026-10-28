@@ -76,11 +76,15 @@ export async function GET(request: NextRequest) {
         ? (sourceParam as TrafficSource)
         : undefined;
 
+    // 28 Okt: toggle raw (suspected-bot ikut dihitung) utk audit owner
+    const includeSuspected = searchParams.get("raw") === "1";
+
     const data = await analyticsService.getComprehensiveAnalytics({
       startDate,
       endDate,
       pathPattern,
       source,
+      includeSuspected,
     });
 
     return NextResponse.json({ data });
