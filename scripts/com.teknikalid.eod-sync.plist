@@ -2,35 +2,36 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>Label</key>
-    <string>com.teknikalid.eod-sync</string>
-    <key>ProgramArguments</key>
-    <array>
-        <string>/usr/bin/curl</string>
-        <string>-s</string>
-        <string>--retry</string>
-        <string>3</string>
-        <string>--retry-delay</string>
-        <string>5</string>
-        <string>--max-time</string>
-        <string>300</string>
-        <string>-H</string>
-        <string>Authorization: Bearer 7oeU08oT1N0aXViLT1IxYMA02BLSdbeY</string>
-        <string>http://localhost:3000/api/cron/sync-eod</string>
-    </array>
-    <key>StartCalendarInterval</key>
-    <array>
-        <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>10</integer><key>Minute</key><integer>0</integer></dict>
-        <dict><key>Weekday</key><integer>2</integer><key>Hour</key><integer>10</integer><key>Minute</key><integer>0</integer></dict>
-        <dict><key>Weekday</key><integer>3</integer><key>Hour</key><integer>10</integer><key>Minute</key><integer>0</integer></dict>
-        <dict><key>Weekday</key><integer>4</integer><key>Hour</key><integer>10</integer><key>Minute</key><integer>0</integer></dict>
-        <dict><key>Weekday</key><integer>5</integer><key>Hour</key><integer>10</integer><key>Minute</key><integer>0</integer></dict>
-    </array>
-    <key>ExitTimeOut</key>
-    <integer>300</integer>
-    <key>StandardOutPath</key>
-    <string>/Users/nicholasandriansurjadi/Documents/teknikalidnew/logs/eod-sync.log</string>
-    <key>StandardErrorPath</key>
-    <string>/Users/nicholasandriansurjadi/Documents/teknikalidnew/logs/eod-sync.log</string>
+	<key>Label</key>
+	<string>com.teknikalid.eod-sync</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/usr/bin/curl</string>
+		<string>-sf</string>
+		<string>-X</string>
+		<string>GET</string>
+		<string>-H</string>
+		<string>Authorization: Bearer 7oeU08oT1N0aXViLT1IxYMA02BLSdbeY</string>
+		<string>https://teknikal.id/api/cron/sync-eod</string>
+	</array>
+	<key>StandardErrorPath</key>
+	<string>/Users/nicholasandriansurjadi/Documents/teknikalidnew/logs/eod-sync.log</string>
+	<key>StandardOutPath</key>
+	<string>/Users/nicholasandriansurjadi/Documents/teknikalidnew/logs/eod-sync.log</string>
+	<key>StartCalendarInterval</key>
+	<array>
+		<dict>
+			<key>Hour</key>
+			<integer>15</integer>
+			<key>Minute</key>
+			<integer>55</integer>
+		</dict>
+		<dict>
+			<key>Hour</key>
+			<integer>16</integer>
+			<key>Minute</key>
+			<integer>30</integer>
+		</dict>
+	</array>
 </dict>
 </plist>
