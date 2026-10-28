@@ -42,6 +42,7 @@ services:
       - comfyui_images:/opt/comfyui/output
       # Brief harian (owner 27 Okt): JSON hasil daily_brief_gen.py — read-only dari host
       - /Users/nicholasandriansurjadi/.hermes/data/teknikalid-growth/daily-brief:/var/lib/teknikal-brief:ro
+      - /Users/nicholasandriansurjadi/.hermes/data/teknikalid-growth/analyst:/var/lib/teknikal-analyst:ro
     depends_on:
       db:
         condition: service_healthy
