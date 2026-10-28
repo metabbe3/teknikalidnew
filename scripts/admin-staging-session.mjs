@@ -1,5 +1,5 @@
 // Mint a next-auth (authjs) session cookie for staging verify — self-hosted, own secret.
-import { encode } from './node_modules/@auth/core/jwt.js';
+import { encode } from '../node_modules/@auth/core/jwt.js';
 import { readFileSync, writeFileSync } from 'fs';
 
 const envlines = readFileSync('/tmp/admin-staging-env.txt', 'utf8').split('\n');
