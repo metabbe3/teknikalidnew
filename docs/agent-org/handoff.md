@@ -1117,3 +1117,24 @@
 - INSIDEN INFRA ke-2 malam ini: Docker daemon flap ~19:52 → prod 502 ±2 mnt; pulih via restart Docker Desktop (pola identik kemarin 19:4x) — 2x dalam 2 hari = kandidat ops entry root-cause.
 - Kereta T-1029-N: prd-26-01 SIAP NAIK (merge night/ux-2026-10-28-01 6dd401e + bo-28-01 announcements). Manifest malam: cek deploy-count dulu (CTO sore warning app restart 18:28).
 - SEC GATE: N/A (frontend-only). Queue v71. Rotasi UX berikutnya: flow (c) landing→register.
+
+## 2026-10-28 19:4x — Admin UX Builder shift (adm-2026-10-28-01 in_train)
+- SHIPPED BUILD-ONLY 7df9d8b branch night/admin-2026-10-28-01 (pushed): done_when #1 — sidebar 4 grup ID awam (Ringkasan/Pengguna & Konten/Pasar & Data/Sistem) + 7 link stub; 7 stub redirect generik jadi DashboardShell initialTab (Users/Community/Stocks/Predictions/Auth) dgn header ID; 0 endpoint baru.
+- VERIFY FISIK: build EXIT-0 BUILD_ID LbZqtCqqDph6lre4Zo2FS; staging one-off :3210; selftest scripts/selftest-admin-nav.mjs 7/7 PASS; CDP 1440 (4 grup, 13 link, active-state oklch bg biru) + 390 (h1 Pengguna, KPI asli 31/3/10/3, overflowX=0). Bukti docs/agent-org/verify/adm-28-01-*.png.
+- POLA BARU utk verify halaman admin (tanpa kredensial owner): scripts/admin-staging-session.mjs — mint session JWT via @auth/core/jwt encode + AUTH_SECRET container + user id ADMIN asli; staging env AUTH_URL=http://localhost:PORT + AUTH_TRUST_HOST=true. Cookie authjs.session-token (bukan __Secure- karena http).
+- Sisa adm-01: done_when #2 KPI parity, #4 label tersisa (Articles/Reports/tabs EN), #5 section Kontrol terpusat. Slot admin berikut ambil #2.
+- Jebakan: (1) heredoc bash + kurung kurawal JS di python string = KeyError setelah file TERTRUNCATE — pakai write_file tool; (2) sidebar submenu kolaps saat SSR (open=hasActiveChild client state) — verify link harus expand interaktif dulu; (3) navigasi CDP cepat ke 390 kadang mendarat di state setengah-hydrasi — poll URL+h1 sampai stabil (±10s).
+
+### Addendum 20:3x — Admin UX Builder (insiden infra + bukti final)
+- INSIDEN INFRA ke-3 malam ini (~20:1x): Docker daemon mati LAGI (pola: 27 Okt 19:4x, 28 Okt 19:52, 28 Okt 20:1x — 3x dalam 2 hari, selalu jam ~19:45-20:15) → prod 502 ±menit; pulih via quit+restart Docker Desktop; container auto-restart, prod 200 verified. BUKAN deploy (image tak berubah). Kandidat ops root-cause makin kuat — beban jam emas malam?
+- Bukti screenshot final: docs/agent-org/verify/adm-28-01-useranalytics-1440.png (135 KB, 1440x900) + -390.png (780x1688 @2x). DOM verify (ground truth): grup Ringkasan/Pengguna & Konten/Pasar & Data/Sistem; link Pengguna active bg oklch(0.93 0.03 260); KPI asli 31 users/3 DAU/10 MAU/3 new.
+- Skill teknikal-ui-workflow di-update: pola mint session staging admin + 3 jebakan verify (submenu SSR kolaps; poll stabil ±10s; capture eksplisit sebelum copy).
+
+### Addendum 20:2x — Admin UX Builder (kolaborasi checkout bersama)
+- DIKETAHUI: commit 7a9105a (20:10, audit pipelines Force EOD/QStash/RecentActivity) DIBUAT DI ATAS branch night/admin-2026-10-28-01 oleh run admin lain dgn checkout bersama — pekerjaan valid, dibiarkan utuh. TSC combined EXIT-0. HEAD kini ec2bdd5 (bukti final + push). CTO pagi: merge urut 7df9d8b → 7a9105a → ec2bdd5 (satu branch night/admin-2026-10-28-01).
+
+## 2026-10-28 23:4x — CTO Night (fix-2026-10-26-12) night_ready
+- Branch `night/fix-2026-10-26-12` (worktree scratch, base c5b2865=origin/main): N+1 getWatchlist dibunuh (loop ≤120 findMany → 2 query), pasar-live SATU PINTU via stockRepository (prisma langsung = 0), morning-delta prev-close doctrine-1 LATERAL, stock-graph pakai marketEngine, data-sync log error lengkap, stock-sync batched writes.
+- Bukti: failing-test-first 3 FAIL→9/9 PASS · parity DB live 8/8 IDENTIK · qcount 15 whole-snapshot · tsc 0 err · build RC=0 BUILD_ID q-P0iFMbuX90cqnbAay33 · regresi 29/29+5/5.
+- Queue entry → night_ready (patch tekstual +22 baris, bukan reformat — jaga ops-27-02).
+- CTO pagi: review 15 mnt → merge night/fix-2026-10-26-12 → deploy biasa. ROLLBACK post-merge: git revert 06bed51.
