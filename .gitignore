@@ -69,3 +69,4 @@ idx-sync.log
 # sec-purge 15 Okt: social-auto-poster tidak boleh masuk git (sessions IG/TikTok)
 social-auto-poster/
 social-auto-poster/sessions/
+cto-queue.json.bak*
