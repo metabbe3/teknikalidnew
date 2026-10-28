@@ -15,6 +15,17 @@ export const socialGraphRepository = {
     return follows.map((f) => f.followingId);
   },
 
+  /** Following-ids utk subset user (auth enrichment 28 Okt — fix-2026-10-26-06:
+   *  auth.service dilarang query prisma.follow langsung; social-graph SATU PINTU). */
+  async getFollowingIdsAmong(followerId: string, candidateIds: string[]): Promise<string[]> {
+    if (candidateIds.length === 0) return [];
+    const follows = await prisma.follow.findMany({
+      where: { followerId, followingId: { in: candidateIds } },
+      select: { followingId: true },
+    });
+    return follows.map((f) => f.followingId);
+  },
+
   async getFollowStatus(followerId: string, followingId: string): Promise<boolean> {
     const existing = await prisma.follow.findUnique({
       where: { followerId_followingId: { followerId, followingId } },
