@@ -21,7 +21,11 @@ export async function POST(request: NextRequest) {
         const stocks = await stockRepository.findActiveStocks();
         const tickers = stocks.map((s) => s.ticker);
         const startTime = Date.now();
-        const batches = await dataSyncService.dispatchEndOfDaySync(tickers);
+        // FIX audit 28 Okt: QStash token tidak terpasang di container — dispatch via QStash
+        // selalu gagal. Jalur cron host (launchd → /api/cron/sync-eod) memakai syncEndOfDayData
+        // langsung; samakan tombol admin dengan jalur itu (SATU PINTU).
+        await dataSyncService.syncEndOfDayData();
+        const batches = Math.ceil(tickers.length / 50);
         const duration = ((Date.now() - startTime) / 1000).toFixed(1);
         await auditService.log(user.id, "admin:sync_eod", { batches, duration }, ip);
         cronMonitoringService.logExecution({
@@ -51,6 +55,15 @@ export async function POST(request: NextRequest) {
       }
       case "clear-queue":
       case "purge-queue": {
+        // FIX audit 28 Okt: tanpa QStash token, cancel loop selalu error — balas jelas
+        // (bukan error 500 misterius) bahwa antrean tidak dipakai.
+        if (!process.env.QSTASH_TOKEN && !process.env.QSTASH_CURRENT_SERVER_TOKEN) {
+          return NextResponse.json({
+            success: true,
+            purged: 0,
+            note: "Antrean QStash tidak dikonfigurasi — sinkronisasi berjalan langsung tanpa antrean.",
+          });
+        }
         try {
           let totalCancelled = 0;
           let cancelled: number;

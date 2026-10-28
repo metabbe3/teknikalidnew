@@ -44,13 +44,17 @@ export async function GET() {
     }
   }
 
-  // QStash check
+  // QStash check — FIX audit 28 Okt: QStash tidak dikonfigurasi (token tidak ada) dan jalur
+  // sinkronisasi utama kini langsung (cron host → syncEndOfDayData), bukan via antrean.
+  // Tampilkan "tidak_dipakai" (bukan "error") supaya status tidak menyesatkan admin.
   let qstashStatus = "not_configured";
-  try {
-    await qstash.http.request({ path: ["v2", "messages"], method: "GET" });
-    qstashStatus = "connected";
-  } catch {
-    qstashStatus = "error";
+  if (process.env.QSTASH_TOKEN || process.env.QSTASH_CURRENT_SERVER_TOKEN) {
+    try {
+      await qstash.http.request({ path: ["v2", "messages"], method: "GET" });
+      qstashStatus = "connected";
+    } catch {
+      qstashStatus = "error";
+    }
   }
 
   // Sentry check
