@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { stockRepository } from "./stock.repository";
 import { INTERVAL } from "@/lib/constants";
 import { fetchQuote } from "@/lib/yahoo-finance";
 import { bigIntToNumber, decimalToNumber } from "@/lib/serialize";
@@ -128,18 +128,10 @@ async function getIhsg(): Promise<PasarIhsg> {
   } catch (err) {
     console.warn("[pasar-live] live IHSG quote failed, falling back to DB:", err instanceof Error ? err.message : err);
   }
-  // 2) DB fallback — latest two ^JKSE closes
-  const ihsgStock = await prisma.stock.findFirst({
-    where: { ticker: "^JKSE" },
-    select: { id: true },
-  });
+  // 2) DB fallback — latest two ^JKSE closes (via repository, SATU PINTU fix-2026-10-26-12)
+  const ihsgStock = await stockRepository.findStockByTicker("^JKSE");
   if (!ihsgStock) return { close: null, prevClose: null, change: null, changePercent: null, date: null, source: "db" };
-  const prices = await prisma.stockPrice.findMany({
-    where: { stockId: ihsgStock.id },
-    orderBy: { date: "desc" },
-    take: 2,
-    select: { close: true, date: true },
-  });
+  const prices = await stockRepository.findLatestPrices(ihsgStock.id, 2);
   const latest = prices[0];
   const prev = prices[1];
   const empty = { close: null, prevClose: null, change: null, changePercent: null, date: null, source: "db" as const };
@@ -165,50 +157,39 @@ async function getIhsg(): Promise<PasarIhsg> {
  */
 const WATCH_MAX = 8;
 
-async function getWatchlist(sessionDate: Date): Promise<PasarWatchlistItem[]> {
-  const freshSince = new Date(sessionDate);
-  freshSince.setUTCDate(freshSince.getUTCDate() - 4); // 5 sessions incl. latest
+export interface WatchlistRow {
+  stockId: number;
+  ticker: string;
+  name: string;
+  rsi14: number | null;
+  signalLabel: string | null;
+  smaCrossSignal: string | null;
+  smaCrossDate: Date | null;
+  emaCrossSignal: string | null;
+  emaCrossDate: Date | null;
+  close: number | null;
+  prevClose: number | null;
+  volume: number | null;
+}
 
-  const rows = await prisma.stockIndicator.findMany({
-    where: {
-      interval: INTERVAL.DAY,
-      date: sessionDate,
-      isGorengan: { not: true },
-      stock: { isActive: true, assetClass: "EQUITY" },
-      OR: [
-        { smaCrossSignal: "golden_cross", smaCrossDate: { gte: freshSince } },
-        { emaCrossSignal: "bullish", emaCrossDate: { gte: freshSince } },
-        { rsi14: { lt: 32 } },
-      ],
-    },
-    include: {
-      stock: { select: { ticker: true, name: true } },
-    },
-    orderBy: [{ signalScore: "desc" }],
-    take: 120,
-  });
-
-  // Latest close+volume per candidate (StockPrice @@index [stockId, date desc])
+/**
+ * Pure picker watchlist (fix-2026-10-26-12) — logika seleksi lama getWatchlist
+ * diekstrak verbatim supaya bisa dites tanpa DB (selftest B1-B4):
+ *  - reason precedence: golden cross segar > EMA bullish segar > RSI<32;
+ *  - liquidity floor close×volume ≥ Rp1 miliar;
+ *  - prevClose null/0 → skip (changePercent tak terdefinisi);
+ *  - urutan input = urutan skor (query sudah orderBy skor DESC) → deterministik.
+ */
+export function pickWatchlistFromRows(rows: WatchlistRow[], freshSince: Date, max: number): PasarWatchlistItem[] {
   const items: PasarWatchlistItem[] = [];
   for (const r of rows) {
-    const prices = await prisma.stockPrice.findMany({
-      where: { stockId: r.stockId },
-      orderBy: { date: "desc" },
-      take: 2,
-      select: { close: true, volume: true, date: true },
-    });
-    const latest = prices[0];
-    const prev = prices[1];
-    if (!latest || !prev) continue;
-    const close = decimalToNumber(latest.close);
-    const prevClose = decimalToNumber(prev.close);
-    const volume = bigIntToNumber(latest.volume);
+    const { close, prevClose, volume } = r;
     if (close === null || prevClose === null || prevClose === 0 || volume === null) continue;
     // liquidity floor: nilai transaksi hari terakhir ≥ Rp1 miliar
     if (close * volume < 1_000_000_000) continue;
 
     const changePercent = ((close - prevClose) / prevClose) * 100;
-    const rsi = decimalToNumber(r.rsi14);
+    const rsi = r.rsi14;
     let reason = "";
     if (r.smaCrossSignal === "golden_cross" && r.smaCrossDate && r.smaCrossDate >= freshSince) {
       reason = "Golden cross baru";
@@ -221,8 +202,8 @@ async function getWatchlist(sessionDate: Date): Promise<PasarWatchlistItem[]> {
     }
 
     items.push({
-      ticker: r.stock.ticker,
-      name: r.stock.name,
+      ticker: r.ticker,
+      name: r.name,
       close,
       changePercent,
       volumeShares: volume,
@@ -230,9 +211,37 @@ async function getWatchlist(sessionDate: Date): Promise<PasarWatchlistItem[]> {
       reason,
       signalLabel: r.signalLabel ?? null,
     });
-    if (items.length >= WATCH_MAX) break;
+    if (items.length >= max) break;
   }
   return items;
+}
+
+async function getWatchlist(sessionDate: Date): Promise<PasarWatchlistItem[]> {
+  const freshSince = new Date(sessionDate);
+  freshSince.setUTCDate(freshSince.getUTCDate() - 4); // 5 sessions incl. latest
+
+  // fix-2026-10-26-12: N+1 killer — 1 query indikator + 1 batch LATERAL harga
+  // (dulu: ≤120 findMany StockPrice sekuensial per kandidat, audit 26 Okt).
+  const rows = await stockRepository.findFreshSignalCandidates(sessionDate, freshSince, 120);
+  const bars = await stockRepository.findLatestBarsWithPrev(rows.map((r) => r.stockId));
+  const pickerRows: WatchlistRow[] = rows.map((r) => {
+    const bar = bars.get(r.stockId);
+    return {
+      stockId: r.stockId,
+      ticker: r.stock.ticker,
+      name: r.stock.name,
+      rsi14: decimalToNumber(r.rsi14),
+      signalLabel: r.signalLabel ?? null,
+      smaCrossSignal: r.smaCrossSignal ?? null,
+      smaCrossDate: r.smaCrossDate ?? null,
+      emaCrossSignal: r.emaCrossSignal ?? null,
+      emaCrossDate: r.emaCrossDate ?? null,
+      close: bar?.close ?? null,
+      prevClose: bar?.prevClose ?? null,
+      volume: bar?.volume ?? null,
+    };
+  });
+  return pickWatchlistFromRows(pickerRows, freshSince, WATCH_MAX);
 }
 
 /**
@@ -271,25 +280,12 @@ async function getMovers(sessionDate: Date): Promise<{ gainers: PasarMover[]; lo
 const FOREIGN_MAX = 10;
 
 async function getForeignFlow(sessionDate: Date): Promise<{ netBuy: PasarForeignItem[]; netSell: PasarForeignItem[] }> {
-  const rows = await prisma.foreignFlow.findMany({
-    where: {
-      date: sessionDate,
-      stock: { isActive: true, assetClass: "EQUITY" },
-    },
-    include: { stock: { select: { ticker: true, name: true } } },
-    take: 1000,
-  });
-  // Close sesi untuk konversi lembar → Rupiah (satu batch query).
-  const ids = rows.map((r) => r.stockId);
-  const prices = await prisma.stockPrice.findMany({
-    where: { stockId: { in: ids }, date: sessionDate },
-    select: { stockId: true, close: true },
-  });
-  const closeByStock = new Map<number, number>();
-  for (const p of prices) {
-    const c = decimalToNumber(p.close);
-    if (c !== null) closeByStock.set(p.stockId, c);
-  }
+  const rows = await stockRepository.findForeignFlowsByDate(sessionDate, 1000);
+  // Close sesi untuk konversi lembar → Rupiah (satu batch query via repository).
+  const closeByStock = await stockRepository.findClosesByStockIdsAndDate(
+    rows.map((r) => r.stockId),
+    sessionDate,
+  );
   const items = rows
     .map((r) => {
       const buy = decimalToNumber(r.foreignBuy) ?? 0;
@@ -317,42 +313,18 @@ async function getForeignFlow(sessionDate: Date): Promise<{ netBuy: PasarForeign
 const TOP_SIGNALS_MAX = 20;
 
 async function getTopSignals(sessionDate: Date): Promise<PasarTopSignal[]> {
-  const rows = await prisma.stockIndicator.findMany({
-    where: {
-      interval: INTERVAL.DAY,
-      date: sessionDate,
-      isGorengan: { not: true },
-      stock: { isActive: true, assetClass: "EQUITY" },
-      signalScore: { not: null },
-    },
-    include: { stock: { select: { ticker: true, name: true } } },
-    orderBy: [{ signalScore: "desc" }],
-    take: 60,
-  });
+  const rows = await stockRepository.findTopSignalRows(sessionDate, 60);
 
-  // Batch latest close+volume+prev untuk kandidat (hindari N+1 per row).
+  // Batch latest close+volume+prev (fix-2026-10-26-12): LATERAL doctrine-1 —
+  // prev-close per-stock STRICTLY sebelum bar terakhir, bukan "baris kedua
+  // window" (carry-forward vol=0 bisa menyerobot; audit 26 Okt item 3).
   const stockIds = rows.map((r) => r.stockId);
-  const priceRows = await prisma.stockPrice.findMany({
-    where: { stockId: { in: stockIds } },
-    orderBy: { date: "desc" },
-    // 2 baris per stock tidak bisa di Prisma take; ambil window terakhir lalu
-    // kelompokkan — stockIds ≤ 60 aman.
-    take: stockIds.length * 2,
-    select: { stockId: true, close: true, volume: true, date: true },
-  });
+  const bars = await stockRepository.findLatestBarsWithPrev(stockIds);
   const latestByStock = new Map<number, { close: number; prev: number; volume: number }>();
-  const seen = new Set<number>();
-  for (const p of priceRows) {
-    if (seen.has(p.stockId)) continue; // first seen = latest (ordered desc)
-    seen.add(p.stockId);
-    const prev = priceRows.find((q) => q.stockId === p.stockId && q.date < p.date);
-    const close = decimalToNumber(p.close);
-    const prevClose = prev ? decimalToNumber(prev.close) : null;
-    const volume = bigIntToNumber(p.volume);
-    if (close === null || prevClose === null || prevClose === 0 || volume === null) continue;
-    latestByStock.set(p.stockId, { close, prev: prevClose, volume });
+  for (const [sid, bar] of bars) {
+    if (bar.close === null || bar.prevClose === null || bar.prevClose === 0 || bar.volume === null) continue;
+    latestByStock.set(sid, { close: bar.close, prev: bar.prevClose, volume: bar.volume });
   }
-
   const items: PasarTopSignal[] = [];
   for (const r of rows) {
     const px = latestByStock.get(r.stockId);
@@ -442,12 +414,7 @@ export const pasarLiveService = {
 
   /** Implementation — dipisah agar cache di getSnapshot tidak rekursif. */
   async _getSnapshotUncached(withNews = true): Promise<PasarSnapshot> {
-    const sessionRow = await prisma.stockPrice.findFirst({
-      where: { stock: { assetClass: "EQUITY" } },
-      orderBy: { date: "desc" },
-      select: { date: true },
-    });
-    const sessionDate = sessionRow?.date ?? null;
+    const sessionDate = await stockRepository.findLatestEquityPriceDate();
 
     const ihsg = await getIhsg();
     if (!sessionDate) {
@@ -473,13 +440,9 @@ export const pasarLiveService = {
   /** Previous session recap (page shown before 06:30 / off-hours): IHSG + movers of sessionDate. */
   async getYesterdayRecap(): Promise<{ ihsg: PasarIhsg; topSignals: PasarTopSignal[]; foreign: { netBuy: PasarForeignItem[]; netSell: PasarForeignItem[] }; gainers: PasarMover[]; losers: PasarMover[]; sessionDate: string | null }> {
     const ihsg = await getIhsg();
-    const sessionRow = await prisma.stockPrice.findFirst({
-      where: { stock: { assetClass: "EQUITY" } },
-      orderBy: { date: "desc" },
-      select: { date: true },
-    });
-    if (!sessionRow) return { ihsg, topSignals: [], foreign: { netBuy: [], netSell: [] }, gainers: [], losers: [], sessionDate: null };
-    const [movers, topSignals, foreign] = await Promise.all([getMovers(sessionRow.date), getTopSignals(sessionRow.date), getForeignFlow(sessionRow.date)]);
-    return { ihsg, topSignals, foreign, gainers: movers.gainers, losers: movers.losers, sessionDate: sessionRow.date.toISOString().slice(0, 10) };
+    const recapDate = await stockRepository.findLatestEquityPriceDate();
+    if (!recapDate) return { ihsg, topSignals: [], foreign: { netBuy: [], netSell: [] }, gainers: [], losers: [], sessionDate: null };
+    const [movers, topSignals, foreign] = await Promise.all([getMovers(recapDate), getTopSignals(recapDate), getForeignFlow(recapDate)]);
+    return { ihsg, topSignals, foreign, gainers: movers.gainers, losers: movers.losers, sessionDate: recapDate.toISOString().slice(0, 10) };
   },
 };

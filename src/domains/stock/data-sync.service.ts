@@ -317,8 +317,10 @@ export const dataSyncService = {
 
     try {
       await stockAlertService.checkAlerts(updatedTickers);
-    } catch {
-      console.error("[DataSync] Stock alert check failed");
+    } catch (error: unknown) {
+      // fix-2026-10-26-12 item(5): error objek tidak dibuang — pesan utk sync log.
+      const msg = error instanceof Error ? error.message : String(error);
+      console.error(`[DataSync] Stock alert check failed: ${msg}`);
     }
 
     pushActivity({

@@ -1,6 +1,7 @@
 import { stockRepository } from "./stock.repository";
 import { INTERVAL } from "@/lib/constants";
 import { decimalToNumber } from "@/lib/serialize";
+import { marketEngine } from "./market-snapshot.service";
 
 export interface StockNeighbor {
   ticker: string;
@@ -41,10 +42,12 @@ export async function computeNeighbors(ticker: string, limit = 3): Promise<Stock
     const prev = m.prices[1];
     const close = latest ? decimalToNumber(latest.close) : null;
     const prevClose = prev ? decimalToNumber(prev.close) : null;
-    const change = close !== null && prevClose !== null ? close - prevClose : null;
-    const changePercent = close !== null && prevClose !== null && prevClose !== 0
-      ? ((close - prevClose) / prevClose) * 100
+    // fix-2026-10-26-12 item(4): rumus via marketEngine (SATU PINTU) — dulu
+    // inline kedua di luar pintu (audit 26 Okt); prev<=0 → null, bukan NaN.
+    const changePercent = close !== null && prevClose !== null
+      ? marketEngine.pctChange(close, prevClose)
       : null;
+    const change = close !== null && prevClose !== null ? close - prevClose : null;
     const ind = m.indicators[0];
     neighbors.push({
       ticker: m.ticker,

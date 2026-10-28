@@ -50,44 +50,56 @@ export const stockSyncService = {
     const updated: Array<{ ticker: string; changes: string[] }> = [];
     let unchanged = 0;
 
-    // Find stocks to add (in IDX but not in DB)
-    for (const [code, idx] of idxMap) {
-      const db = dbMap.get(code);
-      if (!db) {
-        await prisma.stock.create({
-          data: {
-            ticker: code + ".JK",
-            name: cleanName(idx.name),
-            sector: "Uncategorized",
-            listingBoard: idx.board,
-            isActive: true,
-          },
-        });
-        added.push(code);
+    // fix-2026-10-26-12 item(6): tulis sekuensial per saham → batched writes.
+    // Add: createMany satu statement (ticker unik, tidak ada konflik — dbMap miss).
+    // Deactivate/reactivate: dua updateMany set-based (where id IN (...)).
+    // Update name/board: loop per row TETAP (payload beda per row), tapi digabung
+    // $transaction per 100 row → 1 roundtrip per batch, bukan 1 per saham.
+    const toAdd = [...idxMap.entries()].filter(([code]) => !dbMap.has(code));
+    if (toAdd.length > 0) {
+      await prisma.stock.createMany({
+        data: toAdd.map(([code, idx]) => ({
+          ticker: code + ".JK",
+          name: cleanName(idx.name),
+          sector: "Uncategorized",
+          listingBoard: idx.board,
+          isActive: true,
+        })),
+      });
+      for (const [code] of toAdd) added.push(code);
+    }
+
+    // Deactivate (in DB but not in IDX). Indices (^JKSE etc.) are never
+    // IDX-listed equities — always exempt.
+    const toDeactivate = [...dbMap.entries()]
+      .filter(([code, db]) => !idxMap.has(code) && db.isActive && !db.ticker.startsWith("^"))
+      .map(([, db]) => db.id);
+    if (toDeactivate.length > 0) {
+      await prisma.stock.updateMany({
+        where: { id: { in: toDeactivate } },
+        data: { isActive: false },
+      });
+      for (const [code, db] of dbMap) {
+        if (!idxMap.has(code) && db.isActive && !db.ticker.startsWith("^")) removed.push(code);
       }
     }
 
-    // Find stocks to deactivate (in DB but not in IDX).
-    // Indices (^JKSE etc.) are never IDX-listed equities — always exempt.
-    for (const [code, db] of dbMap) {
-      if (!idxMap.has(code) && db.isActive && !db.ticker.startsWith("^")) {
-        await prisma.stock.update({
-          where: { id: db.id },
-          data: { isActive: false },
-        });
-        removed.push(code);
-      }
-      // Reactivate if previously deactivated and now back on IDX
-      if (idxMap.has(code) && !db.isActive) {
-        await prisma.stock.update({
-          where: { id: db.id },
-          data: { isActive: true },
-        });
-        added.push(code + " (reactivated)");
+    // Reactivate if previously deactivated and now back on IDX
+    const toReactivate = [...dbMap.entries()]
+      .filter(([code, db]) => idxMap.has(code) && !db.isActive)
+      .map(([, db]) => db.id);
+    if (toReactivate.length > 0) {
+      await prisma.stock.updateMany({
+        where: { id: { in: toReactivate } },
+        data: { isActive: true },
+      });
+      for (const [code, db] of dbMap) {
+        if (idxMap.has(code) && !db.isActive) added.push(code + " (reactivated)");
       }
     }
 
-    // Find stocks to update (in both, check name/board changes)
+    // Update name/board changes — batched transaction (BATCH 100)
+    const nameBoardUpdates: { id: number; name?: string; listingBoard?: string; ticker: string; changes: string[] }[] = [];
     for (const [code, idx] of idxMap) {
       const db = dbMap.get(code);
       if (!db) continue;
@@ -99,17 +111,32 @@ export const stockSyncService = {
       if (db.listingBoard !== idx.board) changes.push(`board: "${db.listingBoard}" → "${idx.board}"`);
 
       if (changes.length > 0) {
-        await prisma.stock.update({
-          where: { id: db.id },
-          data: {
-            ...(db.name !== idxName && { name: idxName }),
-            ...(db.listingBoard !== idx.board && { listingBoard: idx.board }),
-          },
+        nameBoardUpdates.push({
+          id: db.id,
+          ticker: code + ".JK",
+          changes,
+          ...(db.name !== idxName && { name: idxName }),
+          ...(db.listingBoard !== idx.board && { listingBoard: idx.board }),
         });
-        updated.push({ ticker: code + ".JK", changes });
       } else {
         unchanged++;
       }
+    }
+    const UPDATE_BATCH = 100;
+    for (let i = 0; i < nameBoardUpdates.length; i += UPDATE_BATCH) {
+      const batch = nameBoardUpdates.slice(i, i + UPDATE_BATCH);
+      await prisma.$transaction(
+        batch.map((u) =>
+          prisma.stock.update({
+            where: { id: u.id },
+            data: {
+              ...(u.name !== undefined && { name: u.name }),
+              ...(u.listingBoard !== undefined && { listingBoard: u.listingBoard }),
+            },
+          }),
+        ),
+      );
+      updated.push(...batch.map((u) => ({ ticker: u.ticker, changes: u.changes })));
     }
 
     return { added, removed, updated, unchanged };

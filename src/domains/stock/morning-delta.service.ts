@@ -22,8 +22,10 @@ export interface MorningDelta {
   bullets: DeltaBullet[];
 }
 
+// fix-2026-10-26-12 item(3): bentuk row dari findStocksWithIndicatorHistoryLateral —
+// change% dihitung dari close/prevClose doctrine-1 (LATERAL), bukan prices[0]/prices[1].
 type StockHistory = Awaited<
-  ReturnType<typeof stockRepository.findStocksWithIndicatorHistory>
+  ReturnType<typeof stockRepository.findStocksWithIndicatorHistoryLateral>
 >[number];
 
 function labelTone(label: string | null | undefined): DeltaTone {
@@ -43,8 +45,8 @@ function buildCandidate(
   const prev = stock.indicators[1];
   if (!latest) return null;
 
-  const close0 = decimalToNumber(stock.prices[0]?.close);
-  const close1 = decimalToNumber(stock.prices[1]?.close);
+  const close0 = stock.close;
+  const close1 = stock.prevClose;
   const changePercent =
     close0 !== null && close1 !== null && close1 !== 0
       ? ((close0 - close1) / close1) * 100
@@ -93,8 +95,11 @@ function buildCandidate(
       rank: 22,
     };
   }
-  const macdNow = decimalToNumber(latest.macdHist);
-  const macdPrev = decimalToNumber(prev?.macdHist);
+  // jsonb LATERAL mengembalikan macdHist sebagai unknown — normalisasi ke number.
+  const toNum = (v: unknown): number | null =>
+    v === null || v === undefined ? null : Number(v);
+  const macdNow = toNum(latest.macdHist);
+  const macdPrev = toNum(prev?.macdHist);
   if (
     macdNow !== null &&
     macdPrev !== null &&
@@ -145,7 +150,7 @@ export const morningDeltaService = {
       return { asOf: null, trackedCount: 0, bullets: [] };
     }
 
-    const stocks = await stockRepository.findStocksWithIndicatorHistory(tickers);
+    const stocks = await stockRepository.findStocksWithIndicatorHistoryLateral(tickers);
 
     const bullets = stocks
       .map(buildCandidate)
