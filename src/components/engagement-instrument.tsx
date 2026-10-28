@@ -74,6 +74,15 @@ function push(ev: QueuedEvent): void {
   if (queue.length >= MAX_BATCH) flush(false);
 }
 
+/** cta_click programmatic — PRD prd-2026-10-26-01 AC3: impression sheet register
+ *  dihitung tanpa endpoint baru (reuse queue/endpoint existing); langsung flush
+ *  agar impresi tidak hilang kalau user segera navigasi. */
+export function trackCtaEvent(label: string): void {
+  if (typeof window === "undefined") return;
+  push({ type: "cta_click", label, path: currentPath() });
+  flush(false);
+}
+
 /** Resolve a CTA label for a click target; null = not a tracked CTA. */
 function ctaLabel(target: EventTarget | null): string | null {
   const el = target instanceof Element ? target : null;

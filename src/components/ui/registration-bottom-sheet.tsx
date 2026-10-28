@@ -4,7 +4,23 @@ import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRegistrationPrompt } from "@/hooks/use-registration-prompt";
+import {
+  REGISTER_PROMPT_EVENT,
+  tryConsumeRegisterPrompt,
+  readGuestWatchlist,
+  readSavedScreens,
+} from "@/lib/guest-storage";
+import { trackCtaEvent } from "@/components/engagement-instrument";
 
+/**
+ * Dua trigger:
+ * 1. Time-based (existing): dwell 30s + >=5 pageviews (use-registration-prompt).
+ * 2. Moment-of-intent (PRD prd-2026-10-26-01 OPSI A): CustomEvent REGISTER_PROMPT_EVENT
+ *    dari hook guest SAAT simpan sukses (star_add/preset_save) — copy kontekstual
+ *    n-item (AC2), rate-cap check-and-set 1x/7hari (AC1), impression telemetry
+ *    register_prompt_save_moment via endpoint existing (AC3). Non-blocking:
+ *    simpanan guest tetap sukses apa pun yang terjadi pada sheet ini.
+ */
 export function RegistrationBottomSheet() {
   const { status } = useSession();
   const {
@@ -14,6 +30,8 @@ export function RegistrationBottomSheet() {
   } = useRegistrationPrompt();
   const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  // Copy kontekstual moment-of-intent; null = mode time-based lama.
+  const [saveMoment, setSaveMoment] = useState<{ title: string; body: string } | null>(null);
 
   const handleDismiss = useCallback(() => {
     setVisible(false);
@@ -35,6 +53,29 @@ export function RegistrationBottomSheet() {
 
     return () => clearTimeout(timer);
   }, [status, trackPageView, shouldShowBottomSheet]);
+
+  // Trigger 2 — moment-of-intent guest save (prd-2026-10-26-01)
+  useEffect(() => {
+    if (status === "authenticated" || status === "loading") return;
+    const onMoment = (e: Event) => {
+      if (visible || dismissed) return; // satu sheet pada satu waktu
+      if (!tryConsumeRegisterPrompt()) return; // AC1: check-and-set 1x/7hari
+      const nTickers = readGuestWatchlist().length; // AC2: angka nyata saat itu
+      const nPresets = readSavedScreens().length;
+      const source = (e as CustomEvent<{ source?: string }>).detail?.source;
+      setSaveMoment({
+        title: "Jaga simpanan Anda",
+        body:
+          source === "preset_save"
+            ? `${nTickers + nPresets} simpanan (emiten + preset screener) tersimpan hanya di perangkat ini — daftar gratis supaya permanen dan tampil di semua perangkat.`
+            : `${nTickers} emiten tersimpan hanya di perangkat ini — daftar gratis supaya pantauan Anda permanen dan tampil di semua perangkat.`,
+      });
+      setVisible(true);
+      trackCtaEvent("register_prompt_save_moment"); // AC3: impression terhitung
+    };
+    window.addEventListener(REGISTER_PROMPT_EVENT, onMoment);
+    return () => window.removeEventListener(REGISTER_PROMPT_EVENT, onMoment);
+  }, [status, visible, dismissed]);
 
   // Don't render anything for authenticated users or if already dismissed
   if (status === "authenticated" || dismissed) return null;
@@ -84,15 +125,16 @@ export function RegistrationBottomSheet() {
           {/* Content */}
           <div className="text-center">
             <h3 className="font-heading text-lg font-semibold text-text-primary mb-1.5">
-              Suka fitur analisa teknikal ini?
+              {saveMoment?.title ?? "Suka fitur analisa teknikal ini?"}
             </h3>
             <p className="text-sm text-text-secondary mb-5">
-              Simpan saham favorit Anda dan buat trading plan gratis.
+              {saveMoment?.body ?? "Simpan saham favorit Anda dan buat trading plan gratis."}
             </p>
 
             {/* Google OAuth button */}
             <Link
-              href="/auth/register"
+              href={saveMoment ? "/auth/register?utm_source=product&utm_medium=register_prompt" : "/auth/register"}
+              data-engagement={saveMoment ? "register_open_save_moment" : undefined}
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-accent px-5 py-3 text-sm font-bold text-white hover:bg-accent/90 transition-colors press-scale"
             >
               <svg
@@ -123,7 +165,8 @@ export function RegistrationBottomSheet() {
 
             {/* Email link */}
             <Link
-              href="/auth/register"
+              href={saveMoment ? "/auth/register?utm_source=product&utm_medium=register_prompt" : "/auth/register"}
+              data-engagement={saveMoment ? "register_open_save_moment" : undefined}
               className="mt-3 inline-block text-xs text-text-secondary hover:text-accent transition-colors"
             >
               Daftar dengan email

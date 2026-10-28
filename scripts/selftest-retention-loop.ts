@@ -18,6 +18,9 @@ import {
   GUEST_WATCHLIST_KEY,
   SAVED_SCREENS_KEY,
   MAX_SAVED_SCREENS,
+  tryConsumeRegisterPrompt,
+  countGuestSavedItems,
+  REGISTER_PROMPT_KEY,
   type GuestStorage,
 } from "../src/lib/guest-storage";
 
@@ -105,4 +108,33 @@ test("[5] saved screens: validasi queryString (anti URL-absolut) + remove", () =
   assert.equal(readSavedScreens(st).length, 1, "hanya entry valid yang lolos");
   removeSavedScreen("view=ok", st);
   assert.equal(readSavedScreens(st).length, 0, "remove by queryString");
+});
+
+// ── prd-2026-10-26-01: register prompt moment-of-intent ──
+
+test("[6] AC1 rate-cap: tryConsumeRegisterPrompt true 1x, lalu false dalam 7 hari (check-and-set)", () => {
+  const st = new MemStorage();
+  assert.equal(tryConsumeRegisterPrompt(st), true, "panggilan pertama = boleh show");
+  assert.equal(st.getItem(REGISTER_PROMPT_KEY), String(Date.now()), "timestamp tertulis saat consume");
+  assert.equal(tryConsumeRegisterPrompt(st), false, "panggilan ke-2 hari sama = diblok (AC5)");
+  // simulasikan 7 hari + 1 menit berlalu
+  st.setItem(REGISTER_PROMPT_KEY, String(Date.now() - (7 * 24 * 3600 * 1000 + 60_000)));
+  assert.equal(tryConsumeRegisterPrompt(st), true, "setelah >7 hari = boleh lagi");
+});
+
+test("[7] AC2 copy konteks: countGuestSavedItems = watchlist + preset nyata dari storage", () => {
+  const st = new MemStorage();
+  assert.equal(countGuestSavedItems(st), 0, "guest tanpa simpanan = 0");
+  toggleGuestWatchlistTicker("BBRI", st);
+  toggleGuestWatchlistTicker("BBCA", st);
+  saveScreen({ key: "k", label: "L", queryString: "view=screener&preset=x" }, st);
+  assert.equal(countGuestSavedItems(st), 3, "2 emiten + 1 preset = 3");
+});
+
+test("[8] AC4 kontrol: storage null / throw tidak crash dan tidak pernah show", () => {
+  assert.equal(tryConsumeRegisterPrompt(null), false, "tanpa storage = diam");
+  class ThrowingStorage extends MemStorage {
+    override getItem(): string | null { throw new Error("private mode"); }
+  }
+  assert.equal(tryConsumeRegisterPrompt(new ThrowingStorage() as unknown as GuestStorage), false, "storage throw = diam, simpanan guest tetap sukses");
 });

@@ -156,3 +156,32 @@ export function removeSavedScreen(queryString: string, storage: GuestStorage | n
   }
   return next;
 }
+
+// ── Register prompt moment-of-intent (PRD prd-2026-10-26-01, OPSI A) ──
+
+export const REGISTER_PROMPT_KEY = "teknikal:register_prompt_last";
+export const REGISTER_PROMPT_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000; // AC1: <=1x/7hari
+/** CustomEvent 'teknikal:register-prompt' — di-dispatch hook guest SAAT simpan
+ *  sukses (star_add / preset_save), didengar RegistrationBottomSheet. */
+export const REGISTER_PROMPT_EVENT = "teknikal:register-prompt";
+
+/** Rate-cap check-AND-set atomik (satu fungsi = tak bisa double-show race):
+ *  return true SEKALI per 7 hari per perangkat (anonId ≈ localStorage device).
+ *  Side-effect menulis timestamp saat true — pure-storage-injectable utk test. */
+export function tryConsumeRegisterPrompt(storage: GuestStorage | null = defaultStorage()): boolean {
+  if (!storage) return false;
+  try {
+    const raw = storage.getItem(REGISTER_PROMPT_KEY);
+    const last = raw ? Number(raw) : NaN;
+    if (Number.isFinite(last) && Date.now() - last < REGISTER_PROMPT_INTERVAL_MS) return false;
+    storage.setItem(REGISTER_PROMPT_KEY, String(Date.now()));
+    return true;
+  } catch {
+    return false; // private-mode Safari: diam, simpanan guest tetap sukses
+  }
+}
+
+/** Total simpanan guest (watchlist + preset) utk copy kontekstual (AC2). */
+export function countGuestSavedItems(storage: GuestStorage | null = defaultStorage()): number {
+  return readGuestWatchlist(storage).length + readSavedScreens(storage).length;
+}

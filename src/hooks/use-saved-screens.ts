@@ -11,6 +11,7 @@ import {
   saveScreen as persistScreen,
   removeSavedScreen as removeScreen,
   SAVED_SCREENS_EVENT,
+  REGISTER_PROMPT_EVENT,
   type SavedScreen,
 } from "@/lib/guest-storage";
 
@@ -37,6 +38,8 @@ export function useSavedScreens() {
       if (next) {
         setScreens(next);
         window.dispatchEvent(new CustomEvent(SAVED_SCREENS_EVENT, { detail: next }));
+        // Moment-of-intent (prd-2026-10-26-01): preset tersimpan = peak intent.
+        window.dispatchEvent(new CustomEvent(REGISTER_PROMPT_EVENT, { detail: { source: "preset_save" } }));
       }
       return next;
     },

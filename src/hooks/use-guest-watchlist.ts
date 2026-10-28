@@ -12,6 +12,7 @@ import {
   readGuestWatchlist,
   toggleGuestWatchlistTicker,
   GUEST_WATCHLIST_EVENT,
+  REGISTER_PROMPT_EVENT,
 } from "@/lib/guest-storage";
 
 export function useGuestWatchlist() {
@@ -40,6 +41,11 @@ export function useGuestWatchlist() {
       if (result) {
         setTickers(result.list);
         window.dispatchEvent(new CustomEvent(GUEST_WATCHLIST_EVENT, { detail: result.list }));
+        // Moment-of-intent (prd-2026-10-26-01): hanya saat ADD (bukan unstar);
+        // rate-cap & copy di-handle RegistrationBottomSheet (single consumer).
+        if (result.added) {
+          window.dispatchEvent(new CustomEvent(REGISTER_PROMPT_EVENT, { detail: { source: "star_add" } }));
+        }
       }
       return result ? { added: result.added } : null;
     },
