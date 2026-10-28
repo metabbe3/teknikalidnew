@@ -196,21 +196,30 @@ export const stockSyncService = {
     const directorCount = await stockRepository.replaceDirectors(stock.id, directors);
 
     // Replace shareholders
+    // Fix 28 Okt (bareng VIVA): clamp persen Decimal(6,2) — data IDX kotor bisa
+    // membatalkan emiten via "Value out of range" (pola sama dgn subsidiaries).
     const shareholders = (detail.PemegangSaham ?? []).map((s) => ({
       name: s.Nama,
       type: s.Kategori || null,
-      shares: s.Jumlah ?? null,
-      percent: s.Persentase ?? null,
+      shares: typeof s.Jumlah === "number" && s.Jumlah >= 0 ? s.Jumlah : null,
+      percent: typeof s.Persentase === "number" && s.Persentase >= 0 ? Math.min(s.Persentase, 9999.99) : null,
     }));
     const shareholderCount = await stockRepository.replaceShareholders(stock.id, shareholders);
 
     // Replace subsidiaries
-    const subsidiaries = (detail.AnakPerusahaan ?? []).map((s) => ({
-      name: s.Nama,
-      businessType: s.BidangUsaha?.replace(/\r\n/g, " ") || null,
-      totalAssets: s.JumlahAset ?? null,
-      ownershipPercent: s.Persentase ?? null,
-    }));
+    // Fix VIVA 28 Okt: Persentase IDX kadang >9999.99 (data kotor) → Decimal(6,2)
+    // "Value out of range" membatalkan seluruh emiten. Clamp: percent ≤ 9999.99
+    // (dan negatif → null), JumlahAset juga clamp ke kapasitas Decimal(20,2).
+    const subsidiaries = (detail.AnakPerusahaan ?? []).map((s) => {
+      const pct = typeof s.Persentase === "number" && s.Persentase >= 0 ? Math.min(s.Persentase, 9999.99) : null;
+      const assets = typeof s.JumlahAset === "number" && s.JumlahAset >= 0 ? Math.min(s.JumlahAset, 99999999999999999999.99) : null;
+      return {
+        name: s.Nama,
+        businessType: s.BidangUsaha?.replace(/\r\n/g, " ") || null,
+        totalAssets: assets,
+        ownershipPercent: pct,
+      };
+    });
     const subsidiaryCount = await stockRepository.replaceSubsidiaries(stock.id, subsidiaries);
 
     // Upsert dividends (comes directly from profile response)
