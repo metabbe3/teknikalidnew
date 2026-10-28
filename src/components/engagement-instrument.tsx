@@ -107,7 +107,10 @@ function navClickLabel(target: EventTarget | null): string | null {
   const a = el.closest("a[href]");
   if (a) {
     const href = a.getAttribute("href") ?? "";
-    if (href && !/^(https?:|mailto:|tel:)/i.test(href) && !a.hasAttribute("download")) {
+    // pure-hash (#chart) = in-page jump, bukan navigasi page — skip biar tak
+    // banjir noise nav:home dari sticky nav section.
+    if (href.startsWith("#") || href === "") return null;
+    if (!/^(https?:|mailto:|tel:)/i.test(href) && !a.hasAttribute("download")) {
       const clean = href.split(/[?#]/)[0] || "/";
       const seg = clean.split("/").filter(Boolean).slice(0, 2).join("_");
       return `nav:${seg || "home"}`;
