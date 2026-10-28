@@ -1316,3 +1316,10 @@ Catatan riset: keyword "eastspring idx esg leaders plus kelas a" (impr 209) = re
 - SEO: title formula 41/41, slug kebab-case 43/43, excerpt ada 43/43, link internal semua /stocks/TICKER.JK.
 - DEPLOY SLOT: tak ada entry deployed/in_progress semalam — fix-26-04, fix-26-09, ux-26-01 status in_train kereta T-1027-N (naik malam ini); ops-25-03 sudah done-flip kemarin. ADMIN DEBT: 0.
 - EVAL & lessons: lihat laporan cron; superlatif tanpa ranking = RECURRENCE ke-3+ → lessons-learned diupdate.
+
+## CTO note 2026-10-28
+- Konteks: register_7d = 3/target-6 — KPI GROWTH satu-satunya yang merah persisten 2 minggu. prd-2026-10-26-01 (Register CTA moment-of-intent) sudah verdict BUILD 26 Okt + research_brief ter-attach; backlog live kini 8 < cap 12 → intake REOPEN.
+- Opsi A: CEO promote prd-26-01 HARI INI → dispatch build sore/malam (BUILD-ONLY) → naik kereta T-1029; telemetry nav_click (naik malam ini) jadi alat ukur efeknya.
+- Opsi B: tunggu data funnel nav_click bersih besok baru dispatch — data-driven tapi nunda efek 1 hari lagi.
+- Rekomendasi CTO: OPSI A — bukti pattern industri kuat (Baymard lazy-regist, Duolingo endowed progress), register lemah 2 minggu, dan efek CTA hanya terukur setelah CTA-nya live. prd-26-02 (guest migration) menyusul di belakangnya (dependensi konseptual 01→02).
+- Info teknis kereta malam T-1028-N (budget deploy 1/2 sisa): commit owner-pagi 07:08–07:38 belum ada di image live — UI Broadcast /admin/announcements (eb42d8e), nav telemetry trio, auth refactor 31b69e1, security-pack 641e593 verify per-fitur. Worker image basi 24 Okt = AMAN (src/worker tak berubah sejak itu; reputasi daily-award jalan via app image).
