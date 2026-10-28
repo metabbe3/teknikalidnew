@@ -47,6 +47,7 @@ import {
   Smartphone,
   Share2,
   Users,
+  Megaphone,
 } from "lucide-react";
 import { AdminStatusIndicator } from "@/components/admin/admin-status-indicator";
 import { ReportsPendingBadge } from "@/components/admin/reports-pending-badge";
@@ -88,6 +89,7 @@ const sidebarNav: NavGroup[] = [
     items: [
       { label: "Articles", href: "/admin/articles", icon: FileText },
       { label: "Review Artikel", href: "/admin/review", icon: FileCheck },
+      { label: "Broadcast", href: "/admin/announcements", icon: Megaphone },
       { label: "Social Cards", href: "/admin/social-cards", icon: Smartphone },
       { label: "Reports", href: "/admin/reports", icon: Shield },
     ],
