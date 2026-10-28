@@ -3060,13 +3060,33 @@
    "date": "2026-10-26",
    "type": "perf",
    "priority": "P1",
-   "status": "pending",
-   "assigned_to": "cto",
+   "status": "night_ready",
+   "assigned_to": "cto-night",
    "scheduled_slot": "slot 27-28 Okt (agregat stock P1)",
    "north_star": "RELIABLE/PERF — N+1 & layering pasar",
    "source": "plain audit 26 Okt malam (domain article/ & stock/)",
    "spec": "Stock P1 agregat: (1) pasar-live.service.ts:193-199 N+1 BERAT findMany StockPrice per ticker (≤120 query sekuensial di getWatchlist); (2) pasar-live 10x prisma langsung bypass repository (:132..:454); (3) morning-delta:48-51 change% pola second-row langgar prev-close LATERAL; (4) stock-graph mini-movers compute di luar pintu; (5) data-sync:320 catch buang error objek; (6) stock-sync:54-102 tulis sekuensial per saham.",
    "acceptance": "getWatchlist ≤3 query (join/groupBy); prisma langsung di pasar-live = 0; sync log error lengkap; tsc+build hijau.",
+   "branch": "night/fix-2026-10-26-12",
+   "night_result": {
+    "task": "N+1 getWatchlist dibunuh + pasar-live SATU PINTU repository + morning-delta doctrine-1 LATERAL + stock-graph marketEngine + data-sync log error + stock-sync batched writes",
+    "verify": [
+     "failing-test-first: scripts/selftest/pasar-live-doctrine.selftest.ts 3 FAIL pre-fix (commit 0f1cbc9) -> 9/9 PASS post-fix",
+     "parity DB live (read-only): watchlist 8/8 item IDENTIK bit-per-bit old-loop vs new-LATERAL (scripts/selftest/_parity/parity-pasar-live.ts)",
+     "qcount instrument pg: whole-snapshot 15 query (dulu watchlist sendiri 1+<=120); qcount-pasar-live.ts PASS",
+     "md-lateral runtime DB live: BBCA +7.65% NEST -2.22% prev doctrine-1 benar; md-lateral-check.ts PASS",
+     "npx tsc --noEmit: 0 error; npm run build: RC=0 BUILD_ID q-P0iFMbuX90cqnbAay33; lint sdlc: 0 error",
+     "regresi: market-snapshot-engine 29/29, ai-gate-leak PASS, fundamental-row node:test 5/5"
+    ],
+    "acceptance_check": {
+     "getWatchlist <=3 query": "PASS (2 query: 1 indikator + 1 LATERAL batch; whole snapshot 15)",
+     "prisma langsung di pasar-live = 0": "PASS (guard statis A1 di selftest; import prisma dihapus)",
+     "sync log error lengkap": "PASS (data-sync catch kini log message)",
+     "tsc+build hijau": "PASS"
+    },
+    "commits": ["0f1cbc9 (test-first)", "06bed51 (fix)", "a4f892e (bukti fisik)"],
+    "review_est": "15 menit (diff 632+/166-; jalankan ulang selftest doctrine + parity utk keykinan)"
+   },
    "train": "T-1029-N"
   },
   {
