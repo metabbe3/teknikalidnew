@@ -417,9 +417,31 @@ export async function fetchWatchlistNews(tickers: string[]): Promise<PasarNewsIt
   return out.slice(0, 10);
 }
 
+// Tuning 28 Okt: micro-cache snapshot 60s (stale-while-revalidate sederhana).
+// Module-scope = per-process; app single-container → efektif utk semua request.
+let snapshotCache: { data: PasarSnapshot; at: number; withNews: boolean } | null = null;
+
 export const pasarLiveService = {
-  /** Full /pasar snapshot — one call, deterministic ordering. */
+  /**
+   * Full /pasar snapshot — one call, deterministic ordering.
+   * Tuning 28 Okt: micro-cache 60s di service-layer (halaman tetap force-dynamic).
+   * ISR page-level DICOBA lalu DIBATALKAN: build gagal (prerender butuh DB) dan
+   * RCA 17 Okt mencatat ISR tak beregenerasi di prod (docker standalone) — risiko
+   * halaman "live" beku. Cache di sini aman: generatedAt tetap jujur, jam dari
+   * WibClock client-side, dan stale ≤60s tak terasa utk data batch-sync.
+   */
   async getSnapshot(withNews = true): Promise<PasarSnapshot> {
+    const now = Date.now();
+    if (snapshotCache && now - snapshotCache.at < 60_000 && snapshotCache.withNews === withNews) {
+      return snapshotCache.data;
+    }
+    const data = await pasarLiveService._getSnapshotUncached(withNews);
+    snapshotCache = { data, at: now, withNews };
+    return data;
+  },
+
+  /** Implementation — dipisah agar cache di getSnapshot tidak rekursif. */
+  async _getSnapshotUncached(withNews = true): Promise<PasarSnapshot> {
     const sessionRow = await prisma.stockPrice.findFirst({
       where: { stock: { assetClass: "EQUITY" } },
       orderBy: { date: "desc" },

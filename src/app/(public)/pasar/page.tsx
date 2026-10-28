@@ -7,6 +7,7 @@ import { pasarLiveService, isLiveWindow, isMarketHours, wibNow, wibHHMM, type Pa
 import { prisma } from "@/lib/prisma";
 import { dateLabel, formatPrice, formatPercent, formatVolume, stripJk  } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+import { WibClock } from "./wib-clock";
 import { AlertTriangle, Clock, Moon, Newspaper, TrendingDown, TrendingUp, Zap } from "lucide-react";
 
 /**
@@ -18,10 +19,12 @@ import { AlertTriangle, Clock, Moon, Newspaper, TrendingDown, TrendingUp, Zap } 
  * SEO policy: NOINDEX — konten berubah tiap jam, tidak ada keyword stabil.
  * /pasar = retention, artikel = acquisition (spec.seo_policy).
  *
- * Revalidate 60s saat jam pasar (isMarketHours true on request) — saat tutup,
- * ISR default 15 menit sudah cukup (rekap kemarin jarang berubah).
+ * Tuning 28 Okt (deploy owner-directed): ISR DICOBA lalu DIBATALKAN — build gagal
+ * (prerender butuh DB) + RCA 17 Okt: ISR di stack ini tak beregenerasi di prod.
+ * Optimasi jalan: cache data 60s di pasar-live.service (lihat cachedSnapshot),
+ * halaman tetap force-dynamic — TTFB turun tanpa risiko halaman beku.
  */
-export const dynamic = "force-dynamic";  // SSR per-request; build tak butuh DB (pola page.tsx utama)
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Koran Saham Live — Pasar IDX Hari Ini",
@@ -30,16 +33,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/pasar" },
   robots: { index: false, follow: true },
 };
-
-function WibClock() {
-  const now = wibNow();
-  return (
-    <span className="inline-flex items-center gap-1.5 text-text-tertiary text-sm font-mono">
-      <Clock className="h-3.5 w-3.5" aria-hidden />
-      {now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })} WIB
-    </span>
-  );
-}
 
 function ChangeBadge({ pct, className }: { pct: number | null; className?: string }) {
   if (pct === null) return <span className={cn("text-sm tabular-nums text-text-tertiary", className)}>—</span>;
