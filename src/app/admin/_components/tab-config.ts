@@ -1,4 +1,4 @@
-import { Activity, Users, MessageSquare, TrendingUp, Target, Shield, UserCog, LineChart } from "lucide-react";
+import { Activity, Users, MessageSquare, TrendingUp, Target, Shield, UserCog, LineChart, Lightbulb } from "lucide-react";
 
 export const TABS = [
   { id: "overview", label: "Overview", icon: Activity },
@@ -8,6 +8,7 @@ export const TABS = [
   { id: "predictions", label: "Predictions", icon: Target },
   { id: "auth", label: "Auth", icon: Shield },
   { id: "analytics", label: "Analytics", icon: LineChart },
+  { id: "insight", label: "Insight", icon: Lightbulb },
   { id: "usermgmt", label: "User Mgmt", icon: UserCog },
 ] as const;
 

@@ -10,6 +10,7 @@ import { StocksTab } from "./stocks-tab";
 import { PredictionsTab } from "./predictions-tab";
 import { AuthTab } from "./auth-tab";
 import { AnalyticsTab } from "./analytics-tab";
+import { InsightTab } from "./insight-tab";
 import { UserManagementTab } from "./user-management-tab";
 import { TABS, type TabId } from "./tab-config";
 import { useState } from "react";
@@ -72,6 +73,7 @@ export function DashboardShell({
       {activeTab === "predictions" && <PredictionsTab />}
       {activeTab === "auth" && <AuthTab />}
       {activeTab === "analytics" && <AnalyticsTab />}
+      {activeTab === "insight" && <InsightTab />}
       {activeTab === "usermgmt" && <UserManagementTab />}
     </div>
   );

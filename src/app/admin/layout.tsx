@@ -52,7 +52,7 @@ import {
   MessageSquare,
   TrendingUp,
   Target,
-} from "lucide-react";
+  Lightbulb } from "lucide-react";
 import { AdminStatusIndicator } from "@/components/admin/admin-status-indicator";
 import { ReportsPendingBadge } from "@/components/admin/reports-pending-badge";
 
@@ -92,6 +92,7 @@ const sidebarNav: NavGroup[] = [
       { label: "Social Cards", href: "/admin/social-cards", icon: Smartphone },
       { label: "Reports", href: "/admin/reports", icon: Shield },
       { label: "Pengguna", href: "/admin/user-analytics", icon: Users },
+      { label: "Insight", href: "/admin/insight", icon: Lightbulb },
       { label: "Komunitas", href: "/admin/community", icon: MessageSquare },
     ],
   },
