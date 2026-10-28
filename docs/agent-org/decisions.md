@@ -849,3 +849,9 @@ penulisan masih 404 (deploy di kereta T-1021-N / CTO pagi).
 - BUILD GAGAL ke-1: ponytail a388414 hapus 'compression' padahal server.ts (root, luar src/) import — audit 'zero import' hanya scan src/. FIX restore 1 dep (ef2ac33). Lesson: dependency audit WAJIB cakup server.ts/scripts/*.
 - STATEJSON BUG: subcommand `update --id X --set/--python` MENGABAIKAN --id → menulis top-level queue (bocoran key result/scheduled_slot/tasks — kemungkinan besar penyumbang drift ops-27-02). Hanya `flip --id` yang benar. Top-level sudah dibersihkan manual. → perlu entry perbaikan tools.
 - VERIFY PASCA-DEPLOY: home/stocks/berita/BBCA.JK 200 (before=after); feedback API: POST valid ok=true total=2, dedup flip t→f exact (DB BBCA.JK t=1 f=1), invalid-body 403/400-guard CSRF aktif; chunk UX 'Urut' terserved; selftest 3/3 hijau pre-deploy.
+
+## 2026-10-28 18:4x WIB — CTO sore: SQL content patch qa-2026-10-27-01 + qa-2026-10-28-01 (owner-approved destructive policy)
+- Backup valid: db-20261028.sql.gz (last-success 2026-10-28T01:16, <24h). Preview COUNT: aadi_sup=1, aadi_tgl=1, brief_top=1; title/excerpt = 0 kemunculan (bersih).
+- 1 transaksi: BEGIN -> UPDATE 1 (AADI superlatif Rp11.800/9-Okt -> Rp12.125/6-Okt, -2,3% -> -4,9%) -> UPDATE 1 (AADI volume: 19/20-Okt -> 16/19-Okt) -> UPDATE 1 (brief-28 'Top gainers non-gorengan' -> 'Penguat menonjol non-gorengan ... di balik BOGA +22,88% dan MKNT +14,29%') -> COMMIT. Post-count: old 0x / new 1x ketiganya. Rowcount total = 3 (sesuai preview 3).
+- Rollback bila perlu: reverse replace() ketiga pada slug yang sama.
+- ops-28-01 symlink restore: superset datadir -> repo (cto-queue +fix-2026-10-28-02/qa-2026-10-28-01; backlog +sre-2026-10-28-1/2) sebelum rm+ln -s; backup .bak-20261028-1839-drift4-prelink kedua file; md5 pasca-link identik dua arah (8ab70c4b.../09623dc9...).

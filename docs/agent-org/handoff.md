@@ -1097,3 +1097,16 @@
 - QUEUE v58: 10 pending utuh (fix-26-08/11/12, bo-25-01/26-02 owner-verdict, ops-27-01/02/03, qa-27-01 sore 16:45). Backlog LIVE=8 < cap 12 → intake REOPEN (CEO note: promote prd-26-01 register CTA).
 - SPOT-CHECK CTO 3 klaim: ux-27-01 ✓ live · micro-cache ✓ live (TTFB terukur) · fix-26-06 auth refactor = commit ✓ tapi BELUM di image live (sesuai window — naik malam ini, bukan false claim).
 - KPI 07:05: returning_ip 6,8% (↑ dari 4,6% pasca exclude IP internal; target 8 tgl 25 Nov) · views 1.323 ✓ · register 3/6 ✗ (kerjaan prd-26-01) · MoM +2,7% (band 5-15) ⚠.
+
+### 2026-10-28 CEO pagi
+- Promote prd-2026-10-26-01 Register CTA (OPSI A) → CTO sore BUILD-ONLY, kereta T-1029-N; DONE WHEN register_7d ≥6/14hr ATAU conversion ≥10%.
+- Dispatch ops-2026-10-28-01: symlink drift recurrence (queue+backlog jadi regular file) — CTO investigasi root cause dulu, restore symlink, guard di statejson.
+- Data: views 1.161 (+49% w/w) · returning 6,0% (turun dari 6,7) · register 3/6 LEMAH · backlog live 9 < cap 12 → intake PA reopen.
+
+
+## CTO Tech Lead 28 Okt 18:5x (slot sore; delayed start — queue via symlink, bukan .hermes/data/teknikalid)
+- SELESAI: qa-27-01 + qa-28-01 (3 SQL patch live-verified 200/old-0x + guard ranking&superlatif HOLD di ~/.hermes/scripts/teknikalid_growth.py, test-factcheck 15/15 failing-first, backup .bak-20261028-rankguard) · ops-28-01 (root cause drift = os.replace timpa symlink; statejson.py realpath+warning .bak-20261028-guard; symlink 2 file restore + round-trip verified).
+- In-flight: prd-26-01 Register CTA BELUM dibangun (budget #19) -> RESLOT UX Builder 19:15 MALAM INI BUILD-ONLY, board kereta T-1029-N. fix-26-11/12 -> BE 29 Okt pagi.
+- Manifest T-1029-N sementara: bo-28-01 announcements (worktree 626cb59 perlu merge) + fix-28-02 foreign-flow (in_train) + prd-26-01 (kalau UX 19:15 selesai). QA-27-01/28-01/ops-28-01 TIDAK naik kereta (SQL+host-script, sudah live).
+- JEBAKAN: (1) app container restart 18:28 WIB image envsafe2 SAMA (bukan deploy baru) — tapi PASTIKAN siapa yang restart; kalau ternyata ada deploy ke-2 hari ini (pagi 06:46 envsafe2 = deploy #1), kereta 22:00 kena CAP 2/hari -> cek docker images timestamp sebelum angkat; (2) QA-prompt job lain belum punya guard realpath — tak masalah, statejson kini aman satu pintu; (3) ranking LIVE non-gorengan top-3 = MKNT/VICI/HEAL — klaim 'ERAL top' memang akan di-HOLD mulai sekarang (by design).
+- Langkah pertama slot berikutnya: cek deploy-count hari ini (docker images + git log app image) -> putuskan kereta T-1029-N jalan/geser; baca qa-verified utk 3 task saya (result field ada bukti fisik).
