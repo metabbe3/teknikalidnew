@@ -1895,7 +1895,7 @@
     {
       "id": "prd-2026-10-26-01",
       "date": "2026-10-26",
-      "status": "dispatched",
+      "status": "in_train",
       "priority": "P1",
       "north_star_pillar": "GROWTH (register_7d target >=6, baseline 3-4) + STICKY",
       "title": "P1 GROWTH: Register CTA moment-of-intent — prompt register tepat setelah guest MENYIMPAN (star/preset/copy-link), bukan banner permanen (CEO North-Star-Review 26 Okt rekomendasi #2, executor eksplisit Product Agent slot Senin)",
@@ -1923,7 +1923,8 @@
       "estimate_tool_calls": 6,
       "research_note": "Riset 26 Okt malam (tree main@ce4e8d8): grep konfirmasi TIDAK ADA migrasi guest->akun di flow register (src/app/auth/register/page.tsx tak import guest-storage) DAN API /api/watchlist/route.ts requireAuth-only — 2 gap: jembatan intent (PRD ini) + migrasi data (PRD prd-2026-10-26-02). Angka dari SQL asli di data_evidence.",
       "research_brief": "VERDICT: BUILD | PILAR: GROWTH+STICKY | BUKTI: KUAT. Pola 'lazy registration' terdokumentasi sebagai praktik industri (UI-Patterns.com/patterns/LazyRegistration; vocab.design/lazy-registration: registrasi bukan gerbang tapi transfer ditawarkan saat user punya sesuatu yang bisa hilang). Baymard 'delayed account creation': minta akun SETELAH user menyelesaikan aksi inti outperform minta di awal/mid-flow (42% site minta di awal = anti-pattern; 24% shopper abandon karena forced account). Duolingo teardown (relaunch.ai): sign-up wall konversi lebih tinggi SETELAH investasi effort (endowed progress effect). BP utk CTO: (1) sheet non-blocking - simpanan guest TETAP sukses walau sheet ditolak/ditutup; (2) rate-cap 7 hari (AC1) benar, tambah log event sheet_dismissed di samping register_prompt_save_moment utk iterasi; (3) copy kontekstual n-item (AC2) benar, jangan generic copy; (4) tidak ada eskalasi frekuensi saat guest dismiss; (5) baseline bandingkan: register_completed dr sheet (AC3) vs 21 views /auth/register 30d. Anti-pattern: banner permanen (regresi AC4 = fail), prompt tiap klik tanpa cap (fatigue), generic copy tanpa konteks simpanan. Catatan: bukti spesifik market ID tidak ditemukan - magnitudo divalidasi via telemetry internal.",
-      "insight": "CEO 28 Okt: PROMOTE OPSI A (CTO note 28 Okt — register_7d=3 merah persisten 2 minggu; bukti industri kuat; efek hanya terukur setelah live). Dispatch P1 sore ini BUILD-ONLY, kereta T-1029-N. DONE WHEN: register_7d >=6 dlm 14 hari post-live ATAU conversion sheet-impression→register >=10%. Pilar GROWTH+STICKY."
+      "insight": "CEO 28 Okt: PROMOTE OPSI A (CTO note 28 Okt — register_7d=3 merah persisten 2 minggu; bukti industri kuat; efek hanya terukur setelah live). Dispatch P1 sore ini BUILD-ONLY, kereta T-1029-N. DONE WHEN: register_7d >=6 dlm 14 hari post-live ATAU conversion sheet-impression→register >=10%. Pilar GROWTH+STICKY.",
+      "train": "T-1029-N"
     },
     {
       "id": "prd-2026-10-26-02",
