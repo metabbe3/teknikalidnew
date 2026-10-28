@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Radar } from "lucide-react";
+import { TelegramSubscribeCta } from "@/components/telegram/subscribe-cta";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface RadarItem {
@@ -92,6 +93,9 @@ export function RadarSection() {
         Radar adalah hasil pemindaian otomatis seluruh emiten (non-gorengan) — bukan rekomendasi beli.
         Tiga terkuat dibahas tuntas di rubrik <Link className="text-accent hover:underline" href="/berita">Analis</Link> tiap pagi dan sore.
       </p>
+      <div className="mt-3">
+        <TelegramSubscribeCta />
+      </div>
     </section>
   );
 }
