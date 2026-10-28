@@ -2,6 +2,26 @@
  "protocol": "CTO task queue — dibaca CTO agent (slot 07:30 pagi & 16:45 sore; quiet zone BARU 11:00-18:00 = larang deploy+LLM, owner 16 Sep), ditulis CEO (08:15) / Council (Min 08:00). Entry: {id, date, spec, priority (P0 darurat/P1 tinggi/P2 normal), north_star, status (pending/done/failed/blocked_for_owner), result}. CTO: max 1 deploy per slot (2/hari total), eksekusi claude code pipeline, update status + verify evidence.",
  "entries": [
   {
+   "id": "bo-2026-10-29-01",
+   "date": "2026-10-29",
+   "type": "backoffice",
+   "priority": "P2",
+   "status": "in_train",
+   "assigned_to": "backoffice-builder",
+   "train": "T-1029-N",
+   "north_star": "STICKY+GROWTH — admin satu sumber kebenaran telemetri engagement (funnel returning + CTA per label); alat ukur QA prd-2026-10-26-01 (register_prompt_save_moment countable dari backoffice)",
+   "title": "BACKOFFICE INSIGHT: tab Insight /admin — konsumsi 2 route yatim (engagement+views-geo) + API +clicksByLabel7d (follow-up audit bo-2026-10-28-02)",
+   "spec": "Audit ronde-3 menemukan /api/admin/views-geo + /api/admin/engagement = data sehat (2.551 event) tapi YATIM UI. Eksekusi: insight-tab.tsx (corong 7d viewed->dwell60->cta->returned, klik CTA+nav per label, kedalaman baca per area, geo negara) + /api/admin/engagement +clicksByLabel7d (GROUP BY type,label 7d LIMIT 30 — prasyarat alat ukur prd-26-01) + route /admin/insight + tab ke-9 shell + sidebar. API REUSE: 0 endpoint baru, 0 dependency, komponen dipakai ulang.",
+   "done_when": [
+    "tsc+build EXIT-0 (BUILD_ID fisik)",
+    "staging API 200 + clicksByLabel7d data asli",
+    "CDP DOM: tab aktif, 4 section render, label asli terlihat",
+    "merge T-1029-N oleh CTO pagi + deploy + changelog + rollback anchor"
+   ],
+   "result": "BUILD-ONLY DONE 29 Okt 03:1x WIB (commit 875ec65 night/admin-2026-10-28-01 pushed, kereta T-1029-N). BUKTI: tsc EXIT-0; build EXIT-0 BUILD_ID 0wu6FPZUI5-3EDt4aH5PB3 route /admin/insight ter-list; staging one-off API 200 (7d=1228, funnel 79->49->7->4, clicksByLabel7d top funnel_edu 4/2); CDP DOM h1 'Insight Pengunjung' 9 tab aktif Insight, 4 section render, 31 row, label asli terlihat; screenshot verify/bo-2026-10-29-01-insight-1440.png 125KB. NO DEPLOY (train belum merged; main 0fa2263 di belakang 3 branch malam — deploy sendiri = drop pekerjaan paralel).",
+   "created_by": "Backoffice Builder slot 03:00 29 Okt"
+  },
+  {
    "id": "fix-2026-10-28-02",
    "title": "Foreign Flow Sync CF BLOCKED (exit 2) — restore jalur Playwright warm-session",
    "status": "in_train",
@@ -3084,7 +3104,11 @@
      "sync log error lengkap": "PASS (data-sync catch kini log message)",
      "tsc+build hijau": "PASS"
     },
-    "commits": ["0f1cbc9 (test-first)", "06bed51 (fix)", "a4f892e (bukti fisik)"],
+    "commits": [
+     "0f1cbc9 (test-first)",
+     "06bed51 (fix)",
+     "a4f892e (bukti fisik)"
+    ],
     "review_est": "15 menit (diff 632+/166-; jalankan ulang selftest doctrine + parity utk keykinan)"
    },
    "train": "T-1029-N"
