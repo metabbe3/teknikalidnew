@@ -1,5 +1,13 @@
-import { redirect } from "next/navigation";
+"use client";
+
+import { DashboardShell } from "../_components/dashboard-shell";
 
 export default function UserAnalyticsPage() {
-  redirect("/admin");
+  return (
+    <DashboardShell
+      initialTab="users"
+      title="Pengguna"
+      description="Statistik pengguna: pertumbuhan, aktif harian, retensi & reputasi"
+    />
+  );
 }
