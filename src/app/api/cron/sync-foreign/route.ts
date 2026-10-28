@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireCronSecret } from "@/lib/cron-guard";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -9,10 +10,8 @@ export const dynamic = "force-dynamic";
  * Idempoten: upsert by (stockId, date); ticker tanpa row Stock di-skip.
  */
 export async function POST(request: NextRequest) {
-  const auth = request.headers.get("authorization");
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const denied = requireCronSecret(request);
+  if (denied) return denied;
 
   let payload: { sessionDate?: string; rows?: { code: string; date: string; foreignBuy: number; foreignSell: number }[] };
   try {

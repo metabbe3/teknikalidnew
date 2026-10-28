@@ -1,4 +1,5 @@
 import { type Metadata } from "next";
+import { safeJsonLd } from "@/lib/safe-json-ld";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
@@ -584,7 +585,7 @@ export default async function StockDetailPage({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
     <div className="fade-in stock-detail-root">
       {/* ── AI panel (MLX lokal, ringkasan naratif + Q&A) — menggantikan SignalVerdict
@@ -837,6 +838,7 @@ export default async function StockDetailPage({
               <a
                 key={id}
                 href={`#${id}`}
+                data-engagement={`nav_${id}`} // 28 Okt: sticky nav sebelumnya tak ter-track (anchor jump tak memicu apa pun)
                 className="shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
               >
                 {label}

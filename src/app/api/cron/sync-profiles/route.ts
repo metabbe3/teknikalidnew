@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireCronSecret } from "@/lib/cron-guard";
 import { stockSyncService } from "@/domains/stock/stock-sync.service";
 import type { IDXProfileResponse } from "@/lib/idx-api";
 import { withCronLogging } from "@/domains/cron-monitoring/with-cron-logging";
@@ -12,10 +13,8 @@ export const dynamic = "force-dynamic";
  * StockCommissioner/StockShareholder tetap fresh.
  */
 export async function POST(request: NextRequest) {
-  const auth = request.headers.get("authorization");
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const denied = requireCronSecret(request);
+  if (denied) return denied;
   try {
     const body = await request.json();
     const profiles = body?.profiles as { ticker: string; detail: IDXProfileResponse }[] | undefined;

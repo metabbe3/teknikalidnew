@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { safeJsonLd } from "@/lib/safe-json-ld";
 import { PageHero } from "@/components/layout/page-hero";
 import { AskAiCta } from "@/components/seo/ask-ai-cta";
 import Link from "next/link";
@@ -94,7 +95,7 @@ export default async function SahamStochasticOversoldPage() {
       <script
         type="application/ld+json"
         // JSON-LD from a hardcoded trusted object literal (no user input) — same pattern as /saham-oversold.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
 
       <PageHero

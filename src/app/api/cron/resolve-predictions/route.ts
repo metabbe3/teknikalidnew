@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireCronSecret } from "@/lib/cron-guard";
 import { prisma } from "@/lib/prisma";
 import { PREDICTION_OUTCOME, PREDICTION_DIRECTION } from "@/lib/constants";
 import { withCronLogging } from "@/domains/cron-monitoring/with-cron-logging";
@@ -9,10 +10,8 @@ import { withTimeout } from "@/domains/cron-monitoring/with-timeout";
 export const maxDuration = 300;
 
 export async function GET(request: NextRequest) {
-  const auth = request.headers.get("authorization");
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const denied = requireCronSecret(request);
+  if (denied) return denied;
 
   try {
     const { status, body } = await withCronLogging("resolve-predictions", () =>

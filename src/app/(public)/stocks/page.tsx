@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { safeJsonLd } from "@/lib/safe-json-ld";
 import Link from "next/link";
 import { Suspense } from "react";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
@@ -167,7 +168,7 @@ export default async function StocksPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
       />
     <div className="fade-in">
       {/* ── Editorial header ── */}

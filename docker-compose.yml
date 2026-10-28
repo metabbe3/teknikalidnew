@@ -7,7 +7,10 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
-      - "3000:3000"
+      # Security-audit 28 Okt: bind loopback — cegah direct-origin reach dari LAN
+      # (spoof cf-connecting-ip/x-forwarded-for mem-bypass trust Cloudflare).
+      # cloudflared tunnel tetap sampai via localhost.
+      - "127.0.0.1:3000:3000"
     environment:
       - DATABASE_URL=${DOCKER_DATABASE_URL:-postgresql://teknikalid:***@db:5432/teknikalid}
       - MLX_AI_URL=http://host.docker.internal:8765
@@ -30,6 +33,9 @@ services:
       - MIDTRANS_SERVER_KEY=${MIDTRANS_SERVER_KEY:-}
       - MIDTRANS_IS_PRODUCTION=${MIDTRANS_IS_PRODUCTION:-false}
       - SCRAPER_WHITELIST_IPS=${SCRAPER_WHITELIST_IPS:-}
+      # Traffic Mac mini (CDP verify agent + owner browsing + docker bridge) — diexclude dari
+      # admin analytics "real visitors" (owner 28 Okt: verify HeadlessChrome kelihatan spt bot asing)
+      - ANALYTICS_EXCLUDE_IPS=${ANALYTICS_EXCLUDE_IPS:-}
       # Cap heap below the 2G container limit — saw a heap-FATAL crash 2026-09-07.
       - NODE_OPTIONS=--max-old-space-size=1536
     volumes:

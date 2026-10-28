@@ -2,8 +2,8 @@ import bcrypt from "bcryptjs";
 import { auth } from "@/lib/auth";
 import { getAvatarUrl } from "@/lib/avatar";
 import { USERNAME_REGEX } from "@/lib/constants";
-import { prisma } from "@/lib/prisma";
 import { authRepository } from "./auth.repository";
+import { socialGraphRepository } from "@/domains/social/social-graph.repository";
 import {
   NotAuthenticatedError, AccountSuspendedError, AdminRequiredError,
   EmailTakenError, UsernameTakenError, ValidationError,
@@ -115,11 +115,11 @@ export const authService = {
       }));
     }
 
-    const follows = await prisma.follow.findMany({
-      where: { followerId: userId, followingId: { in: users.map((u) => u.id) } },
-      select: { followingId: true },
-    });
-    const followingIds = new Set(follows.map((f) => f.followingId));
+    // fix-2026-10-26-06: model Follow = milik domain social — lewat repository-nya,
+    // auth tidak boleh query model domain lain langsung (boundary DDD).
+    const followingIds = new Set(
+      await socialGraphRepository.getFollowingIdsAmong(userId, users.map((u) => u.id))
+    );
 
     const enriched = users.map((u) => ({
       id: u.id,

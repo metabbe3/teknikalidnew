@@ -59,8 +59,12 @@ function stripNulls(obj: Record<string, unknown>): Record<string, unknown> {
 }
 
 export async function POST(req: NextRequest) {
+  // Security-audit 28 Okt: xff[0] bisa dipalsukan client (CF append, [0]=nilai attacker).
+  // Prioritaskan cf-connecting-ip (di-set Cloudflare, tak bisa dipalsukan via tunnel).
+  const xff = req.headers.get("x-forwarded-for");
   const ip =
-    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    req.headers.get("cf-connecting-ip") ??
+    (xff ? xff.split(",").pop()?.trim() : undefined) ??
     req.headers.get("x-real-ip") ??
     "unknown";
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { safeJsonLd } from "@/lib/safe-json-ld";
 import { PageHero } from "@/components/layout/page-hero";
 import { AskAiCta } from "@/components/seo/ask-ai-cta";
 import { screenerAnalysisService } from "@/domains/stock/screener-analysis.service";
@@ -84,7 +85,7 @@ export default async function SahamValueGrowthPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
       <PageHero
         eyebrow="Saham IDX"
         title="Daftar Saham Value Growth Indonesia"

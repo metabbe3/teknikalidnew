@@ -1,4 +1,5 @@
 import { type Metadata } from "next";
+import { safeJsonLd } from "@/lib/safe-json-ld";
 import Link from "next/link";
 import { SECTORS, type Sector } from "@/lib/sectors";
 import { SITE_URL } from "@/lib/constants";
@@ -55,7 +56,7 @@ export default function SectorIndexPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
         <div>

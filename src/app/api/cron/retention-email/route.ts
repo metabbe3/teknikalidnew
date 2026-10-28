@@ -10,14 +10,13 @@
  * (penerima dari DB internal); prisma parameterized; endpoint internal-cron.
  */
 import { NextRequest, NextResponse } from "next/server";
+import { requireCronSecret } from "@/lib/cron-guard";
 import { runRetentionEmailJob } from "@/lib/retention-email.service";
 import { withCronLogging } from "@/domains/cron-monitoring/with-cron-logging";
 
 export async function GET(request: NextRequest) {
-  const auth = request.headers.get("authorization");
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const denied = requireCronSecret(request);
+  if (denied) return denied;
 
   const readOnly = request.nextUrl.searchParams.get("readOnly") === "1";
 
