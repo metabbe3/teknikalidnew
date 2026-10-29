@@ -15,7 +15,7 @@ async function send(chatId, text) {
 function normTicker(raw) {
   if (!raw) return null;
   let t = raw.toUpperCase().trim().replace(/\.JK$/,'').replace(/^@/,'').replace(/_JK$/,'');
-  return /^[A-Z0-9]{4}$/.test(t) ? t : null;
+  return /^[A-Z0-9]{4,5}$/.test(t) ? t : null;
 }
 async function handle(msg, c) {
   const chatId = String(msg.chat.id);
@@ -56,11 +56,20 @@ async function handle(msg, c) {
       return send(chatId, `🚫 <b>${code}</b> dihapus dari pantauan. Kirim /start ${code} kalau mau lagi.`);
     }
     if (text.startsWith('/help')) return send(chatId, 'Perintah:\n/start BBCA — pantau saham\n/list — daftar pantauan\n/stop BBCA — berhenti pantau\n\nData oleh teknikal.id — bukan rekomendasi jual-beli.');
-  } catch(e) { console.error('handle error', e.message); }
+  } catch(e) {
+    console.error('handle error', e.message);
+    // fix owner 30 Okt: jangan diam — user harus tahu kalau gangguan (dulu: klik tak ada respons)
+    await send(chatId, '⚠️ Sebentar — server sedang sibuk. Coba kirim ulang perintahmu ya (mis. /start BBCA).').catch(()=>{});
+  }
+}
+async function connect() {
+  const c = new Client({ connectionString: process.env.DATABASE_URL });
+  c.on('error', (e) => console.error('pg client error', e.message));
+  await c.connect();
+  return c;
 }
 async function loop() {
-  const c = new Client({ connectionString: process.env.DATABASE_URL });
-  await c.connect();
+  let c = await connect();
   console.log('[teknikalid-bot] polling…');
   for(;;) {
     try {
@@ -68,9 +77,32 @@ async function loop() {
       const j = await r.json();
       for (const u of j.result||[]) {
         offset = u.update_id+1;
-        if (u.message) await handle(u.message, c);
+        if (u.message) {
+          try {
+            await handle(u.message, c);
+          } catch (e) {
+            // koneksi DB drop di tengah pesan → reconnect SEKALI lalu ulangi pesan itu
+            if (/ECONNREFUSED|Connection terminated|connection closed/i.test(e.message||'')) {
+              console.error('reconnecting DB…');
+              try { await c.end(); } catch {}
+              c = await connect();
+              await handle(u.message, c);
+            } else {
+              throw e;
+            }
+          }
+        }
       }
     } catch(e) { console.error('poll retry', e.message); await new Promise(r=>setTimeout(r,3000)); }
   }
+}
+
+// --test '<json pesan>': jalankan satu pesan tanpa polling (verifikasi end-to-end)
+if (process.argv[2] === '--test') {
+  const msg = JSON.parse(process.argv[3]).message ?? JSON.parse(process.argv[3]);
+  const c = await connect();
+  await handle(msg, c);
+  await c.end();
+  process.exit(0);
 }
 loop();
