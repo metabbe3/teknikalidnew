@@ -1379,3 +1379,7 @@ Catatan riset: keyword "eastspring idx esg leaders plus kelas a" (impr 209) = re
 - Deploy af0b7c1: (1) internal link stock page → /saham/[t]/kenapa-naik-hari-ini + /screener (audit #1); (2) CompanyDataTabs konten selalu di DOM (class hidden, default tab render SSR — audit #2); (3) permanentRedirect varian non-kanonik kenapa-naik (audit #5).
 - Verified prod: 308 varian .JK, link kenapa-naik 2x + screener link live, Direksi/Dividen/Pemegang Saham ada di HTML mentah.
 - Sumber: audit gemini-4-argon-high via agy (owner-approved division of labor); P1-P3 di plan-2026-10-29.md.
+
+## 2026-10-29 — SEO P1 executed (deploy ke-2 hari ini)
+- @graph Article+BreadcrumbList+FAQPage di kenapa-naik-hari-ini (dulu FAQPage saja); dedupe BreadcrumbList stock page (2→1, sisakan versi 4-item sektor); Dataset+Breadcrumb JSON-LD baru di /stocks/[t]/indikator (dulu 0); news-sitemap filter luas NEWS+STOCK_ANALYSIS+MOVEMENT_ANALYSIS (7 URL dulu hanya NEWS subset).
+- Verified prod: @graph 3 type live; stock page 1 BreadcrumbList; Dataset 1; news 7 URL. Commits: (lihat git log) — build REAL_EXIT=0, hot-swap v3 + rm route-cache.
