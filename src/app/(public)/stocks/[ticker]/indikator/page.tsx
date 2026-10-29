@@ -7,6 +7,7 @@ import { stockRepository } from "@/domains/stock/stock.repository";
 import { StockNotFoundError } from "@/domains/stock/stock.errors";
 import { decimalToNumber } from "@/lib/serialize";
 import { SITE_URL } from "@/lib/constants";
+import { safeJsonLd } from "@/lib/safe-json-ld";
 import { summarizeVerdict, toSnapshot, type Outlook } from "@/lib/verdict-prose";
 
 export const revalidate = 3600; // ISR — past rows immutable, latest day refreshes hourly
@@ -129,6 +130,37 @@ export default async function IndicatorHistoryPage({
           <li className="text-foreground font-semibold">Riwayat Indikator</li>
         </ol>
       </nav>
+      {/* seo-2026-10-29-p1 (audit #3): Dataset + BreadcrumbList JSON-LD (dulu 0 schema) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: safeJsonLd({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "Dataset",
+                name: `Riwayat Indikator Teknikal ${name} (${tickerJK})`,
+                description: `Data historis indikator teknikal saham ${name} (${tickerClean}) di Bursa Efek Indonesia: RSI 14, MACD, Bollinger Bands, Stochastic, ADX, VWAP, ATR, dan SMA/EMA — diperbarui setiap sesi bursa.`,
+                url: `${SITE_URL}/stocks/${tickerJK}/indikator`,
+                inLanguage: "id",
+                isAccessibleForFree: true,
+                creator: { "@type": "Organization", name: "TeknikalID", url: SITE_URL },
+                temporalCoverage: `${earliest.toISOString().slice(0, 10)}/${latest.toISOString().slice(0, 10)}`,
+                variableMeasured: ["RSI-14", "MACD", "Bollinger Bands", "Stochastic %K/%D", "ADX", "VWAP", "ATR", "SMA-20/50/200", "EMA-12/26"],
+              },
+              {
+                "@type": "BreadcrumbList",
+                itemListElement: [
+                  { "@type": "ListItem", position: 1, name: "Beranda", item: SITE_URL },
+                  { "@type": "ListItem", position: 2, name: "Saham", item: `${SITE_URL}/stocks` },
+                  { "@type": "ListItem", position: 3, name: tickerClean, item: `${SITE_URL}/stocks/${tickerJK}` },
+                  { "@type": "ListItem", position: 4, name: "Riwayat Indikator" },
+                ],
+              },
+            ],
+          }),
+        }}
+      />
 
       <header className="mx-auto max-w-7xl px-4 pb-4">
         <p className="text-xs font-mono uppercase tracking-wider text-muted-foreground mb-1">Arsip Indikator Teknikal</p>

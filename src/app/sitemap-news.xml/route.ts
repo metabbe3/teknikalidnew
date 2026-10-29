@@ -22,7 +22,8 @@ export async function GET() {
   try {
     articles = await prisma.article.findMany({
       where: {
-        articleType: ArticleType.NEWS,
+        // seo-2026-10-29-p1 (audit #8): luaskan filter agar MARKET_BRIEF & STOCK_ANALYSIS <48h ikut
+        articleType: { in: [ArticleType.NEWS, ArticleType.STOCK_ANALYSIS, ArticleType.MOVEMENT_ANALYSIS] },
         status: ArticleStatus.PUBLISHED,
         publishedAt: { gt: since },
       },

@@ -559,14 +559,9 @@ export default async function StockDetailPage({
           url: SITE_URL,
         },
       },
-      {
-        "@type": "BreadcrumbList",
-        "@id": `${SITE_URL}/stocks/${ticker}#breadcrumb`,
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Stocks", item: `${SITE_URL}/stocks` },
-          { "@type": "ListItem", position: 2, name: stripJk(ticker), item: `${SITE_URL}/stocks/${ticker}` },
-        ],
-      },
+      // seo-2026-10-29-p1 (audit #4): BreadcrumbList JSON-LD dihapus dari @graph —
+      // komponen <Breadcrumbs> (4-item dgn sektor) sudah render schema yang lebih kaya;
+      // dua BreadcrumbList di 1 halaman = sinyal duplikat ke Google.
       {
         "@type": "FAQPage",
         mainEntity: faqItems.map((f) => ({

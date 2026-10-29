@@ -10,6 +10,7 @@ import { ShareButtons } from "@/components/ui/share-buttons";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { StockNotFoundError } from "@/domains/stock/stock.errors";
 import { explainMove, type MoveExplainer } from "@/lib/verdict-prose";
+import { safeJsonLd } from "@/lib/safe-json-ld";
 
 export const revalidate = 3600; // 1 hour ISR
 export const dynamic = "force-dynamic";
@@ -392,14 +393,54 @@ export default async function MovementAnalysisPage({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
+            // seo-2026-10-29-p1 (audit #6): @graph Article + BreadcrumbList + FAQPage (dulu FAQPage saja)
+            __html: safeJsonLd({
               "@context": "https://schema.org",
-              "@type": "FAQPage",
-              mainEntity: faqItems.map((f) => ({
-                "@type": "Question",
-                name: f.q,
-                acceptedAnswer: { "@type": "Answer", text: f.a },
-              })),
+              "@graph": [
+                {
+                  "@type": "Article",
+                  "@id": `${SITE_URL}/saham/${tickerClean.toLowerCase()}/kenapa-naik-hari-ini#article`,
+                  headline: article?.title ?? `Kenapa Saham ${name} ${dir} Hari Ini (${tickerClean})`,
+                  description: article?.excerpt ?? explainer?.prose.slice(0, 160) ?? `Analisis pergerakan saham ${name} hari ini.`,
+                  inLanguage: "id",
+                  datePublished: asOfDate ? new Date(asOfDate).toISOString() : undefined,
+                  dateModified: article?.updatedAt
+                    ? new Date(article.updatedAt).toISOString()
+                    : asOfDate
+                      ? new Date(asOfDate).toISOString()
+                      : undefined,
+                  author: { "@type": "Organization", name: "TeknikalID", url: SITE_URL },
+                  publisher: { "@type": "Organization", name: "TeknikalID", url: SITE_URL },
+                  mainEntityOfPage: `${SITE_URL}/saham/${tickerClean.toLowerCase()}/kenapa-naik-hari-ini`,
+                  about: { "@type": "Corporation", name, tickerSymbol: `${tickerClean}.JK` },
+                },
+                {
+                  "@type": "BreadcrumbList",
+                  itemListElement: [
+                    { "@type": "ListItem", position: 1, name: "Beranda", item: SITE_URL },
+                    { "@type": "ListItem", position: 2, name: "Saham", item: `${SITE_URL}/stocks` },
+                    {
+                      "@type": "ListItem",
+                      position: 3,
+                      name: tickerClean,
+                      item: `${SITE_URL}/stocks/${tickerClean}.JK`,
+                    },
+                    {
+                      "@type": "ListItem",
+                      position: 4,
+                      name: `Kenapa ${tickerClean} ${dir} Hari Ini`,
+                    },
+                  ],
+                },
+                {
+                  "@type": "FAQPage",
+                  mainEntity: faqItems.map((f) => ({
+                    "@type": "Question",
+                    name: f.q,
+                    acceptedAnswer: { "@type": "Answer", text: f.a },
+                  })),
+                },
+              ],
             }),
           }}
         />
