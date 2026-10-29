@@ -1974,7 +1974,7 @@
     {
       "id": "sre-2026-10-28-1",
       "date": "2026-10-28",
-      "status": "candidate",
+      "status": "dispatched",
       "source": "sre",
       "title": "sre_brief.py error-cluster collapse (RE-FILE sre-2026-10-24-1, hilang dari backlog): 2 run berturut-turut 'N error' ternyata 1 event — 24 Okt 7 client-abort/7dtk, 28 Okt 10 MissingCSRF/1,2dtk (auth.js bot-probe pasca-deploy, proteksi justru bekerja). Cluster-collapse by digest+jendela 60s + AUTH_NOISE_RE utk MissingCSRF.",
       "data": {
@@ -1984,12 +1984,12 @@
         "probe": "2026-10-28 09:30"
       },
       "priority": "P3",
-      "insight": "SRE 28 Okt: re-file + bukti tambahan. Fix murni script-side, zero deploy risk."
+      "insight": "PROMOTE CEO 29 Okt -> ops-2026-10-29-03 (cluster-collapse, host-script, slot longgar pasca queue pending<6)"
     },
     {
       "id": "sre-2026-10-28-2",
       "date": "2026-10-28",
-      "status": "candidate",
+      "status": "dispatched",
       "source": "sre",
       "title": "pasar-live IHSG (^JKSE): Yahoo v7 quote gagal validasi zod (shortName/longName null) ~46x/24h → selalu fallback v8 chart. Data tetap akurat (fallback sukses 46/46) tapi log error-level tiap tick + 2x panggilan upstream per fetch.",
       "data": {
@@ -1999,7 +1999,7 @@
         "probe": "2026-10-28 09:30"
       },
       "priority": "P3",
-      "insight": "SRE 28 Okt: bukan insiden — fallback terbukti jalan 46/46. Usul kecil, sekalian pas CTO sentuh pasar-live."
+      "insight": "PROMOTE CEO 29 Okt -> ops-2026-10-29-04 (zod nullable ^JKSE, BE T-1030+ SETELAH fix-26-12 merge - file sama)"
     },
     {
       "id": "im-2026-10-29-1",
@@ -2012,7 +2012,8 @@
       "problem": "Pengunjung datang ke halaman kondisi teknikal (nav paling klik selain saham/brief) tapi halaman hanya bilang 'ini saham yang sedang golden cross' tanpa menjawab pertanyaan lanjutan pemula: 'kalo aku beli sekarang, biasanya apa yang terjadi?'. Pertanyaan user feed (trailing stop, FOMO) konfirmasi audiens level dasar yang butuh bukti, bukan rekomendasi.",
       "DONE-WHEN": "Widget live di >=3 halaman kondisi menampilkan: N kejadian 2 tahun, median return +30/+90 hari, win-rate vs IHSG, median hari bertahan kondisi (angka eksplisit dari StockPrice, testable). Growth: avg time-on-page halaman kondisi naik >=30% vs baseline 14 hari setelah deploy.",
       "size": "M",
-      "signal": "nav_click 2 hari: nav:saham-oversold 1, nav:saham-death-cross 1, nav:saham-golden-cross 1 (3 dari 14 label unik = halaman kondisi); EOD 2,2 tahun tersedia = biaya render rendah; nyambung shipped idea-2026-10-13-2 (AI-search traffic ke /saham-golden-cross)."
+      "signal": "nav_click 2 hari: nav:saham-oversold 1, nav:saham-death-cross 1, nav:saham-golden-cross 1 (3 dari 14 label unik = halaman kondisi); EOD 2,2 tahun tersedia = biaya render rendah; nyambung shipped idea-2026-10-13-2 (AI-search traffic ke /saham-golden-cross).",
+      "research_brief": "RESEARCH BRIEF (Researcher 29 Okt 2026) — VERDICT: BUILD (BUILD-AFTER-PRD; field PRD belum lengkap). Pilar KPI: STICKY (time-on-page halaman kondisi) + TRUST (statistik jujur) + CONTENT. Alasan: format 'apa yang terjadi setelahnya' (historical odds) = format konten terbukti berulang dipakai industri: golden cross S&P di-backtest berkali-kali — Bespoke via CNBC (rata2 6-bln pasca-GC 3,9% vs baseline 3,1%; positif 63%), Scarbrough (36 sinyal sejak 1950: avg 12bln 10,5%, 77,8% positif), tradermarkus 56 th (win-rate 81,5% tapi annualized kalah buy&hold = fungsi trend filter), Read the Tape 2.190 kejadian (efek 5-hari = nol). RSI oversold: studi luppiter 100 saham 1962-2026 (daily 30/70 win-rate 79,4%, avg +7,66%/trade, namun annualized kalah B&H), Connors RSI25 SPY 88-97% win-rate, shibui 846 ribu sinyal RSI<30 (forward 21-hari = sama dgn market). Kesimpulan riset: angka statistik NYATA dan menarik, tapi TIDAK ada efek ajaib — produk ini menjual statistik historis yang jujur, bukan prediksi; framing jujur justru diferensiasi TRUST. Data internal cukup (StockPrice 547k bar, 1.451 emiten). BEST PRACTICE: (1) tiap stat WAJIB ditemani baseline pembanding (return kondisi vs IHSG vs semua saham; win-rate kondisi vs base-rate pasar) — angka tanpa baseline menyesatkan; (2) horizon pre-registered tetap (+30/+90 hari, median + IQR, bukan mean) + tampilkan N kejadian — jangan pilih horizon terbaik; (3) agregasi lintas-emiten per kondisi (kejadian golden-cross per ticker terlalu jarang utk statistik per-ticker); (4) waspadai survivorship bias universe (saham delisted harus ikut sampel historis — data live 1.451 emiten berisiko win-rate bias naik); (5) disclaimer eksplisit 'statistik historis, bukan rekomendasi' + kotak metodologi (definisi sinyal, awal data). ANTI-PATTERN: (a) win-rate tanpa baseline = clickbait statistik, merusak pilar TRUST; (b) look-ahead bias (pakai close hari konfirmasi sinyal, bukan hari deteksi retroaktif); (c) drop saham delisted dari sampel; (d) mengubah definisi sinyal setelah lihat hasil (p-hacking). SUMBER: cnbc.com/2010/10/22/sp-nasdaq-hit-golden-cross.html · scarbroughfinancial.com (golden cross backtest 1950+) · tradermarkus.com/setup-lab/golden-cross-sp500/ · readthetape.cc/tested/golden-cross & /tested/rsi-oversold · jupitergroup.org/papers/rsi-study.pdf · connorsresearch.com Traders Journal Vol.1 · shibui.finance/backtest. BUKTI: SEDANG — format & demand terbukti global; efek di IDX belum ada studi publik; angka final WAJIB dari data internal (DONE-WHEN sudah testable), bukan dari internet."
     },
     {
       "id": "im-2026-10-29-2",
@@ -2025,7 +2026,8 @@
       "problem": "Semua (10/10) pertanyaan user terakhir adalah 'Apa itu X?' konsep dasar — audiens pemula tersesat di halaman analisa penuh jargon tanpa definisi. /akademi punya artikel panjang tapi tidak ada jawaban cepat 1-layar dan tidak ada definisi kontekstual saat istilah muncul di halaman saham.",
       "DONE-WHEN": "(1) 30 istilah inti live di /kamus/[slug] dengan FAQPage schema; (2) tooltip hover/tap di >=3 halaman template (stock detail, kondisi, brief); GSC: >=10 query 'apa itu *' masuk top-20 dalam 60 hari; Question feed 'apa itu' mingguan turun atau jadi traffic organik (kolom referer).",
       "size": "M",
-      "signal": "Question feed 10/10 'Apa itu X' (id terakhir cmqt1cfj1 'Flipping', trailing stop, inflasi, pajak asing, dividen, ST, BVPS, FOMO, gold vs saham, SBR); pola long-tail SEO 'apa itu' terbukti jadi traffic edu 40%+ (edu maintenance cron ada)."
+      "signal": "Question feed 10/10 'Apa itu X' (id terakhir cmqt1cfj1 'Flipping', trailing stop, inflasi, pajak asing, dividen, ST, BVPS, FOMO, gold vs saham, SBR); pola long-tail SEO 'apa itu' terbukti jadi traffic edu 40%+ (edu maintenance cron ada).",
+      "research_brief": "RESEARCH BRIEF (Researcher 29 Okt 2026) — VERDICT: BUILD (BUILD-AFTER-PRD). Pilar KPI: GROWTH (long-tail 'apa itu' programmatic) + AI-SEARCH (FAQPage, jawaban siap-sitasi) + STICKY (tooltip kurangi friksi jargon) + TRUST. Alasan: kamus istilah = format edukasi finansial paling mature di Indonesia — Ajaib, Bibit (FAQ saham), Gotrade (25+ istilah), Financer, Tuwaga (43 istilah) semua punya; long-tail informatif 'apa itu X' = query low-competition yang realistis utk domain muda (Semrush long-tail guide), cocok dgn bukti internal Question feed 10/10 'Apa itu X'. Tooltip inline = pola standar design system besar (Atlassian, Europa ECL, SAP, BBC) TAPI konsensus guidance: hover-only TIDAK cukup (traffic ID mayoritas mobile → wajib tap-to-open), jangan taruh info kritis hanya di tooltip, trigger harus focusable/keyboard-accessible dgn aria-describedby + Escape. Teks definisi harus ada di HTML (bukan JS-only) agar crawler & AI Search membaca. BEST PRACTICE: (1) trigger tooltip = elemen interactive focusable, tap-to-open mobile, konten definisi render di HTML; (2) satu sumber kebenaran: tooltip pull dari dataset kamus yang sama dgn /kamus/[slug] + link 'selengkapnya' — cegah definisi dobel yang drift; (3) batasi istilah yang di-mark per halaman (hanya kata yang ADA di kamus, mulai 30 istilah inti; jangan auto-link semua jargon = clutter); (4) definisi orisinal konteks IDX (contoh emiten .JK, aturan BEI: ARB/UMA/lot 100) — bukan terjemah Investopedia; kebijakan Google 'scaled content abuse' menargetkan halaman massal tanpa nilai tambah → glossary template generik = risiko sitewide; (5) FAQPage schema di /kamus/[slug] + internal link dua arah artikel<->kamus. ANTI-PATTERN: (a) hover-only tooltip (mobile user tak terlayani — peluang terbesar justru mobile); (b) generate 30+ halaman definisi generik seragam (scaled content abuse + sinyal helpful-content negatif sitewide); (c) tooltip berisi link/interactive content (tidak keyboard-accessible, melanggar guidance design system); (d) menandai terlalu banyak istilah per artikel. SUMBER: developers.google.com/search/docs/essentials/spam-policies · atlassian.design/components/tooltip/usage · ec.europa.eu/component-library/ec/components/tooltip/usage · sap.com/design-system/digital/components/tooltip/usage · financer.id/investasi/istilah-saham-pemula/ · heygotrade.com/id/blog/istilah-saham-pemula-kamus-investasi · ajaib.co.id/belajar & faq.bibit.id · semrush.com/blog/how-to-choose-long-tail-keywords/. BUKTI: SEDANG-KUAT — format terbukti luas di pasar Indonesia; demand internal terdokumentasi (Question feed 10/10); angka target GSC (≥10 query top-20/60h) tetap harus divalidasi dari data internal."
     },
     {
       "id": "im-2026-10-29-3",
@@ -2038,7 +2040,8 @@
       "problem": "Trader ritel yang sudah paham dasar selalu berada di fase 'klbf atau indf?' — membandingkan 2 saham hari ini = buka 2 tab dan bolak-balik. Tidak ada situs IDX yang punya halaman compare 1-layar yang shareable; GSC sudah menunjukkan query ticker murni (klbf, indf, bris) masuk lewat halaman saham.",
       "DONE-WHEN": "Halaman /saham/[A]-vs-[B] live utk semua pasangan universe non-gorengan (data fundamental v2 + skor sinyal reuse); metrik: >=50 sessions compare dalam 30 hari dari organic/social; share button click-through tercatat di EngagementEvent nav:compare_share.",
       "size": "M",
-      "signal": "creative bet — pola produk finansial terbukti (stockanalysis.com compare, simplywall.st) YANG BELUM ADA di teknikal.id & tidak di jangan-colong list; sinyal pendukung lemah: GSC ticker queries murni (klbf 30 impr, 'saham klbf' 10, indf 8, bris 6); API reuse (fundamental v2, skor sinyal) = biaya build rendah."
+      "signal": "creative bet — pola produk finansial terbukti (stockanalysis.com compare, simplywall.st) YANG BELUM ADA di teknikal.id & tidak di jangan-colong list; sinyal pendukung lemah: GSC ticker queries murni (klbf 30 impr, 'saham klbf' 10, indf 8, bris 6); API reuse (fundamental v2, skor sinyal) = biaya build rendah.",
+      "research_brief": "RESEARCH BRIEF (Researcher 29 Okt 2026) — VERDICT: MODIFIKASI (persempit scope; BUKAN full-universe N²). Pilar KPI: GROWTH/AI-SEARCH (halaman compare shareable) — namun bukti permintaan lemah. Fakta kunci: klaim idea 'tidak ada situs IDX yang punya halaman compare' TIDAK AKURAT — Stockbit sudah punya fitur Comparison saham-vs-saham (valuasi, dividend, profitability) di app+web (help.stockbit.com, stockbit.com/info/pro-tools/comparison), meski login-walled & bukan URL publik shareable. Diferensiasi realistis teknikal.id = publik + tanpa login + URL shareable + verdict-first (konsisten USP 24 Okt). Tapi bukti DEMAND organik IDX utk query 'A vs B' lemah: GSC hanya menunjukkan ticker-query murni (klbf 30 impr), tidak ada sinyal query 'vs'; tidak ada nav_click pendukung (creative bet, diakui sendiri). Pola produk terbukti di US (stockanalysis.com; NerdWallet comparison = kasus SEO ~$5B brand; programmatic fintech comparison = format mapan) — tapi pasar & perilaku search beda. RISIKO utama: full-universe pasangan (ratusan emiten → puluhan-ratusan ribu halaman) = risiko 'scaled content abuse' (Google spam policy) + duplikasi template — persis pola yang bikin kenapa-naik gagal gate uniqueness 39%. BEST PRACTICE: (1) mulai sebagai fitur interaktif di halaman saham (pilih pembanding B dari A, client-side, 1 URL canonical per arah) — jangan pre-render semua pasangan; (2) hanya index pasangan ber-bukti-demand (query 'vs' di GSC, co-occurrence EngagementEvent, pasangan sektor populer) — sisanya noindex; (3) konten unik per pasangan: verdict ringkas + 3-4 perbedaan kunci (reuse fundamental v2 + skor sinyal), bukan duplikat 2 tabel halaman saham; (4) validasi dulu di subset pasangan populer (BBCA vs BBRI dst) sebelum scale — DONE-WHEN 50 sessions/30hari jalan di subset; (5) share button + og:image tabel ringkas (shareable = pembeda nyata dari Stockbit). ANTI-PATTERN: (a) generate semua pasangan sekaligus (scaled content abuse + crawl budget habis utk halaman nol-demand); (b) menyaingi Stockbit head-on dgn kedalaman data app-grade — menang di publik+SEO, bukan di kedalaman; (c) mengklaim 'satu-satunya di IDX' (sudah tidak akurat). SUMBER: help.stockbit.com/id/article/comparison-bagaimana-cara-menggunakan-fitur-comparison-um9sx2/ · stockbit.com/info/pro-tools/comparison · finweb.agency/blog/programmatic-seo-for-fintech-comparison-pages/ · ahrefs.com/blog/nerdwallet-seo-case-study/ · developers.google.com/search/docs/essentials/spam-policies. BUKTI: TIDAK KUAT utk demand organik IDX — bukti internet tidak meyputukan utk query 'vs' IDX; keputusan build ditarik dari data internal dulu (cek query 'vs' GSC + EngagementEvent 30 hari); pola produk global memang kuat."
     },
     {
       "id": "adm-2026-10-28-01",
@@ -2107,6 +2110,19 @@
       "constraints": "Jangan sentuh staging container agent yg aktif shift; Mac mini single-host doctrine",
       "created": "2026-10-28",
       "result": "DONE (cto-queue done, changelog ops-2026-10-28-01) — status dr cto-queue; union-merge drift#10-kambuh 29 Okt by script-doctor"
+    },
+    {
+      "id": "idea-2026-10-29-4",
+      "date": "2026-10-29",
+      "type": "product-mandate",
+      "priority": "P1",
+      "status": "idea",
+      "source": "CEO pagi 29 Okt (mandate Product Agent Kamis 10:15)",
+      "title": "MANDATE VERDICT 2 Nov: (a) MoM traffic Okt vs Sep per-hari vs band +5-15% (kini +2,2%); (b) register_7d 3/6 pasca prd-26-01 CTA di kereta T-1029-N; (c) RA TCHET returning_ip 8,6% target tercapai 27 hari cepat — usul target baru (>=10-12%?) utk council Minggu",
+      "north_star": "GROWTH + STICKY (kedua KPI merah: MoM band ✗, register ✗; returning butuh ratchet)",
+      "first_step": "ANALISIS DATA: cut kpi.json + DB 28 Okt EOD; baseline->target tabel per KPI; draft verdict GO/ITERATE per hipotesis kereta malam ini (1 deploy = 1 eksperimen, jangan stack klaim)",
+      "done_when": "Memo verdict di handoff/backlog insight Senin 2 Nov pagi dgn tabel data + rekomendasi ratchet utk owner council",
+      "assigned_to": "product-agent"
     }
   ],
   "items": []

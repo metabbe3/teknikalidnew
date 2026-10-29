@@ -3060,7 +3060,10 @@
       "night_commit": "6d10059",
       "night_result": "DONE 27 Okt 23:4x WIB: marketEngine SATU PINTU di market-snapshot.service (pctChange/changeFraction/breadth/sectorAverages/movers/meanChange) — weekly-report.service + screener-analysis.service rewired, computeSnapshot sendiri via engine. Angka TIDAK berubah (parity fisik DB OLD-vs-NEW): weekly 3 minggu IDENTIK bit-per-bit (835/961/865 saham), screener 3 preset IDENTIK (31/16/1 rows), snapshot harian live sesi 27 Okt ihsg 5266.13 -1.99% breadth 101/647/84. Keputusan desain: window mingguan TETAP window mingguan (pakai angka snapshot harian utk laporan mingguan = mengubah angka /laporan-pasar terindeks = regresi TRUST); SATU PINTU dipenuhi di level RUMUS via engine murni. Verify: selftest 29/29 (parity rumus + doctrine-check grep compute duplikat=0, negative-tested exit 1), parity runner scripts/selftest/_parity/ (reproducible + README), tsc --noEmit EXIT 0, npm build EXIT 0. Estimasi review CTO: 15-20 mnt.",
       "verifier_note": "VERIF full(P0) claude PASS 27 Okt 23:5x: refactor inti benar (semantik identik, breadth/sector/movers/ihsg sesuai doctrine), hype_alert fraksi + guard prev<=0 OK. SISA (bukan scope task ini, jangan hilang): (1) computeChange helper src/lib/serialize.ts:16 masih dipakai screener-analysis L117/244/390/498 (preset generik+radar+dailyRadar) & serialize.ts:25 pctChange duplikat — jalur second-row prices[1], milik fix-2026-10-26-12 (morning-delta/pasar-live/stock-graph eksplisit di specnya); usul: task lanjutan reroute computeChange -> marketEngine; (2) engine.movers tie-at-boundary: OLD desc-sort+reverse vs NEW asc-sort beda urutan baris change% seri di batas n — parity empiris 3 minggu identik, tidak ada kasus nyata; (3) weekly ?? 0: null praktis mustahil pasca pre-filter (close>0), kalau kena baris jadi unchanged.",
-      "done_at": "2026-10-28"
+      "done_at": "2026-10-28",
+      "qa_verified": true,
+      "qa_verified_by": "reviewer 2026-10-29",
+      "qa_note": "Post-deploy verify 29 Okt: image 213c366d6bd7 live 09:04 WIB; /pasar 200; angka breadth/movers 45 artikel QA 27-29 Okt konsisten satu basis vs DB; chunk radar+nav_click live."
     },
     {
       "id": "fix-2026-10-26-11",
@@ -3188,8 +3191,10 @@
       "done_when": "Staging 390px: (1) bar sticky tampil di view tabel mobile & menempel di y~56-60 saat deep-scroll dalam hasil; (2) desktop 1280 bar display:none; (3) sort via bar memicu fetch sort_by baru; (4) toggle via bar mengganti tabel<->kartu; (5) tsc 0 + build EXIT 0; (6) H1 Radar Saham IDX verbatim.",
       "result": "[2026-10-28 CTO pagi] REPAIR id=None→ux-2026-10-27-01; shipped 1f8339a 27 Okt, naik envsafe2 28 Okt (bar md:hidden prod).",
       "kpi_pillar": "STICKY (dwell/scroll depth saat menelusuri hasil screener mobile)",
-      "qa_note": "",
-      "id": "ux-2026-10-27-01"
+      "qa_note": "Prod live via image 213c366d6bd7 (sticky bar md:hidden by-design, staging DOM verify 26 Okt); halaman publik 45/45 URL 200.",
+      "id": "ux-2026-10-27-01",
+      "qa_verified": true,
+      "qa_verified_by": "reviewer 2026-10-29"
     },
     {
       "id": "bo-2026-10-28-01",
@@ -3316,6 +3321,42 @@
       "done_when": "run 05:2x BESOK exit 0 DAN seluruh 150 emiten ok (fail=0) ATAU patch guard commit dgn selftest; bukti stdout cron",
       "scheduled_slot": "Backend Builder pagi 09:30 29 Okt (diagnosa read-only dulu, sesudah merge fix-26-12)",
       "date": "2026-10-29"
+    },
+    {
+      "id": "ops-2026-10-29-03",
+      "date": "2026-10-29",
+      "type": "ops",
+      "priority": "P3",
+      "status": "pending",
+      "source": "CEO pagi 29 Okt (verdict PROMOTE kandidat sre-2026-10-28-1, re-file sre-2026-10-24-1 yang hilang)",
+      "north_star": "TRUST (DATA RELIABLE — brief SRE tanpa false-positive)",
+      "title": "OPS: sre_brief.py error-cluster collapse — N baris error ber-digest sama dalam 60s = 1 event (annotasi cluster Nx) + AUTH_NOISE_RE utk MissingCSRF/authjs",
+      "spec": "Host-script ~/.hermes/scripts/sre_brief.py (zero deploy risk): (1) collapse baris error ber-digest sama dalam jendela 60s jadi 1 event + annotasi cluster Nx; (2) tambah pattern MissingCSRF/authjs ke AUTH_NOISE_RE (lanjutan sre-2026-10-14-1 yang shipped). Bukti: 28 Okt 10x MissingCSRF dlm 1,2 dtk = 1 event; 24 Okt 7x client-abort dlm 7 dtk = 1 event.",
+      "done_when": "Selftest: fixture log 10 baris ber-digest sama <60s -> brief output 1 event (cluster x10); fixture authjs -> AUTH_NOISE bucket; bukti run output tertulis",
+      "scheduled_slot": "Agregat BE slot longgar SETELAH queue pending <6 (est. awal Nov) - bukan kereta aktif",
+      "train": null
+    },
+    {
+      "id": "ops-2026-10-29-04",
+      "date": "2026-10-29",
+      "type": "ops",
+      "priority": "P3",
+      "status": "pending",
+      "source": "CEO pagi 29 Okt (verdict PROMOTE kandidat sre-2026-10-28-2)",
+      "north_star": "TRUST (log bersih = sinyal real terlihat; lens DATA-TRUST market-snapshot SATU PINTU)",
+      "title": "OPS: ^JKSE zod quote shortName/longName null -> v7 parse fail 46x/24h + fallback v8 dobel upstream call — nullable schema ATAU route langsung v8 dgn log debug",
+      "spec": "Repo teknikalidnew pasar-live/quote path: zod schema quote shortName/longName .nullable()/opsional ATAU deteksi null -> langsung v8 chart tanpa error-level. KOORDINASI: fix-2026-10-26-12 (pasar-live SATU PINTU) in_train malam ini - JANGAN sentuh window deploy 29 Okt; naik T-1030+ saat BE buka quote path.",
+      "done_when": "Log app 24h pasca-deploy: 0 baris [pasar-live] live IHSG quote failed error-level; spot-check harga IHSG /pasar tetap akurat vs DB; upstream call per tick = 1",
+      "scheduled_slot": "BE T-1030+ (setelah fix-26-12 merge - file sama, hindari konflik)",
+      "train": null
+    },
+    {
+      "id": "qa-2026-10-29-01",
+      "date": "2026-10-29",
+      "priority": "P1",
+      "north_star": "TRUST — data reliable (angka PBV/MA20 PWON tidak cocok DB)",
+      "status": "pending",
+      "spec": "INTENT: patch artikel analis-pagi-2026-10-29-aadi bagian PWON — 'PBV 0,70' salah vs DB/live (StockFundamental 28 Okt = 0,62; live /stocks/PWON.JK render 0.62), dan 'MA20 (268)' salah vs DB SMA20 273,00. Angka kemungkinan diambil dari research note eksternal (Kontan/Bareksa 27 Okt) atau snapshot lama, bukan replay DB. ACCEPTANCE: (1) SQL UPDATE single BEGIN/COMMIT, preview count sebelum commit; (2) live page setelah revalidate: '0,62' tampil, '0,70' 0x; 'MA20 (273' tampil, 'MA20 (268' 0x; (3) klaim turunan tetap sah — 'harga di atas MA20' TETAP benar (290 > 273), tidak perlu ubah narasi; (4) PBV turunkan juga klaim 'net buy 7 hari tertinggi' TIDAK disentuh (sudah diverifikasi reviewer: rank #1 bursa 0,10M lembar = benar); (5) guard generator: field fundamental (PE/PBV/yield) + MA yang masuk angka-kunci WAJIB replay dari StockFundamental/StockIndicator tanggal sesi, bukan dari kutipan berita — mismatch >2% = HOLD DRAFT."
     }
   ]
 }

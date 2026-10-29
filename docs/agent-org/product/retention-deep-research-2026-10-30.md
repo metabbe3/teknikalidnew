@@ -368,3 +368,27 @@ Sebaliknya, **mekanisme retensi 1-on-1 berbasis data deterministik (`User ↔ Po
 2. **Hari 2 (Hidupkan Memori Kunjungan):** Eksekusi **QW-2** (buka delta perubahan sinyal semalam untuk `localStorage` di atas fold `/` & `GuestWatchlistPanel` `/stocks`) dan **QW-8** (`RepeatVisitHint` aktif sejak dwell 45 detik kunjungan pertama).
 3. **Hari 3 (Tajamkan Mesin Push Tanpa-Login):** Eksekusi **QW-3** (upgrade `digest.mjs` Telegram dengan delta skor, aliran asing, H-3 dividen, filter `volume > 0`, dan deep-link ke `/stocks/[TICKER].JK`) + **QW-4** (tunda sheet paksa register ke bintang ke-3 & dukung sync batch pantauan ke Telegram).
 4. **Hari 4–5 (Tutup Kebocoran Landing SEO & Detail Saham):** Eksekusi **QW-5** (kolom Skor Sinyal 0–1 + `⭐` + CTA Telegram di `/saham-*`, `/kalender-dividen`, `/aliran-dana-asing`), **QW-7** (arah skor 5 sesi di kartu utama `/stocks/[ticker]`), **QW-9** (buka `/trading-plan` publik + redirect `/saham/[ticker]`), dan **QW-10** (kait kelanjutan besok di semua artikel harian).
+
+
+---
+
+## EKSEKUSI (2026-10-29/30, owner "Lakukan semua sisanya") — SEMUA 10 QW LIVE
+
+Commit `5a39d60` (build REAL_EXIT=0, hot-swap v3, bot runtime synced + restart launchd):
+
+| QW | Status | Verify |
+|---|---|---|
+| QW-1 anonId PageView | ✅ LIVE | beacon browser nyata → DB: `/stocks/BBCA.JK` + anonId `919ad6ba…` masuk; retention.service COALESCE aktif |
+| QW-2 delta anonim atas fold | ✅ LIVE | route publik ?tickers= (maks 15) + banner snooze harian |
+| QW-3 digest TG ber-delta | ✅ SYNCED | query LATERAL tested prod (BBCA skor -0,36←-0,04, asing -Rp11,7jt); deep-link per ticker; volume>0 |
+| QW-4 sheet tunda bintang-3 | ✅ LIVE | + /start watch_T1_T2_T3 batch sync |
+| QW-5 Skor+⭐ di landing | ✅ LIVE | kalender-dividen & golden-cross verified browser (headers Ticker..Skor Pantau) + modal-100rb + asing |
+| QW-6 nav +3 tool | ✅ LIVE | dropdown "Alat Analisa": Kalender Dividen / Aliran Dana Asing / Indeks LQ45 & JII |
+| QW-7 arah 5 sesi | ✅ LIVE | BBCA page: "Arah 5 sesi terakhir" + 2 tombol mikro (44px) PASS |
+| QW-8 nudge dwell 45s | ✅ LIVE | trigger kunjungan-1 45s / kunjungan-2 langsung; 1-ketuk simpan |
+| QW-9 /trading-plan publik | ✅ LIVE | HTTP 200 tanpa login |
+| QW-10 kait artikel | ✅ LIVE | 3 pintu retensi di kenapa-naik + CTA Brief Pasar |
+
+Catatan verify: MISS semu "nav di homepage HTML" = dropdown tools render on-open (client) — setelah klik "Alat Analisa" ketiganya muncul; bukan bug.
+
+Next (dari matriks riset): HABIT LOOP #3 (ritual 90-detik pergeseran fase) SETELAH pipa tangkap pantauan terpasang rapat — semua QW hari ini adalah pipanya.
