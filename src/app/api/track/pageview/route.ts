@@ -90,9 +90,14 @@ export async function POST(request: NextRequest) {
     const [data, error] = await parseBody(request, schemas.pageview);
     if (error) return error;
 
-    // Path is stored query-free (old behavior); UTM attribution is only kept
-    // for /auth/ pages. See extractPageviewAttribution in @/lib/validation.
-    const { path, utmSource, utmMedium, utmCampaign } = extractPageviewAttribution(data.path);
+    // Path is stored query-free (G6). UTM attribution utk /auth/ dari path (legacy);
+    // Growth-audit 29 Okt: UTM eksplisit dari hook (field body) MENANG atas extract
+    // — sebelumnya di-strip Zod → utmSource NULL utk 100% klik sosmed.
+    const extracted = extractPageviewAttribution(data.path);
+    const utmSource = data.utmSource ?? extracted.utmSource;
+    const utmMedium = data.utmMedium ?? extracted.utmMedium;
+    const utmCampaign = data.utmCampaign ?? extracted.utmCampaign;
+    const path = extracted.path;
 
     // Skip internal / admin paths
     if (SKIP_PREFIXES.some((prefix) => data.path.startsWith(prefix))) {

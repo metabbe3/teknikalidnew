@@ -49,8 +49,8 @@ const DEFAULT_CARD: CardData = {
   source: "TEKNIKAL.ID",
   date: "",
   url: "teknikal.id",
-  colorStart: "#5B21B6",
-  colorMid: "#4338CA",
+  colorStart: "#0C4A6E",
+  colorMid: "#0369A1",
   colorEnd: "#1E3A8A",
   fontHeadline: "#FFFFFF",
   fontSummary: "rgba(255,255,255,0.72)",
@@ -59,12 +59,12 @@ const DEFAULT_CARD: CardData = {
 };
 
 const BUILTIN_PRESETS: ColorPreset[] = [
-  { name: "Purple Blue", colorStart: "#5B21B6", colorMid: "#4338CA", colorEnd: "#1E3A8A", fontHeadline: "#FFFFFF", fontSummary: "rgba(255,255,255,0.72)", fontBadge: "#FFFFFF", fontDate: "rgba(255,255,255,0.72)" },
+  { name: "Purple Blue", colorStart: "#0C4A6E", colorMid: "#0369A1", colorEnd: "#1E3A8A", fontHeadline: "#FFFFFF", fontSummary: "rgba(255,255,255,0.72)", fontBadge: "#FFFFFF", fontDate: "rgba(255,255,255,0.72)" },
   { name: "Ocean Teal", colorStart: "#0F766E", colorMid: "#0E7490", colorEnd: "#164E63", fontHeadline: "#FFFFFF", fontSummary: "rgba(255,255,255,0.72)", fontBadge: "#FFFFFF", fontDate: "rgba(255,255,255,0.72)" },
   { name: "Sunset", colorStart: "#DC2626", colorMid: "#EA580C", colorEnd: "#9A3412", fontHeadline: "#FFFFFF", fontSummary: "rgba(255,255,255,0.72)", fontBadge: "#FFFFFF", fontDate: "rgba(255,255,255,0.72)" },
   { name: "Dark Noir", colorStart: "#18181B", colorMid: "#1F2937", colorEnd: "#111827", fontHeadline: "#FFFFFF", fontSummary: "rgba(255,255,255,0.72)", fontBadge: "#FFFFFF", fontDate: "rgba(255,255,255,0.72)" },
   { name: "Royal Gold", colorStart: "#7C2D12", colorMid: "#92400E", colorEnd: "#78350F", fontHeadline: "#FCD34D", fontSummary: "rgba(252,211,77,0.72)", fontBadge: "#FCD34D", fontDate: "rgba(252,211,77,0.72)" },
-  { name: "Cyber Neon", colorStart: "#4C1D95", colorMid: "#6D28D9", colorEnd: "#312E81", fontHeadline: "#A5F3FC", fontSummary: "rgba(165,243,252,0.72)", fontBadge: "#A5F3FC", fontDate: "rgba(165,243,252,0.72)" },
+  { name: "Midnight Slate", colorStart: "#0F172A", colorMid: "#1E293B", colorEnd: "#0C4A6E", fontHeadline: "#A5F3FC", fontSummary: "rgba(165,243,252,0.72)", fontBadge: "#A5F3FC", fontDate: "rgba(165,243,252,0.72)" },
   { name: "White Clean", colorStart: "#FFFFFF", colorMid: "#F3F4F6", colorEnd: "#E5E7EB", fontHeadline: "#111827", fontSummary: "rgba(17,24,39,0.72)", fontBadge: "#111827", fontDate: "rgba(17,24,39,0.72)" },
   { name: "Emerald", colorStart: "#065F46", colorMid: "#047857", colorEnd: "#064E3B", fontHeadline: "#FFFFFF", fontSummary: "rgba(255,255,255,0.72)", fontBadge: "#6EE7B7", fontDate: "rgba(255,255,255,0.72)" },
 ];

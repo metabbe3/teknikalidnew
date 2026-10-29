@@ -53,7 +53,7 @@ function fallbackImage(ticker: string) {
   return new ImageResponse(
     (
       <div style={{ width: 1080, height: 1920, display: "flex", flexDirection: "column", backgroundColor: "#f8fafc" }}>
-        <div style={{ display: "flex", width: 1080, height: 12, backgroundImage: "linear-gradient(90deg, #0ea5e9, #38bdf8, #818cf8, #38bdf8, #0ea5e9)" }} />
+        <div style={{ display: "flex", width: 1080, height: 12, backgroundImage: "linear-gradient(90deg, #0ea5e9, #38bdf8, #0284c7, #38bdf8, #0ea5e9)" }} />
         <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", width: 1080, height: 1908 }}>
           <span style={{ color: "#0f172a", fontSize: 110, fontWeight: 800, fontFamily: "monospace" }}>
             {stripJk(ticker)}
@@ -108,7 +108,8 @@ export async function GET(request: NextRequest) {
     }
 
     const [qr, emitLogo, logoB64] = await Promise.all([
-      qrDataUrl(`https://teknikal.id/stocks/${stripJk(data.ticker)}`),
+      // Growth-audit 29 Okt: QR bawa UTM (sebelumnya polos → klik OG tak teratribusi)
+      qrDataUrl(`https://teknikal.id/stocks/${stripJk(data.ticker)}?utm_source=social&utm_medium=og-qr&utm_campaign=${stripJk(data.ticker).toLowerCase()}`),
       (async () => {
         if (!data.logoFile) return null;
         try {
@@ -134,7 +135,7 @@ export async function GET(request: NextRequest) {
       (
         <div style={{ width: 1080, height: 1920, display: "flex", flexDirection: "column", backgroundColor: "#f8fafc", backgroundImage: "linear-gradient(170deg, #eff6ff 0%, #f8fafc 45%, #ffffff 100%)" }}>
           {/* === Top Accent Bar — biru muda brand === */}
-          <div style={{ display: "flex", width: 1080, height: 12, backgroundImage: "linear-gradient(90deg, #0ea5e9, #38bdf8, #818cf8, #38bdf8, #0ea5e9)" }} />
+          <div style={{ display: "flex", width: 1080, height: 12, backgroundImage: "linear-gradient(90deg, #0ea5e9, #38bdf8, #0284c7, #38bdf8, #0ea5e9)" }} />
 
           {/* === Ambient glow biru muda === */}
           <svg width="1080" height="1908" viewBox="0 0 1080 1908" style={{ position: "absolute", top: 12, left: 0 }}>
@@ -168,7 +169,7 @@ export async function GET(request: NextRequest) {
             {/* ── Brand header ── */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <div style={{ display: "flex", alignItems: "center" }}>
-                <div style={{ width: 64, height: 64, borderRadius: 16, backgroundImage: "linear-gradient(135deg, #0ea5e9, #6366f1)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 20px rgba(14,165,233,0.30)" }}>
+                <div style={{ width: 64, height: 64, borderRadius: 16, backgroundImage: "linear-gradient(135deg, #0ea5e9, #0f172a)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 20px rgba(14,165,233,0.30)" }}>
                   {logoB64 && <img src={`data:image/png;base64,${logoB64}`} width={44} height={44} style={{ borderRadius: 10 }} alt="" />}
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", marginLeft: 18 }}>

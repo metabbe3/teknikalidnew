@@ -247,6 +247,12 @@ export const schemas = {
     referrer: z.union([z.string().url(), z.literal("")]).optional(),
     // ret-qw1: UUID perangkat localStorage "eng_anon" — bukan kredensial, hanya ukuran retensi
     anonId: z.string().min(8).max(36).regex(/^[a-f0-9-]+$/i).optional(),
+    // Growth-audit 29 Okt (Argon P0): UTM eksplisit dari hook use-page-view (path
+    // sudah query-free G6) — tanpa field ini Zod strip diam-diam → utmSource NULL
+    // semua trafik sosmed di DB. Nilai kosong tidak dikirim hook (conditional spread).
+    utmSource: z.string().min(1).max(64).optional(),
+    utmMedium: z.string().min(1).max(64).optional(),
+    utmCampaign: z.string().min(1).max(96).optional(),
   }),
 
   // track/share - POST body (share-button click beacon)
