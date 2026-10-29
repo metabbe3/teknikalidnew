@@ -1179,3 +1179,11 @@
 - Jebakan: (1) statejson flip --set result tidak set status — dua kali flip; (2) jangan sentuh worktree utama (branch night + file sesi lain); (3) kolom StockFundamental = pb (bukan pbv), dividendYield satuan PERSEN.
 - Langkah pertama slot berikutnya: baca queue → cek kereta T-1029-N berangkat? → verify per-fitur pasca-deploy → QA reviewer D+1 (artikel PWON + guard).
 - Rollback: n/a (DB patch + host-script; reverse SQL di decisions.md)
+
+## 2026-10-29 19:5x — UX Builder shift 19:15 (ux-2026-10-29-01 emoji pass-4)
+- SHIPPED 9179d32 push main (BUILD-ONLY): emoji pass-4 tuntas — 4 emoji→0 di 4 surface (auth/error AlertTriangle SVG, quota-meter Eye/Triangle SVG, about + overlimit banner drop dekoratif). Menutup utang pass-4 ux-2026-10-18-02.
+- Bukti: tsc 0, build 0, staging :3100 /auth/error SVG lucide-triangle-alert live, /about 0 emoji 200, chunk stocks Eye-path + banner tanpa 👋. Queue v78 in_train T-1030-N.
+- Flow (c) landing→register: TIDAK disentuh (2-step+prefill sudah optimal; prd-26-01 sedang diukur 14 hari — no stacking). QA verdict 7 fitur kereta = Reviewer pasca-deploy 22:00, bukan slot ini.
+- Staging one-off container TIDAK dipakai: window 19:45-20:15 = jam emas Docker flap 3x; kereta T-1029-N 22:00 tidak diganggu. Host :3100 cukup (surface statis).
+- Jebakan: statejson append = --entries-json satu blob (bukan banyak --set); npm start foreground diblok gateway → background=true; claude gated edit OK tapi tool timeout 420s memotong tsc worker — verify sendiri wajib.
+- Rotasi UX berikutnya: re-audit flow (a) screener pasca trust-badge + prd-26-01 sheet live (kalau kereta malam berangkat).
