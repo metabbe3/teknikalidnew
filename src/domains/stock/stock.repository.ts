@@ -64,6 +64,57 @@ export const stockRepository = {
     });
   },
 
+  // fix-2026-10-26-12 item(3): morning-delta change% HARUS pakai prev-close
+  // doctrine-1 (per-stock last close STRICTLY sebelum bar terakhir, JOIN
+  // LATERAL) — bukan "baris kedua array" (prices[1]) yang bisa salah ambil
+  // carry-forward vol=0 sebagai prev utk saham yang baru trade lagi.
+  findStocksWithIndicatorHistoryLateral(tickers: string[]): Promise<
+    {
+      ticker: string; name: string;
+      indicators: { date: Date; signalLabel: string | null; macdHist: unknown; smaCrossSignal: string | null; emaCrossSignal: string | null }[];
+      close: number | null; prevClose: number | null;
+    }[]
+  > {
+    if (tickers.length === 0) return Promise.resolve([]);
+    return prisma.$queryRaw`
+      SELECT s.ticker, s.name,
+             lb.close::float8 AS close,
+             p.close::float8 AS "prevClose",
+             jsonb_agg(
+               jsonb_build_object(
+                 'date', si.date, 'signalLabel', si."signalLabel", 'macdHist', si."macdHist",
+                 'smaCrossSignal', si."smaCrossSignal", 'emaCrossSignal', si."emaCrossSignal"
+               ) ORDER BY si.date DESC
+             ) FILTER (WHERE si.id IS NOT NULL) AS indicators
+      FROM "Stock" s
+      JOIN "StockPrice" lb ON lb.id = (
+        SELECT id FROM "StockPrice" WHERE "stockId" = s.id ORDER BY date DESC LIMIT 1
+      )
+      LEFT JOIN LATERAL (
+        SELECT close FROM "StockPrice" WHERE "stockId" = s.id AND date < lb.date ORDER BY date DESC LIMIT 1
+      ) p ON true
+      LEFT JOIN LATERAL (
+        SELECT si.id, si.date, si."signalLabel", si."macdHist", si."smaCrossSignal", si."emaCrossSignal"
+        FROM "StockIndicator" si
+        WHERE si."stockId" = s.id AND si.interval = ${INTERVAL.DAY}
+        ORDER BY si.date DESC LIMIT 2
+      ) si ON true
+      WHERE s.ticker IN (${Prisma.join(tickers)}) AND s."isActive" = true
+      GROUP BY s.ticker, s.name, lb.close, p.close
+    `.then((rows) => {
+      type Raw = { ticker: string; name: string; close: number | null; prevClose: number | null; indicators: unknown };
+      return (rows as unknown as Raw[]).map((r) => ({
+        ticker: r.ticker,
+        name: r.name,
+        close: r.close == null ? null : Number(r.close),
+        prevClose: r.prevClose == null ? null : Number(r.prevClose),
+        indicators: Array.isArray(r.indicators)
+          ? (r.indicators as { date: Date; signalLabel: string | null; macdHist: unknown; smaCrossSignal: string | null; emaCrossSignal: string | null }[])
+          : [],
+      }));
+    });
+  },
+
   findStocksWithIndicatorHistory(tickers: string[]) {
     if (tickers.length === 0) return Promise.resolve([]);
     return prisma.stock.findMany({
@@ -195,6 +246,121 @@ export const stockRepository = {
         seen.set(toDateKey(row.date), row);
       }
       return [...seen.values()];
+    });
+  },
+
+  // ── fix-2026-10-26-12: reads pasar-live via SATU PINTU repository ──
+
+  /** Kandidat watchlist pasar-live: indikator sesi terakhir dgn sinyal segar / RSI<32 (order skor DESC). */
+  findFreshSignalCandidates(sessionDate: Date, freshSince: Date, take: number) {
+    return prisma.stockIndicator.findMany({
+      where: {
+        interval: INTERVAL.DAY,
+        date: sessionDate,
+        isGorengan: { not: true },
+        stock: { isActive: true, assetClass: "EQUITY" },
+        OR: [
+          { smaCrossSignal: "golden_cross", smaCrossDate: { gte: freshSince } },
+          { emaCrossSignal: "bullish", emaCrossDate: { gte: freshSince } },
+          { rsi14: { lt: 32 } },
+        ],
+      },
+      include: {
+        stock: { select: { ticker: true, name: true } },
+      },
+      orderBy: [{ signalScore: "desc" }],
+      take,
+    });
+  },
+
+  /** Top-signal rows utk /pasar skor komposit (order signalScore DESC). */
+  findTopSignalRows(sessionDate: Date, take: number) {
+    return prisma.stockIndicator.findMany({
+      where: {
+        interval: INTERVAL.DAY,
+        date: sessionDate,
+        isGorengan: { not: true },
+        stock: { isActive: true, assetClass: "EQUITY" },
+        signalScore: { not: null },
+      },
+      include: { stock: { select: { ticker: true, name: true } } },
+      orderBy: [{ signalScore: "desc" }],
+      take,
+    });
+  },
+
+  /** ForeignFlow sesi terakhir, universe aktif (usp-2026-10-24-04). */
+  findForeignFlowsByDate(sessionDate: Date, take: number) {
+    return prisma.foreignFlow.findMany({
+      where: {
+        date: sessionDate,
+        stock: { isActive: true, assetClass: "EQUITY" },
+      },
+      include: { stock: { select: { ticker: true, name: true } } },
+      take,
+    });
+  },
+
+  /** Close per stockId pada tanggal sesi (map; stock tanpa bar sesi absen). */
+  async findClosesByStockIdsAndDate(stockIds: number[], sessionDate: Date): Promise<Map<number, number>> {
+    if (stockIds.length === 0) return new Map();
+    const rows = await prisma.stockPrice.findMany({
+      where: { stockId: { in: stockIds }, date: sessionDate },
+      select: { stockId: true, close: true },
+    });
+    const map = new Map<number, number>();
+    for (const r of rows) {
+      const c = r.close == null ? null : Number(r.close);
+      if (c !== null) map.set(r.stockId, c);
+    }
+    return map;
+  },
+
+  /** Tanggal bar EOD terbaru khusus EQUITY aktif (session /pasar). */
+  async findLatestEquityPriceDate(): Promise<Date | null> {
+    const row = await prisma.stockPrice.findFirst({
+      where: { stock: { assetClass: "EQUITY", isActive: true } },
+      orderBy: { date: "desc" },
+      select: { date: true },
+    });
+    return row?.date ?? null;
+  },
+
+  // ── fix-2026-10-26-12: batch read harga utk pasar-live (N+1 killer) ──
+  // Latest bar + per-stock prev-close (STRICTLY sebelum bar itu, doctrine-1
+  // market-snapshot) untuk daftar stockId — SATU query JOIN LATERAL, bukan
+  // loop ≤120 findMany per ticker. Kolom NULL-toleran: saham tanpa prev bar
+  // tetap dikembalikan (prevClose null) supaya caller bisa skip eksplisit.
+  findLatestBarsWithPrev(stockIds: number[]): Promise<
+    Map<number, { close: number | null; prevClose: number | null; volume: number | null; date: Date }>
+  > {
+    if (stockIds.length === 0) return Promise.resolve(new Map());
+    return prisma.$queryRaw<
+      { stockId: number; close: number | null; prevClose: number | null; volume: number | null; date: Date }[]
+    >`
+      SELECT lb."stockId", lb.close::float8 AS close, p.close::float8 AS "prevClose", lb.volume::float8 AS volume, lb.date
+      FROM "StockPrice" lb
+      JOIN LATERAL (
+        SELECT close FROM "StockPrice"
+        WHERE "stockId" = lb."stockId" AND date < lb.date
+        ORDER BY date DESC LIMIT 1
+      ) p ON true
+      WHERE lb.id IN (
+        SELECT DISTINCT ON ("stockId") id FROM "StockPrice"
+        WHERE "stockId" IN (${Prisma.join(stockIds)})
+        ORDER BY "stockId", date DESC
+      )
+    `.then((rows) => {
+      const map = new Map<number, { close: number | null; prevClose: number | null; volume: number | null; date: Date }>();
+      for (const r of rows) {
+        map.set(Number(r.stockId), {
+          close: r.close == null ? null : Number(r.close),
+          prevClose: r.prevClose == null ? null : Number(r.prevClose),
+          volume: r.volume == null ? null : Number(r.volume),
+          date: r.date,
+        });
+      }
+      return map;
     });
   },
 
