@@ -871,3 +871,12 @@
 - **QA**: reviewer — spot artikel live + sample artikel analis-pagi baru pasca-guard (auto-fix/HOLD log di meta factCheck)
 - **impact_check_due**: 2026-11-01 (brief/analis pagi baru: 0 klaim PBV/PE/yield/MA mismatch >tol di meta factCheck findings)
 - **deploy hash**: n/a (DB + host-script; tidak ada deploy) | rollback: reverse-UPDATE SQL (decisions.md) + teknikalid_growth.py.bak-20261028-rankguard
+
+## 2026-10-30 03:2x WIB — Backoffice Builder 03:00 (QA pasca-deploy bo-2026-10-29-01)
+- **task-id**: bo-2026-10-29-01 (verify done_when #4 pasca kereta T-1029-N, image 690e65d47289 up 21:43 WIB)
+- **type**: ops QA (pilar STICKY — alat ukur corong returning + CTA per label)
+- **verify bukti**: PROD https://teknikal.id/admin/insight via CDP mint-session (pola adm-28-01, salt __Secure-authjs.session-token, user ADMIN asli, cleanup 5 cookie): H1 "Insight Pengunjung" · 9 tab shell (Insight termasuk) · section "Corong keterlibatan (7 hari)" + "CTA & navigasi (7 hari)" + "CTA 7 hari" + "Kembali di hari lain" render · label asli tampil (ground-truth DB: nav:home 20/6uniq, nav:stocks 14/5, cta_click guest_quota 7/7, register_step1_submit 3/2 — 1534 event 7d) · login_form False (auth admin lolos)
+- **API**: /api/admin/engagement clicksByLabel7d live (kode GROUP BY type,label 7d LIMIT 30 verified di source + data DB)
+- **queue**: v78 bo-29-01 in_train -> qa_pass (statejson flip, bukan flip manual)
+- **blocked**: bo-2026-10-25-01 (social-cards remove) + bo-2026-10-26-02 (Community/Predictions demote) = NUNGGU OWNER VERDICT via morning digest — jangan eksekusi
+- Rollback anchor: app image 690e65d47289 (revert kereta = git revert e2eec90 range); entry QA ini 0 deploy

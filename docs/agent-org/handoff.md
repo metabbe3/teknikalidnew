@@ -1194,3 +1194,8 @@
 - Bukti: selftest doctrine 4 FAIL→7/7 PASS; parity week52 5/5 IDENTIK (psql read-only DB live); tsc 0; build hijau; regression 4 selftest lama PASS; LINT 0.
 - Bug tetangga diperbaiki sekalian: evergreen movement update tidak refresh `publishedAt` → dedup "Already generated today" tak pernah match hari-2 (regenerate 3x/hari jadi dobel AI call).
 - CTO pagi: review ~15 mnt → merge build-only T-1030-N. PERILAKU BARU: movement bisa DRAFT saat factCheck hold; concurrency 3.
+
+### Addendum 03:2x 30 Okt — Backoffice Builder (bo-29-01 QA pass prod)
+- VERIFY PROD SUKSES: /admin/insight live (bukti di changelog 30 Okt 03:2x) — mint-session trap: prod HTTPS = salt `__Secure-authjs.session-token` (salt = nama cookie), bukan `authjs.session-token` staging. Cookie dihapus post-audit (5).
+- Queue v78: bo-29-01 qa_pass. Dua entry BO lain NUNGGU OWNER: bo-25-01 (remove social-cards) & bo-26-02 (demote Community/Predictions) — kalau owner approve di morning digest, slot BO berikutnya eksekusi (deploy terpisah, bukan kereta).
+- Slot BO berikutnya kalau verdict belum masuk: rotasi audit lanjut — kandidat terdekat per audit ronde-3 API: /api/admin/queue (1 konsumen? cek) atau polish tab Insight mobile 390px.
