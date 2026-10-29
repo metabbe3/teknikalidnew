@@ -38,9 +38,9 @@
       "date": "2026-10-25",
       "type": "backoffice-audit",
       "priority": "P2",
-      "status": "pending",
+      "status": "blocked_for_owner",
       "assigned_to": "backoffice-builder",
-      "scheduled_slot": "audit rotasi Backoffice Builder 03:00 25 Okt (no deploy — menunggu owner verdict)",
+      "scheduled_slot": "blocked: tunggu verdict owner (digest pagi)",
       "north_star": "MATANGKAN/BUANG (owner 12 Okt 'buang yang tak berguna') — pilar tidak langsung: mengurangi permukaan admin mati = consistency admin sebagai satu sumber kebenaran",
       "title": "AUDIT ronde-2 /admin/social-cards -> CANDIDATE-REMOVE: generator kartu TikTok/Reels (Jun 13) utk workflow IG yang STOP by owner 17 Sep",
       "spec": "AUDIT (a) Masih dipakai? Teknis sehat tapi bisnis mati: tujuan halaman = membuat gambar IG/TikTok carousel; IG Carousel STOP by owner 17 Sep (decisions.md L409/L480 'IG stop BY DESIGN — tidak disentuh'); zero telemetry & zero DB trace pemakaian; satu-satunya inbound link = sidebar admin. (b) Data relevan? API /api/admin/social-cards/articles masih jalan (verify live 25 Okt 03:0x: proxy disguised-404 utk anonim = by-design anti-recon, route + handler + build chunk ada; pipeline NEWS aktif 30 artikel/30d sehingga data feed tak basi). (c) Kontrol kurang? N/A — murni client-side image generator (html2canvas-pro, localStorage presets), tanpa persistensi. KLASIFIKASI: CANDIDATE-REMOVE P3 eksekusi — 73 baris page + generator ~600 baris + dep html2canvas-pro (satu-satunya konsumen) melayani workflow yang tidak jalan lagi. Per ronde-1 rule: JANGAN hapus sebelum owner approve. Alternatif jika owner ingin simpan: repostool utk kanal lain (Telegram Koran Saham pakai teks, bukan kartu).",
@@ -50,7 +50,8 @@
         "Jika KEEP: status -> keep-by-design + catat alasan owner di entry ini"
       ],
       "audit_evidence": "2026-10-25 03:00 WIB: file page.tsx mtime Jun 13 (daftar '12 halaman tak tersentuh sejak Juni'); git log social-cards = 2 commit terakhir Jun 13 + snapshot Sep; LIVE: teknikal.id/admin/social-cards 307 auth-guard OK, /api/admin/social-cards/articles 404-anonim (disguise by design, proxy.ts L324-331); grep html2canvas = 1 konsumen; DB read-only: NEWS published 46 total / 7 baru 7d (feed hidup, bukan basi).",
-      "train": "T-1029-N"
+      "train": "T-1029-N",
+      "needs": "OWNER VERDICT: /admin/social-cards (generator kartu TikTok/Reels utk workflow IG yang STOP 17 Sep; ~700 baris + dep html2canvas-pro, zero pemakaian) — APPROVE remove / KEEP?"
     },
     {
       "date": "2026-10-24",
@@ -2805,9 +2806,9 @@
       "date": "2026-10-26",
       "type": "backoffice-audit",
       "priority": "P2",
-      "status": "pending",
+      "status": "blocked_for_owner",
       "assigned_to": "backoffice-builder",
-      "scheduled_slot": "menunggu owner verdict (morning digest) — JANGAN hapus sebelum approve",
+      "scheduled_slot": "blocked: tunggu verdict owner (digest pagi)",
       "north_star": "MATANGKAN/BUANG (owner 12 Okt) — mengurangi permukaan admin yang menampilkan data mati = consistency admin sebagai satu sumber kebenaran",
       "title": "AUDIT Dashboard /admin: tab Community + Predictions = telemetri fitur komunitas 0 pemakaian — kandidat demote/sembunyikan (bukan hapus) sampai komunitas hidup",
       "spec": "AUDIT (a) Masih dipakai? Tab Community (6 KPI + 4 section) dan Predictions (5 KPI) di Dashboard /admin menampilkan data FITUR KOMUNITAS yang tak pernah dipakai: Post total 1 sepanjang sejarah (0 baru 30d), Comment 0/30d, Repost 0/30d, Like 0/30d, prediksi (predictionDirection) 0 sepanjang sejarah, Report moderasi 0 total. Halaman publik /community live 200 + link di footer, jadi fiturnya hidup tapi sunyi (bukan bug). StockFollow 6 row/0 30d — Stocks tab juga nyaris kosong tapi itu telemetri watchlist (Watchlist 12 row/4 user) yang lebih relevan. (b) Data relevan? Semua KPI permanen 0 = noise visual utk owner; moderation summary 'Pending 0/Reviewed 0/Dismissed 0' abadi. (c) Kontrol kurang? Bukan soal kontrol — soal sinyal-vs-noise. KLASIFIKASI: CANDIDATE-DEMOTE (bukan remove): opsi (1) sembunyikan tab Community/Predictions di Dashboard sampai Post count > threshold (mis. 50), pindahkan akses ke halaman /admin/community shim existing; opsi (2) tambah badge '0 aktivitas 30d' di tab; opsi (3) keep by-design kalau owner ingin memantau channel komunitas tetap terlihat. Per ronde-1 rule: owner verdict dulu.",
@@ -2817,7 +2818,8 @@
         "Jika KEEP: status -> keep-by-design + catat alasan owner"
       ],
       "audit_evidence": "2026-10-26 03:0x WIB: psql read-only — Post total=1/30d=0, Comment 30d=0, Repost 30d=0, Like 30d=0 (skema: model Post/Comment/Like/Repost), Post.predictionDirection NOT NULL count=0, Report total=0; /community live 200 (localhost+teknikal.id); footer link Komunitas ada; backlog product: tidak ada PRD komunitas aktif (hanya done_wave3 sidebar-mobile + point-badge prd-2026-10-24-01).",
-      "train": "T-1029-N"
+      "train": "T-1029-N",
+      "needs": "OWNER VERDICT: tab Community+Predictions Dashboard /admin tampil KPI permanen-0 (Post 1 sepanjang sejarah, Comment/Like/Repost/Prediksi 0). DEMOTE (sembunyikan sampai >50 post) / BADGE 0-aktivitas / KEEP?"
     },
     {
       "id": "ux-2026-10-26-01",
