@@ -1388,3 +1388,7 @@ Catatan riset: keyword "eastspring idx esg leaders plus kelas a" (impr 209) = re
 - DB: 22 ticker isActive=false (5 Yahoo-drop: ARMY/BTEL/CBMF/COWL/CPRI + 17 delisting efektif 10 Nov per pengumuman BEI Peng-DEL-00001..2/BEI.PP1-3/04-2026: MTRA SRIL TOYS SBAT TDPM TELE LCGP SUGI MABA LMAS SKYB ENVY GOLL PLAS TRIL UNIT DUCK). Universe aktif 962→940. Histori + halaman tetap ada (200), hanya keluar dari universe aktif & sitemap. Reversible: SET isActive=true.
 - sitemap.ts: filter isActive 3 titik (stockRecords, liquidRows relasi, guard final stockPages) — sitemap kini tak pernah mempromosikan non-aktif. Verified prod: 0 URL delisting, 2032 URL total, halaman utama 200.
 - stock_integrity_check.py: DeprecationWarning utcfromtimestamp fixed (timezone-aware); verify EXIT=0.
+
+## 2026-10-29 — Product audit quick wins executed (audit Argon, owner 'lakukan saja kalau perlu')
+- QW1 Tools mobile utk SEMUA visitor (dulu session-gated; 62,3% trafik mobile eksternal tak terjangkau) + label bahasa awam (Riwayat Akurasi Sinyal/Arah Tren Pasar/Radar Saham Diskon). QW5 guest quota 5→25/hari (pengunjung nyata menabrak di ke-14; KPI traffic-first). QW2 redirect 308 /saham/:ticker→/stocks/:T.JK + /landing→/. QW3 title '(BBCA)' + badge cross 'hari ini/X hari lalu' + copy 12→9 indikator. Tooltip ? 14→32px touch. Button AI keluar dari <Link> (a11y HTML5).
+- Verified prod: 308 x2, (BBCA), 'Gabungan 9 indikator' x2, 'hari lalu' x2, 'Alat Analisa' di SSR anon. Sisa quick win (admin content-editor + pencarian ticker) → CTO queue besok.
