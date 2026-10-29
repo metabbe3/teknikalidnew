@@ -22,6 +22,10 @@ const navLinks = [
 // Tools demoted from main nav (low use: compare 2 views, paper-trading 13). Kept reachable.
 const toolLinks = [
   { href: "/pasar", label: "Koran Pasar Live" },
+  // ret-qw6 (riset retensi): 3 landing evergreen baru masuk nav utama
+  { href: "/kalender-dividen", label: "Kalender Dividen" },
+  { href: "/aliran-dana-asing", label: "Aliran Dana Asing" },
+  { href: "/indeks", label: "Indeks LQ45 & JII" },
   { href: "/track-record", label: "Riwayat Akurasi Sinyal" },
   { href: "/trading-plan", label: "Trading Plan" },
   { href: "/market-structure", label: "Arah Tren Pasar" },

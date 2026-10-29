@@ -421,6 +421,10 @@ export default async function HomePage() {
     return (
       <div className="fade-in">
         <TickerTape items={tickerItems} />
+        {/* ret-qw2: delta pantauan di atas fold — reason-to-return utk 79% pengunjung anonim */}
+        <div className="max-w-7xl mx-auto px-4 pt-3">
+          <WelcomeBackBanner />
+        </div>
         <PersonalizedGreeting name={userName} marketInfo={marketInfo} overview={overview} ihsg={ihsg} />
         <div className="max-w-7xl mx-auto px-4 py-10 space-y-14">
           {/* Owner 18 Okt: PORTOFOLIO dulu — seperti dashboard pribadi.
@@ -584,9 +588,6 @@ export default async function HomePage() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-10 space-y-14">
-        {/* Welcome Back Banner for returning anonymous visitors */}
-        <WelcomeBackBanner />
-
         {/* Try it — interactive tool previews (show-don't-tell, pairs with hero CTAs) */}
         <Suspense fallback={<PreviewSkeleton />}>
           <TradingPlanPreview />

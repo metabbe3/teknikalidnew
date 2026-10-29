@@ -16,8 +16,8 @@ import { readGuestWatchlist } from "@/lib/guest-storage";
 
 const VISITS_KEY = (ticker: string) => `teknikal_visits_${ticker}`;
 const DISMISS_KEY = (ticker: string) => `teknikal_visits_dismissed_${ticker}`;
-const TRIGGER_AT = 3; // kunjungan ke-3
-const AUTO_HIDE_MS = 8000;
+const DWELL_MS = 45_000; // ret-qw8: kunjungan-1 = tunggu bukti serius membaca
+const TRIGGER_AT = 2; // ret-qw8: kunjungan ke-2 = langsung tampil
 
 function safeGet(key: string): string | null {
   try { return window.localStorage.getItem(key); } catch { return null; }
@@ -43,11 +43,13 @@ export function RepeatVisitHint({ ticker }: { ticker: string }) {
     if (!Number.isFinite(n)) return;
     safeSet(VISITS_KEY(ticker), String(n));
 
-    if (n === TRIGGER_AT) {
+    if (n >= TRIGGER_AT) {
       setShow(true);
-      const t = window.setTimeout(() => setShow(false), AUTO_HIDE_MS);
-      return () => window.clearTimeout(t);
+      return; // tanpa auto-hide (ret-qw8): jangan lenyap saat user sedang serius membaca
     }
+    // ret-qw8: kunjungan pertama — tampil hanya jika user betah >=45 detik
+    const t = window.setTimeout(() => setShow(true), DWELL_MS);
+    return () => window.clearTimeout(t);
   }, [ticker, status]);
 
   if (!show) return null;
@@ -55,34 +57,24 @@ export function RepeatVisitHint({ ticker }: { ticker: string }) {
   const handleStar = () => {
     safeSet(DISMISS_KEY(ticker), "1");
     setShow(false);
-    // Klik label = fokus ke bintang StockActionBadge di sebelah (scrollIntoView + highlight ring)
+    // ret-qw8: 1-ketuk langsung simpan — bukan scroll ke tombol lain
     const btn = document.querySelector<HTMLElement>(
       'button[aria-label*="Pantau ' + ticker + '"]',
     );
-    if (btn) {
-      btn.scrollIntoView({ behavior: "smooth", block: "center" });
-      btn.animate(
-        [
-          { boxShadow: "0 0 0 0 rgba(56,189,248,0)" },
-          { boxShadow: "0 0 0 6px rgba(56,189,248,0.35)" },
-          { boxShadow: "0 0 0 0 rgba(56,189,248,0)" },
-        ],
-        { duration: 1200, iterations: 2 },
-      );
-    }
+    if (btn) btn.click();
   };
 
   return (
     <button
       onClick={handleStar}
-      className="inline-flex items-center gap-1.5 rounded-full bg-sky-50 border border-sky-200 px-3 py-1.5 text-[11px] font-medium text-sky-700 transition-all cursor-pointer animate-[fadeIn_200ms_ease-out]"
+      className="inline-flex items-center gap-1.5 rounded-full bg-accent/10 border border-accent/25 px-3 py-1.5 text-[11px] font-medium text-accent transition-all cursor-pointer animate-[fadeIn_200ms_ease-out]"
       aria-label={`Sering kembali ke ${ticker}? Ketuk untuk lihat tombol simpan pantauan`}
     >
       <span aria-hidden="true">⭐</span>
       <span>
-        Sering kembali ke {ticker}? Simpan biar cepat — ketuk bintang di samping
+        Suka memantau {ticker}? Simpan sekali ketuk — biar besok cepat ditemukan
       </span>
-      <span className="text-sky-400" aria-hidden="true">✕</span>
+      <span className="text-accent/60" aria-hidden="true">✕</span>
     </button>
   );
 }

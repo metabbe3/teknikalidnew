@@ -245,6 +245,8 @@ export const schemas = {
     // Tolerate an empty referrer (document.referrer === "" on direct traffic);
     // the beacon is fire-and-forget and must never 400 on a blank referrer.
     referrer: z.union([z.string().url(), z.literal("")]).optional(),
+    // ret-qw1: UUID perangkat localStorage "eng_anon" — bukan kredensial, hanya ukuran retensi
+    anonId: z.string().min(8).max(36).regex(/^[a-f0-9-]+$/i).optional(),
   }),
 
   // track/share - POST body (share-button click beacon)

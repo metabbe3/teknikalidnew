@@ -25,13 +25,15 @@ export function WelcomeBackBanner() {
   const { status } = useSession();
   const [visible, setVisible] = useState(false);
   const [ticker, setTicker] = useState<string | null>(null);
+  const [delta, setDelta] = useState<{ text: string } | null>(null);
 
   useEffect(() => {
     if (status === "authenticated") return;
 
     try {
-      // Check if banner was previously dismissed
-      if (localStorage.getItem(DISMISSED_KEY)) return;
+      // ret-qw2: snooze per-hari-bursa (WIB) — bukan mati permanen lagi
+      const wibToday = new Date(Date.now() + 7 * 3600_000).toISOString().slice(0, 10);
+      if (localStorage.getItem(DISMISSED_KEY) === wibToday) return;
 
       const raw = localStorage.getItem(VISITOR_KEY);
       if (!raw) return;
@@ -43,11 +45,23 @@ export function WelcomeBackBanner() {
       // Must be a returning visitor (first visit > 24h ago)
       if (!visitor.firstVisitAt || now - visitor.firstVisitAt < twentyFourHours) return;
 
-      // Must have at least one visited ticker
-      if (!visitor.lastVisitedTickers?.length) return;
+      // ret-qw2: prioritas guest_watchlist (memori aktif), lalu kunjungan terakhir
+      const watched: string[] = JSON.parse(localStorage.getItem("guest_watchlist") ?? "[]");
+      const candidates = Array.from(new Set([...watched, ...(visitor.lastVisitedTickers ?? [])]));
+      if (!candidates.length) return;
 
-      setTicker(visitor.lastVisitedTickers[0]);
+      setTicker(candidates[0]);
       setVisible(true);
+
+      // ret-qw2: delta semalam nyata (sinyal berbalik/cross/lonjakan) via mode publik
+      const q = candidates.slice(0, 15).map(encodeURIComponent).join(",");
+      fetch(`/api/me/morning-delta?tickers=${q}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((j) => {
+          const b = j?.data?.bullets?.[0];
+          if (b?.text) setDelta({ text: b.text });
+        })
+        .catch(() => {});
     } catch {
       // localStorage unavailable or parse error — silently skip
     }
@@ -63,10 +77,15 @@ export function WelcomeBackBanner() {
         <div className="shrink-0 w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center overflow-hidden">
           <StockLogo name="" ticker={ticker} size={30} />
         </div>
-        <p className="text-sm text-text-secondary truncate">
-          Selamat datang kembali! Terakhir Anda melihat{" "}
-          <span className="font-mono font-semibold text-text-primary tabular-nums">{displayTicker}</span>
-        </p>
+        <div className="min-w-0">
+          <p className="text-sm text-text-secondary truncate">
+            {delta ? "Kabar pantauanmu:" : "Selamat datang kembali! Terakhir Anda melihat"}{" "}
+            <span className="font-mono font-semibold text-text-primary tabular-nums">{displayTicker}</span>
+          </p>
+          {delta && (
+            <p className="text-[13px] text-text-primary font-medium truncate">{delta.text}</p>
+          )}
+        </div>
       </div>
 
       <div className="flex items-center gap-3 shrink-0">
@@ -76,17 +95,13 @@ export function WelcomeBackBanner() {
         >
           Lihat {displayTicker}
         </Link>
-        <Link
-          href="/auth/register"
-          className="text-xs font-medium text-text-tertiary hover:text-text-secondary whitespace-nowrap"
-        >
-          Daftar untuk menyimpan pantauan
-        </Link>
         <button
           type="button"
           onClick={() => {
             try {
-              localStorage.setItem(DISMISSED_KEY, "1");
+              // ret-qw2: snooze sampai besok (hari-bursa WIB), bukan permanen
+              const wibToday = new Date(Date.now() + 7 * 3600_000).toISOString().slice(0, 10);
+              localStorage.setItem(DISMISSED_KEY, wibToday);
             } catch {
               // Silently ignore if localStorage is unavailable
             }

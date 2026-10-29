@@ -13,6 +13,7 @@ import { stockCache } from "@/lib/cache";
 import { getMarketStatusWithFallback } from "@/lib/market-hours";
 import pLimit from "p-limit";
 import type { Prisma } from "@/generated/prisma/client";
+import { prisma } from "@/lib/prisma";
 
 type PriceRow = { close: Prisma.Decimal; volume: bigint };
 
@@ -38,6 +39,7 @@ export interface StockListRow {
   volume: number | null;
   rsi14: number | null;
   sma20: number | null;
+  signalScore: number | null; // ret-qw5
 }
 
 function serializeIndicatorOrNull(indicator: Awaited<ReturnType<typeof stockRepository.findLatestIndicator>>) {
@@ -49,11 +51,18 @@ async function fetchStockBase(ticker: string, priceTake: number) {
   const stock = await stockRepository.findStockByTicker(ticker);
   if (!stock) throw new StockNotFoundError(ticker);
 
-  const [rawPrices, week52, indicator, prevIndicator] = await Promise.all([
+  const [rawPrices, week52, indicator, prevIndicator, scoreSeries] = await Promise.all([
     stockRepository.findLatestTradingPrices(stock.id, priceTake),
     stockRepository.getWeek52HighLow(stock.id),
     stockRepository.findLatestIndicator(stock.id, INTERVAL.DAY),
     stockRepository.findPrevIndicator(stock.id, INTERVAL.DAY),
+    // ret-qw7: trajektori skor 5 sesi utk konteks arah di kartu skor
+    prisma.stockIndicator.findMany({
+      where: { stockId: stock.id, interval: INTERVAL.DAY },
+      orderBy: { date: "desc" },
+      take: 5,
+      select: { date: true, signalScore: true },
+    }),
   ]);
 
   const prices = dedupeStalePrices(rawPrices).slice(0, priceTake);
@@ -62,7 +71,7 @@ async function fetchStockBase(ticker: string, priceTake: number) {
   const prev = prices[1];
   const { close, prevClose, change, changePercent } = computeChange(latest, prev);
 
-  return { stock, prices, latest, prev, prevClose, close, change, changePercent, week52, indicator, prevIndicator };
+  return { stock, prices, latest, prev, prevClose, close, change, changePercent, week52, indicator, prevIndicator, scoreSeries };
 }
 
 function stripJkExt(t: string): string {
@@ -199,6 +208,8 @@ export const stockMarketService = {
         volume: prices[0] ? bigIntToNumber(prices[0].volume) : null,
         rsi14: indicator ? decimalToNumber(indicator.rsi14) : null,
         sma20: indicator ? decimalToNumber(indicator.sma20) : null,
+        // ret-qw5: skor 0-1 utk kolom landing SEO (kalender dividen/asing/modal 100rb)
+        signalScore: indicator ? decimalToNumber(indicator.signalScore) : null,
       };
     });
 
@@ -229,6 +240,7 @@ export const stockMarketService = {
         volume: prices[0] ? bigIntToNumber(prices[0].volume) : null,
         rsi14: indicator ? decimalToNumber(indicator.rsi14) : null,
         sma20: indicator ? decimalToNumber(indicator.sma20) : null,
+        signalScore: indicator ? decimalToNumber(indicator.signalScore) : null, // ret-qw5 (crypto: null-safe)
       };
     });
 
@@ -285,6 +297,11 @@ export const stockMarketService = {
       week52Low: decimalToNumber(base.week52._min.low),
       indicator: serializeIndicatorOrNull(base.indicator),
       prevIndicator: serializeIndicatorOrNull(base.prevIndicator),
+      // ret-qw7: urut tua→baru utk narasi "0,41 → 0,66 (menguat)"
+      scoreSeries: (base.scoreSeries ?? [])
+        .slice()
+        .reverse()
+        .map((r: { date: Date; signalScore: unknown }) => ({ date: r.date.toISOString(), score: r.signalScore === null ? null : Number(r.signalScore as number) })),
     };
   },
 

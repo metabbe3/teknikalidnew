@@ -30,9 +30,28 @@ function getTrackingData(pathname: string) {
     }
   }
 
+  // ret-qw1 (retention-riset 2026-10-30): identitas perangkat anonim — key sama "eng_anon"
+  // dengan engagement-instrument agar histori EngagementEvent & PageView menyatu.
+  let anonId: string | undefined;
+  if (typeof window !== "undefined") {
+    try {
+      anonId = localStorage.getItem("eng_anon") ?? undefined;
+      if (!anonId) {
+        anonId =
+          typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+            ? crypto.randomUUID()
+            : Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
+        localStorage.setItem("eng_anon", anonId);
+      }
+    } catch {
+      // private mode / storage blocked — biarkan undefined
+    }
+  }
+
   return {
     path: pathname + search,
     referrer: referrer || undefined,
+    anonId,
     // Only include UTM if present (keeps payload small for non-UTM traffic)
     ...(utmSource && { utmSource }),
     ...(utmMedium && { utmMedium }),

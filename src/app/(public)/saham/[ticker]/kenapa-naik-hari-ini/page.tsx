@@ -447,13 +447,35 @@ export default async function MovementAnalysisPage({
       </section>
 
 
-      {/* CTA: Link to stock page */}
+      {/* CTA: Link to stock page — ret-qw10: 3 pintu retensi sejajar (besok sore balik lagi) */}
       <div className="mx-auto max-w-4xl px-4 py-8">
         <div className="rounded-xl border border-border bg-card p-6 text-center">
-          <h3 className="text-xl font-bold mb-2">Pantau {tickerClean} Real-time</h3>
+          <h3 className="text-xl font-bold mb-2">Apakah gerak {tickerClean} berlanjut besok?</h3>
           <p className="text-muted-foreground mb-4">
-            Lihat harga, chart, indikator teknikal, dan sinyal {tickerClean} secara lengkap di halaman saham.
+            Simpan {tickerClean} sekarang, biar besok langsung tahu apa yang berubah sejak hari ini.
           </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 mb-4">
+            <Link
+              href={`/stocks/${tickerJK}`}
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground hover:bg-primary/90 transition min-h-11"
+            >
+              Lihat Chart &amp; Skor {tickerClean} →
+            </Link>
+            <Link
+              href={`/stocks/${tickerJK}#pantau`}
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-border px-5 min-h-11 font-medium text-sm hover:bg-accent/5 transition"
+            >
+              ⭐ Simpan ke pantauan HP
+            </Link>
+            <a
+              href={`https://t.me/TeknikalidBot?start=watch_${tickerClean}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-border px-5 min-h-11 font-medium text-sm hover:bg-accent/5 transition"
+            >
+              🔔 Update besok sore via Telegram
+            </a>
+          </div>
           <Link
             href={`/stocks/${tickerJK}`}
             className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground hover:bg-primary/90 transition"

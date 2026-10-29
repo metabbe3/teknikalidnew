@@ -102,6 +102,11 @@ export async function POST(request: NextRequest) {
     // Get user ID from session (nullable for anonymous visitors)
     const session = await auth();
     const userId = session?.user?.id ?? null;
+    // ret-qw1: identitas perangkat anonim (UUID localStorage "eng_anon") — cap 36 utk kolom schema
+    const anonId =
+      typeof data.anonId === "string" && data.anonId.length >= 8 && data.anonId.length <= 36
+        ? data.anonId
+        : null;
 
     // Extract IP from headers (prefer Cloudflare's true client IP)
     const ip = getClientIp(request.headers);
@@ -143,6 +148,7 @@ export async function POST(request: NextRequest) {
         path,
         referrer: data.referrer ?? null,
         userId,
+        anonId,
         ip,
         userAgent,
         utmSource,

@@ -109,11 +109,12 @@ export async function getRetentionOverview(
         ${thisWeek}::timestamptz,
         interval '1 week') wk
       CROSS JOIN LATERAL (
-        SELECT ip, count(DISTINCT (pv."createdAt" + interval '7 hours')::date) AS days
+        -- ret-qw1: identitas perangkat = userId > anonId (UUID localStorage) > ip (fallback CGNAT-bias)
+        SELECT COALESCE(pv."userId", pv."anonId", pv.ip) AS dev, count(DISTINCT (pv."createdAt" + interval '7 hours')::date) AS days
         FROM "PageView" pv
-        WHERE pv."isBot" = false AND pv.ip IS NOT NULL
+        WHERE pv."isBot" = false AND (pv."userId" IS NOT NULL OR pv."anonId" IS NOT NULL OR pv.ip IS NOT NULL)
           AND pv."createdAt" >= wk AND pv."createdAt" < wk + interval '1 week'
-        GROUP BY ip) s
+        GROUP BY dev) s
       GROUP BY wk ORDER BY wk`,
     prisma.$queryRaw<CohortRow[]>`
       WITH weeks AS (

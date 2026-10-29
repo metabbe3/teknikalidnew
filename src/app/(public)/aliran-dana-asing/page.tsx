@@ -4,6 +4,7 @@ import { safeJsonLd } from "@/lib/safe-json-ld";
 import { SITE_URL } from "@/lib/constants";
 import { pasarLiveService } from "@/domains/stock/pasar-live.service";
 import { PageHero } from "@/components/layout/page-hero";
+import { GuestStar } from "@/components/stock/guest-star";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -122,6 +123,7 @@ export default async function AliranDanaAsingPage() {
                       <th className="text-left px-3 py-2">#</th>
                       <th className="text-left px-3 py-2">Emiten</th>
                       <th className="text-right px-3 py-2">Net Beli Asing</th>
+                      <th className="text-center px-3 py-2">Pantau</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -135,6 +137,7 @@ export default async function AliranDanaAsingPage() {
                           <span className="block text-xs text-text-tertiary max-w-[180px] truncate" title={r.name}>{r.name}</span>
                         </td>
                         <td className="px-3 py-2 text-right font-mono tabular-nums text-bullish whitespace-nowrap">{fmtRpCompact(r.netValue)}</td>
+                        <td className="px-3 py-2 text-center"><GuestStar ticker={r.ticker} compact /></td>
                       </tr>
                     ))}
                   </tbody>
@@ -151,6 +154,7 @@ export default async function AliranDanaAsingPage() {
                       <th className="text-left px-3 py-2">#</th>
                       <th className="text-left px-3 py-2">Emiten</th>
                       <th className="text-right px-3 py-2">Net Jual Asing</th>
+                      <th className="text-center px-3 py-2">Pantau</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -164,6 +168,7 @@ export default async function AliranDanaAsingPage() {
                           <span className="block text-xs text-text-tertiary max-w-[180px] truncate" title={r.name}>{r.name}</span>
                         </td>
                         <td className="px-3 py-2 text-right font-mono tabular-nums text-bearish whitespace-nowrap">{fmtRpCompact(r.netValue)}</td>
+                        <td className="px-3 py-2 text-center"><GuestStar ticker={r.ticker} compact /></td>
                       </tr>
                     ))}
                   </tbody>

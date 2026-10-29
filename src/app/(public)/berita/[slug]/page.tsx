@@ -344,12 +344,18 @@ export default async function BeritaArticlePage({
               {/* Contextual signal links (server-rendered, SEO/discovery) */}
               <RelatedSignals ticker={relatedSignalTicker} />
 
-              {/* Pantau via Telegram — hanya artikel ber-ticker (retention-2026-10-28, dismissible) */}
-              {article.tickerTag && (
+              {/* Pantau via Telegram — artikel ber-ticker (retention-2026-10-28, dismissible).
+                  ret-qw10: Brief Pasar (DAILY_SNAPSHOT, tanpa ticker tunggal) tetap dapat CTA —
+                  arahkan ikut ringkasan pasar harian. */}
+              {article.tickerTag ? (
                 <div className="mt-6">
                   <TelegramSubscribeCta ticker={article.tickerTag} />
                 </div>
-              )}
+              ) : article.articleType === ArticleType.DAILY_SNAPSHOT ? (
+                <div className="mt-6">
+                  <TelegramSubscribeCta />
+                </div>
+              ) : null}
 
               {/* Related articles */}
               {relatedArticles.length > 0 && (

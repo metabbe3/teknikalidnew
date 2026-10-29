@@ -41,9 +41,10 @@ export function useGuestWatchlist() {
       if (result) {
         setTickers(result.list);
         window.dispatchEvent(new CustomEvent(GUEST_WATCHLIST_EVENT, { detail: result.list }));
-        // Moment-of-intent (prd-2026-10-26-01): hanya saat ADD (bukan unstar);
-        // rate-cap & copy di-handle RegistrationBottomSheet (single consumer).
-        if (result.added) {
+        // Moment-of-intent (prd-2026-10-26-01) → ret-qw4 (riset retensi 2026-10-30):
+        // sheet registrasi DITUNDA ke simpanan ke-3 — simpanan 1-2 justru momen rayakan,
+        // bukan ditekan mendaftar (bukti: 31 akun vs 79% anonim one-shot).
+        if (result.added && result.list.length >= 3) {
           window.dispatchEvent(new CustomEvent(REGISTER_PROMPT_EVENT, { detail: { source: "star_add" } }));
         }
       }

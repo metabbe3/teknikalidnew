@@ -5,6 +5,7 @@ import { SITE_URL } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
 import { formatPrice } from "@/lib/utils";
 import { PageHero } from "@/components/layout/page-hero";
+import { GuestStar } from "@/components/stock/guest-star";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -32,6 +33,7 @@ type DividendRow = {
   exDate: Date | null;
   paymentDate: Date | null;
   kind: string;
+  signalScore: number | null; // ret-qw5
 };
 
 async function loadDividendCalendar(): Promise<DividendRow[]> {
@@ -52,6 +54,7 @@ async function loadDividendCalendar(): Promise<DividendRow[]> {
           ticker: true,
           name: true,
           prices: { orderBy: { date: "desc" }, take: 1, select: { close: true } },
+          indicators: { orderBy: { date: "desc" }, take: 1, select: { signalScore: true } },
         },
       },
     },
@@ -67,6 +70,7 @@ async function loadDividendCalendar(): Promise<DividendRow[]> {
       exDate: r.exDate,
       paymentDate: r.paymentDate,
       kind: r.type,
+      signalScore: r.stock.indicators[0]?.signalScore != null ? Number(r.stock.indicators[0].signalScore) : null,
     }];
   });
 }
@@ -176,8 +180,10 @@ export default async function KalenderDividenPage() {
                     <th className="text-right px-3 py-2">Harga</th>
                     <th className="text-right px-3 py-2">Modal 1 Lot</th>
                     <th className="text-right px-3 py-2">Est. Yield</th>
+                    <th className="text-right px-3 py-2">Skor Sinyal</th>
                     <th className="text-left px-3 py-2">Ex Date</th>
                     <th className="text-left px-3 py-2">Bayar</th>
+                    <th className="text-center px-3 py-2">Pantau</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -196,8 +202,14 @@ export default async function KalenderDividenPage() {
                         <td className="px-3 py-2 text-right font-mono tabular-nums text-text-secondary">{r.close !== null ? formatPrice(r.close) : "—"}</td>
                         <td className="px-3 py-2 text-right font-mono tabular-nums text-text-secondary">{r.close !== null ? formatPrice(r.close * 100) : "—"}</td>
                         <td className="px-3 py-2 text-right font-mono tabular-nums">{yieldPct !== null ? `${yieldPct.toFixed(2).replace(".", ",")}%` : "—"}</td>
+                        <td className="px-3 py-2 text-right font-mono tabular-nums font-semibold">
+                          {r.signalScore !== null
+                            ? <span className={r.signalScore > 0 ? "text-bullish" : r.signalScore < 0 ? "text-bearish" : "text-text-secondary"}>{r.signalScore.toFixed(2).replace(".", ",")}</span>
+                            : "—"}
+                        </td>
                         <td className="px-3 py-2 font-mono text-xs whitespace-nowrap text-text-secondary">{fmtDate(r.exDate)}</td>
                         <td className="px-3 py-2 font-mono text-xs whitespace-nowrap text-text-secondary">{fmtDate(r.paymentDate)}</td>
+                        <td className="px-3 py-2 text-center"><GuestStar ticker={r.ticker} compact /></td>
                       </tr>
                     );
                   })}

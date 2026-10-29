@@ -8,6 +8,7 @@ import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { SITE_URL } from "@/lib/constants";
 import { AlertTriangle, Gem, Search } from "lucide-react";
+import { GuestStar } from "@/components/stock/guest-star";
 
  // 12 Okt: failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal
 
@@ -108,24 +109,26 @@ export default async function SahamGoldenCrossPage() {
                 <th className="py-2 pr-4 font-semibold">Nama</th>
                 <th className="py-2 pr-4 font-semibold">Harga</th>
                 <th className="py-2 pr-4 font-semibold">Perubahan</th>
+                <th className="py-2 pr-4 font-semibold">Skor</th>
+                <th className="py-2 pr-4 font-semibold">Pantau</th>
               </tr>
             </thead>
             <tbody>
               {failed ? (
                 <tr>
-                  <td colSpan={4} className="py-8 text-center text-muted-foreground">
+                  <td colSpan={6} className="py-8 text-center text-muted-foreground">
                     Data sedang diperbarui — muat ulang sebentar lagi.
                   </td>
                 </tr>
               ) : stocks.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="py-8 text-center text-muted-foreground">
+                  <td colSpan={6} className="py-8 text-center text-muted-foreground">
                     Belum ada saham golden cross saat ini. Cek lagi nanti.
                   </td>
                 </tr>
               ) : (
                 stocks.map((stock) => {
-                  const s = stock as { ticker: string; name: string; close: number | null; changePercent: number | null };
+                  const s = stock as { ticker: string; name: string; close: number | null; changePercent: number | null; signalScore: number | null };
                   return (
                     <tr key={s.ticker} className="border-b hover:bg-muted/50">
                       <td className="py-2 pr-4">
@@ -138,6 +141,10 @@ export default async function SahamGoldenCrossPage() {
                       <td className={`py-2 pr-4 ${s.changePercent !== null ? changeColor(s.changePercent) : ""}`}>
                         {s.changePercent !== null ? formatPercent(s.changePercent) : "—"}
                       </td>
+                      <td className={`py-2 pr-4 font-mono tabular-nums ${s.signalScore !== null ? (s.signalScore > 0 ? "text-emerald-600" : s.signalScore < 0 ? "text-red-600" : "") : ""}`}>
+                        {s.signalScore !== null ? s.signalScore.toFixed(2).replace(".", ",") : "—"}
+                      </td>
+                      <td className="py-2 pr-4"><GuestStar ticker={s.ticker} compact /></td>
                     </tr>
                   );
                 })

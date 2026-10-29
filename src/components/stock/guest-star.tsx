@@ -63,8 +63,11 @@ export function GuestStar({ ticker, compact = false }: { ticker: string; compact
           role="status"
           className="absolute left-1/2 top-full z-10 mt-1 -translate-x-1/2 whitespace-nowrap rounded-full bg-bg-card border border-border px-2.5 py-1 text-[10px] font-medium text-text-secondary depth-shadow"
         >
-          Tersimpan — {tickers.length} emiten dipantau di perangkat ini ·{" "}
+          Tersimpan di perangkat ini ·{" "}
           <Link href="/stocks#pantauan" className="underline hover:text-accent">lihat pantauan</Link>
+          {tickers.length < 3 && (
+            <> · <a href="https://t.me/TeknikalidBot" target="_blank" rel="noopener noreferrer" className="underline hover:text-accent">🔔 update sore via Telegram</a></>
+          )}
         </span>
       )}
     </button>

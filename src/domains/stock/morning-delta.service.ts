@@ -140,6 +140,30 @@ function buildCandidate(
 }
 
 export const morningDeltaService = {
+  // ret-qw2: jalur anonim — sama persis dengan getMorningDelta setelah resolusi ticker,
+  // dipakai oleh /api/me/morning-delta?tickers= (guest watchlist localStorage).
+  async getDeltaForTickers(tickers: string[]): Promise<MorningDelta> {
+    if (tickers.length === 0) {
+      return { asOf: null, trackedCount: 0, bullets: [] };
+    }
+    const stocks = await stockRepository.findStocksWithIndicatorHistoryLateral(tickers);
+    const bullets = stocks
+      .map(buildCandidate)
+      .filter((c): c is { bullet: DeltaBullet; rank: number } => c !== null)
+      .sort((a, b) => b.rank - a.rank)
+      .slice(0, 3)
+      .map((c) => c.bullet);
+    const latestDate = stocks
+      .map((s) => s.indicators[0]?.date ?? null)
+      .filter((d: Date | null): d is Date => d !== null)
+      .sort((a, b) => b.getTime() - a.getTime())[0];
+    return {
+      asOf: latestDate ? latestDate.toISOString() : null,
+      trackedCount: stocks.length,
+      bullets,
+    };
+  },
+
   async getMorningDelta(userId: string): Promise<MorningDelta> {
     const [watchTickers, followedTickers] = await Promise.all([
       watchlistService.getWatchlistTickers(userId),

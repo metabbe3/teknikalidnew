@@ -725,6 +725,42 @@ export default async function StockDetailPage({
                     </div>
                   </div>
                   <SignalBreakdownDetails breakdown={signalBreakdown} />
+                  {/* ret-qw7: arah skor 5 sesi — reason-to-check-back-later */}
+                  {(() => {
+                    const series = (detail.scoreSeries ?? []).map((r) => r.score).filter((v): v is number => v !== null);
+                    if (series.length < 3) return null;
+                    const oldest = series[0];
+                    const newest = series[series.length - 1];
+                    const diff = newest - oldest;
+                    const fmt = (v: number) => v.toFixed(2).replace(".", ",");
+                    return (
+                      <>
+                        <p className="mt-3 text-[12px] text-text-secondary">
+                          Arah 5 sesi terakhir: {fmt(oldest)} → {fmt(newest)}{" "}
+                          <span className={diff > 0.04 ? "text-bullish font-semibold" : diff < -0.04 ? "text-bearish font-semibold" : "text-text-tertiary"}>
+                            ({diff > 0 ? "menguat +" : diff < 0 ? "melemah " : "stabil "}{fmt(Math.abs(diff))})
+                          </span>
+                          <span className="text-text-tertiary"> · dihitung dari penutupan sesi terakhir</span>
+                        </p>
+                        <div className="mt-3 grid grid-cols-2 gap-2">
+                          <a
+                            href={`/stocks/${ticker}#pantau`}
+                            className="flex items-center justify-center gap-1.5 min-h-11 rounded-lg border border-border bg-bg hover:bg-bg-hover text-xs font-medium text-text-secondary transition-colors"
+                          >
+                            ⭐ Simpan ke pantauan
+                          </a>
+                          <a
+                            href="https://t.me/TeknikalidBot"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-1.5 min-h-11 rounded-lg border border-border bg-bg hover:bg-bg-hover text-xs font-medium text-text-secondary transition-colors"
+                          >
+                            🔔 Kabari di Telegram
+                          </a>
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
               );
             })()}

@@ -4,6 +4,7 @@ import { safeJsonLd } from "@/lib/safe-json-ld";
 import { SITE_URL } from "@/lib/constants";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { PageHero } from "@/components/layout/page-hero";
+import { GuestStar } from "@/components/stock/guest-star";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -122,7 +123,9 @@ export default async function SahamModal100RibuPage() {
                   <th className="text-right px-3 py-2">Harga/Lbr</th>
                   <th className="text-right px-3 py-2">Modal 1 Lot</th>
                   <th className="text-right px-3 py-2">Perubahan</th>
+                  <th className="text-right px-3 py-2">Skor</th>
                   <th className="text-right px-3 py-2">RSI-14</th>
+                  <th className="text-center px-3 py-2">Pantau</th>
                 </tr>
               </thead>
               <tbody>
@@ -140,7 +143,13 @@ export default async function SahamModal100RibuPage() {
                     <td className={`px-3 py-2 text-right font-mono tabular-nums ${(r.changePercent ?? 0) > 0 ? "text-bullish" : (r.changePercent ?? 0) < 0 ? "text-bearish" : "text-text-tertiary"}`}>
                       {r.changePercent !== null ? `${r.changePercent > 0 ? "+" : ""}${r.changePercent.toFixed(2).replace(".", ",")}%` : "—"}
                     </td>
+                    <td className="px-3 py-2 text-right font-mono tabular-nums font-semibold">
+                      {r.signalScore !== null
+                        ? <span className={r.signalScore > 0 ? "text-bullish" : r.signalScore < 0 ? "text-bearish" : "text-text-secondary"}>{r.signalScore.toFixed(2).replace(".", ",")}</span>
+                        : "—"}
+                    </td>
                     <td className="px-3 py-2 text-right font-mono tabular-nums text-text-secondary">{r.rsi14 !== null ? r.rsi14.toFixed(0) : "—"}</td>
+                    <td className="px-3 py-2 text-center"><GuestStar ticker={r.ticker} compact /></td>
                   </tr>
                 ))}
               </tbody>

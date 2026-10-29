@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { StockLogo } from "@/components/stock/stock-logo";
 import { PageHero } from "@/components/layout/page-hero";
 import { AskAiCta } from "@/components/seo/ask-ai-cta";
@@ -67,8 +66,9 @@ export default async function TradingPlanPage({
 }: {
   searchParams: Promise<{ t?: string | string[]; f?: string }>;
 }) {
-  const session = await auth();
-  if (!session?.user?.id) redirect("/auth/signin");
+  // ret-qw9 (riset retensi 2026-10-30): buka utk publik — data diambil dari param ticker,
+  // bukan akun; level entry/cut-loss adalah konten paling awam utk pemula anonim.
+  await auth();
 
   const params = await searchParams;
   const raw = Array.isArray(params.t) ? params.t : params.t ? [params.t] : [];

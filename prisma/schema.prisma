@@ -1081,6 +1081,7 @@ model PageView {
   utmSource String?  @db.VarChar(32)
   utmMedium String?  @db.VarChar(32)
   utmCampaign String? @db.VarChar(64)
+  anonId    String?  @db.VarChar(36) // ret-qw1: UUID perangkat localStorage "eng_anon" (kompatibel EngagementEvent)
   isBot     Boolean  @default(false)
   createdAt DateTime @default(now())
 
@@ -1090,6 +1091,7 @@ model PageView {
   @@index([createdAt])
   @@index([path, createdAt(sort: Desc)])
   @@index([isBot])
+  @@index([anonId, createdAt]) // ret-qw1
 }
 
 // Share-button clicks (WhatsApp/X/Telegram/Copy/Story), first-party DB log.

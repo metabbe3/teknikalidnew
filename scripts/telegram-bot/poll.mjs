@@ -22,7 +22,21 @@ async function handle(msg, c) {
   const text = (msg.text||'').trim();
   try {
     if (text.startsWith('/start')) {
-      const code = normTicker(text.split(/\s+/)[1]);
+      // ret-qw4: /start watch_BBCA_BMRI_TLKM — sync batch pantauan web ke Telegram 1 ketukan
+      const rawArg = text.split(/\s+/)[1] || '';
+      if (rawArg.toLowerCase().startsWith('watch_')) {
+        const codes = Array.from(new Set(
+          rawArg.slice(6).split('_').map(t => normTicker(t)).filter(Boolean)
+        )).slice(0, 10);
+        if (!codes.length) return send(chatId, '❌ Format: /start watch_BBCA_TLKM (4-5 huruf per kode).');
+        const q = await c.query('SELECT ticker, name FROM "Stock" WHERE ticker = ANY($1) AND "assetClass"=$2', [codes.map(x => x + '.JK'), 'EQUITY']);
+        if (!q.rows.length) return send(chatId, '❌ Kode tidak ditemukan di teknikal.id. Cek lagi kodenya ya.');
+        for (const st of q.rows) {
+          await c.query('INSERT INTO "TelegramWatch" ("chatId",ticker) VALUES ($1,$2) ON CONFLICT ("chatId",ticker) DO UPDATE SET active=true', [chatId, st.ticker]);
+        }
+        return send(chatId, `✅ <b>${q.rows.length} saham</b> masuk pantauanmu:\n${q.rows.map(r => '• <b>' + r.ticker.replace('.JK','') + '</b> ' + r.name).join('\n')}\n\nUpdate harian jam 16:50 WIB — lengkap dengan perubahan skor sinyal &amp; aliran asing.\n/list — lihat semua`);
+      }
+      const code = normTicker(rawArg);
       if (!code) return send(chatId, '📈 <b>TeknikalID Pantau</b>\n\nPantau saham favoritmu — update tiap hari jam 16:50 WIB setelah pasar tutup, langsung ke chat ini.\n\nCara pakai: buka halaman saham di teknikal.id, klik tombol <b>"Pantau via Telegram"</b>, atau kirim:\n<code>/start BBCA</code>\n\nPerintah lain: /list · /stop BBCA · /help');
       const q = await c.query('SELECT ticker, name FROM "Stock" WHERE ticker=$1 AND "assetClass"=$2', [code+'.JK','EQUITY']);
       if (!q.rows.length) return send(chatId, `❌ Kode <b>${code}</b> tidak ditemukan di teknikal.id. Cek lagi kodenya ya.`);
