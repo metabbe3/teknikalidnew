@@ -852,3 +852,13 @@
 - verify bukti: round-trip update via path symlink -> repo berubah + symlink tetap lrwxr-xr-x (dummy drift_test ditulis lalu dibersihkan); test-factcheck 15/15 + test-insert hijau pasca-patch
 - rollback: cto-queue/product-backlog .bak-20261028-1839-drift4-prelink; statejson.py.bak-20261028-guard; teknikalid_growth.py.bak-20261028-rankguard; reverse UPDATE SQL (decisions.md)
 - deploy hash: n/a (host script + datadir) | impact_check_due: 2026-10-31 (ls -la datadir: kedua file masih symlink)
+
+## 2026-10-29 07:5x WIB — CTO pagi (slot BUILD-ONLY: merge kerja malam ke main, 0 deploy)
+- **task-id**: bo-2026-10-29-01 + adm-2026-10-28-01 (riders) + fix-2026-10-26-12 — kereta T-1029-N
+- **type**: ops (merge night-branches; fitur2 BUILD-ONLY milik slot masing-masing)
+- **PRD**: bo-29-01 (backoffice, FDE via audit ronde-3) · adm-28-01 · fix-26-12 (ops perf)
+- **merge**: c7b4fa8 (night/admin-2026-10-28-01: tab Insight /admin 875ec65 + sidebar 7df9d8b..ec2bdd5 + Radar /pasar 2c86325 + Telegram CTA 5464445..2c50878 + brief-strip date-fix 9163cf9 + analytics raw-toggle 0ba9443) + c21f222 (night/fix-2026-10-26-12: N+1 getWatchlist, pasar-live SATU PINTU)
+- **verify bukti**: tsc --noEmit EXIT-0 pasca-merge gabungan · merge ancestor-check PASS (2 tip in main) · schema-shield PASS (prisma/schema.prisma DIKELUARKAN — owner_gate_ddl, model TelegramWatch catch-up deklaratif, tabel live prod) · queue v73 superset (0 id hilang) · 6 jurnal konflik resolve lossless (0 marker, 0 heading hilang)
+- **QA**: reviewer slot berikutnya — verify per-fitur pasca-deploy kereta T-1029-N (nav/insight tab, /api/radar, radar-section /pasar, telegram CTA, brief-strip tanggal DATA, N+1 parity)
+- **impact_check_due**: 2026-11-01 (telemetri register_prompt_save_moment + radar views + returning ratio)
+- Rollback anchor: app envsafe2 f1b16fb3f642 (belum ada deploy dari merge ini; revert = git revert c7b4fa8 c21f222 + rebuild)

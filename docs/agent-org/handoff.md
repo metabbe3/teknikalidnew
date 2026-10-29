@@ -1150,3 +1150,10 @@
 - Bukti: failing-test-first 3 FAIL→9/9 PASS · parity DB live 8/8 IDENTIK · qcount 15 whole-snapshot · tsc 0 err · build RC=0 BUILD_ID q-P0iFMbuX90cqnbAay33 · regresi 29/29+5/5.
 - Queue entry → night_ready (patch tekstual +22 baris, bukan reformat — jaga ops-27-02).
 - CTO pagi: review 15 mnt → merge night/fix-2026-10-26-12 → deploy biasa. ROLLBACK post-merge: git revert 06bed51.
+
+## 2026-10-29 07:5x — CTO pagi (merge morning: 2 branch malam → main, BUILD-ONLY)
+- State: main = c21f222 (c7b4fa8 admin/insight-merge + c21f222 fix-26-12) — tsc EXIT-0, build in-progress saat tulis; prod TIDAK tersentuh (deploy window malam).
+- Barusan: queue v73 diselamatkan (writer malam tak commit — di-commit 094a281 di branch admin) + merge admin (6 konflik jurnal resolve lossless; schema.prisma TelegramWatch DIKELUARKAN → owner_gate_ddl, tabel sudah live prod sejak 28 Okt) + merge fix-26-12 clean.
+- In-flight: build verifikasi; kereta T-1029-N malam ini deploy SATU build (manifest: bo-29-01 insight + adm-28-01 sidebar + radar + tg-cta + brief-strip + raw-toggle + prd-26-01 sheet + fix-26-12 + nav-tracking sisa T-1028 bila masih gap).
+- Jebakan: (1) queue json di main TIP lama korup marker (stash-pop leak c5b2865) — JANGAN trust `git show c5b2865:queue`; versi benar = live file/094a281; (2) `/private/tmp/bo1028` masih pegang branch bo-28-01 announcements 626cb59 — TIDAK ikut merge pagi (fitur API-only, kereta malam); (3) prisma/schema.prisma di main TIDAK memuat TelegramWatch — bot jalan via pg host-side, aman; owner gate utk catch-up deklaratif.
+- Langkah pertama slot berikutnya: cek hasil build c21f222 (BUILD_ID) → kereta malam T-1029-N: merge bo-28-01 626cb59 → SATU build → deploy 22:00-01:30 → verify per-fitur → changelog.
