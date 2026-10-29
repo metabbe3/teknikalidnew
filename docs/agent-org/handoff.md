@@ -1187,3 +1187,10 @@
 - Staging one-off container TIDAK dipakai: window 19:45-20:15 = jam emas Docker flap 3x; kereta T-1029-N 22:00 tidak diganggu. Host :3100 cukup (surface statis).
 - Jebakan: statejson append = --entries-json satu blob (bukan banyak --set); npm start foreground diblok gateway → background=true; claude gated edit OK tapi tool timeout 420s memotong tsc worker — verify sendiri wajib.
 - Rotasi UX berikutnya: re-audit flow (a) screener pasca trust-badge + prd-26-01 sheet live (kalau kereta malam berangkat).
+
+## CTO Night 29 Okt — fix-2026-10-26-11 (Article P1) night_ready
+- Branch `night/fix-2026-10-26-11` (2 commit: failing-test 60f3aaf → fix 98a42a2): movement-analysis kini lewat guard pipeline sama dgn news (`article-guards.ts` baru — sanitize→quality(preset minWords300/minH2=1)→dedup→factCheck; hold→DRAFT).
+- Layering: SQL movers → `stockRepository.findMovementMovers` (CTE week52 menggantikan enrich N+1 ≤100 query→1); `article-fact-check` prisma-langsung=0 via `articleRepository.findPublishedTypeSlugs`.
+- Bukti: selftest doctrine 4 FAIL→7/7 PASS; parity week52 5/5 IDENTIK (psql read-only DB live); tsc 0; build hijau; regression 4 selftest lama PASS; LINT 0.
+- Bug tetangga diperbaiki sekalian: evergreen movement update tidak refresh `publishedAt` → dedup "Already generated today" tak pernah match hari-2 (regenerate 3x/hari jadi dobel AI call).
+- CTO pagi: review ~15 mnt → merge build-only T-1030-N. PERILAKU BARU: movement bisa DRAFT saat factCheck hold; concurrency 3.
