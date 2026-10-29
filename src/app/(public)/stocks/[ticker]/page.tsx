@@ -753,7 +753,8 @@ export default async function StockDetailPage({
                             ⭐ Simpan ke pantauan
                           </a>
                           <a
-                            href="https://t.me/TeknikalidBot"
+                            href={`https://t.me/TeknikalidBot?start=${ticker.replace(/\.JK$/, "")}_JK`}
+                            data-engagement="tg_pantau_skor"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center justify-center gap-1.5 min-h-11 rounded-lg border border-border bg-bg hover:bg-bg-hover text-xs font-medium text-text-secondary transition-colors"
@@ -1053,6 +1054,7 @@ export default async function StockDetailPage({
           <p className="text-sm text-text-secondary">Dapatkan ringkasan harga &amp; sinyal langsung di Telegram setelah pasar tutup — tanpa perlu login.</p>
           <a
             href={`https://t.me/TeknikalidBot?start=${encodeURIComponent(ticker.replace(/\.JK$/, "") + "_JK")}`}
+            data-engagement="tg_pantau_kartu"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90"

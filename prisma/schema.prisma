@@ -259,6 +259,8 @@ model User {
   name             String?
   username         String    @unique
   image            String?
+  // tracking-audit G6: identitas anonim PERTAMA sebelum daftar — retensi histori menyatu
+  initialAnonId    String?   @db.VarChar(36)
   bio              String?   @db.VarChar(200)
   socialLinks      Json?
   role             Role      @default(USER)
@@ -1096,12 +1098,44 @@ model PageView {
 
 // Share-button clicks (WhatsApp/X/Telegram/Copy/Story), first-party DB log.
 // target/context are short enum-like strings.
+// tracking-audit G5: error log first-party Rp0 — pengganti Sentry mati.
+model AppErrorLog {
+  id          Int      @id @default(autoincrement())
+  fingerprint String   @unique @db.VarChar(64)
+  kind        String   @db.VarChar(16) // api | client | cron | bot
+  path        String?  @db.VarChar(255)
+  message     String   @db.VarChar(500)
+  count       Int      @default(1)
+  anonId      String?  @db.VarChar(36)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  @@index([fingerprint])
+  @@index([createdAt(sort: Desc)])
+}
+
+// tracking-audit G3: daftarkan TelegramWatch (sudah live di DB via bot, belum di schema).
+model TelegramWatch {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  chatId      String
+  ticker      String
+  lang        String?  @default("id")
+  active      Boolean  @default(true)
+  // jembatan web→bot: 12-hex pertama anonId dari deep-link ?start=...__a_<12hex>
+  anonPrefix  String?  @db.VarChar(16)
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+
+  @@unique([chatId, ticker])
+  @@index([anonPrefix])
+}
+
 model ShareEvent {
   id        Int      @id @default(autoincrement())
   target    String   @db.VarChar(16) // whatsapp | x | telegram | copy | story
   context   String   @db.VarChar(16) // asset | saham | berita | akademi | community | other
   path      String   @db.VarChar(255)
   userId    String?
+  anonId    String?  @db.VarChar(36) // tracking-audit G2: join PageView↔ShareEvent
   ip        String?  @db.VarChar(45)
   userAgent String?  @db.VarChar(500)
   isBot     Boolean  @default(false)
@@ -1121,7 +1155,7 @@ model EngagementEvent {
   anonId    String   @db.VarChar(36)
   path      String   @db.VarChar(255)
   type      String   @db.VarChar(16) // dwell_tick | scroll_max | cta_click
-  label     String?  @db.VarChar(32) // star_add | preset_copy | radar_open | preset_save
+  label     String?  @db.VarChar(64) // star_add | preset_copy | radar_open | preset_save
   valueNum  Int? // detik utk dwell_tick, persen utk scroll_max
   createdAt DateTime @default(now())
 

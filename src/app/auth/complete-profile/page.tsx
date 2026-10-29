@@ -73,6 +73,22 @@ export default function CompleteProfilePage() {
           }
           sessionStorage.removeItem("pending_post_register");
         }
+        // tracking-audit G8: migrasikan SELURUH pantauan guest (localStorage guest_watchlist)
+        // ke akun baru — dulu hanya 1 ticker pending yang ikut, sisanya hilang tepat saat
+        // user berkomitmen paling dalam.
+        try {
+          const gw = localStorage.getItem("guest_watchlist");
+          if (gw) {
+            const tickers: string[] = JSON.parse(gw);
+            for (const t of tickers.slice(0, 25)) {
+              await fetch("/api/watchlist", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ticker: t }),
+              }).catch(() => {});
+            }
+          }
+        } catch { /* silent */ }
       } catch {
         sessionStorage.removeItem("pending_post_register");
       }

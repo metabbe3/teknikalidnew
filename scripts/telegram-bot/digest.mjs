@@ -111,8 +111,16 @@ for (const { chatId } of chats.rows) {
   const rows = await c.query('SELECT ticker FROM "TelegramWatch" WHERE "chatId"=$1 AND active=true ORDER BY "createdAt"', [chatId]);
   const sorted = rows.rows.map(r => r.ticker).sort((a, b) => (data[b]?.interesting ? 1 : 0) - (data[a]?.interesting ? 1 : 0));
   const lines = sorted.map(lineFor).join('\n');
-  const txt = `📈 <b>Pantauanmu hari ini</b>\n\n${lines}\n\n👉 Analis Sore hari ini: ${SITE}/berita\n\n— teknikal.id · data harian, bukan rekomendasi jual-beli`;
+  const txt = `📈 <b>Pantauanmu hari ini</b>\n\n${lines}\n\n👉 Analis Sore hari ini: ${SITE}/berita?utm_source=tg_digest\n\n— teknikal.id · data harian, bukan rekomendasi jual-beli`;
   (await send(chatId, txt)) ? ok++ : fail++;
 }
 console.log(JSON.stringify({ ok, fail, tickers: Object.keys(data).length }));
+// tracking-audit G10: catat hasil digest ke CronLog — kegagalan bot tak lagi senyap
+try {
+  await c.query('INSERT INTO "CronLog" ("jobName", status, result, "triggeredBy") VALUES ($1,$2,$3,$4)', [
+    'tg-digest', ok > 0 || tickers.length === 0 ? 'success' : 'error',
+    JSON.stringify({ ok, fail, tickers: tickers.length }).slice(0, 200),
+    'system',
+  ]);
+} catch (e) { console.error('cronlog fail', e.message); }
 process.exit(0);

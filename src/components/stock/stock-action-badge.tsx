@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useWatchlistStatus, useToggleWatchlist } from "@/hooks/use-watchlist";
 import { useStockFollowStatus, useToggleStockFollow } from "@/hooks/use-follow";
 import { GuestStar } from "@/components/stock/guest-star";
+import { getAnonIdSafe } from "@/lib/anon-id-safe";
 
 interface StockActionBadgeProps {
   ticker: string;
@@ -33,6 +34,11 @@ export function StockActionBadge({ ticker }: StockActionBadgeProps) {
   const handleClick = () => {
     if (!isAuthenticated) return;
 
+    // tracking-audit G1: bintang user login juga terukur
+    try {
+      const body = JSON.stringify({ anonId: getAnonIdSafe(), events: [{ type: "cta_click", label: isActive ? "pantau_hapus" : "pantau_tambah", path: location.pathname }] });
+      if (navigator.sendBeacon) navigator.sendBeacon("/api/public/engagement", new Blob([body], { type: "application/json" }));
+    } catch { /* silent */ }
     toggleWatchlist.mutate({ ticker, action: isActive ? "remove" : "add" });
     toggleFollow.mutate(ticker);
   };

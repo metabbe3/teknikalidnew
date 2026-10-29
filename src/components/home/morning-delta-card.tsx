@@ -5,6 +5,7 @@ import { StockLogo } from "@/components/stock/stock-logo";
 import { useMorningDelta } from "@/hooks/use-morning-delta";
 import { stripJk, formatPercent } from "@/lib/utils";
 import type { DeltaBullet } from "@/domains/stock/morning-delta.service";
+import { getAnonIdSafe } from "@/lib/anon-id-safe";
 
 const TONE_TEXT: Record<DeltaBullet["tone"], string> = {
   bullish: "text-bullish",
@@ -16,6 +17,7 @@ function Bullet({ b }: { b: DeltaBullet }) {
   return (
     <Link
       href={`/stocks/${b.ticker}`}
+      data-engagement="delta_pantauan_klik"
       className="flex items-center justify-between gap-3 py-3 group hover:bg-accent/5 -mx-2 px-2 rounded-lg transition-colors"
     >
       <div className="min-w-0">
@@ -53,6 +55,15 @@ export function MorningDeltaCard() {
   }
 
   if (!data || data.bullets.length === 0) return null;
+
+  // tracking-audit G5: impresi kartu delta — sekali per sesi
+  try {
+    if (!sessionStorage.getItem("eng_delta_seen")) {
+      sessionStorage.setItem("eng_delta_seen", "1");
+      const body = JSON.stringify({ anonId: getAnonIdSafe(), events: [{ type: "cta_click", label: "delta_pantauan_tampil", path: location.pathname }] });
+      if (navigator.sendBeacon) navigator.sendBeacon("/api/public/engagement", new Blob([body], { type: "application/json" }));
+    }
+  } catch { /* silent */ }
 
   return (
     <section className="bg-bg-card border border-border rounded-xl p-4">

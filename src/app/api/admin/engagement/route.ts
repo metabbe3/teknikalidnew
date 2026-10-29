@@ -66,19 +66,31 @@ async function getEngagementOverview(now: Date = new Date()): Promise<Engagement
       WHERE "createdAt" >= ${since24h}
       GROUP BY type`,
     prisma.$queryRaw<GroupRow[]>`
-      SELECT
-        CASE WHEN path LIKE '/stocks%' THEN '/stocks'
-             WHEN path LIKE '/berita%' THEN '/berita'
-             WHEN path LIKE '/akademi%' THEN '/akademi'
-             ELSE 'other' END AS grp,
+      WITH t AS (
+        -- tracking-audit G2: MAX per kunjungan (anonId,path,hari WIB,type) dulu —
+        -- rata baris milestone lama menggelembungkan dwell (15+60+180 dihitung 3 nilai).
+        SELECT e."anonId", e.path, e.type, MAX(e."valueNum") AS "valueNum",
+               CASE WHEN e.path LIKE '/stocks%' THEN '/stocks'
+                    WHEN e.path LIKE '/berita%' THEN '/berita'
+                    WHEN e.path LIKE '/akademi%' THEN '/akademi'
+                    ELSE 'other' END AS grp
+        FROM "EngagementEvent" e
+        WHERE e."createdAt" >= ${since7d} AND e.type IN ('dwell_tick', 'scroll_max')
+        GROUP BY e."anonId", e.path, e.type,
+                 ((e."createdAt" + interval '7 hours')::date),
+                 (CASE WHEN e.path LIKE '/stocks%' THEN '/stocks'
+                       WHEN e.path LIKE '/berita%' THEN '/berita'
+                       WHEN e.path LIKE '/akademi%' THEN '/akademi'
+                       ELSE 'other' END)
+      )
+      SELECT grp,
         count(*) FILTER (WHERE type = 'dwell_tick') AS dwell_n,
         (round(avg("valueNum") FILTER (WHERE type = 'dwell_tick'))::float8) AS dwell_avg,
         (percentile_cont(0.5) WITHIN GROUP (ORDER BY "valueNum")
           FILTER (WHERE type = 'dwell_tick')::float8) AS dwell_median,
         count(*) FILTER (WHERE type = 'scroll_max') AS scroll_n,
         (round(avg("valueNum") FILTER (WHERE type = 'scroll_max'))::float8) AS scroll_avg
-      FROM "EngagementEvent"
-      WHERE "createdAt" >= ${since7d} AND type IN ('dwell_tick', 'scroll_max')
+      FROM t
       GROUP BY grp
       ORDER BY grp`,
     prisma.$queryRaw<FunnelRow[]>`

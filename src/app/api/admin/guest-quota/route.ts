@@ -57,13 +57,13 @@ export async function GET(request: NextRequest) {
       d.visitors += 1;
       d.events += ev;
       d.tickerSum += n;
-      if (n >= 6) d.hitCap += 1;
+      if (n >= 25) d.hitCap += 1; // tracking-audit G7: cap aktual 25 (GUEST_DAILY_FREE)
       byDay.set(day, d);
 
       depthCounts.set(n, (depthCounts.get(n) ?? 0) + 1);
       totalVisitors += 1;
       totalEvents += ev;
-      if (n >= 6) totalCap += 1;
+      if (n >= 25) totalCap += 1;
       tickerSum += n;
     }
 

@@ -11,7 +11,15 @@ export default function RootError({
   reset: () => void;
 }) {
   useEffect(() => {
-    Sentry.captureException(error);
+    try { Sentry.captureException(error); } catch { /* DSN kosong — biarkan */ }
+    // tracking-audit G10: first-party client error log (Sentry mati + CSP blokir)
+    try {
+      navigator.sendBeacon?.("/api/track/error", new Blob([JSON.stringify({
+        message: String(error?.message ?? error).slice(0, 200),
+        path: location.pathname,
+        anonId: localStorage.getItem("eng_anon") ?? undefined,
+      })], { type: "application/json" }));
+    } catch { /* silent */ }
   }, [error]);
 
   return (

@@ -8,6 +8,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useGuestWatchlist } from "@/hooks/use-guest-watchlist";
+import { getAnonIdSafe } from "@/lib/anon-id-safe";
 
 export function GuestStar({ ticker, compact = false }: { ticker: string; compact?: boolean }) {
   const { tickers, toggle, mounted } = useGuestWatchlist();
@@ -30,6 +31,12 @@ export function GuestStar({ ticker, compact = false }: { ticker: string; compact
 
   const handleClick = () => {
     const result = toggle(ticker);
+    // tracking-audit G1: event bintang — sebelumnya 0% terukur (selector fallback mati)
+    try {
+      const anon = getAnonIdSafe();
+      const body = JSON.stringify({ anonId: anon, events: [{ type: "cta_click", label: result?.added ? "pantau_tambah" : "pantau_hapus", path: location.pathname }] });
+      if (navigator.sendBeacon) navigator.sendBeacon("/api/public/engagement", new Blob([body], { type: "application/json" }));
+    } catch { /* silent */ }
     if (result?.added) {
       setFlash({ ticker });
       window.setTimeout(
@@ -39,7 +46,11 @@ export function GuestStar({ ticker, compact = false }: { ticker: string; compact
     }
   };
 
+  const shortT = ticker.replace(/\.JK$/, "");
   return (
+    // tracking-audit G1: wrapper menggantikan nesting chip dalam <button> (HTML invalid +
+    // klik link Telegram di chip memicu bubbling = bintang terhapus). Sekarang saudara, bukan anak.
+    <span className={compact ? "relative inline-flex" : "relative inline-flex items-center"}>
     <button
       onClick={handleClick}
       className={compact ? "relative p-1.5 rounded-md transition-colors cursor-pointer before:absolute before:-inset-2 before:content-['']" : "relative inline-flex items-center gap-1.5 rounded-full px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium transition-all press-scale cursor-pointer"}
@@ -58,6 +69,7 @@ export function GuestStar({ ticker, compact = false }: { ticker: string; compact
       )}
       {!compact && (active ? "Dipantau" : "Pantau")}
       {/* PRD idea-2026-10-19-2 AC2: chip inline 'Tersimpan — N emiten' <=2s, tanpa lib toast */}
+    </button>
       {flash?.ticker === ticker && active && (
         <span
           role="status"
@@ -66,10 +78,10 @@ export function GuestStar({ ticker, compact = false }: { ticker: string; compact
           Tersimpan di perangkat ini ·{" "}
           <Link href="/stocks#pantauan" className="underline hover:text-accent">lihat pantauan</Link>
           {tickers.length < 3 && (
-            <> · <a href="https://t.me/TeknikalidBot" target="_blank" rel="noopener noreferrer" className="underline hover:text-accent">🔔 update sore via Telegram</a></>
+            <> · <a data-engagement="tg_pantau_chip" href={`https://t.me/TeknikalidBot?start=${shortT}_JK`} target="_blank" rel="noopener noreferrer" className="underline hover:text-accent">🔔 update sore via Telegram</a></>
           )}
         </span>
       )}
-    </button>
+    </span>
   );
 }

@@ -23,7 +23,11 @@ async function handle(msg, c) {
   try {
     if (text.startsWith('/start')) {
       // ret-qw4: /start watch_BBCA_BMRI_TLKM — sync batch pantauan web ke Telegram 1 ketukan
-      const rawArg = text.split(/\s+/)[1] || '';
+      const rawArg0 = text.split(/\s+/)[1] || '';
+      // tracking-audit G3: suffix __a_<12hex> = anonPrefix jembatan web→bot (dibuang sebelum parse ticker)
+      const am = rawArg0.match(/__a_([a-f0-9]{12})$/i);
+      const anonPrefix = am ? am[1].toLowerCase() : null;
+      const rawArg = anonPrefix ? rawArg0.replace(/__a_[a-f0-9]{12}$/i, '') : rawArg0;
       if (rawArg.toLowerCase().startsWith('watch_')) {
         const codes = Array.from(new Set(
           rawArg.slice(6).split('_').map(t => normTicker(t)).filter(Boolean)
@@ -32,7 +36,7 @@ async function handle(msg, c) {
         const q = await c.query('SELECT ticker, name FROM "Stock" WHERE ticker = ANY($1) AND "assetClass"=$2', [codes.map(x => x + '.JK'), 'EQUITY']);
         if (!q.rows.length) return send(chatId, '❌ Kode tidak ditemukan di teknikal.id. Cek lagi kodenya ya.');
         for (const st of q.rows) {
-          await c.query('INSERT INTO "TelegramWatch" ("chatId",ticker) VALUES ($1,$2) ON CONFLICT ("chatId",ticker) DO UPDATE SET active=true', [chatId, st.ticker]);
+          await c.query('INSERT INTO "TelegramWatch" ("chatId",ticker,"anonPrefix") VALUES ($1,$2,$3) ON CONFLICT ("chatId",ticker) DO UPDATE SET active=true, "anonPrefix"=COALESCE(EXCLUDED."anonPrefix","TelegramWatch"."anonPrefix")', [chatId, st.ticker, anonPrefix]);
         }
         return send(chatId, `✅ <b>${q.rows.length} saham</b> masuk pantauanmu:\n${q.rows.map(r => '• <b>' + r.ticker.replace('.JK','') + '</b> ' + r.name).join('\n')}\n\nUpdate harian jam 16:50 WIB — lengkap dengan perubahan skor sinyal &amp; aliran asing.\n/list — lihat semua`);
       }
@@ -41,7 +45,7 @@ async function handle(msg, c) {
       const q = await c.query('SELECT ticker, name FROM "Stock" WHERE ticker=$1 AND "assetClass"=$2', [code+'.JK','EQUITY']);
       if (!q.rows.length) return send(chatId, `❌ Kode <b>${code}</b> tidak ditemukan di teknikal.id. Cek lagi kodenya ya.`);
       const st = q.rows[0];
-      await c.query('INSERT INTO "TelegramWatch" ("chatId",ticker) VALUES ($1,$2) ON CONFLICT ("chatId",ticker) DO UPDATE SET active=true', [chatId, st.ticker]);
+      await c.query('INSERT INTO "TelegramWatch" ("chatId",ticker,"anonPrefix") VALUES ($1,$2,$3) ON CONFLICT ("chatId",ticker) DO UPDATE SET active=true, "anonPrefix"=COALESCE(EXCLUDED."anonPrefix","TelegramWatch"."anonPrefix")', [chatId, st.ticker, anonPrefix]);
       return send(chatId, `✅ <b>${st.ticker}</b> (${st.name}) masuk pantauanmu.\n\nUpdate harian jam 16:50 WIB: harga, perubahan, sinyal, + link Analis Sore.\n\n/list — lihat semua · /stop ${code} — berhenti`);
     }
     if (text.startsWith('/list')) {

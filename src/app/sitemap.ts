@@ -260,7 +260,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     })),
     { url: `${baseUrl}/stocks`, lastModified: today, changeFrequency: "daily", priority: 0.9 },
-    { url: `${baseUrl}/harga-saham-hari-ini`, lastModified: today, changeFrequency: "daily", priority: 0.8 },
+    // tracking-audit G6: URL 308 dikeluarkan (sudah redirect ke /stocks — jangan dibuang crawl budget)
     { url: `${baseUrl}/akademi`, lastModified: today, changeFrequency: "weekly", priority: 0.8 },
     { url: `${baseUrl}/berita`, lastModified: today, changeFrequency: "daily", priority: 0.8 },
     { url: `${baseUrl}/saham-oversold`, lastModified: today, changeFrequency: "daily", priority: 0.8 },

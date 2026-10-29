@@ -57,6 +57,7 @@ export function PresetCard({
     >
       <button
         onClick={onClick}
+        data-engagement={`saringan_preset_${preset.key}`.slice(0, 64)}
         className={`w-full text-left p-4 cursor-pointer transition-colors ${isActive ? styleDef.accentBg : "hover:bg-bg-hover/50"}`}
         aria-pressed={isActive}
       >

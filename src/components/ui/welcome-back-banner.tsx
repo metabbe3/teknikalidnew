@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { StockLogo } from "@/components/stock/stock-logo";
 import Link from "next/link";
+import { getAnonIdSafe } from "@/lib/anon-id-safe";
 
 interface VisitorState {
   firstVisitAt: number;
@@ -69,6 +70,15 @@ export function WelcomeBackBanner() {
 
   if (!visible || !ticker) return null;
 
+  // tracking-audit G5: impresi banner delta — sekali per sesi
+  try {
+    if (!sessionStorage.getItem("eng_wb_seen")) {
+      sessionStorage.setItem("eng_wb_seen", "1");
+      const body = JSON.stringify({ anonId: getAnonIdSafe(), events: [{ type: "cta_click", label: "delta_pantauan_tampil", path: location.pathname }] });
+      if (navigator.sendBeacon) navigator.sendBeacon("/api/public/engagement", new Blob([body], { type: "application/json" }));
+    }
+  } catch { /* silent */ }
+
   const displayTicker = stripJkSuffix(ticker);
 
   return (
@@ -91,6 +101,7 @@ export function WelcomeBackBanner() {
       <div className="flex items-center gap-3 shrink-0">
         <Link
           href={`/stocks/${ticker}`}
+          data-engagement="delta_pantauan_klik"
           className="text-xs font-semibold text-accent hover:underline whitespace-nowrap"
         >
           Lihat {displayTicker}

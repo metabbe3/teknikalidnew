@@ -378,7 +378,8 @@ export async function proxy(request: NextRequest) {
       url.pathname = `/stocks/${ticker}.JK`;
       // Strip query on canonical redirect — RSC prefetch tokens (_rsc=…) must not
       // leak into the address bar when a client-side nav hits the 301 (owner 20 Okt).
-      url.search = "";
+      // tracking-audit G6: jangan hapus seluruh query — UTM/fbclid harus selamat redirect
+      url.searchParams.delete("_rsc");
       return NextResponse.redirect(url, 301);
     }
   }

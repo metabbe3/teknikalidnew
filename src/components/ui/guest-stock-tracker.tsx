@@ -8,6 +8,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { bumpGuestQuota, readGuestQuota, GuestQuotaMeter } from "./guest-quota-meter";
+import { getAnonIdSafe } from "@/lib/anon-id-safe";
 
 const SEEN_KEY = "teknikal:guest_quota_seen";
 
@@ -53,13 +54,14 @@ export function GuestStockTracker({ ticker }: { ticker: string }) {
         // Beacon event utk admin analytics (Retention Loop v2): quotaViews = hitungan
         // ke-n hari itu. Fire-and-forget, gagal = diam.
         try {
+          // tracking-audit G7: log kuota pindah ke EngagementEvent — ShareEvent harus bersih
+          // berisi share sosial asli (dulu 165/7d "share" = mayoritas log kuota).
           const body = JSON.stringify({
-            target: "guest_quota",
-            context: String(q.count),
-            path: `/stocks/${ticker}`,
+            anonId: getAnonIdSafe(),
+            events: [{ type: "cta_click", label: "guest_quota", path: `/stocks/${ticker}`, valueNum: q.count }],
           });
-          if (navigator.sendBeacon) navigator.sendBeacon("/api/track/share", body);
-          else fetch("/api/track/share", { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true }).catch(() => {});
+          if (navigator.sendBeacon) navigator.sendBeacon("/api/public/engagement", new Blob([body], { type: "application/json" }));
+          else fetch("/api/public/engagement", { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true }).catch(() => {});
         } catch {
           // ignore
         }

@@ -254,6 +254,7 @@ export const schemas = {
     target: z.string().min(1).max(16), // whatsapp | x | telegram | copy | story
     context: z.string().min(1).max(16), // asset | saham | berita | akademi | community | other
     path: z.string().min(1).max(255),
+    anonId: z.string().min(8).max(36).regex(/^[a-f0-9-]+$/i).optional(), // tracking-audit G7
   }),
 
   // public/engagement - POST body (dwell/scroll/cta telemetry beacon)
@@ -263,12 +264,12 @@ export const schemas = {
       // nav_click (28 Okt): label = "nav:<dest>" generatif dari href — free-form
       // string cap-32, bukan enum (setiap page baru otomatis ter-track tanpa
       // update schema). Enum lama utk cta_click tetap ketat.
-      label: z.string().max(32).nullish(),
+      label: z.string().max(64).nullish(), // tracking-audit: label 64 (label VARCHAR(64) pasca-migration)
       valueNum: z.number().int().min(0).max(86400).nullish(),
       path: z.string().min(1).max(255),
       ts: z.number().int().min(0).nullish(),
     })).min(1).max(10),
-    anonId: z.string().regex(/^[a-f0-9-]{8,36}$/),
+    anonId: z.string().regex(/^[a-f0-9-]{8,36}$/), // wajib — kolom NOT NULL; components pakai getAnonIdSafe()
   }),
 
   // admin/eod-logs - GET query

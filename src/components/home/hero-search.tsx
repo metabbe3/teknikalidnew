@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { StockLogo } from "@/components/stock/stock-logo";
 import type { StockRow } from "@/components/stock/stock-table";
+import { getAnonIdSafe } from "@/lib/anon-id-safe";
 
 /**
  * HeroSearch — kolom cari saham langsung di homepage hero (owner 24 Okt:
@@ -64,6 +65,11 @@ export function HeroSearch() {
 
   const go = (ticker: string) => {
     setOpen(false);
+    // tracking-audit G11: pencarian saham — dulu tak terukur
+    try {
+      const body = JSON.stringify({ anonId: getAnonIdSafe(), events: [{ type: "cta_click", label: results.length ? "cari_saham_pilih" : "cari_saham_kosong", path: location.pathname }] });
+      if (navigator.sendBeacon) navigator.sendBeacon("/api/public/engagement", new Blob([body], { type: "application/json" }));
+    } catch { /* silent */ }
     router.push(`/stocks/${ticker}`);
   };
 

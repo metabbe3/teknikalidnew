@@ -33,16 +33,27 @@ let installed = false;
 let anonId = "";
 const queue: QueuedEvent[] = [];
 
+let memAnonId: string | null = null; // tracking-audit G2: fallback Safari private mode
 function getAnonId(): string {
-  let id = localStorage.getItem("eng_anon");
-  if (!id) {
-    id =
-      typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
-        ? crypto.randomUUID()
-        : Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
-    localStorage.setItem("eng_anon", id);
+  try {
+    let id = localStorage.getItem("eng_anon");
+    if (!id) {
+      id =
+        typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+          ? crypto.randomUUID()
+          : Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
+      localStorage.setItem("eng_anon", id);
+    }
+    return id;
+  } catch {
+    if (!memAnonId) {
+      memAnonId =
+        typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+          ? crypto.randomUUID()
+          : Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
+    }
+    return memAnonId;
   }
-  return id;
 }
 
 function currentPath(): string {
@@ -89,6 +100,9 @@ function ctaLabel(target: EventTarget | null): string | null {
   if (!el) return null;
   const tagged = el.closest<HTMLElement>("[data-engagement]");
   if (tagged?.dataset.engagement) return tagged.dataset.engagement;
+  // tracking-audit G3: semua CTA bot Telegram terukur (dulu: link eksternal dibuang diam-diam)
+  const tg = el.closest<HTMLAnchorElement>("a[href*='t.me/TeknikalidBot']");
+  if (tg) return "tg_pantau_klik";
   // Fallback selectors for existing components (zero-touch, best-effort)
   if (el.closest("[class*='GuestStar']")) return "star_add";
   if (el.closest("button[class*='copy' i], [data-copy]")) return "preset_copy";
@@ -147,21 +161,27 @@ export function EngagementInstrument() {
     try {
       anonId = getAnonId();
 
-      // dwell_tick at 15s/60s/180s (wall-clock based so tab throttling
-      // doesn't underreport; ticks fire on catch-up, then the timer stops)
-      const start = Date.now();
+      // tracking-audit G2: dwell aktif hanya saat tab VISIBLE (dulu: tab background ikut dihitung)
+      // + RESET tiap pindah halaman SPA (dulu: timer lanjut lintas halaman → inflasi dwell).
+      let activeSeconds = 0;
       let ticksSent = 0;
-      const dwellTimer = window.setInterval(() => {
-        const elapsed = Math.floor((Date.now() - start) / 1000);
-        while (ticksSent < DWELL_TICKS.length && elapsed >= DWELL_TICKS[ticksSent]) {
-          push({ type: "dwell_tick", valueNum: DWELL_TICKS[ticksSent], path: currentPath() });
-          ticksSent++;
-        }
-        if (ticksSent >= DWELL_TICKS.length) window.clearInterval(dwellTimer);
-      }, 1000);
+      let pageStart = Date.now();
+      let dwellTimer = 0;
+      const runDwell = () => {
+        window.clearInterval(dwellTimer);
+        dwellTimer = window.setInterval(() => {
+          if (document.visibilityState === "visible") activeSeconds++;
+          while (ticksSent < DWELL_TICKS.length && activeSeconds >= DWELL_TICKS[ticksSent]) {
+            push({ type: "dwell_tick", valueNum: DWELL_TICKS[ticksSent], path: currentPath() });
+            ticksSent++;
+          }
+          if (ticksSent >= DWELL_TICKS.length) window.clearInterval(dwellTimer);
+        }, 1000);
+      };
+      runDwell();
 
-      // scroll_max — track the max % reached; emit once (flag) on the next
-      // flush boundary or pagehide so it carries the deepest value seen
+      // scroll_max — max % per halaman; dikirim saat PINDAH halaman / tab hidden / pagehide
+      // (dulu: flush di interval 5 detik menembak scrollSent=true di detik ke-5 → membeku 1-2%)
       let maxScroll = 0;
       let scrollSent = false;
       const onScroll = () => {
@@ -175,6 +195,34 @@ export function EngagementInstrument() {
       };
       window.addEventListener("scroll", onScroll, { passive: true });
 
+      // reset per SPA navigation
+      const resetPage = () => {
+        if (!scrollSent && maxScroll > 0) {
+          scrollSent = true;
+          queue.push({ type: "scroll_max", valueNum: maxScroll, path: currentPath() });
+          flush(true);
+        }
+        maxScroll = 0;
+        scrollSent = false;
+        activeSeconds = 0;
+        ticksSent = 0;
+        pageStart = Date.now();
+        runDwell();
+      };
+      const origPushState = history.pushState?.bind(history);
+      if (origPushState) {
+        history.pushState = ((...args: Parameters<typeof history.pushState>) => {
+          try { document.documentElement.dataset.prevPath = location.pathname; } catch { /* silent */ }
+          resetPage();
+          return origPushState(...args);
+        }) as typeof history.pushState;
+      }
+      const onVis = () => {
+        if (document.visibilityState === "hidden") resetPage();
+      };
+      document.addEventListener("visibilitychange", onVis);
+      void pageStart;
+
       const flushWithScroll = (useBeacon: boolean) => {
         if (!scrollSent && maxScroll > 0) {
           scrollSent = true;
@@ -187,16 +235,33 @@ export function EngagementInstrument() {
       const onClick = (e: MouseEvent) => {
         try {
           const label = ctaLabel(e.target);
-          if (label) push({ type: "cta_click", label, path: currentPath() });
-          // nav_click — semua navigasi antar-page/anchor (28 Okt); cta_label
-          // eksplisit tetap menang utk tombol yang ter-tag.
+          if (label) {
+            // tracking-audit G2: cta eksplisit menang — jangan double-fire nav_click utk klik yg sama
+            push({ type: "cta_click", label, path: currentPath() });
+            return;
+          }
           const nav = navClickLabel(e.target);
-          if (nav) push({ type: "nav_click", label: nav.slice(0, 32), path: currentPath() });
+          if (nav) push({ type: "nav_click", label: nav.slice(0, 48), path: currentPath() });
         } catch {
           // silent
         }
       };
       document.addEventListener("click", onClick, { passive: true });
+      // tracking-audit G3: jembatan identitas — sebelum buka bot, tanam anonPrefix ke ?start=
+      document.addEventListener("click", (e) => {
+        try {
+          const a = (e.target instanceof Element ? e.target : null)?.closest<HTMLAnchorElement>("a[href*='t.me/TeknikalidBot']");
+          if (!a) return;
+          const u = new URL(a.href);
+          const start = u.searchParams.get("start") ?? "";
+          if (start.includes("__a_")) return;
+          const hex = (localStorage.getItem("eng_anon") ?? "").replace(/-/g, "").slice(0, 12);
+          if (/^[a-f0-9]{12}$/.test(hex)) {
+            u.searchParams.set("start", `${start}__a_${hex}`);
+            a.href = u.toString();
+          }
+        } catch { /* silent */ }
+      }, { passive: true, capture: true });
 
       const onVisibility = () => {
         if (document.visibilityState === "hidden") flushWithScroll(true);

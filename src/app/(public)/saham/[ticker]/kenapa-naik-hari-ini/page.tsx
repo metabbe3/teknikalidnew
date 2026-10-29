@@ -468,6 +468,7 @@ export default async function MovementAnalysisPage({
               ⭐ Simpan ke pantauan HP
             </Link>
             <a
+              data-engagement="tg_pantau_kenapa-naik"
               href={`https://t.me/TeknikalidBot?start=watch_${tickerClean}`}
               target="_blank"
               rel="noopener noreferrer"

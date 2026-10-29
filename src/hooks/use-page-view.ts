@@ -7,10 +7,22 @@ import { usePathname } from "next/navigation";
  * Extract UTM parameters and other tracking data from the current URL.
  */
 function getTrackingData(pathname: string) {
-  const referrer = typeof document !== "undefined" ? document.referrer : undefined;
-  // Append the query string (utm_source etc.) — the API strips it before insert
-  // and reads UTM attribution off it for /auth/ pages only.
-  const search = typeof window !== "undefined" ? window.location.search : "";
+  // tracking-audit G6: referrer hanya utk ENTRY pertama sesi (SPA navigasi selanjutnya
+  // membawa document.referrer lengket → bing.com terhitung 5x lipat). Navigasi internal
+  // dikirim sebagai referrer internal agar asal kunjungan tetap terlacak.
+  const isEntry = !sessionStorage.getItem("eng_entry_done");
+  let referrer: string | undefined;
+  if (typeof document !== "undefined") {
+    if (isEntry) {
+      referrer = document.referrer || undefined;
+      try { sessionStorage.setItem("eng_entry_done", "1"); } catch { /* silent */ }
+    } else {
+      referrer = window.location.origin + document.documentElement.dataset.prevPath || undefined;
+    }
+  }
+  // tracking-audit G6: path TANPA query string (URL sosmed fbclid >255 char ditolak Zod 400
+  // → PageView hilang). UTM dikirim sebagai field eksplisit, bukan numpang di path.
+  const search = "";
 
   // Extract UTM params from URL
   let utmSource: string | undefined;
@@ -49,7 +61,7 @@ function getTrackingData(pathname: string) {
   }
 
   return {
-    path: pathname + search,
+    path: pathname,
     referrer: referrer || undefined,
     anonId,
     // Only include UTM if present (keeps payload small for non-UTM traffic)

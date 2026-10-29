@@ -9,6 +9,7 @@ import { useIndicators } from "@/hooks/use-indicators";
 import { RANGE_KEYS, INTRADAY_CONFIG, IDX_STOCKS, type DateRange } from "@/lib/constants";
 import { calculateNearestSR } from "@/lib/indicators";
 import { formatPrice } from "@/lib/utils";
+import { getAnonIdSafe } from "@/lib/anon-id-safe";
 
 const CandlestickChart = dynamic(
   () => import("@/components/chart/candlestick-chart").then((mod) => mod.CandlestickChart),
@@ -168,7 +169,14 @@ export function ChartSection({ ticker }: ChartSectionProps) {
             {visibleRanges.map((r) => (
               <button
                 key={r}
-                onClick={() => setRange(r)}
+                onClick={() => {
+                  setRange(r);
+                  // tracking-audit G9: perubahan periode grafik — sinyal engagement analisa
+                  try {
+                    const body = JSON.stringify({ anonId: getAnonIdSafe(), events: [{ type: "cta_click", label: `grafik_periode_${r}`, path: location.pathname }] });
+                    if (navigator.sendBeacon) navigator.sendBeacon("/api/public/engagement", new Blob([body], { type: "application/json" }));
+                  } catch { /* silent */ }
+                }}
                 aria-pressed={effectiveRange === r}
                 aria-label={`Show ${r} chart`}
                 className={`px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium rounded-md transition-all duration-150 ${

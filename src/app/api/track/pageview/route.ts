@@ -21,7 +21,7 @@ const SKIP_PREFIXES = ["/admin", "/api", "/_next"];
  * De-dupes the beacon's double-fire so we measure a scraper's breadth, not its replay.
  */
 async function distinctStockPaths(
-  scope: { userId: string } | { ip: string },
+  scope: { userId: string } | { ip: string } | { anonId: string },
   windowMs: number,
 ): Promise<number> {
   const rows = await prisma.pageView.findMany({
@@ -127,7 +127,9 @@ export async function POST(request: NextRequest) {
     // inflating views (~25%). Skip exact repeats from the same identity within
     // a short window. Best-effort only — a failed check still records the view.
     try {
-      const scope = userId ? { userId } : ip ? { ip } : null;
+      // tracking-audit G6: anonId DULU sebelum ip — dedup berbasis ip membuang view valid
+      // di jaringan CGNAT (ribuan orang 1 ip); anonId = perangkat individu.
+      const scope = userId ? { userId } : anonId ? { anonId } : ip ? { ip } : null;
       if (scope) {
         const dupe = await prisma.pageView.findFirst({
           where: {

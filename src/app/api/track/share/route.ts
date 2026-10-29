@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
       data: {
         target: data.target,
         context: data.context,
+        anonId: typeof data.anonId === "string" && data.anonId.length >= 8 && data.anonId.length <= 36 ? data.anonId : null,
         path: data.path,
         userId,
         ip,

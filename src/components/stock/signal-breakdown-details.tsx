@@ -44,7 +44,7 @@ export function SignalBreakdownDetails({ breakdown }: { breakdown: BreakdownItem
   grouped.sort((a, b) => a.order - b.order);
 
   return (
-    <details className="group mt-3 border-t border-border/60 pt-2">
+    <details data-engagement="rincian_skor_buka" className="group mt-3 border-t border-border/60 pt-2">
       <summary className="flex cursor-pointer list-none items-center gap-1.5 text-xs font-semibold text-text-secondary hover:text-text-primary [&::-webkit-details-marker]:hidden">
         Rincian {breakdown.length} indikator
         <span className="transition-transform duration-200 group-open:rotate-180" aria-hidden="true">▾</span>
