@@ -1403,3 +1403,10 @@ Catatan riset: keyword "eastspring idx esg leaders plus kelas a" (impr 209) = re
 - Sitemap 2.032 = 36,7% thin/beban crawl (575 /indikator 28,3% + 60 glosarium 82 kata + 115 tanya tipis); batch-2 layak hanya ~87 emiten likuid >=Rp100jt/hari; 148 zombie/gocap wajib ditahan.
 - 5 landing untapped: /kalender-dividen, /aliran-dana-asing, /saham-modal-100-ribu, /compare/[pair] 30 pasangan, /indeks/lq45+jii (sekarang 404).
 - Roadmap 90 hari dispatch CTO queue seo-dr-1..5 (P0 title/h1 answer-block -> P2 batch-2); target GSC: impr 15-25rb, klik 350-600, pos <28.
+
+## 2026-10-29 (malam) — Roadmap SEO 90-hari DIEKSEKUSI FULL (owner 'lakukan semua sekarang')
+- Aksi #1: title/h1 575 halaman saham jadi 'Saham {T} Hari Ini: Harga, Analisa Teknikal & Sinyal' + answer block pemula (1 lot=RpX, support/resistance konkret). Verified: title+h1+Rp4.629 support live BBCA.
+- Aksi #2: diet sitemap 2.032 → 1.346 URL (indikator IDX40-only, glosarium/tanya tipis/legal/compare out; +3 landing baru in).
+- Aksi #3: sektor full-query (Daftar Lengkap N saham + breadth label ID), /indeks/lq45 + jii + idxhidiv20 live (dulu 404), 9 screener paragraf dinamis, 308 /harga-saham-hari-ini.
+- Aksi #4/5: /kalender-dividen (14 emiten upcoming, cum/ex/payment, yield, jebakan ex-date FAQ), /aliran-dana-asing (top 15 buy/sell via pasarLiveService SATU PINTU), /saham-modal-100-ribu (filter gocap/FCA). Semua 200 + JSON-LD @graph.
+- Batch-2 +87 emiten & /compare/[pair] 30 pasangan: TAHAN sampai gate GSC 2-4 minggu (sesuai riset — hindari thin-content rush).
