@@ -1383,3 +1383,8 @@ Catatan riset: keyword "eastspring idx esg leaders plus kelas a" (impr 209) = re
 ## 2026-10-29 — SEO P1 executed (deploy ke-2 hari ini)
 - @graph Article+BreadcrumbList+FAQPage di kenapa-naik-hari-ini (dulu FAQPage saja); dedupe BreadcrumbList stock page (2→1, sisakan versi 4-item sektor); Dataset+Breadcrumb JSON-LD baru di /stocks/[t]/indikator (dulu 0); news-sitemap filter luas NEWS+STOCK_ANALYSIS+MOVEMENT_ANALYSIS (7 URL dulu hanya NEWS subset).
 - Verified prod: @graph 3 type live; stock page 1 BreadcrumbList; Dataset 1; news 7 URL. Commits: (lihat git log) — build REAL_EXIT=0, hot-swap v3 + rm route-cache.
+
+## 2026-10-29 — Universe hygiene: delisting BEI batch 10 Nov 2026
+- DB: 22 ticker isActive=false (5 Yahoo-drop: ARMY/BTEL/CBMF/COWL/CPRI + 17 delisting efektif 10 Nov per pengumuman BEI Peng-DEL-00001..2/BEI.PP1-3/04-2026: MTRA SRIL TOYS SBAT TDPM TELE LCGP SUGI MABA LMAS SKYB ENVY GOLL PLAS TRIL UNIT DUCK). Universe aktif 962→940. Histori + halaman tetap ada (200), hanya keluar dari universe aktif & sitemap. Reversible: SET isActive=true.
+- sitemap.ts: filter isActive 3 titik (stockRecords, liquidRows relasi, guard final stockPages) — sitemap kini tak pernah mempromosikan non-aktif. Verified prod: 0 URL delisting, 2032 URL total, halaman utama 200.
+- stock_integrity_check.py: DeprecationWarning utcfromtimestamp fixed (timezone-aware); verify EXIT=0.
