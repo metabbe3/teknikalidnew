@@ -1397,3 +1397,9 @@ Catatan riset: keyword "eastspring idx esg leaders plus kelas a" (impr 209) = re
 - Dijalankan langsung (deploy 5c87e8e): skor sinyal hero stock page 0-1 unified (0,66 format id-ID, konsisten /pasar); admin articles +pencarian ticker/judul +filter Kenapa-Naik +editor isi content (fetch on-demand, payload list lean via repo select).
 - CTO queue teknikal +8 entry spec_ready (slot 30-31 Okt): StockCard 0-1, breadcrumb ganda, sektor full-query, satu-pintu homepage raw SQL, N+1 foreignFlow+reports, dead code+warna non-token, kalkulator 1 lot, redirect berantai hero+H1.
 - hivePOS: docs/agent-org/audit-qw-2026-10-29.md (QW1-QW5 done-when) utk night-org; QW1 SEO-unblock + QW2 tenant-isolation = WAJIB pre-verdict 31 Okt (mencegah keputusan false-negative).
+
+## 2026-10-29 (sore) — CEO Deep-Research SEO (Argon, 641c019)
+- Temuan inti: masalah bukan render (SSR pasca-P0/P1 sudah unggul) tapi SALAH MEDAN — title/h1 'harga saham' menabrak Google OneBox+DR75+ di head-term, padahal kueri 'analisa teknikal [TICKER]' 'support resistance' '1 lot' minim lawan di 535 saham non-LQ45 (SERP nyata: hanya id.investing.com tabel mesin).
+- Sitemap 2.032 = 36,7% thin/beban crawl (575 /indikator 28,3% + 60 glosarium 82 kata + 115 tanya tipis); batch-2 layak hanya ~87 emiten likuid >=Rp100jt/hari; 148 zombie/gocap wajib ditahan.
+- 5 landing untapped: /kalender-dividen, /aliran-dana-asing, /saham-modal-100-ribu, /compare/[pair] 30 pasangan, /indeks/lq45+jii (sekarang 404).
+- Roadmap 90 hari dispatch CTO queue seo-dr-1..5 (P0 title/h1 answer-block -> P2 batch-2); target GSC: impr 15-25rb, klik 350-600, pos <28.
