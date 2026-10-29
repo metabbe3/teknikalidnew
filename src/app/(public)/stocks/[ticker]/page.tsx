@@ -617,8 +617,9 @@ export default async function StockDetailPage({
               <div className="min-w-0">
                 <div className="flex items-center gap-2.5 flex-wrap">
                   <StockLogo src={stock.logo} name={stock.name} ticker={ticker} />
-                  {/* seo-dr-1: h1 keyword "Harga & Analisa Teknikal" — sebelumnya cuma 4 huruf ticker */}
-                  <h1 className="text-2xl font-bold tracking-tight text-text-primary">Harga & Analisa Teknikal Saham {shortName} ({stripJk(ticker)})</h1>
+                  {/* seo-dr-1 → fix owner 30 Okt: h1 = TICKER ringkas (scannable), keyword SEO
+                      pindah ke <p> deskriptif di bawahnya — crawler tetap baca keyword di atas fold. */}
+                  <h1 className="text-2xl font-bold tracking-tight text-text-primary">{stripJk(ticker)}</h1>
                   {indicators?.isGorengan && (
                     <span className="text-sm font-bold px-3 py-1 rounded-lg bg-amber-500/15 text-amber-600 border border-amber-500/30 inline-flex items-center gap-1">
                       <AlertTriangle className="inline h-4 w-4" /> Gorengan
@@ -641,6 +642,9 @@ export default async function StockDetailPage({
                   <span className="text-xs text-text-tertiary font-medium">{sectorToBahasa(stock.sector)}</span>
                 </div>
                 <p className="text-sm text-text-secondary mt-0.5 truncate">
+                  {/* seo-dr-1 (fix owner 30 Okt): frasa keyword "Harga & Analisa Teknikal Saham"
+                      turun ke baris nama — h1 kembali ringkas BBCA, crawler tetap baca keyword. */}
+                  <span className="text-text-tertiary">Harga &amp; Analisa Teknikal Saham </span>
                   <span className="font-medium">{stock.name}</span>
                   {(() => {
                     const desc = stock.businessActivity?.trim() || stock.subSector?.trim();
