@@ -18,19 +18,20 @@
     "CDP DOM: tab aktif, 4 section render, label asli terlihat",
     "merge T-1029-N oleh CTO pagi + deploy + changelog + rollback anchor"
    ],
-   "result": "BUILD-ONLY DONE 29 Okt 03:1x WIB (commit 875ec65 night/admin-2026-10-28-01 pushed, kereta T-1029-N). BUKTI: tsc EXIT-0; build EXIT-0 BUILD_ID 0wu6FPZUI5-3EDt4aH5PB3 route /admin/insight ter-list; staging one-off API 200 (7d=1228, funnel 79->49->7->4, clicksByLabel7d top funnel_edu 4/2); CDP DOM h1 'Insight Pengunjung' 9 tab aktif Insight, 4 section render, 31 row, label asli terlihat; screenshot verify/bo-2026-10-29-01-insight-1440.png 125KB. NO DEPLOY (train belum merged; main 0fa2263 di belakang 3 branch malam — deploy sendiri = drop pekerjaan paralel). | MERGED CTO pagi 29 Okt c7b4fa8 (dgn adm-28-01 sidebar + radar + tg-cta riders, schema.prisma dikecualikan owner_gate_ddl) — BUILD-ONLY, deploy kereta T-1029-N malam ini.",
+   "result": "BUILD-ONLY DONE 29 Okt 03:1x WIB (commit 875ec65 night/admin-2026-10-28-01 pushed, kereta T-1029-N). BUKTI: tsc EXIT-0; build EXIT-0 BUILD_ID 0wu6FPZUI5-3EDt4aH5PB3 route /admin/insight ter-list; staging one-off API 200 (7d=1228, funnel 79->49->7->4, clicksByLabel7d top funnel_edu 4/2); CDP DOM h1 'Insight Pengunjung' 9 tab aktif Insight, 4 section render, 31 row, label asli terlihat; screenshot verify/bo-2026-10-29-01-insight-1440.png 125KB. NO DEPLOY (train belum merged; main 0fa2263 di belakang 3 branch malam — deploy sendiri = drop pekerjaan paralel). | MERGED CTO pagi 29 Okt c7b4fa8 (schema.prisma dikecualikan owner_gate_ddl) — BUILD-ONLY, deploy kereta T-1029-N.",
    "created_by": "Backoffice Builder slot 03:00 29 Okt"
   },
   {
    "id": "fix-2026-10-28-02",
    "title": "Foreign Flow Sync CF BLOCKED (exit 2) — restore jalur Playwright warm-session",
-   "status": "in_train",
-   "train": "T-1029-N",
+   "status": "pending",
+   "train": null,
    "source": "owner (28 Okt sore): 'Error fix it later'",
    "priority": "high",
    "done_when": "hermes cron run 8b459dd0bc65 berakhir exit 0 dan ForeignFlow rows hari ini masuk DB (SELECT count(*) FROM \\\"ForeignFlow\\\" WHERE date::date=current_date) > 0",
    "notes": "Jalur WAJIB Playwright warm-session (doctrine #184: curl+CDP diblokir CF; endpoint IDX /primary/TradingSummary/GetStockSummary). Cek ~/.hermes/cron/output/8b459dd0bc65/ log. Impact: section Aliran Dana Asing /pasar + /stocks + scanner analyst foreign_accumulation jadi stale.",
-   "date": "2026-10-28"
+   "date": "2026-10-28",
+   "scheduled_slot": "TURUN dari T-1029-N oleh CTO Lead 29 Okt (BOARDING GATE: 0 commit, 0 bukti fisik) -> BE malam 29 Okt 18:30 build-only, target kereta T-1030-N"
   },
   {
    "id": "bo-2026-10-25-01",
@@ -1773,7 +1774,7 @@
    "created_by": "CTO shift 07:45 13 Okt (launchctl list exit-1 + idx-sync.log EPERM evidence)",
    "north_star": "data reliable — daftar emiten IDX basi (listing baru/delisting tak tersync); eod-sync tidak terdampak",
    "spec": "BUKTI: idx-sync.log mtime 12 Okt 08:20 berisi EPERM: process.cwd failed uv_cwd (node v25) — launchd worker kehilangan akses cwd repo (TCC Documents). Plist com.teknikalid.idx-sync Day=1/06:00 (Senin saja). FIX (owner action, TCC = security domain): grant Full Disk Access utk node/launchd ATAU pindah log+cwd ke path non-TCC; verify: Senin depan 06:00 log bersih + sync row baru. Bukan kerja builder (TCC interactive prompt). [UPDATE CTO 19 Okt 07:45: gagal LAGI Senin 19 Okt 06:00 — launchctl exit 1, idx-sync.log beku 12 Okt (bahkan penulisan log kena TCC), MAX(Stock.updatedAt)=2026-10-12 01:09 =  [UPDATE CTO 23 Okt 07:5x: Stock.updatedAt MAX masih 2026-10-12 01:09 = beku 11 hari; launchctl runs=0/never exited; owner TCC grant BELUM. Emiten IDX basi — listing/delisting baru tak tersync. Tetap owner-only (TCC security domain).]",
-   "scheduled_slot": "CTO Kamis 29 Okt sore",
+   "scheduled_slot": "KAMIS 29 Okt SORE (hari ini) 14:30 — host-ops launchd TCC EPERM fix; alternatif: BE malam 18:30",
    "train": "T-1020-N",
    "blocked_checked_at": "2026-10-25 08:2x WIB (CTO shift 07:45): idx-sync.log TETAP beku 12 Okt 08:20 (EPERM uv_cwd, 637B, launchd runs=-); Stock.updatedAt MAX 24 Okt 13:37 UTC berasal dari sync-profiles manual malam 24 Okt (profile fields), BUKAN bukti listing-sync hidup — daftar emiten tetap basi 13 hari. Owner TCC grant masih satu-satunya fix.",
    "needs": "Owner: System Settings > Privacy & Security > Files and Folders (atau Full Disk Access) utk launchd com.teknikalid.idx-sync ke ~/Documents — TCC prompt muncul sekali, atau grant manual.",
@@ -3013,7 +3014,7 @@
    "priority": "P2",
    "status": "pending",
    "assigned_to": "cto",
-   "scheduled_slot": "backlog (agregat)",
+   "scheduled_slot": "BE malam 29 Okt 18:30 (agregat bersama fix-28-02 foreign-flow; ringkas — backlog)",
    "north_star": "CONSISTENCY — audit cron-monitoring 26 Okt",
    "source": "plain audit 26 Okt sore (domain cron-monitoring/)",
    "spec": "Domain cron-monitoring (audit 26 Okt): (1) tanpa cron-monitoring.errors.ts + TimeoutError extends Error bukan DomainError (with-timeout.ts:13); (2) status tipe longgar: repo string vs service union (cron-monitoring.repository.ts:10 vs service:6); (3) errorMessage error.message bisa bocor detail internal ke dashboard admin (with-cron-logging.ts:32) — pastikan dashboard admin-only. Domain sehat, nol P0/P1.",
@@ -3082,7 +3083,7 @@
    "priority": "P1",
    "status": "in_train",
    "assigned_to": "cto-night",
-   "scheduled_slot": "slot 27-28 Okt (agregat stock P1)",
+   "scheduled_slot": "BE pagi 29 Okt 09:30: review diff 15 mnt + merge night/fix-2026-10-26-12 (protocol dry-run) -> flip in_train T-1029-N — CTO Lead 29 Okt",
    "north_star": "RELIABLE/PERF — N+1 & layering pasar",
    "source": "plain audit 26 Okt malam (domain article/ & stock/)",
    "spec": "Stock P1 agregat: (1) pasar-live.service.ts:193-199 N+1 BERAT findMany StockPrice per ticker (≤120 query sekuensial di getWatchlist); (2) pasar-live 10x prisma langsung bypass repository (:132..:454); (3) morning-delta:48-51 change% pola second-row langgar prev-close LATERAL; (4) stock-graph mini-movers compute di luar pintu; (5) data-sync:320 catch buang error objek; (6) stock-sync:54-102 tulis sekuensial per saham.",
@@ -3112,7 +3113,7 @@
     "review_est": "15 menit (diff 632+/166-; jalankan ulang selftest doctrine + parity utk keykinan)"
    },
    "train": "T-1029-N",
-   "merged_by": "CTO pagi 29 Okt: merge c21f222 (fix-26-12) + c7b4fa8 (admin/insight) ke main; tsc EXIT-0; BUILD-ONLY — naik kereta T-1029-N malam ini"
+   "merged_by": "CTO pagi 29 Okt: merge c21f222 ke main (tsc EXIT-0, build EXIT-0 BUILD_ID eu-vm6Ndos0OFaFTqMOe9, selftest doctrine 9/9); deploy kereta T-1029-N malam"
   },
   {
    "id": "ops-2026-10-27-01",

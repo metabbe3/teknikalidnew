@@ -1348,3 +1348,10 @@ Catatan riset: keyword "eastspring idx esg leaders plus kelas a" (impr 209) = re
 - qa-27-01 + qa-28-01 DONE: 3 klaim salah di 2 artikel di-patch via SQL (live-verified 200, frasa lama 0-hit) + guard generator permanen (ranking grup + superlatif close = HOLD DRAFT, test 15/15 failing-first). Pilar TRUST.
 - ops-28-01 DONE: root cause drift = os.replace timpa symlink di statejson.py (bukti kode+artefak); fix realpath satu-pintu + symlink restore + round-trip verified. Pilar TRUST.
 - prd-26-01 (Register CTA) RESLOT -> UX Builder 19:15 malam ini (BUILD-ONLY): budget reserve #19 — slot ini habis utk 3 task P1/P1/P2 penuh; jangan mulai fitur FE besar setengah jalan. Kereta T-1029-N tetap jalan malam ini.
+
+## CTO note 2026-10-29
+- Kereta T-1029-N telat 2 malam (Docker flap 3x + prep-ok-tak-angkat); manifest kini 7 penumpang — risiko big-bang deploy naik.
+- Opsi A: pecah 2 kereta (malam ini: register CTA + announcements + admin UX; besok: N+1 refactor + sisanya). Opsi B: SATU build malam ini, boarding gate ketat, fix-28-02 sudah diturunkan saya (0 bukti).
+- Rekomendasi: B — semua penumpang punya bukti fisik staging/selftest, satu build satu verify per-fitur; delay ke-3 malam lebih mahal daripada risiko merge terkontrol.
+- KONTEN BAGUS: returning_ip 8,6% — target ≥8% tercapai 27 hari lebih cepat (due 25 Nov); register 3/6 jadi front berikutnya (prd-26-01 naik malam ini, DONE WHEN register_7d ≥6).
+- Ops 3 error pagi: profile-sync LRU-150 crash playwright TargetClosed (batch-0 ok) → BE pagi; foreign-flow CF BLOCKED → Playwright warm-session; tg-notify job no_agent tanpa script → perbaiki konfigurasi.
