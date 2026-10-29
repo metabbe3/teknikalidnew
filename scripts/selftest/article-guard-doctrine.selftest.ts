@@ -76,7 +76,10 @@ async function behaviorTests(): Promise<void> {
   const guards = await import("../../src/domains/article/article-guards");
   const { runGenerationGuards } = guards;
 
-  // Fixture: AI output kotor (script tag + terlalu pendek)
+  // Preset movement (fix-2026-10-26-11): 400-600 kata, 1 H2 + H3, cta+disclaimer wajib.
+  const MOVEMENT_OPTS = { minWords: 300, structure: { minH2: 1, requireCta: true, requireDisclaimer: true } } as const;
+
+  // Fixture: AI output kotor (script tag + terlalu pendek + tanpa struktur)
   const dirty = "<script>alert('xss')</script><p>Ringkasan singkat.</p>";
   let threw = false;
   let reason = "";
@@ -85,7 +88,8 @@ async function behaviorTests(): Promise<void> {
       content: dirty,
       title: "Kenapa Saham ABCD Naik Hari Ini? (+5,00%)",
       keywords: ["kenapa saham abcd naik hari ini"],
-      opts: { minWords: 300 },
+      dedupOverride: { isDuplicate: false, similarityScore: 0, similarTo: null },
+      opts: MOVEMENT_OPTS,
     });
   } catch (err) {
     threw = true;
@@ -93,23 +97,39 @@ async function behaviorTests(): Promise<void> {
   }
   check("B1+B2+B4 konten kotor & terlalu pendek → gate throw, tanpa write DB", threw && /word_count|QualityGate|rejected/i.test(reason), reason);
 
-  // Fixture: konten panjang sehat — sanitize berjalan (bukan raw pass-through)
-  const healthy = ("Ringkasan pasar hari ini dengan analisis mendalam. ").repeat(40);
+  // Fixture: konten movement sehat (H2 + disclaimer + cta + 300 kata)
+  const para = "Analisis pergerakan harga saham hari ini menunjukkan momentum yang kuat dari sisi teknikal. ";
+  const healthy = [
+    "## Kenapa Saham BBCA Naik Hari Ini? (+2,50%)",
+    "",
+    ...Array.from({ length: 6 }, () => para.repeat(10)),
+    "",
+    ":::warning[Disclaimer]",
+    "Artikel ini bukan rekomendasi jual beli.",
+    ":::",
+    "",
+    ":::cta[Pantau BBCA Real-time]",
+    "Lihat chart BBCA di TeknikalID.",
+    ":::",
+  ].join("\n");
   const res = await runGenerationGuards({
     content: healthy,
     title: "Kenapa Saham BBCA Naik Hari Ini? (+2,50%)",
     keywords: ["kenapa saham bbc"],
-    opts: { minWords: 300 },
+    dedupOverride: { isDuplicate: false, similarityScore: 0, similarTo: null },
+    factCheckOverride: { passed: true, mismatches: [], correctedContent: null, correctedTitle: null, meta: { claimsChecked: 3, checkedAt: new Date().toISOString() } },
+    opts: MOVEMENT_OPTS,
   });
-  check("B2 konten sehat lolos word_count (minWords=300)", res.status === "publish", JSON.stringify(res).slice(0, 200));
+  check("B2 konten sehat lolos semua gate (minWords=300, minH2=1)", res.status === "publish", JSON.stringify(res).slice(0, 200));
 
   // B3: factCheck verdict hold → DRAFT
   const resHold = await runGenerationGuards({
     content: healthy,
     title: "Kenapa Saham BBCA Naik Hari Ini? (+2,50%)",
     keywords: ["kenapa saham bbc"],
-    opts: { minWords: 300 },
-    factCheckOverride: { passed: false, mismatches: [{ claim: "x", issue: "y" }], correctedContent: null, correctedTitle: null },
+    dedupOverride: { isDuplicate: false, similarityScore: 0, similarTo: null },
+    factCheckOverride: { passed: false, mismatches: [], correctedContent: null, correctedTitle: null, meta: { claimsChecked: 3, checkedAt: new Date().toISOString() } },
+    opts: MOVEMENT_OPTS,
   });
   check("B3 factCheck hold → status draft (autoPublish override)", resHold.status === "draft", JSON.stringify(resHold).slice(0, 200));
 }

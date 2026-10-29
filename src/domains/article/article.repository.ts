@@ -109,6 +109,29 @@ export const articleRepository = {
     ]);
   },
 
+  /**
+   * PUBLISHED slugs per article-type prefix (EDUCATIONAL → /akademi,
+   * NEWS → /berita) — dipakai FactCheckGate Gate-0 internal-link check.
+   * fix-2026-10-26-11: pindah dari prisma-langsung di article-fact-check.ts
+   * (SATU PINTU repository).
+   */
+  async findPublishedTypeSlugs(): Promise<{ eduSlugs: Set<string>; newsSlugs: Set<string> }> {
+    const rows = await prisma.article.findMany({
+      where: {
+        status: ArticleStatus.PUBLISHED,
+        articleType: { in: [ArticleType.EDUCATIONAL, ArticleType.NEWS] },
+      },
+      select: { slug: true, articleType: true },
+    });
+    const eduSlugs = new Set<string>();
+    const newsSlugs = new Set<string>();
+    for (const r of rows) {
+      if (r.articleType === ArticleType.EDUCATIONAL) eduSlugs.add(r.slug);
+      else newsSlugs.add(r.slug);
+    }
+    return { eduSlugs, newsSlugs };
+  },
+
   findAllForAdmin(opts?: { status?: ArticleStatus; type?: ArticleType }) {
     return prisma.article.findMany({
       where: {

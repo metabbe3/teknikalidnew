@@ -4,6 +4,40 @@ import { Prisma } from "@/generated/prisma/client";
 import { INTERVAL } from "@/lib/constants";
 import { toDateKey } from "@/lib/utils";
 
+/** Row findMovementMovers — dipakai movement-analysis (article domain). */
+export interface MovementMoverRow {
+  ticker: string;
+  name: string;
+  sector: string;
+  close: number | null;
+  prevClose: number | null;
+  changePercent: number | null;
+  volume: number | null;
+  avgVolume5d: number | null;
+  rsi14: number | null;
+  macdHist: number | null;
+  sma20: number | null;
+  sma50: number | null;
+  sma200: number | null;
+  adx: number | null;
+  supertrend: number | null;
+  bbUpper: number | null;
+  bbLower: number | null;
+  signalLabel: string | null;
+  signalScore: number | null;
+  pe: number | null;
+  pb: number | null;
+  marketCap: number | null;
+  eps: number | null;
+  dividendYield: number | null;
+  week52High: number | null;
+  week52Low: number | null;
+  high: number | null;
+  low: number | null;
+  open: number | null;
+  isGorengan: boolean | null;
+}
+
 export const stockRepository = {
   // ── Stock ──
 
@@ -386,6 +420,112 @@ export const stockRepository = {
       _max: { high: true },
       _min: { low: true },
     });
+  },
+
+  /**
+   * Top movers hari ini untuk movement-analysis (article domain) — SATU PINTU
+   * (fix-2026-10-26-11: SQL pindah dari movement-analysis.service, prisma
+   * langsung di service = 0). 52w high/low ikut terhitung di CTE yang sama —
+   * menghapus enrich loop N+1 (2 query × ≤50 mover per batch).
+   */
+  async findMovementMovers(minChangePercent: number, limitCount: number): Promise<MovementMoverRow[]> {
+    const yesterday = subDays(new Date(), 1);
+    const rows = await prisma.$queryRaw<MovementMoverRow[]>`
+      WITH latest_prices AS (
+        SELECT DISTINCT ON (sp."stockId")
+          sp."stockId",
+          sp.close,
+          sp.volume,
+          sp.high,
+          sp.low,
+          sp.open,
+          sp.date
+        FROM "StockPrice" sp
+        WHERE sp.date >= ${subDays(new Date(), 7)}
+        ORDER BY sp."stockId", sp.date DESC
+      ),
+      prev_prices AS (
+        SELECT DISTINCT ON (sp."stockId")
+          sp."stockId",
+          sp.close AS prev_close
+        FROM "StockPrice" sp
+        WHERE sp.date >= ${subDays(new Date(), 10)}
+          AND sp.date < ${yesterday}
+        ORDER BY sp."stockId", sp.date DESC
+      ),
+      avg_volumes AS (
+        SELECT
+          sp."stockId",
+          AVG(sp.volume)::float8 AS avg_volume_5d
+        FROM "StockPrice" sp
+        WHERE sp.date >= ${subDays(new Date(), 7)}
+        GROUP BY sp."stockId"
+      ),
+      week52 AS (
+        SELECT
+          sp."stockId",
+          MAX(sp.high)::float8 AS high52,
+          MIN(sp.low)::float8 AS low52
+        FROM "StockPrice" sp
+        WHERE sp.date >= ${subDays(new Date(), 365)}
+        GROUP BY sp."stockId"
+      )
+      SELECT
+        s.ticker,
+        s.name,
+        s.sector,
+        lp.close::float8 AS "close",
+        pp.prev_close::float8 AS "prevClose",
+        CASE WHEN pp.prev_close IS NOT NULL AND pp.prev_close > 0
+          THEN ((lp.close - pp.prev_close) / pp.prev_close * 100)::float8
+          ELSE NULL END AS "changePercent",
+        lp.volume::float8 AS "volume",
+        av.avg_volume_5d AS "avgVolume5d",
+        si."rsi14"::float8 AS "rsi14",
+        si."macdHist"::float8 AS "macdHist",
+        si."sma20"::float8 AS "sma20",
+        si."sma50"::float8 AS "sma50",
+        si."sma200"::float8 AS "sma200",
+        si."adx"::float8 AS "adx",
+        si."supertrend"::float8 AS "supertrend",
+        si."bbUpper"::float8 AS "bbUpper",
+        si."bbLower"::float8 AS "bbLower",
+        si."signalLabel" AS "signalLabel",
+        si."signalScore"::float8 AS "signalScore",
+        si."isGorengan" AS "isGorengan",
+        lp.high::float8 AS "high",
+        lp.low::float8 AS "low",
+        lp.open::float8 AS "open",
+        f."pe"::float8 AS "pe",
+        f."pb"::float8 AS "pb",
+        f."marketCap"::float8 AS "marketCap",
+        f."eps"::float8 AS "eps",
+        f."dividendYield"::float8 AS "dividendYield",
+        w.high52 AS "week52High",
+        w.low52 AS "week52Low"
+      FROM latest_prices lp
+      JOIN "Stock" s ON s.id = lp."stockId"
+      LEFT JOIN prev_prices pp ON pp."stockId" = lp."stockId"
+      LEFT JOIN avg_volumes av ON av."stockId" = lp."stockId"
+      LEFT JOIN week52 w ON w."stockId" = lp."stockId"
+      LEFT JOIN LATERAL (
+        SELECT * FROM "StockIndicator" si2
+        WHERE si2."stockId" = lp."stockId" AND si2.interval = '1d'
+        ORDER BY si2.date DESC LIMIT 1
+      ) si ON true
+      LEFT JOIN LATERAL (
+        SELECT * FROM "StockFundamental" sf2
+        WHERE sf2."stockId" = lp."stockId"
+        ORDER BY sf2.date DESC LIMIT 1
+      ) f ON true
+      WHERE pp.prev_close IS NOT NULL
+        AND pp.prev_close > 0
+        AND ABS((lp.close - pp.prev_close) / pp.prev_close * 100) >= ${minChangePercent}
+        AND s.ticker != '^JKSE'
+      ORDER BY ABS((lp.close - pp.prev_close) / pp.prev_close * 100) DESC
+      LIMIT ${limitCount}
+    `;
+    return rows;
   },
 
   batchGetWeek52HighLow(stockIds: number[]): Promise<Map<number, { high52: number | null; low52: number | null }>> {
