@@ -45,8 +45,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   });
 
   // Build ticker→date map via Stock table
+  // seo-2026-10-29 (delisting BEI 10 Nov): exclude non-active (suspended/delisted) dari sitemap
   const stockRecords = await prisma.stock.findMany({
-    where: { ticker: { in: IDX_STOCKS.map((s) => s.ticker) } },
+    where: { ticker: { in: IDX_STOCKS.map((s) => s.ticker) }, isActive: true },
     select: { ticker: true, id: true },
   });
   const tickerToStockId = new Map(stockRecords.map((s) => [s.ticker, s.id]));
@@ -72,13 +73,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           close: true,
           volume: true,
           stockId: true,
-          stock: { select: { ticker: true } },
+          stock: { select: { ticker: true, isActive: true } },
         },
       })
     : [];
   // avg transaction value over the window per stock (≈20 trading days in 30 calendar days)
   const avgValueByTicker = new Map<number, { ticker: string; value: number }>();
   for (const r of liquidRows) {
+    if (r.stock.isActive === false) continue; // delisted/suspended: jangan promosi
     const v = r.close.toNumber() * Number(r.volume);
     const cur = avgValueByTicker.get(r.stockId) ?? { ticker: r.stock.ticker, value: 0 };
     cur.value += v;
@@ -112,7 +114,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   );
 
   // Enrich the shortlisted stocks with real dates
-  const stockPages = IDX_STOCKS.filter((stock) => sitemapTickers.has(stock.ticker)).map((stock) => {
+  // seo-2026-10-29: guard final — ticker non-aktif (delisted/suspended) tak boleh masuk sitemap dari jalur manapun
+  const stockPages = IDX_STOCKS.filter((stock) => sitemapTickers.has(stock.ticker) && tickerToStockId.has(stock.ticker)).map((stock) => {
     const sid = tickerToStockId.get(stock.ticker);
     const realDate = sid ? stockIdToDate.get(sid) : undefined;
     return {
