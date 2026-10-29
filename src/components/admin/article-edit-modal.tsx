@@ -12,6 +12,7 @@ interface EditableArticle {
   slug: string;
   title: string;
   excerpt: string;
+  content?: string | null; // product-audit-2026-10-29 QW4: editor isi artikel
   tags: string[];
   tickerTag: string | null;
   isListed: boolean;
@@ -21,6 +22,7 @@ export function ArticleEditModal({ article, open, onClose }: { article: Editable
   const qc = useQueryClient();
   const [title, setTitle] = useState(article.title);
   const [excerpt, setExcerpt] = useState(article.excerpt);
+  const [content, setContent] = useState(article.content ?? "");
   const [tags, setTags] = useState(article.tags.join(", "));
   const [tickerTag, setTickerTag] = useState(article.tickerTag ?? "");
   const [isListed, setIsListed] = useState(article.isListed);
@@ -33,6 +35,12 @@ export function ArticleEditModal({ article, open, onClose }: { article: Editable
       setTags(article.tags.join(", "));
       setTickerTag(article.tickerTag ?? "");
       setIsListed(article.isListed);
+      // product-audit-2026-10-29 QW4: content tidak ikut list API (payload ringan) — fetch on-demand
+      setContent("(memuat isi…)");
+      fetch(`/api/admin/articles/${article.id}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((j) => setContent(j?.data?.content ?? ""))
+        .catch(() => setContent(""));
     }
   }, [open, article]);
 
@@ -44,6 +52,7 @@ export function ArticleEditModal({ article, open, onClose }: { article: Editable
         body: JSON.stringify({
           title,
           excerpt,
+          content,
           tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
           tickerTag: tickerTag || null,
           isListed,
@@ -84,6 +93,17 @@ export function ArticleEditModal({ article, open, onClose }: { article: Editable
               maxLength={500}
               rows={3}
               className="flex w-full rounded-md border border-gray-200 px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-gray-700">Isi artikel (markdown)</label>
+            {/* product-audit-2026-10-29 QW4: operator bisa koreksi salah angka QA tanpa sentuh DB */}
+            <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              rows={10}
+              className="flex w-full rounded-md border border-gray-200 px-3 py-2 text-sm font-mono shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 

@@ -46,7 +46,9 @@ interface Article {
 export default function ArticlesAdminPage() {
   const qc = useQueryClient();
   const [statusFilter, setStatusFilter] = useState<"all" | "DRAFT" | "PUBLISHED">("all");
-  const [typeFilter, setTypeFilter] = useState<"all" | "STOCK_ANALYSIS" | "EDUCATIONAL" | "NEWS" | "GENERAL">("all");
+  // product-audit-2026-10-29 QW4: + MOVEMENT_ANALYSIS (ratusan artikel kenapa-naik) + DAILY_SNAPSHOT + pencarian ticker/judul
+  const [typeFilter, setTypeFilter] = useState<"all" | "STOCK_ANALYSIS" | "EDUCATIONAL" | "NEWS" | "GENERAL" | "MOVEMENT_ANALYSIS" | "DAILY_SNAPSHOT">("all");
+  const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<Article | null>(null);
   const [tab, setTab] = useState<"articles" | "performance">("articles");
   const [perfDays, setPerfDays] = useState<7 | 30>(7);
@@ -101,7 +103,11 @@ export default function ArticlesAdminPage() {
   });
 
   const stats = statsData?.data;
-  const articles = articlesData?.data ?? [];
+  // product-audit-2026-10-29 QW4: filter client-side ticker/judul (operator QA pagi)
+  const q = search.trim().toLowerCase();
+  const articles = (articlesData?.data ?? []).filter(
+    (a) => !q || a.title.toLowerCase().includes(q) || (a.tickerTag ?? "").toLowerCase().includes(q.replace(/\.jk$/, ""))
+  );
   const perf = perfData?.data;
 
   return (
@@ -149,15 +155,21 @@ export default function ArticlesAdminPage() {
             </Button>
           ))}
         </div>
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Cari ticker / judul…"
+          className="w-56 rounded-md border border-border bg-bg-card px-3 py-1.5 text-sm"
+        />
         <div className="flex gap-1">
-          {(["all", "STOCK_ANALYSIS", "NEWS", "GENERAL", "EDUCATIONAL"] as const).map((t) => (
+          {(["all", "STOCK_ANALYSIS", "MOVEMENT_ANALYSIS", "NEWS", "GENERAL", "EDUCATIONAL"] as const).map((t) => (
             <Button
               key={t}
               variant={typeFilter === t ? "default" : "outline"}
               size="sm"
               onClick={() => setTypeFilter(t)}
             >
-              {t === "all" ? "All Types" : t === "STOCK_ANALYSIS" ? "Stock" : t === "NEWS" ? "News" : t === "GENERAL" ? "General" : "Edu"}
+              {t === "all" ? "All Types" : t === "STOCK_ANALYSIS" ? "Stock" : t === "MOVEMENT_ANALYSIS" ? "Kenapa Naik" : t === "NEWS" ? "News" : t === "GENERAL" ? "General" : "Edu"}
             </Button>
           ))}
         </div>

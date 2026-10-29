@@ -686,7 +686,10 @@ export default async function StockDetailPage({
             {/* Skor Sinyal hero — verdict instan (riset NBER: 6 menit riset, verdict dulu baru data).
                 SSR utk semua visitor: trust builder + rich answer utk crawler. */}
             {indicators && indicators.signalScore !== null && indicators.signalScore !== undefined && (() => {
-              const score = signalToHealthScore(indicators.signalScore);
+              // product-audit-2026-10-29 #2: unifikasi skala — tampilkan skor brand 0,00-1,00
+              // (konsisten /pasar Top-20) alih-alih konversi 0-100 yang membelah identitas.
+              const raw = indicators.signalScore;
+              const score = signalToHealthScore(raw); // tetap utk meta warna/label band
               if (score === null) return null;
               const meta = healthScoreMeta(score);
               const outlook = indicators.signalLabel ?? "Netral";
@@ -697,9 +700,9 @@ export default async function StockDetailPage({
                   <div className="flex items-center gap-4">
                     <div className="flex flex-col items-center shrink-0">
                       <span className="text-3xl font-extrabold tabular-nums leading-none" style={{ color: meta.color }}>
-                        {score}
+                        {raw.toFixed(2).replace(".", ",")}
                       </span>
-                      <span className="text-[10px] font-semibold text-text-tertiary mt-0.5">dari 100</span>
+                      <span className="text-[10px] font-semibold text-text-tertiary mt-0.5">Skor Sinyal 0-1</span>
                     </div>
                     <div className="h-10 w-px bg-border shrink-0" aria-hidden="true" />
                     <div className="flex-1 min-w-0">
@@ -707,7 +710,7 @@ export default async function StockDetailPage({
                         Sinyal: <span style={{ color: isBull ? "var(--color-bullish)" : isBear ? "var(--color-bearish)" : meta.color }}>{outlook}</span>
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: meta.bg, color: meta.color }}>{meta.label}</span>
                       </p>
-                      <div className="mt-2 h-2 rounded-full bg-bg-hover overflow-hidden relative" role="meter" aria-valuenow={score} aria-valuemin={0} aria-valuemax={100} aria-label={`Skor kesehatan teknikal ${score} dari 100`}>
+                      <div className="mt-2 h-2 rounded-full bg-bg-hover overflow-hidden relative" role="meter" aria-valuenow={raw} aria-valuemin={0} aria-valuemax={1} aria-label={`Skor sinyal teknikal ${raw.toFixed(2)} dari 1,00`}>
                         <div className="h-full rounded-full transition-all duration-700" style={{ width: `${score}%`, backgroundColor: meta.color }} />
                       </div>
                       <p className="mt-1.5 text-[11px] text-text-tertiary">Gabungan 9 indikator teknikal — RSI, MACD, tren, momentum, volume</p>

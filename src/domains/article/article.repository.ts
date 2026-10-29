@@ -47,9 +47,7 @@ export const articleRepository = {
         ...(tags?.length ? { tags: { hasSome: tags } } : {}),
       },
       orderBy: { publishedAt: "desc" },
-      include: {
-        author: { select: { id: true, username: true, name: true, image: true } },
-      },
+
     });
   },
 
@@ -121,7 +119,11 @@ export const articleRepository = {
       // Cap: table was ~1384 rows growing 108/wk — newest 500 (~5 weeks) is the
       // admin working set; older articles stay reachable via preview URLs.
       take: 500,
-      include: {
+      // product-audit-2026-10-29 QW4: exclude content dari LIST (payload list jadi ringan);
+      // ArticleEditModal fetch content on-demand via GET /api/admin/articles/[id].
+      select: {
+        id: true, slug: true, title: true, excerpt: true, tags: true, tickerTag: true,
+        isListed: true, status: true, articleType: true, createdAt: true, publishedAt: true,
         author: { select: { id: true, username: true, name: true, image: true } },
       },
     });
