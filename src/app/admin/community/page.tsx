@@ -1,5 +1,13 @@
-import { redirect } from "next/navigation";
+"use client";
+
+import { DashboardShell } from "../_components/dashboard-shell";
 
 export default function CommunityPage() {
-  redirect("/admin");
+  return (
+    <DashboardShell
+      initialTab="community"
+      title="Komunitas"
+      description="Aktivitas komunitas: komentar, diskusi & kesehatan forum"
+    />
+  );
 }

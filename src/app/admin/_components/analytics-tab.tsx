@@ -174,6 +174,9 @@ const fmtRangeLabel = (r: ResolvedRange) =>
 
 export function AnalyticsTab() {
   const [rangeDays, setRangeDays] = useState<number>(7);
+  // 28 Okt: default false = metrik bersih (suspected-bot dikecualikan);
+  // true = data mentah — pembanding saat owner mengaudit "peak jam 02:00".
+  const [rawMode, setRawMode] = useState(false);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [compareMode, setCompareMode] = useState(false);
@@ -202,9 +205,10 @@ export function AnalyticsTab() {
       });
       if (pathFilter.trim()) params.set("path", pathFilter.trim());
       if (sourceFilter) params.set("source", sourceFilter);
+      if (rawMode) params.set("raw", "1");
       return `/api/admin/analytics/comprehensive?${params}`;
     },
-    [pathFilter, sourceFilter],
+    [pathFilter, sourceFilter, rawMode],
   );
 
   const fetchAnalytics = async (url: string): Promise<AnalyticsData> => {
@@ -230,6 +234,7 @@ export function AnalyticsTab() {
       activeRange.end.toISOString(),
       pathFilter,
       sourceFilter,
+      rawMode,
     ],
     queryFn: () => fetchAnalytics(buildUrl(activeRange)),
     refetchInterval: 30_000,
@@ -242,6 +247,7 @@ export function AnalyticsTab() {
       compareRange.end.toISOString(),
       pathFilter,
       sourceFilter,
+      rawMode,
     ],
     queryFn: () => fetchAnalytics(buildUrl(compareRange)),
     enabled: compareMode,
@@ -399,6 +405,22 @@ export function AnalyticsTab() {
           <option value="referral">Referral</option>
           <option value="email">Email</option>
         </select>
+
+        {/* Raw toggle (28 Okt) — bahasa awam: "Sertakan data mencurigakan" */}
+        <label className="inline-flex items-center gap-1.5 text-sm text-gray-600 select-none cursor-pointer">
+          <input
+            type="checkbox"
+            checked={rawMode}
+            onChange={(e) => setRawMode(e.target.checked)}
+            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500/30"
+          />
+          Sertakan pengunjung terdeteksi robot
+        </label>
+        {rawMode && (
+          <span className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-full px-2.5 py-1">
+            Mode data mentah — angka bisa lebih tinggi
+          </span>
+        )}
       </div>
 
       {/* KPI Cards */}

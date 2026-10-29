@@ -64,6 +64,17 @@ export function Footer() {
                   <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
                 </svg>
               </a>
+              <a
+                href="https://www.threads.net/@teknikal.id"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Threads teknikal.id"
+                className="inline-flex items-center justify-center rounded-md border border-border bg-surface p-2 text-text-secondary transition-colors hover:border-accent/60 hover:text-accent"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.47 12.186v-.011c.03-3.4.88-6.253 2.525-8.305C5.845 1.565 8.598.384 12.18.36h.007c2.796.02 5.09.743 6.818 2.148 1.678 1.364 2.791 3.35 3.212 5.743l-2.292.472c-.332-1.931-1.203-3.443-2.586-4.495-1.347-1.02-3.16-1.545-5.16-1.56-2.918.022-5.083 1.003-6.607 2.994-1.303 1.704-1.979 4.154-2.01 6.996.031 2.842.707 5.292 2.01 6.995 1.525 1.991 3.69 2.972 6.608 2.995 2.304-.016 4.213-.648 5.676-1.878 1.638-1.378 2.493-3.44 2.543-6.127l-3.869-.004.002-2.351 6.293.006-.002 1.177c-.03 4.392-1.384 7.67-3.918 9.481C18.174 23.057 15.446 23.976 12.186 24z" />
+                </svg>
+              </a>
               <span className="text-[10px] text-text-tertiary font-mono uppercase tracking-wider">Bahasa chart untuk trader Indonesia</span>
             </div>
           </div>

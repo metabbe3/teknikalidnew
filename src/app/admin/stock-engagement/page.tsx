@@ -1,5 +1,13 @@
-import { redirect } from "next/navigation";
+"use client";
+
+import { DashboardShell } from "../_components/dashboard-shell";
 
 export default function StockEngagementPage() {
-  redirect("/admin");
+  return (
+    <DashboardShell
+      initialTab="stocks"
+      title="Saham"
+      description="Saham paling banyak dilihat & disimpan watcher"
+    />
+  );
 }

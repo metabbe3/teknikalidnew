@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { RadarSection } from "./radar-section";
 import Link from "next/link";
 import { StockLogo } from "@/components/stock/stock-logo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -225,6 +226,9 @@ export default async function PasarPage() {
         {/* ── Top-20 Skor Sinyal (usp-2026-10-24-02) ── */}
         <TopSignalsSection items={snap.topSignals} sessionDate={snap.sessionDate} />
 
+        {/* ── Radar Sinyal (retention-2026-10-28) ── */}
+        <RadarSection />
+
         {/* ── Aliran Dana Asing (usp-2026-10-24-04) ── */}
         <ForeignFlowSection foreign={snap.foreign} />
 
@@ -352,6 +356,9 @@ function RecapBlock({
         <MoversCard title="Losers kemarin" icon={<TrendingDown className="h-4 w-4 text-bearish" />} items={losers} />
       </div>
       <TopSignalsSection items={topSignals} sessionDate={sessionDate} />
+
+        {/* ── Radar Sinyal (retention-2026-10-28) ── */}
+        <RadarSection />
       <ForeignFlowSection foreign={foreign} />
     </>
   );

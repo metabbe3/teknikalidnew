@@ -10,6 +10,27 @@ export const dynamic = "force-dynamic";
 let yahooCache = { status: "unknown", latency: 0, timestamp: 0 };
 const YAHOO_CACHE_TTL = 300_000;
 
+// FIX audit 28 Okt: recentActivity in-memory hilang tiap restart & jalur cron host tak menulis
+// pushActivity — fallback baca CronLog DB (sumber kebenaran) supaya Recent Activity tidak kosong.
+async function recentActivityFromDb(limit: number) {
+  try {
+    const rows = await prisma.cronLog.findMany({
+      orderBy: { startedAt: "desc" },
+      take: limit,
+      select: { jobName: true, status: true, startedAt: true, durationMs: true, triggeredBy: true },
+    });
+    return rows.map((r) => ({
+      action: r.jobName,
+      timestamp: r.startedAt.toISOString(),
+      duration: r.durationMs != null ? r.durationMs / 1000 : 0,
+      status: r.status === "success" ? ("success" as const) : ("failed" as const),
+      metadata: { triggeredBy: r.triggeredBy ?? "cron" },
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export async function GET() {
   try {
     await requireAdmin();
@@ -54,7 +75,9 @@ export async function GET() {
     lastIntradaySync,
     dbPool: { status: dbConnected ? "connected" : "error" },
     yahooApi: { status: yahooCache.status, latency: yahooCache.latency },
-    recentActivity: getRecentActivity(10),
+    recentActivity: getRecentActivity(10).length
+      ? getRecentActivity(10)
+      : await recentActivityFromDb(10),
   });
   } catch (error) {
     return handleApiError(error, "fetch admin status");

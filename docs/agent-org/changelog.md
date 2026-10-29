@@ -123,6 +123,15 @@
 > Format: satu entri per deploy/task selesai. Ditulis CTO di slot yang sama (bagian dari
 > DONE WHEN), dibaca QA slot berikutnya utk verifikasi + Council/owner utk retro.
 
+## [2026-10-28 07:5x] content-reviewer — QA pagi 28 Okt: T-1027-N qa_pass + 2 temuan fatal P1 (qa-2026-10-28-01) + utang fix-26-07 dibayar
+- Type: post-publish QA | Pilar: TRUST (angka publik == DB kanonik)
+- Konten: 44 artikel 24 jam dicek deterministik — 40/40 halaman harga DAILY_SNAPSHOT: harga+persen judul == StockPrice doktrin snapshot (0 mismatch); brief 28 Okt: 17 ticker (chg/close/RSI), breadth 101/647/84, oversold 86/69/54, GC 127/45 + Senin 137, GC baru LPIN/APII/GTRA/AXIO, IHSG 5.266,13 -1,99% (-106,96): SEMUA exact DB. Brief 27 Okt: 10 ticker + breadth 174/542/118 + Jumat 506/192 + BBCA RSI-series & -6,4% kumulatif + MKNT +250%/6sesi + link-text BBCA -2,9%: exact. IHSG-edu: MMIX/BLES, 831 emiten, 9,1 kuad, BBCA 609T, 4-bank 1544T, DCII/GOTO, 46%<1T: exact (fundamental 26 Okt).
+- FATAL #1 (P1): brief 28 Okt "Top gainers non-gorengan: ERAL/UNIQ" — ERAL #3 (BOGA +22,88 #1, MKNT +14,29 #2); FATAL #2 (P1): analisa AADI "43,8 juta pada 20 Oktober" — DB 20 Okt = 20,1 juta (43,8 = volume 19 Okt). Keduanya -> qa-2026-10-28-01 (SQL patch slot CTO sore, no deploy).
+- Deploy verify T-1027-N (image 8dcf5d01dc11, semalam 18:54) + slot pagi (envsafe2 up 07:03 healthy, kereta bo-2026-10-28-01): commit 397a847/a6bd26d/b54f82b/8864ea8/ef2ac33 ada di main; rehype-sanitize + ai-gate marker live di container; chunk 3955-85c045a957d5209b.js live 200 berisi "Urut"; POST feedback tanpa Origin = 403 (CSRF); /api/reputation 401 auth-gated; /berita + 6 sampel halaman harga 200; gzip br OK.
+- Flip qa_pass (qa_verified: true, oleh content-reviewer): teknikal-2026-10-25-01, fix-2026-10-26-04, fix-2026-10-26-09, ux-2026-10-26-01. straggler-0056106 bukan entry queue — bukti QA di entri ini: POST ok/403 + dedup CTO + reviewer re-verify 403 live.
+- ADMIN DEBT DIBAYAR: fix-2026-10-26-07 (eod-sync launchd) — schedule live 15:55 + 16:30 terverifikasi launchctl print; ditutup via commit 5c2ffad (owner approve).
+- Catatan QA basis: agregat cross/breadth diverifikasi pakai basis kanonik (non-gorengan; breadth doktrin snapshot LATERAL) — qa-25-02..04 impact_check_due hari ini: lolos (generator brief sudah satu-basis).
+
 ## Template entri
 ```
 ## [YYYY-MM-DD HH:MM] <task-id> — <judul singkat>
@@ -824,3 +833,22 @@
 - QA: fix-26-10 parity DB 100% (verifier note 2c8c64f); QA reviewer D+1 utk nav-tracking + announcements UI pasca kereta malam.
 - SEC GATE: pack security audit run-1 (XSS zod, payment ownership, cron-guard timingSafe fail-closed, rate-limit edge IP, safeJsonLd 27 site, CRON_SECRET rotated) ikut ter-merge — sudah live via envsafe2.
 - impact_check_due: 2026-10-31 — /pasar TTFB post-micro-cache, cron routes fail-closed tidak false-block, nav_click telemetry masuk DB.
+
+## 2026-10-28 18:5x — CTO sore 16:45 (delayed start 18:3x; 3 task selesai, 0 deploy — SQL patch + host-script guard)
+### qa-2026-10-27-01 (P1 TRUST — klaim superlatif AADI) — done
+- SQL patch: 'penutupan tertinggi awal Oktober (Rp11.800 pada 9 Oktober), -2,3%' -> '(Rp12.125 pada 6 Oktober), -4,9%' (MAX close Okt 1-12 = 12.125 tgl 6; persen dihitung 11.525 vs 12.125)
+- Generator guard (jalur growth-mandor, host script teknikalid_growth.py): 'penutupan tertinggi/terendah Rp X' diverifikasi vs MAX/MIN close 30d tickerTag (toleransi 0,5%) -> mismatch = HOLD DRAFT. Failing-test-first: test-factcheck a6/a7 (hold salah / lolos benar)
+- verify bukti: live AADI HTTP 200, 'Rp12.125 pada 6 Oktober' 2x, 'Rp11.800 pada 9 Oktober' 0x; UPDATE 1 dalam BEGIN/COMMIT (preview count 1)
+- deploy hash: n/a (SQL + host script) | QA: reviewer D+1 | impact_check_due: 2026-10-31 (artikel analisa baru: factCheckHeld utk klaim superlatif salah)
+### qa-2026-10-28-01 (P1 TRUST — 'Top gainers' brief-28 + tanggal volume AADI) — done
+- SQL patch brief-28: 'Top gainers non-gorengan: ERAL…UNIQ' -> 'Penguat menonjol non-gorengan: ERAL…UNIQ, di balik BOGA +22,88% dan MKNT +14,29%' (ranking jujur, angka tak diubah)
+- SQL patch AADI volume: '44,9 jt pada 19 Okt dan 43,8 jt pada 20 Okt' -> '44,9 jt pada 16 Okt dan 43,8 jt pada 19 Okt'. REVIEWER SETENGAH-BENAR: hanya 43,8/20-Okt yang diflag; cek DB penuh (16=44,9jt · 19=43,8jt · 20=20,1jt) -> KEDUA tanggal salah, keduanya digeser (narasi volume-menipis tetap sah)
+- Guard ranking grup: label peringkat (top gainers/tertinggi/dll) + ticker ber-persen + 'non-gorengan' di jendela kalimat -> verifikasi vs ORDER BY chg% sesi terakhir (top-3, ticker .JK di-strip) -> mismatch HOLD. test-factcheck a5
+- verify bukti: live brief HTTP 200 'Penguat menonjol' 2x / 'Top gainers' 0x / BOGA+MKNT render ticker-link; AADI frasa vol baru 2x / lama 0x; UPDATE 1+1 dalam transaksi
+- deploy hash: n/a | QA: reviewer D+1 | impact_check_due: 2026-10-31
+### ops-2026-10-28-01 (P2 TRUST — symlink drift recurrence #4) — done
+- ROOT CAUSE (tertulis, bukti kode): statejson.py save() = tempfile.mkstemp(dir=dirname) + os.replace(tmp, fp); os.replace menimpa directory entry TIDAK mengikuti symlink -> tiap tulis via path symlink = symlink mati jadi regular file. Bukti pendukung: .statejson-* zero-byte (26 Okt) + 5x .bak-*-drift sepekan
+- Fix satu pintu: statejson.py resolve os.path.realpath(fp) SEBELUM lock/read/write (semua 15 caller job otomatis aman) + warning bila path datadir bukan symlink. Symlink kedua file restore (superset datadir disync ke repo dulu: queue +2 entry, backlog +2 entry; md5 identik dua arah)
+- verify bukti: round-trip update via path symlink -> repo berubah + symlink tetap lrwxr-xr-x (dummy drift_test ditulis lalu dibersihkan); test-factcheck 15/15 + test-insert hijau pasca-patch
+- rollback: cto-queue/product-backlog .bak-20261028-1839-drift4-prelink; statejson.py.bak-20261028-guard; teknikalid_growth.py.bak-20261028-rankguard; reverse UPDATE SQL (decisions.md)
+- deploy hash: n/a (host script + datadir) | impact_check_due: 2026-10-31 (ls -la datadir: kedua file masih symlink)

@@ -28,6 +28,12 @@ export interface AnalyticsFilter {
   endDate: Date;
   pathPattern?: string;
   source?: TrafficSource;
+  /**
+   * 28 Okt: default undefined/false = metrik "clean" (suspected-bot + internal
+   * dikecualikan — perilaku lama). true = raw: heuristic suspected-bot
+   * DITINGGALKAN (owner/internal tetap dikecualikan). Toggle admin Analytics.
+   */
+  includeSuspected?: boolean;
 }
 
 export interface ShareAnalytics {
@@ -546,7 +552,7 @@ export const analyticsService = {
   async getComprehensiveAnalytics(
     filter: AnalyticsFilter,
   ): Promise<ComprehensiveAnalytics> {
-    const { startDate, endDate, pathPattern, source } = filter;
+    const { startDate, endDate, pathPattern, source, includeSuspected } = filter;
 
     // Build where clause
     const where: Record<string, unknown> = {
@@ -590,7 +596,9 @@ export const analyticsService = {
       if (v.userId && adminIds.has(v.userId) && v.ip) adminIps.add(v.ip);
     }
 
-    const suspectedBotIps = detectSuspectedBotIps(pageViews);
+    const suspectedBotIps = includeSuspected
+      ? new Set<string>()
+      : detectSuspectedBotIps(pageViews);
     const internalIps = new Set<string>([...EXCLUDED_IPS, ...adminIps]);
     const isExcluded = (ip: string | null): boolean =>
       !!ip && (internalIps.has(ip) || suspectedBotIps.has(ip));

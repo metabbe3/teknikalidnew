@@ -15,6 +15,7 @@ import { StockArticleCard } from "@/components/stock/stock-article-card";
 import { stripMarkdown } from "@/lib/utils";
 import { SnapshotBriefing, type SnapshotBriefingData } from "@/components/berita/snapshot-briefing";
 import { RelatedSignals } from "@/components/berita/related-signals";
+import { TelegramSubscribeCta } from "@/components/telegram/subscribe-cta";
 import RadarCtaLink from "@/components/seo/radar-cta-link";
 import { decimalToNumber, bigIntToNumber } from "@/lib/serialize";
 import { isStaleArticle, DATA_SOURCE_LABEL } from "@/domains/article/article-freshness";
@@ -342,6 +343,13 @@ export default async function BeritaArticlePage({
 
               {/* Contextual signal links (server-rendered, SEO/discovery) */}
               <RelatedSignals ticker={relatedSignalTicker} />
+
+              {/* Pantau via Telegram — hanya artikel ber-ticker (retention-2026-10-28, dismissible) */}
+              {article.tickerTag && (
+                <div className="mt-6">
+                  <TelegramSubscribeCta ticker={article.tickerTag} />
+                </div>
+              )}
 
               {/* Related articles */}
               {relatedArticles.length > 0 && (

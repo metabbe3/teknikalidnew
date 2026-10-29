@@ -39,10 +39,15 @@ export function DailyBriefStrip() {
 
   if (!brief) return null;
 
+  // tanggal DATA (generatedWib), bukan tanggal kini — jujur saat data belum refresh (owner 28 Okt)
+  const dataDate = brief.generatedWib ? new Date(brief.generatedWib) : new Date();
+  const isStale =
+    brief.generatedWib &&
+    new Date().getTime() - dataDate.getTime() > 36 * 3600 * 1000;
   const dateLabel = new Intl.DateTimeFormat("id-ID", {
     day: "numeric",
     month: "short",
-  }).format(new Date());
+  }).format(dataDate);
 
   return (
     <section
@@ -55,7 +60,14 @@ export function DailyBriefStrip() {
           <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-accent" />
           Pasar Hari Ini
         </span>
-        <span className="text-[10px] font-mono text-text-tertiary">{dateLabel}</span>
+        <span className="text-[10px] font-mono text-text-tertiary">
+          {dateLabel}
+          {isStale && (
+            <span className="ml-1.5 rounded bg-amber-100 px-1.5 py-0.5 font-sans font-semibold text-amber-700">
+              data lama
+            </span>
+          )}
+        </span>
       </div>
 
       {/* One-liner — hero kalimat */}

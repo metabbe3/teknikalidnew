@@ -40,6 +40,7 @@ import {
   FileText,
   FileCheck,
   Shield,
+  ShieldCheck,
   LogOut,
   ChevronRight,
   Bot,
@@ -48,7 +49,10 @@ import {
   Share2,
   Users,
   Megaphone,
-} from "lucide-react";
+  MessageSquare,
+  TrendingUp,
+  Target,
+  Lightbulb } from "lucide-react";
 import { AdminStatusIndicator } from "@/components/admin/admin-status-indicator";
 import { ReportsPendingBadge } from "@/components/admin/reports-pending-badge";
 
@@ -64,9 +68,11 @@ interface NavGroup {
   items: NavItem[];
 }
 
+// Inline nav (anti-goal: no new nav framework — plain config + existing shadcn sidebar).
+// Terjemahan label bahasa awam konsisten (adm-2026-10-28-01); stub routes redirect ke rumah tab-nya.
 const sidebarNav: NavGroup[] = [
   {
-    group: "Dashboard",
+    group: "Ringkasan",
     icon: Activity,
     items: [
       { label: "Overview", href: "/admin", icon: Activity },
@@ -77,14 +83,7 @@ const sidebarNav: NavGroup[] = [
     ],
   },
   {
-    group: "Market Data",
-    icon: BarChart3,
-    items: [
-      { label: "Ticker Manager", href: "/admin/ticker-manager", icon: BarChart3 },
-    ],
-  },
-  {
-    group: "Content",
+    group: "Pengguna & Konten",
     icon: FileText,
     items: [
       { label: "Articles", href: "/admin/articles", icon: FileText },
@@ -92,13 +91,26 @@ const sidebarNav: NavGroup[] = [
       { label: "Broadcast", href: "/admin/announcements", icon: Megaphone },
       { label: "Social Cards", href: "/admin/social-cards", icon: Smartphone },
       { label: "Reports", href: "/admin/reports", icon: Shield },
+      { label: "Pengguna", href: "/admin/user-analytics", icon: Users },
+      { label: "Insight", href: "/admin/insight", icon: Lightbulb },
+      { label: "Komunitas", href: "/admin/community", icon: MessageSquare },
     ],
   },
   {
-    group: "AI Agents",
+    group: "Pasar & Data",
+    icon: BarChart3,
+    items: [
+      { label: "Ticker Manager", href: "/admin/ticker-manager", icon: BarChart3 },
+      { label: "Saham", href: "/admin/stock-engagement", icon: TrendingUp },
+      { label: "Prediksi", href: "/admin/predictions", icon: Target },
+    ],
+  },
+  {
+    group: "Sistem",
     icon: Bot,
     items: [
       { label: "Agent Dashboard", href: "/admin/agent-hub", icon: Bot },
+      { label: "Kesehatan Login", href: "/admin/auth-health", icon: ShieldCheck },
     ],
   },
 ];
@@ -119,6 +131,11 @@ const PAGE_NAMES: Record<string, string> = {
   "/admin/agent-hub/content_quality": "Content Quality",
   "/admin/agent-hub/market_intel": "Market Intelligence",
   "/admin/agent-hub/site_health": "Site Health",
+  "/admin/user-analytics": "Pengguna",
+  "/admin/community": "Komunitas",
+  "/admin/stock-engagement": "Saham",
+  "/admin/predictions": "Prediksi",
+  "/admin/auth-health": "Kesehatan Login",
 };
 
 function NavGroupWithSubmenu({ group, pathname }: { group: NavGroup; pathname: string }) {

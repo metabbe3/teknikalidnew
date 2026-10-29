@@ -1089,14 +1089,12 @@
 - Queue v58 (2 entry baru); datadir≡repo 0 drift sebelum tulis. Owner verdict MASIH pending: bo-25-01 social-cards remove + bo-26-02 Community/Predictions demote (jangan sentuh).
 - Jebakan: (1) worktree baru = symlink node_modules + npx prisma generate dulu atau tsc 666 error palsu; (2) jangan commit docs di branch night/bo (konflik write-back pagi) — queue via statejson, handoff append live.
 
-<<<<<<< Updated upstream
 ## 2026-10-28 07:5x — CTO pagi (BUILD-ONLY: merge night branches, 0 deploy)
 - State: main = 632abcc (pushed origin) — fix-26-10 SATU PINTU + security pack + micro-cache + nav tracking + fix-26-06/07 + bo-28-01 announcements UI. Prod = envsafe2 f1b16fb3f642 (BE deploy 07:03 owner-directed, membawa mayoritas; micro-cache TTFB 0.18s verified).
 - Barusan: queue repair v58→v65 (5 regresi ops-27-02 → done + fix-26-10/bo-28-01 merged-done + entry None→ux-27-01); sticky bar ux-27-01 verified live di chunk tersaji.
 - In-flight: kereta malam T-1028 HARUS deploy image baru (3 commit tracking fe97c7b/106d544/8679409 + announcements UI belum terserved — nav_click=0 di prod). qa-2026-10-27-01 dislot sore 16:45 (SQL patch AADI, no deploy).
 - Jebakan: (1) main worktree masih di branch night/fix-26-10-10 milik sesi BE AKTIF (commit 5c2ffad muncul jam 07:4x) — jangan checkout main di situ; pakai worktree /private/tmp/cto1028-main. (2) statejson CLI: `flip <file> --id X --set k=v` (positional file; tanpa --status/--result). (3) grep SSR /stocks tak menemukan UI client-fetch — verify via chunk JS.
 - Langkah pertama slot berikutnya: baca ini → kereta malam T-1028 deploy + verify per-fitur (nav_click di chunk, /admin/announcements 200) → changelog.
-=======
 ## CTO Tech Lead 28 Okt 07:45 (input CEO 08:15)
 - STATE: sehat. Prod 200 (home 0,26s; /pasar cached 0,22s — micro-cache ec4f638 VERIFIED live 1,11→0,22s). Sticky bar ux-27-01 VERIFIED live (Urut: di DOM /stocks). Redirect 301 /golden-cross OK. Image live = app:envsafe2 (build 06:46 WIB) < main HEAD eb42d8e 07:38 → gap 5 commit (nav_click trio, auth 31b69e1, eod-sync 5c2ffad, merge broadcast eb42d8e) = PENUMPANG KERETA T-1028-N malam ini; verify per-fitur: (1) /admin/announcements render+POST, (2) nav_click masuk EngagementEvent (sample query), (3) login masih OK + rate-limit 429, (4) launchd eod 15:55/16:30 tetap, (5) XSS admin analytics span, (6) micro-cache tetap.
 - WORKER IMAGE BASI 24 Okt = AMAN (git log src/worker sejak 24 Okt = kosong; reputasi daily-award jalan di app image). TIDAK perlu rebuild worker malam ini.
@@ -1132,4 +1130,23 @@
 - INSIDEN P0 (19:16-19:26): prod teknikal.id+hivepos.id 502-total — Docker Desktop gagal init (daemon zombie; anak window com.apple menahan .next/standalone staging run sebelumnya). Pulih via quit+restart Docker Desktop (preseden 27 Okt), 10 container auto-naik, kedua org 200 verified. Root-cause dicurigai: staging one-off container + Docker VM resume. Watchdog self-heal.
 - Jebakan BARU: (1) tab browser kontrol direbut sesi owner aktif (post Threads) — verifikasi interaktif bisa gagal silent, gunakan tab baru + jangan re-use; (2) docker run mount standalone ke /app = MODULE_NOT_FOUND (node_modules ketimpa) — pola yang AMAN: run bare image + docker cp static>standalone>restart; (3) run kembar cron (WIP di worktree sama): SELALU git log/status sebelum commit — ketemu commit 6dd401e sudah dibuat, patch AC2 saya justru menyempurnakannya.
 - SEC GATE: N/A frontend-only. Impact check: register_7d >=6 dalam 14 hari post-live (DONE WHEN prd-26-01).
->>>>>>> Stashed changes
+## 2026-10-28 19:4x — Admin UX Builder shift (adm-2026-10-28-01 in_train)
+- SHIPPED BUILD-ONLY 7df9d8b branch night/admin-2026-10-28-01 (pushed): done_when #1 — sidebar 4 grup ID awam (Ringkasan/Pengguna & Konten/Pasar & Data/Sistem) + 7 link stub; 7 stub redirect generik jadi DashboardShell initialTab (Users/Community/Stocks/Predictions/Auth) dgn header ID; 0 endpoint baru.
+- VERIFY FISIK: build EXIT-0 BUILD_ID LbZqtCqqDph6lre4Zo2FS; staging one-off :3210; selftest scripts/selftest-admin-nav.mjs 7/7 PASS; CDP 1440 (4 grup, 13 link, active-state oklch bg biru) + 390 (h1 Pengguna, KPI asli 31/3/10/3, overflowX=0). Bukti docs/agent-org/verify/adm-28-01-*.png.
+- POLA BARU utk verify halaman admin (tanpa kredensial owner): scripts/admin-staging-session.mjs — mint session JWT via @auth/core/jwt encode + AUTH_SECRET container + user id ADMIN asli; staging env AUTH_URL=http://localhost:PORT + AUTH_TRUST_HOST=true. Cookie authjs.session-token (bukan __Secure- karena http).
+- Sisa adm-01: done_when #2 KPI parity, #4 label tersisa (Articles/Reports/tabs EN), #5 section Kontrol terpusat. Slot admin berikut ambil #2.
+- Jebakan: (1) heredoc bash + kurung kurawal JS di python string = KeyError setelah file TERTRUNCATE — pakai write_file tool; (2) sidebar submenu kolaps saat SSR (open=hasActiveChild client state) — verify link harus expand interaktif dulu; (3) navigasi CDP cepat ke 390 kadang mendarat di state setengah-hydrasi — poll URL+h1 sampai stabil (±10s).
+
+### Addendum 20:3x — Admin UX Builder (insiden infra + bukti final)
+- INSIDEN INFRA ke-3 malam ini (~20:1x): Docker daemon mati LAGI (pola: 27 Okt 19:4x, 28 Okt 19:52, 28 Okt 20:1x — 3x dalam 2 hari, selalu jam ~19:45-20:15) → prod 502 ±menit; pulih via quit+restart Docker Desktop; container auto-restart, prod 200 verified. BUKAN deploy (image tak berubah). Kandidat ops root-cause makin kuat — beban jam emas malam?
+- Bukti screenshot final: docs/agent-org/verify/adm-28-01-useranalytics-1440.png (135 KB, 1440x900) + -390.png (780x1688 @2x). DOM verify (ground truth): grup Ringkasan/Pengguna & Konten/Pasar & Data/Sistem; link Pengguna active bg oklch(0.93 0.03 260); KPI asli 31 users/3 DAU/10 MAU/3 new.
+- Skill teknikal-ui-workflow di-update: pola mint session staging admin + 3 jebakan verify (submenu SSR kolaps; poll stabil ±10s; capture eksplisit sebelum copy).
+
+### Addendum 20:2x — Admin UX Builder (kolaborasi checkout bersama)
+- DIKETAHUI: commit 7a9105a (20:10, audit pipelines Force EOD/QStash/RecentActivity) DIBUAT DI ATAS branch night/admin-2026-10-28-01 oleh run admin lain dgn checkout bersama — pekerjaan valid, dibiarkan utuh. TSC combined EXIT-0. HEAD kini ec2bdd5 (bukti final + push). CTO pagi: merge urut 7df9d8b → 7a9105a → ec2bdd5 (satu branch night/admin-2026-10-28-01).
+
+## 2026-10-28 23:4x — CTO Night (fix-2026-10-26-12) night_ready
+- Branch `night/fix-2026-10-26-12` (worktree scratch, base c5b2865=origin/main): N+1 getWatchlist dibunuh (loop ≤120 findMany → 2 query), pasar-live SATU PINTU via stockRepository (prisma langsung = 0), morning-delta prev-close doctrine-1 LATERAL, stock-graph pakai marketEngine, data-sync log error lengkap, stock-sync batched writes.
+- Bukti: failing-test-first 3 FAIL→9/9 PASS · parity DB live 8/8 IDENTIK · qcount 15 whole-snapshot · tsc 0 err · build RC=0 BUILD_ID q-P0iFMbuX90cqnbAay33 · regresi 29/29+5/5.
+- Queue entry → night_ready (patch tekstual +22 baris, bukan reformat — jaga ops-27-02).
+- CTO pagi: review 15 mnt → merge night/fix-2026-10-26-12 → deploy biasa. ROLLBACK post-merge: git revert 06bed51.

@@ -1895,7 +1895,7 @@
   {
    "id": "prd-2026-10-26-01",
    "date": "2026-10-26",
-   "status": "spec_ready",
+   "status": "in_train",
    "priority": "P1",
    "north_star_pillar": "GROWTH (register_7d target >=6, baseline 3-4) + STICKY",
    "title": "P1 GROWTH: Register CTA moment-of-intent — prompt register tepat setelah guest MENYIMPAN (star/preset/copy-link), bukan banner permanen (CEO North-Star-Review 26 Okt rekomendasi #2, executor eksplisit Product Agent slot Senin)",
@@ -1922,7 +1922,9 @@
    "risk": "low",
    "estimate_tool_calls": 6,
    "research_note": "Riset 26 Okt malam (tree main@ce4e8d8): grep konfirmasi TIDAK ADA migrasi guest->akun di flow register (src/app/auth/register/page.tsx tak import guest-storage) DAN API /api/watchlist/route.ts requireAuth-only — 2 gap: jembatan intent (PRD ini) + migrasi data (PRD prd-2026-10-26-02). Angka dari SQL asli di data_evidence.",
-   "research_brief": "VERDICT: BUILD | PILAR: GROWTH+STICKY | BUKTI: KUAT. Pola 'lazy registration' terdokumentasi sebagai praktik industri (UI-Patterns.com/patterns/LazyRegistration; vocab.design/lazy-registration: registrasi bukan gerbang tapi transfer ditawarkan saat user punya sesuatu yang bisa hilang). Baymard 'delayed account creation': minta akun SETELAH user menyelesaikan aksi inti outperform minta di awal/mid-flow (42% site minta di awal = anti-pattern; 24% shopper abandon karena forced account). Duolingo teardown (relaunch.ai): sign-up wall konversi lebih tinggi SETELAH investasi effort (endowed progress effect). BP utk CTO: (1) sheet non-blocking - simpanan guest TETAP sukses walau sheet ditolak/ditutup; (2) rate-cap 7 hari (AC1) benar, tambah log event sheet_dismissed di samping register_prompt_save_moment utk iterasi; (3) copy kontekstual n-item (AC2) benar, jangan generic copy; (4) tidak ada eskalasi frekuensi saat guest dismiss; (5) baseline bandingkan: register_completed dr sheet (AC3) vs 21 views /auth/register 30d. Anti-pattern: banner permanen (regresi AC4 = fail), prompt tiap klik tanpa cap (fatigue), generic copy tanpa konteks simpanan. Catatan: bukti spesifik market ID tidak ditemukan - magnitudo divalidasi via telemetry internal."
+   "research_brief": "VERDICT: BUILD | PILAR: GROWTH+STICKY | BUKTI: KUAT. Pola 'lazy registration' terdokumentasi sebagai praktik industri (UI-Patterns.com/patterns/LazyRegistration; vocab.design/lazy-registration: registrasi bukan gerbang tapi transfer ditawarkan saat user punya sesuatu yang bisa hilang). Baymard 'delayed account creation': minta akun SETELAH user menyelesaikan aksi inti outperform minta di awal/mid-flow (42% site minta di awal = anti-pattern; 24% shopper abandon karena forced account). Duolingo teardown (relaunch.ai): sign-up wall konversi lebih tinggi SETELAH investasi effort (endowed progress effect). BP utk CTO: (1) sheet non-blocking - simpanan guest TETAP sukses walau sheet ditolak/ditutup; (2) rate-cap 7 hari (AC1) benar, tambah log event sheet_dismissed di samping register_prompt_save_moment utk iterasi; (3) copy kontekstual n-item (AC2) benar, jangan generic copy; (4) tidak ada eskalasi frekuensi saat guest dismiss; (5) baseline bandingkan: register_completed dr sheet (AC3) vs 21 views /auth/register 30d. Anti-pattern: banner permanen (regresi AC4 = fail), prompt tiap klik tanpa cap (fatigue), generic copy tanpa konteks simpanan. Catatan: bukti spesifik market ID tidak ditemukan - magnitudo divalidasi via telemetry internal.",
+   "insight": "CEO 28 Okt: PROMOTE OPSI A (CTO note 28 Okt — register_7d=3 merah persisten 2 minggu; bukti industri kuat; efek hanya terukur setelah live). Dispatch P1 sore ini BUILD-ONLY, kereta T-1029-N. DONE WHEN: register_7d >=6 dlm 14 hari post-live ATAU conversion sheet-impression→register >=10%. Pilar GROWTH+STICKY.",
+   "train": "T-1029-N"
   },
   {
    "id": "prd-2026-10-26-02",
@@ -1966,8 +1968,144 @@
    "title": "RISET sumber data dividen/ex-date: buktikan coverage Yahoo quoteSummary (via fundamental v2 teknikal-2026-10-24-02) utk kebutuhan badge dividen SEBELUM migrasi sumber dari scraper IDX profile",
    "north_star": "TRUST — badge dividen jangka panjang butuh sumber terbukti coverage ex-date per-emiten; jangan tukar sumber tanpa bukti",
    "first_step": "ANALISIS DATA (no deploy): (1) sample 30 emiten populer + 30 acak — bandingkan upcoming ex-date di DB vs Yahoo quoteSummary (calendar events); (2) ukur % coverage & freshness; (3) verdict: Yahoo cukup / scraper IDX tetap + hardening / sumber ketiga.",
-   "DONE-WHEN": "Laporan coverage di insight entry ini: % emiten punya ex-date <=90 hari (Yahoo vs DB), + verdict GO/NO-GO migrasi. Testable: angka coverage eksplisit."
+   "DONE-WHEN": "Laporan coverage di insight entry ini: % emiten punya ex-date <=90 hari (Yahoo vs DB), + verdict GO/NO-GO migrasi. Testable: angka coverage eksplisit.",
+   "research_brief": "RESEARCH BRIEF (Researcher 28 Okt 2026) — VERDICT: MODIFIKASI. Riset internal first_step GO, tapi reframing: jadikan scraper IDX (sumber resmi bursa) SOURCE-OF-TRUTH badge ex-date + hardening, Yahoo quoteSummary hanya secondary/cross-check — jangan migrasi source-of-truth ke Yahoo. Alasan: (1) industry practice corporate-actions = reference data yang gold standard-nya sumber resmi bursa/issuer (IDX publish cum/ex/record/payment per emiten di idx.co.id & sahamidx; vendor kelas berat DTCC/ICE/SIX/EDI menjual persis data ini dari sumber resmi); (2) semantik field calendar Yahoo terbukti rapuh: dokumentasi bug quantmod #287 (field dividendDate Yahoo ternyata PAY date, bukan ex-date), yfinance #568 (payment date tak direturn), dan mismatch label live hari ini di finance.yahoo.com/quote/BBCA.JK ('Forward Dividend 381.00 (7.71%)' padahal 381 = TTM; forward nyata Rp100/2.02%) — salah label forward-vs-TTM persis di ticker .JK target kita; (3) coverage Yahoo .JK spotty & tanpa SLA (ToS/crumb/rate-limit, issue terbuka berulang). BEST PRACTICE: (1) badge tanggal user-facing = fail-closed: render hanya bila terverifikasi sumber primer, jangan render bila ragu (pilar TRUST); (2) uji coverage FULL-POPULASI (atau 30+30 sesuai first_step) dengan horizon ex-date <=90 hari, ukur % terdefinisi + freshness vs kalender resmi IDX; (3) eksplisit bedakan ex-date vs record vs payment di DB schema (jangan satu field generik); (4) cross-check sekunder boleh Yahoo/sectors.app corporate-actions API, tapi anomali → sumber primer yang menang; (5) bila coverage scraper IDX <85% emiten, pertimbangkan IDX Data Services (resmi, berbayar) — bukan agregator gratis. ANTI-PATTERN: (a) migrasi source-of-truth ke agregator gratis tanpa SLA utk data user-facing; (b) menyamakan dividendDate=ex-date (bug klasik quantmod #287); (c) keputusan migrasi dari sample kecil — kegagalan coverage selalu muncul di long-tail emiten kecil. SUMBER: github.com/joshuaulrich/quantmod/issues/287 · github.com/ranaroussi/yfinance/issues/568 · finance.yahoo.com/quote/BBCA.JK (mismatch forward/TTM, dilihat 28 Okt) · idx.co.id market-data dividend-announcement · new.sahamidx.com/?/deviden · idx.co.id/en/products/idx-data-services · docs.sectors.app corporate-actions. BUKTI: SEDANG — prinsip 'sumber resmi bursa utk corporate actions' kuat di industry; tapi angka coverage Yahoo-vs-DB tetap HARUS dari riset internal first_step (bukti internet tidak menggantikan pengukuran internal). DISPATCH NOTE utk CTO/CEO: riset internal ini ANALISIS DATA no-deploy, aman jalan kapan pun; verdict badge go-live tetap gate TRUST."
+  },
+  {
+   "id": "sre-2026-10-28-1",
+   "date": "2026-10-28",
+   "status": "candidate",
+   "source": "sre",
+   "title": "sre_brief.py error-cluster collapse (RE-FILE sre-2026-10-24-1, hilang dari backlog): 2 run berturut-turut 'N error' ternyata 1 event — 24 Okt 7 client-abort/7dtk, 28 Okt 10 MissingCSRF/1,2dtk (auth.js bot-probe pasca-deploy, proteksi justru bekerja). Cluster-collapse by digest+jendela 60s + AUTH_NOISE_RE utk MissingCSRF.",
+   "data": {
+    "evidence": "28 Okt 00:33:18.248–00:33:19.480Z (07:33 WIB) 10x [auth][error] MissingCSRF beruntun 1,2 dtk, 30 mnt pasca-deploy app 07:03 (image envsafe2 build 23:46Z); sre_brief raw_grep=10 padahal N=1 event. 24 Okt: 7x 'destination stream closed early' dalam 7 dtk = 1 event. Usulan 24 Okt (sre-2026-10-24-1) TIDAK ADA di file backlog — write hilang/dihapus.",
+    "impact": "Error-count SLO harian mendung: brief bilang '10 error — investigasi' padahal 0 real error → SRE investigasi manual tiap kemunculan (2 minggu berturut), erosi trust ke brief (DATA RELIABLE).",
+    "fix_hint": "Di sre_brief.py: (1) collapse baris error ber-digest sama dalam jendela 60s jadi 1 event + annotasi 'cluster Nx'; (2) tambah pattern MissingCSRF/authjs ke AUTH_NOISE_RE (lanjutan sre-2026-10-14-1 yang shipped).",
+    "probe": "2026-10-28 09:30"
+   },
+   "priority": "P3",
+   "insight": "SRE 28 Okt: re-file + bukti tambahan. Fix murni script-side, zero deploy risk."
+  },
+  {
+   "id": "sre-2026-10-28-2",
+   "date": "2026-10-28",
+   "status": "candidate",
+   "source": "sre",
+   "title": "pasar-live IHSG (^JKSE): Yahoo v7 quote gagal validasi zod (shortName/longName null) ~46x/24h → selalu fallback v8 chart. Data tetap akurat (fallback sukses 46/46) tapi log error-level tiap tick + 2x panggilan upstream per fetch.",
+   "data": {
+    "evidence": "Log app 24h: '[pasar-live] live IHSG quote failed, falling back to DB: Invalid quote data for ^JKSE' (zod: shortName/longName expected string received null) + '[MarketQuotes] Batch quote parse failed for ^JKSE' → 'v8 chart fallback used' — 46 baris total 00:00–02:31Z, sejak container start 00:03Z.",
+    "impact": "Log noise error-level menutupi sinyal real; upstream call dobel per tick (quota Yahoo); kalau v8 ikut berubah schema, IHSG live quote bisa diam. Lens DATA-TRUST (market-snapshot SATU PINTU).",
+    "fix_hint": "Zod schema quote: shortName/longName dibuat .nullable()/opsional, ATAU deteksi null → langsung route v8 chart tanpa log error-level (downgrade ke debug).",
+    "probe": "2026-10-28 09:30"
+   },
+   "priority": "P3",
+   "insight": "SRE 28 Okt: bukan insiden — fallback terbukti jalan 46/46. Usul kecil, sekalian pas CTO sentuh pasar-live."
+  },
+  {
+   "id": "im-2026-10-29-1",
+   "date": "2026-10-29",
+   "type": "feature",
+   "priority": "P2",
+   "status": "idea",
+   "source": "Idea Miner 29 Okt — nav_click 2 hari: saham-oversold/golden-cross/death-cross di top-15; StockPrice EOD 1.451 emiten × 2024-09→2026-10 (547k bar) sudah cukup",
+   "title": "Riwayat & Backtest Kondisi Teknikal: tab 'Apa yang terjadi setelahnya?' di halaman kondisi (/saham-golden-cross, oversold, death-cross) — statistik historis 2 tahun per kondisi",
+   "problem": "Pengunjung datang ke halaman kondisi teknikal (nav paling klik selain saham/brief) tapi halaman hanya bilang 'ini saham yang sedang golden cross' tanpa menjawab pertanyaan lanjutan pemula: 'kalo aku beli sekarang, biasanya apa yang terjadi?'. Pertanyaan user feed (trailing stop, FOMO) konfirmasi audiens level dasar yang butuh bukti, bukan rekomendasi.",
+   "DONE-WHEN": "Widget live di >=3 halaman kondisi menampilkan: N kejadian 2 tahun, median return +30/+90 hari, win-rate vs IHSG, median hari bertahan kondisi (angka eksplisit dari StockPrice, testable). Growth: avg time-on-page halaman kondisi naik >=30% vs baseline 14 hari setelah deploy.",
+   "size": "M",
+   "signal": "nav_click 2 hari: nav:saham-oversold 1, nav:saham-death-cross 1, nav:saham-golden-cross 1 (3 dari 14 label unik = halaman kondisi); EOD 2,2 tahun tersedia = biaya render rendah; nyambung shipped idea-2026-10-13-2 (AI-search traffic ke /saham-golden-cross)."
+  },
+  {
+   "id": "im-2026-10-29-2",
+   "date": "2026-10-29",
+   "type": "feature",
+   "priority": "P2",
+   "status": "idea",
+   "source": "Idea Miner 29 Okt — Question feed: 10/10 pertanyaan terakhir = 'Apa itu X' konsep dasar (trailing stop, BVPS, dividen, FOMO, inflasi, ST/SBR)",
+   "title": "Kamus Istilah Saham + tooltip inline: hover-card istilah (RSI, MACD, BVPS, dividen) di artikel & halaman kondisi + halaman kamus /kamus/[istilah] programmatic SEO",
+   "problem": "Semua (10/10) pertanyaan user terakhir adalah 'Apa itu X?' konsep dasar — audiens pemula tersesat di halaman analisa penuh jargon tanpa definisi. /akademi punya artikel panjang tapi tidak ada jawaban cepat 1-layar dan tidak ada definisi kontekstual saat istilah muncul di halaman saham.",
+   "DONE-WHEN": "(1) 30 istilah inti live di /kamus/[slug] dengan FAQPage schema; (2) tooltip hover/tap di >=3 halaman template (stock detail, kondisi, brief); GSC: >=10 query 'apa itu *' masuk top-20 dalam 60 hari; Question feed 'apa itu' mingguan turun atau jadi traffic organik (kolom referer).",
+   "size": "M",
+   "signal": "Question feed 10/10 'Apa itu X' (id terakhir cmqt1cfj1 'Flipping', trailing stop, inflasi, pajak asing, dividen, ST, BVPS, FOMO, gold vs saham, SBR); pola long-tail SEO 'apa itu' terbukti jadi traffic edu 40%+ (edu maintenance cron ada)."
+  },
+  {
+   "id": "im-2026-10-29-3",
+   "date": "2026-10-29",
+   "type": "feature",
+   "priority": "P3",
+   "status": "idea",
+   "source": "Idea Miner 29 Okt — creative bet (WAJIB non-data): pola produk finansial terbukti di stockanalysis.com/simplywall.st yang belum ada; GSC ticker queries (klbf 30 impr, indf, bris) sinyal lemah pendukung",
+   "title": "Head-to-Head Compare /saham/[A]-vs-[B]: bandingkan 2 saham (harga, valuasi P/B-P/E, dividen, skor sinyal, foreign flow) dalam 1 halaman — format stockanalysis.com",
+   "problem": "Trader ritel yang sudah paham dasar selalu berada di fase 'klbf atau indf?' — membandingkan 2 saham hari ini = buka 2 tab dan bolak-balik. Tidak ada situs IDX yang punya halaman compare 1-layar yang shareable; GSC sudah menunjukkan query ticker murni (klbf, indf, bris) masuk lewat halaman saham.",
+   "DONE-WHEN": "Halaman /saham/[A]-vs-[B] live utk semua pasangan universe non-gorengan (data fundamental v2 + skor sinyal reuse); metrik: >=50 sessions compare dalam 30 hari dari organic/social; share button click-through tercatat di EngagementEvent nav:compare_share.",
+   "size": "M",
+   "signal": "creative bet — pola produk finansial terbukti (stockanalysis.com compare, simplywall.st) YANG BELUM ADA di teknikal.id & tidak di jangan-colong list; sinyal pendukung lemah: GSC ticker queries murni (klbf 30 impr, 'saham klbf' 10, indf 8, bris 6); API reuse (fundamental v2, skor sinyal) = biaya build rendah."
   }
  ],
- "items": []
+ "items": [
+  {
+   "id": "adm-2026-10-28-01",
+   "title": "Admin UX Phase 1: nav sidebar unified + KPI parity + 13 stub pages",
+   "status": "in_train",
+   "priority": "P1",
+   "source": "owner-direct (TG 28 Okt: 'admin dashboard butuh agent improve UI UX; jangan depan bagus visibility jelek')",
+   "problem": "Audit 28 Okt: 28 halaman admin tapi layout.tsx hanya 1 link nav (/admin); 13 halaman stub 5-10 baris (cron-monitor, queue-monitor, user-analytics, eod-logs, indicators, predictions, community, auth-health, intraday-logs, stock-engagement, api-keys, cron-config, announcements); KPI card hanya di articles/pipelines/errors; bahasa campur EN; kontrol manual tersebar.",
+   "done_when": [
+    "Sidebar nav menjangkau SEMUA 28 halaman admin (grouped: Content/Pasar/Sistem/Users), active-state jelas",
+    "Setiap halaman non-stub punya >=3 KPI card pola admin-kpi-card yang sudah ada (reuse, jangan komponen baru)",
+    "13 halaman stub: isi data nyata dari endpoint existing ATAU redirect ke halaman terkait + hapus dari nav (API REUSE doctrine)",
+    "Bahasa label konsisten (pilih satu: ID awam) di nav + header semua halaman admin",
+    "Manual trigger/control terpusat di satu section 'Kontrol' (reuse manual-trigger-buttons.tsx)"
+   ],
+   "impact": "Owner cek prod sendiri via admin tiap hari; visibility jelek = kepercayaan data turun; 13 stub = 47% halaman mati",
+   "constraints": "Admin = owner-facing: WAJIB verify browser CDP viewport 390+1440; jangan deploy tanpa verify; SATU PINTU data (endpoint existing); token warna teknikal.id",
+   "created": "2026-10-28",
+   "progress": [
+    {
+     "date": "2026-10-28",
+     "shift": "admin-ux-builder 19:45",
+     "done_when_done": "Sidebar nav menjangkau SEMUA halaman (done_when #1) — BUILD-ONLY branch night/admin-2026-10-28-01 commit 7df9d8b (pushed)",
+     "verify": "build EXIT-0 BUILD_ID LbZqtCqqDph6lre4Zo2FS; staging one-off CDP 1440+390; selftest scripts/selftest-admin-nav.mjs 7/7 PASS; KPI asli 31 users/3 DAU render; bukti docs/agent-org/verify/adm-28-01-*.png",
+     "sisa": [
+      "done_when #2: KPI parity >=3 admin-kpi-card di halaman non-stub",
+      "done_when #4: label nav/header tersisa (Articles/Reports dst) + konsistensi penuh",
+      "done_when #5: section Kontrol manual-trigger-buttons terpusat"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "adm-2026-10-28-02",
+   "title": "Admin UX Phase 2: pisah menu per-domain + card 'Info Uang' (nilai portofolio & premium live)",
+   "status": "pending",
+   "priority": "P1",
+   "source": "owner-direct (TG 28 Okt malam: 'kembangkan terus admin seperti halaman depan, pisahin menu, jangan semua di overview, DATA UANG TIDAK UPDATE')",
+   "problem": "Overview 8-tab monolitik = semua di satu halaman. Data uang tidak terlihat/update: PortfolioHolding 6 posisi (BBCA 4.400 lot dll) TIDAK punya UI admin/API sama sekali; Premium count statis dari field isPremium (0/31) tanpa nilai Rp; tidak ada aggregate nilai live.",
+   "done_when": [
+    "Sidebar menu admin dikelompokkan per-domain (Dashboard/Content/Pasar & Data/Users/Monetisasi/Sistem) — Overview jadi ringkasan + link, BUKAN semua-tab-di-satu-halaman",
+    "Card 'Info Uang' di Overview: total nilai portofolio semua user live (SUM qty x harga close terbaru via query existing, NO endpoint baru — extend response /api/admin/status ATAU reuse pola retention), premium count, waitlist count; update tiap load (no stale cache)",
+    "Halaman/halaman uang: value per-user + per-ticker (reuse admin-data-table) dengan P/L % vs buyPrice",
+    "Verify CDP 1440+390: angka live sama dengan SQL manual (spot-check BBCA 4400x5275)",
+    "Label bahasa awam: 'Nilai Portofolio', 'Premium', 'Waiting List'"
+   ],
+   "impact": "Owner cek uang/value tiap hari; data stale = kepercayaan jatuh; menu pisah = kontrol cepat",
+   "constraints": "API REUSE — extend endpoint existing, jangan buat baru; query live jangan berat (>500ms, pakai LATERAL/latest-close pattern); SATU PINTU market data; verify browser wajib",
+   "created": "2026-10-28"
+  },
+  {
+   "id": "ops-2026-10-28-01",
+   "title": "OPS: root-cause Docker Desktop flap 3x dalam 2 hari (prod 502/down total ±2mnt)",
+   "status": "in_progress",
+   "priority": "P1",
+   "source": "audit admin 28 Okt malam (flap live saat audit: daemon mati total, teknikal.id 000; 19:52 kemarin juga - laporan UX Builder)",
+   "problem": "ROOT CAUSE DITEMUKAN 29 Okt pagi: Chrome automation CDP :9222 menumpuk 28 tab lama (42 proses, 5,95GB RAM) dari cron IG/IDX/GSC — RAM 16GB penuh, swap 4,4/5GB, Docker VM kena starvation saat deploy/build (npm build 2-4GB) → daemon flap 3x/2hari. MITIGASI LIVE: tab_reaper.py cron 15-menit (aging 3 run, whitelist GSC) — RAM turun 5.951→1.633MB (-4,3GB) saat pasang. SISA: watchdog prod down-notif (bagian done_when #3).",
+   "done_when": [
+    "Identifikasi trigger (memory pressure? Docker Desktop bug? watchdog?) — cek ~/Library/Containers/com.docker.docker/Data/log/vm/ + report.crash",
+    "Mitigasi dipilih & jalan: salah satu dari (a) restart-policy auto via launchd WatchPaths docker.sock + health probe, (b) kurangi beban (staging container TTL agresif), (c) upgrade Docker Desktop",
+    "Watchdog: launchd KeepAlive docker + probe curl teknikal.id 5-menit NOTIF owner kalau down >2 menit"
+   ],
+   "impact": "Prod down = trust customer jatuh; 3x dalam 2 hari = kecenderungan memburuk",
+   "constraints": "Jangan sentuh staging container agent yg aktif shift; Mac mini single-host doctrine",
+   "created": "2026-10-28"
+  }
+ ]
 }

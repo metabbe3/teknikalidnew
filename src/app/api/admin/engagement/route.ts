@@ -27,6 +27,7 @@ interface GroupRow {
   scroll_avg: number | null;
 }
 interface FunnelRow { viewed: bigint; dwell60: bigint; cta_after: bigint; returned: bigint }
+interface LabelRow { type: string; label: string | null; n: bigint; uniq: bigint }
 
 export interface EngagementGroup {
   group: string;
@@ -43,6 +44,8 @@ export interface EngagementOverview {
   byType24h: Record<string, number>;
   groups7d: EngagementGroup[];
   funnel7d: { viewed: number; dwell60Plus: number; ctaAfterDwell: number; returnedLaterDay: number };
+  /** CTA & nav clicks by label, 7d — feed tab Insight admin (bo-2026-10-28-02 follow-up). */
+  clicksByLabel7d: Array<{ type: string; label: string; count: number; unique: number }>;
 }
 
 async function getEngagementOverview(now: Date = new Date()): Promise<EngagementOverview> {
@@ -52,7 +55,7 @@ async function getEngagementOverview(now: Date = new Date()): Promise<Engagement
   const since24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
   const since7d = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-  const [totalRows, typeRows, groupRows, funnelRows] = await Promise.all([
+  const [totalRows, typeRows, groupRows, funnelRows, labelRows] = await Promise.all([
     prisma.$queryRaw<TotalRow[]>`
       SELECT count(*) FILTER (WHERE "createdAt" >= ${since24h}) AS n24,
              count(*) FILTER (WHERE "createdAt" >= ${since7d}) AS n7
@@ -99,6 +102,13 @@ async function getEngagementOverview(now: Date = new Date()): Promise<Engagement
                SELECT 1 FROM e WHERE e."anonId" = a."anonId" AND e.d > a.first_d
              )) AS returned
       FROM a`,
+    prisma.$queryRaw<LabelRow[]>`
+      SELECT type, label, count(*) AS n, count(DISTINCT "anonId") AS uniq
+      FROM "EngagementEvent"
+      WHERE "createdAt" >= ${since7d} AND type IN ('cta_click', 'nav_click')
+      GROUP BY type, label
+      ORDER BY n DESC
+      LIMIT 30`,
   ]);
 
   const overview: EngagementOverview = {
@@ -122,6 +132,12 @@ async function getEngagementOverview(now: Date = new Date()): Promise<Engagement
       ctaAfterDwell: Number(funnelRows[0]?.cta_after ?? 0),
       returnedLaterDay: Number(funnelRows[0]?.returned ?? 0),
     },
+    clicksByLabel7d: labelRows.map((r) => ({
+      type: r.type,
+      label: r.label ?? "(tanpa label)",
+      count: Number(r.n),
+      unique: Number(r.uniq),
+    })),
   };
 
   cache.set("engagement-overview", overview, CACHE_TTL_MS);
