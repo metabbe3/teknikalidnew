@@ -15,7 +15,13 @@ import { cookies } from "next/headers";
  */
 
 const COOKIE_NAME = "guest_pass";
-export const GUEST_DAILY_FREE = 5;
+/**
+ * product-audit-2026-10-29 QW5: 5 → 25/hari. Data 7-hari: pengunjung nyata
+ * menabrak gate di saham ke-14 → sesi mati, bounce 50,4% — bertabrakan dengan
+ * KPI pivot traffic-first (23 Okt). Loop Retention v2.1 (owner 20 Okt) tetap:
+ * dalam kuota = semua konten terbuka; hanya ADD konten, tidak pernah block.
+ */
+export const GUEST_DAILY_FREE = 25;
 
 interface GuestPassState {
   day: string; // YYYY-MM-DD (WIB)

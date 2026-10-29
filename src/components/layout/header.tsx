@@ -22,10 +22,10 @@ const navLinks = [
 // Tools demoted from main nav (low use: compare 2 views, paper-trading 13). Kept reachable.
 const toolLinks = [
   { href: "/pasar", label: "Koran Pasar Live" },
-  { href: "/track-record", label: "Track Record" },
+  { href: "/track-record", label: "Riwayat Akurasi Sinyal" },
   { href: "/trading-plan", label: "Trading Plan" },
-  { href: "/market-structure", label: "Market Structure" },
-  { href: "/bottom-fishing", label: "Bottom Fishing" },
+  { href: "/market-structure", label: "Arah Tren Pasar" },
+  { href: "/bottom-fishing", label: "Radar Saham Diskon" },
   { href: "/compare", label: "Bandingkan Saham" },
   { href: "/paper-trading", label: "Latihan Trading" },
 ];
@@ -225,15 +225,15 @@ export function Header() {
               </Link>
             );
           })}
-          {session?.user ? (
-            <>
+          {/* product-audit-2026-10-29 QW1: Tools buat SEMUA pengunjung (dulu cuma login;
+              62,3% trafik mobile eksternal tak bisa akses /pasar dkk). Label = bahasa awam. */}
           <button
             type="button"
             onClick={() => setMobileToolsOpen((v) => !v)}
             aria-expanded={mobileToolsOpen}
             className="w-full flex items-center justify-between py-2.5 px-3 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
           >
-            Tools
+            Alat Analisa
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={`transition-transform duration-200 ${mobileToolsOpen ? "rotate-180" : ""}`}>
               <polyline points="6 9 12 15 18 9" />
             </svg>
@@ -256,6 +256,8 @@ export function Header() {
               ))}
             </div>
           )}
+          {session?.user ? (
+            <>
           <Link
                 href={`/profile/${session.user.username}`}
                 onClick={() => setMenuOpen(false)}

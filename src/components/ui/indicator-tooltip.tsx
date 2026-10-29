@@ -16,7 +16,8 @@ export function IndicatorTooltip({ indicator, className }: IndicatorTooltipProps
     <TooltipProvider delay={200}>
       <Tooltip>
         <TooltipTrigger
-          className={`inline-flex items-center justify-center w-3.5 h-3.5 rounded-full text-[9px] font-bold text-text-tertiary hover:text-text-secondary hover:bg-bg-hover transition-colors ${className ?? ""}`}
+          // product-audit-2026-10-29 QW5: 14×14px → area sentuh 32×32px (visual tetap kecil via -m/p trick)
+          className={`inline-flex items-center justify-center w-8 h-8 -m-2.5 p-2 rounded-full text-[10px] font-bold text-text-tertiary hover:text-text-secondary hover:bg-bg-hover transition-colors ${className ?? ""}`}
           aria-label={`Penjelasan ${indicator}`}
         >
           ?

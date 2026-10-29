@@ -109,7 +109,8 @@ export async function generateMetadata({
   // Price lives in meta description, not title (title stays stable for SERP consistency)
   // GSC intent (CTR 0.8%, pos 67): query user = "harga saham X hari ini" → keyword WAJIB di title.
   const shortName = normalizeTickerTitle(fullName, name);
-  const title = `${shortName} ( ${name} ) Harga Saham Hari Ini`;
+  // product-audit-2026-10-29 QW3: hilangkan spasi ganjil "( BBCA )" → "(BBCA)"
+  const title = `${shortName} (${name}) Harga Saham Hari Ini`;
   const description = price
     ? `Harga saham ${name} (${fullName}) hari ini ${price}${changeStr}. Analisa teknikal lengkap: chart interaktif, RSI, MACD, Bollinger Bands, support/resistance, dan sinyal trading.`
     : `Analisa teknikal saham ${fullName} (${name}) hari ini. Chart interaktif, RSI, MACD, Bollinger Bands, SMA/EMA, dan sinyal trading di TeknikalID.`;
@@ -193,14 +194,14 @@ export default async function StockDetailPage({
     if (!indicators?.smaCrossSignal || !indicators.smaCrossDate) return null;
     const days = Math.floor((now - new Date(indicators.smaCrossDate).getTime()) / 86400000);
     const label = indicators.smaCrossSignal === "golden_cross" ? "Golden Cross" : "Death Cross";
-    return `${label} detected ${days === 0 ? "today" : `${days}d ago`}`;
+    return `${label} ${days === 0 ? "terjadi hari ini" : `${days} hari lalu`}`; // product-audit-2026-10-29 QW3
   })();
 
   const emaCrossText = (() => {
     if (!indicators?.emaCrossSignal || !indicators.emaCrossDate) return null;
     const days = Math.floor((now - new Date(indicators.emaCrossDate).getTime()) / 86400000);
     const label = indicators.emaCrossSignal === "bullish" ? "EMA Bullish Cross" : "EMA Bearish Cross";
-    return `${label} ${days === 0 ? "today" : `${days}d ago`}`;
+    return `${label} ${days === 0 ? "terjadi hari ini" : `${days} hari lalu`}`;
   })();
 
   const outlook = (() => {
@@ -709,7 +710,7 @@ export default async function StockDetailPage({
                       <div className="mt-2 h-2 rounded-full bg-bg-hover overflow-hidden relative" role="meter" aria-valuenow={score} aria-valuemin={0} aria-valuemax={100} aria-label={`Skor kesehatan teknikal ${score} dari 100`}>
                         <div className="h-full rounded-full transition-all duration-700" style={{ width: `${score}%`, backgroundColor: meta.color }} />
                       </div>
-                      <p className="mt-1.5 text-[11px] text-text-tertiary">Gabungan 12 indikator teknikal — RSI, MACD, tren, momentum, volume</p>
+                      <p className="mt-1.5 text-[11px] text-text-tertiary">Gabungan 9 indikator teknikal — RSI, MACD, tren, momentum, volume</p>
                     </div>
                   </div>
                   <SignalBreakdownDetails breakdown={signalBreakdown} />

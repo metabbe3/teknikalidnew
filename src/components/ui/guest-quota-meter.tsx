@@ -10,7 +10,8 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 
 const QUOTA_KEY = "teknikal:guest_quota";
-const DAILY_FREE = 5;
+// product-audit-2026-10-29 QW5: sinkron dengan guest-pass.ts GUEST_DAILY_FREE 5 → 25
+const DAILY_FREE = 25;
 
 interface QuotaState {
   date: string; // YYYY-MM-DD lokal

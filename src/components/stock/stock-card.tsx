@@ -87,17 +87,19 @@ export function StockCard({ ticker, name, sector, close, change, changePercent, 
             {isPositive ? "↑" : "↓"}
           </span>
         )}
-        <button
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setAiOpen(true); }}
-          className="flex items-center justify-center w-6 h-6 rounded-full bg-accent/10 text-accent hover:bg-accent/20 transition-colors text-[11px]"
-          aria-label={`Analisa AI ${name}`}
-          title="Analisa AI"
-        >
-          <Sparkles className="h-4 w-4" aria-hidden />
-        </button>
+        {/* product-audit-2026-10-29 QW5: button pindah KELUAR <Link> (HTML5 melarang button dalam a) */}
+        <span className="w-6 h-6" aria-hidden="true" />
         </div>
       </div>
     </Link>
+    <button
+      onClick={() => setAiOpen(true)}
+      className="absolute bottom-3 right-4 flex items-center justify-center w-6 h-6 rounded-full bg-accent/10 text-accent hover:bg-accent/20 transition-colors text-[11px]"
+      aria-label={`Analisa AI ${name}`}
+      title="Analisa AI"
+    >
+      <Sparkles className="h-4 w-4" aria-hidden />
+    </button>
     </div>
     {aiOpen && (
       <StockAiModal ticker={ticker} name={name} onClose={() => setAiOpen(false)} />

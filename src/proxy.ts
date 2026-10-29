@@ -423,6 +423,23 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
 
+  // product-audit-2026-10-29 QW2: /saham/:ticker (pola alami dari /saham/:ticker/kenapa-naik-hari-ini)
+  // dulu 404 — redirect permanen ke halaman saham kanonik.
+  const sahamBareMatch = pathname.match(/^\/saham\/([a-z0-9]+)$/i);
+  if (sahamBareMatch) {
+    const ticker = `${sahamBareMatch[1].toUpperCase()}.JK`;
+    if (KNOWN_TICKERS.has(ticker)) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/stocks/${ticker}`;
+      return NextResponse.redirect(url, 308);
+    }
+  }
+
+  // product-audit-2026-10-29 QW2: /landing (11 views 404 minggu ini — sisa eksperimen) → beranda.
+  if (pathname === "/landing" || pathname === "/landing-test") {
+    return NextResponse.redirect(new URL("/", request.url), 308);
+  }
+
   // Stock-analysis articles (stale ones purged 2026-09-12) → the stock page.
   // Surviving fresh articles render normally; purged slugs land here.
   const analysisMatch = pathname.match(/^\/berita\/analisa-teknikal-([a-z0-9]+)$/i);
