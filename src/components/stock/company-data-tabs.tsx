@@ -101,9 +101,9 @@ export function CompanyDataTabs({ profile, commissioners, directors, shareholder
         </div>
       </button>
 
-      {/* Expanded content */}
-      {isExpanded && (
-        <div className="mt-3 fade-in space-y-3">
+      {/* Expanded content — selalu di DOM utk SEO (audit seo 2026-10-29 #2);
+          visual collapse via class hidden, bukan conditional render */}
+      <div className={`mt-3 fade-in space-y-3 ${isExpanded ? "" : "hidden"}`}>
           {/* Tab bar */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
             {tabs.map((tab) => (
@@ -129,19 +129,16 @@ export function CompanyDataTabs({ profile, commissioners, directors, shareholder
             ))}
           </div>
 
-          {/* Tab content */}
-          {activeTab && (
-            <div className="fade-in">
-              {activeTab === "profil" && hasProfile && <CompanyProfileTab data={profile} />}
-              {activeTab === "komisaris" && <CommissionersTab commissioners={commissioners} />}
-              {activeTab === "direksi" && <DirectorsTab directors={directors} />}
-              {activeTab === "pemegang-saham" && <ShareholdersTab shareholders={shareholders} />}
-              {activeTab === "anak-perusahaan" && <SubsidiariesTab subsidiaries={subsidiaries} />}
-              {activeTab === "dividen" && <DividendHistoryTab dividends={dividends} />}
-            </div>
-          )}
+          {/* Tab content — aktif default tab pertama agar konten ter-render SSR (seo audit #2) */}
+          <div className="fade-in">
+            {(activeTab ?? tabs[0]?.key) === "profil" && hasProfile && <CompanyProfileTab data={profile} />}
+            {(activeTab ?? tabs[0]?.key) === "komisaris" && <CommissionersTab commissioners={commissioners} />}
+            {(activeTab ?? tabs[0]?.key) === "direksi" && <DirectorsTab directors={directors} />}
+            {(activeTab ?? tabs[0]?.key) === "pemegang-saham" && <ShareholdersTab shareholders={shareholders} />}
+            {(activeTab ?? tabs[0]?.key) === "anak-perusahaan" && <SubsidiariesTab subsidiaries={subsidiaries} />}
+            {(activeTab ?? tabs[0]?.key) === "dividen" && <DividendHistoryTab dividends={dividends} />}
+          </div>
         </div>
-      )}
     </div>
   );
 }

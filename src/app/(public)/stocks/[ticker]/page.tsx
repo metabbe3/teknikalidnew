@@ -1034,6 +1034,17 @@ export default async function StockDetailPage({
 
         {/* Daily Analysis — auth-gated (embeds indicator values in narrative) */}
         <span id="analisa" className="block scroll-mt-24" />
+        {/* seo-2026-10-29-p0 (audit #1): internal link ke artikel kenapa-naik —
+            575 halaman artikel dapat backlink kontekstual dari stock page (sebelumnya 0) */}
+        <p className="text-xs text-text-tertiary">
+          Butuh konteks pergerakan?{" "}
+          <Link
+            href={`/saham/${stripJk(ticker).toLowerCase()}/kenapa-naik-hari-ini`}
+            className="text-accent hover:underline"
+          >
+            Kenapa saham {stripJk(ticker)} naik/turun hari ini →
+          </Link>
+        </p>
         {fullAccess && close !== null ? (
             <DailyAnalysisSection
               ticker={ticker}
@@ -1387,6 +1398,13 @@ export default async function StockDetailPage({
               className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:text-accent/80 transition-colors"
             >
               Lihat semua saham sektor {sectorToBahasa(stock.sector)} →
+            </Link>
+            {/* seo-2026-10-29-p0 (audit #1): link screener kontekstual dari stock page */}
+            <Link
+              href="/screener"
+              className="inline-flex items-center gap-1 text-xs font-medium text-text-tertiary hover:text-accent transition-colors"
+            >
+              Saring saham lain by indikator di Screener →
             </Link>
           </div>
         )}

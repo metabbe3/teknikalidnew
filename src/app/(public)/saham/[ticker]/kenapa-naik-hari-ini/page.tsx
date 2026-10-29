@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { SITE_URL } from "@/lib/constants";
@@ -157,6 +157,12 @@ export default async function MovementAnalysisPage({
   params: Promise<{ ticker: string }>;
 }) {
   const { ticker } = await params;
+  // seo-2026-10-29-p0: redirect varian non-kanonik (huruf besar/.JK) ke canonical lowercase
+  // (audit #5; pola sama dgn indikator/page.tsx:113)
+  const canonicalTicker = ticker.replace(/\.JK$/i, "").toLowerCase();
+  if (ticker !== canonicalTicker) {
+    permanentRedirect(`/saham/${canonicalTicker}/kenapa-naik-hari-ini`);
+  }
   const data = await loadKenapaData(ticker);
   if (!data) notFound();
 
