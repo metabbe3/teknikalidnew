@@ -1392,3 +1392,8 @@ Catatan riset: keyword "eastspring idx esg leaders plus kelas a" (impr 209) = re
 ## 2026-10-29 — Product audit quick wins executed (audit Argon, owner 'lakukan saja kalau perlu')
 - QW1 Tools mobile utk SEMUA visitor (dulu session-gated; 62,3% trafik mobile eksternal tak terjangkau) + label bahasa awam (Riwayat Akurasi Sinyal/Arah Tren Pasar/Radar Saham Diskon). QW5 guest quota 5→25/hari (pengunjung nyata menabrak di ke-14; KPI traffic-first). QW2 redirect 308 /saham/:ticker→/stocks/:T.JK + /landing→/. QW3 title '(BBCA)' + badge cross 'hari ini/X hari lalu' + copy 12→9 indikator. Tooltip ? 14→32px touch. Button AI keluar dari <Link> (a11y HTML5).
 - Verified prod: 308 x2, (BBCA), 'Gabungan 9 indikator' x2, 'hari lalu' x2, 'Alat Analisa' di SSR anon. Sisa quick win (admin content-editor + pencarian ticker) → CTO queue besok.
+
+## 2026-10-29 (sore) — Audit findings full-dispatch
+- Dijalankan langsung (deploy 5c87e8e): skor sinyal hero stock page 0-1 unified (0,66 format id-ID, konsisten /pasar); admin articles +pencarian ticker/judul +filter Kenapa-Naik +editor isi content (fetch on-demand, payload list lean via repo select).
+- CTO queue teknikal +8 entry spec_ready (slot 30-31 Okt): StockCard 0-1, breadcrumb ganda, sektor full-query, satu-pintu homepage raw SQL, N+1 foreignFlow+reports, dead code+warna non-token, kalkulator 1 lot, redirect berantai hero+H1.
+- hivePOS: docs/agent-org/audit-qw-2026-10-29.md (QW1-QW5 done-when) utk night-org; QW1 SEO-unblock + QW2 tenant-isolation = WAJIB pre-verdict 31 Okt (mencegah keputusan false-negative).
