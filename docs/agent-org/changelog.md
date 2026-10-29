@@ -862,3 +862,12 @@
 - **QA**: reviewer slot berikutnya — verify per-fitur pasca-deploy kereta T-1029-N (nav/insight tab, /api/radar, radar-section /pasar, telegram CTA, brief-strip tanggal DATA, N+1 parity)
 - **impact_check_due**: 2026-11-01 (telemetri register_prompt_save_moment + radar views + returning ratio)
 - Rollback anchor: app envsafe2 f1b16fb3f642 (belum ada deploy dari merge ini; revert = git revert c7b4fa8 c21f222 + rebuild)
+
+## 2026-10-29 18:5x WIB — CTO sore (slot 16:45 delayed; qa-2026-10-29-01 DONE)
+- **task-id**: qa-2026-10-29-01
+- **type**: ops (SQL patch artikel + guard generator host-script)
+- **PRD**: n/a (QA trust-fix, pilar TRUST)
+- **verify bukti**: SQL BEGIN/COMMIT UPDATE 1 (PBV 0,70→0,62; MA20 (268)→(273), basis sesi 28 Okt); live /berita/analis-pagi-2026-10-29-aadi 200: '0,70' 2→0 · 'MA20 (268' 2→0 · 'PBV 0,62' 0→2 · 'MA20 (273' 0→2 (ISR self-serve, no restart, no deploy); guard teknikalid_growth.py _FUND_SPECS: failing-test-first 2 RED → 18/18 GREEN, py_compile OK, lint 0 hard; E2E replay konten insiden asli: auto-fix pb 0,70→0,61 + sma20 268→275 (sesi terbaru), kontrol MA50 270 vs 271,24 = 0,46% ≤ tol → no false-positive
+- **QA**: reviewer — spot artikel live + sample artikel analis-pagi baru pasca-guard (auto-fix/HOLD log di meta factCheck)
+- **impact_check_due**: 2026-11-01 (brief/analis pagi baru: 0 klaim PBV/PE/yield/MA mismatch >tol di meta factCheck findings)
+- **deploy hash**: n/a (DB + host-script; tidak ada deploy) | rollback: reverse-UPDATE SQL (decisions.md) + teknikalid_growth.py.bak-20261028-rankguard

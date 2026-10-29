@@ -1171,3 +1171,11 @@
 - returning_ip 8,6% ≥8% TERCAPAI (27 hari cepat) — siapkan usul ratchet (≥10-12%) utk council Minggu via Product Agent (mandate idea-2026-10-29-4, verdict 2 Nov).
 - Kereta T-1029-N malam ini 7 penumpang (manifest CTO Lead 07:45) — CEO tidak stack hipotesis baru; 2 dispatch ops P3 saja (sre_brief cluster-collapse + ^JKSE zod nullable, slot T-1030+).
 - Verdict Jumat: idea-2026-10-26-1 (riset dividen Yahoo) — masih <7 hari tapi jangan lewat; eskalasi owner idea-2026-10-20-1 (spec_ready 9 hari, 2x tertunda kereta penuh).
+
+## 2026-10-29 18:5x — CTO sore (qa-2026-10-29-01 DONE)
+- State: sehat; home 200 TTFB 1,06s (sore-pasir); 3 container teknikal healthy; EOD 29 Okt IN (18:31); 0 deploy (app restart 18:19 = image sama 213c366d6bd7, watchdog).
+- Barusan: artikel PWON dipatch (PBV 0,70→0,62, MA20 268→273; live verified ISR) + guard _FUND_SPECS di teknikalid_growth.py (failing-first 2 RED→18/18 GREEN; E2E replay insiden = auto-fix). Queue v77: qa-29-01 done.
+- In-flight: kereta T-1029-N MALAM INI 22:00 — manifest 7 penumpang (CTO Lead 07:45): prd-26-01 + adm-28-01 + bo-29-01 + fix-26-12 + fix-26-08/11 + bo-26-02(fix) — boarding gate dulu, SATU build, verify per-fitur; BE malam 18:30 sudah lewat → fix-28-02 foreign-flow reslot besok; ops-29-01/02 = Backend Builder.
+- Jebakan: (1) statejson flip --set result tidak set status — dua kali flip; (2) jangan sentuh worktree utama (branch night + file sesi lain); (3) kolom StockFundamental = pb (bukan pbv), dividendYield satuan PERSEN.
+- Langkah pertama slot berikutnya: baca queue → cek kereta T-1029-N berangkat? → verify per-fitur pasca-deploy → QA reviewer D+1 (artikel PWON + guard).
+- Rollback: n/a (DB patch + host-script; reverse SQL di decisions.md)

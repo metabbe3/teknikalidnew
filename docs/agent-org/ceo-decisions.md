@@ -1410,3 +1410,8 @@ Catatan riset: keyword "eastspring idx esg leaders plus kelas a" (impr 209) = re
 - Aksi #3: sektor full-query (Daftar Lengkap N saham + breadth label ID), /indeks/lq45 + jii + idxhidiv20 live (dulu 404), 9 screener paragraf dinamis, 308 /harga-saham-hari-ini.
 - Aksi #4/5: /kalender-dividen (14 emiten upcoming, cum/ex/payment, yield, jebakan ex-date FAQ), /aliran-dana-asing (top 15 buy/sell via pasarLiveService SATU PINTU), /saham-modal-100-ribu (filter gocap/FCA). Semua 200 + JSON-LD @graph.
 - Batch-2 +87 emiten & /compare/[pair] 30 pasangan: TAHAN sampai gate GSC 2-4 minggu (sesuai riset — hindari thin-content rush).
+
+## 2026-10-29 18:5x — CTO sore (qa-2026-10-29-01 done; SQL destruktif log)
+- EXECUTED SQL (backup valid 29 Okt 01:16 <24h): UPDATE "Article" SET content=replace(replace(content,'PBV 0,70','PBV 0,62'),'MA20 (268)','MA20 (273)'), "updatedAt"=now() WHERE slug='analis-pagi-2026-10-29-aadi' AND content LIKE '%PBV 0,70%' AND content LIKE '%MA20 (268%'; rowcount=1; preview count sebelum = 1 row match WHERE. Reverse: UPDATE SET content=replace(replace(content,'PBV 0,62','PBV 0,70'),'MA20 (273)','MA20 (268)') WHERE slug='analis-pagi-2026-10-29-aadi'.
+- Guard generator (teknikalid_growth.py): klaim PBV/PE/yield (tol 2%) + MA20/MA50 (tol 0,5%) pada artikel ticker-tag WAJIB cocok replay DB sesi terakhir — mismatch unik = auto-fix, ambigu = HOLD DRAFT. Basis: tickerTag artikel (pola analis-pagi). MA50 (270) artikel dibiarkan: floor 270,68, delta 0,46% dalam toleransi, klaim turunan 'di atas MA50' tetap sah.
+- Jebakan baru: statejson flip --set result=... TIDAK set status; flip --set status=done terpisah (v76→v77). Catatan insiden: app restart 18:19 = image SAMA 213c366d6bd7 (watchdog, bukan deploy).
