@@ -1149,6 +1149,17 @@ model ShareEvent {
   @@index([isBot])
 }
 
+// Pesan bebas masuk ke bot (admin-aktif 29 Okt: dibalas GLM + dilog utk review owner)
+model BotInbox {
+  id        Int      @id @default(autoincrement())
+  chatId    String   @db.VarChar(32)
+  fromName  String?  @db.VarChar(80)
+  text      String?
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([chatId, createdAt(sort: Desc)])
+}
+
 // Engagement telemetry: dwell/scroll/CTA beacons (no PII — anonId is a client-side uuid).
 model EngagementEvent {
   id        Int      @id @default(autoincrement())

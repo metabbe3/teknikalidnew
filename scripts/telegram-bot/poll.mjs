@@ -12,6 +12,30 @@ async function send(chatId, text) {
   await fetch(`${API}/sendMessage`, { method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({ chat_id: chatId, text, parse_mode:'HTML', link_preview_options:{ is_disabled:true } }) }).catch(()=>{});
 }
+// --- admin aktif (owner 29 Okt): pesan bebas dibalas GLM via Z.ai, gaya admin teknikal.id ---
+const AIBASE = process.env.ANTHROPIC_BASE_URL || 'https://api.z.ai/api/anthropic';
+const AIKEY = process.env.ANTHROPIC_AUTH_TOKEN || process.env.ANTHROPIC_API_KEY || '';
+const AIMODEL = process.env.ANTHROPIC_MODEL || 'glm-5.2';
+async function aiReply(chatText, userName) {
+  if (!AIKEY) return null;
+  try {
+    const r = await fetch(`${AIBASE}/v1/messages`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': AIKEY, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({
+        model: AIMODEL,
+        max_tokens: 300,
+        system: 'Kamu admin komunitas teknikal.id (situs analisa saham IDX). Balas pesan user Telegram dalam Bahasa Indonesia santai-profesional, maksimal 3-4 kalimat. Aturan WAJIB: (1) JANGAN pernah memberi rekomendasi beli/jual saham atau prediksi harga — arahkan ke fitur situs (skor sinyal di teknikal.id/stocks, alert Telegram gratis via /start KODE). (2) Tidak ada jargon Inggris berlebihan. (3) Kalau ditanya harga/analisa saham spesifik, jawab ringkas fakta umum + sarankan cek halaman sahamnya. (4) Tutup ramah, contoh: "Ada lagi yang mau ditanyain?" — tanpa emoji berlebihan (maks 1). (5) Kalau pertanyaan di luar saham/teknikal.id, arahkan balik dengan sopan.',
+        messages: [{ role: 'user', content: `Dari: ${userName}\nPesan: ${chatText}` }],
+      }),
+      signal: AbortSignal.timeout(20000),
+    });
+    if (!r.ok) return null;
+    const j = await r.json();
+    return j?.content?.[0]?.text?.trim()?.slice(0, 1200) || null;
+  } catch { return null; }
+}
+
 function normTicker(raw) {
   if (!raw) return null;
   let t = raw.toUpperCase().trim().replace(/\.JK$/,'').replace(/^@/,'').replace(/_JK$/,'');
@@ -60,6 +84,17 @@ async function handle(msg, c) {
       return send(chatId, `🚫 <b>${code}</b> dihapus dari pantauan. Kirim /start ${code} kalau mau lagi.`);
     }
     if (text.startsWith('/help')) return send(chatId, 'Perintah:\n/start BBCA — pantau saham\n/list — daftar pantauan\n/stop BBCA — berhenti pantau\n\nData oleh teknikal.id — bukan rekomendasi jual-beli.');
+
+    // admin aktif (29 Okt): pesan bebas → balas GLM + log ke DB (dulu: diabaikan senyap)
+    if (text && !text.startsWith('/')) {
+      const uname = [msg.from?.first_name, msg.from?.last_name].filter(Boolean).join(' ') || msg.from?.username || 'user';
+      try {
+        await c.query('INSERT INTO "BotInbox" ("chatId", "fromName", "text") VALUES ($1,$2,$3)', [chatId, uname.slice(0,80), text.slice(0,1000)]);
+      } catch (e) { console.error('inbox log fail', e.message); }
+      const ai = await aiReply(text, uname);
+      if (ai) return send(chatId, ai);
+      return send(chatId, 'Halo! 👋 Aku admin teknikal.id. Ketik /help untuk lihat perintah, atau /start KODESAHAM (mis. /start BBCA) untuk pantauan gratis tiap hari.');
+    }
   } catch(e) {
     console.error('handle error', e.message);
     // fix owner 30 Okt: jangan diam — user harus tahu kalau gangguan (dulu: klik tak ada respons)
