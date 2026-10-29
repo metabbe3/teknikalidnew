@@ -681,7 +681,6 @@ export default async function StockDetailPage({
                   <div className="mt-3 flex flex-wrap items-center justify-end gap-2 opacity-90">
                     <span id="ai" className="block scroll-mt-24" />
                     <StockAiModalButton ticker={ticker} name={stock.name} />
-                    <StockActionBadge ticker={ticker} />
                   </div>
                   {/* Nudge pasif: kunjungan ke-3 saham sama (guest) — hint simpan pantauan, bukan popup */}
                   <RepeatVisitHint ticker={ticker} />
