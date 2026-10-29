@@ -8,6 +8,7 @@
  */
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { AlertTriangle, Eye } from "lucide-react";
 
 const QUOTA_KEY = "teknikal:guest_quota";
 // product-audit-2026-10-29 QW5: sinkron dengan guest-pass.ts GUEST_DAILY_FREE 5 → 25
@@ -73,7 +74,13 @@ export function GuestQuotaMeter({ stockViews }: { stockViews: number }) {
       }`}
       role="status"
     >
-      <span aria-hidden>{warn ? "⚠️" : "👁️"}</span>
+      <span aria-hidden>
+        {warn ? (
+          <AlertTriangle className="h-3.5 w-3.5 shrink-0" aria-hidden />
+        ) : (
+          <Eye className="h-3.5 w-3.5 shrink-0" aria-hidden />
+        )}
+      </span>
       <span className="tabular-nums font-medium">
         {left > 0 ? `${left} saham gratis lagi hari ini` : "Kuota gratis hari ini habis"}
       </span>

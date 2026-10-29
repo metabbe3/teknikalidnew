@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AlertTriangle } from "lucide-react";
 
 const MESSAGES: Record<string, string> = {
   CredentialsSignin: "Email atau password salah. Periksa kembali atau daftar akun baru.",
@@ -19,8 +20,8 @@ export default async function AuthErrorPage({
   return (
     <div className="mx-auto max-w-md px-4 py-16 text-center">
       <div className="rounded-xl border border-border bg-bg-card p-8">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-2xl dark:bg-amber-950">
-          ⚠️
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-950">
+          <AlertTriangle className="h-6 w-6 text-amber-600 dark:text-amber-400" aria-hidden />
         </div>
         <h1 className="font-serif text-xl font-semibold text-text-primary">Gagal Masuk</h1>
         <p className="mt-3 text-sm leading-relaxed text-text-secondary">{message}</p>

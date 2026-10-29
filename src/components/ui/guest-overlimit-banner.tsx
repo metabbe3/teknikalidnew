@@ -29,7 +29,7 @@ export function GuestOverlimitBanner({ ticker }: { ticker?: string }) {
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
         <div className="flex-1">
           <p className="text-sm font-semibold text-amber-700 dark:text-amber-400">
-            👋 Anda sudah menjelajah cukup jauh hari ini
+            Anda sudah menjelajah cukup jauh hari ini
           </p>
           <p className="mt-0.5 text-sm text-text-secondary">
             {ticker

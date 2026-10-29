@@ -109,7 +109,7 @@ export default function AboutPage() {
             Chart interaktif ditenagai oleh TradingView Lightweight Charts.
           </p>
           <p className="text-sm text-text-tertiary mt-4 italic">
-            ⚠️ Semua data bersifat informasi dan edukasi. TeknikalID bukan penasihat investasi.
+            Semua data bersifat informasi dan edukasi. TeknikalID bukan penasihat investasi.
             Keputusan trading adalah tanggung jawab Anda sendiri.
           </p>
         </section>
