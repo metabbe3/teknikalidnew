@@ -7,6 +7,45 @@ export interface IDXIndex {
 }
 
 export const IDX_INDICES: IDXIndex[] = [
+  // seo-dr-3 (deep-research 641c019): LQ45 + JII + IDXHIDIV20 — kueri volume besar yang selama ini 404.
+  {
+    slug: "lq45",
+    name: "LQ45",
+    fullName: "Indeks LQ45 BEI",
+    description:
+      "Indeks LQ45 berisi 45 saham paling likuid di Bursa Efek Indonesia dengan kapitalisasi pasar terbesar, dievaluasi setiap enam bulan (Januari & Juli). LQ45 menjadi acuan utama investor pemula dan institusi karena likuiditas tinggi dan fundamental kuat. Pantau harga, modal 1 lot, dan skor sinyal teknikal seluruh konstituen LQ45 di sini.",
+    stocks: [
+      "AADI.JK","ACES.JK","ADRO.JK","AKRA.JK","AMMN.JK","AMRT.JK","ANTM.JK","ARTO.JK","ASII.JK","BBCA.JK",
+      "BBNI.JK","BBRI.JK","BBTN.JK","BMRI.JK","BRIS.JK","BRPT.JK","CPIN.JK","ESSA.JK","EXCL.JK","GGRM.JK",
+      "ICBP.JK","INCO.JK","INDF.JK","INKP.JK","ISAT.JK","ITMG.JK","JPFA.JK","JSMR.JK","KLBF.JK","MAPI.JK",
+      "MBMA.JK","MDKA.JK","MEDC.JK","PGAS.JK","PTBA.JK","SIDO.JK","SMGR.JK","TINS.JK","TLKM.JK","TOWR.JK",
+      "UNTR.JK","UNVR.JK","WIKA.JK",
+    ],
+  },
+  {
+    slug: "jii",
+    name: "JII",
+    fullName: "Jakarta Islamic Index (JII)",
+    description:
+      "Jakarta Islamic Index (JII) berisi 30 saham syariah paling likuid di BEI yang lolos kriteria DSN-MUI — tanpa riba, usaha halal, dan rasio keuangan syariah sehat. JII dievaluasi setiap Mei dan November. Halaman ini menyajikan daftar lengkap konstituen JII terbaru beserta harga, modal 1 lot, dan skor sinyal teknikal 0-1.",
+    stocks: [
+      "AADI.JK","AKRA.JK","AMMN.JK","AMRT.JK","ANTM.JK","BRIS.JK","CPIN.JK","ESSA.JK","GGRM.JK","ICBP.JK",
+      "INCO.JK","INKP.JK","JSMR.JK","KLBF.JK","MDKA.JK","MEDC.JK","PGAS.JK","PTBA.JK","SIDO.JK","SMGR.JK",
+      "TINS.JK","UNTR.JK","UNVR.JK","WIKA.JK","ADHI.JK","BRPT.JK","CDIA.JK","DEWA.JK","PGEO.JK","PTRO.JK",
+    ],
+  },
+  {
+    slug: "idxhidiv20",
+    name: "IDX High Dividend 20",
+    fullName: "Indeks IDX High Dividend 20",
+    description:
+      "Indeks IDX High Dividend 20 (IDXHIDIV20) berisi 20 saham BEI dengan dividen tunai paling konsisten dan yield tinggi dalam dua tahun terakhir, dievaluasi setiap tahun. Cocok untuk investor yang mencari arus kas pasif dari pasar saham. Lihat daftar konstituen, estimasi yield dividen, dan skor sinyal teknikalnya di halaman ini.",
+    stocks: [
+      "ABDA.JK","AALI.JK","AMRT.JK","ARTO.JK","ASII.JK","BBCA.JK","BBNI.JK","BBRI.JK","BMRI.JK","BSDE.JK",
+      "CPIN.JK","GGRM.JK","ICBP.JK","INDF.JK","INKP.JK","ITMG.JK","KLBF.JK","MDKA.JK","PGAS.JK","PTBA.JK",
+      "SIDO.JK","SMGR.JK","TINS.JK","TLKM.JK","UNTR.JK","UNVR.JK",
+    ],
+  },
   {
     slug: "smc-liquid",
     name: "SMC Liquid",

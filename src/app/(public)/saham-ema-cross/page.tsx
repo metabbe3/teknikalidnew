@@ -79,6 +79,15 @@ export default async function SahamEmaCrossPage() {
         title="Saham EMA Cross Hari Ini"
         description="Saham dengan sinyal EMA12/EMA26 crossover — momentum jangka pendek untuk trader aktif. Update setiap 5 menit."
       />
+      {/* seo-dr-3: kalimat pembuka dinamis utk SERP (jumlah saham hari ini) */}
+      <div className="mx-auto max-w-5xl px-4 pt-6">
+        <p className="rounded-lg bg-bg-hover/60 px-3 py-2 text-[13px] text-text-secondary" data-seo-dr="live-count">
+          Per {new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })},
+          terdapat <strong className="text-text-primary">{stocks.length} saham aktif BEI</strong> yang lolos
+          saringan ini — daftar lengkap di bawah, gratis tanpa login.
+        </p>
+      </div>
+
       <div className="mx-auto max-w-5xl px-4 py-8">
         <div className="mt-4 rounded-lg border border-border bg-bg-card p-4 text-sm text-text-secondary">
           <strong className="text-text-primary"> Mengapa EMA cross penting?</strong> EMA cross adalah detektor

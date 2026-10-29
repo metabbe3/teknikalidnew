@@ -79,6 +79,15 @@ export default async function SahamOverboughtPage() {
         title="Saham Overbought Hari Ini"
         description="Saham dengan RSI diatas 70 — berpotensi koreksi. Pertimbangkan take profit."
       />
+      {/* seo-dr-3: kalimat pembuka dinamis utk SERP (jumlah saham hari ini) */}
+      <div className="mx-auto max-w-5xl px-4 pt-6">
+        <p className="rounded-lg bg-bg-hover/60 px-3 py-2 text-[13px] text-text-secondary" data-seo-dr="live-count">
+          Per {new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })},
+          terdapat <strong className="text-text-primary">{stocks.length} saham aktif BEI</strong> yang lolos
+          saringan ini — daftar lengkap di bawah, gratis tanpa login.
+        </p>
+      </div>
+
       <div className="mx-auto max-w-5xl px-4 py-8">
         <div className="mt-4 rounded-lg border border-orange-200 bg-orange-50 p-4 text-sm dark:border-orange-900 dark:bg-orange-950">
           <strong> Perhatian:</strong> Saham overbought bukan sinyal jual pasti. Dalam tren kuat, RSI bisa bertahan

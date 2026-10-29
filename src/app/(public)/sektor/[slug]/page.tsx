@@ -2,7 +2,7 @@ import { type Metadata } from "next";
 import { safeJsonLd } from "@/lib/safe-json-ld";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { SECTORS } from "@/lib/sectors";
+import { SECTORS, SECTOR_SLUG_MAP } from "@/lib/sectors";
 import { SITE_URL } from "@/lib/constants";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { StockCard } from "@/components/stock/stock-card";
@@ -56,6 +56,43 @@ export default async function SectorDetailPage({
   } catch {
     stocks = [];
   }
+
+  // seo-dr-3 (deep-research 641c019): daftar LENGKAP seluruh saham aktif sektor ini via
+  // satu-pintu getStockList(sector) — sebelumnya hanya 2-5 saham statis (halaman 128 kata).
+  // Reverse-map slug → nama sektor IDX (English) via SECTOR_SLUG_MAP.
+  const idxSectorName = Object.entries(SECTOR_SLUG_MAP).find(([, sl]) => sl === slug)?.[0];
+  let allSectorRows: Awaited<ReturnType<typeof stockMarketService.getStockList>> = [];
+  if (idxSectorName) {
+    try {
+      allSectorRows = await stockMarketService.getStockList(idxSectorName);
+    } catch {
+      allSectorRows = [];
+    }
+  }
+  // Baris unik (representative + full), urut: turun % dulu lalu likuiditas (volume).
+  const seen = new Set<string>();
+  const merged = [
+    ...allSectorRows
+      .filter((r) => r.close !== null)
+      .sort((a, b) => (b.volume ?? 0) - (a.volume ?? 0))
+      .slice(0, 60),
+    ...allSectorRows.filter((r) => r.close === null),
+  ];
+  const fullList = merged.filter((r) => {
+    if (seen.has(r.ticker)) return false;
+    seen.add(r.ticker);
+    return true;
+  });
+  const fullBreath = fullList.reduce(
+    (acc, r) => {
+      if (r.close === null) return acc;
+      if ((r.changePercent ?? 0) > 0) acc.bullish++;
+      else if ((r.changePercent ?? 0) < 0) acc.bearish++;
+      else acc.neutral++;
+      return acc;
+    },
+    { bullish: 0, bearish: 0, neutral: 0 },
+  );
   const breath = stocks.reduce(
     (acc, s) => {
       const l = s.signalLabel ?? "";
@@ -168,11 +205,13 @@ export default async function SectorDetailPage({
             <h2 className="text-sm font-semibold uppercase tracking-wider text-text-tertiary">
               Saham Sektor {sector.name} Hari Ini
             </h2>
-            {stocks.length > 0 && (
-              <div className="flex items-center gap-3 text-xs font-mono">
-                <span className="text-bullish">▲ {breath.bullish}</span>
-                <span className="text-gray-400">◆ {breath.neutral}</span>
-                <span className="text-bearish">▼ {breath.bearish}</span>
+            {(stocks.length > 0 || fullList.length > 0) && (
+              <div className="flex items-center gap-2 text-[11px] font-medium">
+                <span className="text-bullish">{fullBreath.bullish} Sinyal Naik</span>
+                <span className="text-text-tertiary">·</span>
+                <span className="text-text-secondary">{fullBreath.neutral} Netral</span>
+                <span className="text-text-tertiary">·</span>
+                <span className="text-bearish">{fullBreath.bearish} Tekanan Jual</span>
               </div>
             )}
           </div>
@@ -186,6 +225,52 @@ export default async function SectorDetailPage({
             <p className="text-sm text-text-tertiary">Belum ada data harga untuk saham di sektor ini.</p>
           )}
         </div>
+
+        {/* seo-dr-3: tabel LENGKAP seluruh saham aktif sektor (SSR, internal link ke semua emiten) */}
+        {fullList.length > 0 && (
+          <div>
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-text-tertiary mb-3">
+              Daftar Lengkap {fullList.length} Saham Sektor {sector.name} di BEI
+            </h2>
+            <p className="text-sm text-text-secondary mb-4 leading-relaxed">
+              Berikut seluruh emiten aktif sektor {sector.name.toLowerCase()} di Bursa Efek Indonesia,
+              diurutkan berdasarkan likuiditas perdagangan. Kolom modal 1 lot membantu pemula menghitung
+              uang yang dibutuhkan untuk membeli 100 lembar saham.
+            </p>
+            <div className="overflow-x-auto rounded-lg border border-border">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-bg-hover text-text-tertiary text-xs">
+                    <th className="text-left px-3 py-2">Kode</th>
+                    <th className="text-left px-3 py-2">Nama Emiten</th>
+                    <th className="text-right px-3 py-2">Harga</th>
+                    <th className="text-right px-3 py-2">Modal 1 Lot</th>
+                    <th className="text-right px-3 py-2">Perubahan</th>
+                    <th className="text-right px-3 py-2">RSI-14</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {fullList.map((r) => (
+                    <tr key={r.ticker} className="border-t border-border">
+                      <td className="px-3 py-2">
+                        <Link href={`/stocks/${r.ticker}`} className="font-mono font-semibold text-accent hover:underline">
+                          {r.ticker.replace(".JK", "")}
+                        </Link>
+                      </td>
+                      <td className="px-3 py-2 text-text-secondary max-w-[240px] truncate" title={r.name}>{r.name}</td>
+                      <td className="px-3 py-2 text-right font-mono tabular-nums">{r.close !== null ? new Intl.NumberFormat("id-ID").format(r.close) : "—"}</td>
+                      <td className="px-3 py-2 text-right font-mono tabular-nums text-text-secondary">{r.close !== null ? new Intl.NumberFormat("id-ID").format(r.close * 100) : "—"}</td>
+                      <td className={`px-3 py-2 text-right font-mono tabular-nums ${(r.changePercent ?? 0) > 0 ? "text-bullish" : (r.changePercent ?? 0) < 0 ? "text-bearish" : "text-text-tertiary"}`}>
+                        {r.changePercent !== null ? `${r.changePercent > 0 ? "+" : ""}${r.changePercent.toFixed(2).replace(".", ",")}%` : "—"}
+                      </td>
+                      <td className="px-3 py-2 text-right font-mono tabular-nums text-text-secondary">{r.rsi14 !== null ? r.rsi14.toFixed(0) : "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
 
         {/* Back link */}
         <Link

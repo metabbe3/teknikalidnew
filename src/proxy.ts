@@ -435,6 +435,11 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // seo-dr-3 (deep-research 641c019): /harga-saham-hari-ini (197 kata) kanibal /stocks → 308.
+  if (pathname === "/harga-saham-hari-ini") {
+    return NextResponse.redirect(new URL("/stocks", request.url), 308);
+  }
+
   // product-audit-2026-10-29 QW2: /landing (11 views 404 minggu ini — sisa eksperimen) → beranda.
   if (pathname === "/landing" || pathname === "/landing-test") {
     return NextResponse.redirect(new URL("/", request.url), 308);

@@ -140,7 +140,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Indicator history TABLE pages — one URL per ticker (NOT per date).
   // Anti-spam: collapsed ~47k dated URLs into ~190 table pages. See SEO plan.
-  const indicatorHistoryPages = IDX_STOCKS.filter((s) => sitemapTickers.has(s.ticker)).map((s) => {
+  // seo-dr-2 (deep-research 641c019): diet crawl-budget — /indikator hanya 40 saham IDX40
+  // (575 URL boilerplate 28,3% sitemap, volume query ~0 → thin-content risk).
+  const indicatorHistoryPages = IDX_STOCKS.filter((s) => sitemapTickers.has(s.ticker) && idx40Set.has(s.ticker)).map((s) => {
     const sid = tickerToStockId.get(s.ticker);
     const realDate = sid ? stockIdToDate.get(sid) : undefined;
     return {
@@ -185,18 +187,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     };
   });
 
-  // FAQ pages
+  // FAQ pages — seo-dr-2: hanya jawaban kaya (>=1500 char ≈ 250 kata) yang masuk sitemap;
+  // 115 halaman tanya tipis (122-158 kata) ditarik keluar demi crawl budget.
   const faqPages = await prisma.question.findMany({
     where: { status: "ANSWERED" },
-    select: { slug: true, updatedAt: true },
+    select: { slug: true, updatedAt: true, shortAnswer: true, longAnswer: true },
   });
 
-  const faqSitemapEntries = faqPages.map((q) => ({
-    url: `${baseUrl}/akademi/tanya/${q.slug}`,
-    lastModified: q.updatedAt,
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
-  }));
+  const faqSitemapEntries = faqPages
+    .filter((q) => ((q.longAnswer ?? q.shortAnswer)?.length ?? 0) >= 1500)
+    .map((q) => ({
+      url: `${baseUrl}/akademi/tanya/${q.slug}`,
+      lastModified: q.updatedAt,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    }));
 
   // Profile pages — removed from sitemap (noindex via robots meta).
   // Keeping low-value UGC pages in the sitemap wastes crawl budget.
@@ -273,10 +278,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/saham-value-growth`, lastModified: today, changeFrequency: "daily", priority: 0.8 },
     { url: `${baseUrl}/broker-saham-terbaik`, lastModified: today, changeFrequency: "weekly", priority: 0.9 },
     { url: `${baseUrl}/community`, lastModified: today, changeFrequency: "daily", priority: 0.6 },
-    { url: `${baseUrl}/compare`, lastModified: today, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${baseUrl}/disclaimer`, lastModified: new Date("2026-01-01"), changeFrequency: "monthly", priority: 0.3 },
-    { url: `${baseUrl}/privacy`, lastModified: new Date("2026-01-01"), changeFrequency: "monthly", priority: 0.3 },
-    { url: `${baseUrl}/terms`, lastModified: new Date("2026-01-01"), changeFrequency: "monthly", priority: 0.3 },
+    // seo-dr-4/5 (deep-research 641c019): landing evergreen baru — data eksklusif BEI bebas login.
+    { url: `${baseUrl}/kalender-dividen`, lastModified: today, changeFrequency: "daily", priority: 0.9 },
+    { url: `${baseUrl}/aliran-dana-asing`, lastModified: today, changeFrequency: "daily", priority: 0.9 },
+    { url: `${baseUrl}/saham-modal-100-ribu`, lastModified: today, changeFrequency: "daily", priority: 0.8 },
+    // seo-dr-2: /compare (shell 52 kata) + halaman legal keluar dari sitemap — buang beban crawl.
     { url: `${baseUrl}/about`, lastModified: today, changeFrequency: "monthly", priority: 0.6 },
     ...stockPages,
     ...kenapaPages,
@@ -288,6 +294,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     indexIndex,
     ...indexPages,
     glossaryIndex,
-    ...glossaryPages,
+    // seo-dr-2: 60 glosarium per-term (82-86 kata) dikeluarkan; otoritas terkumpul di index.
+    // ...glossaryPages,
   ];
 }

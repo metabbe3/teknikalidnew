@@ -110,10 +110,12 @@ export async function generateMetadata({
   // GSC intent (CTR 0.8%, pos 67): query user = "harga saham X hari ini" → keyword WAJIB di title.
   const shortName = normalizeTickerTitle(fullName, name);
   // product-audit-2026-10-29 QW3: hilangkan spasi ganjil "( BBCA )" → "(BBCA)"
-  const title = `${shortName} (${name}) Harga Saham Hari Ini`;
+  // seo-dr-1 (deep-research 641c019): keluar dari medan "harga saham" (Google OneBox+DR75+)
+  // → tembak "analisa teknikal + sinyal" yang kosong lawannya di ~535 saham non-LQ45.
+  const title = `Saham ${name} (${shortName}) Hari Ini: Harga, Analisa Teknikal & Sinyal`;
   const description = price
-    ? `Harga saham ${name} (${fullName}) hari ini ${price}${changeStr}. Analisa teknikal lengkap: chart interaktif, RSI, MACD, Bollinger Bands, support/resistance, dan sinyal trading.`
-    : `Analisa teknikal saham ${fullName} (${name}) hari ini. Chart interaktif, RSI, MACD, Bollinger Bands, SMA/EMA, dan sinyal trading di TeknikalID.`;
+    ? `Harga saham ${name} (${fullName}) hari ini ${price}${changeStr}. Analisa teknikal & skor sinyal 0-1, RSI, MACD, support-resistance, modal 1 lot, dan aliran dana asing — gratis tanpa login.`
+    : `Analisa teknikal saham ${fullName} (${name}): skor sinyal 0-1, RSI, MACD, support-resistance, modal 1 lot, dan aliran dana asing — gratis tanpa login.`;
 
   return {
     title,
@@ -167,6 +169,11 @@ export default async function StockDetailPage({
   }
 
   const { stock, prices, latest, close, change, changePercent, indicator: indicators, prevIndicator } = detail;
+  // seo-dr-1: shortName utk h1 (sama dengan derivasi generateMetadata)
+  const shortName = normalizeTickerTitle(detail.stock?.name ?? stripJk(ticker), stripJk(ticker));
+  // seo-dr-1: level batas utk answer block (support/resistance toleran-null)
+  const supLevel = indicators?.bbLower ?? indicators?.sma20 ?? detail.week52Low ?? null;
+  const resLevel = indicators?.bbUpper ?? indicators?.sma50 ?? detail.week52High ?? null;
   const prev = prices[1];
   const isPositive = change !== null && change >= 0;
 
@@ -610,7 +617,8 @@ export default async function StockDetailPage({
               <div className="min-w-0">
                 <div className="flex items-center gap-2.5 flex-wrap">
                   <StockLogo src={stock.logo} name={stock.name} ticker={ticker} />
-                  <h1 className="text-2xl font-bold tracking-tight text-text-primary">{stripJk(ticker)}</h1>
+                  {/* seo-dr-1: h1 keyword "Harga & Analisa Teknikal" — sebelumnya cuma 4 huruf ticker */}
+                  <h1 className="text-2xl font-bold tracking-tight text-text-primary">Harga & Analisa Teknikal Saham {shortName} ({stripJk(ticker)})</h1>
                   {indicators?.isGorengan && (
                     <span className="text-sm font-bold px-3 py-1 rounded-lg bg-amber-500/15 text-amber-600 border border-amber-500/30 inline-flex items-center gap-1">
                       <AlertTriangle className="inline h-4 w-4" /> Gorengan
@@ -720,6 +728,20 @@ export default async function StockDetailPage({
                 </div>
               );
             })()}
+            {/* seo-dr-1 (deep-research 641c019): Answer block pemula — modal 1 lot + batas bawah/atas.
+                Angka konkret di HTML (SERP nyata: halaman yang mencetak angka level harga menang). */}
+            {close !== null && (
+              <p className="mt-3 text-[13px] leading-relaxed text-text-secondary">
+                <strong className="text-text-primary">Ringkas untuk pemula:</strong> 1 lot (100 lembar) {stripJk(ticker)} = <strong className="text-text-primary">{formatPrice(close * 100)}</strong>
+                {supLevel !== null && close > supLevel && (
+                  <> · batas bawah (support) sekitar <strong className="text-text-primary">{formatPrice(supLevel)}</strong></>
+                )}
+                {resLevel !== null && resLevel > 0 && (
+                  <> · batas atas (resistance) sekitar <strong className="text-text-primary">{formatPrice(resLevel)}</strong></>
+                )}
+                {smaCrossText && <> · {smaCrossText}</>}.
+              </p>
+            )}
 
             {/* OHLC + 52-week strip — anon-visible (SEO + first impression; data sudah SSR di page) */}
             {close !== null && (

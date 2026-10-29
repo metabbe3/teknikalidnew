@@ -112,6 +112,11 @@ export default async function SahamMacdBullishPage() {
         </div>
 
         <div className="mt-6 space-y-4 text-sm leading-relaxed text-text-secondary">
+          <p className="rounded-lg bg-bg-hover/60 px-3 py-2 text-[13px]" data-seo-dr="live-count">
+            Per {new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })},
+            terdapat <strong className="text-text-primary">{stocks.length} saham aktif BEI</strong> yang lolos
+            saringan ini (sudah difilter dari saham gorengan) — daftar lengkapnya di tabel bawah, gratis tanpa login.
+          </p>
           <p>
             <strong className="text-text-primary">Saham MACD bullish hari ini</strong> merujuk pada saham di Bursa
             Efek Indonesia (BEI) yang histogram MACD-nya bernilai positif. MACD mengukur jarak antara dua moving
