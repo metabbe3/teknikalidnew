@@ -359,3 +359,9 @@ Ke-3 kalinya klaim kesegaran sinyal lolos generator Mandor: qa-2026-09-27-01 (hi
 ## [REVIEWER] 2026-10-29 — Pola ke-10: angka fundamental di "Angka kunci" dari kutipan berita, bukan replay DB
 - Analis Pagi 29 Okt (PWON): 'PBV 0,70' + 'MA20 (268)' vs DB 0,62 / SMA20 273 — angka kemungkinan diangkat dari research note eksternal (Kontan/Bareksa 27 Okt) atau snapshot lama, bukan StockFundamental/StockIndicator tanggal sesi. Angka teknikal-harga (% chg, RSI, skor) di artikel yang sama 100% exact — hanya field yang punya padanan di kutipan berita yang melenceng.
 - RULE: field fundamental/MA di blok angka-kunci WAJIB replay dari StockFundamental/StockIndicator tanggal sesi terakhir; jika sumbernya kutipan berita, tandai atribusi eksplisit ATAU cocokkan dulu ke DB (mismatch >2% = HOLD). Diimplement di acceptance qa-2026-10-29-01 (guard generator, bukan prompt-only).
+
+
+## 2026-10-29 21:5x WIB — Hot-swap docker-cp tanpa restart = bom migration (insiden T-1029-N)
+- **Pola**: deploy hot-swap (docker cp .next ke container jalan) TIDAK menjalankan entrypoint → migration prisma baru tak pernah diterapkan/tercatat. Saat container akhirnya restart (deploy kereta), `migrate deploy` menemukan DDL sudah ada (owner terapkan manual) → P3009 → crash-loop → prod 502.
+- **Aturan**: sebelum `up -d` dengan image hasil build baru, SELALU cek `SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NULL` + bandingkan `ls prisma/migrations` vs ledger. DDL sudah live tapi ledger kosong = `prisma migrate resolve --applied <name>` (bookkeeping, bukan DDL).
+- **Aturan-2**: hot-swap path juga menyembunyikan kode dari image — image tua + container jalan = ilusi "belum live"; grep container = satu-satunya kebenaran (lagi).

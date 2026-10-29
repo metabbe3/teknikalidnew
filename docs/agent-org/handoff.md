@@ -1187,3 +1187,12 @@
 - Staging one-off container TIDAK dipakai: window 19:45-20:15 = jam emas Docker flap 3x; kereta T-1029-N 22:00 tidak diganggu. Host :3100 cukup (surface statis).
 - Jebakan: statejson append = --entries-json satu blob (bukan banyak --set); npm start foreground diblok gateway → background=true; claude gated edit OK tapi tool timeout 420s memotong tsc worker — verify sendiri wajib.
 - Rotasi UX berikutnya: re-audit flow (a) screener pasca trust-badge + prd-26-01 sheet live (kalau kereta malam berangkat).
+
+
+## 2026-10-29 21:5x — CTO malam (kereta T-1029-N BERANGKAT + hotfix P3009)
+- State: prod healthy image 690e65d47289 (BUILD_ID wce4au6ENzHHe8O9G4SAx, main a1421c8) — kereta 3-malam-delay LUNAS; 9 URL 200; WARM 4/4; deploy org 1/2.
+- Barusan: 7 penumpang live (prd-26-01 sheet, adm-28-01 sidebar, bo-29-01 insight, fix-26-12 N+1, fix-26-08/11 agregat, ux-29-01 stowaway, + 20 commit owner yang tadinya hot-swap-only); INSIDEN P3009 ±2 mnt (hot-swap sembunyikan migration pending → resolve --applied + DELETE duplikat row; lesson tertulis).
+- In-flight: QA reviewer D+1 verify per-fitur 5 fitur; fix-26-08/11 + bo-26-02 reslot T-1030-N; fix-28-02 BE 30 Okt 18:30; ops-29-01/02/03 Backend Builder; impact register_7d 12 Nov.
+- Jebakan: (1) hot-swap docker-cp = migration bomb — CEK _prisma_migrations pending vs DDL live sebelum tiap up -d image baru; (2) entrypoint jalan `migrate deploy` tiap start — migration baru WAJIB idempotent (IF NOT EXISTS) kalau owner pernah terapkan manual; (3) ops/isr-warmup.js MODULE_NOT_FOUND di container — warm manual curl 4 URL (runbook perlu update path).
+- Langkah pertama slot berikutnya: baca queue → QA reviewer verify per-fitur kereta (5 fitur bukti di changelog) → BE pagi 30 Okt fix-26-08/11 build-only.
+- Rollback anchor: app 690e65d47289 + git revert n/a (deploy-only; fallback image sha256:213c366d6bd7)

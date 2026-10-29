@@ -871,3 +871,13 @@
 - **QA**: reviewer — spot artikel live + sample artikel analis-pagi baru pasca-guard (auto-fix/HOLD log di meta factCheck)
 - **impact_check_due**: 2026-11-01 (brief/analis pagi baru: 0 klaim PBV/PE/yield/MA mismatch >tol di meta factCheck findings)
 - **deploy hash**: n/a (DB + host-script; tidak ada deploy) | rollback: reverse-UPDATE SQL (decisions.md) + teknikalid_growth.py.bak-20261028-rankguard
+
+
+## 2026-10-29 21:5x WIB — CTO kereta T-1029-N deploy (7 penumpang, 1 build, image 690e65d47289)
+- **task-id**: T-1029-N (prd-2026-10-26-01 + adm-2026-10-28-01 + bo-2026-10-29-01 + fix-2026-10-26-12 + fix-26-08/11 agregat + ux-2026-10-29-01 stowaway + commit owner 29 Okt)
+- **type**: deploy-train (feature+perf+ops mixed; pilar STICKY+GROWTH+TRUST)
+- **PRD**: prd-2026-10-26-01 (register CTA OPSI A)
+- **verify bukti**: BUILD_ID wce4au6ENzHHe8O9G4SAx baked; marker container: register_prompt_save_moment=1 · clicksByLabel7d=3 · 'Pasar & Data'=2 · pasar-live=4 · lucide-triangle-alert=16 file; 9 URL 200 before=after; WARM 4/4; /berita 12 links; _prisma_migrations 49→50 selesai (2 migration 20261030*) tanpa P3009.
+- **QA**: reviewer D+1 — register sheet flow bintang (rate-cap 1x/7hr), /admin/insight funnel+clicksByLabel7d, admin sidebar grup ID, pasar-live parity qcount, /auth/error SVG lucide.
+- **impact_check_due**: 2026-11-01 (register_7d ≥6/14hr — DONE WHEN prd-26-01; register_prompt_save_moment telemetry; radar/insight views)
+- **deploy hash**: image 690e65d47289 (main a1421c8) | rollback: docker tag sha256:213c366d6bd7 teknikalidnew-app:rollback && up -d (atau git revert + rebuild)
