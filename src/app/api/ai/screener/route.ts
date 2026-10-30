@@ -189,7 +189,7 @@ export async function POST(req: NextRequest) {
 
   // v2 (owner 30 Okt): authed dari SESSION server (anti-spoof) + dua lapis jam/hari + pesan konversi
   let authed = false;
-  try { authed = !!(await auth()).user; } catch { authed = false; }
+  try { const sess = await auth(); authed = !!(sess && sess.user); } catch { authed = false; }
   const rd = aiRateCheck(ip, authed);
   if (rd.limited) {
     return NextResponse.json(
