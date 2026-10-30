@@ -199,7 +199,7 @@ export default async function PasarPage() {
         <section aria-labelledby="watchlist-heading">
           <div className="flex items-center gap-2 mb-3">
             <h2 id="watchlist-heading" className="text-lg font-semibold">Watchlist Hari Ini</h2>
-            <span className="text-xs text-text-tertiary">sinyal teknikal non-gorengan · likuiditas ≥ Rp1 M</span>
+            <span className="text-xs text-text-tertiary">sinyal teknikal non-gorengan · likuiditas ≥ Rp1 miliar</span>
           </div>
           {snap.watchlist.length === 0 ? (
             <Card><CardContent className="text-sm text-muted-foreground py-4">Belum ada sinyal fresh yang lolos filter hari ini.</CardContent></Card>
@@ -430,7 +430,7 @@ function TopSignalsSection({ items, sessionDate }: { items: PasarTopSignal[]; se
     <section aria-labelledby="topsignals-heading">
       <div className="flex items-baseline justify-between mb-3">
         <h2 id="topsignals-heading" className="text-lg font-semibold">Top-20 Skor Sinyal</h2>
-        <span className="text-xs text-text-tertiary">sesi {dateLabel(sessionDate)} · non-gorengan · likuid ≥ Rp1 M</span>
+        <span className="text-xs text-text-tertiary">sesi {dateLabel(sessionDate)} · non-gorengan · likuid ≥ Rp1 miliar</span>
       </div>
       <Card>
         <CardContent className="py-2">
