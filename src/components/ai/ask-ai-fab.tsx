@@ -2,7 +2,8 @@
 
 /**
  * AskAiFab (owner 30 Okt): floating action button "tanya apapun" — 1 tempat di SEMUA halaman.
- * - Khusus user LOGIN (owner mandate): anon tidak lihat FAB (entry AI anon tetap tombol inline existing).
+ * - Owner 30 Okt (revisi): anon LIHAT FAB (teaser) tapi diarahkan login dulu —
+ *   panel guest menampilkan contoh chips + CTA Masuk/Daftar; baru chat setelah login.
  * - Mobile: FAB bulat kanan-bawah 56px (≥44px tap target); Desktop: pill kanan-bawah.
  * - Buka modal chat ringan → POST /api/ai/screener (mode MARKET, glm-flash + PasarSnapshot).
  * - Deteksi ticker 4-huruf di pertanyaan → auto redirect deep-link ke halaman saham
@@ -60,8 +61,8 @@ export function AskAiFab() {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
   }, [items, loading]);
 
-  // Khusus login (owner 30 Okt). unauthenticated/loading → FAB tidak render.
-  if (status !== "authenticated") return null;
+  const isAuthed = status === "authenticated";
+  const isGuest = status === "unauthenticated"; // loading → tampil FAB, klik no-op sampai status jelas
 
   async function ask(question: string) {
     const text = question.trim();
@@ -96,6 +97,7 @@ export function AskAiFab() {
       {/* FAB */}
       <button
         onClick={() => setOpen((v) => !v)}
+        data-authed={isAuthed ? "1" : "0"}
         aria-label={open ? "Tutup tanya AI" : "Tanya AI apa saja"}
         data-engagement="fab_ask_ai"
         className={`fixed z-30 bottom-24 md:bottom-6 right-4 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent text-white shadow-lg hover:bg-accent/90 active:scale-95 transition
@@ -122,6 +124,44 @@ export function AskAiFab() {
             </button>
           </div>
 
+          {isGuest ? (
+            /* Gate login (owner 30 Okt): teaser terlihat, aksi diarahkan masuk dulu */
+            <div className="flex-1 px-4 py-4 space-y-4">
+              <p className="text-sm text-text-secondary leading-relaxed">
+                Tanya apa saja soal pasar &amp; saham — jawaban dari data teknikal hari ini,
+                langsung dari halaman mana pun.
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {QUICK_CHIPS.map((c) => (
+                  <span key={c} className="text-xs px-3 py-1.5 rounded-full border border-border text-text-tertiary">
+                    {c}
+                  </span>
+                ))}
+              </div>
+              <div className="rounded-xl border border-border bg-bg-primary p-3.5 space-y-3">
+                <p className="text-sm font-semibold text-text-primary">Gratis untuk member ✨</p>
+                <p className="text-xs text-text-tertiary">
+                  Masuk untuk mulai bertanya — daftar 30 detik, tanpa kartu kredit.
+                </p>
+                <div className="flex gap-2">
+                  <Link
+                    href={`/auth/login?callbackUrl=${encodeURIComponent(typeof window !== "undefined" ? window.location.pathname : "/")}`}
+                    onClick={() => setOpen(false)}
+                    className="flex-1 text-center text-sm font-bold text-white bg-accent hover:bg-accent/90 rounded-lg px-4 py-2.5"
+                  >
+                    Masuk
+                  </Link>
+                  <Link
+                    href="/auth/register"
+                    onClick={() => setOpen(false)}
+                    className="flex-1 text-center text-sm font-semibold text-accent border border-accent/40 hover:bg-accent/10 rounded-lg px-4 py-2.5"
+                  >
+                    Daftar Gratis
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ) : (
           <div ref={listRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
             {items.length === 0 && (
               <div className="space-y-3">
@@ -177,7 +217,9 @@ export function AskAiFab() {
             )}
             {error && <p className="text-xs text-red-500">{error}</p>}
           </div>
+          )}
 
+          {!isGuest && (
           <div className="flex gap-2 p-3 border-t border-border">
             <input
               ref={inputRef}
@@ -197,6 +239,7 @@ export function AskAiFab() {
               <Send className="h-4 w-4" aria-hidden />
             </button>
           </div>
+          )}
           <p className="px-4 pb-2.5 text-[10px] text-text-tertiary">
             Jawaban dari data teknikal — edukasi, bukan rekomendasi beli/jual.
           </p>
