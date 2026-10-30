@@ -31,14 +31,14 @@
       "done_when": "hermes cron run 8b459dd0bc65 berakhir exit 0 dan ForeignFlow rows hari ini masuk DB (SELECT count(*) FROM \\\"ForeignFlow\\\" WHERE date::date=current_date) > 0",
       "notes": "Jalur WAJIB Playwright warm-session (doctrine #184: curl+CDP diblokir CF; endpoint IDX /primary/TradingSummary/GetStockSummary). Cek ~/.hermes/cron/output/8b459dd0bc65/ log. Impact: section Aliran Dana Asing /pasar + /stocks + scanner analyst foreign_accumulation jadi stale.",
       "date": "2026-10-28",
-      "scheduled_slot": "TURUN dari T-1029-N oleh CTO Lead 29 Okt (BOARDING GATE: 0 commit, 0 bukti fisik) -> BE malam 29 Okt 18:30 build-only, target kereta T-1030-N"
+      "scheduled_slot": "BE malam 30 Okt 18:30 build-only (resmi TURUN dari T-1029-N boarding gate 29 Okt; restore Playwright warm-session; target T-1030-N bila bukti hijau sore)"
     },
     {
       "id": "bo-2026-10-25-01",
       "date": "2026-10-25",
       "type": "backoffice-audit",
       "priority": "P2",
-      "status": "blocked_for_owner",
+      "status": "approved-remove",
       "assigned_to": "backoffice-builder",
       "scheduled_slot": "blocked: tunggu verdict owner (digest pagi)",
       "north_star": "MATANGKAN/BUANG (owner 12 Okt 'buang yang tak berguna') — pilar tidak langsung: mengurangi permukaan admin mati = consistency admin sebagai satu sumber kebenaran",
@@ -51,7 +51,9 @@
       ],
       "audit_evidence": "2026-10-25 03:00 WIB: file page.tsx mtime Jun 13 (daftar '12 halaman tak tersentuh sejak Juni'); git log social-cards = 2 commit terakhir Jun 13 + snapshot Sep; LIVE: teknikal.id/admin/social-cards 307 auth-guard OK, /api/admin/social-cards/articles 404-anonim (disguise by design, proxy.ts L324-331); grep html2canvas = 1 konsumen; DB read-only: NEWS published 46 total / 7 baru 7d (feed hidup, bukan basi).",
       "train": "T-1029-N",
-      "needs": "OWNER VERDICT: /admin/social-cards (generator kartu TikTok/Reels utk workflow IG yang STOP 17 Sep; ~700 baris + dep html2canvas-pro, zero pemakaian) — APPROVE remove / KEEP?"
+      "needs": "OWNER VERDICT: /admin/social-cards (generator kartu TikTok/Reels utk workflow IG yang STOP 17 Sep; ~700 baris + dep html2canvas-pro, zero pemakaian) — APPROVE remove / KEEP?",
+      "verdict": "OWNER APPROVE REMOVE (30 Okt digest): hapus /admin/social-cards + dep html2canvas-pro",
+      "verdict_at": "2026-10-30"
     },
     {
       "date": "2026-10-24",
@@ -2806,7 +2808,7 @@
       "date": "2026-10-26",
       "type": "backoffice-audit",
       "priority": "P2",
-      "status": "blocked_for_owner",
+      "status": "approved-demote",
       "assigned_to": "backoffice-builder",
       "scheduled_slot": "blocked: tunggu verdict owner (digest pagi)",
       "north_star": "MATANGKAN/BUANG (owner 12 Okt) — mengurangi permukaan admin yang menampilkan data mati = consistency admin sebagai satu sumber kebenaran",
@@ -2819,7 +2821,9 @@
       ],
       "audit_evidence": "2026-10-26 03:0x WIB: psql read-only — Post total=1/30d=0, Comment 30d=0, Repost 30d=0, Like 30d=0 (skema: model Post/Comment/Like/Repost), Post.predictionDirection NOT NULL count=0, Report total=0; /community live 200 (localhost+teknikal.id); footer link Komunitas ada; backlog product: tidak ada PRD komunitas aktif (hanya done_wave3 sidebar-mobile + point-badge prd-2026-10-24-01).",
       "train": "T-1029-N",
-      "needs": "OWNER VERDICT: tab Community+Predictions Dashboard /admin tampil KPI permanen-0 (Post 1 sepanjang sejarah, Comment/Like/Repost/Prediksi 0). DEMOTE (sembunyikan sampai >50 post) / BADGE 0-aktivitas / KEEP?"
+      "needs": "OWNER VERDICT: tab Community+Predictions Dashboard /admin tampil KPI permanen-0 (Post 1 sepanjang sejarah, Comment/Like/Repost/Prediksi 0). DEMOTE (sembunyikan sampai >50 post) / BADGE 0-aktivitas / KEEP?",
+      "verdict": "OWNER APPROVE DEMOTE (30 Okt digest): tab Community+Predictions disembunyikan (flag), bukan dihapus",
+      "verdict_at": "2026-10-30"
     },
     {
       "id": "ux-2026-10-26-01",
@@ -3016,7 +3020,7 @@
       "priority": "P2",
       "status": "pending",
       "assigned_to": "cto",
-      "scheduled_slot": "BE malam 29 Okt 18:30 (agregat bersama fix-28-02 foreign-flow; ringkas — backlog)",
+      "scheduled_slot": "BE malam 30 Okt 18:30 (agregat ringkas — reslot CTO Lead 30 Okt dari 29 Okt yang lewat; target kereta T-1030-N bila hijau sore)",
       "north_star": "CONSISTENCY — audit cron-monitoring 26 Okt",
       "source": "plain audit 26 Okt sore (domain cron-monitoring/)",
       "spec": "Domain cron-monitoring (audit 26 Okt): (1) tanpa cron-monitoring.errors.ts + TimeoutError extends Error bukan DomainError (with-timeout.ts:13); (2) status tipe longgar: repo string vs service union (cron-monitoring.repository.ts:10 vs service:6); (3) errorMessage error.message bisa bocor detail internal ke dashboard admin (with-cron-logging.ts:32) — pastikan dashboard admin-only. Domain sehat, nol P0/P1.",
@@ -3333,12 +3337,13 @@
       "id": "ops-2026-10-29-02",
       "title": "OPS DIAG: profile-sync LRU-150 crash 05:34 (playwright TargetClosedError mid-batch-2 setelah 429-skips) — batch-0/1 ok=24/19; cari penyebab browser-close (OOM? crash daemon?) + guard try/except per-batch",
       "priority": "P2",
-      "status": "pending",
+      "status": "done",
       "source": "CTO Lead 29 Okt (cron output 9cc945374222/2026-10-29_05-34-05.md)",
       "north_star": "TRUST (data profil emiten reliable)",
       "done_when": "run 05:2x BESOK exit 0 DAN seluruh 150 emiten ok (fail=0) ATAU patch guard commit dgn selftest; bukti stdout cron",
       "scheduled_slot": "Backend Builder pagi 09:30 29 Okt (diagnosa read-only dulu, sesudah merge fix-26-12)",
-      "date": "2026-10-29"
+      "date": "2026-10-29",
+      "result": "CTO Lead 30 Okt: crash 29 Okt 05:34 one-off (playwright TargetClosedError mid-batch); clamp value-too-long sudah live via T-1029-N; run 30 Okt 04:07 status ok (ledger runs.jsonl) — monitor via cron harian, entry tutup."
     },
     {
       "id": "ops-2026-10-29-03",
@@ -3520,6 +3525,24 @@
       "title": "QA CTO pagi 30 Okt: verify per-fitur kereta T-1029-N live (7 penumpang)",
       "spec": "Slot pagi CTO = QA reviewer D+1 kereta T-1029-N (deploy 29 Okt 21:35, image 690e65d47289). Verify minimal: (1) prd-26-01 register sheet marker register_prompt_save_moment di chunk layout; (2) bo-29-01 /admin/insight route live; (3) adm-28-01 sidebar; (4) fix-26-12 N+1 — indikator: WorkerLedger 24h tanpa error pasar-live; (5) ux-29-01 emoji 0. SKIP fix-26-08/11 (reslot T-1030-N oleh CTO malam sendiri).",
       "result": "DONE 30 Okt 08:1x. (1) prd-26-01 marker register_prompt_save_moment LIVE di container chunk layout-98ca69609e2fa9a8.js (grep docker exec); (2) bo-29-01 /admin/insight page.js LIVE di container + bo-verify prod 03:2x (qa_pass entry); (3) fix-26-12 selftest pasar-live-doctrine 9/9 PASS re-run 30 Okt; (4) ux-29-01 emoji pass-4 commit 9179d32 di main b6f854d ancestor; (5) fix-26-08/11 SKIP sesuai reslot. Home/stocks/pasar 200. Dashboard kpi.json refresh 07:05 konfirmasi CTO Lead."
+    },
+    {
+      "id": "sec-2026-10-29-02-dispatch",
+      "priority": "P1",
+      "status": "pending",
+      "title": "SEC RED guest-pass unlimited scrape: rate-limit /api/track/guest-pass + server-side cap enforcement",
+      "spec": "From IT-SEC audit (backlog approved): (1) rate-limit beacon /api/track/guest-pass (selalu 204 hari ini — tanpa limit); (2) guest_pass cookie value TIDAK boleh dipercaya langsung utk kuota — server-side cap enforcement (IP+UA hash bucket, cap 50 ticker/hari spt by-design); (3) jangan ubah by-design soft-gate UX (banner overlimit FE tetap). DONE WHEN: curl 60x cepat dari IP sama = 429 bukan 204 semua; cap server-side terbukti via 2 anonId beda cookie sama IP tidak dapat kuota ganda; tsc 0; build hijau. Kereta T-1031-N.",
+      "scheduled_slot": "BE pagi 3 Nov 09:30 (build-only) — verifikasi QA Verifier sebelum naik; pilar TRUST",
+      "north_star": "TRUST"
+    },
+    {
+      "id": "ux-2026-10-30-01",
+      "priority": "P2",
+      "status": "pending",
+      "title": "CTA Tambah ke Portofolio di halaman saham — hidupkan fitur tersembunyi (im-2026-10-30-1)",
+      "spec": "PortfolioHolding + /portfolio sudah live TAPI 0 pintu masuk dari ticker page. Tambahkan CTA \"Tambah ke Portofolio\" di kartu harga/aksi halaman saham (authed) / guest lihat CTA register-adjacent (utm portfolio_cta). Reuse komponen ScreenActions/watchlist pattern; JANGAN buat endpoint baru — API portofolio existing. DONE WHEN: /stocks/BBCA.JK authed menampilkan CTA + klik menambah holding (DB row) ; guest melihat varian CTA; tsc 0; build hijau; staging verify. Pilar STICKY (returning value loop). Kereta T-1031-N.",
+      "scheduled_slot": "FE 19:15 3 Nov BUILD-ONLY (setelah audit-slot hari ini) — kereta T-1031-N",
+      "north_star": "STICKY"
     }
   ]
 }

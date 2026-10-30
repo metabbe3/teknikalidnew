@@ -1422,3 +1422,9 @@ Catatan riset: keyword "eastspring idx esg leaders plus kelas a" (impr 209) = re
 - INSIDEN P0 (21:45-21:47, ±2 mnt prod 502): entrypoint `prisma migrate deploy` P3009 crash-loop — migration 20261030090000_pageview_anonid (owner 12:53) DDL-nya SUDAH diterapkan manual ke prod tapi TIDAK pernah tercatat di _prisma_migrations (hot-swap tak restart → entrypoint tak pernah jalan). FIX: `prisma migrate resolve --applied` (bookkeeping ledger murni, 0 DDL baru; backup fresh 01:16 dicek dulu) + DELETE 1 row failed duplikat. Migration kedua tracking_audit_g1_g14 (IF NOT EXISTS) diterapkan entrypoint normal.
 - TURUN kereta (boarding gate, 0 commit/0 bukti): fix-2026-10-28-02 (sudah reslot BE 30 Okt) · fix-2026-10-26-08 · fix-2026-10-26-11 · bo-2026-10-26-02 → reslot T-1030-N.
 - VERIFY: 9 URL 200 (before=after; /berita baseline timeout → after 200) · marker 5/5 penumpang baked di container · WARM 4/4 · /berita 12 links · AppErrorLog+TelegramWatch to_regclass OK · container healthy.
+
+## CTO note 2026-10-30
+- Konteks: register_7d 2/6 (turun lagi, floor 6) + MoM traffic +3,1% di bawah band 5-15% — verdict traffic 2 Nov H-3. prd-26-01 register sheet live 29 Okt tapi 0 impression (0 guest save pasca-live; window 14 hari s.d. 12 Nov).
+- Opsi A: tahan semua intervensi funnel, tunggu sheet 14 hari (12 Nov) — bersih secara eksperimental, tapi register bisa tetap 2-3 sepanjang window.
+- Opsi B (rekomendasi): naikkan im-2026-10-30-1 CTA "Tambah ke Portofolio" (fitur live tersembunyi, /portfolio 0 pintu masuk) sebagai penumpang T-1031-N — surface BEDA (halaman saham) dari sheet screener, tidak mengotori pengukuran sheet; murah (reuse API portofolio existing, 0 endpoint baru); pilar STICKY.
+- Risk ops hari ini: kereta T-1030-N 4 penumpang tapi 2 masih pending bukti (fix-26-08/fix-28-02) — boarding gate 22:00 final, kereta tidak menunggu penumpang.
