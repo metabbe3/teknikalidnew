@@ -20,6 +20,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Sparkles, X, Send, ArrowUpRight } from "lucide-react";
 import { AiMarkdown } from "@/components/ai/ai-markdown";
+import { detectTickerInText, isPlausibleTicker } from "@/lib/ai-ticker-guard";
 
 const QUICK_CHIPS = [
   "Saham apa yang lagi oke hari ini?",
@@ -77,8 +78,7 @@ export function AskAiFab() {
       // ROUTING (owner 30 Okt: "responsenya sama terus"): sebut ticker 4-huruf → endpoint SAHAM
       // (context per-saham + COMPARE + posisiUser floating P/L); tanpa ticker → endpoint PASAR.
       // Dulu semua ke /api/ai/screener → jawaban pasar identik utk pertanyaan per-saham.
-      const m = text.toUpperCase().match(/\b([A-Z]{4})(?:\.JK)?\b/);
-      const tickerHit = m && m[1] !== "IHSG" ? m[1] : null;
+      const tickerHit = detectTickerInText(text); // guard: "yang/data/macd" ≠ ticker (owner 30 Okt bug YANG)
       const res = await fetch(tickerHit ? "/api/ai/stock" : "/api/ai/screener", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -90,7 +90,7 @@ export function AskAiFab() {
       if (!res.ok || !data.ok) throw new Error(data.error || "Gagal menjawab");
       // ekstrak ticker dari jawaban utk tombol deep-link
       const links = [...new Set((data.text as string).match(ID_TICKER_RE) ?? [])]
-        .filter((t) => t !== "IHSG")
+        .filter((t) => t !== "IHSG" && isPlausibleTicker(t))
         .slice(0, 4)
         .map((ticker) => ({ ticker }));
       setItems((p) => [...p, { role: "ai", text: data.text, links }]);

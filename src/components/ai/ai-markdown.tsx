@@ -3,6 +3,7 @@
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
+import { isPlausibleTicker } from "@/lib/ai-ticker-guard";
 
 /**
  * AiMarkdown (owner 30 Okt: "kita beautify md formatnya"):
@@ -76,7 +77,6 @@ export function AiMarkdown({ text, compact = false }: { text: string; compact?: 
 
 /** Ekstrak ticker ID 4-huruf dari teks jawaban (utk tombol deep-link di FAB) — exclude kata umum. */
 export function extractTickers(text: string, max = 4): string[] {
-  const EXCLUDE = new Set(["IHSG", "OVER", "BEI ", "DATA"]);
   const found = text.match(/\b[A-Z]{4}\b/g) ?? [];
-  return [...new Set(found)].filter((t) => !EXCLUDE.has(t)).slice(0, max);
+  return [...new Set(found)].filter((t) => t !== "IHSG" && isPlausibleTicker(t)).slice(0, max);
 }

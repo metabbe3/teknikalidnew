@@ -1,3 +1,4 @@
+import { isPlausibleTicker } from "@/lib/ai-ticker-guard";
 import { NextRequest, NextResponse } from "next/server";
 import { buildStockAiContext } from "./context";
 import { stockRepository } from "@/domains/stock/stock.repository";
@@ -194,7 +195,7 @@ export async function POST(req: NextRequest) {
     const found = new Set<string>();
     for (const m of question.matchAll(/\b([A-Z]{4})\b/g)) {
       const t = m[1];
-      if (t !== current && !found.has(t)) found.add(t);
+      if (isPlausibleTicker(t, question) && t !== current && !found.has(t)) found.add(t);
     }
     if (found.size > 0) {
       const t2 = [...found][0];
