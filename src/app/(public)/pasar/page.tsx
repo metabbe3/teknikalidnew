@@ -359,8 +359,8 @@ function RecapBlock({
         </CardContent>
       </Card>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <MoversCard title={`Gainers — sesi ${recap.sessionDate ? new Date(recap.sessionDate).toLocaleDateString("id-ID", { day: "numeric", month: "short" }) : "terakhir"}`} icon={<TrendingUp className="h-4 w-4 text-bullish" />} items={gainers} />
-        <MoversCard title={`Losers — sesi ${recap.sessionDate ? new Date(recap.sessionDate).toLocaleDateString("id-ID", { day: "numeric", month: "short" }) : "terakhir"}`} icon={<TrendingDown className="h-4 w-4 text-bearish" />} items={losers} />
+        <MoversCard title={`Gainers — sesi ${sessionDate ? new Date(sessionDate).toLocaleDateString("id-ID", { day: "numeric", month: "short" }) : "terakhir"}`} icon={<TrendingUp className="h-4 w-4 text-bullish" />} items={gainers} />
+        <MoversCard title={`Losers — sesi ${sessionDate ? new Date(sessionDate).toLocaleDateString("id-ID", { day: "numeric", month: "short" }) : "terakhir"}`} icon={<TrendingDown className="h-4 w-4 text-bearish" />} items={losers} />
       </div>
       <TopSignalsSection items={topSignals} sessionDate={sessionDate} />
 
