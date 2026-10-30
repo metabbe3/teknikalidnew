@@ -890,3 +890,11 @@
 - **queue**: v78 bo-29-01 in_train -> qa_pass (statejson flip, bukan flip manual)
 - **blocked**: bo-2026-10-25-01 (social-cards remove) + bo-2026-10-26-02 (Community/Predictions demote) = NUNGGU OWNER VERDICT via morning digest — jangan eksekusi
 - Rollback anchor: app image 690e65d47289 (revert kereta = git revert e2eec90 range); entry QA ini 0 deploy
+
+## 2026-10-30 08:1x WIB — CTO pagi (merge fix-26-11 + QA kereta T-1029-N, BUILD-ONLY)
+- **task-id**: fix-2026-10-26-11 (P1 Article agregat) + qa-2026-10-30-01 (QA D+1 kereta T-1029-N)
+- **type**: merge night→main build-only (pilar TRUST — artikel movement tak lagi publish tanpa guard)
+- **verify bukti**: merge b6f854d (union queue 199 entries, 0 dup, backup marker-clean); tsc --noEmit EXIT-0; selftest article-guard-doctrine 7/7 PASS; regression 4 lama ALL PASS (sanitize ALL/pasar-live 9/ai-gate/market-snapshot 29); build EXIT-0 BUILD_ID D3J615QoGziSgttHvKJv6; QA train: register_prompt_save_moment=1 chunk layout · /admin/insight page.js live · pasar-live-doctrine 9/9.
+- **QA**: pasca-deploy T-1030-N malam ini: movement DRAFT saat factCheck hold (perilaku baru) + selftest re-run di image.
+- **impact_check_due**: 2026-11-02 (movement artikel DRAFT≠publish kotor; AI-call dedup evergreen 3x→1/hari)
+- **deploy hash**: n/a BUILD-ONLY (naik kereta T-1030-N) | rollback: git revert b6f854d
