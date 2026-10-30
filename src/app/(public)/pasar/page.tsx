@@ -12,7 +12,7 @@ const ScreenerAiButton = dynamicImport(
   { loading: () => <span className="inline-block h-[34px] w-[120px] animate-pulse rounded-full" /> },
 );
 import { pasarLiveService, isLiveWindow, isMarketHours, wibNow, wibHHMM, type PasarTopSignal, type PasarForeignItem } from "@/domains/stock/pasar-live.service";
-import { prisma } from "@/lib/prisma";
+import { marketSnapshotService } from "@/domains/stock/market-snapshot.service";
 import { dateLabel, formatPrice, formatPercent, formatVolume, stripJk  } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { WibClock } from "./wib-clock";
@@ -62,22 +62,8 @@ export default async function PasarPage() {
   if (!live) {
     const recap = await pasarLiveService.getYesterdayRecap();
     // Extreme-session badge (ceo-idea 17 Okt) — same criteria as /saham-oversold.
-    const latestIndWeekend = await prisma.stockIndicator
-      .aggregate({ _max: { date: true }, where: { interval: "1d" } })
-      .catch(() => null);
-    const oversoldCountWeekend = latestIndWeekend?._max.date
-      ? await prisma.stockIndicator
-          .count({
-            where: {
-              interval: "1d",
-              date: latestIndWeekend._max.date,
-              rsi14: { lt: 30 },
-              isGorengan: false,
-              stock: { isActive: true, assetClass: "EQUITY" },
-            },
-          })
-          .catch(() => 0)
-      : 0;
+    // code-audit-tk-1: SATU PINTU marketSnapshotService (dulu inline duplikat).
+    const oversoldCountWeekend = await marketSnapshotService.getOversoldCount();
     return (
       <>
         <PageHero eyebrow="Live" title="Koran Saham Live" description="Pasar belum buka — rekap sesi terakhir di bawah ini. Live update mulai 06:30 WIB.">
@@ -126,22 +112,8 @@ export default async function PasarPage() {
   const snap = await pasarLiveService.getSnapshot(true);
   const ihsg = snap.ihsg;
   // Extreme-session badge (ceo-idea 17 Okt) — same criteria as /saham-oversold.
-  const latestInd = await prisma.stockIndicator
-    .aggregate({ _max: { date: true }, where: { interval: "1d" } })
-    .catch(() => null);
-  const oversoldCount = latestInd?._max.date
-    ? await prisma.stockIndicator
-        .count({
-          where: {
-            interval: "1d",
-            date: latestInd._max.date,
-            rsi14: { lt: 30 },
-            isGorengan: false,
-            stock: { isActive: true, assetClass: "EQUITY" },
-          },
-        })
-        .catch(() => 0)
-    : 0;
+  // code-audit-tk-1: SATU PINTU marketSnapshotService (dulu inline duplikat).
+  const oversoldCount = await marketSnapshotService.getOversoldCount();
 
   return (
     <>

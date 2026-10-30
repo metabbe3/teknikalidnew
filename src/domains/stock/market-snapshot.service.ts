@@ -134,8 +134,22 @@ export const marketEngine = {
 const SNAPSHOT_CACHE_KEY = "market-snapshot-v1";
 const SNAPSHOT_TTL_MS = 60_000;
 const MOVER_VOLUME_FLOOR = 1_000_000;
+// code-audit-tk-1: cache khusus oversold-count (TTL panjang — indikator hanya
+// berubah saat EOD sync; hindari 2 query aggregate tiap render halaman).
+const OVERSOLD_CACHE_KEY = "oversold-count-v1";
+const OVERSOLD_TTL_MS = 300_000;
 
 type SessionRow = { ticker: string; name: string; sector: string; close: number; prev: number; volume: bigint };
+
+/** Baris volume-leader (satu pintu, bigint sudah dikonversi ke number). */
+export interface VolumeLeaderRow {
+  ticker: string;
+  name: string;
+  sector: string;
+  close: number | null;
+  prev: number | null;
+  volume: number;
+}
 
 async function computeSnapshot(): Promise<MarketSnapshot> {
   // Doctrine 2: latest date with real trading (volume > 0) among active equities.
@@ -239,5 +253,80 @@ export const marketSnapshotService = {
     const snap = await computeSnapshot();
     stockCache.set(SNAPSHOT_CACHE_KEY, snap, SNAPSHOT_TTL_MS);
     return snap;
+  },
+
+  /**
+   * Jumlah saham oversold (RSI<30, non-gorengan, aktif) di sesi indikator
+   * terakhir — SATU PINTU (code-audit-tk-1). Sebelumnya kriteria ini
+   * terduplikasi 3x inline (homepage + /pasar weekend + /pasar live) dan
+   * bisa bergeser diam-diam antar halaman.
+   * Fail-soft 0: badge ekstrem hilang, halaman tetap render (bukan 500).
+   */
+  async getOversoldCount(): Promise<number> {
+    const cached = stockCache.get(OVERSOLD_CACHE_KEY);
+    if (typeof cached === "number") return cached;
+    try {
+      const agg = await prisma.stockIndicator.aggregate({
+        _max: { date: true },
+        where: { interval: "1d" },
+      });
+      const count = agg._max.date
+        ? await prisma.stockIndicator.count({
+            where: {
+              interval: "1d",
+              date: agg._max.date,
+              rsi14: { lt: 30 },
+              isGorengan: false,
+              stock: { isActive: true, assetClass: "EQUITY" },
+            },
+          })
+        : 0;
+      // TTL lebih panjang dari snapshot: indikator hanya berubah saat EOD sync.
+      stockCache.set(OVERSOLD_CACHE_KEY, count, OVERSOLD_TTL_MS);
+      return count;
+    } catch {
+      return 0;
+    }
+  },
+
+  /**
+   * Top volume leaders sesi terakhir — dipindah verbatim dari raw SQL inline
+   * homepage (code-audit-tk-1: app layer konsumsi service, bukan SQL).
+   * Fail-soft []: kartu "Teraktif" kosong, halaman tetap render.
+   */
+  async getVolumeLeaders(limit = 5): Promise<VolumeLeaderRow[]> {
+    try {
+      const rows = await prisma.$queryRaw<Array<{
+        ticker: string; name: string; sector: string;
+        close: number | null; prev: number | null; volume: bigint;
+      }>>`
+        SELECT s.ticker, s.name, s.sector,
+               sp.close::float8 AS close, p.close::float8 AS prev,
+               sp.volume::bigint AS volume
+        FROM "StockPrice" sp
+        JOIN "Stock" s ON s.id = sp."stockId"
+        JOIN LATERAL (
+          SELECT close FROM "StockPrice"
+          WHERE "stockId" = sp."stockId" AND date < sp.date
+          ORDER BY date DESC LIMIT 1
+        ) p ON true
+        WHERE sp.date = (SELECT MAX(date) FROM "StockPrice" sp2
+                         JOIN "Stock" s2 ON s2.id = sp2."stockId"
+                         WHERE s2."assetClass" = 'EQUITY' AND s2."isActive" = true AND sp2.volume > 0)
+          AND s."assetClass" = 'EQUITY' AND s."isActive" = true AND sp.volume > 0
+        ORDER BY sp.volume DESC
+        LIMIT ${limit}
+      `;
+      return rows.map((r) => ({
+        ticker: r.ticker,
+        name: r.name,
+        sector: r.sector,
+        close: r.close,
+        prev: r.prev,
+        volume: bigIntToNumber(r.volume) ?? 0,
+      }));
+    } catch {
+      return [];
+    }
   },
 };

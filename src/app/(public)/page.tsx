@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { decimalToNumber } from "@/lib/serialize";
 import { IDX_STOCKS } from "@/lib/constants";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
+import { marketSnapshotService } from "@/domains/stock/market-snapshot.service";
 import { technicalAnalysisService } from "@/domains/stock/technical-analysis.service";
 import { authService } from "@/domains/auth/auth.service";
 import { FeaturedStockCard } from "@/components/home/featured-stock-card";
@@ -136,27 +137,8 @@ async function FeaturedStocksSection({
   const [volumeLeaders] = await Promise.all([
     // Owner 24 Okt: "Paling Aktif" jangan duplikat movers % (ticker tape + hero
     // sudah menampilkan gainers/losers) — sumbernya top VOLUME transaksi.
-    prisma.$queryRaw<Array<{
-      ticker: string; name: string; sector: string;
-      close: number | null; prev: number | null; volume: bigint;
-    }>>`
-      SELECT s.ticker, s.name, s.sector,
-             sp.close::float8 AS close, p.close::float8 AS prev,
-             sp.volume::bigint AS volume
-      FROM "StockPrice" sp
-      JOIN "Stock" s ON s.id = sp."stockId"
-      JOIN LATERAL (
-        SELECT close FROM "StockPrice"
-        WHERE "stockId" = sp."stockId" AND date < sp.date
-        ORDER BY date DESC LIMIT 1
-      ) p ON true
-      WHERE sp.date = (SELECT MAX(date) FROM "StockPrice" sp2
-                       JOIN "Stock" s2 ON s2.id = sp2."stockId"
-                       WHERE s2."assetClass" = 'EQUITY' AND s2."isActive" = true AND sp2.volume > 0)
-        AND s."assetClass" = 'EQUITY' AND s."isActive" = true AND sp.volume > 0
-      ORDER BY sp.volume DESC
-      LIMIT 5
-    `.catch(() => []),
+    // code-audit-tk-1: raw SQL pindah ke satu pintu marketSnapshotService.
+    marketSnapshotService.getVolumeLeaders(5),
   ]);
 
   const featuredRaw: FeaturedItem[] = [
@@ -370,22 +352,8 @@ export default async function HomePage() {
     articleRepository.findLatestDailyBrief().catch(() => null),
     // Extreme-session badge (ceo-idea 17 Okt): oversold breadth count, same
     // criteria as /saham-oversold (RSI<30, non-gorengan, active equities).
-    prisma.stockIndicator
-      .aggregate({ _max: { date: true }, where: { interval: "1d" } })
-      .then((a) =>
-        a._max.date
-          ? prisma.stockIndicator.count({
-              where: {
-                interval: "1d",
-                date: a._max.date,
-                rsi14: { lt: 30 },
-                isGorengan: false,
-                stock: { isActive: true, assetClass: "EQUITY" },
-              },
-            })
-          : 0,
-      )
-      .catch(() => 0),
+    // code-audit-tk-1: SATU PINTU marketSnapshotService (dulu inline duplikat).
+    marketSnapshotService.getOversoldCount(),
   ]);
 
   // Compute IHSG change
