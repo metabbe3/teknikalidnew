@@ -1,6 +1,7 @@
 import { isPlausibleTicker, extractTickersRanked } from "@/lib/ai-ticker-guard";
 import { buildStockAiContext } from "../stock/context";
-import { aiRateLimited } from "@/lib/ai-rate-limit";
+import { aiRateCheck } from "@/lib/ai-rate-limit";
+import { auth } from "@/lib/auth";
 import { buildPasarContext } from "@/lib/ai-pasar-context";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
@@ -186,9 +187,13 @@ export async function POST(req: NextRequest) {
     req.headers.get("x-real-ip") ??
     "unknown";
 
-  if (aiRateLimited(ip, req.headers.get("x-teknikal-authed") === "1")) {
+  // v2 (owner 30 Okt): authed dari SESSION server (anti-spoof) + dua lapis jam/hari + pesan konversi
+  let authed = false;
+  try { authed = !!(await auth()).user; } catch { authed = false; }
+  const rd = aiRateCheck(ip, authed);
+  if (rd.limited) {
     return NextResponse.json(
-      { error: "Terlalu banyak permintaan AI — coba lagi dalam beberapa menit." },
+      { error: rd.hit === "day" ? (rd.authed ? "Kuota harian AI kamu (150 pertanyaan) sudah habis - kembali besok ya" : "Kuota gratis harian kamu sudah habis (50 pertanyaan). Login biar dapat 3x lipat - 150 pertanyaan/hari") : "Kecepatan tanya kena batas sementara - istirahat sebentar, coba lagi dalam beberapa menit ya." },
       { status: 429 },
     );
   }
