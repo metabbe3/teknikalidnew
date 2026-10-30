@@ -3468,10 +3468,24 @@
    "id": "code-audit-tk-2",
    "date": "2026-10-29",
    "priority": "P2",
-   "status": "spec_ready",
+   "status": "night_ready",
    "spec": "N+1 foreignFlow stocks/[ticker]:277-286 (stockPrice.findUnique per row padahal detail.prices sudah ada) + admin reports N+1 (post/comment findUnique per loop) ke batch findMany. Done-when: query count per request SSR < 10 di DB Guard.",
    "north_star": "reliable",
-   "scheduled_slot": "2026-10-31 09:30 slot pagi"
+   "scheduled_slot": "2026-10-31 09:30 slot pagi",
+   "branch": "night/code-audit-tk-2",
+   "night_result": {
+    "worked_at": "2026-10-30T23:5x WIB (night CTO)",
+    "commits": [
+     "efe4489 (test RED failing-first)",
+     "cd83a91 (fix)",
+     "53113bc+ac495ec (queue/handoff)"
+    ],
+    "verify": "tsc --noEmit exit 0; selftest foreign-flow-parity 15/15 PASS; probe data asli BBCA.JK 5 sesi PARITY IDENTIK query 6->2; lint 0 error; regression market-snapshot-engine/oversold + pasar-live-doctrine exit 0",
+    "done_when_status": "N+1 keduanya dihapus (foreignFlow 6->2 query; admin reports 1+2N->3). Scope note: total SSR stock page 12 kueri (10 paralel pre-existing main Promise.all) - konsolidasi = kandidat code-audit-tk-4",
+    "review_estimate": "15-20 mnt",
+    "merge_note": "Branch dari local main HEAD da94d6b (origin/main tertinggal 17 commit kerja sore - file sama tersentuh; base origin/main = konflik pasti). CTO pagi: push 17 commit sore ke origin dulu, lalu merge night/code-audit-tk-2.",
+    "pilar_kpi": "TRUST (data reliable) + STICKY (latency SSR stock page)"
+   }
   },
   {
    "id": "code-audit-tk-3",
