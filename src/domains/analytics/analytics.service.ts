@@ -206,7 +206,50 @@ const SOCIAL_PLATFORMS: Record<string, string> = {
   "wa.me": "WhatsApp",
   "web.whatsapp.": "WhatsApp",
   "t.me": "Telegram",
+  "threads.": "Threads",
 };
+
+/**
+ * UTM source → platform yang DIKETAHUI dari link kita sendiri (lebih akurat dari referrer).
+ * UtmSource dipakai dulu kalau ada — karena in-app browser Meta (Android) mengirim referrer
+ * facebook.com untuk klik dari app Threads/IG, bikin klik Threads tersamarkan jadi Facebook
+ * (owner 30 Okt: "klik dr threads kebaca facebook di dashboard").
+ */
+const UTM_SOURCE_PLATFORMS: Record<string, string> = {
+  threads: "Threads",
+  instagram: "Instagram",
+  facebook: "Facebook",
+  twitter: "Twitter/X",
+  x: "Twitter/X",
+  tiktok: "TikTok",
+  telegram: "Telegram",
+  whatsapp: "WhatsApp",
+  youtube: "YouTube",
+  linkedin: "LinkedIn",
+  google: "Google",
+  bing: "Bing",
+};
+
+/**
+ * Kategorikan traffic: utmSource (kalau ada) MENANG atas referrer (refleksi intent sebenarnya —
+ * orang klik link kita di Threads walau browser Meta lapor referrer facebook).
+ */
+export function categorizeTraffic(
+  referrer: string | null | undefined,
+  utmSource?: string | null,
+): { source: TrafficSource; platform: string | null } {
+  if (utmSource) {
+    const u = utmSource.toLowerCase();
+    const plat = UTM_SOURCE_PLATFORMS[u];
+    if (plat === "Google" || plat === "Bing") {
+      return { source: "organic-search", platform: plat };
+    }
+    if (plat) {
+      return { source: "social", platform: plat };
+    }
+  }
+  return categorizeReferrer(referrer);
+}
 
 const EMAIL_PROVIDERS: Record<string, string> = {
   "mail.google.": "Gmail",
@@ -741,7 +784,7 @@ export const analyticsService = {
     };
 
     for (const pv of realViews) {
-      const { source: src } = categorizeReferrer(pv.referrer);
+      const { source: src } = categorizeTraffic(pv.referrer, pv.utmSource);
       // Apply source filter if specified
       if (!source || src === source) {
         sourceCounts[src]++;
@@ -784,7 +827,7 @@ export const analyticsService = {
     // e.g., /stocks/BBCA → ["saham bbca", "harga bbca", "analisa bbca"]
     const organicPageMap: Record<string, { views: number; ips: Set<string> }> = {};
     for (const pv of realViews) {
-      const { source: src } = categorizeReferrer(pv.referrer);
+      const { source: src } = categorizeTraffic(pv.referrer, pv.utmSource);
       if (src === "organic-search") {
         if (!organicPageMap[pv.path]) {
           organicPageMap[pv.path] = { views: 0, ips: new Set() };
@@ -884,10 +927,10 @@ export const analyticsService = {
     // ─── Top Referrers (categorized) ──────────────────────────────────────────
     const referrerMap: Record<string, { count: number; source: TrafficSource }> = {};
     for (const pv of realViews) {
-      if (!pv.referrer) continue;
-      const { source: src, platform } = categorizeReferrer(pv.referrer);
+      if (!pv.referrer && !pv.utmSource) continue;
+      const { source: src, platform } = categorizeTraffic(pv.referrer, pv.utmSource);
       if (src === "direct") continue;
-      const label = platform || pv.referrer;
+      const label = platform || pv.referrer || "(unknown)";
       if (!referrerMap[label]) {
         referrerMap[label] = { count: 0, source: src };
       }
@@ -1020,7 +1063,7 @@ export const analyticsService = {
     const apiTraffic = await getApiTrafficSummary(60);
     const realtimeViews = await prisma.pageView.findMany({
       where: { createdAt: { gte: fiveMinAgo } },
-      select: { ip: true, path: true, referrer: true, isBot: true, createdAt: true },
+      select: { ip: true, path: true, referrer: true, isBot: true, createdAt: true, utmSource: true },
       orderBy: { createdAt: "desc" },
       take: 50,
     });
@@ -1079,7 +1122,7 @@ export const analyticsService = {
       realtime: realtimeViews
         .filter((v) => !isExcluded(v.ip))
         .map((v) => {
-          const { source: src } = categorizeReferrer(v.referrer);
+          const { source: src } = categorizeTraffic(v.referrer, v.utmSource);
           return {
             ip: v.ip,
             path: v.path,
