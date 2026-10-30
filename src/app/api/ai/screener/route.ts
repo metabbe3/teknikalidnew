@@ -269,6 +269,7 @@ export async function POST(req: NextRequest) {
   try {
     // Provider chain (owner 30 Okt): glm-5.3-flash PRIMARY + inject PasarSnapshot;
     // MLX fallback bila GLM gagal. single-flight tetap utk dedupe pertanyaan sama.
+    const __t0 = Date.now(); // flywheel: ukur latency nyata (bug lama: path GLM hardcode ms:0 → p95 AiChatLog selalu 0)
     const data = await singleFlight(`mlx-sc:${cacheKey}`, async () => {
       let glmText: string | null = null;
       try {
@@ -282,7 +283,7 @@ export async function POST(req: NextRequest) {
                 ? "INTENT=EDUKASI: jelaskan konsep yang ditanya secara sederhana (2-4 kalimat) + caveat praktis; jangan menempelkan contoh saham yang tidak terverifikasi memenuhi konsep tersebut."
                 : undefined;
         glmText = await glmScreenerChat(question, needScreen ? stocks : [], pasar, history, intentHint);
-        return { ok: true as const, text: glmText, ms: 0, provider: "glm-flash" };
+        return { ok: true as const, text: glmText, ms: Date.now() - __t0, provider: "glm-flash" };
       } catch (e) {
         console.warn(`[ai/screener] GLM flash gagal (${e instanceof Error ? e.message : "err"}) → fallback MLX`);
       }
