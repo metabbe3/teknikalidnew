@@ -1,3 +1,4 @@
+import { signalLabelId } from "@/lib/signal-label-id";
 import { AlertTriangle, Flame } from "lucide-react";
 import { HealthScoreBadge } from "@/components/stock/health-score-badge";
 import { stripJk } from "@/lib/utils";
@@ -27,7 +28,7 @@ const TONE: Record<SignalVerdictProps["outlook"], { color: string; summary: stri
  */
 export function SignalVerdict({ ticker, signalLabel, signalScore, outlook, rsi14, isGorengan, showHypeAlert, summary }: SignalVerdictProps) {
   const tone = TONE[outlook];
-  const verdictLabel = signalLabel ?? outlook;
+  const verdictLabel = signalLabelId(signalLabel ?? outlook);
   const verdictSummary = summary ?? tone.summary;
   const rsiHint =
     rsi14 !== null ? (rsi14 >= 70 ? "RSI overbought" : rsi14 <= 30 ? "RSI oversold" : null) : null;

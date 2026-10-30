@@ -41,12 +41,13 @@ export function DailyBriefHero({
         aria-label={`Baca brief pasar hari ini: ${brief.title}`}
       >
         <span className="shrink-0 rounded-full bg-accent/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent">
-          Brief Hari Ini
+          Brief Pagi
         </span>
         <span className="min-w-0 flex-1">
           <span className="block truncate text-sm font-semibold text-text-primary group-hover:text-accent transition-colors">
             {brief.title}
           </span>
+          <span className="block text-xs text-text-tertiary">Rekap sesi {relativeDayId(new Date(brief.publishedAt))} · terbit tiap pagi</span>
         </span>
         <span className="shrink-0 text-text-tertiary group-hover:text-accent group-hover:translate-x-0.5 transition-all" aria-hidden>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
@@ -64,7 +65,7 @@ export function DailyBriefHero({
       >
         <div className="flex items-center gap-2">
           <span className="rounded-full bg-accent/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent">
-            Brief Pasar Hari Ini
+            Brief Pagi
           </span>
           <span className="text-xs text-text-tertiary">{relativeDayId(new Date(brief.publishedAt))}</span>
         </div>

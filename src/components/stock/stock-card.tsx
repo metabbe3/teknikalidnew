@@ -28,8 +28,14 @@ const SIGNAL_STYLES: Record<string, string> = {
   "Strong Bullish": "bg-bullish/20 text-bullish",
   "Bullish": "bg-bullish/15 text-bullish",
   "Netral": "bg-gray-200 text-gray-500",
+  "Neutral": "bg-gray-200 text-gray-500",
   "Bearish": "bg-bearish/15 text-bearish",
   "Strong Bearish": "bg-bearish/20 text-bearish",
+  // label ID (audit 30 Okt #2)
+  "Sangat Menguat": "bg-bullish/20 text-bullish",
+  "Menguat": "bg-bullish/15 text-bullish",
+  "Melemah": "bg-bearish/15 text-bearish",
+  "Sangat Melemah": "bg-bearish/20 text-bearish",
 };
 
 export function StockCard({ ticker, name, sector, close, change, changePercent, signalLabel, signalScore, isGorengan }: StockCardProps) {
@@ -56,7 +62,7 @@ export function StockCard({ ticker, name, sector, close, change, changePercent, 
             <p className="font-semibold text-sm tracking-tight">{stripJk(ticker)}</p>
             {signalLabel && (
               <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded ${SIGNAL_STYLES[signalLabel] ?? "bg-gray-200 text-gray-500"}`}>
-                {signalLabel === "Strong Bullish" ? "▲▲" : signalLabel === "Bullish" ? "▲" : signalLabel === "Strong Bearish" ? "▼▼" : signalLabel === "Bearish" ? "▼" : "◆"}
+                {signalLabel?.startsWith("Sangat Menguat") || signalLabel === "Strong Bullish" ? "▲▲" : signalLabel?.startsWith("Menguat") || signalLabel === "Bullish" ? "▲" : signalLabel?.startsWith("Sangat Melemah") || signalLabel === "Strong Bearish" ? "▼▼" : signalLabel?.startsWith("Melemah") || signalLabel === "Bearish" ? "▼" : "◆"}
               </span>
             )}
             {isGorengan && (

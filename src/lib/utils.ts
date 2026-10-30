@@ -40,7 +40,7 @@ export function formatPercent(value: number): string {
 
 export function formatVolume(value: number): string {
   if (!Number.isFinite(value) || value === 0) return "0";
-  if (value >= 1e9) return `${trimDecimalId(value / 1e9)} M`;
+  if (value >= 1e9) return `${trimDecimalId(value / 1e9)} mlr`;
   if (value >= 1e6) return `${trimDecimalId(value / 1e6)} jt`;
   if (value >= 1e3) return `${trimDecimalId(value / 1e3)} rb`;
   return priceFormatter.format(Math.round(value));
@@ -63,7 +63,7 @@ function trimDecimalId(n: number): string {
 
 export function formatMarketCap(v: number): string {
   if (v >= 1e12) return `${trimDecimalId(v / 1e12)} T`;
-  if (v >= 1e9) return `${trimDecimalId(v / 1e9)} M`;
+  if (v >= 1e9) return `${trimDecimalId(v / 1e9)} mlr`;
   if (v >= 1e6) return `${trimDecimalId(v / 1e6)} jt`;
   return v.toLocaleString("id-ID");
 }

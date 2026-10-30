@@ -58,7 +58,7 @@ interface SocialLinks {
 
 const SOCIAL_ICONS: { key: keyof SocialLinks; label: string; color: string }[] = [
   { key: "twitter", label: "Twitter / X", color: "hover:bg-black hover:text-white" },
-  { key: "instagram", label: "Instagram", color: "hover:bg-gradient-to-br hover:from-purple-500 hover:to-pink-500 hover:text-white" },
+  { key: "instagram", label: "Instagram", color: "hover:bg-gradient-to-br hover:from-sky-400 hover:to-sky-600 hover:text-white" },
   { key: "facebook", label: "Facebook", color: "hover:bg-blue-600 hover:text-white" },
   { key: "linkedin", label: "LinkedIn", color: "hover:bg-blue-700 hover:text-white" },
   { key: "youtube", label: "YouTube", color: "hover:bg-red-600 hover:text-white" },

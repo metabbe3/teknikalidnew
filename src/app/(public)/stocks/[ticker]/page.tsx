@@ -1,3 +1,4 @@
+import { signalLabelId } from "@/lib/signal-label-id";
 import { type Metadata } from "next";
 import { safeJsonLd } from "@/lib/safe-json-ld";
 import { notFound, redirect } from "next/navigation";
@@ -172,8 +173,15 @@ export default async function StockDetailPage({
   // seo-dr-1: shortName utk h1 (sama dengan derivasi generateMetadata)
   const shortName = normalizeTickerTitle(detail.stock?.name ?? stripJk(ticker), stripJk(ticker));
   // seo-dr-1: level batas utk answer block (support/resistance toleran-null)
-  const supLevel = indicators?.bbLower ?? indicators?.sma20 ?? detail.week52Low ?? null;
-  const resLevel = indicators?.bbUpper ?? indicators?.sma50 ?? detail.week52High ?? null;
+  // Audit UI/UX #3 (30 Okt): SATU angka per konsep — pemula & trader harus lihat level yang SAMA.
+  // Dulu: bbLower/bbUpper (Bollinger) vs pivot di blok trader → 2 versi support/resistance di 1 halaman.
+  const pivHigh = latest ? decimalToNumber(latest.high) ?? close : null;
+  const pivLow = latest ? decimalToNumber(latest.low) ?? close : null;
+  const pivots = pivHigh && close
+    ? calculatePivotPoints(pivHigh, pivLow ?? close, close)
+    : null;
+  const supLevel = pivots?.s1 ?? indicators?.sma20 ?? detail.week52Low ?? null;
+  const resLevel = pivots?.r1 ?? indicators?.sma50 ?? detail.week52High ?? null;
   const prev = prices[1];
   const isPositive = change !== null && change >= 0;
 
@@ -266,6 +274,7 @@ export default async function StockDetailPage({
             status: "PUBLISHED",
             tickerTag: { in: sectorPeers },
             articleType: { not: "DAILY_SNAPSHOT" },
+            publishedAt: { gte: subDays(new Date(), 14) }, // audit UI/UX 30 Okt: berita basi >14 hari disembunyikan
           },
           orderBy: { publishedAt: "desc" },
           take: 3,
@@ -338,9 +347,6 @@ export default async function StockDetailPage({
   const change20d = close !== null && closeAt(20) !== null && closeAt(20)! > 0
     ? ((close - closeAt(20)!) / closeAt(20)!) * 100 : null;
 
-  const pivots = latestHigh && close
-    ? calculatePivotPoints(latestHigh, latestLow ?? close, close)
-    : null;
   const nearResistance = pivots !== null && close !== null
     ? (pivots.r1 - close) / close < 0.02 && close <= pivots.r1
     : false;
@@ -708,7 +714,7 @@ export default async function StockDetailPage({
               const score = signalToHealthScore(raw); // tetap utk meta warna/label band
               if (score === null) return null;
               const meta = healthScoreMeta(score);
-              const outlook = indicators.signalLabel ?? "Netral";
+              const outlook = signalLabelId(indicators.signalLabel);
               const isBull = /bullish|beli|accumulate/i.test(outlook);
               const isBear = /bearish|jual|sell/i.test(outlook);
               return (
@@ -718,7 +724,7 @@ export default async function StockDetailPage({
                       <span className="text-3xl font-extrabold tabular-nums leading-none" style={{ color: meta.color }}>
                         {raw.toFixed(2).replace(".", ",")}
                       </span>
-                      <span className="text-[10px] font-semibold text-text-tertiary mt-0.5">Skor Sinyal 0-1</span>
+                      <span className="text-[10px] font-semibold text-text-tertiary mt-0.5">Skor Sinyal (−1 s.d. +1)</span>
                     </div>
                     <div className="h-10 w-px bg-border shrink-0" aria-hidden="true" />
                     <div className="flex-1 min-w-0">
@@ -960,7 +966,7 @@ export default async function StockDetailPage({
                 <p className="text-text-secondary">
                   <span className="font-semibold text-text-primary">Sinyal:</span>{' '}
                   <span style={{ color: outlook === "Bullish" ? "var(--color-bullish)" : outlook === "Bearish" ? "var(--color-bearish)" : "var(--color-text-tertiary)" }}>
-                    {indicators.signalLabel ?? outlook}
+                    {outlook}
                   </span>
                   {' — '}
                   {verdictProse || `Indikator teknikal menunjukkan sinyal ${outlook.toLowerCase()} untuk ${stripJk(ticker)}.`}

@@ -124,7 +124,7 @@ function AboveBelowBadge({ price, level }: { price: number | null; level: number
   const above = price > level;
   return (
     <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded ${above ? "bg-bullish-bg text-bullish" : "bg-bearish-bg text-bearish"}`}>
-      {above ? "Above" : "Below"}
+      {above ? "Di Atas" : "Di Bawah"}
     </span>
   );
 }
@@ -135,7 +135,8 @@ export function IndicatorPanel({
   smaCrossSignal, emaCrossSignal,
   sma20, sma50, sma200, ema12, ema26, prevIndicator,
 }: IndicatorPanelProps) {
-  const [plainMode, setPlainMode] = useState(false);
+  // Audit UI/UX #2 (30 Okt): Bahasa Sederhana default ON — target user pemula; tombol "Lihat Angka" utk yang mau angka mentah.
+  const [plainMode, setPlainMode] = useState(true);
   const [showAll, setShowAll] = useState(false);
 
   const prev = prevIndicator;
@@ -190,7 +191,7 @@ export function IndicatorPanel({
                 </p>
                 {rsi14 !== null && (
                   <SignalBadge variant={rsiSignal}>
-                    {rsi14 > 70 ? "Overbought" : rsi14 < 30 ? "Oversold" : "Neutral"}
+                    {rsi14 > 70 ? "Jenuh Beli" : rsi14 < 30 ? "Jenuh Jual" : "Netral"}
                   </SignalBadge>
                 )}
               </div>
@@ -376,7 +377,7 @@ export function IndicatorPanel({
                 <SignalBadge
                   variant={stochK > 80 ? "bearish" : stochK < 20 ? "bullish" : stochK > stochD ? "bullish" : "bearish"}
                 >
-                  {stochK > 80 ? "Overbought" : stochK < 20 ? "Oversold" : stochK > stochD ? "Bullish Cross" : "Bearish Cross"}
+                  {stochK > 80 ? "Jenuh Beli" : stochK < 20 ? "Jenuh Jual" : stochK > stochD ? "Persilangan Naik" : "Persilangan Turun"}
                 </SignalBadge>
               )}
             </>
@@ -396,14 +397,14 @@ export function IndicatorPanel({
             <>
               <div className="flex items-baseline justify-between gap-2">
                 <p className="text-lg font-bold tabular-nums">
-                  {obv !== null ? (obv / 1e6).toFixed(1) + "M" : "—"}
+                  {obv !== null ? (obv / 1e6).toFixed(1) + " jt lembar" : "—"}
                   <DeltaArrow current={obv} prev={p("obv") as number | null} />
                 </p>
                 {obvTrend !== null && (
                   <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
                     obvTrend === "Accumulation" ? "bg-bullish-bg text-bullish" : "bg-bearish-bg text-bearish"
                   }`}>
-                    {obvTrend === "Accumulation" ? "Accumulation" : "Distribution"}
+                    {obvTrend === "Accumulation" ? "Akumulasi" : "Distribusi"}
                   </span>
                 )}
               </div>
@@ -429,7 +430,7 @@ export function IndicatorPanel({
                   <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
                     close > vwap ? "bg-bullish-bg text-bullish" : "bg-bearish-bg text-bearish"
                   }`}>
-                    {close > vwap ? "Above" : "Below"}
+                    {close > vwap ? "Di Atas" : "Di Bawah"}
                   </span>
                 )}
               </div>
@@ -478,7 +479,7 @@ export function IndicatorPanel({
               {ema12 !== null && ema26 !== null && (
                 <div className="pt-1">
                   <SignalBadge variant={ema12 > ema26 ? "bullish" : "bearish"}>
-                    {ema12 > ema26 ? "Bullish Cross" : "Bearish Cross"}
+                    {ema12 > ema26 ? "Persilangan Naik" : "Persilangan Turun"}
                   </SignalBadge>
                 </div>
               )}
@@ -506,7 +507,7 @@ export function IndicatorPanel({
                   <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
                     close > supertrend ? "bg-bullish-bg text-bullish" : "bg-bearish-bg text-bearish"
                   }`}>
-                    {close > supertrend ? "Bullish" : "Bearish"}
+                    {close > supertrend ? "Menguat" : "Melemah"}
                   </span>
                 )}
               </div>
@@ -535,7 +536,7 @@ export function IndicatorPanel({
                   <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
                     adx > 50 ? "bg-accent/10 text-accent" : adx > 25 ? "bg-bullish-bg text-bullish" : "bg-bg-hover text-text-tertiary"
                   }`}>
-                    {adx > 50 ? "Very Strong" : adx > 25 ? "Trending" : "Weak"}
+                    {adx > 50 ? "Sangat Kuat" : adx > 25 ? "Tren Kuat" : "Lemah"}
                   </span>
                 )}
               </div>

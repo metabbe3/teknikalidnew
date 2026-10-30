@@ -1,3 +1,4 @@
+import { signalLabelId } from "@/lib/signal-label-id";
 import type { Metadata } from "next";
 import { RadarSection } from "./radar-section";
 import Link from "next/link";
@@ -11,7 +12,7 @@ const ScreenerAiButton = dynamicImport(
   () => import("@/components/screener/screener-ai-modal").then((m) => ({ default: m.ScreenerAiButton })),
   { loading: () => <span className="inline-block h-[34px] w-[120px] animate-pulse rounded-full" /> },
 );
-import { pasarLiveService, isLiveWindow, isMarketHours, wibNow, wibHHMM, type PasarTopSignal, type PasarForeignItem } from "@/domains/stock/pasar-live.service";
+import { pasarLiveService, isLiveWindow, isMarketHours, wibNow, wibHHMM, type PasarTopSignal, type PasarForeignItem, isWibWeekday } from "@/domains/stock/pasar-live.service";
 import { marketSnapshotService } from "@/domains/stock/market-snapshot.service";
 import { dateLabel, formatPrice, formatPercent, formatVolume, stripJk  } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -56,7 +57,9 @@ export default async function PasarPage() {
   const marketOpen = isMarketHours();
   const nowWib = wibNow();
   const preOpen = !live && wibHHMM(nowWib) < 630;  // 00:00-06:29 = pre-open (fix: 06:00-06:29 sempat jatuh ke 'weekend')
-  const weekend = !live && !preOpen;
+  const weekend = !live && !preOpen && !isWibWeekday(nowWib);
+  // Pasca-close hari bursa (Jumat 18:30–24:00 dst.): data rekap = sesi HARI INI, bukan "belum buka".
+  const afterClose = !live && isWibWeekday(nowWib) && wibHHMM(nowWib) >= 1830;
 
   // ── Pre-open / weekend: rekap kemarin (cheap path, no news fetch) ──
   if (!live) {
@@ -66,10 +69,20 @@ export default async function PasarPage() {
     const oversoldCountWeekend = await marketSnapshotService.getOversoldCount();
     return (
       <>
-        <PageHero eyebrow="Live" title="Koran Saham Live" description="Pasar belum buka — rekap sesi terakhir di bawah ini. Live update mulai 06:30 WIB.">
+        <PageHero
+          eyebrow="Live"
+          title="Koran Saham Live"
+          description={
+            weekend
+              ? "Akhir pekan — bursa tutup. Rekap sesi Jumat terakhir di bawah ini."
+              : afterClose
+                ? "Pasar sudah tutup — rekap sesi hari ini di bawah ini."
+                : "Pasar belum buka — rekap sesi terakhir di bawah ini. Live update mulai 06:30 WIB."
+          }
+        >
           <div className="flex flex-wrap items-center gap-3">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-bg px-3 py-1 text-sm font-medium">
-              <Moon className="inline h-4 w-4" /> Pasar belum buka
+              <Moon className="inline h-4 w-4" /> {weekend ? "Bursa tutup (akhir pekan)" : afterClose ? "Pasar sudah tutup" : "Pasar belum buka"}
             </span>
             <WibClock />
             <span className="text-text-tertiary text-sm">·</span>
@@ -91,6 +104,13 @@ export default async function PasarPage() {
             <Card>
               <CardContent className="text-sm text-muted-foreground py-4">
                 Akhir pekan — bursa tutup. Rekap sesi Jumat terakhir:
+              </CardContent>
+            </Card>
+          )}
+          {afterClose && (
+            <Card>
+              <CardContent className="text-sm text-muted-foreground py-4">
+                Pasar sudah tutup hari ini — berikut rekap sesi terakhir.
               </CardContent>
             </Card>
           )}
@@ -339,8 +359,8 @@ function RecapBlock({
         </CardContent>
       </Card>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <MoversCard title="Gainers kemarin" icon={<TrendingUp className="h-4 w-4 text-bullish" />} items={gainers} />
-        <MoversCard title="Losers kemarin" icon={<TrendingDown className="h-4 w-4 text-bearish" />} items={losers} />
+        <MoversCard title={`Gainers — sesi ${recap.sessionDate ? new Date(recap.sessionDate).toLocaleDateString("id-ID", { day: "numeric", month: "short" }) : "terakhir"}`} icon={<TrendingUp className="h-4 w-4 text-bullish" />} items={gainers} />
+        <MoversCard title={`Losers — sesi ${recap.sessionDate ? new Date(recap.sessionDate).toLocaleDateString("id-ID", { day: "numeric", month: "short" }) : "terakhir"}`} icon={<TrendingDown className="h-4 w-4 text-bearish" />} items={losers} />
       </div>
       <TopSignalsSection items={topSignals} sessionDate={sessionDate} />
 
@@ -430,10 +450,10 @@ function TopSignalsSection({ items, sessionDate }: { items: PasarTopSignal[]; se
                   <ChangeBadge pct={t.changePercent} className="w-20 text-right" />
                   <span
                     className="w-24 text-right text-xs font-semibold tabular-nums"
-                    title={`Skor sinyal ${t.signalScore !== null ? t.signalScore.toFixed(2) : "—"} — rangkuman indikator teknikal, bukan rekomendasi`}
+                    title={`Skor sinyal ${t.signalScore !== null ? t.signalScore.toFixed(2) : "—"} — rangkuman indikator teknikal, bukan rekomendasi. Catatan: skor teknikal ≠ pergerakan harga hari ini — saham bisa turun hari ini walau skornya kuat.`}
                   >
                     {t.signalScore !== null ? t.signalScore.toFixed(2) : "—"}
-                    {t.signalLabel && <span className="block text-[10px] font-normal text-text-tertiary">{t.signalLabel}</span>}
+                    {t.signalLabel && <span className="block text-[10px] font-normal text-text-tertiary">{signalLabelId(t.signalLabel)}</span>}
                   </span>
                 </Link>
               </li>

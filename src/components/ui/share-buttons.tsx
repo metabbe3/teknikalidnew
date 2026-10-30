@@ -161,7 +161,7 @@ export function ShareButtons({ url, title, text, className, imageUrl, storyImage
               ? "bg-red-500"
               : storyState === "success"
                 ? "bg-emerald-500"
-                : "bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 hover:brightness-110"
+                : "bg-gradient-to-r from-sky-400 to-sky-600 hover:brightness-110"
           }`}
           aria-label="Bagikan ke Story atau Download"
         >

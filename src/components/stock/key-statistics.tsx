@@ -34,7 +34,7 @@ export function KeyStatistics({ open, high, low, close, volume, week52High, week
         <div className="mb-4 pb-4 border-b border-border/40">
           <div className="flex justify-between text-[11px] text-text-tertiary mb-1.5">
             <span className="font-mono tabular-nums">{formatPrice(week52Low)}</span>
-            <span className="font-medium">52W Range</span>
+            <span className="font-medium">Rentang 52 Minggu</span>
             <span className="font-mono tabular-nums">{formatPrice(week52High)}</span>
           </div>
           <div className="w-full h-1.5 bg-bg-hover rounded-full overflow-hidden relative">
@@ -54,7 +54,7 @@ export function KeyStatistics({ open, high, low, close, volume, week52High, week
         <div className="space-y-0" role="list">
           {([
             ["Open", open !== null ? formatPrice(open) : null],
-            ["Day High", high !== null ? formatPrice(high) : null],
+            ["Tertinggi Hari Ini", high !== null ? formatPrice(high) : null],
             ["Day Low", low !== null ? formatPrice(low) : null],
             ["Range", dailyRange !== null ? `${dailyRange.toFixed(2)}%` : null],
             ["Volume", volume !== null ? formatVolume(volume) : null],

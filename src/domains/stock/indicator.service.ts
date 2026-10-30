@@ -129,12 +129,14 @@ interface SignalInput {
   vwap: number | null;
 }
 
+// UI/UX audit 30 Okt #2: label Bahasa Indonesia konsisten (dulu campur EN "Strong Bullish"
+// — pemula baca campur bahasa; satu pintu di sini = semua permukaan ikut).
 const SIGNAL_LABELS = [
-  { max: -0.6, label: "Strong Bearish" },
-  { max: -0.2, label: "Bearish" },
+  { max: -0.6, label: "Sangat Melemah" },
+  { max: -0.2, label: "Melemah" },
   { max: 0.2, label: "Netral" },
-  { max: 0.6, label: "Bullish" },
-  { max: 1.01, label: "Strong Bullish" },
+  { max: 0.6, label: "Menguat" },
+  { max: 1.01, label: "Sangat Menguat" },
 ] as const;
 
 function sentimentToValue(s: Sentiment): number {
@@ -184,7 +186,7 @@ export function computeSignalScore(input: SignalInput): {
   );
 
   const score = Math.round(rawScore * 100) / 100;
-  const label = SIGNAL_LABELS.find((l) => score < l.max)?.label ?? "Strong Bullish";
+  const label = SIGNAL_LABELS.find((l) => score < l.max)?.label ?? "Sangat Menguat";
 
   return { score, label, breakdown };
 }

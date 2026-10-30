@@ -51,11 +51,11 @@ function Skeleton({ className }: { className?: string }) {
 // Technical signal styles — collapsed onto the system palette:
 // bull-teal / neutral-slate / bear-red (was a 5-step emerald→red rainbow).
 const SIGNAL_STYLES: Record<string, { bg: string; text: string; label: string; dot: string }> = {
-  STRONG_BUY: { bg: "bg-bullish-bg border-bullish/30", text: "text-bullish", label: "Bullish", dot: "bg-bullish" },
-  BUY: { bg: "bg-bullish-bg border-bullish/30", text: "text-bullish", label: "Bullish", dot: "bg-bullish" },
+  STRONG_BUY: { bg: "bg-bullish-bg border-bullish/30", text: "text-bullish", label: "Menguat", dot: "bg-bullish" },
+  BUY: { bg: "bg-bullish-bg border-bullish/30", text: "text-bullish", label: "Menguat", dot: "bg-bullish" },
   HOLD: { bg: "bg-bg-hover border-border", text: "text-text-secondary", label: "Netral", dot: "bg-text-tertiary" },
-  SELL: { bg: "bg-bearish-bg border-bearish/30", text: "text-bearish", label: "Bearish", dot: "bg-bearish" },
-  STRONG_SELL: { bg: "bg-bearish-bg border-bearish/30", text: "text-bearish", label: "Bearish", dot: "bg-bearish" },
+  SELL: { bg: "bg-bearish-bg border-bearish/30", text: "text-bearish", label: "Melemah", dot: "bg-bearish" },
+  STRONG_SELL: { bg: "bg-bearish-bg border-bearish/30", text: "text-bearish", label: "Melemah", dot: "bg-bearish" },
 };
 
 const SIGNAL_OVERALL: Record<string, { icon: string; color: string; label: string }> = {

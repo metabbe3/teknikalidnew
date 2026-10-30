@@ -31,7 +31,7 @@ const TARGET_META: Record<string, { label: string; color: string; icon: React.Re
   x: { label: "X", color: "bg-black", icon: <Share2 className="h-3.5 w-3.5" /> },
   telegram: { label: "Telegram", color: "bg-[#0088cc]", icon: <Send className="h-3.5 w-3.5" /> },
   copy: { label: "Copy Link", color: "bg-slate-500", icon: <Link2 className="h-3.5 w-3.5" /> },
-  story: { label: "Story", color: "bg-gradient-to-r from-purple-500 to-pink-500", icon: <Share2 className="h-3.5 w-3.5" /> },
+  story: { label: "Story", color: "bg-gradient-to-r from-sky-400 to-sky-600", icon: <Share2 className="h-3.5 w-3.5" /> },
 };
 
 // Calendar-day WIB bounds: Today = today's WIB day; N Days = last N WIB days inclusive.

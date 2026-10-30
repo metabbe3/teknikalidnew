@@ -17,6 +17,9 @@ const confidenceLabels = {
 export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult | null }) {
   const isBOW = plan.strategy === "BUY_ON_WEAKNESS";
   const isWaitAndSee = plan.strategy === "WAIT_AND_SEE";
+  // Audit UI/UX #3b (30 Okt): setup layak = bukan wait&see, R:R ≥ 1, EV ≥ 0 — angka hijau besar
+  // hanya utk setup layak; selain itu netral + warning eksplisit (anti-mislead pemula).
+  const setupLayak = !isWaitAndSee && plan.riskReward >= 1 && (mc?.evPerShare ?? 0) >= 0;
 
   return (
     <div className={`depth-shadow rounded-xl border overflow-hidden ${isWaitAndSee ? "border-bearish/30" : "border-border"}`}>
@@ -73,7 +76,7 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
               <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                 <span className="text-[11px] font-semibold text-text-secondary">Peluang kena TP duluan</span>
                 <span className="flex items-center gap-2">
-                  <span className={`text-lg font-mono font-bold tabular-nums ${mc.winRate >= 0.5 ? "text-bullish" : "text-bearish"}`}>
+                  <span className={`text-lg font-mono font-bold tabular-nums ${!setupLayak ? "text-text-tertiary" : mc.winRate >= 0.5 ? "text-bullish" : "text-bearish"}`}>
                     {(mc.winRate * 100).toFixed(0)}%
                   </span>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-text-tertiary transition-transform group-open:rotate-180" aria-hidden="true">
@@ -98,6 +101,11 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
               </div>
               </div>
             </details>
+            {!setupLayak && (
+              <p className="text-[10px] leading-snug text-text-tertiary bg-bg-hover -mx-1 px-2.5 py-1.5 rounded-lg">
+                ⚠️ Setup belum layak (Risk : Reward 1 : {plan.riskReward.toFixed(1)}) — angka peluang di atas hanya simulasi statistik, bukan sinyal entry.
+              </p>
+            )}
           </>
         )}
 
