@@ -57,6 +57,13 @@ export function AskAiFab() {
   const [items, setItems] = useState<ChatItem[]>([]);
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(false);
+  // animasi thinking (owner 30 Okt "mungkin animasi ketika thinking"): fase bergilir
+  const [thinkPhase, setThinkPhase] = useState(0);
+  useEffect(() => {
+    if (!loading) { setThinkPhase(0); return; }
+    const iv = setInterval(() => setThinkPhase((p) => (p + 1) % 4), 1400);
+    return () => clearInterval(iv);
+  }, [loading]);
   const [error, setError] = useState<string | null>(null);
   const [nudge, setNudge] = useState(false);
   const router = useRouter();
@@ -258,8 +265,16 @@ export function AskAiFab() {
             ))}
             {loading && (
               <div className="flex justify-start">
-                <div className="rounded-2xl rounded-bl-sm bg-bg-tertiary px-4 py-2.5 text-sm text-text-tertiary">
-                  Membaca data pasar…
+                <div className="rounded-2xl rounded-bl-sm bg-bg-tertiary px-4 py-2.5 text-sm text-text-tertiary flex items-center gap-2">
+                  <Sparkles className="h-3.5 w-3.5 text-accent animate-pulse" aria-hidden />
+                  <span className="animate-pulse">
+                    {["Membaca data pasar…", "Cek pergerakan asing…", "Hitung indikator teknikal…", "Nyusun jawaban…"][thinkPhase]}
+                  </span>
+                  <span className="flex gap-1" aria-hidden>
+                    <span className="h-1.5 w-1.5 rounded-full bg-text-tertiary/60 animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <span className="h-1.5 w-1.5 rounded-full bg-text-tertiary/60 animate-bounce" style={{ animationDelay: "150ms" }} />
+                    <span className="h-1.5 w-1.5 rounded-full bg-text-tertiary/60 animate-bounce" style={{ animationDelay: "300ms" }} />
+                  </span>
                 </div>
               </div>
             )}

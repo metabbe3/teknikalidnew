@@ -1,0 +1,442 @@
+// lib/ai-glm.ts — SATU PINTU panggilan GLM (Z.ai anthropic-compatible).
+// Non-stream + STREAMING SSE (owner 30 Okt: "jawabnya streaming?" — RT-13, gap UX terbesar).
+// Dipakai: /api/ai/stock, /api/ai/screener, /api/ai/stream (SSE proxy), /api/ai/eval.
+
+export const GLM_MODEL = process.env.GLM_FLASH_MODEL ?? "glm-5.3-flash";
+
+// ── Prompt stock (join string — Z.ai tolak array-of-string) ──
+const GLM_SYSTEM = [
+  "Kamu 'Tanya AI' — sahabat analisa saham Indonesia di platform TeknikalID: santai, to-the-point, ngobrol kayak teman trading (boleh 'nih', 'tuh', 'nyangkut'), TAPI angka presisi dan tidak menggurui. Jawab intinya dulu, baru rincian.",
+  "ATURAN KERAS: hanya gunakan ANGKA dari DATA yang diberikan user; DILARANG mengarang harga, level, atau angka yang tidak ada di data;",
+  "Kalau ditanya 'layak dibeli / bagus / oke / harus apa', JANGAN bilang beli/jangan-beli:",
+  "jawab dengan KERANGKA DATA — kondisi tren (posisi vs SMA), momentum (RSI/MACD), jarak ke support/resistance, valuasi (PE/PB) bila ada, arus asing (foreign flow) bila ada, lalu beri skenario 'kalau pegang: level invalidation X' / 'kalau mau masuk: tunggu konfirmasi Y'. Satu kalimat penutup bahwa ini edukasi teknikal, bukan rekomendasi beli/jual.",
+  "Kalau ditanya 'kenapa naik/turun', gunakan changePercent + volume vs avgVol20 + foreignFlow5.state + headline recentArticles sebagai kandidat penjelas, dan katakan mana yang didukung data.",
+  "Kalau ada field posisiUser (harga beli + floating P/L sudah dihitung server), gunakan angka itu persis saat membahas dilema hold/cut loss: sebut floating %, jarak ke support/invalidation, dan kerangka skenario — tanpa menyuruh cut loss atau hold.",
+  "Kalau user menyebut ticker LAIN untuk dibandingkan ('bandingin sama BBRI'), gunakan DATA_PERBANDINGAN yang disediakan: sajikan trade-off objektif (valuasi PE/PB, dividen, tren SMA, skor sinyal, arus asing) dua sisi — jangan memihak salah satu.",
+  "Kalau ditanya status halal/syariah dan data tidak memuat status DES/ISSI, JANGAN menebak — jelaskan bahwa cek daftar resmi DES OJK / ISSI BEI diperlukan.",
+  "Untuk detail rasio/harga tebus right issue / IPO / stock split yang tidak ada di recentArticles, jelaskan mekanismenya edukatif dan arahkan ke keterbukaan informasi BEI — DILARANG mengarang angka rasio.",
+  "Jawab Bahasa Indonesia, ringkas, jelas untuk trader retail pemula-menengah; angka format ribuan Indonesia (8.200).",
+  "FORMAT BILA MODE SUMMARIZE (kartu): judul '## <TICKER> — <tema 2-4 kata>', bagian '###' (Tren, Momentum, Volume & Asing, Level Kunci), bullet '-' dengan **bold** angka penting.",
+  "FORMAT BILA MODE ASK / OBROLAN (CONVERSATIONAL PYRAMID — jangan pakai heading '##'/'###'): (1) buka 1-2 kalimat santai yang LANGSUNG menjawab inti pertanyaan; (2) maksimal 3-4 bullet pendek dengan **bold** angka kunci (tabel hanya bila duel 2 saham); (3) tutup 1 kalimat poin pantauan paling krusial + pengingat ringan 'kerangka data edukasi, bukan saran beli/jual' — jangan ulang disclaimer panjang tiap turn.",
+  "KUALIFIKASI + ANGKA: jangan sebut istilah kabur tanpa angka (salah: 'RSI udah rendah'; benar: 'RSI di **31,4**, mepet jenuh jual 30').",
+  "LABEL WAKTU JUJUR (juri Claude 30 Okt): data harga/indikator = EOD. WAJIB tulis 'close <tanggal dari data>' sekali di awal; DILARANG bilang 'hari ini' untuk angka EOD. Gunakan tanggal aktual hari ini (dari DATA asOf/tanggal) sebagai acuan.",
+  "METRIK TURUNAN WAJIB (juri Claude): sebelum bilang 'data tidak tersedia', HITUNG dulu dari angka yang ada: tanya dividen → payout ratio = DPS/EPS (dan sebut hasilnya, mis. 'payout ~117% — dividen lebih besar dari laba'); user nyangkut → %minus sekarang + %naik yang dibutuhkan untuk BEP; bandingkan → selisih % antar saham. Angka turunan tandai dengan '±' bila pembulatan.",
+  "KRITERIA DULU (juri Claude): kata sifat subjektif (sehat, kuat, murah, risiko tinggi) WAJIB diikuti kriterianya di kalimat yang sama atau berikutnya (mis. 'profil risiko tinggi: volatilitas ekstrem + volume lonjak tanpa berita'). DILARANG melabel emiten spesifik dengan kata 'gorengan' — pakai 'profil risiko tinggi (kriteria: ...)'.",
+  "GLOSARIUM SATUAN (juri Claude): aliran asing = 'Rp X miliar' (bukan 'M'), volume = 'juta lembar', desimal pakai koma maksimal 2 angka (3,49 bukan 3,4912), harga pakai titik ribuan (Rp4.940). Konsisten satu format di seluruh jawaban.",
+  "BAHASA: santai tapi JANGAN paksa gaul — kalau ragu dengan sebuah kata gaul, pakai bahasa Indonesia baku sehari-hari (larangan: 'tuang', 'kelola besar', 'kepenjeblokan', 'serok'). Typos = bot murahan.",
+  "EMPATI NYANGKUT: bila ada posisiUser minus atau kata nyangkut/boncos, buka dengan 1 kalimat validasi emosi manusiawi sebelum angka; jangan menggurui.",
+  "BARIS PALING AKHIR WAJIB: '[FOLLOWUPS] Pertanyaan 1? | Pertanyaan 2? | Pertanyaan 3?' — 3 ide lanjutan singkat (<40 karakter, relevan konteks barusan).",
+].join(" ");
+
+// ── Prompt screener ──
+const GLM_SYSTEM_SCREENER: string[] = [
+  "Kamu 'Tanya AI' — sahabat analisa saham Indonesia di platform TeknikalID: santai, to-the-point, ngobrol kayak teman trading (boleh 'nih', 'tuh', 'cuan', 'nyangkut'), TAPI angka harus presisi dan tidak menggurui.",
+  "GAYA CONVERSATIONAL: jawab langsung intinya dulu (1 kalimat pembuka yang menjawab pertanyaan), baru rincian. Kalau user nanya pendek, jawab pendek. Ikuti alur obrolan dari HISTORY — user bilang 'kalau BBRI gimana?' artinya lanjutan topik sebelumnya, jangan ulang semua dari nol.",
+  "ATURAN KERAS: HANYA gunakan ticker & angka dari DATA yang diberikan; DILARANG mengarang ticker/harga;",
+  "Jawab Bahasa Indonesia santai-profesional 2-4 kalimat: pola umum + 2-3 ticker paling menonjol",
+  "dalam format PERSIS [TICKER](/stocks/TICKER.JK) langsung setelah kalimat — tanpa kata 'link', tanpa path terpisah;",
+  "Kalau ada DATA PASAR (IHSG/breadth/asing), pakai untuk konteks; sebut angkanya apa adanya;",
+  "JANGAN daftar semua saham — tabel sudah menampilkannya. Akhiri satu kalimat disclaimer: data teknikal, bukan rekomendasi beli.",
+  "FORMAT: teks naratif pendek 2-4 kalimat dengan **bold** pada nama/ticker penting; ticker WAJIB format Markdown link [TICKER](/stocks/TICKER.JK); boleh bullet '-' bila menonjolkan 2-3 poin; JANGAN tabel (tabel sudah dirender aplikasi).",
+  "Jika daftar kosong, jawab jujur: tidak ada saham yang lolos kriteria itu hari ini.",
+  "LABEL WAKTU JUJUR (juri Claude 30 Okt): data = EOD (close). Sebut tanggal close sekali di awal ('close 29 Okt'), DILARANG 'hari ini' utk angka EOD. Jangan klaim 'pemicu utamanya' utk hal yang tidak ada datanya (berita/makro) — bilang 'mekanisme yang terlihat dari data: ...' dan 'pemicu makro tidak ada di data kami'.",
+  "KONSEP vs CONTOH (juri Claude): bila user tanya KONSEP (golden cross, RSI, dsb.), jelaskan konsepnya saja + caveat (indikator lagging, false signal saat sideways). DILARANG menempelkan nama saham sebagai 'contoh golden cross' dsb. TANPA memverifikasi saham itu benar-benar memenuhi kondisinya — kalau tidak bisa diverifikasi dari data, jangan sebut contohnya.",
+  "KRITERIA DULU + ANTI-GORENGAN (juri Claude): kata sifat (oke, sehat, kuat) WAJIB disertai kriteria di kalimat yang sama ('oke = masih hijau saat IHSG merah + volume di atas rata-rata'). DILARANG melabel emiten 'gorengan' — ganti 'profil risiko tinggi (volatilitas ekstrem, turun dalam, waspada UMA)'. Jangan asosiasikan top-loser dengan gorengan.",
+  "KONSISTENSI KLAIM (juri Claude): sebelum menyebut 'rotasi', cek proporsinya — kalau inflow jauh lebih kecil dari outflow (mis. masuk 65 M vs keluar 800 M), itu EXIT bukan rotasi; sebut apa adanya.",
+  "GLOSARIUM SATUAN: asing = 'Rp X miliar' konsisten; volume = 'juta lembar'; desimal koma max 2 angka; harga titik ribuan. Semua ticker yang disebut WAJIB link [TICKER](/stocks/TICKER.JK) — jangan campur bold dan link.",
+  "VARIASI PEMBUKA: jangan semua jawaban dimulai kondisi IHSG — variasikan sudut (sahamnya dulu, asingnya dulu, dsb.). Bahasa santai natural; larangan kata dipaksa gaul: 'tuang', 'kelola besar', 'kepenjeblokan'.",
+  "BARIS PALING AKHIR WAJIB: '[FOLLOWUPS] Pertanyaan 1? | Pertanyaan 2? | Pertanyaan 3?' — 3 ide pertanyaan lanjutan singkat (<40 karakter, relevan konteks pasar/ticker barusan).",
+].join(" ");
+
+type ChatTurn = { role: "user" | "ai"; text: string };
+
+async function glmScreenerChat(
+  question: string,
+  stocks: unknown,
+  pasar?: unknown,
+  history?: ChatTurn[],
+  intentHint?: string,
+): Promise<string> {
+  const apiKey = process.env.ANTHROPIC_AUTH_TOKEN;
+  if (!apiKey) throw new Error("GLM key missing");
+  const controller = new AbortController();
+  const to = setTimeout(() => controller.abort(), 45_000);
+  try {
+    const res = await fetch(`${process.env.ANTHROPIC_BASE_URL ?? "https://api.z.ai/api/anthropic"}/v1/messages`, {
+      method: "POST",
+      headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+      body: JSON.stringify({
+        model: GLM_MODEL,
+        max_tokens: 700,
+        thinking: { type: "disabled" },
+        // Z.ai (validasi 30 Okt): system WAJIB string tunggal — array-of-string ditolak 400.
+        system: (intentHint ? [...(Array.isArray(GLM_SYSTEM) ? GLM_SYSTEM : [GLM_SYSTEM]), intentHint] : (Array.isArray(GLM_SYSTEM) ? GLM_SYSTEM : [GLM_SYSTEM])).join("\n"),
+        messages: [
+          // multi-turn: history ringkas (max 6 turn terakhir, dipadatkan client)
+          ...(history ?? []).slice(-6).map((h) => ({
+            role: h.role === "user" ? ("user" as const) : ("assistant" as const),
+            content: h.text.slice(0, 800),
+          })),
+          {
+            role: "user" as const,
+            content:
+              `PERTANYAAN USER: ${question}\n\n` +
+              (pasar ? `DATA PASAR HARI INI (konteks, angka final):\n${JSON.stringify(pasar)}\n\n` : "") +
+              `DAFTAR SAHAM hasil screen (ticker, nama, harga, change%, skor):\n${JSON.stringify(stocks)}`,
+          },
+        ],
+      }),
+      signal: controller.signal,
+    });
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => "");
+      throw new Error(`GLM ${res.status}: ${errBody.slice(0, 200)}`);
+    }
+    const data = (await res.json()) as { content?: { type: string; text?: string }[] };
+    const text = (data.content ?? []).filter((b) => b.type === "text").map((b) => b.text ?? "").join("").trim();
+    if (!text) throw new Error("GLM empty");
+    return text;
+  } finally {
+    clearTimeout(to);
+  }
+}
+
+/** Snapshot pasar ringkas utk konteks MARKET (IHSG, movers, asing, top skor) — SATU PINTU pasar-live. */
+
+export async function POST(req: NextRequest) {
+  // Security-audit 28 Okt: xff[0] bisa dipalsukan client (CF append, [0]=nilai attacker).
+  // Prioritaskan cf-connecting-ip (di-set Cloudflare, tak bisa dipalsukan via tunnel).
+  const xff = req.headers.get("x-forwarded-for");
+  const ip =
+    req.headers.get("cf-connecting-ip") ??
+    (xff ? xff.split(",").pop()?.trim() : undefined) ??
+    req.headers.get("x-real-ip") ??
+    "unknown";
+
+  if (aiRateLimited(ip, req.headers.get("x-teknikal-authed") === "1")) {
+    return NextResponse.json(
+      { error: "Terlalu banyak permintaan AI — coba lagi dalam beberapa menit." },
+      { status: 429 },
+    );
+  }
+
+  let body: { question?: string; preset?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Body JSON tidak valid" }, { status: 400 });
+  }
+
+  const question = (body.question ?? "").slice(0, 500).trim();
+  // multi-turn chat (owner 30 Okt: FAB harus kayak chatbot): history dari client, sanitasi ketat
+  const rawHistory = Array.isArray((body as Record<string, unknown>).history)
+    ? ((body as Record<string, unknown>).history as unknown[])
+    : [];
+  const history = rawHistory
+    .filter((h): h is { role: string; text: string } =>
+      !!h && typeof h === "object" &&
+      typeof (h as Record<string, unknown>).role === "string" && typeof (h as Record<string, unknown>).text === "string")
+    .map((h) => ({ role: h.role === "user" ? ("user" as const) : ("ai" as const), text: h.text.slice(0, 800) }))
+    .slice(-6);
+  if (!question) {
+    return NextResponse.json({ error: "Pertanyaan kosong" }, { status: 400 });
+  }
+
+  const chosen = body.preset ? { preset: body.preset, label: body.preset } : pickPreset(question);
+  // RT-08: makro/asing/edukasi tidak butuh preset saham — jangan biarkan regex 'naik|turun'
+  // salah menjatuhkan "kenapa IHSG turun?" ke daftar sinyal bullish.
+  const intent = detectIntent(question);
+  const needScreen = intent === "screener";
+
+  // Ambil hasil screener dari DB (reuse service /api/screener) — hanya bila intent screener
+  let rows: Record<string, unknown>[] = [];
+  let presetError: string | null = null;
+  if (needScreen) {
+    try {
+      const result = (await technicalAnalysisService.screenerQuery(chosen.preset, undefined)) as
+        | Record<string, unknown>[]
+        | { error: string };
+      if (Array.isArray(result)) rows = result.slice(0, 25);
+      else presetError = result.error;
+    } catch (e) {
+      presetError = e instanceof Error ? e.message : "screener query gagal";
+    }
+  }
+
+  if (presetError) {
+    return NextResponse.json({ error: `Screener error: ${presetError}` }, { status: 502 });
+  }
+
+  // Compact rows utk MLX (ticker wajib; angka apa adanya)
+  const stocks = rows.map((r) => ({
+    ticker: String(r.ticker ?? "").replace(/\.JK$/, ""),
+    name: r.name ?? r.shortName ?? "",
+    close: r.close ?? r.closePrice ?? null,
+    changePercent: r.changePercent ?? null,
+    signalScore: r.signalScore ?? null,
+  }));
+
+  const sig = dataSignature(rows);
+  // Cache per (preset + data + PERTANYAAN) — riset Argon P0-2: cacheKey lama tanpa question
+  // membuat jawaban AI pertanyaan A dipakai ulang utk pertanyaan B (bug "responsenya sama terus").
+  const qHash = Buffer.from(question).toString("base64url").slice(0, 40);
+  const cacheKey = `${chosen.preset}::${sig}::${qHash}`;
+  const cached = cacheGet(cacheKey);
+  if (cached) {
+    return NextResponse.json({
+      ok: true,
+      text: cached.text,
+      preset: chosen.preset,
+      presetLabel: cached.presetLabel,
+      matched: cached.matched,
+      stocks: cached.stocks,
+      ms: 0,
+      cached: true,
+    });
+  }
+
+  try {
+    // Provider chain (owner 30 Okt): glm-5.3-flash PRIMARY + inject PasarSnapshot;
+    // MLX fallback bila GLM gagal. single-flight tetap utk dedupe pertanyaan sama.
+    const data = await singleFlight(`mlx-sc:${cacheKey}`, async () => {
+      let glmText: string | null = null;
+      try {
+        const pasar = await buildPasarContext();
+        const intentHint =
+          intent === "market_ihsg"
+            ? "INTENT=MARKET: jawab kondisi & mekanisme pergerakan IHSG/pasar dari DATA PASAR (IHSG, movers, asing); jangan menyodorkan daftar sinyal saham kecuali sebagai penggerak pasar."
+            : intent === "foreign_flow"
+              ? "INTENT=ASING: jawab pola arus dana asing (net buy/sell Rp miliar per emiten) dari DATA PASAR; sebut emiten teratas apa adanya."
+              : intent === "education"
+                ? "INTENT=EDUKASI: jelaskan konsep yang ditanya secara sederhana (2-4 kalimat) + caveat praktis; jangan menempelkan contoh saham yang tidak terverifikasi memenuhi konsep tersebut."
+                : undefined;
+        glmText = await glmScreenerChat(question, needScreen ? stocks : [], pasar, history, intentHint);
+        return { ok: true as const, text: glmText, ms: 0, provider: "glm-flash" };
+      } catch (e) {
+        console.warn(`[ai/screener] GLM flash gagal (${e instanceof Error ? e.message : "err"}) → fallback MLX`);
+      }
+      return withTicket("mlx", async () => {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 60_000);
+        const res = await fetch(`${MLX_URL}/screener-chat`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question, stocks }),
+          signal: controller.signal,
+        });
+        clearTimeout(timeout);
+        if (!res.ok) {
+          const errText = await res.text().catch(() => "");
+          throw new Error(`AI server error (${res.status}) ${errText.slice(0, 200)}`);
+        }
+        return (await res.json()) as { ok?: boolean; text?: string; ms?: number; _queued?: number; provider?: string };
+      });
+    });
+
+    const payload = {
+      ok: true,
+      text: data.text ?? "",
+      preset: chosen.preset,
+      presetLabel: chosen.label,
+      matched: stocks.length,
+      stocks, // tabel: sama dengan data screener, client render
+      ms: data.ms ?? null,
+      provider: (data as { provider?: string }).provider ?? "mlx",
+    };
+    cacheSet(cacheKey, { text: payload.text, presetLabel: payload.presetLabel, matched: payload.matched, stocks, at: Date.now() });
+
+    // flywheel (owner 30 Okt): log QA — fire-and-forget, jangan blok/gagalkan response
+    prisma.aiChatLog
+      .create({ data: { route: "screener", question: question.slice(0, 500), answer: String(payload.text ?? "").slice(0, 8000), provider: payload.provider ?? null, latencyMs: data.ms ?? null, anonId: (body as Record<string, unknown>).anonId as string | undefined ?? null, userId: (body as Record<string, unknown>).userId as string | undefined ?? null } })
+      .catch(() => {});
+    return NextResponse.json(payload);
+  } catch (e) {
+    if (e instanceof QueueFullError) {
+      return NextResponse.json(
+        { error: "AI sedang melayani antrean — coba lagi sebentar.", retryAfterMs: e.retryAfterMs, queueDepth: e.queueDepth },
+        { status: 429, headers: { "Retry-After": String(Math.ceil(e.retryAfterMs / 1000)) } },
+      );
+    }
+    return NextResponse.json(
+      { error: "AI lokal tidak merespons — coba lagi sebentar." },
+      { status: 504 },
+    );
+  }
+}
+
+
+export const SCREENER_SYSTEM_STR = GLM_SYSTEM_SCREENER.join("\n");
+export const STOCK_SYSTEM_STR = GLM_SYSTEM; // sudah string
+
+export interface ChatTurn { role: "user" | "ai"; text: string }
+
+export async function glmCall(
+  context: Record<string, unknown>,
+  mode: "summarize" | "ask",
+  question: string,
+  history?: ChatTurn[],
+): Promise<string> {
+  const apiKey = process.env.ANTHROPIC_AUTH_TOKEN;
+  if (!apiKey) throw new Error("GLM key missing");
+  const body: Record<string, unknown> = {
+    model: GLM_MODEL,
+    max_tokens: 900,
+    thinking: { type: "disabled" },
+    system: GLM_SYSTEM, // sudah string (join " " di deklarasi) — Z.ai: system WAJIB string tunggal
+    messages: [
+      ...(history ?? []).slice(-6).map((h) => ({
+        role: h.role === "user" ? ("user" as const) : ("assistant" as const),
+        content: h.text.slice(0, 800),
+      })),
+      {
+        role: "user" as const,
+        content:
+          `DATA saham (semua angka final, jangan dihitung ulang):\n${JSON.stringify(context, null, 1)}\n\n` +
+          (mode === "ask"
+            ? `PERTANYAAN USER: ${question}\nJawab HANYA dari DATA di atas. Kalau data tidak memuat jawabannya, katakan apa yang bisa disimpulkan dari data yang ada tanpa mengarang angka.`
+            : "TUGAS: rangkum kondisi teknikal saham ini 4-6 kalimat (arah harga, tren vs SMA, momentum RSI/MACD, volume, level support/resistance)."),
+      },
+    ],
+  };
+  const controller = new AbortController();
+  const to = setTimeout(() => controller.abort(), 45_000);
+  try {
+    const res = await fetch(`${process.env.ANTHROPIC_BASE_URL ?? "https://api.z.ai/api/anthropic"}/v1/messages`, {
+      method: "POST",
+      headers: {
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+    if (!res.ok) throw new Error(`GLM ${res.status}`);
+    const data = (await res.json()) as { content?: { type: string; text?: string }[] };
+    const text = (data.content ?? []).filter((b) => b.type === "text").map((b) => b.text ?? "").join("").trim();
+    if (!text) throw new Error("GLM empty");
+    return text;
+  } finally {
+    clearTimeout(to);
+  }
+}
+
+
+export async function glmScreenerChat(
+  question: string,
+  stocks: unknown,
+  pasar?: unknown,
+  history?: ChatTurn[],
+  intentHint?: string,
+): Promise<string> {
+  const apiKey = process.env.ANTHROPIC_AUTH_TOKEN;
+  if (!apiKey) throw new Error("GLM key missing");
+  const controller = new AbortController();
+  const to = setTimeout(() => controller.abort(), 45_000);
+  try {
+    const res = await fetch(`${process.env.ANTHROPIC_BASE_URL ?? "https://api.z.ai/api/anthropic"}/v1/messages`, {
+      method: "POST",
+      headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+      body: JSON.stringify({
+        model: GLM_MODEL,
+        max_tokens: 700,
+        thinking: { type: "disabled" },
+        // Z.ai (validasi 30 Okt): system WAJIB string tunggal — array-of-string ditolak 400.
+        system: (intentHint ? [...(Array.isArray(GLM_SYSTEM) ? GLM_SYSTEM : [GLM_SYSTEM]), intentHint] : (Array.isArray(GLM_SYSTEM) ? GLM_SYSTEM : [GLM_SYSTEM])).join("\n"),
+        messages: [
+          // multi-turn: history ringkas (max 6 turn terakhir, dipadatkan client)
+          ...(history ?? []).slice(-6).map((h) => ({
+            role: h.role === "user" ? ("user" as const) : ("assistant" as const),
+            content: h.text.slice(0, 800),
+          })),
+          {
+            role: "user" as const,
+            content:
+              `PERTANYAAN USER: ${question}\n\n` +
+              (pasar ? `DATA PASAR HARI INI (konteks, angka final):\n${JSON.stringify(pasar)}\n\n` : "") +
+              `DAFTAR SAHAM hasil screen (ticker, nama, harga, change%, skor):\n${JSON.stringify(stocks)}`,
+          },
+        ],
+      }),
+      signal: controller.signal,
+    });
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => "");
+      throw new Error(`GLM ${res.status}: ${errBody.slice(0, 200)}`);
+    }
+    const data = (await res.json()) as { content?: { type: string; text?: string }[] };
+    const text = (data.content ?? []).filter((b) => b.type === "text").map((b) => b.text ?? "").join("").trim();
+    if (!text) throw new Error("GLM empty");
+    return text;
+  } finally {
+    clearTimeout(to);
+  }
+}
+
+
+// ── STREAMING (SSE) ─────────────────────────────────────────────
+// Bangun body request sama seperti glmCall, tapi stream=true; panggil onDelta per chunk teks.
+export async function glmCallStream(
+  system: string,
+  userContent: string,
+  history: ChatTurn[] | undefined,
+  onDelta: (t: string) => void,
+  maxTokens = 900,
+): Promise<string> {
+  const apiKey = process.env.ANTHROPIC_AUTH_TOKEN;
+  if (!apiKey) throw new Error("GLM key missing");
+  const body = {
+    model: GLM_MODEL,
+    max_tokens: maxTokens,
+    thinking: { type: "disabled" },
+    stream: true,
+    system,
+    messages: [
+      ...(history ?? []).slice(-6).map((h) => ({ role: h.role === "user" ? "user" : "assistant", content: h.text.slice(0, 800) })),
+      { role: "user", content: userContent },
+    ],
+  };
+  const controller = new AbortController();
+  const to = setTimeout(() => controller.abort(), 45_000);
+  try {
+    const res = await fetch(`${process.env.ANTHROPIC_BASE_URL ?? "https://api.z.ai/api/anthropic"}/v1/messages`, {
+      method: "POST",
+      headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+    if (!res.ok || !res.body) {
+      const errText = await res.text().catch(() => "");
+      throw new Error(`GLM ${res.status}: ${errText.slice(0, 200)}`);
+    }
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = "";
+    let full = "";
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
+      const lines = buf.split("\n");
+      buf = lines.pop() ?? "";
+      for (const line of lines) {
+        if (!line.startsWith("data:")) continue;
+        const payload = line.slice(5).trim();
+        if (!payload || payload === "[DONE]") continue;
+        try {
+          const j = JSON.parse(payload) as { type?: string; delta?: { type?: string; text?: string } };
+          if (j.type === "content_block_delta" && j.delta?.type === "text_delta" && j.delta.text) {
+            full += j.delta.text;
+            onDelta(j.delta.text);
+          }
+        } catch {
+          // chunk non-JSON (keepalive) — abaikan
+        }
+      }
+    }
+    if (!full.trim()) throw new Error("GLM empty stream");
+    return full;
+  } finally {
+    clearTimeout(to);
+  }
+}

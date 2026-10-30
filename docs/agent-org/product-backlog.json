@@ -2127,7 +2127,7 @@
     {
       "id": "sec-2026-10-29-01",
       "date": "2026-10-29",
-      "status": "candidate",
+      "status": "approved",
       "source": "itsec-blue",
       "exploitability": "rendah",
       "title": "[BLUE][MONITORING GAP] teknikal.id 401/403 anonim TIDAK terukur: tabel ErrorLog tidak ada, AuditLog hanya event authed — password-spray/credential-stuffing terhadap /auth/signin tidak terdeteksi dari DB. Kolom cUrl di [C] kosong = cookie anon tidak tersaji ke anon. [C] headers teknikal.id LENGKAP (CSP ketat frame-ancestors none + HSTS 2y preload + nosniff + XFO DENY) — hanya script-src 'unsafe-inline' (nota #171 SSR-by-design trade-off)",
@@ -2137,12 +2137,14 @@
         "fix_hint": "app-layer instrumentation (butuh deploy → SDLC CEO→PRD→CTO); ITSEC tiap shift Kamis memonitor jika sudah ada",
         "probe": "2026-10-29 21:30 WIB"
       },
-      "priority": "P3"
+      "priority": "P3",
+      "verdict": "OWNER APPROVE backlog (30 Okt digest) — ErrorLog/401-403 monitoring gap",
+      "verdict_at": "2026-10-30"
     },
     {
       "id": "sec-2026-10-29-02",
       "date": "2026-10-29",
-      "status": "candidate",
+      "status": "approved",
       "source": "itsec-red",
       "exploitability": "sedang",
       "title": "[RED] Guest Pass (Retention v2.1, GUEST_DAILY_FREE 5→25 patch audit QW5): kuota server-side via cookie guest_pass (ticker list, cap 50) — by-design bukan hard-gate, tapi SET-COOKIE langsung dipercaya: anon bisa clear-cookie/Incognito loop untuk unlimited gated-content; rate-limit beacon /api/track/guest-pass TIDAK ADA (selalu 204) + flag fileEvidence aktivasi banner overlimit via localStorage FE-meter — bypass = hapus localStorage. Kombinasi memungkinkan scraping gated-content unlimited tanpa akun",
@@ -2153,7 +2155,9 @@
         "tradeoff_note": "owner policy 20 Okt: 'nothing blocked' + no IP detection — kartu ini menyediakan pilihan, BUKAN mengubah policy; kandidat diskusi CEO bila traffic pivot KPI tercapai dan bandwidth/LLM cost naik",
         "probe": "2026-10-29 21:30 WIB; FE meter + banner verified dari kode 9179d32"
       },
-      "priority": "P3"
+      "priority": "P3",
+      "verdict": "OWNER APPROVE backlog (30 Okt digest) — Guest Pass server-side quota fix",
+      "verdict_at": "2026-10-30"
     },
     {
       "id": "im-2026-10-30-1",

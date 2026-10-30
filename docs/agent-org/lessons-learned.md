@@ -365,3 +365,8 @@ Ke-3 kalinya klaim kesegaran sinyal lolos generator Mandor: qa-2026-09-27-01 (hi
 - **Pola**: deploy hot-swap (docker cp .next ke container jalan) TIDAK menjalankan entrypoint → migration prisma baru tak pernah diterapkan/tercatat. Saat container akhirnya restart (deploy kereta), `migrate deploy` menemukan DDL sudah ada (owner terapkan manual) → P3009 → crash-loop → prod 502.
 - **Aturan**: sebelum `up -d` dengan image hasil build baru, SELALU cek `SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NULL` + bandingkan `ls prisma/migrations` vs ledger. DDL sudah live tapi ledger kosong = `prisma migrate resolve --applied <name>` (bookkeeping, bukan DDL).
 - **Aturan-2**: hot-swap path juga menyembunyikan kode dari image — image tua + container jalan = ilusi "belum live"; grep container = satu-satunya kebenaran (lagi).
+
+## [REVIEWER] 2026-10-30 — Pola ke-11: tiga varian angka yang lolos fact-gate mandor
+- Rank-N superlatif: "penurunan terbesar KEENAM" butuh SQL rank() penuh — guard lama hanya tangkap #1/"terbesar" absolut. RULE: ordinal apa pun (ke-N) pada klaim historis = verifikasi rank() window sama.
+- Klaim "di atas rata-rata" TANPA window: +43,6% hanya cocok vs prev-day (single-day), vs avg-20-hari aktual -57%. RULE: kata "rata-rata/banding" wajib menyebut window & rekonciliable dari StockPrice.
+- Cross-day count (EMA 8 vs 3) = pola qa-30-01 BERULANG walau guard sudah ada 30 Okt pagi (artikel sore terbit SEBELUM guard) — bukti guard harus dipasang di generator, bukan hanya reviewer. Varian infra baru: artikel PUBLISHED di DB tapi 404 live (evergreen path) — QA reviewer kini curl SEMUA artikel 24h, tambahkan sweep mingguan slug EDUCATIONAL tua (qa-2026-10-30-03).

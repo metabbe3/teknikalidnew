@@ -2,6 +2,14 @@
   "protocol": "CTO task queue — dibaca CTO agent (slot 07:30 pagi & 16:45 sore; quiet zone BARU 11:00-18:00 = larang deploy+LLM, owner 16 Sep), ditulis CEO (08:15) / Council (Min 08:00). Entry: {id, date, spec, priority (P0 darurat/P1 tinggi/P2 normal), north_star, status (pending/done/failed/blocked_for_owner), result}. CTO: max 1 deploy per slot (2/hari total), eksekusi claude code pipeline, update status + verify evidence.",
   "entries": [
     {
+      "id": "dep-2026-10-30-02",
+      "title": "DEPLOYED 30 Okt 17:2x WIB (owner direct: restart & deploy skrg) — AI expansion + FAB + pasar AI",
+      "status": "done",
+      "spec": "Deploy commit 'ai-expansion P0+P1'. Verified staging 3100: ask layak-beli 200 provider=glm-flash (kerangka data, tanpa kata beli); screener MARKET 200 6,5s (jawab MBSS/AADI + konteks IHSG -3,49% dari PasarSnapshot); COMPARE BBRI vs BBCA 200 (tabel trade-off); posisi nyangkut 5.200 (server hitung floating -45,96%). Post-deploy verify prod sama + chips di halaman saham mobile. TAMBAHAN: /pasar hero kini punya tombol Tanya AI (verified staging HTML render 'Bingung sama pasar' x2 window). Verify prod: buka /pasar → tombol AI klik → chips pasar tampil. TAMBAHAN-2: AskAiFab global login-only (layout.tsx mount) — verify prod: login user biasa → FAB kanan-bawah semua halaman; anon → tidak ada FAB (inline Tanya AI tetap). REVISI: FAB kini TAMPIL utk anon dgn gate login (teaser chips + Masuk/Daftar) — bukan hidden. Verify: anon klik FAB → gate; login klik FAB → chat.",
+      "added": "2026-10-30T13:5x:00+07:00",
+      "result": "Hot-swap sukses. Downtime riil (API dynamic 502 window): ~3s; homepage via CF cache terus 200. Verified prod: /api/ai/stock ask layak-beli → provider=glm-flash 200; FAB container SSR di homepage; 'Bingung sama pasar' x2 di /pasar. Migration idempotent applied (No pending migrations)."
+    },
+    {
       "id": "dep-2026-10-30-01",
       "title": "DEPLOY malam 30 Okt: analytics threads-utm fix (commit analytics categorizeTraffic)",
       "status": "queued",

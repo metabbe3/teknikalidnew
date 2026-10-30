@@ -271,8 +271,12 @@ export const stockRepository = {
   },
 
   findPricesByTicker(ticker: string, where: Prisma.StockPriceWhereInput) {
+    // normalisasi ticker kanonik (BBCA → BBCA.JK) — sama dgn findStockByTicker,
+    // mencegah context AI kosong saat client kirim ticker tanpa suffix (bug 30 Okt)
+    const t = ticker.trim().toUpperCase();
+    const canonical = t.endsWith(".JK") ? t : `${t}.JK`;
     return prisma.stockPrice.findMany({
-      where: { stock: { ticker, isActive: true }, ...where },
+      where: { stock: { ticker: { in: [t, canonical] }, isActive: true }, ...where },
       orderBy: { date: "asc" },
     }).then((rows) => {
       const seen = new Map<string, (typeof rows)[number]>();
