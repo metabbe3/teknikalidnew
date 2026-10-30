@@ -1247,3 +1247,10 @@
 - Jebakan: (1) claude_gated.sh 2x gagal (Claude Code tak kenal glm-5.3 → context thrashing exit 1) → fallback manual sesuai GATEGUARD, jangan retry ke-3; (2) tsc di worktree baru = 675 error PALSU (prisma client belum digenerate) → selalu npx prisma generate dulu; (3) DB host dari host-mac = 127.0.0.1:5433 (pw dari .env baris DATABASE_URL), bukan db:5432; (4) working tree bisa berisi WIP agent paralel (ai/*) — commit SELALU path-spesifik + verify isolated worktree.
 - Langkah pertama slot berikutnya: baca queue → cek hasil BE malam 18:30 (fix-26-08/fix-28-02) → boarding gate T-1030-N (rebuild dari main HEAD, verify per-fitur: movement DRAFT + emoji + skor 2-desimal + oversold satu-pintu /pasar badge + AI G1-G3) → deploy → changelog + flip.
 - Rollback anchor: app 690e65d47289 + git revert 5c913ad (task ini build-only, naik kereta)
+
+### 2026-10-31 03:4x — Backoffice Builder (bo-25-01 + bo-26-02 DONE, deploy 7dbe481)
+- SHIPPED live image 4fc480e31eb8: (1) /admin/social-cards + API + sidebar + dep html2canvas-pro DIHAPUS (verdict owner 30 Okt); (2) tab Dashboard Community+Predictions DEMOTE via HIDDEN_TABS tab-config.ts — shim URL tetap jalan, re-aktivasi saat Post>50.
+- Bukti: tsc 0 / build 0 / docker BUILD_EXIT=0; API social-cards 404 live; tsx verify VISIBLE_TABS 7/9; queue v103 kedua entry done; changelog d506d18.
+- Jebakan baru: (1) docker compose build di foreground = timeout 420s + OOM app container sekali (Killed) — build WAJIB background=true + poll log; (2) npm uninstall menyentuh package-lock 50 baris — commit package.json+lock bersama; (3) re.findall residue check: escape lookbehind `(?<!VISIBLE_)TABS` karena VISIBLE_TABS mengandung substring TABS.
+- Slot BO berikutnya: rotasi audit kandidat dari ronde-3 API — /api/admin/queue (1 konsumen?) atau polish tab Insight mobile 390px (kandidat dari addendum 30 Okt).
+- Rollback anchor: image 4e58bd6ffb6a + git revert 7dbe481.
