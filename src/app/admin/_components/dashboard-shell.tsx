@@ -12,7 +12,7 @@ import { AuthTab } from "./auth-tab";
 import { AnalyticsTab } from "./analytics-tab";
 import { InsightTab } from "./insight-tab";
 import { UserManagementTab } from "./user-management-tab";
-import { TABS, type TabId } from "./tab-config";
+import { VISIBLE_TABS, type TabId } from "./tab-config";
 import { useState } from "react";
 
 interface DashboardShellProps {
@@ -43,12 +43,12 @@ export function DashboardShell({
         onKeyDown={(e) => {
           if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
           e.preventDefault();
-          const idx = TABS.findIndex((t) => t.id === activeTab);
-          const next = e.key === "ArrowRight" ? (idx + 1) % TABS.length : (idx - 1 + TABS.length) % TABS.length;
-          setActiveTab(TABS[next].id);
+          const idx = VISIBLE_TABS.findIndex((t) => t.id === activeTab);
+          const next = e.key === "ArrowRight" ? (idx + 1) % VISIBLE_TABS.length : (idx - 1 + VISIBLE_TABS.length) % VISIBLE_TABS.length;
+          setActiveTab(VISIBLE_TABS[next].id);
         }}
       >
-        {TABS.map((tab) => (
+        {VISIBLE_TABS.map((tab) => (
           <Button
             key={tab.id}
             role="tab"

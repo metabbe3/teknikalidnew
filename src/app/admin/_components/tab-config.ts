@@ -13,3 +13,13 @@ export const TABS = [
 ] as const;
 
 export type TabId = (typeof TABS)[number]["id"];
+
+/**
+ * Tab yang disembunyikan dari bar tab Dashboard (owner approve demote 30 Okt 2026,
+ * entry bo-2026-10-26-02): telemetri komunitas/prediksi masih 0 pemakaian — noise
+ * visual. Halaman shim /admin/community + /admin/predictions (URL langsung) tetap
+ * jalan. Aktifkan lagi (kosongkan array) saat Post total > 50 atau komunitas hidup.
+ */
+export const HIDDEN_TABS: readonly TabId[] = ["community", "predictions"];
+
+export const VISIBLE_TABS = TABS.filter((t) => !HIDDEN_TABS.includes(t.id));
