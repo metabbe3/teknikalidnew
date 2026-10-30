@@ -3072,14 +3072,14 @@
       "date": "2026-10-26",
       "type": "refactor",
       "priority": "P1",
-      "status": "night_ready",
+      "status": "in_train",
       "assigned_to": "cto",
-      "scheduled_slot": "BE pagi 30 Okt 09:30: review 15 mnt + merge night/fix-2026-10-26-11 (build-only, agregat dgn fix-26-08 di T-1030-N)",
+      "scheduled_slot": "BE pagi 30 Okt 07:30 DONE: merged b6f854d + tsc 0 + selftest 7/7 + build D3J615Qo — kereta T-1030-N malam ini",
       "north_star": "TRUST — jalur generate tanpa guard",
       "source": "plain audit 26 Okt malam (domain article/ & stock/)",
       "spec": "Article P1 agregat: (1) movement-analysis.service.ts:304 generateForStock lewati factCheck/sanitize/validate (jalur generate paralel tanpa guard — artikel bisa publish kotor); (2) layering rusak: movement-analysis:100,105 $queryRaw cross-domain + article-fact-check.ts:8,337 prisma langsung; (3) N+1 sekuensial AI/DB: article.service.ts:494,526,686,813 + movement-analysis:191,407,439.",
       "acceptance": "generateForStock lewat guard yang sama dengan article.service; prisma langsung di service = 0; loop berat dibatch Promise.all; tsc+build hijau.",
-      "train": "T-1029-N",
+      "train": "T-1030-N",
       "branch": "night/fix-2026-10-26-11",
       "night_result": {
         "task": "Guard pipeline SATU PINTU article-guards.ts (sanitize→quality→dedup→factCheck) dipakai jalur movement-analysis (dulu publish TANPA guard) + SQL movers pindah ke stockRepository.findMovementMovers dgn CTE week52 (N+1 enrich ≤100 query→1) + article-fact-check prisma-langsung=0 (findPublishedTypeSlugs) + runDailySnapshotGeneration pLimit(5) + preset struktur validator (movement minH2=1, backward-compatible) + evergreen update refresh publishedAt (bug tetangga: dedup harian tak pernah match hari-2)",
@@ -3093,7 +3093,8 @@
         ],
         "review_estimate": "15 mnt (diff 8 file +429/-213; area: article-guards baru, movement rewrite, repo method baru)",
         "catatan": "PERILAKU BARU utk CTO sadari: (1) artikel movement kini bisa di-hold DRAFT oleh factCheck (dulu selalu publish); (2) artikel movement ditolak quality-gate kini throw (skip saham itu, lanjut berikutnya); (3) concurrency generate 3 (dari 1) — biaya AI sama, batch 25 selesai ~3x lebih cepat; (4) jalur news TIDAK berubah perilaku (extract verbatim + opts default sama)"
-      }
+      },
+      "result": "MERGED main b6f854d push origin (30 Okt 08:0x). Kode: article-guards.ts baru (sanitize→quality→dedup→factCheck, hold→DRAFT), movement-analysis via pipeline sama news, movers CTE week52, fact-check prisma-langsung=0. VERIFY: tsc EXIT-0; selftest 7/7; regression 4 lama ALL PASS; build EXIT-0 BUILD_ID D3J615QoGziSgttHvKJv6. Queue union 199 entries 0 dup."
     },
     {
       "id": "fix-2026-10-26-12",
