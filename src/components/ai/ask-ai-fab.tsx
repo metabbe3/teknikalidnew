@@ -145,7 +145,7 @@ export function AskAiFab() {
                 </p>
                 <div className="flex gap-2">
                   <Link
-                    href={`/auth/login?callbackUrl=${encodeURIComponent(typeof window !== "undefined" ? window.location.pathname : "/")}`}
+                    href={`/auth/signin?callbackUrl=${encodeURIComponent(typeof window !== "undefined" ? window.location.pathname : "/")}`}
                     onClick={() => setOpen(false)}
                     className="flex-1 text-center text-sm font-bold text-white bg-accent hover:bg-accent/90 rounded-lg px-4 py-2.5"
                   >
