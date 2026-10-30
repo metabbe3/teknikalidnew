@@ -2,6 +2,13 @@
   "protocol": "CTO task queue — dibaca CTO agent (slot 07:30 pagi & 16:45 sore; quiet zone BARU 11:00-18:00 = larang deploy+LLM, owner 16 Sep), ditulis CEO (08:15) / Council (Min 08:00). Entry: {id, date, spec, priority (P0 darurat/P1 tinggi/P2 normal), north_star, status (pending/done/failed/blocked_for_owner), result}. CTO: max 1 deploy per slot (2/hari total), eksekusi claude code pipeline, update status + verify evidence.",
   "entries": [
     {
+      "id": "dep-2026-10-30-01",
+      "title": "DEPLOY malam 30 Okt: analytics threads-utm fix (commit analytics categorizeTraffic)",
+      "status": "queued",
+      "spec": "Deploy commit 'analytics: utmSource menang atas referrer' ke production malam ini (window 22:00-01:30). Post-deploy verify: /admin analytics overview → klik Threads hari ini (10 view utmSource=threads dgn referrer facebook) harus tampil platform=Threads bukan Facebook; unit test 7 case categorizeTraffic sudah PASS lokal; tsc + next build hijau.",
+      "added": "2026-10-30T09:4x:00+07:00"
+    },
+    {
       "id": "bo-2026-10-29-01",
       "date": "2026-10-29",
       "type": "backoffice",
@@ -3105,7 +3112,7 @@
       "date": "2026-10-26",
       "type": "perf",
       "priority": "P1",
-      "status": "in_train",
+      "status": "qa_pass",
       "assigned_to": "cto-night",
       "scheduled_slot": "BE pagi 29 Okt 09:30: review diff 15 mnt + merge night/fix-2026-10-26-12 (protocol dry-run) -> flip in_train T-1029-N — CTO Lead 29 Okt",
       "north_star": "RELIABLE/PERF — N+1 & layering pasar",
@@ -3138,7 +3145,10 @@
       },
       "train": "T-1029-N",
       "merged_by": "CTO pagi 29 Okt: merge c21f222 ke main (tsc EXIT-0, build EXIT-0 BUILD_ID eu-vm6Ndos0OFaFTqMOe9, selftest doctrine 9/9); deploy kereta T-1029-N malam",
-      "result": "MERGED c21f222 + LIVE via T-1029-N image 690e65d47289: pasar-live marker 4 file; parity 9/9 (CTO Night)"
+      "result": "Deploy T-1029-N + QA D+1: N+1 getWatchlist fix & pasar-live satu-pintu live; verifikasi independen reviewer: /api/radar 200 (MBSS value 0.66 render), doctrine pasar-live 9/9, tsc EXIT-0.",
+      "qa_verified": true,
+      "verified_by": "reviewer",
+      "completed_at": "2026-10-30 07:10 WIB"
     },
     {
       "id": "ops-2026-10-27-01",
@@ -3264,7 +3274,7 @@
       "id": "prd-2026-10-26-01",
       "date": "2026-10-28",
       "priority": "P1",
-      "status": "in_train",
+      "status": "qa_pass",
       "train": "T-1029-N",
       "scheduled_slot": "UX Builder 19:15 28 Okt malam ini (BUILD-ONLY) → kereta T-1029-N — RESLOT oleh CTO sore (budget reserve #19)",
       "north_star": "GROWTH register_7d baseline 3 → >=6 dalam 14 hari post-live (+STICKY: watchlist permanen)",
@@ -3280,8 +3290,10 @@
       "done_when": "DONE WHEN: sheet live di prod kereta T-1029-N + AC1-AC5 lulus staging (bukti fisik boarding gate) + dalam 14 hari post-live register_7d >=6 ATAU sheet-impression→register conversion terukur >=10% dari telemetry (jika <10%, iterate copy/placement — bukan tambah fitur).",
       "type": "feature",
       "prd_ref": "prd-2026-10-26-01",
-      "result": "UX Builder 28 Okt 19:15 BUILD-ONLY: commit 6dd401e branch night/ux-2026-10-28-01 (pushed). BUKTI FISIK: (1) selftest-retention-loop 8/8 PASS (3 test baru: AC1 rate-cap check-and-set 1x/7hr + AC2 count n-item + AC4 storage-throw diam); (2) tsc --noEmit EXIT-0; (3) NEXT_PUBLIC_API_BASE_URL=/api npm run build EXIT-0; (4) staging one-off container localhost:3100 chunk layout-85b2da60 berisi register_prompt_save_moment: star#1 RCCC = sheet Jaga simpanan Anda + body 1 emiten tersimpan (n nyata) + UTM utm_medium=register_prompt + data-engagement register_open_save_moment + cap tertulis + wl tersimpan; star#2 KOPI diblok rate-cap (sheet tidak muncul, wl tetap nambah = non-blocking); POST /api/public/engagement {cta_click, register_prompt_save_moment} teramati via fetch-hook; slide-up verified (tab visible: translate 0px, onscreen true). QA Verifier: staging test fisik di atas = self-check penuh sesuai boarding gate (bukti dicantumkan).",
-      "verified_by": "ux-builder-2026-10-28"
+      "result": "Deploy T-1029-N 29 Okt 21:35 (image 690e65d47289) + QA D+1 qa-2026-10-30-01 done: marker register_prompt_save_moment di chunk layout; live home 200 dgn CTA Daftar gratis x2; done-when register_7d>=6 dievaluasi 12 Nov (impact window).",
+      "verified_by": "reviewer",
+      "qa_verified": true,
+      "completed_at": "2026-10-30 07:10 WIB"
     },
     {
       "id": "ops-2026-10-28-01",
@@ -3389,31 +3401,38 @@
       "date": "2026-10-29",
       "type": "ops",
       "priority": "P3",
-      "status": "in_train",
+      "status": "qa_pass",
       "train": "T-1030-N",
       "title": "UX: emoji pass-4 Lucide (auth-error, quota-meter) + drop dekoratif (about, overlimit banner)",
       "north_star": "STICKY + TRUST — konsistensi visual ui-craft rule #4",
       "created_by": "UX Builder 19:15 29 Okt",
       "spec": "Sisa pekerjaan ux-2026-10-18-02 pass-4 (handoff 22 Okt): 4 emoji di 3 file. Frontend-only.",
-      "result": "BUILD-ONLY 29 Okt 19:15: commit 9179d32 push main. tsc EXIT-0, build EXIT-0 (rm -rf .next), staging :3100: /auth/error SVG lucide-triangle-alert live + 0 emoji, /about disclaimer bersih 200; chunk stocks/[ticker]: Eye lucide-path + banner copy tanpa emoji. 4 surface, emoji 4→0."
+      "result": "Deploy T-1029-N; verifikasi independen reviewer: /auth/error 200 render ikon lucide (SVG, tanpa emoji).",
+      "qa_verified": true,
+      "verified_by": "reviewer",
+      "completed_at": "2026-10-30 07:10 WIB"
     },
     {
       "id": "qw-audit-tk-1",
       "date": "2026-10-29",
       "priority": "P0",
-      "status": "spec_ready",
+      "status": "in_train",
       "spec": "Unifikasi skor sinyal StockCard list: health-score-badge.tsx masih konversi 0-100 bulat tanpa satuan (product-audit #2 lanjutan) - tampilkan 0,00-1,00 + label badge bahasa Indonesia. Done-when: /stocks mobile menampilkan skor 0-1 konsisten /pasar; bukti DOM/screenshot.",
       "north_star": "consistency-trust-reliable",
-      "scheduled_slot": "2026-10-30 09:30 slot pagi"
+      "scheduled_slot": "2026-10-30 09:30 slot pagi",
+      "train": "T-1030-N",
+      "result": "BUILD-ONLY 30 Okt slot siang (commit 02aae39, tsc 0, build EXIT-0 BUILD_ID SyA70zY6ja9TyJfCldmDz): HealthScoreBadge kini tampil skor RAW 2-desimal (signalScore.toFixed(2), identik /pasar radar+tabel) — konversi 0-100 tetap internal utk warna/band/label; 3 caller (stock-card/signal-verdict/snapshot-briefing) pass raw score. Bukti build: title \"Skor sinyal X (label)\" + \"Kondisi Baik\" band di chunks 7681/3146/9946; /100 & \"Health Score:\" 0-hit di server bundle. Live-verify DOM mobile /stocks pasca-kereta."
     },
     {
       "id": "qw-audit-tk-2",
       "date": "2026-10-29",
       "priority": "P1",
-      "status": "spec_ready",
+      "status": "in_train",
       "spec": "Dedupe breadcrumb visual ganda di stock page (page.tsx:592-598 'Stocks > BBCA' Inggris vs bawah 'Beranda > Saham') + terjemahkan 'Key Statistics'/'Fundamentals' + anchor sticky nav 'AI' salah sasaran (#ai bukan seksi) ke #analisa/#asing/#chart/#indikator (product-audit #4).",
       "north_star": "consistency-trust-reliable",
-      "scheduled_slot": "2026-10-30 09:30 slot pagi"
+      "scheduled_slot": "2026-10-30 09:30 slot pagi",
+      "train": "T-1030-N",
+      "result": "BUILD-ONLY 30 Okt slot siang (commit 02aae39): (1) breadcrumb Inggris \"Stocks > TIKER\" DIHAPUS (aria-label duplikat 2x; Breadcrumbs 4-item ID+schema.org jadi satu-satunya) — bukti: >Stocks< 0-hit di page.js build; (2) sticky nav #ai (span kosong bukan seksi) diganti #analisa + #asing (section Aliran Dana Asing kini ber-id+scroll-mt-24) — bukti: array [\"analisa\",\"Analisa\"],[\"asing\",\"Asing\"] di build; (3) Key Statistics→Statistik Utama, Fundamentals→Data Fundamental, tabs compare→ID. Live-verify DOM pasca-kereta."
     },
     {
       "id": "qw-audit-tk-3",
@@ -3543,6 +3562,24 @@
       "spec": "PortfolioHolding + /portfolio sudah live TAPI 0 pintu masuk dari ticker page. Tambahkan CTA \"Tambah ke Portofolio\" di kartu harga/aksi halaman saham (authed) / guest lihat CTA register-adjacent (utm portfolio_cta). Reuse komponen ScreenActions/watchlist pattern; JANGAN buat endpoint baru — API portofolio existing. DONE WHEN: /stocks/BBCA.JK authed menampilkan CTA + klik menambah holding (DB row) ; guest melihat varian CTA; tsc 0; build hijau; staging verify. Pilar STICKY (returning value loop). Kereta T-1031-N.",
       "scheduled_slot": "FE 19:15 3 Nov BUILD-ONLY (setelah audit-slot hari ini) — kereta T-1031-N",
       "north_star": "STICKY"
+    },
+    {
+      "id": "qa-2026-10-30-02",
+      "date": "2026-10-30",
+      "priority": "P1",
+      "status": "pending",
+      "title": "QA reviewer 30 Okt: fix 3 artikel (rank IHSG, EMA cross lintas-sesi, klaim volume MBSS) + doctrine generator",
+      "north_star": "TRUST",
+      "spec": "INTENT: pasca-publish QA 07:00 menemukan angka tidak cocok dgn DB pada 3 artikel editorial. (1) brief-pasar-idx-2026-10-30-116-saham-oversold: klaim penurunan harian terbesar KEENAM dalam 12 bulan - aktual rank #12 (SQL rank -3,49%; 11 hari lebih buruk: 16 Okt -11,57 ... 20 Mei -3,54); breadth 102/653/72 vs snapshot kanon 104/653/74 (naik & stagnan meleset 2). (2) analis-sore-2026-10-29-mbss + analis-pagi-2026-10-30-mbss: klaim 8 sinyal/persilangan EMA cross baru - DB emaCrossDate=2026-10-29 bullish hanya 3; angka 8 = sesi 28 Okt (cross-day error, pola qa-30-01). (3) 2 artikel sama: MBSS volume +43,6% di atas rata-rata harian - tak rekonciliable dgn DB (vol 29 Okt 3,07jt vs avg20 7,09jt = -57%; 43,6% hanya cocok vs volume single-day 28 Okt 2,14jt = prev-day, bukan rata-rata). Plus minor: analis-pagi-30 klaim MBSS satu-satunya Strong Bullish di scan - DB ada 8 SB non-gorengan lain (YULE 0,68 dst) - relabel. ACCEPTANCE: (a) 3 artikel diperbaiki via SQL UPDATE (bukan regenerasi penuh), live 200 dan angka cocok dgn DB; (b) generator doctrine: klaim superlatif ranking wajib dari SQL ranking window sesi yang dibahas; count screener (EMA/GC/DC/oversold) wajib dari tanggal sesi artikel; klaim volume-vs-average wajib menyebut window & rekonciliable dari StockPrice; (c) tambah cek ke guard teknikalid_growth.py / factCheck utk pola ini; (d) selftest guard tetap hijau. KONTEKS: verifikasi SQL reviewer = SELECT rank() OVER (ORDER BY pct ASC) dari StockPrice ^JKSE 12 bulan; emaCrossDate bullish 29 Okt = 3 (28 Okt = 8)."
+    },
+    {
+      "id": "qa-2026-10-30-03",
+      "date": "2026-10-30",
+      "priority": "P1",
+      "status": "pending",
+      "title": "Evergreen 1-lot saham 404 live padahal PUBLISHED di DB",
+      "north_star": "TRUST+GROWTH",
+      "spec": "INTENT: https://teknikal.id/berita/1-lot-saham-berapa-lembar-modal-fraksi-dan-biaya-transaksi = 404 live (retest 2x konsisten, UA Mozilla), padahal DB Article status=PUBLISHED isListed=true articleType=EDUCATIONAL (publishedAt 2026-10-29 10:41 WIB, updatedAt 05:03 UTC). Halaman berita lain 200 semua; buildManifest BUILD_ID wce4au6ENzHHe8O9G4SAx 200. User yang masuk dari sitemap/internal link kena 404 = trust runtuh. ACCEPTANCE: (a) halaman live 200 dan render konten; (b) root-cause kenapa artikel PUBLISHED tidak ter-render (ISR regen? static path kering karena generate saat build? route evergreen vs dinamis?); (c) pastikan semua artikel EDUCATIONAL lain live (cek seluruh slug EDUCATIONAL PUBLISHED); (d) guard: monitoring cron harian QA reviewer sudah curl seluruh artikel 24h - tambah cek slug EDUCATIONAL tua mingguan."
     }
   ]
 }

@@ -898,3 +898,11 @@
 - **QA**: pasca-deploy T-1030-N malam ini: movement DRAFT saat factCheck hold (perilaku baru) + selftest re-run di image.
 - **impact_check_due**: 2026-11-02 (movement artikel DRAFT≠publish kotor; AI-call dedup evergreen 3x→1/hari)
 - **deploy hash**: n/a BUILD-ONLY (naik kereta T-1030-N) | rollback: git revert b6f854d
+
+## 2026-10-30 09:5x WIB — CTO siang 09:30 (qw-audit-tk-1 P0 + qw-audit-tk-2 P1, BUILD-ONLY)
+- **task-id**: qw-audit-tk-1 (P0 unifikasi skor) + qw-audit-tk-2 (P1 breadcrumb/nav/label)
+- **type**: frontend consistency (pilar TRUST — satu format skor di semua permukaan)
+- **verify bukti**: commit 02aae39 (push main); tsc --noEmit EXIT-0; build EXIT-0 BUILD_ID SyA70zY6ja9TyJfCldmDz; grep build: ["analisa","Analisa"],["asing","Asing"] di sticky-nav array + ">Stocks<" 0-hit page.js + "Statistik Utama"/"Data Fundamental"/"Rencana Trading" di server bundle (stocks/compare/berita) + title "Skor sinyal X (label)" chunks 7681/3146/9946; "/100" & "Health Score:" 0-hit.
+- **QA**: pasca-deploy T-1030-N: DOM mobile /stocks skor 2-desimal + detail 1 breadcrumb + nav anchor #asing melompat ke seksi.
+- **impact_check_due**: 2026-11-02
+- **deploy hash**: n/a BUILD-ONLY (in_train T-1030-N) | rollback: git revert 02aae39
