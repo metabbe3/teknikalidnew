@@ -1,3 +1,4 @@
+import { buildPasarContext } from "@/lib/ai-pasar-context";
 import { prisma } from "@/lib/prisma";
 import { isPlausibleTicker } from "@/lib/ai-ticker-guard";
 import { NextRequest, NextResponse } from "next/server";
@@ -39,6 +40,11 @@ const GLM_SYSTEM = [
   "FORMAT BILA MODE SUMMARIZE (kartu): judul '## <TICKER> — <tema 2-4 kata>', bagian '###' (Tren, Momentum, Volume & Asing, Level Kunci), bullet '-' dengan **bold** angka penting.",
   "FORMAT BILA MODE ASK / OBROLAN (CONVERSATIONAL PYRAMID — jangan pakai heading '##'/'###'): (1) buka 1-2 kalimat santai yang LANGSUNG menjawab inti pertanyaan; (2) maksimal 3-4 bullet pendek dengan **bold** angka kunci (tabel hanya bila duel 2 saham); (3) tutup 1 kalimat poin pantauan paling krusial + pengingat ringan 'kerangka data edukasi, bukan saran beli/jual' — jangan ulang disclaimer panjang tiap turn.",
   "KUALIFIKASI + ANGKA: jangan sebut istilah kabur tanpa angka (salah: 'RSI udah rendah'; benar: 'RSI di **31,4**, mepet jenuh jual 30').",
+  "LABEL WAKTU JUJUR (juri Claude 30 Okt): data harga/indikator = EOD. WAJIB tulis 'close <tanggal dari data>' sekali di awal; DILARANG bilang 'hari ini' untuk angka EOD. Gunakan tanggal aktual hari ini (dari DATA asOf/tanggal) sebagai acuan.",
+  "METRIK TURUNAN WAJIB (juri Claude): sebelum bilang 'data tidak tersedia', HITUNG dulu dari angka yang ada: tanya dividen → payout ratio = DPS/EPS (dan sebut hasilnya, mis. 'payout ~117% — dividen lebih besar dari laba'); user nyangkut → %minus sekarang + %naik yang dibutuhkan untuk BEP; bandingkan → selisih % antar saham. Angka turunan tandai dengan '±' bila pembulatan.",
+  "KRITERIA DULU (juri Claude): kata sifat subjektif (sehat, kuat, murah, risiko tinggi) WAJIB diikuti kriterianya di kalimat yang sama atau berikutnya (mis. 'profil risiko tinggi: volatilitas ekstrem + volume lonjak tanpa berita'). DILARANG melabel emiten spesifik dengan kata 'gorengan' — pakai 'profil risiko tinggi (kriteria: ...)'.",
+  "GLOSARIUM SATUAN (juri Claude): aliran asing = 'Rp X miliar' (bukan 'M'), volume = 'juta lembar', desimal pakai koma maksimal 2 angka (3,49 bukan 3,4912), harga pakai titik ribuan (Rp4.940). Konsisten satu format di seluruh jawaban.",
+  "BAHASA: santai tapi JANGAN paksa gaul — kalau ragu dengan sebuah kata gaul, pakai bahasa Indonesia baku sehari-hari (larangan: 'tuang', 'kelola besar', 'kepenjeblokan', 'serok'). Typos = bot murahan.",
   "EMPATI NYANGKUT: bila ada posisiUser minus atau kata nyangkut/boncos, buka dengan 1 kalimat validasi emosi manusiawi sebelum angka; jangan menggurui.",
   "BARIS PALING AKHIR WAJIB: '[FOLLOWUPS] Pertanyaan 1? | Pertanyaan 2? | Pertanyaan 3?' — 3 ide lanjutan singkat (<40 karakter, relevan konteks barusan).",
 ].join(" ");
@@ -258,7 +264,10 @@ export async function POST(req: NextRequest) {
       let glmErr: string | null = null;
       if (mode === "ask" || mode === "summarize") {
         try {
-          const text = await glmCall(context, mode, question, chatHistory);
+          // juri Claude 30 Okt: konteks pasar + tanggal wajib — saham tidak hidup sendirian
+          const [pasarCtx] = await Promise.all([buildPasarContext().catch(() => null)]);
+          const ctx = { ...context, marketContext: pasarCtx ? { ihsg: pasarCtx.ihsg, asingNetSellTop: pasarCtx.foreignNetSell, asingNetBuyTop: pasarCtx.foreignNetBuy } : null, asOf: new Date().toISOString().slice(0, 10) };
+          const text = await glmCall(ctx, mode, question, chatHistory);
           // flywheel (owner 30 Okt): log QA fire-and-forget
           prisma.aiChatLog
             .create({ data: { route: "stock", mode, ticker: String(clientContext.ticker ?? "").replace(/\.JK$/i, ""), question: question.slice(0, 500), answer: text.slice(0, 8000), provider: "glm-flash", latencyMs: Date.now() - __t0, anonId: (body as Record<string, unknown>).anonId as string | undefined ?? null, userId: (body as Record<string, unknown>).userId as string | undefined ?? null } })

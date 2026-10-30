@@ -1,3 +1,4 @@
+import { buildPasarContext } from "@/lib/ai-pasar-context";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { technicalAnalysisService } from "@/domains/stock/technical-analysis.service";
@@ -108,6 +109,12 @@ const GLM_SYSTEM = [
   "JANGAN daftar semua saham — tabel sudah menampilkannya. Akhiri satu kalimat disclaimer: data teknikal, bukan rekomendasi beli.",
   "FORMAT: teks naratif pendek 2-4 kalimat dengan **bold** pada nama/ticker penting; ticker WAJIB format Markdown link [TICKER](/stocks/TICKER.JK); boleh bullet '-' bila menonjolkan 2-3 poin; JANGAN tabel (tabel sudah dirender aplikasi).",
   "Jika daftar kosong, jawab jujur: tidak ada saham yang lolos kriteria itu hari ini.",
+  "LABEL WAKTU JUJUR (juri Claude 30 Okt): data = EOD (close). Sebut tanggal close sekali di awal ('close 29 Okt'), DILARANG 'hari ini' utk angka EOD. Jangan klaim 'pemicu utamanya' utk hal yang tidak ada datanya (berita/makro) — bilang 'mekanisme yang terlihat dari data: ...' dan 'pemicu makro tidak ada di data kami'.",
+  "KONSEP vs CONTOH (juri Claude): bila user tanya KONSEP (golden cross, RSI, dsb.), jelaskan konsepnya saja + caveat (indikator lagging, false signal saat sideways). DILARANG menempelkan nama saham sebagai 'contoh golden cross' dsb. TANPA memverifikasi saham itu benar-benar memenuhi kondisinya — kalau tidak bisa diverifikasi dari data, jangan sebut contohnya.",
+  "KRITERIA DULU + ANTI-GORENGAN (juri Claude): kata sifat (oke, sehat, kuat) WAJIB disertai kriteria di kalimat yang sama ('oke = masih hijau saat IHSG merah + volume di atas rata-rata'). DILARANG melabel emiten 'gorengan' — ganti 'profil risiko tinggi (volatilitas ekstrem, turun dalam, waspada UMA)'. Jangan asosiasikan top-loser dengan gorengan.",
+  "KONSISTENSI KLAIM (juri Claude): sebelum menyebut 'rotasi', cek proporsinya — kalau inflow jauh lebih kecil dari outflow (mis. masuk 65 M vs keluar 800 M), itu EXIT bukan rotasi; sebut apa adanya.",
+  "GLOSARIUM SATUAN: asing = 'Rp X miliar' konsisten; volume = 'juta lembar'; desimal koma max 2 angka; harga titik ribuan. Semua ticker yang disebut WAJIB link [TICKER](/stocks/TICKER.JK) — jangan campur bold dan link.",
+  "VARIASI PEMBUKA: jangan semua jawaban dimulai kondisi IHSG — variasikan sudut (sahamnya dulu, asingnya dulu, dsb.). Bahasa santai natural; larangan kata dipaksa gaul: 'tuang', 'kelola besar', 'kepenjeblokan'.",
   "BARIS PALING AKHIR WAJIB: '[FOLLOWUPS] Pertanyaan 1? | Pertanyaan 2? | Pertanyaan 3?' — 3 ide pertanyaan lanjutan singkat (<40 karakter, relevan konteks pasar/ticker barusan).",
 ].join(" ");
 
@@ -160,21 +167,6 @@ async function glmScreenerChat(
 }
 
 /** Snapshot pasar ringkas utk konteks MARKET (IHSG, movers, asing, top skor) — SATU PINTU pasar-live. */
-async function buildPasarContext(): Promise<Record<string, unknown> | null> {
-  try {
-    const snap = await pasarLiveService.getSnapshot(false);
-    return {
-      ihsg: snap.ihsg ?? null,
-      topGainers: (snap.gainers ?? []).slice(0, 5).map((m) => ({ ticker: m.ticker, chg: m.changePercent, close: m.close })),
-      topLosers: (snap.losers ?? []).slice(0, 5).map((m) => ({ ticker: m.ticker, chg: m.changePercent, close: m.close })),
-      foreignNetBuy: (snap.foreign?.netBuy ?? []).slice(0, 5).map((f) => ({ ticker: f.ticker, netRp: f.netValue })),
-      foreignNetSell: (snap.foreign?.netSell ?? []).slice(0, 5).map((f) => ({ ticker: f.ticker, netRp: f.netValue })),
-      topSignals: (snap.topSignals ?? []).slice(0, 5).map((t) => ({ ticker: t.ticker, skor: t.signalScore, label: t.signalLabel })),
-    };
-  } catch {
-    return null;
-  }
-}
 
 export async function POST(req: NextRequest) {
   // Security-audit 28 Okt: xff[0] bisa dipalsukan client (CF append, [0]=nilai attacker).
