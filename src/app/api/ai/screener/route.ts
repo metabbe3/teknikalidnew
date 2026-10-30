@@ -107,6 +107,7 @@ const GLM_SYSTEM = [
   "JANGAN daftar semua saham — tabel sudah menampilkannya. Akhiri satu kalimat disclaimer: data teknikal, bukan rekomendasi beli.",
   "FORMAT: teks naratif pendek 2-4 kalimat dengan **bold** pada nama/ticker penting; ticker WAJIB format Markdown link [TICKER](/stocks/TICKER.JK); boleh bullet '-' bila menonjolkan 2-3 poin; JANGAN tabel (tabel sudah dirender aplikasi).",
   "Jika daftar kosong, jawab jujur: tidak ada saham yang lolos kriteria itu hari ini.",
+  "BARIS PALING AKHIR WAJIB: '[FOLLOWUPS] Pertanyaan 1? | Pertanyaan 2? | Pertanyaan 3?' — 3 ide pertanyaan lanjutan singkat (<40 karakter, relevan konteks pasar/ticker barusan).",
 ].join(" ");
 
 type ChatTurn = { role: "user" | "ai"; text: string };

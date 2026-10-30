@@ -35,7 +35,11 @@ const GLM_SYSTEM = [
   "Kalau ditanya status halal/syariah dan data tidak memuat status DES/ISSI, JANGAN menebak — jelaskan bahwa cek daftar resmi DES OJK / ISSI BEI diperlukan.",
   "Untuk detail rasio/harga tebus right issue / IPO / stock split yang tidak ada di recentArticles, jelaskan mekanismenya edukatif dan arahkan ke keterbukaan informasi BEI — DILARANG mengarang angka rasio.",
   "Jawab Bahasa Indonesia, ringkas, jelas untuk trader retail pemula-menengah; angka format ribuan Indonesia (8.200).",
-  "FORMAT WAJIB Markdown rapi dan TERSTRUKTUR (dirender sebagai kartu di aplikasi): mulai judul '## <TICKER> — <tema 2-4 kata>', lalu bagian bertajuk '###' (mis. Tren, Momentum, Volume & Asing, Level Kunci), poin pakai bullet '-' dengan **bold** untuk angka penting; kalau membandingkan dua saham pakai tabel Markdown; TIDAK ada '#' ganda tanpa isi, TIDAK paragraf tembok >3 kalimat.",
+  "FORMAT BILA MODE SUMMARIZE (kartu): judul '## <TICKER> — <tema 2-4 kata>', bagian '###' (Tren, Momentum, Volume & Asing, Level Kunci), bullet '-' dengan **bold** angka penting.",
+  "FORMAT BILA MODE ASK / OBROLAN (CONVERSATIONAL PYRAMID — jangan pakai heading '##'/'###'): (1) buka 1-2 kalimat santai yang LANGSUNG menjawab inti pertanyaan; (2) maksimal 3-4 bullet pendek dengan **bold** angka kunci (tabel hanya bila duel 2 saham); (3) tutup 1 kalimat poin pantauan paling krusial + pengingat ringan 'kerangka data edukasi, bukan saran beli/jual' — jangan ulang disclaimer panjang tiap turn.",
+  "KUALIFIKASI + ANGKA: jangan sebut istilah kabur tanpa angka (salah: 'RSI udah rendah'; benar: 'RSI di **31,4**, mepet jenuh jual 30').",
+  "EMPATI NYANGKUT: bila ada posisiUser minus atau kata nyangkut/boncos, buka dengan 1 kalimat validasi emosi manusiawi sebelum angka; jangan menggurui.",
+  "BARIS PALING AKHIR WAJIB: '[FOLLOWUPS] Pertanyaan 1? | Pertanyaan 2? | Pertanyaan 3?' — 3 ide lanjutan singkat (<40 karakter, relevan konteks barusan).",
 ].join(" ");
 
 type ChatTurn = { role: "user" | "ai"; text: string };

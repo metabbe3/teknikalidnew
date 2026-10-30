@@ -1,77 +1,56 @@
 /**
- * AI ticker guard (owner 30 Okt: "Saham apa yang YANG lagi oke" → salah route ke YANG.JK).
- * Kata Indonesia/istilah finansial 4-huruf yang JUGA ticker IDX (atau mirip) tidak boleh
- * memicu routing per-saham. Dipakai: ask-ai-fab (routing client), stock route (COMPARE), ai-markdown (chips).
+ * AI ticker guard v2 (riset Argon 30 Okt P0-1 — menggantikan blacklist v1).
+ * 3-Stage Deterministic Gazetteer + Context Confidence (τ=0.75), <1ms, 0 model tambahan:
+ *   1. Kandidat 4-huruf WAJIB ada di VALID_IDX_SET (939 emiten aktif) — "YANG/MACD/VWAP/SKOR" gugur instan.
+ *   2. Homonym (107 ticker = kata kamus: DATA/BANK/NAIK/GOOD...) butuh sinyal konteks kuat.
+ *   3. Alias populer ("bca" → BBCA) untuk nama pendek.
+ * Kenapa bukan blacklist: 107/939 ticker BEI adalah kata kamus — blacklist tak pernah tuntas
+ * (ribuan kata ID 4-huruf: buat, cara, awal, saja, tapi...). Whitelist tertutup = satu-satunya presisi.
  */
 
-// Kata umum bahasa Indonesia + istilah finansial/indikator yang BUKAN maksud ticker.
-// Kecil semua; bandingkan dengan kandidat .toLowerCase().
-export const TICKER_FALSE_POSITIVES = new Set([
-  // kata tanya / penghubung Indonesia
-  "yang", "data", "sama", "bila", "agar", "biar", "supa", "atau", "dan", "dari",
-  "kepu", "kapan", "dimana", "gimana", "kenapa", "apakah", "bagaimana", "seberapa",
-  "masih", "sudah", "belum", "akan", "bisa", "dulu", "lagi", "nih", "tuh", "dong",
-  "kayak", "gitu", "gini", "banget", "amat", "sangat", "cukup", "agak",
-  "mana", "link", "kalo", "kalau", "tolong", "cekin", "cek", "beda", "bedanya", "ketemu", "itung",
-  // istilah finansial/indikator (bukan ticker IDX)
-  "macd", "rsi", "adx", "atr", "obv", "sma", "ema", "bb", "pe", "pb", "roe", "roa",
-  "eps", "ara", "arb", "fca", "uma", "ipo", "idx", "ihsg", "jci", "notchl", "notch",
-  "cut", "loss", "sell", "buyn", "hold", "avg", "unit", "lot", "share", "price",
-  "up", "down", "high", "low", "open", "prev", "divi", "yield", "ratio", "value",
-  "bull", "bear", "tren", "naik", "turun", "flat", "gain", "drop",
-  "bank", "saham", "emit", "boleh", "jangan", "harus", "mauu", "mahu",
-  "noted", "notes", "info", "news", "today", "hari", "ini",
-]);
+import { VALID_IDX_SET, HOMONYM_TICKERS, POPULAR_ALIAS } from "./idx-tickers";
 
-// Ticker IDX asli yang TABRAKAN dengan kata Indonesia/istilah (diverifikasi DB 963 emiten 30 Okt):
-// AGAR BANK BULL DATA NAIK SUPA UNIT. Kata-kata ini SUPER sering muncul di kalimat tanya,
-// jadi hanya dianggap ticker kalau user nulis HURUF BESAR eksplisit ("DATA saham apa") —
-// bukan saat mengetik "data" lowercase dalam kalimat normal.
-export const AMBIGUOUS_REAL_TICKERS = new Set(["AGAR", "BANK", "BULL", "DATA", "NAIK", "SUPA", "UNIT"]);
-
-/**
- * Kandidat 4-huruf → layak dianggap ticker?
- * Rule urut: 4 char A-Z; bukan false-positive; kalau AMBIGUOUS (ticker asli tapi juga kata
- * Indonesia) wajib ditulis uppercase oleh user di teks asli.
- */
+/** Kata 4-huruf → layak ticker? (confidence scoring, threshold implisit 0.75) */
 export function isPlausibleTicker(
   candidate: string | undefined | null,
   original?: string,
 ): boolean {
   if (!candidate) return false;
   const t = candidate.toUpperCase().replace(/\.JK$/, "");
-  if (!/^[A-Z]{4}$/.test(t)) return false;
-  // AMBIGUOUS real-ticker (DATA/SUPA/dll) dicek SEBELUM false-positive list:
-  // uppercase eksplisit dari user = niat ticker, menang atas kata umum.
-  if (AMBIGUOUS_REAL_TICKERS.has(t)) {
-    // hanya kalau di teks asli benar-benar huruf besar semua (bukan hasil toUpperCase kita)
-    if (!original) return false;
-    const re = new RegExp(`\\b${t}\\b`);
-    return re.test(original);
-  }
-  return true;
+  if (!VALID_IDX_SET.has(t)) return false; // bukan emiten aktif → gugur (YANG, MACD, dll)
+  if (!HOMONYM_TICKERS.has(t)) return true; // ticker murni (BBCA/TLKM) → lolos apapun case-nya
+  // Homonym: butuh sinyal kuat — $TICKER / TICKER.JK eksplisit / "saham TICKER" / all-caps asli user
+  if (!original) return false;
+  if (new RegExp(`\\$${t}\\b|\\b${t}\\.JK\\b`, "i").test(original)) return true;
+  if (new RegExp(`\\b(?:saham|emiten|kode|ticker|nyangkut|avg)\\s+${t}\\b`, "i").test(original)) return true;
+  const m = original.match(new RegExp(`\\b(${t}|${t.toLowerCase()}|${t.charAt(0)}${t.slice(1).toLowerCase()})\\b`));
+  return !!m && m[1] === t; // hanya bila user menulis bentuk FULL-CAPS asli
 }
 
-/**
- * Ambil ticker pertama yang layak dari teks pertanyaan.
- * Scan BOTH: kata uppercase asli (sinyal kuat niat ticker) DAN kata 4-huruf apapun
- * yang cocok pattern (user sering nulis kecil: "apakah bbca layak").
- */
+/** Semua ticker terdeteksi (ranked by confidence) dari teks bebas. */
+export function extractTickersRanked(raw: string): string[] {
+  const letters = raw.replace(/[^A-Za-z]/g, "");
+  const isShouting = letters.length > 6 && letters.replace(/[^A-Z]/g, "").length / letters.length >= 0.7;
+  const scores = new Map<string, number>();
+
+  // 1) alias populer
+  for (const [alias, tkr] of Object.entries(POPULAR_ALIAS)) {
+    if (new RegExp(`\\b${alias}\\b`, "i").test(raw) && VALID_IDX_SET.has(tkr)) scores.set(tkr, 0.92);
+  }
+  // 2) kandidat 4-huruf dalam universe
+  for (const m of raw.matchAll(/(\$)?\b([A-Za-z]{4})(\.JK)?\b/g)) {
+    const t = m[2].toUpperCase();
+    if (!VALID_IDX_SET.has(t)) continue;
+    const before = raw.slice(Math.max(0, (m.index ?? 0) - 20), m.index ?? 0);
+    const hasTrigger = /\b(?:saham|emiten|kode|ticker|nyangkut|avg)\s+$/i.test(before);
+    const isExactCaps = m[2] === t && !isShouting;
+    const conf = m[1] || m[3] ? 1.0 : !HOMONYM_TICKERS.has(t) ? 0.9 : hasTrigger ? 0.9 : isExactCaps ? 0.85 : 0.15;
+    if (conf >= 0.75) scores.set(t, Math.max(scores.get(t) ?? 0, conf));
+  }
+  return [...scores.entries()].sort((a, b) => b[1] - a[1]).map(([t]) => t);
+}
+
+/** Ticker pertama (utk routing FAB) — null bila tidak ada. */
 export function detectTickerInText(text: string): string | null {
-  // Pass 1: kata yang ditulis UPPERCASE asli oleh user — sinyal kuat niat ticker.
-  // Catatan: "Saham apa yang lagi oke" punya "Saham" kapital awal, tapi 4-huruf uppercase
-  // penuh ("YANG") hanya muncul kalau user memang menulis begitu → tetap lolos filter kata umum.
-  const upperMatches = text.match(/\b[A-Z]{4}\b/g) ?? [];
-  for (const m of upperMatches) {
-    if (isPlausibleTicker(m, text)) return m;
-  }
-  // Pass 2: kata apapun 4-huruf alfabet yang BUKAN kata umum Indonesia di teks ASLI.
-  // "bbca" (lowercase, bukan kata kamus) → BBCA ✓; "yang/mana/link" (kata kamus) → skip ✓.
-  const wordMatches = text.toLowerCase().match(/\b[a-z]{4}\b/g) ?? [];
-  for (const w of wordMatches) {
-    if (TICKER_FALSE_POSITIVES.has(w)) continue;
-    if (AMBIGUOUS_REAL_TICKERS.has(w.toUpperCase())) continue; // kata kamus ambigu → butuh uppercase eksplisit
-    return w.toUpperCase();
-  }
-  return null;
+  return extractTickersRanked(text)[0] ?? null;
 }

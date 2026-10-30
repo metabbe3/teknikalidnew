@@ -35,6 +35,15 @@ interface ChatItem {
   role: "user" | "ai";
   text: string;
   links?: { ticker: string }[];
+  followUps?: string[];
+}
+
+/** Pisahkan baris [FOLLOWUPS] X | Y | Z dari teks jawaban → chips tappable (riset Argon P0-4). */
+function splitFollowUps(raw: string): { text: string; followUps: string[] } {
+  const m = raw.match(/\n?\[FOLLOWUPS\]\s*(.+)$/);
+  if (!m) return { text: raw.trim(), followUps: [] };
+  const followUps = m[1].split("|").map((x) => x.trim().replace(/^\(.+?\)\s*/, "")).filter(Boolean).slice(0, 3);
+  return { text: raw.replace(m[0], "").trim(), followUps };
 }
 
 export function AskAiFab() {
@@ -99,7 +108,8 @@ export function AskAiFab() {
         .filter((t) => t !== "IHSG" && isPlausibleTicker(t))
         .slice(0, 4)
         .map((ticker) => ({ ticker }));
-      setItems((p) => [...p, { role: "ai", text: data.text, links }]);
+      const split = splitFollowUps(String(data.text ?? ""));
+      setItems((p) => [...p, { role: "ai", text: split.text, links, followUps: split.followUps }]);
     } catch {
       setError("Sambungan AI terganggu — coba lagi sebentar.");
     } finally {
@@ -206,6 +216,19 @@ export function AskAiFab() {
                   }
                 >
                   {it.role === "user" ? it.text : <AiMarkdown text={it.text} compact /> }
+                  {it.role === "ai" && it.followUps && it.followUps.length > 0 && (
+                    <div className="mt-2 flex flex-col gap-1">
+                      {it.followUps.map((f) => (
+                        <button
+                          key={f}
+                          onClick={() => ask(f)}
+                          className="text-left text-xs px-3 py-1.5 rounded-full border border-accent/30 text-accent hover:bg-accent/10 transition-colors"
+                        >
+                          {f}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                   {it.links && it.links.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       {it.links.map((l) => (
