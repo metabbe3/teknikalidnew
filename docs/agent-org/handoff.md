@@ -1209,7 +1209,14 @@
 - Queue v78: bo-29-01 qa_pass. Dua entry BO lain NUNGGU OWNER: bo-25-01 (remove social-cards) & bo-26-02 (demote Community/Predictions) — kalau owner approve di morning digest, slot BO berikutnya eksekusi (deploy terpisah, bukan kereta).
 - Slot BO berikutnya kalau verdict belum masuk: rotasi audit lanjut — kandidat terdekat per audit ronde-3 API: /api/admin/queue (1 konsumen? cek) atau polish tab Insight mobile 390px.
 
-## 2026-10-30 08:2x — CTO pagi (fix-26-11 merged; QA T-1029-N; BUILD-ONLY 0 deploy)
+
+## 2026-10-30 night CTO — code-audit-tk-2 night_ready
+- code-audit-tk-2 (N+1 foreignFlow stock page + admin reports) SELESAI di branch night/code-audit-tk-2, commit efe4489 (test RED failing-first) + cd83a91 (fix). Untuk CTO pagi 07:30: review + merge + deploy pipeline pagi.
+- Verify: tsc exit 0, selftest foreign-flow-parity 15/15 (RED dulu), probe data asli BBCA.JK PARITY IDENTIK query 6->2, admin reports 1+2N->3, lint 0, regression selftest pasar-live/market-snapshot exit 0 semua.
+- KEPUTUSAN DESAIN: FF harga via batch findMany date IN (paritas by-construction) BUKAN reuse detail.prices top-6 — SQL bukti 652/4810 baris FF tanpa harga & 0 kasus harga-ada-di-luar-top6; gap-sync FF (fix-2026-10-28-02 pending) bisa bikin tanggal FF baru > prices top-6, reuse = risiko netValue null senyap.
+- BASE BRANCH = local main HEAD da94d6b (origin/main 17 commit di belakang - kerja sore belum push; base origin/main = konflik pasti utk file yang sama). CTO pagi merge night/code-audit-tk-2 SETELAH push 17 commit sore.
+- SISA GAP (jujur): total SSR stock page masih 12 kueri (10 paralel pre-existing di main Promise.all, bukan N+1) - konsolidasi jadi <10 = kandidat code-audit-tk-4; done-when literal '<10 DB Guard' hanya tercapai utk blok yang discope (FF 6->2).
+\n## 2026-10-30 08:2x — CTO pagi (fix-26-11 merged; QA T-1029-N; BUILD-ONLY 0 deploy)
 - State: sehat; FRESH (EOD 29 Okt); home/stocks/pasar 200; app 690e65d47289 (T-1029-N live); main = d6a2ef4 pushed; night-audit CLEAN; queue v91 union 199 entries 0 dup; symlink 2/2 hidup.
 - Barusan: fix-2026-10-26-11 MERGED b6f854d (article-guards pipeline + movers CTE; tsc 0; selftest 7/7; regression 4 ALL PASS; build D3J615QoGziSgttHvKJv6) → in_train T-1030-N. QA kereta T-1029-N: prd-26-01 marker + /admin/insight live + pasar-live 9/9 (qa-2026-10-30-01 done). Queue conflict = union-merge SOP (backup di git history 98a42a2 vs e2eec90).
 - In-flight: kereta T-1030-N malam 22:00 manifest = fix-26-11 + ux-29-01 emoji pass-4 (9179d32, in_train) + fix-26-08 (P2, masih pending — BE sore boleh build) + cek straggler; fix-28-02 foreign-flow BE 18:30 hari ini; ops-29-01/02 Backend Builder; bo-25-01/26-02 nunggu owner verdict.
