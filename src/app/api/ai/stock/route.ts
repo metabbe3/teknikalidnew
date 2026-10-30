@@ -16,6 +16,67 @@ configurePool("mlx", { maxConcurrent: 1, maxQueueDepth: 6, maxWaitMs: 25_000 });
 
 const MLX_URL = process.env.MLX_AI_URL ?? "http://host.docker.internal:8765";
 
+// ─── Provider GLM flash (owner 30 Okt): glm-5.3-flash via Z.ai = primary utk AI user-facing ───
+// Latency ~3,5s & paralel (vs MLX serial 7s). MLX lokal = fallback otomatis kalau Z.ai
+// gangguan/timeout → AI user-facing tidak pernah mati total. Prompt & anti-halusinasi
+// rule sama (angka 100% dari DB context — model hanya merangkai narasi).
+const GLM_MODEL = process.env.GLM_FLASH_MODEL ?? "glm-5.3-flash";
+
+const GLM_SYSTEM = [
+  "Kamu analis teknikal retail Indonesia di platform TeknikalID.",
+  "ATURAN KERAS: hanya gunakan ANGKA dari DATA yang diberikan user; DILARANG mengarang harga, level, atau angka yang tidak ada di data;",
+  "Kalau ditanya 'layak dibeli / bagus / oke / harus apa', JANGAN bilang beli/jangan-beli:",
+  "jawab dengan KERANGKA DATA — kondisi tren (posisi vs SMA), momentum (RSI/MACD), jarak ke support/resistance, valuasi (PE/PB) bila ada, arus asing (foreign flow) bila ada, lalu beri skenario 'kalau pegang: level invalidation X' / 'kalau mau masuk: tunggu konfirmasi Y'. Satu kalimat penutup bahwa ini edukasi teknikal, bukan rekomendasi beli/jual.",
+  "Kalau ditanya 'kenapa naik/turun', gunakan changePercent + volume vs avgVol20 + foreignFlow5.state + headline recentArticles sebagai kandidat penjelas, dan katakan mana yang didukung data.",
+  "Jawab Bahasa Indonesia, ringkas, jelas untuk trader retail pemula-menengah; angka format ribuan Indonesia (8.200).",
+].join(" ");
+
+async function glmCall(
+  context: Record<string, unknown>,
+  mode: "summarize" | "ask",
+  question: string,
+): Promise<string> {
+  const apiKey = process.env.ANTHROPIC_AUTH_TOKEN;
+  if (!apiKey) throw new Error("GLM key missing");
+  const body: Record<string, unknown> = {
+    model: GLM_MODEL,
+    max_tokens: 900,
+    thinking: { type: "disabled" },
+    system: GLM_SYSTEM,
+    messages: [
+      {
+        role: "user",
+        content:
+          `DATA saham (semua angka final, jangan dihitung ulang):\n${JSON.stringify(context, null, 1)}\n\n` +
+          (mode === "ask"
+            ? `PERTANYAAN USER: ${question}\nJawab HANYA dari DATA di atas. Kalau data tidak memuat jawabannya, katakan apa yang bisa disimpulkan dari data yang ada tanpa mengarang angka.`
+            : "TUGAS: rangkum kondisi teknikal saham ini 4-6 kalimat (arah harga, tren vs SMA, momentum RSI/MACD, volume, level support/resistance)."),
+      },
+    ],
+  };
+  const controller = new AbortController();
+  const to = setTimeout(() => controller.abort(), 45_000);
+  try {
+    const res = await fetch(`${process.env.ANTHROPIC_BASE_URL ?? "https://api.z.ai/api/anthropic"}/v1/messages`, {
+      method: "POST",
+      headers: {
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+    if (!res.ok) throw new Error(`GLM ${res.status}`);
+    const data = (await res.json()) as { content?: { type: string; text?: string }[] };
+    const text = (data.content ?? []).filter((b) => b.type === "text").map((b) => b.text ?? "").join("").trim();
+    if (!text) throw new Error("GLM empty");
+    return text;
+  } finally {
+    clearTimeout(to);
+  }
+}
+
 const RATE_LIMIT = 300; // per jam (owner 16 Okt: jangan limit browsing)
 const buckets = new Map<string, { count: number; resetAt: number }>();
 
@@ -103,9 +164,19 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    // Waiting room (ref-2026-10-17-04): slot MLX via gate FIFO — bukan hit
-    // MLX bersamaan. summarize ticker sama = single-flight utk dedupe.
+    // Provider chain (owner 30 Okt): glm-5.3-flash PRIMARY (cepat, paralel) → MLX FALLBACK.
+    // withTicket pool "mlx" tetap dipakai utk jalur MLX fallback (serial di Mac mini).
     const data = await withTicket(`mlx`, async () => {
+      let glmErr: string | null = null;
+      if (mode === "ask" || mode === "summarize") {
+        try {
+          const text = await glmCall(context, mode, question);
+          return { ok: true as const, text, ms: 0, provider: "glm-flash" };
+        } catch (e) {
+          glmErr = e instanceof Error ? e.message : "glm error";
+          console.warn(`[ai/stock] GLM flash gagal (${glmErr}) → fallback MLX`);
+        }
+      }
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 60_000);
       const res = await fetch(`${MLX_URL}/${mode}`, {
@@ -119,12 +190,12 @@ export async function POST(req: NextRequest) {
         const errText = await res.text().catch(() => "");
         throw new Error(`AI server error (${res.status}) ${errText.slice(0, 200)}`);
       }
-      return (await res.json()) as { ok: boolean; text?: string; ms?: number };
+      return (await res.json()) as { ok: boolean; text?: string; ms?: number; provider?: string };
     });
     if (!data.ok || !data.text) {
       return NextResponse.json({ error: "AI tidak menghasilkan jawaban" }, { status: 502 });
     }
-    return NextResponse.json({ ok: true, text: data.text, ms: data.ms });
+    return NextResponse.json({ ok: true, text: data.text, ms: data.ms, provider: data.provider ?? "mlx" });
   } catch (e) {
     if (e instanceof QueueFullError) {
       return NextResponse.json(

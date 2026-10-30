@@ -213,6 +213,23 @@ export function StockAiModal({ ticker, name, onClose }: { ticker: string; name: 
 
           {askOpen ? (
             <div className="space-y-2 border-t border-border pt-3">
+              {/* Quick-chips (owner 30 Okt): pertanyaan populer 1-tap — riset autocomplete/Reddit */}
+              <div className="flex flex-wrap gap-1.5">
+                {[
+                  `Kenapa ${ticker.replace(/\.JK$/,"")} naik/turun hari ini?`,
+                  `${ticker.replace(/\.JK$/,"")} masih layak dibeli?`,
+                  "Cut loss atau hold?",
+                  "Bandingin sama sektor",
+                ].map((q) => (
+                  <button
+                    key={q}
+                    onClick={() => { setQuestion(q); }}
+                    className="text-[11px] px-2.5 py-1.5 rounded-full border border-border text-text-secondary hover:border-accent hover:text-accent transition-colors"
+                  >
+                    {q}
+                  </button>
+                ))}
+              </div>
               <div className="flex gap-2">
                 <input
                   value={question}
