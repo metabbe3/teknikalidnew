@@ -74,10 +74,17 @@ export function AskAiFab() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/ai/screener", {
+      // ROUTING (owner 30 Okt: "responsenya sama terus"): sebut ticker 4-huruf → endpoint SAHAM
+      // (context per-saham + COMPARE + posisiUser floating P/L); tanpa ticker → endpoint PASAR.
+      // Dulu semua ke /api/ai/screener → jawaban pasar identik utk pertanyaan per-saham.
+      const m = text.toUpperCase().match(/\b([A-Z]{4})(?:\.JK)?\b/);
+      const tickerHit = m && m[1] !== "IHSG" ? m[1] : null;
+      const res = await fetch(tickerHit ? "/api/ai/stock" : "/api/ai/screener", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: text }),
+        body: JSON.stringify(
+          tickerHit ? { mode: "ask", ticker: `${tickerHit}.JK`, question: text } : { question: text },
+        ),
       });
       const data = await res.json();
       if (!res.ok || !data.ok) throw new Error(data.error || "Gagal menjawab");
