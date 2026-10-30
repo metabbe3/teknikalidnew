@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { technicalAnalysisService } from "@/domains/stock/technical-analysis.service";
+import { pasarLiveService } from "@/domains/stock/pasar-live.service";
 import { withTicket, singleFlight, QueueFullError, configurePool } from "@/domains/ai/ai-gate.service";
 
 // MLX serial ±7s/request — gate FIFO + single-flight (ref-2026-10-17-04)
@@ -93,6 +94,70 @@ function pickPreset(question: string): { preset: string; label: string } {
   return { preset: "macd_bullish", label: "Sinyal Bullish" };
 }
 
+// ─── Provider glm-5.3-flash (owner 30 Okt, riset Argon P0-3): primary, MLX fallback ───
+const GLM_MODEL = process.env.GLM_FLASH_MODEL ?? "glm-5.3-flash";
+
+const GLM_SYSTEM = [
+  "Kamu analis pasar saham Indonesia di platform TeknikalID.",
+  "ATURAN KERAS: HANYA gunakan ticker & angka dari DATA yang diberikan; DILARANG mengarang ticker/harga;",
+  "Jawab Bahasa Indonesia santai-profesional 2-4 kalimat: pola umum + 2-3 ticker paling menonjol",
+  "dalam format PERSIS [TICKER](/stocks/TICKER.JK) langsung setelah kalimat — tanpa kata 'link', tanpa path terpisah;",
+  "Kalau ada DATA PASAR (IHSG/breadth/asing), pakai untuk konteks; sebut angkanya apa adanya;",
+  "JANGAN daftar semua saham — tabel sudah menampilkannya. Akhiri satu kalimat disclaimer: data teknikal, bukan rekomendasi beli.",
+  "Jika daftar kosong, jawab jujur: tidak ada saham yang lolos kriteria itu hari ini.",
+].join(" ");
+
+async function glmScreenerChat(question: string, stocks: unknown, pasar?: unknown): Promise<string> {
+  const apiKey = process.env.ANTHROPIC_AUTH_TOKEN;
+  if (!apiKey) throw new Error("GLM key missing");
+  const controller = new AbortController();
+  const to = setTimeout(() => controller.abort(), 45_000);
+  try {
+    const res = await fetch(`${process.env.ANTHROPIC_BASE_URL ?? "https://api.z.ai/api/anthropic"}/v1/messages`, {
+      method: "POST",
+      headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+      body: JSON.stringify({
+        model: GLM_MODEL,
+        max_tokens: 700,
+        thinking: { type: "disabled" },
+        system: GLM_SYSTEM,
+        messages: [{
+          role: "user",
+          content:
+            `PERTANYAAN USER: ${question}\n\n` +
+            (pasar ? `DATA PASAR HARI INI (konteks, angka final):\n${JSON.stringify(pasar)}\n\n` : "") +
+            `DAFTAR SAHAM hasil screen (ticker, nama, harga, change%, skor):\n${JSON.stringify(stocks)}`,
+        }],
+      }),
+      signal: controller.signal,
+    });
+    if (!res.ok) throw new Error(`GLM ${res.status}`);
+    const data = (await res.json()) as { content?: { type: string; text?: string }[] };
+    const text = (data.content ?? []).filter((b) => b.type === "text").map((b) => b.text ?? "").join("").trim();
+    if (!text) throw new Error("GLM empty");
+    return text;
+  } finally {
+    clearTimeout(to);
+  }
+}
+
+/** Snapshot pasar ringkas utk konteks MARKET (IHSG, movers, asing, top skor) — SATU PINTU pasar-live. */
+async function buildPasarContext(): Promise<Record<string, unknown> | null> {
+  try {
+    const snap = await pasarLiveService.getSnapshot(false);
+    return {
+      ihsg: snap.ihsg ?? null,
+      topGainers: (snap.gainers ?? []).slice(0, 5).map((m) => ({ ticker: m.ticker, chg: m.changePercent, close: m.close })),
+      topLosers: (snap.losers ?? []).slice(0, 5).map((m) => ({ ticker: m.ticker, chg: m.changePercent, close: m.close })),
+      foreignNetBuy: (snap.foreign?.netBuy ?? []).slice(0, 5).map((f) => ({ ticker: f.ticker, netRp: f.netValue })),
+      foreignNetSell: (snap.foreign?.netSell ?? []).slice(0, 5).map((f) => ({ ticker: f.ticker, netRp: f.netValue })),
+      topSignals: (snap.topSignals ?? []).slice(0, 5).map((t) => ({ ticker: t.ticker, skor: t.signalScore, label: t.signalLabel })),
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(req: NextRequest) {
   // Security-audit 28 Okt: xff[0] bisa dipalsukan client (CF append, [0]=nilai attacker).
   // Prioritaskan cf-connecting-ip (di-set Cloudflare, tak bisa dipalsukan via tunnel).
@@ -167,10 +232,18 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    // Waiting room (ref-2026-10-17-04): single-flight dulu (pertanyaan sama
-    // menumpang), lalu slot MLX via gate FIFO — bukan hit MLX bersamaan.
-    const data = await singleFlight(`mlx-sc:${cacheKey}`, () =>
-      withTicket("mlx", async (info) => {
+    // Provider chain (owner 30 Okt): glm-5.3-flash PRIMARY + inject PasarSnapshot;
+    // MLX fallback bila GLM gagal. single-flight tetap utk dedupe pertanyaan sama.
+    const data = await singleFlight(`mlx-sc:${cacheKey}`, async () => {
+      let glmText: string | null = null;
+      try {
+        const pasar = await buildPasarContext();
+        glmText = await glmScreenerChat(question, stocks, pasar);
+        return { ok: true as const, text: glmText, ms: 0, provider: "glm-flash" };
+      } catch (e) {
+        console.warn(`[ai/screener] GLM flash gagal (${e instanceof Error ? e.message : "err"}) → fallback MLX`);
+      }
+      return withTicket("mlx", async () => {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 60_000);
         const res = await fetch(`${MLX_URL}/screener-chat`, {
@@ -184,9 +257,9 @@ export async function POST(req: NextRequest) {
           const errText = await res.text().catch(() => "");
           throw new Error(`AI server error (${res.status}) ${errText.slice(0, 200)}`);
         }
-        return (await res.json()) as { ok?: boolean; text?: string; ms?: number; _queued?: number };
-      }),
-    );
+        return (await res.json()) as { ok?: boolean; text?: string; ms?: number; _queued?: number; provider?: string };
+      });
+    });
 
     const payload = {
       ok: true,
@@ -196,6 +269,7 @@ export async function POST(req: NextRequest) {
       matched: stocks.length,
       stocks, // tabel: sama dengan data screener, client render
       ms: data.ms ?? null,
+      provider: (data as { provider?: string }).provider ?? "mlx",
     };
     cacheSet(cacheKey, { text: payload.text, presetLabel: payload.presetLabel, matched: payload.matched, stocks, at: Date.now() });
     return NextResponse.json(payload);

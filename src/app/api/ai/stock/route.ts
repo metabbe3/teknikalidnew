@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { buildStockAiContext } from "./context";
+import { stockRepository } from "@/domains/stock/stock.repository";
 import { withTicket, QueueFullError, configurePool } from "@/domains/ai/ai-gate.service";
 
 // MLX serial ±7s/request — gate FIFO (ref-2026-10-17-04)
@@ -28,6 +29,10 @@ const GLM_SYSTEM = [
   "Kalau ditanya 'layak dibeli / bagus / oke / harus apa', JANGAN bilang beli/jangan-beli:",
   "jawab dengan KERANGKA DATA — kondisi tren (posisi vs SMA), momentum (RSI/MACD), jarak ke support/resistance, valuasi (PE/PB) bila ada, arus asing (foreign flow) bila ada, lalu beri skenario 'kalau pegang: level invalidation X' / 'kalau mau masuk: tunggu konfirmasi Y'. Satu kalimat penutup bahwa ini edukasi teknikal, bukan rekomendasi beli/jual.",
   "Kalau ditanya 'kenapa naik/turun', gunakan changePercent + volume vs avgVol20 + foreignFlow5.state + headline recentArticles sebagai kandidat penjelas, dan katakan mana yang didukung data.",
+  "Kalau ada field posisiUser (harga beli + floating P/L sudah dihitung server), gunakan angka itu persis saat membahas dilema hold/cut loss: sebut floating %, jarak ke support/invalidation, dan kerangka skenario — tanpa menyuruh cut loss atau hold.",
+  "Kalau user menyebut ticker LAIN untuk dibandingkan ('bandingin sama BBRI'), gunakan DATA_PERBANDINGAN yang disediakan: sajikan trade-off objektif (valuasi PE/PB, dividen, tren SMA, skor sinyal, arus asing) dua sisi — jangan memihak salah satu.",
+  "Kalau ditanya status halal/syariah dan data tidak memuat status DES/ISSI, JANGAN menebak — jelaskan bahwa cek daftar resmi DES OJK / ISSI BEI diperlukan.",
+  "Untuk detail rasio/harga tebus right issue / IPO / stock split yang tidak ada di recentArticles, jelaskan mekanismenya edukatif dan arahkan ke keterbukaan informasi BEI — DILARANG mengarang angka rasio.",
   "Jawab Bahasa Indonesia, ringkas, jelas untuk trader retail pemula-menengah; angka format ribuan Indonesia (8.200).",
 ].join(" ");
 
@@ -160,6 +165,63 @@ export async function POST(req: NextRequest) {
     const dbCtx = await buildStockAiContext(clientContext.ticker);
     if (Object.keys(dbCtx).length > 0) {
       context = { ...dbCtx, ...stripNulls(clientContext) }; // client-explicit menang
+    }
+  }
+
+  // G4 (riset Argon): ekstrak harga beli user ("nyangkut di 5.400" / "beli 5200") → floating P/L dihitung server
+  if (mode === "ask" && question && typeof context.close === "number" && context.close > 0) {
+    const m =
+      question.match(/(?:nyangkut|beli|avg|average|harga beli)\s*(?:di|:|at)?\s*(?:rp\.?\s*)?([0-9][0-9.,]{2,9})/i) ??
+      question.match(/([0-9][0-9.,]{2,9})\s*(?:nyangkut|gitu|an|perlembar)/i);
+    if (m) {
+      const buyPrice = Number(m[1].replace(/[.,](?=\d{3}\b)/g, "").replace(",", "."));
+      if (Number.isFinite(buyPrice) && buyPrice > 10 && buyPrice < 1e7) {
+        const close = context.close as number;
+        (context as Record<string, unknown>).posisiUser = {
+          hargaBeliRata: buyPrice,
+          hargaSekarang: close,
+          floatingPLPercent: ((close - buyPrice) / buyPrice) * 100,
+          catatan: "angka final dihitung server — jangan dihitung ulang",
+        };
+      }
+    }
+  }
+
+  // COMPARE (riset Argon G1): ticker kedua di pertanyaan → inject ringkasan utk duel A vs B
+  if (mode === "ask" && question) {
+    const current = String(clientContext.ticker ?? "").replace(/\.JK$/i, "");
+    const found = new Set<string>();
+    for (const m of question.matchAll(/\b([A-Z]{4})\b/g)) {
+      const t = m[1];
+      if (t !== current && !found.has(t)) found.add(t);
+    }
+    if (found.size > 0) {
+      const t2 = [...found][0];
+      try {
+        const st2 = await stockRepository.findStockByTicker(`${t2}.JK`);
+        if (st2) {
+          const ctx2 = await buildStockAiContext(`${t2}.JK`);
+          const c2 = ctx2 as Record<string, unknown>;
+          (context as Record<string, unknown>) = {
+            ...context,
+            DATA_PERBANDINGAN: {
+              ticker: c2.ticker,
+              close: c2.close,
+              changePercent: c2.changePercent,
+              sma20: c2.sma20,
+              sma50: c2.sma50,
+              sma200: c2.sma200,
+              rsi14: c2.rsi14,
+              signalScore: c2.signalScore,
+              signalLabel: c2.signalLabelAi ?? c2.signalLabel,
+              pe: (c2.fundamental as Record<string, unknown> | null)?.pe ?? null,
+              pb: (c2.fundamental as Record<string, unknown> | null)?.pb ?? null,
+              dividendYield: (c2.fundamental as Record<string, unknown> | null)?.dividendYield ?? null,
+              foreignFlow5: c2.foreignFlow5,
+            },
+          };
+        }
+      } catch { /* best-effort */ }
     }
   }
 

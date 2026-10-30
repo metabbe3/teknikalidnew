@@ -82,7 +82,7 @@ function StructuredSummary({ summary, ticker, name }: { summary: string; ticker:
   );
 }
 
-export function StockAiModalButton({ ticker, name }: { ticker: string; name: string }) {
+export function StockAiModalButton({ ticker, name, changePercent, isGorengan }: { ticker: string; name: string; changePercent?: number | null; isGorengan?: boolean | null }) {
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -93,12 +93,12 @@ export function StockAiModalButton({ ticker, name }: { ticker: string; name: str
       >
         <Sparkles aria-hidden="true" className="inline h-4 w-4" /> Analisa AI
       </button>
-      {open && <StockAiModal ticker={ticker} name={name} onClose={() => setOpen(false)} />}
+      {open && <StockAiModal ticker={ticker} name={name} changePercent={changePercent} isGorengan={isGorengan} onClose={() => setOpen(false)} />}
     </>
   );
 }
 
-export function StockAiModal({ ticker, name, onClose }: { ticker: string; name: string; onClose: () => void }) {
+export function StockAiModal({ ticker, name, changePercent, isGorengan, onClose }: { ticker: string; name: string; changePercent?: number | null; isGorengan?: boolean | null; onClose: () => void }) {
   const [mounted, setMounted] = useState(false);
   const [summary, setSummary] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -213,14 +213,27 @@ export function StockAiModal({ ticker, name, onClose }: { ticker: string; name: 
 
           {askOpen ? (
             <div className="space-y-2 border-t border-border pt-3">
-              {/* Quick-chips (owner 30 Okt): pertanyaan populer 1-tap — riset autocomplete/Reddit */}
+              {/* Quick-chips kontekstual (owner 30 Okt, riset Argon P0-2): dinamis by state saham */}
               <div className="flex flex-wrap gap-1.5">
-                {[
-                  `Kenapa ${ticker.replace(/\.JK$/,"")} naik/turun hari ini?`,
-                  `${ticker.replace(/\.JK$/,"")} masih layak dibeli?`,
-                  "Cut loss atau hold?",
-                  "Bandingin sama sektor",
-                ].map((q) => (
+                {[(() => {
+                  const t = ticker.replace(/\.JK$/, "");
+                  const chg = typeof changePercent === "number" ? changePercent : null;
+                  const kenapa =
+                    chg !== null && chg <= -1.5 ? `📉 Kenapa ${t} turun hari ini?`
+                    : chg !== null && chg >= 1.5 ? `📈 Kenapa ${t} naik hari ini?`
+                    : `🔍 Asing lagi akumulasi atau jualan di ${t}?`;
+                  const chips = [
+                    `⚖️ ${t} masih layak dibeli?`,
+                    kenapa,
+                    "🎯 Level support, resistance & batas ARA/ARB",
+                  ];
+                  chips.push(
+                    isGorengan
+                      ? "⚠️ Cek risiko volatilitas / gorengan"
+                      : "📊 Valuasi murah atau mahal (PE/PBV)?"
+                  );
+                  return chips;
+                })()].flat().map((q) => (
                   <button
                     key={q}
                     onClick={() => { setQuestion(q); }}

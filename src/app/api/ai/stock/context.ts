@@ -1,5 +1,6 @@
 import { indicatorService } from "@/domains/stock/indicator.service";
 import { stockRepository } from "@/domains/stock/stock.repository";
+import { getAraArbLimits } from "@/domains/stock/idx-rules";
 import { prisma } from "@/lib/prisma";
 
 /**
@@ -62,7 +63,8 @@ export async function buildStockAiContext(ticker: string): Promise<Record<string
     arr && arr.length ? (arr[arr.length - 1] ?? null) : null;
 
   // ─── Enrichment (owner 30 Okt): fundamental + foreign flow + artikel ──────
-  const [fundamental, foreignFlows, articles] = await Promise.all([
+  // + P0 riset Argon: signalScore/isGorengan/ATR/VWAP/supertrend dari StockIndicator terakhir
+  const [fundamental, foreignFlows, articles, lastIndicator, lastDividend] = await Promise.all([
     prisma.stockFundamental.findFirst({
       where: { stockId: stock.id },
       orderBy: { date: "desc" },
@@ -80,6 +82,16 @@ export async function buildStockAiContext(ticker: string): Promise<Record<string
       take: 3,
       select: { title: true, slug: true, publishedAt: true },
     }).catch(() => []),
+    prisma.stockIndicator.findFirst({
+      where: { stockId: stock.id },
+      orderBy: [{ date: "desc" }, { id: "desc" }],
+      select: { signalScore: true, signalLabel: true, isGorengan: true, atr: true, vwap: true, supertrend: true },
+    }).catch(() => null),
+    prisma.stockDividend.findFirst({
+      where: { stockId: stock.id },
+      orderBy: [{ year: "desc" }, { updatedAt: "desc" }],
+      select: { year: true, type: true, amount: true, cumDate: true, exDate: true, paymentDate: true },
+    }).catch(() => null),
   ]);
 
   const ffNet = foreignFlows.map((f) => ({
@@ -119,6 +131,30 @@ export async function buildStockAiContext(ticker: string): Promise<Record<string
     change5d,
     change20d,
     // ─── Enrichment ───
+    signalScore: lastIndicator?.signalScore != null ? Number(lastIndicator.signalScore) : null,
+    signalLabelAi: lastIndicator?.signalLabel ?? null,
+    isGorengan: lastIndicator?.isGorengan ?? null,
+    atr: lastIndicator?.atr != null ? Number(lastIndicator.atr) : null,
+    vwap: lastIndicator?.vwap != null ? Number(lastIndicator.vwap) : null,
+    supertrend: lastIndicator?.supertrend != null ? Number(lastIndicator.supertrend) : null,
+    araArbHariIni: (() => {
+      if (!prevClose || prevClose <= 0) return null;
+      const { ara, arb } = getAraArbLimits(prevClose);
+      return { ara, arb, basisPrevClose: prevClose };
+    })(),
+    lotCostRp: close > 0 ? Math.round(close * 100) : null,
+    listingBoard: stock.listingBoard ?? null,
+    isSyariah: stock.isSyariah ?? null, // null = belum disinkron ISSI — AI wajib redirect cek DES OJK
+    listingDate: stock.listingDate instanceof Date ? stock.listingDate.toISOString().slice(0, 10) : null,
+    dividenTerakhir: lastDividend
+      ? {
+          tahun: lastDividend.year ?? null,
+          tipe: lastDividend.type ?? null,
+          amountPerLembar: lastDividend.amount != null ? Number(lastDividend.amount) : null,
+          cumDate: lastDividend.cumDate instanceof Date ? lastDividend.cumDate.toISOString().slice(0, 10) : null,
+          exDate: lastDividend.exDate instanceof Date ? lastDividend.exDate.toISOString().slice(0, 10) : null,
+        }
+      : null,
     fundamental: fundamental
       ? {
           pe: fundamental.pe != null ? Number(fundamental.pe) : null,
