@@ -243,7 +243,10 @@ export async function POST(req: NextRequest) {
   }));
 
   const sig = dataSignature(rows);
-  const cacheKey = `${chosen.preset}::${sig}`;
+  // Cache per (preset + data + PERTANYAAN) — riset Argon P0-2: cacheKey lama tanpa question
+  // membuat jawaban AI pertanyaan A dipakai ulang utk pertanyaan B (bug "responsenya sama terus").
+  const qHash = Buffer.from(question).toString("base64url").slice(0, 40);
+  const cacheKey = `${chosen.preset}::${sig}::${qHash}`;
   const cached = cacheGet(cacheKey);
   if (cached) {
     return NextResponse.json({
