@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { parseAiText, shareAiStock } from "@/components/stock/stock-ai-shared";
+import { AiMarkdown } from "@/components/ai/ai-markdown";
 import { Sparkles } from "lucide-react";
 
 /**
@@ -23,7 +24,7 @@ function StructuredSummary({ summary, ticker, name }: { summary: string; ticker:
 
   // Fallback kalau model tak ikut format — render polos
   if (!parsed.ringkasan && parsed.insights.length === 0) {
-    return <div className="text-sm text-text-secondary leading-relaxed whitespace-pre-line">{parsed.raw}</div>;
+    return <AiMarkdown text={parsed.raw} />;
   }
 
   return (
@@ -260,7 +261,7 @@ export function StockAiModal({ ticker, name, changePercent, isGorengan, onClose 
                   {asking ? "…" : "Kirim"}
                 </button>
               </div>
-              {answer && <p className="text-sm text-text-secondary leading-relaxed whitespace-pre-line">{answer}</p>}
+              {answer && <div className="rounded-xl bg-bg-tertiary/50 p-3"><AiMarkdown text={answer} /></div>}
             </div>
           ) : (
             summary && (

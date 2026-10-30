@@ -30,49 +30,21 @@ function cleanAnswerText(raw: string): string {
     .replace(/([A-Z0-9.^-]{2,12})\[\/?stocks\/[A-Z0-9.^-]{2,12}\]/g, "$1")
     // [TICKER]/stocks/TICKER → TICKER
     .replace(/\[([A-Z0-9.^-]{2,12})\]\/?stocks\/[A-Z0-9.^-]{2,12}/g, "$1")
-    // [TICKER](/stocks/ANY) → TICKER
-    .replace(/\[([A-Z0-9.^-]{2,12})\]\([^)]*\)/g, "$1")
     // [/stocks/TICKER] → TICKER
     .replace(/\[\/?stocks\/([A-Z0-9.^-]{2,12})\]/g, "$1")
     // [TICKER] → TICKER
     .replace(/\[([A-Z0-9.^-]{2,12})\]/g, "$1")
-    // TICKER(/stocks/ANY) → TICKER
-    .replace(/([A-Z0-9.^-]{2,12})\(\/?stocks\/[A-Z0-9.^-]+\)/g, "$1")
-    // ** bold md
-    .replace(/\*\*/g, "");
+    // TICKER(/stocks/ANY) → TICKER (hanya yg telanjang tanpa [label])
+    .replace(/([A-Z0-9.^-]{2,12})\(\/?stocks\/[A-Z0-9.^-]+\)/g, "$1");
+    // NB: **bold** & [TICKER](/stocks/..) dipertahankan — dirender AiMarkdown (owner 30 Okt beautify MD)
 }
+
+import { AiMarkdown } from "@/components/ai/ai-markdown";
 
 function AiAnswer({ text, tickers }: { text: string; tickers: string[] }) {
   const cleaned = cleanAnswerText(text);
-  const known = new Set(tickers);
-  const lines = cleaned.split("\n").filter((l) => l.trim());
-  return (
-    <div className="space-y-1.5">
-      {lines.map((line, i) => {
-        // split per kata; kata = ticker dikenal & huruf kapital penuh → link
-        const tokens = line.split(/(\s+)/);
-        return (
-          <p key={i} className="text-sm leading-relaxed text-text-primary">
-            {tokens.map((tok, j) => {
-              const bare = tok.replace(/^[^A-Z0-9]+|[^A-Z0-9]+$/g, ""); // strip punct tepi
-              if (known.has(bare)) {
-                return (
-                  <a
-                    key={j}
-                    href={`/stocks/${bare}.JK`}
-                    className="font-mono text-xs font-bold text-accent hover:underline bg-accent/10 rounded px-1.5 py-0.5"
-                  >
-                    {tok}
-                  </a>
-                );
-              }
-              return <span key={j}>{tok.replace(/^- /, "• ")}</span>;
-            })}
-          </p>
-        );
-      })}
-    </div>
-  );
+  void tickers; // link ticker kini via MD link [TICKER](/stocks/...) di AiMarkdown
+  return <AiMarkdown text={cleaned} />;
 }
 
 export function ScreenerAiButton() {

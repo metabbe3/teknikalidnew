@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Sparkles, X, Send, ArrowUpRight } from "lucide-react";
+import { AiMarkdown } from "@/components/ai/ai-markdown";
 
 const QUICK_CHIPS = [
   "Saham apa yang lagi oke hari ini?",
@@ -187,10 +188,10 @@ export function AskAiFab() {
                   className={
                     it.role === "user"
                       ? "max-w-[85%] rounded-2xl rounded-br-sm bg-accent text-white px-3.5 py-2 text-sm"
-                      : "max-w-[95%] rounded-2xl rounded-bl-sm bg-bg-tertiary px-3.5 py-2.5 text-sm text-text-primary leading-relaxed whitespace-pre-line"
+                      : "max-w-[95%] rounded-2xl rounded-bl-sm bg-bg-tertiary px-3.5 py-2.5 text-sm text-text-primary leading-relaxed"
                   }
                 >
-                  {it.text}
+                  {it.role === "user" ? it.text : <AiMarkdown text={it.text} compact /> }
                   {it.links && it.links.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       {it.links.map((l) => (

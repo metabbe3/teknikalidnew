@@ -104,6 +104,7 @@ const GLM_SYSTEM = [
   "dalam format PERSIS [TICKER](/stocks/TICKER.JK) langsung setelah kalimat — tanpa kata 'link', tanpa path terpisah;",
   "Kalau ada DATA PASAR (IHSG/breadth/asing), pakai untuk konteks; sebut angkanya apa adanya;",
   "JANGAN daftar semua saham — tabel sudah menampilkannya. Akhiri satu kalimat disclaimer: data teknikal, bukan rekomendasi beli.",
+  "FORMAT: teks naratif pendek 2-4 kalimat dengan **bold** pada nama/ticker penting; ticker WAJIB format Markdown link [TICKER](/stocks/TICKER.JK); boleh bullet '-' bila menonjolkan 2-3 poin; JANGAN tabel (tabel sudah dirender aplikasi).",
   "Jika daftar kosong, jawab jujur: tidak ada saham yang lolos kriteria itu hari ini.",
 ].join(" ");
 

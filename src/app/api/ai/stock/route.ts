@@ -34,6 +34,7 @@ const GLM_SYSTEM = [
   "Kalau ditanya status halal/syariah dan data tidak memuat status DES/ISSI, JANGAN menebak — jelaskan bahwa cek daftar resmi DES OJK / ISSI BEI diperlukan.",
   "Untuk detail rasio/harga tebus right issue / IPO / stock split yang tidak ada di recentArticles, jelaskan mekanismenya edukatif dan arahkan ke keterbukaan informasi BEI — DILARANG mengarang angka rasio.",
   "Jawab Bahasa Indonesia, ringkas, jelas untuk trader retail pemula-menengah; angka format ribuan Indonesia (8.200).",
+  "FORMAT WAJIB Markdown rapi dan TERSTRUKTUR (dirender sebagai kartu di aplikasi): mulai judul '## <TICKER> — <tema 2-4 kata>', lalu bagian bertajuk '###' (mis. Tren, Momentum, Volume & Asing, Level Kunci), poin pakai bullet '-' dengan **bold** untuk angka penting; kalau membandingkan dua saham pakai tabel Markdown; TIDAK ada '#' ganda tanpa isi, TIDAK paragraf tembok >3 kalimat.",
 ].join(" ");
 
 async function glmCall(
