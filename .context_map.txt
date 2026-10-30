@@ -60,8 +60,10 @@ scripts/selftest-title.ts
 scripts/selftest-utm.ts
 scripts/selftest-verdict-prose.ts
 scripts/selftest/ai-gate-leak.selftest.ts
+scripts/selftest/article-guard-doctrine.selftest.ts
 scripts/selftest/article-sanitize.selftest.tsx
 scripts/selftest/market-snapshot-engine.selftest.ts
+scripts/selftest/pasar-live-doctrine.selftest.ts
 scripts/smoke-ai.ts
 scripts/smoke-archive.ts
 scripts/sync-idx-stocks.ts
@@ -122,6 +124,7 @@ src/lib/access-limit.ts
 src/lib/activity-log.ts
 src/lib/admin-content-performance.service.ts
 src/lib/ai-client.ts
+src/lib/anon-id-safe.ts
 src/lib/api-error.ts
 src/lib/api-helpers.ts
 src/lib/api-traffic-log.ts
@@ -175,6 +178,7 @@ src/lib/serialize.ts
 src/lib/short-links.ts
 src/lib/socket.ts
 src/lib/telemetry.ts
+src/lib/tg-deeplink.ts
 src/lib/time.ts
 src/lib/track-record-math.ts
 src/lib/track-record.service.ts
@@ -209,6 +213,9 @@ src/app/(public)/akademi/page.tsx:17:export const metadata → Metadata = {
 src/app/(public)/akademi/page.tsx:47:export const revalidate = 3600;
 src/app/(public)/akademi/tanya/[slug]/page.tsx:23:export async function generateMetadata({
 src/app/(public)/akses-dibatasi/page.tsx:8:export const metadata → Metadata = {
+src/app/(public)/aliran-dana-asing/page.tsx:10:export const revalidate = 0;
+src/app/(public)/aliran-dana-asing/page.tsx:12:export const metadata → Metadata = {
+src/app/(public)/aliran-dana-asing/page.tsx:9:export const dynamic = "force-dynamic";
 src/app/(public)/berita/[slug]/page.tsx:31:export async function generateMetadata({
 src/app/(public)/berita/berita-grid.tsx:25:export function BeritaPagination({
 src/app/(public)/berita/berita-grid.tsx:5:export function buildBeritaUrl(page → number, trend?: string, q?: string): string {
@@ -235,6 +242,9 @@ src/app/(public)/indeks/[slug]/page.tsx:11:export const revalidate = 3600;
 src/app/(public)/indeks/[slug]/page.tsx:13:export async function generateMetadata({
 src/app/(public)/indeks/page.tsx:7:export const revalidate = 3600;
 src/app/(public)/indeks/page.tsx:9:export const metadata → Metadata = {
+src/app/(public)/kalender-dividen/page.tsx:10:export const dynamic = "force-dynamic";
+src/app/(public)/kalender-dividen/page.tsx:11:export const revalidate = 0;
+src/app/(public)/kalender-dividen/page.tsx:13:export const metadata → Metadata = {
 src/app/(public)/laporan-pasar/[minggu]/page.tsx:11:export const revalidate = 3600;
 src/app/(public)/laporan-pasar/[minggu]/page.tsx:27:export async function generateMetadata(
 src/app/(public)/laporan-pasar/page.tsx:15:export const metadata → Metadata = {
@@ -267,10 +277,13 @@ src/app/(public)/saham-dividen/page.tsx:11:export const dynamic = "force-dynamic
 src/app/(public)/saham-dividen/page.tsx:13:export const metadata → Metadata = {
 src/app/(public)/saham-ema-cross/page.tsx:14:export const dynamic = "force-dynamic";
 src/app/(public)/saham-ema-cross/page.tsx:16:export const metadata → Metadata = {
-src/app/(public)/saham-golden-cross/page.tsx:16:export const dynamic = "force-dynamic";
-src/app/(public)/saham-golden-cross/page.tsx:18:export const metadata → Metadata = {
+src/app/(public)/saham-golden-cross/page.tsx:17:export const dynamic = "force-dynamic";
+src/app/(public)/saham-golden-cross/page.tsx:19:export const metadata → Metadata = {
 src/app/(public)/saham-macd-bullish/page.tsx:15:export const dynamic = "force-dynamic";
 src/app/(public)/saham-macd-bullish/page.tsx:17:export const metadata → Metadata = {
+src/app/(public)/saham-modal-100-ribu/page.tsx:10:export const revalidate = 0;
+src/app/(public)/saham-modal-100-ribu/page.tsx:12:export const metadata → Metadata = {
+src/app/(public)/saham-modal-100-ribu/page.tsx:9:export const dynamic = "force-dynamic";
 src/app/(public)/saham-overbought/page.tsx:15:export const dynamic = "force-dynamic";
 src/app/(public)/saham-overbought/page.tsx:17:export const metadata → Metadata = {
 src/app/(public)/saham-oversold/page.tsx:16:export const dynamic = "force-dynamic";
@@ -285,17 +298,17 @@ src/app/(public)/saham-value-growth/page.tsx:11:export const dynamic = "force-dy
 src/app/(public)/saham-value-growth/page.tsx:13:export const metadata → Metadata = {
 src/app/(public)/saham-volume-spike/page.tsx:16:export const dynamic = "force-dynamic";
 src/app/(public)/saham-volume-spike/page.tsx:18:export const metadata → Metadata = {
-src/app/(public)/saham/[ticker]/kenapa-naik-hari-ini/page.tsx:14:export const revalidate = 3600; // 1 hour ISR
-src/app/(public)/saham/[ticker]/kenapa-naik-hari-ini/page.tsx:15:export const dynamic = "force-dynamic";
-src/app/(public)/saham/[ticker]/kenapa-naik-hari-ini/page.tsx:94:export async function generateMetadata({
+src/app/(public)/saham/[ticker]/kenapa-naik-hari-ini/page.tsx:15:export const revalidate = 3600; // 1 hour ISR
+src/app/(public)/saham/[ticker]/kenapa-naik-hari-ini/page.tsx:16:export const dynamic = "force-dynamic";
+src/app/(public)/saham/[ticker]/kenapa-naik-hari-ini/page.tsx:95:export async function generateMetadata({
 src/app/(public)/screener/page.tsx:4:export const metadata → Metadata = {
 src/app/(public)/sektor/[slug]/page.tsx:10:export const dynamic = "force-dynamic";
 src/app/(public)/sektor/[slug]/page.tsx:12:export function generateStaticParams() {
 src/app/(public)/sektor/[slug]/page.tsx:16:export async function generateMetadata({
 src/app/(public)/sektor/page.tsx:7:export const revalidate = 3600;
 src/app/(public)/sektor/page.tsx:9:export const metadata → Metadata = {
-src/app/(public)/stocks/[ticker]/indikator/page.tsx:12:export const revalidate = 3600; // ISR — past rows immutable, latest day refreshes hourly
-src/app/(public)/stocks/[ticker]/indikator/page.tsx:69:export async function generateMetadata({
+src/app/(public)/stocks/[ticker]/indikator/page.tsx:13:export const revalidate = 3600; // ISR — past rows immutable, latest day refreshes hourly
+src/app/(public)/stocks/[ticker]/indikator/page.tsx:70:export async function generateMetadata({
 src/app/(public)/stocks/[ticker]/page.tsx:69:export const dynamic = "force-dynamic";
 src/app/(public)/stocks/[ticker]/page.tsx:85:export async function generateMetadata({
 src/app/(public)/stocks/page.tsx:23:export const dynamic = "force-dynamic";
@@ -304,8 +317,8 @@ src/app/(public)/terms/page.tsx:10:export const revalidate = 86400;
 src/app/(public)/terms/page.tsx:4:export const metadata → Metadata = {
 src/app/(public)/track-record/page.tsx:10:export const dynamic = "force-dynamic";
 src/app/(public)/track-record/page.tsx:13:export const metadata → Metadata = {
-src/app/(public)/trading-plan/page.tsx:16:export const revalidate = 60;
-src/app/(public)/trading-plan/page.tsx:18:export const metadata → Metadata = {
+src/app/(public)/trading-plan/page.tsx:15:export const revalidate = 60;
+src/app/(public)/trading-plan/page.tsx:17:export const metadata → Metadata = {
 src/app/(public)/waitlist/page.tsx:7:export const dynamic = "force-dynamic"; // ISR trap doctrine + posisi antrean live
 src/app/(public)/waitlist/page.tsx:9:export const metadata = {
 src/app/(public)/watchlist/page.tsx:10:export const metadata → Metadata = {
@@ -313,13 +326,14 @@ src/app/(public)/watchlist/page.tsx:16:export const revalidate = 60;
 src/app/admin/_components/analytics-tab.tsx:175:export function AnalyticsTab() {
 src/app/admin/_components/auth-tab.tsx:32:export function AuthTab() {
 src/app/admin/_components/community-tab.tsx:69:export function CommunityTab() {
-src/app/admin/_components/dashboard-shell.tsx:26:export function DashboardShell({
+src/app/admin/_components/dashboard-shell.tsx:27:export function DashboardShell({
 src/app/admin/_components/funnel-section.tsx:28:export function FunnelSection() {
 src/app/admin/_components/guest-quota-section.tsx:27:export function GuestQuotaSection() {
+src/app/admin/_components/insight-tab.tsx:49:export function InsightTab() {
 src/app/admin/_components/overview-tab.tsx:84:export function OverviewTab() {
 src/app/admin/_components/predictions-tab.tsx:47:export function PredictionsTab() {
 src/app/admin/_components/stocks-tab.tsx:24:export function StocksTab() {
-src/app/admin/_components/tab-config.ts:14:export type TabId = (typeof TABS)[number]["id"];
+src/app/admin/_components/tab-config.ts:15:export type TabId = (typeof TABS)[number]["id"];
 src/app/admin/_components/tab-config.ts:3:export const TABS = [
 src/app/admin/_components/user-management-tab.tsx:88:export function UserManagementTab() {
 src/app/admin/_components/users-tab.tsx:36:export function UsersTab() {
@@ -362,9 +376,9 @@ src/app/api/admin/community-stats/route.ts:7:export const dynamic = "force-dynam
 src/app/api/admin/community-stats/route.ts:9:export async function GET() {
 src/app/api/admin/cron-monitor/route.ts:6:export const dynamic = "force-dynamic";
 src/app/api/admin/cron-monitor/route.ts:8:export async function GET() {
-src/app/api/admin/engagement/route.ts:131:export async function GET() {
-src/app/api/admin/engagement/route.ts:31:export interface EngagementGroup {
-src/app/api/admin/engagement/route.ts:40:export interface EngagementOverview {
+src/app/api/admin/engagement/route.ts:159:export async function GET() {
+src/app/api/admin/engagement/route.ts:32:export interface EngagementGroup {
+src/app/api/admin/engagement/route.ts:41:export interface EngagementOverview {
 src/app/api/admin/engagement/route.ts:7:export const dynamic = "force-dynamic";
 src/app/api/admin/eod-logs/route.ts:17:export async function GET(request → NextRequest) {
 src/app/api/admin/eod-logs/route.ts:9:export const dynamic = "force-dynamic";
@@ -373,6 +387,8 @@ src/app/api/admin/errors/route.ts:8:export async function GET(request → NextRe
 src/app/api/admin/faq/[id]/approve/route.ts:6:export async function POST(
 src/app/api/admin/faq/[id]/reject/route.ts:6:export async function POST(
 src/app/api/admin/faq/pending/route.ts:6:export async function GET(request → NextRequest) {
+src/app/api/admin/funnel-v2/route.ts:13:export async function GET() {
+src/app/api/admin/funnel-v2/route.ts:5:export const dynamic = "force-dynamic";
 src/app/api/admin/funnel/route.ts:15:export async function GET(request → NextRequest) {
 src/app/api/admin/funnel/route.ts:6:export const dynamic = "force-dynamic";
 src/app/api/admin/guest-quota/route.ts:19:export async function GET(request → NextRequest) {
@@ -421,7 +437,7 @@ src/app/api/ai/stock/route.ts:34:export interface StockAiContext {
 src/app/api/ai/stock/route.ts:61:export async function POST(req → NextRequest) {
 src/app/api/articles/route.ts:6:export const dynamic = "force-dynamic";
 src/app/api/articles/route.ts:8:export async function GET(request → NextRequest) {
-src/app/api/auth/register/route.ts:12:export async function POST(request → NextRequest) {
+src/app/api/auth/register/route.ts:14:export async function POST(request → NextRequest) {
 src/app/api/block/route.ts:6:export async function POST(request → Request) {
 src/app/api/bookmarks/route.ts:16:export async function POST(request → Request) {
 src/app/api/bookmarks/route.ts:6:export async function GET() {
@@ -467,7 +483,7 @@ src/app/api/market/ihsg/route.ts:12:export async function GET() {
 src/app/api/market/ihsg/route.ts:5:export const dynamic = "force-dynamic";
 src/app/api/market/route.ts:5:export const dynamic = "force-dynamic";
 src/app/api/market/route.ts:7:export async function GET() {
-src/app/api/me/morning-delta/route.ts:6:export async function GET() {
+src/app/api/me/morning-delta/route.ts:10:export async function GET(req → NextRequest) {
 src/app/api/notifications/route.ts:16:export async function PUT(request → Request) {
 src/app/api/notifications/route.ts:6:export async function GET() {
 src/app/api/og/route.tsx:45:export async function GET(request → NextRequest) {
@@ -557,6 +573,8 @@ src/app/api/tags/route.ts:5:export async function GET() {
 src/app/api/thesis/[ticker]/route.ts:6:export async function DELETE(_request → NextRequest, { params }: { params: Promise<{ ticker: string }> }) {
 src/app/api/thesis/route.ts:16:export async function GET() {
 src/app/api/thesis/route.ts:26:export async function POST(request → NextRequest) {
+src/app/api/track/error/route.ts:10:export async function POST(request → NextRequest) {
+src/app/api/track/error/route.ts:4:export const dynamic = "force-dynamic";
 src/app/api/track/guest-pass/route.ts:12:export async function POST(request → NextRequest) {
 src/app/api/track/guest-pass/route.ts:4:export const dynamic = "force-dynamic";
 src/app/api/track/pageview/route.ts:10:export const dynamic = "force-dynamic";
@@ -582,17 +600,3 @@ src/app/llms.txt/route.ts:6:export async function GET() {
 src/app/sitemap-news.xml/route.ts:17:export async function GET() {
 src/app/sitemap-news.xml/route.ts:5:export const dynamic = "force-dynamic";
 src/app/sitemap-news.xml/route.ts:6:export const revalidate = 900;
-src/app/sitemap.ts:10:export const dynamic = "force-dynamic"; // generated at runtime (build stage has no DB access)
-src/app/sitemap.ts:11:export const revalidate = 3600; // Regenerate hourly
-src/components/admin/admin-data-table.tsx:27:export function AdminDataTable<T>({
-src/components/admin/admin-kpi-card.tsx:29:export function AdminKpiCard({ title, icon → Icon, value, subtitle, status, loading }: AdminKpiCardProps) {
-src/components/admin/admin-page-header.tsx:11:export function AdminPageHeader({ title, description, icon → Icon, actions }: AdminPageHeaderProps) {
-src/components/admin/admin-status-indicator.tsx:5:export function AdminStatusIndicator() {
-src/components/admin/article-edit-modal.tsx:20:export function ArticleEditModal({ article, open, onClose } → { article: EditableArticle; open: boolean; onClose: () => void }) {
-src/components/admin/date-range-filter.tsx:12:export function DateRangeFilter({ from, to, onFromChange, onToChange } → DateRangeFilterProps) {
-src/components/admin/manual-trigger-buttons.tsx:29:export function ManualTriggerButtons() {
-src/components/admin/page-view-tracker.tsx:5:export function PageViewTracker() {
-src/components/admin/reports-pending-badge.tsx:5:export function ReportsPendingBadge() {
-src/components/akademi/article-quiz.tsx:12:export function ArticleQuiz({ slug } → { slug: string }) {
-src/components/akademi/edu-card.tsx:10:export function EduCard({ rsi14, macdSignal } → { rsi14: number | null; macdSignal?: string | null }) {
-src/components/akademi/learning-path.tsx:15:export function readDone() → string[] {
