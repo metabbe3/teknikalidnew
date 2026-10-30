@@ -3446,19 +3446,23 @@
       "id": "qw-audit-tk-3",
       "date": "2026-10-29",
       "priority": "P1",
-      "status": "spec_ready",
+      "status": "done",
       "spec": "/sektor/[slug] cuma 5 ticker statis per sektor + breadth simbol misleading (audit #6) - query semua saham aktif per sektor dari DB + chip label 'X Sinyal Bullish / Y Netral / Z Bearish' + label papan BEI bahasa Indonesia.",
       "north_star": "customer-first",
-      "scheduled_slot": "2026-10-30 14:30 slot sore"
+      "scheduled_slot": "2026-10-30 14:30 slot sore",
+      "result": "VERIFIED SUDAH LIVE 30 Okt 18:4x WIB — spec STALE (sudah diimplementasi seo-dr-3 commit 641c019 sebelum spec dibuat). BUKTI curl live /sektor/perbankan 200: chip breadth bahasa Indonesia \"16 Sinyal Naik · 11 Netral · 33 Tekanan Jual\" render; tabel lengkap seluruh saham aktif sektor via getStockList (satu pintu); label papan BEI (Financials→perbankan) via SECTOR_SLUG_MAP. Tidak ada perubahan kode (mencegah duplikat kerja). QA D+1 boleh spot-check halaman sektor lain.",
+      "verified_at": "2026-10-30T18:45:00+07:00"
     },
     {
       "id": "code-audit-tk-1",
       "date": "2026-10-29",
       "priority": "P1",
-      "status": "spec_ready",
+      "status": "in_train",
       "spec": "Satu-pintu market data: homepage FeaturedStocksSection raw SQL percent-change (page.tsx:139-177, tanpa filter ^% dan tanpa volume>0 di LATERAL prev) + oversoldCount terduplikasi 3x - pindahkan ke marketSnapshotService fields (doctrine SATU PINTU). Done-when: grep queryRaw percent-change di app/ = 0.",
       "north_star": "reliable",
-      "scheduled_slot": "2026-10-30 14:30 slot sore"
+      "scheduled_slot": "2026-10-30 14:30 slot sore",
+      "train": "T-1030-N",
+      "result": "BUILD-ONLY DONE 30 Okt 18:5x WIB (commit 5c913ad + test 9f58658, kereta T-1030-N). BUKTI: tsc EXIT-0; build EXIT-0 BUILD_ID Yx3LHedp-0He88nnM_iiq; selftest market-snapshot-oversold 6/6 PASS (RED 5/5 dulu → GREEN; parity service==SQL di DB live); grep rsi14<30 di src/app = 0 (dulu 3x duplikat); homepage tanpa $queryRaw. Spec asli sebagian stale: raw SQL baris 139-177 kini volume-leaders (owner 24 Okt), bukan percent-change movers — sisa inti doctrine (SATU PINTU oversold + volume-leaders) dieksekusi penuh. Done-when grep queryRaw percent-change app/ = 0 TERPENUHI (satu-satunya queryRaw public page kini via service). NO DEPLOY (deploy budget penuh: owner direct 17:2x 1/2 + kereta 22:00 2/2; jam market)."
     },
     {
       "id": "code-audit-tk-2",
