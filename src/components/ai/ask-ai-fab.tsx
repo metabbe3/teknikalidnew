@@ -14,13 +14,14 @@
  *   bottom-24 mobile clearance di atas TickerFab bottom bar.
  */
 
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Sparkles, X, Send, ArrowUpRight } from "lucide-react";
 import { AiMarkdown } from "@/components/ai/ai-markdown";
 import { detectTickerInText, isPlausibleTicker } from "@/lib/ai-ticker-guard";
+import { splitFollowUps } from "@/lib/ai-followups";
 
 const QUICK_CHIPS = [
   "Saham apa yang lagi oke hari ini?",
@@ -39,15 +40,19 @@ interface ChatItem {
 }
 
 /** Pisahkan baris [FOLLOWUPS] X | Y | Z dari teks jawaban → chips tappable (riset Argon P0-4). */
-function splitFollowUps(raw: string): { text: string; followUps: string[] } {
-  const m = raw.match(/\n?\[FOLLOWUPS\]\s*(.+)$/);
-  if (!m) return { text: raw.trim(), followUps: [] };
-  const followUps = m[1].split("|").map((x) => x.trim().replace(/^\(.+?\)\s*/, "")).filter(Boolean).slice(0, 3);
-  return { text: raw.replace(m[0], "").trim(), followUps };
-}
+// RT-05: parser tangguh dipindah ke lib/ai-followups (multiline, **bold**, separator |/;/atau)
 
 export function AskAiFab() {
   const { status } = useSession();
+  // RT-03 red-team 30 Okt: FAB sadar halaman + ingat saham lintas turn.
+  // pageTicker: user buka /stocks/BBCA.JK → pertanyaan "kenapa turun?" otomatis konteks BBCA.
+  // activeTicker: ticker terakhir dari obrolan → turn-2 "supportnya berapa?" tetap nyambung.
+  const pathname = usePathname();
+  const pageTicker = useMemo(() => {
+    const m = pathname?.match(/\/stocks\/([A-Z]{4})(?:\.JK)?/i);
+    return m ? m[1].toUpperCase() : null;
+  }, [pathname]);
+  const activeTickerRef = useRef<string | null>(null);
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<ChatItem[]>([]);
   const [q, setQ] = useState("");
@@ -88,16 +93,21 @@ export function AskAiFab() {
       // (context per-saham + COMPARE + posisiUser floating P/L); tanpa ticker → endpoint PASAR.
       // Dulu semua ke /api/ai/screener → jawaban pasar identik utk pertanyaan per-saham.
       const tickerHit = detectTickerInText(text); // guard: "yang/data/macd" ≠ ticker (owner 30 Okt bug YANG)
+      // makro eksplisit = ganti topik, reset konteks saham
+      const macroSwitch = /\b(ihsg|pasar hari ini|saham apa|screener|sektor apa|top ?gainer|top ?loser|index)\b/i.test(text);
+      const effTicker = tickerHit ?? (macroSwitch ? null : (activeTickerRef.current ?? pageTicker));
+      if (tickerHit) activeTickerRef.current = tickerHit;
+      else if (macroSwitch) activeTickerRef.current = null;
       // history utk multi-turn (max 6, dipadatkan): AI paham "kalau BBRI gimana?" tanpa konteks ulang
       const history = items
         .slice(-6)
         .map((it) => ({ role: it.role === "user" ? "user" : "ai", text: it.text.slice(0, 400) }));
-      const res = await fetch(tickerHit ? "/api/ai/stock" : "/api/ai/screener", {
+      const res = await fetch(effTicker ? "/api/ai/stock" : "/api/ai/screener", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(
-          tickerHit
-            ? { mode: "ask", ticker: `${tickerHit}.JK`, question: text, history }
+          effTicker
+            ? { mode: "ask", ticker: `${effTicker}.JK`, question: text, history }
             : { question: text, history },
         ),
       });

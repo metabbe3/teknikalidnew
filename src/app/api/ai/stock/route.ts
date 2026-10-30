@@ -161,7 +161,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: (StockAiContext & { question?: string }) & { mode?: string };
+  let body: (StockAiContext & { question?: string; history?: unknown; anonId?: string; userId?: string }) & { mode?: string };
   try {
     body = await req.json();
   } catch {
@@ -175,8 +175,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Pertanyaan kosong" }, { status: 400 });
   }
 
-  // Strip non-context fields before forwarding
-  const { mode: _m, question: _q, ...clientContext } = body;
+  // Strip non-context fields before forwarding (RT-02 red-team: whitelist + DB menang atas client)
+  const { mode: _m, question: _q, history: _h, anonId: _a, userId: _u, ...clientContext } = body;
+  // whitelist key yang diizinkan dari client (cukup identitas + posisi user — ANGKA RESMI DARI DB)
+  const CLIENT_ALLOWED = new Set(["ticker", "name", "buyPrice"]);
+  const safeClientCtx = Object.fromEntries(
+    Object.entries(clientContext).filter(([k]) => CLIENT_ALLOWED.has(k) && k !== "ticker" || k === "ticker"),
+  );
 
   // Client modal hanya kirim {ticker,name} → lengkapi dari DB supaya AI tidak
   // mengarang angka (RCA bug "support/resistance semua 8000": prompt kosong).
@@ -184,7 +189,7 @@ export async function POST(req: NextRequest) {
   if (typeof clientContext.ticker === "string" && clientContext.ticker) {
     const dbCtx = await buildStockAiContext(clientContext.ticker);
     if (Object.keys(dbCtx).length > 0) {
-      context = { ...dbCtx, ...stripNulls(clientContext) }; // client-explicit menang
+      context = stripNulls({ ...safeClientCtx, ...dbCtx }); // RT-02: DB wajib menang atas client (anti-spoofing harga/indikator)
     }
   }
   const __t0 = Date.now();
@@ -259,40 +264,48 @@ export async function POST(req: NextRequest) {
 
   try {
     // Provider chain (owner 30 Okt): glm-5.3-flash PRIMARY (cepat, paralel) → MLX FALLBACK.
-    // withTicket pool "mlx" tetap dipakai utk jalur MLX fallback (serial di Mac mini).
-    const data = await withTicket(`mlx`, async () => {
+    // RT-01 red-team 30 Okt: glmCall TIDAK lagi terkunci withTicket("mlx") (serial maxConcurrent=1
+    // → seluruh chat saham antre 1-per-1 + 429 QueueFull saat 1 request lambat). GLM cloud = paralel;
+    // withTicket hanya utk jalur MLX fallback (serial di Mac mini).
+    const data = await (async (): Promise<{ ok: boolean; text: string; ms: number; provider?: string }> => {
       let glmErr: string | null = null;
       if (mode === "ask" || mode === "summarize") {
         try {
           // juri Claude 30 Okt: konteks pasar + tanggal wajib — saham tidak hidup sendirian
-          const [pasarCtx] = await Promise.all([buildPasarContext().catch(() => null)]);
+          const pasarCtx = await buildPasarContext().catch(() => null);
           const ctx = { ...context, marketContext: pasarCtx ? { ihsg: pasarCtx.ihsg, asingNetSellTop: pasarCtx.foreignNetSell, asingNetBuyTop: pasarCtx.foreignNetBuy } : null, asOf: new Date().toISOString().slice(0, 10) };
           const text = await glmCall(ctx, mode, question, chatHistory);
           // flywheel (owner 30 Okt): log QA fire-and-forget
           prisma.aiChatLog
             .create({ data: { route: "stock", mode, ticker: String(clientContext.ticker ?? "").replace(/\.JK$/i, ""), question: question.slice(0, 500), answer: text.slice(0, 8000), provider: "glm-flash", latencyMs: Date.now() - __t0, anonId: (body as Record<string, unknown>).anonId as string | undefined ?? null, userId: (body as Record<string, unknown>).userId as string | undefined ?? null } })
             .catch(() => {});
-          return { ok: true as const, text, ms: 0, provider: "glm-flash" };
+          return { ok: true, text, ms: 0, provider: "glm-flash" };
         } catch (e) {
           glmErr = e instanceof Error ? e.message : "glm error";
           console.warn(`[ai/stock] GLM flash gagal (${glmErr}) → fallback MLX`);
         }
       }
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 60_000);
-      const res = await fetch(`${MLX_URL}/${mode}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...context, question }),
-        signal: controller.signal,
+      return withTicket(`mlx`, async () => {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 60_000);
+        try {
+          const res = await fetch(`${MLX_URL}/${mode}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ...context, question }),
+            signal: controller.signal,
+          });
+          if (!res.ok) {
+            const errText = await res.text().catch(() => "");
+            throw new Error(`AI server error (${res.status}) ${errText.slice(0, 200)}`);
+          }
+          const j = (await res.json()) as { ok?: boolean; text?: string; ms?: number; provider?: string };
+          return { ok: Boolean(j.ok), text: String(j.text ?? ""), ms: Number(j.ms ?? 0), provider: j.provider };
+        } finally {
+          clearTimeout(timeout); // RT-01: clearTimeout di finally
+        }
       });
-      clearTimeout(timeout);
-      if (!res.ok) {
-        const errText = await res.text().catch(() => "");
-        throw new Error(`AI server error (${res.status}) ${errText.slice(0, 200)}`);
-      }
-      return (await res.json()) as { ok: boolean; text?: string; ms?: number; provider?: string };
-    });
+    })();
     if (!data.ok || !data.text) {
       return NextResponse.json({ error: "AI tidak menghasilkan jawaban" }, { status: 502 });
     }

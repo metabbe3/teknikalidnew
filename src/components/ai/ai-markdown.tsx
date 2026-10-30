@@ -36,23 +36,33 @@ export function AiMarkdown({ text, compact = false }: { text: string; compact?: 
           strong: ({ children }) => <strong className="font-semibold text-text-primary">{children}</strong>,
           hr: () => <hr className="my-3 border-border" />,
           a: ({ href, children }) => {
-            // [TICKER](/stocks/TICKER.JK) → Link internal styled
-            const label = String(children ?? "");
-            if (href?.startsWith("/stocks/")) {
+            // RT-04 red-team 30 Okt: (1) render {children} langsung — String(children) pecah jadi
+            // "[object Object]" saat model menulis [**BBCA**](/stocks/BBCA.JK);
+            // (2) link eksternal dijawaban AI dibatasi whitelist domain resmi (anti-phishing).
+            const INTERNAL = href?.startsWith("/") && !href.startsWith("//");
+            const ALLOWED_EXT = /^https:\/\/(teknikal\.id|www\.teknikal\.id|idx\.co\.id|ojk\.go\.id)\//;
+            if (INTERNAL) {
+              const isStock = href?.startsWith("/stocks/");
               return (
                 <Link
-                  href={href}
-                  className="font-mono text-xs font-bold text-accent bg-accent/10 rounded px-1.5 py-0.5 hover:bg-accent/20 transition-colors"
+                  href={href ?? "#"}
+                  className={isStock
+                    ? "font-mono text-xs font-bold text-accent bg-accent/10 rounded px-1.5 py-0.5 hover:bg-accent/20 transition-colors"
+                    : "text-accent hover:underline"}
                 >
-                  {label}
+                  {children}
                 </Link>
               );
             }
-            return (
-              <a href={href} className="text-accent hover:underline" rel="noopener noreferrer">
-                {children}
-              </a>
-            );
+            if (href && ALLOWED_EXT.test(href)) {
+              return (
+                <a href={href} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">
+                  {children}
+                </a>
+              );
+            }
+            // domain lain: render sebagai teks polos (bukan link aktif)
+            return <span className="text-text-primary">{children}</span>;
           },
           table: ({ children }) => (
             <div className="overflow-x-auto mb-2 last:mb-0 rounded-lg border border-border">

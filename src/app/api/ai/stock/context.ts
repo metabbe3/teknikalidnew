@@ -105,11 +105,26 @@ export async function buildStockAiContext(ticker: string): Promise<Record<string
     : ffNet5 < 0 ? "net-sell (distribusi asing)"
     : "netral";
 
+  // RT-06 red-team 30 Okt: support/resistance deterministik server-side.
+  // Swing low/high terdekat dari 20 bar terakhir (bukan mengarang di model):
+  // support = low terendah terakhir yang < close; resistance = high tertinggi terakhir yang > close.
+  const bar20 = sorted.slice(-20);
+  const swingLows = bar20.map((p) => Number(p.low)).filter((l) => l > 0 && l < close);
+  const swingHighs = bar20.map((p) => Number(p.high)).filter((h) => h > 0 && h > close);
+  const support1 = swingLows.length ? Math.max(...swingLows) : low52; // swing low TERDEKAT di bawah harga
+  const support2 = swingLows.length > 1 ? Math.min(...swingLows) : null; // terjauh (bertahap)
+  const resistance1 = swingHighs.length ? Math.min(...swingHighs) : high52;
+  const resistance2 = swingHighs.length > 1 ? Math.max(...swingHighs) : null;
+
   return {
     ticker: stock.ticker,
     name: stock.name,
     sector: stock.sector ?? null,
     close,
+    support1,
+    support2,
+    resistance1,
+    resistance2,
     prevClose,
     changePercent: prevClose > 0 ? ((close - prevClose) / prevClose) * 100 : 0,
     high: Number(last.high),
@@ -166,7 +181,8 @@ export async function buildStockAiContext(ticker: string): Promise<Record<string
           perDate: fundamental.date instanceof Date ? fundamental.date.toISOString().slice(0, 10) : null,
         }
       : null,
-    foreignFlow5: ffNet.length ? { sesi: ffNet, total5: ffNet5, state: ffState } : null,
+    // RT-06: satuan eksplisit — total5Lembar (LEMBAR) + estimasiNet5Rp (≈ lembar × close, bukan angka resmi)
+    foreignFlow5: ffNet.length ? { sesi: ffNet, total5Lembar: ffNet5, estimasiNet5Rp: Math.round(ffNet5 * close), satuanSesi: "lembar", state: ffState } : null,
     recentArticles: articles.map((a) => ({
       title: a.title,
       slug: a.slug,
