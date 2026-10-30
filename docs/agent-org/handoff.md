@@ -1208,3 +1208,11 @@
 - VERIFY PROD SUKSES: /admin/insight live (bukti di changelog 30 Okt 03:2x) — mint-session trap: prod HTTPS = salt `__Secure-authjs.session-token` (salt = nama cookie), bukan `authjs.session-token` staging. Cookie dihapus post-audit (5).
 - Queue v78: bo-29-01 qa_pass. Dua entry BO lain NUNGGU OWNER: bo-25-01 (remove social-cards) & bo-26-02 (demote Community/Predictions) — kalau owner approve di morning digest, slot BO berikutnya eksekusi (deploy terpisah, bukan kereta).
 - Slot BO berikutnya kalau verdict belum masuk: rotasi audit lanjut — kandidat terdekat per audit ronde-3 API: /api/admin/queue (1 konsumen? cek) atau polish tab Insight mobile 390px.
+
+## 2026-10-30 08:2x — CTO pagi (fix-26-11 merged; QA T-1029-N; BUILD-ONLY 0 deploy)
+- State: sehat; FRESH (EOD 29 Okt); home/stocks/pasar 200; app 690e65d47289 (T-1029-N live); main = d6a2ef4 pushed; night-audit CLEAN; queue v91 union 199 entries 0 dup; symlink 2/2 hidup.
+- Barusan: fix-2026-10-26-11 MERGED b6f854d (article-guards pipeline + movers CTE; tsc 0; selftest 7/7; regression 4 ALL PASS; build D3J615QoGziSgttHvKJv6) → in_train T-1030-N. QA kereta T-1029-N: prd-26-01 marker + /admin/insight live + pasar-live 9/9 (qa-2026-10-30-01 done). Queue conflict = union-merge SOP (backup di git history 98a42a2 vs e2eec90).
+- In-flight: kereta T-1030-N malam 22:00 manifest = fix-26-11 + ux-29-01 emoji pass-4 (9179d32, in_train) + fix-26-08 (P2, masih pending — BE sore boleh build) + cek straggler; fix-28-02 foreign-flow BE 18:30 hari ini; ops-29-01/02 Backend Builder; bo-25-01/26-02 nunggu owner verdict.
+- Jebakan: (1) merge night vs main = konflik queue PASTI (2 writer) → union-merge script + strip marker version file (int() statejson crash kalau marker tersisa); (2) selftest ESM __dirname → WAJIB run via `npx tsx` bukan node strip-types; (3) repo utama kembali di main bersih (preseden Opsi A) — worktree utama JANGAN ditinggal di night branch.
+- Langkah pertama slot sore: baca queue → fix-26-08 build-only (ops kecil) → boarding gate T-1030-N 22:00 (SATU build app+worker dari main HEAD d6a2ef4+, verify per-fitur: movement DRAFT behavior + emoji 0 + ISR warm-up #4) → changelog + flip.
+- Rollback anchor: app 690e65d47289 + git revert b6f854d
