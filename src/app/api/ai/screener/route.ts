@@ -1,3 +1,4 @@
+import { aiRateLimited } from "@/lib/ai-rate-limit";
 import { buildPasarContext } from "@/lib/ai-pasar-context";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
@@ -17,8 +18,6 @@ configurePool("mlx", { maxConcurrent: 1, maxQueueDepth: 6, maxWaitMs: 25_000 });
 
 const MLX_URL = process.env.MLX_AI_URL ?? "http://host.docker.internal:8765";
 
-const RATE_LIMIT = 300; // per jam (owner 16 Okt: jangan limit browsing)
-const buckets = new Map<string, { count: number; resetAt: number }>();
 
 /**
  * Answer cache: pertanyaan serupa + data screener sama → jawaban cached,
@@ -54,16 +53,6 @@ function cacheSet(key: string, val: CachedAnswer): void {
   answerCache.set(key, val);
 }
 
-function rateLimited(ip: string): boolean {
-  const now = Date.now();
-  const b = buckets.get(ip);
-  if (!b || b.resetAt < now) {
-    buckets.set(ip, { count: 1, resetAt: now + 3600_000 });
-    return false;
-  }
-  b.count += 1;
-  return b.count > RATE_LIMIT;
-}
 
 /** Map pertanyaan bebas → preset screener (heuristik kata kunci). */
 const QUESTION_PRESETS: { match: RegExp; preset: string; label: string }[] = [
@@ -96,6 +85,18 @@ function pickPreset(question: string): { preset: string; label: string } {
   return { preset: "macd_bullish", label: "Sinyal Bullish" };
 }
 
+// RT-08 red-team 30 Okt: intent non-screener — "kenapa IHSG turun?" terjebak /naik|turun/ →
+// preset saham bullish (tidak menjawab pertanyaan). Intent makro/asing/edukasi = jawab dari
+// PasarSnapshot / konsep, TANPA memaksa 2-3 saham hasil screen.
+type AiIntent = "market_ihsg" | "foreign_flow" | "education" | "screener";
+function detectIntent(q: string): AiIntent {
+  const s = q.toLowerCase();
+  if (/\b(ihsg|index ihsg|pasar hari ini|kondisi pasar|ihsg turun|ihsg naik|composite|bjkl|kenapa pasar|pasar lagi|market hari)\b/.test(s)) return "market_ihsg";
+  if (/\b(asing|net buy|net sell|borong|buang|arus dana asing|foreign flow|akumulasi asing|distribusi asing)\b/.test(s) && !/saham (apa|yang)/.test(s)) return "foreign_flow";
+  if (/\b(apa itu|apa yang dimaksud|arti|kenapa sih|maksud dari|pengertian|gimana cara baca|cara membaca)\b/.test(s)) return "education";
+  return "screener";
+}
+
 // ─── Provider glm-5.3-flash (owner 30 Okt, riset Argon P0-3): primary, MLX fallback ───
 const GLM_MODEL = process.env.GLM_FLASH_MODEL ?? "glm-5.3-flash";
 
@@ -125,6 +126,7 @@ async function glmScreenerChat(
   stocks: unknown,
   pasar?: unknown,
   history?: ChatTurn[],
+  intentHint?: string,
 ): Promise<string> {
   const apiKey = process.env.ANTHROPIC_AUTH_TOKEN;
   if (!apiKey) throw new Error("GLM key missing");
@@ -138,7 +140,8 @@ async function glmScreenerChat(
         model: GLM_MODEL,
         max_tokens: 700,
         thinking: { type: "disabled" },
-        system: GLM_SYSTEM,
+        // Z.ai (validasi 30 Okt): system WAJIB string tunggal — array-of-string ditolak 400.
+        system: (intentHint ? [...(Array.isArray(GLM_SYSTEM) ? GLM_SYSTEM : [GLM_SYSTEM]), intentHint] : (Array.isArray(GLM_SYSTEM) ? GLM_SYSTEM : [GLM_SYSTEM])).join("\n"),
         messages: [
           // multi-turn: history ringkas (max 6 turn terakhir, dipadatkan client)
           ...(history ?? []).slice(-6).map((h) => ({
@@ -156,7 +159,10 @@ async function glmScreenerChat(
       }),
       signal: controller.signal,
     });
-    if (!res.ok) throw new Error(`GLM ${res.status}`);
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => "");
+      throw new Error(`GLM ${res.status}: ${errBody.slice(0, 200)}`);
+    }
     const data = (await res.json()) as { content?: { type: string; text?: string }[] };
     const text = (data.content ?? []).filter((b) => b.type === "text").map((b) => b.text ?? "").join("").trim();
     if (!text) throw new Error("GLM empty");
@@ -178,7 +184,7 @@ export async function POST(req: NextRequest) {
     req.headers.get("x-real-ip") ??
     "unknown";
 
-  if (rateLimited(ip)) {
+  if (aiRateLimited(ip, req.headers.get("x-teknikal-authed") === "1")) {
     return NextResponse.json(
       { error: "Terlalu banyak permintaan AI — coba lagi dalam beberapa menit." },
       { status: 429 },
@@ -208,18 +214,24 @@ export async function POST(req: NextRequest) {
   }
 
   const chosen = body.preset ? { preset: body.preset, label: body.preset } : pickPreset(question);
+  // RT-08: makro/asing/edukasi tidak butuh preset saham — jangan biarkan regex 'naik|turun'
+  // salah menjatuhkan "kenapa IHSG turun?" ke daftar sinyal bullish.
+  const intent = detectIntent(question);
+  const needScreen = intent === "screener";
 
-  // Ambil hasil screener dari DB (reuse service /api/screener)
+  // Ambil hasil screener dari DB (reuse service /api/screener) — hanya bila intent screener
   let rows: Record<string, unknown>[] = [];
   let presetError: string | null = null;
-  try {
-    const result = (await technicalAnalysisService.screenerQuery(chosen.preset, undefined)) as
-      | Record<string, unknown>[]
-      | { error: string };
-    if (Array.isArray(result)) rows = result.slice(0, 25);
-    else presetError = result.error;
-  } catch (e) {
-    presetError = e instanceof Error ? e.message : "screener query gagal";
+  if (needScreen) {
+    try {
+      const result = (await technicalAnalysisService.screenerQuery(chosen.preset, undefined)) as
+        | Record<string, unknown>[]
+        | { error: string };
+      if (Array.isArray(result)) rows = result.slice(0, 25);
+      else presetError = result.error;
+    } catch (e) {
+      presetError = e instanceof Error ? e.message : "screener query gagal";
+    }
   }
 
   if (presetError) {
@@ -261,7 +273,15 @@ export async function POST(req: NextRequest) {
       let glmText: string | null = null;
       try {
         const pasar = await buildPasarContext();
-        glmText = await glmScreenerChat(question, stocks, pasar, history);
+        const intentHint =
+          intent === "market_ihsg"
+            ? "INTENT=MARKET: jawab kondisi & mekanisme pergerakan IHSG/pasar dari DATA PASAR (IHSG, movers, asing); jangan menyodorkan daftar sinyal saham kecuali sebagai penggerak pasar."
+            : intent === "foreign_flow"
+              ? "INTENT=ASING: jawab pola arus dana asing (net buy/sell Rp miliar per emiten) dari DATA PASAR; sebut emiten teratas apa adanya."
+              : intent === "education"
+                ? "INTENT=EDUKASI: jelaskan konsep yang ditanya secara sederhana (2-4 kalimat) + caveat praktis; jangan menempelkan contoh saham yang tidak terverifikasi memenuhi konsep tersebut."
+                : undefined;
+        glmText = await glmScreenerChat(question, needScreen ? stocks : [], pasar, history, intentHint);
         return { ok: true as const, text: glmText, ms: 0, provider: "glm-flash" };
       } catch (e) {
         console.warn(`[ai/screener] GLM flash gagal (${e instanceof Error ? e.message : "err"}) → fallback MLX`);

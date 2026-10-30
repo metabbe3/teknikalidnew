@@ -1,3 +1,4 @@
+import { aiRateLimited } from "@/lib/ai-rate-limit";
 import { buildPasarContext } from "@/lib/ai-pasar-context";
 import { prisma } from "@/lib/prisma";
 import { isPlausibleTicker } from "@/lib/ai-ticker-guard";
@@ -63,7 +64,7 @@ async function glmCall(
     model: GLM_MODEL,
     max_tokens: 900,
     thinking: { type: "disabled" },
-    system: GLM_SYSTEM,
+    system: GLM_SYSTEM, // sudah string (join " " di deklarasi) — Z.ai: system WAJIB string tunggal
     messages: [
       ...(history ?? []).slice(-6).map((h) => ({
         role: h.role === "user" ? ("user" as const) : ("assistant" as const),
@@ -102,19 +103,7 @@ async function glmCall(
   }
 }
 
-const RATE_LIMIT = 300; // per jam (owner 16 Okt: jangan limit browsing)
-const buckets = new Map<string, { count: number; resetAt: number }>();
 
-function rateLimited(ip: string): boolean {
-  const now = Date.now();
-  const b = buckets.get(ip);
-  if (!b || b.resetAt < now) {
-    buckets.set(ip, { count: 1, resetAt: now + 3600_000 });
-    return false;
-  }
-  b.count += 1;
-  return b.count > RATE_LIMIT;
-}
 
 // Context fields the MLX prompt builder understands — everything optional.
 export interface StockAiContext {
@@ -154,7 +143,7 @@ export async function POST(req: NextRequest) {
     req.headers.get("x-real-ip") ??
     "unknown";
 
-  if (rateLimited(ip)) {
+  if (aiRateLimited(ip, req.headers.get("x-teknikal-authed") === "1")) {
     return NextResponse.json(
       { error: "Terlalu banyak permintaan AI — coba lagi dalam beberapa menit." },
       { status: 429 },
