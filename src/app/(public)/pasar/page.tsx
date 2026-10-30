@@ -4,6 +4,13 @@ import Link from "next/link";
 import { StockLogo } from "@/components/stock/stock-logo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHero } from "@/components/layout/page-hero";
+import dynamicImport from "next/dynamic";
+
+// Owner 30 Okt: tanya AI langsung dari /pasar (halaman traffic #1) — mode MARKET
+const ScreenerAiButton = dynamicImport(
+  () => import("@/components/screener/screener-ai-modal").then((m) => ({ default: m.ScreenerAiButton })),
+  { loading: () => <span className="inline-block h-[34px] w-[120px] animate-pulse rounded-full" /> },
+);
 import { pasarLiveService, isLiveWindow, isMarketHours, wibNow, wibHHMM, type PasarTopSignal, type PasarForeignItem } from "@/domains/stock/pasar-live.service";
 import { prisma } from "@/lib/prisma";
 import { dateLabel, formatPrice, formatPercent, formatVolume, stripJk  } from "@/lib/utils";
@@ -79,6 +86,10 @@ export default async function PasarPage() {
               <Moon className="inline h-4 w-4" /> Pasar belum buka
             </span>
             <WibClock />
+            <span className="text-text-tertiary text-sm">·</span>
+            <span className="text-sm text-text-tertiary">
+              Tanya kondisi pasar? <ScreenerAiButton />
+            </span>
             {oversoldCountWeekend >= 150 && (
               <Link
                 href="/saham-oversold"
@@ -149,6 +160,10 @@ export default async function PasarPage() {
             {marketOpen ? "● PASAR BUKA" : "○ di luar sesi"}
           </span>
           <WibClock />
+          <span className="text-text-tertiary text-sm">·</span>
+          <span className="text-sm text-text-tertiary">
+            Bingung sama pasar? <ScreenerAiButton />
+          </span>
           {oversoldCount >= 150 && (
             <Link
               href="/saham-oversold"
