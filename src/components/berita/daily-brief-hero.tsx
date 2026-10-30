@@ -47,7 +47,7 @@ export function DailyBriefHero({
           <span className="block truncate text-sm font-semibold text-text-primary group-hover:text-accent transition-colors">
             {brief.title}
           </span>
-          <span className="block text-xs text-text-tertiary">Rekap sesi {relativeDayId(new Date(brief.publishedAt))} · terbit tiap pagi</span>
+          <span className="block text-xs text-text-tertiary">Rekap sesi sebelumnya · terbit tiap pagi</span>
         </span>
         <span className="shrink-0 text-text-tertiary group-hover:text-accent group-hover:translate-x-0.5 transition-all" aria-hidden>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>

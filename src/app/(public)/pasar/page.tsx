@@ -380,7 +380,7 @@ function ForeignFlowSection({ foreign }: { foreign: { netBuy: PasarForeignItem[]
   const fmtRp = (n: number) => {
     const abs = Math.abs(n);
     const s = abs >= 1_000_000_000_000 ? `${(abs / 1_000_000_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })} T`
-      : abs >= 1_000_000_000 ? `${(abs / 1_000_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })} M`
+      : abs >= 1_000_000_000 ? `${(abs / 1_000_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })} mlr`
       : `${(abs / 1_000_000).toLocaleString("id-ID", { maximumFractionDigits: 0 })} jt`;
     return `${n < 0 ? "−" : ""}Rp${s}`;
   };

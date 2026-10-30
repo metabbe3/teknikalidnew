@@ -15,12 +15,12 @@ export function FundamentalData({ data }: FundamentalDataProps) {
   if (!data) return null;
 
   const rows: [string, string | null][] = [
-    ["Market Cap", data.marketCap !== null ? formatMarketCap(data.marketCap) : null],
+    ["Kapitalisasi Pasar", data.marketCap !== null ? formatMarketCap(data.marketCap) : null],
     ["P/E (TTM)", data.pe !== null ? data.pe.toFixed(2) : null],
-    ["Forward P/E", data.forwardPe !== null ? data.forwardPe.toFixed(2) : null],
+    ["P/E (Proyeksi)", data.forwardPe !== null ? data.forwardPe.toFixed(2) : null],
     ["P/B Ratio", data.pb !== null ? data.pb.toFixed(2) : null],
     ["EPS", data.eps !== null ? formatPrice(data.eps) : null],
-    ["Div Yield", data.dividendYield !== null ? `${data.dividendYield.toFixed(2)}%` : null],
+    ["Dividen Yield", data.dividendYield !== null ? `${data.dividendYield.toFixed(2)}%` : null],
   ];
 
   const hasAnyData = rows.some(([, v]) => v !== null);

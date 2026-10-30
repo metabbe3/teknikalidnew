@@ -115,8 +115,8 @@ export async function generateMetadata({
   // → tembak "analisa teknikal + sinyal" yang kosong lawannya di ~535 saham non-LQ45.
   const title = `Saham ${name} (${shortName}) Hari Ini: Harga, Analisa Teknikal & Sinyal`;
   const description = price
-    ? `Harga saham ${name} (${fullName}) hari ini ${price}${changeStr}. Analisa teknikal & skor sinyal 0-1, RSI, MACD, support-resistance, modal 1 lot, dan aliran dana asing — gratis tanpa login.`
-    : `Analisa teknikal saham ${fullName} (${name}): skor sinyal 0-1, RSI, MACD, support-resistance, modal 1 lot, dan aliran dana asing — gratis tanpa login.`;
+    ? `Harga saham ${name} (${fullName}) hari ini ${price}${changeStr}. Analisa teknikal & skor sinyal (−1 s.d. +1), RSI, MACD, support-resistance, modal 1 lot, dan aliran dana asing — gratis tanpa login.`
+    : `Analisa teknikal saham ${fullName} (${name}): skor sinyal (−1 s.d. +1), RSI, MACD, support-resistance, modal 1 lot, dan aliran dana asing — gratis tanpa login.`;
 
   return {
     title,
@@ -732,7 +732,7 @@ export default async function StockDetailPage({
                         Sinyal: <span style={{ color: isBull ? "var(--color-bullish)" : isBear ? "var(--color-bearish)" : meta.color }}>{outlook}</span>
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: meta.bg, color: meta.color }}>{meta.label}</span>
                       </p>
-                      <div className="mt-2 h-2 rounded-full bg-bg-hover overflow-hidden relative" role="meter" aria-valuenow={raw} aria-valuemin={0} aria-valuemax={1} aria-label={`Skor sinyal teknikal ${raw.toFixed(2)} dari 1,00`}>
+                      <div className="mt-2 h-2 rounded-full bg-bg-hover overflow-hidden relative" role="meter" aria-valuenow={raw} aria-valuemin={-1} aria-valuemax={1} aria-label={`Skor sinyal teknikal ${raw.toFixed(2)} pada skala minus satu sampai plus satu`}>
                         <div className="h-full rounded-full transition-all duration-700" style={{ width: `${score}%`, backgroundColor: meta.color }} />
                       </div>
                       <p className="mt-1.5 text-[11px] text-text-tertiary">Gabungan 9 indikator teknikal — RSI, MACD, tren, momentum, volume</p>
@@ -1030,7 +1030,7 @@ export default async function StockDetailPage({
                           )}
                         </div>
                         <span className={`w-16 shrink-0 text-right font-mono tabular-nums text-[11px] ${v === null ? "text-text-tertiary" : v >= 0 ? "text-bullish" : "text-bearish"} ${isLatest ? "font-semibold" : ""}`}>
-                          {v === null ? "—" : `${v >= 0 ? "+" : "−"}${(Math.abs(v) / 1_000_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })} M`}
+                          {v === null ? "—" : `${v >= 0 ? "+" : "−"}${(Math.abs(v) / 1_000_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })} mlr`}
                         </span>
                       </div>
                     );
@@ -1040,7 +1040,7 @@ export default async function StockDetailPage({
                       <span className="w-12 shrink-0 text-[10px] text-text-secondary font-medium">Σ {valid.length}s</span>
                       <span className="flex-1 text-[10px] text-text-tertiary">total net</span>
                       <span className={`w-16 shrink-0 text-right font-mono tabular-nums text-[11px] font-semibold ${total >= 0 ? "text-bullish" : "text-bearish"}`}>
-                        {`${total >= 0 ? "+" : "−"}Rp${(Math.abs(total) / 1_000_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })} M`}
+                        {`${total >= 0 ? "+" : "−"}Rp${(Math.abs(total) / 1_000_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })} mlr`}
                       </span>
                     </div>
                   )}
@@ -1095,7 +1095,7 @@ export default async function StockDetailPage({
               >
                 <span className="shrink-0 text-lg" aria-hidden><Newspaper className="inline h-4 w-4" /></span>
                 <div className="min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-accent">Disebut di Brief Pasar Hari Ini</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-accent">Disebut di Brief Pasar Terbaru</p>
                   <p className="mt-0.5 text-sm font-semibold text-text-primary leading-snug group-hover:text-accent transition-colors">
                     {brief.title}
                   </p>

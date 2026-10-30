@@ -53,10 +53,10 @@ export function KeyStatistics({ open, high, low, close, volume, week52High, week
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8">
         <div className="space-y-0" role="list">
           {([
-            ["Open", open !== null ? formatPrice(open) : null],
+            ["Pembukaan", open !== null ? formatPrice(open) : null],
             ["Tertinggi Hari Ini", high !== null ? formatPrice(high) : null],
-            ["Day Low", low !== null ? formatPrice(low) : null],
-            ["Range", dailyRange !== null ? `${dailyRange.toFixed(2)}%` : null],
+            ["Terendah Hari Ini", low !== null ? formatPrice(low) : null],
+            ["Rentang Harian", dailyRange !== null ? `${dailyRange.toFixed(2)}%` : null],
             ["Volume", volume !== null ? formatVolume(volume) : null],
           ] as [string, string | null][]).map(([label, value]) => (
             <div key={label} className="flex justify-between py-2 text-sm border-b border-border/30 sm:last:border-0" role="listitem">
@@ -80,7 +80,7 @@ export function KeyStatistics({ open, high, low, close, volume, week52High, week
                   <div className="flex items-center gap-2">
                     {value !== null && close !== null && (
                       <span className={`text-[10px] font-medium ${close > value ? "text-bullish" : "text-bearish"}`}>
-                        {close > value ? "Above" : "Below"}
+                        {close > value ? "Di Atas" : "Di Bawah"}
                       </span>
                     )}
                     <span className="font-mono tabular-nums font-medium">{value !== null ? formatPrice(value) : "—"}</span>

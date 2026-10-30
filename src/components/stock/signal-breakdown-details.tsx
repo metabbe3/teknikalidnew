@@ -7,9 +7,9 @@ interface BreakdownItem {
 }
 
 const SENTIMENT: Record<string, { dot: string; label: string }> = {
-  positif: { dot: "#059669", label: "Bullish" },
+  positif: { dot: "#059669", label: "Menguat" },
   netral: { dot: "#d97706", label: "Netral" },
-  negatif: { dot: "#dc2626", label: "Bearish" },
+  negatif: { dot: "#dc2626", label: "Melemah" },
 };
 
 const GROUP_LABELS: Record<string, string> = {

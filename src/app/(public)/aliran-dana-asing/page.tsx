@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 const fmtRpCompact = (n: number) => {
   const abs = Math.abs(n);
   if (abs >= 1e12) return `Rp${(n / 1e12).toFixed(2).replace(".", ",")} T`;
-  if (abs >= 1e9) return `Rp${(n / 1e9).toFixed(1).replace(".", ",")} M`;
+  if (abs >= 1e9) return `Rp${(n / 1e9).toFixed(1).replace(".", ",")} mlr`;
   if (abs >= 1e6) return `Rp${(n / 1e6).toFixed(1).replace(".", ",")} jt`;
   return `Rp${new Intl.NumberFormat("id-ID").format(n)}`;
 };
@@ -187,7 +187,7 @@ export default async function AliranDanaAsingPage() {
           <p>
             Akumulasi asing paling berguna sebagai <em>konfirmasi</em>, bukan sinyal tunggal: sahanya yang sehat
             adalah saat arus masuk asing diikuti tren harga dan indikator teknikal yang membaik. Buka halaman
-            saham untuk melihat skor sinyal 0-1, RSI, dan posisi terhadap rata-rata harga — atau lihat{" "}
+            saham untuk melihat skor sinyal (−1 s.d. +1), RSI, dan posisi terhadap rata-rata harga — atau lihat{" "}
             <Link href="/pasar" className="text-accent hover:underline">Koran Pasar Live</Link> untuk gambaran
             pasar hari ini.
           </p>
