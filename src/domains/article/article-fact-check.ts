@@ -4,8 +4,7 @@ import { decimalToNumber, bigIntToNumber } from "@/lib/serialize";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { fetchQuote } from "@/lib/yahoo-finance";
 import { passesTitleGuard } from "./title-guard";
-import { ArticleStatus, ArticleType } from "@/generated/prisma/client";
-import { prisma } from "@/lib/prisma";
+import { articleRepository } from "./article.repository";
 
 // ── Types ──
 
@@ -330,24 +329,10 @@ export function validateInternalLinks(
 /**
  * PUBLISHED slugs for the two prefixed article types
  * (EDUCATIONAL → /akademi, NEWS → /berita).
- * ponytail: direct prisma instead of a repository method — task scope pins this
- * file; move to article.repository.ts if more callers appear.
+ * fix-2026-10-26-11: SATU PINTU — via articleRepository (prisma langsung = 0).
  */
 async function loadPublishedArticleSlugs(): Promise<{ eduSlugs: Set<string>; newsSlugs: Set<string> }> {
-  const rows = await prisma.article.findMany({
-    where: {
-      status: ArticleStatus.PUBLISHED,
-      articleType: { in: [ArticleType.EDUCATIONAL, ArticleType.NEWS] },
-    },
-    select: { slug: true, articleType: true },
-  });
-  const eduSlugs = new Set<string>();
-  const newsSlugs = new Set<string>();
-  for (const r of rows) {
-    if (r.articleType === ArticleType.EDUCATIONAL) eduSlugs.add(r.slug);
-    else newsSlugs.add(r.slug);
-  }
-  return { eduSlugs, newsSlugs };
+  return articleRepository.findPublishedTypeSlugs();
 }
 
 /** DB-backed wrapper for the gate. Failed slug query skips the check — the gate must never kill generation. */

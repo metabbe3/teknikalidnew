@@ -1,46 +1,15 @@
 import { subDays } from "date-fns";
-import { ArticleType, ArticleStatus } from "@/generated/prisma/client";
+import pLimit from "p-limit";
+import { ArticleType, ArticleStatus, Prisma } from "@/generated/prisma/client";
 import { decimalToNumber, bigIntToNumber } from "@/lib/serialize";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
+import { stockRepository, type MovementMoverRow } from "@/domains/stock/stock.repository";
 import { articleRepository } from "./article.repository";
 import { aiChat } from "@/lib/ai-client";
-import { gatherMarketContext, formatMarketContextForPrompt } from "./article-fact-check";
-import type { MarketContext } from "./article-fact-check";
+import { gatherMarketContext, formatMarketContextForPrompt, type MarketContext } from "./article-fact-check";
+import { runGenerationGuards } from "./article-guards";
 
 // ── Types ──
-
-interface StockMover {
-  ticker: string;
-  name: string;
-  sector: string;
-  close: number | null;
-  prevClose: number | null;
-  changePercent: number | null;
-  volume: number | null;
-  avgVolume5d: number | null;
-  rsi14: number | null;
-  macdHist: number | null;
-  sma20: number | null;
-  sma50: number | null;
-  sma200: number | null;
-  adx: number | null;
-  supertrend: number | null;
-  bbUpper: number | null;
-  bbLower: number | null;
-  signalLabel: string | null;
-  signalScore: number | null;
-  pe: number | null;
-  pb: number | null;
-  marketCap: number | null;
-  eps: number | null;
-  dividendYield: number | null;
-  week52High: number | null;
-  week52Low: number | null;
-  high: number | null;
-  low: number | null;
-  open: number | null;
-  isGorengan: boolean | null;
-}
 
 interface MovementResult {
   ticker: string;
@@ -60,6 +29,8 @@ interface BatchResult {
 
 const MIN_CHANGE_PERCENT = 3.0;
 const MAX_MOVERS_PER_RUN = 50;
+/** Concurrency AI generate per batch — 3 paralel (timeout agen 18 mnt, ~20 dtk/saham). */
+const GENERATE_CONCURRENCY = 3;
 
 // ── Helpers ──
 
@@ -94,121 +65,16 @@ function volRatio(current: number | null, avg: number | null): string {
   return `${ratio.toFixed(2)}x rata-rata`;
 }
 
-// ── Step 1: Find top movers via SQL ──
+// ── Step 1: Find top movers (SQL di stockRepository — SATU PINTU, fix-2026-10-26-11) ──
 
-async function findTopMovers(): Promise<StockMover[]> {
-  const { prisma } = await import("@/lib/prisma");
-
-  const yesterday = subDays(new Date(), 1);
-
-  // Find stocks where today's close vs yesterday's close moved >3%
-  const movers = await prisma.$queryRaw<StockMover[]>`
-    WITH latest_prices AS (
-      SELECT DISTINCT ON (sp."stockId")
-        sp."stockId",
-        sp.close,
-        sp.volume,
-        sp.high,
-        sp.low,
-        sp.open,
-        sp.date
-      FROM "StockPrice" sp
-      WHERE sp.date >= ${subDays(new Date(), 7)}
-      ORDER BY sp."stockId", sp.date DESC
-    ),
-    prev_prices AS (
-      SELECT DISTINCT ON (sp."stockId")
-        sp."stockId",
-        sp.close AS prev_close
-      FROM "StockPrice" sp
-      WHERE sp.date >= ${subDays(new Date(), 10)}
-        AND sp.date < ${yesterday}
-      ORDER BY sp."stockId", sp.date DESC
-    ),
-    avg_volumes AS (
-      SELECT
-        sp."stockId",
-        AVG(sp.volume)::float8 AS avg_volume_5d
-      FROM "StockPrice" sp
-      WHERE sp.date >= ${subDays(new Date(), 7)}
-      GROUP BY sp."stockId"
-    )
-    SELECT
-      s.ticker,
-      s.name,
-      s.sector,
-      lp.close::float8 AS "close",
-      pp.prev_close::float8 AS "prevClose",
-      CASE WHEN pp.prev_close IS NOT NULL AND pp.prev_close > 0
-        THEN ((lp.close - pp.prev_close) / pp.prev_close * 100)::float8
-        ELSE NULL END AS "changePercent",
-      lp.volume::float8 AS "volume",
-      av.avg_volume_5d AS "avgVolume5d",
-      si."rsi14"::float8 AS "rsi14",
-      si."macdHist"::float8 AS "macdHist",
-      si."sma20"::float8 AS "sma20",
-      si."sma50"::float8 AS "sma50",
-      si."sma200"::float8 AS "sma200",
-      si."adx"::float8 AS "adx",
-      si."supertrend"::float8 AS "supertrend",
-      si."bbUpper"::float8 AS "bbUpper",
-      si."bbLower"::float8 AS "bbLower",
-      si."signalLabel" AS "signalLabel",
-      si."signalScore"::float8 AS "signalScore",
-      si."isGorengan" AS "isGorengan",
-      lp.high::float8 AS "high",
-      lp.low::float8 AS "low",
-      lp.open::float8 AS "open",
-      f."pe"::float8 AS "pe",
-      f."pb"::float8 AS "pb",
-      f."marketCap"::float8 AS "marketCap",
-      f."eps"::float8 AS "eps",
-      f."dividendYield"::float8 AS "dividendYield"
-    FROM latest_prices lp
-    JOIN "Stock" s ON s.id = lp."stockId"
-    LEFT JOIN prev_prices pp ON pp."stockId" = lp."stockId"
-    LEFT JOIN avg_volumes av ON av."stockId" = lp."stockId"
-    LEFT JOIN LATERAL (
-      SELECT * FROM "StockIndicator" si2
-      WHERE si2."stockId" = lp."stockId" AND si2.interval = '1d'
-      ORDER BY si2.date DESC LIMIT 1
-    ) si ON true
-    LEFT JOIN LATERAL (
-      SELECT * FROM "StockFundamental" sf2
-      WHERE sf2."stockId" = lp."stockId"
-      ORDER BY sf2.date DESC LIMIT 1
-    ) f ON true
-    WHERE pp.prev_close IS NOT NULL
-      AND pp.prev_close > 0
-      AND ABS((lp.close - pp.prev_close) / pp.prev_close * 100) >= ${MIN_CHANGE_PERCENT}
-      AND s.ticker != '^JKSE'
-    ORDER BY ABS((lp.close - pp.prev_close) / pp.prev_close * 100) DESC
-    LIMIT ${MAX_MOVERS_PER_RUN}
-  `;
-
-  // Enrich with 52-week high/low
-  const enriched: StockMover[] = [];
-  for (const m of movers) {
-    const stock = await stockMarketService.findStockByTicker(m.ticker);
-    if (stock) {
-      const week52 = await stockMarketService.getWeek52HighLow(stock.id);
-      enriched.push({
-        ...m,
-        week52High: decimalToNumber(week52._max.high),
-        week52Low: decimalToNumber(week52._min.low),
-      });
-    } else {
-      enriched.push({ ...m, week52High: null, week52Low: null });
-    }
-  }
-
-  return enriched;
+async function findTopMovers(): Promise<MovementMoverRow[]> {
+  return stockRepository.findMovementMovers(MIN_CHANGE_PERCENT, MAX_MOVERS_PER_RUN);
 }
 
 // ── Step 2: Build the AI prompt with real DB data ──
 
 function buildMovementPrompt(
-  mover: StockMover,
+  mover: MovementMoverRow,
   marketContextStr: string,
 ): { system: string; user: string } {
   const t = mover.ticker.replace(".JK", "");
@@ -265,8 +131,6 @@ ATURAN KRITIS:
 
 ${marketContextStr}
 
-## INSTRUKSI PENULISAN
-
 Tulis artikel dengan struktur berikut:
 
 ## Kenapa Saham ${t} ${direction === "naik" ? "Naik" : "Turun"} Hari Ini? (${changeStr})
@@ -274,12 +138,15 @@ Tulis artikel dengan struktur berikut:
 [Jawaban cepat dalam 2-3 kalimat di paragraf pertama — langsung menjawab "kenapa"]
 
 ### [Alasan 1 — misal: Momentum Teknikal / Volume / Indikator]
+
 [Penjelasan dengan data di atas]
 
 ### [Alasan 2 — misal: Fundamental / Sentimen Sektor / Tren Pasar]
+
 [Penjelasan dengan data di atas]
 
 ### [Alasan 3 — misal: Level Teknikal / Breakout / Support-Resistance]
+
 [Penjelasan dengan data di atas]
 
 ### [Alasan tambahan jika relevan]
@@ -301,7 +168,7 @@ Lihat pergerakan harga ${mover.name} secara real-time lengkap dengan chart inter
 
 // ── Step 3: Generate movement analysis for a single stock ──
 
-async function generateForStock(mover: StockMover, marketContextStr: string): Promise<MovementResult> {
+async function generateForStock(mover: MovementMoverRow, marketContextStr: string, marketCtx: MarketContext): Promise<MovementResult> {
   const t = mover.ticker.replace(".JK", "");
   const direction = (mover.changePercent ?? 0) >= 0 ? "naik" : "turun";
   const changeStr = pct(mover.changePercent);
@@ -328,9 +195,22 @@ async function generateForStock(mover: StockMover, marketContextStr: string): Pr
 
   // Build title with the % change for high CTR
   const directionCapitalized = direction === "naik" ? "Naik" : "Turun";
-  const title = `Kenapa Saham ${t} ${directionCapitalized} Hari Ini? (${changeStr}) — ${mover.name}`;
+  const rawTitle = `Kenapa Saham ${t} ${directionCapitalized} Hari Ini? (${changeStr}) — ${mover.name}`;
 
-  // Build excerpt
+  // ── fix-2026-10-26-11: guard pipeline yang sama dengan jalur news ──
+  // sanitize → quality (minWords=300, artikel movement 400-600 kata) → dedup →
+  // factCheck (marketCtx batch dipakai ulang). Hold → DRAFT, bukan PUBLISHED.
+  const guards = await runGenerationGuards({
+    content,
+    title: rawTitle,
+    keywords: [`kenapa saham ${t} ${direction} hari ini`],
+    fallbackTitle: rawTitle,
+    marketCtx,
+    opts: { minWords: 300, structure: { minH2: 1, requireCta: true, requireDisclaimer: true } },
+    logPath: "movement",
+  });
+
+  const title = guards.title;
   const excerpt = `${mover.name} (${t}) ${direction} ${changeStr} ke ${price(mover.close)}. Analisis lengkap alasan pergerakan harga, indikator teknikal, dan fundamental saham ${t} hari ini.`;
 
   // Upsert: update existing article or create new
@@ -338,7 +218,10 @@ async function generateForStock(mover: StockMover, marketContextStr: string): Pr
     const updated = await articleRepository.update(existing.id, {
       title,
       excerpt,
-      content,
+      content: guards.content,
+      status: guards.status === "draft" ? ArticleStatus.DRAFT : ArticleStatus.PUBLISHED,
+      ...(guards.status === "publish" ? { publishedAt: new Date() } : {}),
+      generationMeta: guards.meta,
     });
     return {
       ticker: mover.ticker,
@@ -356,13 +239,14 @@ async function generateForStock(mover: StockMover, marketContextStr: string): Pr
     slug,
     title,
     excerpt,
-    content,
+    content: guards.content,
     authorId: adminUser.id,
     articleType: ArticleType.MOVEMENT_ANALYSIS,
-    status: ArticleStatus.PUBLISHED,
+    status: guards.status === "draft" ? ArticleStatus.DRAFT : ArticleStatus.PUBLISHED,
     tickerTag: mover.ticker,
     tags: [t, direction, mover.sector, "analisa-saham", "pergerakan-harga"],
     aiProvider: process.env.ANTHROPIC_MODEL || "qd/qmodel_latest",
+    generationMeta: guards.meta,
   });
 
   return {
@@ -404,22 +288,29 @@ export const movementAnalysisService = {
     const skipped: string[] = [];
     const errors: { ticker: string; error: string }[] = [];
 
-    for (const mover of stocks) {
-      const t = mover.ticker.replace(".JK", "");
-      try {
-        const result = await generateForStock(mover, marketContextStr);
-        generated.push(result);
-        console.info(`[MovementAnalysis] ✅ ${t} (${pct(mover.changePercent)}) → ${result.slug}`);
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        if (msg.includes("Already generated")) {
-          skipped.push(t);
-        } else {
-          errors.push({ ticker: t, error: msg });
-          console.error(`[MovementAnalysis] ❌ ${t}: ${msg}`);
-        }
-      }
-    }
+    // fix-2026-10-26-11: pool concurrency 3 (bukan loop sekuensial) — batch
+    // 25 saham selesai ~3x lebih cepat, masih di bawah timeout agen 18 mnt.
+    const limit = pLimit(GENERATE_CONCURRENCY);
+    await Promise.all(
+      stocks.map((mover) =>
+        limit(async () => {
+          const t = mover.ticker.replace(".JK", "");
+          try {
+            const result = await generateForStock(mover, marketContextStr, marketCtx);
+            generated.push(result);
+            console.info(`[MovementAnalysis] ✅ ${t} (${pct(mover.changePercent)}) → ${result.slug}`);
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
+            if (msg.includes("Already generated")) {
+              skipped.push(t);
+            } else {
+              errors.push({ ticker: t, error: msg });
+              console.error(`[MovementAnalysis] ❌ ${t}: ${msg}`);
+            }
+          }
+        }),
+      ),
+    );
 
     console.info(
       `[MovementAnalysis] Done: ${generated.length} generated, ${skipped.length} skipped (already done today), ${errors.length} errors`,
@@ -460,7 +351,7 @@ export const movementAnalysisService = {
 
     const week52 = await stockMarketService.getWeek52HighLow(stock.id);
 
-    const mover: StockMover = {
+    const mover: MovementMoverRow = {
       ticker: stock.ticker,
       name: stock.name,
       sector: stock.sector,
@@ -496,6 +387,6 @@ export const movementAnalysisService = {
     const marketCtx = await gatherMarketContext([t]);
     const marketContextStr = formatMarketContextForPrompt(marketCtx);
 
-    return generateForStock(mover, marketContextStr);
+    return generateForStock(mover, marketContextStr, marketCtx);
   },
 };

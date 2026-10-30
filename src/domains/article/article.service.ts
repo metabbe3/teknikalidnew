@@ -9,6 +9,7 @@ import { articleRepository } from "./article.repository";
 import { createAIProvider } from "./ai-provider";
 import { buildStockAnalysisPrompt, buildEducationalPrompt, buildNewsPrompt, buildGeneralPrompt, pickNextTopic } from "./prompts";
 import { buildTemplateArticle, buildDailySnapshot, buildDailySlug } from "./article-template";
+import pLimit from "p-limit";
 import { ArticleNotFoundError, ArticleGenerationError, DuplicateSlugError, PublishedArticleDeleteError } from "./article.errors";
 import { gatherMarketContext, formatMarketContextForPrompt, factCheckArticle, factCheckVerdict, extractTickersFromText } from "./article-fact-check";
 import type { MarketContext } from "./article-fact-check";
@@ -681,18 +682,25 @@ export const articleService = {
   },
 
   async runDailySnapshotGeneration(): Promise<{ generated: number; errors: number; skipped: number }> {
+    // fix-2026-10-26-11: template murni (no AI call) — pool pLimit(5) menggantikan
+    // loop 40-ticker sekuensial (preseden updateAllStocks); counter aman karena
+    // increment sinkron di event loop tunggal.
     let generated = 0, errors = 0, skipped = 0;
-
-    for (const ticker of IDX40_TICKERS) {
-      try {
-        const result = await this.generateDailySnapshot(ticker);
-        if (result) generated++;
-        else skipped++;
-      } catch (err) {
-        console.error(`[daily-snapshot] ${ticker}:`, err instanceof Error ? err.message : err);
-        errors++;
-      }
-    }
+    const limit = pLimit(5);
+    await Promise.all(
+      IDX40_TICKERS.map((ticker) =>
+        limit(async () => {
+          try {
+            const result = await this.generateDailySnapshot(ticker);
+            if (result) generated++;
+            else skipped++;
+          } catch (err) {
+            console.error(`[daily-snapshot] ${ticker}:`, err instanceof Error ? err.message : err);
+            errors++;
+          }
+        }),
+      ),
+    );
 
     return { generated, errors, skipped };
   },

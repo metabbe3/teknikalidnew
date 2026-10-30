@@ -1196,3 +1196,15 @@
 - Jebakan: (1) hot-swap docker-cp = migration bomb — CEK _prisma_migrations pending vs DDL live sebelum tiap up -d image baru; (2) entrypoint jalan `migrate deploy` tiap start — migration baru WAJIB idempotent (IF NOT EXISTS) kalau owner pernah terapkan manual; (3) ops/isr-warmup.js MODULE_NOT_FOUND di container — warm manual curl 4 URL (runbook perlu update path).
 - Langkah pertama slot berikutnya: baca queue → QA reviewer verify per-fitur kereta (5 fitur bukti di changelog) → BE pagi 30 Okt fix-26-08/11 build-only.
 - Rollback anchor: app 690e65d47289 + git revert n/a (deploy-only; fallback image sha256:213c366d6bd7)
+
+## CTO Night 29 Okt — fix-2026-10-26-11 (Article P1) night_ready
+- Branch `night/fix-2026-10-26-11` (2 commit: failing-test 60f3aaf → fix 98a42a2): movement-analysis kini lewat guard pipeline sama dgn news (`article-guards.ts` baru — sanitize→quality(preset minWords300/minH2=1)→dedup→factCheck; hold→DRAFT).
+- Layering: SQL movers → `stockRepository.findMovementMovers` (CTE week52 menggantikan enrich N+1 ≤100 query→1); `article-fact-check` prisma-langsung=0 via `articleRepository.findPublishedTypeSlugs`.
+- Bukti: selftest doctrine 4 FAIL→7/7 PASS; parity week52 5/5 IDENTIK (psql read-only DB live); tsc 0; build hijau; regression 4 selftest lama PASS; LINT 0.
+- Bug tetangga diperbaiki sekalian: evergreen movement update tidak refresh `publishedAt` → dedup "Already generated today" tak pernah match hari-2 (regenerate 3x/hari jadi dobel AI call).
+- CTO pagi: review ~15 mnt → merge build-only T-1030-N. PERILAKU BARU: movement bisa DRAFT saat factCheck hold; concurrency 3.
+
+### Addendum 03:2x 30 Okt — Backoffice Builder (bo-29-01 QA pass prod)
+- VERIFY PROD SUKSES: /admin/insight live (bukti di changelog 30 Okt 03:2x) — mint-session trap: prod HTTPS = salt `__Secure-authjs.session-token` (salt = nama cookie), bukan `authjs.session-token` staging. Cookie dihapus post-audit (5).
+- Queue v78: bo-29-01 qa_pass. Dua entry BO lain NUNGGU OWNER: bo-25-01 (remove social-cards) & bo-26-02 (demote Community/Predictions) — kalau owner approve di morning digest, slot BO berikutnya eksekusi (deploy terpisah, bukan kereta).
+- Slot BO berikutnya kalau verdict belum masuk: rotasi audit lanjut — kandidat terdekat per audit ronde-3 API: /api/admin/queue (1 konsumen? cek) atau polish tab Insight mobile 390px.

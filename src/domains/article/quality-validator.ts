@@ -34,9 +34,16 @@ export function validateArticle(
   content: string,
   title: string,
   keywords: string[],
-  opts?: { minWords?: number },
+  opts?: { minWords?: number; structure?: { minH2?: number; requireCta?: boolean; requireDisclaimer?: boolean } },
 ): QualityResult {
   const minWords = opts?.minWords ?? 1200;
+  // fix-2026-10-26-11: preset struktur per artikel-type. Default = perilaku lama
+  // (news/edukasi: 5 H2 + CTA + disclaimer). Movement (400-600 kata, 1 H2 + H3
+  // section) memakai ambang lebih rendah — prompt movement tetap mewajibkan
+  // :::cta dan :::warning[Disclaimer] sehingga keduanya tetap di-enforce.
+  const minH2 = opts?.structure?.minH2 ?? 5;
+  const requireCta = opts?.structure?.requireCta ?? true;
+  const requireDisclaimer = opts?.structure?.requireDisclaimer ?? true;
   const issues: QualityIssue[] = [];
 
   // ── AI prompt leakage detection (HARD BLOCK) ──
@@ -112,11 +119,11 @@ export function validateArticle(
     });
   }
 
-  if (h2Count < 5) {
+  if (h2Count < minH2) {
     issues.push({
       rule: "heading_h2_min",
       severity: "error",
-      message: `Hanya ${h2Count} H2 section, minimum 5 dibutuhkan untuk struktur SEO yang baik.`,
+      message: `Hanya ${h2Count} H2 section, minimum ${minH2} dibutuhkan untuk struktur SEO yang baik.`,
     });
   }
 
@@ -133,7 +140,7 @@ export function validateArticle(
     });
   }
 
-  if (!hasCta) {
+  if (requireCta && !hasCta) {
     issues.push({
       rule: "cta_directive",
       severity: "error",
@@ -141,7 +148,7 @@ export function validateArticle(
     });
   }
 
-  if (!hasDisclaimer) {
+  if (requireDisclaimer && !hasDisclaimer) {
     issues.push({
       rule: "disclaimer_directive",
       severity: "error",

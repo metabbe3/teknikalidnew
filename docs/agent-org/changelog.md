@@ -881,3 +881,12 @@
 - **QA**: reviewer D+1 — register sheet flow bintang (rate-cap 1x/7hr), /admin/insight funnel+clicksByLabel7d, admin sidebar grup ID, pasar-live parity qcount, /auth/error SVG lucide.
 - **impact_check_due**: 2026-11-01 (register_7d ≥6/14hr — DONE WHEN prd-26-01; register_prompt_save_moment telemetry; radar/insight views)
 - **deploy hash**: image 690e65d47289 (main a1421c8) | rollback: docker tag sha256:213c366d6bd7 teknikalidnew-app:rollback && up -d (atau git revert + rebuild)
+
+## 2026-10-30 03:2x WIB — Backoffice Builder 03:00 (QA pasca-deploy bo-2026-10-29-01)
+- **task-id**: bo-2026-10-29-01 (verify done_when #4 pasca kereta T-1029-N, image 690e65d47289 up 21:43 WIB)
+- **type**: ops QA (pilar STICKY — alat ukur corong returning + CTA per label)
+- **verify bukti**: PROD https://teknikal.id/admin/insight via CDP mint-session (pola adm-28-01, salt __Secure-authjs.session-token, user ADMIN asli, cleanup 5 cookie): H1 "Insight Pengunjung" · 9 tab shell (Insight termasuk) · section "Corong keterlibatan (7 hari)" + "CTA & navigasi (7 hari)" + "CTA 7 hari" + "Kembali di hari lain" render · label asli tampil (ground-truth DB: nav:home 20/6uniq, nav:stocks 14/5, cta_click guest_quota 7/7, register_step1_submit 3/2 — 1534 event 7d) · login_form False (auth admin lolos)
+- **API**: /api/admin/engagement clicksByLabel7d live (kode GROUP BY type,label 7d LIMIT 30 verified di source + data DB)
+- **queue**: v78 bo-29-01 in_train -> qa_pass (statejson flip, bukan flip manual)
+- **blocked**: bo-2026-10-25-01 (social-cards remove) + bo-2026-10-26-02 (Community/Predictions demote) = NUNGGU OWNER VERDICT via morning digest — jangan eksekusi
+- Rollback anchor: app image 690e65d47289 (revert kereta = git revert e2eec90 range); entry QA ini 0 deploy

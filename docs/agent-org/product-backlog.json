@@ -2123,6 +2123,55 @@
       "first_step": "ANALISIS DATA: cut kpi.json + DB 28 Okt EOD; baseline->target tabel per KPI; draft verdict GO/ITERATE per hipotesis kereta malam ini (1 deploy = 1 eksperimen, jangan stack klaim)",
       "done_when": "Memo verdict di handoff/backlog insight Senin 2 Nov pagi dgn tabel data + rekomendasi ratchet utk owner council",
       "assigned_to": "product-agent"
+    },
+    {
+      "id": "sec-2026-10-29-01",
+      "date": "2026-10-29",
+      "status": "candidate",
+      "source": "itsec-blue",
+      "exploitability": "rendah",
+      "title": "[BLUE][MONITORING GAP] teknikal.id 401/403 anonim TIDAK terukur: tabel ErrorLog tidak ada, AuditLog hanya event authed — password-spray/credential-stuffing terhadap /auth/signin tidak terdeteksi dari DB. Kolom cUrl di [C] kosong = cookie anon tidak tersaji ke anon. [C] headers teknikal.id LENGKAP (CSP ketat frame-ancestors none + HSTS 2y preload + nosniff + XFO DENY) — hanya script-src 'unsafe-inline' (nota #171 SSR-by-design trade-off)",
+      "data": {
+        "evidence": "pre-run script [A]: 'auth-err teknikal.id 401/403 7d: 0 events / tidak tersedia di DB teknikalid (tabel ErrorLog tidak ada; AuditLog hanya event authed)' + probe [C] cookies kosong",
+        "instrumentation": "persist 401/403 di tabel/DWH ringan (mirror ErrorLogger hivePOS, preseden skip-noise 10d7e0e) atau minimal log berbasis IP+endpoint 7d-retention; setelahnya spike-analisis mingguan ITSEC jadi mungkin",
+        "fix_hint": "app-layer instrumentation (butuh deploy → SDLC CEO→PRD→CTO); ITSEC tiap shift Kamis memonitor jika sudah ada",
+        "probe": "2026-10-29 21:30 WIB"
+      },
+      "priority": "P3"
+    },
+    {
+      "id": "sec-2026-10-29-02",
+      "date": "2026-10-29",
+      "status": "candidate",
+      "source": "itsec-red",
+      "exploitability": "sedang",
+      "title": "[RED] Guest Pass (Retention v2.1, GUEST_DAILY_FREE 5→25 patch audit QW5): kuota server-side via cookie guest_pass (ticker list, cap 50) — by-design bukan hard-gate, tapi SET-COOKIE langsung dipercaya: anon bisa clear-cookie/Incognito loop untuk unlimited gated-content; rate-limit beacon /api/track/guest-pass TIDAK ADA (selalu 204) + flag fileEvidence aktivasi banner overlimit via localStorage FE-meter — bypass = hapus localStorage. Kombinasi memungkinkan scraping gated-content unlimited tanpa akun",
+      "data": {
+        "evidence": "src/lib/guest-pass.ts (GUEST_DAILY_FREE=25, cookie WIB-date, parse cap 50 tickers); src/app/api/guest-pass beacon route: regex ticker ^[A-Z0-9]{2,10}(\\.JK)?$, slice(0,12), always-204 no rate-limit; guest-quota-meter.tsx localStorage QUOTA_KEY; banner overlimit FE-only",
+        "attack": "loop: incognito/clear guest_pass cookie + call beacon → full gated content tiap sesi baru; FE-meter localStorage trivially cleared",
+        "fix_hint": "jika scraping jadi masalah nyata (cek log view-real count anon per-IP): soft-fingerprint IP+UA hash w/ 7d window server-side (CGNAT caveat — NO hard block, owner policy nothing-blocked); ukur dulu via view telemetry: apakah anon heavy-consumer muncul — data dulu (tide-first)",
+        "tradeoff_note": "owner policy 20 Okt: 'nothing blocked' + no IP detection — kartu ini menyediakan pilihan, BUKAN mengubah policy; kandidat diskusi CEO bila traffic pivot KPI tercapai dan bandwidth/LLM cost naik",
+        "probe": "2026-10-29 21:30 WIB; FE meter + banner verified dari kode 9179d32"
+      },
+      "priority": "P3"
+    },
+    {
+      "id": "im-2026-10-30-1",
+      "date": "2026-10-30",
+      "status": "idea",
+      "title": "CTA 'Tambah ke Portofolio' di halaman saham — hidupkan fitur tersembunyi (PortfolioHolding + /portfolio sudah live, 0 pintu masuk dari ticker page)",
+      "problem": "Fitur portofolio saham riil (tambah lot, harga avg, P/L live, publik-privat) sudah live di /portfolio dengan API lengkap, tapi pengguna tidak akan pernah menemukannya: halaman saham (setengah trafik situs) hanya punya 'Simpan ke pantauan' (watchlist) dan CTA Telegram — tidak ada satu pun tombol yang menambah posisi ke portofolio. Trader ritel yang pindah dari aplikasi sekuritas mencari 'saham saya ada di mana' dan tidak menemukannya.",
+      "done_when": "Tombol 'Tambah ke Portofolio' (qty + harga beli) live di halaman saham (anon = register prompt ala prd-26-01; authed = form add-holding langsung) → dalam 14 hari pasca-live: ≥20 holdings baru dari jalur ticker-page (bukan manual /portfolio), dan share of /portfolio views dari jalur ticker naik dari ~0% baseline.",
+      "size": "S",
+      "signal": "nav_click 2d: nav:stocks_BBCA 7 + nav:stocks_BBCA.JK 6 = 13 klik nav ticker (permintaan permukaan ticker kuat); PageView 7d: /stocks/BBCA.JK 89 views (halaman ticker = permintaan agregat terbesar ke-2) — tapi 0 PageView /portfolio dari jalur ticker; fitur live tapi tersembunyi = energi invest terendah (S), daftar aksi pasca prd-26-01.",
+      "source": "Idea Miner 2026-10-30 — sinyal nav_click + PageView + repo audit (grep 0 CTA portofolio di stocks/[ticker]/page.tsx; PortfolioHolding + /portfolio + api/portfolio lengkap)",
+      "tags": [
+        "portfolio",
+        "growth",
+        "retention",
+        "hidden-feature",
+        "north-star:retention+register"
+      ]
     }
   ],
   "items": []
