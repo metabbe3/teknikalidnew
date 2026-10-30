@@ -1,3 +1,4 @@
+import { prisma } from "@/lib/prisma";
 import { isPlausibleTicker } from "@/lib/ai-ticker-guard";
 import { NextRequest, NextResponse } from "next/server";
 import { buildStockAiContext } from "./context";
@@ -180,6 +181,7 @@ export async function POST(req: NextRequest) {
       context = { ...dbCtx, ...stripNulls(clientContext) }; // client-explicit menang
     }
   }
+  const __t0 = Date.now();
   // multi-turn chat (owner 30 Okt): history dari FAB/modal, sanitasi
   const rawHistory = Array.isArray((body as Record<string, unknown>).history)
     ? ((body as Record<string, unknown>).history as unknown[])
@@ -257,6 +259,10 @@ export async function POST(req: NextRequest) {
       if (mode === "ask" || mode === "summarize") {
         try {
           const text = await glmCall(context, mode, question, chatHistory);
+          // flywheel (owner 30 Okt): log QA fire-and-forget
+          prisma.aiChatLog
+            .create({ data: { route: "stock", mode, ticker: String(clientContext.ticker ?? "").replace(/\.JK$/i, ""), question: question.slice(0, 500), answer: text.slice(0, 8000), provider: "glm-flash", latencyMs: Date.now() - __t0, anonId: (body as Record<string, unknown>).anonId as string | undefined ?? null, userId: (body as Record<string, unknown>).userId as string | undefined ?? null } })
+            .catch(() => {});
           return { ok: true as const, text, ms: 0, provider: "glm-flash" };
         } catch (e) {
           glmErr = e instanceof Error ? e.message : "glm error";

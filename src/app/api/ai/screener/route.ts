@@ -1,3 +1,4 @@
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { technicalAnalysisService } from "@/domains/stock/technical-analysis.service";
 import { pasarLiveService } from "@/domains/stock/pasar-live.service";
@@ -302,6 +303,11 @@ export async function POST(req: NextRequest) {
       provider: (data as { provider?: string }).provider ?? "mlx",
     };
     cacheSet(cacheKey, { text: payload.text, presetLabel: payload.presetLabel, matched: payload.matched, stocks, at: Date.now() });
+
+    // flywheel (owner 30 Okt): log QA — fire-and-forget, jangan blok/gagalkan response
+    prisma.aiChatLog
+      .create({ data: { route: "screener", question: question.slice(0, 500), answer: String(payload.text ?? "").slice(0, 8000), provider: payload.provider ?? null, latencyMs: data.ms ?? null, anonId: (body as Record<string, unknown>).anonId as string | undefined ?? null, userId: (body as Record<string, unknown>).userId as string | undefined ?? null } })
+      .catch(() => {});
     return NextResponse.json(payload);
   } catch (e) {
     if (e instanceof QueueFullError) {

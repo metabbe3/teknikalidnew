@@ -1163,6 +1163,27 @@ model BotInbox {
 }
 
 // Engagement telemetry: dwell/scroll/CTA beacons (no PII — anonId is a client-side uuid).
+// Flywheel Tanya AI (owner 30 Okt: "looping terus agar enhance berkembang") —
+// log tiap QA: bahan eval harian (agent enhancer), cluster pertanyaan (RAG gap), dampak product.
+model AiChatLog {
+  id            Int      @id @default(autoincrement())
+  anonId        String?  @db.VarChar(36)
+  userId        String?
+  route         String   @db.VarChar(16) // stock | screener
+  mode          String?  @db.VarChar(16) // ask | summarize
+  ticker        String?  @db.VarChar(12)
+  question      String   @db.VarChar(500)
+  answer        String   @db.Text
+  provider      String?  @db.VarChar(24)
+  latencyMs     Int?
+  followupClick String?  @db.VarChar(200) // chip label yang diklik user (kualitas jawaban signal)
+  createdAt     DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([route, createdAt(sort: Desc)])
+  @@index([ticker])
+}
+
 model EngagementEvent {
   id        Int      @id @default(autoincrement())
   anonId    String   @db.VarChar(36)
