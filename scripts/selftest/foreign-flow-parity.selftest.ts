@@ -83,6 +83,31 @@ check("semua null", buildForeignRows(
 // 6) Input kosong -> [] (foreignFlow catch(() => []) lama)
 check("input kosong", buildForeignRows([], px), []);
 
+
+// ── code-audit-tk-2 bagian admin reports: parity preview builder ──
+import { buildPreviewsFromRows, previewText } from "../../src/app/admin/reports/report-preview.util";
+
+const reportsFx = [
+  { id: "r1", targetType: "POST", targetId: "p1" },
+  { id: "r2", targetType: "POST", targetId: "p-hilang" },
+  { id: "r3", targetType: "COMMENT", targetId: "c1" },
+  { id: "r4", targetType: "COMMENT", targetId: "c-hilang" },
+];
+const postsFx = [
+  { id: "p1", content: "konten pendek", author: { username: "budi" } },
+  { id: "p2", content: "x".repeat(120), author: { username: "ani" } }, // >80 char
+];
+const commentsFx = [
+  { id: "c1", content: "komentar biasa", author: { username: "cita" } },
+];
+const prev = buildPreviewsFromRows(reportsFx, postsFx, commentsFx);
+check("preview post ada", prev.get("r1"), 'Post oleh @budi: "konten pendek"');
+check("preview post dihapus", prev.get("r2"), "[Post dihapus]");
+check("preview komentar ada", prev.get("r3"), 'Komentar oleh @cita: "komentar biasa"');
+check("preview komentar dihapus", prev.get("r4"), "[Komentar dihapus]");
+check("preview panjang terpotong 80 + ...", previewText("Post", "ani", "x".repeat(120)),
+  `Post oleh @ani: "${"x".repeat(80)}..."`);
+
 if (fail > 0) {
   console.error(`\n${fail} FAIL / ${pass} pass`);
   process.exit(1);
