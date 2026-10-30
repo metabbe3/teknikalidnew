@@ -915,3 +915,11 @@
 - **impact_check_due**: 2026-11-02
 - **deploy hash**: n/a BUILD-ONLY (in_train T-1030-N; deploy budget penuh: owner-direct 17:2x + kereta 22:00) | rollback: git revert 5c913ad
 - **catatan pipeline**: claude_gated.sh gagal 2x (exit 1 — Claude Code tak kenali model glm-5.3, context thrashing) → fallback manual sesuai GATEGUARD #65; worker mati SEBELUM menyentuh file (0 side effect).
+
+## 2026-10-31 03:3x WIB — Backoffice Builder (verdict owner 30 Okt: remove + demote, 1 deploy)
+- **task-id**: bo-2026-10-25-01 (remove /admin/social-cards) + bo-2026-10-26-02 (demote tab Community/Predictions)
+- **type**: backoffice cleanup (pilar tidak langsung: mengurangi permukaan admin mati/menosik = admin konsisten sebagai satu sumber kebenaran — CUSTOMER FIRST via data reliable utk keputusan owner)
+- **verify bukti**: commit 7dbe481; tsc --noEmit EXIT-0 (0 error); npm build EXIT-0; docker build BUILD_EXIT=0; deploy up -d app → image sha256:4fc480e31eb8 healthy; curl /api/admin/social-cards/articles = 404 live (route hilang); build route list tanpa /admin/social-cards; app container grep 'Social Cards' 0-hit; npm uninstall html2canvas-pro → package.json+lock 0-hit; tab filter verified via npx tsx: TABS 9 → VISIBLE 7 (community+predictions hidden), shim initialTab 'community'/'predictions' tetap valid; /admin/social-cards 307→login (auth-guard proxy by-design).
+- **QA**: owner cek visual: /admin sidebar tanpa "Social Cards" + tab bar Dashboard tanpa Community/Predictions (7 tab); /admin/community + /admin/predictions via URL tetap jalan (by-design demote bukan remove).
+- **deploy hash**: 7dbe481 | image 4fc480e31eb8 | rollback: git revert 7dbe481 + re-up image anchor 4e58bd6ffb6a (T-1030-N)
+- **insiden minor**: build pertama timeout tool (420s) → app kena OOM "Killed" sekali (auto-restart sehat, image lama tak tersentuh); build ulang background sukses. Worker restarts=28 kumulatif 6 hari, stabil sejak 03:16, mem 164MB normal.
