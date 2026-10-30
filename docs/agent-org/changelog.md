@@ -906,3 +906,12 @@
 - **QA**: pasca-deploy T-1030-N: DOM mobile /stocks skor 2-desimal + detail 1 breadcrumb + nav anchor #asing melompat ke seksi.
 - **impact_check_due**: 2026-11-02
 - **deploy hash**: n/a BUILD-ONLY (in_train T-1030-N) | rollback: git revert 02aae39
+
+## 2026-10-30 18:5x WIB — CTO sore 16:45 (code-audit-tk-1 P1 BUILD-ONLY; qw-audit-tk-3 verified-stale)
+- **task-id**: code-audit-tk-1 (P1 satu-pintu market data) + qw-audit-tk-3 (P1 sektor breadth — spec stale, sudah live)
+- **type**: refactor backend (pilar TRUST — data konsisten satu pintu; kriteria oversold tak bisa bergeser diam-diam antar halaman)
+- **verify bukti**: failing-test-first 9f58658 (RED 5/5) → fix 5c913ad (GREEN 6/6: parity getOversoldCount()==SQL count di DB live, volume-leaders ≤5 volume desc, fail-soft); tsc --noEmit EXIT-0 (isolated worktree HEAD, prisma generate); build EXIT-0 BUILD_ID Yx3LHedp-0He88nnM_iiq; grep rsi14<30 di src/app = 0 (dulu 3x: homepage + pasar weekend + pasar live); homepage (public)/page.tsx tanpa $queryRaw. qw-audit-tk-3: curl /sektor/perbankan 200 chip "16 Sinyal Naik · 11 Netral · 33 Tekanan Jual" (implementasi seo-dr-3 641c019 sudah live sebelum spec dibuat — CEO spec stale, CTO koreksi).
+- **QA**: pasca-deploy T-1030-N: DOM /pasar badge Sesi Ekstrem (bila ≥150) + homepage kartu Teraktif urutan sama.
+- **impact_check_due**: 2026-11-02
+- **deploy hash**: n/a BUILD-ONLY (in_train T-1030-N; deploy budget penuh: owner-direct 17:2x + kereta 22:00) | rollback: git revert 5c913ad
+- **catatan pipeline**: claude_gated.sh gagal 2x (exit 1 — Claude Code tak kenali model glm-5.3, context thrashing) → fallback manual sesuai GATEGUARD #65; worker mati SEBELUM menyentuh file (0 side effect).
