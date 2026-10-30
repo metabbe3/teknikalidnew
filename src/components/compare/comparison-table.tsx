@@ -12,10 +12,10 @@ interface Props {
 }
 
 const TABS = [
-  { key: "stats", label: "Key Statistics" },
-  { key: "technical", label: "Technical" },
-  { key: "fundamentals", label: "Fundamentals" },
-  { key: "plans", label: "Trading Plans" },
+  { key: "stats", label: "Statistik Utama" },
+  { key: "technical", label: "Teknikal" },
+  { key: "fundamentals", label: "Fundamental" },
+  { key: "plans", label: "Rencana Trading" },
 ] as const;
 
 type TabKey = (typeof TABS)[number]["key"];

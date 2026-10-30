@@ -597,6 +597,10 @@ export default async function StockDetailPage({
       <section className="border-b border-border bg-bg-card">
         <div className="max-w-7xl mx-auto px-4 py-3 sm:py-5 space-y-3">
           {/* Breadcrumb */}
+          {/* qw-audit-tk-2 (30 Okt): breadcrumb Inggris duplikat DIHAPUS —
+              <Breadcrumbs> 4-item di bawah (Beranda > Saham > Sektor > TIKER,
+              dgn schema.org lebih kaya) jadi SATU breadcrumb. */}
+          {/*
           <nav className="text-xs text-text-tertiary flex items-center gap-1.5 font-mono" aria-label="Breadcrumb">
             <Link href="/stocks" className="hover:text-text-primary transition-colors">Stocks</Link>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -604,6 +608,7 @@ export default async function StockDetailPage({
             </svg>
             <span className="text-text-secondary" aria-current="page">{stripJk(ticker)}</span>
           </nav>
+          */}
 
           {/* Price Header Card */}
           <div className="rounded-xl border border-border bg-bg-primary/60 p-4 sm:p-5 relative overflow-hidden">
@@ -893,7 +898,8 @@ export default async function StockDetailPage({
             {[
               ["chart", "Chart"],
               ["indikator", "Indikator"],
-              ["ai", "AI"],
+              ["analisa", "Analisa"],
+              ["asing", "Asing"],
               ...(fullAccess ? [["plan", "Trading Plan"]] : []),
             ].map(([id, label]) => (
               <a
@@ -984,7 +990,7 @@ export default async function StockDetailPage({
 
         {/* Aliran Dana Asing 5 sesi (usp-2026-10-24-04) — guest-visible, graceful hidden */}
         {foreignLatest && (
-          <section className="bg-bg-card rounded-xl border border-border p-5 space-y-3" aria-label="Aliran dana asing">
+          <section id="asing" className="bg-bg-card rounded-xl border border-border p-5 space-y-3 scroll-mt-24" aria-label="Aliran dana asing">
             <div className="flex items-baseline justify-between">
               <h2 className="font-serif text-base font-semibold text-text-primary">Aliran Dana Asing</h2>
               <span className="text-xs text-text-tertiary">5 sesi terakhir · net (beli − jual) asing</span>
@@ -1233,7 +1239,7 @@ export default async function StockDetailPage({
               ) : (
                 <LoginGate
                   className="w-full"
-                  feature="Key Statistics"
+                  feature="Statistik Utama"
                   message="Daftar gratis untuk membuka data statistik lengkap — OHLC harian, volume, SMA, dan range 52 minggu."
                 />
               )}

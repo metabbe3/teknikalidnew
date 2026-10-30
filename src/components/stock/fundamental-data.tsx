@@ -28,7 +28,7 @@ export function FundamentalData({ data }: FundamentalDataProps) {
 
   return (
     <div className="indicator-card depth-shadow p-4">
-      <h2 className="text-sm font-semibold text-text-primary mb-3">Fundamentals</h2>
+      <h2 className="text-sm font-semibold text-text-primary mb-3">Data Fundamental</h2>
       <div className="space-y-0" role="list">
         {rows.map(([label, value]) => (
           <div key={label} className="flex justify-between py-2 text-sm border-b border-border/30 last:border-0" role="listitem">
