@@ -26,8 +26,8 @@ export function translateStochastic(k: number | null, d: number | null): Transla
   if (k === null) return { short: "Tidak ada data", explanation: "", sentiment: "netral" };
   if (k > 80) return { short: "Jenuh Beli", explanation: "Harga di zona tertinggi. Risiko koreksi.", sentiment: "negatif" };
   if (k < 20) return { short: "Jenuh Jual", explanation: "Harga di zona terendah. Potensi rebound.", sentiment: "positif" };
-  if (d !== null && k > d) return { short: "Bullish Cross", explanation: "Momentum naik.", sentiment: "positif" };
-  if (d !== null && k < d) return { short: "Bearish Cross", explanation: "Momentum turun.", sentiment: "negatif" };
+  if (d !== null && k > d) return { short: "Persilangan Naik", explanation: "Momentum naik.", sentiment: "positif" };
+  if (d !== null && k < d) return { short: "Persilangan Turun", explanation: "Momentum turun.", sentiment: "negatif" };
   return { short: "Zona Netral", explanation: "Pergerakan normal.", sentiment: "netral" };
 }
 
@@ -68,11 +68,11 @@ export function translateATR(atr: number | null, price: number | null): Translat
 export function translateCrossSignal(signal: string | null, type: "sma" | "ema"): Translation {
   if (!signal) return { short: "Tidak Ada Cross", explanation: "Tidak ada sinyal cross terbaru.", sentiment: "netral" };
   if (type === "sma") {
-    if (signal === "golden_cross") return { short: "Golden Cross", explanation: "SMA 50 memotong SMA 200 ke atas — sinyal bullish jangka panjang.", sentiment: "positif" };
-    return { short: "Death Cross", explanation: "SMA 50 memotong SMA 200 ke bawah — sinyal bearish jangka panjang.", sentiment: "negatif" };
+    if (signal === "golden_cross") return { short: "Silang Emas (Golden Cross)", explanation: "SMA 50 memotong SMA 200 ke atas — sinyal naik jangka panjang.", sentiment: "positif" };
+    return { short: "Silang Maut (Death Cross)", explanation: "SMA 50 memotong SMA 200 ke bawah — sinyal turun jangka panjang.", sentiment: "negatif" };
   }
-  if (signal === "bullish") return { short: "EMA Bullish Cross", explanation: "EMA 12 memotong EMA 26 ke atas — momentum naik.", sentiment: "positif" };
-  return { short: "EMA Bearish Cross", explanation: "EMA 12 memotong EMA 26 ke bawah — momentum turun.", sentiment: "negatif" };
+  if (signal === "bullish") return { short: "EMA Persilangan Naik", explanation: "EMA 12 memotong EMA 26 ke atas — momentum naik.", sentiment: "positif" };
+  return { short: "EMA Persilangan Turun", explanation: "EMA 12 memotong EMA 26 ke bawah — momentum turun.", sentiment: "negatif" };
 }
 
 export function translateOBV(obvTrend: string | null): Translation {
@@ -83,8 +83,8 @@ export function translateOBV(obvTrend: string | null): Translation {
 
 export function translateSupertrend(price: number | null, supertrend: number | null): Translation {
   if (price === null || supertrend === null) return { short: "Tidak ada data", explanation: "", sentiment: "netral" };
-  if (price > supertrend) return { short: "Bullish", explanation: "Harga di atas Supertrend. Tren naik.", sentiment: "positif" };
-  return { short: "Bearish", explanation: "Harga di bawah Supertrend. Tren turun.", sentiment: "negatif" };
+  if (price > supertrend) return { short: "Menguat", explanation: "Harga di atas Supertrend. Tren naik.", sentiment: "positif" };
+  return { short: "Melemah", explanation: "Harga di bawah Supertrend. Tren turun.", sentiment: "negatif" };
 }
 
 export function translateSMA(sma20: number | null, sma50: number | null, sma200: number | null, price: number | null): Translation {
@@ -93,7 +93,7 @@ export function translateSMA(sma20: number | null, sma50: number | null, sma200:
   const above50 = sma50 !== null && price > sma50;
   const above200 = sma200 !== null && price > sma200;
   const aboveCount = [above20, above50, above200].filter(Boolean).length;
-  if (aboveCount === 3) return { short: "Tren Kuat Naik", explanation: "Harga di atas semua SMA. Tren bullish solid.", sentiment: "positif" };
+  if (aboveCount === 3) return { short: "Tren Kuat Naik", explanation: "Harga di atas semua SMA. Tren naik solid.", sentiment: "positif" };
   if (aboveCount >= 2) return { short: "Cenderung Naik", explanation: "Mayoritas SMA di bawah harga.", sentiment: "positif" };
   if (aboveCount === 0) return { short: "Tren Kuat Turun", explanation: "Harga di bawah semua SMA. Tren bearish.", sentiment: "negatif" };
   return { short: "Campuran", explanation: "Harga berada di antara SMA. Tren belum jelas.", sentiment: "netral" };
