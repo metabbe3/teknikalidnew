@@ -3508,6 +3508,18 @@
       "spec": "Aksi #5 (minggu 6-10, SETELAH gate GSC hijau): /saham-modal-100-ribu (1 lot <= Rp100rb, close>55, non-FCA, non-gorengan) + /saham-pemantauan-khusus (57 FCA) + /compare/[a]-vs-[b] SSR 30 pasangan populer (kartu verdict 3 metrik + tabel 12 baris, stockMarketService) + batch-2 sitemap +87 emiten likuid >= Rp100jt/hari (WBSA RANS KOPI JECX LTLS dll, TANPA sub-halaman indikator). Done-when: 30 URL compare 200 + batch-2 masuk sitemap.",
       "north_star": "traffic_mom_growth_pct",
       "scheduled_slot": "2026-11-06 09:30 slot pagi"
+    },
+    {
+      "id": "qa-2026-10-30-01",
+      "date": "2026-10-30",
+      "type": "qa",
+      "priority": "P2",
+      "status": "done",
+      "assigned_to": "cto",
+      "north_star": "TRUST",
+      "title": "QA CTO pagi 30 Okt: verify per-fitur kereta T-1029-N live (7 penumpang)",
+      "spec": "Slot pagi CTO = QA reviewer D+1 kereta T-1029-N (deploy 29 Okt 21:35, image 690e65d47289). Verify minimal: (1) prd-26-01 register sheet marker register_prompt_save_moment di chunk layout; (2) bo-29-01 /admin/insight route live; (3) adm-28-01 sidebar; (4) fix-26-12 N+1 — indikator: WorkerLedger 24h tanpa error pasar-live; (5) ux-29-01 emoji 0. SKIP fix-26-08/11 (reslot T-1030-N oleh CTO malam sendiri).",
+      "result": "DONE 30 Okt 08:1x. (1) prd-26-01 marker register_prompt_save_moment LIVE di container chunk layout-98ca69609e2fa9a8.js (grep docker exec); (2) bo-29-01 /admin/insight page.js LIVE di container + bo-verify prod 03:2x (qa_pass entry); (3) fix-26-12 selftest pasar-live-doctrine 9/9 PASS re-run 30 Okt; (4) ux-29-01 emoji pass-4 commit 9179d32 di main b6f854d ancestor; (5) fix-26-08/11 SKIP sesuai reslot. Home/stocks/pasar 200. Dashboard kpi.json refresh 07:05 konfirmasi CTO Lead."
     }
   ]
 }
