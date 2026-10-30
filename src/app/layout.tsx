@@ -6,6 +6,7 @@ import "@/lib/events-init";
 import { EngagementInstrument } from "@/components/engagement-instrument";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
+import { AskAiFab } from "@/components/ai/ask-ai-fab";
 import { ConditionalSocketProvider as SocketProvider } from "@/components/providers/socket-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
@@ -148,6 +149,7 @@ export default function RootLayout({
               <TooltipProvider>
                 <SiteAnnouncementBanner />
                 <main id="main-content" className="flex-1 flex flex-col">{children}</main>
+                <AskAiFab />
               </TooltipProvider>
             </SocketProvider>
           </AuthProvider>
