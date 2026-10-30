@@ -98,7 +98,8 @@ function pickPreset(question: string): { preset: string; label: string } {
 const GLM_MODEL = process.env.GLM_FLASH_MODEL ?? "glm-5.3-flash";
 
 const GLM_SYSTEM = [
-  "Kamu analis pasar saham Indonesia di platform TeknikalID.",
+  "Kamu 'Tanya AI' — sahabat analisa saham Indonesia di platform TeknikalID: santai, to-the-point, ngobrol kayak teman trading (boleh 'nih', 'tuh', 'cuan', 'nyangkut'), TAPI angka harus presisi dan tidak menggurui.",
+  "GAYA CONVERSATIONAL: jawab langsung intinya dulu (1 kalimat pembuka yang menjawab pertanyaan), baru rincian. Kalau user nanya pendek, jawab pendek. Ikuti alur obrolan dari HISTORY — user bilang 'kalau BBRI gimana?' artinya lanjutan topik sebelumnya, jangan ulang semua dari nol.",
   "ATURAN KERAS: HANYA gunakan ticker & angka dari DATA yang diberikan; DILARANG mengarang ticker/harga;",
   "Jawab Bahasa Indonesia santai-profesional 2-4 kalimat: pola umum + 2-3 ticker paling menonjol",
   "dalam format PERSIS [TICKER](/stocks/TICKER.JK) langsung setelah kalimat — tanpa kata 'link', tanpa path terpisah;",
@@ -108,7 +109,14 @@ const GLM_SYSTEM = [
   "Jika daftar kosong, jawab jujur: tidak ada saham yang lolos kriteria itu hari ini.",
 ].join(" ");
 
-async function glmScreenerChat(question: string, stocks: unknown, pasar?: unknown): Promise<string> {
+type ChatTurn = { role: "user" | "ai"; text: string };
+
+async function glmScreenerChat(
+  question: string,
+  stocks: unknown,
+  pasar?: unknown,
+  history?: ChatTurn[],
+): Promise<string> {
   const apiKey = process.env.ANTHROPIC_AUTH_TOKEN;
   if (!apiKey) throw new Error("GLM key missing");
   const controller = new AbortController();
@@ -122,13 +130,20 @@ async function glmScreenerChat(question: string, stocks: unknown, pasar?: unknow
         max_tokens: 700,
         thinking: { type: "disabled" },
         system: GLM_SYSTEM,
-        messages: [{
-          role: "user",
-          content:
-            `PERTANYAAN USER: ${question}\n\n` +
-            (pasar ? `DATA PASAR HARI INI (konteks, angka final):\n${JSON.stringify(pasar)}\n\n` : "") +
-            `DAFTAR SAHAM hasil screen (ticker, nama, harga, change%, skor):\n${JSON.stringify(stocks)}`,
-        }],
+        messages: [
+          // multi-turn: history ringkas (max 6 turn terakhir, dipadatkan client)
+          ...(history ?? []).slice(-6).map((h) => ({
+            role: h.role === "user" ? ("user" as const) : ("assistant" as const),
+            content: h.text.slice(0, 800),
+          })),
+          {
+            role: "user" as const,
+            content:
+              `PERTANYAAN USER: ${question}\n\n` +
+              (pasar ? `DATA PASAR HARI INI (konteks, angka final):\n${JSON.stringify(pasar)}\n\n` : "") +
+              `DAFTAR SAHAM hasil screen (ticker, nama, harga, change%, skor):\n${JSON.stringify(stocks)}`,
+          },
+        ],
       }),
       signal: controller.signal,
     });
@@ -184,6 +199,16 @@ export async function POST(req: NextRequest) {
   }
 
   const question = (body.question ?? "").slice(0, 500).trim();
+  // multi-turn chat (owner 30 Okt: FAB harus kayak chatbot): history dari client, sanitasi ketat
+  const rawHistory = Array.isArray((body as Record<string, unknown>).history)
+    ? ((body as Record<string, unknown>).history as unknown[])
+    : [];
+  const history = rawHistory
+    .filter((h): h is { role: string; text: string } =>
+      !!h && typeof h === "object" &&
+      typeof (h as Record<string, unknown>).role === "string" && typeof (h as Record<string, unknown>).text === "string")
+    .map((h) => ({ role: h.role === "user" ? ("user" as const) : ("ai" as const), text: h.text.slice(0, 800) }))
+    .slice(-6);
   if (!question) {
     return NextResponse.json({ error: "Pertanyaan kosong" }, { status: 400 });
   }
@@ -239,7 +264,7 @@ export async function POST(req: NextRequest) {
       let glmText: string | null = null;
       try {
         const pasar = await buildPasarContext();
-        glmText = await glmScreenerChat(question, stocks, pasar);
+        glmText = await glmScreenerChat(question, stocks, pasar, history);
         return { ok: true as const, text: glmText, ms: 0, provider: "glm-flash" };
       } catch (e) {
         console.warn(`[ai/screener] GLM flash gagal (${e instanceof Error ? e.message : "err"}) → fallback MLX`);

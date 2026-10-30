@@ -25,7 +25,7 @@ const MLX_URL = process.env.MLX_AI_URL ?? "http://host.docker.internal:8765";
 const GLM_MODEL = process.env.GLM_FLASH_MODEL ?? "glm-5.3-flash";
 
 const GLM_SYSTEM = [
-  "Kamu analis teknikal retail Indonesia di platform TeknikalID.",
+  "Kamu 'Tanya AI' — sahabat analisa saham Indonesia di platform TeknikalID: santai, to-the-point, ngobrol kayak teman trading (boleh 'nih', 'tuh', 'nyangkut'), TAPI angka presisi dan tidak menggurui. Jawab intinya dulu, baru rincian.",
   "ATURAN KERAS: hanya gunakan ANGKA dari DATA yang diberikan user; DILARANG mengarang harga, level, atau angka yang tidak ada di data;",
   "Kalau ditanya 'layak dibeli / bagus / oke / harus apa', JANGAN bilang beli/jangan-beli:",
   "jawab dengan KERANGKA DATA — kondisi tren (posisi vs SMA), momentum (RSI/MACD), jarak ke support/resistance, valuasi (PE/PB) bila ada, arus asing (foreign flow) bila ada, lalu beri skenario 'kalau pegang: level invalidation X' / 'kalau mau masuk: tunggu konfirmasi Y'. Satu kalimat penutup bahwa ini edukasi teknikal, bukan rekomendasi beli/jual.",
@@ -38,10 +38,13 @@ const GLM_SYSTEM = [
   "FORMAT WAJIB Markdown rapi dan TERSTRUKTUR (dirender sebagai kartu di aplikasi): mulai judul '## <TICKER> — <tema 2-4 kata>', lalu bagian bertajuk '###' (mis. Tren, Momentum, Volume & Asing, Level Kunci), poin pakai bullet '-' dengan **bold** untuk angka penting; kalau membandingkan dua saham pakai tabel Markdown; TIDAK ada '#' ganda tanpa isi, TIDAK paragraf tembok >3 kalimat.",
 ].join(" ");
 
+type ChatTurn = { role: "user" | "ai"; text: string };
+
 async function glmCall(
   context: Record<string, unknown>,
   mode: "summarize" | "ask",
   question: string,
+  history?: ChatTurn[],
 ): Promise<string> {
   const apiKey = process.env.ANTHROPIC_AUTH_TOKEN;
   if (!apiKey) throw new Error("GLM key missing");
@@ -51,8 +54,12 @@ async function glmCall(
     thinking: { type: "disabled" },
     system: GLM_SYSTEM,
     messages: [
+      ...(history ?? []).slice(-6).map((h) => ({
+        role: h.role === "user" ? ("user" as const) : ("assistant" as const),
+        content: h.text.slice(0, 800),
+      })),
       {
-        role: "user",
+        role: "user" as const,
         content:
           `DATA saham (semua angka final, jangan dihitung ulang):\n${JSON.stringify(context, null, 1)}\n\n` +
           (mode === "ask"
@@ -169,6 +176,17 @@ export async function POST(req: NextRequest) {
       context = { ...dbCtx, ...stripNulls(clientContext) }; // client-explicit menang
     }
   }
+  // multi-turn chat (owner 30 Okt): history dari FAB/modal, sanitasi
+  const rawHistory = Array.isArray((body as Record<string, unknown>).history)
+    ? ((body as Record<string, unknown>).history as unknown[])
+    : [];
+  const chatHistory = rawHistory
+    .filter((h): h is { role: string; text: string } =>
+      !!h && typeof h === "object" &&
+      typeof (h as Record<string, unknown>).role === "string" && typeof (h as Record<string, unknown>).text === "string")
+    .map((h) => ({ role: h.role === "user" ? ("user" as const) : ("ai" as const), text: h.text.slice(0, 800) }))
+    .slice(-6);
+
 
   // G4 (riset Argon): ekstrak harga beli user ("nyangkut di 5.400" / "beli 5200") → floating P/L dihitung server
   if (mode === "ask" && question && typeof context.close === "number" && context.close > 0) {
@@ -234,7 +252,7 @@ export async function POST(req: NextRequest) {
       let glmErr: string | null = null;
       if (mode === "ask" || mode === "summarize") {
         try {
-          const text = await glmCall(context, mode, question);
+          const text = await glmCall(context, mode, question, chatHistory);
           return { ok: true as const, text, ms: 0, provider: "glm-flash" };
         } catch (e) {
           glmErr = e instanceof Error ? e.message : "glm error";

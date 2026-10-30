@@ -79,11 +79,17 @@ export function AskAiFab() {
       // (context per-saham + COMPARE + posisiUser floating P/L); tanpa ticker → endpoint PASAR.
       // Dulu semua ke /api/ai/screener → jawaban pasar identik utk pertanyaan per-saham.
       const tickerHit = detectTickerInText(text); // guard: "yang/data/macd" ≠ ticker (owner 30 Okt bug YANG)
+      // history utk multi-turn (max 6, dipadatkan): AI paham "kalau BBRI gimana?" tanpa konteks ulang
+      const history = items
+        .slice(-6)
+        .map((it) => ({ role: it.role === "user" ? "user" : "ai", text: it.text.slice(0, 400) }));
       const res = await fetch(tickerHit ? "/api/ai/stock" : "/api/ai/screener", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(
-          tickerHit ? { mode: "ask", ticker: `${tickerHit}.JK`, question: text } : { question: text },
+          tickerHit
+            ? { mode: "ask", ticker: `${tickerHit}.JK`, question: text, history }
+            : { question: text, history },
         ),
       });
       const data = await res.json();
