@@ -1184,6 +1184,22 @@ model AiChatLog {
   @@index([ticker])
 }
 
+// Skor evaluasi Tanya AI oleh judge LLM (owner 30 Okt) — tren kualitas harian.
+model AiEvalRun {
+  id            Int      @id @default(autoincrement())
+  question      String   @db.VarChar(500)
+  route         String   @db.VarChar(16)
+  ticker        String?  @db.VarChar(12)
+  answer        String   @db.Text
+  routingScore  Int
+  qualityScore  Int
+  fitScore      Int
+  notes         String?  @db.Text
+  createdAt     DateTime @default(now())
+
+  @@index([createdAt])
+}
+
 model EngagementEvent {
   id        Int      @id @default(autoincrement())
   anonId    String   @db.VarChar(36)
