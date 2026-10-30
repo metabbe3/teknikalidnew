@@ -1,7 +1,7 @@
 import { aiRateLimited } from "@/lib/ai-rate-limit";
 import { buildPasarContext } from "@/lib/ai-pasar-context";
 import { prisma } from "@/lib/prisma";
-import { isPlausibleTicker } from "@/lib/ai-ticker-guard";
+import { isPlausibleTicker, extractTickersRanked } from "@/lib/ai-ticker-guard";
 import { NextRequest, NextResponse } from "next/server";
 import { buildStockAiContext } from "./context";
 import { stockRepository } from "@/domains/stock/stock.repository";
@@ -35,6 +35,10 @@ const GLM_SYSTEM = [
   "Kalau ditanya 'kenapa naik/turun', gunakan changePercent + volume vs avgVol20 + foreignFlow5.state + headline recentArticles sebagai kandidat penjelas, dan katakan mana yang didukung data.",
   "Kalau ada field posisiUser (harga beli + floating P/L sudah dihitung server), gunakan angka itu persis saat membahas dilema hold/cut loss: sebut floating %, jarak ke support/invalidation, dan kerangka skenario — tanpa menyuruh cut loss atau hold.",
   "Kalau user menyebut ticker LAIN untuk dibandingkan ('bandingin sama BBRI'), gunakan DATA_PERBANDINGAN yang disediakan: sajikan trade-off objektif (valuasi PE/PB, dividen, tren SMA, skor sinyal, arus asing) dua sisi — jangan memihak salah satu.",
+  "SO WHAT (wajib): setiap rangkuman angka HARUS diikuti implikasinya — 'harga -9,6% di bawah SMA20' lanjut 'artinya tren jangka pendek masih turun, entry konfirmasi tunggu di atas SMA'. Angka tanpa implikasi = jawaban setengah jadi.",
+  "premiseCheck di data = premis user SALAH vs data: luruskan di KALIMAT PERTAMA ('Lurusin dulu: hari ini justru naik +X%'), baru lanjut analisis penyebab yang benar (mis. tren 20 hari).",
+  "posisiUser.bepGapPct = persen kenaikan yang dibutuhkan buat balik modal; posisiUser.avgDown1to1 = rata-rata baru kalau averaging lot sama di harga sekarang. distToSupportPct/distToResistPct = jarak % ke level kunci. Semua sudah dihitung server — pakai langsung, jangan hitung ulang.",
+  "Arus asing: bandingkan antar-emiten dalam RUPIAH (estimasiNet5Rp / sesi × harga), BUKAN lembar — harga per lembar beda jauh.",
   "Kalau ditanya status halal/syariah dan data tidak memuat status DES/ISSI, JANGAN menebak — jelaskan bahwa cek daftar resmi DES OJK / ISSI BEI diperlukan.",
   "Untuk detail rasio/harga tebus right issue / IPO / stock split yang tidak ada di recentArticles, jelaskan mekanismenya edukatif dan arahkan ke keterbukaan informasi BEI — DILARANG mengarang angka rasio.",
   "Jawab Bahasa Indonesia, ringkas, jelas untuk trader retail pemula-menengah; angka format ribuan Indonesia (8.200).",
@@ -157,8 +161,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Body JSON tidak valid" }, { status: 400 });
   }
 
-  const mode = body.mode === "ask" ? "ask" : "summarize";
-  const question = typeof body.question === "string" ? body.question.slice(0, 500) : "";
+  // G1 (juri Claude 30 Okt): question tanpa mode → ask (bukan summarize dgn context kosong)
+  const hasQuestion = typeof body.question === "string" && body.question.trim().length > 0;
+  const mode = body.mode === "summarize" && !hasQuestion ? "summarize" : body.mode === "summarize" || hasQuestion ? (body.mode === "summarize" ? "summarize" : "ask") : "summarize";
+  const question = hasQuestion ? (body.question as string).slice(0, 500) : "";
 
   if (mode === "ask" && !question.trim()) {
     return NextResponse.json({ error: "Pertanyaan kosong" }, { status: 400 });
@@ -171,6 +177,12 @@ export async function POST(req: NextRequest) {
   const safeClientCtx = Object.fromEntries(
     Object.entries(clientContext).filter(([k]) => CLIENT_ALLOWED.has(k) && k !== "ticker" || k === "ticker"),
   );
+
+  // G1 (juri Claude 30 Okt): client modal tanpa ticker → cari dari teks pertanyaan
+  if (!clientContext.ticker && question) {
+    const ranked = extractTickersRanked(question);
+    if (ranked.length > 0) clientContext.ticker = ranked[0];
+  }
 
   // Client modal hanya kirim {ticker,name} → lengkapi dari DB supaya AI tidak
   // mengarang angka (RCA bug "support/resistance semua 8000": prompt kosong).
@@ -195,7 +207,8 @@ export async function POST(req: NextRequest) {
 
 
   // G4 (riset Argon): ekstrak harga beli user ("nyangkut di 5.400" / "beli 5200") → floating P/L dihitung server
-  if (mode === "ask" && question && typeof context.close === "number" && context.close > 0) {
+  // G1c (juri 30 Okt): jalankan utk SEMUA mode — summarize dgn pertanyaan posisi juga butuh ini
+  if (question && typeof context.close === "number" && context.close > 0) {
     const m =
       question.match(/(?:nyangkut|beli|avg|average|harga beli)\s*(?:di|:|at)?\s*(?:rp\.?\s*)?([0-9][0-9.,]{2,9})/i) ??
       question.match(/([0-9][0-9.,]{2,9})\s*(?:nyangkut|gitu|an|perlembar)/i);
@@ -214,7 +227,8 @@ export async function POST(req: NextRequest) {
   }
 
   // COMPARE (riset Argon G1): ticker kedua di pertanyaan → inject ringkasan utk duel A vs B
-  if (mode === "ask" && question) {
+  // G1c (juri 30 Okt): compare juga jalan di summarize (bug id 51/48: "bandingin" buntu)
+  if (question) {
     const current = String(clientContext.ticker ?? "").replace(/\.JK$/i, "");
     const found = new Set<string>();
     for (const m of question.matchAll(/\b([A-Z]{4})\b/g)) {
@@ -248,6 +262,34 @@ export async function POST(req: NextRequest) {
           };
         }
       } catch { /* best-effort */ }
+    }
+  }
+
+  // ── G3 (juri Claude 30 Okt): lapisan "so what" dihitung SERVER, bukan dikarang model ──
+  {
+    const ctx = context as Record<string, unknown>;
+    const close = typeof ctx.close === "number" ? (ctx.close as number) : null;
+    // posisiUser enrichment: BEP gap + average-down 1:1
+    const pos = ctx.posisiUser as ({ hargaBeliRata?: number } & Record<string, unknown>) | undefined;
+    if (pos && typeof pos.hargaBeliRata === "number" && close && close > 0) {
+      const bep = pos.hargaBeliRata;
+      pos.bepGapPct = Math.round(((bep - close) / close) * 1000) / 10; // butuh naik % utk balik modal
+      pos.avgDown1to1 = Math.round(((bep + close) / 2) * 100) / 100;  // rata baru bila lot sama di harga skrg
+    }
+    // jarak ke support/resistance %
+    const s1 = typeof ctx.support1 === "number" ? (ctx.support1 as number) : null;
+    const r1 = typeof ctx.resistance1 === "number" ? (ctx.resistance1 as number) : null;
+    if (close && close > 0) {
+      if (s1 && s1 > 0) ctx.distToSupportPct = Math.round(((close - s1) / close) * 1000) / 10;
+      if (r1 && r1 > 0) ctx.distToResistPct = Math.round(((r1 - close) / close) * 1000) / 10;
+    }
+    // premiseCheck: user bilang turun/naik padahal data bilang sebaliknya → wajib diluruskan di kalimat pertama
+    if (question && typeof ctx.changePercent === "number") {
+      const chg = ctx.changePercent as number;
+      const bilangTurun = /\b(turun|anjlok|melemah|drop|turunya)\b/i.test(question);
+      const bilangNaik = /\b(naik|rally|menguat|naiknya)\b/i.test(question);
+      if (bilangTurun && chg > 0.05) ctx.premiseCheck = `PERHATIAN: user bilang turun, tapi data close hari ini ${chg > 0 ? "+" : ""}${chg}% — luruskan premis di kalimat PERTAMA sebelum analisis.`;
+      else if (bilangNaik && chg < -0.05) ctx.premiseCheck = `PERHATIAN: user bilang naik, tapi data close hari ini ${chg}% — luruskan premis di kalimat PERTAMA sebelum analisis.`;
     }
   }
 

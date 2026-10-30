@@ -120,6 +120,16 @@ export function AskAiFab() {
       });
       const data = await res.json();
       if (!res.ok || !data.ok) throw new Error(data.error || "Gagal menjawab");
+      // G2 hand-off: pertanyaan pasar ternyata per-saham → re-POST ke jalur saham dgn context server
+      if (data.handoff === "stock" && data.ticker && data.context) {
+        const r2 = await fetch("/api/ai/stock", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mode: "ask", ticker: `${data.ticker}.JK`, question: text, history }),
+        });
+        const d2 = await r2.json();
+        if (r2.ok && d2.ok) Object.assign(data, { text: d2.text });
+      }
       // ekstrak ticker dari jawaban utk tombol deep-link
       const links = [...new Set((data.text as string).match(ID_TICKER_RE) ?? [])]
         .filter((t) => t !== "IHSG" && isPlausibleTicker(t))

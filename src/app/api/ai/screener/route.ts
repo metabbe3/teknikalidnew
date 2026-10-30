@@ -1,3 +1,5 @@
+import { isPlausibleTicker, extractTickersRanked } from "@/lib/ai-ticker-guard";
+import { buildStockAiContext } from "../stock/context";
 import { aiRateLimited } from "@/lib/ai-rate-limit";
 import { buildPasarContext } from "@/lib/ai-pasar-context";
 import { prisma } from "@/lib/prisma";
@@ -218,6 +220,36 @@ export async function POST(req: NextRequest) {
   // salah menjatuhkan "kenapa IHSG turun?" ke daftar sinyal bullish.
   const intent = detectIntent(question);
   const needScreen = intent === "screener";
+
+  // ── G2 (juri Claude 30 Okt): pertanyaan menyebut SAHAM SPESIFIK → bukan job screener.
+  // Hand-off ke buildStockAiContext (satu pintu data saham — id 72 "nyangkut BBCA" pernah
+  // dijawab "nggak punya data teknikal" di jalur screener). Typo 4-huruf → tawarkan koreksi.
+  // Hand-off hanya untuk pertanyaan PER-SAHAM (intent bukan screener listing).
+  // Kasus "saham blue chip oversold": BLUE ticker valid (PT Blue Bird) + frasa "saham BLUE"
+  // lolos homonym guard — tapi intent-nya screener listing, bukan analisa BLUE → jangan hand-off.
+  const perStockIntent =
+    intent !== "screener" ||
+    /\b(nyangkut|beli|jual|hold|tahan|cut ?loss|averaging|analisa|analisis|tren|kenapa|gimana|bagaimana|dividen|support|resistance|layak|banding)\b/i.test(question);
+  if (!body.preset && perStockIntent) {
+    const ranked = extractTickersRanked(question);
+    const exact = ranked.find((t) => isPlausibleTicker(t, question));
+    if (exact) {
+      try {
+        const stockCtx = await buildStockAiContext(`${exact}.JK`);
+        if (Object.keys(stockCtx).length > 0) {
+          return NextResponse.json({ ok: true, handoff: "stock", ticker: exact, text: "", context: stockCtx, note: "Pertanyaan menyebut emiten spesifik — lanjutkan di jalur saham." });
+        }
+      } catch { /* fallthrough ke screener normal */ }
+    } else if (ranked.length > 0 && /\b(layak|beli|analisa|analisis|tren|kenapa|gimana|dividen|nyangkut)\b/i.test(question)) {
+      // kandidat tak lolos homonym-guard: tawarkan koreksi typo (jarak edit kecil di akhiran)
+      const near = ranked[0];
+      return NextResponse.json({
+        ok: true,
+        handoff: "suggest",
+        text: `Sepertinya maksud kamu saham **${near}** ya? Tulis ulang dengan kode itu (mis. "analisa ${near}") biar aku bisa kasih data lengkapnya. Kalau memang mau screening banyak saham sekaligus, tambahkan kata seperti "yang oversold" atau "golden cross".`,
+      });
+    }
+  }
 
   // Ambil hasil screener dari DB (reuse service /api/screener) — hanya bila intent screener
   let rows: Record<string, unknown>[] = [];
