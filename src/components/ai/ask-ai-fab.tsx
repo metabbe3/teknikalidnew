@@ -9,8 +9,9 @@
  * - Deteksi ticker 4-huruf di pertanyaan → auto redirect deep-link ke halaman saham
  *   (jawaban per-ticker terlengkap ada di /stocks/TICKER dgn chips kontekstual).
  * - Token warna teknikal.id semua; ikon lucide; state loading/empty/error lengkap.
- * - Z-index 30 (di bawah modal 50 & bottom-sheet FAB mobile 40) — tidak tabrakan TickerFab
- *   (bottom-24 mobile clearance).
+ * - Z-index 50 (owner 30 Okt: harus PALING ATAS — dulu z-30 kalah sama sticky nav z-40
+ *   "Chart/Indikator/Analisa/Asing/Trading Plan" & toast onboarding z-40 yang menutup FAB).
+ *   bottom-24 mobile clearance di atas TickerFab bottom bar.
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -101,7 +102,7 @@ export function AskAiFab() {
         data-authed={isAuthed ? "1" : "0"}
         aria-label={open ? "Tutup tanya AI" : "Tanya AI apa saja"}
         data-engagement="fab_ask_ai"
-        className={`fixed z-30 bottom-24 md:bottom-6 right-4 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent text-white shadow-lg hover:bg-accent/90 active:scale-95 transition
+        className={`fixed z-50 bottom-24 md:bottom-6 right-4 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent text-white shadow-lg hover:bg-accent/90 active:scale-95 transition
         h-14 px-4 md:h-11 md:px-5 text-sm font-semibold
         ${nudge && !open ? "animate-pulse ring-4 ring-accent/20" : ""}`}
       >
@@ -114,7 +115,7 @@ export function AskAiFab() {
         <div
           role="dialog"
           aria-label="Tanya AI"
-          className="fixed z-30 bottom-40 md:bottom-20 right-4 left-4 md:left-auto md:w-[420px] rounded-2xl border border-border bg-bg-card shadow-2xl flex flex-col max-h-[70vh]"
+          className="fixed z-50 bottom-40 md:bottom-20 right-4 left-4 md:left-auto md:w-[420px] rounded-2xl border border-border bg-bg-card shadow-2xl flex flex-col max-h-[70vh]"
         >
           <div className="flex items-center justify-between px-4 py-3 border-b border-border">
             <p className="text-sm font-bold text-text-primary flex items-center gap-2">
