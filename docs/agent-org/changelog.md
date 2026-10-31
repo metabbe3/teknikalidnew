@@ -949,3 +949,12 @@
 - **SEC-REVIEW**: (1) redirect target = slug dari DB article sendiri (bukan input user) — no open-redirect; (2) kondisi PUBLISHED — artikel non-published tetap 404, tidak bocor; (3) no input/db/money surface baru — N/A rate-limit.
 - **impact_check_due**: 2026-11-03 (GSC: crawl URL /akademi/ lama naik; CTR/impresi edu)
 - **deploy hash**: n/a BUILD-ONLY (in_train T-1031-N) | rollback: git revert b555462
+
+## 2026-10-31 17:4x WIB — CTO weekend sore slot (kereta T-1031-N DEPLOY)
+- **task-id**: T-1031-N (code-audit-tk-2 + feat-audit-tk-1 + feat-audit-tk-2 + qa-2026-10-30-03)
+- **type**: deploy kereta (4 penumpang BUILD-ONLY dari slot pagi/sore)
+- **deploy**: image 9251d9ae37c6 (main e44de27 = 5fa9586+94083fd+b555462), 17:37 WIB, deploy 1/2 hari ini
+- **verify per-fitur (6/6 PASS live)**: (a) h2 "Aliran Dana Asing" /stocks/BBCA.JK; (b) baris 1-lot "Rp498.000" SSR; (c) H1 beranda "Analisa Saham IDX Tanpa Nebak-Nebak"; (d) hero "Analisa Sekarang" href=/stocks langsung; (e) /berita/1-lot-saham-... 308→/akademi/ (redirect_url exact); (f) sitemap 43/43 edu-PUBLISHED ter-list (0 hilang; +23 tanya/*+glosarium by-design).
+- **insiden build**: 2x gagal — (1) OOM paralel app+worker (Docker VM 3.8GB, dua next build berlomba; fix=build app tunggal); (2) ECONNRESET npm transient (retry sukses). Root cause OOM = pola bug-2026-10-30-01.
+- **QA**: D+1 = QA reviewer 1 Nov 07:15 (qa-30-02 + spot 6 titik T-1031-N); impact_check_due = 2026-11-03
+- **impact_check_due**: 2026-11-03 ( skor /pasar + breadcrumb + 1-lot + H1 stabil pasca-EOD Senin)
