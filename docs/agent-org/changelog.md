@@ -931,3 +931,11 @@
 - **QA**: pasca-deploy T-1031-N: DOM seksi Asing halaman saham angka utuh + /admin/reports preview; QA reviewer D+1.
 - **impact_check_due**: 2026-11-03 (query count SSR stock page &lt; 10 DB Guard)
 - **deploy hash**: n/a BUILD-ONLY (in_train T-1031-N) | rollback: git revert 5fa9586
+
+## 2026-10-31 08:2x WIB — CTO weekend sore slot (feat-audit-tk-1 + feat-audit-tk-2 BUILD-ONLY)
+- **task-id**: feat-audit-tk-1 (P2 1-lot header harga) + feat-audit-tk-2 (P2 hero redirect chain + H1 beranda)
+- **type**: fitur FE kecil (pilar CUSTOMER-FIRST/GROWTH: modal 1 lot terlihat di atas fold tanpa scroll ke blok pemula; hero click hemat 1 redirect 308; H1 keyword)
+- **verify bukti**: commit 94083fd (push menyusul); tsc --noEmit EXIT-0; build EXIT-0 BUILD_ID Kqf-T6qCjMkzbtEjP9DdV; bundle grep: "1 Lot (100 lbr)" di server/app/stocks/[ticker]/page.js, "Analisa Saham IDX Tanpa Nebak-Nebak" di (public)/page.js, 0 sisa href /berita/saham-; staging :3100 (DATABASE_URL host 127.0.0.1:5433): H1 baru live, href hero /stocks/ALKA.JK+4 lain, LOT_LINE "Rp498.000" vs PRICE "Rp4.980" (x100 benar). Baseline chain: /berita/saham-kopi 308 -> /stocks/KOPI.JK.
+- **QA**: pasca-deploy T-1031-N: DOM homepage h1 + hero href + /stocks/BBCA.JK baris 1 lot.
+- **impact_check_due**: 2026-11-03
+- **deploy hash**: n/a BUILD-ONLY (in_train T-1031-N) | rollback: git revert 94083fd

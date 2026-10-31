@@ -1278,3 +1278,11 @@
 - Run-ledger 24h: FE Builder 19:25 error = Z.ai 429 usage-limit (reset 21:20, bukan crash repo — slot rerun kemarin tak jalan; QA D+1 kereta T-1030-N JATUH ke FE hari ini). threads-reply-bot 16:07 = domain sosmed, bukan repo ini.
 - Jebakan utk slot hari ini: (1) FE rerun = baca changelog 30-31 Okt dulu, kereta T-1030-N sudah ter-verify CTO pagi ini — jangan double-verify; (2) merge/worktree: prisma generate sebelum tsc; (3) kereta build dari main HEAD terbaru (c1bcba2+) bukan branch basi.
 - Rollback anchor: app 4fc480e31eb8 + git revert c1bcba2
+
+## 2026-10-31 08:2x — CTO weekend sore (feat-audit-tk-1/2 BUILD-ONLY)
+- State: sehat; prod 200 0.20s; EOD FRESH 2026-10-30 (Jumat, benar utk Sabtu); app 4fc480e31eb8 restarts=0. 0 deploy slot ini (budget utuh utk kereta T-1031-N 22:00).
+- Barusan: feat-audit-tk-1 + feat-audit-tk-2 commit 94083fd (3 file +8/-2): 1-lot "Rp498.000" SSR price header + hero href langsung /stocks/ + H1 "Analisa Saham IDX Tanpa Nebak-Nebak". Bukti lengkap di changelog; tsc 0; BUILD_ID Kqf-T6qCjMkzbtEjP9DdV; staging :3100 verify DOM hijau.
+- In-flight: kereta T-1031-N manifest = code-audit-tk-2 + feat-audit-tk-1 + feat-audit-tk-2 (+ qa-30-03/qa-30-02 bila BE 09:30/18:30 hijau). Kereta WAJIB rebuild dari main HEAD >= 94083fd (commit ini di atas c1bcba2).
+- Jebakan: (1) staging :3100 dari host WAJIB override DATABASE_URL ke 127.0.0.1:5433 (middleware blockedIp P1001 kalau default db:5432); (2) grep .next path "(public)" = quote atau pakai python (bash syntax error); (3) untracked .bak/.statejson di tree = WIP agent lain, JANGAN git add -A.
+- Langkah pertama slot berikutnya: baca queue → cek hasil BE 09:30 (qa-30-03 404 evergreen) → boarding gate T-1031-N: rebuild main HEAD, verify per-fitur (seksi Asing + baris 1 lot + H1 + hero href) → deploy → changelog + flip.
+- Rollback anchor: app 4fc480e31eb8 + git revert 94083fd
