@@ -1286,3 +1286,11 @@
 - Jebakan: (1) staging :3100 dari host WAJIB override DATABASE_URL ke 127.0.0.1:5433 (middleware blockedIp P1001 kalau default db:5432); (2) grep .next path "(public)" = quote atau pakai python (bash syntax error); (3) untracked .bak/.statejson di tree = WIP agent lain, JANGAN git add -A.
 - Langkah pertama slot berikutnya: baca queue → cek hasil BE 09:30 (qa-30-03 404 evergreen) → boarding gate T-1031-N: rebuild main HEAD, verify per-fitur (seksi Asing + baris 1 lot + H1 + hero href) → deploy → changelog + flip.
 - Rollback anchor: app 4fc480e31eb8 + git revert 94083fd
+
+## 2026-10-31 15:5x — CTO weekend sore (qa-30-03 diagnosa+fix → in_train T-1031-N)
+- State: sehat; home 200 TTFB 0.23s; EOD 30 Okt benar (Sabtu); 3 container teknikal healthy; 0 deploy slot ini (budget utuh utk kereta).
+- Barusan: qa-2026-10-30-03 TUNTAS diagnosa Opsi A — spec salah asumsi (/berita/<edu> 404 by-design sejak 21 Sep; 43/43 edu live 200 di /akademi/); BUG REAL: legacy /berita/<edu> hard-404 → 308 kanonik + 24/43 edu hilang dari sitemap (stale-filter) → isEvergreenIndexed exempt. Test RED 3/3 (f1f2367) → GREEN 3/3; tsc 0; build Ri9iNdoIcHHvk6N8GY8Qy; staging 308→200 + sitemap 43/43 verified. Commit b555462 push main; queue flip in_train.
+- In-flight: kereta T-1031-N 22:00 manifest = code-audit-tk-2 (5fa9586) + feat-audit-tk-1/2 (94083fd) + qa-30-03 (b555462) — build WAJIB dari main HEAD >= b555462; pasca-deploy verify: 308 /berita/1-lot→/akademi 200, sitemap prod 43 edu, seksi Asing, baris 1-lot, H1 beranda. qa-2026-10-30-02 (3 artikel angka) TETAP pending QA reviewer besok 07:15 — bukan CTO sore.
+- Jebakan: (1) tsx selftest = CJS — top-level await dilarang, bungkus main().then(); (2) docker exec dari execFile node = hang — pakai prisma langsung dgn DATABASE_URL 127.0.0.1:5433; (3) grep meta robots staging: berita page kini 308 utk edu — sweep QA wajib pakai kanonik /akademi/.
+- Langkah pertama slot berikutnya: baca queue → boarding gate T-1031-N (rebuild main HEAD b555462+, verify per-fitur 4 penumpang) → changelog + flip; kalau kereta sudah berangkat duluan: verify per-fitur pasca-deploy.
+- Rollback: n/a BUILD-ONLY (revert = git revert b555462)

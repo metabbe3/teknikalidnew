@@ -939,3 +939,13 @@
 - **QA**: pasca-deploy T-1031-N: DOM homepage h1 + hero href + /stocks/BBCA.JK baris 1 lot.
 - **impact_check_due**: 2026-11-03
 - **deploy hash**: n/a BUILD-ONLY (in_train T-1031-N) | rollback: git revert 94083fd
+
+## 2026-10-31 15:5x WIB — CTO weekend sore slot (qa-2026-10-30-03 BUILD-ONLY → T-1031-N)
+- **task-id**: qa-2026-10-30-03 (P1 TRUST+GROWTH — evergreen EDUCATIONAL 404)
+- **type**: bugfix route + SEO sitemap (pilar TRUST+GROWTH: URL legacy tak lagi hard-404; evergreen edu kembali crawlable)
+- **PRD**: n/a (type=ops/QA trust-debt, bukan fitur — gate SDLC tidak berlaku)
+- **verify bukti**: DIAGNOSA: /berita/<edu> 404 = BY-DESIGN (kanonik /akademi/ sejak qa-2026-09-21-03) — 43/43 edu live 200 + index,follow; spec QA reviewer salah URL. BUG REAL ditemukan: (1) URL legacy hard-404 → fix permanentRedirect 308; (2) 24/43 edu hilang dari sitemap oleh isStaleArticle(>60d) → helper isEvergreenIndexed exempt. BUKTI: selftest edu-canonical RED 3/3 (f1f2367 failing-first) → GREEN 3/3 pasca-fix; tsc --noEmit EXIT-0; build EXIT-0 BUILD_ID Ri9iNdoIcHHvk6N8GY8Qy; staging :3100: /berita/1-lot = 308 → /akademi/1-lot 200; sitemap staging /akademi/ 19→43 edu (slug lama kembali); bogus slug tetap 404. Commit fix b555462 push main.
+- **QA**: pasca-deploy T-1031-N 22:00: curl -A Mozilla -L https://teknikal.id/berita/1-lot-... → 200 final /akademi/; sitemap.xml prod /akademi/ = 43; QA reviewer D+1.
+- **SEC-REVIEW**: (1) redirect target = slug dari DB article sendiri (bukan input user) — no open-redirect; (2) kondisi PUBLISHED — artikel non-published tetap 404, tidak bocor; (3) no input/db/money surface baru — N/A rate-limit.
+- **impact_check_due**: 2026-11-03 (GSC: crawl URL /akademi/ lama naik; CTR/impresi edu)
+- **deploy hash**: n/a BUILD-ONLY (in_train T-1031-N) | rollback: git revert b555462
