@@ -1,9 +1,27 @@
 import { prisma } from "@/lib/prisma";
+import { buildPreviewsFromRows, type ReportLike } from "./report-preview.util";
 import { requireAdmin } from "@/lib/auth-guard";
 import Link from "next/link";
 import { ReportActions } from "./report-actions";
 
 export const revalidate = 60;
+
+// ── code-audit-tk-2: batch preview laporan (dulu findUnique post/comment
+// PER LAPORAN dalam Promise.all = N+1; kini 2 findMany utk semua laporan).
+// String preview satu pintu di report-preview.util (di-selftest parity).
+async function buildReportPreviews(reports: ReportLike[]): Promise<Map<string, string>> {
+  const [posts, comments] = await Promise.all([
+    prisma.post.findMany({
+      where: { id: { in: reports.filter((r) => r.targetType === "POST").map((r) => r.targetId) } },
+      select: { id: true, content: true, author: { select: { username: true } } },
+    }),
+    prisma.comment.findMany({
+      where: { id: { in: reports.filter((r) => r.targetType !== "POST").map((r) => r.targetId) } },
+      select: { id: true, content: true, author: { select: { username: true } } },
+    }),
+  ]);
+  return buildPreviewsFromRows(reports, posts, comments);
+}
 
 export default async function AdminReportsPage() {
   await requireAdmin();
@@ -18,39 +36,18 @@ export default async function AdminReportsPage() {
     },
   });
 
-  const reportItems = await Promise.all(
-    reports.map(async (report) => {
-      let targetPreview = "";
-
-      if (report.targetType === "POST") {
-        const post = await prisma.post.findUnique({
-          where: { id: report.targetId },
-          select: { content: true, author: { select: { username: true } } },
-        });
-        targetPreview = post
-          ? `Post oleh @${post.author.username}: "${post.content.slice(0, 80)}${post.content.length > 80 ? "..." : ""}"`
-          : "[Post dihapus]";
-      } else {
-        const comment = await prisma.comment.findUnique({
-          where: { id: report.targetId },
-          select: { content: true, author: { select: { username: true } } },
-        });
-        targetPreview = comment
-          ? `Komentar oleh @${comment.author.username}: "${comment.content.slice(0, 80)}${comment.content.length > 80 ? "..." : ""}"`
-          : "[Komentar dihapus]";
-      }
-
-      return {
-        id: report.id,
-        targetType: report.targetType,
-        targetId: report.targetId,
-        reason: report.reason,
-        createdAt: report.createdAt.toISOString(),
-        reporter: report.reporter,
-        targetPreview,
-      };
-    })
-  );
+  // code-audit-tk-2: N+1 post/comment findUnique per laporan -> batch findMany.
+  // Paritas preview per laporan dijaga helper reportPreview() (satu pintu).
+  const pendingPreviews = await buildReportPreviews(reports);
+  const reportItems = reports.map((report) => ({
+    id: report.id,
+    targetType: report.targetType,
+    targetId: report.targetId,
+    reason: report.reason,
+    createdAt: report.createdAt.toISOString(),
+    reporter: report.reporter,
+    targetPreview: pendingPreviews.get(report.id) ?? "",
+  }));
 
   const reasonLabels: Record<string, string> = {
     SPAM: "Spam",
@@ -89,40 +86,18 @@ export default async function AdminReportsPage() {
     });
   }
 
-  const historyItems = await Promise.all(
-    reviewedReports.map(async (report) => {
-      let targetPreview = "";
-
-      if (report.targetType === "POST") {
-        const post = await prisma.post.findUnique({
-          where: { id: report.targetId },
-          select: { content: true, author: { select: { username: true } } },
-        });
-        targetPreview = post
-          ? `Post oleh @${post.author.username}: "${post.content.slice(0, 80)}${post.content.length > 80 ? "..." : ""}"`
-          : "[Post dihapus]";
-      } else {
-        const comment = await prisma.comment.findUnique({
-          where: { id: report.targetId },
-          select: { content: true, author: { select: { username: true } } },
-        });
-        targetPreview = comment
-          ? `Komentar oleh @${comment.author.username}: "${comment.content.slice(0, 80)}${comment.content.length > 80 ? "..." : ""}"`
-          : "[Komentar dihapus]";
-      }
-
-      return {
-        id: report.id,
-        targetType: report.targetType,
-        reason: report.reason,
-        status: report.status,
-        createdAt: report.createdAt.toISOString(),
-        reporter: report.reporter,
-        targetPreview,
-        review: reviewByReportId.get(report.id) ?? null,
-      };
-    })
-  );
+  const historyPreviews = await buildReportPreviews(reviewedReports);
+  const historyItems = reviewedReports.map((report) => ({
+    id: report.id,
+    targetType: report.targetType,
+    targetId: report.targetId,
+    reason: report.reason,
+    status: report.status,
+    createdAt: report.createdAt.toISOString(),
+    reporter: report.reporter,
+    targetPreview: historyPreviews.get(report.id) ?? "",
+    review: reviewByReportId.get(report.id) ?? null,
+  }));
 
   const actionLabels: Record<string, string> = {
     delete: "Hapus Konten",

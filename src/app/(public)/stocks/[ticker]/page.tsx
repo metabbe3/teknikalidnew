@@ -57,6 +57,7 @@ import { DATA_SOURCE_LABEL } from "@/domains/article/article-freshness";
 import { ArticleContent } from "@/components/article/article-renderer";
 import { IDX_STOCKS } from "@/lib/idx-stocks";
 import { prisma } from "@/lib/prisma";
+import { buildForeignRows } from "@/domains/stock/foreign-flow.util";
 import { portfolioService } from "@/domains/portfolio/portfolio.service";
 import DailyAnalysisSection from "@/components/stock/daily-analysis-section";
 import { LoginGate } from "@/components/auth/login-gate";
@@ -284,6 +285,9 @@ export default async function StockDetailPage({
   ]);
 
   // Aliran dana asing 5 sesi terakhir (usp-2026-10-24-04) — graceful: kosong → section hidden.
+  // Aliran dana asing: SATU batch harga utk semua tanggal (code-audit-tk-2,
+  // dulu findUnique per baris = N+1). Paritas rumus di foreign-flow.util +
+  // selftest foreign-flow-parity. foreignLatest tetap baris pertama non-null.
   const foreignRows = detail
     ? await prisma.foreignFlow.findMany({
         where: { stockId: detail.stock.id },
@@ -291,17 +295,13 @@ export default async function StockDetailPage({
         take: 5,
       }).catch(() => [])
     : [];
-  const foreignWithPx = await Promise.all(
-    foreignRows.map(async (f) => {
-      const px = await prisma.stockPrice.findUnique({
-        where: { stockId_date: { stockId: f.stockId, date: f.date } },
-        select: { close: true },
-      }).catch(() => null);
-      const close = px?.close ? Number(px.close) : null;
-      const netShares = Number(f.foreignBuy) - Number(f.foreignSell);
-      return { date: f.date, netValue: close !== null ? netShares * close : null };
-    })
-  );
+  const foreignPxRows = foreignRows.length
+    ? await prisma.stockPrice.findMany({
+        where: { stockId: detail.stock.id, date: { in: foreignRows.map((f) => f.date) } },
+        select: { stockId: true, date: true, close: true },
+      }).catch(() => [])
+    : [];
+  const foreignWithPx = buildForeignRows(foreignRows, foreignPxRows);
   const foreignLatest = foreignWithPx.find((f) => f.netValue !== null) ?? null;
 
   const socialScore = (socialData._sum.likesCount ?? 0) * 0.5

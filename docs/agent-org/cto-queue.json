@@ -3479,14 +3479,13 @@
         "worked_at": "2026-10-30T23:5x WIB (night CTO)",
         "commits": [
           "efe4489 (test RED failing-first)",
-          "cd83a91 (fix)",
-          "53113bc+ac495ec (queue/handoff)"
+          "cd83a91 (fix)"
         ],
-        "verify": "tsc --noEmit exit 0; selftest foreign-flow-parity 15/15 PASS; probe data asli BBCA.JK 5 sesi PARITY IDENTIK query 6->2; lint 0 error; regression market-snapshot-engine/oversold + pasar-live-doctrine exit 0",
-        "done_when_status": "N+1 keduanya dihapus (foreignFlow 6->2 query; admin reports 1+2N->3). Scope note: total SSR stock page 12 kueri (10 paralel pre-existing main Promise.all) - konsolidasi = kandidat code-audit-tk-4",
-        "review_estimate": "15-20 mnt",
-        "merge_note": "Branch dari local main HEAD da94d6b (origin/main tertinggal 17 commit kerja sore - file sama tersentuh; base origin/main = konflik pasti). CTO pagi: push 17 commit sore ke origin dulu, lalu merge night/code-audit-tk-2.",
-        "pilar_kpi": "TRUST (data reliable) + STICKY (latency SSR stock page)"
+        "verify": "tsc --noEmit exit 0; selftest foreign-flow-parity 15/15 PASS (dari RED module-not-found); probe data asli BBCA.JK 5 sesi: PARITY_FF IDENTIK, query 6->2; probe admin reports preview fixture 5/5 + DB live 0 rows (tabel Report kosong - komunitas idle); lint 0 error; regression: market-snapshot-engine/oversold + pasar-live-doctrine selftest semua exit 0",
+        "done_when_status": "N+1 keduanya dihapus: foreignFlow 6->2 query (batch findMany date IN), admin reports 1+2N->3 (2 findMany post/comment + preview satu pintu). CATATAN scope: 'query count SSR <10' stock page total = 12 (10 kueri paralel pre-existing main Promise.all + 2 FF) - konsolidasi main Promise.all di luar scope task ini, kandidat follow-up code-audit-tk-4",
+        "review_estimate": "15-20 mnt: diff kecil (2 file utama + 2 util baru + selftest), parity contract jelas, tanpa perubahan perilaku",
+        "merge_note": "Branch dari local main HEAD da94d6b (bukan origin/main - 17 commit kerja sore 30 Okt belum push ke origin oleh slot sore, file yang sama tersentuh sweep UI/UX; base origin/main = konflik pasti). CTO pagi: review diff, merge night/code-audit-tk-2 ke main, push via pipeline pagi, deploy pagi.",
+        "pilar_kpi": "TRUST (data reliable: query efisien = latency SSR stabil di bawah load) + STICKY (stock page render cepat)"
       }
     },
     {
