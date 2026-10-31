@@ -923,3 +923,11 @@
 - **QA**: owner cek visual: /admin sidebar tanpa "Social Cards" + tab bar Dashboard tanpa Community/Predictions (7 tab); /admin/community + /admin/predictions via URL tetap jalan (by-design demote bukan remove).
 - **deploy hash**: 7dbe481 | image 4fc480e31eb8 | rollback: git revert 7dbe481 + re-up image anchor 4e58bd6ffb6a (T-1030-N)
 - **insiden minor**: build pertama timeout tool (420s) → app kena OOM "Killed" sekali (auto-restart sehat, image lama tak tersentuh); build ulang background sukses. Worker restarts=28 kumulatif 6 hari, stabil sejak 03:16, mem 164MB normal.
+
+## 2026-10-31 08:1x WIB — CTO pagi 07:30 (code-audit-tk-2 merge; dep-30-01 verified; T-1030-N recon)
+- **task-id**: code-audit-tk-2 (P2 N+1 foreignFlow + admin reports) + dep-2026-10-30-01 (analytics utm deploy-verify)
+- **type**: perf refactor backend (pilar TRUST — halaman saham tetap responsif saat beban naik; /admin analytics benar mengatribusi Threads)
+- **verify bukti**: merge 5fa9586 --no-ff (union queue 208 entries 0 dup; konflik bookkeeping saja, kode bersih; schema-shield PASS 0 DDL); push main; tsc --noEmit EXIT-0; selftest foreign-flow-parity 15/15 PASS; stockPrice.findUnique 0-hit stock page; build EXIT-0 BUILD_ID d-9D00eKocjcFYD0cHs5M. dep-30-01: cd15630 ancestor 7dbe481 (image live 4fc480e31eb8) + DB read-only 26h = 30 PageView utmSource=threads + marker utmSource/SOCIAL_PLATFORMS di chunks container.
+- **QA**: pasca-deploy T-1031-N: DOM seksi Asing halaman saham angka utuh + /admin/reports preview; QA reviewer D+1.
+- **impact_check_due**: 2026-11-03 (query count SSR stock page &lt; 10 DB Guard)
+- **deploy hash**: n/a BUILD-ONLY (in_train T-1031-N) | rollback: git revert 5fa9586

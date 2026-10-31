@@ -12,9 +12,10 @@
     {
       "id": "dep-2026-10-30-01",
       "title": "DEPLOY malam 30 Okt: analytics threads-utm fix (commit analytics categorizeTraffic)",
-      "status": "queued",
+      "status": "done",
       "spec": "Deploy commit 'analytics: utmSource menang atas referrer' ke production malam ini (window 22:00-01:30). Post-deploy verify: /admin analytics overview → klik Threads hari ini (10 view utmSource=threads dgn referrer facebook) harus tampil platform=Threads bukan Facebook; unit test 7 case categorizeTraffic sudah PASS lokal; tsc + next build hijau.",
-      "added": "2026-10-30T09:4x:00+07:00"
+      "added": "2026-10-30T09:4x:00+07:00",
+      "result": "VERIFIED live via image 4fc480e31eb8 (BO build 03:06 31 Okt membawa cd15630 — merge-base ancestor OK): DB read-only 26h = 30 PageView utmSource=threads tercatat; marker utmSource/SOCIAL_PLATFORMS di chunks container; /stocks /pasar 200. Tidak perlu deploy terpisah."
     },
     {
       "id": "bo-2026-10-29-01",
@@ -3470,10 +3471,10 @@
       "id": "code-audit-tk-2",
       "date": "2026-10-29",
       "priority": "P2",
-      "status": "night_ready",
+      "status": "in_train",
       "spec": "N+1 foreignFlow stocks/[ticker]:277-286 (stockPrice.findUnique per row padahal detail.prices sudah ada) + admin reports N+1 (post/comment findUnique per loop) ke batch findMany. Done-when: query count per request SSR < 10 di DB Guard.",
       "north_star": "reliable",
-      "scheduled_slot": "2026-10-31 09:30 slot pagi",
+      "scheduled_slot": "2026-10-31 07:30 slot pagi DONE: merged 5fa9586 + tsc 0 + selftest 15/15 + build d-9D00eK — kereta T-1031-N malam 22:00",
       "branch": "night/code-audit-tk-2",
       "night_result": {
         "worked_at": "2026-10-30T23:5x WIB (night CTO)",
@@ -3486,7 +3487,9 @@
         "review_estimate": "15-20 mnt: diff kecil (2 file utama + 2 util baru + selftest), parity contract jelas, tanpa perubahan perilaku",
         "merge_note": "Branch dari local main HEAD da94d6b (bukan origin/main - 17 commit kerja sore 30 Okt belum push ke origin oleh slot sore, file yang sama tersentuh sweep UI/UX; base origin/main = konflik pasti). CTO pagi: review diff, merge night/code-audit-tk-2 ke main, push via pipeline pagi, deploy pagi.",
         "pilar_kpi": "TRUST (data reliable: query efisien = latency SSR stabil di bawah load) + STICKY (stock page render cepat)"
-      }
+      },
+      "train": "T-1031-N",
+      "result": "MERGED 5fa9586 (push main): union bookkeeping; tsc --noEmit EXIT-0; selftest foreign-flow-parity 15/15 PASS; stockPrice.findUnique 0-hit di stock page (dulu N+1 ≤5 row); build EXIT-0 BUILD_ID d-9D00eKocjcFYD0cHs5M; schema-shield PASS (0 DDL)"
     },
     {
       "id": "code-audit-tk-3",
@@ -3597,7 +3600,8 @@
       "status": "pending",
       "title": "QA reviewer 30 Okt: fix 3 artikel (rank IHSG, EMA cross lintas-sesi, klaim volume MBSS) + doctrine generator",
       "north_star": "TRUST",
-      "spec": "INTENT: pasca-publish QA 07:00 menemukan angka tidak cocok dgn DB pada 3 artikel editorial. (1) brief-pasar-idx-2026-10-30-116-saham-oversold: klaim penurunan harian terbesar KEENAM dalam 12 bulan - aktual rank #12 (SQL rank -3,49%; 11 hari lebih buruk: 16 Okt -11,57 ... 20 Mei -3,54); breadth 102/653/72 vs snapshot kanon 104/653/74 (naik & stagnan meleset 2). (2) analis-sore-2026-10-29-mbss + analis-pagi-2026-10-30-mbss: klaim 8 sinyal/persilangan EMA cross baru - DB emaCrossDate=2026-10-29 bullish hanya 3; angka 8 = sesi 28 Okt (cross-day error, pola qa-30-01). (3) 2 artikel sama: MBSS volume +43,6% di atas rata-rata harian - tak rekonciliable dgn DB (vol 29 Okt 3,07jt vs avg20 7,09jt = -57%; 43,6% hanya cocok vs volume single-day 28 Okt 2,14jt = prev-day, bukan rata-rata). Plus minor: analis-pagi-30 klaim MBSS satu-satunya Strong Bullish di scan - DB ada 8 SB non-gorengan lain (YULE 0,68 dst) - relabel. ACCEPTANCE: (a) 3 artikel diperbaiki via SQL UPDATE (bukan regenerasi penuh), live 200 dan angka cocok dgn DB; (b) generator doctrine: klaim superlatif ranking wajib dari SQL ranking window sesi yang dibahas; count screener (EMA/GC/DC/oversold) wajib dari tanggal sesi artikel; klaim volume-vs-average wajib menyebut window & rekonciliable dari StockPrice; (c) tambah cek ke guard teknikalid_growth.py / factCheck utk pola ini; (d) selftest guard tetap hijau. KONTEKS: verifikasi SQL reviewer = SELECT rank() OVER (ORDER BY pct ASC) dari StockPrice ^JKSE 12 bulan; emaCrossDate bullish 29 Okt = 3 (28 Okt = 8)."
+      "spec": "INTENT: pasca-publish QA 07:00 menemukan angka tidak cocok dgn DB pada 3 artikel editorial. (1) brief-pasar-idx-2026-10-30-116-saham-oversold: klaim penurunan harian terbesar KEENAM dalam 12 bulan - aktual rank #12 (SQL rank -3,49%; 11 hari lebih buruk: 16 Okt -11,57 ... 20 Mei -3,54); breadth 102/653/72 vs snapshot kanon 104/653/74 (naik & stagnan meleset 2). (2) analis-sore-2026-10-29-mbss + analis-pagi-2026-10-30-mbss: klaim 8 sinyal/persilangan EMA cross baru - DB emaCrossDate=2026-10-29 bullish hanya 3; angka 8 = sesi 28 Okt (cross-day error, pola qa-30-01). (3) 2 artikel sama: MBSS volume +43,6% di atas rata-rata harian - tak rekonciliable dgn DB (vol 29 Okt 3,07jt vs avg20 7,09jt = -57%; 43,6% hanya cocok vs volume single-day 28 Okt 2,14jt = prev-day, bukan rata-rata). Plus minor: analis-pagi-30 klaim MBSS satu-satunya Strong Bullish di scan - DB ada 8 SB non-gorengan lain (YULE 0,68 dst) - relabel. ACCEPTANCE: (a) 3 artikel diperbaiki via SQL UPDATE (bukan regenerasi penuh), live 200 dan angka cocok dgn DB; (b) generator doctrine: klaim superlatif ranking wajib dari SQL ranking window sesi yang dibahas; count screener (EMA/GC/DC/oversold) wajib dari tanggal sesi artikel; klaim volume-vs-average wajib menyebut window & rekonciliable dari StockPrice; (c) tambah cek ke guard teknikalid_growth.py / factCheck utk pola ini; (d) selftest guard tetap hijau. KONTEKS: verifikasi SQL reviewer = SELECT rank() OVER (ORDER BY pct ASC) dari StockPrice ^JKSE 12 bulan; emaCrossDate bullish 29 Okt = 3 (28 Okt = 8).",
+      "scheduled_slot": "2026-11-01 07:15 QA reviewer pagi"
     },
     {
       "id": "qa-2026-10-30-03",
@@ -3606,7 +3610,8 @@
       "status": "pending",
       "title": "Evergreen 1-lot saham 404 live padahal PUBLISHED di DB",
       "north_star": "TRUST+GROWTH",
-      "spec": "INTENT: https://teknikal.id/berita/1-lot-saham-berapa-lembar-modal-fraksi-dan-biaya-transaksi = 404 live (retest 2x konsisten, UA Mozilla), padahal DB Article status=PUBLISHED isListed=true articleType=EDUCATIONAL (publishedAt 2026-10-29 10:41 WIB, updatedAt 05:03 UTC). Halaman berita lain 200 semua; buildManifest BUILD_ID wce4au6ENzHHe8O9G4SAx 200. User yang masuk dari sitemap/internal link kena 404 = trust runtuh. ACCEPTANCE: (a) halaman live 200 dan render konten; (b) root-cause kenapa artikel PUBLISHED tidak ter-render (ISR regen? static path kering karena generate saat build? route evergreen vs dinamis?); (c) pastikan semua artikel EDUCATIONAL lain live (cek seluruh slug EDUCATIONAL PUBLISHED); (d) guard: monitoring cron harian QA reviewer sudah curl seluruh artikel 24h - tambah cek slug EDUCATIONAL tua mingguan."
+      "spec": "INTENT: https://teknikal.id/berita/1-lot-saham-berapa-lembar-modal-fraksi-dan-biaya-transaksi = 404 live (retest 2x konsisten, UA Mozilla), padahal DB Article status=PUBLISHED isListed=true articleType=EDUCATIONAL (publishedAt 2026-10-29 10:41 WIB, updatedAt 05:03 UTC). Halaman berita lain 200 semua; buildManifest BUILD_ID wce4au6ENzHHe8O9G4SAx 200. User yang masuk dari sitemap/internal link kena 404 = trust runtuh. ACCEPTANCE: (a) halaman live 200 dan render konten; (b) root-cause kenapa artikel PUBLISHED tidak ter-render (ISR regen? static path kering karena generate saat build? route evergreen vs dinamis?); (c) pastikan semua artikel EDUCATIONAL lain live (cek seluruh slug EDUCATIONAL PUBLISHED); (d) guard: monitoring cron harian QA reviewer sudah curl seluruh artikel 24h - tambah cek slug EDUCATIONAL tua mingguan.",
+      "scheduled_slot": "2026-10-31 16:45 CTO sore — P1 TRUST 404 live (diagnosa dulu, weekend window)"
     },
     {
       "id": "bug-2026-10-30-01",
@@ -3617,7 +3622,8 @@
       "title": "BUG INFRA: teknikalidnew-app-1 OOM crash-loop 19:1x-19:2x WIB — 502 ke user saat window audit UX",
       "spec": "REPRO (3 baris): (1) docker events --filter container=teknikalidnew-app-1 30m menunjukkan oom-die-start berulang (RestartCount app=3, worker=8, start terakhir 12:20:25Z = 19:20 WIB); (2) browser real menangkap 2x 502 Bad Gateway: saat klik preset screener (?view=screener&tab=bottom-fishing&preset=rsi_oversold) dan saat full-load ?view=screener; (3) post-recovery docker stats 201MiB/2GiB (9,8%), host 65% free - OOM internal container, BUKAN host RAM. SEVERITY: P1 TRUST - user di window 19:15-19:25 WIB lihat 502/blank; bukan deploy (0 proses build/docker-cp berjalan saat itu). Note: curl ringan 200 stabil (CF cache menutupi); user interaktif kena. Dispatch by UX Builder 30 Okt 19:15 (aturan: nemu bug = dispatch, jangan fix sendiri - ini infra). Kaitan skill deploy-note: flap kelas RAM - cek tab Chrome :9222 menumpuk & heap node.",
       "status": "pending",
-      "source": "ux-builder flow-a audit 30 Okt 19:15 (observasi live saat insiden)"
+      "source": "ux-builder flow-a audit 30 Okt 19:15 (observasi live saat insiden)",
+      "scheduled_slot": "2026-10-31 18:30 BE malam — OOM forensik (app stabil kini restarts=0 up 4h)"
     },
     {
       "id": "bug-2026-10-30-02",
@@ -3628,7 +3634,8 @@
       "title": "BUG UX TRUST: error boundary Inggris \"Something went wrong\" di site bahasa Indonesia",
       "spec": "REPRO (3 baris): (1) saat app 502/OOM, /stocks?view=screener render error boundary \"Something went wrong\" + tombol \"Try again\" (Inggris); (2) nav mobile drawer terbuka permanen di halaman error (semua link nav y=60-281 visible tanpa scroll); (3) seluruh copy site berbahasa Indonesia. SEVERITY: P2 TRUST - saat halaman gagal justru momen paling rawan kepercayaan; error Inggris + tombol Inggris di site ID = terasa rusak. Fix hint FE kecil: terjemahkan error boundary ke ID (\"Ada yang error - coba muat ulang\" / tombol \"Coba Lagi\") + copy ramah (data aman, coba beberapa saat lagi). Dispatch by UX Builder 30 Okt.",
       "status": "pending",
-      "source": "ux-builder flow-a audit 30 Okt 19:15"
+      "source": "ux-builder flow-a audit 30 Okt 19:15",
+      "scheduled_slot": "2026-10-31 19:15 FE — error boundary bahasa Indonesia"
     }
   ]
 }
