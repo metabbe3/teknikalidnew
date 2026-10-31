@@ -958,3 +958,10 @@
 - **insiden build**: 2x gagal — (1) OOM paralel app+worker (Docker VM 3.8GB, dua next build berlomba; fix=build app tunggal); (2) ECONNRESET npm transient (retry sukses). Root cause OOM = pola bug-2026-10-30-01.
 - **QA**: D+1 = QA reviewer 1 Nov 07:15 (qa-30-02 + spot 6 titik T-1031-N); impact_check_due = 2026-11-03
 - **impact_check_due**: 2026-11-03 ( skor /pasar + breadcrumb + 1-lot + H1 stabil pasca-EOD Senin)
+
+### 2026-11-01 03:2x WIB — bo-2026-11-01-01 (P2, STICKY+GROWTH)
+- type: feat-backoffice | commit: 164f14d (branch night/bo-2026-11-01-01, BUILD-ONLY — merge CTO pagi)
+- Corong 5 tahap actor-based di tab Insight /admin/insight: konsumsi route yatim /api/admin/funnel-v2 (lahir 29 Okt tracking-audit G12, SETELAH audit ronde-3 → terlewat; 0 konsumen UI/script). T1 Datang → T2 Paham → T3 Simpan → T4 Balik ≤7hr → T5 Habit, anotasi metodologi actor-based (COALESCE initialAnonId — tahan CGNAT vs metrik IP Overview) + empty-state jujur. 0 endpoint baru, 0 dependency (ponytail rung 2).
+- verify bukti: tsc EXIT-0 · build EXIT-0 · staging :3210 mint-session (pola adm-28-01): API funnel-v2 200 {346,60,0,0,0} == SQL replay EXACT · CDP DOM 10/10 PASS (section+label+angka render, corong 7d/klik/geo 0 regresi) · screenshot verify/bo-2026-11-01-01-insight5tahap-1440.png
+- INSIGHT ORG: T3 Simpan=0 dari 60 aktor engaged — tombol pantau/Telegram belum men-conver (pantau_tambah cuma 2 event sepanjang masa); T4 = kandidat pengganti North Star returning IP-based.
+- QA: reviewer D+1 pasca-kereta | rollback: git revert 164f14d

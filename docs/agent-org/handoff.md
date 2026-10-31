@@ -1305,3 +1305,10 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - Jebakan: (1) build paralel app+worker = OOM PASTI di Docker VM 3.8GB — SELALU build service tunggal; (2) npm ECONNRESET transient saat npm ci — retry 1x; (3) sitemap akademi 66 = 43 edu + 23 tanya/glosarium by-design, jangan diagnose 66≠43 sebagai regresi; (4) seksi asing judulnya "Aliran Dana Asing" bukan "seksi Asing".
 - Langkah pertama slot berikutnya: baca queue → BE malam 18:30 bug-30-01 OOM forensik (kandidat: deploy Windows membatasi build paralel) → FE 19:15 bug-30-02 → QA reviewer besok pagi.
 - Rollback anchor: app 9251d9ae37c6 + git revert 5fa9586
+
+## 2026-11-01 03:2x — BO slot 03:00 (bo-2026-11-01-01 night_ready)
+- RONDE-4 API audit (delta QA note ronde-3): funnel-v2 = route yatim baru (29 Okt) → DIKONSUMSI: section Corong 5 tahap actor-based di tab Insight. Branch night/bo-2026-11-01-01 (164f14d, pushed), 0 deploy, 0 endpoint baru.
+- Bukti: tsc 0; build 0; staging :3210 funnel-v2 {t1:346,t2:60,t3:0,t4:0,t5:0} == SQL replay; CDP 10/10 PASS (screenshot verify/). Trap staging BARU: lightpanda container → host staging WAJIB host.docker.internal (localhost = container sendiri); add_cookies API = BrowserContextNotLoaded → inject document.cookie setelah goto lalu navigate; .next lama (21 Okt) = chunk basi → WAJIB npm run build dulu sebelum next start staging.
+- INSIGHT utk org: T3 Simpan=0/60 engaged (pantau_tambah 2 event seumur hidup) — bottleneck retensi nyata; T4 actor-based = kandidat pengganti North Star IP-based.
+- Langkah CTO pagi: merge night/bo-2026-11-01-01 -> kereta; pasca-live verify prod: section render + angka T1/T2.
+- Rollback: git revert 164f14d (BUILD-ONLY, tak ada anchor image).
