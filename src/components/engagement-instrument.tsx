@@ -141,6 +141,11 @@ function navClickLabel(target: EventTarget | null): string | null {
     return null;
   }
 
+  // prd-2026-10-31-01: <details data-nav-label> = interaksi in-page yang perlu
+  // terukur sebagai nav_click (bukan cta_click) — section riwayat kondisi.
+  const taggedNav = el.closest<HTMLElement>("[data-nav-label]");
+  if (taggedNav?.dataset.navLabel) return taggedNav.dataset.navLabel;
+
   // 2) Button yang navigate via JS — deteksi heuristik teks umum
   const b = el.closest("button");
   if (b) {

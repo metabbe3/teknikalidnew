@@ -40,6 +40,24 @@ function skip(name: string, why: string): void {
 async function main(): Promise<void> {
   const ROOT = join(__dirname, "../../");
 
+  // ENV dulu sebelum import service: prisma singleton membaca DATABASE_URL
+  // saat modul dimuat (pg.Pool konfigurasi di konstruktor) — rewrite host
+  // docker db:5432 -> 127.0.0.1:5433 (port mapping teknikalidnew-db-1).
+  function dbUrlHost(): string | undefined {
+    try {
+      const env = readFileSync(join(ROOT, ".env"), "utf8");
+      const m = env.match(/^DATABASE_URL=(.+)$/m);
+      if (!m) return undefined;
+      return m[1].trim().replace(/@db:5432\//, "@127.0.0.1:5433/");
+    } catch {
+      return undefined;
+    }
+  }
+  if (!process.env.DATABASE_URL || process.env.DATABASE_URL.includes("@db:")) {
+    const u = dbUrlHost();
+    if (u) process.env.DATABASE_URL = u;
+  }
+
   // ─── A. PURE: summarizeForwardStats ─────────────────────────────────────────
   // Import target (RED: modul belum ada saat commit test ini).
   const { summarizeForwardStats, getConditionBacktest, CONDITION_KEYS } = await import(
@@ -112,25 +130,10 @@ async function main(): Promise<void> {
   check("B10 empty-state eksplisit (AC5, bukan 0% palsu)", /belum ada|belum pernah/i.test(emptyHtml) || emptyHtml.length < 400, "");
 
   // ─── C. LIVE: DB read-only (fail-soft) ──────────────────────────────────────
-  function dbUrlHost(): string | undefined {
-    try {
-      const env = readFileSync(join(ROOT, ".env"), "utf8");
-      const m = env.match(/^DATABASE_URL=(.+)$/m);
-      if (!m) return undefined;
-      // docker hostname db:5432 -> host 127.0.0.1:5433 (port mapping teknikalidnew-db-1)
-      return m[1].trim().replace(/@db:5432\//, "@127.0.0.1:5433/");
-    } catch {
-      return undefined;
-    }
-  }
-
-  const url = process.env.DATABASE_URL?.includes("@db:") ? dbUrlHost() : process.env.DATABASE_URL || dbUrlHost();
+  const url = process.env.DATABASE_URL;
   if (!url) {
     skip("C", "DATABASE_URL tidak ditemukan");
   } else {
-    process.env.DATABASE_URL = url;
-    // prisma client dibuat saat modul di-import pertama kali — env sudah diset di atas? 
-    // getConditionBacktest meng-impor prisma via src/lib/prisma (lazy singleton per proses).
     let live = false;
     let pgMod: typeof import("pg") | null = null;
     try {

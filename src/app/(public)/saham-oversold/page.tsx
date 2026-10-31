@@ -5,6 +5,8 @@ import { AskAiCta } from "@/components/seo/ask-ai-cta";
 import { RegisterCta } from "@/components/signal/register-cta";
 import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
+import { ConditionHistory } from "@/components/signal/condition-history";
+import { getConditionBacktest } from "@/lib/condition-backtest.service";
 import { formatPrice, formatPercent, stripJk, changeColor, rsiColor } from "@/lib/utils";
 import { SITE_URL } from "@/lib/constants";
 import { AlertTriangle, Search, Target, TrendingUp } from "lucide-react";
@@ -41,6 +43,14 @@ export const metadata: Metadata = {
 
 export default async function SahamOversoldPage() {
   const { stocks, failed } = await fetchScreenerRows("rsi_oversold");
+  // prd-2026-10-31-01: riwayat & backtest kondisi — fail-diam (section tak
+  // muncul bila query error; halaman utama tetap render).
+  let conditionHistory: Awaited<ReturnType<typeof getConditionBacktest>> | null = null;
+  try {
+    conditionHistory = await getConditionBacktest("rsi_oversold");
+  } catch (e) {
+    console.error("[condition-history] gagal:", e instanceof Error ? e.message : e);
+  }
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -107,7 +117,9 @@ export default async function SahamOversoldPage() {
           dibawah 30. Ini berarti harga turun terlalu cepat dan berpotensi naik kembali (rebound).
         </div>
 
-                  <RegisterCta slug="saham-oversold" />
+                          <ConditionHistory result={conditionHistory} />
+
+        <RegisterCta slug="saham-oversold" />
 
         <div className="mt-6 space-y-4 text-sm leading-relaxed text-text-secondary">
           <p className="rounded-lg bg-bg-hover/60 px-3 py-2 text-[13px]" data-seo-dr="live-count">
