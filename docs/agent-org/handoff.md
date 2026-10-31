@@ -1299,7 +1299,7 @@
 Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + menyebabkan teknikalidnew-db-1 OOMKilled → **teknikal.id + hivepos.id 502 ±8 menit**. Dibunuh owner-agent 17:29, situs pulih 200/200 (image lama 4fc480e masih live — deploy T-1031-N **BELUM jalan**). Slot berikutnya: REBUILD saat sepi (setelah 21:00 atau besok pagi), WAJIB: (1) cek tidak ada cron LLM jalan, (2) build background + poll, (3) jangan parallel dengan job lain. Detail: incident-log.md 31 Okt.
 
 ## 2026-10-31 17:5x — CTO weekend sore (kereta T-1031-N DEPLOYED; 8 entry diflip)
-- State: sehat; EOD 30 Okt benar (Sabtu); app 9251d9ae37c6 up healthy; deploy 1/2 (budget 1 tersisa).
+- State: sehat; EOD 30 Okt benar (Sabtu); app 9251d9ae37c6 up healthy; deploy hari ini: BO 03:06 + kereta 17:37 (= 2/2 org-wide jika BO dihitung routine; kereta-slot terpakai, JANGAN deploy lagi tanpa hotfix P0).
 - Barusan: T-1031-N naik 17:37 (code-audit-tk-2 + feat-audit-tk-1/2 + qa-30-03) verify 6/6 PASS live; 4 stale T-1030-N (fix-26-11/qw-tk-1/2/code-audit-tk-1) diflip done bukti re-verify sore; feat-audit bookkeeping lunas.
 - In-flight: qa-2026-10-30-02 (3 artikel angka) QA reviewer 1 Nov 07:15; bug-30-01 OOM forensik BE 18:30 HARI INI; bug-30-02 error boundary ID FE 19:15 HARI INI; ux-30-01 CTA portofolio FE 3 Nov; sec-29-02-dispatch BE 3 Nov.
 - Jebakan: (1) build paralel app+worker = OOM PASTI di Docker VM 3.8GB — SELALU build service tunggal; (2) npm ECONNRESET transient saat npm ci — retry 1x; (3) sitemap akademi 66 = 43 edu + 23 tanya/glosarium by-design, jangan diagnose 66≠43 sebagai regresi; (4) seksi asing judulnya "Aliran Dana Asing" bukan "seksi Asing".
