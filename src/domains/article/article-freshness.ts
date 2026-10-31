@@ -35,5 +35,17 @@ export function isStaleArticle(
   return now.getTime() - article.updatedAt.getTime() > maxAge;
 }
 
+/**
+ * Types whose PUBLISHED pages are always `index, follow` (no staleness noindex
+ * anywhere in the app) — sitemap membership must match renderable+indexable
+ * state. EDUCATIONAL pages at /akademi are evergreen compounding GROWTH assets
+ * (preseden qa-2026-10-25-01) and never noindex, so dropping them from the
+ * sitemap via isStaleArticle made 24/43 unlisted while still indexable —
+ * inconsistent. qa-2026-10-30-03.
+ */
+export function isEvergreenIndexed(article: { articleType: ArticleType }): boolean {
+  return article.articleType === ArticleType.EDUCATIONAL;
+}
+
 /** Source attribution shown next to the freshness stamp. */
 export const DATA_SOURCE_LABEL = "Yahoo Finance";

@@ -4,7 +4,7 @@ import { GLOSSARY_TERMS } from "@/lib/glossary-terms";
 import { SECTORS } from "@/lib/sectors";
 import { IDX_INDICES } from "@/lib/idx-indices";
 import { ArticleType } from "@/generated/prisma/client";
-import { isStaleArticle } from "@/domains/article/article-freshness";
+import { isStaleArticle, isEvergreenIndexed } from "@/domains/article/article-freshness";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic"; // generated at runtime (build stage has no DB access)
@@ -171,7 +171,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const articlePages = articles
     .filter((a) => a.articleType !== ArticleType.DAILY_SNAPSHOT)
     .filter((a) => !a.slug.startsWith("analisa-teknikal-"))
-    .filter((a) => !isStaleArticle(a))
+    // qa-2026-10-30-03: EDUCATIONAL evergreen selalu indexable (/akademi tak pernah
+    // noindex) — jangan di-drop oleh stale-filter; sitemap wajib ⊇ halaman indexable.
+    .filter((a) => isEvergreenIndexed(a) || !isStaleArticle(a))
     .filter((a) => !unpromotedLandingIds.has(a.id))
     .map((a) => {
     const isEducational = a.articleType === ArticleType.EDUCATIONAL;

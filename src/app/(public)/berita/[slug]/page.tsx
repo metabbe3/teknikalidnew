@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { safeJsonLd } from "@/lib/safe-json-ld";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { SITE_URL, IDX40_TICKERS } from "@/lib/constants";
@@ -85,10 +85,13 @@ export default async function BeritaArticlePage({
     },
   });
 
-  // EDUCATIONAL articles are canonical at /akademi/<slug> — never renderable here
-  // (soft-duplicate with homepage-fallback meta). Explicit check so future edits to
-  // BERITA_TYPES can't silently re-expose them. qa-2026-09-21-03
-  if (article && article.articleType === ArticleType.EDUCATIONAL) notFound();
+  // EDUCATIONAL articles are canonical at /akademi/<slug>. Legacy /berita/<slug>
+  // URLs (indexed/shared pre-reorg qa-2026-09-21-03) get a 308 to the canonical
+  // page instead of a hard 404 — link equity + user trust preserved.
+  // qa-2026-10-30-03
+  if (article && article.status === "PUBLISHED" && article.articleType === ArticleType.EDUCATIONAL) {
+    permanentRedirect(`/akademi/${article.slug}`);
+  }
 
   if (!article || article.status !== "PUBLISHED" || !BERITA_TYPES.includes(article.articleType)) notFound();
 
