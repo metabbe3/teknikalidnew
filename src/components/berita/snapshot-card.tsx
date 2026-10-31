@@ -54,7 +54,7 @@ export function SnapshotCard({
 
   return (
     <Link
-      href={`/berita/${slug}`}
+      href={`/stocks/${ticker}`}
       className="group relative flex flex-col bg-bg-card rounded-xl p-4 border border-border/60 hover:border-accent/30 hover:depth-shadow-hover transition-all duration-200 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
       aria-label={`${stripJk(ticker)} ${name}${close !== null ? `, harga ${formatPrice(close)}` : ""}${chgPct ? `, ${chgPct}` : ""}`}
     >

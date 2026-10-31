@@ -462,7 +462,7 @@ export default async function HomePage() {
               </Link>
             )}
             <h1 className="mt-5 font-serif text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.03] text-text-primary">
-              TeknikalID
+              Analisa Saham IDX Tanpa Nebak-Nebak
             </h1>
             <p className="mt-3 text-xl sm:text-2xl font-semibold tracking-tight text-text-primary">
               Trading <span className="text-bullish">tanpa nebak-nebak.</span>

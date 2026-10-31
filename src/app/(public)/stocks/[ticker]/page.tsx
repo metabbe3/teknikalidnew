@@ -693,6 +693,12 @@ export default async function StockDetailPage({
                       )}
                     </p>
                   )}
+                  {/* feat-audit-tk-1 (31 Okt): nilai 1 lot di header harga — SSR murni,
+                      mengikuti harga live (close×100), tanpa JS. Blok seo-dr-1 di bawah
+                      tetap (jawaban konteks pemula). */}
+                  <p className="mt-1.5 text-xs text-text-tertiary tabular-nums">
+                    1 Lot (100 lbr) = <span className="font-semibold text-text-secondary">{formatPrice(close * 100)}</span>
+                  </p>
                   <div className="mt-3 flex flex-wrap items-center justify-end gap-2 opacity-90">
                     <span id="ai" className="block scroll-mt-24" />
                     <StockAiModalButton ticker={ticker} name={stock.name} changePercent={changePercent} isGorengan={indicators?.isGorengan ?? null} />
