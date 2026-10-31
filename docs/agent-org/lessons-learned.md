@@ -370,3 +370,10 @@ Ke-3 kalinya klaim kesegaran sinyal lolos generator Mandor: qa-2026-09-27-01 (hi
 - Rank-N superlatif: "penurunan terbesar KEENAM" butuh SQL rank() penuh — guard lama hanya tangkap #1/"terbesar" absolut. RULE: ordinal apa pun (ke-N) pada klaim historis = verifikasi rank() window sama.
 - Klaim "di atas rata-rata" TANPA window: +43,6% hanya cocok vs prev-day (single-day), vs avg-20-hari aktual -57%. RULE: kata "rata-rata/banding" wajib menyebut window & rekonciliable dari StockPrice.
 - Cross-day count (EMA 8 vs 3) = pola qa-30-01 BERULANG walau guard sudah ada 30 Okt pagi (artikel sore terbit SEBELUM guard) — bukti guard harus dipasang di generator, bukan hanya reviewer. Varian infra baru: artikel PUBLISHED di DB tapi 404 live (evergreen path) — QA reviewer kini curl SEMUA artikel 24h, tambahkan sweep mingguan slug EDUCATIONAL tua (qa-2026-10-30-03).
+
+## 2026-10-30 | cron-infra | Gate PRD Night Buffer salah konvensi sinyal | pakai wakeAgent stdout, bukan exit code
+
+- Insiden: job `PRD Night Buffer (dual-org)` (8a6bebe52a0a, no_agent=false) tiap malam buffer sehat melaporkan "Script exited with code 1" — LLM tetap dibangunkan untuk laporan kosong.
+- Akar: prd_buffer_gate.sh memakai konvensi no_agent lama ("exit 1 = skip"), padahal scheduler (#1232) membaca exit!=0 sebagai Script Error; sinyal skip resmi = baris stdout terakhir {"wakeAgent": false} + exit 0.
+- Fix 30 Okt (glm-5.3): gate ditulis ulang — selalu exit 0, sinyal via baris JSON terakhir; teruji 3 cabang (buffer ok → sleep, queue hilang → sleep, low → wake) + simulasi _parse_wake_gate. Backup: prd_buffer_gate.sh.bak-20261030-signalfix.
+- Pencegahan: script gate utk job no_agent=FALSE wajib: exit 0 selalu (pola qa_verifier_gate.py "bukan crash-reporter"), sinyal wake/sleep via {"wakeAgent": bool} di stdout terakhir.

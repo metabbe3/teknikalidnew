@@ -3611,7 +3611,7 @@
       "title": "Evergreen 1-lot saham 404 live padahal PUBLISHED di DB",
       "north_star": "TRUST+GROWTH",
       "spec": "INTENT: https://teknikal.id/berita/1-lot-saham-berapa-lembar-modal-fraksi-dan-biaya-transaksi = 404 live (retest 2x konsisten, UA Mozilla), padahal DB Article status=PUBLISHED isListed=true articleType=EDUCATIONAL (publishedAt 2026-10-29 10:41 WIB, updatedAt 05:03 UTC). Halaman berita lain 200 semua; buildManifest BUILD_ID wce4au6ENzHHe8O9G4SAx 200. User yang masuk dari sitemap/internal link kena 404 = trust runtuh. ACCEPTANCE: (a) halaman live 200 dan render konten; (b) root-cause kenapa artikel PUBLISHED tidak ter-render (ISR regen? static path kering karena generate saat build? route evergreen vs dinamis?); (c) pastikan semua artikel EDUCATIONAL lain live (cek seluruh slug EDUCATIONAL PUBLISHED); (d) guard: monitoring cron harian QA reviewer sudah curl seluruh artikel 24h - tambah cek slug EDUCATIONAL tua mingguan.",
-      "scheduled_slot": "2026-10-31 16:45 CTO sore — P1 TRUST 404 live (diagnosa dulu, weekend window)"
+      "scheduled_slot": "BE pagi 31 Okt 09:30 (prioritas utama CTO Lead — P1 TRUST 404 live 3 hari; QA verdict REPRO solid: DB PUBLISHED + isListed, live 404 retest 2x konsisten)"
     },
     {
       "id": "bug-2026-10-30-01",

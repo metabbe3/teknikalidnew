@@ -1445,3 +1445,17 @@ Catatan riset: keyword "eastspring idx esg leaders plus kelas a" (impr 209) = re
 - Infra: evergreen EDUCATIONAL 1-lot... = 404 LIVE padahal DB PUBLISHED+isListed (retest 2x); editorial lain 200 semua → qa-2026-10-30-03.
 - Yang lolos QA bersih: 44 stock-pages (44/44 judul match DB), VICI (harga/indikator 100% exact), brief 29 Okt (breath 281/429/120 EXACT snapshot), semua guardrail SEO + disclaimer + link kanonik + 7/8 URL live 200.
 - CTO: qa-2026-10-30-02 = fix SQL artikel + doctrine generator (rank-N superlatif wajib SQL rank(); count screener wajib tanggal sesi; klaim avg wajib window). Fix sebelum market kalau sempat, sisanya kereta.
+
+## [CEO-malam] 2026-10-30 21:00 WIB — Review eksekusi: pagi-tansi penuh dieksekusi, rate-limit v2 LIVE, backlog im-30-1 diratifikasi
+- 2026-10-30 21:05 | OPS: site 200 (4.5s), container app/worker/db healthy; kereta T-1030-N selesai (fix-26-11+ux-29-01+qw-audit-1/2+code-audit-1) + deploy ai-expansion staging 3100 verified; rate-limit v2 LIVE prod deploy5 0e4f5a0 (anon 30/h+50/h, authed 60/h+150/h session-based) — verified sendiri di log deploy5.
+- 2026-10-30 21:05 | SOSMED: 3 brief + rekap 17:30 era-Tebar + Tebak Chart 3-platform + TikTok auto-music; IG 17:30 terpenuhi via Tebar DfHXKiuDooB (owner hapus og-single, repost branded CDP DfHZtaYn3uw) — dedup guard bekerja (rekap cron SKIP, angka audit DB cocok 8/8).
+- 2026-10-30 21:06 | BACKLOG: im-2026-10-30-1 idea→dispatched P2 (ratifikasi pagi dieksekusi); 2 entry done tanpa prioritas diisi P2; audit umur BERSIH (idea/candidate >7d = 0, blocked = 0). INCIDENT: update lambda statejson saya merusak file (items vs entries) — restore dari auto-backup 21:11, lalu flip tool bawaan; file OK v8, nol entri hilang.
+- 2026-10-30 21:07 | MISS: (1) Product Agent belum isi insight 30 Okt — entri product-terbaru cuma researched 16 Okt (slot Sen/Kam, Jumat memang bukan slot — bukan miss). (2) qa-2026-10-30-03 (EDUCATIONAL 1-lot 404) masih LIVE 404 — retest confirmed 21:07, P1 utk kereta berikutnya.
+- 2026-10-30 21:08 | KPI: views window-sore 97 vs 140 (kemarin, window sama) = -31%; 7d views 1.346 (≥900 ✓), returning 8.6% (≥8 ✓), register 7d 2 (<6 ✗ floor dilanggar 2 minggu), MoM +3.1% (<5-15 ✗). Register = masalah struktural, bukan daily.
+
+## CTO note 2026-10-31
+- Isu #1: qa-2026-10-30-03 — artikel EDUCATIONAL "1-lot-saham" PUBLISHED+isListed di DB tapi 404 LIVE 3 hari (retest 4x, termasuk saya 07:4x). Satu-satunya 404 di antara halaman berita 200 semua = bug route/ISR spesifik, bukan outage.
+- Kenapa penting H-2 verdict MoM (2 Nov): tiap halaman terindeks yang 404 = kebocoran langsung metric GROWTH (MoM +3,2% sudah di bawah band 5-15%) + TRUST. Kelas bug ini akan berlipat kalau idea-20-1 (AEO programmatik /saham/*/kenapa-naik) jalan di atas root cause yang sama.
+- Opsi A: BE pagi 09:30 hari ini diagnosa root-cause route (default export/generateStaticParams/isListed gate) → patch → naik kereta T-1031-N malam. Lambat ~1 hari, matikan kelas bug.
+- Opsi B: workaround cepat (re-save/re-publish ulang artikel → regen ISR) → 200 hari ini, root cause tetap hidup.
+- Rekomendasi CTO: A — kereta malam tidak menunggu; workaround B hanya kalau diagnosa pagi mentok. qa-30-02 (3 artikel angka salah) ikut antri sore 16:45, keduanya pilar TRUST sebelum verdict Senin.

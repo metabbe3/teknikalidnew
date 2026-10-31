@@ -63,6 +63,7 @@ scripts/selftest/ai-gate-leak.selftest.ts
 scripts/selftest/article-guard-doctrine.selftest.ts
 scripts/selftest/article-sanitize.selftest.tsx
 scripts/selftest/market-snapshot-engine.selftest.ts
+scripts/selftest/market-snapshot-oversold.selftest.ts
 scripts/selftest/pasar-live-doctrine.selftest.ts
 scripts/smoke-ai.ts
 scripts/smoke-archive.ts
@@ -124,6 +125,12 @@ src/lib/access-limit.ts
 src/lib/activity-log.ts
 src/lib/admin-content-performance.service.ts
 src/lib/ai-client.ts
+src/lib/ai-followups.test.ts
+src/lib/ai-followups.ts
+src/lib/ai-pasar-context.ts
+src/lib/ai-rate-limit.ts
+src/lib/ai-ticker-guard.test.ts
+src/lib/ai-ticker-guard.ts
 src/lib/anon-id-safe.ts
 src/lib/api-error.ts
 src/lib/api-helpers.ts
@@ -151,6 +158,7 @@ src/lib/hsc-stocks.ts
 src/lib/idx-api.ts
 src/lib/idx-indices.ts
 src/lib/idx-stocks.ts
+src/lib/idx-tickers.ts
 src/lib/indicator-translations.ts
 src/lib/indicators.ts
 src/lib/indodax.ts
@@ -176,6 +184,7 @@ src/lib/safe-json-ld.ts
 src/lib/sectors.ts
 src/lib/serialize.ts
 src/lib/short-links.ts
+src/lib/signal-label-id.ts
 src/lib/socket.ts
 src/lib/telemetry.ts
 src/lib/tg-deeplink.ts
@@ -252,11 +261,11 @@ src/app/(public)/laporan-pasar/page.tsx:8:export const revalidate = 3600;
 src/app/(public)/market-structure/page.tsx:14:export const dynamic = "force-dynamic";
 src/app/(public)/market-structure/page.tsx:16:export const metadata → Metadata = {
 src/app/(public)/metodologi/page.tsx:15:export const metadata → Metadata = {
-src/app/(public)/page.tsx:55:export const metadata → Metadata = {
-src/app/(public)/page.tsx:63:export const dynamic = "force-dynamic";
+src/app/(public)/page.tsx:56:export const metadata → Metadata = {
+src/app/(public)/page.tsx:64:export const dynamic = "force-dynamic";
 src/app/(public)/paper-trading/layout.tsx:3:export const metadata → Metadata = {
-src/app/(public)/pasar/page.tsx:28:export const dynamic = "force-dynamic";
-src/app/(public)/pasar/page.tsx:30:export const metadata → Metadata = {
+src/app/(public)/pasar/page.tsx:36:export const dynamic = "force-dynamic";
+src/app/(public)/pasar/page.tsx:38:export const metadata → Metadata = {
 src/app/(public)/pasar/radar-section.tsx:30:export function RadarSection() {
 src/app/(public)/pasar/wib-clock.tsx:12:export function WibClock() {
 src/app/(public)/payment/error/route.ts:3:export async function GET(request → NextRequest) {
@@ -309,8 +318,8 @@ src/app/(public)/sektor/page.tsx:7:export const revalidate = 3600;
 src/app/(public)/sektor/page.tsx:9:export const metadata → Metadata = {
 src/app/(public)/stocks/[ticker]/indikator/page.tsx:13:export const revalidate = 3600; // ISR — past rows immutable, latest day refreshes hourly
 src/app/(public)/stocks/[ticker]/indikator/page.tsx:70:export async function generateMetadata({
-src/app/(public)/stocks/[ticker]/page.tsx:69:export const dynamic = "force-dynamic";
-src/app/(public)/stocks/[ticker]/page.tsx:85:export async function generateMetadata({
+src/app/(public)/stocks/[ticker]/page.tsx:70:export const dynamic = "force-dynamic";
+src/app/(public)/stocks/[ticker]/page.tsx:86:export async function generateMetadata({
 src/app/(public)/stocks/page.tsx:23:export const dynamic = "force-dynamic";
 src/app/(public)/stocks/page.tsx:25:export const metadata → Metadata = {
 src/app/(public)/terms/page.tsx:10:export const revalidate = 86400;
@@ -431,10 +440,12 @@ src/app/api/admin/users/route.ts:87:export async function PATCH(request → Next
 src/app/api/admin/users/route.ts:8:export const dynamic = "force-dynamic";
 src/app/api/admin/views-geo/route.ts:13:export async function GET(request → NextRequest) {
 src/app/api/admin/views-geo/route.ts:6:export const dynamic = "force-dynamic";
-src/app/api/ai/screener/route.ts:96:export async function POST(req → NextRequest) {
-src/app/api/ai/stock/context.ts:10:export async function buildStockAiContext(ticker → string): Promise<Record<string, unknown>> {
-src/app/api/ai/stock/route.ts:34:export interface StockAiContext {
-src/app/api/ai/stock/route.ts:61:export async function POST(req → NextRequest) {
+src/app/api/ai/eval/route.ts:72:export async function POST(req → Request) {
+src/app/api/ai/eval/route.ts:9:export const dynamic = "force-dynamic";
+src/app/api/ai/screener/route.ts:180:export async function POST(req → NextRequest) {
+src/app/api/ai/stock/context.ts:15:export async function buildStockAiContext(ticker → string): Promise<Record<string, unknown>> {
+src/app/api/ai/stock/route.ts:114:export interface StockAiContext {
+src/app/api/ai/stock/route.ts:141:export async function POST(req → NextRequest) {
 src/app/api/articles/route.ts:6:export const dynamic = "force-dynamic";
 src/app/api/articles/route.ts:8:export async function GET(request → NextRequest) {
 src/app/api/auth/register/route.ts:14:export async function POST(request → NextRequest) {
@@ -593,10 +604,8 @@ src/app/api/watchlist/route.ts:38:export async function POST(request → NextReq
 src/app/feed.xml/route.ts:17:export async function GET() {
 src/app/feed.xml/route.ts:5:export const dynamic = "force-dynamic";
 src/app/feed.xml/route.ts:6:export const revalidate = 300;
-src/app/layout.tsx:36:export const viewport → Viewport = {
-src/app/layout.tsx:42:export const metadata → Metadata = {
+src/app/layout.tsx:37:export const viewport → Viewport = {
+src/app/layout.tsx:43:export const metadata → Metadata = {
 src/app/llms.txt/route.ts:4:export const dynamic = "force-dynamic";
 src/app/llms.txt/route.ts:6:export async function GET() {
 src/app/sitemap-news.xml/route.ts:17:export async function GET() {
-src/app/sitemap-news.xml/route.ts:5:export const dynamic = "force-dynamic";
-src/app/sitemap-news.xml/route.ts:6:export const revalidate = 900;
