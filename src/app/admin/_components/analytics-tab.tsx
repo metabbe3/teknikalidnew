@@ -511,7 +511,7 @@ export function AnalyticsTab() {
             <CardContent className="pt-3">
               <div className="flex items-end gap-1 h-24">
                 {data.livePulse.map((b, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-1 group relative">
+                  <div key={i} className="flex-1 h-full flex flex-col justify-end items-center gap-1 group relative">
                     <div
                       className="w-full rounded-t bg-gradient-to-t from-emerald-500 to-emerald-300 transition-all group-hover:from-emerald-600"
                       style={{ height: `${Math.max((b.views / max) * 100, b.views > 0 ? 6 : 2)}%` }}
@@ -856,9 +856,10 @@ export function AnalyticsTab() {
           ) : (
             <div className="flex items-end gap-1.5 h-32">
               {daily.map((day) => {
-                const height = Math.max(4, (day.views / maxDaily) * 100);
+                // fix owner 1 Nov (bug kembar Traffic-by-Hour): kolom tanpa tinggi → bar % = 0px
+                const height = day.views > 0 ? Math.max(6, (day.views / maxDaily) * 100) : 2;
                 return (
-                  <div key={day.date} className="flex-1 flex flex-col items-center gap-1 group relative">
+                  <div key={day.date} className="flex-1 h-full flex flex-col justify-end items-center gap-1 group relative">
                     <div className="absolute -top-12 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white text-[10px] px-2 py-1 rounded-md whitespace-nowrap z-10 pointer-events-none">
                       {day.date}: {day.views} views · {day.uniqueVisitors} unique
                     </div>
