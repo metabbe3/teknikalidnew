@@ -172,7 +172,10 @@ function CompareContent() {
               ))}
             </div>
           ) : stocks.length > 0 && !error ? (
-            <GatedContent message="Daftar gratis untuk melihat tabel perbandingan lengkap indikator & fundamental">
+            <GatedContent
+              message="Daftar gratis untuk melihat tabel perbandingan lengkap indikator & fundamental"
+              context={tickers.length > 0 ? tickers.join(",") : undefined}
+            >
               <ComparisonTable stocks={stocks} />
             </GatedContent>
           ) : null}

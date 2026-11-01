@@ -47,6 +47,7 @@ export function AlertPreviewCard({ ticker, signalLabel, hasSignal }: AlertPrevie
         <div className="flex flex-col sm:flex-row sm:justify-end gap-2">
           <Link
             href="/auth/register"
+            data-engagement="cta_register_alert_card"
             className="sm:shrink-0 inline-flex items-center justify-center gap-1.5 rounded-full bg-text-primary px-4 py-2 text-xs font-semibold text-white hover:opacity-90 transition-opacity press-scale"
           >
             Daftar gratis — buka alert

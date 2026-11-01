@@ -30,3 +30,81 @@ export function step2Ready(password: string, confirmPassword: string): boolean {
   const { longEnough, matches } = passwordChecks(password, confirmPassword);
   return longEnough && matches;
 }
+
+/**
+ * Task 1 — Gate CTA register href builder:
+ * Mengarahkan user ke /auth/register dengan query param ?ctx=... jika context diberikan,
+ * atau href polos /auth/register jika tanpa context.
+ */
+export function getGateRegisterHref(context?: string | null): string {
+  if (!context || !context.trim()) {
+    return "/auth/register";
+  }
+  return `/auth/register?ctx=${encodeURIComponent(context.trim())}`;
+}
+
+export interface RegisterSubmitOptions {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  ctx?: string | null;
+  anonId?: string;
+  fetchFn?: typeof fetch;
+  trackFn?: (label: string) => void;
+}
+
+export interface RegisterSubmitResult {
+  ok: boolean;
+  error?: string;
+}
+
+/**
+ * Task 2 — Registrasi submit logic & telemetry jujur:
+ * Event register_success hanya terkirim SETELAH createUser sukses (res.ok / server response 201),
+ * BUKAN saat tombol submit diklik.
+ */
+export async function executeRegister({
+  email,
+  password,
+  confirmPassword,
+  ctx,
+  anonId,
+  fetchFn = fetch,
+  trackFn,
+}: RegisterSubmitOptions): Promise<RegisterSubmitResult> {
+  const effectiveAnonId =
+    anonId ??
+    (() => {
+      try {
+        return localStorage.getItem("eng_anon") ?? undefined;
+      } catch {
+        return undefined;
+      }
+    })();
+
+  const res = await fetchFn("/api/auth/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email,
+      password,
+      confirmPassword,
+      anonId: effectiveAnonId,
+    }),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    return { ok: false, error: data.error || "Gagal mendaftar. Coba lagi." };
+  }
+
+  // telemetry AC4-fix 1 Nov: success = post-server-ok, bukan click
+  if (trackFn) {
+    trackFn("register_success");
+    if (ctx && ctx.trim()) {
+      trackFn(`register_success_ctx:${ctx.trim()}`.slice(0, 64));
+    }
+  }
+
+  return { ok: true };
+}

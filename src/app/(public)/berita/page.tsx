@@ -289,7 +289,11 @@ export default async function BeritaPage({
                 <p className="text-sm font-semibold text-text-primary">Brief harian, gratis di inbox beranda Anda</p>
                 <p className="text-xs text-text-tertiary mt-0.5">Daftar — pantauan saham, trading plan, dan notifikasi sinyal.</p>
               </div>
-              <Link href="/auth/register" className="inline-flex items-center gap-1.5 text-sm font-bold text-white bg-accent hover:bg-accent/90 rounded-lg px-4 py-2.5 min-h-11 whitespace-nowrap">
+              <Link
+                href="/auth/register"
+                data-engagement="cta_register_berita_card"
+                className="inline-flex items-center gap-1.5 text-sm font-bold text-white bg-accent hover:bg-accent/90 rounded-lg px-4 py-2.5 min-h-11 whitespace-nowrap"
+              >
                 Daftar Gratis <ArrowUpRight className="h-4 w-4" aria-hidden />
               </Link>
             </div>

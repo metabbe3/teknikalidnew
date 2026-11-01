@@ -39,6 +39,7 @@ export function GuestOverlimitBanner({ ticker }: { ticker?: string }) {
         </div>
         <Link
           href="/auth/register"
+          data-engagement="cta_register_overlimit"
           className="inline-flex shrink-0 items-center justify-center rounded-lg bg-accent px-5 py-2.5 text-sm font-bold text-white hover:bg-accent/90 transition-colors press-scale"
         >
           Daftar Gratis

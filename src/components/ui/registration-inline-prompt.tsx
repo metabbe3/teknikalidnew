@@ -34,6 +34,7 @@ export function RegistrationInlinePrompt({
       </p>
       <Link
         href="/auth/register"
+        data-engagement="cta_register_inline_prompt"
         className="shrink-0 text-xs font-semibold text-accent hover:text-accent/80 transition-colors"
       >
         Daftar Gratis

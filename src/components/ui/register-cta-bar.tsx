@@ -19,6 +19,7 @@ export function RegisterCtaBar() {
       </div>
       <Link
         href="/auth/register"
+        data-engagement="cta_register_content_bar"
         className="inline-flex items-center gap-1.5 text-sm font-bold text-white bg-accent hover:bg-accent/90 rounded-lg px-4 py-2 whitespace-nowrap"
       >
         Daftar Gratis <ArrowUpRight className="h-4 w-4" aria-hidden />
