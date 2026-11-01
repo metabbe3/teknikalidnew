@@ -2,6 +2,7 @@ import { indicatorService } from "@/domains/stock/indicator.service";
 import { stockRepository } from "@/domains/stock/stock.repository";
 import { getAraArbLimits } from "@/domains/stock/idx-rules";
 import { prisma } from "@/lib/prisma";
+import { marketEngine } from "@/lib/market-engine";
 
 /**
  * Lengkapi context AI dari DB saat client hanya mengirim {ticker, name}
@@ -126,7 +127,7 @@ export async function buildStockAiContext(ticker: string): Promise<Record<string
     resistance1,
     resistance2,
     prevClose,
-    changePercent: prevClose > 0 ? ((close - prevClose) / prevClose) * 100 : 0,
+    changePercent: marketEngine.pctChange(close, prevClose) ?? 0,
     high: Number(last.high),
     low: Number(last.low),
     open: Number(last.open),

@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { communityAgentService } from "@/domains/community-agent/community-agent.service";
 import { communityService } from "@/domains/community/community.service";
 import { articleService } from "@/domains/article/article.service";
+import { marketEngine } from "@/lib/market-engine";
 
 interface Mover {
   ticker: string;
@@ -210,7 +211,6 @@ export class MarketIntelAgent extends BaseAgent {
         name: string;
         close: number;
         prev_close: number;
-        change_pct: number;
       }>>`
         WITH latest AS (
           SELECT sp."stockId", sp.close, sp.date,
@@ -220,36 +220,41 @@ export class MarketIntelAgent extends BaseAgent {
         ),
         cur AS (SELECT * FROM latest WHERE rn = 1),
         prev AS (SELECT * FROM latest WHERE rn = 2)
+        -- bo-2026-11-02-01: rumus change% TIDAK lagi dihitung di SQL (jalur
+        -- duplikat doctrine SATU PINTU) — close & prev mentah keluar, pct via
+        -- marketEngine.pctChange di TS. ORDER BY pakai ekspresi sama, hasil
+        -- identik (SQL ROUND 2dp hanya utk display, sorting tak berubah).
         SELECT s.ticker, s.name,
                ROUND(CAST(c.close AS numeric), 2) as close,
-               ROUND(CAST(p.close AS numeric), 2) as prev_close,
-               ROUND(CAST(((c.close - p.close) / p.close) * 100 AS numeric), 2) as change_pct
+               ROUND(CAST(p.close AS numeric), 2) as prev_close
         FROM cur c
         JOIN prev p ON c."stockId" = p."stockId"
         JOIN "Stock" s ON s.id = c."stockId"
         WHERE s."isActive" = true
-        ORDER BY change_pct DESC
+        ORDER BY (c.close / p.close) DESC
         LIMIT 30
       `;
 
+      const pct = (r: { close: number; prev_close: number }): number =>
+        marketEngine.pctChange(Number(r.close), Number(r.prev_close)) ?? 0;
       const gainers = rows
-        .filter((r) => r.change_pct > 0)
+        .filter((r) => pct(r) > 0)
         .slice(0, 5)
         .map((r) => ({
           ticker: r.ticker,
           name: r.name,
-          changePercent: Number(r.change_pct),
+          changePercent: pct(r),
           close: Number(r.close),
         }));
 
       const losers = rows
-        .filter((r) => r.change_pct < 0)
-        .sort((a, b) => Number(a.change_pct) - Number(b.change_pct))
+        .filter((r) => pct(r) < 0)
+        .sort((a, b) => pct(a) - pct(b))
         .slice(0, 5)
         .map((r) => ({
           ticker: r.ticker,
           name: r.name,
-          changePercent: Number(r.change_pct),
+          changePercent: pct(r),
           close: Number(r.close),
         }));
 

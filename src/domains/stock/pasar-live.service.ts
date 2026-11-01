@@ -3,6 +3,7 @@ import { INTERVAL } from "@/lib/constants";
 import { fetchQuote } from "@/lib/yahoo-finance";
 import { bigIntToNumber, decimalToNumber } from "@/lib/serialize";
 import { marketSnapshotService, type Mover } from "./market-snapshot.service";
+import { marketEngine } from "@/lib/market-engine";
 
 /**
  * pasar-live.service — deterministic data assembly for /pasar (Koran Saham Live)
@@ -140,7 +141,7 @@ async function getIhsg(): Promise<PasarIhsg> {
   if (close === null) return empty;
   const prevClose = prev ? decimalToNumber(prev.close) : null;
   const change = prevClose !== null ? close - prevClose : null;
-  const changePercent = prevClose !== null && prevClose !== 0 ? ((close - prevClose) / prevClose) * 100 : null;
+  const changePercent = prevClose !== null ? marketEngine.pctChange(close, prevClose) : null;
   return { close, prevClose, change, changePercent, date: latest.date.toISOString().slice(0, 10), source: "db" };
 }
 
@@ -188,7 +189,8 @@ export function pickWatchlistFromRows(rows: WatchlistRow[], freshSince: Date, ma
     // liquidity floor: nilai transaksi hari terakhir ≥ Rp1 miliar
     if (close * volume < 1_000_000_000) continue;
 
-    const changePercent = ((close - prevClose) / prevClose) * 100;
+    // bo-2026-11-02-01: engine SATU PINTU (filter sudah menjamin prevClose > 0; ?? 0 = safety net tak pernah terpicu)
+    const changePercent = marketEngine.pctChange(close, prevClose) ?? 0;
     const rsi = r.rsi14;
     let reason = "";
     if (r.smaCrossSignal === "golden_cross" && r.smaCrossDate && r.smaCrossDate >= freshSince) {

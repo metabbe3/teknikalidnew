@@ -5,6 +5,7 @@ import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { fetchQuote } from "@/lib/yahoo-finance";
 import { passesTitleGuard } from "./title-guard";
 import { articleRepository } from "./article.repository";
+import { marketEngine } from "@/lib/market-engine";
 
 // ── Types ──
 
@@ -113,8 +114,8 @@ export async function gatherMarketContext(tickers?: string[]): Promise<MarketCon
       if (latest) {
         const close = decimalToNumber(latest.close);
         const prevClose = prev ? decimalToNumber(prev.close) : null;
-        const changePct = close !== null && prevClose !== null && prevClose !== 0
-          ? ((close - prevClose) / prevClose) * 100
+        const changePct = close !== null && prevClose !== null
+          ? marketEngine.pctChange(close, prevClose)
           : null;
         ihsg = { level: close, changePercent: changePct };
         console.info(`[FactCheck] IHSG from DB fallback: ${close} (${changePct?.toFixed(2)}%)`);
@@ -152,8 +153,8 @@ export async function gatherMarketContext(tickers?: string[]): Promise<MarketCon
     const close = latest ? decimalToNumber(latest.close) : null;
     const prevClose = prev ? decimalToNumber(prev.close) : null;
     const changePercent =
-      close !== null && prevClose !== null && prevClose !== 0
-        ? ((close - prevClose) / prevClose) * 100
+      close !== null && prevClose !== null
+        ? marketEngine.pctChange(close, prevClose)
         : null;
 
     return {
@@ -181,8 +182,8 @@ export async function gatherMarketContext(tickers?: string[]): Promise<MarketCon
         const close = latest ? decimalToNumber(latest.close) : null;
         const prevClose = prev ? decimalToNumber(prev.close) : null;
         const changePercent =
-          close !== null && prevClose !== null && prevClose !== 0
-            ? ((close - prevClose) / prevClose) * 100
+          close !== null && prevClose !== null
+            ? marketEngine.pctChange(close, prevClose)
             : null;
 
         return {

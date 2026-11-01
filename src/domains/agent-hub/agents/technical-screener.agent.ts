@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { decimalToNumber, bigIntToNumber } from "@/lib/serialize";
 import { communityService } from "@/domains/community/community.service";
 import { communityAgentRepository } from "@/domains/community-agent/community-agent.repository";
+import { marketEngine } from "@/lib/market-engine";
 
 // ── Types ──────────────────────────────────────────────────
 
@@ -116,7 +117,8 @@ Gaya:
       if (!price?.close) continue;
       const close = decimalToNumber(price.close) ?? 0;
       const prevClose = prevPrice?.close ? (decimalToNumber(prevPrice.close) ?? close) : close;
-      const changePercent = prevClose !== 0 ? ((close - prevClose) / prevClose) * 100 : 0;
+      // bo-2026-11-02-01: engine SATU PINTU (parity: prevClose 0 -> null -> 0, sama seperti guard lama)
+      const changePercent = marketEngine.pctChange(close, prevClose) ?? 0;
       const volume = price.volume ? (bigIntToNumber(price.volume) ?? 0) : 0;
       const volInfo = volumeSums.get(stockId);
       const avgVolume = volInfo ? volInfo.total / volInfo.count : volume;

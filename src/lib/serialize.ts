@@ -1,5 +1,6 @@
 import type { Prisma } from "@/generated/prisma/client";
 import { toDateKey } from "@/lib/utils";
+import { marketEngine } from "./market-engine";
 
 type Decimal = Prisma.Decimal;
 
@@ -21,8 +22,8 @@ export function computeChange(
   const prevClose = prev ? decimalToNumber(prev.close) : null;
   const change = close !== null && prevClose !== null ? close - prevClose : null;
   const changePercent =
-    close !== null && prevClose !== null && prevClose !== 0
-      ? ((close - prevClose) / prevClose) * 100
+    close !== null && prevClose !== null
+      ? marketEngine.pctChange(close, prevClose)
       : null;
   return { close, prevClose, change, changePercent };
 }
