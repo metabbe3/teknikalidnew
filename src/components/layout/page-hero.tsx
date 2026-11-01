@@ -16,7 +16,7 @@ export function PageHero({
 }: {
   eyebrow?: string;
   title: string;
-  description?: string;
+  description?: React.ReactNode; // prd-2026-10-31-02: widen utk TermTip inline (string tetap valid)
   children?: React.ReactNode;
   className?: string;
 }) {

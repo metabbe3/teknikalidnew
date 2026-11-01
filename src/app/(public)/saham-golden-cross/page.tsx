@@ -6,6 +6,7 @@ import { RegisterCta } from "@/components/signal/register-cta";
 import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { ConditionHistory } from "@/components/signal/condition-history";
+import { TermTip } from "@/components/seo/term-tip";
 import { getConditionBacktest } from "@/lib/condition-backtest.service";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { SITE_URL } from "@/lib/constants";
@@ -93,7 +94,7 @@ export default async function SahamGoldenCrossPage() {
       <PageHero
         eyebrow="Saham IDX"
         title="Saham Golden Cross Hari Ini"
-        description="Saham dengan MA50 crossing diatas MA200 — sinyal bullish kuat untuk swing trading. Update setiap 5 menit."
+        description={<>Saham dengan <TermTip term="moving-average">MA50 crossing diatas MA200</TermTip> — sinyal bullish kuat untuk swing trading. Update setiap 5 menit.</>}
       />
       {/* seo-dr-3: kalimat pembuka dinamis utk SERP (jumlah saham hari ini) */}
       <div className="mx-auto max-w-5xl px-4 pt-6">
@@ -107,7 +108,7 @@ export default async function SahamGoldenCrossPage() {
       <div className="mx-auto max-w-5xl px-4 py-8">
 
         <div className="mt-4 rounded-lg border border-green-200 bg-green-50 p-4 text-sm dark:border-green-900 dark:bg-green-950">
-          <strong> Mengapa golden cross penting?</strong> Golden cross adalah salah satu sinyal bullish paling
+          <strong> Mengapa <TermTip term="golden-cross">golden cross</TermTip> penting?</strong> Golden cross adalah salah satu sinyal bullish paling
           diandalkan. Statistik menunjukkan saham setelah golden cross cenderung naik dalam 2-4 minggu berikutnya.
         </div>
 

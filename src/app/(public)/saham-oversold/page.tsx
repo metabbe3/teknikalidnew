@@ -6,6 +6,7 @@ import { RegisterCta } from "@/components/signal/register-cta";
 import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { ConditionHistory } from "@/components/signal/condition-history";
+import { TermTip } from "@/components/seo/term-tip";
 import { getConditionBacktest } from "@/lib/condition-backtest.service";
 import { formatPrice, formatPercent, stripJk, changeColor, rsiColor } from "@/lib/utils";
 import { formatDecimalId } from "@/lib/format-number";
@@ -114,7 +115,7 @@ export default async function SahamOversoldPage() {
       <div className="mx-auto max-w-5xl px-4 py-8">
 
         <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm dark:border-blue-900 dark:bg-blue-950">
-          <strong> Apa itu saham oversold?</strong> Saham dikatakan oversold ketika RSI (Relative Strength Index)
+          <strong> Apa itu saham <TermTip term="oversold">oversold</TermTip>?</strong> Saham dikatakan oversold ketika <TermTip term="rsi">RSI (Relative Strength Index)</TermTip>
           dibawah 30. Ini berarti harga turun terlalu cepat dan berpotensi naik kembali (rebound).
         </div>
 
