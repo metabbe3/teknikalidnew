@@ -27,14 +27,14 @@ export const metadata: Metadata = {
   description: "Komunitas trader Indonesia untuk diskusi analisa teknikal saham BEI. Bagikan prediksi harga, chart, dan strategi trading bersama ribuan trader.",
   alternates: { canonical: "/community" },
   openGraph: {
-    title: "Komunitas Saham BEI — TeknikalID",
+    title: "Komunitas Saham BEI — Diskusi Analisa Teknikal",
     description: "Komunitas trader Indonesia untuk diskusi analisa teknikal saham BEI.",
     url: `${SITE_URL}/community`,
     images: [{ url: `${SITE_URL}/api/og?title=Komunitas+Saham+BEI&type=berita`, width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Komunitas Saham BEI — TeknikalID",
+    title: "Komunitas Saham BEI — Diskusi Analisa Teknikal",
     description: "Komunitas trader Indonesia untuk diskusi analisa teknikal saham BEI.",
   },
 };

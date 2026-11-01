@@ -12,12 +12,12 @@ export const revalidate = 0;
 export const metadata: Metadata = {
   // seo-dr-5 (deep-research 641c019): kueri "saham modal 100 ribu utk pemula" 9-18rb/bln —
   // kompetitor = artikel blog statis harga tahun lalu; kita live + filter risiko (gocap/FCA/gorengan).
-  title: "Daftar Saham Modal Rp100 Ribu Hari Ini — 1 Lot Terjangkau di BEI | TeknikalID",
+  title: "Daftar Saham Modal Rp100 Ribu Hari Ini — 1 Lot Terjangkau di BEI",
   description:
     "Saham dengan modal 1 lot di bawah Rp100.000 di BEI hari ini — sudah disaring dari saham gocap, papan pemantauan khusus, dan saham tidur. Lengkap harga, likuiditas, dan skor sinyal. Gratis.",
   alternates: { canonical: "/saham-modal-100-ribu" },
   openGraph: {
-    title: "Saham Modal Rp100 Ribu untuk Pemula — 1 Lot ≤ Rp100.000 | TeknikalID",
+    title: "Saham Modal Rp100 Ribu untuk Pemula — 1 Lot ≤ Rp100.000",
     description: "Daftar saham BEI terjangkau 1 lot Rp100 ribu, tersaring risiko — update harian.",
     url: `${SITE_URL}/saham-modal-100-ribu`,
   },

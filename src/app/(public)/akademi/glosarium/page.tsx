@@ -7,7 +7,7 @@ import { GlossarySearch } from "./glossary-search";
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: "Glosarium Istilah Saham — TeknikalID",
+  title: "Glosarium Istilah Saham",
   description:
     "Kamus lengkap istilah-istilah saham dan analisis teknikal. Pelajari arti RSI, MACD, Support, Resistance, dan istilah trading lainnya.",
   alternates: { canonical: "/akademi/glosarium" },

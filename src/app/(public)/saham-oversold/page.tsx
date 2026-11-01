@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     "saham diskon bursa efek",
   ],
   openGraph: {
-    title: "Saham Oversold Hari Ini — RSI < 30 | TeknikalID",
+    title: "Saham Oversold Hari Ini — RSI < 30",
     description:
       "Daftar saham IDX oversold (RSI < 30) yang berpotensi rebound. Temukan peluang beli saham murah.",
     url: `${SITE_URL}/saham-oversold`,

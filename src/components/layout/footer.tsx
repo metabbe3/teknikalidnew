@@ -1,19 +1,26 @@
 import Link from "next/link";
 
-const footerLinks = [
+const navLinks = [
   { href: "/", label: "Beranda" },
-  { href: "/stocks", label: "Saham" },
-  { href: "/stocks?view=screener", label: "Screener" },
-  { href: "/berita", label: "Berita" },
+  { href: "/stocks", label: "Saham IDX" },
+  { href: "/stocks?view=screener", label: "Screener Saham" },
+  { href: "/berita", label: "Berita & Analisis" },
   { href: "/akademi", label: "Akademi" },
-  // Demoted from nav 2026-09-07 (27 views all-time) — still reachable here.
   { href: "/community", label: "Komunitas" },
   { href: "/compare", label: "Bandingkan Saham" },
   { href: "/paper-trading", label: "Latihan Trading" },
+  { href: "/track-record", label: "Track Record" },
+];
+
+const marketToolLinks = [
+  { href: "/kalender-dividen", label: "Kalender Dividen" },
+  { href: "/aliran-dana-asing", label: "Aliran Dana Asing" },
+  { href: "/indeks/lq45", label: "Indeks LQ45 & JII" },
+  { href: "/bottom-fishing", label: "Radar Saham Diskon" },
+  { href: "/swing", label: "Setup Swing Hari Ini" },
+  { href: "/sektor", label: "Sektor Saham BEI" },
   { href: "/laporan-pasar", label: "Laporan Pasar Mingguan" },
   { href: "/pasar", label: "Koran Pasar Live" },
-  { href: "/track-record", label: "Track Record" },
-  { href: "/swing", label: "Setup Swing Hari Ini" },
 ];
 
 const legalLinks = [
@@ -28,7 +35,7 @@ export function Footer() {
   return (
     <footer className="border-t border-border bg-bg-card">
       <div className="max-w-7xl mx-auto px-4 py-10">
-        <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_auto] gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
@@ -84,7 +91,19 @@ export function Footer() {
           <div className="space-y-2.5">
             <p className="text-xs font-semibold text-text-primary uppercase tracking-wider">Navigasi</p>
             <div className="flex flex-col gap-1.5">
-              {footerLinks.map((link) => (
+              {navLinks.map((link) => (
+                <Link key={link.href} href={link.href} className="text-xs text-text-secondary hover:text-text-primary transition-colors">
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Data & Pasar Tools (P0 SEO Internal Linking) */}
+          <div className="space-y-2.5">
+            <p className="text-xs font-semibold text-text-primary uppercase tracking-wider">Data Pasar &amp; Tools</p>
+            <div className="flex flex-col gap-1.5">
+              {marketToolLinks.map((link) => (
                 <Link key={link.href} href={link.href} className="text-xs text-text-secondary hover:text-text-primary transition-colors">
                   {link.label}
                 </Link>

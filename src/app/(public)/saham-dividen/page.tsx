@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     "saham bagi hasil",
   ],
   openGraph: {
-    title: "Daftar Saham Dividen Tinggi Indonesia | TeknikalID",
+    title: "Daftar Saham Dividen Tinggi Indonesia",
     description: "198+ saham dividen tinggi dengan yield live dari data pasar terbaru.",
     url: `${SITE_URL}/saham-dividen`,
     images: [{ url: `${SITE_URL}/api/og?title=Saham+Dividen+Tinggi+Indonesia&type=berita`, width: 1200, height: 630 }],

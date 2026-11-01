@@ -129,4 +129,11 @@ export const SECTORS: Sector[] = [
       "Sektor konsumer BEI terdiri dari perusahaan consumer goods, rokok, dan makanan-minuman besar Indonesia. Saham konsumer seperti ICBP, INDF, dan GGRM relatif defensif di tengah ketidakpastian pasar. Cek analisis teknikal lengkap saham konsumer termasuk sinyal buy-sell di TeknikalID.",
     stocks: ["ICBP", "INDF", "GGRM", "UNVR"],
   },
+  {
+    slug: "kesehatan",
+    name: "Kesehatan",
+    description:
+      "Sektor kesehatan di BEI meliputi industri farmasi, rumah sakit, dan alat kesehatan seperti KLBF, MIKA, HEAL, dan SILO. Pantau analisis teknikal saham kesehatan untuk mengidentifikasi momentum harga dan level support-resistance kunci.",
+    stocks: ["KLBF", "MIKA", "HEAL", "SILO"],
+  },
 ];

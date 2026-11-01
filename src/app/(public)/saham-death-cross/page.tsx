@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     "saham downtrend",
   ],
   openGraph: {
-    title: "Saham Death Cross Hari Ini — Sinyal Bearish | TeknikalID",
+    title: "Saham Death Cross Hari Ini — Sinyal Bearish",
     description: "Daftar saham IDX death cross (MA50 < MA200). Sinyal bearish — waspadai momentum turun.",
     url: `${SITE_URL}/saham-death-cross`,
     images: [{ url: `${SITE_URL}/api/og?title=Saham+Death+Cross+Hari+Ini&type=berita`, width: 1200, height: 630 }],

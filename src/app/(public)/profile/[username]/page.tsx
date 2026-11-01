@@ -27,7 +27,7 @@ export async function generateMetadata({
   });
   if (!user) return {};
 
-  const title = `${user.name} (@${username}) — TeknikalID`;
+  const title = `${user.name} (@${username})`;
   const description = user.bio?.slice(0, 160) ?? `Profil ${user.name} di TeknikalID — komunitas analisa teknikal saham BEI.`;
 
   return {

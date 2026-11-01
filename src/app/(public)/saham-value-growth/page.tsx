@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     "growth stock idx",
   ],
   openGraph: {
-    title: "Daftar Saham Value Growth Indonesia | TeknikalID",
+    title: "Daftar Saham Value Growth Indonesia",
     description: "Saham dengan valuasi wajar dan pertumbuhan laba — update otomatis dari data pasar.",
     url: `${SITE_URL}/saham-value-growth`,
     images: [{ url: `${SITE_URL}/api/og?title=Saham+Value+Growth+Indonesia&type=berita`, width: 1200, height: 630 }],

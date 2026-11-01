@@ -13,13 +13,13 @@ export const revalidate = 0;
 export const metadata: Metadata = {
   // seo-dr-4 (deep-research 641c019): kueri "jadwal dividen saham 2026" / "cum date dividen" 12-22rb/bln,
   // kompetitor = berita harian yang basi 3 hari — halaman evergreen ini selalu segar dari DB.
-  title: "Kalender Dividen Saham BEI 2026 Terbaru — Jadwal Cum Date & Yield | TeknikalID",
+  title: "Kalender Dividen BEI 2026 — Cum Date & Yield",
   description:
-    "Jadwal pembagian dividen saham BEI terbaru: tanggal cum date, ex date, pembayaran, nominal per lembar, dan estimasi yield. Cek apakah tren harga aman sebelum beli — gratis tanpa login.",
+    "Jadwal pembagian dividen saham BEI terbaru: cum date, ex date, tanggal pembayaran, nominal, dan estimasi yield — cek sebelum beli.",
   alternates: { canonical: "/kalender-dividen" },
   openGraph: {
-    title: "Kalender Dividen Saham BEI Terbaru — Jadwal Cum Date & Yield | TeknikalID",
-    description: "Jadwal cum date & ex date dividen seluruh emiten BEI, update otomatis tiap hari bursa.",
+    title: "Kalender Dividen BEI 2026 — Cum Date & Yield",
+    description: "Jadwal pembagian dividen saham BEI terbaru: cum date, ex date, tanggal pembayaran, nominal, dan estimasi yield — cek sebelum beli.",
     url: `${SITE_URL}/kalender-dividen`,
   },
 };

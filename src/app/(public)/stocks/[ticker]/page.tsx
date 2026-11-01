@@ -107,31 +107,26 @@ export async function generateMetadata({
   const canonicalPath = `/stocks/${canonicalTicker}`;
   const ogImage = `${SITE_URL}/api/og/stock?ticker=${encodeURIComponent(canonicalTicker)}`;
 
-  // SEO-optimized title — shortName ≤ 35 chars (suffix stripped, word-boundary cut; root template adds "| TeknikalID" = ~13 chars → total < 60)
-  // Price lives in meta description, not title (title stays stable for SERP consistency)
-  // GSC intent (CTR 0.8%, pos 67): query user = "harga saham X hari ini" → keyword WAJIB di title.
+  // SEO-optimized title — shortName ≤ 30 chars (suffix stripped, word-boundary cut; root template adds "| TeknikalID" = ~13 chars → total < 60)
   const shortName = normalizeTickerTitle(fullName, name);
-  // product-audit-2026-10-29 QW3: hilangkan spasi ganjil "( BBCA )" → "(BBCA)"
-  // seo-dr-1 (deep-research 641c019): keluar dari medan "harga saham" (Google OneBox+DR75+)
-  // → tembak "analisa teknikal + sinyal" yang kosong lawannya di ~535 saham non-LQ45.
-  const title = `Saham ${name} (${shortName}) Hari Ini: Harga, Analisa Teknikal & Sinyal`;
+  const title = `Harga Saham ${name} Hari Ini ${price ? `${price} ` : ""}— Analisa & Sinyal`;
   const description = price
-    ? `Harga saham ${name} (${fullName}) hari ini ${price}${changeStr}. Analisa teknikal & skor sinyal (−1 s.d. +1), RSI, MACD, support-resistance, modal 1 lot, dan aliran dana asing — gratis tanpa login.`
-    : `Analisa teknikal saham ${fullName} (${name}): skor sinyal (−1 s.d. +1), RSI, MACD, support-resistance, modal 1 lot, dan aliran dana asing — gratis tanpa login.`;
+    ? `Harga saham ${shortName} (${fullName}) hari ini ${price}${changeStr}. Analisa teknikal & skor sinyal (−1 s.d. +1), RSI, MACD, support-resistance, modal 1 lot, dan aliran dana asing — gratis tanpa login.`
+    : `Analisa teknikal saham ${shortName} (${fullName}): skor sinyal (−1 s.d. +1), RSI, MACD, support-resistance, modal 1 lot, dan aliran dana asing — gratis tanpa login.`;
 
   return {
     title,
     description,
     alternates: { canonical: canonicalPath },
     openGraph: {
-      title: `${name} — ${fullName} | TeknikalID`,
+      title,
       description: description,
       url: `${SITE_URL}${canonicalPath}`,
       images: [{ url: ogImage, width: 1200, height: 630, alt: `Harga Saham ${name} Hari Ini` }],
     },
     twitter: {
       card: "summary_large_image",
-      title: `${name} — ${fullName} | TeknikalID`,
+      title,
       description: description,
     },
   };
@@ -173,6 +168,7 @@ export default async function StockDetailPage({
   const { stock, prices, latest, close, change, changePercent, indicator: indicators, prevIndicator } = detail;
   // seo-dr-1: shortName utk h1 (sama dengan derivasi generateMetadata)
   const shortName = normalizeTickerTitle(detail.stock?.name ?? stripJk(ticker), stripJk(ticker));
+  const priceStr = close !== null ? formatPrice(close) : "";
   // seo-dr-1: level batas utk answer block (support/resistance toleran-null)
   // Audit UI/UX #3 (30 Okt): SATU angka per konsep — pemula & trader harus lihat level yang SAMA.
   // Dulu: bbLower/bbUpper (Bollinger) vs pivot di blok trader → 2 versi support/resistance di 1 halaman.
@@ -628,9 +624,9 @@ export default async function StockDetailPage({
               <div className="min-w-0">
                 <div className="flex items-center gap-2.5 flex-wrap">
                   <StockLogo src={stock.logo} name={stock.name} ticker={ticker} />
-                  {/* seo-dr-1 → fix owner 30 Okt: h1 = TICKER ringkas (scannable), keyword SEO
-                      pindah ke <p> deskriptif di bawahnya — crawler tetap baca keyword di atas fold. */}
-                  <h1 className="text-2xl font-bold tracking-tight text-text-primary">{stripJk(ticker)}</h1>
+                  <h1 className="text-2xl font-bold tracking-tight text-text-primary">
+                    Saham {shortName} ({stripJk(ticker)}) — Harga {priceStr ? `${priceStr} ` : ""}&amp; Analisa Teknikal Hari Ini
+                  </h1>
                   {indicators?.isGorengan && (
                     <span className="text-sm font-bold px-3 py-1 rounded-lg bg-amber-500/15 text-amber-600 border border-amber-500/30 inline-flex items-center gap-1">
                       <AlertTriangle className="inline h-4 w-4" /> Gorengan

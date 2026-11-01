@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     "koreksi saham idx",
   ],
   openGraph: {
-    title: "Saham Overbought Hari Ini — RSI > 70 | TeknikalID",
+    title: "Saham Overbought Hari Ini — RSI > 70",
     description: "Daftar saham IDX overbought (RSI > 70). Waspadai koreksi harga.",
     url: `${SITE_URL}/saham-overbought`,
   },

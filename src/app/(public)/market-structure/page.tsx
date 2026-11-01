@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     "saham downtrend hari ini",
   ],
   openGraph: {
-    title: "Market Structure — Struktur Tren Saham IDX | TeknikalID",
+    title: "Market Structure — Struktur Tren Saham IDX",
     description: "Struktur tren 40 saham IDX terlikuid berbasis swing point analysis.",
     url: `${SITE_URL}/market-structure`,
     images: [{ url: `${SITE_URL}/api/og?title=Market+Structure+IDX&type=berita`, width: 1200, height: 630 }],

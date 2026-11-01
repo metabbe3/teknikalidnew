@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     "saham tren naik koreksi",
   ],
   openGraph: {
-    title: "Saham Pullback ke SMA20 Hari Ini | TeknikalID",
+    title: "Saham Pullback ke SMA20 Hari Ini",
     description: "Saham tren naik yang sedang koreksi ke SMA20 — kesempatan entry bagi swing trader.",
     url: `${SITE_URL}/saham-pullback-sma20`,
     images: [{ url: `${SITE_URL}/api/og?title=Saham+Pullback+SMA20+Hari+Ini&type=berita`, width: 1200, height: 630 }],

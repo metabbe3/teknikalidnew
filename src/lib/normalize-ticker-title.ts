@@ -1,32 +1,63 @@
 /**
- * Normalize stock long-name for <title> — strip legal suffixes, cap length, never cut mid-word.
- * Pure function; og:title/twitter/description intentionally keep the raw fullName.
+ * Normalize and sanitize stock name for titles and H1 — strip legal suffixes,
+ * cap length at word boundary, avoid cutting in the middle of parentheses.
+ * Pure function.
  */
 
-const MAX_LEN = 35;
-// Suffixes only (anchored $): ' (Persero)', ' Tbk.', ' Tbk' — incl. bare 'Persero' left over
-// after a paired strip (e.g. "Persero Tbk"). Loop strips combinations in any order.
-const SUFFIX_RE = /\s*(\(persero\)|persero|tbk\.?)$/i;
+const MAX_LEN = 30;
 
-export function normalizeTickerTitle(fullName: string, fallbackTicker: string): string {
+// Corporate suffixes: (Persero), (Perser..., (Tbk.), Tbk, bare Persero, bare Tb/T, etc.
+// Note: we do NOT strip non-corporate parentheses like (BRI).
+const CORPORATE_SUFFIX_RE = /\s*(?:\((?:persero|perser|perse|pers|tbk\.?|tb|t)\)?|\b(?:persero|perser|tbk\.?|tb|t))\s*$/i;
+
+export function sanitizeShortName(
+  fullName: string,
+  fallbackTicker = "",
+  maxLen = MAX_LEN,
+): string {
+  if (!fullName) return fallbackTicker;
+
   let stripped = fullName.trim();
   let prev: string;
   do {
     prev = stripped;
-    stripped = stripped.replace(SUFFIX_RE, "").trim();
+    stripped = stripped.replace(CORPORATE_SUFFIX_RE, "").trim();
   } while (stripped !== prev);
 
-  // Fallback: nothing survives the strip — return ticker verbatim (no ellipsis, no empty string).
+  // If nothing survived, fallback to ticker
   if (stripped.length === 0) return fallbackTicker;
 
-  if (stripped.length <= MAX_LEN) return stripped;
-
-  // Cut at word boundary within budget (result incl. '…' must stay ≤ MAX_LEN).
-  const window = stripped.slice(0, MAX_LEN);
-  const lastSpace = window.lastIndexOf(" ");
-  if (lastSpace <= 0) {
-    // Edge fallback: no boundary in window (single word > MAX_LEN) — hard cut, mid-word unavoidable.
-    return window;
+  // If length fits within budget, check if there is an unclosed parenthesis at the end
+  if (stripped.length <= maxLen) {
+    const openCount = (stripped.match(/\(/g) || []).length;
+    const closeCount = (stripped.match(/\)/g) || []).length;
+    if (openCount > closeCount) {
+      const lastOpen = stripped.lastIndexOf("(");
+      return stripped.slice(0, lastOpen).trim() || fallbackTicker;
+    }
+    return stripped;
   }
-  return window.slice(0, lastSpace).trimEnd() + "…";
+
+  // Truncate at word boundary within maxLen without cutting words in half
+  const window = stripped.slice(0, maxLen);
+  const lastSpace = window.lastIndexOf(" ");
+  let cut = lastSpace > 0 ? window.slice(0, lastSpace).trim() : window.trim();
+
+  // "jangan truncate di tengah kurung": if cut happens inside open parentheses
+  const openCount = (cut.match(/\(/g) || []).length;
+  const closeCount = (cut.match(/\)/g) || []).length;
+  if (openCount > closeCount) {
+    const lastOpen = cut.lastIndexOf("(");
+    cut = cut.slice(0, lastOpen).trim();
+  }
+
+  return cut || fallbackTicker || stripped.slice(0, maxLen);
+}
+
+export function normalizeTickerTitle(
+  fullName: string,
+  fallbackTicker: string,
+  maxLen = MAX_LEN,
+): string {
+  return sanitizeShortName(fullName, fallbackTicker, maxLen);
 }

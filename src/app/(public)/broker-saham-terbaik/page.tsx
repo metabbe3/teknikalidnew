@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     "biaya transaksi saham",
   ],
   openGraph: {
-    title: "Perbandingan Broker Saham Terbaik 2026 | TeknikalID",
+    title: "Perbandingan Broker Saham Terbaik 2026",
     description: "Bandingkan fee, minimum deposit, dan fitur semua broker saham Indonesia.",
     url: `${SITE_URL}/broker-saham-terbaik`,
     images: [{ url: `${SITE_URL}/api/og?title=Broker+Saham+Terbaik+2026&type=berita`, width: 1200, height: 630 }],

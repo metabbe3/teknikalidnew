@@ -154,12 +154,16 @@ export default async function BeritaArticlePage({
     }
   }
 
-  // Fetch related articles by ticker or overlapping tags
-  const relatedWhere = article.tickerTag
-    ? { status: "PUBLISHED" as const, articleType: { in: LINKABLE_TYPES }, id: { not: article.id }, tickerTag: article.tickerTag }
-    : { status: "PUBLISHED" as const, articleType: { in: LINKABLE_TYPES }, id: { not: article.id }, tags: { hasSome: article.tags } };
+  // 5 artikel terkait per ticker di halaman artikel (query artikel dengan ticker overlap terbaru)
+  const tickersToMatch = Array.from(
+    new Set([
+      ...(article.tickerTag ? [article.tickerTag, article.tickerTag.replace(/\.JK$/i, "")] : []),
+      ...mentionedTickers,
+      ...mentionedTickers.map((t) => t.replace(/\.JK$/i, "")),
+    ]),
+  );
 
-  const [prevArticle, nextArticle, stockCards, relatedArticles] = await Promise.all([
+  const [prevArticle, nextArticle, stockCards] = await Promise.all([
     prisma.article.findFirst({
       where: { status: "PUBLISHED", articleType: { in: LINKABLE_TYPES }, publishedAt: { lt: article.publishedAt } },
       orderBy: { publishedAt: "desc" },
@@ -173,29 +177,48 @@ export default async function BeritaArticlePage({
     mentionedTickers.length > 0
       ? stockMarketService.getStockBatchWithIndicators(mentionedTickers)
       : Promise.resolve([]),
-    prisma.article.findMany({
-      where: relatedWhere,
+  ]);
+
+  let relatedArticles = tickersToMatch.length > 0
+    ? await prisma.article.findMany({
+        where: {
+          status: "PUBLISHED",
+          articleType: { in: LINKABLE_TYPES },
+          id: { not: article.id },
+          OR: [
+            { tickerTag: { in: tickersToMatch } },
+            { tags: { hasSome: tickersToMatch } },
+          ],
+        },
+        orderBy: { publishedAt: "desc" },
+        take: 5,
+        select: { id: true, slug: true, title: true, publishedAt: true, articleType: true, tickerTag: true },
+      })
+    : [];
+
+  if (relatedArticles.length === 0) {
+    relatedArticles = await prisma.article.findMany({
+      where: {
+        status: "PUBLISHED",
+        articleType: { in: LINKABLE_TYPES },
+        id: { not: article.id },
+      },
       orderBy: { publishedAt: "desc" },
       take: 5,
       select: { id: true, slug: true, title: true, publishedAt: true, articleType: true, tickerTag: true },
-    }),
-  ]);
+    });
+  }
 
   const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(article.title)}&type=berita${article.tickerTag ? `&ticker=${article.tickerTag.replace(".JK", "")}` : ""}`;
-
-  // NewsArticle type only while fresh — Google News relevance window is ~2 days
-  const isFreshNews =
-    article.articleType === ArticleType.NEWS &&
-    Date.now() - article.publishedAt.getTime() < 2 * 24 * 60 * 60 * 1000;
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": isFreshNews ? ["Article", "NewsArticle"] : "Article",
+        "@type": ["NewsArticle", "Article"],
         headline: article.title,
         description: article.excerpt,
-        datePublished: article.publishedAt.toISOString(),
+        datePublished: (article.publishedAt ?? article.createdAt).toISOString(),
         dateModified: article.updatedAt.toISOString(),
         image: ogImageUrl,
         author: {
@@ -216,6 +239,9 @@ export default async function BeritaArticlePage({
           "@type": "WebPage",
           "@id": `${SITE_URL}/berita/${slug}`,
         },
+        ...(article.tickerTag
+          ? { about: { "@type": "Corporation", tickerSymbol: article.tickerTag } }
+          : {}),
       },
       {
         "@type": "BreadcrumbList",

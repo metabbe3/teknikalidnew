@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     "saham fundamental kuat",
   ],
   openGraph: {
-    title: "Daftar Saham Blue Chip Indonesia — IDX40 & LQ45 | TeknikalID",
+    title: "Daftar Saham Blue Chip Indonesia — IDX40 & LQ45",
     description: "Daftar lengkap 40+ saham blue chip Indonesia dengan analisa teknikal gratis.",
     url: `${SITE_URL}/saham-blue-chip`,
     images: [{ url: `${SITE_URL}/api/og?title=Saham+Blue+Chip+Indonesia&type=berita`, width: 1200, height: 630 }],

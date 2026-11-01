@@ -7,7 +7,7 @@ import { Sparkles } from "lucide-react";
 export const dynamic = "force-dynamic"; // ISR trap doctrine + posisi antrean live
 
 export const metadata = {
-  title: "Waitlist Brief Pasar 06:30 — TeknikalID",
+  title: "Waitlist Brief Pasar 06:30",
   description:
     "Dapatkan Brief Pasar IDX tiap pagi 06:30 langsung ke WhatsApp/email. Gratis, tanpa install aplikasi.",
   robots: { index: true, follow: true },

@@ -1,20 +1,22 @@
 import { type Metadata } from "next";
 import { safeJsonLd } from "@/lib/safe-json-ld";
 import Link from "next/link";
-import { SECTORS, type Sector } from "@/lib/sectors";
+import { SECTORS, SECTOR_SLUG_MAP } from "@/lib/sectors";
 import { SITE_URL } from "@/lib/constants";
+import { stockMarketService } from "@/domains/stock/stock-market.service";
+import { formatPercent, changeColor } from "@/lib/utils";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Sektor Saham BEI — Daftar Harga & Analisa Teknikal per Sektor",
+  title: "Sektor Saham BEI — Harga & Analisa per Sektor",
   description:
-    "Jelajahi analisa teknikal saham BEI berdasarkan sektor: perbankan, pertambangan, agrikultur, properti, teknologi, dan lainnya. Pantau indikator RSI, MACD, dan sinyal trading tiap sektor.",
+    "Jelajahi analisa teknikal saham BEI berdasarkan 12 sektor resmi: perbankan, energi, konsumer, properti, teknologi, kesehatan, dan lainnya. Cek jumlah saham, pergerakan harga, dan sinyal tiap sektor.",
   alternates: { canonical: "/sektor" },
   openGraph: {
-    title: "Sektor Saham BEI — Daftar Harga & Analisa Teknikal per Sektor",
+    title: "Sektor Saham BEI — Harga & Analisa per Sektor",
     description:
-      "Jelajahi analisa teknikal saham BEI berdasarkan sektor: perbankan, pertambangan, agrikultur, properti, teknologi, dan lainnya.",
+      "Jelajahi analisa teknikal saham BEI berdasarkan 12 sektor resmi: perbankan, energi, konsumer, properti, teknologi, kesehatan, dan lainnya.",
     url: `${SITE_URL}/sektor`,
   },
 };
@@ -24,9 +26,9 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "CollectionPage",
-      name: "Sektor Saham BEI",
+      name: "Sektor Saham BEI — Harga & Analisa per Sektor",
       description:
-        "Daftar sektor saham di Bursa Efek Indonesia dengan analisis teknikal lengkap.",
+        "Daftar 12 sektor saham di Bursa Efek Indonesia dengan ringkasan jumlah saham dan analisis teknikal per sektor.",
       url: `${SITE_URL}/sektor`,
       breadcrumb: { "@id": `${SITE_URL}/sektor#breadcrumb` },
     },
@@ -51,14 +53,47 @@ const jsonLd = {
   ],
 };
 
-export default function SectorIndexPage() {
+export default async function SectorIndexPage() {
+  let allStocks: Awaited<ReturnType<typeof stockMarketService.getStockList>> = [];
+  try {
+    allStocks = await stockMarketService.getStockList();
+  } catch {
+    allStocks = [];
+  }
+
+  // Calculate sector metrics SSR for all 12 sectors
+  const sectorRows = SECTORS.map((sector) => {
+    const idxSectorName = Object.entries(SECTOR_SLUG_MAP).find(([, sl]) => sl === sector.slug)?.[0];
+    const matching = allStocks.filter(
+      (r) =>
+        (idxSectorName && r.sector === idxSectorName) ||
+        sector.stocks.some((t) => r.ticker.replace(/\.JK$/, "") === t || r.ticker === t),
+    );
+
+    const totalCount = matching.length > 0 ? matching.length : sector.stocks.length;
+    const upCount = matching.filter((r) => (r.changePercent ?? 0) > 0).length;
+    const downCount = matching.filter((r) => (r.changePercent ?? 0) < 0).length;
+    const avgChange =
+      matching.length > 0
+        ? matching.reduce((acc, r) => acc + (r.changePercent ?? 0), 0) / matching.length
+        : 0;
+
+    return {
+      sector,
+      totalCount,
+      upCount,
+      downCount,
+      avgChange,
+    };
+  });
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
-      <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
+      <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
         <div>
           <nav className="text-xs text-text-tertiary flex items-center gap-1.5 mb-4">
             <Link href="/" className="hover:text-accent transition-colors">
@@ -80,16 +115,71 @@ export default function SectorIndexPage() {
             </span>
           </nav>
           <h1 className="text-2xl sm:text-3xl font-bold font-serif text-text-primary">
-            Sektor Saham BEI
+            Sektor Saham BEI — Harga & Analisa per Sektor
           </h1>
-          <p className="text-text-secondary mt-2 text-sm sm:text-base max-w-2xl">
-            Jelajahi analisis teknikal saham berdasarkan sektor di Bursa Efek
-            Indonesia. Pilih sektor untuk melihat saham-saham representatif
-            beserta indikator teknikalnya.
+          <p className="text-text-secondary mt-2 text-sm sm:text-base max-w-3xl">
+            Ringkasan data pasar dan analisis teknikal 12 sektor saham Bursa Efek Indonesia.
+            Pilih sektor untuk melihat pergerakan harga lengkap seluruh emiten serta indikator RSI dan MACD.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* 12-row SSR Sector Table */}
+        <div className="overflow-x-auto rounded-xl border border-border bg-bg-card">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/40 text-left text-xs uppercase tracking-wider text-text-tertiary">
+                <th className="py-3 px-4 font-semibold">Sektor</th>
+                <th className="py-3 px-4 font-semibold text-right">Jumlah Saham</th>
+                <th className="py-3 px-4 font-semibold text-right">Saham Naik</th>
+                <th className="py-3 px-4 font-semibold text-right">Saham Turun</th>
+                <th className="py-3 px-4 font-semibold text-right">Rata-Rata Perubahan</th>
+                <th className="py-3 px-4 font-semibold">Saham Utama</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {sectorRows.map(({ sector, totalCount, upCount, downCount, avgChange }) => (
+                <tr key={sector.slug} className="hover:bg-muted/30 transition-colors">
+                  <td className="py-3 px-4">
+                    <Link
+                      href={`/sektor/${sector.slug}`}
+                      className="font-semibold text-text-primary hover:text-accent transition-colors"
+                    >
+                      {sector.name}
+                    </Link>
+                  </td>
+                  <td className="py-3 px-4 text-right font-mono text-text-secondary">
+                    {totalCount}
+                  </td>
+                  <td className="py-3 px-4 text-right font-mono text-bullish">
+                    {upCount}
+                  </td>
+                  <td className="py-3 px-4 text-right font-mono text-bearish">
+                    {downCount}
+                  </td>
+                  <td className={`py-3 px-4 text-right font-mono font-medium ${changeColor(avgChange)}`}>
+                    {formatPercent(avgChange)}
+                  </td>
+                  <td className="py-3 px-4">
+                    <div className="flex flex-wrap gap-1.5">
+                      {sector.stocks.map((t) => (
+                        <Link
+                          key={t}
+                          href={`/stocks/${t}.JK`}
+                          className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-muted hover:bg-accent/15 hover:text-accent text-text-tertiary transition-colors"
+                        >
+                          {t}
+                        </Link>
+                      ))}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Sector Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
           {SECTORS.map((sector) => (
             <Link
               key={sector.slug}

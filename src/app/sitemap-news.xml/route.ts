@@ -15,15 +15,22 @@ function escapeXml(s: string): string {
 }
 
 export async function GET() {
-  // Google News sitemap: only articles from the last 48h (spec window)
-  const since = new Date(Date.now() - 48 * 60 * 60 * 1000);
+  // Google News / Fresh news sitemap: semua artikel terbit 30 hari terakhir
+  const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
   let articles: { slug: string; title: string; publishedAt: Date }[] = [];
   try {
     articles = await prisma.article.findMany({
       where: {
-        // seo-2026-10-29-p1 (audit #8): luaskan filter agar MARKET_BRIEF & STOCK_ANALYSIS <48h ikut
-        articleType: { in: [ArticleType.NEWS, ArticleType.STOCK_ANALYSIS, ArticleType.MOVEMENT_ANALYSIS] },
+        articleType: {
+          in: [
+            ArticleType.NEWS,
+            ArticleType.STOCK_ANALYSIS,
+            ArticleType.MOVEMENT_ANALYSIS,
+            ArticleType.DAILY_SNAPSHOT,
+            ArticleType.GENERAL,
+          ],
+        },
         status: ArticleStatus.PUBLISHED,
         publishedAt: { gt: since },
       },

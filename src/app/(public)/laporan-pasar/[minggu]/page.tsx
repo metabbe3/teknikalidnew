@@ -38,7 +38,7 @@ export async function generateMetadata(
     description: `Ringkasan pasar saham Indonesia minggu ${mon.getUTCDate()} ${MONTHS_ID[mon.getUTCMonth()]}: pergerakan IHSG, market breadth, sektor terkuat-terlemah, top movers, dan sinyal golden cross / death cross.`,
     alternates: { canonical: `/laporan-pasar/${minggu}` },
     openGraph: {
-      title: `${title} | TeknikalID`,
+      title,
       description: `Data asli TeknikalID: IHSG, breadth, sektor, movers, dan sinyal SMA minggu ${mon.getUTCDate()} ${MONTHS_ID[mon.getUTCMonth()]} ${mon.getUTCFullYear()}.`,
       url: `${SITE_URL}/laporan-pasar/${minggu}`,
       images: [{ url: `${SITE_URL}/api/og?title=${encodeURIComponent(`Laporan Pasar IDX — Minggu ${mon.getUTCDate()} ${MONTHS_ID[mon.getUTCMonth()]}`)}&type=berita`, width: 1200, height: 630 }],

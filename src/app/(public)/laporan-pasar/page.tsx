@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     "golden cross saham minggu ini",
   ],
   openGraph: {
-    title: "Laporan Pasar Saham IDX Mingguan | TeknikalID",
+    title: "Laporan Pasar Saham IDX Mingguan",
     description: "Ringkasan mingguan pasar IDX dari data asli — IHSG, breadth, sektor, movers, sinyal.",
     url: `${SITE_URL}/laporan-pasar`,
     images: [{ url: `${SITE_URL}/api/og?title=Laporan+Pasar+Saham+IDX+Mingguan&type=berita`, width: 1200, height: 630 }],
