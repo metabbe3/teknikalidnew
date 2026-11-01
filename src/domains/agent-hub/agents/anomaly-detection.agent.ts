@@ -3,6 +3,7 @@ import type { AgentType, AgentJobPayload, AgentJobResult } from "../agent-hub.ty
 import { prisma } from "@/lib/prisma";
 import { NotificationType } from "@/generated/prisma/client";
 import { decimalToNumber, bigIntToNumber } from "@/lib/serialize";
+import { marketEngine } from "@/lib/market-engine";
 
 interface Anomaly {
   ticker: string;
@@ -83,7 +84,9 @@ export class AnomalyDetectionAgent extends BaseAgent {
         : 0;
 
       // Price Surge
-      const changePercent = ((todayPrice.close - yesterdayPrice.close) / yesterdayPrice.close) * 100;
+      // bo-2026-11-02-01: engine SATU PINTU. HARDENING disengaja: close kemarin <= 0 = data
+      // sampah -> null -> 0 (dulu: Infinity lolos jadi anomali "Infinity%" — bug, bukan fitur).
+      const changePercent = marketEngine.pctChange(todayPrice.close, yesterdayPrice.close) ?? 0;
       if (Math.abs(changePercent) > priceThreshold) {
         const anomaly: Anomaly = {
           ticker,
@@ -113,7 +116,7 @@ export class AnomalyDetectionAgent extends BaseAgent {
           ticker,
           type: "gap_up",
           severity: "warning",
-          details: `Gap up: opened at ${todayPrice.open.toFixed(0)} vs previous high ${yesterdayPrice.high.toFixed(0)} (+${(((todayPrice.open - yesterdayPrice.high) / yesterdayPrice.high) * 100).toFixed(1)}%)`,
+          details: `Gap up: opened at ${todayPrice.open.toFixed(0)} vs previous high ${yesterdayPrice.high.toFixed(0)} (+${(marketEngine.pctChange(todayPrice.open, yesterdayPrice.high) ?? 0).toFixed(1)}%)`,
         };
         anomalies.push(anomaly);
         anomalyCountPerStock.set(ticker, (anomalyCountPerStock.get(ticker) ?? 0) + 1);
@@ -122,7 +125,7 @@ export class AnomalyDetectionAgent extends BaseAgent {
           ticker,
           type: "gap_down",
           severity: "warning",
-          details: `Gap down: opened at ${todayPrice.open.toFixed(0)} vs previous low ${yesterdayPrice.low.toFixed(0)} (${(((todayPrice.open - yesterdayPrice.low) / yesterdayPrice.low) * 100).toFixed(1)}%)`,
+          details: `Gap down: opened at ${todayPrice.open.toFixed(0)} vs previous low ${yesterdayPrice.low.toFixed(0)} (${(marketEngine.pctChange(todayPrice.open, yesterdayPrice.low) ?? 0).toFixed(1)}%)`,
         };
         anomalies.push(anomaly);
         anomalyCountPerStock.set(ticker, (anomalyCountPerStock.get(ticker) ?? 0) + 1);

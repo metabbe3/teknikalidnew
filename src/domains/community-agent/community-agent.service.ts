@@ -8,6 +8,7 @@ import { AIGenerationError } from "./community-agent.errors";
 import { scanSignals, buildMarketPulseData, type DetectedSignal } from "./signal-detector";
 import { buildSignalPostPrompt, buildMarketPulsePrompt, buildReplyPrompt, buildRandomInsightPrompt } from "./prompt-builder";
 import { IDX40_TICKERS } from "@/lib/constants";
+import { marketEngine } from "@/lib/market-engine";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -224,8 +225,8 @@ export const communityAgentService = {
     const ind = stock.indicators[0];
     const close = stock.prices[0] ? Number(stock.prices[0].close) : null;
     const prevClose = stock.prices[1] ? Number(stock.prices[1].close) : null;
-    const changePercent = close != null && prevClose != null && prevClose > 0
-      ? ((close - prevClose) / prevClose) * 100
+    const changePercent = close != null && prevClose != null
+      ? marketEngine.pctChange(close, prevClose)
       : null;
 
     const { system, user } = buildRandomInsightPrompt({
@@ -360,8 +361,8 @@ export const communityAgentService = {
     const prices = stock.prices;
     const close = prices[0] ? Number(prices[0].close) : null;
     const prevClose = prices[1] ? Number(prices[1].close) : null;
-    const changePercent = close != null && prevClose != null && prevClose > 0
-      ? ((close - prevClose) / prevClose) * 100
+    const changePercent = close != null && prevClose != null
+      ? marketEngine.pctChange(close, prevClose)
       : null;
 
     return {

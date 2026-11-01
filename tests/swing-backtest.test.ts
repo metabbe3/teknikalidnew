@@ -95,11 +95,13 @@ test("Kasus 3: Seri pendek (<21 baris -> signals=0)", () => {
   assert.equal(stats.avgHoldDays, 0, "Avg hold days fallback 0");
 });
 
-test("Uji Tambahan: Null-safety dan threshold filtering", () => {
+test("Uji Tambahan: Null-safety dan threshold filtering (termasuk NaN guard)", () => {
   const rows: SwingRow[] = [
     { date: "2026-01-01", close: 100, signalScore: 0.1, ticker: "TEST.JK" }, // skor < 0.34
     { date: "2026-01-02", close: 0, signalScore: 0.5, ticker: "TEST.JK" }, // close invalid <= 0
     { date: "2026-01-03", close: 100, signalScore: null, ticker: "TEST.JK" }, // null score
+    { date: "2026-01-04", close: 100, signalScore: Number.NaN, ticker: "TEST.JK" }, // NaN score
+    { date: "2026-01-05", close: 100, signalScore: Number.POSITIVE_INFINITY, ticker: "TEST.JK" }, // Infinity score
   ];
 
   const stats = computeSwingStats(rows, 0.34);

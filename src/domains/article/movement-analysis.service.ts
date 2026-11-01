@@ -8,6 +8,7 @@ import { articleRepository } from "./article.repository";
 import { aiChat } from "@/lib/ai-client";
 import { gatherMarketContext, formatMarketContextForPrompt, type MarketContext } from "./article-fact-check";
 import { runGenerationGuards } from "./article-guards";
+import { marketEngine } from "@/lib/market-engine";
 
 // ── Types ──
 
@@ -341,8 +342,8 @@ export const movementAnalysisService = {
 
     const close = decimalToNumber(latest.close);
     const prevClose = decimalToNumber(prev.close);
-    const changePercent = close !== null && prevClose !== null && prevClose !== 0
-      ? ((close - prevClose) / prevClose) * 100
+    const changePercent = close !== null && prevClose !== null
+      ? marketEngine.pctChange(close, prevClose)
       : null;
 
     // Calculate 5d avg volume

@@ -16,6 +16,7 @@ import type { MarketContext } from "./article-fact-check";
 import { validateArticle } from "./quality-validator";
 import { resolveTitle } from "./title-guard";
 import { sanitizeGeneratedContent } from "./content-sanitizer";
+import { marketEngine } from "@/lib/market-engine";
 
 export const articleService = {
   async generateStockAnalysis(ticker: string): Promise<{ id: string; title: string; slug: string }> {
@@ -57,12 +58,9 @@ export const articleService = {
 
     const close = latest ? decimalToNumber(latest.close) : null;
     const prev = prices[1];
-    const changePercent = latest && prev
-      ? (() => {
-          const c = decimalToNumber(latest.close);
-          const p = decimalToNumber(prev.close);
-          return c !== null && p !== null ? ((c - p) / p) * 100 : null;
-        })()
+    const prevClose = prev ? decimalToNumber(prev.close) : null;
+    const changePercent = close !== null && prevClose !== null
+      ? marketEngine.pctChange(close, prevClose)
       : null;
 
     const { system, user } = buildStockAnalysisPrompt({
@@ -167,12 +165,9 @@ export const articleService = {
     const week52 = await stockMarketService.getWeek52HighLow(stock.id);
     const close = latest ? decimalToNumber(latest.close) : null;
     const prev = prices[1];
-    const changePercent = latest && prev
-      ? (() => {
-          const c = decimalToNumber(latest.close);
-          const p = decimalToNumber(prev.close);
-          return c !== null && p !== null ? ((c - p) / p) * 100 : null;
-        })()
+    const prevClose = prev ? decimalToNumber(prev.close) : null;
+    const changePercent = close !== null && prevClose !== null
+      ? marketEngine.pctChange(close, prevClose)
       : null;
 
     const t = ticker.replace(".JK", "").toLowerCase();
@@ -570,8 +565,9 @@ export const articleService = {
     const week52 = await stockMarketService.getWeek52HighLow(stock.id);
     const close = decimalToNumber(latest.close);
     const prev = prices[1];
-    const changePercent = prev
-      ? (() => { const p = decimalToNumber(prev.close); return p ? ((close! - p) / p) * 100 : null; })()
+    const prevClose = prev ? decimalToNumber(prev.close) : null;
+    const changePercent = close !== null && prevClose !== null
+      ? marketEngine.pctChange(close, prevClose)
       : null;
 
     // Extract 30-day price history for mini chart (reverse to get chronological order)

@@ -47,89 +47,15 @@ export interface MarketSnapshot {
   breadth: { advancers: number; decliners: number; unchanged: number; total: number };
 }
 
-// ── Pure market engine (fix-2026-10-26-10) ──
-// SATU PINTU rumus pasar: change% / breadth / sektor / movers / mean.
-// Sebelum modul ini rumus yang sama ditulis inline di weekly-report.service
-// + screener-analysis.service (jalur duplikat = akar insiden drift angka,
-// ref-2026-10-17-01). Konsumen hanya menyiapkan baris + window-nya
-// (sesi harian vs jendela mingguan) lalu memanggil engine — DILARANG
-// menulis ((close-prev)/prev)*100 di luar modul ini.
-// Guard prev <= 0: harga penutupan negatif = data sampah, bukan sinyal.
-
-export interface EngineChangeRow {
-  ticker: string;
-  changePercent: number;
-}
-
-export interface EngineSectorRow {
-  sector: string;
-  avgChange: number;
-  count: number;
-}
-
-export const marketEngine = {
-  /** (close - prev) / prev sebagai fraksi (0.05 = +5%). null jika prev invalid. */
-  changeFraction(close: number, prev: number): number | null {
-    if (!Number.isFinite(close) || !Number.isFinite(prev) || prev <= 0) return null;
-    const f = (close - prev) / prev;
-    return Number.isFinite(f) ? f : null;
-  },
-
-  /** ((close - prev) / prev) * 100 sebagai persen. null jika prev invalid. */
-  pctChange(close: number, prev: number): number | null {
-    if (!Number.isFinite(close) || !Number.isFinite(prev) || prev <= 0) return null;
-    const pct = ((close - prev) / prev) * 100;
-    return Number.isFinite(pct) ? pct : null;
-  },
-
-  /** Breadth pasar: hitung naik/turun/stagnan dari baris changePercent. */
-  breadth(rows: EngineChangeRow[]): { advancers: number; decliners: number; unchanged: number; total: number } {
-    let advancers = 0;
-    let decliners = 0;
-    let unchanged = 0;
-    for (const r of rows) {
-      if (r.changePercent > 0) advancers++;
-      else if (r.changePercent < 0) decliners++;
-      else unchanged++;
-    }
-    return { advancers, decliners, unchanged, total: rows.length };
-  },
-
-  /** Rata-rata change% per sektor (aritmetik sederhana — doctrine ponytail),
-   * urutan entri = first-seen. Konsumen memformat/mengurutkan sendiri. */
-  sectorAverages(rows: { sector: string; changePercent: number }[]): EngineSectorRow[] {
-    const m = new Map<string, { total: number; sum: number }>();
-    for (const r of rows) {
-      const e = m.get(r.sector) ?? { total: 0, sum: 0 };
-      e.total++;
-      e.sum += r.changePercent;
-      m.set(r.sector, e);
-    }
-    return [...m.entries()].map(([sector, { total, sum }]) => ({ sector, avgChange: sum / total, count: total }));
-  },
-
-  /** Top movers: n gainer teratas & n loser terbawah (worst-first).
-   * excludeOverlap=true → losers tidak tumpang tindih gainers (jalur snapshot
-   * harian: pool likuid kecil); default false (jalur laporan mingguan). */
-  movers<T extends { ticker: string; changePercent: number }>(
-    rows: T[],
-    n: number,
-    opts?: { excludeOverlap?: boolean },
-  ): { gainers: T[]; losers: T[] } {
-    const gainers = [...rows].sort((a, b) => b.changePercent - a.changePercent).slice(0, n);
-    const pool = opts?.excludeOverlap
-      ? rows.filter((r) => !gainers.some((g) => g.ticker === r.ticker))
-      : rows;
-    const losers = [...pool].sort((a, b) => a.changePercent - b.changePercent).slice(0, n);
-    return { gainers, losers };
-  },
-
-  /** Mean change% seluruh pasar. 0 untuk rows kosong. */
-  meanChange(rows: EngineChangeRow[]): number {
-    if (rows.length === 0) return 0;
-    return rows.reduce((acc, r) => acc + r.changePercent, 0) / rows.length;
-  },
-};
+// ── Pure market engine — SATU PINTU (fix-2026-10-26-10, bo-2026-11-02-01) ──
+// Definisi fisik pindah ke src/lib/market-engine.ts (pure, 0 import) supaya
+// src/lib/* (serialize, mailer) bisa konsumsi tanpa circular import.
+// Re-export: konsumen lama (weekly-report, screener-analysis, stock-graph,
+// pasar-live, dan 14 call-site hasil migrasi bo-2026-11-02-01) tetap satu
+// objek yang sama — tidak ada jalur duplikat baru.
+import { marketEngine } from "@/lib/market-engine";
+export { marketEngine } from "@/lib/market-engine";
+export type { EngineChangeRow, EngineSectorRow } from "@/lib/market-engine";
 
 const SNAPSHOT_CACHE_KEY = "market-snapshot-v1";
 const SNAPSHOT_TTL_MS = 60_000;

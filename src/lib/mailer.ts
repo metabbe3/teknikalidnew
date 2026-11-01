@@ -16,6 +16,7 @@
  *   RETENTION_EMAIL_DRY_RUN  — "0"/"false" untuk kirim nyata (SAAT key terisi).
  */
 import { prisma } from "@/lib/prisma";
+import { marketEngine } from "./market-engine";
 
 export const DRY_RUN_DEFAULT = true;
 
@@ -186,8 +187,9 @@ const SIGNAL_LINKS: Array<{ href: string; label: string; desc: string }> = [
 
 /** chg% 1 desimal, koma desimal-ID; null bila tak bisa dihitung. */
 export function chgPct(close: number | null, prevClose: number | null): string | null {
-  if (close === null || prevClose === null || prevClose === 0) return null;
-  const pct = ((close - prevClose) / prevClose) * 100;
+  if (close === null || prevClose === null) return null;
+  const pct = marketEngine.pctChange(close, prevClose);
+  if (pct === null) return null; // prevClose <= 0 = data sampah (guard engine)
   const sign = pct > 0 ? "+" : "";
   return `${sign}${pct.toFixed(1).replace(".", ",")}%`;
 }
