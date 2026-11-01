@@ -6,6 +6,7 @@ import { IDX_INDICES } from "@/lib/idx-indices";
 import { ArticleType } from "@/generated/prisma/client";
 import { isStaleArticle, isEvergreenIndexed } from "@/domains/article/article-freshness";
 import { prisma } from "@/lib/prisma";
+import { stockMarketService } from "@/domains/stock/stock-market.service";
 
 export const dynamic = "force-dynamic"; // generated at runtime (build stage has no DB access)
 export const revalidate = 3600; // Regenerate hourly
@@ -126,17 +127,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     };
   });
 
-  // "Kenapa naik/turun hari ini" pages — deterministic, always-on (no longer 404).
-  const kenapaPages = IDX_STOCKS.filter((stock) => sitemapTickers.has(stock.ticker)).map((stock) => {
+  // "Kenapa naik/turun hari ini" pages — segmentasi hijau vs merah dari data EOD terakhir.
+  // Naik hanya emit saat change% > 0; turun saat change% < 0; netral (0%) tidak di-emit keduanya.
+  const equityStockList = await stockMarketService.getStockList().catch(() => []);
+  const tickerChangeMap = new Map<string, number | null>(
+    equityStockList.map((s) => [s.ticker, s.changePercent]),
+  );
+
+  const kenapaPages: MetadataRoute.Sitemap = [];
+  for (const stock of IDX_STOCKS) {
+    if (!sitemapTickers.has(stock.ticker)) continue;
+    const change = tickerChangeMap.get(stock.ticker) ?? null;
+    if (change === null || change === 0) continue; // Netral (0%) → jangan emit keduanya
+
     const sid = tickerToStockId.get(stock.ticker);
     const realDate = sid ? stockIdToDate.get(sid) : undefined;
-    return {
-      url: `${baseUrl}/saham/${stock.ticker.replace(/\.JK$/, "").toLowerCase()}/kenapa-naik-hari-ini`,
+    const cleanTicker = stock.ticker.replace(/\.JK$/, "").toLowerCase();
+    const route = change > 0 ? "kenapa-naik-hari-ini" : "kenapa-turun-hari-ini";
+
+    kenapaPages.push({
+      url: `${baseUrl}/saham/${cleanTicker}/${route}`,
       lastModified: realDate ?? today,
       changeFrequency: "daily" as const,
       priority: idx40Set.has(stock.ticker) ? 0.7 : 0.5,
-    };
-  });
+    });
+  }
 
   // Indicator history TABLE pages — one URL per ticker (NOT per date).
   // Anti-spam: collapsed ~47k dated URLs into ~190 table pages. See SEO plan.

@@ -29,7 +29,7 @@ export async function generateMetadata({
     description: desc,
     alternates: { canonical: `/indeks/${slug}` },
     openGraph: {
-      title: `${idx.fullName} — Daftar Saham & Harga Hari Ini | TeknikalID`,
+      title: `${idx.fullName} — Daftar Saham & Harga Hari Ini`,
       description: desc,
       url: `${SITE_URL}/indeks/${slug}`,
     },

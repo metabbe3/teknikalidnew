@@ -40,7 +40,7 @@ export async function generateMetadata({
   const ogImage = `${SITE_URL}/api/og?title=${encodeURIComponent(question.question)}&type=faq`;
 
   return {
-    title: `${question.question} — Tanya Jawab TeknikalID`,
+    title: `${question.question} — Tanya Jawab`,
     description,
     alternates: { canonical: `/akademi/tanya/${slug}` },
     openGraph: {

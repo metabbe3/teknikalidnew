@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/crypto" },
   keywords: ["harga crypto hari ini", "harga btc idr", "daftar crypto", "screener crypto", "analisa teknikal crypto", "bitcoin indonesia"],
   openGraph: {
-    title: "Harga Crypto Hari Ini — 400+ Koin (IDR) + Screener | TeknikalID",
+    title: "Harga Crypto Hari Ini — 400+ Koin (IDR) + Screener",
     description: "Harga crypto Rupiah (Indodax) + screener teknikal untuk ratusan koin. Chart, RSI, MACD, sinyal trading.",
     url: `${SITE_URL}/crypto`,
   },

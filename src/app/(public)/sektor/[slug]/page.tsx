@@ -29,7 +29,7 @@ export async function generateMetadata({
       : sector.description,
     alternates: { canonical: `/sektor/${slug}` },
     openGraph: {
-      title: `Sektor ${sector.name} — Daftar Saham & Harga Hari Ini | TeknikalID`,
+      title: `Sektor ${sector.name} — Daftar Saham & Harga Hari Ini`,
       description: sector.description.length > 160
         ? sector.description.slice(0, 157) + "..."
         : sector.description,

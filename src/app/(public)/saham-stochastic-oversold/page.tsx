@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     "daftar saham stoch oversold",
   ],
   openGraph: {
-    title: "Saham Stochastic Oversold Hari Ini — %K & %D < 20 | TeknikalID",
+    title: "Saham Stochastic Oversold Hari Ini — %K & %D < 20",
     description:
       "Daftar saham IDX dengan Stochastic %K dan %D dibawah 20 — potensi reversal naik. Update setiap 5 menit saat pasar buka.",
     url: `${SITE_URL}/saham-stochastic-oversold`,

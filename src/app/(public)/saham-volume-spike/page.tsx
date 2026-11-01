@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     "volume saham idx",
   ],
   openGraph: {
-    title: "Saham Volume Spike Hari Ini — Volume Melonjak | TeknikalID",
+    title: "Saham Volume Spike Hari Ini — Volume Melonjak",
     description: "Daftar saham IDX dengan volume perdagangan melonjak diatas rata-rata.",
     url: `${SITE_URL}/saham-volume-spike`,
     images: [{ url: `${SITE_URL}/api/og?title=Saham+Volume+Spike+Hari+Ini&type=berita`, width: 1200, height: 630 }],

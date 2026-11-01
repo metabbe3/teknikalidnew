@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     "rsi oversold saham indonesia",
   ],
   openGraph: {
-    title: "Bottom Fishing Radar — Saham Oversold Potensi Reversal | TeknikalID",
+    title: "Bottom Fishing Radar — Saham Oversold Potensi Reversal",
     description: "Saham oversold RSI < 30 dengan volume transaksi nyata di Bursa Efek Indonesia.",
     url: `${SITE_URL}/bottom-fishing`,
     images: [{ url: `${SITE_URL}/api/og?title=Bottom+Fishing+Radar&type=berita`, width: 1200, height: 630 }],

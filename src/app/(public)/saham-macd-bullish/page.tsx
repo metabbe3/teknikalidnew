@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     "daftar saham macd positif",
   ],
   openGraph: {
-    title: "Saham MACD Bullish Hari Ini — Histogram MACD > 0 | TeknikalID",
+    title: "Saham MACD Bullish Hari Ini — Histogram MACD > 0",
     description:
       "Daftar saham IDX dengan histogram MACD positif — momentum beli sedang menguat. Update setiap 5 menit saat pasar buka.",
     url: `${SITE_URL}/saham-macd-bullish`,

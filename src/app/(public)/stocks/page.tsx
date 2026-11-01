@@ -23,9 +23,9 @@ import { ChannelCta } from "@/components/stock/channel-cta";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Harga Saham IDX Hari Ini — Screener Saham Gratis & Chart Live 956+ Saham",
+  title: "Harga Saham Hari Ini — 956 Emiten IDX Real-Time",
   description:
-    "Cek harga saham IDX hari ini di radar saham IDX gratis: screener filter sektor, RSI, MACD, golden cross, dan indikator teknikal. Chart live real-time untuk 956+ saham BEI.",
+    "Daftar harga saham IDX hari ini untuk 956 emiten — update real-time tiap detik pasar buka. Filter sektor, RSI, MACD & golden cross gratis, tanpa login.",
   alternates: { canonical: "/stocks" },
   keywords: [
     "daftar harga saham hari ini", "harga saham idx hari ini", "harga saham live",
@@ -35,15 +35,15 @@ export const metadata: Metadata = {
     "radar saham idx", "radar saham",
   ],
   openGraph: {
-    title: "Daftar Harga Saham IDX Hari Ini — Live Chart & Analisa Teknikal",
-    description: "Cek harga saham IDX hari ini di radar saham IDX gratis: chart live, RSI, MACD, dan filter indikator untuk 956+ saham BEI.",
+    title: "Harga Saham Hari Ini — 956 Emiten IDX Real-Time",
+    description: "Daftar harga saham IDX hari ini untuk 956 emiten — update real-time tiap detik pasar buka. Filter sektor, RSI, MACD & golden cross gratis, tanpa login.",
     url: `${SITE_URL}/stocks`,
     images: [{ url: `${SITE_URL}/api/og?title=Daftar+Harga+Saham+IDX+Hari+Ini&type=berita`, width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Daftar Harga Saham IDX Hari Ini — Live Chart & Analisa Teknikal",
-    description: "Cek harga saham IDX hari ini lengkap dengan analisa teknikal. Chart live, RSI, MACD, dan filter indikator.",
+    title: "Harga Saham Hari Ini — 956 Emiten IDX Real-Time",
+    description: "Daftar harga saham IDX hari ini untuk 956 emiten — update real-time tiap detik pasar buka. Filter sektor, RSI, MACD & golden cross gratis, tanpa login.",
   },
 };
 
@@ -175,8 +175,11 @@ export default async function StocksPage() {
       <section className="border-b border-border bg-bg-card">
         <div className="max-w-7xl mx-auto px-4 py-4 sm:py-5">
           <MarketStatus marketStatus={marketInfo.marketStatus} latestPrice={latestPrice} />
-          <h1 id="radar" className="mt-3 font-serif text-2xl sm:text-3xl font-semibold tracking-tight text-text-primary">
+          <div className="mt-3 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
             Radar Saham IDX
+          </div>
+          <h1 id="radar" className="mt-1 font-serif text-2xl sm:text-3xl font-semibold tracking-tight text-text-primary">
+            Harga Saham IDX Hari Ini
           </h1>
           <p className="mt-1 text-xs text-text-tertiary">
             {IDX_STOCKS.length}+ saham — cari langsung di bawah, atau saring sesuai strategi. IDX Radar

@@ -12,13 +12,13 @@ export const revalidate = 0;
 export const metadata: Metadata = {
   // seo-dr-4 (deep-research 641c019): kueri "saham net foreign buy hari ini" / "akumulasi asing BEI"
   // 4,5-8,5rb/bln — kompetitor mengunci data di balik login sekuritas; kita free + satu-pintu pasarLiveService.
-  title: "Aliran Dana Asing BEI Hari Ini — Saham Net Foreign Buy Terbesar | TeknikalID",
+  title: "Aliran Dana Asing Hari Ini — Net Foreign Buy BEI",
   description:
-    "Daftar saham net foreign buy (beli bersih asing) terbesar di BEI hari ini plus net foreign sell — data resmi IDX TradingSummary, dikonfirmasi skor sinyal teknikal. Gratis tanpa login.",
+    "Saham net foreign buy & sell terbesar BEI hari ini dari data resmi IDX, plus skor sinyal teknikal tiap emiten. Update tiap hari bursa.",
   alternates: { canonical: "/aliran-dana-asing" },
   openGraph: {
-    title: "Aliran Dana Asing Saham BEI Hari Ini | TeknikalID",
-    description: "Top net foreign buy & sell BEI + skor sinyal teknikal — update tiap sesi.",
+    title: "Aliran Dana Asing Hari Ini — Net Foreign Buy BEI",
+    description: "Saham net foreign buy & sell terbesar BEI hari ini dari data resmi IDX, plus skor sinyal teknikal tiap emiten. Update tiap hari bursa.",
     url: `${SITE_URL}/aliran-dana-asing`,
   },
 };

@@ -14,25 +14,34 @@ import { DailyBriefHero } from "@/components/berita/daily-brief-hero";
 // prerender di-serve tanpa regenerasi. Data-driven harian → render per-request.
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const title = "Brief Pasar Saham Hari Ini — Berita & Analisa IDX";
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams?: Promise<{ page?: string }>;
+}): Promise<Metadata> {
+  const sp = searchParams ? await searchParams : {};
+  const currentPage = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
+  const title = currentPage > 1
+    ? `Brief Pasar Saham Hari Ini — Halaman ${currentPage} — Berita & Analisa IDX`
+    : "Brief Pasar Saham Hari Ini — Berita & Analisa IDX";
+  const canonicalPath = currentPage === 1 ? "/berita" : `/berita?page=${currentPage}`;
   const description =
     "Brief pasar saham IDX setiap hari: ringkasan pergerakan IHSG, top movers, dan sinyal teknikal — semua saham yang disebut terhubung ke chart-nya. Ditulis dari data asli TeknikalID.";
   return {
     title,
     description,
-    alternates: { canonical: "/berita" },
+    alternates: { canonical: canonicalPath },
     keywords: [
       "brief pasar saham", "brief saham hari ini", "ringkasan pasar idx",
       "berita saham hari ini", "saham hari ini", "top mover saham",
     ],
     openGraph: {
-      title: "Brief Pasar Saham Hari Ini | TeknikalID",
+      title,
       description,
-      url: `${SITE_URL}/berita`,
+      url: `${SITE_URL}${canonicalPath}`,
       images: [{ url: `${SITE_URL}/api/og?title=Brief+Pasar+Saham+Hari+Ini&type=berita`, width: 1200, height: 630 }],
     },
-    twitter: { card: "summary_large_image", title: "Brief Pasar Saham Hari Ini — TeknikalID", description },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
 
@@ -40,25 +49,40 @@ function fmtDateId(d: Date): string {
   return new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakarta" }).format(d);
 }
 
-export default async function BeritaPage() {
+export default async function BeritaPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ page?: string }>;
+}) {
+  const sp = searchParams ? await searchParams : {};
+  const currentPage = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
+  const pageSize = 12;
+  const skip = (currentPage - 1) * pageSize;
+
+  const archiveFilter = {
+    status: ArticleStatus.PUBLISHED,
+    isListed: true,
+    articleType: { in: [ArticleType.NEWS, ArticleType.GENERAL] as ArticleType[] },
+  };
+
   // Brief-centric listing (2026-09-10): the old per-ticker DAILY_SNAPSHOT grid is
   // gone — only ~6 snapshots/day are still generated (movers), so the grid was
   // 99% stale rows. Snapshot pages stay live for long-tail SEO; they're just not
   // listed here anymore.
   // All fire-soft: build-stage prerender has no DB — empty states render and the
   // hourly ISR revalidate fills them in production.
-  const [brief, briefsArchive, overview, recentWeeks] = await Promise.all([
+  const [brief, briefsArchive, totalArticles, overview, recentWeeks] = await Promise.all([
     articleRepository.findLatestDailyBrief().catch(() => null),
     prisma.article.findMany({
-      where: {
-        status: ArticleStatus.PUBLISHED,
-        isListed: true,
-        articleType: { in: [ArticleType.NEWS, ArticleType.GENERAL] as ArticleType[] },
-      },
+      where: archiveFilter,
       orderBy: { publishedAt: "desc" },
-      take: 12,
+      skip,
+      take: pageSize,
       select: { slug: true, title: true, excerpt: true, publishedAt: true, articleType: true },
     }).catch(() => [] as { slug: string; title: string; excerpt: string | null; publishedAt: Date; articleType: ArticleType }[]),
+    prisma.article.count({
+      where: archiveFilter,
+    }).catch(() => 0),
     stockMarketService.getMarketOverview().catch(() => ({
       gainers: [] as { ticker: string; changePercent: number }[],
       losers: [] as { ticker: string; changePercent: number }[],
@@ -72,6 +96,11 @@ export default async function BeritaPage() {
     weeklyReportService.getRecentWeeks(1).catch(() => [] as Date[]),
   ]);
   const latestWeek = recentWeeks[0] ?? null;
+  const totalPages = Math.max(1, Math.ceil(totalArticles / pageSize));
+  const hasPrev = currentPage > 1;
+  const hasNext = currentPage < totalPages;
+  const prevPageUrl = currentPage - 1 === 1 ? "/berita" : `/berita?page=${currentPage - 1}`;
+  const nextPageUrl = `/berita?page=${currentPage + 1}`;
 
   // WIB display — container runs UTC; without an explicit timeZone the masthead
   // shows the previous day between 00:00-06:59 WIB.
@@ -99,6 +128,8 @@ export default async function BeritaPage() {
   return (
     <>
       <script type="application/ld+json">{breadcrumbJsonLd}</script>
+      {hasPrev && <link rel="prev" href={`${SITE_URL}${prevPageUrl}`} />}
+      {hasNext && <link rel="next" href={`${SITE_URL}${nextPageUrl}`} />}
       <div className="min-h-screen bg-bg-primary">
         {/* ── Editorial masthead ── */}
         <section className="border-b border-border bg-bg-card">
@@ -181,6 +212,37 @@ export default async function BeritaPage() {
                     </div>
                   </Link>
                 ))}
+              </div>
+            )}
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between mt-6 pt-4 border-t border-border/80">
+                {hasPrev ? (
+                  <Link
+                    href={prevPageUrl}
+                    rel="prev"
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-bg-card hover:bg-bg-hover text-xs font-semibold text-text-primary transition-colors"
+                  >
+                    ← Halaman Sebelumnya
+                  </Link>
+                ) : (
+                  <div />
+                )}
+                <span className="text-xs font-mono text-text-tertiary">
+                  Halaman {currentPage} dari {totalPages} ({totalArticles} total)
+                </span>
+                {hasNext ? (
+                  <Link
+                    href={nextPageUrl}
+                    rel="next"
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-bg-card hover:bg-bg-hover text-xs font-semibold text-text-primary transition-colors"
+                  >
+                    Halaman Berikutnya →
+                  </Link>
+                ) : (
+                  <div />
+                )}
               </div>
             )}
           </section>

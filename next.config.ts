@@ -100,6 +100,48 @@ const nextConfig: NextConfig = {
         destination: "/saham-volume-spike",
         statusCode: 301,
       },
+
+      // SEO Sprint-1: 301 kanibalisasi akademi & tanya jawab (audit 2026-11-01)
+      {
+        source: "/akademi/tanya/cara-memilih-saham-untuk-pemula-bb7c51",
+        destination: "/akademi/tanya/cara-memilih-saham-untuk-pemula",
+        statusCode: 301,
+      },
+      {
+        source: "/akademi/tanya/cara-memilih-saham-untuk-pemula-cthzrv",
+        destination: "/akademi/tanya/cara-memilih-saham-untuk-pemula",
+        statusCode: 301,
+      },
+      {
+        source: "/akademi/tanya/cara-memilih-saham-untuk-pemula-i7cx5q",
+        destination: "/akademi/tanya/cara-memilih-saham-untuk-pemula",
+        statusCode: 301,
+      },
+      {
+        source: "/akademi/tanya/strategi-swing-trading-saham-uo62xv",
+        destination: "/akademi/tanya/strategi-swing-trading-saham",
+        statusCode: 301,
+      },
+      {
+        source: "/akademi/tanya/apa-itu-flipping-dalam-pasar-saham",
+        destination: "/akademi/tanya/apa-itu-flipping",
+        statusCode: 301,
+      },
+      {
+        source: "/akademi/tanya/bollinger-bands-cara-menggunakan-indikator-saham",
+        destination: "/akademi/tanya/bollinger-bands-dan-cara-menggunakannya",
+        statusCode: 301,
+      },
+      {
+        source: "/akademi/golden-cross-vs-death-cross-arti-cara-membaca-contoh-saham",
+        destination: "/akademi/beda-golden-cross-vs-death-cross",
+        statusCode: 301,
+      },
+      {
+        source: "/akademi/golden-cross-dan-death-cross-sinyal-strategi-saham",
+        destination: "/akademi/beda-golden-cross-vs-death-cross",
+        statusCode: 301,
+      },
     ];
   },
   async headers() {

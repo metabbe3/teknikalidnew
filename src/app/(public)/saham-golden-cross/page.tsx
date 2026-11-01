@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     "saham uptrend hari ini",
   ],
   openGraph: {
-    title: "Saham Golden Cross Hari Ini — Sinyal Bullish | TeknikalID",
+    title: "Saham Golden Cross Hari Ini — Sinyal Bullish",
     description: "Daftar saham IDX golden cross (MA50 > MA200). Sinyal bullish untuk swing trading.",
     url: `${SITE_URL}/saham-golden-cross`,
     images: [{ url: `${SITE_URL}/api/og?title=Saham+Golden+Cross+Hari+Ini&type=berita`, width: 1200, height: 630 }],

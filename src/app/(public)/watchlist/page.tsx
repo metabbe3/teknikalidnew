@@ -8,7 +8,7 @@ import { GuestWatchlistView } from "@/components/watchlist/guest-watchlist-view"
 import { RemoveWatchlistButton } from "@/components/watchlist/remove-watchlist-button";
 
 export const metadata: Metadata = {
-  title: "Watchlist Saham — TeknikalID",
+  title: "Watchlist Saham",
   description: "Pantau saham pilihan kamu di satu tempat. Lihat harga, perubahan, dan indikator teknikal untuk semua saham di watchlist kamu.",
   robots: { index: false, follow: false },
 };

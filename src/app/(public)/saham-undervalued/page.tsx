@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     "cara cari saham undervalued",
   ],
   openGraph: {
-    title: "Daftar Saham Undervalued Indonesia (PE<15, PB<1.5) | TeknikalID",
+    title: "Daftar Saham Undervalued Indonesia (PE<15, PB<1.5)",
     description: "Saham dengan valuasi murah berdasarkan PE dan PB terbaru — update otomatis.",
     url: `${SITE_URL}/saham-undervalued`,
     images: [{ url: `${SITE_URL}/api/og?title=Saham+Undervalued+Indonesia&type=berita`, width: 1200, height: 630 }],

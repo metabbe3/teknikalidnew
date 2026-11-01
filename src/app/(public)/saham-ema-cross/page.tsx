@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     "ema cross bullish",
   ],
   openGraph: {
-    title: "Saham EMA Cross Hari Ini — EMA12/EMA26 | TeknikalID",
+    title: "Saham EMA Cross Hari Ini — EMA12/EMA26",
     description: "Daftar saham IDX dengan sinyal EMA12/EMA26 crossover.",
     url: `${SITE_URL}/saham-ema-cross`,
     images: [{ url: `${SITE_URL}/api/og?title=Saham+EMA+Cross+Hari+Ini&type=berita`, width: 1200, height: 630 }],
