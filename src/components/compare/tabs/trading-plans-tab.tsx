@@ -4,6 +4,7 @@ import { StockLogo } from "@/components/stock/stock-logo";
 import type { CompareStock } from "@/hooks/use-compare-data";
 import type { TradingPlan } from "@/lib/trading-plan";
 import { formatRp, stripJk } from "@/lib/utils";
+import { formatDecimalId } from "@/lib/format-number";
 
 interface Props {
   stocks: CompareStock[];
@@ -76,7 +77,7 @@ function PlanCard({ plan, ticker, color }: { plan: TradingPlan; ticker: string; 
 
         <div className="flex justify-between text-xs">
           <span className="text-text-secondary">Risk : Reward</span>
-          <span className={`font-bold tabular-nums ${isWaitAndSee ? "text-bearish" : ""}`}>1 : {plan.riskReward.toFixed(1)}</span>
+          <span className={`font-bold tabular-nums ${isWaitAndSee ? "text-bearish" : ""}`}>1 : {formatDecimalId(plan.riskReward, 1)}</span>
         </div>
 
         {plan.suggestion && (

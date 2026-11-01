@@ -89,8 +89,8 @@ export function InsightTab() {
   const f = e?.funnel7d;
   const stages = [
     { label: "Pengunjung (anonId)", value: f?.viewed ?? 0, color: "bg-blue-500" },
-    { label: "Baca ≥60 detik", value: f?.dwell60Plus ?? 0, color: "bg-indigo-500" },
-    { label: "Klik CTA setelahnya", value: f?.ctaAfterDwell ?? 0, color: "bg-purple-500" },
+    { label: "Baca ≥60 detik", value: f?.dwell60Plus ?? 0, color: "bg-sky-500" },
+    { label: "Klik CTA setelahnya", value: f?.ctaAfterDwell ?? 0, color: "bg-cyan-500" },
     { label: "Kembali di hari lain", value: f?.returnedLaterDay ?? 0, color: "bg-emerald-500" },
   ];
   const maxStage = Math.max(1, ...stages.map((s) => s.value));
@@ -210,7 +210,7 @@ export function InsightTab() {
               const rows = [
                 { label: "T1 · Datang", v: t?.t1_datang ?? 0, color: "bg-sky-500" },
                 { label: "T2 · Paham (dwell/klik)", v: t?.t2_paham ?? 0, color: "bg-blue-500" },
-                { label: "T3 · Simpan (pantau/Telegram)", v: t?.t3_simpan ?? 0, color: "bg-violet-500" },
+                { label: "T3 · Simpan (pantau/Telegram)", v: t?.t3_simpan ?? 0, color: "bg-cyan-500" },
                 { label: "T4 · Balik ≤7 hari", v: t?.t4_balik7 ?? 0, color: "bg-emerald-500" },
                 { label: "T5 · Habit (Telegram aktif)", v: t?.t5_habit ?? 0, color: "bg-amber-500" },
               ];
@@ -245,7 +245,7 @@ export function InsightTab() {
         <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
           <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
             <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
-              <MousePointerClick className="h-4 w-4 text-violet-500" />
+              <MousePointerClick className="h-4 w-4 text-sky-500" />
               Klik CTA &amp; navigasi (7 hari)
             </CardTitle>
           </CardHeader>
@@ -299,7 +299,7 @@ export function InsightTab() {
                 <div key={b.country} className="flex items-center gap-3">
                   <span className="text-xs font-mono font-bold text-gray-700 w-10 shrink-0">{b.country}</span>
                   <div className="flex-1 h-5 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-blue-600 to-violet-500 rounded-full transition-all duration-500" style={{ width: `${Math.max(2, (b.views / geoMax) * 100)}%` }} />
+                    <div className="h-full bg-gradient-to-r from-blue-600 to-sky-500 rounded-full transition-all duration-500" style={{ width: `${Math.max(2, (b.views / geoMax) * 100)}%` }} />
                   </div>
                   <span className="text-xs tabular-nums text-gray-600 w-24 text-right">
                     {b.views.toLocaleString("id-ID")} ({b.pct}%)

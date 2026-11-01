@@ -6,24 +6,24 @@ import { useArticles, type ArticleItem } from "@/hooks/use-articles";
 const TYPE_LABELS: Record<string, { label: string; color: string }> = {
   STOCK_ANALYSIS: { label: "Analisis Saham", color: "text-blue-500 bg-blue-500/10" },
   NEWS: { label: "Berita Pasar", color: "text-amber-500 bg-amber-500/10" },
-  GENERAL: { label: "Opini & Insight", color: "text-purple-500 bg-purple-500/10" },
+  GENERAL: { label: "Opini & Insight", color: "text-accent bg-accent-muted" },
 };
 
 const TAG_COLORS: Record<string, string> = {
   RSI: "#d97706",
-  MACD: "#8b5cf6",
+  MACD: "#0369a1",
   "Bollinger Bands": "#ec4899",
   Stochastic: "#06b6d4",
   SMA: "#0d9486",
   EMA: "#14b8a6",
   Support: "#2563eb",
   Resistance: "#dc2626",
-  "Pivot Point": "#6366f1",
+  "Pivot Point": "#0d9488",
   Trading: "#f59e0b",
   Saham: "#0d9486",
   Bullish: "#16a34a",
   Bearish: "#dc2626",
-  Sideways: "#8b5cf6",
+  Sideways: "#78716c",
 };
 
 function getTagColor(tag: string): string {

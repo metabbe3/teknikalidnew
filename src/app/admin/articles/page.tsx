@@ -137,7 +137,7 @@ export default function ArticlesAdminPage() {
       {/* Actions bar */}
       <div className="flex flex-wrap items-center gap-3">
         <Link href="/admin/articles/generate">
-          <Button className="gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md shadow-blue-600/20 transition-all">
+          <Button className="gap-2 bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700 shadow-md shadow-blue-600/20 transition-all">
             <Plus className="h-4 w-4" />
             Generate New Article
           </Button>

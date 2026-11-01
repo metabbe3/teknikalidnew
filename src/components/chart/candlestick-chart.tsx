@@ -229,7 +229,7 @@ export function CandlestickChart({
     });
 
     const sma50Series = chart.addSeries(LineSeries, {
-      color: "#8b5cf6",
+      color: "#0369a1",
       lineWidth: 2,
       visible: false,
       priceLineVisible: false,
@@ -316,7 +316,7 @@ export function CandlestickChart({
     });
 
     const compareSeries = chart.addSeries(LineSeries, {
-      color: "#6366f1",
+      color: "#0d9488",
       lineWidth: 2,
       lineStyle: 2,
       priceLineVisible: false,
@@ -629,7 +629,7 @@ export function CandlestickChart({
           </div>
           {tooltip.compareValue != null && (
             <div className="mt-1 pt-1 border-t border-gray-700/50">
-              <span className="text-indigo-400">{compareLabel}: {formatPrice(tooltip.compareValue)}</span>
+              <span className="text-bullish">{compareLabel}: {formatPrice(tooltip.compareValue)}</span>
             </div>
           )}
         </div>
@@ -637,7 +637,7 @@ export function CandlestickChart({
       {/* Compare legend */}
       {compareData && compareData.length > 0 && compareLabel && (
         <div className="absolute top-2 left-3 flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded px-2 py-1 text-[11px]">
-          <span className="w-4 h-0.5 border-t-2 border-dashed border-indigo-500" />
+          <span className="w-4 h-0.5 border-t-2 border-dashed border-bullish" />
           <span className="text-text-secondary font-medium">{compareLabel}</span>
         </div>
       )}

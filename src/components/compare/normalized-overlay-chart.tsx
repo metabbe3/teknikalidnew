@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { createChart, LineSeries, type IChartApi, type MouseEventParams, ColorType } from "lightweight-charts";
 import { stripJk } from "@/lib/utils";
+import { formatDecimalId } from "@/lib/format-number";
 
 interface ChartSeries {
   ticker: string;
@@ -153,7 +154,7 @@ export function NormalizedOverlayChart({ series }: NormalizedOverlayChartProps) 
                 </div>
                 {v.value !== null && (
                   <span className={`text-[11px] font-mono tabular-nums font-bold ${v.value >= 0 ? "text-bullish" : "text-bearish"}`}>
-                    {v.value >= 0 ? "+" : ""}{v.value.toFixed(2)}%
+                    {v.value >= 0 ? "+" : ""}{formatDecimalId(v.value, 2)}%
                   </span>
                 )}
               </div>

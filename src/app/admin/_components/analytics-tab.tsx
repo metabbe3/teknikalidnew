@@ -99,7 +99,7 @@ interface AnalyticsData {
 
 const SOURCE_ICONS: Record<string, React.ReactNode> = {
   "organic-search": <Search className="h-3.5 w-3.5 text-blue-500" />,
-  social: <Share2 className="h-3.5 w-3.5 text-purple-500" />,
+  social: <Share2 className="h-3.5 w-3.5 text-sky-500" />,
   direct: <Globe2 className="h-3.5 w-3.5 text-gray-400" />,
   referral: <ExternalLink className="h-3.5 w-3.5 text-emerald-500" />,
   email: <Hash className="h-3.5 w-3.5 text-amber-500" />,
@@ -107,7 +107,7 @@ const SOURCE_ICONS: Record<string, React.ReactNode> = {
 
 const SOURCE_COLORS: Record<string, string> = {
   "organic-search": "bg-blue-500",
-  social: "bg-purple-500",
+  social: "bg-sky-500",
   direct: "bg-gray-400",
   referral: "bg-emerald-500",
   email: "bg-amber-500",
@@ -534,9 +534,9 @@ export function AnalyticsTab() {
       {/* Realtime Visitors */}
       {data?.realtime && data.realtime.length > 0 && (
         <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
-          <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-purple-50 to-white rounded-t-lg">
+          <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-sky-50 to-white rounded-t-lg">
             <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
-              <Wifi className="h-4 w-4 text-purple-500" />
+              <Wifi className="h-4 w-4 text-sky-500" />
               Live Visitors
               <span className="text-xs font-normal text-gray-400">
                 ({data.overview.realtimeVisitors} online · last 5 min)
@@ -684,7 +684,7 @@ export function AnalyticsTab() {
                       <div
                         className={`w-full rounded-t transition-all duration-300 ${
                           isPeak
-                            ? "bg-gradient-to-t from-purple-600 to-purple-400"
+                            ? "bg-gradient-to-t from-sky-600 to-sky-400"
                             : "bg-gradient-to-t from-blue-600 to-cyan-400"
                         }`}
                         style={{ height: `${height}%` }}
@@ -710,9 +710,9 @@ export function AnalyticsTab() {
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Traffic Sources */}
         <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
-          <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-purple-50 to-white rounded-t-lg">
+          <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-sky-50 to-white rounded-t-lg">
             <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
-              <Share2 className="h-4 w-4 text-purple-500" />
+              <Share2 className="h-4 w-4 text-sky-500" />
               Traffic Sources
               <span className="text-xs font-normal text-gray-400">— where they come from</span>
             </CardTitle>
@@ -1010,9 +1010,9 @@ export function AnalyticsTab() {
 
         {/* Geo */}
         <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
-          <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-purple-50 to-white rounded-t-lg">
+          <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-sky-50 to-white rounded-t-lg">
             <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
-              <MapPin className="h-4 w-4 text-purple-500" />
+              <MapPin className="h-4 w-4 text-sky-500" />
               Top Locations
               {data?.crawlerSeo && data.crawlerSeo.views > 0 && (
                 <span className="ml-auto text-[10px] font-normal text-gray-400">
@@ -1031,7 +1031,7 @@ export function AnalyticsTab() {
                 {data.geo.map((g, i) => (
                   <div key={i} className="flex items-center justify-between text-xs">
                     <span className="text-gray-700 font-medium truncate flex-1">{g.label}</span>
-                    <span className="font-bold text-purple-600 tabular-nums ml-2">{g.count}</span>
+                    <span className="font-bold text-sky-600 tabular-nums ml-2">{g.count}</span>
                     <span className="text-gray-400 tabular-nums ml-1 w-8 text-right">{g.percentage}%</span>
                   </div>
                 ))}

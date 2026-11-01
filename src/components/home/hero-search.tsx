@@ -6,6 +6,7 @@ import { Search } from "lucide-react";
 import { StockLogo } from "@/components/stock/stock-logo";
 import type { StockRow } from "@/components/stock/stock-table";
 import { getAnonIdSafe } from "@/lib/anon-id-safe";
+import { formatDecimalId } from "@/lib/format-number";
 
 /**
  * HeroSearch — kolom cari saham langsung di homepage hero (owner 24 Okt:
@@ -163,7 +164,7 @@ export function HeroSearch() {
                     }`}
                   >
                     {s.changePercent >= 0 ? "+" : "−"}
-                    {Math.abs(s.changePercent).toFixed(2)}%
+                    {formatDecimalId(Math.abs(s.changePercent), 2)}%
                   </span>
                 )}
               </button>

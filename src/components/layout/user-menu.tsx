@@ -42,7 +42,7 @@ export function UserMenu({ user }: { user: User | undefined | null }) {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <button className="flex items-center gap-2 rounded-lg p-1 hover:bg-bg-hover transition-colors" />
+          <button aria-label="Menu akun" className="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-lg p-1 hover:bg-bg-hover transition-colors" />
         }
       >
         <Avatar className="h-7 w-7" size="sm">

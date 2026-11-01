@@ -8,6 +8,7 @@ import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { weeklyReportService } from "@/domains/stock/weekly-report.service";
 import { articleRepository } from "@/domains/article/article.repository";
 import { DailyBriefHero } from "@/components/berita/daily-brief-hero";
+import { formatDecimalId } from "@/lib/format-number";
 
 // force-dynamic (RCA 17 Okt): ISR prerender fire-soft saat build tanpa DB membekukan
 // "Belum ada brief" selamanya — revalidate 300s tidak pernah mengisi karena cache
@@ -161,7 +162,7 @@ export default async function BeritaPage({
                   className="hidden sm:inline-flex items-center gap-1 text-text-secondary hover:text-bullish transition-colors">
                   Top Gainer:
                   <span className="font-mono font-bold text-bullish">{topGainer.ticker.replace(/\.JK$/i, "")}</span>
-                  <span className="font-mono text-bullish">+{topGainer.changePercent.toFixed(2)}%</span>
+                  <span className="font-mono text-bullish">+{formatDecimalId(topGainer.changePercent, 2)}%</span>
                 </Link>
               )}
               {topLoser && (
@@ -169,7 +170,7 @@ export default async function BeritaPage({
                   className="hidden sm:inline-flex items-center gap-1 text-text-secondary hover:text-bearish transition-colors">
                   Top Loser:
                   <span className="font-mono font-bold text-bearish">{topLoser.ticker.replace(/\.JK$/i, "")}</span>
-                  <span className="font-mono text-bearish">{topLoser.changePercent.toFixed(2)}%</span>
+                  <span className="font-mono text-bearish">{formatDecimalId(topLoser.changePercent, 2)}%</span>
                 </Link>
               )}
             </div>

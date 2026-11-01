@@ -96,7 +96,7 @@ export default function TickerManagerPage() {
     { header: "#", cell: (_: TickerEntry, i: number) => <span className="text-xs text-gray-400">{i + 1}</span> },
     { header: "Ticker", cell: (r: TickerEntry) => <span className="font-mono font-bold text-sm text-gray-900">{r.ticker}</span> },
     { header: "Name", cell: (r: TickerEntry) => <span className="text-sm text-gray-700">{r.name}</span> },
-    { header: "Sector", cell: (r: TickerEntry) => <Badge variant="secondary" className="bg-violet-50 text-violet-700 border-violet-200">{r.sector}</Badge> },
+    { header: "Sector", cell: (r: TickerEntry) => <Badge variant="secondary" className="bg-sky-50 text-sky-700 border-sky-200">{r.sector}</Badge> },
     {
       header: "Price",
       cell: (r: TickerEntry) =>

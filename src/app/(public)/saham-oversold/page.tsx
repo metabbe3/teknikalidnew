@@ -8,6 +8,7 @@ import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { ConditionHistory } from "@/components/signal/condition-history";
 import { getConditionBacktest } from "@/lib/condition-backtest.service";
 import { formatPrice, formatPercent, stripJk, changeColor, rsiColor } from "@/lib/utils";
+import { formatDecimalId } from "@/lib/format-number";
 import { SITE_URL } from "@/lib/constants";
 import { AlertTriangle, Search, Target, TrendingUp } from "lucide-react";
 
@@ -250,7 +251,7 @@ export default async function SahamOversoldPage() {
                         {s.changePercent !== null ? formatPercent(s.changePercent) : "—"}
                       </td>
                       <td className={`py-2 pr-4 font-semibold ${s.rsi14 !== null ? rsiColor(s.rsi14) : ""}`}>
-                        {s.rsi14 !== null ? s.rsi14.toFixed(1) : "—"}
+                        {s.rsi14 !== null ? formatDecimalId(s.rsi14, 1) : "—"}
                       </td>
                     </tr>
                   );

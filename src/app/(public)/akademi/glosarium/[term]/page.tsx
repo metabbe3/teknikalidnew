@@ -16,7 +16,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
-  teknikal: "#8b5cf6",
+  teknikal: "#0369a1",
   fundamental: "#2563eb",
   pasar: "#0d9488",
   strategi: "#f59e0b",

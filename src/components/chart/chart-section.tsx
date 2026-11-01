@@ -122,7 +122,7 @@ export function ChartSection({ ticker }: ChartSectionProps) {
       label: "Moving Average",
       items: [
         { name: "SMA 20", color: "#d97706", value: showSma20, toggle: () => setShowSma20(!showSma20) },
-        { name: "SMA 50", color: "#8b5cf6", value: showSma50, toggle: () => setShowSma50(!showSma50) },
+        { name: "SMA 50", color: "#0369a1", value: showSma50, toggle: () => setShowSma50(!showSma50) },
         { name: "SMA 200", color: "#0ea5e9", value: showSma200, toggle: () => setShowSma200(!showSma200) },
         { name: "EMA 12", color: "#06b6d4", value: showEma12, toggle: () => setShowEma12(!showEma12) },
         { name: "EMA 26", color: "#ec4899", value: showEma26, toggle: () => setShowEma26(!showEma26) },
@@ -138,7 +138,7 @@ export function ChartSection({ ticker }: ChartSectionProps) {
     {
       label: "Panel",
       items: [
-        { name: "RSI", color: "#8b5cf6", value: showRsi, toggle: () => setShowRsi(!showRsi) },
+        { name: "RSI", color: "#0369a1", value: showRsi, toggle: () => setShowRsi(!showRsi) },
         { name: "MACD", color: "#2563eb", value: showMacd, toggle: () => setShowMacd(!showMacd) },
       ],
     },

@@ -15,6 +15,7 @@ const ScreenerAiButton = dynamicImport(
 import { pasarLiveService, isLiveWindow, isMarketHours, wibNow, wibHHMM, type PasarTopSignal, type PasarForeignItem, isWibWeekday } from "@/domains/stock/pasar-live.service";
 import { marketSnapshotService } from "@/domains/stock/market-snapshot.service";
 import { dateLabel, formatPrice, formatPercent, formatVolume, stripJk  } from "@/lib/utils";
+import { formatDecimalId } from "@/lib/format-number";
 import { cn } from "@/lib/utils";
 import { WibClock } from "./wib-clock";
 import { AlertTriangle, Clock, Moon, Newspaper, TrendingDown, TrendingUp, Zap } from "lucide-react";
@@ -450,9 +451,9 @@ function TopSignalsSection({ items, sessionDate }: { items: PasarTopSignal[]; se
                   <ChangeBadge pct={t.changePercent} className="w-20 text-right" />
                   <span
                     className="w-24 text-right text-xs font-semibold tabular-nums"
-                    title={`Skor sinyal ${t.signalScore !== null ? t.signalScore.toFixed(2) : "—"} — rangkuman indikator teknikal, bukan rekomendasi. Catatan: skor teknikal ≠ pergerakan harga hari ini — saham bisa turun hari ini walau skornya kuat.`}
+                    title={`Skor sinyal ${t.signalScore !== null ? formatDecimalId(t.signalScore, 2) : "—"} — rangkuman indikator teknikal, bukan rekomendasi. Catatan: skor teknikal ≠ pergerakan harga hari ini — saham bisa turun hari ini walau skornya kuat.`}
                   >
-                    {t.signalScore !== null ? t.signalScore.toFixed(2) : "—"}
+                    {t.signalScore !== null ? formatDecimalId(t.signalScore, 2) : "—"}
                     {t.signalLabel && <span className="block text-[10px] font-normal text-text-tertiary">{signalLabelId(t.signalLabel)}</span>}
                   </span>
                 </Link>

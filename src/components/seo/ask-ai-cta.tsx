@@ -8,7 +8,7 @@ import { Sparkles } from "lucide-react";
 export function AskAiCta({ question }: { question: string }) {
   const href = `/stocks?view=screener&ask=${encodeURIComponent(question)}`;
   return (
-    <div className="mt-8 rounded-lg border border-purple-200 bg-purple-50 p-5 dark:border-purple-900 dark:bg-purple-950">
+    <div className="mt-8 rounded-lg border border-border bg-accent/5 p-5">
       <div className="flex items-start gap-3">
         <Sparkles className="text-2xl h-8 w-8 text-accent" aria-hidden />
         <div className="flex-1">
@@ -20,13 +20,13 @@ export function AskAiCta({ question }: { question: string }) {
           <div className="mt-3 flex flex-wrap gap-2">
             <Link
               href={href}
-              className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700"
+              className="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent/90"
             >
               {question}
             </Link>
             <Link
               href="/stocks?view=screener"
-              className="rounded-lg border border-purple-300 px-4 py-2 text-sm font-semibold hover:bg-purple-100 dark:border-purple-800 dark:hover:bg-purple-900"
+              className="rounded-lg border border-border px-4 py-2 text-sm font-semibold text-text-primary hover:bg-hover"
             >
               Lihat semua topik →
             </Link>

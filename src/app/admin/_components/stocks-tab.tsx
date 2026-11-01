@@ -72,7 +72,7 @@ export function StocksTab() {
     {
       header: "Posts",
       cell: (r: { posts: number }) => (
-        <span className="text-sm font-bold text-violet-600 tabular-nums">{r.posts}</span>
+        <span className="text-sm font-bold text-sky-600 tabular-nums">{r.posts}</span>
       ),
     },
   ];
@@ -111,7 +111,7 @@ export function StocksTab() {
         <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
           <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
             <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
-              <MessageSquare className="h-4 w-4 text-violet-500" />
+              <MessageSquare className="h-4 w-4 text-sky-500" />
               Most Discussed (This Week)
             </CardTitle>
           </CardHeader>
@@ -146,7 +146,7 @@ export function StocksTab() {
                     <span className="text-xs font-medium text-gray-700 w-40 shrink-0 truncate">{s.sector}</span>
                     <div className="flex-1 h-5 bg-gray-100 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-blue-600 to-violet-500 rounded-full transition-all duration-500"
+                        className="h-full bg-gradient-to-r from-blue-600 to-sky-500 rounded-full transition-all duration-500"
                         style={{ width: `${pct}%` }}
                       />
                     </div>

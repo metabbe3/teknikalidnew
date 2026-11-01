@@ -9,6 +9,7 @@ import { stockRepository } from "@/domains/stock/stock.repository";
 import { monteCarloTpFirst } from "@/lib/monte-carlo";
 import { auth } from "@/lib/auth";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
+import { formatDecimalId } from "@/lib/format-number";
 import { IDX_STOCKS } from "@/lib/constants";
 import { subDays } from "date-fns";
 
@@ -255,7 +256,7 @@ export default async function TradingPlanPage({
                     <div className="text-xs text-text-secondary">
                       Risk-Reward:{" "}
                       <span className={`font-mono font-semibold ${rr >= 1.5 ? "text-bullish" : rr >= 1 ? "text-amber-400" : "text-bearish"}`}>
-                        1 : {rr.toFixed(1)}
+                        1 : {formatDecimalId(rr, 1)}
                       </span>
                       {d.tradingWarning && (
                         <span className="block mt-1.5 text-text-tertiary leading-snug">⚠ {d.tradingWarning}</span>

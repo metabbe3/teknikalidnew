@@ -253,8 +253,8 @@ export default function AgentDetailPage() {
         </Link>
         <div className="flex-1">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-indigo-50">
-              <Icon className="h-6 w-6 text-indigo-600" />
+            <div className="p-2 rounded-lg bg-blue-50">
+              <Icon className="h-6 w-6 text-blue-600" />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -304,7 +304,7 @@ export default function AgentDetailPage() {
             onClick={() => setActiveTab(key)}
             className={`flex items-center gap-1.5 px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === key
-                ? "border-indigo-500 text-indigo-600"
+                ? "border-blue-500 text-blue-600"
                 : "border-transparent text-gray-500 hover:text-gray-700"
             }`}
           >
@@ -476,7 +476,7 @@ export default function AgentDetailPage() {
                 Changes take effect on the next job run.
               </p>
               <textarea
-                className="w-full h-64 p-3 text-sm font-mono border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50"
+                className="w-full h-64 p-3 text-sm font-mono border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50"
                 placeholder="Leave empty to use the default prompt..."
                 value={promptDraft}
                 onChange={(e) => setPromptDraft(e.target.value)}
@@ -679,7 +679,7 @@ function Toggle({ value, onChange, label, description }: {
       <button
         onClick={() => onChange(!value)}
         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-          value ? "bg-indigo-600" : "bg-gray-300"
+          value ? "bg-blue-600" : "bg-gray-300"
         }`}
       >
         <span
@@ -791,7 +791,7 @@ function ContentQualitySettings({
         <Toggle value={fixEnabled} onChange={(v) => { setFixEnabled(v); if (!v) return; }}
           label="Auto-Fix Issues" description="Automatically fix grammar, clickbait, structure, and duplicates before re-scoring" />
         {fixEnabled && (
-          <div className="pl-2 space-y-3 border-l-2 border-indigo-100">
+          <div className="pl-2 space-y-3 border-l-2 border-blue-100">
             <Toggle value={fixGrammar} onChange={setFixGrammar}
               label="Fix Grammar & Readability" description="AI rewrites content to fix grammar and typos" />
             <Toggle value={fixClickbait} onChange={setFixClickbait}
@@ -902,7 +902,7 @@ function SiteHealthSettings({
         label="Auto-Remediate Issues" description="Automatically trigger fixes when health checks fail" />
 
       {enabled && (
-        <div className="pl-2 space-y-3 border-l-2 border-indigo-100">
+        <div className="pl-2 space-y-3 border-l-2 border-blue-100">
           <Toggle value={staleStockData} onChange={setStaleStockData}
             label="Fix Stale Stock Data" description="Trigger sync-eod when price data is stale" />
           <Toggle value={noArticles} onChange={setNoArticles}

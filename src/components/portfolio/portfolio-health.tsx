@@ -1,14 +1,15 @@
 "use client";
 
 import type { PortfolioSummary } from "@/hooks/use-portfolio";
+import { formatDecimalId } from "@/lib/format-number";
 
 const SECTOR_COLORS: Record<string, string> = {
   "Financials": "#0d9488",
-  "Consumer Cyclicals": "#6366f1",
+  "Consumer Cyclicals": "#0284c7",
   "Consumer Non-Cyclicals": "#f59e0b",
   "Basic Materials": "#ef4444",
   "Energy": "#f97316",
-  "Industrials": "#8b5cf6",
+  "Industrials": "#64748b",
   "Infrastructures": "#06b6d4",
   "Properties & Real Estate": "#ec4899",
   "Technology": "#3b82f6",
@@ -98,7 +99,7 @@ export function PortfolioHealth({ summary }: PortfolioHealthProps) {
                     backgroundColor: s.color,
                     opacity: 0.7,
                   }}
-                  title={`${s.sector}: ${s.percent.toFixed(1)}%`}
+                  title={`${s.sector}: ${formatDecimalId(s.percent, 1)}%`}
                 />
               ))}
             </div>
@@ -112,7 +113,7 @@ export function PortfolioHealth({ summary }: PortfolioHealthProps) {
                     style={{ backgroundColor: s.color }}
                   />
                   <span className="text-[11px] text-gray-500 flex-1 truncate">{s.sector}</span>
-                  <span className="text-[10px] font-mono text-gray-400 font-semibold tabular-nums">{s.percent.toFixed(1)}%</span>
+                  <span className="text-[10px] font-mono text-gray-400 font-semibold tabular-nums">{formatDecimalId(s.percent, 1)}%</span>
                 </div>
               ))}
             </div>

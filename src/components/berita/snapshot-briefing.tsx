@@ -4,6 +4,7 @@ import { MiniSparkline } from "@/components/chart/mini-sparkline";
 import { HealthScoreBadge } from "@/components/stock/health-score-badge";
 import { KeyStatistics } from "@/components/stock/key-statistics";
 import { formatPercentPlain, formatPrice, stripJk } from "@/lib/utils";
+import { formatDecimalId } from "@/lib/format-number";
 
 /**
  * SnapshotBriefing — the data dashboard rendered above the analysis prose on
@@ -175,10 +176,10 @@ export function SnapshotBriefing({ data }: { data: SnapshotBriefingData }) {
 
         <div className="indicator-card depth-shadow p-4">
           <h3 className="text-[11px] font-semibold text-text-tertiary uppercase tracking-wider mb-2">Indikator Teknikal</h3>
-          <IndicatorChip label="RSI (14)" value={rsi !== null ? rsi.toFixed(1) : "—"} tone={toneFor(rsi, 0, 0) === null ? null : (rsi! >= 70 ? "bear" : rsi! <= 30 ? "bull" : "neutral")} hint=">70 overbought, <30 oversold" />
-          <IndicatorChip label="MACD Histogram" value={macd !== null ? macd.toFixed(2) : "—"} tone={macd === null ? null : macd >= 0 ? "bull" : "bear"} />
-          <IndicatorChip label="Stochastic %K" value={stochK !== null ? stochK.toFixed(1) : "—"} tone={stochK === null ? null : stochK >= 80 ? "bear" : stochK <= 20 ? "bull" : "neutral"} />
-          <IndicatorChip label="ADX (trend strength)" value={adx !== null ? adx.toFixed(1) : "—"} tone={adx === null ? null : adx >= 25 ? "bull" : "neutral"} hint=">25 = tren kuat" />
+          <IndicatorChip label="RSI (14)" value={rsi !== null ? formatDecimalId(rsi, 1) : "—"} tone={toneFor(rsi, 0, 0) === null ? null : (rsi! >= 70 ? "bear" : rsi! <= 30 ? "bull" : "neutral")} hint=">70 overbought, <30 oversold" />
+          <IndicatorChip label="MACD Histogram" value={macd !== null ? formatDecimalId(macd, 2) : "—"} tone={macd === null ? null : macd >= 0 ? "bull" : "bear"} />
+          <IndicatorChip label="Stochastic %K" value={stochK !== null ? formatDecimalId(stochK, 1) : "—"} tone={stochK === null ? null : stochK >= 80 ? "bear" : stochK <= 20 ? "bull" : "neutral"} />
+          <IndicatorChip label="ADX (trend strength)" value={adx !== null ? formatDecimalId(adx, 1) : "—"} tone={adx === null ? null : adx >= 25 ? "bull" : "neutral"} hint=">25 = tren kuat" />
           <IndicatorChip label="Bollinger Atas" value={indicator?.bbUpper !== null && indicator?.bbUpper !== undefined ? formatPrice(indicator.bbUpper) : "—"} tone={null} />
           <IndicatorChip label="Bollinger Bawah" value={indicator?.bbLower !== null && indicator?.bbLower !== undefined ? formatPrice(indicator.bbLower) : "—"} tone={null} />
           <IndicatorChip label="Supertrend" value={indicator?.supertrend !== null && indicator?.supertrend !== undefined ? formatPrice(indicator.supertrend) : "—"} tone={null} />

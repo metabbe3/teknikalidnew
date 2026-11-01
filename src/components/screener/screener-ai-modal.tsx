@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Sparkles, Loader2 } from "lucide-react";
+import { formatDecimalId } from "@/lib/format-number";
 
 /**
  * Tanya AI Screener — tombol di /stocks, modal chat bahasa manusia.
@@ -209,9 +210,9 @@ export function ScreenerAiButton() {
                           </td>
                           <td className="px-3 py-2 text-right font-mono text-xs">{s.close != null ? new Intl.NumberFormat("id-ID").format(s.close) : "–"}</td>
                           <td className={`px-3 py-2 text-right font-mono text-xs ${(s.changePercent ?? 0) >= 0 ? "text-bullish" : "text-bearish"}`}>
-                            {s.changePercent != null ? `${s.changePercent >= 0 ? "+" : ""}${s.changePercent.toFixed(2)}%` : "–"}
+                            {s.changePercent != null ? `${s.changePercent >= 0 ? "+" : ""}${formatDecimalId(s.changePercent, 2)}%` : "–"}
                           </td>
-                          <td className="px-3 py-2 text-right font-mono text-xs text-text-secondary">{s.signalScore != null ? s.signalScore.toFixed(2) : "–"}</td>
+                          <td className="px-3 py-2 text-right font-mono text-xs text-text-secondary">{s.signalScore != null ? formatDecimalId(s.signalScore, 2) : "–"}</td>
                         </tr>
                       ))}
                     </tbody>

@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { StockLogo } from "@/components/stock/stock-logo";
 import { formatPrice, formatPercent, formatVolume, stripJk, changeColor, rsiColor } from "@/lib/utils";
+import { formatDecimalId } from "@/lib/format-number";
 import type { TradingStyleDef, ScreenerStock, ViewMode, SortField, SortOrder } from "./screener-types";
 import { SORT_OPTIONS, signalLabelColor } from "./screener-types";
 import { BookmarkIcon } from "./screener-icons";
@@ -278,7 +279,7 @@ export function ResultsTable({ stocks, watchlistTickers, onToggleWatchlist, onRe
                   {stock.volume !== null ? formatVolume(stock.volume) : "\u2014"}
                 </div>
                 <div className={`px-4 py-3 text-right font-mono tabular-nums text-xs ${rsiColor(stock.rsi14)}`}>
-                  {stock.rsi14 !== null ? stock.rsi14.toFixed(1) : "\u2014"}
+                  {stock.rsi14 !== null ? formatDecimalId(stock.rsi14, 1) : "\u2014"}
                 </div>
                 <div className="px-4 py-3 text-right">
                   {stock.signalLabel ? (

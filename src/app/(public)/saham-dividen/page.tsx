@@ -5,6 +5,7 @@ import { AskAiCta } from "@/components/seo/ask-ai-cta";
 import { screenerAnalysisService } from "@/domains/stock/screener-analysis.service";
 import { SITE_URL } from "@/lib/constants";
 import { stripJk } from "@/lib/utils";
+import { formatDecimalId } from "@/lib/format-number";
 import Link from "next/link";
 import { Gem, Landmark, Search } from "lucide-react";
 
@@ -127,11 +128,11 @@ export default async function SahamDividenPage() {
                   </td>
                   <td className="py-2 pr-4">
                     <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700 dark:bg-green-950 dark:text-green-300">
-                      {r.dividendYield != null ? `${r.dividendYield.toFixed(2)}%` : "-"}
+                      {r.dividendYield != null ? `${formatDecimalId(r.dividendYield, 2)}%` : "-"}
                     </span>
                   </td>
                   <td className="py-2 pr-4">{r.close != null ? r.close.toLocaleString("id-ID") : "-"}</td>
-                  <td className="py-2 pr-4">{r.pe != null ? r.pe.toFixed(1) : "-"}</td>
+                  <td className="py-2 pr-4">{r.pe != null ? formatDecimalId(r.pe, 1) : "-"}</td>
                   <td className="py-2 text-xs">{r.sector}</td>
                 </tr>
               ))}

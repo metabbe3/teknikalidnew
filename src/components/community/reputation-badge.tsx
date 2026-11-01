@@ -4,11 +4,11 @@ import { BADGE_TIERS, getBadge } from "@/domains/reputation/badge";
 
 const COLOR_STYLES: Record<string, { bg: string; dot: string }> = {
   amber: { bg: "bg-amber-50 text-amber-700 border border-amber-200", dot: "bg-amber-500" },
-  purple: { bg: "bg-purple-50 text-purple-700 border border-purple-200", dot: "bg-purple-500" },
+  rose: { bg: "bg-rose-50 text-rose-700 border border-rose-200", dot: "bg-rose-500" },
   gold: { bg: "bg-yellow-50 text-yellow-700 border border-yellow-200", dot: "bg-yellow-500" },
   teal: { bg: "bg-teal-50 text-teal-700 border border-teal-200", dot: "bg-teal-500" },
   blue: { bg: "bg-blue-50 text-blue-700 border border-blue-200", dot: "bg-blue-500" },
-  indigo: { bg: "bg-indigo-50 text-indigo-700 border border-indigo-200", dot: "bg-indigo-500" },
+  sky: { bg: "bg-sky-50 text-sky-700 border border-sky-200", dot: "bg-sky-500" },
   cyan: { bg: "bg-cyan-50 text-cyan-700 border border-cyan-200", dot: "bg-cyan-500" },
   slate: { bg: "bg-slate-50 text-slate-600 border border-slate-200", dot: "bg-slate-400" },
 };

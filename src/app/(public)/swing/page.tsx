@@ -4,6 +4,7 @@ import { PageHero } from "@/components/layout/page-hero";
 import { StockLogo } from "@/components/stock/stock-logo";
 import { GET, type SwingMarketResponse } from "@/app/api/market/swing/route";
 import { formatPrice, stripJk, dateLabel } from "@/lib/utils";
+import { formatDecimalId } from "@/lib/format-number";
 import { TrendingUp, ShieldAlert, CheckCircle2, ArrowUpRight, BarChart3, Target } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -60,7 +61,7 @@ export default async function SwingPage() {
       >
         <div className="flex flex-wrap items-center gap-3 text-xs text-text-secondary">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-border bg-bg-card font-medium">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="h-2 w-2 rounded-full bg-bullish animate-pulse" />
             Data EOD Sesi: {dateLabel(asOf)}
           </span>
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-border bg-bg-card">
@@ -73,7 +74,7 @@ export default async function SwingPage() {
         {/* ── Static Intro SEO Text ── */}
         <section className="rounded-xl border border-border bg-bg-card p-6 sm:p-8 space-y-4">
           <div className="flex items-center gap-2 text-text-primary font-semibold text-lg">
-            <Target className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+            <Target className="h-5 w-5 text-accent" />
             <h2>Metodologi & Panduan Eksekusi Swing Trading</h2>
           </div>
           <p className="text-sm text-text-secondary leading-relaxed">
@@ -118,8 +119,8 @@ export default async function SwingPage() {
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
             <div>
               <div className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                <h2 className="text-xl font-bold tracking-tight text-text-primary">
+                <TrendingUp className="h-5 w-5 text-accent" />
+                <h2 className="text-lg font-semibold tracking-tight text-text-primary">
                   Top 10 Kandidat Swing Hari Ini
                 </h2>
               </div>
@@ -177,10 +178,10 @@ export default async function SwingPage() {
                             <StockLogo name={c.name} ticker={c.ticker} size={36} />
                             <div className="min-w-0">
                               <div className="flex items-center gap-1.5">
-                                <span className="font-bold text-text-primary group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                                <span className="font-bold text-text-primary group-hover:text-accent transition-colors">
                                   {cleanTicker}
                                 </span>
-                                <ArrowUpRight className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-emerald-600 dark:text-emerald-400" />
+                                <ArrowUpRight className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-accent" />
                               </div>
                               <p className="text-xs text-text-secondary truncate max-w-[140px] sm:max-w-[200px]">
                                 {c.name}
@@ -218,8 +219,8 @@ export default async function SwingPage() {
                         {/* R:R Estimasi */}
                         <td className="px-3 py-3">
                           <div className="space-y-0.5">
-                            <span className="font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
-                              1 : {c.estimatedRR.toFixed(1)}
+                            <span className="font-semibold tabular-nums text-accent">
+                              1 : {c.estimatedRR != null ? formatDecimalId(c.estimatedRR, 1) : "—"}
                             </span>
                             <p className="text-[11px] text-text-tertiary tabular-nums">
                               Stop: {formatPrice(c.estimatedStop)}
@@ -232,13 +233,13 @@ export default async function SwingPage() {
                           <span
                             className={`font-medium ${
                               c.rsi14 !== null && c.rsi14 < 30
-                                ? "text-emerald-600 dark:text-emerald-400 font-semibold"
+                                ? "text-bullish font-semibold"
                                 : c.rsi14 !== null && c.rsi14 > 70
-                                ? "text-amber-600 dark:text-amber-400 font-semibold"
+                                ? "text-warning font-semibold"
                                 : "text-text-primary"
                             }`}
                           >
-                            {c.rsi14 !== null ? c.rsi14.toFixed(1) : "—"}
+                            {c.rsi14 !== null ? formatDecimalId(c.rsi14, 1) : "—"}
                           </span>
                         </td>
 
@@ -247,8 +248,8 @@ export default async function SwingPage() {
                           <span
                             className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${
                               isAboveSma
-                                ? "text-emerald-600 bg-emerald-500/10 dark:text-emerald-400"
-                                : "text-rose-600 bg-rose-500/10 dark:text-rose-400"
+                                ? "text-bullish bg-bullish-bg"
+                                : "text-bearish bg-bearish-bg"
                             }`}
                           >
                             {formatPercentWithSign(c.distanceSma50Pct, false)}
@@ -266,9 +267,9 @@ export default async function SwingPage() {
         {/* ── Section Bukti Backtest ── */}
         <section className="space-y-6">
           <div className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+            <BarChart3 className="h-5 w-5 text-accent" />
             <div>
-              <h2 className="text-xl font-bold tracking-tight text-text-primary">
+              <h2 className="text-lg font-semibold tracking-tight text-text-primary">
                 Bukti Backtest Historis (Forward Return 20 Hari)
               </h2>
               <p className="text-xs text-text-secondary mt-0.5">
@@ -279,17 +280,17 @@ export default async function SwingPage() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             {/* Kartu Ambang P95 (0.34) */}
-            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/[0.03] p-5 sm:p-6 space-y-4">
+            <div className="rounded-xl border border-bullish/30 bg-bullish-bg/20 p-5 sm:p-6 space-y-4">
               <div className="flex items-center justify-between border-b border-border/80 pb-3">
                 <div>
-                  <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
+                  <span className="text-xs font-semibold text-bullish uppercase tracking-wider">
                     Tier Utama: Ambang P95 (Skor ≥ 0,34)
                   </span>
                   <h3 className="text-sm font-semibold text-text-primary mt-0.5">
                     Setup Momentum Terkuat
                   </h3>
                 </div>
-                <span className="text-xs px-2.5 py-1 rounded-full border border-emerald-500/40 text-emerald-600 dark:text-emerald-400 font-medium">
+                <span className="text-xs px-2.5 py-1 rounded-full border border-bullish/40 text-bullish font-medium">
                   {formatIntId(stats34.signals)} Sinyal
                 </span>
               </div>
@@ -297,7 +298,7 @@ export default async function SwingPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="rounded-lg bg-bg-card border border-border p-3.5">
                   <span className="text-xs text-text-tertiary">Win Rate (20 Hari)</span>
-                  <div className="text-2xl font-bold tabular-nums text-emerald-600 dark:text-emerald-400 mt-1">
+                  <div className="text-2xl font-bold tabular-nums text-bullish mt-1">
                     {formatPercentPlain(stats34.winRate, true)}
                   </div>
                   <span className="text-[11px] text-text-secondary">
@@ -330,7 +331,7 @@ export default async function SwingPage() {
                       <span className="font-medium text-text-primary">{label}</span>
                       <div className="flex items-center gap-4 tabular-nums">
                         <span className="text-text-secondary">{formatIntId(s.signals)} sinyal</span>
-                        <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                        <span className="text-bullish font-semibold">
                           Win: {formatPercentPlain(s.winRate, true)}
                         </span>
                         <span className="font-semibold text-text-primary">
@@ -391,7 +392,7 @@ export default async function SwingPage() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span>Look-ahead Safety:</span>
-                  <span className="font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                  <span className="font-semibold text-bullish flex items-center gap-1">
                     <CheckCircle2 className="h-3.5 w-3.5" /> Terproteksi
                   </span>
                 </div>

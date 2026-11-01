@@ -45,7 +45,7 @@ export function StockSelector({ selected, onAdd, onRemove, stocks, maxStocks = 4
           {selected.map((ticker, i) => {
             const stock = IDX_STOCKS.find((s) => s.ticker === ticker);
             const meta = stocks?.find((s) => s.ticker === ticker);
-            const colors = ["#06b6d4", "#f59e0b", "#8b5cf6", "#ef4444"];
+            const colors = ["#06b6d4", "#f59e0b", "#0369a1", "#ef4444"];
             const chipColor = meta?.color.line ?? colors[i % colors.length];
 
             return (

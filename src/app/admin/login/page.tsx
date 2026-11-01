@@ -50,14 +50,14 @@ function AdminLoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-violet-50 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-sky-50 to-slate-50 relative overflow-hidden">
       <div className="absolute top-1/4 -left-20 w-80 h-80 bg-blue-200/30 rounded-full blur-3xl" />
-      <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-violet-200/30 rounded-full blur-3xl" />
+      <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-sky-200/30 rounded-full blur-3xl" />
       <div className="absolute top-10 right-1/4 w-40 h-40 bg-emerald-200/20 rounded-full blur-2xl" />
 
       <div className="w-full max-w-sm space-y-6 relative z-10">
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-violet-600 shadow-lg shadow-blue-500/25">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-sky-600 shadow-lg shadow-blue-500/25">
             <Shield className="h-7 w-7 text-white" />
           </div>
           <h1 className="text-2xl font-extrabold admin-gradient-text">TeknikalID</h1>
@@ -130,7 +130,7 @@ function AdminLoginForm() {
               )}
               <Button
                 type="submit"
-                className="w-full h-11 bg-gradient-to-r from-blue-500 to-violet-600 hover:from-blue-600 hover:to-violet-700 shadow-md shadow-blue-500/20 transition-all"
+                className="w-full h-11 bg-gradient-to-r from-blue-500 to-sky-600 hover:from-blue-600 hover:to-sky-700 shadow-md shadow-blue-500/20 transition-all"
                 disabled={loading}
               >
                 {loading ? "Signing in..." : "Sign In"}

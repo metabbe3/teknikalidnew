@@ -118,7 +118,7 @@ export function CommunityTab() {
     {
       header: "Stock",
       cell: (r: CommunityData["topPosts"][0]) => (
-        r.tickerTag ? <Badge variant="secondary" className="bg-violet-50 text-violet-700 border-violet-200 font-semibold">{r.tickerTag}</Badge> : <span className="text-xs text-gray-400">-</span>
+        r.tickerTag ? <Badge variant="secondary" className="bg-sky-50 text-sky-700 border-sky-200 font-semibold">{r.tickerTag}</Badge> : <span className="text-xs text-gray-400">-</span>
       ),
     },
   ];
@@ -130,7 +130,7 @@ export function CommunityTab() {
         <div className="flex items-center gap-2">
           <Avatar className="h-6 w-6 ring-1 ring-blue-100">
             <AvatarImage src={r.image ?? undefined} />
-            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-[10px] font-bold">
+            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-sky-600 text-white text-[10px] font-bold">
               {(r.username ?? r.name ?? "?")[0].toUpperCase()}
             </AvatarFallback>
           </Avatar>
@@ -208,7 +208,7 @@ export function CommunityTab() {
                 return (
                   <div key={day.date} className="flex-1 flex flex-col items-center gap-1">
                     <div
-                      className="w-full rounded-t bg-gradient-to-t from-blue-600 to-indigo-400 transition-all duration-300"
+                      className="w-full rounded-t bg-gradient-to-t from-blue-600 to-sky-400 transition-all duration-300"
                       style={{ height: `${height}%` }}
                       title={`${day.date}: ${day.posts} posts, ${day.comments} comments`}
                     />
@@ -222,7 +222,7 @@ export function CommunityTab() {
           )}
           <div className="flex items-center gap-4 mt-3 justify-center">
             <div className="flex items-center gap-1.5">
-              <div className="w-2.5 h-2.5 rounded-sm bg-gradient-to-t from-blue-600 to-indigo-400" />
+              <div className="w-2.5 h-2.5 rounded-sm bg-gradient-to-t from-blue-600 to-sky-400" />
               <span className="text-[10px] text-gray-500 font-medium">Posts</span>
             </div>
             <div className="flex items-center gap-1.5">

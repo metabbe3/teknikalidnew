@@ -9,7 +9,7 @@ import { VoteButtons } from "@/components/faq/vote-buttons";
 
 const CATEGORY_COLORS: Record<string, string> = {
   saham: "#0d9488",
-  indikator: "#8b5cf6",
+  indikator: "#0369a1",
   strategi: "#f59e0b",
   fundamental: "#2563eb",
   trading: "#ec4899",
@@ -251,7 +251,7 @@ export default async function FAQQuestionPage({
           <div className="flex items-center gap-2 mb-8 text-sm flex-wrap">
             {isAIGenerated ? (
               <>
-                <Sparkles className="h-4 w-4 text-violet-400" />
+                <Sparkles className="h-4 w-4 text-accent" />
                 <span className="text-text-tertiary">Dijawab oleh AI</span>
               </>
             ) : (
