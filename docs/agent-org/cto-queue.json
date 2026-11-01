@@ -30,15 +30,17 @@
       "type": "prd",
       "priority": "P2",
       "prd_id": "im-2026-10-29-2",
-      "status": "spec_ready",
+      "status": "night_ready",
       "title": "P2 STICKY (PRD im-2026-10-29-2): Tooltip istilah inline di 3 halaman kondisi — reuse Tooltip UI + GLOSSARY_TERMS 61 istilah + anchor /akademi/glosarium (7% pertanyaan 'apa itu X')",
       "north_star": "STICKY time-spent pemula + jembatan konten existing; sinyal AiChatLog 'apa itu X' 7/98 (30d)",
       "source": "Product Agent nightly buffer-keeper 31 Okt (SQL teknikalidnew-db-1 read-only: StockPrice 549.546 bar/1.451 emiten/2024-09-09..2026-10-30; PageView+EngagementEvent 7d; AiChatLog 30d; tree main@710b8dc (31 Okt))",
       "spec": "Bangun sesuai PRD im-2026-10-29-2 (product-backlog.json): (1) term-tip.tsx wrap Tooltip UI existing, definisi import tunggal GLOSSARY_TERMS; (2) fase-1 3 halaman kondisi min 2 istilah/halaman; (3) anchor id glosarium + link 'Lihat di Kamus'; (4) fail-diam istilah tak dikenal; (5) telemetri nav_click label=glossary_open reuse. SCOPE: halaman /kamus/ programmatic DITUNDA (research_note PRD). FDE: PRD 7-field + metadata v2 OK.",
       "qa_plan": "Pembangun != pemeriksa. Proses: staging hover/focus + keyboard-focusable + anchor resolve 200; regresi: 0 hydration error (kelas #418) + chunk +<5KB + LCP stabil. Metrik 14 hari: glossary_open >=5 & time-spent fase-1 tidak turun.",
       "done_when": "DONE WHEN: (a) tsc EXIT-0; (b) staging: 2 istilah/halaman fase-1 memunculkan definisi + anchor 200; (c) 14 hari pasca-live: nav_click glossary_open >=5 dan 0 hydration error baru; gagal -> iterate istilah terpilih, bukan scope baru.",
-      "scheduled_slot": "2026-11-04 19:15 FE Rabu (UX Builder) BUILD-ONLY — gate PRD OK im-2026-10-29-2 spec_ready; assign CTO sore 1 Nov",
-      "created_by": "Product Agent buffer-keeper 2026-10-31 22:1x WIB"
+      "scheduled_slot": "review+merge CTO pagi Senin 2 Nov -> boarding kereta malam (BUILD dari main HEAD >= merge; slot FE Rabu 4 Nov 19:15 kini hanya QA D+1)",
+      "created_by": "Product Agent buffer-keeper 2026-10-31 22:1x WIB",
+      "branch": "night/prd-2026-10-31-02",
+      "result": "IMPLEMENTASI PENUH malam 1 Nov (CTO night 23:0x-23:5x): TermTip fase-1 selftest RED 5708a8f -> GREEN 159ce95 (5/5, test tak tersentuh saat fix). Verify: LINT 0; tsc --noEmit EXIT-0; npm run build EXIT-0 BUILD_ID mmBNJbPP13dUriLk6WJWQ; staging :3100 4/4 200 (golden-cross/death-cross/oversold/glosarium); DOM fisik: trigger aria-label 'Penjelasan istilah' x6 (golden 2, death 3, oversold 2), definisi SSR sr-only x3 pola '(Golden Cross: Pola di mana...', anchor glosarium id=\"golden-cross\"/id=\"rsi\" + scroll-mt-24, marker glossary_open di chunk 9154-eca02c3747b2e0ad.js. AC1-AC6 terpenuhi. Estimasi review 20-30 mnt (diff +174/-27, 11 file; 2 file baru kecil + 1 widen type). NOTE utk reviewer: (a) deskripsi hero golden/death kini JSX braces — teks identik; (b) data-nav-label pindah SEBELUM a[href] di navClickLabel (perilaku link biasa tak berubah, hanya elemen bertanda yang kini menang); (c) slot FE Rabu 4 Nov 19:15 = jadi review+merge saja, implementasi selesai."
     },
     {
       "id": "prd-2026-10-31-01",
@@ -704,7 +706,8 @@
       "status": "done",
       "scheduled_slot": "2026-09-15 07:30 CTO pagi (sisa slot, tanpa deploy)",
       "spec": "Mandor 15 Sep: command `log --json` (tanpa argumen) error 'list index out of range'. Repro, temukan baris penyebab, fix defensive (argparse default / guard index), test. Kecil, sekalian kalau ada slot sisa.",
-      "result": "DONE 15 Sep 07:50. Root cause: sys.argv.index('--json')+1 IndexError di teknikalid_growth.py (4 call site L316/320/324/326). Fix: helper _arg_value() defensive + pesan error jelas; py_compile OK; repro 3 varian error kini pesan usage jelas; happy path read-log utuh. File lokal Hermes scripts — tanpa deploy."
+      "result": "DONE 15 Sep 07:50. Root cause: sys.argv.index('--json')+1 IndexError di teknikalid_growth.py (4 call site L316/320/324/326). Fix: helper _arg_value() defensive + pesan error jelas; py_compile OK; repro 3 varian error kini pesan usage jelas; happy path read-log utuh. File lokal Hermes scripts — tanpa deploy.",
+      "qa_verified": "true|qa_by=sentinel-2200-1101|bukti=_arg_value x5 di teknikalid_growth.py; repro 1 Nov 'log --json' tanpa arg = pesan error jelas, bukan IndexError"
     },
     {
       "id": "ops-2026-09-30-01",
@@ -854,7 +857,9 @@
       "north_star": "register growth: register_views 2 → ≥9/minggu dalam 2 pekan (konversi trafik existing)",
       "status": "done",
       "result": "DONE 14 Sep 07:30 slot pagi. Commit 15c49b8 (4 files, +45): register-cta.tsx server-side (no useSession — curl-verifiable, zero CLS) + insert setelah tabel di 3 signal pages. tsc --noEmit clean. Deploy sebelum 09:00 (build + up -d app). Live-check 07:4x: /saham-oversold, /saham-golden-cross, /saham-volume-spike semua 200 + utm_campaign={slug} ter-render; home 200. Rollback anchor: image 10b28e9ab2ed / commit 412ef39.",
-      "scheduled_slot": "2026-09-14 07:30 CTO pagi (deploy ≤08:45, pre-market)"
+      "scheduled_slot": "2026-09-14 07:30 CTO pagi (deploy ≤08:45, pre-market)",
+      "qa_verified": "true|qa_by=sentinel-2200-1101|bukti=commit 15c49b8 ancestor-OK; register-cta.tsx ada+terpakai; live 3/3 signal page utm_campaign={slug} render (curl 1 Nov)",
+      "qa_checked_at": "2026-11-01T22:1x"
     },
     {
       "id": "council-2026-09-13-02",
@@ -865,7 +870,8 @@
       "status": "done",
       "completed_at": "2026-09-15 17:05",
       "result": "DONE 15 Sep 17:05 CTO sore. Commit f75dd7d (2 file kode + spec): related-signals.tsx server component (SSR curl-visible; predikat paritas screener: smaCrossSignal='golden_cross', rsi14<30, vol>3x avg20, |close-sma20|/sma20<=3%; contextual max 3 + fallback min 2 + link /stocks) + insert setelah ArticleContent di berita/[slug]/page.tsx. Retro-fit OTOMATIS serve-time semua artikel ber-ticker (tickerTag ?? first mentioned) — tanpa regen/patch DB. tsc clean. Deploy 16:58 (1 deploy, pasca-market). VERIFIKASI live: brief-pasar-15 Sep blok 'Sinyal Terkait' render + href golden-cross/oversold/pullback-sma20 + /stocks. Catatan: artikel saham-*/analisa-teknikal-* sesi 14 Sep kini 308→/stocks/TICKER (stale by design pasca-EOD 15 Sep — bukan regresi; pagi tadi masih 200 karena EOD belum ganti). Signal pages 4/4=200, register-CTA kemarin utuh, /stocks/BBRI.JK 200. Rollback anchor: image 5c89d6ac9964, HEAD d449b58 (decisions.md). Ukur 2 pekan: signal page views 38→≥60/pekan + pages/session.",
-      "scheduled_slot": "2026-09-15 16:45 CTO sore (pagi dipakai reviewer P1 + mandor P2)"
+      "scheduled_slot": "2026-09-15 16:45 CTO sore (pagi dipakai reviewer P1 + mandor P2)",
+      "qa_verified": "true|qa_by=sentinel-2200-1101|bukti=commit f75dd7d ancestor-OK; related-signals.tsx ada; live brief 30 Okt: blok 'Sinyal Terkait' + href golden-cross x4 + oversold x4 (curl 1 Nov)"
     },
     {
       "id": "test-001",
@@ -885,7 +891,8 @@
       "status": "done",
       "scheduled_slot": "2026-09-14 16:45 CTO sore (post-market; diagnosis EOD live setelah 17:00)",
       "completed_at": "2026-09-14 17:30",
-      "result": "P0 data-integrity SELESAI 14 Sep 17:17: root cause 3-lapis (Yahoo v7 mati→TradingView scanner uncommitted regularMarketTime:null+marketState hardcoded; fix 7 Sep tak ter-commit). Fix: write-guard isWibWriteWindow() Sen-Jum 09:00-18:00 WIB commit d29f24d, tsc clean, deploy 17:17 WIB, live 200. Freshness gate +flag ANOMALI weekend, unit-test+live FRESH. Cleanup DELETE 865+865 rows 13 Sep (backup 08:30 valid, COUNT preview, transaksi tunggal, pasca=0), log decisions.md, docs commit 35914c9. Deploy 2/2. Sisa: council-02 besok 07:30. Utang: ~60k baris weekend historis, kalender libur IDX, diff repo uncommitted wajib commit."
+      "result": "P0 data-integrity SELESAI 14 Sep 17:17: root cause 3-lapis (Yahoo v7 mati→TradingView scanner uncommitted regularMarketTime:null+marketState hardcoded; fix 7 Sep tak ter-commit). Fix: write-guard isWibWriteWindow() Sen-Jum 09:00-18:00 WIB commit d29f24d, tsc clean, deploy 17:17 WIB, live 200. Freshness gate +flag ANOMALI weekend, unit-test+live FRESH. Cleanup DELETE 865+865 rows 13 Sep (backup 08:30 valid, COUNT preview, transaksi tunggal, pasca=0), log decisions.md, docs commit 35914c9. Deploy 2/2. Sisa: council-02 besok 07:30. Utang: ~60k baris weekend historis, kalender libur IDX, diff repo uncommitted wajib commit.",
+      "qa_verified": "true|qa_by=sentinel-2200-1101|bukti=commit d29f24d ancestor-OK; isWibWriteWindow di data-sync.service.ts; SQL 1 Nov: weekend rows 18/25/31 Okt+1 Nov=0; MAX(date)=2026-10-30 (Jumat) — guard hidup 6 minggu"
     },
     {
       "id": "ceo-2026-09-15-01",
@@ -909,7 +916,8 @@
       "status": "done",
       "scheduled_slot": "07:30",
       "completed_at": "2026-09-15 07:50",
-      "result": "DONE 15 Sep 07:50 CTO pagi. Sumber: fmtVol (movement-analysis.service.ts L76) + formatVolumeHuman (article-template.ts L200) — label 'lot' padahal StockPrice.volume = saham (verif BBRI.JK 14 Sep = 278.495.400). Commit 90225ca (2 file +8/-8, kata unit saja; hunk authorId pre-existing tidak ikut). tsc clean. Deploy app+worker 07:46 (1 deploy, pre-market). SQL patch 41 PUBLISHED artikel (backup 06:44, preview COUNT=41, ' lot'=='juta lot' terverifikasi 100% di scope, 5 artikel edukasi lot-benar tidak tersentuh): residual juta lot=0. Live-check: /berita/saham-bbri '278.5 juta saham' x6, /berita/saham-mdka '77.7 juta saham' x6, 0 'juta lot'. Log: docs/agent-org/decisions.md. Rollback anchor: image app f705987548db/worker 4b3414f9b5e7, commit 4228de481c."
+      "result": "DONE 15 Sep 07:50 CTO pagi. Sumber: fmtVol (movement-analysis.service.ts L76) + formatVolumeHuman (article-template.ts L200) — label 'lot' padahal StockPrice.volume = saham (verif BBRI.JK 14 Sep = 278.495.400). Commit 90225ca (2 file +8/-8, kata unit saja; hunk authorId pre-existing tidak ikut). tsc clean. Deploy app+worker 07:46 (1 deploy, pre-market). SQL patch 41 PUBLISHED artikel (backup 06:44, preview COUNT=41, ' lot'=='juta lot' terverifikasi 100% di scope, 5 artikel edukasi lot-benar tidak tersentuh): residual juta lot=0. Live-check: /berita/saham-bbri '278.5 juta saham' x6, /berita/saham-mdka '77.7 juta saham' x6, 0 'juta lot'. Log: docs/agent-org/decisions.md. Rollback anchor: image app f705987548db/worker 4b3414f9b5e7, commit 4228de481c.",
+      "qa_verified": "true|qa_by=sentinel-2200-1101|bukti=commit 90225ca ancestor-OK; SQL 1 Nov: PUBLISHED 'juta lot'=0; artikel saham 30 Okt pakai 'juta saham' (antm 74,0; bbri 333,0). Catatan: /berita/saham-* kini 308 ke /stocks/TICKER (stale-by-design) — DB jadi satu-satunya pintu verifikasi"
     },
     {
       "id": "botgate-2026-09-16-01",
@@ -934,7 +942,8 @@
       "date": "2026-09-16",
       "spec": "Yahoo v7 quote API 401 sejak ~3 Sep → fetchQuotesBatch gagal senyap utk ^JKSE. Patch lib/yahoo-finance.ts pakai v8 chart API fallback (verified hidup dari mesin ini). + guardrail gen_daily_brief: label tanggal sesi wajib == tanggal close terbaru DB; max 1 NEWS/hari gate disamakan dgn Mandor. DB backfilled manual s/d 15 Sep (6.461,15).",
       "north_star": "content integrity — brief pakai data fresh, zero double-post",
-      "result": "SELESAI 16 Sep 18:53 — commit 8f9b3bd (3 file, +161/-16, yahoo v8 chart fallback utk ^JKSE + guardrail label tanggal brief via latestSessionDate DB + baris DATA SESI). Deploy app+worker verifikasi CEO malam: image e5b191a/fcc3df7, site 200, golden-cross 200. DONE WHEN runtime dites brief 17 Sep 10:00 WIB (label sesi benar + IHSG non-null) — flag di sini kalau gagal."
+      "result": "SELESAI 16 Sep 18:53 — commit 8f9b3bd (3 file, +161/-16, yahoo v8 chart fallback utk ^JKSE + guardrail label tanggal brief via latestSessionDate DB + baris DATA SESI). Deploy app+worker verifikasi CEO malam: image e5b191a/fcc3df7, site 200, golden-cross 200. DONE WHEN runtime dites brief 17 Sep 10:00 WIB (label sesi benar + IHSG non-null) — flag di sini kalau gagal.",
+      "qa_verified": "true|qa_by=sentinel-2200-1101|bukti=commit 8f9b3bd ancestor-OK; v8 chart fallback di lib/yahoo-finance.ts; guardrail latestSessionDate+DATA SESI di article.service.ts L723/734; brief harian hidup s/d 30 Okt dgn judul sesi == MAX(date) DB (30 Okt)"
     },
     {
       "id": "jkse-2026-09-17-01",
@@ -3726,11 +3735,11 @@
       "north_star": "TRUST",
       "title": "BUG UX TRUST: error boundary Inggris \"Something went wrong\" di site bahasa Indonesia",
       "spec": "REPRO (3 baris): (1) saat app 502/OOM, /stocks?view=screener render error boundary \"Something went wrong\" + tombol \"Try again\" (Inggris); (2) nav mobile drawer terbuka permanen di halaman error (semua link nav y=60-281 visible tanpa scroll); (3) seluruh copy site berbahasa Indonesia. SEVERITY: P2 TRUST - saat halaman gagal justru momen paling rawan kepercayaan; error Inggris + tombol Inggris di site ID = terasa rusak. Fix hint FE kecil: terjemahkan error boundary ke ID (\"Ada yang error - coba muat ulang\" / tombol \"Coba Lagi\") + copy ramah (data aman, coba beberapa saat lagi). Dispatch by UX Builder 30 Okt.",
-      "status": "done|result=Deployed via kereta T-1101-N slot sore (image 6c643d2a0794): error boundary ID live — grep container 4 file chunks (global-error, error, compare, stocks/[ticker]) berisi Coba Lagi/Ada yang salah; EN lama 0 hit; 5 URL 200 before==after. BuktI FE 10:30 (tsc 0, BUILD_ID wH9oE6wp) + CTO sore deploy+verify.",
+      "status": "done",
       "source": "ux-builder flow-a audit 30 Okt 19:15",
       "scheduled_slot": "2026-11-01 10:30 FE weekend BUILD-ONLY (reslot CTO 1 Nov — slot 31 Okt 19:15 lewat; naik kereta T-1101-M bila bukti hijau)",
       "train": "T-1101-N",
-      "result": "BUILD-ONLY commit 377abe8: error boundary 3 file EN->ID (Ada yang salah + Coba Lagi + Daftar Saham + digest code) + PaymentButton fallback ID + global-error lang=id. Bukti: tsc 0; build EXIT-0 BUILD_ID wH9oE6wpl-FbHllxqYpH8; chunk error-887616bde4bccd2a.js + global-error-171c33750495e409.js + ticker error-5ac7b26de2638629.js ALL berisi string ID (grep lokal 1/1/1 hit), EN lama 0 hit di .next; staging :3100 200 home+/stocks, chunk via HTTP verified. Pasca-deploy verify: trigger error di prod tidak praktis — verify chunk prod via /_next/static URL grep Coba Lagi.",
+      "result": "Deployed via kereta T-1101-N slot sore (image 6c643d2a0794): error boundary ID live — grep container 4 file chunks (global-error, error, compare, stocks/[ticker]) berisi Coba Lagi/Ada yang salah; EN lama 0 hit; 5 URL 200 before==after. BuktI FE 10:30 (tsc 0, BUILD_ID wH9oE6wp) + CTO sore deploy+verify.",
       "qa_verified": "true|qa_by=agy-sweep-2026-11-01"
     },
     {
@@ -3782,22 +3791,39 @@
       "date": "2026-11-01",
       "priority": "P1",
       "type": "content-fix",
-      "status": "done|result=SQL patch 7/7 (backup 01:16 fresh, WHERE slug sempit, COUNT 2 dulu): DC 45→51, H1 10→14, H2 35→37, Sep 74 GC→79 & 11→14, kohort 36→43 emiten median -8,7%→-12,3%, universe -12,3%→-15,5%, 4/36→4/43, oversold 65→54 (non-gorengan exact; 65=54+11 gorengan). Replay kanonik pasangan unik (stockId,smaCrossDate) non-gorengan. LIVE verified: RSC payload + TOC + meta/og/JSON-LD semua angka baru, residual lama=0. Same-day fix sebelum verifikasi owner.",
+      "status": "done",
       "north_star": "TRUST — angka sinyal bulanan harus replayable dari DB; klaim tak ter-verifikasi meruntuhkan data-trust (pilar TRUST)",
       "title": "REKAP BULANAN 1 Nov: blok sinyal bulanan tidak replayable dari DB (61 GC vs 45 DC; DC H1=10 H2=34; September 74 GC/11 DC)",
       "spec": "INTENT: artikel rekap-pasar-2026-10-oktober (terbit 1 Nov 06:30) memuat blok sinyal: Oktober (61 golden cross baru vs 45 death cross), paruh-1 (10 death cross) vs paruh-2 (35), September (74 golden cross) dan (death cross melonjak 4x dari 11), emiten GC-H1 (36) dengan median -8,7% vs pasar -12,3% (4/36 positif), oversold (65 saat rebound 23 Okt). ACCEPTANCE: (1) replay SQL DB per 1 Nov dengan berbagai definisi universe (row-level isGorengan, latest-row per stock, pasangan unik stockId+smaCrossDate, avgvol>=1jt) menghasilkan 60 GC / 44-51 DC, H1_DC=10-14, H2_DC=34-37, SEP 68-79 GC / 11-14 DC, GC-H1 likuid=23-24, median GC43 15-30 Okt = -12,7% - TIDAK ADA definisi yang menghasilkan angka artikel; (2) blok kontras (43 golden cross vs 10 death cross paruh pertama) = POLA qa-30-01 berulang: angka GC replay exact tapi angka DC pasangannya tidak; (3) catatan non-fatal: (65 oversold 23 Okt) hanya cocok jika universe termasuk gorengan, padahal artikel menyatakan non-gorengan (deret lain di artikel sama: 98/331/144 = non-gorengan exact); (4) FIX: mandor regenerasi blok dari satu query kanonik sinyal dengan definisi universe dieksplisitkan di artikel; angka dead-reckon 45/10/35/36/11/74 diganti angka replay; (5) selftest fact-gate sinyal bulanan = cross-check GC dan DC keduanya, bukan GC saja. NOTE: deret IHSG harian, breadth 5 sesi, sektor, movers pekan, tabel top-10 bulanan, angka BBCA/BBRI, PV 4.021/453 IP, 8 register pada artikel yang sama: replay EXACT - hanya blok sinyal bulanan ini yang gagal.",
-      "qa_verified": "partial|qa_by=agy-sweep-2026-11-01"
+      "qa_verified": "partial|qa_by=agy-sweep-2026-11-01",
+      "result": "SQL patch 7/7 (backup 01:16 fresh, WHERE slug sempit, COUNT 2 dulu): DC 45→51, H1 10→14, H2 35→37, Sep 74 GC→79 & 11→14, kohort 36→43 emiten median -8,7%→-12,3%, universe -12,3%→-15,5%, 4/36→4/43, oversold 65→54 (non-gorengan exact; 65=54+11 gorengan). Replay kanonik pasangan unik (stockId,smaCrossDate) non-gorengan. LIVE verified: RSC payload + TOC + meta/og/JSON-LD semua angka baru, residual lama=0. Same-day fix sebelum verifikasi owner."
     },
     {
       "id": "qa-2026-11-01-02",
       "date": "2026-11-01",
       "priority": "P1",
       "type": "content-fix",
-      "status": "done|result=SQL patch 2/2: klaim BBRI+BBCA → BBCA-only + angka asli (bulanan: halaman BBCA 156 kunjungan; mingguan: 86 vs BBRI 7). Replay PageView isBot=false: BBCA 156/86 = #1 saham, BBRI 9/7 di luar top-30. LIVE verified RSC payload p-1 + kalimat watch mingguan; klaim lama 0 residual. Sisa gap: superlatif engagement guard utk generator (ops backlog).",
+      "status": "done",
       "north_star": "TRUST — klaim superlatif traffic internal wajib replay PageView, bukan naratif",
       "title": "REKAP BULANAN 1 Nov: klaim BBRI+BBCA paling banyak dibaca kontra PageView DB (BBRI 9 PV manusia sebulan; BBCA memang #1)",
       "spec": "INTENT: artikel rekap-pasar-2026-10-oktober dan rekap-pasar-mingguan-2026-10-31 mengklaim halaman BBCA dan BBRI (paling banyak dibaca pengunjung). ACCEPTANCE: (1) replay PageView bot-filtered (isBot=false) Okt: /stocks/BBCA.JK=156 (peringkat #3, benar) tapi /stocks/BBRI.JK=9 (di luar top-30; minggu 26-30 Okt: BBRI=7 vs TPIA=13, GOTO=10, RUNS=7); (2) blok traffic pada artikel yang sama replay EXACT (4.021 PV +6,9% vs 3.760 Sep; 453 IP vs 238; register 8 vs 6; top /stocks, /, BBCA) - generator punya akses data benar, klaim BBRI = dead-reckon naratif; (3) FIX: mandor hapus/ganti klaim BBRI menjadi BBCA saja, atau query ulang ranking PageView sebelum publikasi; (4) guard: superlatif engagement/traffic (paling banyak dibaca/diakses) wajib ORDER BY count PageView isBot=false pada window yang disebut, sama seperti superlatif harga. NOTE: marker Rp498.000 (SSR 1-lot, verify T-1031-N) tak ada lagi di live /akademi/1-lot - kemungkinan konten edu refresh harga sejak 31 Okt; bukan fatal, catatan monitor.",
-      "qa_verified": "true|qa_by=agy-sweep-2026-11-01"
+      "qa_verified": "true|qa_by=agy-sweep-2026-11-01",
+      "result": "SQL patch 2/2: klaim BBRI+BBCA → BBCA-only + angka asli (bulanan: halaman BBCA 156 kunjungan; mingguan: 86 vs BBRI 7). Replay PageView isBot=false: BBCA 156/86 = #1 saham, BBRI 9/7 di luar top-30. LIVE verified RSC payload p-1 + kalimat watch mingguan; klaim lama 0 residual. Sisa gap: superlatif engagement guard utk generator (ops backlog)."
+    },
+    {
+      "id": "prd-2026-11-02-01",
+      "date": "2026-11-02",
+      "type": "prd",
+      "priority": "P2",
+      "prd_id": "im-2026-10-31-1",
+      "status": "spec_ready",
+      "title": "P2 GROWTH (PRD im-2026-10-31-1 fase-1): Kalender Ex-Date Dividen 30 hari di /saham-dividen — tabel StockDividend YATIM (314 rows 100% bertanggal, pipeline hidup) jadi section SSR di atas ranking yield",
+      "north_star": "reach/traffic SEO long-tail ex-date dividen + TRUST data internal — /saham-dividen 30d cuma 2 views, ruang tumbuh besar; momentum: SIDO ex 3 Nov, UNTR ex 6 Nov",
+      "source": "Product Agent nightly buffer-keeper 2 Nov 00:3x WIB (SQL read-only teknikalidnew-new-db-1; tree teknikalidnew main@d5a744f 1 Nov)",
+      "spec": "Bangun sesuai PRD im-2026-10-31-1 (product-backlog.json): (1) section 'Kalender Ex-Date 30 Hari ke Depan' SSR server-component di /saham-dividen ATAS tabel yield; (2) query read-only prisma StockDividend JOIN Stock urut exDate asc, kolom ticker/nama/type/amount/exDate/paymentDate; (3) badge 'segera' <=3 hari; (4) +1 FAQ ex-date ke FAQPage existing; (5) pool kosong render jujur; (6) 0 client-JS baru, 0 endpoint, 0 migrasi. SCOPE: fase-1 internal-only; kalender IPO/SBR/ORI = fase-2 setelah riset idea-2026-10-26-1.",
+      "qa_plan": "Pembangun != pemeriksa. Staging: curl view-source baris SIDO/UNTR/CNMA + tanggal asli; tsc 0; LCP stabil (0 JS baru); no-regresi tabel yield diff terbatas. D+14: GSC impresi 'ex date' > 0 ATAU PageView > baseline; 0 hydration error.",
+      "done_when": "DONE WHEN: (a) tsc EXIT-0; (b) staging view-source memuat 3 baris asli (SIDO 2026-11-03, UNTR 2026-11-06, CNMA 2026-11-09) + badge 'segera'; (c) tabel yield existing tak berubah; (d) D+14 evaluasi AC6 PRD.",
+      "created_by": "Product Agent buffer-keeper 2026-11-02 00:3x (run gate: buffer teknikal 2 < 3)"
     }
   ]
 }
