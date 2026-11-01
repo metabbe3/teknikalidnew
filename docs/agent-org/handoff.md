@@ -1374,3 +1374,10 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - NOTE reviewer: (a) description hero golden/death kini JSX braces, teks identik; (b) data-nav-label kini MENANG atas a[href] (elemen bertanda saja, link biasa tak berubah); (c) slot FE Rabu 4 Nov 19:15 tinggal review/merge + QA D+1, implementasi selesai.
 - Jebakan baru: pre-commit hook (dipasang 1 Nov 14:12) memblok literal pemanggilan log-console di staged diff -> selftest BARU wajib pola node:test + assert/strict (preseden selftest-reputation-daily); hook hanya scan baris ^+ (file lama tak terjangkau).
 - Rollback: n/a BUILD-ONLY (revert = git revert 159ce95)
+
+## 2026-11-02 03:1x — BO slot 03:00 (bo-2026-11-02-01 night_ready BUILD-ONLY)
+- QUEUE item G (audit row-33) tuntas: 17 call-site pct inline di 14 file -> marketEngine.pctChange(); engine murni extract ke src/lib/market-engine.ts (0 import), market-snapshot re-export. Termasuk agent-hub x4 + ihsg-mini-chart (2 site ketemu selftest A1, BUKAN di audit) + market-intel SQL->TS (ORDER BY c.close/p.close monotonik, urutan identik).
+- Bukti: tsc 0; selftest BARU market-one-door 6/6 (statis 0 residual + parity); engine lama 29/29; eslint 19 warnings == 19 HEAD (0 baru); build EXIT-0. Branch night/bo-2026-11-02-01 = b1798ac pushed.
+- HARDENING disengaja (didokumentasikan di changelog): anomaly-detection prev<=0 dulu Infinity kini 0; call-site fallback-0 lama identik via ?? 0.
+- Langkah CTO pagi: merge night/bo-2026-11-02-01 -> kereta; pasca-live verify: selftest market-one-door 6/6 di main + grep residual 0 (tidak ada UI baru utk dicek visual).
+- Rollback: git revert b1798ac.
