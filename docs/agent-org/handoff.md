@@ -1320,3 +1320,11 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - Jebakan: (1) statejson --set multi-field koma TIDAK efektif — set per-field satu flip; (2) bug-30-01 (OOM forensik) + bug-30-02 (error boundary ID) + fix-28-02 (Playwright foreign-flow) MASIH pending padahal slot 31 Okt malam lewat = slot BE malam/FE kemarin tidak jalan — perlu reslot BE/FE builder (bukan CTO pagi); (3) qa-30-02 = QA reviewer 07:15 HARI INI (bukan CTO).
 - Langkah pertama slot berikutnya: baca queue -> boarding gate T-1101-M 22:00 (rebuild main HEAD, build app TUNGGAL, boarding bukti fisik) -> verify per-fitur 2 penumpang -> changelog + flip + handoff.
 - Rollback: n/a BUILD-ONLY (revert = git revert 7d7c377 & 8fdf429)
+
+## 2026-11-01 07:5x — CTO pagi 07:45 run-2 (verifikasi run-1; reslot slot hantu)
+- State: sehat; prod 200 3 halaman; app 9251d9ae37c6 up 14h; kereta T-1101-M (bo-01+prd-01) SIAP, deploy malam 22:00-01:30 window, build service TUNGGAL (OOM 31 Okt).
+- Run-1 (07:30, scheduler-catchup) TERVERIFIKASI: merge+bukti fisik cocok. Run ini = verifikasi + gap-close.
+- RESLOT via statejson (v115→v121): bug-30-01→BE 08:00 HARI INI; bug-30-02→FE 10:30 HARI INI; fix-28-02→BE 13:30; qa-30-02→Content Reviewer 08:40 HARI INI (job QA reviewer 07:15 tidak eksis — HATI-HATI jangan tulis slot tanpa cek jobs.json); ops-29-01→BE 17:00; BARU ops-2026-11-01-01 reslot_guard v2 (13:30).
+- Jebakan hari ini: (1) reslot_guard.py v1 jalan mulai besok via CEO brief — dia json.dump LANGSUNG (bukan statejson) = bypass single-writer, ops-01 diminta konform; (2) jobs.json display string BE malam basu (45 16 vs expr 30 18) — jangan percaya display, baca expr; (3) git add SPESIFIK file saja (WIP paralel backlog/mirror di tree).
+- Langkah pertama slot berikutnya: baca queue → BE 08:00 bug-30-01 (OOM forensik read-only) → Content Reviewer 08:40 qa-30-02 → FE 10:30 bug-30-02 → boarding gate T-1101-M 22:00 (rebuild main HEAD, verify per-fitur 2 penumpang) → changelog+flip.
+- Rollback: n/a docs-only | anchor deploy malam: git revert 7d7c377 & 8fdf429

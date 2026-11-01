@@ -105,7 +105,7 @@
       "done_when": "hermes cron run 8b459dd0bc65 berakhir exit 0 dan ForeignFlow rows hari ini masuk DB (SELECT count(*) FROM \\\"ForeignFlow\\\" WHERE date::date=current_date) > 0",
       "notes": "Jalur WAJIB Playwright warm-session (doctrine #184: curl+CDP diblokir CF; endpoint IDX /primary/TradingSummary/GetStockSummary). Cek ~/.hermes/cron/output/8b459dd0bc65/ log. Impact: section Aliran Dana Asing /pasar + /stocks + scanner analyst foreign_accumulation jadi stale.",
       "date": "2026-10-28",
-      "scheduled_slot": "BE malam 30 Okt 18:30 build-only (resmi TURUN dari T-1029-N boarding gate 29 Okt; restore Playwright warm-session; target T-1030-N bila bukti hijau sore)"
+      "scheduled_slot": "2026-11-01 13:30 BE weekend siang BUILD-ONLY (reslot CTO 1 Nov — slot 30 Okt lewat 2x)"
     },
     {
       "id": "bo-2026-10-25-01",
@@ -3419,7 +3419,7 @@
       "source": "CTO Lead 29 Okt (run-ledger error sweep)",
       "north_star": "STICKY (kanal retensi Telegram aktif)",
       "done_when": "job cron teknikal-tg-notify run berikutnya berakhir ok (exit 0) ATAU status paused eksplisit dgn alasan tertulis; bukti run-ledger status ok",
-      "scheduled_slot": "Backend Builder malam 18:30 29 Okt (host-ops konfigurasi — 5 menit)",
+      "scheduled_slot": "2026-11-01 17:00 BE weekend sore (5 mnt host-ops cron konfigurasi, bukan deploy web; reslot CTO 1 Nov)",
       "date": "2026-10-29"
     },
     {
@@ -3676,7 +3676,7 @@
       "title": "QA reviewer 30 Okt: fix 3 artikel (rank IHSG, EMA cross lintas-sesi, klaim volume MBSS) + doctrine generator",
       "north_star": "TRUST",
       "spec": "INTENT: pasca-publish QA 07:00 menemukan angka tidak cocok dgn DB pada 3 artikel editorial. (1) brief-pasar-idx-2026-10-30-116-saham-oversold: klaim penurunan harian terbesar KEENAM dalam 12 bulan - aktual rank #12 (SQL rank -3,49%; 11 hari lebih buruk: 16 Okt -11,57 ... 20 Mei -3,54); breadth 102/653/72 vs snapshot kanon 104/653/74 (naik & stagnan meleset 2). (2) analis-sore-2026-10-29-mbss + analis-pagi-2026-10-30-mbss: klaim 8 sinyal/persilangan EMA cross baru - DB emaCrossDate=2026-10-29 bullish hanya 3; angka 8 = sesi 28 Okt (cross-day error, pola qa-30-01). (3) 2 artikel sama: MBSS volume +43,6% di atas rata-rata harian - tak rekonciliable dgn DB (vol 29 Okt 3,07jt vs avg20 7,09jt = -57%; 43,6% hanya cocok vs volume single-day 28 Okt 2,14jt = prev-day, bukan rata-rata). Plus minor: analis-pagi-30 klaim MBSS satu-satunya Strong Bullish di scan - DB ada 8 SB non-gorengan lain (YULE 0,68 dst) - relabel. ACCEPTANCE: (a) 3 artikel diperbaiki via SQL UPDATE (bukan regenerasi penuh), live 200 dan angka cocok dgn DB; (b) generator doctrine: klaim superlatif ranking wajib dari SQL ranking window sesi yang dibahas; count screener (EMA/GC/DC/oversold) wajib dari tanggal sesi artikel; klaim volume-vs-average wajib menyebut window & rekonciliable dari StockPrice; (c) tambah cek ke guard teknikalid_growth.py / factCheck utk pola ini; (d) selftest guard tetap hijau. KONTEKS: verifikasi SQL reviewer = SELECT rank() OVER (ORDER BY pct ASC) dari StockPrice ^JKSE 12 bulan; emaCrossDate bullish 29 Okt = 3 (28 Okt = 8).",
-      "scheduled_slot": "2026-11-01 07:15 QA reviewer pagi"
+      "scheduled_slot": "2026-11-01 08:40 Content Reviewer pagi (P1 TRUST, verdict MoM 2 Nov; reslot CTO 1 Nov — job QA reviewer 07:15 tidak eksis di cron)"
     },
     {
       "id": "qa-2026-10-30-03",
@@ -3703,7 +3703,7 @@
       "spec": "REPRO (3 baris): (1) docker events --filter container=teknikalidnew-app-1 30m menunjukkan oom-die-start berulang (RestartCount app=3, worker=8, start terakhir 12:20:25Z = 19:20 WIB); (2) browser real menangkap 2x 502 Bad Gateway: saat klik preset screener (?view=screener&tab=bottom-fishing&preset=rsi_oversold) dan saat full-load ?view=screener; (3) post-recovery docker stats 201MiB/2GiB (9,8%), host 65% free - OOM internal container, BUKAN host RAM. SEVERITY: P1 TRUST - user di window 19:15-19:25 WIB lihat 502/blank; bukan deploy (0 proses build/docker-cp berjalan saat itu). Note: curl ringan 200 stabil (CF cache menutupi); user interaktif kena. Dispatch by UX Builder 30 Okt 19:15 (aturan: nemu bug = dispatch, jangan fix sendiri - ini infra). Kaitan skill deploy-note: flap kelas RAM - cek tab Chrome :9222 menumpuk & heap node.",
       "status": "pending",
       "source": "ux-builder flow-a audit 30 Okt 19:15 (observasi live saat insiden)",
-      "scheduled_slot": "2026-10-31 18:30 BE malam — OOM forensik (app stabil kini restarts=0 up 4h)"
+      "scheduled_slot": "2026-11-01 08:00 BE weekend pagi BUILD-ONLY (forensik read-only; reslot CTO 1 Nov — slot 31 Okt 18:30 lewat tanpa jalan)"
     },
     {
       "id": "bug-2026-10-30-02",
@@ -3715,7 +3715,17 @@
       "spec": "REPRO (3 baris): (1) saat app 502/OOM, /stocks?view=screener render error boundary \"Something went wrong\" + tombol \"Try again\" (Inggris); (2) nav mobile drawer terbuka permanen di halaman error (semua link nav y=60-281 visible tanpa scroll); (3) seluruh copy site berbahasa Indonesia. SEVERITY: P2 TRUST - saat halaman gagal justru momen paling rawan kepercayaan; error Inggris + tombol Inggris di site ID = terasa rusak. Fix hint FE kecil: terjemahkan error boundary ke ID (\"Ada yang error - coba muat ulang\" / tombol \"Coba Lagi\") + copy ramah (data aman, coba beberapa saat lagi). Dispatch by UX Builder 30 Okt.",
       "status": "pending",
       "source": "ux-builder flow-a audit 30 Okt 19:15",
-      "scheduled_slot": "2026-10-31 19:15 FE — error boundary bahasa Indonesia"
+      "scheduled_slot": "2026-11-01 10:30 FE weekend BUILD-ONLY (reslot CTO 1 Nov — slot 31 Okt 19:15 lewat; naik kereta T-1101-M bila bukti hijau)"
+    },
+    {
+      "id": "ops-2026-11-01-01",
+      "date": "2026-11-01",
+      "priority": "P2",
+      "status": "pending",
+      "north_star": "TRUST",
+      "title": "OPS: reslot_guard v2 — validasi scheduled_slot vs kalender cron (slot hantu) + konform single-writer statejson",
+      "spec": "INTENT (dispatch CTO 1 Nov): 3 slot hantu 31 Okt—1 Nov: entry bug-30-01 (BE malam 18:30 Sabtu, cron expr 30 18 * * 1-5 Sen-Jum saja), bug-30-02 (FE 19:15 Sabtu, Sen-Jum saja), qa-30-02 (QA reviewer 07:15 — job TIDAK EKSIS di ~/.hermes/cron/jobs.json). reslot_guard.py (jalan mulai 2 Nov via CEO brief) hanya reslot kereta kedaluwarsa (field train), TIDAK deteksi slot yang tak akan pernah menembak. FIX host-script (0 deploy web): (1) reslot_guard v2 — parse expr cron jobs.json, flag entry pending/in_train yang scheduled_slot-nya menyebut jam/hari job yang tidak akan run hari itu atau besok (nama job + jam match), print ALERT (silent-healthy kalau bersih); (2) rapor display-string basu di jobs.json (BE malam display 45 16 vs expr 30 18 — HANYA laporkan, JANGAN edit jobs.json dari script); (3) tulis queue via statejson.py (flip/update) atau minimal ambil Lock yang sama — sekarang json.dump langsung bypass version-check single-writer (charter §10). DONE-WHEN: (a) selftest: fixture jobs.json + queue berisi 3 kasus hantu 31 Okt → script flag 3/3, fixture sehat → 0 alert; (b) lint_all.py 0 error utk file disentuh; (c) dry-run di queue asli hari ini: 0 alert (semua sudah direslot CTO pagi); (d) changelog + handoff. ESTIMASI 30-45 mnt.",
+      "scheduled_slot": "2026-11-01 13:30 BE weekend siang (host-script BUILD-ONLY, 0 deploy)"
     }
   ]
 }

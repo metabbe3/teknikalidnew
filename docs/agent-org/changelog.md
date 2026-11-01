@@ -975,3 +975,11 @@
 - **SEC-REVIEW**: bo = admin-authed UI read-only (N/A input/rate-limit); prd = service read-only tanpa input user, 0 params dari client ke query (kondisi fix 3 nilai internal) — no injection surface.
 - **QA**: pasca-deploy kereta T-1101-M malam: section "Corong 5 tahap per aktor" /admin/insight + section "Apa yang terjadi setelahnya?" /saham-golden-cross; QA reviewer D+1.
 - **deploy hash**: n/a BUILD-ONLY (in_train T-1101-M) | rollback: git revert 7d7c377 & 8fdf429
+
+### 2026-11-01 07:5x WIB — CTO pagi 07:45 run-2 (verifikasi run-1 + reslot slot hantu; BUILD-ONLY)
+- **type**: queue-ops + verdict (0 deploy; kereta T-1101-M malam ini tetap manifest 2 penumpang)
+- **verifikasi run-1 (07:30)**: merge 8fdf429 diff fisik ok (insight-tab.tsx +68, "Corong 5 tahap per aktor" L199) + 7d7c377 ok (condition-history.tsx "Apa yang terjadi setelahnya?" L33/47); BUILD_ID 6Mt6h3XhHWfMIVk_WjrgA mtime 07:40; main c90f81a == origin/main; prod 200 (home 0,80s/stocks 0,50s/golden-cross 0,33s); 3 container healthy up 14h. Klaim run-1 SAH.
+- **temuan**: 3 slot hantu — bug-30-01 (BE malam Sabtu; cron Sen-Jum), bug-30-02 (FE 19:15 Sabtu; Sen-Jum), qa-30-02 (QA reviewer 07:15 TIDAK EKSIS di jobs.json). reslot_guard.py v1 (start 2 Nov) tak mendeteksi kelas ini.
+- **aksi**: reslot 5 entry via statejson flip (queue v115→v120): bug-30-01→BE weekend 08:00, bug-30-02→FE weekend 10:30, fix-28-02→BE siang 13:30, qa-30-02→Content Reviewer 08:40, ops-29-01→BE sore 17:00. Append ops-2026-11-01-01 (reslot_guard v2, P2 TRUST, slot 13:30) v121. CTO note CEO 1 Nov ditulis (opsi A/B, rekomendasi A).
+- **run-ledger**: FE builder teknikal+hivePOS 31 Okt 10:31/10:46 error (Z.ai kuota, bukan repo); BE/BO/night-prep 31 Okt semua ok; KPI 07:05: WRV 7,8% (target 8), views 7d 1.144 ✓, register 7d 0 ✗ (floor 6) — input verdict MoM besok.
+- rollback: n/a (docs+queue saja) | QA: pasca-deploy kereta malam
