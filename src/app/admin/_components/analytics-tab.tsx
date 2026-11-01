@@ -670,12 +670,14 @@ export function AnalyticsTab() {
             <>
               <div className="flex items-end gap-0.5 h-40">
                 {hourly.map((h) => {
-                  const height = Math.max(2, (h.views / maxHourly) * 100);
+                  // fix owner 1 Nov: bar % height butuh parent deterministik — kolom kini h-full
+                  // (dulu items-end tanpa tinggi → persen auto → 0px → chart tak pernah tampil)
+                  const height = h.views > 0 ? Math.max(6, (h.views / maxHourly) * 100) : 2;
                   const isPeak = data?.overview.peakHour?.hour === h.hour;
                   return (
                     <div
                       key={h.hour}
-                      className="flex-1 flex flex-col items-center gap-1 group relative"
+                      className="flex-1 h-full flex flex-col justify-end items-center gap-1 group relative"
                     >
                       {/* Tooltip */}
                       <div className="absolute -top-12 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900 text-white text-[10px] px-2 py-1 rounded-md whitespace-nowrap z-10 pointer-events-none">
@@ -700,7 +702,38 @@ export function AnalyticsTab() {
               </div>
               <p className="text-[10px] text-gray-400 mt-2 text-center">
                 Jam WIB (00–23) · {fmtRangeLabel(activeRange)}
+                {data?.overview.peakHour && data.overview.peakHour.views > 0 && (
+                  <span className="font-semibold text-sky-600">
+                    {" "}· Puncak {String(data.overview.peakHour.hour).padStart(2, "0")}:00 WIB ({data.overview.peakHour.views} views)
+                  </span>
+                )}
               </p>
+              {/* Data per-jam eksplisit (owner 1 Nov: "each hour have its own data") */}
+              <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-12 gap-1 mt-3">
+                {hourly.map((h) => {
+                  const isPeak = data?.overview.peakHour?.hour === h.hour && h.views > 0;
+                  return (
+                    <div
+                      key={h.hour}
+                      className={`rounded border px-1 py-1 text-center ${
+                        isPeak
+                          ? "border-sky-400 bg-sky-50"
+                          : h.views > 0
+                            ? "border-gray-200 bg-gray-50"
+                            : "border-gray-100"
+                      }`}
+                      title={`${h.label} WIB · ${h.views} views · ${h.uniqueVisitors} unique`}
+                    >
+                      <div className="text-[9px] text-gray-400 tabular-nums font-medium">
+                        {String(h.hour).padStart(2, "0")}
+                      </div>
+                      <div className={`text-xs font-bold tabular-nums ${h.views > 0 ? "text-blue-700" : "text-gray-300"}`}>
+                        {h.views}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </>
           )}
         </CardContent>
