@@ -104,7 +104,7 @@ export function UsersTab() {
               {dailyStats.map((day) => {
                 const height = Math.max(4, (day.count / maxDaily) * 100);
                 return (
-                  <div key={day.date} className="flex-1 flex flex-col items-center gap-1">
+                  <div key={day.date} className="flex-1 h-full flex flex-col justify-end items-center gap-1">
                     <div
                       className="w-full rounded-t bg-gradient-to-t from-blue-600 to-sky-400 transition-all duration-300"
                       style={{ height: `${height}%` }}

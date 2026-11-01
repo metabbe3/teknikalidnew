@@ -115,7 +115,7 @@ export function SharesView() {
             ) : (
               <div className="flex items-end gap-1 h-40">
                 {daily.map((d) => (
-                  <div key={d.date} className="flex-1 flex flex-col items-center gap-1 group relative">
+                  <div key={d.date} className="flex-1 h-full flex flex-col justify-end items-center gap-1 group relative">
                     <div
                       className="w-full rounded-t bg-blue-500/80 hover:bg-blue-600 transition-colors"
                       style={{ height: `${(d.count / maxDaily) * 100}%`, minHeight: d.count > 0 ? 4 : 0 }}
