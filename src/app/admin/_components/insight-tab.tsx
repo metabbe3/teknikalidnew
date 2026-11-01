@@ -29,6 +29,15 @@ interface GeoData {
   breakdown: Array<{ country: string; views: number; pct: number }>;
 }
 
+interface FunnelV2Data {
+  window: string;
+  t1_datang: number;
+  t2_paham: number;
+  t3_simpan: number;
+  t4_balik7: number;
+  t5_habit: number;
+}
+
 const GROUP_LABEL: Record<string, string> = {
   "/stocks": "Halaman saham",
   "/berita": "Berita & brief",
@@ -61,6 +70,16 @@ export function InsightTab() {
     queryFn: async () => {
       const r = await fetch("/api/admin/views-geo?days=7");
       if (!r.ok) throw new Error("gagal memuat geo");
+      return r.json();
+    },
+    refetchInterval: 300_000,
+  });
+
+  const fun2 = useQuery<FunnelV2Data>({
+    queryKey: ["admin-funnel-v2"],
+    queryFn: async () => {
+      const r = await fetch("/api/admin/funnel-v2");
+      if (!r.ok) throw new Error("gagal memuat funnel aktor");
       return r.json();
     },
     refetchInterval: 300_000,
@@ -168,6 +187,55 @@ export function InsightTab() {
           )}
           <p className="text-[11px] text-gray-400 pt-1">
             Jawaban atas &quot;kenapa returning rendah&quot;: berapa pengunjung yang benar-benar membaca lama, lalu kembali lagi.
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* Corong 5 tahap aktor (funnel-v2) */}
+      <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+          <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
+            <UserCheck className="h-4 w-4 text-sky-500" />
+            Corong 5 tahap per aktor (21 hari)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-4 space-y-3">
+          {fun2.isLoading ? (
+            <div className="h-40 bg-gray-50 rounded-lg animate-pulse" />
+          ) : fun2.isError ? (
+            <p className="text-sm text-gray-400 text-center py-6">Gagal memuat corong aktor</p>
+          ) : (
+            (() => {
+              const t = fun2.data;
+              const rows = [
+                { label: "T1 · Datang", v: t?.t1_datang ?? 0, color: "bg-sky-500" },
+                { label: "T2 · Paham (dwell/klik)", v: t?.t2_paham ?? 0, color: "bg-blue-500" },
+                { label: "T3 · Simpan (pantau/Telegram)", v: t?.t3_simpan ?? 0, color: "bg-violet-500" },
+                { label: "T4 · Balik ≤7 hari", v: t?.t4_balik7 ?? 0, color: "bg-emerald-500" },
+                { label: "T5 · Habit (Telegram aktif)", v: t?.t5_habit ?? 0, color: "bg-amber-500" },
+              ];
+              const mx = Math.max(1, ...rows.map((r) => r.v));
+              return rows.map((r, i) => (
+                <div key={r.label} className="space-y-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-medium text-gray-700">{r.label}</span>
+                    <span className="tabular-nums text-gray-500">
+                      <span className="font-bold text-gray-800">{r.v.toLocaleString("id-ID")}</span>
+                      {i > 0 && ` (${pct(r.v, rows[0].v)})`}
+                    </span>
+                  </div>
+                  <div className="h-5 bg-gray-100 rounded-full overflow-hidden">
+                    <div className={`h-full ${r.color} rounded-full transition-all duration-500`} style={{ width: `${Math.max(2, (r.v / mx) * 100)}%` }} />
+                  </div>
+                  {i > 0 && rows[i - 1].v > 0 && r.v === 0 && (
+                    <p className="text-[10px] text-amber-600">Belum ada aktor yang sampai sini.</p>
+                  )}
+                </div>
+              ));
+            })()
+          )}
+          <p className="text-[11px] text-gray-400 pt-1">
+            Aktor = identitas gabungan login+anon (COALESCE initialAnonId) &mdash; lebih tahan CGNAT daripada metrik IP di Overview; T4 adalah kandidat pengganti North Star returning.
           </p>
         </CardContent>
       </Card>
