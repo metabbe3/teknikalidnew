@@ -1,10 +1,12 @@
 import { subDays } from "date-fns";
+import { cache } from "react";
 import { fetchHistorical, fetchQuote, fetchChart } from "@/lib/yahoo-finance";
 import { cryptoPair, fetchCryptoIdrOHLC } from "@/lib/indodax";
 import { computeChange, bigIntToNumber, decimalToNumber, serializePriceRow, serializeIndicator } from "@/lib/serialize";
 import { INTERVAL, RANGE_DAYS, type DateRange, type IntradayInterval } from "@/lib/constants";
 import { toDateKey } from "@/lib/utils";
 import { getCompareColor } from "@/lib/compare-colors";
+import { marketEngine } from "@/lib/market-engine";
 import { stockRepository } from "./stock.repository";
 import { technicalAnalysisService } from "./technical-analysis.service";
 import { marketSnapshotService } from "./market-snapshot.service";
@@ -47,12 +49,14 @@ function serializeIndicatorOrNull(indicator: Awaited<ReturnType<typeof stockRepo
   return serializeIndicator(indicator);
 }
 
-async function fetchStockBase(ticker: string, priceTake: number) {
+// Memoize fetchStockBase per-request via React cache() (Next 16 server)
+// Dedupe metadata + page double-fetch on /stocks/[ticker]
+const fetchStockBase = cache(async (ticker: string) => {
   const stock = await stockRepository.findStockByTicker(ticker);
   if (!stock) throw new StockNotFoundError(ticker);
 
   const [rawPrices, week52, indicator, prevIndicator, scoreSeries] = await Promise.all([
-    stockRepository.findLatestTradingPrices(stock.id, priceTake),
+    stockRepository.findLatestTradingPrices(stock.id, 35),
     stockRepository.getWeek52HighLow(stock.id),
     stockRepository.findLatestIndicator(stock.id, INTERVAL.DAY),
     stockRepository.findPrevIndicator(stock.id, INTERVAL.DAY),
@@ -65,14 +69,14 @@ async function fetchStockBase(ticker: string, priceTake: number) {
     }),
   ]);
 
-  const prices = dedupeStalePrices(rawPrices).slice(0, priceTake);
+  const prices = dedupeStalePrices(rawPrices);
 
   const latest = prices[0];
   const prev = prices[1];
   const { close, prevClose, change, changePercent } = computeChange(latest, prev);
 
   return { stock, prices, latest, prev, prevClose, close, change, changePercent, week52, indicator, prevIndicator, scoreSeries };
-}
+});
 
 function stripJkExt(t: string): string {
   return t.replace(/\.JK$/i, "");
@@ -249,7 +253,7 @@ export const stockMarketService = {
   },
 
   async getStockDetail(ticker: string) {
-    const base = await fetchStockBase(ticker, 2);
+    const base = await fetchStockBase(ticker);
 
     return {
       stock: { id: base.stock.id, ticker: base.stock.ticker, name: base.stock.name, sector: base.stock.sector },
@@ -272,7 +276,7 @@ export const stockMarketService = {
   },
 
   async getStockDetailForPage(ticker: string) {
-    const base = await fetchStockBase(ticker, 21);
+    const base = await fetchStockBase(ticker);
 
     return {
       stock: {
@@ -287,7 +291,7 @@ export const stockMarketService = {
         foreignOwnershipPercent: base.stock.foreignOwnershipPercent,
         isinCode: base.stock.isinCode,
       },
-      prices: base.prices,
+      prices: base.prices.slice(0, 21),
       latest: base.latest,
       prevClose: base.prevClose,
       close: base.close,
@@ -306,7 +310,7 @@ export const stockMarketService = {
   },
 
   async getStockOgData(ticker: string): Promise<StockOgData> {
-    const base = await fetchStockBase(ticker, 31);
+    const base = await fetchStockBase(ticker);
     const indicator = serializeIndicatorOrNull(base.indicator);
 
     // Local logo file (same chain as StockLogo): png → jpg → svg (jpg palsu/WebP sudah dibersihkan)
@@ -680,7 +684,7 @@ export const stockMarketService = {
           const pClose = decimalToNumber(p.close) ?? 0;
           return {
             time: toDateKey(p.date),
-            value: firstClose !== 0 ? Number((((pClose - firstClose) / firstClose) * 100).toFixed(2)) : 0,
+            value: firstClose !== 0 ? Number(((marketEngine.pctChange(pClose, firstClose) ?? 0)).toFixed(2)) : 0,
           };
         });
       })();

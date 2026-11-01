@@ -3,6 +3,11 @@ import { INTERVAL } from "@/lib/constants";
 import { fetchQuote } from "@/lib/yahoo-finance";
 import { bigIntToNumber, decimalToNumber } from "@/lib/serialize";
 import { marketSnapshotService, type Mover } from "./market-snapshot.service";
+import { marketEngine } from "@/lib/market-engine";
+import { stockCache } from "@/lib/cache";
+
+const YESTERDAY_RECAP_CACHE_KEY = "pasar-live:yesterday-recap";
+const YESTERDAY_RECAP_TTL_MS = 5 * 60 * 1000; // 5 menit (data immutable off-hours)
 
 /**
  * pasar-live.service — deterministic data assembly for /pasar (Koran Saham Live)
@@ -140,7 +145,7 @@ async function getIhsg(): Promise<PasarIhsg> {
   if (close === null) return empty;
   const prevClose = prev ? decimalToNumber(prev.close) : null;
   const change = prevClose !== null ? close - prevClose : null;
-  const changePercent = prevClose !== null && prevClose !== 0 ? ((close - prevClose) / prevClose) * 100 : null;
+  const changePercent = prevClose !== null ? marketEngine.pctChange(close, prevClose) : null;
   return { close, prevClose, change, changePercent, date: latest.date.toISOString().slice(0, 10), source: "db" };
 }
 
@@ -188,7 +193,8 @@ export function pickWatchlistFromRows(rows: WatchlistRow[], freshSince: Date, ma
     // liquidity floor: nilai transaksi hari terakhir ≥ Rp1 miliar
     if (close * volume < 1_000_000_000) continue;
 
-    const changePercent = ((close - prevClose) / prevClose) * 100;
+    // bo-2026-11-02-01: engine SATU PINTU (filter sudah menjamin prevClose > 0; ?? 0 = safety net tak pernah terpicu)
+    const changePercent = marketEngine.pctChange(close, prevClose) ?? 0;
     const rsi = r.rsi14;
     let reason = "";
     if (r.smaCrossSignal === "golden_cross" && r.smaCrossDate && r.smaCrossDate >= freshSince) {
@@ -334,7 +340,7 @@ async function getTopSignals(sessionDate: Date): Promise<PasarTopSignal[]> {
       ticker: r.stock.ticker,
       name: r.stock.name,
       close: px.close,
-      changePercent: ((px.close - px.prev) / px.prev) * 100,
+      changePercent: marketEngine.pctChange(px.close, px.prev),
       volumeShares: px.volume,
       signalScore: decimalToNumber(r.signalScore),
       signalLabel: r.signalLabel,
@@ -439,10 +445,22 @@ export const pasarLiveService = {
 
   /** Previous session recap (page shown before 06:30 / off-hours): IHSG + movers of sessionDate. */
   async getYesterdayRecap(): Promise<{ ihsg: PasarIhsg; topSignals: PasarTopSignal[]; foreign: { netBuy: PasarForeignItem[]; netSell: PasarForeignItem[] }; gainers: PasarMover[]; losers: PasarMover[]; sessionDate: string | null }> {
+    const cached = stockCache.get(YESTERDAY_RECAP_CACHE_KEY) as {
+      ihsg: PasarIhsg;
+      topSignals: PasarTopSignal[];
+      foreign: { netBuy: PasarForeignItem[]; netSell: PasarForeignItem[] };
+      gainers: PasarMover[];
+      losers: PasarMover[];
+      sessionDate: string | null;
+    } | undefined;
+    if (cached) return cached;
+
     const ihsg = await getIhsg();
     const recapDate = await stockRepository.findLatestEquityPriceDate();
     if (!recapDate) return { ihsg, topSignals: [], foreign: { netBuy: [], netSell: [] }, gainers: [], losers: [], sessionDate: null };
     const [movers, topSignals, foreign] = await Promise.all([getMovers(recapDate), getTopSignals(recapDate), getForeignFlow(recapDate)]);
-    return { ihsg, topSignals, foreign, gainers: movers.gainers, losers: movers.losers, sessionDate: recapDate.toISOString().slice(0, 10) };
+    const result = { ihsg, topSignals, foreign, gainers: movers.gainers, losers: movers.losers, sessionDate: recapDate.toISOString().slice(0, 10) };
+    stockCache.set(YESTERDAY_RECAP_CACHE_KEY, result, YESTERDAY_RECAP_TTL_MS);
+    return result;
   },
 };

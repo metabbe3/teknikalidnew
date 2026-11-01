@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { unstable_cache } from "next/cache";
 import { IDX_STOCKS, IDX40_TICKERS, SITE_URL } from "@/lib/constants";
 import { GLOSSARY_TERMS } from "@/lib/glossary-terms";
 import { SECTORS } from "@/lib/sectors";
@@ -8,8 +9,11 @@ import { isStaleArticle, isEvergreenIndexed } from "@/domains/article/article-fr
 import { prisma } from "@/lib/prisma";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 
-export const dynamic = "force-dynamic"; // generated at runtime (build stage has no DB access)
-export const revalidate = 3600; // Regenerate hourly
+// force-dynamic tetap digunakan karena build stage Next.js tidak memiliki koneksi DB.
+// revalidate=3600 sebelumnya dihapus karena kontradiktif dengan force-dynamic (force-dynamic menang).
+// Caching sitemap kini ditangani oleh unstable_cache dengan TTL 3600s (1 jam) dan revalidateTags ["sitemap"],
+// sehingga query DB berat hanya dieksekusi sekali per jam saat runtime.
+export const dynamic = "force-dynamic";
 
 /** Mondays of the last n completed weeks (skips the in-progress week — it has
  *  no full trading data yet; bounded list, anti-spam: no unbounded dated URLs). */
@@ -25,34 +29,38 @@ function lastNWeeks(n: number): Date[] {
   });
 }
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = SITE_URL;
-  const idx40Set = new Set(IDX40_TICKERS);
-  const today = new Date();
+const getCachedSitemap = unstable_cache(
+  async (): Promise<MetadataRoute.Sitemap> => {
+    const baseUrl = SITE_URL;
+    const idx40Set = new Set(IDX40_TICKERS);
+    const today = new Date();
 
-  // ── Fetch real lastmod dates from the database ──
+    // ── Fetch real lastmod dates from the database ──
 
-  // Latest trading date — used to rank liquidity for the sitemap shortlist
-  const latestPriceRow = await prisma.stockPrice.findFirst({
-    orderBy: { date: "desc" },
-    select: { date: true },
-  });
-  const latestDate = latestPriceRow?.date;
+    // Latest trading date — used to rank liquidity for the sitemap shortlist
+    const latestPriceRow = await prisma.stockPrice.findFirst({
+      orderBy: { date: "desc" },
+      select: { date: true },
+    });
+    const latestDate = latestPriceRow?.date;
 
-  // Get latest price date per stock (for stock pages)
-  const latestPriceDates = await prisma.stockPrice.groupBy({
-    by: ["stockId"],
-    _max: { date: true },
-  });
+    // Get latest price date per stock (for stock pages)
+    // OPTIMIZED: raw SELECT DISTINCT ON ("stockId") replaces groupBy to leverage index
+    // and avoid 550k-row parallel seq scan.
+    const latestPriceDates = await prisma.$queryRaw<Array<{ stockId: number; date: Date }>>`
+      SELECT DISTINCT ON ("stockId") "stockId", date
+      FROM "StockPrice"
+      ORDER BY "stockId", date DESC
+    `;
 
-  // Build ticker→date map via Stock table
-  // seo-2026-10-29 (delisting BEI 10 Nov): exclude non-active (suspended/delisted) dari sitemap
-  const stockRecords = await prisma.stock.findMany({
-    where: { ticker: { in: IDX_STOCKS.map((s) => s.ticker) }, isActive: true },
-    select: { ticker: true, id: true },
-  });
-  const tickerToStockId = new Map(stockRecords.map((s) => [s.ticker, s.id]));
-  const stockIdToDate = new Map(latestPriceDates.map((p) => [p.stockId, p._max.date]));
+    // Build ticker→date map via Stock table
+    // seo-2026-10-29 (delisting BEI 10 Nov): exclude non-active (suspended/delisted) dari sitemap
+    const stockRecords = await prisma.stock.findMany({
+      where: { ticker: { in: IDX_STOCKS.map((s) => s.ticker) }, isActive: true },
+      select: { ticker: true, id: true },
+    });
+    const tickerToStockId = new Map(stockRecords.map((s) => [s.ticker, s.id]));
+    const stockIdToDate = new Map(latestPriceDates.map((p) => [p.stockId, p.date]));
 
   // Sitemap shortlist: IDX40 (always) ∪ top 500 by 20-day average transaction value
   // (close × volume) ∪ GSC top-query stocks (search intent proven). The rest stay
@@ -314,4 +322,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // seo-dr-2: 60 glosarium per-term (82-86 kata) dikeluarkan; otoritas terkumpul di index.
     // ...glossaryPages,
   ];
+},
+["sitemap-cache-v1"],
+{ revalidate: 3600, tags: ["sitemap"] },
+);
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  return getCachedSitemap();
 }

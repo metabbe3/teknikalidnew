@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import dynamicImport from "next/dynamic";
 import { prisma } from "@/lib/prisma";
 import { decimalToNumber } from "@/lib/serialize";
+import { marketEngine } from "@/lib/market-engine";
 import { IDX_STOCKS } from "@/lib/constants";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { marketSnapshotService } from "@/domains/stock/market-snapshot.service";
@@ -367,8 +368,8 @@ export default async function HomePage() {
   const ihsgClose = ihsgLatest ? decimalToNumber(ihsgLatest.close) : null;
   const ihsgPrevClose = ihsgPrev ? decimalToNumber(ihsgPrev.close) : null;
   const ihsgChange = ihsgClose !== null && ihsgPrevClose !== null ? ihsgClose - ihsgPrevClose : null;
-  const ihsgChangePercent = ihsgClose !== null && ihsgPrevClose !== null && ihsgPrevClose !== 0
-    ? ((ihsgClose - ihsgPrevClose) / ihsgPrevClose) * 100
+  const ihsgChangePercent = ihsgClose !== null && ihsgPrevClose !== null
+    ? marketEngine.pctChange(ihsgClose, ihsgPrevClose)
     : null;
   const ihsg = ihsgClose !== null ? { close: ihsgClose, change: ihsgChange, changePercent: ihsgChangePercent } : null;
 

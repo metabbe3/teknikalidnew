@@ -1,45 +1,33 @@
 import test, { describe, it } from "node:test";
 import assert from "node:assert";
-import { generateKenapaMetaDescription } from "../src/lib/kenapa-meta";
+import { generateKenapaMetaDescription, determineSignalTone } from "../src/lib/kenapa-meta";
 
-describe("kenapa-meta (arah harga × arah sinyal 6 kombinasi)", () => {
-  it("kombinasi 1: naik + sinyal menguat", () => {
+describe("kenapa-meta deskripsi (deadband, guard, format id-ID, arah sinyal)", () => {
+  it("kasus 1: naik besar (>0.5%) dengan format koma id-ID", () => {
     const desc = generateKenapaMetaDescription({
       ticker: "BBCA",
-      changePercent: 2.5,
+      changePercent: 12.5,
       signalTone: "menguat",
     });
     assert.strictEqual(
       desc,
-      "BBCA naik 2.5% didorong penguatan sinyal teknikal — momentum beli dominan di pasar.",
+      "BBCA naik 12,5% didorong penguatan sinyal teknikal — momentum beli dominan di pasar.",
     );
   });
 
-  it("kombinasi 2: naik + sinyal melemah (technical rebound)", () => {
-    const desc = generateKenapaMetaDescription({
-      ticker: "BTPS",
-      changePercent: 3.1,
-      signalTone: "melemah",
-    });
-    assert.strictEqual(
-      desc,
-      "BTPS naik 3.1% meski sinyal teknikal melemah — kemungkinan technical rebound.",
-    );
-  });
-
-  it("kombinasi 3: naik + sinyal netral", () => {
+  it("kasus 2: naik mikro 0.04% -> deadband < 0.5% masuk cabang datar (bukan naik 0.0%)", () => {
     const desc = generateKenapaMetaDescription({
       ticker: "TLKM",
-      changePercent: 1.2,
-      signalTone: "netral",
+      changePercent: 0.04,
+      signalTone: "menguat",
     });
     assert.strictEqual(
       desc,
-      "TLKM naik 1.2% di tengah sinyal teknikal netral — pantau volume dan konfirmasi tren.",
+      "TLKM bergerak relatif datar hari ini — pantau indikator RSI, MACD, dan level support-resistance.",
     );
   });
 
-  it("kombinasi 4: turun + sinyal melemah", () => {
+  it("kasus 3: turun (< -0.5%) dengan format koma id-ID", () => {
     const desc = generateKenapaMetaDescription({
       ticker: "ASII",
       changePercent: -2.8,
@@ -47,31 +35,83 @@ describe("kenapa-meta (arah harga × arah sinyal 6 kombinasi)", () => {
     });
     assert.strictEqual(
       desc,
-      "ASII turun 2.8% seiring pelemahan sinyal teknikal — tekanan jual mendominasi pasar.",
+      "ASII turun 2,8% seiring pelemahan sinyal teknikal — tekanan jual mendominasi pasar.",
     );
   });
 
-  it("kombinasi 5: turun + sinyal menguat (buy on weakness / pullback)", () => {
-    const desc = generateKenapaMetaDescription({
-      ticker: "AMRT",
-      changePercent: -4.2,
-      signalTone: "menguat",
-    });
-    assert.strictEqual(
-      desc,
-      "AMRT turun 4.2% meski sinyal teknikal menguat — potensi buy on weakness pada support.",
-    );
-  });
-
-  it("kombinasi 6: turun + sinyal netral", () => {
-    const desc = generateKenapaMetaDescription({
+  it("kasus 4: 0% / turun mikro (-0.04%) masuk cabang datar", () => {
+    const descZero = generateKenapaMetaDescription({
       ticker: "ICBP",
-      changePercent: -1.0,
+      changePercent: 0,
       signalTone: "netral",
     });
     assert.strictEqual(
-      desc,
-      "ICBP turun 1.0% di tengah sinyal teknikal netral — konsolidasi tanpa perubahan tren mayor.",
+      descZero,
+      "ICBP bergerak relatif datar hari ini — pantau indikator RSI, MACD, dan level support-resistance.",
     );
+
+    const descMicroTurun = generateKenapaMetaDescription({
+      ticker: "ICBP",
+      changePercent: -0.04,
+      signalTone: "melemah",
+    });
+    assert.strictEqual(
+      descMicroTurun,
+      "ICBP bergerak relatif datar hari ini — pantau indikator RSI, MACD, dan level support-resistance.",
+    );
+  });
+
+  it("kasus 5: Infinity / -Infinity / NaN guard -> cabang datar, jangan pernah 'Infinity%'", () => {
+    const descInf = generateKenapaMetaDescription({
+      ticker: "GOTO",
+      changePercent: Number.POSITIVE_INFINITY,
+      signalTone: "menguat",
+    });
+    assert.strictEqual(
+      descInf,
+      "GOTO bergerak relatif datar hari ini — pantau indikator RSI, MACD, dan level support-resistance.",
+    );
+
+    const descNaN = generateKenapaMetaDescription({
+      ticker: "GOTO",
+      changePercent: Number.NaN,
+      signalTone: "menguat",
+    });
+    assert.strictEqual(
+      descNaN,
+      "GOTO bergerak relatif datar hari ini — pantau indikator RSI, MACD, dan level support-resistance.",
+    );
+  });
+
+  it("kasus 6: format persen id-ID (koma bukan titik)", () => {
+    const desc = generateKenapaMetaDescription({
+      ticker: "BMRI",
+      changePercent: 2.5,
+      signalTone: "menguat",
+    });
+    assert.match(desc, /2,5%/);
+    assert.doesNotMatch(desc, /2\.5%/);
+  });
+});
+
+describe("determineSignalTone (threshold P5/P95: -0.20 / +0.34 + guard)", () => {
+  it("score > 0.34 menguat, score < -0.20 melemah, di antaranya netral", () => {
+    assert.strictEqual(determineSignalTone(null, 0.35), "menguat");
+    assert.strictEqual(determineSignalTone(null, 0.34), "netral");
+    assert.strictEqual(determineSignalTone(null, 0.10), "netral");
+    assert.strictEqual(determineSignalTone(null, -0.19), "netral");
+    assert.strictEqual(determineSignalTone(null, -0.21), "melemah");
+  });
+
+  it("guard NaN / undefined / null menghasilkan netral", () => {
+    assert.strictEqual(determineSignalTone(null, Number.NaN), "netral");
+    assert.strictEqual(determineSignalTone(null, null), "netral");
+    assert.strictEqual(determineSignalTone(null, undefined), "netral");
+  });
+
+  it("primaryDriverTone mengoverride score numerik", () => {
+    assert.strictEqual(determineSignalTone("bullish", -0.5), "menguat");
+    assert.strictEqual(determineSignalTone("bearish", 0.8), "melemah");
+    assert.strictEqual(determineSignalTone("neutral", 0.5), "menguat");
   });
 });

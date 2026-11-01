@@ -13,11 +13,27 @@ export interface KenapaMetaInput {
   signalTone: SignalTone;
 }
 
+const pctFormatter = new Intl.NumberFormat("id-ID", {
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+});
+
 export function generateKenapaMetaDescription(opts: KenapaMetaInput): string {
   const { ticker, changePercent, signalTone } = opts;
-  const pct = changePercent !== null ? Math.abs(changePercent).toFixed(1) : "0";
-  const isNaik = changePercent !== null && changePercent > 0;
-  const isTurun = changePercent !== null && changePercent < 0;
+
+  // Guard: non-finite (NaN, Infinity, -Infinity), null, atau deadband |changePercent| < 0.5
+  // sama dengan verdict-prose: sub-0.5% dianggap datar agar tidak keluar "naik 0.0%" atau "Infinity%".
+  if (
+    changePercent === null ||
+    !Number.isFinite(changePercent) ||
+    Math.abs(changePercent) < 0.5
+  ) {
+    return `${ticker} bergerak relatif datar hari ini — pantau indikator RSI, MACD, dan level support-resistance.`;
+  }
+
+  const pct = pctFormatter.format(Math.abs(changePercent));
+  const isNaik = changePercent >= 0.5;
+  const isTurun = changePercent <= -0.5;
 
   if (isNaik) {
     if (signalTone === "menguat") {
@@ -42,15 +58,21 @@ export function generateKenapaMetaDescription(opts: KenapaMetaInput): string {
   return `${ticker} bergerak relatif datar hari ini — pantau indikator RSI, MACD, dan level support-resistance.`;
 }
 
+/**
+ * Threshold sinyal teknikal diselaraskan dengan distribusi riil skor pasar
+ * (P5/P95 terdokumentasi di utils.ts:177). Skor di atas +0.34 (~P95) mencerminkan
+ * penguatan kuat, sementara di bawah -0.20 mencerminkan pelemahan signifikan.
+ * Di antara rentang tersebut dianggap netral / konsolidasi.
+ */
 export function determineSignalTone(
   primaryDriverTone?: "bullish" | "bearish" | "neutral" | null,
   signalScore?: number | null,
 ): SignalTone {
   if (primaryDriverTone === "bullish") return "menguat";
   if (primaryDriverTone === "bearish") return "melemah";
-  if (signalScore !== undefined && signalScore !== null) {
-    if (signalScore > 0.15) return "menguat";
-    if (signalScore < -0.15) return "melemah";
+  if (signalScore !== undefined && signalScore !== null && Number.isFinite(signalScore)) {
+    if (signalScore > 0.34) return "menguat";
+    if (signalScore < -0.20) return "melemah";
   }
   return "netral";
 }

@@ -46,8 +46,47 @@ function formatIntId(val: number | null | undefined): string {
 }
 
 export default async function SwingPage() {
-  const res = await GET();
-  const data: SwingMarketResponse = await res.json();
+  let data: SwingMarketResponse | null = null;
+  try {
+    const res = await GET();
+    if (res.ok) {
+      const json = await res.json();
+      if (
+        json &&
+        Array.isArray(json.candidates) &&
+        json.backtest?.stats34 &&
+        json.backtest?.stats20
+      ) {
+        data = json as SwingMarketResponse;
+      }
+    }
+  } catch {
+    data = null;
+  }
+
+  if (!data) {
+    return (
+      <div className="min-h-screen bg-bg-primary text-text-primary pb-16">
+        <PageHero
+          eyebrow="Swing Trader Pack v1"
+          title="Setup Swing Saham Hari Ini"
+          description="Seleksi 10 emiten dengan skor teknikal terkuat dari seluruh IHSG untuk swing trading 2–8 minggu, dilengkapi kalkulasi rasio Risk:Reward berbasis ATR dan validasi backtest historis."
+        />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-12">
+          <div className="rounded-xl border border-border bg-bg-card p-12 text-center space-y-3">
+            <Target className="h-10 w-10 text-text-tertiary mx-auto" />
+            <h2 className="text-lg font-semibold text-text-primary">
+              Belum ada data swing hari ini
+            </h2>
+            <p className="text-sm text-text-secondary max-w-md mx-auto">
+              Data setup swing sedang diperbarui atau sesi pasar belum menghasilkan kandidat yang memenuhi kriteria likuiditas dan sinyal teknikal.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const { asOf, backtest, candidates } = data;
   const { stats34, stats20 } = backtest;
 

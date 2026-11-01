@@ -8,7 +8,7 @@ export const articleRepository = {
    * (tickerTag null = market-wide brief, not a per-stock piece). Featured on
    * /berita; stock pages link the latest brief mentioning their ticker.
    */
-  findLatestDailyBrief() {
+  findLatestDailyBrief(includeContent = false) {
     return prisma.article.findFirst({
       where: {
         status: ArticleStatus.PUBLISHED,
@@ -17,7 +17,14 @@ export const articleRepository = {
         tickerTag: null,
       },
       orderBy: { publishedAt: "desc" },
-      select: { slug: true, title: true, excerpt: true, publishedAt: true, content: true },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        excerpt: true,
+        publishedAt: true,
+        ...(includeContent ? { content: true } : {}),
+      },
     });
   },
 

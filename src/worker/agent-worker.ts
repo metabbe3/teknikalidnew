@@ -10,7 +10,7 @@ import { getAgent } from "@/domains/agent-hub/agents";
 import { agentHubRepository } from "@/domains/agent-hub/agent-hub.repository";
 import type { AgentType } from "@/domains/agent-hub/agent-hub.types";
 
-const POLL_INTERVAL_MS = 10_000; // 10 seconds
+const POLL_INTERVAL_MS = 30_000; // 30 seconds
 const STUCK_JOB_TIMEOUT_MIN = 20; // Mark running jobs as failed after 20 min
 const RECOVERY_INTERVAL_MS = 3 * 60_000; // Check for stuck jobs every 3 min
 

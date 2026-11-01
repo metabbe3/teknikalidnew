@@ -3,6 +3,7 @@ import type { AgentType, AgentJobPayload, AgentJobResult } from "../agent-hub.ty
 import { prisma } from "@/lib/prisma";
 import { NotificationType } from "@/generated/prisma/client";
 import { decimalToNumber } from "@/lib/serialize";
+import { marketEngine } from "@/lib/market-engine";
 
 export class UserEngagementAgent extends BaseAgent {
   readonly type: AgentType = "user_engagement";
@@ -176,7 +177,8 @@ export class UserEngagementAgent extends BaseAgent {
         const todayClose = decimalToNumber(tp.close);
         const yesterdayClose = decimalToNumber(yc);
         if (todayClose === null || yesterdayClose === null || yesterdayClose === 0) continue;
-        const change = ((todayClose - yesterdayClose) / yesterdayClose) * 100;
+        // bo-2026-11-02-01: engine SATU PINTU (guard yesterdayClose 0 sudah continue di atas)
+        const change = marketEngine.pctChange(todayClose, yesterdayClose) ?? 0;
         if (Math.abs(change) >= priceThreshold) {
           notifs.push({
             type: "RE_ENGAGE" as NotificationType,

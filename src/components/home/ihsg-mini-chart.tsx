@@ -2,6 +2,7 @@ import { decimalToNumber } from "@/lib/serialize";
 import { formatPercentPlain } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
 import { MiniSparkline } from "@/components/chart/mini-sparkline";
+import { marketEngine } from "@/lib/market-engine";
 
 export async function IhsgMiniChart() {
   // Fetch IHSG stock + its price history
@@ -43,14 +44,15 @@ export async function IhsgMiniChart() {
     const prevClose = decimalToNumber(prev.close);
     if (close && prevClose) {
       change = close - prevClose;
-      changePercent = prevClose !== 0 ? ((close - prevClose) / prevClose) * 100 : null;
+      // bo-2026-11-02-01: engine SATU PINTU (parity: guard prevClose!==0 identik dgn guard engine prev<=0)
+      changePercent = marketEngine.pctChange(close, prevClose);
     }
   } else {
     // Fallback: use open vs close for the single record
     const open = decimalToNumber(latest.open);
     if (close && open && open !== 0) {
       change = close - open;
-      changePercent = ((close - open) / open) * 100;
+      changePercent = marketEngine.pctChange(close, open);
     }
   }
 

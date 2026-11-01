@@ -108,7 +108,12 @@ export function computeSwingStats(
       const cur = sorted[i];
 
       // Filter sinyal berdasarkan threshold
-      if (cur.signalScore === null || cur.signalScore === undefined || cur.signalScore < threshold) {
+      if (
+        cur.signalScore === null ||
+        cur.signalScore === undefined ||
+        !Number.isFinite(cur.signalScore) ||
+        cur.signalScore < threshold
+      ) {
         continue;
       }
 
