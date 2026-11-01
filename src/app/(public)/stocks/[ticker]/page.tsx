@@ -166,8 +166,7 @@ export default async function StockDetailPage({
   }
 
   const { stock, prices, latest, close, change, changePercent, indicator: indicators, prevIndicator } = detail;
-  // seo-dr-1: shortName utk h1 (sama dengan derivasi generateMetadata)
-  const shortName = normalizeTickerTitle(detail.stock?.name ?? stripJk(ticker), stripJk(ticker));
+  // fix owner 1 Nov: shortName tidak lagi dipakai H1 (H1 = ticker murni); meta desc tetap pakai derivasi generateMetadata
   const priceStr = close !== null ? formatPrice(close) : "";
   // seo-dr-1: level batas utk answer block (support/resistance toleran-null)
   // Audit UI/UX #3 (30 Okt): SATU angka per konsep — pemula & trader harus lihat level yang SAMA.
@@ -624,9 +623,8 @@ export default async function StockDetailPage({
               <div className="min-w-0">
                 <div className="flex items-center gap-2.5 flex-wrap">
                   <StockLogo src={stock.logo} name={stock.name} ticker={ticker} />
-                  <h1 className="text-2xl font-bold tracking-tight text-text-primary">
-                    Saham {shortName} ({stripJk(ticker)}) — Harga {priceStr ? `${priceStr} ` : ""}&amp; Analisa Teknikal Hari Ini
-                  </h1>
+                  {/* fix owner 1 Nov (msg 34872): H1 ringkas ticker saja — nama & frasa keyword turun ke baris H2 di bawah */}
+                  <h1 className="text-2xl font-bold tracking-tight text-text-primary">{stripJk(ticker)}</h1>
                   {indicators?.isGorengan && (
                     <span className="text-sm font-bold px-3 py-1 rounded-lg bg-amber-500/15 text-amber-600 border border-amber-500/30 inline-flex items-center gap-1">
                       <AlertTriangle className="inline h-4 w-4" /> Gorengan
@@ -648,10 +646,9 @@ export default async function StockDetailPage({
                   <span className="text-text-tertiary" aria-hidden="true">·</span>
                   <span className="text-xs text-text-tertiary font-medium">{sectorToBahasa(stock.sector)}</span>
                 </div>
-                <p className="text-sm text-text-secondary mt-0.5 truncate">
-                  {/* seo-dr-1 (fix owner 30 Okt): frasa keyword "Harga & Analisa Teknikal Saham"
-                      turun ke baris nama — h1 kembali ringkas BBCA, crawler tetap baca keyword. */}
-                  <span className="text-text-tertiary">Harga &amp; Analisa Teknikal Saham </span>
+                <h2 className="text-sm text-text-secondary mt-0.5 truncate font-semibold">
+                  {/* fix owner 1 Nov: baris nama jadi H2 — H1 tetap murni ticker, crawler baca keyword di sini */}
+                  <span className="text-text-tertiary font-medium">Harga &amp; Analisa Teknikal Saham </span>
                   <span className="font-medium">{stock.name}</span>
                   {(() => {
                     const desc = stock.businessActivity?.trim() || stock.subSector?.trim();
@@ -663,7 +660,7 @@ export default async function StockDetailPage({
                       </>
                     );
                   })()}
-                </p>
+                </h2>
               </div>
               {close !== null && (
                 <div className="text-right shrink-0">
