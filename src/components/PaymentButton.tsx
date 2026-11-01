@@ -95,7 +95,7 @@ export default function PaymentButton({
       }
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
-      onError?.(message || "Something went wrong");
+      onError?.(message || "Terjadi kesalahan. Silakan coba lagi.");
       setLoading(false);
     }
   };

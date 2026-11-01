@@ -23,15 +23,15 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <html lang="en">
+    <html lang="id">
       <body className="min-h-screen flex flex-col items-center justify-center p-8 text-center font-sans">
-        <h2 className="text-2xl font-semibold mb-2">Something went wrong</h2>
-        <p className="text-text-secondary mb-6">An unexpected error occurred. Please try again.</p>
+        <h2 className="text-2xl font-semibold mb-2">Ada yang salah</h2>
+        <p className="text-text-secondary mb-6">Terjadi kesalahan tak terduga. Datamu aman — silakan coba lagi.</p>
         <button
           onClick={reset}
           className="bg-accent text-white px-6 py-2 rounded-full font-medium hover:opacity-90 transition-opacity"
         >
-          Try again
+          Coba Lagi
         </button>
       </body>
     </html>

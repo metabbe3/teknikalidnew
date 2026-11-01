@@ -21,20 +21,23 @@ export default function StockDetailError({
         <svg className="w-12 h-12 mx-auto text-red" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
         </svg>
-        <h2 className="text-xl font-semibold">Failed to load stock</h2>
-        <p className="text-text-secondary text-sm">{error.message || "An unexpected error occurred."}</p>
+        <h2 className="text-xl font-semibold">Gagal memuat saham ini</h2>
+        <p className="text-text-secondary text-sm">Datamu aman. Silakan coba muat ulang beberapa saat lagi.</p>
+        {error.digest ? (
+          <p className="text-text-secondary/70 text-xs">Kode laporan: {error.digest}</p>
+        ) : null}
         <div className="flex gap-3 justify-center">
           <button
             onClick={reset}
             className="bg-text-primary text-white px-5 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity press-scale"
           >
-            Try again
+            Coba Lagi
           </button>
           <Link
             href="/stocks"
             className="bg-bg-card text-text-primary px-5 py-2 rounded-full text-sm font-medium hover:bg-bg-hover transition-colors press-scale border border-border"
           >
-            Back to Stocks
+            Daftar Saham
           </Link>
         </div>
       </div>
