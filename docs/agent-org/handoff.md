@@ -1328,3 +1328,11 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - Jebakan hari ini: (1) reslot_guard.py v1 jalan mulai besok via CEO brief — dia json.dump LANGSUNG (bukan statejson) = bypass single-writer, ops-01 diminta konform; (2) jobs.json display string BE malam basu (45 16 vs expr 30 18) — jangan percaya display, baca expr; (3) git add SPESIFIK file saja (WIP paralel backlog/mirror di tree).
 - Langkah pertama slot berikutnya: baca queue → BE 08:00 bug-30-01 (OOM forensik read-only) → Content Reviewer 08:40 qa-30-02 → FE 10:30 bug-30-02 → boarding gate T-1101-M 22:00 (rebuild main HEAD, verify per-fitur 2 penumpang) → changelog+flip.
 - Rollback: n/a docs-only | anchor deploy malam: git revert 7d7c377 & 8fdf429
+
+## 2026-11-01 08:2x — CTO weekend pagi run-3 (kereta T-1101-M DEPLOYED 08:13)
+- State: sehat; home 200 TTFB 0.85s; app container 92ee87232494 (image fd76c6af5c85) healthy up; EOD 30 Okt = FRESH utk Minggu (IDX libur); build service-tunggal 4 mnt EXIT-0 (window sepi 08:0x, 0 LLM job aktif — lesson OOM 31 Okt dipatuhi).
+- Barusan: T-1101-M berangkat PAGI (bukan 22:00): bo-11-01-01 + prd-31-01 + flip bo-10-29-01 — verify per-fitur live 3/3 (Corong 5 tahap marker, backtest 252 kejadian render, baseline 200 before==after). Changelog + queue flip v121→v124.
+- In-flight HARI INI (milik slot lain, JANGAN diambil CTO sore): BE 08:00 bug-30-01 OOM forensik; Reviewer 08:40 qa-30-02; FE 10:30 bug-30-02; BE 13:30 fix-28-02 foreign-flow + ops-11-01-01 reslot_guard v2; BE 17:00 ops-29-01.
+- Jebakan: (1) grep marker case-sensitive — 'Corong 5 Tahap' gagal padahal live ('corong keterlibatan...' / 'Corong 5 tahap per aktor'); (2) /api/admin/* unauth = 404 masking by-design; (3) section backtest = <details> SSR, marker di chunks/6821.js bukan page.html (force-dynamic); (4) statejson flip = --id + --set, bukan update; (5) docker compose up -d via terminal foreground = ditolak gateway → background=true.
+- Langkah pertama slot sore (15:30): baca queue → reslot entry pending tanpa scheduled_slot (fix-26-08, ops-27-01/02/03, qa-30-02 dst sudah punya slot) → sisanya health check; PRD baru tunggu CEO ritual besok pagi.
+- Rollback anchor: app fd76c6af5c85 (current) · pre = 9251d9ae37c6 · git revert 8fdf429 7d7c377

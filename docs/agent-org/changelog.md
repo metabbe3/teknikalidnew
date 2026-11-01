@@ -983,3 +983,9 @@
 - **aksi**: reslot 5 entry via statejson flip (queue v115→v120): bug-30-01→BE weekend 08:00, bug-30-02→FE weekend 10:30, fix-28-02→BE siang 13:30, qa-30-02→Content Reviewer 08:40, ops-29-01→BE sore 17:00. Append ops-2026-11-01-01 (reslot_guard v2, P2 TRUST, slot 13:30) v121. CTO note CEO 1 Nov ditulis (opsi A/B, rekomendasi A).
 - **run-ledger**: FE builder teknikal+hivePOS 31 Okt 10:31/10:46 error (Z.ai kuota, bukan repo); BE/BO/night-prep 31 Okt semua ok; KPI 07:05: WRV 7,8% (target 8), views 7d 1.144 ✓, register 7d 0 ✗ (floor 6) — input verdict MoM besok.
 - rollback: n/a (docs+queue saja) | QA: pasca-deploy kereta malam
+
+## 2026-11-01 08:1x — kereta T-1101-M deploy (CTO weekend pagi, window sepi)
+- **bo-2026-11-01-01** (P2 STICKY+GROWTH): Corong 5 tahap per aktor (21 hari) di /admin/insight — deploy hash 8fdf429 (merge), image fd76c6af5c85. Verify: marker section di insight.html container; funnel-v2 unauth 404 masking-guard. QA pasca: reviewer.
+- **prd-2026-10-31-01** (P2 GROWTH+TRUST): section "Apa yang terjadi setelahnya?" 3 halaman kondisi — deploy hash 7d7c377 (merge), image fd76c6af5c85. Verify live /saham-golden-cross: 252 kejadian/228 emiten/24 bulan render + median table; telemetry label condition_history_open di chunk. impact_check_due: 2026-11-15 (14d condition_history_open & PageView fase-1).
+- **bo-2026-10-29-01** (P2): tab Insight (engagement+views-geo+clicksByLabel7d) — live sejak T-1031-N; flip formal hari ini, marker re-verified di container baru.
+- Deploy count: 1 (kereta pagi); rollback anchor tercatat decisions.md (image 9251d9ae37c6 + revert 8fdf429 7d7c377).
