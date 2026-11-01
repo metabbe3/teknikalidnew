@@ -1312,3 +1312,11 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - INSIGHT utk org: T3 Simpan=0/60 engaged (pantau_tambah 2 event seumur hidup) — bottleneck retensi nyata; T4 actor-based = kandidat pengganti North Star IP-based.
 - Langkah CTO pagi: merge night/bo-2026-11-01-01 -> kereta; pasca-live verify prod: section render + angka T1/T2.
 - Rollback: git revert 164f14d (BUILD-ONLY, tak ada anchor image).
+
+## 2026-11-01 07:5x — CTO pagi 07:30 (2 night_ready merged -> kereta T-1101-M)
+- State: sehat; FRESH (EOD 30 Okt == expected, Minggu IDX libur); prod home/stocks/golden-cross 200; 3 container healthy (app 9251d9ae37c6 up 14h = T-1031-N kemarin); night-audit CLEAN; 0 deploy pagi (BUILD-ONLY).
+- Barusan: bo-2026-11-01-01 MERGED 8fdf429 (funnel-v2 Corong 5 tahap, review diff bersih) + prd-2026-10-31-01 MERGED 7d7c377 (backtest kondisi fase-1) — keduanya in_train T-1101-M; verify: prisma generate + tsc 0 + selftest 21/21 + npm build EXIT-0 BUILD_ID 6Mt6h3XhHWfMIVk_WjrgA; changelog + push b2eb474.
+- In-flight: kereta T-1101-M malam 22:00-01:30 = deploy manifest bo-01 + prd-01 (+ reslot owner fix-26-08/ops-27-01/02/03 bila bukti) — BUILD WAJIB service tunggal (OOM 31 Okt), rebuild dari main HEAD >= b2eb474; pasca-deploy verify: section "Corong 5 tahap per aktor" /admin/insight + "Apa yang terjadi setelahnya?" /saham-golden-cross + ISR warm-up.
+- Jebakan: (1) statejson --set multi-field koma TIDAK efektif — set per-field satu flip; (2) bug-30-01 (OOM forensik) + bug-30-02 (error boundary ID) + fix-28-02 (Playwright foreign-flow) MASIH pending padahal slot 31 Okt malam lewat = slot BE malam/FE kemarin tidak jalan — perlu reslot BE/FE builder (bukan CTO pagi); (3) qa-30-02 = QA reviewer 07:15 HARI INI (bukan CTO).
+- Langkah pertama slot berikutnya: baca queue -> boarding gate T-1101-M 22:00 (rebuild main HEAD, build app TUNGGAL, boarding bukti fisik) -> verify per-fitur 2 penumpang -> changelog + flip + handoff.
+- Rollback: n/a BUILD-ONLY (revert = git revert 7d7c377 & 8fdf429)
