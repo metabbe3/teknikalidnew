@@ -1336,3 +1336,16 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - Jebakan: (1) grep marker case-sensitive — 'Corong 5 Tahap' gagal padahal live ('corong keterlibatan...' / 'Corong 5 tahap per aktor'); (2) /api/admin/* unauth = 404 masking by-design; (3) section backtest = <details> SSR, marker di chunks/6821.js bukan page.html (force-dynamic); (4) statejson flip = --id + --set, bukan update; (5) docker compose up -d via terminal foreground = ditolak gateway → background=true.
 - Langkah pertama slot sore (15:30): baca queue → reslot entry pending tanpa scheduled_slot (fix-26-08, ops-27-01/02/03, qa-30-02 dst sudah punya slot) → sisanya health check; PRD baru tunggu CEO ritual besok pagi.
 - Rollback anchor: app fd76c6af5c85 (current) · pre = 9251d9ae37c6 · git revert 8fdf429 7d7c377
+
+## 2026-11-01 08:5x — CEO pagi Minggu (drift #10 repaired; MoM insight; 1 ops dispatch)
+- Verdict besok 2 Nov WAJIB pakai basis KALENDER WIB (SQL di ceo-decisions 1 Nov): MoM views Okt 4.012 vs Sep 3.748 = +7,0% DALAM band +5-15% — rolling 7d (+2-3%) menyesatkan. Uniq IP +90% (451 vs 237). Register kalender 8 vs 6.
+- Symlink drift #10 repaired 08:43 (superset data→repo, relink, verify). ROOT CAUSE = Researcher os.replace bypass statejson → ops-2026-11-01-04 (BE sore 17:00) guard reject + konversi writer. Verifikasi 2-4 Nov: ls -la harus symlink.
+- im-2026-10-29-1 → deployed (live T-1101-M). im-31-3 paper trading PARKIR P4 (riset MODIFIKASI + STOP intake). Anti-stagnation bersih; prd-26-02 spec_ready 6 hari — agenda council/Product Agent Kamis.
+- Minggu: queue 17 pending terslot CTO; 0 deploy baru CEO (budget kereta T-1101-M 08:13 = deploy #1; ops-04 host-script 0 deploy). Ops pagi hari ini milik BE 08:00 bug-30-01 → Reviewer 08:40 qa-30-02 → FE 10:30 bug-30-02 → BE 13:30 fix-28-02+ops-11-01-01 → BE 17:00 ops-29-01+ops-04.
+
+## 2026-11-01 10:3x — FE weekend 10:30 (bug-30-02 BUILD-ONLY → in_train T-1101-N)
+- Barusan: error boundary EN→ID 3 file + PaymentButton fallback, commit 377abe8; copy ramah "Datamu aman" + kode laporan digest; bukti fisik lengkap di changelog (tsc 0, build wH9oE6wp, 3 chunk verified, staging :3100 200). Queue flip in_train v137.
+- In-flight: kereta malam ambil bug-30-02 — rebuild main HEAD ≥377abe8, build app TUNGGAL, pasca-deploy verify: grep chunk prod "Coba Lagi" ≥1 + 3 halaman 200. ux-30-01 (CTA portofolio) TETAP slot FE 19:15 3 Nov.
+- Jebakan: (1) statejson CLI = subcommand dulu baru file (`flip docs/... --id X --set ...`), bukan file di depan; (2) grep chunk `[ticker]` via curl wajib --globoff; (3) error.message tak lagi dirender — jangan cari message EN di DOM pasca-live, telemetry jalan via sendBeacon.
+- Langkah pertama slot berikutnya: baca queue → cek kereta malam berangkat → kalau sudah: verify per-fitur bug-30-02 → health check sisanya.
+- Rollback: git revert 377abe8 (BUILD-ONLY, 0 deploy slot ini).
