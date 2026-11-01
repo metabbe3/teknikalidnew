@@ -10,6 +10,7 @@ import {formatPrice, formatPercent, formatVolume, stripJk, changeColor, rsiColor
 import { normalizeTickerTitle } from "@/lib/normalize-ticker-title";
 import { ChartSection } from "@/components/chart/chart-section";
 import { IndicatorPanel } from "@/components/stock/indicator-panel";
+import { IndicatorSeoSection } from "@/components/stock/indicator-seo-section";
 import { EduCard } from "@/components/akademi/edu-card";
 import dynamicImport from "next/dynamic";
 const TickerFunnelActions = dynamicImport(
@@ -117,6 +118,19 @@ export async function generateMetadata({
   return {
     title,
     description,
+    keywords: [
+      `saham ${name}`,
+      `harga saham ${name}`,
+      `analisa teknikal ${name}`,
+      `RSI ${name}`,
+      `MACD ${name}`,
+      `Moving Average ${name}`,
+      `Bollinger Bands ${name}`,
+      `Stochastic ${name}`,
+      `ADX ${name}`,
+      `ATR ${name}`,
+      `sinyal ${name}`,
+    ],
     alternates: { canonical: canonicalPath },
     openGraph: {
       title,
@@ -1356,6 +1370,13 @@ export default async function StockDetailPage({
           <VerdictFeedback ticker={ticker} />
         </div>
 
+        {/* Sprint 2 SEO: Heading Per-Indikator × Ticker */}
+        <IndicatorSeoSection
+          ticker={ticker}
+          name={stock.name}
+          close={close}
+          indicators={indicators}
+        />
 
         {/* Related articles */}
         {relatedArticles.length > 0 && (
