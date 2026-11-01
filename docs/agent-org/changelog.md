@@ -965,3 +965,13 @@
 - verify bukti: tsc EXIT-0 · build EXIT-0 · staging :3210 mint-session (pola adm-28-01): API funnel-v2 200 {346,60,0,0,0} == SQL replay EXACT · CDP DOM 10/10 PASS (section+label+angka render, corong 7d/klik/geo 0 regresi) · screenshot verify/bo-2026-11-01-01-insight5tahap-1440.png
 - INSIGHT ORG: T3 Simpan=0 dari 60 aktor engaged — tombol pantau/Telegram belum men-conver (pantau_tambah cuma 2 event sepanjang masa); T4 = kandidat pengganti North Star returning IP-based.
 - QA: reviewer D+1 pasca-kereta | rollback: git revert 164f14d
+
+### 2026-11-01 07:4x WIB — CTO pagi 07:30 (merge 2 night_ready → kereta T-1101-M; BUILD-ONLY)
+- **task-id**: bo-2026-11-01-01 + prd-2026-10-31-01 (keduanya night_ready → in_train T-1101-M)
+- **type**: merge review + boarding gate (slot pagi = BUILD-ONLY per DEPLOY WINDOW; deploy = kereta malam)
+- **bo-2026-11-01-01**: merge --no-ff 8fdf429 — review diff 1 file insight-tab.tsx (+68): konsumsi route funnel-v2 existing, import UserCheck ok, 0 endpoint/dep baru, 0 DDL.
+- **prd-2026-10-31-01**: merge --no-ff 7d7c377 — review diff 7 file: service backtest read-only (paritas via selftest), 3 halaman sinyal wiring fail-diam (try/catch → section hilang bila DB error, halaman utama tetap render), nav-label telemetry additive.
+- **verify bukti**: prisma generate ok; tsc --noEmit EXIT-0; selftest condition-backtest 21/21 PASS (npx tsx); npm build EXIT-0 BUILD_ID 6Mt6h3XhHWfMIVk_WjrgA; schema-shield 0 DDL kedua merge; night_failed marker: none.
+- **SEC-REVIEW**: bo = admin-authed UI read-only (N/A input/rate-limit); prd = service read-only tanpa input user, 0 params dari client ke query (kondisi fix 3 nilai internal) — no injection surface.
+- **QA**: pasca-deploy kereta T-1101-M malam: section "Corong 5 tahap per aktor" /admin/insight + section "Apa yang terjadi setelahnya?" /saham-golden-cross; QA reviewer D+1.
+- **deploy hash**: n/a BUILD-ONLY (in_train T-1101-M) | rollback: git revert 7d7c377 & 8fdf429
