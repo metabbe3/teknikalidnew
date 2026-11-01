@@ -3,12 +3,14 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { getGateRegisterHref } from "@/lib/register-funnel";
 
 interface GatedContentProps {
   children: React.ReactNode;
   message: string;
   ctaText?: string;
   blurPx?: number;
+  context?: string;
 }
 
 export function GatedContent({
@@ -16,6 +18,7 @@ export function GatedContent({
   message,
   ctaText = "Daftar Gratis",
   blurPx = 5,
+  context,
 }: GatedContentProps) {
   const { status } = useSession();
   const [mounted, setMounted] = useState(false);
@@ -52,7 +55,8 @@ export function GatedContent({
         <div className="text-center px-6 py-4 max-w-xs">
           <p className="text-sm text-text-secondary mb-3">{message}</p>
           <Link
-            href="/auth/register"
+            href={getGateRegisterHref(context)}
+            data-engagement="funnel_paper_gate_cta"
             className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-bold bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors press-scale"
           >
             {ctaText}

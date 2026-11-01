@@ -57,10 +57,15 @@ export default function PaperTradingPage() {
 
 function PaperTradingRouter() {
   const { status } = useSession();
+  const searchParams = useSearchParams();
 
   // Anonymous: show blurred preview — no API calls fire
   if (status === "unauthenticated") {
-    return <PaperTradingPreview />;
+    const rawTicker = searchParams.get("ticker") ?? undefined;
+    const tickerContext = rawTicker
+      ? `${rawTicker.replace(/\.jk$/i, "")}.JK`
+      : undefined;
+    return <PaperTradingPreview context={tickerContext} />;
   }
 
   // Authenticated or loading: render the real dashboard

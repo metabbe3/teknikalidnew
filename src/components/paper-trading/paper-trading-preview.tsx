@@ -2,13 +2,18 @@
 
 import { GatedContent } from "@/components/ui/gated-content";
 
-export function PaperTradingPreview() {
+interface PaperTradingPreviewProps {
+  context?: string;
+}
+
+export function PaperTradingPreview({ context }: PaperTradingPreviewProps = {}) {
   return (
     <div className="max-w-2xl mx-auto px-4 pb-24">
       <GatedContent
         message="Daftar untuk mulai simulasi trading gratis dengan saldo virtual hingga Rp 100 juta"
         ctaText="Daftar Gratis"
         blurPx={6}
+        context={context}
       >
         {/* Mock account summary card */}
         <div className="mt-4 rounded-xl bg-bg-card depth-shadow p-5 border border-border">

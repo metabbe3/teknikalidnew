@@ -396,6 +396,7 @@ export default async function CommunityPage({
                   </Link>
                   <Link
                     href="/auth/register"
+                    data-engagement="cta_register_community"
                     className="inline-flex items-center px-4 py-2 rounded-lg text-sm font-bold text-white bg-accent hover:bg-accent/90 transition-colors press-scale"
                   >
                     Daftar Gratis

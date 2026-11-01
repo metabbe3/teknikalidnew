@@ -192,6 +192,7 @@ export function ChartSection({ ticker }: ChartSectionProps) {
           {!isAuthed && (
             <Link
               href="/auth/register"
+              data-engagement="cta_register_chart_range"
               className="inline-flex items-center text-xs px-2 py-1 min-h-11 sm:min-h-0 rounded-md border border-accent/40 bg-accent/10 text-accent hover:bg-accent/20 transition-colors font-medium whitespace-nowrap"
               title="Rentang lebih panjang untuk member"
             >

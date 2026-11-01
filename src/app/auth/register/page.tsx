@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowRight, Check, Users } from "lucide-react";
 import { AuthBrandPanel } from "@/components/auth/auth-brand-panel";
-import { isEmailLoose, passwordChecks, step2Ready } from "@/lib/register-funnel";
+import { isEmailLoose, passwordChecks, step2Ready, executeRegister } from "@/lib/register-funnel";
+import { trackCtaEvent } from "@/components/engagement-instrument";
 
 /**
  * Register funnel 2-step progressive disclosure (prd-2026-10-18-01).
@@ -14,11 +15,20 @@ import { isEmailLoose, passwordChecks, step2Ready } from "@/lib/register-funnel"
  * Logika password identik dengan form lama — diekstrak ke @/lib/register-funnel
  * (dites node:test). Pre-fill landing (ux-2026-10-16-01) tetap jalan: autoFocus
  * email step-1; email dibawa lintas step via state.
- * Telemetry AC4: data-engagement register_step1_submit / register_completed
+ * Telemetry AC4: data-engagement register_step1_submit / register_submit_final
  * ditangkap listener global engagement-instrument (beacon /api/public/engagement).
+ * Telemetry AC4-fix 1 Nov: success = post-server-ok, bukan click (register_success).
  */
-export default function RegisterPage() {
+function RegisterContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [ctx, setCtx] = useState<string | null>(null);
+
+  useEffect(() => {
+    const c = searchParams.get("ctx");
+    if (c) setCtx(c);
+  }, [searchParams]);
+
   const [step, setStep] = useState<1 | 2>(1);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -54,15 +64,17 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, confirmPassword, anonId: (() => { try { return localStorage.getItem("eng_anon") ?? undefined; } catch { return undefined; } })() }),
+      // telemetry AC4-fix 1 Nov: success = post-server-ok, bukan click
+      const reg = await executeRegister({
+        email,
+        password,
+        confirmPassword,
+        ctx,
+        trackFn: trackCtaEvent,
       });
 
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "Gagal mendaftar. Coba lagi.");
+      if (!reg.ok) {
+        setError(reg.error || "Gagal mendaftar. Coba lagi.");
         setLoading(false);
         return;
       }
@@ -210,7 +222,7 @@ export default function RegisterPage() {
                 <button
                   type="submit"
                   disabled={loading || !step2Ready(password, confirmPassword)}
-                  data-engagement="register_completed"
+                  data-engagement="register_submit_final"
                   className="w-full bg-accent text-white rounded-xl px-4 py-3 text-sm font-semibold hover:bg-accent/90 transition-colors press-scale disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? "Memproses…" : "Mulai Analisa Gratis"}
@@ -244,5 +256,32 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={
+      <div className="max-w-6xl mx-auto px-4 py-8 lg:py-12">
+        <div className="grid lg:grid-cols-2 gap-8 items-stretch">
+          <div className="hidden lg:block">
+            <AuthBrandPanel />
+          </div>
+          <div className="flex items-center justify-center">
+            <div className="w-full max-w-sm space-y-6">
+              <div className="lg:hidden">
+                <Link href="/" className="font-serif text-xl font-semibold text-text-primary">TeknikalID</Link>
+                <p className="text-sm text-text-secondary">Analisa teknikal untuk trader Indonesia</p>
+              </div>
+              <div>
+                <h1 className="font-serif text-2xl font-semibold tracking-tight text-text-primary">Buat akun gratis</h1>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <RegisterContent />
+    </Suspense>
   );
 }

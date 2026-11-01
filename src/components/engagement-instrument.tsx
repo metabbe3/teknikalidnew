@@ -57,12 +57,16 @@ function getAnonId(): string {
 }
 
 function currentPath(): string {
-  // pathname only — query string stripped, capped to schema max
-  return window.location.pathname.slice(0, 255);
+  try {
+    return window.location.pathname.slice(0, 255);
+  } catch {
+    return "/";
+  }
 }
 
 function flush(useBeacon: boolean): void {
   try {
+    if (!anonId) anonId = getAnonId();
     if (queue.length === 0 || !anonId) return;
     const payload = JSON.stringify({ anonId, events: queue.splice(0, MAX_BATCH) });
     if (useBeacon && typeof navigator.sendBeacon === "function") {

@@ -39,6 +39,7 @@ export function LoginGate({
         <p className="text-sm text-text-secondary leading-relaxed">{message}</p>
         <Link
           href="/auth/register"
+          data-engagement="funnel_login_gate_cta"
           className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-bold bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors press-scale"
         >
           Daftar Gratis

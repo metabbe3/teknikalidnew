@@ -423,6 +423,7 @@ export function GuestRegisterCta() {
         </Link>
         <Link
           href="/auth/register?utm_source=stocks_screener&utm_medium=results_cta"
+          data-engagement="cta_register_screener_bar"
           className="inline-flex min-h-11 items-center rounded-lg bg-accent px-4 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-accent/90 press-scale cursor-pointer"
         >
           Daftar gratis
