@@ -865,3 +865,8 @@ penulisan masih 404 (deploy di kereta T-1021-N / CTO pagi).
 
 ## 2026-10-29 18:4x WIB — qa-2026-10-29-01 (CTO sore) — SQL destruktif log
 - UPDATE "Article" content PWON (PBV 0,70→0,62; MA20 (268)→(273)) WHERE slug='analis-pagi-2026-10-29-aadi' AND LIKE-guard ganda; rowcount=1; preview match=1; backup=db-20261029.sql.gz (01:16, valid <24h). Reverse: replace balik (tercatat ceo-decisions.md).
+
+## 2026-11-01 08:0x WIB — ROLLBACK ANCHOR kereta T-1101-M (CTO weekend pagi)
+- Pre-deploy live: image sha256:9251d9ae37c6 (up 31 Okt 17:37), main ed5e66d.
+- Penumpang: bo-2026-11-01-01 (8fdf429 funnel-v2 section) + prd-2026-10-31-01 (7d7c377 backtest kondisi). bo-2026-10-29-01 sudah terbukti live di anchor image (marker clicksByLabel7d) → flip done.
+- Rollback: git revert 8fdf429 7d7c377 + redeploy image 9251d9ae37c6.
