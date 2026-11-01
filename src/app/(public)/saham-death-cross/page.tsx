@@ -3,6 +3,8 @@ import { PageHero } from "@/components/layout/page-hero";
 import { AskAiCta } from "@/components/seo/ask-ai-cta";
 import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
+import { ConditionHistory } from "@/components/signal/condition-history";
+import { getConditionBacktest } from "@/lib/condition-backtest.service";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { SITE_URL } from "@/lib/constants";
 import { Gem, Search, TrendingUp } from "lucide-react";
@@ -36,6 +38,14 @@ export const metadata: Metadata = {
 
 export default async function SahamDeathCrossPage() {
   const { stocks, failed } = await fetchScreenerRows("death_cross");
+  // prd-2026-10-31-01: riwayat & backtest kondisi — fail-diam (section tak
+  // muncul bila query error; halaman utama tetap render).
+  let conditionHistory: Awaited<ReturnType<typeof getConditionBacktest>> | null = null;
+  try {
+    conditionHistory = await getConditionBacktest("death_cross");
+  } catch (e) {
+    console.error("[condition-history] gagal:", e instanceof Error ? e.message : e);
+  }
 
   // Static schema markup (no user input), rendered as a plain script child.
   const jsonLd = JSON.stringify({
@@ -142,6 +152,8 @@ export default async function SahamDeathCrossPage() {
         </div>
 
         
+                <ConditionHistory result={conditionHistory} />
+
         <AskAiCta question="Saham yang death cross ada?" />
 
         <div className="mt-8 flex flex-wrap gap-3">

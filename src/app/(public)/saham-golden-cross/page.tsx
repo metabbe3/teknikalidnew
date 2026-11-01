@@ -5,6 +5,8 @@ import { AskAiCta } from "@/components/seo/ask-ai-cta";
 import { RegisterCta } from "@/components/signal/register-cta";
 import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
+import { ConditionHistory } from "@/components/signal/condition-history";
+import { getConditionBacktest } from "@/lib/condition-backtest.service";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { SITE_URL } from "@/lib/constants";
 import { AlertTriangle, Gem, Search } from "lucide-react";
@@ -41,6 +43,14 @@ export const metadata: Metadata = {
 
 export default async function SahamGoldenCrossPage() {
   const { stocks, failed } = await fetchScreenerRows("golden_cross");
+  // prd-2026-10-31-01: riwayat & backtest kondisi — fail-diam (section tak
+  // muncul bila query error; halaman utama tetap render).
+  let conditionHistory: Awaited<ReturnType<typeof getConditionBacktest>> | null = null;
+  try {
+    conditionHistory = await getConditionBacktest("golden_cross");
+  } catch (e) {
+    console.error("[condition-history] gagal:", e instanceof Error ? e.message : e);
+  }
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -152,7 +162,9 @@ export default async function SahamGoldenCrossPage() {
             </tbody>
           </table>
 
-          <RegisterCta slug="saham-golden-cross" />
+                  <ConditionHistory result={conditionHistory} />
+
+        <RegisterCta slug="saham-golden-cross" />
         </div>
 
         
