@@ -6,6 +6,7 @@ import { IDX_STOCKS } from "@/lib/constants";
 import { STRATEGY_TAGS } from "./constants";
 import { usePlaceOrder } from "@/hooks/use-paper-trading";
 import { useToast } from "./toast";
+import { formatRupiah } from "@/lib/format-number";
 
 const MOODS = [
   { value: "CONFIDENT", label: "Yakin", icon: "💪" },
@@ -14,10 +15,6 @@ const MOODS = [
   { value: "FEARFUL", label: "Takut", icon: "😰" },
   { value: "NEUTRAL", label: "Netral", icon: "😐" },
 ];
-
-function formatRupiah(n: number): string {
-  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n);
-}
 
 interface TradeModalProps {
   onClose: () => void;

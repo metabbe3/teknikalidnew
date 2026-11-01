@@ -14,3 +14,18 @@ export function formatDecimalId(
     maximumFractionDigits: digits,
   }).format(value);
 }
+
+/**
+ * Format mata uang Rupiah (IDR) tanpa desimal dengan pemisah ribuan titik.
+ * Mengembalikan "-" jika n bernilai null.
+ */
+export function formatRupiah(n: number | null): string {
+  if (n === null) return "-";
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(n);
+}
+

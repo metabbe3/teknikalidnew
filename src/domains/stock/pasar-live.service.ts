@@ -96,10 +96,6 @@ export function wibHHMM(d = wibNow()): number {
   return d.getUTCHours() * 100 + d.getUTCMinutes();
 }
 
-export function wibDateKey(d = wibNow()): string {
-  return d.toISOString().slice(0, 10);
-}
-
 /** Weekday check in WIB (getUTCDay on the +7h shifted clock). */
 export function isWibWeekday(d = wibNow()): boolean {
   const day = d.getUTCDay();
