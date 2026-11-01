@@ -65,7 +65,7 @@ export function UsersTab() {
         <div className="flex items-center gap-2">
           <Avatar className="h-6 w-6 ring-1 ring-blue-100">
             <AvatarImage src={r.image ?? undefined} />
-            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-[10px] font-bold">
+            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-sky-600 text-white text-[10px] font-bold">
               {(r.username ?? r.name ?? "?")[0].toUpperCase()}
             </AvatarFallback>
           </Avatar>
@@ -106,7 +106,7 @@ export function UsersTab() {
                 return (
                   <div key={day.date} className="flex-1 flex flex-col items-center gap-1">
                     <div
-                      className="w-full rounded-t bg-gradient-to-t from-blue-600 to-indigo-400 transition-all duration-300"
+                      className="w-full rounded-t bg-gradient-to-t from-blue-600 to-sky-400 transition-all duration-300"
                       style={{ height: `${height}%` }}
                       title={`${day.date}: ${day.count} signups`}
                     />
@@ -161,7 +161,7 @@ export function UsersTab() {
                 {(data?.providers ?? []).map((p) => {
                   const total = data?.providers.reduce((sum, x) => sum + x.count, 0) || 1;
                   const pct = Math.round((p.count / total) * 100);
-                  const color = p.provider === "google" ? "bg-blue-500" : "bg-violet-500";
+                  const color = p.provider === "google" ? "bg-blue-500" : "bg-sky-500";
                   return (
                     <div key={p.provider} className="flex items-center gap-3">
                       <span className="text-sm font-medium text-gray-700 w-24 capitalize">{p.provider}</span>

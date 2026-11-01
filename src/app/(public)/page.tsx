@@ -261,7 +261,7 @@ async function TradingPlanPreview() {
       </div>
       {/* Owner 24 Okt: funnel fitur tersembunyi — /pasar 10 views, /paper-trading 10, /akademi 14 vs home 398 */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
-        <Link href="/swing" data-engagement="funnel_home_swing" className="group flex flex-col items-center gap-1.5 p-3.5 rounded-xl bg-bg-card border border-accent/30 hover:border-accent/60 depth-shadow transition-all">
+        <Link href="/swing" data-engagement="funnel_home_swing" className="group flex flex-col items-center gap-1.5 p-3.5 rounded-xl bg-bg-card border border-border hover:border-accent/40 depth-shadow transition-all">
           <span className="text-lg" aria-hidden>🎯</span>
           <span className="text-xs font-semibold text-text-secondary group-hover:text-accent transition-colors">Setup Swing Hari Ini</span>
           <span className="text-[10px] text-text-tertiary text-center leading-tight">10 kandidat + bukti backtest</span>

@@ -113,7 +113,7 @@ export function AuthTab() {
                 {(data?.providers ?? []).map((p) => {
                   const total = data?.providers.reduce((sum, x) => sum + x.count, 0) || 1;
                   const pct = Math.round((p.count / total) * 100);
-                  const color = p.provider === "google" ? "bg-blue-500" : "bg-violet-500";
+                  const color = p.provider === "google" ? "bg-blue-500" : "bg-sky-500";
                   return (
                     <div key={p.provider} className="flex items-center gap-3">
                       <span className="text-sm font-medium text-gray-700 w-24 capitalize">{p.provider}</span>

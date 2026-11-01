@@ -2,6 +2,7 @@
 
 import type { CompareStock } from "@/hooks/use-compare-data";
 import { stripJk, rsiBgColor, rsiStatus } from "@/lib/utils";
+import { formatDecimalId } from "@/lib/format-number";
 
 interface Props {
   stocks: CompareStock[];
@@ -84,7 +85,7 @@ function TechnicalCard({ stock }: { stock: CompareStock }) {
         {/* Momentum */}
         <MetricRow
           label="Momentum"
-          value={macdHist !== null ? macdHist.toFixed(2) : "—"}
+          value={macdHist !== null ? formatDecimalId(macdHist, 2) : "—"}
         >
           {macdHist !== null && (
             <Badge text={momentumBullish ? "Bullish" : "Bearish"} variant={momentumBullish ? "bullish" : "bearish"} />
@@ -95,7 +96,7 @@ function TechnicalCard({ stock }: { stock: CompareStock }) {
         <div>
           <MetricRow
             label="RSI (14)"
-            value={rsi14 !== null ? rsi14.toFixed(1) : "—"}
+            value={rsi14 !== null ? formatDecimalId(rsi14, 1) : "—"}
           >
             {rsi14 !== null && (
               <Badge
@@ -110,7 +111,7 @@ function TechnicalCard({ stock }: { stock: CompareStock }) {
         {/* Volume */}
         <MetricRow
           label="Volume"
-          value={volRatio !== null ? `${volRatio.toFixed(1)}x avg` : "—"}
+          value={volRatio !== null ? `${formatDecimalId(volRatio, 1)}x avg` : "—"}
         >
           {volRatio !== null && volRatio >= 2 && <Badge text="Spike" variant="spike" />}
         </MetricRow>

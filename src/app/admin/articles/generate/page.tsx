@@ -166,7 +166,7 @@ export default function GenerateArticlePage() {
               <select
                 value={selectedTopic}
                 onChange={(e) => setSelectedTopic(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">-- Select educational topic --</option>
                 {EDU_TOPICS.map((t) => (
@@ -325,7 +325,7 @@ export default function GenerateArticlePage() {
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Step 4: Generate</p>
           <Button
-            className="w-full gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-600/20 transition-all"
+            className="w-full gap-2 bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700 shadow-lg shadow-blue-600/20 transition-all"
             size="lg"
             disabled={generateMut.isPending}
             onClick={() => generateMut.mutate()}

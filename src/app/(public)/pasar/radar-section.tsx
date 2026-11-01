@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Radar } from "lucide-react";
 import { TelegramSubscribeCta } from "@/components/telegram/subscribe-cta";
 import { Card, CardContent } from "@/components/ui/card";
+import { formatDecimalId } from "@/lib/format-number";
 
 interface RadarItem {
   ticker: string;
@@ -74,7 +75,7 @@ export function RadarSection() {
                         </span>
                         <span className="text-right shrink-0">
                           <span className="block text-xs font-semibold tabular-nums">
-                            {r.signalScore != null ? r.signalScore.toFixed(2) : r.signalLabel ?? ""}
+                            {r.signalScore != null ? formatDecimalId(r.signalScore, 2) : r.signalLabel ?? ""}
                           </span>
                           <span className="block text-[10px] text-text-tertiary">
                             {r.cat === "value" && r.pe ? `PER ${r.pe}` : r.note ?? r.signalLabel ?? ""}

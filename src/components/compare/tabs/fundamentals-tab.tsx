@@ -2,6 +2,7 @@
 
 import type { CompareStock } from "@/hooks/use-compare-data";
 import { formatPrice, formatPercent, formatVolume, stripJk } from "@/lib/utils";
+import { formatDecimalId } from "@/lib/format-number";
 
 interface Props {
   stocks: CompareStock[];
@@ -30,7 +31,7 @@ function Row({ label, values, fmt, highlight }: { label: string; values: (number
 }
 
 export function FundamentalsTab({ stocks }: Props) {
-  const f2 = (v: number) => v.toFixed(2);
+  const f2 = (v: number) => formatDecimalId(v, 2);
 
   return (
     <table className="w-full min-w-[420px]">
@@ -50,7 +51,7 @@ export function FundamentalsTab({ stocks }: Props) {
         <Row label="Forward P/E" values={stocks.map((s) => s.fundamentals?.forwardPe ?? null)} fmt={f2} highlight="min" />
         <Row label="P/B Ratio" values={stocks.map((s) => s.fundamentals?.pb ?? null)} fmt={f2} highlight="min" />
         <Row label="EPS" values={stocks.map((s) => s.fundamentals?.eps ?? null)} fmt={formatPrice} highlight="max" />
-        <Row label="Div. Yield" values={stocks.map((s) => s.fundamentals?.dividendYield ?? null)} fmt={(v) => `${v.toFixed(2)}%`} highlight="max" />
+        <Row label="Div. Yield" values={stocks.map((s) => s.fundamentals?.dividendYield ?? null)} fmt={(v) => `${formatDecimalId(v, 2)}%`} highlight="max" />
       </tbody>
     </table>
   );

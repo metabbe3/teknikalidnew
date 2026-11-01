@@ -254,7 +254,7 @@ button:focus-visible,
 .admin-accent-emerald { border-top: 3px solid #10b981; }
 .admin-accent-amber { border-top: 3px solid #f59e0b; }
 .admin-accent-rose { border-top: 3px solid #f43f5e; }
-.admin-accent-violet { border-top: 3px solid #8b5cf6; }
+.admin-accent-cyan { border-top: 3px solid #06b6d4; }
 .admin-accent-blue-left { border-top: 3px solid #3b82f6; }
 .admin-accent-emerald-left { border-top: 3px solid #10b981; }
 .admin-accent-amber-left { border-top: 3px solid #f59e0b; }
@@ -368,7 +368,7 @@ button:focus-visible,
   --chart-5: oklch(0.269 0 0);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary: var(--color-accent);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.269 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
@@ -1363,7 +1363,7 @@ button:focus-visible,
     from var(--beam-angle, 0deg),
     transparent 0deg 300deg,
     var(--beam-from, #38bdf8) 330deg,
-    var(--beam-to, #818cf8) 360deg
+    var(--beam-to, #0369a1) 360deg
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;

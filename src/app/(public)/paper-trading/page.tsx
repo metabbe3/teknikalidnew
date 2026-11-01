@@ -162,7 +162,7 @@ function PaperTradingDashboard({
       {/* Floating trade button */}
       <button
         onClick={() => { setTradeTicker(undefined); setShowTradeModal(true); }}
-        className="fixed bottom-6 right-6 bg-teal-600 text-white w-14 h-14 rounded-2xl depth-shadow-strong press-scale hover:bg-teal-700 transition-colors flex items-center justify-center z-40 group"
+        className="fixed md:hidden bottom-6 right-6 bg-bullish text-white w-14 h-14 rounded-2xl depth-shadow-strong press-scale hover:bg-bullish/90 transition-colors flex items-center justify-center z-40 group"
         style={{ boxShadow: "0 0 0 1px rgba(0,0,0,0.04), 0 4px 12px rgba(13,148,136,0.3), 0 12px 28px rgba(13,148,136,0.15)" }}
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="group-hover:rotate-90 transition-transform duration-200">

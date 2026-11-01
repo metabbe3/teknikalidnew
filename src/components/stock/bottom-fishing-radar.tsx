@@ -130,7 +130,7 @@ export function BottomFishingRadar({
                         </span>
                       )}
                       {stock.stochK !== null && stock.stochD !== null && stock.stochK <= 20 && (
-                        <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400">
+                        <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-bullish-bg text-bullish">
                           Stoch {stock.stochK.toFixed(0)}/{stock.stochD.toFixed(0)}
                         </span>
                       )}

@@ -5,6 +5,7 @@ import { AskAiCta } from "@/components/seo/ask-ai-cta";
 import { screenerAnalysisService } from "@/domains/stock/screener-analysis.service";
 import { SITE_URL } from "@/lib/constants";
 import { stripJk } from "@/lib/utils";
+import { formatDecimalId } from "@/lib/format-number";
 import Link from "next/link";
 import { Gem, PiggyBank, Search } from "lucide-react";
 
@@ -121,7 +122,7 @@ export default async function SahamValueGrowthPage() {
                     </Link>
                     <span className="block text-xs text-muted-foreground">{r.name}</span>
                   </td>
-                  <td className="py-2 pr-4 font-semibold">{r.pe != null ? r.pe.toFixed(1) : "-"}</td>
+                  <td className="py-2 pr-4 font-semibold">{r.pe != null ? formatDecimalId(r.pe, 1) : "-"}</td>
                   <td className="py-2 pr-4">{r.eps != null ? r.eps.toFixed(0) : "-"}</td>
                   <td className="py-2 pr-4">{r.close != null ? r.close.toLocaleString("id-ID") : "-"}</td>
                   <td className="py-2 text-xs">{r.sector}</td>

@@ -183,9 +183,9 @@ export function signalToHealthScore(signalScore: number | null): number | null {
 }
 
 export function healthScoreMeta(score: number): { color: string; bg: string; label: string } {
-  if (score >= 80) return { color: "#059669", bg: "rgba(5,150,105,0.10)", label: "Kondisi Baik" };
+  if (score >= 80) return { color: "#047857", bg: "rgba(4,120,87,0.10)", label: "Kondisi Baik" };
   if (score >= 60) return { color: "#0d9488", bg: "rgba(13,148,136,0.10)", label: "Cukup Baik" };
-  if (score >= 40) return { color: "#d97706", bg: "rgba(217,119,6,0.10)", label: "Netral" };
+  if (score >= 40) return { color: "#635c56", bg: "rgba(99,92,86,0.08)", label: "Netral" };
   if (score >= 20) return { color: "#b45309", bg: "rgba(180,83,9,0.10)", label: "Lemah" };
   return { color: "#dc2626", bg: "rgba(220,38,38,0.10)", label: "Berisiko" };
 }

@@ -25,7 +25,7 @@ export function BorderBeam({
   active = true,
   className = "",
   colorFrom = "#38bdf8",
-  colorTo = "#818cf8",
+  colorTo = "#0369a1",
   size = 2,
   duration = 6,
 }: BorderBeamProps) {

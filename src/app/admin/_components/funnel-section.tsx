@@ -41,13 +41,13 @@ export function FunnelSection() {
     {
       label: "Lihat /auth/signin",
       value: totals?.signin ?? 0,
-      color: "bg-indigo-500",
+      color: "bg-sky-500",
       note: "tracking mulai 7 Sep 2026",
     },
     {
       label: "Lihat /auth/register",
       value: totals?.register ?? 0,
-      color: "bg-purple-500",
+      color: "bg-cyan-500",
       note: "",
     },
     { label: "Registrasi baru", value: totals?.signups ?? 0, color: "bg-emerald-500", note: "" },

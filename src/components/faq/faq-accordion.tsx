@@ -6,7 +6,7 @@ import Link from "next/link";
 const CATEGORY_COLORS: Record<string, string> = {
   indikator: "bg-blue-500/15 text-blue-400",
   saham: "bg-emerald-500/15 text-emerald-400",
-  trading: "bg-purple-500/15 text-purple-400",
+  trading: "bg-accent/10 text-accent",
   umum: "bg-gray-500/15 text-gray-400",
 };
 

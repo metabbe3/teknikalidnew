@@ -150,7 +150,7 @@ export default function AgentHubPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Bot className="h-7 w-7 text-indigo-600" />
+            <Bot className="h-7 w-7 text-blue-600" />
             AI Agent Hub
           </h1>
           <p className="text-sm text-gray-500 mt-1">Centralized agent orchestration — monitor, trigger, and manage AI agents</p>
@@ -214,8 +214,8 @@ export default function AgentHubPage() {
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="p-2 rounded-lg bg-indigo-50">
-                        <Icon className="h-5 w-5 text-indigo-600" />
+                      <div className="p-2 rounded-lg bg-blue-50">
+                        <Icon className="h-5 w-5 text-blue-600" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
@@ -305,7 +305,7 @@ export default function AgentHubPage() {
                   <div className="mt-2 flex justify-end">
                     <Link
                       href={`/admin/agent-hub/${agent.type}`}
-                      className="text-xs text-indigo-600 hover:underline flex items-center gap-1"
+                      className="text-xs text-blue-600 hover:underline flex items-center gap-1"
                     >
                       View Details <ExternalLink className="h-3 w-3" />
                     </Link>

@@ -13,14 +13,14 @@ import {
 
 const TAG_COLORS: Record<string, string> = {
   RSI: "#d97706",
-  MACD: "#8b5cf6",
+  MACD: "#0369a1",
   "Bollinger Bands": "#ec4899",
   Stochastic: "#06b6d4",
   SMA: "#0d9488",
   EMA: "#14b8a6",
   Support: "#2563eb",
   Resistance: "#dc2626",
-  "Pivot Point": "#6366f1",
+  "Pivot Point": "#0d9488",
   Trading: "#f59e0b",
   Saham: "#0d9488",
 };

@@ -253,7 +253,7 @@ export function UserManagementTab() {
                         {user.name || user.username}
                       </span>
                       {user.role === "ADMIN" && (
-                        <span className="text-[10px] font-bold bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded">
+                        <span className="text-[10px] font-bold bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">
                           ADMIN
                         </span>
                       )}

@@ -152,8 +152,8 @@ export function AskAiFab() {
         data-authed={isAuthed ? "1" : "0"}
         aria-label={open ? "Tutup tanya AI" : "Tanya AI apa saja"}
         data-engagement="fab_ask_ai"
-        className={`fixed z-50 bottom-24 md:bottom-6 right-4 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent text-white shadow-lg hover:bg-accent/90 active:scale-95 transition
-        h-14 px-4 md:h-11 md:px-5 text-sm font-semibold
+        className={`fixed z-50 bottom-24 right-4 md:hidden inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent text-white shadow-lg hover:bg-accent/90 active:scale-95 transition
+        h-14 px-4 text-sm font-semibold
         ${nudge && !open ? "animate-pulse ring-4 ring-accent/20" : ""}`}
       >
         {open ? <X className="h-5 w-5" aria-hidden /> : <Sparkles className="h-5 w-5" aria-hidden />}
@@ -165,13 +165,13 @@ export function AskAiFab() {
         <div
           role="dialog"
           aria-label="Tanya AI"
-          className="fixed z-50 bottom-40 md:bottom-20 right-4 left-4 md:left-auto md:w-[420px] rounded-2xl border border-border bg-bg-card shadow-2xl flex flex-col max-h-[70vh]"
+          className="fixed z-50 bottom-40 right-4 left-4 md:hidden rounded-2xl border border-border bg-bg-card shadow-2xl flex flex-col max-h-[70vh]"
         >
           <div className="flex items-center justify-between px-4 py-3 border-b border-border">
             <p className="text-sm font-bold text-text-primary flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-accent" aria-hidden /> Tanya AI — pasar & saham
             </p>
-            <button onClick={() => setOpen(false)} aria-label="Tutup" className="p-1.5 -m-1 rounded-lg hover:bg-bg-tertiary">
+            <button onClick={() => setOpen(false)} aria-label="Tutup" className="size-11 -m-2 flex items-center justify-center rounded-lg hover:bg-bg-tertiary text-text-secondary hover:text-text-primary">
               <X className="h-4 w-4" aria-hidden />
             </button>
           </div>

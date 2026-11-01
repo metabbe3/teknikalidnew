@@ -53,7 +53,7 @@ function ThesisForm({ ticker, onClose }: { ticker: string; onClose: () => void }
       >
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-text-primary">Kunci tesis {ticker.replace(/\.JK$/i, "")}</h3>
-          <button onClick={onClose} className="text-text-tertiary hover:text-text-primary p-1" aria-label="Tutup">
+          <button onClick={onClose} className="size-11 -m-2 flex items-center justify-center text-text-tertiary hover:text-text-primary rounded-lg transition-colors" aria-label="Tutup">
             ✕
           </button>
         </div>

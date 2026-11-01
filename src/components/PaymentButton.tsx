@@ -114,7 +114,7 @@ export default function PaymentButton({
       <button
         onClick={handlePay}
         disabled={loading || !snapLoaded}
-        className="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         {loading ? "Memproses..." : `Bayar ${formatCurrency(plan!.price)}`}
       </button>
@@ -131,12 +131,12 @@ export default function PaymentButton({
             onClick={() => setSelectedPlan(plan.id)}
             className={`p-6 rounded-xl border-2 cursor-pointer transition-all ${
               selectedPlan === plan.id
-                ? "border-indigo-600 bg-indigo-50 shadow-lg"
-                : "border-gray-200 hover:border-indigo-300"
+                ? "border-blue-600 bg-blue-50 shadow-lg"
+                : "border-gray-200 hover:border-blue-300"
             }`}
           >
             <h3 className="text-lg font-bold text-gray-900">{plan.name}</h3>
-            <p className="text-2xl font-bold text-indigo-600 mt-2">
+            <p className="text-2xl font-bold text-blue-600 mt-2">
               {formatCurrency(plan.price)}
             </p>
             <ul className="mt-4 space-y-2">
@@ -164,7 +164,7 @@ export default function PaymentButton({
       <button
         onClick={handlePay}
         disabled={!selectedPlan || loading || !snapLoaded}
-        className="w-full px-6 py-4 bg-indigo-600 text-white font-bold text-lg rounded-xl hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="w-full px-6 py-4 bg-blue-600 text-white font-bold text-lg rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         {loading ? "Memproses..." : "Bayar Sekarang"}
       </button>

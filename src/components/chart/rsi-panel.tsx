@@ -72,7 +72,7 @@ export default function RsiPanel({
 
     // RSI line series
     const rsiSeries = chart.addSeries(LineSeries, {
-      color: "#8b5cf6",
+      color: "#0369a1",
       lineWidth: 2,
     });
     rsiSeriesRef.current = rsiSeries;

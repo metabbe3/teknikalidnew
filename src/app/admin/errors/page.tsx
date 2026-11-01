@@ -105,7 +105,7 @@ export default function ErrorHubPage() {
           className={`text-[10px] px-1.5 py-0 ${
             entry.source === "cron"
               ? "border-blue-300 text-blue-600 bg-blue-50"
-              : "border-violet-300 text-violet-600 bg-violet-50"
+              : "border-sky-300 text-sky-600 bg-sky-50"
           }`}
         >
           {entry.source === "cron" ? "Cron" : "Agent"}

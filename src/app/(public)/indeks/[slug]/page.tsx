@@ -6,6 +6,7 @@ import { IDX_INDICES } from "@/lib/idx-indices";
 import { SITE_URL } from "@/lib/constants";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { formatPrice, formatPercent, stripJk, changeColor, rsiColor, rsiStatus } from "@/lib/utils";
+import { formatDecimalId } from "@/lib/format-number";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 3600;
@@ -199,7 +200,7 @@ export default async function IndexDetailPage({
                       <td
                         className={`py-3 px-3 text-right tabular-nums ${rsiColor(stock.rsi14)}`}
                       >
-                        {stock.rsi14 != null ? stock.rsi14.toFixed(1) : "—"}
+                        {stock.rsi14 != null ? formatDecimalId(stock.rsi14, 1) : "—"}
                       </td>
                       <td className="py-3 px-3 text-center">
                         <span

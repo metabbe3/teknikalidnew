@@ -26,11 +26,11 @@ import { formatRp, formatPercent, changeColor, stripJk } from "@/lib/utils";
 // translucent light fills readable on the paper card.
 const BADGE_STYLES: Record<string, { bg: string; dot: string }> = {
   amber: { bg: "bg-amber-500/10 text-amber-700 border border-amber-500/20", dot: "bg-amber-500" },
-  purple: { bg: "bg-purple-500/10 text-purple-700 border border-purple-500/20", dot: "bg-purple-500" },
+  rose: { bg: "bg-rose-500/10 text-rose-700 border border-rose-500/20", dot: "bg-rose-500" },
   gold: { bg: "bg-yellow-500/10 text-yellow-700 border border-yellow-500/20", dot: "bg-yellow-500" },
   teal: { bg: "bg-teal-500/10 text-teal-700 border border-teal-500/20", dot: "bg-teal-500" },
   blue: { bg: "bg-accent-muted text-accent border border-accent/20", dot: "bg-accent" },
-  indigo: { bg: "bg-indigo-500/10 text-indigo-700 border border-indigo-500/20", dot: "bg-indigo-500" },
+  sky: { bg: "bg-sky-500/10 text-sky-700 border border-sky-500/20", dot: "bg-sky-500" },
   cyan: { bg: "bg-cyan-500/10 text-cyan-700 border border-cyan-500/20", dot: "bg-cyan-500" },
   slate: { bg: "bg-bg-hover text-text-secondary border border-border", dot: "bg-text-tertiary" },
 };

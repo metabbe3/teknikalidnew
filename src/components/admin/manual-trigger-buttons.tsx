@@ -10,7 +10,7 @@ const actions = [
     key: "sync-eod",
     label: "Force EOD Sync",
     icon: Zap,
-    className: "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md shadow-blue-600/20",
+    className: "bg-gradient-to-r from-blue-600 to-sky-600 hover:from-blue-700 hover:to-sky-700 text-white shadow-md shadow-blue-600/20",
   },
   {
     key: "sync-intraday",

@@ -498,7 +498,7 @@ function CronJobsTab() {
         <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
-              <Clock className="h-4 w-4 text-indigo-500" />
+              <Clock className="h-4 w-4 text-sky-500" />
               Execution History
             </CardTitle>
             <select
@@ -598,7 +598,7 @@ function SyncLogsTab() {
     {
       header: "Indicators",
       cell: (r: SyncLog) => (
-        <span className="tabular-nums font-bold text-violet-600">
+        <span className="tabular-nums font-bold text-sky-600">
           {r.indicatorsWritten}
         </span>
       ),
@@ -960,7 +960,7 @@ function IndicatorsTab() {
         <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
           <div className="flex items-center justify-between w-full">
             <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
-              <Activity className="h-4 w-4 text-violet-500" />
+              <Activity className="h-4 w-4 text-sky-500" />
               Indicator Coverage per Stock
             </CardTitle>
             <input
@@ -1223,7 +1223,7 @@ function ServicesConfigTab() {
                 <div className="flex flex-col items-end gap-1 shrink-0">
                   <Badge
                     variant="secondary"
-                    className="bg-violet-50 text-violet-700 border-violet-200"
+                    className="bg-sky-50 text-sky-700 border-sky-200"
                   >
                     {job.schedule}
                   </Badge>
