@@ -1357,3 +1357,12 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - Jebakan: (1) grep frasa ber-ticker di artikel live = auto-link memecah kata (BBCA jadi >BBCA</a>) — pakai frasa tanpa ticker atau baca RSC payload; (2) anomali 530 serentak ±30s = docker restart watchdog, cek docker events + image hash dulu sebelum panic; (3) kolom mixed-case Prisma WAJIB quote di SQL manual (smaCrossSignal tanpa quote = column does not exist); (4) worker TIDAK ikut rebuild (kode error-boundary = app-only; worker image lama by-design).
 - Langkah pertama slot berikutnya: baca queue → entry pending tanpa scheduled_slot → BE 17:00 punya 2 entry → health check sisanya; PRD baru tunggu CEO ritual besok.
 - Rollback anchor: app 6c643d2a0794 (current) · pre = fd76c6af5c85 · git revert 377abe8
+
+## 2026-11-01 17:1x — CTO weekend sore 15:30 run-2 catch-up (verify + reslot 12)
+- State: sehat; prod home/golden-cross/berita 200; app 6c643d2a0794 (T-1101-N 13:42) healthy; EOD 30 Okt benar (Minggu); deploy org 2/2 HABIS — jangan deploy lagi tanpa hotfix P0.
+- Run 13:5x TERVERIFIKASI independen: image CreatedAt 13:42:49, chunk "Coba Lagi" 4 file di container, EN "Something went wrong" 0 hit, 3 URL 200.
+- Reslot 12 entry slot-hantu/lewat → Sen-Rab 2-4 Nov (BE pagi 07:30/siang 09:30/malam 18:30, Reviewer 07:05, FE 19:15) via statejson; prd-31-02 gate PRD OK (im-2026-10-29-2 spec_ready). Queue valid 217 entry.
+- Jebakan: (1) job "QA reviewer 07:15" & slot 08:40 TIDAK eksis di cron — Reviewer asli jalan 07:05; (2) BE malam display string basi (45 16) tapi expr asli 30 18 1-5 — selalu baca expr; (3) jobs.json ada di ~/.hermes/cron/jobs.json (bukan ~/.hermes/jobs.json).
+- Milik slot lain (JANGAN diambil CTO): BE 17:00 hari ini = ops-29-01 + ops-11-01-04; Senin = CEO verdict MoM basis kalender WIB.
+- Langkah pertama slot berikutnya: baca queue → BE pagi Senin: bug-30-01 (OOM forensik) → Reviewer 07:05 qa-30-02 → BE siang ops-11-01-01 → kereta malam cek manifest.
+- Rollback anchor: app 6c643d2a0794 (current) · pre = fd76c6af5c85 · git revert 377abe8
