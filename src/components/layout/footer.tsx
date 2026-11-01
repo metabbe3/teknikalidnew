@@ -13,6 +13,7 @@ const footerLinks = [
   { href: "/laporan-pasar", label: "Laporan Pasar Mingguan" },
   { href: "/pasar", label: "Koran Pasar Live" },
   { href: "/track-record", label: "Track Record" },
+  { href: "/swing", label: "Setup Swing Hari Ini" },
 ];
 
 const legalLinks = [

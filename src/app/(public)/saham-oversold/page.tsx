@@ -149,6 +149,17 @@ export default async function SahamOversoldPage() {
           </p>
         </div>
 
+        <Link
+          href="/swing"
+          data-engagement="crosslink_oversold_swing"
+          className="mt-8 flex items-center justify-between gap-3 rounded-lg border border-accent/30 bg-accent/5 hover:border-accent/60 p-4 transition-colors"
+        >
+          <span className="text-xs text-text-secondary leading-relaxed">
+            Lebih suka tunggu konfirmasi tren? Lihat <strong className="text-text-primary">Setup Swing Hari Ini</strong> — kandidat skor sinyal tertinggi dengan level entry & stop dari ATR, plus bukti backtest.
+          </span>
+          <span className="text-accent text-lg" aria-hidden>→</span>
+        </Link>
+
         <div className="mt-8 space-y-6">
           <h2 className="text-lg font-bold text-text-primary">Strategi & Risiko Trading Saham Oversold</h2>
           <div className="grid gap-4 sm:grid-cols-2">

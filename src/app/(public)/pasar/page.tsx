@@ -464,6 +464,16 @@ function TopSignalsSection({ items, sessionDate }: { items: PasarTopSignal[]; se
       <p className="mt-2 text-xs text-text-tertiary">
         Skor sinyal (−1 s.d. +1) adalah rangkuman otomatis indikator teknikal — bukan rekomendasi beli. Klik emiten untuk melihat rincian indikator di balik skornya.
       </p>
+      <Link
+        href="/swing"
+        data-engagement="crosslink_pasar_swing"
+        className="mt-2 flex items-center justify-between gap-3 rounded-lg border border-accent/30 bg-accent/5 hover:border-accent/60 p-3 transition-colors"
+      >
+        <span className="text-xs text-text-secondary leading-relaxed">
+          Mau horizon berhari-hari? <strong className="text-text-primary">Setup Swing Hari Ini</strong> — 10 kandidat skor tertinggi dengan level entry/stop + bukti backtest 74 ribu sinyal.
+        </span>
+        <span className="text-accent text-lg" aria-hidden>→</span>
+      </Link>
     </section>
   );
 }

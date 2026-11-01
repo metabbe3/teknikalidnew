@@ -28,6 +28,7 @@ const toolLinks = [
   { href: "/indeks", label: "Indeks LQ45 & JII" },
   { href: "/track-record", label: "Riwayat Akurasi Sinyal" },
   { href: "/trading-plan", label: "Trading Plan" },
+  { href: "/swing", label: "Setup Swing Hari Ini" },
   { href: "/market-structure", label: "Arah Tren Pasar" },
   { href: "/bottom-fishing", label: "Radar Saham Diskon" },
   { href: "/compare", label: "Bandingkan Saham" },
