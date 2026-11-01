@@ -83,9 +83,9 @@ export function PredictionsTab() {
         <Badge
           variant="outline"
           className={`text-xs font-semibold ${
-            r.predictionDirection === "BULLISH"
+            r.predictionDirection?.toLowerCase() === "bullish"
               ? "border-emerald-300 text-emerald-700 bg-emerald-50"
-              : r.predictionDirection === "BEARISH"
+              : r.predictionDirection?.toLowerCase() === "bearish"
                 ? "border-rose-300 text-rose-700 bg-rose-50"
                 : ""
           }`}
@@ -144,7 +144,7 @@ export function PredictionsTab() {
         <div className="flex items-center gap-2">
           <Avatar className="h-6 w-6 ring-1 ring-blue-100">
             <AvatarImage src={r.image ?? undefined} />
-            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-[10px] font-bold">
+            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-sky-600 text-white text-[10px] font-bold">
               {(r.username ?? r.name ?? "?")[0].toUpperCase()}
             </AvatarFallback>
           </Avatar>
@@ -186,7 +186,7 @@ export function PredictionsTab() {
     {
       header: "Predictions",
       cell: (r: { ticker: string; count: number }) => (
-        <span className="text-sm font-bold text-violet-600 tabular-nums">{r.count}</span>
+        <span className="text-sm font-bold text-sky-600 tabular-nums">{r.count}</span>
       ),
     },
   ];
@@ -220,7 +220,7 @@ export function PredictionsTab() {
                 return (
                   <div key={day.date} className="flex-1 flex flex-col items-center gap-1">
                     <div
-                      className="w-full rounded-t bg-gradient-to-t from-violet-600 to-indigo-400 transition-all duration-300"
+                      className="w-full rounded-t bg-gradient-to-t from-blue-600 to-sky-400 transition-all duration-300"
                       style={{ height: `${height}%` }}
                       title={`${day.date}: ${day.count} predictions`}
                     />

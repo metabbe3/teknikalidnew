@@ -96,8 +96,13 @@ export const SIGNALS = {
 } as const;
 
 export const PREDICTION_DIRECTION = {
-  UP: "UP",
-  DOWN: "DOWN",
+  // admin-scan fix 1 Nov (P0): DB menyimpan lowercase dari validation.ts ("bullish"/"bearish").
+  // Kanon: simpan lowercase; pembanding WAJIB normalize. UP/DOWN lama dipertahankan sbg alias
+  // kompatibilitas agar data lama (kalau ada) tetap ter-resolve benar.
+  UP: "bullish",
+  DOWN: "bearish",
+  UP_LEGACY: "UP",
+  DOWN_LEGACY: "DOWN",
 } as const;
 
 export const PREDICTION_OUTCOME = {

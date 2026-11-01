@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireCronSecret } from "@/lib/cron-guard";
 import { prisma } from "@/lib/prisma";
-import { PREDICTION_OUTCOME, PREDICTION_DIRECTION } from "@/lib/constants";
+import { PREDICTION_OUTCOME } from "@/lib/constants";
 import { withCronLogging } from "@/domains/cron-monitoring/with-cron-logging";
 import { withTimeout } from "@/domains/cron-monitoring/with-timeout";
 
@@ -93,11 +93,15 @@ export async function GET(request: NextRequest) {
         if (actualPrice === undefined) continue;
 
         const target = Number(post.predictionTarget);
-        const direction = post.predictionDirection!;
+        // admin-scan fix 1 Nov (P0): direction DB = "bullish"/"bearish" (lowercase, dari validation.ts).
+        // Normalize + terima legacy uppercase agar resolve tak pernah salah nilai lagi.
+        const dir = String(post.predictionDirection ?? "").toLowerCase();
+        const isUp = dir === "bullish" || dir === "up";
+        const isDown = dir === "bearish" || dir === "down";
 
         let outcome: string;
-        if ((direction === PREDICTION_DIRECTION.UP && actualPrice >= target) ||
-            (direction === PREDICTION_DIRECTION.DOWN && actualPrice <= target)) {
+        if ((isUp && actualPrice >= target) ||
+            (isDown && actualPrice <= target)) {
           outcome = PREDICTION_OUTCOME.CORRECT;
           correct++;
         } else {
