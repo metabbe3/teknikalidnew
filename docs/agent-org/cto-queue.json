@@ -1406,7 +1406,7 @@
       "created_by": "Product Agent nightly buffer-keeper 3 Okt 22:1x WIB",
       "scheduled_slot": "CTO slot berikutnya (ops host -- bukan deploy aplikasi; hindari quiet zone 11:00-18:00)",
       "priority": "P2",
-      "status": "superseded",
+      "status": "archived",
       "prd_id": "sre-2026-10-03-2",
       "north_star": "consistency/data reliable -- laporan pagi = janji harian ke owner; 4 laporan gagal beruntun 3 Okt 06:31-07:00 (429-1308 kuota 5-jam) tanpa deteksi/rerun = silent gap",
       "title": "P2 OPS (PRD sre-2026-10-03-2): auto-rerun laporan pagi pasca-reset kuota 5-jam z.ai -- parse 429-1308 'reset at HH:MM' dari errors.log, antri hermes cron run +5mnt, gagal-masuk-digest; 0 kode aplikasi teknikal.id, 0 DB",
@@ -1420,7 +1420,8 @@
       "qa_verified": true,
       "qa_verified_by": "reviewer 4 Okt 2026",
       "qa_note": "QA reviewer 4 Okt — PASS: script live ~/.hermes/scripts/zai_quota_rerun.py (mtime 4 Okt 07:36) + snapshot repo docs/agent-org/ops/ ada; py_compile OK; fixture-test pytest 7/7 PASS dijalankan independen oleh reviewer; merge 0f35d7f ada di git log main; 0 kode aplikasi/DB sesuai spec. Residual (bukan scope done_when): cron job 'ZAI Quota Rerun' belum dibuat — menunggu owner (tercatat ceo-decisions 4 Okt). Utang dibayar reviewer.",
-      "resolved_at": "2026-10-28"
+      "resolved_at": "2026-10-28",
+      "freeze_note": "hivePOS development stopped by owner 2026-11-01"
     },
     {
       "id": "prd-2026-10-03-02",
@@ -1606,7 +1607,7 @@
       "date": "2026-10-10",
       "title": "Engagement telemetry: dwell-time + scroll + activity events (jawab 'kenapa returning rendah')",
       "priority": "P1",
-      "status": "superseded",
+      "status": "archived",
       "scheduled_slot": "2026-10-10 17:00 weekend slot sore",
       "source": "owner-direct (10 Okt 14:3x)",
       "spec": "MASALAH: returning IP 7d = 3/88 (3,4%) dan 1-2 di antaranya self-traffic; kita BLIND soal sebabnya — PageView cuma path/referrer/UA, TIDAK ada time-on-page/scroll/activity tracking (ShareEvent 0 rows, Session=auth-only). Owner pertanyaan: 'kenapa returning rendah? data kita terlalu rumit / kurang?' — butuh bukti, bukan tebakan. BUILD: (1) Tabel EngagementEvent {id, anonId(text, uuid client-side localStorage), path, type(enum: dwell_tick|scroll_max|cta_click|star_add|preset_copy|radar_open), valueNum(int: detik utk dwell, % utk scroll), createdAt} via prisma migrate additive. (2) POST /api/public/engagement — pola hivePOS landing-cta: publik, rate-limit burst (65/min per IP), NO PII (anonId random, no ip di payload body), validasi type+value range. (3) Client hook (script global layout): visibilitychange + sendBeacon utk dwell 15s/60s/180s tick, scroll_max once per page (throttle), klik CTA utama (bintang, simpan preset, copy-link, radar card). Batch max 10 events/request. (4) DASHBOARD: query agregat — avg dwell & scroll per page-group (/stocks*, /berita*, edu), funnel: view→dwell>60s→activity→return-next-day. Append ringkas ke brief pagi (teknikalid_growth brief) 1 baris: 'dwell median Xs · scroll Y% · funnel Z%'. SEC GATE: input publik → strict validation (enum, int range, length cap), rate-limit, additive migrate only, no auth touch. VERIFIKASI: sendBeacon test browser interaktif (klik bintang → row cta_click; tunggu 65s → dwell_tick), rate-limit burst 429, 5 URL 200 before=after. Rollback: git revert + prisma tidak auto-drop (tabel additive, aman). EVAL 12 Okt bisa pakai data funnel ini utk returning verdict.",
@@ -1617,7 +1618,8 @@
       "qa_verified": true,
       "qa_by": "reviewer",
       "qa_result": "QA pass 11 Okt 09:3x independen: tabel EngagementEvent live (schema: anonId/path/type/label/valueNum/createdAt), data mengalir nyata dwell_tick 14 / scroll_max 7 / cta_click 2; rate-limit route RATE_LIMIT=65 sesuai klaim burst 70=65x204+5x429; 5 URL 200 sehat saat audit. Data funnel dipakai EVAL returning 12 Okt — bukan lulus penuh sampai EVAL; QA ini lulus sisi teknis/deploy.",
-      "resolved_at": "2026-10-28"
+      "resolved_at": "2026-10-28",
+      "freeze_note": "hivePOS development stopped by owner 2026-11-01"
     },
     {
       "id": "sec-2026-10-10-01",
@@ -3716,9 +3718,11 @@
       "north_star": "TRUST",
       "title": "BUG UX TRUST: error boundary Inggris \"Something went wrong\" di site bahasa Indonesia",
       "spec": "REPRO (3 baris): (1) saat app 502/OOM, /stocks?view=screener render error boundary \"Something went wrong\" + tombol \"Try again\" (Inggris); (2) nav mobile drawer terbuka permanen di halaman error (semua link nav y=60-281 visible tanpa scroll); (3) seluruh copy site berbahasa Indonesia. SEVERITY: P2 TRUST - saat halaman gagal justru momen paling rawan kepercayaan; error Inggris + tombol Inggris di site ID = terasa rusak. Fix hint FE kecil: terjemahkan error boundary ke ID (\"Ada yang error - coba muat ulang\" / tombol \"Coba Lagi\") + copy ramah (data aman, coba beberapa saat lagi). Dispatch by UX Builder 30 Okt.",
-      "status": "pending",
+      "status": "done|result=Deployed via kereta T-1101-N slot sore (image 6c643d2a0794): error boundary ID live — grep container 4 file chunks (global-error, error, compare, stocks/[ticker]) berisi Coba Lagi/Ada yang salah; EN lama 0 hit; 5 URL 200 before==after. BuktI FE 10:30 (tsc 0, BUILD_ID wH9oE6wp) + CTO sore deploy+verify.",
       "source": "ux-builder flow-a audit 30 Okt 19:15",
-      "scheduled_slot": "2026-11-01 10:30 FE weekend BUILD-ONLY (reslot CTO 1 Nov — slot 31 Okt 19:15 lewat; naik kereta T-1101-M bila bukti hijau)"
+      "scheduled_slot": "2026-11-01 10:30 FE weekend BUILD-ONLY (reslot CTO 1 Nov — slot 31 Okt 19:15 lewat; naik kereta T-1101-M bila bukti hijau)",
+      "train": "T-1101-N",
+      "result": "BUILD-ONLY commit 377abe8: error boundary 3 file EN->ID (Ada yang salah + Coba Lagi + Daftar Saham + digest code) + PaymentButton fallback ID + global-error lang=id. Bukti: tsc 0; build EXIT-0 BUILD_ID wH9oE6wpl-FbHllxqYpH8; chunk error-887616bde4bccd2a.js + global-error-171c33750495e409.js + ticker error-5ac7b26de2638629.js ALL berisi string ID (grep lokal 1/1/1 hit), EN lama 0 hit di .next; staging :3100 200 home+/stocks, chunk via HTTP verified. Pasca-deploy verify: trigger error di prod tidak praktis — verify chunk prod via /_next/static URL grep Coba Lagi."
     },
     {
       "id": "ops-2026-11-01-01",
@@ -3734,12 +3738,13 @@
       "id": "ops-2026-11-01-02",
       "date": "2026-11-01",
       "priority": "P1",
-      "status": "pending",
+      "status": "archived",
       "north_star": "TRUST",
       "title": "OPS: offsite backup rclone gdrive OAuth token mati (empty token, 3 remotes gagal sync)",
       "spec": "INTENT (dispatch COUNCIL 1 Nov): job Offsite Backup Sync 01:45 gagal total — rclone 'empty token found - please run rclone config reconnect gdrive:' untuk teknikalid-db+pt-data+hivepos-db; failure_streak=1 tapi backup offsite = SLO RELIABLE. SCOPE BE: (1) verifikasi scope kerusakan (rclone ls gdrive: non-interaktif), (2) tulis runbook 3-langkah utk owner (reconnect = OAuth browser interaktif = OWNER-ONLY, jangan eksekusi sendiri), (3) tambah guard di offsite_backup_sync.sh: exit-code + failure_streak>=2 kirim ALERT ke laporan malam (bukan silent). BUKAN scope: menyentuh token/kredensial.",
       "scheduled_slot": "2026-11-02 18:30 BE malam",
-      "source": "COUNCIL 2026-11-01"
+      "source": "COUNCIL 2026-11-01",
+      "freeze_note": "hivePOS development stopped by owner 2026-11-01"
     },
     {
       "id": "ops-2026-11-01-03",
@@ -3768,7 +3773,7 @@
       "date": "2026-11-01",
       "priority": "P1",
       "type": "content-fix",
-      "status": "pending",
+      "status": "done|result=SQL patch 7/7 (backup 01:16 fresh, WHERE slug sempit, COUNT 2 dulu): DC 45→51, H1 10→14, H2 35→37, Sep 74 GC→79 & 11→14, kohort 36→43 emiten median -8,7%→-12,3%, universe -12,3%→-15,5%, 4/36→4/43, oversold 65→54 (non-gorengan exact; 65=54+11 gorengan). Replay kanonik pasangan unik (stockId,smaCrossDate) non-gorengan. LIVE verified: RSC payload + TOC + meta/og/JSON-LD semua angka baru, residual lama=0. Same-day fix sebelum verifikasi owner.",
       "north_star": "TRUST — angka sinyal bulanan harus replayable dari DB; klaim tak ter-verifikasi meruntuhkan data-trust (pilar TRUST)",
       "title": "REKAP BULANAN 1 Nov: blok sinyal bulanan tidak replayable dari DB (61 GC vs 45 DC; DC H1=10 H2=34; September 74 GC/11 DC)",
       "spec": "INTENT: artikel rekap-pasar-2026-10-oktober (terbit 1 Nov 06:30) memuat blok sinyal: Oktober (61 golden cross baru vs 45 death cross), paruh-1 (10 death cross) vs paruh-2 (35), September (74 golden cross) dan (death cross melonjak 4x dari 11), emiten GC-H1 (36) dengan median -8,7% vs pasar -12,3% (4/36 positif), oversold (65 saat rebound 23 Okt). ACCEPTANCE: (1) replay SQL DB per 1 Nov dengan berbagai definisi universe (row-level isGorengan, latest-row per stock, pasangan unik stockId+smaCrossDate, avgvol>=1jt) menghasilkan 60 GC / 44-51 DC, H1_DC=10-14, H2_DC=34-37, SEP 68-79 GC / 11-14 DC, GC-H1 likuid=23-24, median GC43 15-30 Okt = -12,7% - TIDAK ADA definisi yang menghasilkan angka artikel; (2) blok kontras (43 golden cross vs 10 death cross paruh pertama) = POLA qa-30-01 berulang: angka GC replay exact tapi angka DC pasangannya tidak; (3) catatan non-fatal: (65 oversold 23 Okt) hanya cocok jika universe termasuk gorengan, padahal artikel menyatakan non-gorengan (deret lain di artikel sama: 98/331/144 = non-gorengan exact); (4) FIX: mandor regenerasi blok dari satu query kanonik sinyal dengan definisi universe dieksplisitkan di artikel; angka dead-reckon 45/10/35/36/11/74 diganti angka replay; (5) selftest fact-gate sinyal bulanan = cross-check GC dan DC keduanya, bukan GC saja. NOTE: deret IHSG harian, breadth 5 sesi, sektor, movers pekan, tabel top-10 bulanan, angka BBCA/BBRI, PV 4.021/453 IP, 8 register pada artikel yang sama: replay EXACT - hanya blok sinyal bulanan ini yang gagal."
@@ -3778,7 +3783,7 @@
       "date": "2026-11-01",
       "priority": "P1",
       "type": "content-fix",
-      "status": "pending",
+      "status": "done|result=SQL patch 2/2: klaim BBRI+BBCA → BBCA-only + angka asli (bulanan: halaman BBCA 156 kunjungan; mingguan: 86 vs BBRI 7). Replay PageView isBot=false: BBCA 156/86 = #1 saham, BBRI 9/7 di luar top-30. LIVE verified RSC payload p-1 + kalimat watch mingguan; klaim lama 0 residual. Sisa gap: superlatif engagement guard utk generator (ops backlog).",
       "north_star": "TRUST — klaim superlatif traffic internal wajib replay PageView, bukan naratif",
       "title": "REKAP BULANAN 1 Nov: klaim BBRI+BBCA paling banyak dibaca kontra PageView DB (BBRI 9 PV manusia sebulan; BBCA memang #1)",
       "spec": "INTENT: artikel rekap-pasar-2026-10-oktober dan rekap-pasar-mingguan-2026-10-31 mengklaim halaman BBCA dan BBRI (paling banyak dibaca pengunjung). ACCEPTANCE: (1) replay PageView bot-filtered (isBot=false) Okt: /stocks/BBCA.JK=156 (peringkat #3, benar) tapi /stocks/BBRI.JK=9 (di luar top-30; minggu 26-30 Okt: BBRI=7 vs TPIA=13, GOTO=10, RUNS=7); (2) blok traffic pada artikel yang sama replay EXACT (4.021 PV +6,9% vs 3.760 Sep; 453 IP vs 238; register 8 vs 6; top /stocks, /, BBCA) - generator punya akses data benar, klaim BBRI = dead-reckon naratif; (3) FIX: mandor hapus/ganti klaim BBRI menjadi BBCA saja, atau query ulang ranking PageView sebelum publikasi; (4) guard: superlatif engagement/traffic (paling banyak dibaca/diakses) wajib ORDER BY count PageView isBot=false pada window yang disebut, sama seperti superlatif harga. NOTE: marker Rp498.000 (SSR 1-lot, verify T-1031-N) tak ada lagi di live /akademi/1-lot - kemungkinan konten edu refresh harga sejak 31 Okt; bukan fatal, catatan monitor."
