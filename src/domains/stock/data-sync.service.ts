@@ -7,6 +7,7 @@ import { pushActivity } from "@/lib/activity-log";
 import { stockAlertService } from "./stock-alert.service";
 import { prisma } from "@/lib/prisma";
 import { deriveFundamentalRow, type FundamentalQuoteInput } from "./fundamental-row";
+import { wibDayKey } from "@/lib/datetime-wib";
 
 const BATCH_SIZE = 50;
 const BATCH_DELAY_MS = 500;
@@ -193,7 +194,7 @@ export const dataSyncService = {
     // also the one quote that rides the v8 fallback (no volume). If the batch
     // still dropped it, write a minimal row from a single-quote fetch.
     try {
-      const wibDateKey = new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString().slice(0, 10);
+      const wibDateKey = wibDayKey(new Date());
       const jkse = stockLookup.get("^JKSE");
       const hasToday = jkse
         ? await prisma.stockPrice.findFirst({

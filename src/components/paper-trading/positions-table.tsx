@@ -4,10 +4,7 @@ import { useState } from "react";
 import { useClosePosition, useUpdatePosition, type OpenPosition } from "@/hooks/use-paper-trading";
 import { useToast } from "./toast";
 import { TradeModal } from "./trade-modal";
-
-function formatRupiah(n: number): string {
-  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n);
-}
+import { formatRupiah } from "@/lib/format-number";
 
 const MOOD_LABELS: Record<string, string> = {
   CONFIDENT: "Yakin",

@@ -5,10 +5,7 @@ import type { PaperAccountSummary } from "@/hooks/use-paper-trading";
 import { useTogglePublic } from "@/hooks/use-paper-trading";
 import { TopUpModal } from "./topup-modal";
 import { useToast } from "./toast";
-
-function formatRupiah(n: number): string {
-  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n);
-}
+import { formatRupiah } from "@/lib/format-number";
 
 export function AccountSummary({ account }: { account: PaperAccountSummary }) {
   const pnlPositive = account.totalPnl >= 0;

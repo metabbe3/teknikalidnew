@@ -4,16 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import type { HoldingItem } from "@/hooks/use-portfolio";
 import { StockLogo } from "@/components/stock/stock-logo";
+import { formatRupiah } from "@/lib/format-number";
 
 interface HoldingsTableProps {
   holdings: HoldingItem[];
   onEdit: (ticker: string) => void;
   onDelete: (ticker: string) => void;
-}
-
-function formatRupiah(n: number | null) {
-  if (n === null) return "-";
-  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n);
 }
 
 function formatCompact(n: number) {

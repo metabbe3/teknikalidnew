@@ -21,10 +21,18 @@ export async function POST(request: NextRequest) {
     try {
       const u = await prisma.user.findUnique({ where: { email: body.email }, select: { id: true } });
       if (u && body.anonId) {
-        await prisma.user.update({ where: { id: u.id }, data: { initialAnonId: body.anonId } }).catch(() => {});
-        await prisma.engagementEvent.create({
-          data: { anonId: body.anonId, path: "/auth/register", type: "cta_click", label: "daftar_berhasil" },
-        }).catch(() => {});
+        await prisma.user
+          .update({ where: { id: u.id }, data: { initialAnonId: body.anonId } })
+          .catch((e) =>
+            console.warn("[auth/register] user.update initialAnonId failed:", e?.message)
+          );
+        await prisma.engagementEvent
+          .create({
+            data: { anonId: body.anonId, path: "/auth/register", type: "cta_click", label: "daftar_berhasil" },
+          })
+          .catch((e) =>
+            console.warn("[auth/register] anon-merge engagementEvent failed:", e?.message)
+          );
       }
     } catch { /* telemetry tidak boleh gagalkan register */ }
 

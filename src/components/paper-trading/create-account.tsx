@@ -2,10 +2,7 @@
 
 import { useCreateAccount } from "@/hooks/use-paper-trading";
 import { useToast } from "./toast";
-
-function formatRupiah(n: number): string {
-  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n);
-}
+import { formatRupiah } from "@/lib/format-number";
 
 const BALANCE_OPTIONS = [
   { value: 10_000_000, label: "10 Juta", desc: "Cocok untuk pemula", popular: false },

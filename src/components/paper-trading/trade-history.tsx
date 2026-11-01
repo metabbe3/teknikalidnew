@@ -1,10 +1,7 @@
 "use client";
 
 import { useTradeHistory, type TradeHistoryItem } from "@/hooks/use-paper-trading";
-
-function formatRupiah(n: number): string {
-  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n);
-}
+import { formatRupiah } from "@/lib/format-number";
 
 function HistoryItem({ item }: { item: TradeHistoryItem }) {
   const pnlPositive = (item.realizedPnl ?? 0) >= 0;

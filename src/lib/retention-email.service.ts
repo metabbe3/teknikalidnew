@@ -34,19 +34,15 @@ import {
   type RetentionEmailData,
   type WatchlistEmailRow,
 } from "@/lib/mailer";
+import { wibDayKey } from "@/lib/datetime-wib";
 
 export const DAY2_MIN_OFFSET_DAYS = 1;
 export const DAY2_MAX_OFFSET_DAYS = 2;
 
-/** Ambil tanggal WIB (UTC+7) sebagai YYYY-MM-DD. */
-export function wibDateKey(d: Date): string {
-  return new Date(d.getTime() + 7 * 3600 * 1000).toISOString().slice(0, 10);
-}
-
 /** Selisih hari kalender WIB antara `now` dan `createdAt` (0 = hari yang sama). */
 export function wibDayOffset(now: Date, createdAt: Date): number {
-  const a = Date.UTC(...(parts(wibDateKey(now))));
-  const b = Date.UTC(...(parts(wibDateKey(createdAt))));
+  const a = Date.UTC(...(parts(wibDayKey(now))));
+  const b = Date.UTC(...(parts(wibDayKey(createdAt))));
   return Math.round((a - b) / 86400000);
 }
 
@@ -170,7 +166,7 @@ export async function runRetentionEmailJob(opts?: {
   const siteUrl = opts?.siteUrl ?? process.env.NEXT_PUBLIC_SITE_URL ?? "https://teknikal.id";
   const dryRun = opts?.dryRun;
   const readOnly = opts?.readOnly ?? false;
-  const dateKey = wibDateKey(now);
+  const dateKey = wibDayKey(now);
 
   // 1) Kandidat window: createdAt dalam 3 hari terakhir (filter offset WIB-hari
   //    dilakukan di pure selector — murah, user baru sedikit).
@@ -211,7 +207,7 @@ export async function runRetentionEmailJob(opts?: {
     if (!v.userId) continue;
     const created = createdAtById.get(v.userId);
     if (!created) continue;
-    if (wibDateKey(v.createdAt) === wibDateKey(created)) {
+    if (wibDayKey(v.createdAt) === wibDayKey(created)) {
       refinedDay0[v.userId] = (refinedDay0[v.userId] ?? 0) + 1;
     }
   }
@@ -219,11 +215,11 @@ export async function runRetentionEmailJob(opts?: {
   // star_add: EngagementEvent anonId tidak tertaut userId — v1: user dianggap
   // "punya star_add" bila event terjadi pada hari kalender WIB sama dengan
   // day-0 ATAU day-1 user (proxy kasar, keterbatasan dicatat di queue).
-  const starDays = new Set(starRows.map(s => wibDateKey(s.createdAt)));
+  const starDays = new Set(starRows.map(s => wibDayKey(s.createdAt)));
   const starAdds: Record<string, number> = {};
   for (const u of users) {
-    const d0 = wibDateKey(u.createdAt);
-    const d1 = wibDateKey(new Date(u.createdAt.getTime() + 86400000));
+    const d0 = wibDayKey(u.createdAt);
+    const d1 = wibDayKey(new Date(u.createdAt.getTime() + 86400000));
     if (starDays.has(d0) || starDays.has(d1)) starAdds[u.id] = 1;
   }
 

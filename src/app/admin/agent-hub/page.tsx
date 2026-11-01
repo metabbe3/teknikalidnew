@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
+import { timeAgo } from "@/lib/time";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -296,7 +297,7 @@ export default function AgentHubPage() {
                     <div>
                       <div className="text-xs text-gray-500">
                         {agent.lastRun
-                          ? `${timeAgo(agent.lastRun)}`
+                          ? `${timeAgo(agent.lastRun, "en")}`
                           : "Never"}
                       </div>
                       <div className="text-xs text-gray-400">Last Run</div>
@@ -350,7 +351,7 @@ export default function AgentHubPage() {
                           <StatusBadge status={job.status} />
                         </td>
                         <td className="p-3 text-gray-500">{job.priority}</td>
-                        <td className="p-3 text-gray-500 text-xs">{timeAgo(job.createdAt)}</td>
+                        <td className="p-3 text-gray-500 text-xs">{timeAgo(job.createdAt, "en")}</td>
                         <td className="p-3 text-gray-500 text-xs">
                           {job.startedAt && job.completedAt
                             ? `${Math.round((new Date(job.completedAt).getTime() - new Date(job.startedAt).getTime()) / 1000)}s`
@@ -386,19 +387,4 @@ function StatusBadge({ status }: { status: string }) {
       {status}
     </span>
   );
-}
-
-function timeAgo(dateStr: string): string {
-  const now = Date.now();
-  const then = new Date(dateStr).getTime();
-  const diff = Math.max(0, now - then);
-  const seconds = Math.floor(diff / 1000);
-
-  if (seconds < 60) return `${seconds}s ago`;
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  return `${days}d ago`;
 }

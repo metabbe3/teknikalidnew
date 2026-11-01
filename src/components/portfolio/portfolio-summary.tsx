@@ -1,15 +1,12 @@
 "use client";
 
 import type { PortfolioSummary } from "@/hooks/use-portfolio";
+import { formatRupiah } from "@/lib/format-number";
 
 interface PortfolioSummaryBarProps {
   summary: PortfolioSummary;
   isPublic: boolean;
   onTogglePrivacy: () => void;
-}
-
-function formatRupiah(n: number) {
-  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n);
 }
 
 export function PortfolioSummaryBar({

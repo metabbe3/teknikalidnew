@@ -9,24 +9,18 @@
  * Pure & testable (tanpa prisma) — dicek scripts/selftest-reputation-daily.ts.
  */
 
+import { wibDayKey } from "@/lib/datetime-wib";
+export { wibDayKey as wibDateKey };
+
 /** Satuan poin harian sesuai PRD (jangan hardcode di repo/service). */
 export const DAILY_AWARD_POINTS = 5;
 
 /** Offset WIB (UTC+7) dalam menit — Indonesia tidak punya DST. */
 const WIB_OFFSET_MINUTES = 7 * 60;
 
-/**
- * Tanggal kalender WIB untuk suatu instan waktu, "YYYY-MM-DD".
- * new Date().toISOString().slice(0,10) adalah tanggal UTC — BUKAN tanggal WIB.
- */
-export function wibDateKey(instant: Date): string {
-  const t = new Date(instant.getTime() + WIB_OFFSET_MINUTES * 60_000);
-  return t.toISOString().slice(0, 10);
-}
-
 /** Key idempotensi harian: `daily-rep:<userId>:<tanggal-WIB>`. */
 export function dailyCacheKey(userId: string, instant: Date): string {
-  return `daily-rep:${userId}:${wibDateKey(instant)}`;
+  return `daily-rep:${userId}:${wibDayKey(instant)}`;
 }
 
 /**

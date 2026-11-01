@@ -170,7 +170,9 @@ export async function POST(request: NextRequest) {
     // locks on real visitors. Residual bot protection: proxy rate limits + the
     // 2404:c0 prefix block in ip-blocklist.ts.
     if (userId && ip) {
-      enrichSignupOrigin(userId, ip, path).catch(() => {});
+      enrichSignupOrigin(userId, ip, path).catch((e) =>
+        console.warn("[track] enrichSignupOrigin failed:", e?.message)
+      );
     }
   } catch {
     // Fire-and-forget: never expose errors to the client

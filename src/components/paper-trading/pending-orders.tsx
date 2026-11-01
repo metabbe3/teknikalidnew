@@ -3,10 +3,7 @@
 import { useState } from "react";
 import { useCancelOrder, type PendingOrder } from "@/hooks/use-paper-trading";
 import { useToast } from "./toast";
-
-function formatRupiah(n: number): string {
-  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n);
-}
+import { formatRupiah } from "@/lib/format-number";
 
 export function PendingOrders({ orders }: { orders: PendingOrder[] }) {
   const cancelOrder = useCancelOrder();
