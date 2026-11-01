@@ -1366,3 +1366,11 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - Milik slot lain (JANGAN diambil CTO): BE 17:00 hari ini = ops-29-01 + ops-11-01-04; Senin = CEO verdict MoM basis kalender WIB.
 - Langkah pertama slot berikutnya: baca queue → BE pagi Senin: bug-30-01 (OOM forensik) → Reviewer 07:05 qa-30-02 → BE siang ops-11-01-01 → kereta malam cek manifest.
 - Rollback anchor: app 6c643d2a0794 (current) · pre = fd76c6af5c85 · git revert 377abe8
+
+## 2026-11-01 23:5x — CTO night (prd-2026-10-31-02 night_ready BUILD-ONLY)
+- prd-31-02 (TermTip tooltip istilah, PRD im-2026-10-29-2 spec_ready) IMPLEMENTASI PENUH di branch night/prd-2026-10-31-02 (pushed, tip a439aec; base = local main d5a744f karena local ahead 16 vs origin/main — preseden code-audit-tk-2).
+- Verify lengkap: selftest failing-first RED 5708a8f (1/5) -> GREEN 159ce95 (5/5); LINT 0; tsc EXIT-0; build EXIT-0 BUILD_ID mmBNJbPP13dUriLk6WJWQ; staging :3100 4/4 200 + DOM fisik (trigger aria-label x6, definisi sr-only SSR, anchor id=slug, marker glossary_open chunk 9154-eca02c3747b2e0ad.js).
+- Bookkeeping (queue night_ready + context-map + changelog) di branch night/prd-2026-10-31-02-bookkeeping (pushed) karena main kena hard-gate — CTO pagi: cherry-pick 19eef23 saat merge, JANGAN timpa queue paralel.
+- NOTE reviewer: (a) description hero golden/death kini JSX braces, teks identik; (b) data-nav-label kini MENANG atas a[href] (elemen bertanda saja, link biasa tak berubah); (c) slot FE Rabu 4 Nov 19:15 tinggal review/merge + QA D+1, implementasi selesai.
+- Jebakan baru: pre-commit hook (dipasang 1 Nov 14:12) memblok literal pemanggilan log-console di staged diff -> selftest BARU wajib pola node:test + assert/strict (preseden selftest-reputation-daily); hook hanya scan baris ^+ (file lama tak terjangkau).
+- Rollback: n/a BUILD-ONLY (revert = git revert 159ce95)
