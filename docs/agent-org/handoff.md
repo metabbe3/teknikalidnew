@@ -1374,3 +1374,11 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - NOTE reviewer: (a) description hero golden/death kini JSX braces, teks identik; (b) data-nav-label kini MENANG atas a[href] (elemen bertanda saja, link biasa tak berubah); (c) slot FE Rabu 4 Nov 19:15 tinggal review/merge + QA D+1, implementasi selesai.
 - Jebakan baru: pre-commit hook (dipasang 1 Nov 14:12) memblok literal pemanggilan log-console di staged diff -> selftest BARU wajib pola node:test + assert/strict (preseden selftest-reputation-daily); hook hanya scan baris ^+ (file lama tak terjangkau).
 - Rollback: n/a BUILD-ONLY (revert = git revert 159ce95)
+
+## 2026-11-02 07:5x — CTO pagi Senin (merge night_ready + forensik; 0 deploy by window rule)
+- State: prod sehat (image 758a5330 06:42, freshness FRESH); main lokal = 35d303e + merge 4ffedb4 (TermTip) + docs bef4326; deploy budget Senin 2/2 HABIS (owner override pagi) → kereta T-1102-N jalan di window berikutnya yang valid.
+- Barusan: prd-31-02 merged in_train (tsc 0, selftest 5/5, build EXIT-0 BUILD_ID ZhLI6MxqfAZal4soBG-kT); bug-30-01 OOM forensik done (mitigasi aktif, sehat); ops-11-01-03 sitemap verdict ACCEPT by-design (bukan kausal views -29%).
+- In-flight (milik slot lain): BE 18:30 = fix-28-02 (foreign flow Playwright) + fix-26-08 + ops-29-01 + ops-11-01-04; FE 19:15 = code-audit-tk-3 + prd-2026-11-02-01 (kalender ex-date /saham-dividen, spec_ready, PRD im-2026-10-31-1); kereta cek manifest prd-31-02.
+- Jebakan: (1) bo-2026-11-02-01 CONFLICT pasar-live.service.ts — owner resolve, JANGAN auto-merge (16/17 call-site bersih, 1 bentrok vs 9b65da3); (2) npm build crash 'length' undefined = .next korup → rm -rf .next rebuild (2x kelas ini sekarang); (3) statejson flip id bo-2026-11-02-01 tak ada — BO tak pernah tulis entry queue, sudah di-append pagi ini; (4) DB psql user = teknikalid (bukan postgres).
+- Langkah pertama slot sore: baca queue → BE 18:30 ambil fix-28-02 (+agregat ops-29-01/ops-11-01-04/fix-26-08 host-script) → kereta malam manifest: prd-31-02 WAJIB naik kalau window deploy valid.
+- Rollback: n/a 0 deploy (revert merge = git revert 4ffedb4; prod anchor image 758a5330be60).
