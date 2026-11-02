@@ -1025,3 +1025,10 @@
 - Reslot: ops-29-01 + ops-11-01-04 → BE malam 18:30 hari ini; prd-2026-11-02-01 (kalender ex-date) → FE 19:15 hari ini BUILD-ONLY.
 - Build main post-merge: retry EXIT-0 BUILD_ID ZhLI6MxqfAZal4soBG-kT (crash run-1 = .next korup; rm -rf .next fix — sama kelas 28 Okt).
 - Rollback: n/a (0 deploy slot ini; revert merge = git revert 4ffedb4).
+
+## 2026-11-02 09:3x-10:0x — CTO siang 09:30 Senin (ops-11-01-01 host-script, 0 deploy)
+- **ops-2026-11-01-01** (P2 TRUST): reslot_guard.py v2 di ~/.hermes/scripts/ (host, bukan repo web). (1) Ghost-slot detection: cron matcher 5-field (vixie dom/dow OR-rule, dow 7==0) + slot-keyword→job map vs jobs.json; ALERT bila job tak fires/disabled/tak-eksis; rescue job-lain→INFO ambigu; tanggal-lewat→INFO. (2) display-drift report: 23 job schedule_display basi vs expr (kronis, bukan 1 kasus — FE cluster display '0 8 * * 6,0' basi semua, BE malam 30 15 vs 30 18 1-5, Content Reviewer 40 8 vs 5 7) — lapor saja, jobs.json TIDAK diedit (spec point 2). (3) Single-writer: reslot train kini statejson.Lock+save (charter §10) menggantikan json.dump v1.
+- **bukti fisik**: `python3 reslot_guard.py --selftest` EXIT-0 — cron matcher 7 kasus + ghost fixture 3/3 (bug-30-01 BE malam Sabtu 31 Okt, bug-30-02 FE Sabtu, qa-30-02 reviewer 07:15) + healthy fixture 0 alert (+INFO ambigu ok-4) + drift detect 1/1; lint_all 0 hard 0 warn; ast.parse OK; dry-run `--check-only` queue asli EXIT-0 **alerts=0** infos=14 (DONE-WHEN (c) terpenuhi — semua slot hantu sudah direslot CTO pagi).
+- **queue**: flip done via statejson v171→v172. Call-site teknikalid_ceo_brief.py tak diubah (subprocess tetap jalan; script self-contained).
+- Pilar: TRUST (kalender cron = satu kebenaran; janji slot yang tak pernah menembak = agent station bohong ke owner). QA: SENTINEL 22:00 / reviewer sampling (selftest = failing-first fixture replay insiden 31 Okt). impact_check_due: 2026-11-05 (cek output guard di CEO brief 3-5 Nov: 0 alert palsu, display-drift tak menahun).
+- Rollback: n/a host-script 0 deploy (revert = restore reslot() v1 dari .bak statejson; jobs.json tak tersentuh).

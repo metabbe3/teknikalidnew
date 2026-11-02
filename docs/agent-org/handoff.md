@@ -1382,3 +1382,20 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - Jebakan: (1) bo-2026-11-02-01 CONFLICT pasar-live.service.ts — owner resolve, JANGAN auto-merge (16/17 call-site bersih, 1 bentrok vs 9b65da3); (2) npm build crash 'length' undefined = .next korup → rm -rf .next rebuild (2x kelas ini sekarang); (3) statejson flip id bo-2026-11-02-01 tak ada — BO tak pernah tulis entry queue, sudah di-append pagi ini; (4) DB psql user = teknikalid (bukan postgres).
 - Langkah pertama slot sore: baca queue → BE 18:30 ambil fix-28-02 (+agregat ops-29-01/ops-11-01-04/fix-26-08 host-script) → kereta malam manifest: prd-31-02 WAJIB naik kalau window deploy valid.
 - Rollback: n/a 0 deploy (revert merge = git revert 4ffedb4; prod anchor image 758a5330be60).
+
+## 2026-11-02T07:55 — CTO pagi Senin run-2 (sweep verdict; P1 worker-stale ke queue)
+- Sweep 24 jam: bus 30 baris, queue 219→220 entry (aktif 32), backlog 81. Spot-check klaim kemarin: Sprint2 heading LIVE terverifikasi — H2 "RSI/MACD/Moving Average/Bollinger/Stochastic BBCA Hari Ini" render di /stocks/BBCA.JK (CATATAN: /saham/bbca = 308 redirect, verify wajib curl -L).
+- TEMUAN P1 → ops-2026-11-02-02: worker image stale. Bukti: container grep POLL_INTERVAL_MS = 30_000 → 0 hit; image worker 1 Nov 18:04 < commit 526381e 2 Nov 06:08 (poll 10s→30s). Kereta malam T-1102-N WAJIB rebuild app+worker SATU perintah + CreatedAt parity gate + grep bukti.
+- Slot valid (verifikasi expr jobs.json BUKAN display): BE siang 09:30 ADA (expr '30 9 * * 1-5') — reslot CTO sore kemarin valid; BE pagi 07:30 ✓; Reviewer 07:05 ✓; BE malam '30 18 * * 1-5' ✓; FE '15 19 * * 1-5' ✓. Tidak ada bentrok window (BE malam selesai sebelum FE mulai).
+- Antrian hari ini: 09:30 ops-11-01-01 (reslot_guard v2) → 18:30 fix-28-02 + ops-29-01 + ops-11-01-04 + fix-26-08 (agregat) → 19:15 FE code-audit-tk-3 + prd-2026-11-02-01 (kalender ex-date) → kereta malam T-1102-N: prd-31-02 + ops-2026-11-02-02 (parity rebuild) + bo-1102-01 bila konflik sudah owner-resolve.
+- Symlink drift #10 verifikasi 2 Nov: data-dir → repo UNTUH, md5 queue & backlog SAMA (repo kanonik). idx-sync Senin: heartbeat 07:53 hidup; MAX(date) EOD belum dicek (tabel bukan 'eod' — cek schema Prisma; libur Kemarin 1 Nov = Minggu, EOD Jumat 30 Okt masih wajar tampil Senin pagi).
+- Gap: qa-30-02 verdict Content Reviewer 07:05 BELUM muncul di queue pukul 07:46 — cek ulang slot sore; im-2026-10-31-1/2/3 tetap parkir sampai verdict GROWTH gate 9 Nov.
+- Rollback: n/a (docs+queue additive) | anchor: prod app image 758a5330be60 06:42 utuh; revert entry = statejson .bak otomatis
+
+## 2026-11-02T10:0x — CTO siang Senin 09:30 (ops-11-01-01 done)
+- State: prod sehat (freshness FRESH; app 758a5330 06:42); deploy org 2/2 HABIS — hari ini BUILD-ONLY saja; queue v172.
+- Barusan: ops-2026-11-01-01 DONE — reslot_guard.py v2 (ghost-slot detect + 23 display-drift INFO + reslot via statejson); selftest 3/3, lint 0, dry-run alerts=0. jobs.json TIDAK disentuh.
+- In-flight (milik slot lain): 18:30 BE malam = fix-28-02 + ops-29-01 + ops-11-01-04 + fix-26-08 (agregat) + ops-11-02-02 (worker-stale WAJIB app+worker SATU build); 19:15 FE = code-audit-tk-3 + prd-2026-11-02-01 (kalender ex-date); kereta malam T-1102-N manifest: prd-31-02 + ops-11-02-02 (+bo-1102-01 bila owner resolve konflik pasar-live).
+- Jebakan: (1) 23 job display-string basi di jobs.json — SELALU baca schedule.expr, jangan percaya display/label jam di nama job; (2) bo-1102-01 konflik pasar-live.service.ts = owner gate, JANGAN auto-merge; (3) qa-30-02 tanggal-lewat masih pending — reslot ke Reviewer 07:05 besok bila masih relevan.
+- Langkah pertama slot berikutnya: baca queue → BE malam 18:30 ambil fix-28-02 (agregat host-script) → pastikan kereta malam rebuild app+worker SATU perintah + CreatedAt parity.
+- Rollback: n/a 0 deploy (host script; revert = restore reslot() v1 dari .bak).

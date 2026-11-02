@@ -3748,11 +3748,12 @@
       "id": "ops-2026-11-01-01",
       "date": "2026-11-01",
       "priority": "P2",
-      "status": "pending",
+      "status": "done",
       "north_star": "TRUST",
       "title": "OPS: reslot_guard v2 — validasi scheduled_slot vs kalender cron (slot hantu) + konform single-writer statejson",
       "spec": "INTENT (dispatch CTO 1 Nov): 3 slot hantu 31 Okt—1 Nov: entry bug-30-01 (BE malam 18:30 Sabtu, cron expr 30 18 * * 1-5 Sen-Jum saja), bug-30-02 (FE 19:15 Sabtu, Sen-Jum saja), qa-30-02 (QA reviewer 07:15 — job TIDAK EKSIS di ~/.hermes/cron/jobs.json). reslot_guard.py (jalan mulai 2 Nov via CEO brief) hanya reslot kereta kedaluwarsa (field train), TIDAK deteksi slot yang tak akan pernah menembak. FIX host-script (0 deploy web): (1) reslot_guard v2 — parse expr cron jobs.json, flag entry pending/in_train yang scheduled_slot-nya menyebut jam/hari job yang tidak akan run hari itu atau besok (nama job + jam match), print ALERT (silent-healthy kalau bersih); (2) rapor display-string basu di jobs.json (BE malam display 45 16 vs expr 30 18 — HANYA laporkan, JANGAN edit jobs.json dari script); (3) tulis queue via statejson.py (flip/update) atau minimal ambil Lock yang sama — sekarang json.dump langsung bypass version-check single-writer (charter §10). DONE-WHEN: (a) selftest: fixture jobs.json + queue berisi 3 kasus hantu 31 Okt → script flag 3/3, fixture sehat → 0 alert; (b) lint_all.py 0 error utk file disentuh; (c) dry-run di queue asli hari ini: 0 alert (semua sudah direslot CTO pagi); (d) changelog + handoff. ESTIMASI 30-45 mnt.",
-      "scheduled_slot": "2026-11-02 09:30 BE siang Senin (host-script BUILD-ONLY, 0 deploy; reslot CTO sore — slot 13:30 lewat)"
+      "scheduled_slot": "2026-11-02 09:30 BE siang Senin (host-script BUILD-ONLY, 0 deploy; reslot CTO sore — slot 13:30 lewat)",
+      "result": "DONE BE siang 09:30 Senin 2 Nov (host-script, 0 deploy). reslot_guard.py v2: (1) ghost-slot detection — cron matcher 5-field (vixie dom/dow OR-rule, 7==0), slot keyword→job jobs.json, fires(date,jam); ALERT bila job tidak fires/disabled/tak-eksis, fallback rescue job-lain→INFO ambigu, tanggal-lewat→INFO; (2) display-drift report 23 job basi (cronish-only, prosa dikecualikan; terbesar: BE malam display 30 15 vs expr 30 18 1-5, Content Reviewer display 40 8 vs expr 5 7, FE cluster display weekend basi) — HANYA lapor, jobs.json tak disentuh; (3) reslot train kini via statejson.Lock+save (single-writer charter §10; v1 raw json.dump deprecated). BUKTI FISIK: python3 reslot_guard.py --selftest EXIT-0 = cron 7 kasus + ghost fixture 3/3 (bug-30-01 BE malam Sabtu, bug-30-02 FE Sabtu, qa-30-02 reviewer 07:15) + healthy 0 alert + drift 1/1; lint_all 0 hard 0 warn; dry-run --check-only queue asli EXIT-0 alerts=0 (14 INFO: 7 tanggal-lewat-masih-pending, prosa ambigu, duplikat qa-30-02 x2 terdedupe) + 23 display-drift; AST parse OK. Jalan otomatis tiap pagi via teknikalid_ceo_brief.py (call-site utuh tak diubah). Rollback: git/cp tidak berlaku (host script) — salinan v1 tersimpan .bak via statejson auto-backup; revert = kembalikan fungsi reslot() ke json.dump lama."
     },
     {
       "id": "ops-2026-11-01-02",
@@ -3842,6 +3843,20 @@
       "spec": "Konflik content di src/domains/stock/pasar-live.service.ts: branch BO b1798ac (refactor pctChange satu-pintu) vs main 9b65da3 (perf cache/memoize, merged 2 Nov 06:09). 16/17 call-site bersih, 1 file bentrok. STRICT ABORT by protocol — owner resolve manual kedua sisi lalu merge --no-ff.",
       "created_by": "CTO pagi 2 Nov 07:5x (append: entry BO tak pernah ditulis BO slot ke queue)",
       "result": "MERGE ABORT 2 Nov 07:4x; branch utuh; changelog BO 2 Nov 03:13 punya detail verify (selftest 6/6 + parity bit-identik). Jangan auto-merge."
+    },
+    {
+      "id": "ops-2026-11-02-02",
+      "type": "ops",
+      "priority": "P1",
+      "title": "OPS P1 WORKER IMAGE STALE: image worker 1 Nov 18:04 < commit 526381e (2 Nov 06:08, poll 10s->30s + satu-pintu marketEngine) — deploy pagi 06:42+07:00 app-only melanggar REBUILD ATOMIK",
+      "spec": "Kereta malam T-1102-N WAJIB: (1) docker compose build app worker SATU perintah, BUKAN app-only; (2) verify image CreatedAt app==worker sebelum up; (3) bukti per-fitur H1: docker exec teknikalidnew-worker-1 sh -c \"grep -c 'POLL_INTERVAL_MS = 30_000' /app/dist/server.js\" harus >=1; (4) konfirmasi jadwal cron internal worker tetap lengkap setelah poll 10s->30s (tidak ada job hilang window). DONE-WHEN: 4 syarat hijau + bukti fisik di field result.",
+      "status": "pending",
+      "scheduled_slot": "2026-11-02 kereta malam T-1102-N window 22:00-01:30 (bareng prd-31-02 boarding; rider fix-28-02/ops-29-01/ops-11-01-04/fix-26-08 build sore, deploy sekali di kereta)",
+      "north_star": "TRUST — worker = mesin sinyal/EOD; bundle basi = perilaku prod != main (data reliable)",
+      "assigned_to": "be-night",
+      "created_by": "cto-pagi-2026-11-02",
+      "date": "2026-11-02",
+      "result": ""
     }
   ]
 }
