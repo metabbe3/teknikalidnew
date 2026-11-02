@@ -4036,6 +4036,64 @@
         "p2"
       ],
       "notes": "Ditambahkan owner-approval 3 Nov 00:5x via agent-utama setelah diagnosis di chat."
+    },
+    {
+      "id": "sos-2026-11-03-01",
+      "status": "pending",
+      "title": "SOSMED P1: Threads Rekap reslot 12:10→16:30 (blokir struktural EOD-only)",
+      "summary": "Job 'Threads Rekap Sesi-I 12:10' tertahan berhari-hari: stack hanya punya data EOD, posting 12:10 berarti angka kemarin dijual sebagai 'Sesi-I hari ini' (salah & bahaya trust). 2 Nov tidak ada output sama sekali.",
+      "acceptance": [
+        "Cron reslot 16:30 Sen-Jum (setelah close 15:49 + EOD ingest ±16:00)",
+        "Hook diubah 'Rekap Sesi Penuh {tanggal}' dengan data same-day final",
+        "Label 'Data per penutupan {tgl} WIB' wajib di post",
+        "Bukti: 1 post live pertama + guard dedup tetap jalan",
+        "Cadence owner 1-2/hari tetap dihormati"
+      ],
+      "scheduled_slot": "2026-11-03 09:30 BE siang Selasa (host-ops cron config, 0 deploy)",
+      "created_at": "2026-11-03T06:21:35",
+      "labels": [
+        "sosmed",
+        "threads",
+        "p1"
+      ],
+      "notes": "Diagnosis agent-utama 3 Nov: bukan kuota, bukan no-news — data availability."
+    },
+    {
+      "id": "sos-2026-11-03-02",
+      "status": "pending",
+      "title": "SOSMED P1: DEBUG Sunday Evergreen (job hidup tapi 0 output sejak dibuat)",
+      "summary": "Cron 'Sosmed Sunday Evergreen Post' (sundayevergr, 10:30 Minggu) TIDAK PERNAH menghasilkan output — Minggu 1 Nov lewat tanpa post padahal peak audiens. Cek: script ada? error silent? state stuck? Perbaiki + pastikan post Minggu berikutnya (8 Nov) live.",
+      "acceptance": [
+        "Root cause terdokumentasi (script/state/schedule)",
+        "Post evergreen live Minggu 8 Nov + verified",
+        "Log aktivitas tercatat di growth log"
+      ],
+      "scheduled_slot": "2026-11-03 09:30 bareng sos-2026-11-03-01 (investigasi ringan)",
+      "created_at": "2026-11-03T06:21:35",
+      "labels": [
+        "sosmed",
+        "ig",
+        "p1"
+      ]
+    },
+    {
+      "id": "sos-2026-11-03-03",
+      "status": "spec_ready",
+      "title": "SOSMED P2 GROWTH: TikTok pipeline — repurpose konten IG ke TikTok via Tebar",
+      "summary": "TikTok terhubung via Tebar 30 Okt (account 5f0193c6, scope video.publish ADA) tapi belum ada pipeline posting sama sekali = kanal reach terbesar terbuang. Owner mandate 'kita harus cari follower'.",
+      "acceptance": [
+        "Spec: pipeline ambil video bedah/carousel IG (sudah 9:16-ready) → publish TikTok via Tebar video.publish, cap 1/hari, jendela 18:00-20:00",
+        "Trial 3 video pertama + metrics view/follow dicatat ke growth-metrics",
+        "Keputusan continue/pause setelah 2 minggu data"
+      ],
+      "scheduled_slot": "spec review CTO sore 3 Nov; build sprint berikutnya",
+      "created_at": "2026-11-03T06:21:35",
+      "labels": [
+        "sosmed",
+        "tiktok",
+        "growth",
+        "p2"
+      ]
     }
   ]
 }
