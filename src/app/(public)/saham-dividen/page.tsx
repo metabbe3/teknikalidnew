@@ -3,6 +3,7 @@ import { safeJsonLd } from "@/lib/safe-json-ld";
 import { PageHero } from "@/components/layout/page-hero";
 import { AskAiCta } from "@/components/seo/ask-ai-cta";
 import { screenerAnalysisService } from "@/domains/stock/screener-analysis.service";
+import { prisma } from "@/lib/prisma";
 import { SITE_URL } from "@/lib/constants";
 import { stripJk } from "@/lib/utils";
 import { formatDecimalId } from "@/lib/format-number";
@@ -39,6 +40,47 @@ type FundRow = {
   dividendYield: number | null; marketCap: number | null;
 };
 
+type ExDateRow = {
+  ticker: string; name: string; kind: string;
+  perShare: number | null; exDate: Date; paymentDate: Date | null;
+};
+
+// prd-2026-11-02-01 fase-1: ex-date 30 hari ke depan dari tabel StockDividend (pipeline hidup)
+async function loadUpcomingExDates(): Promise<ExDateRow[]> {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const until = new Date(today.getTime() + 30 * 86400000);
+  const rows = await prisma.stockDividend.findMany({
+    where: { exDate: { gte: today, lte: until } },
+    orderBy: { exDate: "asc" },
+    take: 30,
+    select: {
+      type: true,
+      amount: true,
+      exDate: true,
+      paymentDate: true,
+      stock: { select: { ticker: true, name: true } },
+    },
+  });
+  return rows.flatMap((r) =>
+    r.exDate
+      ? [{
+          ticker: r.stock.ticker,
+          name: r.stock.name,
+          kind: r.type,
+          perShare: r.amount != null ? Number(r.amount) : null,
+          exDate: r.exDate,
+          paymentDate: r.paymentDate,
+        }]
+      : [],
+  );
+}
+
+const fmtTgl = (d: Date | null) =>
+  d ? new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" }).format(d) : "—";
+const fmtRp = (n: number | null) =>
+  n !== null ? new Intl.NumberFormat("id-ID", { maximumFractionDigits: 2 }).format(n) : "—";
+
 export default async function SahamDividenPage() {
   const result = await screenerAnalysisService.screenerQuery("high_dividend");
   const rows = (Array.isArray(result) ? result : []) as unknown as FundRow[];
@@ -46,6 +88,17 @@ export default async function SahamDividenPage() {
     .filter((r) => r.dividendYield != null)
     .sort((a, b) => (b.dividendYield ?? 0) - (a.dividendYield ?? 0))
     .slice(0, 20);
+
+  // prd-2026-11-02-01: gagal load jangan robohkan halaman ranking (render jujur, section disembunyikan)
+  let exDates: ExDateRow[] = [];
+  try {
+    exDates = await loadUpcomingExDates();
+  } catch {
+    exDates = [];
+  }
+  const now = new Date();
+  const MS_DAY = 86400000;
+  const daysUntil = (d: Date) => Math.ceil((d.getTime() - now.getTime()) / MS_DAY);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -83,6 +136,14 @@ export default async function SahamDividenPage() {
               text: "Anda menerima dividen jika memegang saham sampai tanggal cum date (tanggal terakhir kepemilikan untuk berhak dividen). Pembayaran biasanya 1-2 bulan setelah RUPS tahunan perusahaan.",
             },
           },
+          {
+            "@type": "Question",
+            name: "Apa itu ex date dividen dan kenapa penting?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Ex date adalah hari pertama pembeli saham TIDAK lagi berhak atas dividen yang baru diumumkan. Supaya dapat dividen, Anda harus membeli saham sebelum ex date (paling lambat di cum date). Di hari ex date harga biasanya disesuaikan turun kira-kira sebesar dividen per lembar. Kalender ex-date 30 hari ke depan bisa dicek di halaman ini.",
+            },
+          },
         ],
       },
     ],
@@ -105,6 +166,63 @@ export default async function SahamDividenPage() {
         </div>
 
         <AskAiCta question="Dividen di atas 8% ada yang aman?" />
+
+        {exDates.length > 0 ? (
+          <section className="mt-6" aria-labelledby="exdate-heading">
+            <h2 id="exdate-heading" className="text-lg font-bold">
+              Kalender Ex-Date 30 Hari ke Depan
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Saham yang masuk ex date di 30 hari ke depan — beli paling lambat sehari sebelum ex date untuk berhak dividen.
+            </p>
+            <div className="mt-3 overflow-x-auto rounded-lg border">
+              <table className="w-full min-w-[640px] text-sm">
+                <thead>
+                  <tr className="border-b bg-muted/50 text-left text-xs text-muted-foreground">
+                    <th className="px-3 py-2 font-medium">Saham</th>
+                    <th className="px-3 py-2 font-medium">Ex Date</th>
+                    <th className="px-3 py-2 font-medium">Dividen/Lbr</th>
+                    <th className="px-3 py-2 font-medium">Tanggal Bayar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {exDates.map((r) => {
+                    const days = daysUntil(r.exDate);
+                    return (
+                      <tr key={`${r.ticker}-${r.exDate.toISOString()}`} className="border-b last:border-0">
+                        <td className="px-3 py-2">
+                          <Link href={`/stocks/${r.ticker}`} className="font-bold hover:underline">
+                            {stripJk(r.ticker)}
+                          </Link>
+                          <span className="block text-xs text-muted-foreground">{r.name}</span>
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2">
+                          {fmtTgl(r.exDate)}{" "}
+                          {days <= 3 && (
+                            <span className="ml-1 rounded bg-amber-100 px-1.5 py-0.5 text-xs font-semibold text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+                              segera
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-3 py-2">{fmtRp(r.perShare)}</td>
+                        <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">{fmtTgl(r.paymentDate)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Jadwal dari pengumuman resmi emiten. Ingin daftar lengkap cum date + estimasi yield?{" "}
+              <Link href="/kalender-dividen" className="font-semibold underline">Kalender Dividen BEI</Link>.
+            </p>
+          </section>
+        ) : (
+          <p className="mt-6 text-sm text-muted-foreground">
+            Belum ada ex-date dividen terjadwal dalam 30 hari ke depan — cek{" "}
+            <Link href="/kalender-dividen" className="underline">kalender dividen lengkap</Link>.
+          </p>
+        )}
 
         <div className="mt-6 overflow-x-auto">
           <table className="w-full min-w-[640px] text-sm">
