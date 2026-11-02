@@ -34,14 +34,6 @@ function flagDone(key: string, userId: string): void {
   }
 }
 
-function flagIsDone(key: string, userId: string): boolean {
-  try {
-    return window.localStorage.getItem(key) === userId;
-  } catch {
-    return false;
-  }
-}
-
 function GuestMigrator() {
   const { data: session, status } = useSession();
   const done = useRef(false);
@@ -57,17 +49,15 @@ function GuestMigrator() {
       payload = { watchlist: [], presets: [], isEmpty: true };
     }
 
-    const wlDone = flagIsDone(MIGRATED_WL_FLAG_KEY, userId);
-    const presetDone = flagIsDone(MIGRATED_PRESET_FLAG_KEY, userId);
-    const wlTodo = payload.watchlist.length > 0 && !wlDone;
-    const presetTodo = payload.presets.length > 0 && !presetDone;
+    // v2: gating = KEBERADAAN DATA, bukan flag. Flag v1 per-userId punya bug warisan:
+    // logout → guest menambah simpanan → login lagi = flag sudah terpasang → data baru
+    // TIDAK pernah dimigrasi. Idempotensi dijamin server (skipDuplicates + 409 name-exists),
+    // jadi re-migrasi aman; flag tetap ditulis utk observabilitas.
+    const wlTodo = payload.watchlist.length > 0;
+    const presetTodo = payload.presets.length > 0;
 
     if (!wlTodo && !presetTodo) {
-      // AC4 no-op bersih: tidak ada simpanan / sudah dimigrasi — 0 fetch, 0 error
-      if (payload.isEmpty) {
-        clearGuestWatchlist();
-        clearSavedScreens();
-      }
+      // AC4 no-op bersih: tidak ada simpanan guest — 0 fetch, 0 query, 0 error
       return;
     }
 
@@ -91,6 +81,7 @@ function GuestMigrator() {
 
         // 2) Presets (reuse /api/screener/saved; 409 name-exists = sudah ada = sukses idempoten)
         if (presetTodo) {
+          let failed = 0;
           for (const preset of payload.presets) {
             const filters = Object.fromEntries(new URLSearchParams(preset.queryString));
             try {
@@ -100,13 +91,18 @@ function GuestMigrator() {
                 body: JSON.stringify({ name: preset.name, filters }),
               });
               if (res.ok || res.status === 409) migrated += 1;
+              else failed += 1;
             } catch {
-              // satu preset gagal jaringan → lanjut preset berikutnya (partial OK)
+              failed += 1; // lanjut preset berikutnya — sisanya jangan ikut hilang
             }
           }
-          clearSavedScreens();
-          flagDone(MIGRATED_PRESET_FLAG_KEY, userId);
-          window.dispatchEvent(new CustomEvent(SAVED_SCREENS_EVENT, { detail: [] }));
+          // Clear HANYA bila semua insert terkonfirmasi (yang sukses re-POST login
+          // berikutnya = 409 skip, idempoten). Partial-failure = data dipertahankan.
+          if (failed === 0) {
+            clearSavedScreens();
+            flagDone(MIGRATED_PRESET_FLAG_KEY, userId);
+            window.dispatchEvent(new CustomEvent(SAVED_SCREENS_EVENT, { detail: [] }));
+          }
         }
 
         // AC3: telemetri guest_migrate_done (nilai = jumlah item termigrasi)
