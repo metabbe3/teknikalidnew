@@ -39,7 +39,6 @@ import { StockAlertBanner } from "@/components/stock/stock-alert-banner";
 import { StockFAQWidget } from "@/components/faq/stock-faq-widget";
 import { CompanyDataTabs } from "@/components/stock/company-data-tabs";
 import { StockPaperPosition } from "@/components/paper-trading/stock-paper-position";
-import { HealthScoreDetail } from "@/components/stock/health-score-detail";
 import { SignalBreakdownDetails } from "@/components/stock/signal-breakdown-details";
 import { StockLogo } from "@/components/stock/stock-logo";
 import { StockAiModalButton } from "@/components/stock/stock-ai-modal";
