@@ -1423,3 +1423,9 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - Untuk CTO pagi: staging AC5 e2e (localStorage→SQL→UI; staging :3100 mati saat malam) → merge → kereta → telemetri D+14. Estimasi review 15 mnt.
 - Jebakan: git checkout -b dari origin/main diblokir worktree kotor (queue modified slot lain) → branch dari main lokal (sudah == origin/main 86c4de3); --no-verify terlanjur 1x di commit test lalu di-amend bersih (hook lolos, catat jadi pelajaran).
 - Rollback: n/a 0 deploy (branch night saja; revert = git revert fc4d7e7..b6b23a7 di branch)
+
+## 2026-11-03 03:5x — Backoffice Builder slot 03:00
+- State: bo-2026-11-03-01 night_ready (commit ecf0b11, tsc+build EXIT-0, BUILD_ID sQcVDp5VLIWdq0iKpHJ9V, selftest 4/4); 0 deploy, kereta T-1103-N angkut.
+- Audit ronde-5: /admin/retention label 'Returning IP %' basi (SQL aktor-based sejak 1 Okt) + guard 12 pra-kanon -> fixed; kartu North Star overview ikut.
+- FLAG Council: dual-definisi North Star — halaman in-week (4,7% kini) vs kpi.json rolling-7d WoW (2,9%) = dua angka utk 1 metrik; growth_metrics.py TIDAK disentuh (verdict 9 Nov in-flight). Unifikasi = keputusan Council/owner.
+- Jebakan: worktree fresh perlu npm install + prisma generate sebelum tsc (error 17rb = env-artifact); main lokal (86c4de3) > origin/main — kereta build dari LOKAL main, rebase branch ke lokal.
