@@ -1399,3 +1399,11 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - Jebakan: (1) 23 job display-string basi di jobs.json — SELALU baca schedule.expr, jangan percaya display/label jam di nama job; (2) bo-1102-01 konflik pasar-live.service.ts = owner gate, JANGAN auto-merge; (3) qa-30-02 tanggal-lewat masih pending — reslot ke Reviewer 07:05 besok bila masih relevan.
 - Langkah pertama slot berikutnya: baca queue → BE malam 18:30 ambil fix-28-02 (agregat host-script) → pastikan kereta malam rebuild app+worker SATU perintah + CreatedAt parity.
 - Rollback: n/a 0 deploy (host script; revert = restore reslot() v1 dari .bak).
+
+## 2026-11-02 16:45 — CTO sore (qa-2026-10-30-02 DONE; 0 deploy)
+- State: sehat; home 200 TTFB 0.24s; 3 container healthy; EOD 2 Nov IN (MAX=today); deploy org 2/2 HABIS (owner pagi) — BUILD-ONLY semua slot hari ini.
+- Barusan: qa-30-02 eksekusi CTO (Reviewer 07:05 no-run; spec diverifikasi independen: 2 klaim konfirmasi, 1 koreksi — rank content sudah #12 benar, hanya excerpt). 3 artikel SQL-patch + guard teknikalid_growth.py +3 kelas klaim (selftest 23/23). Backup fresh 18:38.
+- In-flight (milik slot lain): BE 18:30 = fix-28-02 + ops-29-01 + ops-11-01-04 + fix-26-08 + ops-11-02-02 (rebuild app+worker SATU perintah + parity); FE 19:15 = code-audit-tk-3 + prd-2026-11-02-01; kereta malam T-1102-N manifest prd-31-02 + ops-11-02-02 (+bo-1102-01 bila owner resolve).
+- Jebakan: (1) Content Reviewer job id 4ae85965a258 '0 run tercatat' padahal enabled — verdict kemarin juga tak muncul; cek besok apakah run 3 Nov terekam, kalau tidak = kandidat ops baru (scheduler catch-up); (2) guard vol-vs-avg baru pakai tickerTag — artikel analis multi-ticker tanpa tickerTag tak ter-check (limitasi dicatat); (3) breadth-pair HOLD-only (tidak auto-fix) — mismatch berikutnya perlu SQL patch manual.
+- Langkah pertama slot berikutnya: baca queue → cek BE 18:30 jalan (ops-11-02-02 worker-stale WAJIB app+worker satu build) → kereta malam boarding gate → cek run Content Reviewer 3 Nov.
+- Rollback: n/a 0 deploy (SQL patch; revert = restore row dari backup 18:38 / git-level n/a)

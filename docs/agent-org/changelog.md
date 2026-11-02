@@ -1032,3 +1032,11 @@
 - **queue**: flip done via statejson v171→v172. Call-site teknikalid_ceo_brief.py tak diubah (subprocess tetap jalan; script self-contained).
 - Pilar: TRUST (kalender cron = satu kebenaran; janji slot yang tak pernah menembak = agent station bohong ke owner). QA: SENTINEL 22:00 / reviewer sampling (selftest = failing-first fixture replay insiden 31 Okt). impact_check_due: 2026-11-05 (cek output guard di CEO brief 3-5 Nov: 0 alert palsu, display-drift tak menahun).
 - Rollback: n/a host-script 0 deploy (revert = restore reslot() v1 dari .bak statejson; jobs.json tak tersentuh).
+
+## 2026-11-02 16:45 — CTO sore — qa-2026-10-30-02 (P1 TRUST)
+- **task-id:** qa-2026-10-30-02 · **type:** ops/QA-patch · **PRD:** n/a (spec reviewer, verifikasi independen CTO — 2 klaim reviewer TERKONFIRMASI, 1 dikoreksi: rank 'keenam salah' ternyata content sudah #12 benar, hanya excerpt yang belum)
+- **deploy:** n/a (SQL patch DB + host script; ISR live ≤300s, verify 3 URL 200 frasa baru render, residual lama = 0)
+- **verify bukti:** UPDATE 6/6; residual position()=0 semua (102 naik/827/8 sinyal/43,6%-di-atas/satu-satinya/keenam-excerpt); selftest guard 23/23 (6 baru: breadth_pair_holds, ema_count_holds, vol_vs_avg_holds + 2 clean-pass kontrol + tidy); live fetch ema=5/vol -90,1 dinamis
+- **QA:** verdict = SENTINEL 22:00 (H3: builder tidak self-verify)
+- **impact_check_due:** 2026-11-05 (brief/analis baru lewat guard — cek 0 hold false-positive)
+- **impact_check:** pemanggil teknikalid_growth.py tidak berubah (fungsi baru internal); caller = cron Mandor insert-article
