@@ -88,7 +88,10 @@ export default function GlossaryPage() {
                   <Link
                     key={t.slug}
                     href={`/akademi/glosarium/${t.slug}`}
-                    className="group flex items-start gap-3 p-3.5 rounded-xl bg-bg-card border border-border hover:border-accent/30 transition-all"
+                    // prd-2026-10-31-02 AC3: anchor id=term-<slug> utk deep-link tooltip
+                    // 'Lihat di Kamus' (scroll-mt kompensasi sticky header)
+                    id={t.slug}
+                    className="group flex items-start gap-3 p-3.5 rounded-xl bg-bg-card border border-border hover:border-accent/30 transition-all scroll-mt-24"
                   >
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors">

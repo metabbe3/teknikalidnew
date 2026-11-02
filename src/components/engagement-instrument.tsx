@@ -130,6 +130,12 @@ function navClickLabel(target: EventTarget | null): string | null {
   const el = target instanceof Element ? target : null;
   if (!el) return null;
 
+  // prd-2026-10-31-02: [data-nav-label] dicek SEBELUM <a href> — elemen interaktif
+  // di dalam/di atas anchor (mis. 'Lihat di Kamus' dalam tooltip) harus tercatat
+  // dengan label spesifiknya (glossary_open), bukan dinavar nav:<dest> generatif.
+  const taggedNav = el.closest<HTMLElement>("[data-nav-label]");
+  if (taggedNav?.dataset.navLabel) return taggedNav.dataset.navLabel;
+
   // 1) Anchor internal (bukan external/href='#'/download)
   const a = el.closest("a[href]");
   if (a) {
@@ -144,11 +150,6 @@ function navClickLabel(target: EventTarget | null): string | null {
     }
     return null;
   }
-
-  // prd-2026-10-31-01: <details data-nav-label> = interaksi in-page yang perlu
-  // terukur sebagai nav_click (bukan cta_click) — section riwayat kondisi.
-  const taggedNav = el.closest<HTMLElement>("[data-nav-label]");
-  if (taggedNav?.dataset.navLabel) return taggedNav.dataset.navLabel;
 
   // 2) Button yang navigate via JS — deteksi heuristik teks umum
   const b = el.closest("button");

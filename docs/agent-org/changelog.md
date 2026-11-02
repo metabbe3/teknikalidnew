@@ -1,4 +1,12 @@
 ## [2026-10-25 15:45] cto-weekend-sore — qa-2026-10-25-02/03/04: 3 QA P1 content-fix (SQL patch ISR, 0 deploy)
+## [2026-11-01 23:5x] cto-night — prd-2026-10-31-02: TermTip tooltip istilah inline fase-1 (BUILD-ONLY, night_ready)
+- Type: prd (fitur STICKY)  |  PRD: im-2026-10-29-2 / prd-2026-10-31-02 (spec_ready → implementasi penuh malam)
+- Deploy: TIDAK ADA (BUILD-ONLY slot malam; boarding kereta oleh CTO pagi)  |  Rollback: n/a BUILD-ONLY (revert = git revert 159ce95)
+- RINGKAS: src/components/seo/term-tip.tsx (server, lookup GLOSSARY_TERMS import tunggal — 0 salinan definisi) + term-tip-client.tsx (wrap Tooltip UI @base-ui existing, 0 dep baru; provider global layout; trigger <button> focusable tap-to-open; definisi SSR-visible sr-only utk crawler/AI-search; link 'Lihat di Kamus' data-nav-label=glossary_open). Fase-1 3 halaman kondisi: golden-cross (golden-cross, moving-average), death-cross (death-cross, moving-average + parenthetical definisi MA200), oversold (oversold, rsi). Glosarium anchor id={slug} + scroll-mt-24. PageHero/SectionHeading description?: string -> ReactNode (type-only).
+- Failing-test-first: scripts/selftest-term-tip.ts (node:test) commit 5708a8f RED 1/5 → implementasi 159ce95 GREEN 5/5 (test tak tersentuh saat fix).
+- Verify: LINT 0; tsc --noEmit EXIT-0; npm run build EXIT-0; selftest 5/5; staging :3100 3 halaman 200 + definisi SSR terlihat + trigger button + anchor glosarium fisik di HTML.
+- Dampak North Star: STICKY (kurangi friksi jargon pemula — sinyal AiChatLog 7/98 'apa itu X') + jembatan konten /akademi/glosarium.
+
 - Type: qa content-fix  |  PRD: N/A (ops QA trust-debt, reviewer dispatch 24-25 Okt)  |  Pilar: TRUST (angka publik == DB)
 - Deploy: TIDAK ADA (SQL patch Article + ISR revalidate, by-design jalur QA)  |  Rollback: n/a (DB-only patch; row-backup /tmp/qa25_backup_1530.tsv di db-1 + full backup 25 Okt 01:16 valid)
 ## [2026-10-26 03:0x] backoffice-builder — bo-2026-10-26-01: North Star strip di Dashboard /admin (Overview tab)

@@ -14,7 +14,7 @@ export function SectionHeading({
 }: {
   eyebrow?: string;
   title?: string;
-  description?: string;
+  description?: React.ReactNode; // prd-2026-10-31-02: widen utk TermTip inline (string tetap valid)
   action?: React.ReactNode;
   className?: string;
   as?: "h1" | "h2" | "h3";

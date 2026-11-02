@@ -4,6 +4,7 @@ import { AskAiCta } from "@/components/seo/ask-ai-cta";
 import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { ConditionHistory } from "@/components/signal/condition-history";
+import { TermTip } from "@/components/seo/term-tip";
 import { getConditionBacktest } from "@/lib/condition-backtest.service";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { SITE_URL } from "@/lib/constants";
@@ -87,7 +88,7 @@ export default async function SahamDeathCrossPage() {
       <PageHero
         eyebrow="Saham IDX"
         title="Saham Death Cross Hari Ini"
-        description="Saham dengan MA50 memotong kebawah MA200 — sinyal bearish, waspadai momentum turun. Update setiap 5 menit."
+        description={<>Saham dengan <TermTip term="moving-average">MA50 memotong kebawah MA200</TermTip> — sinyal bearish, waspadai momentum turun. Update setiap 5 menit.</>}
       />
       {/* seo-dr-3: kalimat pembuka dinamis utk SERP (jumlah saham hari ini) */}
       <div className="mx-auto max-w-5xl px-4 pt-6">
@@ -100,7 +101,7 @@ export default async function SahamDeathCrossPage() {
 
       <div className="mx-auto max-w-5xl px-4 py-8">
         <div className="mt-4 rounded-lg border border-border bg-bg-card p-4 text-sm text-text-secondary">
-          <strong className="text-text-primary"> Mengapa death cross penting?</strong> Death cross menandakan
+          <strong className="text-text-primary"> Mengapa <TermTip term="death-cross">death cross</TermTip> penting?</strong> Death cross (MA50 memotong ke bawah <TermTip term="moving-average">MA200</TermTip>) menandakan
           tren turun jangka panjang terkonfirmasi. Bagi investor, ini saat meninjau ulang posisi; bagi trader,
           peluang short-term rebound biasanya lemah sampai tren berbalik.
         </div>
