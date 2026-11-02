@@ -185,6 +185,11 @@ export function tryConsumeRegisterPrompt(storage: GuestStorage | null = defaultS
 export function countGuestSavedItems(storage: GuestStorage | null = defaultStorage()): number {
   return readGuestWatchlist(storage).length + readSavedScreens(storage).length;
 }
+/** Kosongkan storage presets guest (dipanggil migrator setelah insert akun terkonfirmasi). */
+export function clearSavedScreens(storage: GuestStorage | null = defaultStorage()): void {
+  storage?.removeItem(SAVED_SCREENS_KEY);
+}
+
 
 // ── Guest migration v2 (PRD prd-2026-10-26-02) ──
 
