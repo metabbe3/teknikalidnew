@@ -2224,6 +2224,53 @@
    "size": "M",
    "signal": "CREATIVE BET: pola kompetisi/simulator terbukti di luar (Investopedia sim, kontes sekuritas); infra modal ada (paper trading live + Point&Badge v1 leaderboard-ready); TIDAK meniru jangan-colong list (paper trading sendiri = fitur kita, bukan colongan; kompetisi = lapisan sosial di atasnya). Legal disclaimer wajib: virtual, bukan ajakan trading dana riil.",
    "synergy": "Leaderboard reuse Point&Badge v1; distribusi hasil via IG flash post (pipeline sosmed live)."
+  },
+  {
+   "id": "sec-2026-11-02-01",
+   "date": "2026-11-02",
+   "priority": "P2",
+   "status": "candidate",
+   "type": "security",
+   "source": "itsec-blue",
+   "title": "CDP browser lightpanda bind 0.0.0.0:9223 tanpa auth — drivable dari LAN",
+   "data": {
+    "bukti": "docker ps: lightpanda 0.0.0.0:9223->9222/tcp + [::]; curl localhost:9223/json/version merespons (Protocol 1.3, ws debugger URL); tidak ada token/auth di CDP by-design.",
+    "risiko": "Siapa pun di LAN bisa /json/new membuka tab, eksekusi JS di konteks browser itu, dan pakai sebagai pivot. Saat audit: container TANPA mount sesi (profil kosong) + umur 55 mnt — belum ada aset terpapar; bahaya muncul begitu sesi login (IG/sosmed) pernah diload ke container ini.",
+    "exploitability": "sedang (butuh posisi di LAN; mitigasi: router NAT)",
+    "rekomendasi": "Ganti port binding ke 127.0.0.1:9223:9222 di compose/run lightpanda (pola skill mac-mini-admin: non-loopback binding defeats trust). 1 baris fix."
+   },
+   "exploitability": "sedang"
+  },
+  {
+   "id": "sec-2026-11-02-02",
+   "date": "2026-11-02",
+   "priority": "P3",
+   "status": "candidate",
+   "type": "security",
+   "source": "itsec-red",
+   "title": "Branch lokal backup/pre-sec-purge-1015 masih memuat sessions/ig-session.json + tiktok-session.json di repo ber-origin PUBLIC",
+   "data": {
+    "bukti": "git show backup/pre-sec-purge-1015:social-auto-poster/sessions/ig-session.json = storage_state Playwright berisi cookie .instagram.com: csrftoken, datr, ig_did, mid (expired 2027); tiktok-session.json: ttwid, msToken, s_v_web_id, passport-sotl-auth-token-NONCE x2. TIDAK ada sessionid/ds_user_id/passport-token utuh → device fingerprint, BUKAN kredensial login.",
+    "kondisi": "git ls-remote origin: branch backup TIDAK ada di remote (lokal saja); scan seluruh refs/remotes/origin/* = 0 file sessions/. Namun origin = github.com/metabbe3/teknikalidnew VISIBILITY PUBLIC — satu `git push --all` yang tidak sengaja membocorkan file ini ke publik.",
+    "exploitability": "rendah (cookie device-level; branch belum pernah dipush)",
+    "rekomendasi": "Hapus branch lokal (git branch -D backup/pre-sec-purge-1015) ATAU strip path sessions/ dari ref; tambah guard pre-push yang menolak push branch berisi social-auto-poster/sessions/."
+   },
+   "exploitability": "rendah"
+  },
+  {
+   "id": "sec-2026-11-02-03",
+   "date": "2026-11-02",
+   "priority": "P3",
+   "status": "candidate",
+   "type": "security",
+   "source": "itsec-blue",
+   "title": "Monitoring gap: 401/403 anonim teknikal.id tidak terukur (tidak ada ErrorLog; AuditLog hanya post-auth) — password-spray lambat tak terdeteksi",
+   "data": {
+    "bukti": "Pre-run audit 2 Nov: query 401/403 7d tidak tersedia di DB teknikalid — tabel ErrorLog tidak ada, AuditLog hanya event user ter-autentikasi. Endpoint register/login punya rate-limit (5/jam/IP register, bcrypt-12), tapi tidak ada sinyal agregat utk spray lintas-IP.",
+    "exploitability": "rendah (gap deteksi, bukan celah; kontrol rate-limit sudah ada)",
+    "rekomendasi": "Counter ringan 401/403 per-jam (reuse pola AppErrorLog upsert fingerprint ala api-error.ts, Rp0) + alert threshold di sentinel; pilar TRUST data."
+   },
+   "exploitability": "rendah"
   }
  ],
  "items": []
