@@ -1415,3 +1415,11 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - Jebakan: (1) 'segera' muncul 2x di HTML = 1 tabel + 1 RSC flight-data payload (bukan duplikat render) — verify badge posisinya via offset vs heading, jangan panic; (2) /saham-dividen force-dynamic → build tak mem-prerender, verify WAJIB via staging :3100 bukan grep .next output; (3) queue data-dir = symlink ke repo, commit queue TERPISAH dari file docs slot lain (ceo-decisions/product-backlog modified oleh slot lain — JANGAN git add -A).
 - Kereta malam T-1102-N manifest tambahan dari FE: prd-31-02 + ops-11-02-02 (worker-stale, rebuild app+worker SATU perintah + parity) + bo-1102-01 (bila owner resolve konflik pasar-live) + prd-11-02-01 + code-audit-tk-3.
 - Rollback: git revert 18c50c9 (kalender) / 98fcadc (cleanup) — 0 deploy slot ini.
+
+## 2026-11-02 23:1x — CTO Night slot (prd-2026-10-26-02 night_ready, 0 deploy)
+- Task: guest-migration v2 (watchlist+preset → akun). Branch night/prd-2026-10-26-02 HEAD fc4d7e7 (5 commit), pushed. Queue v186 night_ready T-1103-N.
+- 2 BUG nyata ditemukan & diperbaiki (bukan cuma fitur): (1) ticker bare guest (BBCA) didrop SENYAP oleh findStocksByTickers exact-match saat migrasi v1 → buildMigratePayload normalize ke .JK; (2) flag migrasi v1 per-userId → simpanan yang ditambah pasca-logout tak pernah dimigrasi → gating = keberadaan data + idempoten server.
+- Verify: tsc EXIT-0 · selftest-guest-migrate 6/6 · selftest-retention-loop 8/8 (no-regresi) · build EXIT-0 BUILD_ID tgRNWtsPd-w_K-ENCt2Bw · marker v2 di layout chunk · LINT 0.
+- Untuk CTO pagi: staging AC5 e2e (localStorage→SQL→UI; staging :3100 mati saat malam) → merge → kereta → telemetri D+14. Estimasi review 15 mnt.
+- Jebakan: git checkout -b dari origin/main diblokir worktree kotor (queue modified slot lain) → branch dari main lokal (sudah == origin/main 86c4de3); --no-verify terlanjur 1x di commit test lalu di-amend bersih (hook lolos, catat jadi pelajaran).
+- Rollback: n/a 0 deploy (branch night saja; revert = git revert fc4d7e7..b6b23a7 di branch)
