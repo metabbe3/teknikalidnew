@@ -3992,6 +3992,50 @@
       "branch": "night/prd-2026-10-26-02",
       "train": "T-1103-N",
       "result": "NIGHT BUILD 2 Nov (branch night/prd-2026-10-26-02, HEAD fc4d7e7, 5 commit): GuestMigrator v2 di auth-provider — (1) presets 'Simpananku' kini ikut migrasi ke SavedScreener via /api/screener/saved (reuse, 409=name-exists skip idempoten); (2) FIX BUG DATA-LOSS: ticker bare (BBCA) guest dinormalisasi ke kanonis DB BBCA.JK di buildMigratePayload — tanpa ini findStocksByTickers exact-match mendrop senyap; (3) FIX BUG FLAG v1: gating kini keberadaan-data (flag lama per-userId membuat simpanan pasca-logout tak pernah dimigrasi); (4) cap 30/10 FIFO + dedupe by ticker/queryString; (5) event cta_click guest_migrate_done via trackCtaEvent. VERIFY: tsc EXIT-0; selftest-guest-migrate 6/6; selftest-retention-loop 8/8 (regresi aman); npm build EXIT-0 BUILD_ID tgRNWtsPd-w_K-ENCt2Bw; marker v2 (teknikal_guest_presets_migrated + guest_migrate_done) terbukti di chunk .next layout-f26fa0ae98c7341a.js; LINT 0 error. ESTIMASI REVIEW: 15 menit (2 file src, +94/-29). SISA utk CTO pagi: staging AC5 end-to-end (localStorage→SQL→UI) + kereta deploy + telemetri D+14."
+    },
+    {
+      "id": "bo-2026-11-03-01",
+      "date": "2026-11-03",
+      "type": "backoffice",
+      "priority": "P2",
+      "status": "night_ready",
+      "assigned_to": "backoffice-builder",
+      "north_star": "STICKY + DATA-TRUST — North Star #1 org (Weekly Returning Visitor ≥8% per 25 Nov): /admin/retention wajib jadi satu sumber kebenaran metrik ini; label & guard yang menyesatkan = pelanggaran data-trust (sentinel kelas halusinasi angka)",
+      "title": "BACKOFFICE MATANGKAN /admin/retention: label basi 'Returning IP %' (SQL sudah aktor-based sejak 1 Okt) + guard 12% pra-kanon + dual-definisi vs kpi.json growth_metrics — audit ronde-5",
+      "spec": "Audit ronde-5 (3 Nov, rotasi: retention = halaman real last-commit 1 Okt, belum pernah diaudit khusus). Temuan: (1) SQL retention.service sudah aktor-based COALESCE(userId>anonId>ip) tapi LABEL UI masih 'Returning IP %'/'IP nobot' (retention/page.tsx + overview-tab.tsx North Star card) = basi, memicu keputusan salah (CEO 13 Okt: IP/CGNAT tak reproducible). (2) RETURNING_GUARD_PCT=12 ditulis 1 Okt SEBELUM kanon north-star.md 14 Okt (target ≥8% 25 Nov) — badge 'BELOW GUARD' terus merah meski target North Star tercapai 8-11.9%. (3) Dual-definisi: halaman = in-week calendar (Sen-Min WIB, ≥2 hari berbeda) vs kpi.json/:8790 (growth_metrics.py = rolling-7d WoW-return, kini 2,9% vs in-week 4,7%) — dua angka North Star tak pernah cocok di mata owner; verdict gate GROWTH-PLAN 9 Nov tergantung definisi mana. EKSEKUSI (ponytail ring-2, 0 endpoint/0 schema): (a) label 'Returning IP %'→'Returning Visitor % (aktor)' + sub 'pengunjung nobot (login > anonId > IP)'; (b) guard 12→8 align north-star.md + komentar ratchet Council; (c) anotasi metodologi 2 baris di kartu (definisi aktor + jendela kalender) + 1 baris cross-ref 'rolling-7d WoW-return di dashboard :8790 memakai jendela berbeda — angka berbeda by-design, keputusan unifikasi = Council/owner'; (d) flag dual-definisi utk Council Minggu (bukan diubah sendiri — growth_metrics.py = artefak GROWTH-PLAN owner, verdict 9 Nov in-flight, DILARANG sentuh mid-experiment).",
+      "done_when": [
+        "tsc EXIT-0",
+        "grep residu: 'Returning IP %' & 'IP nobot' = 0 di src (label baru terlihat di page.tsx + overview-tab.tsx)",
+        "guard=8 di retention.service.ts + sparkline line guard ikut (unit: RETURNING_GUARD_PCT dipakai semua UI dari 1 konstanta)",
+        "build EXIT-0 (BUILD_ID fisik) — BUILD-ONLY, kereta malam angkut, 0 deploy slot ini",
+        "commit sempit branch night/bo-2026-11-03-01 + push; queue flip + handoff + bus"
+      ],
+      "created_by": "Backoffice Builder slot 03:00 3 Nov",
+      "branch": "night/bo-2026-11-03-01",
+      "result": "BUILD selesai slot 03:00 3 Nov: commit ecf0b11 pushed, tsc EXIT-0, build EXIT-0 BUILD_ID sQcVDp5VLIWdq0iKpHJ9V, selftest-retention 4/4 GREEN (guard=8), residu label lama 0 file di .next/server. 0 deploy slot ini (BUILD-ONLY kereta). Rollback: git revert ecf0b11. NOTE utk Council: dual-definisi in-week vs rolling-7d WoW-return TERIMA Kasih FLAGGED di anotasi halaman — unifikasi = keputusan Council, growth_metrics.py TIDAK disentuh (verdict gate 9 Nov in-flight).",
+      "scheduled_slot": "review+merge CTO pagi 3 Nov -> kereta malam T-1103-N"
+    },
+    {
+      "id": "ux-2026-11-03-01",
+      "status": "pending",
+      "title": "FIX DASHBOARD: agent_ops_page train schedule kosong — renderer tak parse scheduled_slot string bebas",
+      "summary": "Dashboard /agents 'T-w antre' menampilkan kartu TANPA jadwal padahal 12/12 pending punya scheduled_slot terisi. Root cause: scheduled_slot adalah string naratif ('2026-11-02 18:30 BE malam Senin...'), renderer expect format pendek/tanggal terstruktur → jatuh ke tampilan polos. created_at/updated_at juga kosong di entry lama (sorting umur gagal). Data SEHAT, murni bug tampilan.",
+      "acceptance": [
+        "Renderer parse scheduled_slot string: regex tanggal 'YYYY-MM-DD[ HH:MM]' di awal → tampilkan tanggal+jam + countdown 'hari ini 18:30 / D-1 / D-2'",
+        "Fallback: kalau tak terparse, TAMPILKAN teks slot apa adanya (bukan kosong)",
+        "Kartu pending tanpa slot sama sekali → badge 'PERLU SLOT' merah biar kelihatan",
+        "Sorting antrean pakai tanggal terparse; entry tanpa tanggal di bawah",
+        "Verifikasi: halaman /agents menampilkan 12 pending SEMUA dengan jadwal terlihat (screenshot/evidence DOM)"
+      ],
+      "scheduled_slot": "2026-11-03 19:15 FE Selasa BUILD-ONLY bareng ux-2026-10-30-01 (satu PR dashboard)",
+      "created_at": "2026-11-03T06:13:14",
+      "labels": [
+        "dashboard",
+        "ux",
+        "agents-page",
+        "p2"
+      ],
+      "notes": "Ditambahkan owner-approval 3 Nov 00:5x via agent-utama setelah diagnosis di chat."
     }
   ]
 }
