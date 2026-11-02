@@ -27,7 +27,7 @@ function Sparkline({ points }: { points: Array<{ weekStart: string; returningPct
   const path = coords.filter((c) => c.y !== null).map((c) => `${c.x.toFixed(1)},${c.y!.toFixed(1)}`).join(" ");
   const guardY = h - pad - ((RETURNING_GUARD_PCT - min) / span) * (h - 2 * pad);
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-12" role="img" aria-label="Returning IP % 8 minggu">
+    <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-12" role="img" aria-label="Returning Visitor % (aktor) 8 minggu">
       <line x1={pad} y1={guardY} x2={w - pad} y2={guardY} stroke="#f59e0b" strokeDasharray="4 3" strokeWidth="1" />
       <polyline points={path} fill="none" stroke="#2563eb" strokeWidth="2" strokeLinejoin="round" />
       {coords.filter((c) => c.y !== null).map((c, i) => <circle key={i} cx={c.x} cy={c.y!} r="2.5" fill="#2563eb" />)}
@@ -44,7 +44,7 @@ export default async function AdminRetentionPage() {
     <div className="space-y-6 fade-in">
       <AdminPageHeader
         title="Retention"
-        description="Satu sumber kebenaran retensi — returning IP % mingguan (Senin–Minggu WIB) vs guard, cohort register D1/D7, dead-letter notifikasi."
+        description="Satu sumber kebenaran retensi — Returning Visitor % mingguan per aktor (Senin–Minggu WIB) vs guard North Star, cohort register D1/D7, dead-letter notifikasi."
         icon={UserCheck}
       />
 
@@ -52,12 +52,12 @@ export default async function AdminRetentionPage() {
       <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
         <div className="flex flex-wrap items-center gap-3">
           <div>
-            <div className="text-xs uppercase tracking-wide text-gray-400">Returning IP % — minggu ini</div>
+            <div className="text-xs uppercase tracking-wide text-gray-400">Returning Visitor % — minggu ini</div>
             <div className="text-3xl font-extrabold text-gray-900">
               <Pct v={o.returningPct} />
             </div>
             <div className="text-xs text-gray-500">
-              {o.returningIps}/{o.totalIps} IP nobot · pekan {o.weekStart} s/d {o.weekEnd} (WIB)
+              {o.returningIps}/{o.totalIps} pengunjung nobot · pekan {o.weekStart} s/d {o.weekEnd} (WIB)
             </div>
           </div>
           <span
@@ -132,7 +132,8 @@ export default async function AdminRetentionPage() {
       </div>
 
       <div className="text-[11px] text-gray-400">
-        Dibaca {new Date(o.generatedAt).toISOString()} · cache 5 menit · definisi kanonik: minggu Senin–Minggu WIB, IP nobot dengan ≥2 hari kunjungan berbeda.
+        Dibaca {new Date(o.generatedAt).toISOString()} · cache 5 menit · definisi kanonik: minggu Senin–Minggu WIB, aktor nobot (login &gt; anonId &gt; IP fallback) dengan ≥2 hari kunjungan berbeda.
+        {" "}· Catatan: kartu North Star dashboard :8790 (kpi.json) memakai jendela rolling-7d WoW-return — angkanya berbeda by-design; unifikasi definisi = keputusan Council.
       </div>
     </div>
   );

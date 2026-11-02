@@ -10,7 +10,9 @@
 import { prisma } from "@/lib/prisma";
 import { TtlCache } from "@/lib/cache";
 
-export const RETURNING_GUARD_PCT = 12;
+// Kanon north-star.md (14 Okt): target North Star >=8% per 25 Nov 2026 (baseline 3,8%).
+// Ratchet Council Minggu: baseline naik -> guard naik, tidak turun.
+export const RETURNING_GUARD_PCT = 8;
 export const RETENTION_CACHE_TTL_MS = 5 * 60 * 1000;
 
 /** (instant + 7h) sebagai timestamp UTC — dipakai untuk arithmetic WIB. */
