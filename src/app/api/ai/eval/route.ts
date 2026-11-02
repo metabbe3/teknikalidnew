@@ -60,13 +60,20 @@ async function glmJudge(dim: JudgeDim, question: string, answer: string): Promis
 async function runQuestion(route: string, body: Record<string, unknown>): Promise<{ answer: string; ms: number }> {
   const t0 = Date.now();
   const base = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:3000";
+  // Fix 2 Nov: self-fetch internal tanpa header Origin kena 403 CSRF proxy
+  // ("Cross-site request blocked") → eval menjalankan pertanyaan tapi dapat text kosong,
+  // 3 juri menilai 0 dan tren AiEvalRun penuh skor palsu. Kirim Origin = base sendiri
+  // agar lolos same-origin check proxy; POST lintas-situs dari browser tetap diblokir.
   const res = await fetch(`${base}/api/ai/${route === "stock" ? "stock" : "screener"}`, {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: { "content-type": "application/json", origin: base },
     body: JSON.stringify(body),
   });
-  const j = (await res.json()) as { text?: string };
-  return { answer: String(j.text ?? ""), ms: Date.now() - t0 };
+  const j = (await res.json()) as { text?: string; error?: string };
+  if (!res.ok || !j.text) {
+    throw new Error(`inner ${res.status}: ${String(j.error ?? "jawaban kosong").slice(0, 140)}`);
+  }
+  return { answer: String(j.text), ms: Date.now() - t0 };
 }
 
 export async function POST(req: Request) {
