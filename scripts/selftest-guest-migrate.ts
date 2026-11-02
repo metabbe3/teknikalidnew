@@ -11,6 +11,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   buildMigratePayload,
+  toCanonicalJkTicker,
   readGuestWatchlist,
   writeGuestWatchlist,
   saveScreen,
@@ -55,4 +56,28 @@ test("[3] buildMigratePayload: no-op bersih saat kosong", () => {
   assert.deepEqual(payload.watchlist, []);
   assert.deepEqual(payload.presets, []);
   assert.equal(payload.isEmpty, true, "AC4: no-op = 0 query");
+});
+
+test("[4] toCanonicalJkTicker: normalisasi + tolak malformed (AC2 400-diam server-side)", () => {
+  assert.equal(toCanonicalJkTicker("bbca"), "BBCA.JK", "lowercase dinormalisasi");
+  assert.equal(toCanonicalJkTicker(" BBRI.JK "), "BBRI.JK", "trim + tetap");
+  assert.equal(toCanonicalJkTicker("BTC-USD"), null, "crypto bare ditolak (bukan watchlist IDX)");
+  assert.equal(toCanonicalJkTicker(""), null, "kosong ditolak");
+  assert.equal(toCanonicalJkTicker("A"), null, "1 huruf ditolak (regex 2-10)");
+});
+
+test("[5] buildMigratePayload: dedupe pasca-normalisasi (BBCA + BBCA.JK = 1 entri)", () => {
+  const st = new MemStorage();
+  writeGuestWatchlist(["BBCA", "BBCA.JK", "TLKM"], st);
+  const payload = buildMigratePayload(st);
+  assert.equal(payload.watchlist.filter((t) => t.startsWith("BBCA")).length, 1, "dedupe kanonis");
+  assert.deepEqual(payload.watchlist.sort(), ["BBCA.JK", "TLKM.JK"]);
+});
+
+test("[6] preset name selalu <=100 VarChar (saveScreen cap 80 + buildMigratePayload cap 100 = defense in depth)", () => {
+  const st = new MemStorage();
+  const longLabel = "P".repeat(150);
+  saveScreen({ key: "k", label: longLabel, queryString: "view=list&x=1" }, st);
+  const payload = buildMigratePayload(st);
+  assert.ok(payload.presets[0].name.length <= 100, "invariant DB VarChar(100) tak pernah terlanggar");
 });
