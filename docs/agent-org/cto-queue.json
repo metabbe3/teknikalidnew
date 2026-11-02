@@ -4094,6 +4094,29 @@
         "growth",
         "p2"
       ]
+    },
+    {
+      "id": "sos-2026-11-03-04",
+      "status": "pending",
+      "title": "SOSMED P1: Pipeline NEWS-BREAKING — News Scout temukan → Content Brain langsung format & post (IG+Threads, TikTok nanti)",
+      "summary": "Owner insight 3 Nov: 'kmrn kayanya dari news org jadi tertarik' — konten news/berita terbukti menarik orang. Sekarang News Scout (RSS, tiap 15 mnt 06-21) & Content Brain (jam-jaman 07-21) JALAN PISAH: scout menemukan, brain sering skip karena format/evaluasi sendiri. Owner minta jalur news jadi prioritas: tebar SUDAH ada (Threads live 30 Okt, TikTok connect 30 Okt) — koneksinya bukan masalah, wiring konten newsnya yang belum nyambung.",
+      "acceptance": [
+        "Wiring: News Scout temuan HIGH-signal → langsung masuk queue Content Brain dengan template news-breaking (hook 1 kalimat + angka + disclaimer + link teknikal.id/berita)",
+        "News-breaking TEMPLATE beda dari template evergreen/rekap: headline tegas, 3 bullet fakta, 'selengkapnya' CTA",
+        "Latency target: news gede (IHSG anjlok, saham limit, regultor) → post < 60 menit",
+        "Cadence guard tetap: max 2 post/hari per platform, dedup semantik, disclaimer wajib",
+        "Bukti: 2 post news-breaking live pertama + view/engagement dicatat growth-metrics",
+        "TikTok video versi news-breaking masuk fase-2 (setelah IG+Threads terbukti)"
+      ],
+      "scheduled_slot": "2026-11-03 09:30 BE siang Selasa bareng sos-01/02 (wiring script, tanpa deploy web)",
+      "created_at": "2026-11-03T06:26:06",
+      "labels": [
+        "sosmed",
+        "news",
+        "growth",
+        "p1"
+      ],
+      "notes": "Owner directive 3 Nov: news = magnet follower terbukti; tebar sudah connect; jalur tinggal di-wire."
     }
   ]
 }
