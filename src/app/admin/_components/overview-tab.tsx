@@ -10,6 +10,11 @@ import { ManualTriggerButtons } from "@/components/admin/manual-trigger-buttons"
 import { Activity, Database, Radio, Wifi, Shield, CheckCircle, AlertTriangle } from "lucide-react";
 import { timeAgo } from "@/lib/time";
 
+// Guard North Star fallback saat API belum balik (kanon north-star.md: >=8% per 25 Nov 2026).
+// Duplikat disengaja & satu-satunya: file ini "use client" sehingga tak boleh import
+// retention.service (prisma ikut ter-bundle). Ganti = ganti di kedua tempat + Council review.
+const NORTH_STAR_GUARD_FALLBACK = 8;
+
 interface StatusData {
   lastEodSync: { status: string; timestamp: string | null };
   lastIntradaySync: { status: string; timestamp: string | null };
@@ -65,7 +70,7 @@ function NorthStarSparkline({
   }));
   const drawn = coords.filter((c): c is { x: number; y: number } => c.y !== null);
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="h-11 w-full" role="img" aria-label="Returning IP % 8 minggu">
+    <svg viewBox={`0 0 ${w} ${h}`} className="h-11 w-full" role="img" aria-label="Returning Visitor % (aktor) 8 minggu">
       <line x1={pad} y1={yOf(guard)} x2={w - pad} y2={yOf(guard)} stroke="#f59e0b" strokeWidth="1" strokeDasharray="4 3" />
       <polyline
         fill="none"
@@ -236,15 +241,15 @@ export function OverviewTab() {
                 {nsLoading ? "…" : nsData ? `${nsData.returningPct?.toFixed(1) ?? "—"}%` : "—"}
               </div>
               <div className="text-xs text-gray-500">
-                {nsData ? `${nsData.returningIps}/${nsData.totalIps} IP nobot · minggu ${nsData.weekStart} s/d ${nsData.weekEnd} (WIB)` : "Memuat data retensi…"}
+                {nsData ? `${nsData.returningIps}/${nsData.totalIps} pengunjung nobot (aktor) · minggu ${nsData.weekStart} s/d ${nsData.weekEnd} (WIB)` : "Memuat data retensi…"}
               </div>
             </div>
-            <span className={`ml-auto rounded-full px-3 py-1 text-xs font-bold ${!nsData ? "bg-gray-100 text-gray-500" : nsData.guardOk ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`} title={`Guard ${nsData?.guardPct ?? 12}%`}>
-              {nsData ? (nsData.guardOk ? "OK" : "BELOW GUARD") : "…"} · guard {nsData?.guardPct ?? 12}%
+            <span className={`ml-auto rounded-full px-3 py-1 text-xs font-bold ${!nsData ? "bg-gray-100 text-gray-500" : nsData.guardOk ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`} title={`Guard ${nsData?.guardPct ?? 8}%`}>
+              {nsData ? (nsData.guardOk ? "OK" : "BELOW GUARD") : "…"} · guard {nsData?.guardPct ?? 8}%
             </span>
             <Link href="/admin/retention" className="text-xs font-semibold text-blue-600 hover:underline whitespace-nowrap">Detail Retensi →</Link>
           </div>
-          <div className="mt-3"><NorthStarSparkline points={nsData?.sparkline ?? []} guard={nsData?.guardPct ?? 12} /></div>
+          <div className="mt-3"><NorthStarSparkline points={nsData?.sparkline ?? []} guard={nsData?.guardPct ?? NORTH_STAR_GUARD_FALLBACK} /></div>
         </CardContent>
       </Card>
 

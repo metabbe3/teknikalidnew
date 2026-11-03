@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 /**
  * GET /api/admin/retention — satu sumber kebenaran retensi (PRD idea-2026-10-01-1).
- * returning IP % mingguan (Senin-Minggu WIB) vs guard 12% + cohort D1/D7 +
+ * Returning Visitor % mingguan per aktor (Senin-Minggu WIB) vs guard 8% + cohort D1/D7 +
  * dead-letter notifikasi. Cache 5 menit di service. Count-only, 0 PII.
  */
 export async function GET() {

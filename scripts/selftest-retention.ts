@@ -48,7 +48,7 @@ console.log("\n[2] wibShifted + paritas hari SQL + interval '7 hours'");
 }
 
 console.log("\n[3] Konstanta guard");
-assert(RETURNING_GUARD_PCT === 12, "guard = 12%");
+assert(RETURNING_GUARD_PCT === 8, "guard = 8% (kanon north-star.md >=8% per 25 Nov 2026; ratchet Council)");
 
 console.log("\n[4] pct2 pembulatan 1 desimal");
 assert(pct2(4, 38) === 10.5, "4/38 = 10.5");
