@@ -40,7 +40,7 @@ if [ "$UNPUSHED" -gt 0 ]; then
   log "FORCE_UNPUSHED=1 — melanjutkan dengan sadar (commit lokal akan tertimpa)."
 fi
 
-UNCOMMITTED=$(git status --porcelain | wc -l | tr -d ' ')
+UNCOMMITTED=$(git status --porcelain -uno | wc -l | tr -d ' ')  # -uno: untracked tidak dimakan reset --hard, jangan blokir
 if [ "$UNCOMMITTED" -gt 0 ]; then
   log "WARNING: $UNCOMMITTED file uncommitted di working tree — reset --hard akan menghapus perubahan itu."
   if [ "${FORCE_DIRTY:-0}" != "1" ]; then
