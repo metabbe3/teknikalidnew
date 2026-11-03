@@ -59,7 +59,7 @@ export default async function AliranDanaAsingPage() {
         name: "Aliran Dana Asing BEI Harian",
         description: `Peringkat ${netBuy.length} saham net foreign buy dan ${netSell.length} net foreign sell sesi ${session}, dihitung dari data IDX TradingSummary (beli − jual asing) × harga penutupan.`,
         license: "https://teknikal.id/metodologi",
-        creator: { "@type": "Organization", name: "TeknikalID", url: SITE_URL },
+        creator: { "@type": "Person", name: "Nicholas Andrian Surjadi", url: SITE_URL },
       },
       {
         "@type": "BreadcrumbList",

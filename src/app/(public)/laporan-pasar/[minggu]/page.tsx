@@ -80,6 +80,7 @@ export default async function LaporanMingguPage({
         headline: `Laporan Pasar Saham IDX — Minggu ${report.label}`,
         description: report.prose.intro,
         datePublished: report.weekStart.toISOString(),
+        author: { "@type": "Person", name: "Nicholas Andrian Surjadi", url: `${SITE_URL}/about`, jobTitle: "Founder & Technical Risk Engineer" }, // E-E-A-T wave-5
         publisher: { "@type": "Organization", name: "TeknikalID", url: SITE_URL },
         mainEntityOfPage: `${SITE_URL}/laporan-pasar/${minggu}`,
       },

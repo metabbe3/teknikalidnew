@@ -106,7 +106,7 @@ export default async function KalenderDividenPage() {
         name: "Kalender Dividen BEI",
         description: `Data jadwal dividen ${rows.length} emiten BEI (45 hari terakhir hingga 120 hari ke depan), bersumber dari pengumuman resmi emiten.`,
         license: "https://teknikal.id/metodologi",
-        creator: { "@type": "Organization", name: "TeknikalID", url: SITE_URL },
+        creator: { "@type": "Person", name: "Nicholas Andrian Surjadi", url: SITE_URL },
         temporalCoverage: `${new Date(now.getTime() - 45 * 86400000).toISOString().slice(0, 10)}/${new Date(now.getTime() + 120 * 86400000).toISOString().slice(0, 10)}`,
       },
       {

@@ -416,7 +416,10 @@ export async function RenderMovementPage({
                     : asOfDate
                       ? new Date(asOfDate).toISOString()
                       : undefined,
-                  author: { "@type": "Organization", name: "TeknikalID", url: SITE_URL },
+                  // E-E-A-T wave-5 (Trust-Auditor): YMYL finansial butuh individu yang
+                  // dapat dipertanggungjawabkan — Person + link profil /about (NO-FAKE:
+                  // jujur, situs dibangun satu orang; metodologi deterministik menopang)
+                  author: { "@type": "Person", name: "Nicholas Andrian Surjadi", url: `${SITE_URL}/about`, jobTitle: "Founder & Technical Risk Engineer" },
                   publisher: { "@type": "Organization", name: "TeknikalID", url: SITE_URL },
                   mainEntityOfPage: `${SITE_URL}/saham/${tickerClean.toLowerCase()}/kenapa-${expectedDirection}-hari-ini`,
                   about: { "@type": "Corporation", name, tickerSymbol: `${tickerClean}.JK` },

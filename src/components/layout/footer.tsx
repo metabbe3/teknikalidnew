@@ -29,6 +29,7 @@ const legalLinks = [
   { href: "/terms", label: "Ketentuan" },
   { href: "/metodologi", label: "Metodologi" },
   { href: "/about", label: "Tentang Kami" },
+  { href: "/kontak", label: "Kontak" }, // E-E-A-T wave-5: QRSG "who is responsible"
 ];
 
 export function Footer() {

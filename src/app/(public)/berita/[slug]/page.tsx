@@ -222,9 +222,11 @@ export default async function BeritaArticlePage({
         dateModified: article.updatedAt.toISOString(),
         image: ogImageUrl,
         author: {
-          "@type": "Organization",
-          name: "TeknikalID",
-          url: SITE_URL,
+          // E-E-A-T wave-5: YMYL finansial — Person dipertanggungjawabkan (reviewer agent tetap tercatat sebagai editor kalau ada)
+          "@type": "Person",
+          name: "Nicholas Andrian Surjadi",
+          url: `${SITE_URL}/about`,
+          jobTitle: "Founder & Technical Risk Engineer",
         },
         ...(article.reviewedBy
           ? { editor: { "@type": "Person", name: article.reviewedBy.name, url: `${SITE_URL}/berita` } }

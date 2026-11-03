@@ -144,7 +144,7 @@ export default async function IndicatorHistoryPage({
                 url: `${SITE_URL}/stocks/${tickerJK}/indikator`,
                 inLanguage: "id",
                 isAccessibleForFree: true,
-                creator: { "@type": "Organization", name: "TeknikalID", url: SITE_URL },
+                creator: { "@type": "Person", name: "Nicholas Andrian Surjadi", url: SITE_URL },
                 temporalCoverage: `${earliest.toISOString().slice(0, 10)}/${latest.toISOString().slice(0, 10)}`,
                 variableMeasured: ["RSI-14", "MACD", "Bollinger Bands", "Stochastic %K/%D", "ADX", "VWAP", "ATR", "SMA-20/50/200", "EMA-12/26"],
               },
