@@ -184,7 +184,8 @@ export async function buildStockAiContext(ticker: string): Promise<Record<string
       : null,
     // RT-06: satuan eksplisit — total5Lembar (LEMBAR) + estimasiNet5Rp (≈ lembar × close, bukan angka resmi)
     foreignFlow5: ffNet.length ? { sesi: ffNet, total5Lembar: ffNet5, estimasiNet5Rp: Math.round(ffNet5 * close), satuanSesi: "lembar", state: ffState } : null,
-    recentArticles: articles.map((a) => ({
+    // key ramah-model (juri 3 Nov: nama field internal 'recentArticles' pernah di-echo ke jawaban)
+    artikelTerkini: articles.map((a) => ({
       title: a.title,
       slug: a.slug,
       tanggal: a.publishedAt instanceof Date ? a.publishedAt.toISOString().slice(0, 10) : null,
