@@ -8,6 +8,8 @@ import { GuestWatchlistView } from "@/components/watchlist/guest-watchlist-view"
 import { RemoveWatchlistButton } from "@/components/watchlist/remove-watchlist-button";
 
 export const metadata: Metadata = {
+  // seo-adv3: canonical self (dulu warisi "/" dari layout)
+  alternates: { canonical: "/watchlist" },
   title: "Watchlist Saham",
   description: "Pantau saham pilihan kamu di satu tempat. Lihat harga, perubahan, dan indikator teknikal untuk semua saham di watchlist kamu.",
   robots: { index: false, follow: false },

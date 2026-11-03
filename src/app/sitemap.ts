@@ -136,7 +136,11 @@ const getCachedSitemap = unstable_cache(
     const realDate = sid ? stockIdToDate.get(sid) : undefined;
     return {
       url: `${baseUrl}/stocks/${stock.ticker}`,
-      lastModified: realDate ?? new Date("2026-01-01"),
+      // seo-adv3 (purist audit 3 Nov): mass-stamp regeneratif merusak kepercayaan
+      // crawl scheduling Google — fallback tanggal bohong DIHAPUS; lastmod hanya
+      // bila ada tanggal EOD riil per-URL (Google: "we're not going to believe
+      // you anymore"). Omit = jujur.
+      ...(realDate ? { lastModified: realDate } : {}),
       changeFrequency: "daily" as const,
       priority: idx40Set.has(stock.ticker) ? 0.8 : 0.6,
     };
@@ -162,7 +166,8 @@ const getCachedSitemap = unstable_cache(
 
     kenapaPages.push({
       url: `${baseUrl}/saham/${cleanTicker}/${route}`,
-      lastModified: realDate ?? today,
+      // seo-adv3: omit lastmod bila tanpa tanggal riil (anti mass-stamp)
+      ...(realDate ? { lastModified: realDate } : {}),
       changeFrequency: "daily" as const,
       priority: idx40Set.has(stock.ticker) ? 0.7 : 0.5,
     });
@@ -178,7 +183,8 @@ const getCachedSitemap = unstable_cache(
     return {
       // seo-2026-10-15-01: gunakan TICKER.JK uppercase — konsisten dengan canonical halaman utama/indikator.
       url: `${baseUrl}/stocks/${s.ticker}/indikator`,
-      lastModified: realDate ?? today,
+      // seo-adv3: omit lastmod bila tanpa tanggal riil (anti mass-stamp)
+      ...(realDate ? { lastModified: realDate } : {}),
       changeFrequency: "daily" as const,
       priority: idx40Set.has(s.ticker) ? 0.6 : 0.4,
     };

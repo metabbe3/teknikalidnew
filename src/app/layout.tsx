@@ -78,7 +78,9 @@ export const metadata: Metadata = {
     google: process.env.GOOGLE_SITE_VERIFICATION,
   },
   alternates: {
-    canonical: "/",
+    // seo-adv3 (purist audit 3 Nov): TANPA canonical default di layout — semua
+    // halaman punya metadata sendiri; yang tidak (mis. 404/error) TIDAK boleh
+    // mewarisi canonical "/" (CKRA.JK 404 live sempat men-tandai homepage).
     languages: { id: SITE_URL },
     types: { "application/rss+xml": `${SITE_URL}/feed.xml` },
   },
