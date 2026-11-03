@@ -54,3 +54,27 @@ Konteks: impresi 3-bulan 6.120→856; klik 3-bulan cuma 5; sosmed +45%/bln jadi 
 - Tidak kejar "eastspring idx esg" (intent reksa dana, off-core).
 - Tidak beli backlink / apapun berbayar (fase monetisasi F1 = Rp0).
 - Tidak buat halaman baru sebelum Gelombang 1-2 selesai (kualitas dulu, kuantitas kemudian).
+
+---
+
+## REVISI ADV-1 (3 Nov malam) — 3-reviewer adversarial (Skeptic/Realist/Purist)
+
+### Diagnosis direvisi
+- **BUKAN murni mirage**: September 2026 Spam Update global (24 Sep–8 Okt, seroundtable.com/google-september-2026-spam-update-done-42235.html) bertepatan posisi 32→66. Rolling window menjelaskan impresi, BUKAN posisi. Hipotesis baru: scaled-content classifier (476 thin + lastmod mass-stamp) + YMYL trust gap (tanpa E-E-A-T author/metodologi).
+- **CTR 0,6% sebagian struktur SERP baru** (AIO ~79% query finansial panjang) — north star ganti: posisi & impresi, bukan klik.
+
+### Strategi konten direvisi (Realist)
+- 481 halaman kenapa-naik/turun = ASET, bukan sampah: SERP "kenapa saham X naik/turun" kosong pemain lokal; idxradar.com/tradersaham.com ranking dengan produk bayar.
+- **Mesin harian event-driven**: hanya mover signifikan (|Δ|≥3%) + narasi grounded data. Non-goal "tidak buat halaman baru" DICABUT.
+- Target kurasi: ±120-150 emiten likuid narasi unik (90% dollar volume IDX).
+- Inisiatif baru: (1) Kenapa Naik/Turun harian, (2) seri "Duit Besar" foreign-flow + broker summary (data EOD sudah ada).
+- Prioritas audit AIO/widget di 20 query ticker utama SEBELUM invest template 940 halaman.
+
+### Eksekusi teknis (Purist — verifikasi live 3 Nov)
+- [x] lastmod mass-stamp regeneratif DIHAPUS (omit bila tanpa tanggal riil) — cc73951
+- [x] 404 tidak lagi warisi canonical homepage (CKRA live proof) — cc73951
+- [x] screener/watchlist canonical self — cc73951
+- [ ] www 2-hop → 1-hop 301 (Cloudflare, P3)
+- [ ] Kurasi 481 kenapa-*: survivor = |Δ|≥3% + narasi; sisanya noindex + KELUAR sitemap (minggu 2)
+- [ ] Movers module /stocks + anchor deskriptif parent→kenapa (minggu 2-3)
+- [ ] Rollout H1 template pilot BRIS → 940 (minggu 3-4)
