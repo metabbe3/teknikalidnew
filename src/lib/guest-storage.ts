@@ -185,3 +185,64 @@ export function tryConsumeRegisterPrompt(storage: GuestStorage | null = defaultS
 export function countGuestSavedItems(storage: GuestStorage | null = defaultStorage()): number {
   return readGuestWatchlist(storage).length + readSavedScreens(storage).length;
 }
+/** Kosongkan storage presets guest (dipanggil migrator setelah insert akun terkonfirmasi). */
+export function clearSavedScreens(storage: GuestStorage | null = defaultStorage()): void {
+  storage?.removeItem(SAVED_SCREENS_KEY);
+}
+
+
+// ── Guest migration v2 (PRD prd-2026-10-26-02) ──
+
+/** Cap payload migrasi — sesuai AC2 (watchlist 30, preset 10 FIFO). */
+export const MIGRATE_WATCHLIST_CAP = 30;
+export const MIGRATE_PRESET_CAP = 10;
+
+export interface MigratePresetPayload {
+  name: string;
+  queryString: string;
+}
+
+export interface MigratePayload {
+  watchlist: string[];
+  presets: MigratePresetPayload[];
+  isEmpty: boolean;
+}
+
+/** Normalisasi ticker IDX ke format kanonis DB: XXXX.JK (guest bisa menyimpan bare
+ *  dari link legacy /share lama; tanpa ini, findStocksByTickers exact-match mendrop
+ *  senyap → data guest hilang saat migrasi — bug nyata yang diperbaiki PRD ini). */
+export function toCanonicalJkTicker(ticker: string): string | null {
+  const t = ticker.trim().toUpperCase();
+  if (!TICKER_RE.test(t)) return null;
+  return t.endsWith(".JK") ? t : `${t}.JK`;
+}
+
+/**
+ * Bangun payload migrasi satu pintu (dipakai auth-provider saat guest → authenticated).
+ * - watchlist: normalize .JK, dedupe, cap 30 (AC2)
+ * - presets: dedupe by queryString, name = label (cap 100 VarChar), cap 10 FIFO terbaru-dulu
+ *   (readSavedScreens sudah mengembalikan urutan terbaru-dulu, sama seperti UI)
+ * - isEmpty: AC4 — true = caller NO-OP (0 fetch, 0 query)
+ */
+export function buildMigratePayload(storage: GuestStorage | null = defaultStorage()): MigratePayload {
+  // FIFO: watchlist guest = append (baru di belakang) → bila >cap, TERLAMA dibuang
+  // (ambil 30 terakhir). Preset kebalikannya: baru di depan (saveScreen) → ambil 10 pertama.
+  const seen = new Set<string>();
+  const all: string[] = [];
+  for (const t of readGuestWatchlist(storage)) {
+    const canonical = toCanonicalJkTicker(t);
+    if (!canonical || seen.has(canonical)) continue;
+    seen.add(canonical);
+    all.push(canonical);
+  }
+  const watchlist = all.slice(-MIGRATE_WATCHLIST_CAP);
+  const seenQs = new Set<string>();
+  const presets: MigratePresetPayload[] = [];
+  for (const s of readSavedScreens(storage)) {
+    if (seenQs.has(s.queryString)) continue;
+    seenQs.add(s.queryString);
+    presets.push({ name: s.label.slice(0, 100), queryString: s.queryString });
+    if (presets.length >= MIGRATE_PRESET_CAP) break;
+  }
+  return { watchlist, presets, isEmpty: watchlist.length === 0 && presets.length === 0 };
+}
