@@ -1,3 +1,9 @@
+## [2026-11-03 23:29] cto-night — prd-2026-11-02-03: glosarium content-depth fase-2 (night_ready)
+- task-id: prd-2026-11-02-03 | type: prd (frontend murni, 0 migrasi) | branch: night/prd-2026-11-02-03 (2 commits, base origin/main 4734d6a)
+  scope: glosarium content-depth 15 istilah prioritas (5 TermTip + 10 fundamental/pasar) — 3 sections >=300 kata + blok "Contoh angka nyata hari ini" SSR SATU PINTU (screener/marketSnapshot/StockDividend/StockFundamental/listingDate, fail-soft empty-state jujur) + Bacaan Lanjutan link artikel akademi + sitemap re-entry selektif (filter passesDepthGate, +15 URL, verdict seo-dr-2 tetap utk 45 istilah thin)
+  keputusan desain: generateStaticParams [term] DIHAPUS → ISR on-demand (bake saat build Docker tanpa DB akan mengunci contoh kosong 24 jam — angka live harus revalidate, bukan bake)
+  verify: LINT 0 error · tsc EXIT-0 · build EXIT-0 + BUILD_ID fisik · selftest glossary-depth 114/114 PASS dbReachable=true (failing-first: module-not-found → hijau) · staging :4599 semua varian contoh verified angka asli DB (rsi AGRO 25,8; dividen SIDO Rp10/UNTR Rp430/CNMA Rp4 persis data_evidence; ihsg 4.904,29 -3,78% sesi 3 Nov; per BBCA P/E; ipo RANS 10 Jul) · sitemap tepat 15 URL glossary · regression non-prioritas utuh
+  deploy: SIAP MERGE CTO 07:30 — review ~15 mnt (fokus: keputusan ISR + tone konten) | impact_check_due: 2026-11-17 (GSC impresi batch-1 14 hari → verdict batch-2)
 ## [2026-10-25 15:45] cto-weekend-sore — qa-2026-10-25-02/03/04: 3 QA P1 content-fix (SQL patch ISR, 0 deploy)
 ## [2026-11-01 23:5x] cto-night — prd-2026-10-31-02: TermTip tooltip istilah inline fase-1 (BUILD-ONLY, night_ready)
 - Type: prd (fitur STICKY)  |  PRD: im-2026-10-29-2 / prd-2026-10-31-02 (spec_ready → implementasi penuh malam)

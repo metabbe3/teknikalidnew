@@ -3922,7 +3922,7 @@
       "type": "prd",
       "priority": "P2",
       "prd_id": "im-2026-10-29-2",
-      "status": "spec_ready",
+      "status": "night_ready",
       "title": "P2 STICKY+AEO (PRD im-2026-10-29-2 fase-2): Glosarium content-depth — 15 istilah prioritas naik ke >=300 kata + blok contoh-angka-nyata SSR (SATU PINTU), lalu re-entry batch ke sitemap (buka kunci seo-dr-2 selektif)",
       "north_star": "STICKY time-spent (pemula paham istilah dalam 1 halaman; jembatan dari TermTip fase-1 live) + SEO/AEO long-tail pengertian-istilah — glosarium 30d = 0 views karena 60 URL per-term dikecualikan sitemap (seo-dr-2)",
       "user_story": "Sebagai pemula yang menemukan istilah (RSI, MACD, dividen) dari halaman kondisi, artikel, atau Tanya AI, saya ingin halaman istilah yang menjelaskan cara membaca plus contoh angka nyata hari ini, supaya saya paham dalam 1 halaman tanpa cari sumber lain.",
@@ -3953,8 +3953,28 @@
       "spec": "Bangun sesuai PRD im-2026-10-29-2 fase-2 (backlog): konten-depth dulu, sitemap kemudian — JANGAN re-entry massal 60 URL (seo-dr-2 verdict tetap utk 45 istilah belum lolos gate). Data contoh angka read-only saat render SSR; reuse market-snapshot SATU PINTU. Batch-2 (45 sisa) menunggu verdict GSC impresi batch-1 14 hari.",
       "qa_plan": "Pembangun != pemeriksa. Staging: word-count 3 sample >=300 + angka asli di view-source + sitemap.xml diff +15 tepat. D+14: GSC impresi query pengertian/perdagangan istilah > 0 ATAU PageView term-page > 0; 0 thin-content flag Search Console.",
       "done_when": "DONE WHEN: (a) tsc+build EXIT-0; (b) staging 15/15 istilah lolos depth gate dgn bukti fisik view-source; (c) sitemap live diff +15; (d) verdict GSC 14 hari menentukan batch-2. Konten placeholder/angka karangan = GAGAL, bukan partial-done.",
-      "scheduled_slot": "usul FE 19:15 Sen-Jum berikutnya (frontend murni + sitemap, 0 migrasi); boarding CEO/CTO",
-      "created_by": "Product Agent buffer-keeper 2026-11-02 22:4x WIB (run gate: buffer teknikal 0 < 3)"
+      "scheduled_slot": "SIAP MERGE CTO pagi 07:30 — review 15 mnt + merge + deploy 1 slot (frontend murni, 0 migrasi DB)",
+      "created_by": "Product Agent buffer-keeper 2026-11-02 22:4x WIB (run gate: buffer teknikal 0 < 3)",
+      "branch": "night/prd-2026-11-02-03",
+      "night_result": {
+        "date": "2026-11-03",
+        "commits": [
+          "5811603 (test failing-first)",
+          "65cc779 (feature)"
+        ],
+        "verify": {
+          "lint": "0 error (sdlc_lint 5 file)",
+          "tsc": "EXIT-0",
+          "build": "EXIT-0 + BUILD_ID fisik (23:25); route [term] kini ƒ Dynamic (ISR on-demand, generateStaticParams dihapus — cegah bake-empty saat build Docker tanpa DB)",
+          "selftest": "114 PASS 0 FAIL dbReachable=true (C3: 15/15 slug artikel verified ada di Article PUBLISHED)",
+          "staging_local": "next start :4599 — semua varian contoh verified angka asli DB: rsi(AGRO RSI 25,8/ARTO 27,5), dividen(SIDO Rp10 3Nov, UNTR Rp430 6Nov, CNMA Rp4 9Nov = persis data_evidence queue), ihsg(sesi 2026-11-03 4.904,29 -3,78% breadth 69/717/834), per/blue-chip(BBCA P/E, kap Rp596,8T), ipo(RANS 10 Jul 2026), golden-cross(CBUT), moving-average(ABMM), lot(BBCA modal/lot), oversold(count+IHSG)",
+          "sitemap": "tepat 15 URL glosarium masuk (sorted list verified); diff kode = hanya +filter passesDepthGate + spread; CATATAN baseline: total 1916 URL (baseline PRD 1317 basi — main bertambah sejak 2 Nov), perubahan murni dari branch ini TEPAT +15 glossary, 0 URL lain tersentuh",
+          "regression": "istilah non-prioritas (support) tetap 200 tanpa blok depth; index /akademi/glosarium 200",
+          "wordcount": "body istilah sample rsi = 480 kata (>300 gate)"
+        },
+        "review_hint": "Review fokus: (1) keputusan hapus generateStaticParams → ISR on-demand — trade-off: first-hit render dulu (bukan instant), tapi angka live selalu fresh per revalidate 86400 + tak ada risiko bake-empty di build Docker; (2) konten 15 istilah = 3 sections x ~150 kata bahasa awam — spot-check nada/tone; (3) GlossaryExample = server component, 0 client-JS baru (AC4).",
+        "estimasi_review_menit": 15
+      }
     },
     {
       "id": "prd-2026-10-26-02",
