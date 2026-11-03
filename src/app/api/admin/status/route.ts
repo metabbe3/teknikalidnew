@@ -31,6 +31,51 @@ async function recentActivityFromDb(limit: number) {
   }
 }
 
+// Info Uang (adm-2026-10-28-02): nilai portofolio LIVE = SUM(qty × close terbaru per ticker),
+// fallback buyPrice kalau harga belum ada (pola perhitungan sama dengan profile/[username]).
+async function moneyInfoFromDb() {
+  try {
+    const holdings = await prisma.portfolioHolding.findMany({
+      select: {
+        userId: true,
+        quantity: true,
+        buyPrice: true,
+        stock: {
+          select: {
+            ticker: true,
+            prices: { orderBy: { date: "desc" }, take: 1, select: { close: true, date: true } },
+          },
+        },
+      },
+    });
+    let value = 0;
+    let cost = 0;
+    let latestDate: Date | null = null;
+    for (const h of holdings) {
+      const p = h.stock.prices[0];
+      const cur = p ? Number(p.close) : Number(h.buyPrice);
+      value += cur * h.quantity;
+      cost += Number(h.buyPrice) * h.quantity;
+      if (p?.date && (!latestDate || p.date > latestDate)) latestDate = p.date;
+    }
+    const [premiumCount, waitlistCount] = await Promise.all([
+      prisma.user.count({ where: { isPremium: true } }),
+      prisma.waitlistSubscriber.count(),
+    ]);
+    return {
+      portfolioValue: value,
+      portfolioCost: cost,
+      holdingsCount: holdings.length,
+      holdersCount: new Set(holdings.map((h) => h.userId)).size,
+      priceDate: latestDate ? latestDate.toISOString() : null,
+      premiumCount,
+      waitlistCount,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function GET() {
   try {
     await requireAdmin();
@@ -75,6 +120,7 @@ export async function GET() {
     lastIntradaySync,
     dbPool: { status: dbConnected ? "connected" : "error" },
     yahooApi: { status: yahooCache.status, latency: yahooCache.latency },
+    money: await moneyInfoFromDb(), // adm-2026-10-28-02 Info Uang live
     recentActivity: getRecentActivity(10).length
       ? getRecentActivity(10)
       : await recentActivityFromDb(10),

@@ -7,8 +7,9 @@ import { AdminDataTable } from "@/components/admin/admin-data-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ManualTriggerButtons } from "@/components/admin/manual-trigger-buttons";
-import { Activity, Database, Radio, Wifi, Shield, CheckCircle, AlertTriangle } from "lucide-react";
+import { Activity, Database, Radio, Wifi, Shield, CheckCircle, AlertTriangle, Wallet, TrendingUp, TrendingDown, Scale, Crown } from "lucide-react";
 import { timeAgo } from "@/lib/time";
+import { formatRupiah } from "@/lib/format-number";
 
 // Guard North Star fallback saat API belum balik (kanon north-star.md: >=8% per 25 Nov 2026).
 // Duplikat disengaja & satu-satunya: file ini "use client" sehingga tak boleh import
@@ -20,6 +21,15 @@ interface StatusData {
   lastIntradaySync: { status: string; timestamp: string | null };
   dbPool: { status: string };
   yahooApi: { status: string; latency: number };
+  money: {
+    portfolioValue: number;
+    portfolioCost: number;
+    holdingsCount: number;
+    holdersCount: number;
+    priceDate: string | null;
+    premiumCount: number;
+    waitlistCount: number;
+  } | null;
   recentActivity: Array<{
     action: string;
     timestamp: string;
@@ -118,6 +128,10 @@ export function OverviewTab() {
   });
 
   const isLoading = statusLoading || healthLoading || nsLoading;
+
+  // adm-2026-10-28-02: Info Uang live dari /api/admin/status (refresh 30s bersama status)
+  const money = statusData?.money ?? null;
+  const moneyLoading = statusLoading;
 
   const serviceCards = [
     {
@@ -250,6 +264,52 @@ export function OverviewTab() {
             <Link href="/admin/retention" className="text-xs font-semibold text-blue-600 hover:underline whitespace-nowrap">Detail Retensi →</Link>
           </div>
           <div className="mt-3"><NorthStarSparkline points={nsData?.sparkline ?? []} guard={nsData?.guardPct ?? NORTH_STAR_GUARD_FALLBACK} /></div>
+        </CardContent>
+      </Card>
+
+      {/* Info Uang (adm-2026-10-28-02) — live tiap load, no stale cache */}
+      <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
+        <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
+          <CardTitle className="text-sm font-bold text-gray-800">Info Uang</CardTitle>
+        </CardHeader>
+        <CardContent className="pt-4">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <AdminKpiCard
+              title="Nilai Portofolio"
+              icon={Wallet}
+              value={moneyLoading ? "…" : formatRupiah(money?.portfolioValue ?? null)}
+              subtitle={
+                money
+                  ? `${money.holdingsCount} posisi · ${money.holdersCount} pengguna · harga ${money.priceDate ? new Date(money.priceDate).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }) : "belum ada"}`
+                  : "Data uang belum tersedia"
+              }
+              loading={statusLoading}
+            />
+            <AdminKpiCard
+              title="Untung/Rugi Total"
+              icon={money && money.portfolioCost > 0 ? (money.portfolioValue >= money.portfolioCost ? TrendingUp : TrendingDown) : Scale}
+              value={
+                moneyLoading
+                  ? "…"
+                  : money && money.portfolioCost > 0
+                    ? `${money.portfolioValue >= money.portfolioCost ? "+" : ""}${formatRupiah(money.portfolioValue - money.portfolioCost)}`
+                    : "Rp 0"
+              }
+              subtitle={
+                money && money.portfolioCost > 0
+                  ? `${(((money.portfolioValue - money.portfolioCost) / money.portfolioCost) * 100).toFixed(1)}% vs modal ${formatRupiah(money.portfolioCost)}`
+                  : "Belum ada modal tercatat"
+              }
+              loading={statusLoading}
+            />
+            <AdminKpiCard
+              title="Premium & Waiting List"
+              icon={Crown}
+              value={moneyLoading ? "…" : `${money?.premiumCount ?? 0} / ${money?.waitlistCount ?? 0}`}
+              subtitle="Pengguna premium / pendaftar waiting list"
+              loading={statusLoading}
+            />
+          </div>
         </CardContent>
       </Card>
 
