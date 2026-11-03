@@ -78,3 +78,29 @@ Konteks: impresi 3-bulan 6.120→856; klik 3-bulan cuma 5; sosmed +45%/bln jadi 
 - [ ] Kurasi 481 kenapa-*: survivor = |Δ|≥3% + narasi; sisanya noindex + KELUAR sitemap (minggu 2)
 - [ ] Movers module /stocks + anchor deskriptif parent→kenapa (minggu 2-3)
 - [ ] Rollout H1 template pilot BRIS → 940 (minggu 3-4)
+
+---
+
+## REVISI ADV-2 (3 Nov siang) — debate ronde-2 (Spam-Risk Auditor / CFO / Execution-Realist)
+
+### Perubahan urutan 30 hari (konsensus 3/3)
+1. **#1 AIO audit 20 query ticker** (S-M) — GATE keputusan capex terbesar. Ada slot biru di SERP? Ya→H1 rollout jalan / Tidak→hanya idx-radar+movers. (Dulu tak ber-minggu di checklist — kini blocker eksplisit.)
+2. **#2 Kurasi 481 kenapa-* — SPLIT**: (a) noindex massal non-mover (M, otomatis filter |Δ|+likuiditas, sisakan ±130-150) = melunasi utang spam-classifier, JALAN; (b) narasi unik 120-150 emiten (XL, trickle editorial) = terpisah, jangan blokir (a).
+3. **#3 Movers module + anchor** (M).
+4. **#4 H1 rollout 940 — DITUNDA** sampai AIO audit membuktikan inventory klik. Kalau jalan: batch 50-100 + monitor posisi per batch + invalidate cache per-batch.
+5. www 1-hop (S, Cloudflare) — kapan saja.
+
+### Mesin Kenapa-Naik/Turun: REVISE — jangan nyala sebelum siap
+- **Threshold |Δ|≥3% DITOLAK** — data riil DB: 3% tanpa filter = 170-781 halaman/hari (median 285; 16 Okt 781). Itu noise normal IDX = scaled-content 2.0. **Baru: |Δ|≥5% + top-300 dollar volume + volume>0 → ~100-120/hari.**
+- **Cap: 8 halaman/hari, 40/minggu**, prioritas dollar-volume; dedup 1 emiten/hari + cooldown 3 sesi + similarity-check 30 hari.
+- Sitasi ground-truth wajib; kausalitas tanpa sumber resmi → tulis "penyebab belum dikonfirmasi" (JANGAN spekulasi).
+- **URL stabil per-ticker, update konten — JANGAN URL baru per-tanggal.**
+- Pra-syarat non-negotiable sebelum nyala: kurasi noindex massal SELESAI + **deploy.sh fixed** (reset --hard = konten hari itu hilang; kini pra-syarat mesin, bukan P3 ops) + regression-test generator sitemap di CI (anti lastmod-stamp & redirect regression cc73951).
+- **Kill-switch GSC (pause seketika)**: Discovered-not-indexed >50% URL baru dalam 14 hari · median posisi sitewide −15% dua minggu berturut · impresi −30% WoW · halaman kenapa-* indexed mulai didrop.
+
+### Realokasi CFO (disetujui): matematika SEO 6-bulan
+- Posisi 66→30 + AIO haircut = +116-284 klik/6-bulan ≈ Rp14-29rb revenue — nilai < 1 hari funnel fix pada traffic sosmed existing (3.991 views × 2% register = potensi 80 register/bln).
+- Jam-agent yang dibebaskan dari pemotongan H1-rollout → **F1 funnel: CTA stock page + register flow + retensi** (jalur menuju 20 subscriber Februari).
+- Seri "Duit Besar" TIDAK jadi inisiatif halaman-SEO baru — dual-use sebagai bahan Threads/IG (datanya sudah ada, gratis).
+- GSC Request Indexing (~10 URL/hari) dibagi: hanya movers head + idx-radar; halaman kenapa-* sitemap-only.
+- Pilot BRIS wajib verify `curl` production (bukan log build — deploy.sh skip-rebuild bisa palsu-hijau).
