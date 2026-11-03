@@ -3,6 +3,7 @@ import { notFound, permanentRedirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { SITE_URL } from "@/lib/constants";
+import KURASI_KEEP_STATIC from "@/lib/seo/kurasi-keep"; // wave-4c: static import (dynamic import gagal di standalone → fail-open bug)
 import { ArticleType, ArticleStatus } from "@/generated/prisma/client";
 import { ArticleContent, estimateReadingTime } from "@/components/article/article-renderer";
 import { ChevronRight, TrendingUp, TrendingDown, Activity, ListChecks, AlertCircle } from "lucide-react";
@@ -127,10 +128,8 @@ export async function generateMovementMetadataHelper(
   // (prices sudah termuat dari getStockDetailForPage — tanpa query tambahan).
   // Fallback: error import → whitelist kosong → jangan blokir (fail-open lama).
   let isCurated = true;
-  try {
-    const { default: keep } = (await import("@/lib/seo/kurasi-keep")) as {
-      default: Set<string>;
-    };
+  {
+    const keep = KURASI_KEEP_STATIC; // wave-4c: static — dynamic import tak ter-trace di standalone
     if (keep.size > 0 && !keep.has(tickerClean.toUpperCase())) {
       const prices = data.prices ?? []; // urut baru→tua, 21 baris
       const recent = prices.slice(0, 15);
@@ -143,8 +142,6 @@ export async function generateMovementMetadataHelper(
         return Math.abs(curClose / prevClose - 1) >= 0.05;
       });
     }
-  } catch {
-    // fallback: file tak ada → jangan blokir (safe default lama)
   }
 
   return {
@@ -184,16 +181,8 @@ export async function RenderMovementPage({
   if (ticker !== canonicalTicker) {
     permanentRedirect(`/saham/${canonicalTicker}/kenapa-${expectedDirection}-hari-ini`);
   }
-  // wave-4b: whitelist utk related-link hygiene (import di render juga — modul cached)
-  let KURASI_KEEP: Set<string> = new Set();
-  try {
-    const { default: keep } = (await import("@/lib/seo/kurasi-keep")) as {
-      default: Set<string>;
-    };
-    KURASI_KEEP = keep;
-  } catch {
-    // fail-open: whitelist kosong → link tetap ke kenapa-* (perilaku lama)
-  }
+  // wave-4c: static import (dynamic import tak ter-trace di Next standalone)
+  const KURASI_KEEP = KURASI_KEEP_STATIC;
 
   const data = await loadMovementData(ticker);
   if (!data) notFound();
