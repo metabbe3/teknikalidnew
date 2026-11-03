@@ -3275,7 +3275,9 @@
       "north_star": "TRUST (board/queue = kebenaran operasional)",
       "source": "CTO Tech Lead sweep 27 Okt (regresi fisik + restore v48→v50)",
       "train": "T-1103-M",
-      "reslot_note": "auto-reslot 2026-11-02: kereta T-1101-M kedaluwarsa (reslot_guard.py v2)"
+      "reslot_note": "auto-reslot 2026-11-02: kereta T-1101-M kedaluwarsa (reslot_guard.py v2)",
+      "forensik": "FASE-1 READ-ONLY SELESAI 3 Nov 18:45: (a) git log window 26 Okt 20:00-27 Okt 12:00 → NOL commit sentuh cto-queue.json sebelum 08:01 (8a4ff28/f9b38c6/17f5272 = RESTORE, bukan penyebab); (b) 29a3247 = commit src/lib/validation.ts, TIDAK sentuh queue; (c) mirror_sync.sh = satu arah kanonik->mirror (cp -f), bukan writer. KESIMPULAN writer = agent tulis JSON langsung (konsisten forensik CTO 27 Okt: no statejson .bak in window + handoff UX 26 Okt admission). FASE-2 FIX (slot berikutnya): drift-guard entry-level last-write-wins by updated_at + enforce statejson di guard.",
+      "blocked_checked_at": "2026-11-03T18:45+07:00"
     },
     {
       "id": "ops-2026-10-27-03",
@@ -4169,7 +4171,7 @@
     },
     {
       "id": "ops-2026-11-03-06",
-      "status": "pending",
+      "status": "done",
       "priority": "P1",
       "title": "OPS P1 TRUST: patch teknikalid_northstar_kpi.py — filter FB-crawler IPv6 + IP internal + guard MoM + label dwell bucket",
       "summary": "Researcher 2 Nov: 6/15 returning IP = crawler Facebook (2a03:2880::/32, lolos filter bot-UA) + 2 internal (::1, 172.29.0.1) → returning eksternal riil 5,3% bukan 7,9%. MoM hari-1..5 bulan = artefak kalender (-78,8% = 55v/2d vs 4.023v/31d). Dwell harus dilabel bucket 15/60/180 (target 45s tak terukur). Patch host-script ±10 baris, 0 deploy web. Tanpa ini metric inti north star (target 8% per 25 Nov) terbaca lebih optimis dari kenyataan.",
@@ -4185,7 +4187,9 @@
         "ceo-dispatch",
         "trust"
       ],
-      "notes": "pilar KPI: TRUST — dispatch CEO pagi 3 Nov"
+      "notes": "pilar KPI: TRUST — dispatch CEO pagi 3 Nov",
+      "result": "DONE 18:40 WIB: filter IP FB-crawler(2a03:2880::/32)+internal(::1,127/8,172.16/12) via SQL_IP_GUARD + guard MoM <6 hari (artefak kalender) + dwell label bucket 15/60/180. SELFTEST is_excluded_ip 11/11 (RED dulu: AttributeError). REGEN kpi.json 18:37: returning 7,5->4,1% (= probe DB 169 IP / 7 returning), MoM null err=bulan-berjalan<6d, dwell op=info bucket. Dashboard teknikalid_page.py _kpi_line tgt=None + label 'Dwell median (bucket)' (smoke render OK, MoM row hilang by-design). lint 0 hard. 0 deploy web. KPI pilar TRUST.",
+      "qa_verified": false
     },
     {
       "id": "sec-2026-11-03-02-dispatch",
