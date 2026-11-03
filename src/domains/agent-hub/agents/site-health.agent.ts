@@ -28,7 +28,7 @@ export class SiteHealthAgent extends BaseAgent {
     checks.push(await this.checkArticleSchedule());
 
     // 4. Community agent schedule
-    checks.push(await this.checkCommunityAgentSchedule());
+    // community-agent check REMOVED 2026-11-03 (feature prune: bot teknikal_robo dihapus).
 
     // 5. Page response times
     checks.push(await this.checkPageResponse());
@@ -261,43 +261,6 @@ export class SiteHealthAgent extends BaseAgent {
     } catch (error) {
       return {
         name: "Article Generation",
-        status: "fail",
-        message: `Error: ${error instanceof Error ? error.message : "unknown"}`,
-        durationMs: Date.now() - start,
-      };
-    }
-  }
-
-  private async checkCommunityAgentSchedule(): Promise<HealthCheck> {
-    const start = Date.now();
-    try {
-      const latestPost = await prisma.post.findFirst({
-        where: { author: { username: "teknikal_robo" } },
-        orderBy: { createdAt: "desc" },
-        select: { createdAt: true },
-      });
-
-      if (!latestPost) {
-        return {
-          name: "Community Agent (Robo)",
-          status: "warn",
-          message: "No Teknikal Robo posts found",
-          durationMs: Date.now() - start,
-        };
-      }
-
-      const hoursSince = (Date.now() - latestPost.createdAt.getTime()) / (1000 * 60 * 60);
-      const status: "pass" | "warn" | "fail" = hoursSince > 72 ? "fail" : hoursSince > 24 ? "warn" : "pass";
-
-      return {
-        name: "Community Agent (Robo)",
-        status,
-        message: `Latest Robo post: ${Math.round(hoursSince)}h ago`,
-        durationMs: Date.now() - start,
-      };
-    } catch (error) {
-      return {
-        name: "Community Agent (Robo)",
         status: "fail",
         message: `Error: ${error instanceof Error ? error.message : "unknown"}`,
         durationMs: Date.now() - start,

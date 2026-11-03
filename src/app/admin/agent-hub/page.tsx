@@ -20,7 +20,6 @@ import {
   AlertTriangle,
   ExternalLink,
   Bell,
-  MessageSquare,
   Users,
   Power,
 } from "lucide-react";

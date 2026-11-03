@@ -160,7 +160,8 @@ export default async function StockDetailPage({
   // Crypto tickers are stored bare (BTC); IDX with .JK — so a resolved bare ticker = crypto.
   const precheck = await stockRepository.findStockByTicker(ticker);
   if (precheck && !precheck.ticker.endsWith(".JK")) {
-    redirect(`/crypto/${precheck.ticker}`);
+    // Crypto assets remain in DB but their pages were pruned (2026-11-03).
+    notFound();
   }
 
   // Hybrid freemium: chart + indicator panel are free (chart data fetched client-side,

@@ -354,7 +354,7 @@ export function PersonalizedBeranda() {
               {data.recentPosts.map((post) => (
                 <Link
                   key={post.id}
-                  href={`/community?post=${post.id}`}
+                  href="/stocks"
                   className="block py-3 first:pt-0 last:pb-0 hover:bg-bg-hover -mx-3 px-3 transition-colors"
                 >
                   <div className="flex-1 min-w-0">

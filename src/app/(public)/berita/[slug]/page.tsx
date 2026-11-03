@@ -444,9 +444,6 @@ export default async function BeritaArticlePage({
                     <Link href="/screener" className="bg-white/10 text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-white/20 transition-colors press-scale">
                       Buka Screener
                     </Link>
-                    <Link href="/community" className="bg-white/10 text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-white/20 transition-colors press-scale">
-                      Diskusi di Community
-                    </Link>
                     <Link href="/akademi" className="bg-white/10 text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-white/20 transition-colors press-scale">
                       Belajar di Akademi
                     </Link>

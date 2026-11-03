@@ -40,7 +40,6 @@ Output:
     const config = await this.getAgentConfig();
     const maxSetups = (config?.maxSetups as number) ?? 5;
     const minScore = (config?.minScore as number) ?? 50;
-    const autoPost = (config?.autoPost as boolean) ?? true;
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);

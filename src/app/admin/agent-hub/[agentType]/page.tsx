@@ -25,7 +25,6 @@ import {
   Settings,
   Calendar,
   Bell,
-  MessageSquare,
   Users,
 } from "lucide-react";
 
@@ -819,10 +818,7 @@ function MarketIntelSettings({
   isSaving: boolean;
   isSaved: boolean;
 }) {
-  const autoPost = (config?.autoPost as Record<string, unknown>) ?? {};
   const autoArticle = (config?.autoGenerateArticle as Record<string, unknown>) ?? {};
-  const [postEnabled, setPostEnabled] = useState((autoPost.enabled as boolean) ?? false);
-  const [maxPosts, setMaxPosts] = useState((autoPost.maxPostsPerRun as number) ?? 2);
   const [articleEnabled, setArticleEnabled] = useState((autoArticle.enabled as boolean) ?? false);
   const [maxArticles, setMaxArticles] = useState((autoArticle.maxArticlesPerRun as number) ?? 1);
 
@@ -847,7 +843,6 @@ function MarketIntelSettings({
       </div>
 
       <Button size="sm" onClick={() => onSave({
-        autoPost: { enabled: postEnabled, maxPostsPerRun: maxPosts },
         autoGenerateArticle: { enabled: articleEnabled, maxArticlesPerRun: maxArticles },
       })} disabled={isSaving}>
         {isSaving && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
@@ -901,6 +896,13 @@ function SiteHealthSettings({
       )}
 
       <Button size="sm" onClick={() => onSave({
+        autoRemediate: {
+          enabled,
+          staleStockData,
+          noArticles,
+          tableBloat,
+          cleanupRetentionDays: retentionDays,
+        },
       })} disabled={isSaving}>
         {isSaving && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
         Save
