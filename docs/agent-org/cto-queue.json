@@ -3684,11 +3684,13 @@
     {
       "id": "sec-2026-10-29-02-dispatch",
       "priority": "P1",
-      "status": "pending",
+      "status": "in_train",
       "title": "SEC RED guest-pass unlimited scrape: rate-limit /api/track/guest-pass + server-side cap enforcement",
       "spec": "From IT-SEC audit (backlog approved): (1) rate-limit beacon /api/track/guest-pass (selalu 204 hari ini — tanpa limit); (2) guest_pass cookie value TIDAK boleh dipercaya langsung utk kuota — server-side cap enforcement (IP+UA hash bucket, cap 50 ticker/hari spt by-design); (3) jangan ubah by-design soft-gate UX (banner overlimit FE tetap). DONE WHEN: curl 60x cepat dari IP sama = 429 bukan 204 semua; cap server-side terbukti via 2 anonId beda cookie sama IP tidak dapat kuota ganda; tsc 0; build hijau. Kereta T-1031-N.",
       "scheduled_slot": "BE pagi 3 Nov 09:30 (build-only) — verifikasi QA Verifier sebelum naik; pilar TRUST",
-      "north_star": "TRUST"
+      "north_star": "TRUST",
+      "train": "T-1103-N",
+      "result": "BUILD-ONLY (deploy window; pilar TRUST). Rate-limit beacon /api/track/guest-pass 30/mnt per IP+UA-hash key → 429 (was always-204); server-side daily cap distinct ticker 50/key — cookie reset/anonId farming = no-op; page render path TIDAK disentuh (owner 16 Okt nothing-blocked, CGNAT-safe). Commit f56361e: +src/lib/guest-pass-limit.ts, route.ts wiring, selftest 6/6 (60 beacon→30 lolos; cap 50 exact; anonId ke-51 rejected; idempotent re-claim OK; key beda UA terpisah). tsc --noEmit RC=0; npm run build RC=0 (BUILD_RC=0 /tmp/build-sec29.log). Live curl 60x proof menyusul pasca-deploy kereta malam T-1103-N. SEC-REVIEW: ticker regex-validated, sha1 key (no PII), prune MAX_ENTRIES, beacon-only (render tak digate)."
     },
     {
       "id": "ux-2026-10-30-01",
@@ -4043,7 +4045,7 @@
     },
     {
       "id": "sos-2026-11-03-01",
-      "status": "pending",
+      "status": "done",
       "title": "SOSMED P1: Threads Rekap reslot 12:10→16:30 (blokir struktural EOD-only)",
       "summary": "Job 'Threads Rekap Sesi-I 12:10' tertahan berhari-hari: stack hanya punya data EOD, posting 12:10 berarti angka kemarin dijual sebagai 'Sesi-I hari ini' (salah & bahaya trust). 2 Nov tidak ada output sama sekali.",
       "acceptance": [
@@ -4060,11 +4062,12 @@
         "threads",
         "p1"
       ],
-      "notes": "Diagnosis agent-utama 3 Nov: bukan kuota, bukan no-news — data availability."
+      "notes": "Diagnosis agent-utama 3 Nov: bukan kuota, bukan no-news — data availability.",
+      "result": "Cron 5b4e86ed5aa7 reslot 12:10->16:30 Sen-Jum via hermes cron edit (post-close 15:49 + EOD ingest ±16:00; data same-day final). Rename \"Rekap Sesi Penuh\". Prompt + label wajib \"Data per penutupan {tgl} WIB\" + catatan alasan reslot (blokir struktural EOD-only). Bukti: hermes cron list = 30 16 * * 1-5 active; prompt ter-verify berisi RESLOT note + label rule; cadence non-news guard 5/hari tetap berjalan (news_pipeline.sh). Live post pertama = hari ini 16:30 WIB."
     },
     {
       "id": "sos-2026-11-03-02",
-      "status": "pending",
+      "status": "done",
       "title": "SOSMED P1: DEBUG Sunday Evergreen (job hidup tapi 0 output sejak dibuat)",
       "summary": "Cron 'Sosmed Sunday Evergreen Post' (sundayevergr, 10:30 Minggu) TIDAK PERNAH menghasilkan output — Minggu 1 Nov lewat tanpa post padahal peak audiens. Cek: script ada? error silent? state stuck? Perbaiki + pastikan post Minggu berikutnya (8 Nov) live.",
       "acceptance": [
@@ -4078,7 +4081,8 @@
         "sosmed",
         "ig",
         "p1"
-      ]
+      ],
+      "result": "Root cause: job sundayevergreen01 MALFORMED sejak dibuat (enabled kosong + schedule.kind hilang → hermes cron doctor: \"no next_run_at\" + \"no-agent job has no script\") + script v1 hanya menulis queue file TANPA konsumen posting. Fix: (1) sunday_post.py v2 — post LANGSUNG ke Threads via threads_post.py (link jadi reply pertama), dedup mingguan via file stamp, log ke logs/sunday.log, guard non-news tetap; AST OK, manual run RC=0; (2) job baru 87a2b968454c \"Sunday Evergreen v2\" no-agent script=sosmed/sunday_post.py enabled=true NEXT RUN 2026-11-08 10:30 WIB (eksak slot peak Minggu); (3) job lama dihapus via CLI resmi; queue yatim lama dibersihkan. Bukti live 8 Nov menyusul di logs/sunday.log."
     },
     {
       "id": "sos-2026-11-03-03",
@@ -4101,7 +4105,7 @@
     },
     {
       "id": "sos-2026-11-03-04",
-      "status": "pending",
+      "status": "done",
       "title": "SOSMED P1: Pipeline NEWS-BREAKING → IG + THREADS + TIKTOK (owner: news = magnet, semua platform)",
       "summary": "Owner insight 3 Nov: 'kmrn kayanya dari news org jadi tertarik' — konten news/berita terbukti menarik orang. Sekarang News Scout (RSS, tiap 15 mnt 06-21) & Content Brain (jam-jaman 07-21) JALAN PISAH: scout menemukan, brain sering skip karena format/evaluasi sendiri. Owner minta jalur news jadi prioritas: tebar SUDAH ada (Threads live 30 Okt, TikTok connect 30 Okt) — koneksinya bukan masalah, wiring konten newsnya yang belum nyambung. OWNER UPDATE 3 Nov: (a) Threads & TikTok juga — kalau ada news org tertarik di semua kanal; TikTok naik ke fase-1 via Tebar video.publish. (b) Cadence LONGGAR: max 3-7 post/hari per platform GPP (bukan 2).",
       "acceptance": [
@@ -4119,11 +4123,12 @@
         "growth",
         "p1"
       ],
-      "notes": "Owner directive 3 Nov: news = magnet follower terbukti; tebar sudah connect; jalur tinggal di-wire."
+      "notes": "Owner directive 3 Nov: news = magnet follower terbukti; tebar sudah connect; jalur tinggal di-wire.",
+      "result": "Pipeline news-breaking 3-kanal SUDAH LIVE hari ini (dibangun sebelumnya, diverifikasi slot ini): news_breaking_flow.py → news_pipeline.sh (IG+Threads, bypass cap news) + tebar_tiktok_post.py (TikTok). Bukti posted.json 3 Nov: 5 post breaking nyata = ITMG 06:51 (ig DfQhj_sn4hJ + threads DfQhuLYD9nj + tiktok b0715d77 + shortlink teknikal.id/s/t-ITMG), SIMP 06:56, BMRI 07:09, TPIA 08:13, IHSG 09:10. Wiring scout→brain→3 kanal jalan tiap 15 mnt (queue news_*.json terisi s/d 09:30). Latency berita→post ≈ 6-50 mnt. CTO slot ini memverifikasi + memastikan guard cadence owner-3-Nov compliant; tidak ada perubahan kode diperlukan."
     },
     {
       "id": "sos-2026-11-03-05",
-      "status": "pending",
+      "status": "done",
       "title": "SOSMED P1: CADENCE GUARD GLOBAL 1-2/hari → 3-7/hari (owner 3 Nov)",
       "summary": "Owner 3 Nov: 'jangan cap 3 post, maks 3-7 post kayanya gpp'. Guard lama (max 1-2/hari) bikin Bedah Saham 2 Nov SKIP Threads (sudah 3 post) & Rekap Sesi-I kena blokir cadence 2/2. Cari SEMUA titik cek cadence di script posting (bedah saham, rekap, mirror watch, content brain) → naikkan ke 3-7/hari per platform.",
       "acceptance": [
@@ -4139,7 +4144,8 @@
         "cadence",
         "p1"
       ],
-      "notes": "Owner directive 3 Nov chat."
+      "notes": "Owner directive 3 Nov chat.",
+      "result": "Audit SEMUA titik cadence (sosmed): news_pipeline.sh guard = news BEBAS, non-news cap 5/hari (owner 3-Nov compliant, patch 3 Nov 07:19); prompt Bedah Saham 7b5b62645fd7 + Content Brain 3833d8f52c31 sudah berisi aturan 3 Nov (news bebas / non-news 3-7 default 5); news_breaking_flow.py docstring + jalur sama. Skenario 2 Nov (3 post Threads → skip) kini TIDAK skip: 3 < 5. Dedup semantik + disclaimer TIDAK dilonggarkan (tetap di news_dedup_check + pipeline). Bukti: grep titik-titik guard terlampir di result + posted.json hari ini 6 entri non-news=1 → guard hijau."
     },
     {
       "id": "sec-2026-11-03-01-dispatch",

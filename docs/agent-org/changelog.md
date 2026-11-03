@@ -1045,3 +1045,14 @@
 - task-id: prd-2026-10-26-02 | type: prd STICKY | PRD: prd-2026-10-26-02 | deploy: PENDING kereta T-1103-N (merge main 9058336, push origin) | verify: tsc EXIT-0 · selftest-guest-migrate 6/6 · build EXIT-0 BUILD_ID H49vgVnzZIAFihQig1il7 · AC5 staging e2e = tugas kereta malam | QA: sentinel 22:00 | impact_check_due: 2026-11-06
 - task-id: bo-2026-11-03-01 | type: backoffice STICKY+TRUST | deploy: PENDING kereta T-1103-N (merge main 4070d56) | verify: tsc EXIT-0 · selftest-retention 4/4 · build EXIT-0 BUILD_ID sama | QA: sentinel 22:00 | impact_check_due: 2026-11-06
 - Catatan: kereta T-1102-N (Senin malam) NO-SHOW — 5 penumpang di-reslot T-1103-N; worker image masih basi 1 Nov 18:04 (ops-11-02-02 P1 jadi rider WAJIB app+worker satu build).
+
+## 2026-11-03 09:30 CTO Siang — sec-1103-01 + sos batch (0 deploy web)
+- task-id: sec-2026-11-03-01-dispatch | type: ops/security | PRD: n/a (IT-SEC audit promote)
+  deploy: n/a (host-ops) | verify: lsof 127.0.0.1:9223 LISTEN survive restart; LAN 192.168.2.2:9223 REFUSED; CDP smoke goto teknikal.id OK
+  QA: SENTINEL 22:00 | impact_check_due: 2026-11-06
+- task-id: sec-2026-10-29-02-dispatch | type: security bugfix | PRD: sec backlog IT-SEC
+  deploy: BUILD-ONLY commit f56361e → kereta T-1103-N | verify: selftest 6/6, tsc RC=0, build RC=0
+  QA: boarding gate malam ini (curl 60x → 429 proof pasca-deploy) | impact_check_due: 2026-11-06
+- task-id: sos-2026-11-03-01/-02/-04/-05 | type: ops sosmed host | PRD: n/a
+  deploy: n/a (cron host) | verify: hermes cron list 30 16 * * 1-5; job 87a2b968454c next 8 Nov 10:30; posted.json 5 breaking live
+  QA: live post 16:30 hari ini + Minggu 8 Nov | impact_check_due: 2026-11-08
