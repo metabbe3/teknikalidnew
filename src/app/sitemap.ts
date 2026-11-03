@@ -6,6 +6,7 @@ import { SECTORS } from "@/lib/sectors";
 import { IDX_INDICES } from "@/lib/idx-indices";
 import { ArticleType } from "@/generated/prisma/client";
 import { isStaleArticle, isEvergreenIndexed } from "@/domains/article/article-freshness";
+import KURASI_KEEP from "@/lib/seo/kurasi-keep"; // ADV-2: survivor whitelist kenapa-* pages
 import { prisma } from "@/lib/prisma";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 
@@ -156,6 +157,9 @@ const getCachedSitemap = unstable_cache(
   const kenapaPages: MetadataRoute.Sitemap = [];
   for (const stock of IDX_STOCKS) {
     if (!sitemapTickers.has(stock.ticker)) continue;
+    // ADV-2 kurasi (3 Nov): hanya survivor + GSC-intent keep yang masuk sitemap —
+    // noindex di sitemap = sinyal kontradiktif (Purist audit)
+    if (!KURASI_KEEP.has(stock.ticker.replace(/\.JK$/, "").toUpperCase())) continue;
     const change = tickerChangeMap.get(stock.ticker) ?? null;
     if (change === null || change === 0) continue; // Netral (0%) → jangan emit keduanya
 

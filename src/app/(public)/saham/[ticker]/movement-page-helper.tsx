@@ -116,6 +116,22 @@ export async function generateMovementMetadataHelper(
 
   const ogImage = `${SITE_URL}/api/og?title=${encodeURIComponent(title)}&type=movement&ticker=${tickerClean}`;
 
+  // ADV-2 kurasi (3 Nov): hanya ±145 survivor (top-300 dollar volume + riwayat
+  // big-move, survivor.json) + 3 keep-index GSC-intent yang boleh di-index.
+  // Sisanya (±344) noindex — melunasi utang thin-content spam-classifier.
+  const KURASI_KEEP = new Set<string>();
+  try {
+    // cached module-level di dev; file kecil (~150 ticker)
+    const { default: keep } = (await import("@/lib/seo/kurasi-keep")) as {
+      default: Set<string>;
+    };
+    keep.forEach((t) => KURASI_KEEP.add(t));
+  } catch {
+    // fallback: file tak ada → jangan blokir (safe default lama)
+  }
+  const isCurated =
+    KURASI_KEEP.size === 0 || KURASI_KEEP.has(tickerClean.toUpperCase());
+
   return {
     title,
     description,
@@ -130,6 +146,8 @@ export async function generateMovementMetadataHelper(
       images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
     },
     twitter: { card: "summary_large_image", title, description },
+    // ADV-2: non-survivor noindex (kurasi 3 Nov — survivor.json 145 + 3 GSC keep)
+    ...(isCurated ? {} : { robots: { index: false, follow: true } }),
     keywords: [
       `kenapa saham ${tickerClean} ${expectedDirection}`,
       `harga saham ${tickerClean} hari ini`,
