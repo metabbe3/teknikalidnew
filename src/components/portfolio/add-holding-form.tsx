@@ -8,9 +8,11 @@ import { useToast } from "@/components/paper-trading/toast";
 interface AddHoldingFormProps {
   open: boolean;
   onClose: () => void;
+  /** ux-2026-10-30-01: prefill ticker dari halaman saham — lewati step cari saham. */
+  prefillTicker?: string;
 }
 
-export function AddHoldingForm({ open, onClose }: AddHoldingFormProps) {
+export function AddHoldingForm({ open, onClose, prefillTicker }: AddHoldingFormProps) {
   const [ticker, setTicker] = useState("");
   const [buyPrice, setBuyPrice] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -47,19 +49,25 @@ export function AddHoldingForm({ open, onClose }: AddHoldingFormProps) {
   }, [open]);
 
   useEffect(() => {
-    if (open) {
-      setTicker("");
-      setBuyPrice("");
-      setQuantity("");
-      setBuyDate("");
-      setNotes("");
-      setError("");
-      setSearchQuery("");
-      setSearchOpen(true);
-      setHighlightIndex(0);
-      setTimeout(() => inputRef.current?.focus(), 150);
-    }
-  }, [open]);
+    if (!open) return;
+    setTicker(prefillTicker || "");
+    setBuyPrice("");
+    setQuantity("");
+    setBuyDate("");
+    setNotes("");
+    setError("");
+    setSearchQuery("");
+    setSearchOpen(!prefillTicker);
+    setHighlightIndex(0);
+    // prefill: fokus langsung ke harga beli; tanpa prefill: fokus cari saham
+    setTimeout(() => {
+      if (prefillTicker) {
+        document.getElementById("buy-price-input")?.focus();
+      } else {
+        inputRef.current?.focus();
+      }
+    }, 150);
+  }, [open, prefillTicker]);
 
   if (!open) return null;
 
@@ -236,6 +244,7 @@ export function AddHoldingForm({ open, onClose }: AddHoldingFormProps) {
                 Harga Beli / Lembar
               </label>
               <input
+                id="buy-price-input"
                 type="number"
                 value={buyPrice}
                 onChange={(e) => setBuyPrice(e.target.value)}

@@ -42,6 +42,7 @@ import { StockPaperPosition } from "@/components/paper-trading/stock-paper-posit
 import { SignalBreakdownDetails } from "@/components/stock/signal-breakdown-details";
 import { StockLogo } from "@/components/stock/stock-logo";
 import { StockAiModalButton } from "@/components/stock/stock-ai-modal";
+import { StockPortfolioCta } from "@/components/stock/stock-portfolio-cta";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { IndicatorTooltip } from "@/components/ui/indicator-tooltip";
 import { technicalAnalysisService, computeSignalScore } from "@/domains/stock/technical-analysis.service";
@@ -713,6 +714,10 @@ export default async function StockDetailPage({
                   <div className="mt-3 flex flex-wrap items-center justify-end gap-2 opacity-90">
                     <span id="ai" className="block scroll-mt-24" />
                     <StockAiModalButton ticker={ticker} name={stock.name} changePercent={changePercent} isGorengan={indicators?.isGorengan ?? null} />
+                    {/* ux-2026-10-30-01: pintu masuk portofolio dari halaman saham (fitur
+                        tersembunyi: /portfolio live tapi 0 entry-point). Login = form
+                        prefill; guest = varian register-adjacent. */}
+                    <StockPortfolioCta ticker={ticker} isAuthed={isAuthed} />
                   </div>
                   {/* Nudge pasif: kunjungan ke-3 saham sama (guest) — hint simpan pantauan, bukan popup */}
                   <RepeatVisitHint ticker={ticker} />

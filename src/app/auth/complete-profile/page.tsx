@@ -66,6 +66,13 @@ export default function CompleteProfilePage() {
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ ticker: pending.ticker }),
             }).catch(() => {});
+          } else if (pending?.type === "portfolio_cta" && typeof pending.ticker === "string" && pending.ticker) {
+            // ux-2026-10-30-01: guest klik "Catat di portofolio" di halaman saham →
+            // pasca-register kembali ke halaman saham (form prefill, bukan auto-add:
+            // harga/lot tetap input user).
+            window.location.href = `/stocks/${encodeURIComponent(pending.ticker)}?ctx=portfolio_cta`;
+            sessionStorage.removeItem("pending_post_register");
+            return;
           }
           // same-origin relative only — reject '//evil.com' and absolute/scheme URLs
           if (typeof pending?.next === "string" && pending.next.startsWith("/") && !pending.next.startsWith("//")) {
