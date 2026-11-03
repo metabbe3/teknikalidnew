@@ -1056,3 +1056,11 @@
 - task-id: sos-2026-11-03-01/-02/-04/-05 | type: ops sosmed host | PRD: n/a
   deploy: n/a (cron host) | verify: hermes cron list 30 16 * * 1-5; job 87a2b968454c next 8 Nov 10:30; posted.json 5 breaking live
   QA: live post 16:30 hari ini + Minggu 8 Nov | impact_check_due: 2026-11-08
+
+## 2026-11-03 18:30 CTO sore — ops-2026-11-03-06 (P1 TRUST, host-script 0 deploy)
+- task-id: ops-2026-11-03-06 | type: ops/metric-integrity | PRD: n/a (researcher 2 Nov, dispatch CEO pagi 3 Nov)
+- deploy: n/a host-script (teknikalid_northstar_kpi.py + teknikalid_page.py dashboard reader; kpi.json regen manual 18:37, cron 07:05 next)
+- verify bukti: selftest is_excluded_ip 11/11 (RED-first AttributeError); regen kpi.json REAL_EXIT=0 → returning_ip_pct 7,5→4,1 (= probe SQL 169 IP/7 returning, fb-crawler+internal keluar); traffic_mom value=None err='bulan berjalan <6 hari' (before: -45,0% artefak); dwell_median_s op=info + bucket='15/60/180' (valueNum distinct memang cuma 15/60/180 — 711 event); dashboard smoke render 'Dwell median (bucket) 15' tanpa target, MoM row hilang; lint_all 0 hard
+- QA: verdict = SENTINEL 22:00 (H3: builder tidak self-verify)
+- impact_check_due: 2026-11-06 (cron 07:05 4 Nov → kpi.json konsisten returning ±4%, MoM tetap null s/d 6 Nov lalu tampil valid; dashboard :8790 dwell row tanpa '/45')
+- impact_check: pemanggil kpi.json = teknikalid_page.py (dipatch) + ns-kpi-refresh-0705 cron (jalankan script yg sama) — tidak ada konsumen lain (grep)
