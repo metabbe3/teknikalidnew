@@ -512,6 +512,11 @@ const CRAWLER_UA_RE =
 export function classifyCrawler(ip: string | null, ua: string | null): string | null {
   if (ua && CRAWLER_UA_RE.test(ua)) return "seo-bot";
   if (ip) {
+    // Meta in-app browser proxy (2a03:2880::/32 = Facebook edge POPs: Prineville,
+    // Luleå, Clonee...) — REAL users clicking links inside IG/Threads/FB apps,
+    // routed via Meta egress. Group under social-proxy so city stats stay honest
+    // (reverify 3 Nov: UA "Barcelona…" = IG in-app browser, human behavior).
+    if (ip.toLowerCase().startsWith("2a03:2880:")) return "social-proxy";
     for (const { p, label } of DATACENTER_PREFIXES) {
       if (ip.startsWith(p)) return label === "scanner" ? "scanner" : "seo-bot";
     }
