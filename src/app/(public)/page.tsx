@@ -491,6 +491,7 @@ export default async function HomePage() {
             <div className="mt-4 flex flex-wrap items-center gap-3">
               <Link
                 href="/stocks"
+                title="IDX Radar — radar saham IDX"
                 className="inline-flex items-center gap-2 bg-text-primary text-white px-6 py-3 rounded-xl font-semibold hover:bg-text-primary/90 transition-colors press-scale"
               >
                 Analisa Sekarang
