@@ -13,6 +13,28 @@ Disallow: /billing
 Disallow: /settings
 Disallow: /payment
 
+# AI answer-engine crawlers (AEO, 3 Nov 2026) — discovery/citation bots dipersilakan
+User-Agent: PerplexityBot
+User-Agent: Perplexity-User
+User-Agent: OAI-SearchBot
+User-Agent: ChatGPT-User
+User-Agent: Claude-SearchBot
+User-Agent: Claude-User
+User-Agent: ClaudeBot
+User-Agent: GPTBot
+User-Agent: Applebot-Extended
+User-Agent: Amazonbot
+Allow: /
+Disallow: /api/
+Disallow: /auth/
+Disallow: /admin/
+Disallow: /paper-trading/
+Disallow: /portfolio/
+Disallow: /watchlist
+Disallow: /billing
+Disallow: /settings
+Disallow: /payment
+
 User-Agent: *
 Allow: /
 Disallow: /api/
