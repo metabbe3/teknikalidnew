@@ -19,7 +19,7 @@ export default function robots(): MetadataRoute.Robots {
         // anyway" limbo). Crawling them lets Google drop the URLs cleanly.
         userAgent: "Googlebot",
         allow: "/",
-        disallow: ["/api/", "/auth/", "/admin/", "/paper-trading/", "/portfolio/", "/watchlist", "/billing", "/settings", "/payment"],
+        disallow: ["/api/", "/auth/", "/admin/", "/paper-trading/", "/portfolio/", "/watchlist/", "/billing", "/settings", "/payment"],
       },
       {
         // AI answer-engine discovery crawlers (AEO, 3 Nov 2026): greet explicitly
@@ -27,12 +27,12 @@ export default function robots(): MetadataRoute.Robots {
         // bots only; training bots stay under the generic "*" policy.
         userAgent: ["PerplexityBot", "Perplexity-User", "OAI-SearchBot", "ChatGPT-User", "Claude-SearchBot", "Claude-User", "ClaudeBot", "GPTBot", "Applebot-Extended", "Amazonbot", "CCBot"],
         allow: "/",
-        disallow: ["/api/", "/auth/", "/admin/", "/paper-trading/", "/portfolio/", "/watchlist", "/billing", "/settings", "/payment"],
+        disallow: ["/api/", "/auth/", "/admin/", "/paper-trading/", "/portfolio/", "/watchlist/", "/billing", "/settings", "/payment"],
       },
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/auth/", "/admin/", "/paper-trading/", "/portfolio/", "/watchlist", "/billing", "/settings", "/payment"],
+        disallow: ["/api/", "/auth/", "/admin/", "/paper-trading/", "/portfolio/", "/watchlist/", "/billing", "/settings", "/payment"],
       },
     ],
     sitemap: [`${SITE_URL}/sitemap.xml`, `${SITE_URL}/sitemap-news.xml`],

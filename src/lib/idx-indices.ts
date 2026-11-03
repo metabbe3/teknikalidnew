@@ -48,10 +48,10 @@ export const IDX_INDICES: IDXIndex[] = [
   },
   {
     slug: "smc-liquid",
-    name: "SMC Liquid",
-    fullName: "IDX SMC Liquid",
+    name: "SMC Composite",
+    fullName: "IDX SMC Composite (SMC Liquid)",
     description:
-      "Indeks SMC Liquid (Small-Mid-Cap Liquid) BEI mencakup saham-saham dengan kapitalisasi menengah-kecil yang memiliki likuiditas tinggi. Saham-saham dalam indeks ini dipilih berdasarkan volume perdagangan dan frekuensi transaksi, menjadikannya acuan untuk investor yang mencari saham likuid di luar LQ45/IDX40.",
+      "IDX SMC Composite — indeks Small-Mid-Cap Composite (dikenal juga sebagai SMC Liquid) — mencakup saham-saham kapitalisasi menengah-kecil BEI dengan likuiditas tinggi. Saham-saham dalam indeks ini dipilih berdasarkan volume perdagangan dan frekuensi transaksi, menjadikannya acuan untuk investor yang mencari saham likuid di luar LQ45/IDX40.",
     stocks: [
       "ACES.JK",
       "ADHI.JK",

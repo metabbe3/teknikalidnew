@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+// SEO-T6 (audit 3 Nov): 404 harus self-contained — title unik + TANPA canonical ke
+// homepage (canonical 404→home yang diwarisi layout adalah sinyal duplikat salah).
+export const metadata: Metadata = {
+  title: "Halaman Tidak Ditemukan | TeknikalID",
+  robots: { index: false, follow: false },
+};
 
 export default function NotFound() {
   return (

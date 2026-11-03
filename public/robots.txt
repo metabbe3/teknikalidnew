@@ -8,7 +8,7 @@ Disallow: /auth/
 Disallow: /admin/
 Disallow: /paper-trading/
 Disallow: /portfolio/
-Disallow: /watchlist
+Disallow: /watchlist/
 Disallow: /billing
 Disallow: /settings
 Disallow: /payment
@@ -30,7 +30,7 @@ Disallow: /auth/
 Disallow: /admin/
 Disallow: /paper-trading/
 Disallow: /portfolio/
-Disallow: /watchlist
+Disallow: /watchlist/
 Disallow: /billing
 Disallow: /settings
 Disallow: /payment
@@ -41,7 +41,7 @@ Disallow: /api/
 Disallow: /admin/
 Disallow: /paper-trading/
 Disallow: /portfolio/
-Disallow: /watchlist
+Disallow: /watchlist/
 Disallow: /billing
 Disallow: /settings
 Disallow: /payment

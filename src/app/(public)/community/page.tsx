@@ -23,19 +23,19 @@ const PAGE_SIZE = 20;
 type SearchParams = Promise<{ tab?: string; tag?: string; search?: string; page?: string }>;
 
 export const metadata: Metadata = {
-  title: "Komunitas Saham BEI — Diskusi Analisa Teknikal",
-  description: "Komunitas trader Indonesia untuk diskusi analisa teknikal saham BEI. Bagikan prediksi harga, chart, dan strategi trading bersama ribuan trader.",
+  title: "Forum Diskusi Investasi & Saham BEI — Komunitas TeknikalID",
+  description: "Forum diskusi investasi saham BEI: analisa teknikal, prediksi harga, chart, dan strategi trading bersama ribuan trader Indonesia.",
   alternates: { canonical: "/community" },
   openGraph: {
-    title: "Komunitas Saham BEI — Diskusi Analisa Teknikal",
-    description: "Komunitas trader Indonesia untuk diskusi analisa teknikal saham BEI.",
+    title: "Forum Diskusi Investasi & Saham BEI — Komunitas TeknikalID",
+    description: "Forum diskusi investasi saham BEI: analisa teknikal, prediksi harga, chart, dan strategi trading.",
     url: `${SITE_URL}/community`,
     images: [{ url: `${SITE_URL}/api/og?title=Komunitas+Saham+BEI&type=berita`, width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Komunitas Saham BEI — Diskusi Analisa Teknikal",
-    description: "Komunitas trader Indonesia untuk diskusi analisa teknikal saham BEI.",
+    title: "Forum Diskusi Investasi & Saham BEI — Komunitas TeknikalID",
+    description: "Forum diskusi investasi saham BEI: analisa teknikal, prediksi harga, chart, dan strategi trading.",
   },
 };
 
@@ -335,8 +335,8 @@ export default async function CommunityPage({
     <div className="fade-in min-h-screen bg-gray-50">
       <PageHero
         eyebrow="Komunitas"
-        title="Komunitas Saham"
-        description="Diskusi analisa teknikal, sharing sinyal, dan strategi trading saham IDX bareng komunitas TeknikalID."
+        title="Forum Diskusi Investasi Saham"
+        description="Diskusi investasi, analisa teknikal, sharing sinyal, dan strategi trading saham IDX bareng komunitas TeknikalID."
       >
         <div className="flex flex-wrap gap-2">
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-bullish/10 border border-bullish/20 text-[10px] font-mono font-semibold text-bullish tracking-wider">

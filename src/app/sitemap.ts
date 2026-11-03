@@ -74,6 +74,13 @@ const getCachedSitemap = unstable_cache(
     "SOSS.JK", // Shield On Service — GSC query
     "DVLA.JK", // "darya varia" = Darya-Varia Laboratoria — GSC top query
     "ELTY.JK", // "elty" — sudah masuk top-150 tapi dijamin
+    // SEO-03 (audit 3 Nov): query GSC terbukti ada intent, halaman 200 tapi di luar
+    // shortlist top-580 likuiditas — masukkan manual (sitemap ⊇ halaman ber-intent):
+    "KONI.JK",   // "saham koni" pos 61,4 — 200 tapi tak di sitemap
+    "MPRO.JK",   // "saham mpro" pos 80,2 — 200 tapi tak di sitemap
+    "STAR.JK",   // "saham star" pos 92,6 — 200 tapi tak di sitemap
+    "APIC.JK",   // "saham apic" pos 68,4
+    "BRIS.JK",   // "harga saham bris hari ini" pos 70,8 — terbaik cluster ticker
   ]);
   const liquidRows = latestDate
     ? await prisma.stockPrice.findMany({

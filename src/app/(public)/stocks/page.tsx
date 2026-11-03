@@ -176,7 +176,7 @@ export default async function StocksPage() {
         <div className="max-w-7xl mx-auto px-4 py-4 sm:py-5">
           <MarketStatus marketStatus={marketInfo.marketStatus} latestPrice={latestPrice} />
           <div className="mt-3 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
-            Radar Saham IDX
+            IDX Radar — Radar Saham IDX
           </div>
           <h1 id="radar" className="mt-1 font-serif text-2xl sm:text-3xl font-semibold tracking-tight text-text-primary">
             Harga Saham IDX Hari Ini

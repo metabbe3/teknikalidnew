@@ -110,9 +110,13 @@ export async function generateMetadata({
   // SEO-optimized title — shortName ≤ 30 chars (suffix stripped, word-boundary cut; root template adds "| TeknikalID" = ~13 chars → total < 60)
   const shortName = normalizeTickerTitle(fullName, name);
   const title = `Harga Saham ${name} Hari Ini ${price ? `${price} ` : ""}— Analisa & Sinyal`;
+  // SEO-03 (audit 3 Nov): kalau shortName == fullName setelah normalisasi, tampilkan satu
+  // kali saja — "X (X)" di meta desc (kasus KONI: "Perdana Bangun Pusaka (Perdana
+  // Bangun Pusaka)") adalah template smell yang dibenci Google.
+  const namePair = shortName === fullName ? fullName : `${shortName} (${fullName})`;
   const description = price
-    ? `Harga saham ${shortName} (${fullName}) hari ini ${price}${changeStr}. Analisa teknikal & skor sinyal (−1 s.d. +1), RSI, MACD, support-resistance, modal 1 lot, dan aliran dana asing — gratis tanpa login.`
-    : `Analisa teknikal saham ${shortName} (${fullName}): skor sinyal (−1 s.d. +1), RSI, MACD, support-resistance, modal 1 lot, dan aliran dana asing — gratis tanpa login.`;
+    ? `Harga saham ${namePair} hari ini ${price}${changeStr}. Analisa teknikal & skor sinyal (−1 s.d. +1), RSI, MACD, support-resistance, modal 1 lot, dan aliran dana asing — gratis tanpa login.`
+    : `Analisa teknikal saham ${namePair}: skor sinyal (−1 s.d. +1), RSI, MACD, support-resistance, modal 1 lot, dan aliran dana asing — gratis tanpa login.`;
 
   return {
     title,
@@ -661,7 +665,7 @@ export default async function StockDetailPage({
                 </div>
                 <h2 className="text-sm text-text-secondary mt-0.5 truncate font-semibold">
                   {/* fix owner 1 Nov: baris nama jadi H2 — H1 tetap murni ticker, crawler baca keyword di sini */}
-                  <span className="text-text-tertiary font-medium">Harga &amp; Analisa Teknikal Saham </span>
+                  <span className="text-text-tertiary font-medium">Harga Saham Hari Ini &amp; Analisa Teknikal </span>
                   <span className="font-medium">{stock.name}</span>
                   {(() => {
                     const desc = stock.businessActivity?.trim() || stock.subSector?.trim();

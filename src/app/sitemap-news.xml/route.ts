@@ -14,6 +14,20 @@ function escapeXml(s: string): string {
     .replace(/'/g, "&apos;");
 }
 
+/**
+ * SEO-T5 (audit 3 Nov): sebagian artikel lama tersimpan dengan timestamp WIB
+ * yang salah label UTC (future-dated ~7 jam). Google News mengabaikan artikel
+ * future-dated, jadi saat emit: kalau pubDate di masa depan, asumsikan salah
+ * label WIB dan geser mundur 7 jam; kalau masih future juga (data aneh),
+ * clamp ke "sekarang" supaya sitemap selalu valid.
+ */
+function clampFutureDate(d: Date): Date {
+  const now = Date.now();
+  if (d.getTime() <= now) return d;
+  const shifted = new Date(d.getTime() - 7 * 60 * 60 * 1000);
+  return shifted.getTime() <= now ? shifted : new Date(now);
+}
+
 export async function GET() {
   // Google News / Fresh news sitemap: semua artikel terbit 30 hari terakhir
   const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -41,14 +55,24 @@ export async function GET() {
     // DB down: empty urlset, never 500
   }
 
-  const urls = articles.map((a) => `  <url>
+  // SEO-01 (audit 3 Nov): news sitemap WAJIB berisi URL final 200 saja — Google
+  // menurunkan kepercayaan crawl pada sitemap yang mengiklankan redirect.
+  // proxy.ts 308-kan pola berikut ke /stocks atau /akademi; jangan pernah di-emit:
+  //  - saham-<ticker> / saham-<ticker>-<tanggal>  (DAILY_SNAPSHOT legacy)
+  //  - kenapa-saham-<ticker>-naik/turun-hari-ini  (MOVEMENT_ANALYSIS legacy)
+  //  - analisa-teknikal-<ticker>                  (STOCK_ANALYSIS legacy)
+  //  - slug EDUCATIONAL                           (canonical di /akademi)
+  const REDIRECTED_SLUG = /^(saham-[a-z0-9]+(-\d+-[a-z]+-\d{4})?|kenapa-saham-[a-z0-9]+-(naik|turun)-hari-ini|analisa-teknikal-.+)$/;
+  const finalUrls = articles.filter((a) => !REDIRECTED_SLUG.test(a.slug));
+
+  const urls = finalUrls.map((a) => `  <url>
     <loc>${SITE_URL}/berita/${a.slug}</loc>
     <news:news>
       <news:publication>
         <news:name>TeknikalID</news:name>
         <news:language>id</news:language>
       </news:publication>
-      <news:publication_date>${a.publishedAt.toISOString()}</news:publication_date>
+      <news:publication_date>${clampFutureDate(a.publishedAt).toISOString()}</news:publication_date>
       <news:title>${escapeXml(a.title)}</news:title>
     </news:news>
   </url>`).join("\n");
