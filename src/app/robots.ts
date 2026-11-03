@@ -22,6 +22,14 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/auth/", "/admin/", "/paper-trading/", "/portfolio/", "/watchlist", "/billing", "/settings", "/payment"],
       },
       {
+        // AI answer-engine discovery crawlers (AEO, 3 Nov 2026): greet explicitly
+        // so they are never caught by a future stray "disallow" — search citation
+        // bots only; training bots stay under the generic "*" policy.
+        userAgent: ["PerplexityBot", "Perplexity-User", "OAI-SearchBot", "ChatGPT-User", "Claude-SearchBot", "Claude-User", "ClaudeBot", "GPTBot", "Applebot-Extended", "Amazonbot", "CCBot"],
+        allow: "/",
+        disallow: ["/api/", "/auth/", "/admin/", "/paper-trading/", "/portfolio/", "/watchlist", "/billing", "/settings", "/payment"],
+      },
+      {
         userAgent: "*",
         allow: "/",
         disallow: ["/api/", "/auth/", "/admin/", "/paper-trading/", "/portfolio/", "/watchlist", "/billing", "/settings", "/payment"],
