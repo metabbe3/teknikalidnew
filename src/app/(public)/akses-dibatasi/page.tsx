@@ -74,7 +74,7 @@ export default async function AksesDibatasiPage({ searchParams }: { searchParams
               Berita Pasar
             </Link>
             <Link
-              href="/community"
+              href="/stocks"
               className="bg-bg-card text-text-primary px-5 py-2 rounded-full text-sm font-medium hover:bg-bg-hover transition-colors press-scale border border-border"
             >
               Komunitas
@@ -82,7 +82,7 @@ export default async function AksesDibatasiPage({ searchParams }: { searchParams
           </div>
           <p className="text-text-secondary text-xs pt-1">
             Merasa ini keliru? Hubungi kami di komunitas{" "}
-            <Link href="/community" className="text-accent hover:underline">
+            <Link href="/stocks" className="text-accent hover:underline">
               teknikal.id/community
             </Link>
             .

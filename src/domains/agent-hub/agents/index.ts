@@ -6,7 +6,6 @@ import { ContentQualityAgent } from "./content-quality.agent";
 import { MarketIntelAgent } from "./market-intel.agent";
 import { StockAlertAgent } from "./stock-alert.agent";
 import { AnomalyDetectionAgent } from "./anomaly-detection.agent";
-import { CommunitySentimentAgent } from "./community-sentiment.agent";
 import { UserEngagementAgent } from "./user-engagement.agent";
 import { TechnicalScreenerAgent } from "./technical-screener.agent";
 import { GenSnapshotsAgent } from "./gen-snapshots.agent";
@@ -30,7 +29,6 @@ const agents: Record<AgentType, BaseAgent> = {
   market_intel: new MarketIntelAgent(),
   stock_alert: new StockAlertAgent(),
   anomaly_detection: new AnomalyDetectionAgent(),
-  community_sentiment: new CommunitySentimentAgent(),
   user_engagement: new UserEngagementAgent(),
   technical_screener: new TechnicalScreenerAgent(),
   gen_snapshots: new GenSnapshotsAgent(),

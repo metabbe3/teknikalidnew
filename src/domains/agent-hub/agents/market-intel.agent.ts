@@ -3,8 +3,6 @@ import type { AgentType, AgentJobPayload, AgentJobResult } from "../agent-hub.ty
 import type { ChainedJobSpec } from "./base-agent";
 import type { AutoFixRecord } from "../auto-fix.types";
 import { prisma } from "@/lib/prisma";
-import { communityAgentService } from "@/domains/community-agent/community-agent.service";
-import { communityService } from "@/domains/community/community.service";
 import { articleService } from "@/domains/article/article.service";
 import { marketEngine } from "@/lib/market-engine";
 
@@ -27,18 +25,7 @@ export class MarketIntelAgent extends BaseAgent {
 
     const actions: AutoFixRecord[] = [];
 
-    // Auto-post community posts (opt-in)
-    const autoPostConfig = config?.autoPost as Record<string, unknown> | undefined;
-    if (autoPostConfig?.enabled === true) {
-      const suggestedPosts = Array.isArray(analysis.suggestedPosts)
-        ? (analysis.suggestedPosts as unknown[]).filter((p): p is string => typeof p === "string")
-        : [];
-      const postResults = await this.autoPostSuggestions(
-        suggestedPosts,
-        autoPostConfig,
-      );
-      actions.push(...postResults);
-    }
+    // Auto-post community posts REMOVED 2026-11-03 (feature prune — /community dead).
 
     // Auto-generate articles for breaking events (opt-in)
     const autoArticleConfig = config?.autoGenerateArticle as Record<string, unknown> | undefined;
@@ -90,56 +77,6 @@ export class MarketIntelAgent extends BaseAgent {
   }
 
   // ── Auto-action methods ──────────────────────────────────────────────
-
-  private async autoPostSuggestions(
-    posts: string[],
-    config: Record<string, unknown>,
-  ): Promise<AutoFixRecord[]> {
-    const results: AutoFixRecord[] = [];
-    const maxPosts = (config.maxPostsPerRun as number) ?? 2;
-    const toPost = posts.slice(0, maxPosts);
-
-    if (toPost.length === 0) return results;
-
-    try {
-      const botUser = await communityAgentService.ensureBotUser();
-
-      for (const content of toPost) {
-        // Truncate to 1000 chars (community post limit)
-        const trimmedContent = content.slice(0, 1000);
-        try {
-          await communityService.createPost(botUser.id, { content: trimmedContent });
-          results.push({
-            type: "auto_post",
-            field: "community_post",
-            before: "",
-            after: trimmedContent.slice(0, 300),
-            applied: true,
-          });
-        } catch (err) {
-          results.push({
-            type: "auto_post",
-            field: "community_post",
-            before: "",
-            after: trimmedContent.slice(0, 300),
-            applied: false,
-            reason: err instanceof Error ? err.message : "Failed to create post",
-          });
-        }
-      }
-    } catch (err) {
-      results.push({
-        type: "auto_post",
-        field: "community_post",
-        before: "",
-        after: "",
-        applied: false,
-        reason: `Bot user error: ${err instanceof Error ? err.message : "Failed"}`,
-      });
-    }
-
-    return results;
-  }
 
   private async autoGenerateBreakingArticles(
     events: Array<{ ticker: string; event: string; impact: string; suggestedAction: string }>,

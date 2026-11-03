@@ -36,7 +36,6 @@ const AGENT_ICONS: Record<string, React.ComponentType<{ className?: string }>> =
   site_health: Activity,
   stock_alert: Bell,
   anomaly_detection: AlertTriangle,
-  community_sentiment: MessageSquare,
   user_engagement: Users,
 };
 
@@ -638,15 +637,6 @@ export default function AgentDetailPage() {
                 />
               )}
 
-              {/* Community Sentiment settings */}
-              {agentType === "community_sentiment" && (
-                <CommunitySentimentSettings
-                  config={config?.config ?? null}
-                  onSave={(cfg) => saveConfigMutation.mutate(cfg)}
-                  isSaving={saveConfigMutation.isPending}
-                  isSaved={saveConfigMutation.isSuccess}
-                />
-              )}
 
               {/* User Engagement settings */}
               {agentType === "user_engagement" && (
@@ -839,17 +829,7 @@ function MarketIntelSettings({
   return (
     <div className="space-y-4">
       <div className="border-t pt-3 space-y-3">
-        <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Auto-Post Community Updates</p>
-        <Toggle value={postEnabled} onChange={setPostEnabled}
-          label="Auto-Post via Teknikal Robo" description="Automatically post market updates to the community" />
-        {postEnabled && (
-          <div className="pl-2">
-            <label className="text-sm font-medium">Max Posts Per Run</label>
-            <input type="number" min={1} max={5} value={maxPosts}
-              onChange={(e) => setMaxPosts(Number(e.target.value))}
-              className="ml-3 w-16 text-sm border rounded px-2 py-1" />
-          </div>
-        )}
+        {/* Auto-Post Community REMOVED 2026-11-03 (feature prune) */}
       </div>
 
       <div className="border-t pt-3 space-y-3">
@@ -893,7 +873,6 @@ function SiteHealthSettings({
   const [enabled, setEnabled] = useState((remediate.enabled as boolean) ?? false);
   const [staleStockData, setStaleStockData] = useState(remediate.staleStockData !== false);
   const [noArticles, setNoArticles] = useState(remediate.noArticles !== false);
-  const [noCommunityPosts, setNoCommunityPosts] = useState(remediate.noCommunityPosts !== false);
   const [tableBloat, setTableBloat] = useState(remediate.tableBloat !== false);
   const [retentionDays, setRetentionDays] = useState((remediate.cleanupRetentionDays as number) ?? 7);
 
@@ -908,8 +887,6 @@ function SiteHealthSettings({
             label="Fix Stale Stock Data" description="Trigger sync-eod when price data is stale" />
           <Toggle value={noArticles} onChange={setNoArticles}
             label="Fix Missing Articles" description="Trigger generate-articles when no recent articles" />
-          <Toggle value={noCommunityPosts} onChange={setNoCommunityPosts}
-            label="Fix Missing Community Posts" description="Trigger community-agent when no recent posts" />
           <Toggle value={tableBloat} onChange={setTableBloat}
             label="Cleanup Old Job Records" description="Remove completed AgentJob records older than retention period" />
           {tableBloat && (
@@ -924,7 +901,6 @@ function SiteHealthSettings({
       )}
 
       <Button size="sm" onClick={() => onSave({
-        autoRemediate: { enabled, staleStockData, noArticles, noCommunityPosts, tableBloat, cleanupRetentionDays: retentionDays },
       })} disabled={isSaving}>
         {isSaving && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
         Save
@@ -1024,48 +1000,6 @@ function AnomalyDetectionSettings({
   );
 }
 
-function CommunitySentimentSettings({
-  config,
-  onSave,
-  isSaving,
-  isSaved,
-}: {
-  config: Record<string, unknown> | null;
-  onSave: (cfg: Record<string, unknown>) => void;
-  isSaving: boolean;
-  isSaved: boolean;
-}) {
-  const [minPosts, setMinPosts] = useState((config?.minPostsForAnalysis as number) ?? 3);
-  const [maxTickers, setMaxTickers] = useState((config?.maxTickersPerRun as number) ?? 20);
-
-  return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="text-sm font-medium">Min Posts for Analysis</label>
-          <p className="text-xs text-gray-500">Skip tickers with fewer posts</p>
-          <input type="number" min={1} max={10} value={minPosts}
-            onChange={(e) => setMinPosts(Number(e.target.value))}
-            className="w-full text-sm border rounded px-2 py-1 mt-1" />
-        </div>
-        <div>
-          <label className="text-sm font-medium">Max Tickers Per Run</label>
-          <p className="text-xs text-gray-500">Limit AI calls per execution</p>
-          <input type="number" min={5} max={50} value={maxTickers}
-            onChange={(e) => setMaxTickers(Number(e.target.value))}
-            className="w-full text-sm border rounded px-2 py-1 mt-1" />
-        </div>
-      </div>
-
-      <Button size="sm" onClick={() => onSave({ minPostsForAnalysis: minPosts, maxTickersPerRun: maxTickers })} disabled={isSaving}>
-        {isSaving && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
-        Save
-      </Button>
-      {isSaved && <p className="text-xs text-green-600">Settings saved.</p>}
-    </div>
-  );
-}
-
 function UserEngagementSettings({
   config,
   onSave,
@@ -1078,7 +1012,6 @@ function UserEngagementSettings({
   isSaved: boolean;
 }) {
   const [enableReEngagement, setEnableReEngagement] = useState((config?.enableReEngagement as boolean) ?? true);
-  const [enableCommunityDigest, setEnableCommunityDigest] = useState((config?.enableCommunityDigest as boolean) ?? true);
   const [reEngageDays, setReEngageDays] = useState((config?.reEngageAfterDays as number) ?? 7);
   const [maxNotifs, setMaxNotifs] = useState((config?.maxNotificationsPerRun as number) ?? 100);
   const [priceThreshold, setPriceThreshold] = useState((config?.priceChangeThreshold as number) ?? 3);
@@ -1087,8 +1020,6 @@ function UserEngagementSettings({
     <div className="space-y-4">
       <Toggle value={enableReEngagement} onChange={setEnableReEngagement}
         label="Re-engage Inactive Users" description="Notify inactive users about watchlist stock movements" />
-      <Toggle value={enableCommunityDigest} onChange={setEnableCommunityDigest}
-        label="Community Sentiment Digest" description="Send sentiment alerts for strongly discussed stocks" />
 
       <div className="grid grid-cols-2 gap-4">
         <div>
@@ -1111,7 +1042,7 @@ function UserEngagementSettings({
         </div>
       </div>
 
-      <Button size="sm" onClick={() => onSave({ enableReEngagement, enableCommunityDigest, reEngageAfterDays: reEngageDays, maxNotificationsPerRun: maxNotifs, priceChangeThreshold: priceThreshold })} disabled={isSaving}>
+      <Button size="sm" onClick={() => onSave({ enableReEngagement, reEngageAfterDays: reEngageDays, maxNotificationsPerRun: maxNotifs, priceChangeThreshold: priceThreshold })} disabled={isSaving}>
         {isSaving && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
         Save
       </Button>

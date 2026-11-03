@@ -31,7 +31,7 @@ export function BottomFishingRadar({
 }) {
   const [expanded, setExpanded] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
-  const noun = linkBase === "/crypto" ? "koin" : "saham";
+  const noun = "saham";
 
   const { data: stocks = [], isLoading, isError } = useQuery<RadarStock[]>({
     queryKey: ["radar", assetClass ?? "all"],
@@ -62,7 +62,7 @@ export function BottomFishingRadar({
             </div>
             <div>
               <h3 className="text-base font-bold text-text-primary">Radar Pantulan</h3>
-              <p className="text-[10px] text-text-tertiary">{noun === "koin" ? "Koin" : "Saham"} memasuki area oversold — tunggu konfirmasi reversal</p>
+              <p className="text-[10px] text-text-tertiary">Saham memasuki area oversold — tunggu konfirmasi reversal</p>
             </div>
           </div>
           {!isLoading && stocks.length > 0 && (

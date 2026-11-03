@@ -2,7 +2,6 @@ import type { MetadataRoute } from "next";
 import { unstable_cache } from "next/cache";
 import { IDX_STOCKS, IDX40_TICKERS, SITE_URL } from "@/lib/constants";
 import { GLOSSARY_TERMS } from "@/lib/glossary-terms";
-import { SECTORS } from "@/lib/sectors";
 import { IDX_INDICES } from "@/lib/idx-indices";
 import { ArticleType } from "@/generated/prisma/client";
 import { isStaleArticle, isEvergreenIndexed } from "@/domains/article/article-freshness";
@@ -250,20 +249,6 @@ const getCachedSitemap = unstable_cache(
 
   // ── Static pages with today's date (they update daily) ──
 
-  const sectorIndex = {
-    url: `${baseUrl}/sektor`,
-    lastModified: today,
-    changeFrequency: "weekly" as const,
-    priority: 0.8,
-  };
-
-  const sectorPages = SECTORS.map((s) => ({
-    url: `${baseUrl}/sektor/${s.slug}`,
-    lastModified: today,
-    changeFrequency: "weekly" as const,
-    priority: 0.7,
-  }));
-
   const indexIndex = {
     url: `${baseUrl}/indeks`,
     lastModified: today,
@@ -319,7 +304,6 @@ const getCachedSitemap = unstable_cache(
     { url: `${baseUrl}/saham-undervalued`, lastModified: today, changeFrequency: "daily", priority: 0.8 },
     { url: `${baseUrl}/saham-value-growth`, lastModified: today, changeFrequency: "daily", priority: 0.8 },
     { url: `${baseUrl}/broker-saham-terbaik`, lastModified: today, changeFrequency: "weekly", priority: 0.9 },
-    { url: `${baseUrl}/community`, lastModified: today, changeFrequency: "daily", priority: 0.6 },
     // seo-dr-4/5 (deep-research 641c019): landing evergreen baru — data eksklusif BEI bebas login.
     { url: `${baseUrl}/kalender-dividen`, lastModified: today, changeFrequency: "daily", priority: 0.9 },
     { url: `${baseUrl}/aliran-dana-asing`, lastModified: today, changeFrequency: "daily", priority: 0.9 },
@@ -330,10 +314,7 @@ const getCachedSitemap = unstable_cache(
     ...kenapaPages,
     ...indicatorHistoryPages,
     ...articlePages,
-    ...faqSitemapEntries,
-    sectorIndex,
-    ...sectorPages,
-    indexIndex,
+    ...faqSitemapEntries,indexIndex,
     ...indexPages,
     glossaryIndex,
     // seo-dr-2: 60 glosarium per-term (82-86 kata) dikeluarkan; otoritas terkumpul di index.

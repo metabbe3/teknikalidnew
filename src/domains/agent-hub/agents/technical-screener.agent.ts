@@ -3,8 +3,6 @@ import type { AgentType, AgentJobPayload, AgentJobResult, AgentConfigRow } from 
 import type { ChainedJobSpec } from "./base-agent";
 import { prisma } from "@/lib/prisma";
 import { decimalToNumber, bigIntToNumber } from "@/lib/serialize";
-import { communityService } from "@/domains/community/community.service";
-import { communityAgentRepository } from "@/domains/community-agent/community-agent.repository";
 import { marketEngine } from "@/lib/market-engine";
 
 // ── Types ──────────────────────────────────────────────────
@@ -21,11 +19,6 @@ interface ScreenerSetup {
   score: number; // 0-100
 }
 
-interface BotUser {
-  id: string;
-  username: string;
-}
-
 // ── Agent ──────────────────────────────────────────────────
 
 export class TechnicalScreenerAgent extends BaseAgent {
@@ -34,15 +27,12 @@ export class TechnicalScreenerAgent extends BaseAgent {
 
   protected getDefaultSystemPrompt(): string {
     return `Kamu adalah trader teknikal profesional di Bursa Efek Indonesia (IDX).
-Tugasmu: menulis community post yang casual, informatif, dan engaging tentang setup teknikal saham.
+Tugasmu: mendeteksi dan merangkum setup teknikal saham IDX (golden cross, RSI bounce, MACD cross, volume spike).
 
-Gaya:
-- Bahasa Indonesia santai, kayak trader ngobrol di group WA
-- Singkat padat, 2-4 kalimat per saham
-- Pakai emoji yang relevan (📈📉🔥⚡💰)
+Output:
+- Ringkasan singkat per setup, 2-4 kalimat per saham
 - Mention ticker dalam format $TICKER
-- Jangan pakai markdown bold/italic
-- Jangan terlalu formal atau kaku
+- Fokus pada fakta indikator, tanpa rekomendasi beli/jual
 - Boleh kasih disclaimer singkat di akhir`;
   }
 
@@ -259,49 +249,12 @@ Gaya:
       return { summary: "No significant setups found today", setups: [], posted: false };
     }
 
-    // 7. Generate community post
-    let posted = false;
-    let postId: string | null = null;
-
-    if (autoPost) {
-      try {
-        const botUser = await this.ensureBotUser();
-
-        // Dedup: skip if already posted screener today
-        const existing = await this.findScreenerPostToday(botUser.id);
-        if (existing) {
-          return {
-            summary: `Screener already posted today`,
-            setups: topSetups.map((s) => ({ ticker: s.ticker, signal: s.signalLabel, score: s.score })),
-            posted: false,
-            reason: "duplicate",
-          };
-        }
-
-        const content = await this.generatePostContent(topSetups);
-        if (!content) {
-          return { summary: "AI failed to generate content", setups: topSetups, posted: false };
-        }
-
-        const post = await communityService.createPost(botUser.id, {
-          content,
-        });
-
-        posted = true;
-        postId = post.id;
-      } catch (error) {
-        const msg = error instanceof Error ? error.message : String(error);
-        return {
-          summary: `Failed to post: ${msg}`,
-          setups: topSetups.map((s) => ({ ticker: s.ticker, signal: s.signalLabel, score: s.score })),
-          posted: false,
-          error: msg,
-        };
-      }
-    }
+    // 7. Community auto-post REMOVED 2026-11-03 (feature prune: /community dead —
+    // 1 post all-time, 0 comments/30d; bot-posting into a dead feed = wasted LLM calls).
+    // Setups are still persisted + returned for agent job result / swing page.
 
     return {
-      summary: `Found ${setups.length} setups, posted top ${topSetups.length}`,
+      summary: `Found ${setups.length} setups, top ${topSetups.length}`,
       setups: topSetups.map((s) => ({
         ticker: s.ticker,
         name: s.stockName,
@@ -313,84 +266,10 @@ Gaya:
         score: s.score,
         details: s.details,
       })),
-      posted,
-      postId,
+      posted: false,
     };
   }
 
   // ── Helpers ────────────────────────────────────────────────
 
-  private async ensureBotUser(): Promise<BotUser> {
-    const botEmail = "bot+robo@teknikalid.id";
-    let user = await prisma.user.findFirst({ where: { email: botEmail } });
-    if (!user) {
-      user = await prisma.user.create({
-        data: {
-          email: botEmail,
-          username: "teknikal_robo",
-          name: "Teknikal Robo",
-          role: "ADMIN",
-          emailVerified: new Date(),
-        },
-      });
-    }
-    return { id: user.id, username: user.username };
-  }
-
-  private async findScreenerPostToday(botUserId: string): Promise<boolean> {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    const posts = await prisma.post.findMany({
-      where: {
-        authorId: botUserId,
-        createdAt: { gte: today, lt: tomorrow },
-        content: { contains: "Screener Teknikal" },
-      },
-      take: 1,
-    });
-    return posts.length > 0;
-  }
-
-  private async generatePostContent(setups: ScreenerSetup[]): Promise<string | null> {
-    const setupsText = setups
-      .map((s) => {
-        const emoji = s.signal === "bullish" ? "🟢" : "🔴";
-        const changeEmoji = s.changePercent >= 0 ? "📈" : "📉";
-        return `${emoji} $${s.ticker} — ${s.signalLabel}
-   Harga: ${s.close.toLocaleString("id-ID")} (${changeEmoji} ${s.changePercent >= 0 ? "+" : ""}${s.changePercent.toFixed(1)}%)
-   Score: ${s.score}/100 | ${s.details.join(" | ")}`;
-      })
-      .join("\n\n");
-
-    const bullishCount = setups.filter((s) => s.signal === "bullish").length;
-    const bearishCount = setups.filter((s) => s.signal === "bearish").length;
-
-    const userPrompt = `Buat community post untuk TeknikalID tentang hasil screener teknikal hari ini.
-
-SETUP YANG TERDETEKSI:
-${setupsText}
-
-RINGKASAN: ${setups.length} setup terdeteksi (${bullishCount} bullish, ${bearishCount} bearish)
-
-ATURAN:
-- Tulis opening 1 kalimat tentang market hari ini
-- Lalu list setup satu per satu, singkat (1-2 kalimat per saham)
-- Format: "$TICKER — [jelaskan setup dengan bahasa santai trader]"
-- Di akhir kasih 1 kalimat disclaimer
-- Total max 800 karakter
-- Jangan pakai markdown bold/italic
-- Jangan pakai heading`;
-
-    try {
-      const systemPrompt = await this.getSystemPrompt();
-      const content = await this.callAI(systemPrompt, userPrompt, 1000);
-      return content.trim();
-    } catch (error) {
-      console.error("[TechnicalScreener] AI generation failed:", error);
-      return null;
-    }
-  }
 }

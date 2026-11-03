@@ -6,7 +6,6 @@ const navLinks = [
   { href: "/stocks?view=screener", label: "Screener Saham" },
   { href: "/berita", label: "Berita & Analisis" },
   { href: "/akademi", label: "Akademi" },
-  { href: "/community", label: "Komunitas" },
   { href: "/compare", label: "Bandingkan Saham" },
   { href: "/paper-trading", label: "Latihan Trading" },
   { href: "/track-record", label: "Track Record" },
@@ -18,7 +17,6 @@ const marketToolLinks = [
   { href: "/indeks/lq45", label: "Indeks LQ45 & JII" },
   { href: "/bottom-fishing", label: "Radar Saham Diskon" },
   { href: "/swing", label: "Setup Swing Hari Ini" },
-  { href: "/sektor", label: "Sektor Saham BEI" },
   { href: "/laporan-pasar", label: "Laporan Pasar Mingguan" },
   { href: "/pasar", label: "Koran Pasar Live" },
 ];

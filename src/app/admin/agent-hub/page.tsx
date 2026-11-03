@@ -34,7 +34,6 @@ const AGENT_ICONS: Record<string, React.ComponentType<{ className?: string }>> =
   site_health: Activity,
   stock_alert: Bell,
   anomaly_detection: AlertTriangle,
-  community_sentiment: MessageSquare,
   user_engagement: Users,
 };
 

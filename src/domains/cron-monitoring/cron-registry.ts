@@ -33,14 +33,6 @@ export const CRON_JOB_REGISTRY: CronJobDefinition[] = [
     route: "/api/cron/generate-articles",
   },
   {
-    jobName: "community-agent",
-    displayName: "Community AI Agent",
-    description: "AI agent that posts market commentary and engages with community",
-    schedule: "Weekdays 08:00-21:00 WIB tiap 30-60 min",
-    method: "POST",
-    route: "/api/cron/community-agent",
-  },
-  {
     jobName: "resolve-predictions",
     displayName: "Prediction Resolution",
     description: "Resolves expired stock predictions by comparing targets to actual prices",

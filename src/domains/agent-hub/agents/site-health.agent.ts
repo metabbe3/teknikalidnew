@@ -137,32 +137,7 @@ export class SiteHealthAgent extends BaseAgent {
       }
     }
 
-    // No community posts → trigger community-agent
-    if (check.name === "Community Agent (Robo)" && config.noCommunityPosts !== false) {
-      try {
-        const response = await fetch(`${baseUrl}/api/cron/community-agent`, {
-          method: "POST",
-          headers: { Authorization: `Bearer ${cronSecret}` },
-          signal: AbortSignal.timeout(30_000),
-        });
-        return {
-          type: "trigger_community_agent",
-          field: "cron",
-          before: check.message,
-          after: `Triggered community-agent: HTTP ${response.status}`,
-          applied: response.ok,
-        };
-      } catch (err) {
-        return {
-          type: "trigger_community_agent",
-          field: "cron",
-          before: check.message,
-          after: "",
-          applied: false,
-          reason: err instanceof Error ? err.message : "Failed",
-        };
-      }
-    }
+    // community-agent trigger REMOVED 2026-11-03 (feature prune).
 
     // Table bloat → cleanup old AgentJob records
     if (check.name === "Table Sizes" && config.tableBloat !== false) {

@@ -45,6 +45,34 @@ const nextConfig: NextConfig = {
         destination: "/stocks?view=screener",
         permanent: true,
       },
+      // ── Feature prune 2026-11-03 (owner: "buang yang tidak perlu") ──
+      // Dead features removed. 308 permanent so any accumulated link equity passes
+      // to the closest live surface; GSC will drop the old URLs from the index.
+      {
+        source: "/community",
+        destination: "/stocks",
+        permanent: true,
+      },
+      {
+        source: "/community/post/:id",
+        destination: "/stocks",
+        permanent: true,
+      },
+      {
+        source: "/waitlist",
+        destination: "/auth/register",
+        permanent: true,
+      },
+      {
+        source: "/sektor",
+        destination: "/stocks",
+        permanent: true,
+      },
+      {
+        source: "/sektor/:slug",
+        destination: "/stocks",
+        permanent: true,
+      },
       // Community post shares used to build /community/<id> (404). Real route is /community/post/[id].
       // 308 for links already circulating in chats before the share-modal fix.
       {

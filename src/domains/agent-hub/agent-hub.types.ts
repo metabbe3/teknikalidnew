@@ -5,7 +5,6 @@ export const AGENT_TYPES = [
   "site_health",
   "stock_alert",
   "anomaly_detection",
-  "community_sentiment",
   "user_engagement",
   "technical_screener",
   "gen_snapshots",
@@ -110,14 +109,6 @@ export const AGENT_META: Record<AgentType, AgentMeta> = {
     defaultSchedule: "Every 30 min during market hours",
     estimatedAiCalls: 0,
   },
-  community_sentiment: {
-    type: "community_sentiment",
-    label: "Community Sentiment",
-    description: "Analyzes community posts per ticker using AI to generate bullish/bearish/neutral sentiment scores.",
-    icon: "MessageSquare",
-    defaultSchedule: "Every 6 hours",
-    estimatedAiCalls: 1,
-  },
   user_engagement: {
     type: "user_engagement",
     label: "User Engagement",
@@ -129,7 +120,7 @@ export const AGENT_META: Record<AgentType, AgentMeta> = {
   technical_screener: {
     type: "technical_screener",
     label: "Technical Screener",
-    description: "Scans all IDX stocks for bullish/bearish technical setups (Golden Cross, RSI bounce, MACD cross, volume spike, etc.) and posts a daily screener summary to community.",
+    description: "Scans all IDX stocks for bullish/bearish technical setups (Golden Cross, RSI bounce, MACD cross, volume spike, etc.) and stores the daily screener summary in the agent job result.",
     icon: "BarChart3",
     defaultSchedule: "Daily 09:30 WIB (weekdays)",
     estimatedAiCalls: 1,

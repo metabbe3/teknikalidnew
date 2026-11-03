@@ -15,7 +15,6 @@ export class UserEngagementAgent extends BaseAgent {
     const maxNotifs = (config?.maxNotificationsPerRun as number) ?? 100;
     const priceThreshold = (config?.priceChangeThreshold as number) ?? 3;
     const enableReEngagement = (config?.enableReEngagement as boolean) ?? true;
-    const enableCommunityDigest = (config?.enableCommunityDigest as boolean) ?? true;
 
     const systemUser = await prisma.user.findFirst({ where: { role: "ADMIN" }, select: { id: true } });
     if (!systemUser) {
@@ -36,11 +35,6 @@ export class UserEngagementAgent extends BaseAgent {
       totalSent += reEngaged;
     }
 
-    // 3. Community sentiment digest
-    if (enableCommunityDigest && totalSent < maxNotifs) {
-      const digestSent = await this.sendCommunityDigest(systemUser.id, today, maxNotifs - totalSent);
-      totalSent += digestSent;
-    }
 
     return {
       summary: `Sent ${totalSent} personalized notifications`,
@@ -196,59 +190,4 @@ export class UserEngagementAgent extends BaseAgent {
     return notifs.length;
   }
 
-  private async sendCommunityDigest(actorId: string, today: Date, limit: number): Promise<number> {
-    if (limit <= 0) return 0;
-
-    // Find the most recent completed community_sentiment job
-    const sentimentJob = await prisma.agentJob.findFirst({
-      where: { agentType: "community_sentiment", status: "done" },
-      orderBy: { completedAt: "desc" },
-      select: { result: true },
-    });
-
-    if (!sentimentJob?.result) return 0;
-
-    const result = sentimentJob.result as Record<string, unknown>;
-    const sentiments = (result.sentiments as Array<{ ticker: string; sentiment: number; confidence: number }>) ?? [];
-
-    // Only notify for strong sentiment shifts
-    const strongTickers = sentiments
-      .filter((s) => Math.abs(s.sentiment) > 0.5 && s.confidence > 0.3)
-      .map((s) => s.ticker);
-
-    if (strongTickers.length === 0) return 0;
-
-    // Find users who follow these tickers
-    const follows = await prisma.stockFollow.findMany({
-      where: { ticker: { in: strongTickers } },
-      select: { userId: true },
-    });
-    const watchlists = await prisma.watchlist.findMany({
-      where: { stockTicker: { in: strongTickers } },
-      select: { userId: true },
-    });
-
-    const userIds = [...new Set([...follows.map((f) => f.userId), ...watchlists.map((w) => w.userId)])];
-
-    // Deduplicate
-    const existing = await prisma.notification.findMany({
-      where: { type: "AGENT_ALERT" as NotificationType, createdAt: { gte: today } },
-      select: { recipientId: true },
-    });
-    const alreadyNotified = new Set(existing.map((n) => n.recipientId));
-
-    const notifs = userIds
-      .filter((id) => !alreadyNotified.has(id))
-      .slice(0, limit)
-      .map((userId) => ({
-        type: "AGENT_ALERT" as NotificationType,
-        recipientId: userId,
-        actorId,
-      }));
-
-    if (notifs.length > 0) {
-      await prisma.notification.createMany({ data: notifs });
-    }
-    return notifs.length;
-  }
 }

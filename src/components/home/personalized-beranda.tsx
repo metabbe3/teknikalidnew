@@ -343,9 +343,7 @@ export function PersonalizedBeranda() {
               <MessageSquare className="h-4 w-4 text-text-tertiary" />
               <h3 className="text-sm font-semibold text-text-primary">Diskusi Terbaru</h3>
             </div>
-            <Link href="/community" className="text-[10px] text-accent hover:underline font-mono inline-flex items-center gap-1 py-2 -my-2">
-              Semua <ArrowRight className="h-3 w-3" />
-            </Link>
+            
           </div>
           {isLoading ? (
             <div className="space-y-3">
