@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { unstable_cache } from "next/cache";
 import { IDX_STOCKS, IDX40_TICKERS, SITE_URL } from "@/lib/constants";
 import { GLOSSARY_TERMS } from "@/lib/glossary-terms";
+import { passesDepthGate } from "@/lib/glossary-deep-dives";
 import { IDX_INDICES } from "@/lib/idx-indices";
 import { ArticleType } from "@/generated/prisma/client";
 import { isStaleArticle, isEvergreenIndexed } from "@/domains/article/article-freshness";
@@ -270,7 +271,11 @@ const getCachedSitemap = unstable_cache(
     priority: 0.7,
   };
 
-  const glossaryPages = GLOSSARY_TERMS.map((t) => ({
+  // prd-2026-11-02-03: re-entry SELEKTIF — hanya istilah lolos depth gate
+  // (>=300 kata + contoh angka + link artikel). 45 istilah tetap dikecualikan
+  // sesuai verdict seo-dr-2 (thin content); buka kunci massal = tunggu verdict
+  // GSC batch-1 (14 hari pasca-deploy).
+  const glossaryPages = GLOSSARY_TERMS.filter(passesDepthGate).map((t) => ({
     url: `${baseUrl}/akademi/glosarium/${t.slug}`,
     lastModified: new Date("2026-01-01"),
     changeFrequency: "monthly" as const,
@@ -317,8 +322,9 @@ const getCachedSitemap = unstable_cache(
     ...faqSitemapEntries,indexIndex,
     ...indexPages,
     glossaryIndex,
-    // seo-dr-2: 60 glosarium per-term (82-86 kata) dikeluarkan; otoritas terkumpul di index.
-    // ...glossaryPages,
+    // seo-dr-2 verdict tetap utk 45 istilah thin; re-entry selektif prd-2026-11-02-03:
+    // hanya 15 istilah depth-gated yang masuk sitemap (+15 URL, 0 perubahan lain).
+    ...glossaryPages,
   ];
 },
 ["sitemap-cache-v1"],

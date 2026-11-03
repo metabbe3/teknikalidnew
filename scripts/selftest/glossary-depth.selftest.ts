@@ -60,31 +60,38 @@ function countWords(text: string): number {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
-let dbReachable = false;
-let publishedSlugs: Set<string> | null = null;
-try {
-  // Read-only DB check (opsional — skip silently bila DB tak reachable).
-  const { PrismaClient } = await import("../../src/generated/prisma/client");
-  const { readFileSync: rf } = await import("node:fs");
-  const envLine = rf(join(__dirname, "../../.env"), "utf8")
-    .split("\n")
-    .find((l) => l.startsWith("DATABASE_URL="));
-  const p = new PrismaClient({
-    datasources: { db: { url: envLine?.slice("DATABASE_URL=".length).trim() } },
-  });
-  const rows = await p.article.findMany({
-    where: { status: "PUBLISHED" },
-    select: { slug: true },
-  });
-  publishedSlugs = new Set(rows.map((r) => r.slug));
-  await p.$disconnect();
-  dbReachable = true;
-} catch {
-  console.error("(DB tidak reachable — C3 slug-existence di-skip, C1/C2 tetap)");
+async function loadPublishedSlugs(): Promise<Set<string> | null> {
+  try {
+    // Read-only DB check (opsional — null bila DB tak reachable).
+    // Prisma 7 + @prisma/adapter-pg — pola persis src/lib/prisma.ts (repo pattern).
+    const { PrismaClient } = await import("../../src/generated/prisma/client");
+    const { PrismaPg } = await import("@prisma/adapter-pg");
+    const pgMod = await import("pg");
+    const envLine = readFileSync(join(__dirname, "../../.env"), "utf8")
+      .split("\n")
+      .find((l) => l.startsWith("DATABASE_URL="));
+    const url = envLine?.slice("DATABASE_URL=".length).trim();
+    if (!url) return null;
+    const pool = new pgMod.default.Pool({ connectionString: url, connectionTimeoutMillis: 5000 });
+    const p = new PrismaClient({ adapter: new PrismaPg(pool) });
+    const rows = await p.article.findMany({
+      where: { status: "PUBLISHED" },
+      select: { slug: true },
+    });
+    await p.$disconnect();
+    return new Set(rows.map((r) => r.slug));
+  } catch {
+    console.error("(DB tidak reachable — C3 slug-existence di-skip, C1/C2 tetap)");
+    return null;
+  }
 }
 
-// B + C + E per slug
-for (const slug of PRIORITY_SLUGS) {
+async function main(): Promise<void> {
+  const publishedSlugs = await loadPublishedSlugs();
+  const dbReachable = publishedSlugs !== null;
+
+  // B + C + E per slug
+  for (const slug of PRIORITY_SLUGS) {
   const term = GLOSSARY_TERMS.find((t) => t.slug === slug);
   const dd = GLOSSARY_DEEP_DIVES[slug];
   check(`B0 ${slug}: ada di GLOSSARY_TERMS`, !!term);
@@ -113,21 +120,27 @@ for (const slug of PRIORITY_SLUGS) {
       check(`E3 ${slug}: preset '${ex.preset}' di VALID_PRESETS`, VALID_PRESETS.has(ex.preset));
     }
   }
-}
+  }
 
-// D. depth gate = tepat 15
-const gated = GLOSSARY_TERMS.filter(passesDepthGate).map((t) => t.slug);
-check("D1 passesDepthGate = tepat 15 slug", gated.length === 15, `got ${gated.length}`);
+  // D. depth gate = tepat 15
+  const gated = GLOSSARY_TERMS.filter(passesDepthGate).map((t) => t.slug);
+  check("D1 passesDepthGate = tepat 15 slug", gated.length === 15, `got ${gated.length}`);
 
-const sitemapSrc = readFileSync(join(__dirname, "../../src/app/sitemap.ts"), "utf8");
-check(
+  const sitemapSrc = readFileSync(join(__dirname, "../../src/app/sitemap.ts"), "utf8");
+  check(
   "D2 sitemap.ts pakai filter passesDepthGate (re-entry selektif, bukan spread buta)",
   sitemapSrc.includes("passesDepthGate"),
-);
-check(
-  "D3 sitemap.ts: spread lama (semua istilah) tidak aktif",
-  !sitemapSrc.includes("...glossaryPages,"),
-);
+  );
+  check(
+  "D3 sitemap.ts: konstruksi lama tanpa filter (GLOSSARY_TERMS.map ke glossaryPages) tidak boleh kembali",
+  !sitemapSrc.includes("const glossaryPages = GLOSSARY_TERMS.map"),
+  );
 
-console.error(`\nglossary-depth.selftest: ${pass} PASS, ${fail} FAIL (dbReachable=${dbReachable})`);
-process.exit(fail === 0 ? 0 : 1);
+  console.error(`\nglossary-depth.selftest: ${pass} PASS, ${fail} FAIL (dbReachable=${dbReachable})`);
+  process.exit(fail === 0 ? 0 : 1);
+}
+
+main().catch((e) => {
+  console.error("selftest crash:", e);
+  process.exit(1);
+});
