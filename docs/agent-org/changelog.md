@@ -1040,3 +1040,8 @@
 - **QA:** verdict = SENTINEL 22:00 (H3: builder tidak self-verify)
 - **impact_check_due:** 2026-11-05 (brief/analis baru lewat guard — cek 0 hold false-positive)
 - **impact_check:** pemanggil teknikalid_growth.py tidak berubah (fungsi baru internal); caller = cron Mandor insert-article
+
+## 2026-11-03 07:5x WIB — CTO pagi 3 Nov (merge night_ready x2 + reslot kereta; BUILD-ONLY 0 deploy)
+- task-id: prd-2026-10-26-02 | type: prd STICKY | PRD: prd-2026-10-26-02 | deploy: PENDING kereta T-1103-N (merge main 9058336, push origin) | verify: tsc EXIT-0 · selftest-guest-migrate 6/6 · build EXIT-0 BUILD_ID H49vgVnzZIAFihQig1il7 · AC5 staging e2e = tugas kereta malam | QA: sentinel 22:00 | impact_check_due: 2026-11-06
+- task-id: bo-2026-11-03-01 | type: backoffice STICKY+TRUST | deploy: PENDING kereta T-1103-N (merge main 4070d56) | verify: tsc EXIT-0 · selftest-retention 4/4 · build EXIT-0 BUILD_ID sama | QA: sentinel 22:00 | impact_check_due: 2026-11-06
+- Catatan: kereta T-1102-N (Senin malam) NO-SHOW — 5 penumpang di-reslot T-1103-N; worker image masih basi 1 Nov 18:04 (ops-11-02-02 P1 jadi rider WAJIB app+worker satu build).

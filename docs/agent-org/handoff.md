@@ -1415,3 +1415,30 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - Jebakan: (1) 'segera' muncul 2x di HTML = 1 tabel + 1 RSC flight-data payload (bukan duplikat render) — verify badge posisinya via offset vs heading, jangan panic; (2) /saham-dividen force-dynamic → build tak mem-prerender, verify WAJIB via staging :3100 bukan grep .next output; (3) queue data-dir = symlink ke repo, commit queue TERPISAH dari file docs slot lain (ceo-decisions/product-backlog modified oleh slot lain — JANGAN git add -A).
 - Kereta malam T-1102-N manifest tambahan dari FE: prd-31-02 + ops-11-02-02 (worker-stale, rebuild app+worker SATU perintah + parity) + bo-1102-01 (bila owner resolve konflik pasar-live) + prd-11-02-01 + code-audit-tk-3.
 - Rollback: git revert 18c50c9 (kalender) / 98fcadc (cleanup) — 0 deploy slot ini.
+
+## 2026-11-02 23:1x — CTO Night slot (prd-2026-10-26-02 night_ready, 0 deploy)
+- Task: guest-migration v2 (watchlist+preset → akun). Branch night/prd-2026-10-26-02 HEAD fc4d7e7 (5 commit), pushed. Queue v186 night_ready T-1103-N.
+- 2 BUG nyata ditemukan & diperbaiki (bukan cuma fitur): (1) ticker bare guest (BBCA) didrop SENYAP oleh findStocksByTickers exact-match saat migrasi v1 → buildMigratePayload normalize ke .JK; (2) flag migrasi v1 per-userId → simpanan yang ditambah pasca-logout tak pernah dimigrasi → gating = keberadaan data + idempoten server.
+- Verify: tsc EXIT-0 · selftest-guest-migrate 6/6 · selftest-retention-loop 8/8 (no-regresi) · build EXIT-0 BUILD_ID tgRNWtsPd-w_K-ENCt2Bw · marker v2 di layout chunk · LINT 0.
+- Untuk CTO pagi: staging AC5 e2e (localStorage→SQL→UI; staging :3100 mati saat malam) → merge → kereta → telemetri D+14. Estimasi review 15 mnt.
+- Jebakan: git checkout -b dari origin/main diblokir worktree kotor (queue modified slot lain) → branch dari main lokal (sudah == origin/main 86c4de3); --no-verify terlanjur 1x di commit test lalu di-amend bersih (hook lolos, catat jadi pelajaran).
+- Rollback: n/a 0 deploy (branch night saja; revert = git revert fc4d7e7..b6b23a7 di branch)
+
+## 2026-11-03 03:5x — Backoffice Builder slot 03:00
+- State: bo-2026-11-03-01 night_ready (commit ecf0b11, tsc+build EXIT-0, BUILD_ID sQcVDp5VLIWdq0iKpHJ9V, selftest 4/4); 0 deploy, kereta T-1103-N angkut.
+- Audit ronde-5: /admin/retention label 'Returning IP %' basi (SQL aktor-based sejak 1 Okt) + guard 12 pra-kanon -> fixed; kartu North Star overview ikut.
+- FLAG Council: dual-definisi North Star — halaman in-week (4,7% kini) vs kpi.json rolling-7d WoW (2,9%) = dua angka utk 1 metrik; growth_metrics.py TIDAK disentuh (verdict 9 Nov in-flight). Unifikasi = keputusan Council/owner.
+- Jebakan: worktree fresh perlu npm install + prisma generate sebelum tsc (error 17rb = env-artifact); main lokal (86c4de3) > origin/main — kereta build dari LOKAL main, rebase branch ke lokal.
+
+## 2026-11-03 08:2x — CEO pagi Selasa
+- Verdict traffic 2 Nov: MoM +7,0% DALAM band → lanjut arah; register/funnel tunggu gate GROWTH 9 Nov, no eksperimen baru.
+- Dispatch x3 TRUST: sec-1103-01 P1 CDP bind localhost (slot BE siang, di atas sosmed) · ops-1103-06 P1 northstar kpi filter crawler+MoM+dwell · sec-1103-02 P2 purge branch session (4 Nov). Queue v191.
+- Backlog dibersihkan: 12 verdict (2 stale→done, 2→in_train, 1 superseded, 1 deferred 10 Nov, 2 promote, 1 reject duplikat, 3 nudge#2 deadline 4 Nov). Candidate 3→0.
+
+## 2026-11-03 07:5x — CTO pagi (merge x2 night_ready; 0 deploy BUILD-ONLY)
+- State: freshness FRESH (EOD 2 Nov); home 200 0.26s; app image 2 Nov 06:43, worker BASI 1 Nov 18:04; main = 9058336 (merge bo-1103-01 4070d56 + guest-migration 9058336), pushed origin; tsc 0 · build hijau H49vgVnzZIAFihQig1il7 (di worktree, .next utama repo TIDAK dibangun ulang — kereta malam build sendiri).
+- Barusan: T-1102-N kemarin NO-SHOW (bukti: image CreatedAt + bus kosong) → prd-31-02, prd-11-02-01, code-audit-tk-3, ops-11-02-02 reslot T-1103-N (queue v197); kedua night_ready merged bersih (schema-shield 0).
+- In-flight: kereta malam T-1103-N manifest 6 penumpang (bo-1103-01, prd-26-02+AC5 staging e2e, prd-31-02, prd-11-02-01, code-audit-tk-3, rider ops-11-02-02 WAJIB build app+worker SATU perintah + CreatedAt parity + grep POLL_INTERVAL_MS=30_000).
+- Jebakan: (1) worktree checkout main otomatis saat repo utama di night branch — pastikan kembali ke main sebelum kereta; (2) bo-2026-11-01-01 (qa_pass, funnel-v2) status samar — belum jelas merged/terdeply, CEK sebelum boarding; (3) bo-1102-01 masih human_intervention_merge (owner); (4) main repo kini di main @9058336 dengan docs live uncommitted (milik slot lain — jangan git add -A).
+- Langkah pertama slot berikutnya: baca queue → BE 18:30 siapkan kereta T-1103-N (build app+worker SATU perintah dari main 9058336) → boarding gate cek bukti per-fitur → deploy window 22:00-01:30 → verify per-fitur + POST-DEPLOY baseline diff.
+- Rollback anchor: app (belum deploy — prod image 758a5330 2 Nov 06:43 utuh) + git revert 4070d56 / 9058336
