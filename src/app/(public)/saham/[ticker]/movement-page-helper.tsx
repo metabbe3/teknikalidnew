@@ -184,6 +184,16 @@ export async function RenderMovementPage({
   if (ticker !== canonicalTicker) {
     permanentRedirect(`/saham/${canonicalTicker}/kenapa-${expectedDirection}-hari-ini`);
   }
+  // wave-4b: whitelist utk related-link hygiene (import di render juga — modul cached)
+  let KURASI_KEEP: Set<string> = new Set();
+  try {
+    const { default: keep } = (await import("@/lib/seo/kurasi-keep")) as {
+      default: Set<string>;
+    };
+    KURASI_KEEP = keep;
+  } catch {
+    // fail-open: whitelist kosong → link tetap ke kenapa-* (perilaku lama)
+  }
 
   const data = await loadMovementData(ticker);
   if (!data) notFound();
@@ -356,10 +366,18 @@ export async function RenderMovementPage({
               {related.map((r) => {
                 const up = (r.changePercent ?? 0) >= 0;
                 const peerDir = up ? "kenapa-naik-hari-ini" : "kenapa-turun-hari-ini";
+                const peerTickerClean = r.ticker.replace(/\.JK$/, "").toLowerCase();
+                // wave-4b: peer non-survivor & bukan mover-14d → jangan tatap link kenapa-*
+                // (link internal massal ke noindex = sinyal spam-graph; arahkan ke /stocks)
+                const peerIndexable =
+                  KURASI_KEEP.has(r.ticker.replace(/\.JK$/, "").toUpperCase()) ||
+                  Math.abs(r.changePercent ?? 0) >= 5;
                 return (
                   <Link
                     key={r.ticker}
-                    href={`/saham/${r.ticker.replace(/\.JK$/, "").toLowerCase()}/${peerDir}`}
+                    href={peerIndexable
+                      ? `/saham/${peerTickerClean}/${peerDir}`
+                      : `/stocks/${r.ticker}`}
                     className="flex items-center justify-between gap-3 rounded-lg border border-border px-4 py-3 text-sm hover:border-primary/40 transition"
                   >
                     <span className="min-w-0">
