@@ -74,6 +74,8 @@ export async function loadMovementData(tickerRaw: string) {
     week52High: base.week52High,
     week52Low: base.week52Low,
     asOfDate: base.latest?.date ?? null,
+    // wave-4: big-move 14d check utk kurasi hybrid (tanpa query tambahan)
+    prices: base.prices.map((p) => ({ close: Number(p.close) })),
     related,
     article,
   };
@@ -116,21 +118,34 @@ export async function generateMovementMetadataHelper(
 
   const ogImage = `${SITE_URL}/api/og?title=${encodeURIComponent(title)}&type=movement&ticker=${tickerClean}`;
 
-  // ADV-2 kurasi (3 Nov): hanya ±145 survivor (top-300 dollar volume + riwayat
-  // big-move, survivor.json) + 3 keep-index GSC-intent yang boleh di-index.
-  // Sisanya (±344) noindex — melunasi utang thin-content spam-classifier.
-  const KURASI_KEEP = new Set<string>();
+  // ADV-2 kurasi (3 Nov): hanya survivor (top-300 dollar volume + big-move
+  // 90d) + GSC-intent keep yang di-index; sisanya noindex — melunasi utang
+  // thin-content spam-classifier.
+  // Wave-4 fix (3 Nov): whitelist beku churn ~50%/bln (74 masuk/53 keluar,
+  // data DB) → mover BARU non-whitelist ke-noindex justru di puncak demand.
+  // Hybrid: whitelist statis (sitemap) OR big-move |Δ|≥5% 14 hari terakhir
+  // (prices sudah termuat dari getStockDetailForPage — tanpa query tambahan).
+  // Fallback: error import → whitelist kosong → jangan blokir (fail-open lama).
+  let isCurated = true;
   try {
-    // cached module-level di dev; file kecil (~150 ticker)
     const { default: keep } = (await import("@/lib/seo/kurasi-keep")) as {
       default: Set<string>;
     };
-    keep.forEach((t) => KURASI_KEEP.add(t));
+    if (keep.size > 0 && !keep.has(tickerClean.toUpperCase())) {
+      const prices = data.prices ?? []; // urut baru→tua, 21 baris
+      const recent = prices.slice(0, 15);
+      isCurated = recent.some((p, i) => {
+        if (i === 0) return false;
+        const prev = recent[i - 1];
+        const prevClose = Number(prev?.close);
+        const curClose = Number(p?.close);
+        if (!prevClose || !curClose) return false;
+        return Math.abs(curClose / prevClose - 1) >= 0.05;
+      });
+    }
   } catch {
     // fallback: file tak ada → jangan blokir (safe default lama)
   }
-  const isCurated =
-    KURASI_KEEP.size === 0 || KURASI_KEEP.has(tickerClean.toUpperCase());
 
   return {
     title,
