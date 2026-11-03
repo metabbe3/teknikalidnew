@@ -950,6 +950,7 @@ export default async function StockDetailPage({
       {/* Main content */}
       <div className="max-w-7xl mx-auto px-4 py-4 space-y-5">
         <Breadcrumbs
+          currentUrl={`/stocks/${ticker}`}
           items={[
             { label: "Beranda", href: "/" },
             { label: "Saham", href: "/stocks" },

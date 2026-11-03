@@ -12,13 +12,18 @@ export interface Crumb {
  * JSON-LD script for SERP rich results. The last item is the current page (no link).
  * JSON-LD is a static schema object (no user input), stringified into a raw script tag.
  */
-export function Breadcrumbs({ items }: { items: Crumb[] }) {
-  const itemListElement = items.map((it, i) => ({
-    "@type": "ListItem" as const,
-    position: i + 1,
-    name: it.label,
-    ...(it.href ? { item: `${SITE_URL}${it.href}` } : {}),
-  }));
+export function Breadcrumbs({ items, currentUrl }: { items: Crumb[]; currentUrl?: string }) {
+  const itemListElement = items.map((it, i) => {
+    // Last item = current page: Google Rich Results requires `item` when the
+    // breadcrumb name isn't a URL. Always emit item for the current page too.
+    const href = it.href ?? (i === items.length - 1 ? currentUrl : undefined);
+    return {
+      "@type": "ListItem" as const,
+      position: i + 1,
+      name: it.label,
+      ...(href ? { item: href.startsWith("http") ? href : `${SITE_URL}${href}` } : {}),
+    };
+  });
   const jsonLd = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement };
 
   return (
