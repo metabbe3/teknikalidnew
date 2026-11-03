@@ -8,7 +8,7 @@
       "priority": "P2",
       "status": "qa_pass",
       "assigned_to": "backoffice-builder",
-      "train": "T-1101-M",
+      "train": "T-1103-M",
       "north_star": "STICKY+GROWTH — funnel 5-tahap actor-based (T4 Balik ≤7 hari) = kandidat metrik returning yang lebih benar dari IP-based (CEO 13 Okt: CGNAT tak reproducible); admin satu sumber kebenaran perjalanan user",
       "title": "BACKOFFICE INSIGHT: konsumsi route yatim /api/admin/funnel-v2 — corong 5-tahap actor-based di tab Insight (ronde-4 API audit)",
       "spec": "Audit ronde-4 (1 Nov): funnel-v2 lahir 29 Okt (tracking-audit G12) SETELAH ronde-3 → terlewat, 0 konsumen UI/script. SQL replay read-only 1 Nov 03:2x: T1=346 T2=60 T3=0 T4=0 T5=0 (Simpan=pantau/Telegram mati = bottleneck retensi — insight sendiri). Eksekusi: section 'Corong 5 Tahap (aktor, 21 hari)' di insight-tab.tsx KONSUMSI route existing (0 endpoint baru, 0 dep — ponytail rung 2): 5 bar tahap + konversi antar-tahap + anotasi metodologi actor-based + empty-state jujur utk tahap 0 ('belum ada aktor sampai sini — Simpan pantau/Telegram belum jalan').",
@@ -22,7 +22,8 @@
       "branch": "night/bo-2026-11-01-01",
       "result": "DEPLOYED kereta T-1101-M 1 Nov 08:1x WIB (CTO weekend pagi, window sepi pre-09:00): image fd76c6af5c85 / container 92ee87232494 healthy. VERIFY LIVE: marker \"Corong 5 tahap per aktor (21 hari)\" ada di .next/server/app/admin/insight.html container baru; /api/admin/funnel-v2 unauth 404 (masking guard by-design); baseline / + /stocks 200 before==after. Rollback: git revert 8fdf429 + image 9251d9ae37c6.",
       "scheduled_slot": "merge CTO pagi 1 Nov -> kereta malam berikutnya",
-      "qa_verified": "true (Content-Reviewer 1 Nov 09:4x: grep container insight.html marker corong=1, /api/admin/funnel-v2 unauth 404 by-design, prod 200)"
+      "qa_verified": "true (Content-Reviewer 1 Nov 09:4x: grep container insight.html marker corong=1, /api/admin/funnel-v2 unauth 404 by-design, prod 200)",
+      "reslot_note": "auto-reslot 2026-11-02: kereta T-1101-M kedaluwarsa (reslot_guard.py v2)"
     },
     {
       "id": "prd-2026-10-31-02",
@@ -37,11 +38,12 @@
       "spec": "Bangun sesuai PRD im-2026-10-29-2 (product-backlog.json): (1) term-tip.tsx wrap Tooltip UI existing, definisi import tunggal GLOSSARY_TERMS; (2) fase-1 3 halaman kondisi min 2 istilah/halaman; (3) anchor id glosarium + link 'Lihat di Kamus'; (4) fail-diam istilah tak dikenal; (5) telemetri nav_click label=glossary_open reuse. SCOPE: halaman /kamus/ programmatic DITUNDA (research_note PRD). FDE: PRD 7-field + metadata v2 OK.",
       "qa_plan": "Pembangun != pemeriksa. Proses: staging hover/focus + keyboard-focusable + anchor resolve 200; regresi: 0 hydration error (kelas #418) + chunk +<5KB + LCP stabil. Metrik 14 hari: glossary_open >=5 & time-spent fase-1 tidak turun.",
       "done_when": "DONE WHEN: (a) tsc EXIT-0; (b) staging: 2 istilah/halaman fase-1 memunculkan definisi + anchor 200; (c) 14 hari pasca-live: nav_click glossary_open >=5 dan 0 hydration error baru; gagal -> iterate istilah terpilih, bukan scope baru.",
-      "scheduled_slot": "review+merge CTO pagi Senin 2 Nov -> boarding kereta malam (BUILD dari main HEAD >= merge; slot FE Rabu 4 Nov 19:15 kini hanya QA D+1)",
+      "scheduled_slot": "merged main 4ffedb4 (CTO pagi 2 Nov) — kereta T-1102-N TIDAK jalan (no-show) -> reslot T-1103-N",
       "created_by": "Product Agent buffer-keeper 2026-10-31 22:1x WIB",
       "branch": "night/prd-2026-10-31-02",
       "result": "MERGED ke main 4ffedb4 oleh CTO pagi 2 Nov 07:4x (BUILD-ONLY; dry-run clean, schema-shield 0 hit; tsc EXIT-0; selftest 5/5 GREEN). Deploy = kereta malam T-1102-N 18:30. Rollback: git revert 4ffedb4.",
-      "train": "T-1102-N"
+      "train": "T-1103-N",
+      "reslot_note": "auto-reslot 2026-11-03: kereta T-1102-N kedaluwarsa (reslot_guard.py v2)"
     },
     {
       "id": "prd-2026-10-31-01",
@@ -60,8 +62,9 @@
       "created_by": "Product Agent buffer-keeper 2026-10-31 22:1x WIB",
       "branch": "night/prd-2026-10-31-01",
       "result": "DEPLOYED kereta T-1101-M 1 Nov 08:1x WIB: image fd76c6af5c85 healthy. VERIFY LIVE: /saham-golden-cross 200, section \"Apa yang terjadi setelahnya?\" render x2 — angka nyata DB: 252 kejadian / 228 emiten / window 23 Jul 2025-30 Okt 2026 + tabel median return per jangka waktu; marker condition_history_open di chunk 6821.js. Baseline 200 before==after. AC metric 14-hari condition_history_open due ~15 Nov (impact_check). Rollback: git revert 7d7c377 + image 9251d9ae37c6.",
-      "train": "T-1101-M",
-      "qa_verified": "true (Content-Reviewer 1 Nov 09:4x: live /saham-golden-cross render 252 kejadian/228 emiten/24 bulan + marker condition_history_open di chunk 6821.js container)"
+      "train": "T-1103-M",
+      "qa_verified": "true (Content-Reviewer 1 Nov 09:4x: live /saham-golden-cross render 252 kejadian/228 emiten/24 bulan + marker condition_history_open di chunk 6821.js container)",
+      "reslot_note": "auto-reslot 2026-11-02: kereta T-1101-M kedaluwarsa (reslot_guard.py v2)"
     },
     {
       "id": "dep-2026-10-30-02",
@@ -88,7 +91,7 @@
       "priority": "P2",
       "status": "qa_pass",
       "assigned_to": "backoffice-builder",
-      "train": "T-1101-M",
+      "train": "T-1103-M",
       "north_star": "STICKY+GROWTH — admin satu sumber kebenaran telemetri engagement (funnel returning + CTA per label); alat ukur QA prd-2026-10-26-01 (register_prompt_save_moment countable dari backoffice)",
       "title": "BACKOFFICE INSIGHT: tab Insight /admin — konsumsi 2 route yatim (engagement+views-geo) + API +clicksByLabel7d (follow-up audit bo-2026-10-28-02)",
       "spec": "Audit ronde-3 menemukan /api/admin/views-geo + /api/admin/engagement = data sehat (2.551 event) tapi YATIM UI. Eksekusi: insight-tab.tsx (corong 7d viewed->dwell60->cta->returned, klik CTA+nav per label, kedalaman baca per area, geo negara) + /api/admin/engagement +clicksByLabel7d (GROUP BY type,label 7d LIMIT 30 — prasyarat alat ukur prd-26-01) + route /admin/insight + tab ke-9 shell + sidebar. API REUSE: 0 endpoint baru, 0 dependency, komponen dipakai ulang.",
@@ -100,7 +103,7 @@
       ],
       "result": "QA PASS + live sejak kereta T-1031-N 31 Okt; FLIP DONE 1 Nov 08:1x CTO weekend pagi: marker clicksByLabel7d (route engagement) + Insight Pengunjung (page) terverifikasi fisik di container kereta T-1101-M 92ee87232494. Bukti lengkap di result sebelumnya (CDP DOM 4 section + screenshot 25 Okt).",
       "created_by": "Backoffice Builder slot 03:00 29 Okt",
-      "reslot_note": "reslot otomatis 1 Nov: kereta T-1029-N kedaluwarsa tanpa keberangkatan (CEO reslot miss sejak 29 Okt); dipindah ke T-1101-M",
+      "reslot_note": "auto-reslot 2026-11-02: kereta T-1101-M kedaluwarsa (reslot_guard.py v2)",
       "qa_verified": "true (Content-Reviewer 1 Nov 09:4x: marker re-verified di container kereta T-1101-M baru)"
     },
     {
@@ -361,7 +364,8 @@
       "branch": "night/prd-2026-10-18-01",
       "verify_evidence": "NIGHT 18 Okt 23:5x. Failing-test-first: commit test 8 asersi dulu (gagal modul belum ada), lalu implementasi. Commits (urutan failing-first): c0df007 test-gagal-dulu -> feat 2-step. tsc --noEmit exit 0; LINT 0 error (ruff/tsc via sdlc_lint.py); suite node:test 113/113 (105 lama + 8 baru register-funnel); next build 194/194 route sukses; BUKTI FISIK AC1: prerender .next/server/app/auth/register.html memuat data-step=\"1\" + input email + tombol 'Lanjut' + data-engagement=register_step1_submit, TANPA field password di layar pertama; grep count=1. AC3 no-regresi: diff src/app/auth hanya page.tsx register (complete-profile pre-fill utuh, autoFocus tetap). AC2+AC4 cek 14 hari pasca-deploy (SQL count + EngagementEvent). Baseline terverifikasi ulang malam ini: users_30d=8, pv_register_30d=18 (docker exec teknikalidnew-db-1 read-only). Estimasi review: 10-15 mnt.",
       "scheduled_slot": "2026-10-19 07:30 slot pagi",
-      "result": "CTO pagi 19 Okt: MERGE dry-run CLEAN exit 0 -> merge --no-ff 70ee7be (schema-shield PASS 0 DDL) -> PUSH origin/main (0c16c9f..70ee7be). VERIFY tsc --noEmit exit 0 (repo utama, prisma generate); test register-funnel PASS via tsx --test; bukti fisik LIVE image 154712c147f9 (build worktree 05:59, sebelum slot — pola build-dari-worktree): curl -A Mozilla https://teknikal.id/auth/register -> 200 (31426B), before data-step=0 / after data-step=\"1\"=1 + register_step1_submit=1 + autofocus=1; step-2 hidden client-side (data-step=2 = 0 di SSR, benar). AC1 PASS (live marker+tsc); AC3 autoFocus email step-1 utuh (grep line119) — pre-fill landing jalan; AC4 telemetry label register_step1_submit+register_completed ada di zod schema (validation.ts diff); AC2 funnel 1.25x = cek 14 hari (due 2026-11-02, SQL: User(createdAt>=deploy)/PageView register nobot). Ikut merge: rate-limit 600->3000 req/min owner-directed cc60c26 (night branch commit) + c0df007 failing-first test. 0 deploy routine slot ini (BUILD-ONLY window)."
+      "result": "CTO pagi 19 Okt: MERGE dry-run CLEAN exit 0 -> merge --no-ff 70ee7be (schema-shield PASS 0 DDL) -> PUSH origin/main (0c16c9f..70ee7be). VERIFY tsc --noEmit exit 0 (repo utama, prisma generate); test register-funnel PASS via tsx --test; bukti fisik LIVE image 154712c147f9 (build worktree 05:59, sebelum slot — pola build-dari-worktree): curl -A Mozilla https://teknikal.id/auth/register -> 200 (31426B), before data-step=0 / after data-step=\"1\"=1 + register_step1_submit=1 + autofocus=1; step-2 hidden client-side (data-step=2 = 0 di SSR, benar). AC1 PASS (live marker+tsc); AC3 autoFocus email step-1 utuh (grep line119) — pre-fill landing jalan; AC4 telemetry label register_step1_submit+register_completed ada di zod schema (validation.ts diff); AC2 funnel 1.25x = cek 14 hari (due 2026-11-02, SQL: User(createdAt>=deploy)/PageView register nobot). Ikut merge: rate-limit 600->3000 req/min owner-directed cc60c26 (night branch commit) + c0df007 failing-first test. 0 deploy routine slot ini (BUILD-ONLY window).",
+      "qa_verified": "partial"
     },
     {
       "id": "prd-2026-10-17-01",
@@ -1870,12 +1874,12 @@
       "north_star": "data reliable — daftar emiten IDX basi (listing baru/delisting tak tersync); eod-sync tidak terdampak",
       "spec": "BUKTI: idx-sync.log mtime 12 Okt 08:20 berisi EPERM: process.cwd failed uv_cwd (node v25) — launchd worker kehilangan akses cwd repo (TCC Documents). Plist com.teknikalid.idx-sync Day=1/06:00 (Senin saja). FIX (owner action, TCC = security domain): grant Full Disk Access utk node/launchd ATAU pindah log+cwd ke path non-TCC; verify: Senin depan 06:00 log bersih + sync row baru. Bukan kerja builder (TCC interactive prompt). [UPDATE CTO 19 Okt 07:45: gagal LAGI Senin 19 Okt 06:00 — launchctl exit 1, idx-sync.log beku 12 Okt (bahkan penulisan log kena TCC), MAX(Stock.updatedAt)=2026-10-12 01:09 =  [UPDATE CTO 23 Okt 07:5x: Stock.updatedAt MAX masih 2026-10-12 01:09 = beku 11 hari; launchctl runs=0/never exited; owner TCC grant BELUM. Emiten IDX basi — listing/delisting baru tak tersync. Tetap owner-only (TCC security domain).]",
       "scheduled_slot": "KAMIS 29 Okt SORE (hari ini) 14:30 — host-ops launchd TCC EPERM fix; alternatif: BE malam 18:30",
-      "train": "T-1101-M",
+      "train": "T-1103-M",
       "blocked_checked_at": "2026-10-25 08:2x WIB (CTO shift 07:45): idx-sync.log TETAP beku 12 Okt 08:20 (EPERM uv_cwd, 637B, launchd runs=-); Stock.updatedAt MAX 24 Okt 13:37 UTC berasal dari sync-profiles manual malam 24 Okt (profile fields), BUKAN bukti listing-sync hidup — daftar emiten tetap basi 13 hari. Owner TCC grant masih satu-satunya fix.",
       "needs": "Owner: System Settings > Privacy & Security > Files and Folders (atau Full Disk Access) utk launchd com.teknikalid.idx-sync ke ~/Documents — TCC prompt muncul sekali, atau grant manual.",
       "owner_brief": "READ-ONLY evidence 21 Okt 07:35: launchctl print = runs 0 / never exited; idx-sync.log beku 12 Okt 08:20 (EPERM uv_cwd TCC ~/Documents); Stock.updatedAt MAX=2026-10-12 (1451 rows); launchctl list kolom exit 0 = misleading (wrapper tidak pernah sampai node). YANG DIBUTUHKAN OWNER: approve TCC prompt utk launchd idx-sync (System Settings > Privacy & Security), atau jalankan sekali manual: bash ~/.hermes/scripts/teknikal_idx_sync.sh lalu tekan \"Allow\" di dialog TCC. File yang disentuh: TIDAK ADA (murni macOS permission, bukan kode). Risiko: rendah — sync idempotent upsert daftar emiten IDX; rollback: n/a (tidak ada perubahan kode/DB destruktif). Verifikasi pasca-grant: launchctl kickstart gui/$(id -u)/com.teknikalid.idx-sync lalu cek idx-sync.log fresh + Stock.updatedAt > 20 Okt.",
       "note": "[COUNCIL 25 Okt] SCHEDULE: launchd idx-sync EPERM TCC ~/Documents — kandidat: pindah workdir ke ~/Library/teknikalid / grant FDA",
-      "reslot_note": "reslot otomatis 1 Nov: kereta T-1020-N kedaluwarsa tanpa keberangkatan (CEO reslot miss sejak 29 Okt); dipindah ke T-1101-M"
+      "reslot_note": "auto-reslot 2026-11-02: kereta T-1101-M kedaluwarsa (reslot_guard.py v2)"
     },
     {
       "id": "qa-2026-10-13-01",
@@ -2615,7 +2619,7 @@
       "priority": "P1",
       "spec": "Owner 23 Okt: DAU/MAU di Users tab tidak mencerminkan aktivitas browsing + ingin lihat saham yang dilihat per user. SUDAH DIKERJAKAN di main e032849: (1) activeWhere DAU/MAU kini include pageViews authed non-bot; (2) endpoint /api/admin/user-analytics/[userId]/stocks (top 10 ticker 30 hari + last active); (3) UserManagementTab expandable 'Lihat saham yang dibuka'. Per-user dwell tracking di-skip (privacy).",
       "status": "qa_pass",
-      "train": "T-1101-M",
+      "train": "T-1103-M",
       "done_when": "post-deploy: /admin Users tab DAU/MAU > 0 konsisten dgn realita (ada authed views harian); klik 'Lihat saham yang dibuka' di user dgn views menampilkan chips ticker; curl endpoint 401 tanpa admin session",
       "result": "PARSIAL (28 Okt): DAU/MAU browsing-based LIVE (activeWhere di user-analytics route), tapi 'saham dilihat per user' belum — reslot T-1029-N lanjutan bagian itu",
       "north_star": "TRUST (angka admin jujur) + STICKY (retention targeting per-user)",
@@ -2623,7 +2627,7 @@
       "qa_verified": true,
       "qa_verified_by": "reviewer",
       "qa_verified_at": "2026-10-24T08:50+07:00",
-      "reslot_note": "reslot otomatis 1 Nov: kereta T-1029-N kedaluwarsa tanpa keberangkatan (CEO reslot miss sejak 29 Okt); dipindah ke T-1101-M"
+      "reslot_note": "auto-reslot 2026-11-02: kereta T-1101-M kedaluwarsa (reslot_guard.py v2)"
     },
     {
       "id": "ux-2026-10-23-01",
@@ -3124,8 +3128,8 @@
       "source": "plain audit 26 Okt sore (domain cron-monitoring/)",
       "spec": "Domain cron-monitoring (audit 26 Okt): (1) tanpa cron-monitoring.errors.ts + TimeoutError extends Error bukan DomainError (with-timeout.ts:13); (2) status tipe longgar: repo string vs service union (cron-monitoring.repository.ts:10 vs service:6); (3) errorMessage error.message bisa bocor detail internal ke dashboard admin (with-cron-logging.ts:32) — pastikan dashboard admin-only. Domain sehat, nol P0/P1.",
       "acceptance": "errors.ts ada + DomainError dipakai; tipe status sinkron repo↔service; dashboard cron-monitoring terverifikasi admin-only.",
-      "train": "T-1101-M",
-      "reslot_note": "reslot otomatis 1 Nov: kereta T-1029-N kedaluwarsa tanpa keberangkatan (CEO reslot miss sejak 29 Okt); dipindah ke T-1101-M"
+      "train": "T-1103-M",
+      "reslot_note": "auto-reslot 2026-11-02: kereta T-1101-M kedaluwarsa (reslot_guard.py v2)"
     },
     {
       "id": "fix-2026-10-26-09",
@@ -3237,13 +3241,13 @@
         ],
         "review_est": "15 menit (diff 632+/166-; jalankan ulang selftest doctrine + parity utk keykinan)"
       },
-      "train": "T-1101-M",
+      "train": "T-1103-M",
       "merged_by": "CTO pagi 29 Okt: merge c21f222 ke main (tsc EXIT-0, build EXIT-0 BUILD_ID eu-vm6Ndos0OFaFTqMOe9, selftest doctrine 9/9); deploy kereta T-1029-N malam",
       "result": "Deploy T-1029-N + QA D+1: N+1 getWatchlist fix & pasar-live satu-pintu live; verifikasi independen reviewer: /api/radar 200 (MBSS value 0.66 render), doctrine pasar-live 9/9, tsc EXIT-0.",
       "qa_verified": true,
       "verified_by": "reviewer",
       "completed_at": "2026-10-30 07:10 WIB",
-      "reslot_note": "reslot otomatis 1 Nov: kereta T-1029-N kedaluwarsa tanpa keberangkatan (CEO reslot miss sejak 29 Okt); dipindah ke T-1101-M"
+      "reslot_note": "auto-reslot 2026-11-02: kereta T-1101-M kedaluwarsa (reslot_guard.py v2)"
     },
     {
       "id": "ops-2026-10-27-01",
@@ -3256,8 +3260,8 @@
       "scheduled_slot": "2026-11-03 09:30 BE siang Selasa (host-script build-only; reslot CTO sore 1 Nov — slot 28 Okt lewat)",
       "north_star": "TRUST (data direktorat/dividen akurat)",
       "source": "CTO Tech Lead sweep 27 Okt (bukti fisik output cron)",
-      "train": "T-1101-M",
-      "reslot_note": "reslot otomatis 1 Nov: kereta T-1029-N kedaluwarsa tanpa keberangkatan (CEO reslot miss sejak 29 Okt); dipindah ke T-1101-M"
+      "train": "T-1103-M",
+      "reslot_note": "auto-reslot 2026-11-02: kereta T-1101-M kedaluwarsa (reslot_guard.py v2)"
     },
     {
       "id": "ops-2026-10-27-02",
@@ -3270,8 +3274,8 @@
       "scheduled_slot": "2026-11-03 18:30 BE malam Selasa (read-only forensik dulu; reslot CTO sore — slot 27 Okt lewat)",
       "north_star": "TRUST (board/queue = kebenaran operasional)",
       "source": "CTO Tech Lead sweep 27 Okt (regresi fisik + restore v48→v50)",
-      "train": "T-1101-M",
-      "reslot_note": "reslot otomatis 1 Nov: kereta T-1029-N kedaluwarsa tanpa keberangkatan (CEO reslot miss sejak 29 Okt); dipindah ke T-1101-M"
+      "train": "T-1103-M",
+      "reslot_note": "auto-reslot 2026-11-02: kereta T-1101-M kedaluwarsa (reslot_guard.py v2)"
     },
     {
       "id": "ops-2026-10-27-03",
@@ -3282,9 +3286,9 @@
       "source": "CEO pagi 27 Okt (backlog closure round)",
       "spec": "BUG DETECTOR backlog_health.py: item status=deferred dengan review_date ISO MASA DEPAN tetap di-alert stagnan (contoh roadmap-pro-2026-10-15 deferred review 2026-11-24 masih muncul pagi ini). Root cause fungsi _last_touch() hanya baca keys status_at/updated_at/moved_at/closed_at/date/created/created_at + regex blob note/result — TIDAK baca field review_date (future = sah skip) dan verdict_date (touch terbaru). Fix di ~/.hermes/scripts/backlog_health.py: (1) sebelum stale-check, entry dengan review_date ISO > hari ini = SKIP alert (deferred sah); (2) tambah verdict_date ke daftar key touch kandidat. JANGAN ubah semantics lain (CAP, HARD_DAYS). Host-script murni, tanpa deploy web. DONE WHEN: python3 backlog_health.py tidak lagi menampilkan roadmap-pro-2026-10-15/idea-2026-09-23-1 sebagai stagnan (keduanya deferred review future), DAN negative-test: inject review_date lampau (2026-10-01) pada salinan entry → alert tetap muncul; restore. Bukti fisik: output before/after + diff script di field result.",
       "scheduled_slot": "2026-11-04 09:30 BE siang Rabu (host-script; reslot CTO sore — slot 28 Okt lewat)",
-      "train": "T-1101-M",
+      "train": "T-1103-M",
       "status": "pending",
-      "reslot_note": "reslot otomatis 1 Nov: kereta T-1030-N kedaluwarsa tanpa keberangkatan (CEO reslot miss sejak 29 Okt); dipindah ke T-1101-M"
+      "reslot_note": "auto-reslot 2026-11-02: kereta T-1101-M kedaluwarsa (reslot_guard.py v2)"
     },
     {
       "id": "qa-2026-10-27-01",
@@ -3373,7 +3377,7 @@
       "date": "2026-10-28",
       "priority": "P1",
       "status": "qa_pass",
-      "train": "T-1101-M",
+      "train": "T-1103-M",
       "scheduled_slot": "UX Builder 19:15 28 Okt malam ini (BUILD-ONLY) → kereta T-1029-N — RESLOT oleh CTO sore (budget reserve #19)",
       "north_star": "GROWTH register_7d baseline 3 → >=6 dalam 14 hari post-live (+STICKY: watchlist permanen)",
       "spec": "CEO INTENT (OPSI A, CTO note 28 Okt): Register CTA moment-of-intent — guest yang baru MENYIMPAN (star_add watchlist / preset screener save) ditawari register gratis via bottom-sheet, BUKAN banner permanen. PRD lengkap + research_brief (verdict BUILD, bukti KUAT: lazy registration UI-Patterns/vocab.design, Baymard delayed account creation, Duolingo endowed progress) ada di product-backlog.json prd-2026-10-26-01. Implementasi: trigger di guest-watchlist-panel.tsx (star_add) + save-screen-prompt.tsx (preset_save), sheet registration-bottom-sheet.tsx rate-cap 1x/7hari/anonId (localStorage lastPromptAt), copy kontekstual n-item, reuse telemetry cta_click existing (DILARANG endpoint baru), kontrol: guest tanpa simpanan tidak pernah lihat sheet (AC4). Dependencies: prd-2026-10-26-02 (guest migration) MENUNGGU task ini live dulu — urutan 01 baru 02. FDE checklist: research_brief OK · PRD 7 field OK · QA plan lihat field qa_plan · slot terisi.",
@@ -3392,7 +3396,7 @@
       "verified_by": "reviewer",
       "qa_verified": true,
       "completed_at": "2026-10-30 07:10 WIB",
-      "reslot_note": "reslot otomatis 1 Nov: kereta T-1029-N kedaluwarsa tanpa keberangkatan (CEO reslot miss sejak 29 Okt); dipindah ke T-1101-M"
+      "reslot_note": "auto-reslot 2026-11-02: kereta T-1101-M kedaluwarsa (reslot_guard.py v2)"
     },
     {
       "id": "ops-2026-10-28-01",
@@ -3502,7 +3506,7 @@
       "type": "ops",
       "priority": "P3",
       "status": "qa_pass",
-      "train": "T-1101-M",
+      "train": "T-1103-M",
       "title": "UX: emoji pass-4 Lucide (auth-error, quota-meter) + drop dekoratif (about, overlimit banner)",
       "north_star": "STICKY + TRUST — konsistensi visual ui-craft rule #4",
       "created_by": "UX Builder 19:15 29 Okt",
@@ -3511,7 +3515,7 @@
       "qa_verified": true,
       "verified_by": "reviewer",
       "completed_at": "2026-10-30 07:10 WIB",
-      "reslot_note": "reslot otomatis 1 Nov: kereta T-1030-N kedaluwarsa tanpa keberangkatan (CEO reslot miss sejak 29 Okt); dipindah ke T-1101-M"
+      "reslot_note": "auto-reslot 2026-11-02: kereta T-1101-M kedaluwarsa (reslot_guard.py v2)"
     },
     {
       "id": "qw-audit-tk-1",
@@ -3588,9 +3592,10 @@
       "status": "in_train",
       "spec": "Dead code cleanup: PaymentButton.tsx (0 import), stock-ai-panel.tsx (0 import), health-score-detail.tsx (imported unused) + docs/agent-org/*.bak-* liar di working tree - hapus. Sweep 20+ file kelas warna non-token ke token brand (list lengkap di audit 4A).",
       "north_star": "reliable",
-      "scheduled_slot": "2026-11-02 19:15 FE Senin malam BUILD-ONLY (dead-code cleanup; reslot CTO sore — slot 31 Okt lewat)",
-      "train": "T-1102-N",
-      "result": "BUILD-ONLY: commit 98fcadc di main; health-score-detail.tsx -167 baris + import unused; PaymentButton/stock-ai-panel sudah hilang via sweep 2 Nov (verified find 0); 2 bak liar dihapus; tsc EXIT-0. Naik kereta malam T-1102-N."
+      "scheduled_slot": "FE Senin BUILD selesai (98fcadc) — kereta T-1102-N no-show -> reslot T-1103-N",
+      "train": "T-1103-N",
+      "result": "BUILD-ONLY: commit 98fcadc di main; health-score-detail.tsx -167 baris + import unused; PaymentButton/stock-ai-panel sudah hilang via sweep 2 Nov (verified find 0); 2 bak liar dihapus; tsc EXIT-0. Naik kereta malam T-1102-N.",
+      "reslot_note": "auto-reslot 2026-11-03: kereta T-1102-N kedaluwarsa (reslot_guard.py v2)"
     },
     {
       "id": "feat-audit-tk-1",
@@ -3650,7 +3655,8 @@
       "status": "done",
       "spec": "Aksi #4 landing evergreen (minggu 4-6): /kalender-dividen dari StockDividend (cumDate/exDate/paymentDate + yield + skor sinyal + edukasi jebakan ex-date, JSON-LD Dataset+FAQPage) & /aliran-dana-asing dari ForeignFlow+marketSnapshotService SATU PINTU (Top15 net buy/sell + akumulasi 5 hari; reuse pola #184/#185). Internal link dari /saham-dividen + tab dividen + blok asing 575 halaman saham. Done-when: 2 URL 200 SSR + masuk sitemap + JSON-LD valid.",
       "north_star": "traffic_mom_growth_pct",
-      "scheduled_slot": "2026-11-02 09:30 slot pagi"
+      "scheduled_slot": "2026-11-02 09:30 slot pagi",
+      "qa_verified": true
     },
     {
       "id": "seo-dr-5",
@@ -3702,7 +3708,8 @@
       "north_star": "TRUST",
       "spec": "INTENT: pasca-publish QA 07:00 menemukan angka tidak cocok dgn DB pada 3 artikel editorial. (1) brief-pasar-idx-2026-10-30-116-saham-oversold: klaim penurunan harian terbesar KEENAM dalam 12 bulan - aktual rank #12 (SQL rank -3,49%; 11 hari lebih buruk: 16 Okt -11,57 ... 20 Mei -3,54); breadth 102/653/72 vs snapshot kanon 104/653/74 (naik & stagnan meleset 2). (2) analis-sore-2026-10-29-mbss + analis-pagi-2026-10-30-mbss: klaim 8 sinyal/persilangan EMA cross baru - DB emaCrossDate=2026-10-29 bullish hanya 3; angka 8 = sesi 28 Okt (cross-day error, pola qa-30-01). (3) 2 artikel sama: MBSS volume +43,6% di atas rata-rata harian - tak rekonciliable dgn DB (vol 29 Okt 3,07jt vs avg20 7,09jt = -57%; 43,6% hanya cocok vs volume single-day 28 Okt 2,14jt = prev-day, bukan rata-rata). Plus minor: analis-pagi-30 klaim MBSS satu-satunya Strong Bullish di scan - DB ada 8 SB non-gorengan lain (YULE 0,68 dst) - relabel. ACCEPTANCE: (a) 3 artikel diperbaiki via SQL UPDATE (bukan regenerasi penuh), live 200 dan angka cocok dgn DB; (b) generator doctrine: klaim superlatif ranking wajib dari SQL ranking window sesi yang dibahas; count screener (EMA/GC/DC/oversold) wajib dari tanggal sesi artikel; klaim volume-vs-average wajib menyebut window & rekonciliable dari StockPrice; (c) tambah cek ke guard teknikalid_growth.py / factCheck utk pola ini; (d) selftest guard tetap hijau. KONTEKS: verifikasi SQL reviewer = SELECT rank() OVER (ORDER BY pct ASC) dari StockPrice ^JKSE 12 bulan; emaCrossDate bullish 29 Okt = 3 (28 Okt = 8).",
       "scheduled_slot": "2026-11-02 07:05 Content Reviewer Senin (P1 TRUST, verdict MoM 2 Nov; reslot CTO sore 1 Nov — slot 08:40 hantu)",
-      "result": "DONE CTO sore 2 Nov 16:45 (Reviewer 07:05 no-run tercatat; eksekusi slot ini). PATCH: (1) brief-30 breadth 102/653/72→104/654/74 (832 saham) + excerpt 'keenam'→'ke-12' & 827→832 — content rank ke-12 SUDAH benar (verif #12 exact); (2) analis-sore-29 '8 sinyal EMA cross'→3 (DB emaCrossDate 29 Okt non-gorengan DISTINCT=3; 8=sesi 28) + '43,6% di atas rata-rata'→'43,6% dari sesi sebelumnya, ~57% di bawah rata-rata 20 hari' + 'tertinggi di scanner'→'salah satu dari 6 SB (tertinggi YULE 0,68)'; (3) analis-pagi-30 'satu-satinya SB'→'salah satu dari 6 SB non-gorengan' + volume idem. GUARD teknikalid_growth.py +3 kelas klaim (breadth-pair comma-list, ema-cross-count vs sesi, vol-vs-avg20 arah+magnitudo>40pp) selftest 23/23. LIVE: 3 URL 200, frasa baru 2x render, residual lama 0 (H2). Backup 18:38 (fresh)."
+      "result": "DONE CTO sore 2 Nov 16:45 (Reviewer 07:05 no-run tercatat; eksekusi slot ini). PATCH: (1) brief-30 breadth 102/653/72→104/654/74 (832 saham) + excerpt 'keenam'→'ke-12' & 827→832 — content rank ke-12 SUDAH benar (verif #12 exact); (2) analis-sore-29 '8 sinyal EMA cross'→3 (DB emaCrossDate 29 Okt non-gorengan DISTINCT=3; 8=sesi 28) + '43,6% di atas rata-rata'→'43,6% dari sesi sebelumnya, ~57% di bawah rata-rata 20 hari' + 'tertinggi di scanner'→'salah satu dari 6 SB (tertinggi YULE 0,68)'; (3) analis-pagi-30 'satu-satinya SB'→'salah satu dari 6 SB non-gorengan' + volume idem. GUARD teknikalid_growth.py +3 kelas klaim (breadth-pair comma-list, ema-cross-count vs sesi, vol-vs-avg20 arah+magnitudo>40pp) selftest 23/23. LIVE: 3 URL 200, frasa baru 2x render, residual lama 0 (H2). Backup 18:38 (fresh).",
+      "qa_verified": true
     },
     {
       "id": "qa-2026-10-30-03",
@@ -3730,7 +3737,8 @@
       "status": "done",
       "source": "ux-builder flow-a audit 30 Okt 19:15 (observasi live saat insiden)",
       "scheduled_slot": "2026-11-02 07:30 BE pagi Senin BUILD-ONLY (forensik OOM read-only; reslot CTO sore 1 Nov — weekend pagi 08:00 lewat)",
-      "result": "FORENSIK READ-ONLY 2 Nov 07:3x: insiden 30 Okt 19:1x = OOM crash-loop dengan mitigasi by-design terkendali: NODE_OPTIONS max-old-space-size=1536 + compose memory 2G + swap 4G + restart unless-stopped. docker events window 30 Okt kosong (log rotasi; container image diganti prod-731df60 18:31 30 Okt). Status kini SEHAT: app 428MiB/2GiB (20,9 persen), OOMKilled=false, RestartCount=0, up sejak 23:43Z; worker 190MiB/1GiB. MITIGASI AKTIF: heap cap 1536MB (deploy 1 Nov) + single-service build. REKOMENDASI: watchdog alert RestartCount lebih dari 0 di jam market (tidak perlu entry baru — sentinel 30m sudah ada). Bukti fisik: docker inspect OOMKilled=false RestartCount=0 + docker stats 20,9 persen. Rollback: n/a read-only."
+      "result": "FORENSIK READ-ONLY 2 Nov 07:3x: insiden 30 Okt 19:1x = OOM crash-loop dengan mitigasi by-design terkendali: NODE_OPTIONS max-old-space-size=1536 + compose memory 2G + swap 4G + restart unless-stopped. docker events window 30 Okt kosong (log rotasi; container image diganti prod-731df60 18:31 30 Okt). Status kini SEHAT: app 428MiB/2GiB (20,9 persen), OOMKilled=false, RestartCount=0, up sejak 23:43Z; worker 190MiB/1GiB. MITIGASI AKTIF: heap cap 1536MB (deploy 1 Nov) + single-service build. REKOMENDASI: watchdog alert RestartCount lebih dari 0 di jam market (tidak perlu entry baru — sentinel 30m sudah ada). Bukti fisik: docker inspect OOMKilled=false RestartCount=0 + docker stats 20,9 persen. Rollback: n/a read-only.",
+      "qa_verified": true
     },
     {
       "id": "bug-2026-10-30-02",
@@ -3756,7 +3764,8 @@
       "title": "OPS: reslot_guard v2 — validasi scheduled_slot vs kalender cron (slot hantu) + konform single-writer statejson",
       "spec": "INTENT (dispatch CTO 1 Nov): 3 slot hantu 31 Okt—1 Nov: entry bug-30-01 (BE malam 18:30 Sabtu, cron expr 30 18 * * 1-5 Sen-Jum saja), bug-30-02 (FE 19:15 Sabtu, Sen-Jum saja), qa-30-02 (QA reviewer 07:15 — job TIDAK EKSIS di ~/.hermes/cron/jobs.json). reslot_guard.py (jalan mulai 2 Nov via CEO brief) hanya reslot kereta kedaluwarsa (field train), TIDAK deteksi slot yang tak akan pernah menembak. FIX host-script (0 deploy web): (1) reslot_guard v2 — parse expr cron jobs.json, flag entry pending/in_train yang scheduled_slot-nya menyebut jam/hari job yang tidak akan run hari itu atau besok (nama job + jam match), print ALERT (silent-healthy kalau bersih); (2) rapor display-string basu di jobs.json (BE malam display 45 16 vs expr 30 18 — HANYA laporkan, JANGAN edit jobs.json dari script); (3) tulis queue via statejson.py (flip/update) atau minimal ambil Lock yang sama — sekarang json.dump langsung bypass version-check single-writer (charter §10). DONE-WHEN: (a) selftest: fixture jobs.json + queue berisi 3 kasus hantu 31 Okt → script flag 3/3, fixture sehat → 0 alert; (b) lint_all.py 0 error utk file disentuh; (c) dry-run di queue asli hari ini: 0 alert (semua sudah direslot CTO pagi); (d) changelog + handoff. ESTIMASI 30-45 mnt.",
       "scheduled_slot": "2026-11-02 09:30 BE siang Senin (host-script BUILD-ONLY, 0 deploy; reslot CTO sore — slot 13:30 lewat)",
-      "result": "DONE BE siang 09:30 Senin 2 Nov (host-script, 0 deploy). reslot_guard.py v2: (1) ghost-slot detection — cron matcher 5-field (vixie dom/dow OR-rule, 7==0), slot keyword→job jobs.json, fires(date,jam); ALERT bila job tidak fires/disabled/tak-eksis, fallback rescue job-lain→INFO ambigu, tanggal-lewat→INFO; (2) display-drift report 23 job basi (cronish-only, prosa dikecualikan; terbesar: BE malam display 30 15 vs expr 30 18 1-5, Content Reviewer display 40 8 vs expr 5 7, FE cluster display weekend basi) — HANYA lapor, jobs.json tak disentuh; (3) reslot train kini via statejson.Lock+save (single-writer charter §10; v1 raw json.dump deprecated). BUKTI FISIK: python3 reslot_guard.py --selftest EXIT-0 = cron 7 kasus + ghost fixture 3/3 (bug-30-01 BE malam Sabtu, bug-30-02 FE Sabtu, qa-30-02 reviewer 07:15) + healthy 0 alert + drift 1/1; lint_all 0 hard 0 warn; dry-run --check-only queue asli EXIT-0 alerts=0 (14 INFO: 7 tanggal-lewat-masih-pending, prosa ambigu, duplikat qa-30-02 x2 terdedupe) + 23 display-drift; AST parse OK. Jalan otomatis tiap pagi via teknikalid_ceo_brief.py (call-site utuh tak diubah). Rollback: git/cp tidak berlaku (host script) — salinan v1 tersimpan .bak via statejson auto-backup; revert = kembalikan fungsi reslot() ke json.dump lama."
+      "result": "DONE BE siang 09:30 Senin 2 Nov (host-script, 0 deploy). reslot_guard.py v2: (1) ghost-slot detection — cron matcher 5-field (vixie dom/dow OR-rule, 7==0), slot keyword→job jobs.json, fires(date,jam); ALERT bila job tidak fires/disabled/tak-eksis, fallback rescue job-lain→INFO ambigu, tanggal-lewat→INFO; (2) display-drift report 23 job basi (cronish-only, prosa dikecualikan; terbesar: BE malam display 30 15 vs expr 30 18 1-5, Content Reviewer display 40 8 vs expr 5 7, FE cluster display weekend basi) — HANYA lapor, jobs.json tak disentuh; (3) reslot train kini via statejson.Lock+save (single-writer charter §10; v1 raw json.dump deprecated). BUKTI FISIK: python3 reslot_guard.py --selftest EXIT-0 = cron 7 kasus + ghost fixture 3/3 (bug-30-01 BE malam Sabtu, bug-30-02 FE Sabtu, qa-30-02 reviewer 07:15) + healthy 0 alert + drift 1/1; lint_all 0 hard 0 warn; dry-run --check-only queue asli EXIT-0 alerts=0 (14 INFO: 7 tanggal-lewat-masih-pending, prosa ambigu, duplikat qa-30-02 x2 terdedupe) + 23 display-drift; AST parse OK. Jalan otomatis tiap pagi via teknikalid_ceo_brief.py (call-site utuh tak diubah). Rollback: git/cp tidak berlaku (host script) — salinan v1 tersimpan .bak via statejson auto-backup; revert = kembalikan fungsi reslot() ke json.dump lama.",
+      "qa_verified": true
     },
     {
       "id": "ops-2026-11-01-02",
@@ -3780,7 +3789,8 @@
       "spec": "INTENT (dispatch COUNCIL 1 Nov): sitemap 26 Okt 2028 URL -> 1 Nov 1375; delta utama /stocks 616 (flag CTO 31 Okt belum tuntas). Pekan ini views 761 vs 1044 (-27%), screener 261->132 (-49%) = penyumbang drop terbesar; perlu verdict apakah shortlist shrink by-design (freshness/ranking filter) atau bug generator. OUTPUT: angka URL count per-seksi sebelum/sesudah + verdict restore/accept + estimasi dampak indeks GSC. READ-ONLY DB.",
       "scheduled_slot": "2026-11-02 07:30 BE pagi",
       "source": "COUNCIL 2026-11-01",
-      "result": "VERDICT ACCEPT by-design (bukan bug) 2 Nov 07:3x: sitemap live 1.317 URL. Komposisi: /stocks 616 + /saham 515 + berita 70 + akademi 67 + sektor 13 + laporan-pasar 9 + indeks 7 + landing 1. Penyusutan 2028 ke 1317 = efek gabungan filter DISENGAJAKAN: (1) stale-filter artikel non-edu lebih dari 10 hari (66 artikel ter-exclude; sitemap wajib superset halaman indexable yang kini auto-noindex), (2) 301 kanibalisasi akademi Sprint-1, (3) guard ticker non-aktif 29 Okt, (4) shortlist /saham slice 580 dari ranking views — ekspansi batch-2 +80 memang DITUNDA menunggu verdict GSC 2-4 minggu. KAUSAL VIEWS: PageView 7d 903 vs prev 1273 = -29 persen WoW RIIL tapi BUKAN disebabkan sitemap (index = funnel bulanan; drop pekanan = trafik langsung, prime-time shift). ESTIMASI RESTORE +80: dampak minor, tetap deferred sampai GSC verdict batch-1. Bukti: curl sitemap count 1.317 + SQL stale 66 + PageView 903/1273. Rollback: n/a read-only verdict."
+      "result": "VERDICT ACCEPT by-design (bukan bug) 2 Nov 07:3x: sitemap live 1.317 URL. Komposisi: /stocks 616 + /saham 515 + berita 70 + akademi 67 + sektor 13 + laporan-pasar 9 + indeks 7 + landing 1. Penyusutan 2028 ke 1317 = efek gabungan filter DISENGAJAKAN: (1) stale-filter artikel non-edu lebih dari 10 hari (66 artikel ter-exclude; sitemap wajib superset halaman indexable yang kini auto-noindex), (2) 301 kanibalisasi akademi Sprint-1, (3) guard ticker non-aktif 29 Okt, (4) shortlist /saham slice 580 dari ranking views — ekspansi batch-2 +80 memang DITUNDA menunggu verdict GSC 2-4 minggu. KAUSAL VIEWS: PageView 7d 903 vs prev 1273 = -29 persen WoW RIIL tapi BUKAN disebabkan sitemap (index = funnel bulanan; drop pekanan = trafik langsung, prime-time shift). ESTIMASI RESTORE +80: dampak minor, tetap deferred sampai GSC verdict batch-1. Bukti: curl sitemap count 1.317 + SQL stale 66 + PageView 903/1273. Rollback: n/a read-only verdict.",
+      "qa_verified": true
     },
     {
       "id": "ops-2026-11-01-04",
@@ -3831,9 +3841,10 @@
       "qa_plan": "Pembangun != pemeriksa. Staging: curl view-source baris SIDO/UNTR/CNMA + tanggal asli; tsc 0; LCP stabil (0 JS baru); no-regresi tabel yield diff terbatas. D+14: GSC impresi 'ex date' > 0 ATAU PageView > baseline; 0 hydration error.",
       "done_when": "DONE WHEN: (a) tsc EXIT-0; (b) staging view-source memuat 3 baris asli (SIDO 2026-11-03, UNTR 2026-11-06, CNMA 2026-11-09) + badge 'segera'; (c) tabel yield existing tak berubah; (d) D+14 evaluasi AC6 PRD.",
       "created_by": "Product Agent buffer-keeper 2026-11-02 00:3x (run gate: buffer teknikal 2 < 3)",
-      "scheduled_slot": "2026-11-02 19:15 FE Senin malam BUILD-ONLY lalu boarding kereta malam (assign CTO pagi 2 Nov)",
-      "train": "T-1102-N",
-      "result": "BUILD-ONLY: commit 18c50c9 di main; tsc EXIT-0; build EXIT-0 gG22HaqyYZTIAaJpUw-fX; staging :3100 DOM fisik SIDO/UNTR/CNMA+tanggal asli+badge segera (SIDO only), yield table intact, FAQ4 ex-date. Bukti: curl staging HTML grep. Naik kereta malam T-1102-N."
+      "scheduled_slot": "FE 19:15 Senin BUILD selesai (18c50c9) — kereta T-1102-N no-show -> reslot T-1103-N",
+      "train": "T-1103-N",
+      "result": "BUILD-ONLY: commit 18c50c9 di main; tsc EXIT-0; build EXIT-0 gG22HaqyYZTIAaJpUw-fX; staging :3100 DOM fisik SIDO/UNTR/CNMA+tanggal asli+badge segera (SIDO only), yield table intact, FAQ4 ex-date. Bukti: curl staging HTML grep. Naik kereta malam T-1102-N.",
+      "reslot_note": "auto-reslot 2026-11-03: kereta T-1102-N kedaluwarsa (reslot_guard.py v2)"
     },
     {
       "id": "bo-2026-11-02-01",
@@ -3856,12 +3867,339 @@
       "title": "OPS P1 WORKER IMAGE STALE: image worker 1 Nov 18:04 < commit 526381e (2 Nov 06:08, poll 10s->30s + satu-pintu marketEngine) — deploy pagi 06:42+07:00 app-only melanggar REBUILD ATOMIK",
       "spec": "Kereta malam T-1102-N WAJIB: (1) docker compose build app worker SATU perintah, BUKAN app-only; (2) verify image CreatedAt app==worker sebelum up; (3) bukti per-fitur H1: docker exec teknikalidnew-worker-1 sh -c \"grep -c 'POLL_INTERVAL_MS = 30_000' /app/dist/server.js\" harus >=1; (4) konfirmasi jadwal cron internal worker tetap lengkap setelah poll 10s->30s (tidak ada job hilang window). DONE-WHEN: 4 syarat hijau + bukti fisik di field result.",
       "status": "pending",
-      "scheduled_slot": "2026-11-02 kereta malam T-1102-N window 22:00-01:30 (bareng prd-31-02 boarding; rider fix-28-02/ops-29-01/ops-11-01-04/fix-26-08 build sore, deploy sekali di kereta)",
+      "scheduled_slot": "2026-11-03 kereta malam T-1103-N window 22:00-01:30 — WAJIB docker compose build app worker SATU perintah + CreatedAt parity + grep POLL_INTERVAL_MS 30_000 di worker (masih basi 1 Nov 18:04, diverifikasi CTO pagi 3 Nov)",
       "north_star": "TRUST — worker = mesin sinyal/EOD; bundle basi = perilaku prod != main (data reliable)",
       "assigned_to": "be-night",
       "created_by": "cto-pagi-2026-11-02",
       "date": "2026-11-02",
       "result": ""
+    },
+    {
+      "id": "prd-2026-11-02-02",
+      "date": "2026-11-02",
+      "type": "prd",
+      "priority": "P2",
+      "prd_id": "idea-2026-10-26-1",
+      "status": "spec_ready",
+      "title": "P2 TRUST (PRD idea-2026-10-26-1): Hardening data ex-date dividen — sumber primer IDX scraper + cross-check Yahoo fail-closed + buka constraint 1-dividen/tahun (fondasi kalender prd-2026-11-02-01 yang in_train T-1102-N)",
+      "north_star": "TRUST (angka publik = data terverifikasi; user bikin keputusan finansial nyata dari tanggal ex-date) + GROWTH kalender ex-date /saham-dividen",
+      "user_story": "Sebagai pembaca yang melihat kalender ex-date /saham-dividen dan badge dividen di halaman saham, saya ingin tanggal yang tampil terverifikasi dari sumber resmi bursa (dan disembunyikan bila ragu), supaya saya tidak kehilangan hak dividen karena tanggal salah.",
+      "acceptance_criteria": [
+        "AC1: Provenance — row StockDividend mencatat sumber (kolom source idx|yahoo + sourceVerifiedAt); render user-facing (kalender + badge) FAIL-CLOSED: hanya row source=idx ATAU row yahoo yang lolos cross-check <=7 hari vs IDX yang boleh render; row tak terverifikasi tidak dirender (bukan dirender dengan tanggal)",
+        "AC2: Schema unlock — constraint @@unique([stockId, year, type]) diganti compound unique yang menyertakan exDate (pola semi-annual interim+final 1 emiten 1 tahun bisa tersimpan); migrasi idempotent + down-migration teruji + backup DB <24h sebelum eksekusi",
+        "AC3: Laporan coverage audit (no-deploy, script): % emiten non-gorengan likuid dgn ex-date 365d terakhir di DB vs jadwal resmi IDX — angka eksplisit; baseline riset 2 Nov: 314 rows/268 emiten/181 exDate-365d, horizon ke-depan HANYA 3 row (kalender 30-hari akan sering kosong)",
+        "AC4: Freshness guard — row dgn exDate <7 hari ke depan yang belum reconcile hari ini = prioritas sync; row stale >14 hari tanpa verifikasi = auto-keluar dari render (bukan dihapus dari DB)",
+        "AC5: tsc EXIT-0; build EXIT-0; staging: row tanpa provenance TIDAK muncul di kalender (spot-check SQL vs DOM fisik); migrasi up+down hijau di staging DB"
+      ],
+      "data_evidence": "SQL read-only teknikalidnew-db-1 2 Nov: StockDividend 314 rows / 268 emiten / 100% bertanggal (exDate+recordDate+paymentDate+cumDate=314) / amount 313 / SEMUA type=cash; updatedAt batch harian hidup (29 Okt=131, 30 Okt=62, 31 Okt=32, 1 Nov=24; MIN 2026-05-31); upcoming 2 Nov hanya 3 row: SIDO 2026-11-03 Rp10, UNTR 2026-11-06 Rp430, CNMA 2026-11-09 Rp4. information_schema: 12 kolom TANPA field provenance. prisma/schema.prisma L224 model StockDividend @@unique([stockId, year, type]) = max 1 dividen cash/emiten/tahun (dividen interim+final tidak tertampung). Penulis pipeline: src/app/api/cron/sync-profiles + stock.repository.ts. Researcher 28 Oct verdict MODIFIKASI: IDX = source-of-truth, Yahoo quoteSummary secondary saja (bug label forward-vs-TTM .JK terbukti: quantmod #287, yfinance #568, mismatch live BBCA.JK). Tree riset: teknikalidnew main@86c4de3 (2 Nov); deployed image 758a5330 06:42 + BUILD-ONLY T-1102-N (18c50c9/98fcadc)",
+      "impact": 4,
+      "effort": 3,
+      "target_files": [
+        "prisma/schema.prisma (StockDividend: unique compound + field provenance)",
+        "src/app/api/cron/sync-profiles/route.ts (pipeline dividen, path estimasi)",
+        "src/domains/stock/stock.repository.ts (filter provenance)",
+        "src/app/(public)/saham-dividen/page.tsx (render fail-closed)",
+        "scripts/dividend-coverage-audit.ts (baru, estimasi)"
+      ],
+      "db_migrations": true,
+      "dependencies": [
+        "scraper IDX existing (sync-profiles pipeline)",
+        "yahoo-finance quoteSummary existing (fundamental v2)"
+      ],
+      "risk": "medium",
+      "estimate_tool_calls": 25,
+      "spec": "Bangun sesuai PRD idea-2026-10-26-1 (product-backlog.json, research_brief Researcher 28 Okt = MODIFIKASI): (1) IDX scraper = SOURCE-OF-TRUTH ex-date, Yahoo hanya cross-check — JANGAN migrasi ke Yahoo; (2) render user-facing fail-closed; (3) buka constraint unique utk multi-dividen/tahun; (4) coverage audit script. Urutan: migrasi schema dulu, lalu provenance backfill, lalu guard render.",
+      "qa_plan": "Pembangun != pemeriksa. Staging: SQL row tanpa provenance vs DOM kalender = 0 render; migrasi up/down; coverage audit angka % eksplisit. D+14: 0 laporan tanggal salah; horizon kalender > 10 row.",
+      "done_when": "DONE WHEN: (a) migrasi up+down hijau staging + row semi-annual ganda tersimpan; (b) staging kalender 0 render row unverified; (c) laporan coverage % angka; (d) tsc+build EXIT-0. Gagal render-guard = iterate, bukan ship setengah.",
+      "scheduled_slot": "usul BE slot kosong setelah T-1102-N (ada migrasi DB — jangan slot BUILD-ONLY murni); boarding CEO/CTO",
+      "created_by": "Product Agent buffer-keeper 2026-11-02 22:4x WIB (run gate: buffer teknikal 0 < 3)"
+    },
+    {
+      "id": "prd-2026-11-02-03",
+      "date": "2026-11-02",
+      "type": "prd",
+      "priority": "P2",
+      "prd_id": "im-2026-10-29-2",
+      "status": "spec_ready",
+      "title": "P2 STICKY+AEO (PRD im-2026-10-29-2 fase-2): Glosarium content-depth — 15 istilah prioritas naik ke >=300 kata + blok contoh-angka-nyata SSR (SATU PINTU), lalu re-entry batch ke sitemap (buka kunci seo-dr-2 selektif)",
+      "north_star": "STICKY time-spent (pemula paham istilah dalam 1 halaman; jembatan dari TermTip fase-1 live) + SEO/AEO long-tail pengertian-istilah — glosarium 30d = 0 views karena 60 URL per-term dikecualikan sitemap (seo-dr-2)",
+      "user_story": "Sebagai pemula yang menemukan istilah (RSI, MACD, dividen) dari halaman kondisi, artikel, atau Tanya AI, saya ingin halaman istilah yang menjelaskan cara membaca plus contoh angka nyata hari ini, supaya saya paham dalam 1 halaman tanpa cari sumber lain.",
+      "acceptance_criteria": [
+        "AC1: 15 istilah prioritas deterministik — 5 istilah TermTip fase-1 (rsi, moving-average, golden-cross, death-cross, oversold; terbukti dipakai 3 halaman kondisi) + 10 kategori fundamental/pasar urut slug (dividen, eps, per, pbv, market-cap, blue-chip, lot, ipo, saham, ihsg) — diperluas >=300 kata: definisi + cara-membaca + 1 blok contoh nyata SSR",
+        "AC2: Blok contoh angka WAJIB dari SATU PINTU existing (signals_kanonik/market-snapshot utk RSI-oversold; StockDividend utk ex-date; fundamental v2 utk P/E-P/BV) — DILARANG hitung sendiri (rule qa-30-01); pool kosong = empty-state jujur",
+        "AC3: Depth gate: istilah lolos (>=300 kata + 1 contoh angka + >=1 internal-link artikel akademi) baru masuk sitemap; gagal = tetap live TANPA sitemap; sitemap.ts re-enable selektif dgn komentar verdict-link seo-dr-2",
+        "AC4: Sitemap diff pasca-deploy = tepat +15 URL (baseline 1317 -> 1332), 0 perubahan URL lain; 0 client-JS baru (server component, revalidate 86400 existing); schema JSON-LD pakai safeJsonLd existing bila ditambahkan",
+        "AC5: tsc EXIT-0; build EXIT-0; staging view-source 3 istilah sample: blok contoh memuat angka asli DB (bukan placeholder) + hitungan kata >=300"
+      ],
+      "data_evidence": "DB+kode main@86c4de3 (2 Nov): glosarium 61 istilah live (src/lib/glossary-terms.ts 61 entri; route /akademi/glosarium/[term] generateStaticParams + revalidate 86400) TAPI PageView 30d path glosarium = 0 rows (isBot=false, SQL 2 Nov) — tak discoverable; sitemap.ts L322: 60 per-term URL DIKELUARKAN sitemap by seo-dr-2 (thin content 82-86 kata, otoritas dikumpul di index — verdict accept); definisi kini ~25 kata/istilah (1-2 kalimat). Demand istilah nyata: AiChatLog 115 interaksi/7d (SQL 2 Nov; sinyal apa-itu-X 7/98 dicatat PRD prd-2026-10-31-02); TermTip fase-1 live menghubungkan 3 halaman kondisi -> glosarium (jalur internal-link siap, tinggal konten layak tujuan). Live image 758a5330 + BUILD-ONLY T-1102-N.",
+      "impact": 3,
+      "effort": 3,
+      "target_files": [
+        "src/lib/glossary-terms.ts (struktur + field konten-lanjutan)",
+        "src/app/(public)/akademi/glosarium/[term]/page.tsx (render depth + blok contoh)",
+        "src/app/sitemap.ts (re-entry selektif 15 URL)",
+        "src/app/(public)/akademi/glosarium/page.tsx (link batch, opsional)"
+      ],
+      "db_migrations": false,
+      "dependencies": [
+        "market-snapshot.service / signals_kanonik SATU PINTU (contoh angka)",
+        "tabel StockDividend + StockFundamental existing",
+        "safeJsonLd existing"
+      ],
+      "risk": "low",
+      "estimate_tool_calls": 18,
+      "spec": "Bangun sesuai PRD im-2026-10-29-2 fase-2 (backlog): konten-depth dulu, sitemap kemudian — JANGAN re-entry massal 60 URL (seo-dr-2 verdict tetap utk 45 istilah belum lolos gate). Data contoh angka read-only saat render SSR; reuse market-snapshot SATU PINTU. Batch-2 (45 sisa) menunggu verdict GSC impresi batch-1 14 hari.",
+      "qa_plan": "Pembangun != pemeriksa. Staging: word-count 3 sample >=300 + angka asli di view-source + sitemap.xml diff +15 tepat. D+14: GSC impresi query pengertian/perdagangan istilah > 0 ATAU PageView term-page > 0; 0 thin-content flag Search Console.",
+      "done_when": "DONE WHEN: (a) tsc+build EXIT-0; (b) staging 15/15 istilah lolos depth gate dgn bukti fisik view-source; (c) sitemap live diff +15; (d) verdict GSC 14 hari menentukan batch-2. Konten placeholder/angka karangan = GAGAL, bukan partial-done.",
+      "scheduled_slot": "usul FE 19:15 Sen-Jum berikutnya (frontend murni + sitemap, 0 migrasi); boarding CEO/CTO",
+      "created_by": "Product Agent buffer-keeper 2026-11-02 22:4x WIB (run gate: buffer teknikal 0 < 3)"
+    },
+    {
+      "id": "prd-2026-10-26-02",
+      "date": "2026-10-26",
+      "type": "prd",
+      "priority": "P2",
+      "prd_id": "prd-2026-10-26-02 (kanonik: product-backlog.json — MIRROR ke queue 2 Nov, anti-stagnation)",
+      "status": "in_train",
+      "title": "P2 STICKY: Migrasi otomatis guest watchlist+preset -> akun saat register/login sukses (data tidak hilang = alasan balik; nyambung 1-tap ke prd-2026-10-26-01)",
+      "north_star": "STICKY (returning_ip_pct >=8%; baseline GROWTH-PLAN 2 Nov: returning rolling-7d 2,3% — KPI MERAH utama) + TRUST",
+      "user_story": "Sebagai guest yang punya watchlist/preset tersimpan di perangkat, saat saya akhirnya register/login dari device yang sama, saya ingin semua simpanan saya otomatis pindah ke akun, supaya saya tidak mulai dari nol dan tidak kehilangan apa yang sudah saya kumpulkan.",
+      "acceptance_criteria": [
+        "AC1: Pasca register ATAU login sukses (klien mengirim payload {watchlist:[ticker], presets:[{name,queryString}]} dari localStorage), server insert ke tabel Watchlist + SavedScreener milik user — dedupe by ticker/queryString, TIDAK menimpa data akun existing.",
+        "AC2: Payload dibatasi: watchlist max 30 ticker, preset max 10 (sesuai FIFO localStorage), validasi ticker format ^[A-Z]{4}\\.JK$ — payload di luar bentuk ditolak 400 diam-diam (bukan crash).",
+        "AC3: Setelah migrasi sukses, localStorage guest DIKOSONGKAN + event cta_click label=guest_migrate_done terkirim (terhitung di EngagementEvent).",
+        "AC4: Kontrol race: user yang login di device TANPA simpanan guest = 0 query insert, 0 error (no-op bersih).",
+        "AC5: tsc EXIT-0 + staging: guest simpan 2 ticker + 1 preset -> register -> SQL: Watchlist 2 rows + SavedScreener 1 row milik user baru; refresh halaman: panel akun menampilkan 2 ticker; localStorage guest_watchlist kosong."
+      ],
+      "data_evidence": "Bukti kode tree main@ce4e8d8 (26 Okt): (a) src/lib/guest-storage.ts L13 GUEST_WATCHLIST_KEY='guest_watchlist' + L86 preset 'Simpananku' — keduanya localStorage-only; (b) grep GUEST_WATCHLIST_KEY di seluruh src: 0 konsumen di src/app/auth atau src/components/auth (tidak ada migrasi); (c) prisma/schema.prisma: model Watchlist + SavedScreener SUDAH ADA (server-side) — migrasi = insert ke tabel existing, 0 DDL. User baru 30d = 9 (populasi kecil, dampak terukur bersih). RE-VERIFY FRESH 2 Nov (Product Agent, tree main@86c4de3): guest-storage.ts masih ada + 4 hit GUEST_WATCHLIST_KEY; 0 konsumen auth; model Watchlist L470 + SavedScreener L1218 — PRD TIDAK basi. Konteks baru: GROWTH-PLAN-2026-11-02 baseline register 0 baru/7d & returning 2,3% — fitur ini pembayaran janji 'simpanan tidak hilang' dari CTA register prd-26-01 (deployed T-1029-N + qa_pass).",
+      "impact": 3,
+      "effort": 3,
+      "target_files": [
+        "src/lib/guest-storage.ts (helper read-and-clear utk payload migrasi)",
+        "src/app/auth/register/page.tsx + login page (kirim payload migrasi pasca auth sukses)",
+        "src/app/api/watchlist/batch/route.ts (REUSE endpoint batch existing — cek kontrak dulu, dilarang endpoint baru)",
+        "src/app/api/saved-screener (lokasi persis unknown — cari route preset existing; kalau tidak ada, extend 1 route di api/ existing)",
+        "prisma/schema.prisma (READ-ONLY referensi — 0 migration)"
+      ],
+      "db_migrations": false,
+      "dependencies": [
+        "prd-2026-10-26-01 register CTA (deployed 29 Okt, qa_pass — UNBLOCKED)"
+      ],
+      "risk": "med",
+      "estimate_tool_calls": 7,
+      "spec": "Bangun sesuai PRD prd-2026-10-26-02 (product-backlog.json — entry kanonik + research_brief Researcher 26 Okt VERDICT BUILD): client kirim payload pasca auth sukses -> server insert dedupe -> clear localStorage HANYA setelah insert terkonfirmasi. BP wajib: dedupe server-side (bukan klien saja); cap+regex 400 diam; race no-op; JANGAN over-engineer anonymous-account server-side.",
+      "qa_plan": "Pembangun != pemeriksa. Staging AC5 end-to-end fisik (localStorage -> SQL rows -> UI panel). D+14: event guest_migrate_count > 0 + returning_ip_pct naik vs baseline growth-metrics.jsonl 2 Nov (2,3%). NIGHT NOTE: staging :3100 mati saat slot malam — AC5 e2e fisik dikerjakan CTO pagi (start staging → guest simpan 2 ticker+1 preset → register → SQL verify).",
+      "done_when": "DONE WHEN: (a) tsc EXIT-0; (b) staging AC5 hijau penuh; (c) live kereta + telemetri guest_migrate_done tercatat; gagal -> iterate copy/placement, bukan fitur baru.",
+      "scheduled_slot": "merged main 9058336 (CTO pagi 3 Nov BUILD-ONLY) -> kereta malam T-1103-N",
+      "created_by": "Product Agent buffer-keeper 2026-11-02 22:5x WIB — MIRROR dari product-backlog.json (bukan PRD baru; cap 2-PRD-baru tidak terganggu)",
+      "branch": "night/prd-2026-10-26-02",
+      "train": "T-1103-N",
+      "result": "MERGED by CTO pagi 3 Nov: dry-run bersih exit 0, schema-shield 0 file; source-only merge (docs queue/handoff versi branch v186 di-restore ke main — state live v191 utuh via statejson); commit merge 9058336; verify tree merged: tsc EXIT-0, selftest-guest-migrate 6/6, build EXIT-0 BUILD_ID H49vgVnzZIAFihQig1il7. 0 deploy pagi. NOTE AC5 staging e2e belum dijalankan (staging :3100 = tanggung jawab kereta/FE; builder night sudah tsc+selftest+build+marker v2). Rollback: git revert 9058336"
+    },
+    {
+      "id": "bo-2026-11-03-01",
+      "date": "2026-11-03",
+      "type": "backoffice",
+      "priority": "P2",
+      "status": "in_train",
+      "assigned_to": "backoffice-builder",
+      "north_star": "STICKY + DATA-TRUST — North Star #1 org (Weekly Returning Visitor ≥8% per 25 Nov): /admin/retention wajib jadi satu sumber kebenaran metrik ini; label & guard yang menyesatkan = pelanggaran data-trust (sentinel kelas halusinasi angka)",
+      "title": "BACKOFFICE MATANGKAN /admin/retention: label basi 'Returning IP %' (SQL sudah aktor-based sejak 1 Okt) + guard 12% pra-kanon + dual-definisi vs kpi.json growth_metrics — audit ronde-5",
+      "spec": "Audit ronde-5 (3 Nov, rotasi: retention = halaman real last-commit 1 Okt, belum pernah diaudit khusus). Temuan: (1) SQL retention.service sudah aktor-based COALESCE(userId>anonId>ip) tapi LABEL UI masih 'Returning IP %'/'IP nobot' (retention/page.tsx + overview-tab.tsx North Star card) = basi, memicu keputusan salah (CEO 13 Okt: IP/CGNAT tak reproducible). (2) RETURNING_GUARD_PCT=12 ditulis 1 Okt SEBELUM kanon north-star.md 14 Okt (target ≥8% 25 Nov) — badge 'BELOW GUARD' terus merah meski target North Star tercapai 8-11.9%. (3) Dual-definisi: halaman = in-week calendar (Sen-Min WIB, ≥2 hari berbeda) vs kpi.json/:8790 (growth_metrics.py = rolling-7d WoW-return, kini 2,9% vs in-week 4,7%) — dua angka North Star tak pernah cocok di mata owner; verdict gate GROWTH-PLAN 9 Nov tergantung definisi mana. EKSEKUSI (ponytail ring-2, 0 endpoint/0 schema): (a) label 'Returning IP %'→'Returning Visitor % (aktor)' + sub 'pengunjung nobot (login > anonId > IP)'; (b) guard 12→8 align north-star.md + komentar ratchet Council; (c) anotasi metodologi 2 baris di kartu (definisi aktor + jendela kalender) + 1 baris cross-ref 'rolling-7d WoW-return di dashboard :8790 memakai jendela berbeda — angka berbeda by-design, keputusan unifikasi = Council/owner'; (d) flag dual-definisi utk Council Minggu (bukan diubah sendiri — growth_metrics.py = artefak GROWTH-PLAN owner, verdict 9 Nov in-flight, DILARANG sentuh mid-experiment).",
+      "done_when": [
+        "tsc EXIT-0",
+        "grep residu: 'Returning IP %' & 'IP nobot' = 0 di src (label baru terlihat di page.tsx + overview-tab.tsx)",
+        "guard=8 di retention.service.ts + sparkline line guard ikut (unit: RETURNING_GUARD_PCT dipakai semua UI dari 1 konstanta)",
+        "build EXIT-0 (BUILD_ID fisik) — BUILD-ONLY, kereta malam angkut, 0 deploy slot ini",
+        "commit sempit branch night/bo-2026-11-03-01 + push; queue flip + handoff + bus"
+      ],
+      "created_by": "Backoffice Builder slot 03:00 3 Nov",
+      "branch": "night/bo-2026-11-03-01",
+      "result": "MERGED by CTO pagi 3 Nov: dry-run merge bersih (exit 0, no conflict), schema-shield 0 file, commit merge 4070d56; verify tree merged: tsc EXIT-0, selftest-retention 4/4, build EXIT-0 BUILD_ID H49vgVnzZIAFihQig1il7. 0 deploy slot pagi (DEPLOY WINDOW). Rollback: git revert 4070d56. + bukti builder asli: ecf0b11 tsc+build EXIT-0 BUILD_ID sQcVDp5VLIWdq0iKpHJ9V, residu label 0",
+      "scheduled_slot": "merged main 4070d56 (CTO pagi 3 Nov BUILD-ONLY) -> kereta malam T-1103-N",
+      "train": "T-1103-N"
+    },
+    {
+      "id": "ux-2026-11-03-01",
+      "status": "pending",
+      "title": "FIX DASHBOARD: agent_ops_page train schedule kosong — renderer tak parse scheduled_slot string bebas",
+      "summary": "Dashboard /agents 'T-w antre' menampilkan kartu TANPA jadwal padahal 12/12 pending punya scheduled_slot terisi. Root cause: scheduled_slot adalah string naratif ('2026-11-02 18:30 BE malam Senin...'), renderer expect format pendek/tanggal terstruktur → jatuh ke tampilan polos. created_at/updated_at juga kosong di entry lama (sorting umur gagal). Data SEHAT, murni bug tampilan.",
+      "acceptance": [
+        "Renderer parse scheduled_slot string: regex tanggal 'YYYY-MM-DD[ HH:MM]' di awal → tampilkan tanggal+jam + countdown 'hari ini 18:30 / D-1 / D-2'",
+        "Fallback: kalau tak terparse, TAMPILKAN teks slot apa adanya (bukan kosong)",
+        "Kartu pending tanpa slot sama sekali → badge 'PERLU SLOT' merah biar kelihatan",
+        "Sorting antrean pakai tanggal terparse; entry tanpa tanggal di bawah",
+        "Verifikasi: halaman /agents menampilkan 12 pending SEMUA dengan jadwal terlihat (screenshot/evidence DOM)"
+      ],
+      "scheduled_slot": "2026-11-03 19:15 FE Selasa BUILD-ONLY bareng ux-2026-10-30-01 (satu PR dashboard)",
+      "created_at": "2026-11-03T06:13:14",
+      "labels": [
+        "dashboard",
+        "ux",
+        "agents-page",
+        "p2"
+      ],
+      "notes": "Ditambahkan owner-approval 3 Nov 00:5x via agent-utama setelah diagnosis di chat."
+    },
+    {
+      "id": "sos-2026-11-03-01",
+      "status": "pending",
+      "title": "SOSMED P1: Threads Rekap reslot 12:10→16:30 (blokir struktural EOD-only)",
+      "summary": "Job 'Threads Rekap Sesi-I 12:10' tertahan berhari-hari: stack hanya punya data EOD, posting 12:10 berarti angka kemarin dijual sebagai 'Sesi-I hari ini' (salah & bahaya trust). 2 Nov tidak ada output sama sekali.",
+      "acceptance": [
+        "Cron reslot 16:30 Sen-Jum (setelah close 15:49 + EOD ingest ±16:00)",
+        "Hook diubah 'Rekap Sesi Penuh {tanggal}' dengan data same-day final",
+        "Label 'Data per penutupan {tgl} WIB' wajib di post",
+        "Bukti: 1 post live pertama + guard dedup tetap jalan",
+        "Cadence owner 1-2/hari tetap dihormati"
+      ],
+      "scheduled_slot": "2026-11-03 09:30 BE siang Selasa (host-ops cron config, 0 deploy)",
+      "created_at": "2026-11-03T06:21:35",
+      "labels": [
+        "sosmed",
+        "threads",
+        "p1"
+      ],
+      "notes": "Diagnosis agent-utama 3 Nov: bukan kuota, bukan no-news — data availability."
+    },
+    {
+      "id": "sos-2026-11-03-02",
+      "status": "pending",
+      "title": "SOSMED P1: DEBUG Sunday Evergreen (job hidup tapi 0 output sejak dibuat)",
+      "summary": "Cron 'Sosmed Sunday Evergreen Post' (sundayevergr, 10:30 Minggu) TIDAK PERNAH menghasilkan output — Minggu 1 Nov lewat tanpa post padahal peak audiens. Cek: script ada? error silent? state stuck? Perbaiki + pastikan post Minggu berikutnya (8 Nov) live.",
+      "acceptance": [
+        "Root cause terdokumentasi (script/state/schedule)",
+        "Post evergreen live Minggu 8 Nov + verified",
+        "Log aktivitas tercatat di growth log"
+      ],
+      "scheduled_slot": "2026-11-03 09:30 bareng sos-2026-11-03-01 (investigasi ringan)",
+      "created_at": "2026-11-03T06:21:35",
+      "labels": [
+        "sosmed",
+        "ig",
+        "p1"
+      ]
+    },
+    {
+      "id": "sos-2026-11-03-03",
+      "status": "spec_ready",
+      "title": "SOSMED P2 GROWTH: TikTok pipeline — repurpose konten IG ke TikTok via Tebar",
+      "summary": "TikTok terhubung via Tebar 30 Okt (account 5f0193c6, scope video.publish ADA) tapi belum ada pipeline posting sama sekali = kanal reach terbesar terbuang. Owner mandate 'kita harus cari follower'.",
+      "acceptance": [
+        "Spec: pipeline ambil video bedah/carousel IG (sudah 9:16-ready) → publish TikTok via Tebar video.publish, cap 1/hari, jendela 18:00-20:00",
+        "Trial 3 video pertama + metrics view/follow dicatat ke growth-metrics",
+        "Keputusan continue/pause setelah 2 minggu data"
+      ],
+      "scheduled_slot": "spec review CTO sore 3 Nov; build sprint berikutnya",
+      "created_at": "2026-11-03T06:21:35",
+      "labels": [
+        "sosmed",
+        "tiktok",
+        "growth",
+        "p2"
+      ]
+    },
+    {
+      "id": "sos-2026-11-03-04",
+      "status": "pending",
+      "title": "SOSMED P1: Pipeline NEWS-BREAKING → IG + THREADS + TIKTOK (owner: news = magnet, semua platform)",
+      "summary": "Owner insight 3 Nov: 'kmrn kayanya dari news org jadi tertarik' — konten news/berita terbukti menarik orang. Sekarang News Scout (RSS, tiap 15 mnt 06-21) & Content Brain (jam-jaman 07-21) JALAN PISAH: scout menemukan, brain sering skip karena format/evaluasi sendiri. Owner minta jalur news jadi prioritas: tebar SUDAH ada (Threads live 30 Okt, TikTok connect 30 Okt) — koneksinya bukan masalah, wiring konten newsnya yang belum nyambung. OWNER UPDATE 3 Nov: (a) Threads & TikTok juga — kalau ada news org tertarik di semua kanal; TikTok naik ke fase-1 via Tebar video.publish. (b) Cadence LONGGAR: max 3-7 post/hari per platform GPP (bukan 2).",
+      "acceptance": [
+        "Wiring: News Scout temuan HIGH-signal → Content Brain format news-breaking → post ke IG + THREADS + TIKTOK (tebar satu pintu)",
+        "Template news-breaking: headline tegas + 3 bullet fakta + disclaimer + CTA link teknikal.id/berita; TikTok pakai video pendek dari slide IG (9:16 ready)",
+        "Latency target: news gede → post < 60 menit semua kanal",
+        "Cadence guard BARU: max 3-7 post/hari per platform (owner 3 Nov), dedup semantik + disclaimer tetap wajib",
+        "Bukti: 2 siklus news-breaking live di 3 kanal + view/engagement ke growth-metrics"
+      ],
+      "scheduled_slot": "2026-11-03 09:30 BE siang Selasa bareng sos-01/02 (wiring script, tanpa deploy web)",
+      "created_at": "2026-11-03T06:26:06",
+      "labels": [
+        "sosmed",
+        "news",
+        "growth",
+        "p1"
+      ],
+      "notes": "Owner directive 3 Nov: news = magnet follower terbukti; tebar sudah connect; jalur tinggal di-wire."
+    },
+    {
+      "id": "sos-2026-11-03-05",
+      "status": "pending",
+      "title": "SOSMED P1: CADENCE GUARD GLOBAL 1-2/hari → 3-7/hari (owner 3 Nov)",
+      "summary": "Owner 3 Nov: 'jangan cap 3 post, maks 3-7 post kayanya gpp'. Guard lama (max 1-2/hari) bikin Bedah Saham 2 Nov SKIP Threads (sudah 3 post) & Rekap Sesi-I kena blokir cadence 2/2. Cari SEMUA titik cek cadence di script posting (bedah saham, rekap, mirror watch, content brain) → naikkan ke 3-7/hari per platform.",
+      "acceptance": [
+        "grep semua skrip posting utk cadence/cap check — daftar titik di laporan",
+        "Cap baru 3-7 post/hari per platform (pilih angka aman 5 sbg default guard keras, sisanya slot fleksibel)",
+        "Bukti: logic baru lolos uji skenario kemarin (2 Nov = 3 post threads → dengan guard baru TIDAK skip)",
+        "Dedup semantik & disclaimer TIDAK dilonggarkan"
+      ],
+      "scheduled_slot": "2026-11-03 09:30 BE Selasa bareng sos-01/02/04",
+      "created_at": "2026-11-03T06:26:38",
+      "labels": [
+        "sosmed",
+        "cadence",
+        "p1"
+      ],
+      "notes": "Owner directive 3 Nov chat."
+    },
+    {
+      "id": "sec-2026-11-03-01-dispatch",
+      "status": "pending",
+      "priority": "P1",
+      "title": "SEC P1 TRUST: lightpanda CDP bind 0.0.0.0:9223 tanpa auth — tutup eksposur LAN",
+      "summary": "IT-SEC 2 Nov (backlog sec-2026-11-02-01, promote CEO 3 Nov): CDP browser bind 0.0.0.0:9223 tanpa auth = siapa pun di LAN bisa drive browser yang memegang session login (IG/Threads/GSC). Fix: bind 127.0.0.1 saja (semua workflow CDP lokal via localhost: reaper whitelist login-mahir, cdp_lock, posting IG/Threads native) ATAU auth token bila memang butuh akses lintas-host. Ini infra tooling host, BUKAN area auth/payments situs — bila CTO nilai domain owner, tandai blocked_for_owner dan stop.",
+      "acceptance": [
+        "lsof/netstat verify: 9223 listen di 127.0.0.1 (bukan 0.0.0.0) ATAU tetap terbuka tapi wajib auth",
+        "Smoke 1 workflow CDP nyata (reaper / health IG) masih jalan pasca perubahan",
+        "cdp_lock.py + reaper TANPA perubahan endpoint (koneksi localhost tetap)",
+        "DONE WHEN: output lsof + log smoke terlampir di result; binding bertahan setelah restart service/host"
+      ],
+      "scheduled_slot": "2026-11-03 09:30 BE siang Selasa — DI ATAS batch sosmed (security dulu); host-ops 0 deploy web",
+      "created_at": "2026-11-03T08:2x+07:00 (CEO pagi)",
+      "labels": [
+        "ceo-dispatch",
+        "trust"
+      ],
+      "notes": "pilar KPI: TRUST — dispatch CEO pagi 3 Nov"
+    },
+    {
+      "id": "ops-2026-11-03-06",
+      "status": "pending",
+      "priority": "P1",
+      "title": "OPS P1 TRUST: patch teknikalid_northstar_kpi.py — filter FB-crawler IPv6 + IP internal + guard MoM + label dwell bucket",
+      "summary": "Researcher 2 Nov: 6/15 returning IP = crawler Facebook (2a03:2880::/32, lolos filter bot-UA) + 2 internal (::1, 172.29.0.1) → returning eksternal riil 5,3% bukan 7,9%. MoM hari-1..5 bulan = artefak kalender (-78,8% = 55v/2d vs 4.023v/31d). Dwell harus dilabel bucket 15/60/180 (target 45s tak terukur). Patch host-script ±10 baris, 0 deploy web. Tanpa ini metric inti north star (target 8% per 25 Nov) terbaca lebih optimis dari kenyataan.",
+      "acceptance": [
+        "returning_ip_pct EXCLUDE 2a03:2880::/32, ::1, 127.0.0.0/8, 172.16.0.0/12 — fixture IP FB-crawler tidak terhitung (unit check)",
+        "Guard MoM: hide/skip delta bila periode berjalan <6 hari — angka artefak -78% tak muncul lagi",
+        "Dwell dilabel bucket 15/60/180s di kpi.json; dashboard membaca label bucket (tanpa klaim target-45s)",
+        "DONE WHEN: selftest data 2 Nov → returning riil turun 7,9%→~5,3%; regen kpi.json 07:05 4 Nov konsisten; 0 perubahan SQL pengumpul selain filter IP"
+      ],
+      "scheduled_slot": "2026-11-03 18:30 BE malam Selasa (host-script rider bareng ops-10-27-02; boleh maju bila slot longgar)",
+      "created_at": "2026-11-03T08:2x+07:00 (CEO pagi)",
+      "labels": [
+        "ceo-dispatch",
+        "trust"
+      ],
+      "notes": "pilar KPI: TRUST — dispatch CEO pagi 3 Nov"
+    },
+    {
+      "id": "sec-2026-11-03-02-dispatch",
+      "status": "pending",
+      "priority": "P2",
+      "title": "SEC P2 TRUST: purge sessions/ig-session* dari branch backup/pre-sec-purge-1015 + verify 404 di remote",
+      "summary": "IT-SEC 2 Nov (backlog sec-2026-11-02-02, promote CEO 3 Nov): branch lokal backup/pre-sec-purge-1015 masih memuat file sessions/ig-session*. Precedent insiden sec-purge-2026-10-15: raw.githubusercontent pernah bocorkan file dari branch night. Aksi: hapus file session dari branch backup (atau hapus branch bila tak dipakai, alasan tercatat), verify remote, grep worktree lain.",
+      "acceptance": [
+        "git ls-tree branch backup: file sessions/ig-session* hilang ATAU branch dihapus (alasan tercatat)",
+        "curl raw.githubusercontent.com/<owner>/teknikalidnew/<branch>/<path-session> → 404 semua path",
+        "Session IG/Threads AKTIF tidak tersentuh — smoke job posting sosmed masih jalan",
+        "DONE WHEN: bukti ls-tree + curl 404 terlampir di result"
+      ],
+      "scheduled_slot": "2026-11-04 09:30 BE siang Rabu (host/git ops, 0 deploy web)",
+      "created_at": "2026-11-03T08:2x+07:00 (CEO pagi)",
+      "labels": [
+        "ceo-dispatch",
+        "trust"
+      ],
+      "notes": "pilar KPI: TRUST — dispatch CEO pagi 3 Nov"
     }
   ]
 }
