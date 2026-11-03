@@ -62,7 +62,7 @@ export function SectorHeatmap({ sectors }: { sectors: Record<string, SectorData>
           return slug ? (
             <Link
               key={sector}
-              href={`/sektor/${slug}`}
+              href="/stocks"
               style={{ "--stagger-i": i } as React.CSSProperties}
               className="sector-row flex items-center gap-3 px-4 py-2.5 hover:bg-bg-card transition-colors group"
             >

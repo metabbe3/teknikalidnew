@@ -50,7 +50,7 @@ import { calculatePivotPoints } from "@/lib/indicators";
 import { summarizeVerdict, toSnapshot } from "@/lib/verdict-prose";
 import { subDays } from "date-fns";
 import { SITE_URL, isCryptoTicker } from "@/lib/constants";
-import { getSectorSlug, sectorToBahasa } from "@/lib/sectors";
+import { sectorToBahasa } from "@/lib/sectors";
 import { ShareButtons } from "@/components/ui/share-buttons";
 import { articleRepository } from "@/domains/article/article.repository";
 import { DATA_SOURCE_LABEL } from "@/domains/article/article-freshness";
@@ -959,7 +959,7 @@ export default async function StockDetailPage({
             { label: "Beranda", href: "/" },
             { label: "Saham", href: "/stocks" },
             ...(stock.sector
-              ? [{ label: sectorToBahasa(stock.sector), href: `/sektor/${getSectorSlug(stock.sector)}` }]
+              ? [{ label: sectorToBahasa(stock.sector), href: "/stocks" }]
               : []),
             { label: stripJk(ticker) },
           ]}
@@ -1492,7 +1492,7 @@ export default async function StockDetailPage({
             )}
             {/* Sector page link for SEO */}
             <Link
-              href={`/sektor/${getSectorSlug(stock.sector)}`}
+              href="/stocks"
               className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:text-accent/80 transition-colors"
             >
               Lihat semua saham sektor {sectorToBahasa(stock.sector)} →
