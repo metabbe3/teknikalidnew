@@ -4427,6 +4427,19 @@
         "audit-followup"
       ],
       "spec": "Baca: teknikal-agent/docs/agent-org/audits/2026-11-04-*.md + skill teknikal-agent (Wave-2 section). Deliverable dua repo: teknikal-agent (bot feedback buttons) + teknikalidnew (API admin + webhook verify). DONE-WHEN: curl replay settlement 2x = premium +30 hari tepat sekali; tombol 👍/👎 kirim + tampil di /admin tab Agent Bot; tsc+go test hijau."
+    },
+    {
+      "id": "bo-2026-11-04-04",
+      "title": "DEPLOY HOTFIX tab Agent Bot kosong (commit e33456c): API /api/admin/agent-bot 500 karena query token kolom tokens_in/tokens_out tidak ada di agent_message_log (42703) — sudah diganti sumber agent_usage_ledger; verify: login /admin → tab Agent Bot menampilkan 6 KPI + users + funnel (bukan kosong), docker logs tanpa PrismaClientKnownRequestError",
+      "priority": "P1",
+      "status": "night_ready",
+      "train": "T-1104-N",
+      "labels": [
+        "admin",
+        "hotfix",
+        "agent-bot"
+      ],
+      "spec": "commit e33456c src/app/api/admin/agent-bot/route.ts"
     }
   ]
 }
