@@ -72,17 +72,24 @@ export default async function BeritaPage({
   // listed here anymore.
   // All fire-soft: build-stage prerender has no DB — empty states render and the
   // hourly ISR revalidate fills them in production.
-  const [brief, briefsArchive, totalArticles, overview, recentWeeks] = await Promise.all([
-    articleRepository.findLatestDailyBrief().catch(() => null),
+  const brief = await articleRepository.findLatestDailyBrief().catch(() => null);
+  // Featured hero lolos filter arsip yang sama (NEWS terbaru) — exclude slug-nya
+  // supaya artikel terbaru tidak tampil 2× (hero + baris #1) di layar pertama.
+  const listFilter = {
+    ...archiveFilter,
+    ...(brief ? { slug: { not: brief.slug } } : {}),
+  };
+
+  const [briefsArchive, totalArticles, overview, recentWeeks] = await Promise.all([
     prisma.article.findMany({
-      where: archiveFilter,
+      where: listFilter,
       orderBy: { publishedAt: "desc" },
       skip,
       take: pageSize,
       select: { slug: true, title: true, excerpt: true, publishedAt: true, articleType: true },
     }).catch(() => [] as { slug: string; title: string; excerpt: string | null; publishedAt: Date; articleType: ArticleType }[]),
     prisma.article.count({
-      where: archiveFilter,
+      where: listFilter,
     }).catch(() => 0),
     stockMarketService.getMarketOverview().catch(() => ({
       gainers: [] as { ticker: string; changePercent: number }[],
@@ -189,9 +196,23 @@ export default async function BeritaPage({
             </div>
 
             {briefsArchive.length === 0 ? (
-              <p className="text-center text-text-tertiary py-12">
-                Belum ada brief. Brief pertama terbit setelah pasar tutup hari ini.
-              </p>
+              currentPage > totalPages ? (
+                <div className="text-center py-12">
+                  <p className="text-sm text-text-secondary">
+                    Sudah akhir arsip — semua brief dan artikel terlama telah ditampilkan.
+                  </p>
+                  <Link
+                    href="/berita"
+                    className="inline-flex items-center gap-1.5 mt-3 px-3 py-2 rounded-lg border border-border bg-bg-card hover:bg-bg-hover text-xs font-semibold text-text-primary transition-colors"
+                  >
+                    ← Kembali ke tulisan terbaru
+                  </Link>
+                </div>
+              ) : (
+                <p className="text-center text-text-tertiary py-12">
+                  Belum ada brief. Brief pertama terbit setelah pasar tutup hari ini.
+                </p>
+              )
             ) : (
               <div className="divide-y divide-border rounded-xl border border-border bg-bg-card">
                 {briefsArchive.map((a) => (
