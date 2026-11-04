@@ -4451,6 +4451,30 @@
       "title": "UX: /berita dedup hero+list (artikel terbaru tampil 2x di layar pertama) + empty-state akhir arsip",
       "spec": "Audit flow (b) landing->berita->artikel terkait. Bug: hero featured (findLatestDailyBrief NEWS tickerTag null) juga lolos filter arsip yang sama -> artikel terbaru tampil 2x di 2 layar pertama mobile (DOM bukti: kartu @382px h252 + duplikat @842px h95). Fix: exclude slug hero di listFilter (findMany+count konsisten; count 68->67, totalPages tetap 6; halaman 7+ memang kosong by design). Empty-state halaman>totalPages (7+) kini 'Sudah akhir arsip' + link balik, alih-alih 'Belum ada brief. Brief pertama terbit setelah pasar tutup' yang menyesatkan (arsip sudah penuh, bukan belum terbit). Frontend-only. DONE WHEN: prod /berita page-1 tanpa href duplikat; halaman 6 tanpa tombol Berikutnya; halaman 7+ tampil 'Sudah akhir arsip'; tsc 0. Pilar: CONTENT + TRUST.",
       "result": "tsc 0; BUILD_ID jx_qwDicU28EUpURMd23f; staging :3100 bukti: page1 dupHrefs=0 (sebelum: hero@382px+baris1@842px artikel sama), 12 baris first=analis-sore-1104-pbid; p6=7 kartu TANPA Berikutnya (total 67, totalPages 6); p8=akhir-arsip copy+link balik, TANPA Belum-ada-brief palsu; commit 9186cb1; SEO invariant utuh; staging dimatikan"
+    },
+    {
+      "id": "bug-2026-11-04-01",
+      "title": "Screener hasil memuat ^JKSE (indeks) — link detail 404 dead-end",
+      "priority": "P2",
+      "status": "pending",
+      "created_at": "2026-11-04T19:45:00+07:00",
+      "assigned_to": "backend-builder",
+      "source": "FE Builder audit flow (a) 4 Nov",
+      "spec": "REPRO (3 baris):\n1. GET https://teknikal.id/api/screener?preset=rsi_oversold (dgn/tanpa assetClass=EQUITY sama)\n2. Row pertama = {\"ticker\":\"^JKSE\",\"name\":\"IHSG\",\"sector\":\"Index\"} — indeks ikut hasil\n3. Klik row IHSG di UI → /stocks/%5EJKSE = 404 (verified 4 Nov 19:40 WIB)\n\nSEVERITY: P2 — dead-end link di flow utama screener; user percaya data lalu kena 404 (TRUST pillar).\nRoot-cause kandidat: API /api/screener tidak exclude ticker prefix ^ (indeks) padahal UI overlay assetClass; cek juga findStocksByTickers path.\nFix: exclude ^* dari hasil equity screener ATAU route indeks ke halaman indeks (kalau ada).\nVerify: curl preset=rsi_oversold & macd_bullish → 0 row ^; UI hasil 264→263 saham.",
+      "kpi": "TRUST (dead-end 404 di flow utama) + STICKY",
+      "reported_by": "frontend-builder 19:15 slot 4 Nov"
+    },
+    {
+      "id": "ux-2026-11-04-02",
+      "title": "Screener guest save-bar polish: copy jargon EN->ID + tap target 44px + tracking label",
+      "priority": "P3",
+      "status": "in_train",
+      "train": "T-1105-N",
+      "created_at": "2026-11-04T20:05:00+07:00",
+      "assigned_to": "frontend-builder",
+      "source": "FE Builder 19:15 shift 4 Nov — audit siklus-2 flow (a) screener pasca trust-badge",
+      "kpi": "GROWTH (funnel register screener) + STICKY",
+      "result": "BUILD-ONLY commit 10570f1 (3 file, +6/-5):\n(a) 'Simpan Screen'->'Simpan Filter' — jargon EN->ID, konsisten dgn teks bar 'Simpan filter agar tidak hilang'\n(b) tap target tombol ~28px->44px (min-h-11 inline-flex, selaras CTA lain di flow)\n(c) data-engagement=cta_save_screen_prompt — funnel point sebelumnya gelap (0 event terukur)\n(d) sweep konsistensi: toast 'Screen tersimpan ke akun'->'Filter tersimpan ke akun', aria 'Simpan screen ke akun'->'Simpan filter ini ke akun', saveLabel 'Screen custom'->'Filter Atur Sendiri' (tampil di panel Simpananku)\nBUKTI FISIK: tsc EXIT-0; build EXIT-0 BUILD_ID G883j0qQGLbELTJ0XzOBL; staging :3100 DOM: tombol h=44px minHeight=44px label='Simpan Filter' attr data-engagement ada; panel Simpananku render 'Filter Atur Sendiri'; hasil 264 saham render asli; grep residual 'Simpan Screen' staging=0; SEO invariant H1 'Radar Saham IDX' before=after 2=2, title-tag utuh.\nNaik kereta berikutnya (T-1105-N, 5 Nov malam) — bukan T-1104-N malam ini (verifikasi selesai 20:0x > boarding 22:15 berisiko bentrok manifest final kondektur; kereta tidak menunggu penumpang)."
     }
   ]
 }
