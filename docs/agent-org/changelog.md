@@ -1070,3 +1070,10 @@
 - QA: verdict = SENTINEL 22:00 (H3: builder tidak self-verify)
 - impact_check_due: 2026-11-06 (cron 07:05 4 Nov → kpi.json konsisten returning ±4%, MoM tetap null s/d 6 Nov lalu tampil valid; dashboard :8790 dwell row tanpa '/45')
 - impact_check: pemanggil kpi.json = teknikalid_page.py (dipatch) + ns-kpi-refresh-0705 cron (jalankan script yg sama) — tidak ada konsumen lain (grep)
+
+## 2026-11-04 07:30 — CTO pagi 4 Nov (ops-1104-01: rekonstruksi bookkeeping deploy liar; BUILD-ONLY 0 deploy)
+- **ops-2026-11-04-01** (P1 TRUST): FORENSIK deploy tanpa-bookkeeping 3 Nov: prod app = image f2c0885e1c79 BUILD_ID IBdVRgilVnsO0ciEdl7Fe (deploy.log v2 14:02:51, up 18:45) = main 9251d9ae..1eb66e9. ISI: prd-11-02-01 kalender dividen (live UNTR/CNMA/Ex-Date) · prd-31-02 TermTip (chunk 7978 'Lihat di Kamus') · code-audit-tk-3 (0 file health-score) · prd-26-02 guest-migration (9058336, marker pending_post_register IN) · bo-1103-01 retention aktor (4070d56, 'Returning Visitor'/'pengunjung nobot' IN page.js) · sec-29-02 f56361e (route guest-pass IN + boarding proof LIVE 60 beacon = 30x204+30x429) · SEO batch 3 Nov (prune/kurasi/deploy.sh v2/E-E-A-T). TERTINGGAL (in_train T-1104-N): ux-10-30-01 (905a4f2 > image), adm-28-02#2 (eb11c93), tanya-ai 4734d6a, glosarium (merge CTO 1f90cde).
+- **merge glosarium**: night/prd-2026-11-02-03 → main 1f90cde (dry-run clean, schema-shield 0, tsc EXIT-0 RC=0) — penumpang kereta T-1104-N.
+- **boarding gate ux-10-30-01 HIJAU**: staging :3100 (standalone server + DATABASE_URL @127.0.0.1:5433) /stocks/BBCA.JK → 'Catat di portofolio — gratis' (guest variant, DOM fisik). Bukti: grep hit x1.
+- Rollback: git revert 1f90cde (merge glosarium; prod tak tersentuh slot pagi — 0 deploy, window BUILD-ONLY).
+- impact_check_due: 2026-11-05 (kereta T-1104-N malam ini → verify per-fitur: CTA prod + Info Uang + worker POLL_30s + CreatedAt parity app==worker).

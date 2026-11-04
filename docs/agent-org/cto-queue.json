@@ -3692,7 +3692,7 @@
       "scheduled_slot": "BE pagi 3 Nov 09:30 (build-only) — verifikasi QA Verifier sebelum naik; pilar TRUST",
       "north_star": "TRUST",
       "train": "T-1105-N",
-      "result": "BUILD-ONLY (deploy window; pilar TRUST). Rate-limit beacon /api/track/guest-pass 30/mnt per IP+UA-hash key → 429 (was always-204); server-side daily cap distinct ticker 50/key — cookie reset/anonId farming = no-op; page render path TIDAK disentuh (owner 16 Okt nothing-blocked, CGNAT-safe). Commit f56361e: +src/lib/guest-pass-limit.ts, route.ts wiring, selftest 6/6 (60 beacon→30 lolos; cap 50 exact; anonId ke-51 rejected; idempotent re-claim OK; key beda UA terpisah). tsc --noEmit RC=0; npm run build RC=0 (BUILD_RC=0 /tmp/build-sec29.log). Live curl 60x proof menyusul pasca-deploy kereta malam T-1103-N. SEC-REVIEW: ticker regex-validated, sha1 key (no PII), prune MAX_ENTRIES, beacon-only (render tak digate).",
+      "result": "DEPLOYED-DI-IMAGE-LIAR 3 Nov (f56361e IN f2c0885e1c79; forensik CTO 4 Nov: route guest-pass IN container + boarding proof LIVE 60 beacon realistis = 30x204+30x429 rate-limit aktif prod). Tetap in_train T-1104-N: naik rebuild app+worker malam ini agar bundle konsisten; verdict final = Sentinel 22:00.",
       "reslot_note": "auto-reslot 2026-11-04: kereta T-1103-N kedaluwarsa (reslot_guard.py v2)"
     },
     {
@@ -3704,7 +3704,7 @@
       "scheduled_slot": "2026-11-03 19:15 FE Selasa BUILD-ONLY → kereta malam (assign CTO sore 1 Nov, konflik audit-slot 2 Nov dihindari)",
       "north_star": "STICKY",
       "train": "T-1105-N",
-      "result": "BUILD-ONLY commit 9469a29 (f053c1f..9469a29): StockPortfolioCta authed=AddHoldingForm prefill (car-saham step dilangkau 5->3 field) + guest register-loop pending_post_register/portfolio_cta. tsc EXIT-0; build EXIT-0 BUILD_ID Wyj_HhMcPHBDg6tMdBoY0. BELUM boarding final: staging :3100 DOM verify (tombol di /stocks/BBCA.JK) menunggu slot kereta malam.",
+      "result": "BUILD+BOARDING-GATE HIJAU (CTO pagi 4 Nov): staging :3100 standalone (DB @127.0.0.1:5433) /stocks/BBCA.JK render CTA guest |CTA-GRATIS| — DONE-WHEN staging DOM verify TERPENUHI. Naik kereta T-1104-N malam ini (rider app+worker SATU build + adm-28-02#2 + glosarium 1f90cde). Verify prod pasca-deploy: /stocks/BBCA.JK guest=CTA portofolio; authed=AddHoldingForm prefill.",
       "reslot_note": "auto-reslot 2026-11-04: kereta T-1103-N kedaluwarsa (reslot_guard.py v2)"
     },
     {

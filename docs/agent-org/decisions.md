@@ -870,3 +870,8 @@ penulisan masih 404 (deploy di kereta T-1021-N / CTO pagi).
 - Pre-deploy live: image sha256:9251d9ae37c6 (up 31 Okt 17:37), main ed5e66d.
 - Penumpang: bo-2026-11-01-01 (8fdf429 funnel-v2 section) + prd-2026-10-31-01 (7d7c377 backtest kondisi). bo-2026-10-29-01 sudah terbukti live di anchor image (marker clicksByLabel7d) → flip done.
 - Rollback: git revert 8fdf429 7d7c377 + redeploy image 9251d9ae37c6.
+
+## 2026-11-04 07:30 — CTO pagi (ops-1104-01 rekonstruksi) — ROLLBACK ANCHOR
+- Prod as-is: app image f2c0885e1c79 (3 Nov 14:02) / worker 912fb59f1738 (24 Okt — BASI). Main = 21a236b (docs) + 1f90cde (merge glosarium, BUILD-ONLY).
+- Rollback kereta T-1104-N: git revert 1f90cde + image app f2c0885e1c79 / worker 912fb59f1738 (docker tag teknikalidnew-app:latest f2c0885e1c79-backup).
+- Jebakan kereta malam: (1) WAJIB docker compose build app worker SATU perintah + verify CreatedAt parity + grep POLL_INTERVAL_MS = 30_000 ≥1 di worker container; (2) dirty tree slot lain (insight-tab.tsx + /api/admin/ai-insight/) JANGAN ikut build — build dari main bersih atau stash dulu; (3) staging :3100 = node .next/standalone/server.js + DB @127.0.0.1:5433 (npm start tak jalan dgn standalone).
