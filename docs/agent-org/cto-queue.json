@@ -4387,6 +4387,19 @@
       "result": "qa_fixed_by=CTO-siang-4Nov · bukti: residual DB 0 semua frasa lama (patch script assert count==1 + re-verify), frasa baru live curl grep >=2 (DFAM +33,9% [2], top gainer non-gorengan [2], 7 gc 27Okt [2], 9 gc 26Okt [2+3], RSI 20,0/26,0 29Okt/2Nov [2], 5 bearish+3 bullish ASII/MPMX/POWR [2-3]), replay_sql_gate exit 0 4/4 artikel pasca-patch (sebelum: FAIL 2) · catatan: premise qa-02 keliru (29 Okt rsi=20,04 sudah cocok “20,0”), patch = netralkan kata “dasar” (min streak aktual 0,02 @30Sep) + tanggal 2 Nov eksplisit",
       "qa_verified": false,
       "done_at": "2026-11-04T09:5x WIB"
+    },
+    {
+      "id": "bo-2026-11-04-01",
+      "title": "DEPLOY tab Agent Bot admin (commit f61b798): monitoring TeknikalAgent owner — KPI health/fallback/latency/biaya + users kuota + funnel + top ticker; verify /admin tab Agent Bot + /api/admin/agent-bot 200",
+      "priority": "P1",
+      "status": "night_ready",
+      "train": "T-1104-N",
+      "labels": [
+        "admin",
+        "agent-bot",
+        "owner-monitoring"
+      ],
+      "spec": "commit f61b798; route /api/admin/agent-bot queryRaw schema agent read-only WIB-aware; tab id=agentbot"
     }
   ]
 }
