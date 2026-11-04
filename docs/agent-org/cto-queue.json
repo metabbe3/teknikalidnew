@@ -40,7 +40,7 @@
       "id": "prd-2026-11-05-02",
       "type": "prd",
       "priority": "P1",
-      "status": "spec_ready",
+      "status": "night_ready",
       "title": "P1 AGENT FUNNEL (PRD idea-2026-11-04-1): starter alert 1-gratis — agent_alert 0 rows sepanjang sejarah karena alert dikunci paywall PRO (subscription=0, 7/7 user FREE) padahal alerts worker live & lengkap; hidupkan 1 alert utk FREE",
       "source": "Product Agent nightly buffer-keeper 5 Nov (SQL read-only teknikalidnew-db-1 schema agent.*: agent_user=7 (7 baru 7d), agent_subscription=0, agent_alert=0, agent_watchlist=2 chats, agent_message_log=71/4 chats; grep teknikal-agent internal/alerts/worker.go UpgradeUpsellMessage L15-19; teknikal-agent main@6412396 (4 Nov))",
       "spec": "docs/agent-org/specs/prd-2026-11-05-02-agent-starter-alert.md",
@@ -68,7 +68,20 @@
       "risk": "low",
       "estimate_tool_calls": 6,
       "created_at": "2026-11-04T22:36+07:00",
-      "research_tree": "teknikal-agent main@6412396 (4 Nov)"
+      "research_tree": "teknikal-agent main@6412396 (4 Nov)",
+      "branch": "night/prd-2026-11-05-02 (repo ~/Documents/teknikal-agent, base 6412396, TANPA remote — lokal murni)",
+      "night_result": {
+        "commits": [
+          "7fdd58b test failing-first",
+          "c3f039c feat implementasi"
+        ],
+        "verify": "go build OK; go vet ./... clean; gofmt clean; full suite 31/31 paket ok REAL_EXIT=0; go test -race 3/3 paket disentuh hijau; sdlc_lint 0 error",
+        "scope": "billing MaxAlerts (FREE=1/basic=10/pro=25/premium=50) + CheckAlertsAllowed; worker resolveTier + SetAlert upsell FREE + sweep dispatch FREE; copy upsell & empty-state /alert; 2 test baru failing-first; 3 flake quiet-hour baselined diperbaiki",
+        "bonus_fix": "flake test sweep quiet-hour (21:00-07:00 WIB defer run_at -> Claim kosong) — SweepOneShot/DailyCap/StarterSweep kini Depth+GetJob fallback, deterministik 24 jam",
+        "deploy_note": "go deploy agentd worker (bukan docker web); DB read-only terpakai 0 migrasi (kolom limit runtime sesuai PRD)"
+      },
+      "review_estimate_min": 15,
+      "night_done_at": "2026-11-04T23:20+07:00"
     },
     {
       "id": "bo-2026-11-01-01",
