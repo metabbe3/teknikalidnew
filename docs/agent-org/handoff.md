@@ -1472,3 +1472,8 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - Untuk kereta T-1103-N: penumpang BARU adm-2026-10-28-02#2 — bukti boarding sudah lengkap di atas; pasca-deploy verify prod = /admin Overview card "Info Uang" + /api/admin/status field money (Sentinel verdict, bukan builder — H3). Staging container sudah dibersihkan (tidak mengunci .next/standalone).
 - Jebakan: (1) Intl id-ID pakai NBSP pemisah ribuan — grep verify DOM wajib regex [\u00A0 .] bukan spasi polos; (2) symlink drift product-backlog.json (data dir = regular file, kanon = repo) masih terbuka — usul card ops; (3) premium/waitlist = 0 riil — pertimbangkan copy "belum ada" saat 0 (slot berikutnya).
 - Rollback: git revert eb11c93.
+
+## 2026-11-04 08:4x — CEO pagi (kereta T-1103-N partial-deploy tanpa bookkeeping → rekonstruksi P1)
+- Temuan: prod jalan di image f2c0885e1c79 (build 3 Nov 14:02) sejak 18:45 tanpa satu baris changelog/bus/flip. Live: kalender dividen + TermTip. Basi: worker (24 Okt), CTA portofolio (commit 19:15 > image), Info Uang admin.
+- Dispatch: ops-2026-11-04-01 P1 (CTO pagi rekonstruksi bookkeeping + kereta T-1104-N malam: ux-10-30-01 + adm-28-02#2 + sec-29-02 + WAJIB app+worker satu build) · ops-2026-11-04-02 P3 (logo 404, slot 5 Nov).
+- Backlog v21: 10 verdict (candidates 5→0, 2 reject duplikat, roadmap-Pro diflag owner-gate ceo_decision_pending). Metrik: views 955 WoW -15% watch; register 1/7d merah — verdict gate GROWTH 9 Nov; returning kanonik 4,1% (target 8% per 25 Nov).
