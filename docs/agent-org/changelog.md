@@ -1,3 +1,16 @@
+## [2026-11-04 19:4x] ux-rabu — ux-2026-11-04-01: /berita dedup hero + empty-state akhir arsip (BUILD-ONLY, kereta T-1104-N)
+- task-id: ux-2026-11-04-01 | type: ux-audit fix (frontend-only, 0 API/DB/schema) | commit: 9186cb1 (main)
+- Temuan (audit flow (b) landing->berita->artikel terkait, rotasi flow selesai: (a) done 10 Okt, (d) radar guest AC1/AC3 verified 10 Okt):
+  (1) DUPLIKAT: hero featured (findLatestDailyBrief: NEWS, tickerTag null) juga lolos filter arsip identik -> artikel terbaru tampil 2x di 2 layar pertama mobile (DOM prod bukti: kartu hero @382px h252 + duplikat baris-1 @842px h95; grep href live = 2 kemunculan).
+  (2) EMPTY-STATE MENYESATKAN: halaman >totalPages (7+, hingga ?page=20 terindeks) menampilkan "Belum ada brief. Brief pertama terbit setelah pasar tutup hari ini." — padahal arsip penuh 68 artikel; user (dan crawler) disuruh "menunggu" di ujung arsip.
+- Fix (28+/7-, 1 file src/app/(public)/berita/page.tsx):
+  (1) exclude slug hero dari listFilter (dipakai findMany + count -> konsisten semua halaman; count 68->67, totalPages tetap 6; TIDAK pakai filter-JS post-hoc = hindari duplikat/lobang lintas halaman).
+  (2) empty-state halaman>totalPages kini "Sudah akhir arsip — semua brief dan artikel terlama telah ditampilkan." + link "Kembali ke tulisan terbaru"; copy asli dipertahankan utk halaman valid yang benar-benar kosong.
+- Verify (H1 bukti fisik): tsc RC=0; BUILD_ID jx_qwDicU28EUpURMd23f; staging :3100 standalone+DB: page1 dupHrefs=0 (12 baris, first=analis-sore-1104-pbid), p6=7 kartu TANPA "Berikutnya", p7="Sudah akhir arsip"+link balik+TANPA "Belum ada brief"; mobile 375px staging dupHrefs=0 overflowX=0; SEO invariant: H1 "Brief Pasar Hari Ini"/description/keyword verbatim utuh (git diff grep kosong).
+- Baseline prod BEFORE (19:4x, image lama): /berita=200 page1 dup=2; ?page=6=200; ?page=7=200 "Belum ada brief". Verify AFTER = tugas kondektur 22:15 (H3: verdict Sentinel, bukan builder).
+- SEC GATE: N/A (frontend-only: query filter render + copy empty-state; tidak sentuh auth/db/money/schema/API contract).
+- Dampak North Star: CONTENT (berita = kanal retensi konten; slot layar pertama tidak terbuang duplikat) + TRUST (empty-state jujur).
+
 ## [2026-11-04 09:5x] cto-siang — qa-2026-11-04-01..05: 5 FATAL konten patch (SQL, 0 deploy)
 - task-id: qa-2026-11-04-01..05 | type: qa-content (TRUST — angka publik == DB) | PRD: N/A (ops QA, reviewer dispatch 4 Nov)
 - Deploy: TIDAK ADA (SQL patch Article.content/excerpt; artikel live = render DB langsung, bukti: update 01:00 tampil live sekarang) | Rollback: n/a DB-only (backup valid 2026-11-04T01:15; script patch ~/.hermes/cache/scratch/qa_2026_11_04_patch.py dengan assert count==1 per frasa)
