@@ -48,7 +48,9 @@ export function AgentBotTab() {
     queryFn: async () => {
       const r = await fetch("/api/admin/agent-bot");
       if (!r.ok) return undefined;
-      return r.json();
+      const j = await r.json();
+      // API membalik {data: AgentBotData} — unwrap agar komponen menerima shape yang benar.
+      return j?.data ?? j;
     },
     refetchInterval: 60_000,
   });
@@ -129,7 +131,7 @@ export function AgentBotTab() {
                 <span className="text-muted-foreground">Belum ada</span>
               ) : (
                 <div className="flex flex-wrap gap-2">
-                  {data?.topTickers.map((t) => (
+                  {(data?.topTickers ?? []).map((t) => (
                     <span key={t.ticker} className="rounded bg-muted px-2 py-0.5">
                       <b>{t.ticker}</b> ×{t.n}
                     </span>
@@ -210,7 +212,7 @@ export function AgentBotTab() {
         </CardHeader>
         <CardContent className="text-sm">
           <div className="flex flex-wrap gap-2">
-            {data?.jobs14.map((j) => (
+            {(data?.jobs14 ?? []).map((j) => (
               <span key={j.d} className="rounded bg-muted px-2 py-0.5" title={j.d}>
                 {j.n}
               </span>
