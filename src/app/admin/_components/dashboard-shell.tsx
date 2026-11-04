@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { BarChart3 } from "lucide-react";
 import { OverviewTab } from "./overview-tab";
 import { UsersTab } from "./users-tab";
+import { AgentBotTab } from "./agentbot-tab";
 import { CommunityTab } from "./community-tab";
 import { StocksTab } from "./stocks-tab";
 import { PredictionsTab } from "./predictions-tab";
@@ -75,6 +76,7 @@ export function DashboardShell({
       {activeTab === "analytics" && <AnalyticsTab />}
       {activeTab === "insight" && <InsightTab />}
       {activeTab === "usermgmt" && <UserManagementTab />}
+      {activeTab === "agentbot" && <AgentBotTab />}
     </div>
   );
 }

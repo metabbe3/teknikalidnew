@@ -1,4 +1,4 @@
-import { Activity, Users, MessageSquare, TrendingUp, Target, Shield, UserCog, LineChart, Lightbulb } from "lucide-react";
+import { Activity, Users, MessageSquare, TrendingUp, Target, Shield, UserCog, LineChart, Lightbulb, Bot } from "lucide-react";
 
 export const TABS = [
   { id: "overview", label: "Overview", icon: Activity },
@@ -10,6 +10,7 @@ export const TABS = [
   { id: "analytics", label: "Analytics", icon: LineChart },
   { id: "insight", label: "Insight", icon: Lightbulb },
   { id: "usermgmt", label: "User Mgmt", icon: UserCog },
+  { id: "agentbot", label: "Agent Bot", icon: Bot },
 ] as const;
 
 export type TabId = (typeof TABS)[number]["id"];
