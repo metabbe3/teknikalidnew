@@ -1515,3 +1515,10 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - Jebakan: main kini 65ba033 (riders bo-04-03/04); worktree kotor src/app/api/ai/stock/route.ts+context.ts (+insight-tab, ai-insight/) = WIP sesi pivot agent-utama — JANGAN di-stage/dibangun; kondektur WAJIB update rollback anchor ke 270602085a2f.
 - Langkah pertama slot berikutnya (Kondektur 22:15): GateGuard manifest T-1104-N → build app+worker SATU perintah dari main bersih → deploy window → verify per-fitur + baseline 5 URL.
 - Rollback: n/a (read-only + docs; revert = statejson .bak otomatis) · anchor prod: app 270602085a2f / worker 912fb59f1738
+
+## 2026-11-04 19:5x — FE Rabu 19:00 (ux-2026-11-04-01 BUILD-ONLY done, naik T-1104-N)
+- Audit flow (b) landing→berita→artikel: DUA friction fixed, commit 9186cb1+8da4907 di main: (1) hero featured brief juga baris #1 arsip (duplikat di 2 layar pertama mobile, bukti DOM 382px+842px) → exclude slug hero di listFilter (list+count konsisten, 68→67, totalPages 6); (2) halaman >6 (sampai ?page=20) tampil "Belum ada brief... pasar tutup" menyesatkan → "Sudah akhir arsip" + link balik.
+- Bukti: tsc 0, BUILD_ID jx_qwDicU28EUpURMd23f, staging :3100 dupHrefs=0 / p6 7 kartu tanpa Berikutnya / p7 akhir-arsip; mobile 375px overflow 0; SEO invariant H1 utuh. Queue ux-2026-11-04-01 in_train T-1104-N (v249); staging SUDAH DIMATIKAN.
+- Jebakan: (1) Lightpanda context baru TIDAK mewarisi viewport — angka above-fold 810px palsu, w=1920 di semua rect; mobile audit WAJIB Chrome CDP :9222 (benar: H1@125px, kartu@382px, sehat). (2) grep -c pada HTML 1-baris menghitung BARIS bukan kemunculan — pakai grep -o | wc -l. (3) kereta malam build dari main 1f90cde→kini 65ba033+9186cb1 — ux-11-04-01 otomatis ikut (sudah di main).
+- Untuk Kondektur 22:15: manifest +1 penumpang ux-2026-11-04-01; verify pasca-deploy = prod /berita page-1 href oversold-massal harus 1 kemunculan (bukan 2), ?page=7 tampil "Sudah akhir arsip". Slot UX berikutnya: flow (b) tahap-2 (artikel→ticker cross-link polish) atau flow (c) landing→register.
+- Rollback: git revert 9186cb1 (frontend-only, 1 file).
