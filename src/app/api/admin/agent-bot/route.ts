@@ -91,7 +91,9 @@ export async function GET() {
         u.last_active_at AS "lastActive"
       FROM agent.agent_user u
       LEFT JOIN agent.agent_subscription s ON s.chat_id=u.chat_id AND s.status='active'
-      ORDER BY t7::bigint DESC NULLS LAST LIMIT 20
+      ORDER BY (SELECT coalesce(sum(l.tokens_in+l.tokens_out),0) FROM agent.agent_usage_ledger l
+        WHERE l.chat_id=u.chat_id AND l.created_at >= now() - interval '7 days') DESC NULLS LAST
+      LIMIT 20
     `;
 
     // Daily series 14 hari (compare daily/weekly — owner 5 Nov): token per hari WIB.
