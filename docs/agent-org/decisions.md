@@ -875,3 +875,10 @@ penulisan masih 404 (deploy di kereta T-1021-N / CTO pagi).
 - Prod as-is: app image f2c0885e1c79 (3 Nov 14:02) / worker 912fb59f1738 (24 Okt — BASI). Main = 21a236b (docs) + 1f90cde (merge glosarium, BUILD-ONLY).
 - Rollback kereta T-1104-N: git revert 1f90cde + image app f2c0885e1c79 / worker 912fb59f1738 (docker tag teknikalidnew-app:latest f2c0885e1c79-backup).
 - Jebakan kereta malam: (1) WAJIB docker compose build app worker SATU perintah + verify CreatedAt parity + grep POLL_INTERVAL_MS = 30_000 ≥1 di worker container; (2) dirty tree slot lain (insight-tab.tsx + /api/admin/ai-insight/) JANGAN ikut build — build dari main bersih atau stash dulu; (3) staging :3100 = node .next/standalone/server.js + DB @127.0.0.1:5433 (npm start tak jalan dgn standalone).
+
+## 2026-11-04 09:5x WIB — CTO-siang: patch konten FATAL qa-04-01..05 (DB Article UPDATE, 0 deploy)
+- POLICY SQL DESTRUKTIF dipenuhi: backup valid 2026-11-04T01:15 (<24h) · preview SQL exact di changelog block · SELECT COUNT WHERE sama dulu (occurrence tiap frasa = 1, kecuali 20,0 = 2 valid) · WHERE sempit (slug eksak 4 artikel) · log ini.
+- UPDATE "Article" SET content/excerpt + updatedAt WHERE slug IN (4 slug) — 8 replace, rowcount 1 per slug. Script: ~/.hermes/cache/scratch/qa_2026_11_04_patch.py (assert old-in + count==1).
+- ROLLBACK ANCHOR (0 deploy, DB-only): git revert n/a; restore per-row dari backup 01:15 bila perlu. Prod image app f2c0885e1c79 UTUH (docker ps verified).
+- Temuan: replay_sql_gate v1 false-positive (token non-ticker) — dipatch _is_real_ticker() SKIP; klaim terbesar bursa GOTO valid via SQL manual (4,31M/3,78M #1 dua sesi, BUMI #2).
+- Premise spec qa-04-02 basi (DB cocok klaim artikel) — dibukti di changelog; patch minimal tetap (netralkan kata dasar).

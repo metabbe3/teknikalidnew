@@ -3385,7 +3385,7 @@
       "date": "2026-10-28",
       "priority": "P1",
       "status": "qa_pass",
-      "train": "T-1105-M",
+      "train": "T-1105-N",
       "scheduled_slot": "UX Builder 19:15 28 Okt malam ini (BUILD-ONLY) → kereta T-1029-N — RESLOT oleh CTO sore (budget reserve #19)",
       "north_star": "GROWTH register_7d baseline 3 → >=6 dalam 14 hari post-live (+STICKY: watchlist permanen)",
       "spec": "CEO INTENT (OPSI A, CTO note 28 Okt): Register CTA moment-of-intent — guest yang baru MENYIMPAN (star_add watchlist / preset screener save) ditawari register gratis via bottom-sheet, BUKAN banner permanen. PRD lengkap + research_brief (verdict BUILD, bukti KUAT: lazy registration UI-Patterns/vocab.design, Baymard delayed account creation, Duolingo endowed progress) ada di product-backlog.json prd-2026-10-26-01. Implementasi: trigger di guest-watchlist-panel.tsx (star_add) + save-screen-prompt.tsx (preset_save), sheet registration-bottom-sheet.tsx rate-cap 1x/7hari/anonId (localStorage lastPromptAt), copy kontekstual n-item, reuse telemetry cta_click existing (DILARANG endpoint baru), kontrol: guest tanpa simpanan tidak pernah lihat sheet (AC4). Dependencies: prd-2026-10-26-02 (guest migration) MENUNGGU task ini live dulu — urutan 01 baru 02. FDE checklist: research_brief OK · PRD 7 field OK · QA plan lihat field qa_plan · slot terisi.",
@@ -3404,7 +3404,7 @@
       "verified_by": "reviewer",
       "qa_verified": true,
       "completed_at": "2026-10-30 07:10 WIB",
-      "reslot_note": "auto-reslot 2026-11-04: kereta T-1103-M kedaluwarsa (reslot_guard.py v2)"
+      "reslot_note": "kondektur-fix 2026-11-04: T-1029-N kedaluwarsa sejak 29 Okt -> T-1105-N"
     },
     {
       "id": "ops-2026-10-28-01",
@@ -3888,7 +3888,7 @@
       "priority": "P1",
       "title": "OPS P1 WORKER IMAGE STALE: image worker 1 Nov 18:04 < commit 526381e (2 Nov 06:08, poll 10s->30s + satu-pintu marketEngine) — deploy pagi 06:42+07:00 app-only melanggar REBUILD ATOMIK",
       "spec": "Kereta malam T-1102-N WAJIB: (1) docker compose build app worker SATU perintah, BUKAN app-only; (2) verify image CreatedAt app==worker sebelum up; (3) bukti per-fitur H1: docker exec teknikalidnew-worker-1 sh -c \"grep -c 'POLL_INTERVAL_MS = 30_000' /app/dist/server.js\" harus >=1; (4) konfirmasi jadwal cron internal worker tetap lengkap setelah poll 10s->30s (tidak ada job hilang window). DONE-WHEN: 4 syarat hijau + bukti fisik di field result.",
-      "status": "pending",
+      "status": "in_train",
       "scheduled_slot": "2026-11-04 22:15 KONDEKTUR kereta malam (rider WAJIB app+worker satu build + CreatedAt parity + POLL_30s)",
       "north_star": "TRUST — worker = mesin sinyal/EOD; bundle basi = perilaku prod != main (data reliable)",
       "assigned_to": "be-night",
@@ -4315,11 +4315,14 @@
       "priority": "P1",
       "title": "FATAL brief-pasar-idx-2026-11-03: 'Top gainer bursa' MKNT +27,3% salah — top gainer riil 2 Nov = DFAM +33,93%",
       "north_star": "TRUST (klaim superlatif #1 tidak boleh ngarang; qa-27-01)",
-      "status": "pending",
+      "status": "done",
       "spec": "INTENT: brief-pasar-idx-2026-11-03-rebound-energy menulis 'Top gainer bursa hari itu MKNT +27,3% (Rp14)' — DB StockPrice 2 Nov ranking pct top-1 (aktif, semua saham, tanpa filter tambahan) = DFAM +33,93% (56->75), MKNT hanya #2 (+27,27%). MKNT valid hanya jika filter non-gorengan, tapi itu tidak ditulis. ACCEPTANCE (DONE WHEN): (a) kalimat diganti jadi akurat — pilih salah satu: 'DFAM +33,9% (top gainer, saham gorengan)' ATAU 'MKNT +27,3% — top gainer di antara saham non-gorengan'; (b) grep semua kemunculan 'MKNT' di artikel konsisten dengan pilihan; (c) replay_sql_gate.py exit 0; (d) ISR refresh, curl live render frasa baru, residual frasa lama = 0.",
       "train": "T-1105-M",
       "scheduled_slot": "2026-11-04 22:00 QA Sentinel sweep FATAL konten (verdict+fix artikel, bukan deploy kereta)",
-      "reslot_note": "kondektur-fix 2026-11-04: assign QA Sentinel 22:00 hari ini"
+      "reslot_note": "kondektur-fix 2026-11-04: assign QA Sentinel 22:00 hari ini",
+      "result": "qa_fixed_by=CTO-siang-4Nov · bukti: residual DB 0 semua frasa lama (patch script assert count==1 + re-verify), frasa baru live curl grep >=2 (DFAM +33,9% [2], top gainer non-gorengan [2], 7 gc 27Okt [2], 9 gc 26Okt [2+3], RSI 20,0/26,0 29Okt/2Nov [2], 5 bearish+3 bullish ASII/MPMX/POWR [2-3]), replay_sql_gate exit 0 4/4 artikel pasca-patch (sebelum: FAIL 2) · catatan: premise qa-02 keliru (29 Okt rsi=20,04 sudah cocok “20,0”), patch = netralkan kata “dasar” (min streak aktual 0,02 @30Sep) + tanggal 2 Nov eksplisit",
+      "qa_verified": false,
+      "done_at": "2026-11-04T09:5x WIB"
     },
     {
       "id": "qa-2026-11-04-02",
@@ -4328,11 +4331,14 @@
       "priority": "P1",
       "title": "FATAL analisa-saham-goto-oversold-26-sesi: 'RSI dasar 20,0 pada 29 Oktober' — DB RSI 29 Okt = 20,04; 20,0 exact adalah 30 Okt/2 Nov (cross-day)",
       "north_star": "TRUST (angka + hari harus cocok snapshot hari itu; qa-30-01)",
-      "status": "pending",
+      "status": "done",
       "spec": "INTENT: analisa-saham-goto-oversold-26-sesi (publish 3 Nov, basis sesi 2 Nov) menulis 'menyentuh dasar 20,0 pada 29 Oktober lalu membaik ke level 26,0 sekarang'. DB StockIndicator GOTO: 29 Okt rsi14=20.04; nilai 20.0 exact = 30 Okt & 2 Nov (dan 26,0 = RSI 2 Nov benar). Cross-day mismatch. ACCEPTANCE: (a) perbaiki jadi 'dasar 20,0 pada 30 Oktober' ATAU 'di kisaran 20 pada akhir Oktober'; (b) grep '20,0' & '29 Oktober' di artikel -> frasa lama 0; (c) live render frasa baru, residual 0.",
       "train": "T-1105-M",
       "scheduled_slot": "2026-11-04 22:00 QA Sentinel sweep FATAL konten (verdict+fix artikel, bukan deploy kereta)",
-      "reslot_note": "kondektur-fix 2026-11-04: assign QA Sentinel 22:00 hari ini"
+      "reslot_note": "kondektur-fix 2026-11-04: assign QA Sentinel 22:00 hari ini",
+      "result": "qa_fixed_by=CTO-siang-4Nov · bukti: residual DB 0 semua frasa lama (patch script assert count==1 + re-verify), frasa baru live curl grep >=2 (DFAM +33,9% [2], top gainer non-gorengan [2], 7 gc 27Okt [2], 9 gc 26Okt [2+3], RSI 20,0/26,0 29Okt/2Nov [2], 5 bearish+3 bullish ASII/MPMX/POWR [2-3]), replay_sql_gate exit 0 4/4 artikel pasca-patch (sebelum: FAIL 2) · catatan: premise qa-02 keliru (29 Okt rsi=20,04 sudah cocok “20,0”), patch = netralkan kata “dasar” (min streak aktual 0,02 @30Sep) + tanggal 2 Nov eksplisit",
+      "qa_verified": false,
+      "done_at": "2026-11-04T09:5x WIB"
     },
     {
       "id": "qa-2026-11-04-03",
@@ -4341,11 +4347,14 @@
       "priority": "P1",
       "title": "FATAL brief-pasar-idx-2026-11-03: '19 golden cross dalam 7 sesi terakhir' — 19 = window 11 sesi (17-31 Okt s/d 2 Nov); window 7 sesi kanonik = 8",
       "north_star": "TRUST (label window harus sama dengan basis hitung; kanonik = mandor_brief signals.golden_cross_7d)",
-      "status": "pending",
+      "status": "done",
       "spec": "INTENT: brief-pasar-idx-2026-11-03-rebound-energy klaim '19 golden cross aktif dalam 7 sesi terakhir (equity aktif non-gorengan)'. Replay DB: golden_cross smaCrossDate 27 Okt-2 Nov (7 sesi, filter kanonik aktif+non-gorengan) = 8; angka 19 baru cocok bila window diperlebar ke 17-31 Okt-2 Nov (11 sesi). ACCEPTANCE: (a) ganti jadi '8 golden cross dalam 7 sesi terakhir' ATAU '19 golden cross dalam 11 sesi (sejak 17 Oktober)' — angka dan label window harus konsisten; (b) replay_sql_gate.py exit 0; (c) live render frasa baru, residual 0.",
       "train": "T-1105-M",
       "scheduled_slot": "2026-11-04 22:00 QA Sentinel sweep FATAL konten (verdict+fix artikel, bukan deploy kereta)",
-      "reslot_note": "kondektur-fix 2026-11-04: assign QA Sentinel 22:00 hari ini"
+      "reslot_note": "kondektur-fix 2026-11-04: assign QA Sentinel 22:00 hari ini",
+      "result": "qa_fixed_by=CTO-siang-4Nov · bukti: residual DB 0 semua frasa lama (patch script assert count==1 + re-verify), frasa baru live curl grep >=2 (DFAM +33,9% [2], top gainer non-gorengan [2], 7 gc 27Okt [2], 9 gc 26Okt [2+3], RSI 20,0/26,0 29Okt/2Nov [2], 5 bearish+3 bullish ASII/MPMX/POWR [2-3]), replay_sql_gate exit 0 4/4 artikel pasca-patch (sebelum: FAIL 2) · catatan: premise qa-02 keliru (29 Okt rsi=20,04 sudah cocok “20,0”), patch = netralkan kata “dasar” (min streak aktual 0,02 @30Sep) + tanggal 2 Nov eksplisit",
+      "qa_verified": false,
+      "done_at": "2026-11-04T09:5x WIB"
     },
     {
       "id": "qa-2026-11-04-04",
@@ -4354,11 +4363,14 @@
       "priority": "P1",
       "title": "FATAL brief-pasar-idx-2026-11-04: '22 golden cross pada 7 sesi terakhir' — window 7 sesi (26 Okt-3 Nov) kanonik = 12-14; 22 = window 11 sesi tanpa filter aktif",
       "north_star": "TRUST (definisi + window konsisten; qa-27-01)",
-      "status": "pending",
+      "status": "done",
       "spec": "INTENT: brief-pasar-idx-2026-11-04-oversold-massal klaim '22 golden cross pada 7 sesi terakhir (saham aktif non-gorengan)'. Replay DB: golden_cross 26 Okt-3 Nov dgn filter aktif+non-gorengan = 12 (tanpa filter = 14); angka 22 hanya cocok bila window diperlebar ke 18 Okt-3 Nov (11 sesi, tanpa filter aktif). ACCEPTANCE: (a) ganti jadi '12 golden cross pada 7 sesi terakhir' ATAU sebut window 11 sesi dgn angka benar; (b) replay_sql_gate.py exit 0; (c) live render frasa baru, residual 0.",
       "train": "T-1105-M",
       "scheduled_slot": "2026-11-04 22:00 QA Sentinel sweep FATAL konten (verdict+fix artikel, bukan deploy kereta)",
-      "reslot_note": "kondektur-fix 2026-11-04: assign QA Sentinel 22:00 hari ini"
+      "reslot_note": "kondektur-fix 2026-11-04: assign QA Sentinel 22:00 hari ini",
+      "result": "qa_fixed_by=CTO-siang-4Nov · bukti: residual DB 0 semua frasa lama (patch script assert count==1 + re-verify), frasa baru live curl grep >=2 (DFAM +33,9% [2], top gainer non-gorengan [2], 7 gc 27Okt [2], 9 gc 26Okt [2+3], RSI 20,0/26,0 29Okt/2Nov [2], 5 bearish+3 bullish ASII/MPMX/POWR [2-3]), replay_sql_gate exit 0 4/4 artikel pasca-patch (sebelum: FAIL 2) · catatan: premise qa-02 keliru (29 Okt rsi=20,04 sudah cocok “20,0”), patch = netralkan kata “dasar” (min streak aktual 0,02 @30Sep) + tanggal 2 Nov eksplisit",
+      "qa_verified": false,
+      "done_at": "2026-11-04T09:5x WIB"
     },
     {
       "id": "qa-2026-11-04-05",
@@ -4367,11 +4379,14 @@
       "priority": "P1",
       "title": "FATAL analis-sore-3-Nov: '8 sinyal EMA cross baru (7 bearish, hanya MPMX bullish)' — komposisi tidak cocok DB sesi 2 Nov manapun (basis vol>=3jt = 5 dn + 3 up; semua non-gorengan = 12 dn + 5 up)",
       "north_star": "TRUST (komposisi sinyal harus dari satu basis DB; qa-30-02 guard _EMA_COUNT_CLAIM)",
-      "status": "pending",
+      "status": "done",
       "spec": "INTENT: analis-sore-2026-11-03-goto menulis '8 sinyal EMA cross baru (7 di antaranya bearish ... hanya MPMX bullish pada 2 Nov)'. DB 2 Nov: total non-gorengan 17 baru (12 bearish + 5 bullish: ASII, MPMX, CASA, NFCX, POWR); dgn filter volume>=3jt total = 8 (5 bearish + 3 bullish) — tidak ada basis yang menghasilkan 8 = 7 bearish + 1 bullish. Komposisi salah meski total 8 kebetulan match filter volume. ACCEPTANCE: (a) tulis ulang kalimat dari SATU basis: mis. '8 sinyal EMA cross baru di saham likuid (5 bearish, 3 bullish — MPMX salah satu bullish)' sesuai pilihan basis yang dinyatakan eksplisit, ATAU pakai basis penuh non-gorengan 17 (12 bearish, 5 bullish); (b) klaim 'hanya MPMX bullish' dihapus/dikoreksi (DB: 5 bullish 2 Nov); (c) replay_sql_gate.py exit 0; (d) live render frasa baru, residual 0.",
       "train": "T-1105-M",
       "scheduled_slot": "2026-11-04 22:00 QA Sentinel sweep FATAL konten (verdict+fix artikel, bukan deploy kereta)",
-      "reslot_note": "kondektur-fix 2026-11-04: assign QA Sentinel 22:00 hari ini"
+      "reslot_note": "kondektur-fix 2026-11-04: assign QA Sentinel 22:00 hari ini",
+      "result": "qa_fixed_by=CTO-siang-4Nov · bukti: residual DB 0 semua frasa lama (patch script assert count==1 + re-verify), frasa baru live curl grep >=2 (DFAM +33,9% [2], top gainer non-gorengan [2], 7 gc 27Okt [2], 9 gc 26Okt [2+3], RSI 20,0/26,0 29Okt/2Nov [2], 5 bearish+3 bullish ASII/MPMX/POWR [2-3]), replay_sql_gate exit 0 4/4 artikel pasca-patch (sebelum: FAIL 2) · catatan: premise qa-02 keliru (29 Okt rsi=20,04 sudah cocok “20,0”), patch = netralkan kata “dasar” (min streak aktual 0,02 @30Sep) + tanggal 2 Nov eksplisit",
+      "qa_verified": false,
+      "done_at": "2026-11-04T09:5x WIB"
     }
   ]
 }

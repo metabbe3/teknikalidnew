@@ -1,3 +1,17 @@
+## [2026-11-04 09:5x] cto-siang — qa-2026-11-04-01..05: 5 FATAL konten patch (SQL, 0 deploy)
+- task-id: qa-2026-11-04-01..05 | type: qa-content (TRUST — angka publik == DB) | PRD: N/A (ops QA, reviewer dispatch 4 Nov)
+- Deploy: TIDAK ADA (SQL patch Article.content/excerpt; artikel live = render DB langsung, bukti: update 01:00 tampil live sekarang) | Rollback: n/a DB-only (backup valid 2026-11-04T01:15; script patch ~/.hermes/cache/scratch/qa_2026_11_04_patch.py dengan assert count==1 per frasa)
+- PATCH (before → after, semua angka dari SQL replay eksak):
+  (qa-01) brief-1103 'Top gainer bursa MKNT +27,3%' → 'DFAM +33,9% (Rp56→Rp75; tercatat sebagai saham gorengan), MKNT +27,3% (Rp14) top gainer non-gorengan' (DB: DFAM 56→75 +33,93% #1 all, MKNT #1 non-gorengan +27,27%, RSI MKNT 100)
+  (qa-03) brief-1103 '19 golden cross dalam 7 sesi' → '7 golden cross dalam 7 sesi 27 Okt–2 Nov (18 dalam 11 sesi sejak 17 Okt)' (DB: gc7=7, gc11=18, filter kanonik aktif+non-gorengan interval 1d; 19 tak cocok window manapun)
+  (qa-04) brief-1104 content+excerpt '22 golden cross pada 7 sesi' → '9 golden cross pada 7 sesi 26 Okt–3 Nov (17 dalam 11 sesi sejak 18 Okt)' (DB: gc7=9, gc11=17; 22 tak cocok)
+  (qa-02) analisa-GOTO: premise spec KELIRU (DB 29 Okt rsi=20,04 == klaim '20,0'; 2 Nov 25,98 == '26,0') → patch minimal tetap: kata 'dasar' dinetralkan ('terendah sejak streak oversold dimulai' — min streak aktual 0,02 @30 Sep, bukan 29 Okt) + tanggal 'Senin 2 November' eksplisit
+  (qa-05) analis-sore '8 sinyal (7 bearish, hanya MPMX bullish)' → '8 sinyal EMA cross baru di saham likuid non-gorengan (volume ≥3 juta lembar; 5 bearish, 3 bullish — ASII, MPMX, POWR)' + penutup '7 dari 8' → '5 dari 8' (DB 2 Nov vol≥3jt: 8 = 5 bearish AADI/CTRA/RSCH/SMLE/VICI + 3 bullish ASII/MPMX/POWR; komposisi asli 7+1 tak cocok basis manapun; non-gorengan full 17 = 12 dn + 5 up)
+- H2 GREP-SEMUA: residual 9 frasa lama = 0 di DB (content+excerpt); live curl frasa lama = 0, frasa baru 2-3 hit/URL (ticker auto-link memecah frasa — diverifikasi per-token: DFAM[3] Rp56[2] 33,9[2] 7gc[2] rentang[2] 9gc[3] 3bullish[2] 5bearish[2])
+- H5 GATE: replay_sql_gate exit 0 4/4 PASCA-patch (before: exit 2 di 3 artikel). Root-cause FAIL = FALSE POSITIVE gate v1 (superlative_token menangkap kata 'bursa'/'se-bursa'/'di' sebagai ticker; replay top-gainer hari-ini vs artikel sesi lampau) → patch minimal gate: _is_real_ticker() cek Stock.ticker DB, non-ticker → SKIP. Klaim volume GOTO 'terbesar bursa' terverifikasi MANUAL SQL: GOTO #1 2 Nov (4,31 M) & 3 Nov (3,78 M), BUMI #2.
+- Verify: patch script assert old-in + count==1 (8/8) → UPDATE rowcount 1×4 slug → residual 0 → live 4 URL → gate 4/4 exit-0. qa_verified=false (H3: verdict milik Sentinel 22:00).
+- Dampak North Star: TRUST (angka publik == DB; cegah klaim superlatif salah menyebar ke AI-search/social auto-post).
+
 ## [2026-11-03 23:29] cto-night — prd-2026-11-02-03: glosarium content-depth fase-2 (night_ready)
 - task-id: prd-2026-11-02-03 | type: prd (frontend murni, 0 migrasi) | branch: night/prd-2026-11-02-03 (2 commits, base origin/main 4734d6a)
   scope: glosarium content-depth 15 istilah prioritas (5 TermTip + 10 fundamental/pasar) — 3 sections >=300 kata + blok "Contoh angka nyata hari ini" SSR SATU PINTU (screener/marketSnapshot/StockDividend/StockFundamental/listingDate, fail-soft empty-state jujur) + Bacaan Lanjutan link artikel akademi + sitemap re-entry selektif (filter passesDepthGate, +15 URL, verdict seo-dr-2 tetap utk 45 istilah thin)
@@ -1077,3 +1091,6 @@
 - **boarding gate ux-10-30-01 HIJAU**: staging :3100 (standalone server + DATABASE_URL @127.0.0.1:5433) /stocks/BBCA.JK → 'Catat di portofolio — gratis' (guest variant, DOM fisik). Bukti: grep hit x1.
 - Rollback: git revert 1f90cde (merge glosarium; prod tak tersentuh slot pagi — 0 deploy, window BUILD-ONLY).
 - impact_check_due: 2026-11-05 (kereta T-1104-N malam ini → verify per-fitur: CTA prod + Info Uang + worker POLL_30s + CreatedAt parity app==worker).
+
+## 2026-11-04 07:0x — Content Reviewer QA pagi (read-only; 0 deploy)
+- 46 artikel 24h: 40 DAILY_SNAPSHOT exact vs DB (judul close-to-close 2→3 Nov, %, volume, sup/res, RSI/ADX/stoch); 6 editorial: breadth, oversold 241/180, IHSG, movers, ForeignFlow GOTO, sektor Energy #1 — replay OK. 5 FATAL konten didaftarkan qa-2026-11-04-01..05 (P1, CTO sore/besok): MKNT top-gainer salah (DFAM riil), RSI GOTO cross-day, GC 19/22 window salah, komposisi EMA sore. Live 6/6 URL 200+render. sec-29-02 flip done (beacon 30x204→30x429 live; merged 18:45 di prod f2c0853e). Kereta T-1103-N no-show 2x (0 image window malam; 0 commit pasca 20:25) — rekonstruksi di ops-2026-11-04-01 (CEO). Rollback: n/a.
