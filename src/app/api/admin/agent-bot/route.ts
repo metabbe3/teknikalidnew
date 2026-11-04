@@ -33,6 +33,10 @@ export async function GET() {
       WHERE status IN ('pending','running') GROUP BY 1
     `;
 
+        // Label model LLM agent (owner 5 Nov "model apa yang dipakai") — dari env var
+    // AGENTD_LLM_MODEL yang juga dipakai agentd; fallback generic.
+    const MODEL_LABEL = process.env.AGENTBOT_LLM_MODEL || "glm-5.3-flash";
+
     const users = await prisma.$queryRaw<Array<{
       chatId: string; tier: string | null; subStatus: string | null; periodEnd: Date | null;
       turnsMonth: string | null; lastActive: Date | null; onbDone: boolean | null;
@@ -63,6 +67,42 @@ export async function GET() {
       FROM agent.agent_usage_ledger
       WHERE created_at >= now() - interval '7 days'
       GROUP BY 1 ORDER BY 3::bigint DESC LIMIT 8
+    `;
+
+    // Per-user token & turn breakdown (owner 5 Nov): window 7/30/90 hari dalam SATU query.
+    const perUser = await prisma.$queryRaw<Array<{
+      chatId: string; tier: string | null;
+      t7: string; t30: string; t90: string; turns30: string;
+      in7: string; out7: string; lastActive: Date | null;
+    }>>`
+      SELECT u.chat_id::text AS "chatId", coalesce(s.tier,'free') AS tier,
+        coalesce((SELECT sum(l.tokens_in+l.tokens_out) FROM agent.agent_usage_ledger l
+          WHERE l.chat_id=u.chat_id AND l.created_at >= now() - interval '7 days'),0)::text AS t7,
+        coalesce((SELECT sum(l.tokens_in+l.tokens_out) FROM agent.agent_usage_ledger l
+          WHERE l.chat_id=u.chat_id AND l.created_at >= now() - interval '30 days'),0)::text AS t30,
+        coalesce((SELECT sum(l.tokens_in+l.tokens_out) FROM agent.agent_usage_ledger l
+          WHERE l.chat_id=u.chat_id AND l.created_at >= now() - interval '90 days'),0)::text AS t90,
+        coalesce((SELECT sum(l.turns_used) FROM agent.agent_usage_ledger l
+          WHERE l.chat_id=u.chat_id AND l.created_at >= now() - interval '30 days'),0)::text AS "turns30",
+        coalesce((SELECT sum(l.tokens_in) FROM agent.agent_usage_ledger l
+          WHERE l.chat_id=u.chat_id AND l.created_at >= now() - interval '7 days'),0)::text AS in7,
+        coalesce((SELECT sum(l.tokens_out) FROM agent.agent_usage_ledger l
+          WHERE l.chat_id=u.chat_id AND l.created_at >= now() - interval '7 days'),0)::text AS out7,
+        u.last_active_at AS "lastActive"
+      FROM agent.agent_user u
+      LEFT JOIN agent.agent_subscription s ON s.chat_id=u.chat_id AND s.status='active'
+      ORDER BY t7::bigint DESC NULLS LAST LIMIT 20
+    `;
+
+    // Daily series 14 hari (compare daily/weekly — owner 5 Nov): token per hari WIB.
+    const dailyTokens = await prisma.$queryRaw<Array<{ d: string; tin: string; tout: string; turns: string }>>`
+      SELECT to_char((l.created_at AT TIME ZONE 'Asia/Jakarta')::date, 'YYYY-MM-DD') AS d,
+             coalesce(sum(l.tokens_in),0)::text AS tin,
+             coalesce(sum(l.tokens_out),0)::text AS tout,
+             coalesce(sum(l.turns_used),0)::text AS turns
+      FROM agent.agent_usage_ledger l
+      WHERE l.created_at >= now() - interval '14 days'
+      GROUP BY 1 ORDER BY 1
     `;
 
     const tickers = await prisma.$queryRaw<Array<{ t: string | null; n: bigint }>>`
@@ -149,6 +189,16 @@ export async function GET() {
           onbDone: u.onbDone,
         })),
         econ: { tokensIn: din, tokensOut: dout, estRp: Math.round((din / 1000) * 1.1 + (dout / 1000) * 4.4) },
+        model: MODEL_LABEL,
+        perUser: perUser.map((u) => ({
+          chatId: String(u.chatId), tier: u.tier,
+          t7: Number(u.t7), t30: Number(u.t30), t90: Number(u.t90),
+          turns30: Number(u.turns30), in7: Number(u.in7), out7: Number(u.out7),
+          lastActive: u.lastActive,
+        })),
+        dailyTokens: dailyTokens.map((d) => ({
+          d: d.d, tin: Number(d.tin), tout: Number(d.tout), turns: Number(d.turns),
+        })),
         features: feat.map((f) => ({ feature: f.feature, used: Number(f.used), tokens: Number(f.tokens) })),
         topTickers,
         jobs14: jobs14.map((j) => ({ d: j.d, n: Number(j.n) })),

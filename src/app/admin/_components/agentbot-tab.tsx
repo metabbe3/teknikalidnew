@@ -36,6 +36,9 @@ interface AgentBotData {
   funnel: { total: number; onb: number; act7: number; paid: number };
   feedback: { d: string; up: number; dn: number }[];
   tools: { tool: string; n: number; errs: number; p50: number | null; p90: number | null }[];
+  model?: string;
+  perUser?: Array<{ chatId: string; tier: string | null; t7: number; t30: number; t90: number; turns30: number; in7: number; out7: number; lastActive: string | null }>;
+  dailyTokens?: Array<{ d: string; tin: number; tout: number; turns: number }>;
 }
 
 function fmtRp(n: number): string {
@@ -159,6 +162,53 @@ export function AgentBotTab() {
           </Card>
         </div>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">🧾 Token per User (7/30/90 hari){data?.model ? ` · ${data.model}` : ""}</CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm">
+          {(data?.perUser ?? []).length === 0 ? (
+            <span className="text-muted-foreground">Belum ada data</span>
+          ) : (
+            <AdminDataTable
+              columns={[
+                { header: "CHAT ID", cell: (u) => <span className="font-mono">{u.chatId}</span> },
+                { header: "TIER", cell: (u) => u.tier || "free" },
+                { header: "7D TOK", cell: (u) => formatVolume(u.t7) },
+                { header: "30D TOK", cell: (u) => formatVolume(u.t30) },
+                { header: "90D TOK", cell: (u) => formatVolume(u.t90) },
+                { header: "TURN 30D", cell: (u) => u.turns30 },
+                { header: "IN/OUT 7D", cell: (u) => `${formatVolume(u.in7)} / ${formatVolume(u.out7)}` },
+              ]}
+              data={data?.perUser ?? []}
+              keyFn={(u) => u.chatId}
+            />
+          )}
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">📅 Token per Hari (14d)</CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm">
+          {(data?.dailyTokens ?? []).length === 0 ? (
+            <span className="text-muted-foreground">Belum ada data</span>
+          ) : (
+            <AdminDataTable
+              columns={[
+                { header: "TANGGAL", cell: (d) => d.d },
+                { header: "IN", cell: (d) => formatVolume(d.tin) },
+                { header: "OUT", cell: (d) => formatVolume(d.tout) },
+                { header: "TOTAL", cell: (d) => <b>{formatVolume(d.tin + d.tout)}</b> },
+                { header: "TURN", cell: (d) => d.turns },
+              ]}
+              data={data?.dailyTokens ?? []}
+              keyFn={(d) => d.d}
+            />
+          )}
+        </CardContent>
+      </Card>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
