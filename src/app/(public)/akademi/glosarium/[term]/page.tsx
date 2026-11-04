@@ -3,6 +3,8 @@ import { safeJsonLd } from "@/lib/safe-json-ld";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { GLOSSARY_TERMS } from "@/lib/glossary-terms";
+import { GLOSSARY_DEEP_DIVES } from "@/lib/glossary-deep-dives";
+import { GlossaryExample } from "@/components/glossary/glossary-example";
 import { SITE_URL } from "@/lib/constants";
 import { ChevronRight, ArrowLeft, BookOpen } from "lucide-react";
 
@@ -21,10 +23,6 @@ const CATEGORY_COLORS: Record<string, string> = {
   pasar: "#0d9488",
   strategi: "#f59e0b",
 };
-
-export async function generateStaticParams() {
-  return GLOSSARY_TERMS.map((t) => ({ term: t.slug }));
-}
 
 export async function generateMetadata({
   params,
@@ -70,6 +68,9 @@ export default async function GlossaryTermPage({
   if (!entry) notFound();
 
   const categoryColor = CATEGORY_COLORS[entry.category] ?? "#6b7280";
+
+  // Deep-dive konten lanjutan (15 istilah prioritas — sisanya tetap ringkas)
+  const deep = GLOSSARY_DEEP_DIVES[slug];
 
   // Related terms lookup
   const relatedTerms = (entry.related ?? [])
@@ -196,6 +197,43 @@ export default async function GlossaryTermPage({
               {entry.definition}
             </p>
           </div>
+
+          {/* Deep-dive sections (PRD prd-2026-11-02-03 — depth >=300 kata utk 15 istilah prioritas) */}
+          {deep && (
+            <div className="space-y-6 mb-6">
+              {deep.sections.map((sec) => (
+                <section key={sec.heading} className="bg-bg-card rounded-xl depth-shadow p-6 sm:p-8">
+                  <h2 className="text-lg font-bold text-text-primary mb-3">{sec.heading}</h2>
+                  <p className="text-[15px] text-text-secondary leading-relaxed">{sec.body}</p>
+                </section>
+              ))}
+            </div>
+          )}
+
+          {/* Contoh angka nyata — SATU PINTU, fail-soft empty-state */}
+          {deep && <GlossaryExample spec={deep.example} />}
+
+          {/* Bacaan lanjutan (internal-link artikel akademi) */}
+          {deep && deep.articles.length > 0 && (
+            <div className="mb-6">
+              <p className="text-xs font-mono text-text-tertiary mb-3 uppercase tracking-wider">
+                Bacaan Lanjutan
+              </p>
+              <ul className="space-y-2">
+                {deep.articles.map((a) => (
+                  <li key={a.slug}>
+                    <Link
+                      href={`/akademi/${a.slug}`}
+                      className="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-accent transition-colors"
+                    >
+                      <ChevronRight className="h-3 w-3 opacity-40 shrink-0" />
+                      {a.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Related terms */}
           {relatedTerms.length > 0 && (
