@@ -50,10 +50,12 @@ export async function GET() {
       LIMIT 30
     `;
 
+    // FIX 4 Nov: agent_message_log hanya punya kolom `tokens` (total in+out) —
+    // tokens_in/tokens_out menyebabkan 42703 → seluruh tab kosong. Split pakai ledger.
     const econ = await prisma.$queryRaw<Array<{ din: string | null; dout: string | null }>>`
-      SELECT coalesce(sum(tokens_in),0)::text AS din, coalesce(sum(tokens_out),0)::text AS dout
-      FROM agent.agent_message_log
-      WHERE dir='out' AND created_at >= now() - interval '7 days'
+      SELECT coalesce(sum(l.tokens_in),0)::text AS din, coalesce(sum(l.tokens_out),0)::text AS dout
+      FROM agent.agent_usage_ledger l
+      WHERE l.created_at >= now() - interval '7 days'
     `;
 
     const feat = await prisma.$queryRaw<Array<{ feature: string; used: string; tokens: string }>>`
