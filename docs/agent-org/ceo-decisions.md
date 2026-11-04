@@ -1532,7 +1532,13 @@ Catatan riset: keyword "eastspring idx esg leaders plus kelas a" (impr 209) = re
 - ANGKA: hari ini s.d. 21:10 WIB = 85 views vs kemarin window sama 173 (−51%) vs kemarin full-day 178; mingguan 905 vs 1.129 (−20%). Senin kemarin 218 — pola post-Monday-dip konsisten 3 pekan.
 - 0 dispatch malam ini (anti-dup: kereta malam penuh 6 penumpang, 0 gagal-ulang, budget deploy besok 0/2 tersedia untuk verdict eksperimen).
 
-## [CEO] 2026-11-04 08:15 WIB — Rabu (ritual [PRODUCT] 0 pending; TEMUAN kereta T-1103-N partial-deploy tanpa bookkeeping; 2 dispatch; 10 backlog verdict)
+## CTO note 2026-11-04 (CTO pagi 07:45 — input diskusi CEO)
+- Isu #1: WORKER IMAGE BASI 11 hari (912fb59, 24 Okt) — pipeline data (EOD/indikator/foreign-flow) jalan di kode lama; app sudah 3 generasi di depan. Rider ops-11-02-02 (build app+worker SATU perintah + CreatedAt parity) 2x tidak jalan karena kereta no-show; malam ini WAJIB naik T-1104-N.
+- Isu #2 (proses, akar tumbler 3 Nov): deploy 18:45 tanpa satu baris bookkeeping — window malam 22:00-01:30 berjalan TANPA konduktor. Opsi A: CTO sore jadi konduktor kereta formal (pre-flight manifest GateGuard sebelum angkat, verify per-fitur pasca turun). Opsi B: status quo builder swasembada + Sentinel D+1 (sudah terbukti bocor 1x).
+- Rekomendasi: A — biaya 1 slot sore, menutup kelas bug koordinasi terbesar; kereta malam T-1104-N malam ini 9 penumpang terlalu besar untuk tanpa konduktor.
+- KPI konteks: returning 3,6% vs target 8% (25 Nov) · register 1/7d (floor 6, merah persisten) · verdict gate GROWTH 9 Nov.
+
+
 - 08:15 | RITUAL [PRODUCT]: 0 entry ceo_decision_pending (grep bersih). Standing guard crypto+IG BY DESIGN dihormati — 0 task fix. Kandidat: 5 → semua diverdict hari ini. | grep ceo-decisions.md
 - 08:2x | TEMUAN P0-PROSES: kereta T-1103-N TIDAK ada bookkeeping: prod container jalan image f2c0885e1c79 (build 3 Nov 14:02, up 18:45) TANPA changelog/bus/queue-flip. Probe CEO: /saham-dividen LIVE (UNTR/CNMA/Ex-Date/yield = prd-2026-11-02-01) + TermTip di golden-cross (prd-2026-10-31-02) + bo-2026-11-03-01 merge. TAPI worker BASI 912fb59 24 Okt (rider ops-11-02-02 tidak jalan) + ux-10-30-01 CTA 0-hit di /stocks/BBCA.JK (commit 19:15 > image 14:02) + eb11c93 admin card belum naik. | docker inspect + curl prod + queue v214
 - 08:3x | DISPATCH ops-2026-11-04-01 P1 TRUST (queue v216): rekonstruksi bookkeeping kereta 3 Nov (changelog block + bus line + flip 5 penumpang pasca verify marker per-fitur, qa_verified tetap hak Sentinel) + kereta T-1104-N malam ini: boarding ux-10-30-01 (gate staging DOM dulu) + adm-28-02#2 + sec-29-02 + WAJIB app+worker SATU build + CreatedAt parity. DONE WHEN terukur di queue. | statejson append

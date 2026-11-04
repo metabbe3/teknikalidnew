@@ -2084,7 +2084,7 @@
     {
       "id": "adm-2026-10-28-02",
       "title": "Admin UX Phase 2: pisah menu per-domain + card 'Info Uang' (nilai portofolio & premium live)",
-      "status": "approved",
+      "status": "in_train",
       "priority": "P1",
       "source": "owner-direct (TG 28 Okt malam: 'kembangkan terus admin seperti halaman depan, pisahin menu, jangan semua di overview, DATA UANG TIDAK UPDATE')",
       "problem": "Overview 8-tab monolitik = semua di satu halaman. Data uang tidak terlihat/update: PortfolioHolding 6 posisi (BBCA 4.400 lot dll) TIDAK punya UI admin/API sama sekali; Premium count statis dari field isPremium (0/31) tanpa nilai Rp; tidak ada aggregate nilai live.",
@@ -2099,7 +2099,9 @@
       "constraints": "API REUSE — extend endpoint existing, jangan buat baru; query live jangan berat (>500ms, pakai LATERAL/latest-close pattern); SATU PINTU market data; verify browser wajib",
       "created": "2026-10-28",
       "owner_verdict": "gas — approve via Owner Decision Digest 29 Okt 07:5x WIB",
-      "verdict_at": "2026-10-29T07:50:00+07:00"
+      "verdict_at": "2026-10-29T07:50:00+07:00",
+      "train": "T-1104-N",
+      "scheduled_slot": "merge eb11c93 main; staging :3210 angka EXACT == SQL replay; kereta malam T-1104-N"
     },
     {
       "id": "ops-2026-10-28-01",
