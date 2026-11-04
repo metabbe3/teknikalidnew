@@ -100,7 +100,7 @@ export function ScreenActions({ currentUrl, shareQuery, saveLabel }: { currentUr
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       setJustSaved(true);
-      setToast("Screen tersimpan ke akun");
+      setToast("Filter tersimpan ke akun");
     } catch {
       setToast("Gagal menyimpan — coba lagi");
     } finally {
@@ -148,7 +148,7 @@ export function ScreenActions({ currentUrl, shareQuery, saveLabel }: { currentUr
           onClick={handleSaveToAccount}
           disabled={saving || justSaved}
           className="flex items-center gap-1.5 px-3 py-2.5 min-h-11 text-xs font-medium rounded-lg border border-accent/30 bg-accent/10 text-accent hover:bg-accent/20 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-          aria-label="Simpan screen ke akun"
+          aria-label="Simpan filter ini ke akun"
         >
           <StarIcon filled={false} />
           {saving ? "Menyimpan…" : "Simpan ke Akun"}

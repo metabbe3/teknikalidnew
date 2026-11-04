@@ -227,7 +227,7 @@ function ScreenerPageContent({ assetClass, linkBase = "/stocks" }: { assetClass?
   }, [activeStyle, activePreset, customParams, sliderValues, styles]);
 
   const shareLabel = useMemo(() => {
-    if (activeStyle === "custom") return "Screen custom";
+    if (activeStyle === "custom") return "Filter Atur Sendiri";
     if (!activePreset || activePreset === "radar") return styleDef.label;
     const presetDef = styles.flatMap((st) => st.presets).find((pr) => pr.key === activePreset);
     return presetDef ? `${styleDef.shortLabel ?? styleDef.label} · ${presetDef.label}` : styleDef.label;

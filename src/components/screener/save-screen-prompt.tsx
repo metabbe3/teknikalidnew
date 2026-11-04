@@ -27,9 +27,10 @@ export function SaveScreenPrompt({ filters, next }: SaveScreenPromptProps) {
       </div>
       <button
         onClick={handleClick}
-        className="px-3 py-1.5 text-xs font-medium rounded-lg bg-accent text-white hover:bg-accent/90 transition-colors cursor-pointer whitespace-nowrap"
+        data-engagement="cta_save_screen_prompt"
+        className="inline-flex min-h-11 items-center px-4 py-2.5 text-xs font-medium rounded-lg bg-accent text-white hover:bg-accent/90 transition-colors cursor-pointer whitespace-nowrap"
       >
-        Simpan Screen
+        Simpan Filter
       </button>
     </div>
   );
