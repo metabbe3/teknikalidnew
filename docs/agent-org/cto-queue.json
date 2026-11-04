@@ -4400,6 +4400,19 @@
         "owner-monitoring"
       ],
       "spec": "commit f61b798; route /api/admin/agent-bot queryRaw schema agent read-only WIB-aware; tab id=agentbot"
+    },
+    {
+      "id": "bo-2026-11-04-02",
+      "title": "DEPLOY fix webhook Midtrans idempotent + custom_field cross-check (commit 905aa60): replay settlement di-skip (anti premium gratis), planId/amount/userId mismatch ditolak — audit H-2+M-4 4 Nov; verify POST replay settlement tidak menambah masa premium",
+      "priority": "P1",
+      "status": "night_ready",
+      "train": "T-1104-N",
+      "labels": [
+        "payment",
+        "security",
+        "audit-fix"
+      ],
+      "spec": "commit 905aa60 src/app/api/payment/notification/route.ts"
     }
   ]
 }
