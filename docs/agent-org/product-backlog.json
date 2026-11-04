@@ -2374,6 +2374,18 @@
       "priority": "P1",
       "status": "researched",
       "research_note": "RESEARCH 5 Nov: schema agent.* audit — agent_user=7 (7 baru 7d), agent_subscription=0, agent_alert=0, agent_watchlist=2 chats, agent_message_log=71/4 chats (3-4 Nov); internal/alerts/worker.go live (sweep+threshold+quiet-hour+dispatch) tapi UpgradeUpsellMessage memblokir FREE. PRD = prd-2026-11-05-02 spec_ready. Pivot 4 Nov: agent proaktif = produk — 0/7 user pernah merasakan proaktivitas."
+    },
+    {
+      "id": "im-2026-11-05-1",
+      "date": "2026-11-05",
+      "status": "idea",
+      "source": "idea-miner 5 Nov 2026 (nav_click 2d + anonId repeat-view 30d)",
+      "title": "Baru Saja Dilihat (Recently Viewed) — row otomatis saham terakhir dibuka pengunjung di /stocks (guest localStorage + sync anonId→akun), zero-effort memori sesi",
+      "problem": "Trader ritel mobile bolak-balik memeriksa 5-10 saham di teknikal.id tapi besok harus mengingat ulang tickernya dari nol: watchlist = komitmen eksplisit (bintang) yang 93% guest tidak pernah lakukan, dan riwayat lihat per-orang saat ini HANYA hidup di admin (tombol admin itu justru nav_click #1: 14 klik/2 hari). Tidak ada memori sesi otomatis di sisi pengunjung.",
+      "done_when": "Row \"Baru saja dilihat\" (maks 8 ticker, FIFO) render di /stocks untuk guest via localStorage + persist ke akun saat register (pola migrasi prd-2026-10-26-02). SUKSES 4 minggu pasca-live: (a) ≥15% sesi anonId aktif di /stocks menampilkan row non-kosong, DAN (b) ≥20 nav_click dari row ke /stocks/[ticker] per 7d. Gagal → iterasi placement, bukan hapus.",
+      "size": "S",
+      "data_signal": "nav_click 2d: nav:lihat_saham_yang_dib(eli) 14 klik = #1 bersama nav:stocks (label tombol admin user-management \"Lihat saham yang dibuka (30 hari)\"); PageView anonId 30d: 10 pasangan (ticker,anon) repeat-view ≥2 hari beda (CGNAT-proof, metode kanon post-idea-2026-10-04-1); nav:watchlist 3 klik. Pola produk terbukti di app sekuritas/e-commerce (recently-viewed universal), belum ada di teknikal.id (localStorage keys: guest_watchlist/teknikal:visitor/eng_anon — tanpa recently-viewed). Bukan jangan-colong list.",
+      "creative_bet": false
     }
   ],
   "items": []

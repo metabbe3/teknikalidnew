@@ -109,6 +109,29 @@ export async function POST(request: NextRequest) {
         break;
     }
 
+    // AGENT order forward (owner 5 Nov): order TA-* diproses agentd (subscription
+    // tier + promo redemption). Forward raw body + signature ke ops server agentd;
+    // kegagalan forward TIDAK membatalkan pemrosesan web (independen).
+    if (typeof order_id === "string" && order_id.startsWith("TA-")) {
+      try {
+        const agentdUrl = process.env.AGENTD_WEBHOOK_URL; // http://host.docker.internal:9101/webhook/midtrans
+        const agentdToken = process.env.AGENTD_WEBHOOK_TOKEN;
+        if (agentdUrl && agentdToken) {
+          await fetch(agentdUrl, {
+            method: "POST",
+            headers: {
+              "content-type": "application/json",
+              authorization: `Bearer ${agentdToken}`,
+            },
+            body: JSON.stringify(notification),
+          });
+        }
+      } catch (fwdError: unknown) {
+        const fm = fwdError instanceof Error ? fwdError.message : String(fwdError);
+        console.error("[Midtrans] agent forward failed:", fm);
+      }
+    }
+
     // Always return 200 to Midtrans so they stop retrying
     return NextResponse.json({ status: "ok" });
   } catch (error: unknown) {
