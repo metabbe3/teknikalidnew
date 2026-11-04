@@ -123,8 +123,9 @@ export async function GET() {
     const din = Number(econ[0]?.din ?? 0);
     const dout = Number(econ[0]?.dout ?? 0);
 
-    return NextResponse.json({
-      data: {
+    // Guard global: bigint apapun yang lolos dikonversi, bukan crash 500.
+    const jsonReplacer = (_k: string, v: unknown) => (typeof v === "bigint" ? Number(v) : v);
+    return NextResponse.json(JSON.parse(JSON.stringify({ data: {
         health: {
           jobsToday: Number(healthRow?.jobsToday ?? 0),
           successRate: done7 + fail7 > 0 ? Math.round((done7 / (done7 + fail7)) * 1000) / 10 : 100,
@@ -136,9 +137,16 @@ export async function GET() {
           p90: latencyRows[0]?.p90 != null ? Number(latencyRows[0].p90) : null,
           queue: queueRows.map((r) => ({ status: r.status, n: Number(r.n) })),
         },
+        // FIX 5 Nov r3: chat_id BIGINT (int8) balik sebagai BigInt Prisma → JSON.stringify crash.
+        // Spread ...a tidak boleh dipakai untuk row raw-SQL — map eksplisit SEMUA kolom.
         users: users.map((u) => ({
-          ...u,
+          chatId: String(u.chatId),
+          tier: u.tier,
+          subStatus: u.subStatus,
+          periodEnd: u.periodEnd,
           turnsMonth: u.turnsMonth ? Number(u.turnsMonth) : 0,
+          lastActive: u.lastActive,
+          onbDone: u.onbDone,
         })),
         econ: { tokensIn: din, tokensOut: dout, estRp: Math.round((din / 1000) * 1.1 + (dout / 1000) * 4.4) },
         features: feat.map((f) => ({ feature: f.feature, used: Number(f.used), tokens: Number(f.tokens) })),
@@ -156,7 +164,7 @@ export async function GET() {
           p50: t.p50 != null ? Number(t.p50) : null, p90: t.p90 != null ? Number(t.p90) : null,
         })),
       },
-    });
+    }, jsonReplacer)));
   } catch (error) {
     return handleApiError(error, "fetch agent bot stats");
   }
