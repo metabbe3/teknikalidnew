@@ -132,6 +132,31 @@ async function handlePaymentSuccess(
     return;
   }
 
+  // M-4 (audit 4 Nov): custom_field (userId/planId/duration) TIDAK masuk signature Midtrans —
+  // jangan percaya mentah. Kalau ada record order pending di DB (dibuat saat checkout),
+  // planId & amount HARUS cocok; mismatch = tolak (kemungkinan tamper).
+  const priorRecord = await prisma.payment.findUnique({ where: { orderId } });
+
+  // H-2 (audit 4 Nov): IDEMPOTENT settlement. Replay notification "settlement"
+  // valid-signature yang sama TIDAK boleh memperpanjang premium dua kali.
+  if (priorRecord && priorRecord.status === "success" && priorRecord.paidAt) {
+    console.info("[Midtrans] Duplicate settlement notification (idempotent skip):", orderId);
+    return;
+  }
+  if (priorRecord && priorRecord.status !== "success") {
+    if (priorRecord.planId !== planId || priorRecord.amount !== amount) {
+      console.error("[Midtrans] Order mismatch vs prior record, rejecting:", orderId, {
+        recordPlan: priorRecord.planId, notifPlan: planId,
+        recordAmount: priorRecord.amount, notifAmount: amount,
+      });
+      return;
+    }
+    if (priorRecord.userId && userId && priorRecord.userId !== userId) {
+      console.error("[Midtrans] userId mismatch vs prior record, rejecting:", orderId);
+      return;
+    }
+  }
+
   // Real user — upsert payment and activate premium
   await prisma.payment.upsert({
     where: { orderId },
