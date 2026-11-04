@@ -4413,6 +4413,20 @@
         "audit-fix"
       ],
       "spec": "commit 905aa60 src/app/api/payment/notification/route.ts"
+    },
+    {
+      "id": "bo-2026-11-04-03",
+      "title": "BUILD P1 audit-followup: (1) Admin Agent Bot Wave-2 — feedback 👍/👎 per jawaban (tabel agent.agent_feedback + tombol inline di bot + API /api/admin/agent-bot/feedback + kolom panel), counter dedup/rate-limit terpasang, agent_tool_audit latency/error per-tool; (2) Webhook Midtrans VERIFY-VIA-API — sebelum activate premium, GET status ke Midtrans API pakai server key (cek order_id+transaction_status+gross_amount dari server, bukan cuma signature body); baca audit docs/agent-org/audits/2026-11-04-dataexposure.md H-2/M-4; verify: replay settlement settlement-tested tidak menambah premium, feedback muncul di panel admin",
+      "priority": "P1",
+      "status": "night_ready",
+      "train": "T-1104-N",
+      "labels": [
+        "admin",
+        "payment",
+        "security",
+        "audit-followup"
+      ],
+      "spec": "Baca: teknikal-agent/docs/agent-org/audits/2026-11-04-*.md + skill teknikal-agent (Wave-2 section). Deliverable dua repo: teknikal-agent (bot feedback buttons) + teknikalidnew (API admin + webhook verify). DONE-WHEN: curl replay settlement 2x = premium +30 hari tepat sekali; tombol 👍/👎 kirim + tampil di /admin tab Agent Bot; tsc+go test hijau."
     }
   ]
 }
