@@ -4475,6 +4475,19 @@
       "source": "FE Builder 19:15 shift 4 Nov — audit siklus-2 flow (a) screener pasca trust-badge",
       "kpi": "GROWTH (funnel register screener) + STICKY",
       "result": "BUILD-ONLY commit 10570f1 (3 file, +6/-5):\n(a) 'Simpan Screen'->'Simpan Filter' — jargon EN->ID, konsisten dgn teks bar 'Simpan filter agar tidak hilang'\n(b) tap target tombol ~28px->44px (min-h-11 inline-flex, selaras CTA lain di flow)\n(c) data-engagement=cta_save_screen_prompt — funnel point sebelumnya gelap (0 event terukur)\n(d) sweep konsistensi: toast 'Screen tersimpan ke akun'->'Filter tersimpan ke akun', aria 'Simpan screen ke akun'->'Simpan filter ini ke akun', saveLabel 'Screen custom'->'Filter Atur Sendiri' (tampil di panel Simpananku)\nBUKTI FISIK: tsc EXIT-0; build EXIT-0 BUILD_ID G883j0qQGLbELTJ0XzOBL; staging :3100 DOM: tombol h=44px minHeight=44px label='Simpan Filter' attr data-engagement ada; panel Simpananku render 'Filter Atur Sendiri'; hasil 264 saham render asli; grep residual 'Simpan Screen' staging=0; SEO invariant H1 'Radar Saham IDX' before=after 2=2, title-tag utuh.\nNaik kereta berikutnya (T-1105-N, 5 Nov malam) — bukan T-1104-N malam ini (verifikasi selesai 20:0x > boarding 22:15 berisiko bentrok manifest final kondektur; kereta tidak menunggu penumpang)."
+    },
+    {
+      "id": "bo-2026-11-04-05",
+      "title": "VERIFIED SHIPPED context-lifecycle ala Hermes (commit 6412396, live 20:2x): idle-compress >15mnt, daily-reset 00:00 WIB + recap ke memori, /ingat <fakta> persisten, footer sisa kuota tiap reply — unit test 3 hijau + LIVE PROBE Postgres produksi PASS (footer owner: sisa 15 turn FREE; AddMemory kind=fact ok). Bot restart healthz ok. TINDAKAN KONDEKTUR: cukup verify visual di Telegram (kirim 1 chat, cek footer muncul)",
+      "priority": "P2",
+      "status": "night_ready",
+      "train": "T-1104-N",
+      "labels": [
+        "agent-bot",
+        "memory",
+        "verified"
+      ],
+      "spec": "commit 6412396 teknikal-agent"
     }
   ]
 }

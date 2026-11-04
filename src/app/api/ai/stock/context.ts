@@ -117,6 +117,16 @@ export async function buildStockAiContext(ticker: string): Promise<Record<string
   const resistance1 = swingHighs.length ? Math.min(...swingHighs) : high52;
   const resistance2 = swingHighs.length > 1 ? Math.max(...swingHighs) : null;
 
+  // Metrik dividen turunan (juri #3 30 Okt, skor 5,5 — "data ada, so-what kelewat"):
+  // payout ratio dihitung SERVER karena model dilarang berhitung sendiri.
+  // DPS estimasi = dividendYield(%) × close / 100 (unit yield DB = persen; verifikasi
+  // TLKM 4 Nov: yield 11,38 + harga → DPS ≈ Rp213 ≈ dividen historis TLKM).
+  // payout = DPS/EPS → >100% = dividen lebih besar dari laba (insight kunci "aman nggak").
+  const dyPct = fundamental?.dividendYield != null ? Number(fundamental.dividendYield) : null;
+  const epsNum = fundamental?.eps != null ? Number(fundamental.eps) : null;
+  const dpsEstimasiRp = dyPct != null && dyPct > 0 && close > 0 ? (dyPct * close) / 100 : null;
+  const payoutRatioPct = dpsEstimasiRp != null && epsNum != null && epsNum > 0 ? (dpsEstimasiRp / epsNum) * 100 : null;
+
   return {
     ticker: stock.ticker,
     name: stock.name,
@@ -177,6 +187,9 @@ export async function buildStockAiContext(ticker: string): Promise<Record<string
           pb: fundamental.pb != null ? Number(fundamental.pb) : null,
           eps: fundamental.eps != null ? Number(fundamental.eps) : null,
           dividendYield: fundamental.dividendYield != null ? Number(fundamental.dividendYield) : null,
+          // DPS & payout dihitung server (juri #3 30 Okt) — estimasi dari yield×close; '±' dijawab model
+          dpsEstimasiRp: dpsEstimasiRp != null ? Math.round(dpsEstimasiRp * 100) / 100 : null,
+          payoutRatioPct: payoutRatioPct != null ? Math.round(payoutRatioPct * 10) / 10 : null,
           marketCapRpT: fundamental.marketCap != null ? Number(fundamental.marketCap) / 1e12 : null,
           beta: fundamental.beta != null ? Number(fundamental.beta) : null,
           perDate: fundamental.date instanceof Date ? fundamental.date.toISOString().slice(0, 10) : null,
