@@ -71,6 +71,7 @@ scripts/selftest/article-sanitize.selftest.tsx
 scripts/selftest/condition-backtest.selftest.ts
 scripts/selftest/edu-canonical.selftest.ts
 scripts/selftest/foreign-flow-parity.selftest.ts
+scripts/selftest/glossary-depth.selftest.ts
 scripts/selftest/market-one-door.selftest.ts
 scripts/selftest/market-snapshot-engine.selftest.ts
 scripts/selftest/market-snapshot-oversold.selftest.ts
@@ -158,6 +159,7 @@ src/lib/events-init.ts
 src/lib/format-number.ts
 src/lib/generate-avatar.ts
 src/lib/geo-prefixes.ts
+src/lib/glossary-deep-dives.ts
 src/lib/glossary-terms.ts
 src/lib/guest-pass-limit.ts
 src/lib/guest-pass.ts
@@ -226,9 +228,8 @@ tests/track-record.test.ts
 src/app/(public)/about/page.tsx:8:export const metadata → Metadata = {
 src/app/(public)/akademi/[slug]/page.tsx:18:export async function generateMetadata({
 src/app/(public)/akademi/akademi-grid.tsx:53:export function AkademiGrid({
-src/app/(public)/akademi/glosarium/[term]/page.tsx:25:export async function generateStaticParams() {
-src/app/(public)/akademi/glosarium/[term]/page.tsx:29:export async function generateMetadata({
-src/app/(public)/akademi/glosarium/[term]/page.tsx:9:export const revalidate = 86400;
+src/app/(public)/akademi/glosarium/[term]/page.tsx:11:export const revalidate = 86400;
+src/app/(public)/akademi/glosarium/[term]/page.tsx:27:export async function generateMetadata({
 src/app/(public)/akademi/glosarium/glossary-search.tsx:7:export function GlossarySearch() {
 src/app/(public)/akademi/glosarium/page.tsx:7:export const revalidate = 86400;
 src/app/(public)/akademi/glosarium/page.tsx:9:export const metadata → Metadata = {
@@ -338,19 +339,20 @@ src/app/(public)/trading-plan/page.tsx:16:export const revalidate = 60;
 src/app/(public)/trading-plan/page.tsx:18:export const metadata → Metadata = {
 src/app/(public)/watchlist/page.tsx:10:export const metadata → Metadata = {
 src/app/(public)/watchlist/page.tsx:18:export const revalidate = 60;
+src/app/admin/_components/agentbot-tab.tsx:43:export function AgentBotTab() {
 src/app/admin/_components/analytics-tab.tsx:175:export function AnalyticsTab() {
 src/app/admin/_components/auth-tab.tsx:32:export function AuthTab() {
 src/app/admin/_components/community-tab.tsx:69:export function CommunityTab() {
-src/app/admin/_components/dashboard-shell.tsx:27:export function DashboardShell({
+src/app/admin/_components/dashboard-shell.tsx:28:export function DashboardShell({
 src/app/admin/_components/funnel-section.tsx:28:export function FunnelSection() {
 src/app/admin/_components/guest-quota-section.tsx:27:export function GuestQuotaSection() {
-src/app/admin/_components/insight-tab.tsx:58:export function InsightTab() {
+src/app/admin/_components/insight-tab.tsx:67:export function InsightTab() {
 src/app/admin/_components/overview-tab.tsx:99:export function OverviewTab() {
 src/app/admin/_components/predictions-tab.tsx:47:export function PredictionsTab() {
 src/app/admin/_components/stocks-tab.tsx:24:export function StocksTab() {
-src/app/admin/_components/tab-config.ts:15:export type TabId = (typeof TABS)[number]["id"];
-src/app/admin/_components/tab-config.ts:23:export const HIDDEN_TABS → readonly TabId[] = ["community", "predictions"];
-src/app/admin/_components/tab-config.ts:25:export const VISIBLE_TABS = TABS.filter((t) => !HIDDEN_TABS.includes(t.id));
+src/app/admin/_components/tab-config.ts:16:export type TabId = (typeof TABS)[number]["id"];
+src/app/admin/_components/tab-config.ts:24:export const HIDDEN_TABS → readonly TabId[] = ["community", "predictions"];
+src/app/admin/_components/tab-config.ts:26:export const VISIBLE_TABS = TABS.filter((t) => !HIDDEN_TABS.includes(t.id));
 src/app/admin/_components/tab-config.ts:3:export const TABS = [
 src/app/admin/_components/user-management-tab.tsx:88:export function UserManagementTab() {
 src/app/admin/_components/users-tab.tsx:36:export function UsersTab() {
@@ -368,6 +370,7 @@ src/app/admin/retention/page.tsx:8:export const metadata = { title → "Retentio
 src/app/admin/shares/page.tsx:4:export const metadata → Metadata = { title: "Share Tracking — Admin" };
 src/app/admin/shares/shares-view.tsx:45:export function SharesView() {
 src/app/api/achievements/route.ts:6:export async function GET(request → NextRequest) {
+src/app/api/admin/agent-bot/route.ts:11:export async function GET() {
 src/app/api/admin/agent-hub/[agentType]/route.ts:21:export async function POST(
 src/app/api/admin/agent-hub/[agentType]/route.ts:35:export async function PUT(
 src/app/api/admin/agent-hub/[agentType]/route.ts:6:export async function GET(
@@ -376,6 +379,9 @@ src/app/api/admin/agent-hub/jobs/[jobId]/route.ts:36:export async function POST(
 src/app/api/admin/agent-hub/jobs/[jobId]/route.ts:7:export async function GET(
 src/app/api/admin/agent-hub/route.ts:16:export async function POST(request → NextRequest) {
 src/app/api/admin/agent-hub/route.ts:6:export async function GET() {
+src/app/api/admin/ai-insight/route.ts:107:export async function GET() {
+src/app/api/admin/ai-insight/route.ts:28:export interface AiInsightOverview {
+src/app/api/admin/ai-insight/route.ts:7:export const dynamic = "force-dynamic";
 src/app/api/admin/analytics/comprehensive/route.ts:29:export async function GET(request → NextRequest) {
 src/app/api/admin/analytics/comprehensive/route.ts:7:export const dynamic = "force-dynamic";
 src/app/api/admin/announcements/route.ts:10:export async function POST(request → Request) {
@@ -619,7 +625,3 @@ src/app/layout.tsx:37:export const viewport → Viewport = {
 src/app/layout.tsx:43:export const metadata → Metadata = {
 src/app/llms.txt/route.ts:4:export const dynamic = "force-dynamic";
 src/app/llms.txt/route.ts:6:export async function GET() {
-src/app/not-found.tsx:6:export const metadata → Metadata = {
-src/app/sitemap-news.xml/route.ts:31:export async function GET() {
-src/app/sitemap-news.xml/route.ts:5:export const dynamic = "force-dynamic";
-src/app/sitemap-news.xml/route.ts:6:export const revalidate = 900;

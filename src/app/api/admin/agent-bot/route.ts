@@ -97,6 +97,25 @@ export async function GET() {
         (SELECT count(*) FROM agent.agent_subscription WHERE status='active' AND tier <> 'free') AS paid
     `;
 
+    // Wave-2 (bo-2026-11-04-03): feedback 👍/👎 14d + tool-audit per-tool 7d.
+    const feedbackRows = await prisma.$queryRaw<Array<{ d: Date; up: bigint; dn: bigint }>>`
+      SELECT (created_at AT TIME ZONE 'Asia/Jakarta')::date AS d,
+             count(*) FILTER (WHERE rating='up') AS up,
+             count(*) FILTER (WHERE rating='down') AS dn
+      FROM agent.agent_feedback
+      WHERE created_at >= now() - interval '14 days'
+      GROUP BY 1 ORDER BY 1
+    `;
+    const toolRows = await prisma.$queryRaw<Array<{ tool: string; n: bigint; errs: bigint; p50: number | null; p90: number | null }>>`
+      SELECT tool, count(*) AS n,
+             count(*) FILTER (WHERE ok = false) AS errs,
+             percentile_disc(0.5) WITHIN GROUP (ORDER BY latency_ms) AS p50,
+             percentile_disc(0.9) WITHIN GROUP (ORDER BY latency_ms) AS p90
+      FROM agent.agent_tool_audit
+      WHERE created_at >= now() - interval '7 days'
+      GROUP BY 1 ORDER BY n DESC LIMIT 12
+    `;
+
     const done7 = Number(healthRow?.done7 ?? 0);
     const fail7 = Number(healthRow?.fail7 ?? 0);
     const out7 = Number(healthRow?.out7 ?? 0);
@@ -111,8 +130,10 @@ export async function GET() {
           successRate: done7 + fail7 > 0 ? Math.round((done7 / (done7 + fail7)) * 1000) / 10 : 100,
           fallbackRate: out7 > 0 ? Math.round((fb7 / out7) * 1000) / 10 : 0,
           fb7, out7, done7, fail7,
-          p50: latencyRows[0]?.p50 ?? null,
-          p90: latencyRows[0]?.p90 ?? null,
+          // FIX 5 Nov: percentile_disc balik BigInt — Number() wajib, kalau tidak JSON.stringify
+          // TypeError "Do not know how to serialize a BigInt" → endpoint 500 → tab kosong.
+          p50: latencyRows[0]?.p50 != null ? Number(latencyRows[0].p50) : null,
+          p90: latencyRows[0]?.p90 != null ? Number(latencyRows[0].p90) : null,
           queue: queueRows.map((r) => ({ status: r.status, n: Number(r.n) })),
         },
         users: users.map((u) => ({
@@ -129,6 +150,11 @@ export async function GET() {
           act7: Number(funnelRow?.act7 ?? 0),
           paid: Number(funnelRow?.paid ?? 0),
         },
+        feedback: feedbackRows.map((f) => ({ d: f.d, up: Number(f.up), dn: Number(f.dn) })),
+        tools: toolRows.map((t) => ({
+          tool: t.tool, n: Number(t.n), errs: Number(t.errs),
+          p50: t.p50 != null ? Number(t.p50) : null, p90: t.p90 != null ? Number(t.p90) : null,
+        })),
       },
     });
   } catch (error) {

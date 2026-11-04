@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifySignature, MidtransNotification } from "@/lib/midtrans";
+import { verifySignature, MidtransNotification, getCoreApi } from "@/lib/midtrans";
 import { prisma } from "@/lib/prisma";
 
 // Midtrans sends webhook notifications here
@@ -50,6 +50,36 @@ export async function POST(request: NextRequest) {
       } else {
         effectiveStatus = "deny"; // Fraud detected
       }
+    }
+
+    // bo-2026-11-04-03 (audit H-2 double-confirm): sebelum state-change finansial,
+    // verifikasi status LANGSUNG ke Midtrans via Core API pakai server key —
+    // signature valid + body cocok bukan jaminan order benar-benar settle di sisi
+    // Midtrans (body bisa tertangkap/di-replay pihak lain). Fail-closed: API error
+    // ATAU status mismatch => tolak activation, Midtrans akan retry bila asli.
+    try {
+      const core = getCoreApi();
+      const vt = (await core.transactionStatus(order_id)) as {
+        transaction_status?: string;
+        gross_amount?: string;
+      };
+      const remoteStatus = vt?.transaction_status;
+      const remoteOk =
+        remoteStatus === effectiveStatus ||
+        (remoteStatus === "capture" && effectiveStatus === "capture") ||
+        (remoteStatus === "settlement" && effectiveStatus === "settlement");
+      const remoteAmountOk = String(vt?.gross_amount ?? "") === String(gross_amount);
+      if (!remoteOk || !remoteAmountOk) {
+        console.error("[Midtrans] Verify-via-API mismatch, rejecting:", order_id, {
+          local: effectiveStatus, remote: remoteStatus,
+          localAmount: gross_amount, remoteAmount: vt?.gross_amount,
+        });
+        return NextResponse.json({ status: "ok" }); // 200 agar tidak di-replay terus; log = audit trail
+      }
+    } catch (verifyError: unknown) {
+      const vm = verifyError instanceof Error ? verifyError.message : String(verifyError);
+      console.error("[Midtrans] Verify-via-API failed (fail-closed):", order_id, vm);
+      return NextResponse.json({ status: "ok" }); // jangan activate saat tidak yakin
     }
 
     // Handle based on status

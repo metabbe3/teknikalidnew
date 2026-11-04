@@ -126,7 +126,9 @@
       "result": "TERDEPLOY tanpa bookkeeping 3 Nov 18:45 (rekonstruksi CTO 4 Nov). VERIFY LIVE: /saham-golden-cross 200 + marker TermTip \"Lihat di Kamus\" x1 di HTML; rollback git revert 4ffedb4",
       "train": "T-1104-N",
       "reslot_note": "auto-reslot 2026-11-04: kereta T-1103-N kedaluwarsa (reslot_guard.py v2)",
-      "deployed_at": "2026-11-03 18:45 (rekonstruksi CTO 4 Nov: image f2c0885e1c79)"
+      "deployed_at": "2026-11-03 18:45 (rekonstruksi CTO 4 Nov: image f2c0885e1c79)",
+      "qa_verified": true,
+      "qa_note": "QA 5Nov: curl /saham-golden-cross 200 (0,35s); TermTipClient di payload RSC + 'Lihat di Kamus' x1 di chunk 7978-8b041ed3a57338cd.js yg direferensikan halaman (koreksi kecil: marker di JS chunk TermTip client, bukan literal SSR HTML)"
     },
     {
       "id": "prd-2026-10-31-01",
@@ -3690,7 +3692,9 @@
       "train": "T-1104-N",
       "result": "TERDEPLOY tanpa bookkeeping 3 Nov 18:45 (rekonstruksi CTO 4 Nov, changelog line 1075: 0 file health-score di image = cleanup aktif); rollback git revert 98fcadc",
       "reslot_note": "auto-reslot 2026-11-04: kereta T-1103-N kedaluwarsa (reslot_guard.py v2)",
-      "deployed_at": "2026-11-03 18:45 (rekonstruksi CTO 4 Nov: image f2c0885e1c79)"
+      "deployed_at": "2026-11-03 18:45 (rekonstruksi CTO 4 Nov: image f2c0885e1c79)",
+      "qa_verified": true,
+      "qa_note": "QA 5Nov: find /app image 270602085a2f = 0 file *health-score* (luar node_modules) — cleanup aktif; 98fcadc ancestor origin/main"
     },
     {
       "id": "feat-audit-tk-1",
@@ -3799,7 +3803,9 @@
       "north_star": "STICKY",
       "train": "T-1104-N",
       "result": "KONDEKTUR T-1104-N 4 Nov: CTA \"Catat di portofolio — gratis\" LIVE prod /stocks/BBCA.JK (curl 1-hit, ancoref dengan svg icon); sudah ada di image app 270602085a2f (14:05, memuat 9a5a4f2) TANPA deploy baru — bukti curl prod segar; verdict Sentinel 5 Nov (H3)",
-      "reslot_note": "auto-reslot 2026-11-04: kereta T-1103-N kedaluwarsa (reslot_guard.py v2)"
+      "reslot_note": "auto-reslot 2026-11-04: kereta T-1103-N kedaluwarsa (reslot_guard.py v2)",
+      "qa_verified": true,
+      "qa_note": "QA 5Nov: curl prod /stocks/BBCA.JK 200 — 'Catat di portofolio — gratis' x1 (anchor dgn svg icon persis markup)"
     },
     {
       "id": "qa-2026-10-30-02",
@@ -3948,7 +3954,9 @@
       "train": "T-1104-N",
       "result": "TERDEPLOY tanpa bookkeeping 3 Nov 18:45 image f2c0885e1c79 (rekonstruksi CTO 4 Nov). VERIFY LIVE: /saham-dividen 200 (0,19s) marker UNTR x5 + CNMA x5 + Ex-Date x2; rollback git revert 18c50c9",
       "reslot_note": "auto-reslot 2026-11-04: kereta T-1103-N kedaluwarsa (reslot_guard.py v2)",
-      "deployed_at": "2026-11-03 18:45 (rekonstruksi CTO 4 Nov: image f2c0885e1c79 build 14:02)"
+      "deployed_at": "2026-11-03 18:45 (rekonstruksi CTO 4 Nov: image f2c0885e1c79 build 14:02)",
+      "qa_verified": true,
+      "qa_note": "QA 5Nov: curl /saham-dividen 200 (0,18s): UNTR x5 + CNMA x5 + Ex-Date x2 — persis klaim"
     },
     {
       "id": "bo-2026-11-02-01",
@@ -3978,7 +3986,9 @@
       "date": "2026-11-02",
       "result": "KONDEKTUR T-1104-N 4 Nov 22:31: image worker 3c381b970bbb dibangun dari origin/main a7556ef (worktree bersih, hook-compliant) + up -d; POLL_INTERVAL_MS=30_000 di container (dulu 10_000 basi 24 Okt); heartbeat /tmp/worker-heartbeat fresh; ps: node tsx agent-worker.ts; DB agent_message_log 16 rows/5mnt; app tetap 270602085a2f (14:05) — parity code-level origin/main. Bukti kondektur, verdict Sentinel 22:00 5 Nov (H3)",
       "train": "T-1104-N",
-      "reslot_note": "kondektur-fix 2026-11-04: penumpang tanpa jadwal -> T-1104-N (2026-11-04 22:15 KONDEKTUR kereta malam)"
+      "reslot_note": "kondektur-fix 2026-11-04: penumpang tanpa jadwal -> T-1104-N (2026-11-04 22:15 KONDEKTUR kereta malam)",
+      "qa_verified": true,
+      "qa_note": "QA 5Nov: worker Up healthy img 3c381b970bbb, PID1 npm exec tsx src/worker/agent-worker.ts live; POLL_INTERVAL_MS=30_000 (default kode /app/src/worker/agent-worker.ts:13, env tak override); heartbeat /tmp 20:32 UTC fresh; agent.agent_message_log ada"
     },
     {
       "id": "prd-2026-11-02-02",
@@ -4082,7 +4092,9 @@
         "estimasi_review_menit": 15
       },
       "train": "T-1104-N",
-      "result": "KONDEKTUR T-1104-N 4 Nov: glosarium content-depth LIVE — /akademi/glosarium 200 (60 term-link, was /glosarium 404 baseline), term golden-cross 200/585 kata, dividen 200/586 kata, blok contoh-angka nyata ada (regex); merge 1f90cde dalam origin/main → image 14:05; verdict Sentinel 5 Nov (H3)"
+      "result": "KONDEKTUR T-1104-N 4 Nov: glosarium content-depth LIVE — /akademi/glosarium 200 (60 term-link, was /glosarium 404 baseline), term golden-cross 200/585 kata, dividen 200/586 kata, blok contoh-angka nyata ada (regex); merge 1f90cde dalam origin/main → image 14:05; verdict Sentinel 5 Nov (H3)",
+      "qa_verified": true,
+      "qa_note": "QA 5Nov: /akademi/glosarium 200 dgn 60 term-link unik; /glosarium 404; term golden-cross 200 ('contoh' x3) + dividen 200 ('contoh angka nyata hari ini' x2); 1f90cde ancestor origin/main"
     },
     {
       "id": "prd-2026-10-26-02",
@@ -4126,7 +4138,9 @@
       "train": "T-1104-N",
       "result": "TERDEPLOY tanpa bookkeeping 3 Nov 18:45 (rekonstruksi CTO 4 Nov, changelog line 1075: marker pending_post_register IN image); rollback git revert 9058336",
       "reslot_note": "auto-reslot 2026-11-04: kereta T-1103-N kedaluwarsa (reslot_guard.py v2)",
-      "deployed_at": "2026-11-03 18:45 (rekonstruksi CTO 4 Nov: image f2c0885e1c79)"
+      "deployed_at": "2026-11-03 18:45 (rekonstruksi CTO 4 Nov: image f2c0885e1c79)",
+      "qa_verified": true,
+      "qa_note": "QA 5Nov: grep image /app/.next = pending_post_register di 9 file; 9058336 ancestor origin/main"
     },
     {
       "id": "bo-2026-11-03-01",
@@ -4151,7 +4165,9 @@
       "scheduled_slot": "merged main 4070d56 (CTO pagi 3 Nov BUILD-ONLY) -> kereta malam T-1103-N",
       "train": "T-1104-N",
       "reslot_note": "auto-reslot 2026-11-04: kereta T-1103-N kedaluwarsa (reslot_guard.py v2)",
-      "deployed_at": "2026-11-03 18:45 (rekonstruksi CTO 4 Nov: image f2c0885e1c79)"
+      "deployed_at": "2026-11-03 18:45 (rekonstruksi CTO 4 Nov: image f2c0885e1c79)",
+      "qa_verified": true,
+      "qa_note": "QA 5Nov: marker semantik 'aktor' ADA di image retention/page.js (aria-label 'Returning Visitor % (aktor) 8 minggu'); catatan: literal string 'retention-aktor' = 0 — marker berupa label aktor, bukan token itu"
     },
     {
       "id": "ux-2026-11-03-01",
@@ -4422,8 +4438,9 @@
       "scheduled_slot": "2026-11-04 22:00 QA Sentinel sweep FATAL konten (verdict+fix artikel, bukan deploy kereta)",
       "reslot_note": "kondektur-fix 2026-11-04: assign QA Sentinel 22:00 hari ini",
       "result": "qa_fixed_by=CTO-siang-4Nov · bukti: residual DB 0 semua frasa lama (patch script assert count==1 + re-verify), frasa baru live curl grep >=2 (DFAM +33,9% [2], top gainer non-gorengan [2], 7 gc 27Okt [2], 9 gc 26Okt [2+3], RSI 20,0/26,0 29Okt/2Nov [2], 5 bearish+3 bullish ASII/MPMX/POWR [2-3]), replay_sql_gate exit 0 4/4 artikel pasca-patch (sebelum: FAIL 2) · catatan: premise qa-02 keliru (29 Okt rsi=20,04 sudah cocok “20,0”), patch = netralkan kata “dasar” (min streak aktual 0,02 @30Sep) + tanggal 2 Nov eksplisit",
-      "qa_verified": false,
-      "done_at": "2026-11-04T09:5x WIB"
+      "qa_verified": true,
+      "done_at": "2026-11-04T09:5x WIB",
+      "qa_note": "QA-Verifier 5Nov independen: artikel live brief-pasar-idx-2026-11-03-rebound-energy = DFAM x17 + '+33,9%' x2 + non-gorengan x4; brief-2026-11-04-oversold-massal = 'golden cross' x15 + '27 Okt' x4; DB non-gorengan hanya di artikel Sep (bukan sisa patch). Fix CTO terkonfirmasi — flip false→true"
     },
     {
       "id": "qa-2026-11-04-03",
@@ -4485,7 +4502,9 @@
         "owner-monitoring"
       ],
       "spec": "commit f61b798; route /api/admin/agent-bot queryRaw schema agent read-only WIB-aware; tab id=agentbot",
-      "result": "KONDEKTUR T-1104-N 4 Nov: tab Agent Bot admin LIVE - route /api/admin/agent-bot ada di image app 270602085a2f (grep .next/server hit; f61b798 13:59 < image 14:05, ancestor origin/main a7556ef). Verify DOM /admin butuh login owner. FIX-BUG: flip pertama salah kena duplikat id T-1105-M (statejson flip first-match) - dipulihkan via update scoped id+train. Verdict Sentinel 5 Nov (H3)"
+      "result": "KONDEKTUR T-1104-N 4 Nov: tab Agent Bot admin LIVE - route /api/admin/agent-bot ada di image app 270602085a2f (grep .next/server hit; f61b798 13:59 < image 14:05, ancestor origin/main a7556ef). Verify DOM /admin butuh login owner. FIX-BUG: flip pertama salah kena duplikat id T-1105-M (statejson flip first-match) - dipulihkan via update scoped id+train. Verdict Sentinel 5 Nov (H3)",
+      "qa_verified": true,
+      "qa_note": "QA 5Nov: route.js + route.js.nft.json utk /api/admin/agent-bot ADA di image 270602085a2f; tab 'Agent Bot' x1 di admin.html prerender; API 404 utk anonim konsisten lokal+prod (stealth auth); DOM interaktif /admin = defer login owner"
     },
     {
       "id": "bo-2026-11-04-02",

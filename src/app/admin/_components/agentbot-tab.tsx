@@ -34,6 +34,8 @@ interface AgentBotData {
   topTickers: Array<{ ticker: string; n: number }>;
   jobs14: Array<{ d: string; n: number }>;
   funnel: { total: number; onb: number; act7: number; paid: number };
+  feedback: { d: string; up: number; dn: number }[];
+  tools: { tool: string; n: number; errs: number; p50: number | null; p90: number | null }[];
 }
 
 function fmtRp(n: number): string {
@@ -154,6 +156,52 @@ export function AgentBotTab() {
             </CardContent>
           </Card>
         </div>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">👍👎 Feedback Jawaban (14d)</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm">
+            {(data?.feedback ?? []).length === 0 ? (
+              <span className="text-muted-foreground">Belum ada feedback</span>
+            ) : (
+              <AdminDataTable
+                loading={isLoading}
+                columns={[
+                  { header: "Tanggal", cell: (f) => new Date(f.d).toLocaleDateString("id-ID", { day: "2-digit", month: "short" }) },
+                  { header: "👍", cell: (f) => <span className="text-emerald-600">{f.up}</span> },
+                  { header: "👎", cell: (f) => <span className="text-rose-600">{f.dn}</span> },
+                ]}
+                data={data?.feedback}
+                keyFn={(f) => f.d}
+              />
+            )}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">🔧 Tool Latency &amp; Error (7d)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {(data?.tools ?? []).length === 0 ? (
+              <span className="text-muted-foreground text-sm">Belum ada pemanggilan tool</span>
+            ) : (
+              <AdminDataTable
+                loading={isLoading}
+                columns={[
+                  { header: "Tool", cell: (t) => t.tool },
+                  { header: "Calls", cell: (t) => String(t.n) },
+                  { header: "Error", cell: (t) => (t.errs > 0 ? <span className="text-rose-600">{t.errs}</span> : "0") },
+                  { header: "p50/p90", cell: (t) => `${t.p50 ?? "-"}ms / ${t.p90 ?? "-"}ms` },
+                ]}
+                data={data?.tools}
+                keyFn={(t) => t.tool}
+              />
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       <Card>
