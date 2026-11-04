@@ -1107,3 +1107,11 @@
 
 ## 2026-11-04 07:0x — Content Reviewer QA pagi (read-only; 0 deploy)
 - 46 artikel 24h: 40 DAILY_SNAPSHOT exact vs DB (judul close-to-close 2→3 Nov, %, volume, sup/res, RSI/ADX/stoch); 6 editorial: breadth, oversold 241/180, IHSG, movers, ForeignFlow GOTO, sektor Energy #1 — replay OK. 5 FATAL konten didaftarkan qa-2026-11-04-01..05 (P1, CTO sore/besok): MKNT top-gainer salah (DFAM riil), RSI GOTO cross-day, GC 19/22 window salah, komposisi EMA sore. Live 6/6 URL 200+render. sec-29-02 flip done (beacon 30x204→30x429 live; merged 18:45 di prod f2c0853e). Kereta T-1103-N no-show 2x (0 image window malam; 0 commit pasca 20:25) — rekonstruksi di ops-2026-11-04-01 (CEO). Rollback: n/a.
+
+## 2026-11-04 22:15 — KONDEKTUR T-1104-N (deploy window 22:00-01:30)
+- BLOCKER SISTEMIK: pre-push hook 21:45-07:00 (owner 30 Sep) menolak push main oleh agent → deploy.sh tak bisa jalan (14 unpushed). TIDAK dibypass (hukum hook). Jalur sanctioned: PR #2 night/T-1104-N-pending-merge (merge CTO pagi 07:30).
+- DEPLOYED NYATA malam ini: worker 3c381b970bbb (22:31, build dari origin/main a7556ef via worktree bersih; POLL 10_000→30_000 rider ops-11-02-02 + P0 owner "rebuild worker"). Rollback tag: teknikalidnew-worker:rollback-912fb59-24okt.
+- SUDAH-LIVE-TANPA-DEPLOY-BARU (image app 270602085a2f 14:05 memuat origin/main a7556ef): ux-10-30-01 CTA portofolio (curl live 1-hit), prd-11-02-03 glosarium depth (60 term-link, golden-cross 585 kata), bo-1104-01 tab Agent Bot (f61b798 13:59), adm-28-02 Info Uang (eb11c93, via backlog).
+- UNPUSHED di PR #2 (verifikasi setelah merge+rebuild T-1105): bo-1104-02 webhook idempotent 905aa60, bo-1104-04 hotfix agent-bot 500 e33456c, ux-11-04-01 /berita dedup 9186cb1, 10570f1 screener polish.
+- DRIFT: bo-1104-03 night_ready tapi kode Wave-2 (agent_feedback, /api/admin/agent-bot/feedback, webhook verify-via-API) TIDAK ADA di repo mana pun → reslot T-1105, builder harus kerjakan dulu. sec-1103-02 invalid (branch backup/pre-sec-purge-1015 tidak ada di remote). bo-1104-05 = runtime teknikal-agent (agentd live @6412396 sejak 19:55, bukan image web) — flip done.
+- Baseline 5 URL 200 sebelum==sesudah; /api/health ok; worker heartbeat fresh 53s.
