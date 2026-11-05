@@ -209,6 +209,26 @@ const getCachedSitemap = unstable_cache(
   // ARE included: qa-2026-10-25-01 — compounding GROWTH assets must be crawlable.
   // Size bound: isStaleArticle drops STOCK_ANALYSIS older than 60d (evergreen
   // bucket) — stricter than the 90d recency cap proposed in the spec.
+  // seo-2026-11-05: redirect paths dari next.config (21 source) — halaman yang 301
+  // tidak boleh menghabiskan crawl budget di sitemap. Dibaca dari file config langsung
+  // supaya redirect baru otomatis ter-exclude tanpa edit ganda.
+  let nextConfigSrc = "";
+  try {
+    nextConfigSrc = await fs.readFile("next.config.ts", "utf8");
+  } catch {
+    // File tidak ada di runtime (image lama) — fallback: sitemap tanpa filter redirect.
+  }
+  const redirectPaths = new Set<string>();
+  const redirectBlock = nextConfigSrc.slice(
+    nextConfigSrc.indexOf("async redirects"),
+    nextConfigSrc.indexOf("async headers") > 0
+      ? nextConfigSrc.indexOf("async headers")
+      : undefined,
+  );
+  for (const m of redirectBlock.matchAll(/source:\s*"([^"]+)"/g)) {
+    if (!m[1].includes(":")) redirectPaths.add(m[1]); // statis saja; :param bukan URL sitemap
+  }
+
   const articlePages = articles
     .filter((a) => a.articleType !== ArticleType.DAILY_SNAPSHOT)
     .filter((a) => !a.slug.startsWith("analisa-teknikal-"))
@@ -234,26 +254,6 @@ const getCachedSitemap = unstable_cache(
       priority,
     };
   });
-
-  // seo-2026-11-05: redirect paths dari next.config (21 source) — halaman yang 301
-  // tidak boleh menghabiskan crawl budget di sitemap. Dibaca dari file config langsung
-  // supaya redirect baru otomatis ter-exclude tanpa edit ganda.
-  let nextConfigSrc = "";
-  try {
-    nextConfigSrc = await fs.readFile("next.config.ts", "utf8");
-  } catch {
-    // File tidak ada di runtime (image lama) — fallback: sitemap tanpa filter redirect.
-  }
-  const redirectPaths = new Set<string>();
-  const redirectBlock = nextConfigSrc.slice(
-    nextConfigSrc.indexOf("async redirects"),
-    nextConfigSrc.indexOf("async headers") > 0
-      ? nextConfigSrc.indexOf("async headers")
-      : undefined,
-  );
-  for (const m of redirectBlock.matchAll(/source:\s*"([^"]+)"/g)) {
-    if (!m[1].includes(":")) redirectPaths.add(m[1]); // statis saja; :param bukan URL sitemap
-  }
 
   // FAQ pages — seo-dr-2: hanya jawaban kaya (>=1500 char ≈ 250 kata) yang masuk sitemap;
   // 115 halaman tanya tipis (122-158 kata) ditarik keluar demi crawl budget.
