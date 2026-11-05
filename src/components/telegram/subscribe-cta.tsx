@@ -15,9 +15,13 @@ const LS_KEY = "tgcta_dismissed_until";
 export function TelegramSubscribeCta({
   variant = "inline",
   ticker,
+  botUrl,
+  startParam,
 }: {
   variant?: "inline" | "footer";
   ticker?: string;
+  botUrl?: string;
+  startParam?: string;
 }) {
   const [dismissed, setDismissed] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -41,8 +45,13 @@ export function TelegramSubscribeCta({
     }
   };
 
-  const start = ticker ? `?start=${encodeURIComponent(ticker.replace(/\.JK$/, "") + "_JK")}` : "";
-  const href = `https://t.me/TeknikalidBot${start}`;
+  const base = botUrl ?? "https://t.me/TeknikalidAgentBot";
+  const start = startParam
+    ? `?start=${encodeURIComponent(startParam)}`
+    : ticker
+    ? `?start=web_${encodeURIComponent(ticker.replace(/\.JK$/, ""))}`
+    : `?start=web_berita`;
+  const href = `${base}${start}`;
 
   if (variant === "footer") {
     return (

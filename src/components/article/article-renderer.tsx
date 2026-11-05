@@ -51,19 +51,31 @@ const sanitizeSchema = {
 
 export function extractHeadings(content: string, title?: string): { id: string; text: string }[] {
   const headings: { id: string; text: string }[] = [];
-  const regex = /^## (.+)$/gm;
+  const regex = /^(#{1,2}) (.+)$/gm;
   const normTitle = title ? normalizeTitle(title) : "";
   let match;
   let firstHeadingChecked = false;
   while ((match = regex.exec(content)) !== null) {
-    const text = match[1].trim();
+    const level = match[1].length;
+    const text = match[2].trim();
+    const normHeading = normalizeTitle(text);
     if (!firstHeadingChecked) {
       firstHeadingChecked = true;
       if (
+        level === 1 ||
+        (normTitle &&
+          (normHeading === normTitle ||
+            normHeading.startsWith(normTitle) ||
+            normTitle.startsWith(normHeading)))
+      ) {
+        continue;
+      }
+    } else {
+      if (
         normTitle &&
-        (normalizeTitle(text) === normTitle ||
-          normalizeTitle(text).startsWith(normTitle) ||
-          normTitle.startsWith(normalizeTitle(text)))
+        (normHeading === normTitle ||
+          normHeading.startsWith(normTitle) ||
+          normTitle.startsWith(normHeading))
       ) {
         continue;
       }
@@ -134,18 +146,29 @@ export function remarkDropDuplicateHeading(title?: string) {
 
     for (const node of tree.children) {
       if (node.type === "heading" && (node.depth === 1 || node.depth === 2)) {
+        const headingText = getNodeText(node);
+        const normHeading = normalizeTitle(headingText);
+
         if (!firstHeadingChecked) {
           firstHeadingChecked = true;
-          const headingText = getNodeText(node);
-          const normHeading = normalizeTitle(headingText);
-
+          // Heading pertama depth-1 (atau depth-2 yang teksnya identik dgn judul/H1) -> HAPUS dari AST
+          if (
+            node.depth === 1 ||
+            (normTitle &&
+              (normHeading === normTitle ||
+                normHeading.startsWith(normTitle) ||
+                normTitle.startsWith(normHeading)))
+          ) {
+            continue;
+          }
+        } else {
+          // If any subsequent heading is identical to title, drop it too
           if (
             normTitle &&
             (normHeading === normTitle ||
               normHeading.startsWith(normTitle) ||
               normTitle.startsWith(normHeading))
           ) {
-            // Drop duplicate title heading
             continue;
           }
         }
@@ -162,14 +185,8 @@ export function remarkDropDuplicateHeading(title?: string) {
   };
 }
 
-export function remarkDemoteH1() {
-  return (tree: { children?: MdastNode[] }) => {
-    const visitNode = (node: MdastNode) => {
-      if (node.type === "heading" && node.depth === 1) node.depth = 2;
-      if (node.children) node.children.forEach(visitNode);
-    };
-    if (tree.children) tree.children.forEach(visitNode);
-  };
+export function remarkDemoteH1(title?: string) {
+  return remarkDropDuplicateHeading(title);
 }
 
 export function ArticleContent({ content, title }: { content: string; title?: string }) {

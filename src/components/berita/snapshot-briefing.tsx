@@ -159,33 +159,39 @@ export function SnapshotBriefing({ data }: { data: SnapshotBriefingData }) {
         </div>
       )}
 
-      {/* Stats + indicators */}
-      <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <KeyStatistics
-          open={latest?.open ?? null}
-          high={latest?.high ?? null}
-          low={latest?.low ?? null}
-          close={close}
-          volume={latest?.volume ?? null}
-          week52High={week52High}
-          week52Low={week52Low}
-          sma20={indicator?.sma20 ?? null}
-          sma50={indicator?.sma50 ?? null}
-          sma200={indicator?.sma200 ?? null}
-        />
+      {/* Stats + indicators (folded into details) */}
+      <details className="mt-4 group rounded-xl border border-border/70 bg-bg-card p-4 transition-all">
+        <summary className="cursor-pointer text-xs font-semibold text-text-secondary hover:text-text-primary flex items-center justify-between list-none">
+          <span>Lihat Statistik Lengkap &amp; Indikator Teknikal ({stripJk(ticker)})</span>
+          <span className="text-text-tertiary text-xs transition-transform group-open:rotate-180">▼</span>
+        </summary>
+        <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4 pt-3 border-t border-border/40">
+          <KeyStatistics
+            open={latest?.open ?? null}
+            high={latest?.high ?? null}
+            low={latest?.low ?? null}
+            close={close}
+            volume={latest?.volume ?? null}
+            week52High={week52High}
+            week52Low={week52Low}
+            sma20={indicator?.sma20 ?? null}
+            sma50={indicator?.sma50 ?? null}
+            sma200={indicator?.sma200 ?? null}
+          />
 
-        <div className="indicator-card depth-shadow p-4">
-          <h3 className="text-[11px] font-semibold text-text-tertiary uppercase tracking-wider mb-2">Indikator Teknikal</h3>
-          <IndicatorChip label="RSI (14)" value={rsi !== null ? formatDecimalId(rsi, 1) : "—"} tone={toneFor(rsi, 0, 0) === null ? null : (rsi! >= 70 ? "bear" : rsi! <= 30 ? "bull" : "neutral")} hint=">70 overbought, <30 oversold" />
-          <IndicatorChip label="MACD Histogram" value={macd !== null ? formatDecimalId(macd, 2) : "—"} tone={macd === null ? null : macd >= 0 ? "bull" : "bear"} />
-          <IndicatorChip label="Stochastic %K" value={stochK !== null ? formatDecimalId(stochK, 1) : "—"} tone={stochK === null ? null : stochK >= 80 ? "bear" : stochK <= 20 ? "bull" : "neutral"} />
-          <IndicatorChip label="ADX (trend strength)" value={adx !== null ? formatDecimalId(adx, 1) : "—"} tone={adx === null ? null : adx >= 25 ? "bull" : "neutral"} hint=">25 = tren kuat" />
-          <IndicatorChip label="Bollinger Atas" value={indicator?.bbUpper !== null && indicator?.bbUpper !== undefined ? formatPrice(indicator.bbUpper) : "—"} tone={null} />
-          <IndicatorChip label="Bollinger Bawah" value={indicator?.bbLower !== null && indicator?.bbLower !== undefined ? formatPrice(indicator.bbLower) : "—"} tone={null} />
-          <IndicatorChip label="Supertrend" value={indicator?.supertrend !== null && indicator?.supertrend !== undefined ? formatPrice(indicator.supertrend) : "—"} tone={null} />
-          <IndicatorChip label="OBV Trend" value={indicator?.obvTrend ?? "—"} tone={indicator?.obvTrend === "Rising" ? "bull" : indicator?.obvTrend === "Falling" ? "bear" : "neutral"} />
+          <div className="indicator-card depth-shadow p-4">
+            <h3 className="text-[11px] font-semibold text-text-tertiary uppercase tracking-wider mb-2">Indikator Teknikal</h3>
+            <IndicatorChip label="RSI (14)" value={rsi !== null ? formatDecimalId(rsi, 1) : "—"} tone={toneFor(rsi, 0, 0) === null ? null : (rsi! >= 70 ? "bear" : rsi! <= 30 ? "bull" : "neutral")} hint=">70 overbought, <30 oversold" />
+            <IndicatorChip label="MACD Histogram" value={macd !== null ? formatDecimalId(macd, 2) : "—"} tone={macd === null ? null : macd >= 0 ? "bull" : "bear"} />
+            <IndicatorChip label="Stochastic %K" value={stochK !== null ? formatDecimalId(stochK, 1) : "—"} tone={stochK === null ? null : stochK >= 80 ? "bear" : stochK <= 20 ? "bull" : "neutral"} />
+            <IndicatorChip label="ADX (trend strength)" value={adx !== null ? formatDecimalId(adx, 1) : "—"} tone={adx === null ? null : adx >= 25 ? "bull" : "neutral"} hint=">25 = tren kuat" />
+            <IndicatorChip label="Bollinger Atas" value={indicator?.bbUpper !== null && indicator?.bbUpper !== undefined ? formatPrice(indicator.bbUpper) : "—"} tone={null} />
+            <IndicatorChip label="Bollinger Bawah" value={indicator?.bbLower !== null && indicator?.bbLower !== undefined ? formatPrice(indicator.bbLower) : "—"} tone={null} />
+            <IndicatorChip label="Supertrend" value={indicator?.supertrend !== null && indicator?.supertrend !== undefined ? formatPrice(indicator.supertrend) : "—"} tone={null} />
+            <IndicatorChip label="OBV Trend" value={indicator?.obvTrend ?? "—"} tone={indicator?.obvTrend === "Rising" ? "bull" : indicator?.obvTrend === "Falling" ? "bear" : "neutral"} />
+          </div>
         </div>
-      </div>
+      </details>
 
       {/* CTA to full stock page */}
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl depth-shadow border border-border/60 bg-bg-card p-4">
