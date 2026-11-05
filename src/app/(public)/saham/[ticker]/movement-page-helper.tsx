@@ -91,7 +91,7 @@ export async function generateMovementMetadataHelper(
 
   const { name, tickerClean, changePercent, explainer, indicator, sector } = data;
   const sectorMod = sector ? ` Sektor ${sector}` : "";
-  const signalTone = determineSignalTone(explainer?.primary?.tone, (indicator as any)?.signalScore);
+  const signalTone = determineSignalTone(explainer?.primary?.tone, (indicator as { signalScore?: number | null } | null)?.signalScore);
   const description = generateKenapaMetaDescription({
     ticker: tickerClean,
     name,
@@ -217,6 +217,10 @@ export async function RenderMovementPage({
       ? `Arah pergerakan harga ${tickerClean} hari ini berbeda dengan URL yang Anda buka.`
       : article?.excerpt ?? explainer?.headline ?? `Pergerakan harga dan analisis teknikal ${name} hari ini.`;
 
+  const analysisText = explainer?.prose || article?.excerpt || subtitle;
+  const firstSentenceMatch = analysisText.match(/^.*?[.!?](?:\s|$)/);
+  const conclusionSentence = firstSentenceMatch ? firstSentenceMatch[0].trim() : analysisText;
+
   const actualDirLabel = isActuallyNaik ? "Naik" : isActuallyTurun ? "Turun" : "Datar";
   const actualDirColor = isActuallyNaik
     ? "bg-bullish/15 text-bullish border-bullish/30"
@@ -289,6 +293,31 @@ export async function RenderMovementPage({
           />
         </div>
       </header>
+
+      {/* Kotak Kesimpulan 1-Kalimat di Paling Atas (Batch E) */}
+      <section className="mx-auto max-w-4xl px-4 pb-6">
+        <div className="rounded-xl border border-border bg-bg-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-text-tertiary mb-1">
+              Kesimpulan Hari Ini
+            </p>
+            <p className="text-sm font-medium text-text-primary leading-relaxed">
+              {conclusionSentence}
+            </p>
+          </div>
+          <a
+            href={`https://t.me/TeknikalidAgentBot?start=web_${tickerClean}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-11 sm:min-h-0 items-center justify-center gap-2 rounded-lg border border-border bg-bg-secondary px-3.5 py-2 text-xs font-semibold text-text-secondary hover:border-accent/40 hover:text-accent hover:bg-bg-hover transition-colors shrink-0"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" className="text-accent shrink-0" aria-hidden="true">
+              <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.121l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.196 1.006.128.832.922z" />
+            </svg>
+            <span>Alert {tickerClean} di Telegram</span>
+          </a>
+        </div>
+      </section>
 
       {/* Mismatch Alert Banner (if opened naik URL while stock is falling, or vice versa) */}
       {isMismatch && (
