@@ -344,7 +344,7 @@ export async function RenderMovementPage({
       {/* Article body (optional — only if matching direction) */}
       {!isMismatch && article && (
         <div className="mx-auto max-w-4xl px-4">
-          <ArticleContent content={article.content} />
+          <ArticleContent content={article.content} title={article.title} />
         </div>
       )}
 

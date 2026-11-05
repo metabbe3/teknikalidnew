@@ -68,7 +68,7 @@ export default async function ArticlePage({
 
   if (!article || article.status !== "PUBLISHED" || article.articleType !== "EDUCATIONAL") notFound();
 
-  const headings = extractHeadings(article.content);
+  const headings = extractHeadings(article.content, article.title);
   const readingTime = estimateReadingTime(article.content);
   const relatedTickers = extractTickers(article.content).slice(0, 6);
 
@@ -239,14 +239,13 @@ export default async function ArticlePage({
               </div>
 
               {/* Article body */}
-              <ArticleContent content={article.content} />
+              <ArticleContent content={article.content} title={article.title} />
+
+              {/* Live example — raised above quiz directly following article content (Batch C) */}
+              {relatedTickers.length > 0 && <LiveIndicatorExample ticker={relatedTickers[0]} />}
+
               {/* Owner 24 Okt: quiz belajar aktif */}
               <ArticleQuiz slug={article.slug} />
-
-              {/* Live example — deterministic verdict for the first ticker the
-                  article mentions; turns the static pillar into a daily-refreshing
-                  live-data page (SEO) + funnels into the gated stock page (conversion). */}
-              {relatedTickers.length > 0 && <LiveIndicatorExample ticker={relatedTickers[0]} />}
 
               {/* Related Stocks — contextual internal links to product pages */}
               {relatedTickers.length > 0 && (

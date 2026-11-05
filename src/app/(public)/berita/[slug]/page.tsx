@@ -95,7 +95,7 @@ export default async function BeritaArticlePage({
 
   if (!article || article.status !== "PUBLISHED" || !BERITA_TYPES.includes(article.articleType)) notFound();
 
-  const headings = extractHeadings(article.content);
+  const headings = extractHeadings(article.content, article.title);
   const readingTime = estimateReadingTime(article.content);
   const mentionedTickers = extractTickers(article.content);
   const relatedSignalTicker = article.tickerTag ?? mentionedTickers[0] ?? null;
@@ -358,7 +358,31 @@ export default async function BeritaArticlePage({
               {briefingData && <SnapshotBriefing data={briefingData} />}
 
               {/* Analysis body */}
-              <ArticleContent content={article.content} />
+              <ArticleContent content={article.content} title={article.title} />
+
+              {/* Jembatan analisa teknikal emiten yang dibahas (Batch C) */}
+              <div className="mt-8 p-4 sm:p-5 rounded-xl border border-border bg-bg-card flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
+                    Analisa Saham
+                  </p>
+                  <p className="text-sm font-semibold text-text-primary mt-0.5">
+                    {mentionedTickers.length > 0
+                      ? `Lihat analisa teknikal emiten yang dibahas: ${mentionedTickers.map((t) => t.replace(".JK", "")).slice(0, 4).join(", ")}`
+                      : "Lihat analisa teknikal emiten yang dibahas"}
+                  </p>
+                  <p className="text-xs text-text-secondary mt-1">
+                    Cek skor sinyal, support-resistance, dan indikator teknikal lengkap tanpa login.
+                  </p>
+                </div>
+                <Link
+                  href={mentionedTickers.length === 1 ? `/stocks/${mentionedTickers[0]}` : "/stocks"}
+                  className="inline-flex min-h-11 sm:min-h-0 items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-accent text-white text-xs font-semibold hover:bg-accent/90 transition-colors shrink-0"
+                >
+                  <span>Lihat Analisa Saham</span>
+                  <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
+                </Link>
+              </div>
 
               {/* Stock cards for mentioned tickers — first: direct continuation of reading intent */}
               {stockCards.length > 0 && (
