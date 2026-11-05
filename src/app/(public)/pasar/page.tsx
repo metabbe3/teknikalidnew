@@ -157,6 +157,10 @@ export default async function PasarPage() {
         </div>
       </PageHero>
 
+      <div className="max-w-7xl mx-auto px-4 pt-8">
+        <AgentKopiBanner source="pasar" />
+      </div>
+
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
         {/* ── IHSG header ── */}
         <Card>
