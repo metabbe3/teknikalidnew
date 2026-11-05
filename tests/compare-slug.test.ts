@@ -10,8 +10,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { parseCompareSlug, toJk } from "../src/domains/stock/compare.service";
 
-test("slug valid: bbca-vs-bbri → [BBCA, BBRI]", () => {
-  assert.deepEqual(parseCompareSlug("bbca-vs-bbri"), ["bbca", "bbri"]);
+test("slug valid: bbca-vs-bbri → [BBCA, BBRI] (normalisasi uppercase)", () => {
+  assert.deepEqual(parseCompareSlug("bbca-vs-bbri"), ["BBCA", "BBRI"]);
 });
 
 test("slug valid: BBCA.JK-vs-BBRI.JK (uppercase + suffix)", () => {
