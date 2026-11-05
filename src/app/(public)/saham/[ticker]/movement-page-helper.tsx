@@ -149,7 +149,8 @@ export async function generateMovementMetadataHelper(
   }
 
   return {
-    title,
+    // seo-2026-11-05: absolute — tanpa suffix root (title sudah ~60chr dengan ticker)
+    title: { absolute: title },
     description,
     alternates: { canonical: canonicalPath },
     openGraph: {

@@ -15,7 +15,8 @@ const LearningPath = dynamicImport(
 );
 
 export const metadata: Metadata = {
-  title: "Belajar Analisis Teknikal Saham — Panduan RSI, MACD & Strategi Trading",
+  // seo-2026-11-05: 87chr dengan suffix — judul inti + absolute (pilar keyword tetap)
+  title: { absolute: "Akademi Saham: Belajar Analisis Teknikal & Strategi Trading" },
   description:
     "Belajar analisis teknikal saham BEI dari dasar: panduan lengkap RSI, MACD, Bollinger Bands, support/resistance, dan strategi trading untuk pemula dan investor Indonesia.",
   alternates: { canonical: "/akademi" },
