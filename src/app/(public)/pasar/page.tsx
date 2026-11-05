@@ -1,4 +1,5 @@
 import { signalLabelId } from "@/lib/signal-label-id";
+import { signalBadge } from "@/lib/seo/signal-badge";
 import type { Metadata } from "next";
 import { RadarSection } from "./radar-section";
 import Link from "next/link";
@@ -437,13 +438,24 @@ function TopSignalsSection({ items, sessionDate }: { items: PasarTopSignal[]; se
           {t.volumeShares !== null && <span className="block text-xs text-text-tertiary">vol {formatVolume(t.volumeShares)}</span>}
         </span>
         <ChangeBadge pct={t.changePercent} className="w-20 text-right" />
-        <span
-          className="w-24 text-right text-xs font-semibold tabular-nums"
+        <div
+          className="w-28 text-right text-xs font-semibold tabular-nums shrink-0"
           title={`Skor sinyal ${t.signalScore !== null ? formatDecimalId(t.signalScore, 2) : "—"} — rangkuman indikator teknikal, bukan rekomendasi. Catatan: skor teknikal ≠ pergerakan harga hari ini — saham bisa turun hari ini walau skornya kuat.`}
         >
-          {t.signalScore !== null ? formatDecimalId(t.signalScore, 2) : "—"}
-          {t.signalLabel && <span className="block text-[10px] font-normal text-text-tertiary">{signalLabelId(t.signalLabel)}</span>}
-        </span>
+          {t.signalScore !== null ? (
+            <div className="flex flex-col items-end gap-0.5">
+              <div className="flex items-center gap-1 justify-end">
+                <span className="font-mono">{formatDecimalId(t.signalScore, 2)}</span>
+                <span className={`inline-block text-[9px] font-bold px-1.5 py-0.5 rounded-full ${signalBadge(t.signalScore).cls}`}>
+                  {signalBadge(t.signalScore).label}
+                </span>
+              </div>
+              {t.signalLabel && <span className="block text-[10px] font-normal text-text-tertiary">{signalLabelId(t.signalLabel)}</span>}
+            </div>
+          ) : (
+            "—"
+          )}
+        </div>
       </Link>
     </li>
   );

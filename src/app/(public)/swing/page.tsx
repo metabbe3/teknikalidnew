@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { signalBadge } from "@/lib/seo/signal-badge";
 import { PageHero } from "@/components/layout/page-hero";
 import { StockLogo } from "@/components/stock/stock-logo";
 import { GET, type SwingMarketResponse } from "@/app/api/market/swing/route";
@@ -198,16 +199,12 @@ export default async function SwingPage() {
                         <td className="px-3 py-3">
                           <div className="flex flex-col gap-1 items-start">
                             <span
-                              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold tabular-nums"
-                              style={{
-                                color: c.healthMeta.color,
-                                backgroundColor: c.healthMeta.bg,
-                              }}
+                              className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold tabular-nums ${signalBadge(c.signalScore).cls}`}
                             >
-                              {c.healthScore !== null ? c.healthScore : "—"} / 100
+                              {formatDecimalId(c.signalScore, 2)}
                             </span>
                             <span className="text-[11px] text-text-tertiary font-medium">
-                              {c.healthMeta.label}
+                              {signalBadge(c.signalScore).label}
                             </span>
                           </div>
                         </td>

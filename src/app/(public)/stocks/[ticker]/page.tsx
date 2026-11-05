@@ -1,4 +1,5 @@
 import { signalLabelId } from "@/lib/signal-label-id";
+import { signalBadge } from "@/lib/seo/signal-badge";
 import { type Metadata } from "next";
 import { safeJsonLd } from "@/lib/safe-json-ld";
 import { notFound, redirect } from "next/navigation";
@@ -749,9 +750,14 @@ export default async function StockDetailPage({
                 <div className="mt-4 rounded-xl border border-border bg-bg-card p-4 depth-shadow" aria-label="Skor sinyal teknikal">
                   <div className="flex items-center gap-4">
                     <div className="flex flex-col items-center shrink-0">
-                      <span className="text-3xl font-extrabold tabular-nums leading-none" style={{ color: meta.color }}>
-                        {raw.toFixed(2).replace(".", ",")}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-3xl font-extrabold tabular-nums leading-none" style={{ color: meta.color }}>
+                          {raw.toFixed(2).replace(".", ",")}
+                        </span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${signalBadge(raw).cls}`}>
+                          {signalBadge(raw).label}
+                        </span>
+                      </div>
                       <span className="text-[10px] font-semibold text-text-tertiary mt-0.5">Skor Sinyal (−1 s.d. +1)</span>
                     </div>
                     <div className="h-10 w-px bg-border shrink-0" aria-hidden="true" />
