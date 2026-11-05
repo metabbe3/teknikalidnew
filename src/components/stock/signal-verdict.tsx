@@ -34,14 +34,14 @@ export function SignalVerdict({ ticker, signalLabel, signalScore, outlook, rsi14
     rsi14 !== null ? (rsi14 >= 70 ? "RSI overbought" : rsi14 <= 30 ? "RSI oversold" : null) : null;
 
   return (
-    <section className="border-b border-border bg-bg-card" aria-label="Verdik sinyal teknikal">
+    <section className="border-b border-border bg-bg-card" aria-label="Skor sinyal teknikal">
       <div className="max-w-7xl mx-auto px-4 py-5 sm:py-6">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
           {/* Verdict */}
           <div className="flex items-center gap-3 sm:min-w-[230px]">
             <span className="h-11 w-1.5 rounded-full shrink-0" style={{ backgroundColor: tone.color }} aria-hidden />
             <div>
-              <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-text-tertiary">Verdik Sinyal</p>
+              <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-text-tertiary">Skor Sinyal</p>
               <p className="font-serif text-2xl sm:text-3xl font-semibold leading-tight" style={{ color: tone.color }}>
                 {verdictLabel}
               </p>

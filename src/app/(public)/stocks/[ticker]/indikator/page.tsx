@@ -100,7 +100,7 @@ export async function generateMetadata({
 
   // seo-2026-11-05: nama full bikin title 77chr — pakai shortName helper (≤30, word-boundary).
   const title = `Riwayat Indikator ${normalizeTickerTitle(data.name, data.tickerClean)} (${data.tickerClean})`;
-  const description = `Arsip riwayat indikator teknikal ${data.name} (${data.tickerClean}) — verdik sinyal harian RSI, MACD, SMA, EMA, dan crossing historis.`;
+  const description = `Arsip riwayat indikator teknikal ${data.name} (${data.tickerClean}) — skor sinyal harian RSI, MACD, SMA, EMA, dan crossing historis.`;
   return {
     title,
     description,
@@ -218,7 +218,7 @@ export default async function IndicatorHistoryPage({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 py-3 border-b border-border">
             <div className="flex items-center gap-2">
               <Activity className="h-4 w-4 text-primary" />
-              <h2 className="font-bold">Verdik Sinyal Harian</h2>
+              <h2 className="font-bold">Skor Sinyal Harian</h2>
             </div>
             {/* Rentang selector */}
             <div className="flex items-center gap-1.5 text-xs">
