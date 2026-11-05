@@ -20,6 +20,68 @@ function getCategoryColor(category: string): string {
   return CATEGORY_COLORS[category] ?? "#6b7280";
 }
 
+interface FaqConceptBridge {
+  concept: string;
+  label: string;
+  href: string;
+}
+
+function getFaqConceptBridge(question: { question: string; tags: string[]; category?: string }): FaqConceptBridge | null {
+  const text = `${question.question} ${question.tags.join(" ")} ${question.category ?? ""}`.toLowerCase();
+
+  if (text.includes("golden cross") || text.includes("goldencross")) {
+    return {
+      concept: "Golden Cross",
+      label: "Tren Naik Baru · Golden Cross",
+      href: "/stocks?view=screener&tab=swing-trade&preset=golden_cross",
+    };
+  }
+  if (text.includes("bollinger") || text.includes("bb lower") || text.includes("pita bollinger")) {
+    return {
+      concept: "Bollinger Bands",
+      label: "Batas Bawah · Bollinger Bands",
+      href: "/stocks?view=screener&tab=bottom-fishing&preset=bb_lower_touch",
+    };
+  }
+  if (text.includes("rsi") || text.includes("oversold") || text.includes("jenuh jual")) {
+    return {
+      concept: "RSI Oversold",
+      label: "Saham Mulai Mantul · RSI Oversold",
+      href: "/stocks?view=screener&tab=bottom-fishing&preset=rsi_oversold",
+    };
+  }
+  if (text.includes("macd")) {
+    return {
+      concept: "MACD",
+      label: "Momentum Berbalik Naik · MACD",
+      href: "/stocks?view=screener&tab=swing-trade&preset=macd_bullish",
+    };
+  }
+  if (text.includes("stochastic") || text.includes("stokastik")) {
+    return {
+      concept: "Stochastic",
+      label: "Pantulan Titik Terendah · Stochastic",
+      href: "/stocks?view=screener&tab=bottom-fishing&preset=stoch_oversold",
+    };
+  }
+  if (text.includes("volume spike") || text.includes("volume lonjak") || text.includes("volume meledak")) {
+    return {
+      concept: "Volume Spike",
+      label: "Transaksi Melonjak · Volume Meledak",
+      href: "/stocks?view=screener&preset=volume_spike",
+    };
+  }
+  if (text.includes("supertrend")) {
+    return {
+      concept: "Supertrend",
+      label: "Tren Naik Kukuh · Supertrend",
+      href: "/stocks?view=screener&tab=swing-trade&preset=supertrend_bullish",
+    };
+  }
+
+  return null;
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -114,6 +176,7 @@ export default async function FAQQuestionPage({
   };
 
   const isAIGenerated = question.source === "AI_GENERATED";
+  const conceptBridge = getFaqConceptBridge(question);
 
   return (
     <>
@@ -198,6 +261,32 @@ export default async function FAQQuestionPage({
             <div className="bg-bg-card rounded-xl depth-shadow p-6 sm:p-8 mb-6">
               <div className="text-sm text-text-primary leading-relaxed whitespace-pre-wrap">
                 {question.longAnswer}
+              </div>
+            </div>
+          )}
+
+          {/* Concept screener bridge (Batch D — minimal SSR bridge) */}
+          {conceptBridge && (
+            <div className="bg-bg-card rounded-xl depth-shadow p-5 border border-border mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
+                    Screener Terkait
+                  </p>
+                  <p className="text-sm font-semibold text-text-primary mt-0.5">
+                    Saham yang menyentuh {conceptBridge.concept} hari ini
+                  </p>
+                  <p className="text-xs text-text-secondary mt-1">
+                    Cek daftar saham IDX yang memenuhi kriteria teknikal ini secara otomatis.
+                  </p>
+                </div>
+                <Link
+                  href={conceptBridge.href}
+                  className="inline-flex min-h-11 sm:min-h-0 items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-accent text-white text-xs font-semibold hover:bg-accent/90 transition-colors shrink-0"
+                >
+                  <span>Buka {conceptBridge.label}</span>
+                  <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
+                </Link>
               </div>
             </div>
           )}
