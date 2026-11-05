@@ -1565,3 +1565,11 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - In-flight: bo-1104-03 Wave-2 + bug-1104-01 = slot 18:30 BE malam (build-only, naik T-1105-N 22:15 bila hijau); prd-1105-01 compare = FE/BE slot berikutnya; ops-11-05-03 P0 window-pinning = 6 Nov 09:30 BE; VERIFIKASI sweep-24h ops-27-02 (0 regresi status) = slot 6 Nov; bo-1104-01 telemetri AI = backoffice 03:00 besok.
 - Jebakan: (1) alert backlog 36>cap12 + stagnan roadmap-pro/prod-17-01 = PRE-EXISTING domain ops-27-03/CEO verdict, bukan efek patch LWW — jangan salah diagnosa; (2) lightpanda '--host 0.0.0.0' di Cmd container = wajib agar port-forward jalan, JANGAN di-"fix" jadi 127.0.0.1 (matikan CDP intra-container); (3) deploy budget 5 Nov: pivot 06:59 owner = 1/2; kereta T-1105-N 22:15 masih bisa jalan.
 - Langkah pertama slot berikutnya: baca queue → entry slot-nya masing-masing (bo-1104-03/bug-1104-01 18:30 BE) → cek hasil sweep LWW 24h (0 regresi) → flip done bila hijau.
+
+## 2026-11-05 18:5x — CTO sore instance-2 (bug-2026-11-04-01 SHIPPED BUILD-ONLY)
+- State: queue v289; commit 20dfbb0 pushed main; 0 deploy (window kereta 22:15). Freshness FRESH (price 5 Nov). Anchor prod: app eaf2e78634b3 / worker 3c381b97.
+- Barusan selesai: bug-2026-11-04-01 ^JKSE screener leak — excludeIndexRows choke-point (screener+radar), selftest 4/4, bukti perilaku raw 431 caret=1 vs svc 430 caret=0.
+- In-flight (BUKAN milikku, JANGAN sentuh/stash): dirty tree instance-1 slot sore — src/app/api/ai/stock/route.ts + src/lib/ai-ticker-guard.ts (ops-11-05-01 typo-rescue kenapa-*) + docs flips (ops-27-02 done, sec-1103-01 done). ops-11-05-02 morning-delta fix BELUM dikerjakan (worker claude pagi exit 2/143; selftest-nya masih merah).
+- Jebakan: (1) Array.isArray men-narrow union array ke member pertama (TS quirk) — cast eksplisit; (2) pre-commit hook blok console.log di selftest — pakai node:test runner; (3) DB dari host = 127.0.0.1:5433 (bukan db:5432); (4) ada 2 instance CTO sore hari ini — bus entry 18:52 = instance-1.
+- Langkah pertama slot berikutnya (BE 09:30 Jumat): ops-11-05-03 P0 window-pinning generator (pakai data-evidence ^JKSE 168 golden_cross sebagai kasus uji) → ops-11-05-02 morning-delta (test merah sudah ada) → cek instance-1 commit kode AI rescue.
+- Rollback: n/a (0 deploy by me) · revert task = git revert 20dfbb0.

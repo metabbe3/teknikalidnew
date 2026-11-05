@@ -1149,3 +1149,11 @@
 - Bukti: failing-test-first selftest 6/6 RED→GREEN (T1 stale-pending kalah vs fresh-done; T2 docs-fresh tak diregresi; T2b no-ts; T3 jalur _try_restore penuh + symlink utuh); live run exit-0; symlink queue+backlog 2/2 hidup; 0 alert drift baru. Writer forensik dilengkapi di lessons-learned (agent tulis JSON langsung; mirror_sync & git commit terbukti bukan penyebab).
 - DONE WHEN: (a) writer didokumentasi lessons ✓ (b) fixture mirror-stale status lama tak menghidupkan lagi ✓ (c) sweep 24h = verifikasi slot 6 Nov (dicatat di entry+handoff). Pilar: TRUST. SEC GATE: N/A (host-script org-state, bukan auth/input/db/money aplikasi).
 - Rollback: n/a (host-script, 0 deploy web) — revert = kembalikan _merge_into_docs lama dari .bak statejson · anchor prod: app eaf2e78634b3 / worker 3c381b97.
+
+## 2026-11-05 18:5x — CTO SORE instance-2 (bug-2026-11-04-01 ^JKSE screener; BUILD-ONLY 0 deploy)
+- bug-2026-11-04-01 (P2 TRUST): excludeIndexRows choke-point post-cache di screenerQuery + getBottomFishingRadar — file BARU src/domains/stock/screener-filter.ts + screener-analysis.service.ts. Commit 20dfbb0 pushed main (6355106..20dfbb0); naik kereta T-1105-N 22:15 (deploy kondektur), boarding: build main hijau dgn commit ini (BUILD_ID 1geBarJj2INoXkrHDaOqD).
+- Bukti fisik: selftest node:test 4/4 RED→GREEN; perilaku tsx live-query — raw DB adx_trending 431 rows caret=[^JKSE] vs service 430 caret=[]; baseline live before adx_trending/supertrend_bearish/below_sma200 semuanya bocor ^JKSE; tsc 0; selftest tetangga hijau.
+- QA: verify per-fitur pasca-deploy kereta = /api/screener?preset=adx_trending caret=0 & row 430 (bukan 431). impact_check_due = 2026-11-08.
+- BONUS dispatch-worthy: ^JKSE punya 168 baris golden_cross + 100 death_cross historis di StockIndicator — kandidat kontaminasi hitungan "N emiten golden cross" di pipeline konten (kelas pola qa-11-05-01); evaluai di entry ops-11-05-03/queue.
+- Pilar: TRUST. SEC GATE: N/A (post-filter read-path, tanpa input/auth/db/money baru).
+- Rollback: git revert 20dfbb0 (frontend+service murni, 3 file) · anchor prod: app eaf2e78634b3 / worker 3c381b97.

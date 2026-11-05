@@ -4578,7 +4578,7 @@
       "id": "bug-2026-11-04-01",
       "title": "Screener hasil memuat ^JKSE (indeks) — link detail 404 dead-end",
       "priority": "P2",
-      "status": "pending",
+      "status": "in_train",
       "created_at": "2026-11-04T19:45:00+07:00",
       "assigned_to": "backend-builder",
       "source": "FE Builder audit flow (a) 4 Nov",
@@ -4586,7 +4586,8 @@
       "kpi": "TRUST (dead-end 404 di flow utama) + STICKY",
       "reported_by": "frontend-builder 19:15 slot 4 Nov",
       "scheduled_slot": "2026-11-05 18:30 BE malam Kamis BUILD-ONLY (exclude ticker prefix ^ dari hasil equity screener; verify curl preset rsi_oversold+macd_bullish 0 row ^; naik T-1105-N bila hijau)",
-      "train": "T-1105-N"
+      "train": "T-1105-N",
+      "result": "SHIPPED BUILD-ONLY 5 Nov 18:5x (CTO sore instance-2): excludeIndexRows post-cache choke-point di screenerQuery+getBottomFishingRadar (src/domains/stock/screener-filter.ts BARU + screener-analysis.service.ts). Commit 20dfbb0 pushed main. FAILING-TEST-FIRST selftest node:test 4/4 RED->GREEN. Bukti perilaku fisik: raw DB preset adx_trending 431 rows caret=[^JKSE] vs service 430 caret=[] (tsx live query 127.0.0.1:5433); baseline live before: adx_trending 431/supertrend_bearish 385/below_sma200 710 semuanya ^JKSE. tsc 0 error, build hijau BUILD_ID 1geBarJj2INoXkrHDaOqD, selftest tetangga (market-snapshot-oversold/market-one-door) hijau. BONUS temuan: ^JKSE punya 168 baris smaCrossSignal=golden_cross historis — kandidat kontaminasi hitungan GC pipeline konten (evaluasi terpisah). Naik kereta T-1105-N via deploy kondektur 22:15."
     },
     {
       "id": "ux-2026-11-04-02",
