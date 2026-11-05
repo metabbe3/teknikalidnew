@@ -474,7 +474,7 @@ function TopSignalsSection({ items, sessionDate }: { items: PasarTopSignal[]; se
           {remaining.length > 0 && (
             <details className="group border-t border-border mt-1 pt-1">
               <summary className="cursor-pointer list-none py-2 px-1 text-center text-xs font-semibold text-accent hover:underline flex items-center justify-center gap-1.5 [&::-webkit-details-marker]:hidden">
-                <span>Lihat {remaining.length} sinyal lainnya</span>
+                <span>{`Lihat ${remaining.length} sinyal lainnya`}</span>
                 <svg
                   width="14"
                   height="14"
