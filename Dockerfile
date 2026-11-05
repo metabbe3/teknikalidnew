@@ -32,6 +32,10 @@ COPY --from=builder --chown=nextjs:nodejs /app/dist/server.js ./custom-server.js
 # Prisma generated client (output = src/generated/prisma)
 COPY --from=builder /app/src/generated/prisma ./src/generated/prisma
 
+# seo-2026-11-05: sitemap.ts baca redirect paths dari next.config.ts saat runtime
+# (exclude URL 301 dari sitemap) — file harus ikut ke runtime image.
+COPY --from=builder /app/next.config.ts ./next.config.ts
+
 # Prisma schema + config (needed for migrate deploy)
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts

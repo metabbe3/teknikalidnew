@@ -1,3 +1,4 @@
+import { promises as fs } from "node:fs";
 import type { MetadataRoute } from "next";
 import { unstable_cache } from "next/cache";
 import { IDX_STOCKS, IDX40_TICKERS, SITE_URL } from "@/lib/constants";
@@ -215,6 +216,11 @@ const getCachedSitemap = unstable_cache(
     // noindex) — jangan di-drop oleh stale-filter; sitemap wajib ⊇ halaman indexable.
     .filter((a) => isEvergreenIndexed(a) || !isStaleArticle(a))
     .filter((a) => !unpromotedLandingIds.has(a.id))
+    // seo-2026-11-05: exclude Article yang di-redirect next.config (golden-cross legacy dll).
+    .filter((a) => {
+      const p2 = a.articleType === ArticleType.EDUCATIONAL ? `/akademi/${a.slug}` : `/berita/${a.slug}`;
+      return !redirectPaths.has(p2);
+    })
     .map((a) => {
     const isEducational = a.articleType === ArticleType.EDUCATIONAL;
     const path = isEducational ? `/akademi/${a.slug}` : `/berita/${a.slug}`;
@@ -229,15 +235,25 @@ const getCachedSitemap = unstable_cache(
     };
   });
 
-  // seo-2026-11-05: slug Question legacy yang di-redirect app (301) — jangan masuk sitemap.
-  const FAQ_LEGACY_REDIRECT_SLUGS = new Set([
-    "cara-memilih-saham-untuk-pemula-cthzrv",
-    "cara-memilih-saham-untuk-pemula-bb7c51",
-    "cara-memilih-saham-untuk-pemula-i7cx5q",
-    "strategi-swing-trading-saham-uo62xv",
-    "bollinger-bands-cara-menggunakan-indikator-saham",
-    "apa-itu-flipping-dalam-pasar-saham",
-  ]);
+  // seo-2026-11-05: redirect paths dari next.config (21 source) — halaman yang 301
+  // tidak boleh menghabiskan crawl budget di sitemap. Dibaca dari file config langsung
+  // supaya redirect baru otomatis ter-exclude tanpa edit ganda.
+  let nextConfigSrc = "";
+  try {
+    nextConfigSrc = await fs.readFile("next.config.ts", "utf8");
+  } catch {
+    // File tidak ada di runtime (image lama) — fallback: sitemap tanpa filter redirect.
+  }
+  const redirectPaths = new Set<string>();
+  const redirectBlock = nextConfigSrc.slice(
+    nextConfigSrc.indexOf("async redirects"),
+    nextConfigSrc.indexOf("async headers") > 0
+      ? nextConfigSrc.indexOf("async headers")
+      : undefined,
+  );
+  for (const m of redirectBlock.matchAll(/source:\s*"([^"]+)"/g)) {
+    if (!m[1].includes(":")) redirectPaths.add(m[1]); // statis saja; :param bukan URL sitemap
+  }
 
   // FAQ pages — seo-dr-2: hanya jawaban kaya (>=1500 char ≈ 250 kata) yang masuk sitemap;
   // 115 halaman tanya tipis (122-158 kata) ditarik keluar demi crawl budget.
@@ -248,9 +264,9 @@ const getCachedSitemap = unstable_cache(
 
   const faqSitemapEntries = faqPages
     .filter((q) => ((q.longAnswer ?? q.shortAnswer)?.length ?? 0) >= 1500)
-    // seo-2026-11-05 (audit 955): exclude slug legacy yang 301 — buang 6 URL redirect
-    // dari sitemap demi crawl budget (4 duplikat suffix + 2 rename: bollinger/flipping).
-    .filter((q) => !FAQ_LEGACY_REDIRECT_SLUGS.has(q.slug))
+    // seo-2026-11-05 (audit 955): exclude URL yang 301 via next.config redirects —
+    // single source of truth: tambah redirect baru = otomatis keluar dari sitemap.
+    .filter((q) => !redirectPaths.has(`/akademi/tanya/${q.slug}`))
     .map((q) => ({
       url: `${baseUrl}/akademi/tanya/${q.slug}`,
       lastModified: q.updatedAt,
