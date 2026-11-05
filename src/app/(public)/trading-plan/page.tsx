@@ -81,7 +81,7 @@ export default async function TradingPlanPage({
       .map((v) => (KNOWN.has(`${v}.JK`) ? `${v}.JK` : v))
       .filter((v) => KNOWN.has(v)),
   )].slice(0, 6);
-  const selected = tickers.length > 0 ? tickers : ["BBCA.JK"];
+  const selected = tickers.length > 0 ? tickers : ["BBCA.JK", "BBRI.JK", "BMRI.JK", "TLKM.JK"];
   const filter = (TIERS as string[]).includes(params.f ?? "") ? (params.f as Tier) : "semua";
 
   const [ogList, closesList] = await Promise.all([
@@ -248,7 +248,7 @@ export default async function TradingPlanPage({
                         />
                       </div>
                       <div className="text-[10px] text-text-tertiary">
-                        Expected value: {mc.evPerShare >= 0 ? "+" : "−"}Rp{Math.abs(Math.round(mc.evPerShare)).toLocaleString("id-ID")}/lembar · bootstrap 150 hari
+                        Expected value: {mc.evPerShare >= 0 ? "+" : "−"}Rp{Math.abs(Math.round(mc.evPerShare)).toLocaleString("id-ID")}/lembar · simulasi 150 hari data historis
                       </div>
                     </div>
                   )}
@@ -269,15 +269,18 @@ export default async function TradingPlanPage({
           </div>
         )}
 
-        <div className="rounded-lg border border-border bg-bg-card p-5">
-          <h2 className="text-sm font-semibold mb-2">Cara membaca verdict</h2>
-          <ul className="text-sm text-text-secondary space-y-1.5 list-disc pl-5">
+        <details className="group rounded-lg border border-border bg-bg-card p-5">
+          <summary className="flex items-center justify-between cursor-pointer list-none text-sm font-semibold text-text-primary select-none">
+            <span>Cara membaca verdict</span>
+            <span className="text-xs text-text-tertiary transition-transform group-open:rotate-180">▼</span>
+          </summary>
+          <ul className="text-sm text-text-secondary space-y-1.5 list-disc pl-5 mt-3 pt-3 border-t border-border/40">
             <li><span className="font-semibold text-bullish">Layak</span> — risk-reward ≥ 1:1,5 dan confidence Tinggi. {counts.layak} dari {details.length} saham terpilih.</li>
             <li><span className="font-semibold text-amber-400">Menengah</span> — masih oke tapi margin tipis (RR 1–1,5 atau confidence Sedang). Posisi kecil, sabar menunggu entry.</li>
             <li><span className="font-semibold text-text-secondary">Tunggu</span> — harga belum di zona entry ideal, strategi otomatis jadi Wait &amp; See. Jangan kejar.</li>
             <li>Plan dihitung dari Pivot Points &amp; ATR(14) — kerangka disiplin, bukan prediksi.</li>
           </ul>
-        </div>
+        </details>
 
         <AskAiCta question={`Trading plan ${stripJk(selected[0])} bagaimana?`} />
       </div>
