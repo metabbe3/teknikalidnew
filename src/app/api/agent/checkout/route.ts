@@ -6,7 +6,9 @@ import { prisma } from "@/lib/prisma";
 // AGENT checkout (owner 5 Nov): web register → bayar agent subscription via Midtrans.
 // Order ID format WAJIB `TA-<chatId>-<TIER>-<ts>` (diparse agentd webhook) — chatId
 // diambil dari binding email↔Telegram, BUKAN dari body client (anti spoof).
-// Promo first month -90% hard-coded server-side (Basic 7900 / Pro 14900); regular = 79000/149000.
+// REBASE HARGA 6 Nov (owner paywall test + Argon): Malam Trader (basic) 29000
+// promo bulan pertama 14900; Pro 79000 promo 29000. Label promo = "bulan pertama",
+// BUKAN -90% (margin minus setelah biaya gateway; churn shock 10x).
 export async function POST(request: NextRequest) {
   try {
     const session = await requireAuth();
@@ -41,7 +43,7 @@ export async function POST(request: NextRequest) {
       if (Number(redeemed[0]?.n ?? "0") > 0) usePromo = false;
     }
 
-    const price = usePromo ? (tier === "basic" ? 7900 : 14900) : tier === "basic" ? 79000 : 149000;
+    const price = usePromo ? (tier === "basic" ? 14900 : 29000) : tier === "basic" ? 29000 : 79000;
     const tierTag = usePromo ? `PROMO${tier.toUpperCase()}` : tier.toUpperCase();
     const orderId = `TA-${chatId}-${tierTag}-${Date.now()}`;
 
@@ -54,8 +56,8 @@ export async function POST(request: NextRequest) {
           price,
           quantity: 1,
           name: usePromo
-            ? `TeknikalAgent ${tier.toUpperCase()} (Promo -90% bulan pertama)`
-            : `TeknikalAgent ${tier.toUpperCase()}`,
+            ? `TeknikalAgent ${tier === "basic" ? "Malam Trader" : "Pro"} — bulan pertama ${price === 14900 ? "Rp14.900" : "Rp29.000"}`
+            : `TeknikalAgent ${tier === "basic" ? "Malam Trader" : "Pro"}`,
           category: "Subscription",
         },
       ],

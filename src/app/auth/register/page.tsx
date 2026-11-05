@@ -88,7 +88,10 @@ function RegisterContent() {
       if (result?.error) {
         router.push("/auth/signin");
       } else {
-        router.push("/auth/complete-profile");
+        // owner 6 Nov: kalau datang dari CTA agent (next param), lewati profil
+        // lengkap — balik langsung ke /agent biar 1-klik bind Telegram
+        const next = searchParams.get("next");
+        router.push(next && next.startsWith("/agent") ? next : "/auth/complete-profile");
         router.refresh();
       }
     } catch {

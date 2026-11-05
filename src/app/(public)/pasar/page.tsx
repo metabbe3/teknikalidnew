@@ -6,6 +6,7 @@ import Link from "next/link";
 import { StockLogo } from "@/components/stock/stock-logo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHero } from "@/components/layout/page-hero";
+import { AgentKopiBanner } from "@/components/telegram/agent-kopi-banner";
 import dynamicImport from "next/dynamic";
 
 // Owner 30 Okt: tanya AI langsung dari /pasar (halaman traffic #1) — mode MARKET
@@ -95,6 +96,10 @@ export default async function PasarPage() {
             )}
           </div>
         </PageHero>
+
+      <div className="max-w-7xl mx-auto px-4 pt-8">
+        <AgentKopiBanner source="pasar" />
+      </div>
         <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
           <RecapBlock
             ihsg={recap.ihsg}

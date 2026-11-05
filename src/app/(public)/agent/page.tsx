@@ -15,6 +15,8 @@ type Membership = {
   promoUsed: boolean;
 };
 
+const BOT_URL = "https://t.me/TeknikalidAgentBot";
+
 export default function AgentPage() {
   const [mem, setMem] = useState<Membership | null>(null);
   const [loading, setLoading] = useState(true);
@@ -41,6 +43,11 @@ export default function AgentPage() {
     if (r.ok) {
       const j = await r.json();
       setBindUrl(j.bindUrl);
+    } else if (r.status === 401) {
+      // belum register/login (owner 6 Nov: WAJIB register dulu agar email bisa
+      // di-bind; setelah register balik sini, 1 klik langsung onboarding bot)
+      window.location.href = "/auth/register?next=/agent&cta=bind";
+      return;
     } else {
       setMsg("Gagal membuat token — coba login ulang.");
     }
@@ -55,9 +62,13 @@ export default function AgentPage() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ tier, promo: !mem?.promoUsed }),
       });
+      if (r.status === 401) {
+        window.location.href = "/auth/register?next=/agent&cta=pay";
+        return;
+      }
       const j = await r.json();
       if (r.status === 409 && j.error === "BINDING_REQUIRED") {
-        setMsg("Hubungkan akun Telegram dulu sebelum berlangganan.");
+        setMsg("Hubungkan Telegram dulu (langkah 1) — 10 detik, tanpa isi apa-apa.");
         return;
       }
       if (j.redirect_url) {
@@ -70,44 +81,79 @@ export default function AgentPage() {
     }
   };
 
+  const tierName = (t: string | null | undefined) =>
+    t === "basic" ? "Malam Trader" : t === "pro" ? "Pro" : t ? t.toUpperCase() : "-";
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">🤖 TeknikalAgent — AI Saham Pribadi</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Konsultasi saham via Telegram: analisa, berita, rencana trading — 24/7.
+        <h1 className="text-2xl font-bold">TeknikalAgent — Asisten Saham di Telegram</h1>
+        <p className="text-sm text-text-secondary mt-1">
+          Semua chart dan angka di teknikal.id gratis. Agent ini buat kamu yang sibuk
+          kerja siang: bot yang jagain harga, kirim rekap sore, dan bisa ditanya kapan
+          saja.
         </p>
       </div>
 
-      {/* Step 1: bind Telegram */}
+      {/* Value prop — 3 bullet bahasa tongkrongan (anti AI-slop) */}
+      <div className="rounded-xl border border-border bg-bg-card p-5 space-y-2 text-sm">
+        <p className="font-semibold text-text-primary">Kenapa trader malam pakai agent ini?</p>
+        <ul className="space-y-1.5 text-text-secondary">
+          <li>
+            <span className="text-text-primary font-medium">Rekap sore otomatis 19.00 WIB</span>{" "}
+            khusus saham incaranmu — tidak perlu buka puluhan tab sepulang kerja.
+          </li>
+          <li>
+            <span className="text-text-primary font-medium">Dicolek pas harga krusial</span> —
+            masuk area beli (Entry) atau dekat batas rugi (Stop Loss), langsung notif Telegram.
+          </li>
+          <li>
+            <span className="text-text-primary font-medium">Bisa ditanya kapan saja</span> —
+            &quot;BBRI sama BMRI malam ini bagusan mana?&quot; dijawab bahasa manusia.
+          </li>
+        </ul>
+      </div>
+
+      {/* Step 1: bind Telegram — register dulu, lalu 1 klik langsung onboarding */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">1. Hubungkan Telegram</CardTitle>
+          <CardTitle className="text-base">1. Aktifkan di Telegram (coba gratis 3x tanya)</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {loading ? (
-            <p className="text-sm text-muted-foreground">Memuat…</p>
+            <p className="text-sm text-text-secondary">Memuat…</p>
           ) : mem?.chatBound ? (
-            <p className="text-sm text-emerald-600 dark:text-emerald-400">
-              ✅ Terhubung (chat {mem.chatId})
-            </p>
+            <div className="space-y-2">
+              <p className="text-sm text-text-primary font-medium">
+                Terhubung (chat {mem.chatId})
+              </p>
+              <a href={`${BOT_URL}?start=web_agentpage`} target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="gap-2">
+                  Buka Bot di Telegram
+                </Button>
+              </a>
+            </div>
           ) : bindUrl ? (
             <div className="space-y-2">
               <p className="text-sm">
-                Buka link ini di Telegram, tekan <b>Start</b> — akun langsung terikat:
+                Satu klik: buka Telegram, tekan <b>Start</b> — akun langsung terikat dan
+                onboarding bot langsung jalan.
               </p>
-              <a href={bindUrl} className="text-sm text-blue-600 underline break-all">
-                {bindUrl}
+              <a href={bindUrl} target="_blank" rel="noopener noreferrer">
+                <Button className="gap-2">Buka Telegram &amp; Mulai</Button>
               </a>
-              <p className="text-xs text-muted-foreground">Berlaku 15 menit.</p>
+              <p className="text-xs text-text-tertiary">
+                Link berlaku 15 menit. Akun email kamu yang mengikat langganan Telegram-mu.
+              </p>
             </div>
           ) : (
             <>
-              <p className="text-sm text-muted-foreground">
-                Satu akun email = satu akun Telegram (anti penyalahgunaan).
+              <p className="text-sm text-text-secondary">
+                Butuh akun web (email) supaya langganan dan Telegram-mu nyambung —
+                register sekali, setelah itu semua lewat Telegram.
               </p>
-              <Button onClick={startBind} variant="outline" className="gap-2">
-                ✈️ Hubungkan via Bot
+              <Button onClick={startBind} className="gap-2">
+                Hubungkan Telegram — 1 Klik
               </Button>
             </>
           )}
@@ -117,46 +163,53 @@ export default function AgentPage() {
       {/* Step 2: subscription */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">2. Langganan</CardTitle>
+          <CardTitle className="text-base">2. Langganan (kalau cocok)</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {mem?.status === "paid" ? (
             <div className="text-sm space-y-1">
-              <p className="font-semibold">Paket aktif: {mem.tier?.toUpperCase()}</p>
+              <p className="font-semibold">Paket aktif: {tierName(mem.tier)}</p>
               {mem.periodEnd && (
-                <p className="text-muted-foreground">
+                <p className="text-text-secondary">
                   Aktif s/d {new Date(mem.periodEnd).toLocaleDateString("id-ID")}
                 </p>
               )}
-              <p className="text-muted-foreground">
+              <p className="text-text-secondary">
                 Kuota bulan ini: {mem.turnsUsed}/{mem.maxTurns} turn
               </p>
             </div>
           ) : (
             <>
               <div className="grid gap-3 sm:grid-cols-2">
-                <div className="rounded-lg border p-4 space-y-2">
-                  <p className="font-semibold">Basic</p>
+                <div className="rounded-lg border border-border p-4 space-y-2">
+                  <p className="font-semibold">Malam Trader</p>
                   <p className="text-2xl font-bold">
-                    {mem?.promoUsed ? "Rp79.000" : "Rp7.900"}
-                    <span className="text-xs font-normal text-muted-foreground"> /bulan pertama</span>
+                    {mem?.promoUsed ? "Rp29.000" : "Rp14.900"}
+                    <span className="text-xs font-normal text-text-tertiary"> /bulan pertama</span>
                   </p>
-                  <p className="text-xs text-muted-foreground">150 turn/bulan · selanjutnya Rp79.000</p>
+                  <p className="text-xs text-text-tertiary">
+                    150 turn/bulan · pantau 5 saham · rekap 19.00 WIB · selanjutnya Rp29.000
+                  </p>
+                  <p className="text-xs text-text-tertiary">
+                    Kurang dari Rp1.000/hari — lebih murah dari parkir motor.
+                  </p>
                   <Button
                     onClick={() => checkout("basic")}
                     disabled={paying || !mem?.chatBound}
                     className="w-full"
                   >
-                    {paying ? "Memproses…" : mem?.promoUsed ? "Langganan Basic" : "🎁 Ambil Promo -90%"}
+                    {paying ? "Memproses…" : mem?.promoUsed ? "Langganan Malam Trader" : "Ambil Bulan Pertama Rp14.900"}
                   </Button>
                 </div>
-                <div className="rounded-lg border p-4 space-y-2">
+                <div className="rounded-lg border border-border p-4 space-y-2">
                   <p className="font-semibold">Pro</p>
                   <p className="text-2xl font-bold">
-                    {mem?.promoUsed ? "Rp149.000" : "Rp14.900"}
-                    <span className="text-xs font-normal text-muted-foreground"> /bulan pertama</span>
+                    {mem?.promoUsed ? "Rp79.000" : "Rp29.000"}
+                    <span className="text-xs font-normal text-text-tertiary"> /bulan pertama</span>
                   </p>
-                  <p className="text-xs text-muted-foreground">600 turn/bulan · selanjutnya Rp149.000</p>
+                  <p className="text-xs text-text-tertiary">
+                    600 turn/bulan · pantau 20 saham · notif WhatsApp · selanjutnya Rp79.000
+                  </p>
                   <Button
                     onClick={() => checkout("pro")}
                     disabled={paying || !mem?.chatBound}
@@ -178,9 +231,26 @@ export default function AgentPage() {
         </CardContent>
       </Card>
 
-      <p className="text-xs text-muted-foreground">
-        Pembayaran diproses Midtrans. Langganan perpanjang otomatis bulan berikutnya dengan harga
-        normal — bisa dibatalkan kapan saja. Bukan rekomendasi investasi; edukasi saja.
+      <div className="rounded-lg border border-border bg-bg-card p-4 text-xs text-text-secondary space-y-1">
+        <p className="font-medium text-text-primary">Pertanyaan yang sering ditanya</p>
+        <p>
+          <span className="font-medium">Data web jadi berbayar?</span> Tidak. Chart, skor
+          sinyal, Entry/TP/SL di teknikal.id tetap gratis selamanya. Yang berbayar hanya
+          asisten Telegram-nya.
+        </p>
+        <p>
+          <span className="font-medium">Kenapa harganya segelas kopi?</span> Karena target
+          kami pemantau saham biasa yang butuh dikit bantuan, bukan institusi.
+        </p>
+        <p>
+          <span className="font-medium">Bisa berhenti?</span> Bisa kapan saja, tanpa
+          penalti. Pembayaran lewat Midtrans (QRIS/e-wallet).
+        </p>
+      </div>
+
+      <p className="text-xs text-text-tertiary">
+        Pembayaran diproses Midtrans. Bukan rekomendasi investasi; alat bantu riset dan
+        edukasi.
       </p>
     </div>
   );

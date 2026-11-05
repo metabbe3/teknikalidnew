@@ -24,6 +24,7 @@ import { articleRepository } from "@/domains/article/article.repository";
 import { SnapshotCard, type SnapshotCardData } from "@/components/berita/snapshot-card";
 import { DailyBriefHero } from "@/components/berita/daily-brief-hero";
 import { DailyBriefStrip } from "@/components/home/daily-brief-strip";
+import { AgentKopiBanner } from "@/components/telegram/agent-kopi-banner";
 import { MarketBreathStrip } from "@/components/ui/market-breath-strip";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Zap } from "lucide-react";
@@ -399,6 +400,8 @@ export default async function HomePage() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-10 space-y-14">
+        {/* Cross-sell agent (owner 6 Nov): 1 banner jujur, harga kopi, zero-JS */}
+        <AgentKopiBanner source="home" />
         {/* wave2-review (Argon 6 Nov): konten SSR anon dipulihkan ke DOM untuk
             Googlebot — dilipat <details> (paritas beranda login), bukan dihapus. */}
         <details className="group rounded-xl border border-border bg-bg-card p-5">

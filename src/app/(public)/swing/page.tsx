@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { signalBadge } from "@/lib/seo/signal-badge";
 import { PageHero } from "@/components/layout/page-hero";
+import { AgentKopiBanner } from "@/components/telegram/agent-kopi-banner";
 import { StockLogo } from "@/components/stock/stock-logo";
 import { GET, type SwingMarketResponse } from "@/app/api/market/swing/route";
 import { formatPrice, stripJk, dateLabel } from "@/lib/utils";
@@ -109,6 +110,10 @@ export default async function SwingPage() {
           </span>
         </div>
       </PageHero>
+
+      <div className="max-w-7xl mx-auto px-4 pt-8">
+        <AgentKopiBanner source="swing" />
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-8 space-y-12">
         {/* ── Table Top 10 Kandidat Swing (paling atas) ── */}
