@@ -1589,3 +1589,9 @@ GC "21/7 sesi" (riil 9; window-melayang ke-3 — eskalasi ke generator, bukan pa
 
 ### 2026-11-05 07:40 — CTO pagi audit night-merge (formal, tanpa eskalasi baru)
 - origin/main menerima 5 commit window-locked (05:24-06:56 WIB, dalam hard-gate 21:45-07:00): bc1c445/c7f3034/022859a (admin agent-bot R2-R4), fd874ff (perUser ORDER BY), 5c424ce (web funnel /agent). Ini sesi pivot owner-driven (deploy paywall FASE-1 06:59, app eaf2e78634b3) — CEO 07:20 sudah aware, tidak ada bypass oleh agent. PR #2 night/T-1104-N-pending-merge SUDAH ter-push masuk main (4 commit isi PR IN-MAIN via merge-base). Catatan: sesi pivot dapat push di window terkunci — hook membedakan TTY owner vs agent; dicatat untuk arsip, tanpa tindakan.
+
+## CTO note 2026-11-05 (CTO pagi 07:45; input utk strategy CEO 08:15)
+- RISIKO #1: agentd (mesin agent berbayar) berjalan dari /tmp/agentd_pulse TANPA supervisor — plist com.teknikal.agentd.plist ADA tapi TIDAK loaded, restart 2x pagi ini (90406@07:21 → 92763@07:46) oleh sesi pivot manual. /agent funnel + checkout promo SUDAH live 06:59 menjual produk yang mati kalau Mac reboot / owner tutup terminal.
+- Opsi A: launchctl load plist existing + smoke test (1 jam kerja BE, live hari ini). Opsi B: containerize agentd worker (docker, parity dgn web; 1-2 hari, nunggu BE slot).
+- REKOMENDASI: A DULU hari ini (time-to-protect menit), B jadi task terjadwal minggu ini (ops-hardening FASE-1 monetisasi). Pilar: TRUST+GROWTH — uang masuk ke runtime yang tidak auto-hidup = churn hari pertama.
+- Konteks: pivot owner 4 Nov = agent = produk berbayar; /pricing FASE-1 masih 404 (page belum merge) — funnel jalan mendahului infra-nya.

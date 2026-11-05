@@ -4369,7 +4369,7 @@
       ],
       "notes": "pilar KPI: TRUST — dispatch CEO pagi 3 Nov",
       "train": "T-1105-N",
-      "reslot_note": "kondektur-fix 2026-11-04: penumpang tanpa jadwal -> T-1104-N (2026-11-04 22:15 KONDEKTUR)",
+      "reslot_note": "CTO pagi 5 Nov: verdict REJECT premise — SUDAH TERJADI. Bukti fisik: git ls-tree -r seluruh 42 branch remote (ls-remote --heads origin) = 0 file sessions/ig-session* / tiktok-session*; main bersih; raw.githubusercontent branch backup = 404 by branch-not-on-remote. Satu-satunya carrier = branch LOKAL backup/pre-sec-purge-1015 (23 commit pra-purge 15 Okt). Status close: BE siang 09:30 cukup strip file session dari branch lokal (filter-repo/rebase strip, verify ls-tree lokal 0) — bukan kereta deploy. Sesi IG/Threads AKTIF tidak tersentuh.",
       "result": "KONDEKTUR T-1104-N 4 Nov: TIDAK TEREKSEKUSI — objek purge (branch remote backup/pre-sec-purge-1015) TIDAK ADA di remote (ls-remote 0 hit) → premise invalid; butuh re-dispatch CTO dgn branch tujuan benar atau close"
     },
     {
@@ -4539,7 +4539,8 @@
         "audit-followup"
       ],
       "spec": "Baca: teknikal-agent/docs/agent-org/audits/2026-11-04-*.md + skill teknikal-agent (Wave-2 section). Deliverable dua repo: teknikal-agent (bot feedback buttons) + teknikalidnew (API admin + webhook verify). DONE-WHEN: curl replay settlement 2x = premium +30 hari tepat sekali; tombol 👍/👎 kirim + tampil di /admin tab Agent Bot; tsc+go test hijau.",
-      "result": "KONDEKTUR T-1104-N 4 Nov: DRIFT — night_ready TAPI kode Wave-2 TIDAK DITEMUKAN (grep agent_feedback/agent-bot/feedback 0-hit di teknikalidnew main+semua branch + teknikal-agent) → reslot T-1105-N, builder WAJIB kerjakan build dulu sebelum naik kereta. Webhook verify-via-API juga belum ada di main (905aa60 hanya idempotent+cross-check)"
+      "result": "KONDEKTUR T-1104-N 4 Nov: DRIFT — night_ready TAPI kode Wave-2 TIDAK DITEMUKAN (grep agent_feedback/agent-bot/feedback 0-hit di teknikalidnew main+semua branch + teknikal-agent) → reslot T-1105-N, builder WAJIB kerjakan build dulu sebelum naik kereta. Webhook verify-via-API juga belum ada di main (905aa60 hanya idempotent+cross-check)",
+      "scheduled_slot": "2026-11-05 18:30 BE malam Kamis BUILD-ONLY (Wave-2 feedback + webhook verify-via-API; boarding gate: bukti fisik replay+panel; naik kereta T-1105-N 22:15 bila hijau — cap deploy 2/hari: pivot 06:59 sudah pakai 1)"
     },
     {
       "id": "bo-2026-11-04-04",
@@ -4582,7 +4583,9 @@
       "source": "FE Builder audit flow (a) 4 Nov",
       "spec": "REPRO (3 baris):\n1. GET https://teknikal.id/api/screener?preset=rsi_oversold (dgn/tanpa assetClass=EQUITY sama)\n2. Row pertama = {\"ticker\":\"^JKSE\",\"name\":\"IHSG\",\"sector\":\"Index\"} — indeks ikut hasil\n3. Klik row IHSG di UI → /stocks/%5EJKSE = 404 (verified 4 Nov 19:40 WIB)\n\nSEVERITY: P2 — dead-end link di flow utama screener; user percaya data lalu kena 404 (TRUST pillar).\nRoot-cause kandidat: API /api/screener tidak exclude ticker prefix ^ (indeks) padahal UI overlay assetClass; cek juga findStocksByTickers path.\nFix: exclude ^* dari hasil equity screener ATAU route indeks ke halaman indeks (kalau ada).\nVerify: curl preset=rsi_oversold & macd_bullish → 0 row ^; UI hasil 264→263 saham.",
       "kpi": "TRUST (dead-end 404 di flow utama) + STICKY",
-      "reported_by": "frontend-builder 19:15 slot 4 Nov"
+      "reported_by": "frontend-builder 19:15 slot 4 Nov",
+      "scheduled_slot": "2026-11-05 18:30 BE malam Kamis BUILD-ONLY (exclude ticker prefix ^ dari hasil equity screener; verify curl preset rsi_oversold+macd_bullish 0 row ^; naik T-1105-N bila hijau)",
+      "train": "T-1105-N"
     },
     {
       "id": "ux-2026-11-04-02",
@@ -4641,12 +4644,12 @@
       "priority": "P1",
       "title": "FATAL brief-pasar-idx-2026-11-05: '21 golden cross pada 7 sesi terakhir' — window salah, 7 sesi kanonik = 9",
       "north_star": "TRUST (angka sinyal harus replayable dari window yang dinyatakan; qa-27-01; pola berulang ke-3)",
-      "status": "pending",
+      "status": "done",
       "spec": "INTENT: brief-pasar-idx-2026-11-05-reversal-dari-low menulis '21 golden cross pada 7 sesi terakhir (saham aktif non-gorengan)'. Replay DB definisi kanonik (distinct stockId, smaCrossSignal='golden_cross', smaCrossDate, filter aktif+non-gorengan): 7 sesi 27 Okt-4 Nov = 9, BUKAN 21. Angka 21 hanya cocok dengan window >= 20 Okt (12 sesi). Pola berulang KE-3: qa-2026-11-04-03 (19 -> window 11 sesi), qa-2026-11-04-04 (22 -> window 11 sesi), kini 21 -> window 12 sesi — generator brief menghitung GC dengan window melayang tanpa menyebutnya. ACCEPTANCE (DONE WHEN): (a) perbaiki kalimat — pilih '9 golden cross pada 7 sesi terakhir (27 Okt-4 Nov, saham aktif non-gorengan)' ATAU '21 golden cross dalam 12 sesi terakhir (sejak 20 Oktober)' — angka dan label window WAJIB konsisten; (b) grep semua kemunculan '21 golden cross' + '7 sesi' konsisten dengan pilihan, residual frasa lama 0; (c) replay_sql_gate.py exit 0; (d) ISR refresh + curl live render frasa baru. CATATAN GUARDRAIL GENERATOR (perbaiki akar, bukan cuma artikel): pin SQL basis GC ke window sesi-7 kalender trading; window lain hanya boleh dipakai jika ditulis eksplisit di kalimat.",
       "assigned_to": "cto",
       "scheduled_slot": "CTO pagi 5 Nov slot 07:30 (SQL patch konten, 0 deploy web)",
-      "result": "",
-      "qa_verified": null,
+      "result": "CTO pagi 5 Nov 08:0x: PATCHED+VERIFIED. DB replay latest-row kanonik: GC 7 sesi (27Okt-4Nov) = 9, window 12 sesi sejak 20 Okt = 21 — klaim 21 memakai window melayang. UPDATE replace content: \"21 golden cross pada 7 sesi terakhir (saham aktif non-gorengan)\" -> \"9 golden cross pada 7 sesi terakhir 27 Oktober-4 November (saham aktif non-gorengan)\". BUKTI H1/H2: position(\"21 golden cross\")=0 pasca, \"9 golden cross\"=1; live curl 2x frasa baru 0 frasa lama; replay_sql_gate exit-0; excerpt 0 kcemunculan; backup /tmp/qa1105-backup/. Generator-root: dispatch ops-2026-11-05-03.",
+      "qa_verified": false,
       "source": "Content-Reviewer QA pagi 5 Nov (read-only)"
     },
     {
@@ -4656,13 +4659,32 @@
       "priority": "P1",
       "title": "FATAL analis-sore-2026-11-04: 'bullish cross segar hanya dua (LPIN & KINO)' — DB 12 bullish segar non-gorengan 2-4 Nov",
       "north_star": "TRUST (klaim komposisi sinyal harus dari satu basis yang dinyatakan; qa-30-01)",
-      "status": "pending",
+      "status": "done",
       "spec": "INTENT: analis-sore-2026-11-04-pbid menulis 'bearish cross baru justru berdatangan sepanjang 2-4 November (DUTI, DMAS, AADI, SBMA, MPIX, AUTO), sementara bullish cross segar hanya dua - LPIN (4 November) dan KINO (3 November)'. Replay DB StockIndicator asof 4 Nov (emaCrossDate 2-4 Nov, non-gorengan): BULLISH = 12 (2 Nov: ASII, CASA, MPMX, NFCX; 3 Nov: ASBI, KINO, MBAP, WOMF; 4 Nov: DKFT, LPIN, POWR, PRIM), BEARISH = 26. Daftar 6 bearish yang dikutip benar semua tapi tidak lengkap. Tidak ada basis wajar yang menghasilkan 'dua': label sinyal positif + likuid vol>=3jt pun = 5 (CASA, LPIN, KINO, POWR, PRIM). ACCEPTANCE (DONE WHEN): (a) tulis ulang kalimat dari SATU basis eksplisit — mis. '12 bullish cross segar vs 26 bearish (2-4 Nov, non-gorengan)' ATAU '5 bullish cross segar di saham likuid bersinyal positif (CASA, KINO, LPIN, POWR, PRIM)'; (b) grep 'hanya dua' + daftar nama saham konsisten dengan pilihan, residual 0; (c) replay_sql_gate.py exit 0; (d) live render frasa baru.",
       "assigned_to": "cto",
       "scheduled_slot": "CTO pagi 5 Nov slot 07:30 (SQL patch konten, 0 deploy web)",
-      "result": "",
-      "qa_verified": null,
+      "result": "CTO pagi 5 Nov 08:0x: PATCHED+VERIFIED. DB replay emaCross 2-4 Nov non-gorengan: bullish=12 (ASBI ASII CASA DKFT KINO LPIN MBAP MPMX NFCX POWR PRIM WOMF), bearish=26 — \"hanya dua\" tanpa basis wajar. UPDATE replace: kalimat kini \"DUTI, DMAS, AADI, SBMA, MPIX, AUTO, dan 20 emiten lainnya - total 26 bearish ... bullish cross segar 12 emiten non-gorengan - termasuk LPIN (4 November) dan KINO (3 November)\". BUKTI: position(\"hanya dua\")=0, \"12 emiten non-gorengan\"=1, \"total 26 bearish\"=1; live curl 2x baru 0 lama; replay_sql_gate exit-0; backup /tmp/qa1105-backup/.",
+      "qa_verified": false,
       "source": "Content-Reviewer QA pagi 5 Nov (read-only)"
+    },
+    {
+      "id": "ops-2026-11-05-03",
+      "title": "P0 TRUST ROOT-FIX: pin window SQL generator brief-pasar/analis-sore — angka sinyal WAJIB dari window yang dinyatakan di kalimat (pola GC window-melayang ke-3: qa-04-03, qa-04-04, qa-11-05-01)",
+      "priority": "P0",
+      "status": "pending",
+      "labels": [
+        "qa-escalation",
+        "trust",
+        "root-cause",
+        "generator"
+      ],
+      "kpi": "TRUST (angka sinyal replayable; North Star: data reliable)",
+      "north_star": "TRUST — angka sinyal harus replayable dari window yang dinyatakan",
+      "assigned_to": "backend-builder",
+      "scheduled_slot": "2026-11-06 09:30 BE Builder siang Jumat (setelah ops-2026-11-05-01 guardrail kenapa-*)",
+      "train": "T-1106-M",
+      "spec": "INTENT: generator brief-pasar-idx & analis-sore menghitung golden-cross/bullish-cross dengan window SESI MELAYANG tanpa menyebutkannya di kalimat — 3x FATAL berulang (qa-2026-11-04-03 19->window-11-sesi, qa-2026-11-04-04 22->window-11-sesi, qa-2026-11-05-01 21->window-3-sesi-lebih-panjang). Patch artikel hanya obat simptomatik; akar = SQL basis generator tidak dipatok ke window sesi-7 kalender-trading yang ditulis artikel. ACCEPTANCE (DONE WHEN): (1) lokasi generator (jalur night-prep/brief generator di teknikalidnew, kandidat: scripts/tknkl_article_sweep.py + pipeline brief-pasar) dan query GC/EMA-cross yang dipakai; (2) window dipatok ke jumlah sesi kalender-trading yang dinyatakan (7 sesi = 7 hari bursa terakhir dari asof, BUKAN hari kalender melayang) dan angka di kalimat = output query itu; (3) failing-test-first: test yang menyatakan window N sesi lalu membandingkan angka artikel vs query pinned — merah sebelum fix, hijau sesudah; (3) dry-run generator 1 artikel brief-pasar dgn window pinned + replay_sql_gate exit 0; (4) PR merge / commit dgn bukti fisik file:line. Catatan: terkait ops-2026-11-05-01 (guardrail kenapa-*) — beda mesin (guardrail = pre-publish gate; ini = SQL window pinning) tapi satu keluarga akar: angka konten dari SATU basis kanonik yang dinyatakan.",
+      "created_at": "2026-11-05T08:0x+07:00 (CTO pagi, eskalasi qa-2026-11-05-01)"
     }
   ]
 }

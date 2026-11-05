@@ -1132,3 +1132,9 @@
   - prd-2026-11-05-02: agentd_pulse PID 90406 @07:21 (binary built 07:20, tip 9d1ce12 ⊃ c3f039c starter-alert; strings: copy starter ada). DB 20 tabel agent. NOTE: runtime owner-session masih develop di repo teknikal-agent (MarketPulse) — jangan ganggu.
 - Baseline 6 URL 200 (/, /berita, /saham-dividen, /saham-golden-cross, /stocks/BBCA.JK, /akademi/glosarium); /agent funnel 200 (grep Telegram ✓). Glosarium di /akademi/glosarium (kemarin juga) — /glosarium 404 BUKAN regresi.
 - Rollback: n/a (0 deploy by me) · anchor prod: app eaf2e78634b3 / worker 3c381b97 (4 Nov 22:32).
+
+## 2026-11-05 08:0x — CTO PAGI (slot 07:45; QA fatal content patch; 0 deploy)
+- qa-2026-11-05-01: brief-pasar-idx-2026-11-05 "21 golden cross pada 7 sesi" → "9 golden cross pada 7 sesi 27 Oktober–4 November" (replay: 7-sesi=9, 12-sesi=21). Bukti: position lama=0 DB; live 2x baru/0 lama; gate exit-0.
+- qa-2026-11-05-02: analis-sore-2026-11-04 "bullish segar hanya dua" → "12 emiten non-gorengan (termasuk LPIN/KINO) vs total 26 bearish" (replay: bullish=12, bearish=26; daftar 6 benar tapi tak lengkap). Bukti idem + gate exit-0.
+- Root-fix dispatch ops-2026-11-05-03 P0 (generator window pinning). sec-1103-02 REJECT-premise (remote 42 branch 0 sessions; lokal strip 09:30). Pilar: TRUST.
+- Rollback: UPDATE-reverse dari /tmp/qa1105-backup/ · anchor app eaf2e78634b3 / worker 3c381b97.
