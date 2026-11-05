@@ -23,15 +23,27 @@ interface User {
 }
 
 export function UserMenu({ user }: { user: User | undefined | null }) {
-  // Logged-out state: show sign-in button
+  // Logged-out state: Daftar (accent, growth) + Masuk (netral) — pasangan standar.
+  // ux-2026-11-05-01: sebelumnya desktop anon TIDAK punya entry Daftar di header
+  // sama sekali (jalur: Masuk → halaman signin → "Daftar gratis" = 2 klik + load).
   if (!user) {
     return (
-      <Link
-        href="/auth/signin"
-        className="hidden sm:inline-flex items-center bg-text-primary text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-text-primary/90 transition-colors press-scale"
-      >
-        Masuk
-      </Link>
+      <div className="flex items-center gap-2">
+        <Link
+          href="/auth/register"
+          data-engagement="nav_register_desktop"
+          className="hidden md:inline-flex items-center bg-accent text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors press-scale"
+        >
+          Daftar
+        </Link>
+        <Link
+          href="/auth/signin"
+          data-engagement="nav_masuk_desktop"
+          className="inline-flex items-center bg-text-primary text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-text-primary/90 transition-colors press-scale"
+        >
+          Masuk
+        </Link>
+      </div>
     );
   }
 

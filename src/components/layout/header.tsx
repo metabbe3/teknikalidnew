@@ -302,7 +302,8 @@ export function Header() {
               <Link
                 href="/auth/register"
                 onClick={() => setMenuOpen(false)}
-                className="text-center py-2.5 px-3 rounded-lg text-sm font-medium text-white bg-accent hover:bg-accent/90 transition-colors"
+                data-engagement="nav_register_mobile"
+                className="text-center min-h-11 inline-flex items-center justify-center py-2.5 px-3 rounded-lg text-sm font-medium text-white bg-accent hover:bg-accent/90 transition-colors"
               >
                 Daftar
               </Link>
