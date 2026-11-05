@@ -196,7 +196,7 @@ export default function AgentPage() {
                     </p>
                   )}
                   <p className="text-xs text-text-tertiary">
-                    150 turn/bulan · pantau 5 saham · rekap 19.00 WIB
+                    150 turn/bulan · pantau 10 saham · alert 10
                   </p>
                   <p className="text-xs text-text-tertiary">
                     Kurang dari Rp1.000/hari — lebih murah dari parkir motor.
@@ -224,7 +224,7 @@ export default function AgentPage() {
                     </p>
                   )}
                   <p className="text-xs text-text-tertiary">
-                    600 turn/bulan · pantau 20 saham · notif WhatsApp
+                    400 turn/bulan · pantau 25 saham · alert 25
                   </p>
                   <Button
                     onClick={() => checkout("pro")}
