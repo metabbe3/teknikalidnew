@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { safeJsonLd } from "@/lib/safe-json-ld";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { BookOpen, MessageCircleQuestion } from "lucide-react";
+import { BookOpen, MessageCircleQuestion, BookMarked } from "lucide-react";
 import { SITE_URL } from "@/lib/constants";
 import { PageHero } from "@/components/layout/page-hero";
 import { FAQTabSection } from "@/components/faq/faq-tab-section";
@@ -151,10 +151,10 @@ export default async function AkademiPage({
 
         <div className="max-w-6xl mx-auto px-4 py-10">
           {/* Tab navigation */}
-          <div className="flex items-center gap-1 mb-8 border-b border-border">
+          <div className="flex items-center gap-1 mb-8 border-b border-border overflow-x-auto">
             <Link
               href="/akademi"
-              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors -mb-px ${
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap -mb-px ${
                 activeTab === "artikel"
                   ? "border-accent text-accent"
                   : "border-transparent text-text-tertiary hover:text-text-secondary"
@@ -165,7 +165,7 @@ export default async function AkademiPage({
             </Link>
             <Link
               href="/akademi?tab=faq"
-              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors -mb-px ${
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap -mb-px ${
                 activeTab === "faq"
                   ? "border-accent text-accent"
                   : "border-transparent text-text-tertiary hover:text-text-secondary"
@@ -173,6 +173,13 @@ export default async function AkademiPage({
             >
               <MessageCircleQuestion className="h-4 w-4" />
               Tanya Jawab
+            </Link>
+            <Link
+              href="/akademi/glosarium"
+              className="flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 border-transparent text-text-tertiary hover:text-text-secondary transition-colors whitespace-nowrap -mb-px"
+            >
+              <BookMarked className="h-4 w-4" />
+              Glosarium
             </Link>
           </div>
 
@@ -189,20 +196,16 @@ export default async function AkademiPage({
             />
           ) : (
             <>
-              <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-gradient-to-r from-[#0f2a3d] to-[#123548] px-4 py-3">
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-slate-100">Dari teori ke praktik 🎮</p>
-                <p className="text-xs text-slate-400">Coba paper trading Rp 10.000.000 virtual sambil belajar.</p>
-              </div>
-              <Link
-                href="/paper-trading"
-                data-engagement="funnel_paper_banner_akademi"
-                className="press-scale inline-flex items-center gap-1.5 text-xs font-bold bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent/90 transition-colors shrink-0"
-              >
-                Mulai Simulasi Gratis
-              </Link>
-            </div>
-            <LearningPath />
+              {/* Alur Belajar — folded into details to save vertical space on mobile */}
+              <details className="mb-8 group rounded-xl border border-border/70 bg-bg-card p-4 transition-all">
+                <summary className="cursor-pointer text-xs font-semibold text-text-secondary hover:text-text-primary flex items-center justify-between list-none">
+                  <span>Alur Belajar Analisis Teknikal (Pemula → Menengah)</span>
+                  <span className="text-text-tertiary text-xs transition-transform group-open:rotate-180">▼</span>
+                </summary>
+                <div className="mt-4 pt-3 border-t border-border/40">
+                  <LearningPath />
+                </div>
+              </details>
 
               {/* Tag filter strip */}
               {allTags.length > 0 && (
