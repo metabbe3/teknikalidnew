@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 // AGENT checkout (owner 5 Nov): web register → bayar agent subscription via Midtrans.
 // Order ID format WAJIB `TA-<chatId>-<TIER>-<ts>` (diparse agentd webhook) — chatId
 // diambil dari binding email↔Telegram, BUKAN dari body client (anti spoof).
-// REBASE HARGA 6 Nov (owner paywall test + Argon): Malam Trader (basic) 29000
+// REBASE HARGA 6 Nov (owner paywall test + Argon): Night Trader (basic) 29000
 // promo bulan pertama 14900; Pro 79000 promo 29000. Label promo = "bulan pertama",
 // BUKAN -90% (margin minus setelah biaya gateway; churn shock 10x).
 export async function POST(request: NextRequest) {
@@ -56,8 +56,8 @@ export async function POST(request: NextRequest) {
           price,
           quantity: 1,
           name: usePromo
-            ? `TeknikalAgent ${tier === "basic" ? "Malam Trader" : "Pro"} — bulan pertama ${price === 14900 ? "Rp14.900" : "Rp29.000"}`
-            : `TeknikalAgent ${tier === "basic" ? "Malam Trader" : "Pro"}`,
+            ? `TeknikalAgent ${tier === "basic" ? "Night Trader" : "Pro"} — bulan pertama ${price === 14900 ? "Rp14.900" : "Rp29.000"}`
+            : `TeknikalAgent ${tier === "basic" ? "Night Trader" : "Pro"}`,
           category: "Subscription",
         },
       ],

@@ -82,7 +82,7 @@ export default function AgentPage() {
   };
 
   const tierName = (t: string | null | undefined) =>
-    t === "basic" ? "Malam Trader" : t === "pro" ? "Pro" : t ? t.toUpperCase() : "-";
+    t === "basic" ? "Night Trader" : t === "pro" ? "Pro" : t ? t.toUpperCase() : "-";
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 space-y-6">
@@ -182,13 +182,21 @@ export default function AgentPage() {
             <>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="rounded-lg border border-border p-4 space-y-2">
-                  <p className="font-semibold">Malam Trader</p>
-                  <p className="text-2xl font-bold">
-                    {mem?.promoUsed ? "Rp29.000" : "Rp14.900"}
-                    <span className="text-xs font-normal text-text-tertiary"> /bulan pertama</span>
-                  </p>
+                  <p className="font-semibold">Night Trader</p>
+                  {mem?.promoUsed ? (
+                    <p className="text-2xl font-bold">
+                      Rp29.000
+                      <span className="text-xs font-normal text-text-tertiary"> /bulan</span>
+                    </p>
+                  ) : (
+                    <p className="text-2xl font-bold">
+                      <span className="mr-1.5 text-base font-medium text-text-tertiary line-through">Rp29.000</span>
+                      Rp14.900
+                      <span className="text-xs font-normal text-text-tertiary"> /bulan pertama</span>
+                    </p>
+                  )}
                   <p className="text-xs text-text-tertiary">
-                    150 turn/bulan · pantau 5 saham · rekap 19.00 WIB · selanjutnya Rp29.000
+                    150 turn/bulan · pantau 5 saham · rekap 19.00 WIB
                   </p>
                   <p className="text-xs text-text-tertiary">
                     Kurang dari Rp1.000/hari — lebih murah dari parkir motor.
@@ -198,17 +206,25 @@ export default function AgentPage() {
                     disabled={paying || !mem?.chatBound}
                     className="w-full"
                   >
-                    {paying ? "Memproses…" : mem?.promoUsed ? "Langganan Malam Trader" : "Ambil Bulan Pertama Rp14.900"}
+                    {paying ? "Memproses…" : mem?.promoUsed ? "Langganan Night Trader" : "Ambil Bulan Pertama Rp14.900"}
                   </Button>
                 </div>
                 <div className="rounded-lg border border-border p-4 space-y-2">
                   <p className="font-semibold">Pro</p>
-                  <p className="text-2xl font-bold">
-                    {mem?.promoUsed ? "Rp79.000" : "Rp29.000"}
-                    <span className="text-xs font-normal text-text-tertiary"> /bulan pertama</span>
-                  </p>
+                  {mem?.promoUsed ? (
+                    <p className="text-2xl font-bold">
+                      Rp79.000
+                      <span className="text-xs font-normal text-text-tertiary"> /bulan</span>
+                    </p>
+                  ) : (
+                    <p className="text-2xl font-bold">
+                      <span className="mr-1.5 text-base font-medium text-text-tertiary line-through">Rp79.000</span>
+                      Rp29.000
+                      <span className="text-xs font-normal text-text-tertiary"> /bulan pertama</span>
+                    </p>
+                  )}
                   <p className="text-xs text-text-tertiary">
-                    600 turn/bulan · pantau 20 saham · notif WhatsApp · selanjutnya Rp79.000
+                    600 turn/bulan · pantau 20 saham · notif WhatsApp
                   </p>
                   <Button
                     onClick={() => checkout("pro")}
