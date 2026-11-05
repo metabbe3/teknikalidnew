@@ -989,13 +989,13 @@ export default async function StockDetailPage({
               ["indikator", "Indikator"],
               ["analisa", "Analisa"],
               ["asing", "Asing"],
-              ...(fullAccess ? [["plan", "Trading Plan"]] : []),
+              ...(fullAccess ? [["plan", "Rencana Trading"]] : []),
             ].map(([id, label]) => (
               <a
                 key={id}
                 href={`#${id}`}
                 data-engagement={`nav_${id}`} // 28 Okt: sticky nav sebelumnya tak ter-track (anchor jump tak memicu apa pun)
-                className="shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
+                className="shrink-0 rounded-full px-3 py-2.5 min-h-11 inline-flex items-center text-xs font-semibold text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
               >
                 {label}
               </a>
