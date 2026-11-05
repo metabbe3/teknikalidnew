@@ -32,50 +32,85 @@ function getFaqConceptBridge(question: { question: string; tags: string[]; categ
   if (text.includes("golden cross") || text.includes("goldencross")) {
     return {
       concept: "Golden Cross",
-      label: "Tren Naik Baru · Golden Cross",
-      href: "/stocks?view=screener&tab=swing-trade&preset=golden_cross",
+      label: "Saham Golden Cross",
+      href: "/saham-golden-cross",
     };
   }
-  if (text.includes("bollinger") || text.includes("bb lower") || text.includes("pita bollinger")) {
+  if (text.includes("death cross") || text.includes("deathcross")) {
     return {
-      concept: "Bollinger Bands",
-      label: "Batas Bawah · Bollinger Bands",
-      href: "/stocks?view=screener&tab=bottom-fishing&preset=bb_lower_touch",
+      concept: "Death Cross",
+      label: "Saham Death Cross",
+      href: "/saham-death-cross",
     };
   }
-  if (text.includes("rsi") || text.includes("oversold") || text.includes("jenuh jual")) {
+  if (text.includes("oversold") || text.includes("jenuh jual") || text.includes("rsi")) {
     return {
       concept: "RSI Oversold",
-      label: "Saham Mulai Mantul · RSI Oversold",
-      href: "/stocks?view=screener&tab=bottom-fishing&preset=rsi_oversold",
+      label: "Saham RSI Oversold",
+      href: "/saham-oversold",
+    };
+  }
+  if (text.includes("overbought") || text.includes("jenuh beli")) {
+    return {
+      concept: "Overbought",
+      label: "Saham Overbought",
+      href: "/saham-overbought",
     };
   }
   if (text.includes("macd")) {
     return {
-      concept: "MACD",
-      label: "Momentum Berbalik Naik · MACD",
-      href: "/stocks?view=screener&tab=swing-trade&preset=macd_bullish",
+      concept: "MACD Bullish",
+      label: "Saham MACD Bullish",
+      href: "/saham-macd-bullish",
     };
   }
   if (text.includes("stochastic") || text.includes("stokastik")) {
     return {
-      concept: "Stochastic",
-      label: "Pantulan Titik Terendah · Stochastic",
-      href: "/stocks?view=screener&tab=bottom-fishing&preset=stoch_oversold",
+      concept: "Stochastic Oversold",
+      label: "Saham Stochastic Oversold",
+      href: "/saham-stochastic-oversold",
+    };
+  }
+  if (text.includes("ema") || text.includes("exponential moving average")) {
+    return {
+      concept: "EMA Cross",
+      label: "Saham EMA Cross",
+      href: "/saham-ema-cross",
+    };
+  }
+  if (text.includes("sma 20") || text.includes("sma20") || text.includes("pullback")) {
+    return {
+      concept: "Pullback SMA 20",
+      label: "Saham Pullback SMA 20",
+      href: "/saham-pullback-sma20",
     };
   }
   if (text.includes("volume spike") || text.includes("volume lonjak") || text.includes("volume meledak")) {
     return {
       concept: "Volume Spike",
-      label: "Transaksi Melonjak · Volume Meledak",
-      href: "/stocks?view=screener&preset=volume_spike",
+      label: "Saham Volume Spike",
+      href: "/saham-volume-spike",
     };
   }
-  if (text.includes("supertrend")) {
+  if (text.includes("dividen") || text.includes("dividend")) {
     return {
-      concept: "Supertrend",
-      label: "Tren Naik Kukuh · Supertrend",
-      href: "/stocks?view=screener&tab=swing-trade&preset=supertrend_bullish",
+      concept: "Dividen Tinggi",
+      label: "Saham Dividen Tinggi",
+      href: "/saham-dividen",
+    };
+  }
+  if (text.includes("undervalued") || text.includes("murah") || text.includes("valuasi")) {
+    return {
+      concept: "Undervalued",
+      label: "Saham Undervalued",
+      href: "/saham-undervalued",
+    };
+  }
+  if (text.includes("blue chip") || text.includes("bluechip") || text.includes("lq45")) {
+    return {
+      concept: "Blue Chip",
+      label: "Saham Blue Chip",
+      href: "/saham-blue-chip",
     };
   }
 
@@ -265,19 +300,19 @@ export default async function FAQQuestionPage({
             </div>
           )}
 
-          {/* Concept screener bridge (Batch D — minimal SSR bridge) */}
+          {/* Concept screener bridge */}
           {conceptBridge && (
             <div className="bg-bg-card rounded-xl depth-shadow p-5 border border-border mb-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
-                    Screener Terkait
+                    Screener Tematik Terkait
                   </p>
                   <p className="text-sm font-semibold text-text-primary mt-0.5">
-                    Saham yang menyentuh {conceptBridge.concept} hari ini
+                    Daftar {conceptBridge.label} Hari Ini
                   </p>
                   <p className="text-xs text-text-secondary mt-1">
-                    Cek daftar saham IDX yang memenuhi kriteria teknikal ini secara otomatis.
+                    Cek emiten BEI yang memenuhi kondisi {conceptBridge.concept} dari data penutupan sesi terakhir.
                   </p>
                 </div>
                 <Link

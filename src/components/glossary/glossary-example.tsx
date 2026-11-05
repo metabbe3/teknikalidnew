@@ -32,6 +32,14 @@ function fmtDateWIB(d: Date): string {
     day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Jakarta",
   }).format(d);
 }
+function fmtDateStrID(dStr: string | null | undefined): string {
+  if (!dStr) return "terakhir";
+  const d = new Date(dStr);
+  if (isNaN(d.getTime())) return dStr;
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakarta",
+  }).format(d);
+}
 function fmtMarketCap(v: number | null | undefined): string {
   if (v == null || !Number.isFinite(v)) return "—";
   if (v >= 1e12) return `Rp${(v / 1e12).toFixed(1)} T`;
@@ -79,7 +87,7 @@ export async function GlossaryExample({ spec }: { spec: GlossaryExampleSpec }) {
         body = (
           <div className="py-2 space-y-1.5 font-mono text-sm text-text-secondary">
             <p>
-              Sesi <span className="text-text-primary font-semibold">{snap.sessionDate ?? "terakhir"}</span> —{" "}
+              Sesi <span className="text-text-primary font-semibold">{fmtDateStrID(snap.sessionDate)}</span> —{" "}
               <span className="text-text-primary font-semibold">{count} saham</span> berstatus oversold
               (RSI&lt;30, non-gorengan, aktif).
             </p>
@@ -208,7 +216,7 @@ export async function GlossaryExample({ spec }: { spec: GlossaryExampleSpec }) {
         body = (
           <div className="py-2 space-y-1.5 font-mono text-sm text-text-secondary">
             <p>
-              IHSG sesi <span className="text-text-primary font-semibold">{snap.sessionDate ?? "terakhir"}</span>:{" "}
+              IHSG sesi <span className="text-text-primary font-semibold">{fmtDateStrID(snap.sessionDate)}</span>:{" "}
               <span className="text-text-primary font-semibold">{fmtNum(snap.ihsg.close, 2)}</span> ({fmtPct(snap.ihsg.changePercent)}).
             </p>
             <p className="text-text-tertiary">
@@ -234,7 +242,7 @@ export async function GlossaryExample({ spec }: { spec: GlossaryExampleSpec }) {
           <div className="py-2 space-y-1.5 font-mono text-sm text-text-secondary">
             <p>
               {stripJk(liquid!.ticker)} ditutup <span className="text-text-primary font-semibold">{formatPrice(close)}</span>/lembar
-              (sesi {snap.sessionDate ?? "terakhir"}).
+              (sesi {fmtDateStrID(snap.sessionDate)}).
             </p>
             <p className="text-text-tertiary">
               1 lot = 100 lembar → modal per lot ≈{" "}
