@@ -293,7 +293,7 @@ export default async function SwingPage() {
                 </h3>
                 <p className="text-xs text-text-secondary leading-relaxed">
                   Skor sinyal menggabungkan konfirmasi moving average (SMA20/50/200), RSI14, MACD, dan Supertrend yang
-                  dipetakan ke skala kesehatan 0–100 untuk mengeliminasi bias subjektif.
+                  dipetakan ke skala −1 s.d. +1 untuk mengeliminasi bias subjektif.
                 </p>
               </div>
               <div className="rounded-lg border border-border/80 bg-bg-primary/50 p-4">

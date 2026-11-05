@@ -483,7 +483,7 @@ export default async function HomePage() {
               Trading <span className="text-bullish">tanpa nebak-nebak.</span>
             </p>
             <p className="mt-5 text-base sm:text-lg text-text-secondary max-w-xl leading-relaxed">
-              Chart profesional, 12 indikator teknikal, dan screener untuk{" "}
+              Chart profesional, 9 indikator teknikal, dan screener untuk{" "}
               <span className="font-semibold text-text-primary">{totalStocks}+ saham IDX</span>. Gratis.
             </p>
 

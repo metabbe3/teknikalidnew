@@ -762,7 +762,7 @@ export default async function StockDetailPage({
                   <div className="flex items-center gap-4">
                     <div className="flex flex-col items-center shrink-0">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-3xl font-extrabold tabular-nums leading-none" style={{ color: meta.color }}>
+                        <span className={`text-3xl font-extrabold tabular-nums leading-none ${signalBadge(raw).cls}`} style={{ backgroundColor: "transparent", border: "none", padding: 0 }}>
                           {raw.toFixed(2).replace(".", ",")}
                         </span>
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${signalBadge(raw).cls}`}>
@@ -774,8 +774,7 @@ export default async function StockDetailPage({
                     <div className="h-10 w-px bg-border shrink-0" aria-hidden="true" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-text-primary flex items-center gap-2 flex-wrap">
-                        Sinyal: <span style={{ color: isBull ? "var(--color-bullish)" : isBear ? "var(--color-bearish)" : meta.color }}>{outlook}</span>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: meta.bg, color: meta.color }}>{meta.label}</span>
+                        Sinyal: <span style={{ color: isBull ? "var(--color-bullish)" : isBear ? "var(--color-bearish)" : undefined }} className={!isBull && !isBear ? `${signalBadge(raw).cls} bg-transparent border-0 p-0` : undefined}>{outlook}</span>
                       </p>
                       <div className="mt-2 h-2 rounded-full bg-bg-hover overflow-hidden relative" role="meter" aria-valuenow={raw} aria-valuemin={-1} aria-valuemax={1} aria-label={`Skor sinyal teknikal ${raw.toFixed(2)} pada skala minus satu sampai plus satu`}>
                         <div className="h-full rounded-full transition-all duration-700" style={{ width: `${score}%`, backgroundColor: meta.color }} />
@@ -1048,14 +1047,21 @@ export default async function StockDetailPage({
             <div className="mt-1"><VerdictFeedback ticker={ticker} /></div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div className="space-y-2">
-                <p className="text-text-secondary">
-                  <span className="font-semibold text-text-primary">Sinyal:</span>{' '}
-                  <span style={{ color: outlook === "Bullish" ? "var(--color-bullish)" : outlook === "Bearish" ? "var(--color-bearish)" : "var(--color-text-tertiary)" }}>
-                    {outlook}
-                  </span>
-                  {' — '}
-                  {verdictProse || `Indikator teknikal menunjukkan sinyal ${outlook.toLowerCase()} untuk ${stripJk(ticker)}.`}
-                </p>
+                {(() => {
+                  const anonSignal = signalLabelId(indicators.signalLabel);
+                  const isAnonBull = /bullish|beli|accumulate/i.test(anonSignal);
+                  const isAnonBear = /bearish|jual|sell/i.test(anonSignal);
+                  return (
+                    <p className="text-text-secondary">
+                      <span className="font-semibold text-text-primary">Sinyal:</span>{' '}
+                      <span style={{ color: isAnonBull ? "var(--color-bullish)" : isAnonBear ? "var(--color-bearish)" : "var(--color-text-tertiary)" }}>
+                        {anonSignal}
+                      </span>
+                      {' — '}
+                      {verdictProse || `Indikator teknikal menunjukkan sinyal ${anonSignal.toLowerCase()} untuk ${stripJk(ticker)}.`}
+                    </p>
+                  );
+                })()}
                 <p className="text-text-secondary">
                   <span className="font-semibold text-text-primary">Harga:</span> {formatPrice(close)}
                   {changePercent !== null && ` (${formatPercent(changePercent)})`}
