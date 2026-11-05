@@ -74,7 +74,10 @@ export default async function SahamPullbackSma20Page() {
   });
 
   const topScored = [...stocks]
-    .filter((s): s is typeof s & { ticker: string; signalScore: number } => typeof (s as any).signalScore === "number" && (s as any).signalScore !== null)
+    .filter((s): s is typeof s & { ticker: string; signalScore: number } => {
+      const row = s as { ticker?: string; signalScore?: number | null };
+      return typeof row.signalScore === "number" && Number.isFinite(row.signalScore);
+    })
     .sort((a, b) => b.signalScore - a.signalScore)
     .slice(0, 3);
   const topScoredText = topScored.length > 0

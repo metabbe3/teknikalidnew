@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { SITE_URL } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
 import { ArticleContent, extractHeadings, estimateReadingTime, extractTickers } from "@/components/article/article-renderer";
-import { ArrowLeft, BookOpen, Clock, User, ChevronRight, ArrowRight, TrendingUp, BarChart3 } from "lucide-react";
+import { ArrowLeft, Clock, ChevronRight, ArrowRight, TrendingUp, BarChart3 } from "lucide-react";
 import { ShareButtons } from "@/components/ui/share-buttons";
 import dynamicImport from "next/dynamic";
 const ArticleQuiz = dynamicImport(

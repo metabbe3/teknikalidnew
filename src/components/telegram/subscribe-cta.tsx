@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
+
+const emptySubscribe = () => () => {};
 
 /**
  * TelegramSubscribeCta (retention-2026-10-28) — CTA subscribe bot TIDAK annoying:
@@ -23,21 +25,29 @@ export function TelegramSubscribeCta({
   botUrl?: string;
   startParam?: string;
 }) {
-  const [dismissed, setDismissed] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [userDismissed, setUserDismissed] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-    try {
-      const until = Number(localStorage.getItem(LS_KEY) || 0);
-      if (until > Date.now()) setDismissed(true);
-    } catch {
-      /* private mode — biarkan tampil */
-    }
-  }, []);
+  const isMounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
+
+  const isStoredDismissed = useSyncExternalStore(
+    emptySubscribe,
+    () => {
+      try {
+        const until = Number(localStorage.getItem(LS_KEY) || 0);
+        return until > Date.now();
+      } catch {
+        return false;
+      }
+    },
+    () => false,
+  );
 
   const dismiss = () => {
-    setDismissed(true);
+    setUserDismissed(true);
     try {
       localStorage.setItem(LS_KEY, String(Date.now() + 7 * 86400_000));
     } catch {
@@ -70,7 +80,7 @@ export function TelegramSubscribeCta({
     );
   }
 
-  if (!mounted || dismissed) return null;
+  if (!isMounted || isStoredDismissed || userDismissed) return null;
 
   return (
     <aside
