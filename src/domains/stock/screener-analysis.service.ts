@@ -6,6 +6,7 @@ import { buildIndicatorWhere, VOLUME_SPIKE_MULTIPLIER, VALID_PRESETS } from "./i
 import { cachedEod, eodKey } from "./eod-cache";
 import { isOversoldSignal } from "./radar-filter";
 import { marketEngine } from "./market-snapshot.service";
+import { excludeIndexRows } from "./screener-filter";
 
 export const screenerAnalysisService = {
   async screenerQuery(preset: string, assetClass: "EQUITY" | "CRYPTO" = "EQUITY") {
@@ -13,7 +14,14 @@ export const screenerAnalysisService = {
 
     // EOD data — cached 5 menit (ref-2026-10-17-03): 9 signal pages + /screener
     // + API konsumen semuanya query identik per request sebelum ini.
-    return cachedEod(eodKey("screener", preset, assetClass), async () => this._screenerQueryUncached(preset, assetClass));
+    const rows = await cachedEod(eodKey("screener", preset, assetClass), async () => this._screenerQueryUncached(preset, assetClass));
+    // bug-2026-11-04-01: ^JKSE (indeks) terklasifikasi EQUITY+isActive di tabel
+    // Stock sehingga lolos filter DB preset — link detailnya 404 dead-end.
+    // Choke-point filter ticker prefix '^' SETELAH cache (menutup semua jalur
+    // preset + cache hangat). Catatan: nilai cache selalu array (error-object
+    // dikembalikan sebelum caching); Array.isArray pada union array men-narrow
+    // ke member pertama (TS quirk) — cast eksplisit, tipe union utuh.
+    return excludeIndexRows(rows as { ticker: string | null }[]) as typeof rows;
   },
 
   async _screenerQueryUncached(preset: string, assetClass: "EQUITY" | "CRYPTO" = "EQUITY") {
@@ -186,7 +194,11 @@ export const screenerAnalysisService = {
   },
 
   async getBottomFishingRadar(assetClass?: "EQUITY" | "CRYPTO") {
-    return cachedEod(eodKey("radar", assetClass ?? "ALL"), async () => this._radarUncached(assetClass));
+    // bug-2026-11-04-01 (kelas sama): ^JKSE bisa match predikat oversold (RSI
+    // 26.67 pada 4 Nov) dan muncul di radar equity sebagai "emiten" — choke-
+    // point yang sama dengan screener, filter prefix '^' setelah cache.
+    const rows = await cachedEod(eodKey("radar", assetClass ?? "ALL"), async () => this._radarUncached(assetClass));
+    return excludeIndexRows(rows);
   },
 
   async _radarUncached(assetClass?: "EQUITY" | "CRYPTO"): Promise<{
