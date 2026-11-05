@@ -2,7 +2,7 @@ import { aiRateCheck } from "@/lib/ai-rate-limit";
 import { auth } from "@/lib/auth";
 import { buildPasarContext } from "@/lib/ai-pasar-context";
 import { prisma } from "@/lib/prisma";
-import { isPlausibleTicker, extractTickersRanked } from "@/lib/ai-ticker-guard";
+import { isPlausibleTicker, extractTickersRanked, rescueTypoTicker } from "@/lib/ai-ticker-guard";
 import { NextRequest, NextResponse } from "next/server";
 import { buildStockAiContext } from "./context";
 import { stockRepository } from "@/domains/stock/stock.repository";
@@ -178,6 +178,8 @@ export async function POST(req: NextRequest) {
 
   // Strip non-context fields before forwarding (RT-02 red-team: whitelist + DB menang atas client)
   const { mode: _m, question: _q, history: _h, anonId: _a, userId: _u, ...clientContext } = body;
+  // Loop 5 Nov: hasil rescue typo ticker ("BBCAA" → BBCA) utk konteks + instruksi koreksi
+  let tickerRescue: { from: string; to: string } | null = null;
   // whitelist key yang diizinkan dari client (cukup identitas + posisi user — ANGKA RESMI DARI DB)
   const CLIENT_ALLOWED = new Set(["ticker", "name", "buyPrice"]);
   const safeClientCtx = Object.fromEntries(
@@ -187,7 +189,19 @@ export async function POST(req: NextRequest) {
   // G1 (juri Claude 30 Okt): client modal tanpa ticker → cari dari teks pertanyaan
   if (!clientContext.ticker && question) {
     const ranked = extractTickersRanked(question);
-    if (ranked.length > 0) clientContext.ticker = ranked[0];
+    if (ranked.length > 0) {
+      clientContext.ticker = ranked[0];
+    } else {
+      // Loop 5 Nov: typo ticker (mis. "BBCAA") — rescue jarak-edit ≤1 ke emiten aktif,
+      // pakai konteks PENUH ticker terkoreksi + suruh model konfirmasi koreksinya.
+      // Gate: hanya pertanyaan bercita-rasa saham (anti false-positive token caps random).
+      const hasStockIntent = /\b(layak|beli|jual|analisa|analisis|nyangkut|avg|average|harga|turun|naik|anjlok|dividen|deviden|banding|bandingin|bagus|masuk|tahan|ditahan|cutloss|cut loss|target|support|resistance)\b/i.test(question);
+      const rescue = hasStockIntent ? rescueTypoTicker(question) : null;
+      if (rescue) {
+        clientContext.ticker = rescue.to;
+        tickerRescue = rescue;
+      }
+    }
   }
 
   // Client modal hanya kirim {ticker,name} → lengkapi dari DB supaya AI tidak
@@ -310,7 +324,7 @@ export async function POST(req: NextRequest) {
         try {
           // juri Claude 30 Okt: konteks pasar + tanggal wajib — saham tidak hidup sendirian
           const pasarCtx = await buildPasarContext().catch(() => null);
-          const ctx = { ...context, marketContext: pasarCtx ? { ihsg: pasarCtx.ihsg, asingNetSellTop: pasarCtx.foreignNetSell, asingNetBuyTop: pasarCtx.foreignNetBuy } : null, asOf: new Date().toISOString().slice(0, 10) };
+          const ctx = { ...context, marketContext: pasarCtx ? { ihsg: pasarCtx.ihsg, asingNetSellTop: pasarCtx.foreignNetSell, asingNetBuyTop: pasarCtx.foreignNetBuy } : null, asOf: new Date().toISOString().slice(0, 10), ...(tickerRescue ? { tickerCorrection: `User menulis "${tickerRescue.from}" — itu typo; ticker yang benar adalah ${tickerRescue.to}. Konfirmasi koreksi di kalimat PERTAMA ("Sepertinya maksudnya ${tickerRescue.to} ya"), lalu analisa ${tickerRescue.to} LANGSUNG dengan data teknikal/fundamental yang sudah ada di data — DILARANG berkata data tidak tersedia atau minta user kirim data.` } : {}) };
           const text = await glmCall(ctx, mode, question, chatHistory);
           // flywheel (owner 30 Okt): log QA fire-and-forget
           prisma.aiChatLog

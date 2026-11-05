@@ -54,3 +54,48 @@ export function extractTickersRanked(raw: string): string[] {
 export function detectTickerInText(text: string): string | null {
   return extractTickersRanked(text)[0] ?? null;
 }
+
+/** Levenshtein distance ≤1 antar token sama-panjang/beda-1 huruf (tanpa dep). */
+function editDistanceAtMost1(a: string, b: string): boolean {
+  if (a === b) return true;
+  const la = a.length;
+  const lb = b.length;
+  if (Math.abs(la - lb) > 1) return false;
+  let i = 0;
+  let j = 0;
+  let diff = 0;
+  while (i < la && j < lb) {
+    if (a[i] === b[j]) {
+      i++;
+      j++;
+    } else {
+      if (++diff > 1) return false;
+      if (la === lb) {
+        i++;
+        j++;
+      } else if (la > lb) {
+        i++;
+      } else {
+        j++;
+      }
+    }
+  }
+  return diff + (la - i) + (lb - j) <= 1;
+}
+
+/**
+ * Rescue typo ticker (loop 5 Nov): token CAPS 4-5 huruf yang BUKAN ticker valid
+ * (jadi tak lolos extractTickersRanked) tapi tepat SATU emiten aktif ber-jarak edit ≤1
+ * → kandidat koreksi ("BBCAA" → BBCA). Lowercase/gibberish tak pernah jadi kandidat;
+ * ambigu (≥2 ticker berjarak 1) → null, jangan nebak.
+ */
+export function rescueTypoTicker(raw: string): { from: string; to: string } | null {
+  const candidates = [...raw.matchAll(/\b([A-Z]{4,5})\b/g)]
+    .map((m) => m[1])
+    .filter((t) => !VALID_IDX_SET.has(t));
+  for (const from of candidates) {
+    const matches = [...VALID_IDX_SET].filter((t) => editDistanceAtMost1(from, t));
+    if (matches.length === 1) return { from, to: matches[0] };
+  }
+  return null;
+}
