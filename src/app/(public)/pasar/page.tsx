@@ -73,13 +73,7 @@ export default async function PasarPage() {
         <PageHero
           eyebrow="Live"
           title="Koran Saham Live"
-          description={
-            weekend
-              ? "Akhir pekan — bursa tutup. Rekap sesi Jumat terakhir di bawah ini."
-              : afterClose
-                ? "Pasar sudah tutup — rekap sesi hari ini di bawah ini."
-                : "Pasar belum buka — rekap sesi terakhir di bawah ini. Live update mulai 06:30 WIB."
-          }
+          description="20 saham sinyal terkuat & aliran dana asing — update tiap bursa"
         >
           <div className="flex flex-wrap items-center gap-3">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-bg px-3 py-1 text-sm font-medium">
@@ -141,7 +135,7 @@ export default async function PasarPage() {
       <PageHero
         eyebrow="Live"
         title="Koran Saham Live"
-        description="Satu halaman untuk pantau pasar IDX hari ini — IHSG, watchlist sinyal, movers, dan berita. Update tiap menit saat sesi berjalan."
+        description="20 saham sinyal terkuat & aliran dana asing — update tiap bursa"
       >
         <div className="flex flex-wrap items-center gap-3">
           <span
@@ -427,6 +421,33 @@ function ForeignFlowSection({ foreign }: { foreign: { netBuy: PasarForeignItem[]
  */
 function TopSignalsSection({ items, sessionDate }: { items: PasarTopSignal[]; sessionDate: string | null }) {
   if (items.length === 0) return null;
+  const top5 = items.slice(0, 5);
+  const remaining = items.slice(5);
+
+  const renderRow = (t: PasarTopSignal, i: number) => (
+    <li key={t.ticker}>
+      <Link href={`/stocks/${t.ticker}`} className="flex items-center gap-3 py-2.5 group">
+        <span className="w-5 text-xs text-text-tertiary tabular-nums">{i + 1}</span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-semibold group-hover:text-accent">{stripJk(t.ticker)}</span>
+          <span className="block text-xs text-text-tertiary truncate">{t.name}</span>
+        </span>
+        <span className="text-right">
+          <span className="block text-sm font-mono tabular-nums">{t.close !== null ? formatPrice(t.close) : "—"}</span>
+          {t.volumeShares !== null && <span className="block text-xs text-text-tertiary">vol {formatVolume(t.volumeShares)}</span>}
+        </span>
+        <ChangeBadge pct={t.changePercent} className="w-20 text-right" />
+        <span
+          className="w-24 text-right text-xs font-semibold tabular-nums"
+          title={`Skor sinyal ${t.signalScore !== null ? formatDecimalId(t.signalScore, 2) : "—"} — rangkuman indikator teknikal, bukan rekomendasi. Catatan: skor teknikal ≠ pergerakan harga hari ini — saham bisa turun hari ini walau skornya kuat.`}
+        >
+          {t.signalScore !== null ? formatDecimalId(t.signalScore, 2) : "—"}
+          {t.signalLabel && <span className="block text-[10px] font-normal text-text-tertiary">{signalLabelId(t.signalLabel)}</span>}
+        </span>
+      </Link>
+    </li>
+  );
+
   return (
     <section aria-labelledby="topsignals-heading">
       <div className="flex items-baseline justify-between mb-3">
@@ -436,30 +457,32 @@ function TopSignalsSection({ items, sessionDate }: { items: PasarTopSignal[]; se
       <Card>
         <CardContent className="py-2">
           <ul className="divide-y divide-border">
-            {items.map((t, i) => (
-              <li key={t.ticker}>
-                <Link href={`/stocks/${t.ticker}`} className="flex items-center gap-3 py-2.5 group">
-                  <span className="w-5 text-xs text-text-tertiary tabular-nums">{i + 1}</span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-semibold group-hover:text-accent">{stripJk(t.ticker)}</span>
-                    <span className="block text-xs text-text-tertiary truncate">{t.name}</span>
-                  </span>
-                  <span className="text-right">
-                    <span className="block text-sm font-mono tabular-nums">{t.close !== null ? formatPrice(t.close) : "—"}</span>
-                    {t.volumeShares !== null && <span className="block text-xs text-text-tertiary">vol {formatVolume(t.volumeShares)}</span>}
-                  </span>
-                  <ChangeBadge pct={t.changePercent} className="w-20 text-right" />
-                  <span
-                    className="w-24 text-right text-xs font-semibold tabular-nums"
-                    title={`Skor sinyal ${t.signalScore !== null ? formatDecimalId(t.signalScore, 2) : "—"} — rangkuman indikator teknikal, bukan rekomendasi. Catatan: skor teknikal ≠ pergerakan harga hari ini — saham bisa turun hari ini walau skornya kuat.`}
-                  >
-                    {t.signalScore !== null ? formatDecimalId(t.signalScore, 2) : "—"}
-                    {t.signalLabel && <span className="block text-[10px] font-normal text-text-tertiary">{signalLabelId(t.signalLabel)}</span>}
-                  </span>
-                </Link>
-              </li>
-            ))}
+            {top5.map((t, i) => renderRow(t, i))}
           </ul>
+          {remaining.length > 0 && (
+            <details className="group border-t border-border mt-1 pt-1">
+              <summary className="cursor-pointer list-none py-2 px-1 text-center text-xs font-semibold text-accent hover:underline flex items-center justify-center gap-1.5 [&::-webkit-details-marker]:hidden">
+                <span>Lihat {remaining.length} sinyal lainnya</span>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-accent transition-transform duration-200 group-open:rotate-180"
+                  aria-hidden="true"
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </summary>
+              <ul className="divide-y divide-border border-t border-border/60 pt-1">
+                {remaining.map((t, i) => renderRow(t, i + 5))}
+              </ul>
+            </details>
+          )}
         </CardContent>
       </Card>
       <p className="mt-2 text-xs text-text-tertiary">
