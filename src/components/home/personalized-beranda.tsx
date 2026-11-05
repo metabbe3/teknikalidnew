@@ -321,18 +321,23 @@ export function PersonalizedBeranda() {
             </div>
           </div>
           <div className="flex items-center gap-2 mt-3 flex-wrap">
-            <Link href="/bottom-fishing" className="px-3 py-2.5 sm:py-1.5 rounded-lg text-[11px] font-medium bg-bg-hover border border-border text-text-secondary hover:text-text-primary hover:bg-bg-card transition-all press-scale">
-              Bottom Fishing Radar
-            </Link>
-            <Link href="/market-structure" className="px-3 py-2.5 sm:py-1.5 rounded-lg text-[11px] font-medium bg-bg-hover border border-border text-text-secondary hover:text-text-primary hover:bg-bg-card transition-all press-scale">
-              Market Structure
+            <Link href="/stocks" className="px-3 py-2.5 sm:py-1.5 rounded-lg text-[11px] font-medium bg-bg-hover border border-border text-text-secondary hover:text-text-primary hover:bg-bg-card transition-all press-scale">
+              Cek Kode (Search)
             </Link>
             <Link href="/trading-plan" className="px-3 py-2.5 sm:py-1.5 rounded-lg text-[11px] font-medium bg-bg-hover border border-border text-text-secondary hover:text-text-primary hover:bg-bg-card transition-all press-scale">
-              Trading Plan
+              Kalkulator Plan
             </Link>
-            <Link href="/screener" className="px-3 py-2.5 sm:py-1.5 rounded-lg text-[11px] font-medium bg-bg-hover border border-border text-text-secondary hover:text-text-primary hover:bg-bg-card transition-all press-scale">
+            <Link href="/stocks?view=screener" className="px-3 py-2.5 sm:py-1.5 rounded-lg text-[11px] font-medium bg-bg-hover border border-border text-text-secondary hover:text-text-primary hover:bg-bg-card transition-all press-scale">
               Screener
             </Link>
+            <a
+              href="https://t.me/TeknikalidAgentBot?start=web_home_login"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-2.5 sm:py-1.5 rounded-lg text-[11px] font-medium bg-bg-hover border border-border text-text-secondary hover:text-text-primary hover:bg-bg-card transition-all press-scale"
+            >
+              TeknikalAgent Telegram
+            </a>
           </div>
         </Card>
 

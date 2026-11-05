@@ -198,20 +198,33 @@ export default async function GlossaryTermPage({
             </p>
           </div>
 
-          {/* Deep-dive sections (PRD prd-2026-11-02-03 — depth >=300 kata utk 15 istilah prioritas) */}
-          {deep && (
-            <div className="space-y-6 mb-6">
-              {deep.sections.map((sec) => (
-                <section key={sec.heading} className="bg-bg-card rounded-xl depth-shadow p-6 sm:p-8">
-                  <h2 className="text-lg font-bold text-text-primary mb-3">{sec.heading}</h2>
-                  <p className="text-[15px] text-text-secondary leading-relaxed">{sec.body}</p>
-                </section>
+          {/* Contoh angka nyata — naik ke atas */}
+          {deep && <GlossaryExample spec={deep.example} />}
+
+          {/* Seksi 1 utama */}
+          {deep && deep.sections[0] && (
+            <section className="bg-bg-card rounded-xl depth-shadow p-6 sm:p-8 mb-6">
+              <h2 className="text-lg font-bold text-text-primary mb-3">{deep.sections[0].heading}</h2>
+              <p className="text-[15px] text-text-secondary leading-relaxed">{deep.sections[0].body}</p>
+            </section>
+          )}
+
+          {/* Seksi 2-3 dilipat ke details */}
+          {deep && deep.sections.length > 1 && (
+            <div className="space-y-4 mb-6">
+              {deep.sections.slice(1).map((sec) => (
+                <details key={sec.heading} className="group bg-bg-card rounded-xl depth-shadow p-6 sm:p-8">
+                  <summary className="flex items-center justify-between cursor-pointer list-none select-none">
+                    <h2 className="text-lg font-bold text-text-primary">{sec.heading}</h2>
+                    <span className="text-xs text-text-tertiary transition-transform group-open:rotate-180">▼</span>
+                  </summary>
+                  <p className="text-[15px] text-text-secondary leading-relaxed mt-4 pt-4 border-t border-border/50">
+                    {sec.body}
+                  </p>
+                </details>
               ))}
             </div>
           )}
-
-          {/* Contoh angka nyata — SATU PINTU, fail-soft empty-state */}
-          {deep && <GlossaryExample spec={deep.example} />}
 
           {/* Bacaan lanjutan (internal-link artikel akademi) */}
           {deep && deep.articles.length > 0 && (

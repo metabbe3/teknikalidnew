@@ -5,8 +5,9 @@ import Link from "next/link";
 import { IDX_INDICES } from "@/lib/idx-indices";
 import { SITE_URL } from "@/lib/constants";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
-import { formatPrice, formatPercent, stripJk, changeColor, rsiColor, rsiStatus } from "@/lib/utils";
+import { formatPrice, formatPercent, stripJk, changeColor, rsiColor } from "@/lib/utils";
 import { formatDecimalId } from "@/lib/format-number";
+import { signalBadge } from "@/lib/seo/signal-badge";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 3600;
@@ -49,6 +50,13 @@ export default async function IndexDetailPage({
   const stocks = await stockMarketService.getStockBatchWithIndicators(
     idx.stocks.slice(0, 30)
   );
+
+  const advancingCount = stocks.filter((s) => s.changePercent !== null && s.changePercent > 0).length;
+  const decliningCount = stocks.filter((s) => s.changePercent !== null && s.changePercent < 0).length;
+  const stocksWithScore = stocks.filter((s) => s.signalScore !== null && !isNaN(s.signalScore));
+  const topScorer = stocksWithScore.length > 0
+    ? [...stocksWithScore].sort((a, b) => (b.signalScore ?? 0) - (a.signalScore ?? 0))[0]
+    : null;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -147,9 +155,39 @@ export default async function IndexDetailPage({
 
         {/* Stock table */}
         <div>
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-text-tertiary mb-4">
-            Saham Konstituen ({stocks.length})
-          </h2>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-text-tertiary">
+              Saham Konstituen ({stocks.length})
+            </h2>
+            {stocks.length > 0 && (
+              <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-text-secondary py-1.5 px-3 rounded-lg bg-bg-card border border-border/60">
+                <span>
+                  <strong className="text-bullish tabular-nums">{advancingCount}</strong> naik
+                </span>
+                <span className="text-text-tertiary">·</span>
+                <span>
+                  <strong className="text-bearish tabular-nums">{decliningCount}</strong> turun
+                </span>
+                {topScorer && topScorer.signalScore !== null && (
+                  <>
+                    <span className="text-text-tertiary">·</span>
+                    <span>
+                      skor tertinggi{" "}
+                      <Link
+                        href={`/stocks/${topScorer.ticker}`}
+                        className="font-mono font-semibold text-text-primary hover:text-accent"
+                      >
+                        {stripJk(topScorer.ticker)}
+                      </Link>{" "}
+                      <span className="font-mono font-medium text-accent">
+                        ({topScorer.signalScore > 0 ? `+${formatDecimalId(topScorer.signalScore, 2)}` : formatDecimalId(topScorer.signalScore, 2)})
+                      </span>
+                    </span>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Desktop table */}
           <div className="hidden sm:block overflow-x-auto">
@@ -161,13 +199,11 @@ export default async function IndexDetailPage({
                   <th className="text-right py-3 px-3 font-semibold">Harga</th>
                   <th className="text-right py-3 px-3 font-semibold">Perubahan</th>
                   <th className="text-right py-3 px-3 font-semibold">RSI 14</th>
-                  <th className="text-center py-3 px-3 font-semibold">Sinyal</th>
+                  <th className="text-center py-3 px-3 font-semibold">Skor Sinyal</th>
                 </tr>
               </thead>
               <tbody>
                 {stocks.map((stock) => {
-                  const isPositive =
-                    stock.changePercent !== null && stock.changePercent >= 0;
                   return (
                     <tr
                       key={stock.ticker}
@@ -203,19 +239,20 @@ export default async function IndexDetailPage({
                         {stock.rsi14 != null ? formatDecimalId(stock.rsi14, 1) : "—"}
                       </td>
                       <td className="py-3 px-3 text-center">
-                        <span
-                          className={`text-xs font-semibold px-2 py-0.5 rounded ${
-                            stock.rsi14 != null
-                              ? stock.rsi14 > 70
-                                ? "bg-bearish/15 text-bearish"
-                                : stock.rsi14 < 30
-                                  ? "bg-bullish/15 text-bullish"
-                                  : "bg-gray-200 text-gray-500"
-                              : "bg-gray-200 text-gray-500"
-                          }`}
-                        >
-                          {rsiStatus(stock.rsi14)}
-                        </span>
+                        {stock.signalScore != null ? (
+                          <div className="inline-flex flex-col items-center gap-0.5">
+                            <span
+                              className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold tabular-nums ${signalBadge(stock.signalScore).cls}`}
+                            >
+                              {stock.signalScore > 0 ? `+${formatDecimalId(stock.signalScore, 2)}` : formatDecimalId(stock.signalScore, 2)}
+                            </span>
+                            <span className="text-[10px] text-text-tertiary font-medium">
+                              {signalBadge(stock.signalScore).label}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-text-tertiary text-xs">—</span>
+                        )}
                       </td>
                     </tr>
                   );
@@ -227,8 +264,6 @@ export default async function IndexDetailPage({
           {/* Mobile cards */}
           <div className="sm:hidden grid grid-cols-1 gap-3">
             {stocks.map((stock) => {
-              const isPositive =
-                stock.changePercent !== null && stock.changePercent >= 0;
               return (
                 <Link
                   key={stock.ticker}
@@ -243,17 +278,11 @@ export default async function IndexDetailPage({
                       <p className="font-semibold text-text-primary group-hover:text-accent transition-colors font-mono">
                         {stripJk(stock.ticker)}
                       </p>
-                      {stock.rsi14 != null && (
+                      {stock.signalScore != null && (
                         <span
-                          className={`text-[8px] font-bold px-1.5 py-0.5 rounded ${
-                            stock.rsi14 > 70
-                              ? "bg-bearish/15 text-bearish"
-                              : stock.rsi14 < 30
-                                ? "bg-bullish/15 text-bullish"
-                                : "bg-gray-200 text-gray-500"
-                          }`}
+                          className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${signalBadge(stock.signalScore).cls}`}
                         >
-                          {rsiStatus(stock.rsi14)}
+                          {signalBadge(stock.signalScore).label}
                         </span>
                       )}
                     </div>

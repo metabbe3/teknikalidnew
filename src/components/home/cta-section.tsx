@@ -49,6 +49,14 @@ export function CtaSection() {
           >
             {secondaryLabel}
           </Link>
+          <a
+            href="https://t.me/TeknikalidAgentBot?start=web_home"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="border border-border bg-bg-card hover:bg-bg-hover text-text-primary px-5 py-2.5 min-h-11 sm:min-h-0 rounded-lg font-medium text-sm transition-all press-scale inline-flex items-center gap-2"
+          >
+            Biar TeknikalAgent yang pantau — notifikasi analisa ke Telegram kamu
+          </a>
         </div>
       </div>
     </div>

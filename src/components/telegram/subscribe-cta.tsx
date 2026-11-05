@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
+
+const emptySubscribe = () => () => {};
 
 /**
  * TelegramSubscribeCta (retention-2026-10-28) — CTA subscribe bot TIDAK annoying:
@@ -15,25 +17,37 @@ const LS_KEY = "tgcta_dismissed_until";
 export function TelegramSubscribeCta({
   variant = "inline",
   ticker,
+  botUrl,
+  startParam,
 }: {
   variant?: "inline" | "footer";
   ticker?: string;
+  botUrl?: string;
+  startParam?: string;
 }) {
-  const [dismissed, setDismissed] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [userDismissed, setUserDismissed] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-    try {
-      const until = Number(localStorage.getItem(LS_KEY) || 0);
-      if (until > Date.now()) setDismissed(true);
-    } catch {
-      /* private mode — biarkan tampil */
-    }
-  }, []);
+  const isMounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
+
+  const isStoredDismissed = useSyncExternalStore(
+    emptySubscribe,
+    () => {
+      try {
+        const until = Number(localStorage.getItem(LS_KEY) || 0);
+        return until > Date.now();
+      } catch {
+        return false;
+      }
+    },
+    () => false,
+  );
 
   const dismiss = () => {
-    setDismissed(true);
+    setUserDismissed(true);
     try {
       localStorage.setItem(LS_KEY, String(Date.now() + 7 * 86400_000));
     } catch {
@@ -41,8 +55,13 @@ export function TelegramSubscribeCta({
     }
   };
 
-  const start = ticker ? `?start=${encodeURIComponent(ticker.replace(/\.JK$/, "") + "_JK")}` : "";
-  const href = `https://t.me/TeknikalidBot${start}`;
+  const base = botUrl ?? "https://t.me/TeknikalidAgentBot";
+  const start = startParam
+    ? `?start=${encodeURIComponent(startParam)}`
+    : ticker
+    ? `?start=web_${encodeURIComponent(ticker.replace(/\.JK$/, ""))}`
+    : `?start=web_berita`;
+  const href = `${base}${start}`;
 
   if (variant === "footer") {
     return (
@@ -61,7 +80,7 @@ export function TelegramSubscribeCta({
     );
   }
 
-  if (!mounted || dismissed) return null;
+  if (!isMounted || isStoredDismissed || userDismissed) return null;
 
   return (
     <aside

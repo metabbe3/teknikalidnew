@@ -105,7 +105,7 @@ function ctaLabel(target: EventTarget | null): string | null {
   const tagged = el.closest<HTMLElement>("[data-engagement]");
   if (tagged?.dataset.engagement) return tagged.dataset.engagement;
   // tracking-audit G3: semua CTA bot Telegram terukur (dulu: link eksternal dibuang diam-diam)
-  const tg = el.closest<HTMLAnchorElement>("a[href*='t.me/TeknikalidBot']");
+  const tg = el.closest<HTMLAnchorElement>("a[href*='t.me/TeknikalidBot'], a[href*='t.me/TeknikalidAgentBot']");
   if (tg) return "tg_pantau_klik";
   // Fallback selectors for existing components (zero-touch, best-effort)
   if (el.closest("[class*='GuestStar']")) return "star_add";

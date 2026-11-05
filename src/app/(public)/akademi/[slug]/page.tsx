@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { SITE_URL } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
 import { ArticleContent, extractHeadings, estimateReadingTime, extractTickers } from "@/components/article/article-renderer";
-import { ArrowLeft, BookOpen, Clock, User, ChevronRight, ArrowRight, TrendingUp, BarChart3 } from "lucide-react";
+import { ArrowLeft, Clock, ChevronRight, ArrowRight, TrendingUp, BarChart3 } from "lucide-react";
 import { ShareButtons } from "@/components/ui/share-buttons";
 import dynamicImport from "next/dynamic";
 const ArticleQuiz = dynamicImport(
@@ -68,7 +68,7 @@ export default async function ArticlePage({
 
   if (!article || article.status !== "PUBLISHED" || article.articleType !== "EDUCATIONAL") notFound();
 
-  const headings = extractHeadings(article.content);
+  const headings = extractHeadings(article.content, article.title);
   const readingTime = estimateReadingTime(article.content);
   const relatedTickers = extractTickers(article.content).slice(0, 6);
 
@@ -239,24 +239,33 @@ export default async function ArticlePage({
               </div>
 
               {/* Article body */}
-              <ArticleContent content={article.content} />
-              {/* Owner 24 Okt: quiz belajar aktif */}
-              <ArticleQuiz slug={article.slug} />
+              <ArticleContent content={article.content} title={article.title} />
 
-              {/* Live example — deterministic verdict for the first ticker the
-                  article mentions; turns the static pillar into a daily-refreshing
-                  live-data page (SEO) + funnels into the gated stock page (conversion). */}
+              {/* Live example — raised above quiz directly following article content (Batch C) */}
               {relatedTickers.length > 0 && <LiveIndicatorExample ticker={relatedTickers[0]} />}
 
-              {/* Related Stocks — contextual internal links to product pages */}
+              {/* Uji Pemahaman — folded into details */}
+              <details className="my-8 group rounded-xl border border-border/70 bg-bg-card p-5">
+                <summary className="cursor-pointer font-semibold text-text-primary flex items-center justify-between list-none">
+                  <span className="text-base font-bold">Uji Pemahaman</span>
+                  <span className="text-text-tertiary text-xs transition-transform group-open:rotate-180">▼</span>
+                </summary>
+                <div className="mt-4 pt-4 border-t border-border/40">
+                  <ArticleQuiz slug={article.slug} />
+                </div>
+              </details>
+
+              {/* Related Stocks — contextual internal links to product pages (max 4) */}
               {relatedTickers.length > 0 && (
                 <section className="mt-12 mb-8" aria-label="Saham terkait dalam artikel">
-                  <h2 className="text-xl font-bold text-text-primary mb-4 flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-accent" />
-                    Saham Terkait
-                  </h2>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {relatedTickers.map((ticker) => (
+                  <div className="flex items-center gap-2 mb-4">
+                    <TrendingUp className="h-5 w-5 text-accent" aria-hidden />
+                    <h2 className="text-xl font-bold text-text-primary">
+                      Saham Terkait
+                    </h2>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {relatedTickers.slice(0, 4).map((ticker) => (
                       <Link
                         key={ticker}
                         href={`/stocks/${ticker}`}
@@ -277,17 +286,19 @@ export default async function ArticlePage({
               {/* Smart Screener CTA — maps article topic to relevant screener preset */}
               {screenerPreset && (
                 <section className="mb-8 p-6 bg-bg-card rounded-xl depth-shadow border border-border">
-                  <h2 className="text-lg font-bold text-text-primary mb-2 flex items-center gap-2">
-                    <BarChart3 className="h-5 w-5 text-accent" />
-                    Terapkan Ilmu Ini
-                  </h2>
+                  <div className="flex items-center gap-2 mb-2">
+                    <BarChart3 className="h-5 w-5 text-accent" aria-hidden />
+                    <h2 className="text-lg font-bold text-text-primary">
+                      Terapkan Ilmu Ini
+                    </h2>
+                  </div>
                   <p className="text-sm text-text-secondary mb-4">
                     Gunakan Screener untuk menemukan{" "}
                     <strong className="text-accent">{screenerLabel}</strong>{" "}
                     berdasarkan indikator yang dibahas di artikel ini.
                   </p>
                   <Link
-                    href={`/screener?preset=${screenerPreset}`}
+                    href={`/stocks?view=screener&preset=${screenerPreset}`}
                     className="inline-flex items-center gap-2 bg-accent text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-accent/90 transition-colors press-scale"
                   >
                     Buka Screener: {screenerLabel}
@@ -295,33 +306,6 @@ export default async function ArticlePage({
                   </Link>
                 </section>
               )}
-
-              {/* Bottom CTA banner */}
-              <div className="akademi-cta-banner mt-12 p-8">
-                <div className="relative z-10 space-y-4">
-                  <p className="text-lg font-semibold text-white">
-                    Terapkan yang Anda pelajari
-                  </p>
-                  <p className="text-gray-400 text-sm max-w-lg">
-                    Gunakan Screener TeknikalID untuk menemukan saham berdasarkan
-                    indikator yang dibahas di artikel ini.
-                  </p>
-                  <div className="flex flex-wrap gap-3 pt-2">
-                    <Link
-                      href="/screener"
-                      className="bg-accent text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-accent/90 transition-colors press-scale"
-                    >
-                      Buka Screener
-                    </Link>
-                    <Link
-                      href="/stocks"
-                      className="bg-white/10 text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-white/20 transition-colors press-scale"
-                    >
-                      Lihat Saham
-                    </Link>
-                  </div>
-                </div>
-              </div>
 
               {/* Prev / Next navigation */}
               {(prevArticle || nextArticle) && (

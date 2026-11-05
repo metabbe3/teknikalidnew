@@ -178,20 +178,26 @@ export default async function AliranDanaAsingPage() {
           </div>
         )}
 
-        <div className="mt-8 space-y-3 text-sm leading-relaxed text-text-secondary">
-          <p>
-            <strong className="text-text-primary">Aliran dana asing</strong> menunjukkan saham mana yang sedang
-            diakumulasi atau didistribusikan investor asing di Bursa Efek Indonesia. Nilai bersih dihitung dari
-            volume beli dikurangi jual asing (data resmi IDX TradingSummary) dikalikan harga penutupan sesi.
-          </p>
-          <p>
-            Akumulasi asing paling berguna sebagai <em>konfirmasi</em>, bukan sinyal tunggal: sahanya yang sehat
-            adalah saat arus masuk asing diikuti tren harga dan indikator teknikal yang membaik. Buka halaman
-            saham untuk melihat skor sinyal (−1 s.d. +1), RSI, dan posisi terhadap rata-rata harga — atau lihat{" "}
-            <Link href="/pasar" className="text-accent hover:underline">Koran Pasar Live</Link> untuk gambaran
-            pasar hari ini.
-          </p>
-        </div>
+        <details className="mt-8 group rounded-lg border border-border bg-bg-card p-5 text-sm leading-relaxed text-text-secondary">
+          <summary className="flex items-center justify-between cursor-pointer list-none font-semibold text-text-primary select-none">
+            <span>Tentang Data Aliran Dana Asing</span>
+            <span className="text-xs text-text-tertiary transition-transform group-open:rotate-180">▼</span>
+          </summary>
+          <div className="space-y-3 mt-3 pt-3 border-t border-border/40">
+            <p>
+              <strong className="text-text-primary">Aliran dana asing</strong> menunjukkan saham mana yang sedang
+              diakumulasi atau didistribusikan investor asing di Bursa Efek Indonesia. Nilai bersih dihitung dari
+              volume beli dikurangi jual asing (data resmi IDX TradingSummary) dikalikan harga penutupan sesi.
+            </p>
+            <p>
+              Akumulasi asing paling berguna sebagai <em>konfirmasi</em>, bukan sinyal tunggal: saham yang sehat
+              adalah saat arus masuk asing diikuti tren harga dan indikator teknikal yang membaik. Buka halaman
+              saham untuk melihat skor sinyal (−1 s.d. +1), RSI, dan posisi terhadap rata-rata harga — atau lihat{" "}
+              <Link href="/pasar" className="text-accent hover:underline">Koran Pasar Live</Link> untuk gambaran
+              pasar hari ini.
+            </p>
+          </div>
+        </details>
       </div>
     </>
   );

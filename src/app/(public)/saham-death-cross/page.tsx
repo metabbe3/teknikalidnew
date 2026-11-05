@@ -7,8 +7,10 @@ import { ConditionHistory } from "@/components/signal/condition-history";
 import { TermTip } from "@/components/seo/term-tip";
 import { getConditionBacktest } from "@/lib/condition-backtest.service";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
+import { formatDecimalId } from "@/lib/format-number";
 import { SITE_URL } from "@/lib/constants";
 import { Gem, Search, TrendingUp } from "lucide-react";
+import { GuestStar } from "@/components/stock/guest-star";
 
  // 12 Okt: failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal
 
@@ -82,20 +84,31 @@ export default async function SahamDeathCrossPage() {
     ],
   });
 
+  const topScored = [...stocks]
+    .filter((s): s is typeof s & { ticker: string; signalScore: number } => {
+      const row = s as { ticker?: string; signalScore?: number | null };
+      return typeof row.signalScore === "number" && Number.isFinite(row.signalScore);
+    })
+    .sort((a, b) => b.signalScore - a.signalScore)
+    .slice(0, 3);
+  const topScoredText = topScored.length > 0
+    ? ` · 3 skor tertinggi hari ini: ${topScored.map((s) => `${stripJk(s.ticker)} (${s.signalScore > 0 ? "+" : ""}${formatDecimalId(s.signalScore, 2)})`).join(", ")}`
+    : "";
+
   return (
     <>
       <script type="application/ld+json">{jsonLd}</script>
       <PageHero
         eyebrow="Saham IDX"
         title="Saham Death Cross Hari Ini"
-        description={<>Saham dengan <TermTip term="moving-average">MA50 memotong kebawah MA200</TermTip> — sinyal bearish, waspadai momentum turun. Update setiap 5 menit.</>}
+        description={<>Saham dengan <TermTip term="moving-average">MA50 memotong kebawah MA200</TermTip> — sinyal bearish, waspadai momentum turun. Dihitung dari data penutupan &amp; sesi terakhir BEI.</>}
       />
       {/* seo-dr-3: kalimat pembuka dinamis utk SERP (jumlah saham hari ini) */}
       <div className="mx-auto max-w-5xl px-4 pt-6">
         <p className="rounded-lg bg-bg-hover/60 px-3 py-2 text-[13px] text-text-secondary" data-seo-dr="live-count">
-          Per {new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })},
+          Per {new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakarta" })},
           terdapat <strong className="text-text-primary">{stocks.length} saham aktif BEI</strong> yang lolos
-          saringan ini — daftar lengkap di bawah, gratis tanpa login.
+          saringan ini{topScoredText} — daftar lengkap di bawah, gratis tanpa login.
         </p>
       </div>
 
@@ -114,24 +127,26 @@ export default async function SahamDeathCrossPage() {
                 <th className="py-2 pr-4 font-semibold text-text-primary">Nama</th>
                 <th className="py-2 pr-4 font-semibold text-text-primary">Harga</th>
                 <th className="py-2 pr-4 font-semibold text-text-primary">Perubahan</th>
+                <th className="py-2 pr-4 font-semibold text-text-primary">Skor Sinyal</th>
+                <th className="py-2 pr-4 font-semibold text-text-primary">Pantau</th>
               </tr>
             </thead>
             <tbody>
               {failed ? (
                 <tr>
-                  <td colSpan={4} className="py-8 text-center text-text-tertiary">
+                  <td colSpan={6} className="py-8 text-center text-text-tertiary">
                     Data sinyal sementara tidak dapat dimuat — sedang diperbarui. Mohon muat ulang dalam beberapa menit.
                   </td>
                 </tr>
               ) : stocks.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="py-8 text-center text-text-tertiary">
+                  <td colSpan={6} className="py-8 text-center text-text-tertiary">
                     Belum ada saham death cross saat ini. Cek lagi nanti.
                   </td>
                 </tr>
               ) : (
                 stocks.map((stock) => {
-                  const s = stock as { ticker: string; name: string; close: number | null; changePercent: number | null };
+                  const s = stock as { ticker: string; name: string; close: number | null; changePercent: number | null; signalScore: number | null };
                   return (
                     <tr key={s.ticker} className="border-b border-border hover:bg-bg-hover">
                       <td className="py-2 pr-4">
@@ -144,16 +159,31 @@ export default async function SahamDeathCrossPage() {
                       <td className={`py-2 pr-4 ${s.changePercent !== null ? changeColor(s.changePercent) : ""}`}>
                         {s.changePercent !== null ? formatPercent(s.changePercent) : "—"}
                       </td>
+                      <td className={`py-2 pr-4 font-mono tabular-nums ${s.signalScore !== null ? (s.signalScore > 0 ? "text-bullish" : s.signalScore < 0 ? "text-bearish" : "") : ""}`}>
+                        {s.signalScore !== null ? (s.signalScore > 0 ? `+${formatDecimalId(s.signalScore, 2)}` : formatDecimalId(s.signalScore, 2)) : "—"}
+                      </td>
+                      <td className="py-2 pr-4"><GuestStar ticker={s.ticker} compact /></td>
                     </tr>
                   );
                 })
               )}
             </tbody>
           </table>
+
+          <div className="mt-4">
+            <a
+              href="https://t.me/TeknikalidAgentBot?start=web_screener_tematik"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-engagement="tg_subscribe_click"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:underline"
+            >
+              🔔 Dapatkan notifikasi sinyal harian via Telegram →
+            </a>
+          </div>
         </div>
 
-        
-                <ConditionHistory result={conditionHistory} />
+        <ConditionHistory result={conditionHistory} />
 
         <AskAiCta question="Saham yang death cross ada?" />
 

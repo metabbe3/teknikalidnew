@@ -8,27 +8,18 @@ import { marketEngine } from "@/lib/market-engine";
 import { IDX_STOCKS } from "@/lib/constants";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { marketSnapshotService } from "@/domains/stock/market-snapshot.service";
-import { technicalAnalysisService } from "@/domains/stock/technical-analysis.service";
 import { authService } from "@/domains/auth/auth.service";
 import { FeaturedStockCard } from "@/components/home/featured-stock-card";
-import { SectorHeatmap } from "@/components/home/sector-heatmap";
 import { PlatformFeatures } from "@/components/home/platform-features";
 import { CtaSection } from "@/components/home/cta-section";
 import { TickerTape } from "@/components/home/ticker-tape";
 import { SahamStrategyLinks } from "@/components/seo/saham-strategy-links";
-import { TradingPlanCard } from "@/components/stock/trading-plan-card";
-import { WelcomeBackBanner } from "@/components/ui/welcome-back-banner";
 import { PersonalizedBeranda } from "@/components/home/personalized-beranda";
-import { MorningDeltaCard } from "@/components/home/morning-delta-card";
+import { SectorHeatmap } from "@/components/home/sector-heatmap";
 import { HoldingTradingPlans } from "@/components/home/holding-trading-plans";
 import { portfolioRepository } from "@/domains/portfolio/portfolio.repository";
 import { ThesisCard } from "@/components/home/thesis-card";
 import { PersonalizedGreeting } from "@/components/home/personalized-greeting";
-import { WelcomeCard } from "@/components/home/welcome-card";
-import { ClaimStreakButton } from "@/components/home/claim-streak-button";
-import { reputationRepository } from "@/domains/reputation/reputation.repository";
-import { reputationService } from "@/domains/reputation/reputation.service";
-import { getBadge } from "@/domains/reputation/badge";
 import { articleRepository } from "@/domains/article/article.repository";
 import { SnapshotCard, type SnapshotCardData } from "@/components/berita/snapshot-card";
 import { DailyBriefHero } from "@/components/berita/daily-brief-hero";
@@ -44,14 +35,6 @@ const ScreenerAiButton = dynamicImport(
 const HeroSearch = dynamicImport(
   () => import("@/components/home/hero-search").then((m) => ({ default: m.HeroSearch })),
   { loading: () => <div className="h-[52px] bg-bg-card rounded-xl animate-pulse" /> },
-);
-const MiniScreenerPreview = dynamicImport(
-  () => import("@/components/home/mini-screener-preview").then((m) => ({ default: m.MiniScreenerPreview })),
-  { loading: () => <div className="h-[200px] bg-bg-card rounded-xl animate-pulse" /> },
-);
-const RadarPreview = dynamicImport(
-  () => import("@/components/home/radar-preview").then((m) => ({ default: m.RadarPreview })),
-  { loading: () => <div className="h-[200px] bg-bg-card rounded-xl animate-pulse" /> },
 );
 
 export const metadata: Metadata = {
@@ -76,38 +59,6 @@ function FeaturedSkeleton() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
         {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="h-[120px] bg-bg-card rounded-xl animate-pulse" />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function SectorSkeleton() {
-  return (
-    <section className="space-y-5">
-      <div className="flex items-center gap-2.5 mb-5" aria-hidden="true">
-        <span className="h-6 w-1 rounded-full bg-accent/40 animate-pulse" />
-        <div className="h-6 w-36 bg-bg-card rounded-md animate-pulse" />
-      </div>
-      <div className="flex flex-wrap gap-3">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="h-[80px] min-w-[140px] bg-bg-card rounded-xl animate-pulse" />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function PreviewSkeleton() {
-  return (
-    <section className="space-y-5">
-      <div className="flex items-center gap-2.5 mb-5" aria-hidden="true">
-        <span className="h-6 w-1 rounded-full bg-accent/40 animate-pulse" />
-        <div className="h-6 w-44 bg-bg-card rounded-md animate-pulse" />
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="h-[200px] bg-bg-card rounded-xl animate-pulse" />
         ))}
       </div>
     </section>
@@ -207,144 +158,7 @@ async function FeaturedStocksSection({
   );
 }
 
-async function TradingPlanPreview() {
-  const sampleDetail = await stockMarketService.getStockDetailForPage("BBCA.JK").catch(() => null);
-
-  let sampleTradingPlan = null;
-  if (sampleDetail?.close && sampleDetail?.latest) {
-    const ind = sampleDetail.indicator;
-    const latestHigh = decimalToNumber(sampleDetail.latest.high) ?? sampleDetail.close;
-    const latestLow = decimalToNumber(sampleDetail.latest.low) ?? sampleDetail.close;
-    sampleTradingPlan = technicalAnalysisService.generateTradingPlan({
-      currentPrice: sampleDetail.close,
-      high: latestHigh,
-      low: latestLow,
-      close: sampleDetail.close,
-      prevClose: sampleDetail.prevClose ?? sampleDetail.close,
-      atr: ind?.atr ?? null,
-      rsi14: ind?.rsi14 ?? null,
-      sma20: ind?.sma20 ?? null,
-      sma50: ind?.sma50 ?? null,
-      sma200: ind?.sma200 ?? null,
-      macdHist: ind?.macdHist ?? null,
-      supertrend: ind?.supertrend ?? null,
-      obvTrend: ind?.obvTrend ?? null,
-      stochK: ind?.stochK ?? null,
-      stochD: ind?.stochD ?? null,
-      adx: ind?.adx ?? null,
-    });
-  }
-
-  return (
-    <section className="space-y-5 content-auto">
-      <SectionHeading eyebrow="coba gratis" title="Coba Fitur Analisa" />
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <MiniScreenerPreview />
-        <div className="space-y-4">
-          <div className="preview-panel" style={{ background: "linear-gradient(180deg, rgba(13, 148, 136, 0.06) 0%, var(--color-bg-card) 40%)" }}>
-            <div className="preview-panel-header">
-              <p className="text-xs font-semibold text-text-primary">Contoh Trading Plan</p>
-              <p className="text-[10px] text-text-tertiary mt-0.5">
-                BBCA — Otomatis dari Pivot Points & ATR
-              </p>
-            </div>
-            <div className="p-3">
-              {sampleTradingPlan ? (
-                <TradingPlanCard plan={sampleTradingPlan} />
-              ) : (
-                <p className="text-xs text-text-tertiary text-center py-6">
-                  Trading plan tidak tersedia saat ini
-                </p>
-              )}
-            </div>
-            <div className="px-4 pb-3">
-              <Link
-                href="/stocks/BBCA.JK"
-                className="block text-center text-xs text-accent hover:underline font-medium"
-              >
-                Lihat trading plan lengkap →
-              </Link>
-            </div>
-          </div>
-        </div>
-        <RadarPreview />
-      </div>
-      {/* Owner 24 Okt: funnel fitur tersembunyi — /pasar 10 views, /paper-trading 10, /akademi 14 vs home 398 */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
-        <Link href="/swing" data-engagement="funnel_home_swing" className="group flex flex-col items-center gap-1.5 p-3.5 rounded-xl bg-bg-card border border-border hover:border-accent/40 depth-shadow transition-all">
-          <span className="text-lg" aria-hidden>🎯</span>
-          <span className="text-xs font-semibold text-text-secondary group-hover:text-accent transition-colors">Setup Swing Hari Ini</span>
-          <span className="text-[10px] text-text-tertiary text-center leading-tight">10 kandidat + bukti backtest</span>
-        </Link>
-        <Link href="/pasar" data-engagement="funnel_home_pasar" className="group flex flex-col items-center gap-1.5 p-3.5 rounded-xl bg-bg-card border border-border hover:border-accent/40 depth-shadow transition-all">
-          <span className="text-lg" aria-hidden>📰</span>
-          <span className="text-xs font-semibold text-text-secondary group-hover:text-accent transition-colors">Koran Pasar Live</span>
-          <span className="text-[10px] text-text-tertiary text-center leading-tight">Ringkasan hari ini</span>
-        </Link>
-        <Link href="/paper-trading" data-engagement="funnel_home_paper" className="group flex flex-col items-center gap-1.5 p-3.5 rounded-xl bg-bg-card border border-border hover:border-accent/40 depth-shadow transition-all">
-          <span className="text-lg" aria-hidden>🎮</span>
-          <span className="text-xs font-semibold text-text-secondary group-hover:text-accent transition-colors">Simulasi Trading</span>
-          <span className="text-[10px] text-text-tertiary text-center leading-tight">Latihan tanpa risiko</span>
-        </Link>
-        <Link href="/akademi" data-engagement="funnel_home_akademi" className="group flex flex-col items-center gap-1.5 p-3.5 rounded-xl bg-bg-card border border-border hover:border-accent/40 depth-shadow transition-all">
-          <span className="text-lg" aria-hidden>🎓</span>
-          <span className="text-xs font-semibold text-text-secondary group-hover:text-accent transition-colors">Akademi</span>
-          <span className="text-[10px] text-text-tertiary text-center leading-tight">Belajar 5 menit/hari</span>
-        </Link>
-      </div>
-    </section>
-  );
-}
-
 // ── Main Page ───────────────────────────────────────────────────────
-
-// ── First-Session Welcome Loop (PRD idea-2026-10-02-2 / prd-2026-10-02-02) ──
-// Server component: derives checklist progress, streak state and day-2+ signals
-// surface from existing tables. Each piece fails soft (returns null) so the home
-// page never errors. Anonymous users never reach this branch (0 cards, AC5).
-
-type WelcomeLoopUser = { id: string; createdAt: Date };
-
-async function WelcomeLoopSection({ currentUser }: { currentUser: WelcomeLoopUser | null }) {
-  if (!currentUser) return null;
-
-  const userCreatedAt = new Date(currentUser.createdAt);
-  const daysSinceRegister = Math.floor((Date.now() - userCreatedAt.getTime()) / 86_400_000);
-
-  // Point & Badge v1 (PRD prd-2026-10-24-01): auto +5 once per day on any
-  // authenticated home visit — fire-safe, never blocks the page.
-  await reputationService.maybeAwardDaily(currentUser.id).catch(() => null);
-
-  const [reputation, latestBrief] = await Promise.all([
-    reputationRepository.findUserReputation(currentUser.id).catch(() => null),
-    articleRepository.findLatestDailyBrief().catch(() => null),
-  ]);
-
-  const streak = reputation?.dailyStreak ?? 0;
-  const isNewUser = daysSinceRegister < 7;
-
-  // Same-day claim check (server calendar day) — informational only now that
-  // the award is automatic (Point & Badge v1); kept for potential UX nuance.
-  const lastClaim = reputation?.lastDailyClaimAt ? new Date(reputation.lastDailyClaimAt) : null;
-  const claimedToday = lastClaim !== null && lastClaim.toDateString() === new Date().toDateString();
-  const totalPoints = reputation?.reputation ?? 0;
-
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      {isNewUser ? (
-        <>
-          <WelcomeCard userId={currentUser.id} userCreatedAt={userCreatedAt} latestBriefSlug={latestBrief?.slug ?? null} />
-          <ClaimStreakButton initialStreak={streak} claimedToday={claimedToday} reputation={totalPoints} />
-        </>
-      ) : (
-        <>
-          <MorningDeltaCard />
-          <ClaimStreakButton initialStreak={streak} claimedToday={claimedToday} reputation={totalPoints} />
-        </>
-      )}
-    </div>
-  );
-}
 
 export default async function HomePage() {
   // TODO(SSR-blocking): getMarketOverview() and getMarketStatusForPage() block the entire
@@ -404,25 +218,41 @@ export default async function HomePage() {
     return (
       <div className="fade-in">
         <TickerTape items={tickerItems} />
-        {/* ret-qw2: delta pantauan di atas fold — reason-to-return utk 79% pengunjung anonim */}
-        <div className="max-w-7xl mx-auto px-4 pt-3">
-          <WelcomeBackBanner />
-        </div>
         <PersonalizedGreeting name={userName} marketInfo={marketInfo} overview={overview} ihsg={ihsg} />
         <div className="max-w-7xl mx-auto px-4 py-10 space-y-14">
           {/* Owner 18 Okt: PORTOFOLIO dulu — seperti dashboard pribadi.
               Urutan: portofolio+watchlist → trading plan holdings → delta+streak
-              → movers → tesis → quick tools → heatmap. */}
+              → movers → tesis → quick tools. */}
           <PersonalizedBeranda />
           <HoldingTradingPlans tickers={holdings.map((h) => h.stockTicker)} />
-          <WelcomeLoopSection currentUser={currentUser} />
-          <Suspense fallback={<FeaturedSkeleton />}>
-            <FeaturedStocksSection gainers={gainers} losers={losers} isMarketOpen={!isClosed} />
-          </Suspense>
-          <ThesisCard />
-          <Suspense fallback={<SectorSkeleton />}>
-            <SectorHeatmap sectors={sectors} />
-          </Suspense>
+          <details className="group rounded-xl border border-border bg-bg-card p-5">
+            <summary className="cursor-pointer list-none flex items-center justify-between text-text-primary font-semibold text-sm [&::-webkit-details-marker]:hidden">
+              <span className="flex items-center gap-2">
+                <span>Saham Teraktif &amp; Tesis Pasar</span>
+                <span className="text-xs text-text-tertiary font-normal">({gainers.length + losers.length} movers)</span>
+              </span>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-text-tertiary transition-transform duration-200 group-open:rotate-180 shrink-0 ml-2"
+                aria-hidden="true"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </summary>
+            <div className="mt-4 pt-4 border-t border-border space-y-6">
+              <Suspense fallback={<FeaturedSkeleton />}>
+                <FeaturedStocksSection gainers={gainers} losers={losers} isMarketOpen={!isClosed} />
+              </Suspense>
+              <ThesisCard />
+            </div>
+          </details>
         </div>
       </div>
     );
@@ -479,11 +309,8 @@ export default async function HomePage() {
             <h1 className="mt-5 font-serif text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.03] text-text-primary">
               Analisa Saham IDX Tanpa Nebak-Nebak
             </h1>
-            <p className="mt-3 text-xl sm:text-2xl font-semibold tracking-tight text-text-primary">
-              Trading <span className="text-bullish">tanpa nebak-nebak.</span>
-            </p>
             <p className="mt-5 text-base sm:text-lg text-text-secondary max-w-xl leading-relaxed">
-              Chart profesional, 12 indikator teknikal, dan screener untuk{" "}
+              Chart profesional, 9 indikator teknikal, dan screener untuk{" "}
               <span className="font-semibold text-text-primary">{totalStocks}+ saham IDX</span>. Gratis.
             </p>
 
@@ -506,7 +333,7 @@ export default async function HomePage() {
                 Analisa Sekarang
               </Link>
               <Link
-                href="/screener"
+                href="/stocks?view=screener"
                 className="inline-flex items-center gap-2 bg-bg-primary text-text-primary border border-border px-6 py-3 rounded-xl font-semibold hover:border-accent/40 transition-colors press-scale"
               >
                 Coba Screener
@@ -572,22 +399,83 @@ export default async function HomePage() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-10 space-y-14">
-        {/* Try it — interactive tool previews (show-don't-tell, pairs with hero CTAs) */}
-        <Suspense fallback={<PreviewSkeleton />}>
-          <TradingPlanPreview />
-        </Suspense>
+        {/* wave2-review (Argon 6 Nov): konten SSR anon dipulihkan ke DOM untuk
+            Googlebot — dilipat <details> (paritas beranda login), bukan dihapus. */}
+        <details className="group rounded-xl border border-border bg-bg-card p-5">
+          <summary className="cursor-pointer list-none flex items-center justify-between text-text-primary font-semibold text-sm [&::-webkit-details-marker]:hidden">
+            <span className="flex items-center gap-2">
+              <span>Saham Teraktif Hari Ini</span>
+              <span className="text-xs text-text-tertiary font-normal">({gainers.length + losers.length} movers)</span>
+            </span>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-text-tertiary transition-transform duration-200 group-open:rotate-180 shrink-0 ml-2"
+              aria-hidden="true"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </summary>
+          <div className="mt-4 pt-4 border-t border-border space-y-6">
+            <Suspense fallback={<FeaturedSkeleton />}>
+              <FeaturedStocksSection gainers={gainers} losers={losers} isMarketOpen={!isClosed} />
+            </Suspense>
+            <SectorHeatmap sectors={sectors} />
+          </div>
+        </details>
 
-        {/* Featured Stocks — the single proper movers showcase */}
-        <Suspense fallback={<FeaturedSkeleton />}>
-          <FeaturedStocksSection gainers={gainers} losers={losers} isMarketOpen={!isClosed} />
-        </Suspense>
+        {/* Kalkulator Trading Plan — folded details */}
+        <details className="group rounded-xl border border-border bg-bg-card p-6">
+          <summary className="cursor-pointer list-none flex items-center justify-between text-text-primary font-semibold text-lg [&::-webkit-details-marker]:hidden">
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-semibold tracking-tight text-text-primary">
+                Kalkulator Trading Plan
+              </h2>
+              <span className="text-xs text-text-tertiary font-normal">(Area Beli, Target &amp; Cut Loss)</span>
+            </div>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-text-tertiary transition-transform duration-200 group-open:rotate-180 shrink-0 ml-2"
+              aria-hidden="true"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </summary>
+          <div className="mt-4 pt-4 border-t border-border space-y-4">
+            <p className="text-sm text-text-secondary leading-relaxed">
+              Hitung area beli (entry limit), target profit (TP1 &amp; TP2), dan batas rugi (Stop Loss) otomatis berdasarkan Pivot Points dan volatilitas ATR untuk 950+ saham IDX.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/trading-plan"
+                className="inline-flex items-center gap-2 bg-text-primary text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-text-primary/90 transition-colors"
+              >
+                Buka Kalkulator Trading Plan →
+              </Link>
+              <Link
+                href="/stocks/BBCA.JK"
+                className="inline-flex items-center gap-2 border border-border bg-bg-hover text-text-primary px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-bg-card transition-colors"
+              >
+                Contoh Rencana BBCA
+              </Link>
+            </div>
+          </div>
+        </details>
 
-        {/* Sector Heatmap */}
-        <Suspense fallback={<SectorSkeleton />}>
-          <SectorHeatmap sectors={sectors} />
-        </Suspense>
-
-        {/* Platform Features */}
+        {/* Platform Features — folded details */}
         <PlatformFeatures />
 
         {/* Screener strategi — de-orphan commercial landing pages */}

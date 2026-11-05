@@ -4,10 +4,11 @@ import { PageHero } from "@/components/layout/page-hero";
 import { AskAiCta } from "@/components/seo/ask-ai-cta";
 import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
-import { formatPrice, formatPercent, stripJk, changeColor, rsiColor } from "@/lib/utils";
+import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { formatDecimalId } from "@/lib/format-number";
 import { SITE_URL } from "@/lib/constants";
 import { Gem, Search, TrendingUp } from "lucide-react";
+import { GuestStar } from "@/components/stock/guest-star";
 
  // 12 Okt: failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal
 
@@ -72,26 +73,37 @@ export default async function SahamOverboughtPage() {
     ],
   };
 
+  const topScored = [...stocks]
+    .filter((s): s is typeof s & { ticker: string; signalScore: number } => {
+      const row = s as { ticker?: string; signalScore?: number | null };
+      return typeof row.signalScore === "number" && Number.isFinite(row.signalScore);
+    })
+    .sort((a, b) => b.signalScore - a.signalScore)
+    .slice(0, 3);
+  const topScoredText = topScored.length > 0
+    ? ` · 3 skor tertinggi hari ini: ${topScored.map((s) => `${stripJk(s.ticker)} (${s.signalScore > 0 ? "+" : ""}${formatDecimalId(s.signalScore, 2)})`).join(", ")}`
+    : "";
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
       <PageHero
         eyebrow="Saham IDX"
         title="Saham Overbought Hari Ini"
-        description="Saham dengan RSI diatas 70 — berpotensi koreksi. Pertimbangkan take profit."
+        description="Saham dengan RSI diatas 70 — berpotensi koreksi. Dihitung dari data penutupan &amp; sesi terakhir BEI."
       />
       {/* seo-dr-3: kalimat pembuka dinamis utk SERP (jumlah saham hari ini) */}
       <div className="mx-auto max-w-5xl px-4 pt-6">
         <p className="rounded-lg bg-bg-hover/60 px-3 py-2 text-[13px] text-text-secondary" data-seo-dr="live-count">
-          Per {new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })},
+          Per {new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakarta" })},
           terdapat <strong className="text-text-primary">{stocks.length} saham aktif BEI</strong> yang lolos
-          saringan ini — daftar lengkap di bawah, gratis tanpa login.
+          saringan ini{topScoredText} — daftar lengkap di bawah, gratis tanpa login.
         </p>
       </div>
 
       <div className="mx-auto max-w-5xl px-4 py-8">
-        <div className="mt-4 rounded-lg border border-orange-200 bg-orange-50 p-4 text-sm dark:border-orange-900 dark:bg-orange-950">
-          <strong> Perhatian:</strong> Saham overbought bukan sinyal jual pasti. Dalam tren kuat, RSI bisa bertahan
+        <div className="mt-4 rounded-lg border border-amber-500/25 bg-amber-500/5 p-4 text-sm text-text-secondary">
+          <strong className="text-text-primary"> Perhatian:</strong> Saham overbought bukan sinyal jual pasti. Dalam tren kuat, RSI bisa bertahan
           diatas 70. Gunakan bersama indikator lain.
         </div>
         <div className="mt-6 overflow-x-auto">
@@ -102,38 +114,54 @@ export default async function SahamOverboughtPage() {
                 <th className="py-2 pr-4 font-semibold">Nama</th>
                 <th className="py-2 pr-4 font-semibold">Harga</th>
                 <th className="py-2 pr-4 font-semibold">Perubahan</th>
-                <th className="py-2 pr-4 font-semibold">RSI</th>
+                <th className="py-2 pr-4 font-semibold">Skor Sinyal</th>
+                <th className="py-2 pr-4 font-semibold">Pantau</th>
               </tr>
             </thead>
             <tbody>
               {failed ? (
-                <tr><td colSpan={5} className="py-8 text-center text-muted-foreground">Data sinyal sementara tidak dapat dimuat — sedang diperbarui. Mohon muat ulang dalam beberapa menit.</td></tr>
+                <tr><td colSpan={6} className="py-8 text-center text-text-secondary">Data sinyal sementara tidak dapat dimuat — sedang diperbarui. Mohon muat ulang dalam beberapa menit.</td></tr>
               ) : stocks.length === 0 ? (
-                <tr><td colSpan={5} className="py-8 text-center text-muted-foreground">Belum ada saham overbought saat ini.</td></tr>
+                <tr><td colSpan={6} className="py-8 text-center text-text-secondary">Belum ada saham overbought saat ini.</td></tr>
               ) : (
                 stocks.map((stock) => {
-                  const s = stock as { ticker: string; name: string; close: number | null; changePercent: number | null; rsi14: number | null };
+                  const s = stock as { ticker: string; name: string; close: number | null; changePercent: number | null; signalScore: number | null };
                   return (
-                    <tr key={s.ticker} className="border-b hover:bg-muted/50">
-                      <td className="py-2 pr-4"><Link href={`/stocks/${s.ticker}`} className="font-semibold text-blue-600 hover:underline inline-block py-1.5">{stripJk(s.ticker)}</Link></td>
-                      <td className="py-2 pr-4 text-muted-foreground">{s.name}</td>
+                    <tr key={s.ticker} className="border-b hover:bg-bg-hover/50">
+                      <td className="py-2 pr-4"><Link href={`/stocks/${s.ticker}`} className="font-semibold text-accent hover:underline inline-block py-1.5">{stripJk(s.ticker)}</Link></td>
+                      <td className="py-2 pr-4 text-text-secondary">{s.name}</td>
                       <td className="py-2 pr-4"><span data-live-price={(s ?? stock).ticker}>{s.close !== null ? formatPrice(s.close) : "—"}</span></td>
                       <td className={`py-2 pr-4 ${s.changePercent !== null ? changeColor(s.changePercent) : ""}`}>{s.changePercent !== null ? formatPercent(s.changePercent) : "—"}</td>
-                      <td className={`py-2 pr-4 font-semibold ${s.rsi14 !== null ? rsiColor(s.rsi14) : ""}`}>{s.rsi14 !== null ? formatDecimalId(s.rsi14, 1) : "—"}</td>
+                      <td className={`py-2 pr-4 font-mono tabular-nums ${s.signalScore !== null ? (s.signalScore > 0 ? "text-bullish" : s.signalScore < 0 ? "text-bearish" : "") : ""}`}>
+                        {s.signalScore !== null ? (s.signalScore > 0 ? `+${formatDecimalId(s.signalScore, 2)}` : formatDecimalId(s.signalScore, 2)) : "—"}
+                      </td>
+                      <td className="py-2 pr-4"><GuestStar ticker={s.ticker} compact /></td>
                     </tr>
                   );
                 })
               )}
             </tbody>
           </table>
+
+          <div className="mt-4">
+            <a
+              href="https://t.me/TeknikalidAgentBot?start=web_screener_tematik"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-engagement="tg_subscribe_click"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:underline"
+            >
+              🔔 Dapatkan notifikasi sinyal harian via Telegram →
+            </a>
+          </div>
         </div>
-        
+
         <AskAiCta question="Saham overbought ada?" />
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/saham-oversold" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted"><Gem className="inline h-4 w-4" /> Saham Oversold</Link>
-          <Link href="/saham-golden-cross" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted"><TrendingUp className="inline h-4 w-4" /> Saham Golden Cross</Link>
-          <Link href="/screener" className="rounded-lg bg-teal-600 px-4 py-3 text-sm font-semibold text-white hover:bg-teal-700"><Search className="inline h-4 w-4" /> Screener Lengkap</Link>
+          <Link href="/stocks?view=screener" className="rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-accent/90"><Search className="inline h-4 w-4" /> Screener Lengkap</Link>
+          <Link href="/saham-oversold" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-bg-hover"><Gem className="inline h-4 w-4" /> Saham Oversold</Link>
+          <Link href="/saham-golden-cross" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-bg-hover"><TrendingUp className="inline h-4 w-4" /> Saham Golden Cross</Link>
         </div>
       </div>
     </>

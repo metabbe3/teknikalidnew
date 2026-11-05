@@ -20,6 +20,103 @@ function getCategoryColor(category: string): string {
   return CATEGORY_COLORS[category] ?? "#6b7280";
 }
 
+interface FaqConceptBridge {
+  concept: string;
+  label: string;
+  href: string;
+}
+
+function getFaqConceptBridge(question: { question: string; tags: string[]; category?: string }): FaqConceptBridge | null {
+  const text = `${question.question} ${question.tags.join(" ")} ${question.category ?? ""}`.toLowerCase();
+
+  if (text.includes("golden cross") || text.includes("goldencross")) {
+    return {
+      concept: "Golden Cross",
+      label: "Saham Golden Cross",
+      href: "/saham-golden-cross",
+    };
+  }
+  if (text.includes("death cross") || text.includes("deathcross")) {
+    return {
+      concept: "Death Cross",
+      label: "Saham Death Cross",
+      href: "/saham-death-cross",
+    };
+  }
+  if (text.includes("oversold") || text.includes("jenuh jual") || text.includes("rsi")) {
+    return {
+      concept: "RSI Oversold",
+      label: "Saham RSI Oversold",
+      href: "/saham-oversold",
+    };
+  }
+  if (text.includes("overbought") || text.includes("jenuh beli")) {
+    return {
+      concept: "Overbought",
+      label: "Saham Overbought",
+      href: "/saham-overbought",
+    };
+  }
+  if (text.includes("macd")) {
+    return {
+      concept: "MACD Bullish",
+      label: "Saham MACD Bullish",
+      href: "/saham-macd-bullish",
+    };
+  }
+  if (text.includes("stochastic") || text.includes("stokastik")) {
+    return {
+      concept: "Stochastic Oversold",
+      label: "Saham Stochastic Oversold",
+      href: "/saham-stochastic-oversold",
+    };
+  }
+  if (text.includes("ema") || text.includes("exponential moving average")) {
+    return {
+      concept: "EMA Cross",
+      label: "Saham EMA Cross",
+      href: "/saham-ema-cross",
+    };
+  }
+  if (text.includes("sma 20") || text.includes("sma20") || text.includes("pullback")) {
+    return {
+      concept: "Pullback SMA 20",
+      label: "Saham Pullback SMA 20",
+      href: "/saham-pullback-sma20",
+    };
+  }
+  if (text.includes("volume spike") || text.includes("volume lonjak") || text.includes("volume meledak")) {
+    return {
+      concept: "Volume Spike",
+      label: "Saham Volume Spike",
+      href: "/saham-volume-spike",
+    };
+  }
+  if (text.includes("dividen") || text.includes("dividend")) {
+    return {
+      concept: "Dividen Tinggi",
+      label: "Saham Dividen Tinggi",
+      href: "/saham-dividen",
+    };
+  }
+  if (text.includes("undervalued") || text.includes("murah") || text.includes("valuasi")) {
+    return {
+      concept: "Undervalued",
+      label: "Saham Undervalued",
+      href: "/saham-undervalued",
+    };
+  }
+  if (text.includes("blue chip") || text.includes("bluechip") || text.includes("lq45")) {
+    return {
+      concept: "Blue Chip",
+      label: "Saham Blue Chip",
+      href: "/saham-blue-chip",
+    };
+  }
+
+  return null;
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -114,6 +211,7 @@ export default async function FAQQuestionPage({
   };
 
   const isAIGenerated = question.source === "AI_GENERATED";
+  const conceptBridge = getFaqConceptBridge(question);
 
   return (
     <>
@@ -198,6 +296,32 @@ export default async function FAQQuestionPage({
             <div className="bg-bg-card rounded-xl depth-shadow p-6 sm:p-8 mb-6">
               <div className="text-sm text-text-primary leading-relaxed whitespace-pre-wrap">
                 {question.longAnswer}
+              </div>
+            </div>
+          )}
+
+          {/* Concept screener bridge */}
+          {conceptBridge && (
+            <div className="bg-bg-card rounded-xl depth-shadow p-5 border border-border mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
+                    Screener Tematik Terkait
+                  </p>
+                  <p className="text-sm font-semibold text-text-primary mt-0.5">
+                    Daftar {conceptBridge.label} Hari Ini
+                  </p>
+                  <p className="text-xs text-text-secondary mt-1">
+                    Cek emiten BEI yang memenuhi kondisi {conceptBridge.concept} dari data penutupan sesi terakhir.
+                  </p>
+                </div>
+                <Link
+                  href={conceptBridge.href}
+                  className="inline-flex min-h-11 sm:min-h-0 items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-accent text-white text-xs font-semibold hover:bg-accent/90 transition-colors shrink-0"
+                >
+                  <span>Buka {conceptBridge.label}</span>
+                  <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
+                </Link>
               </div>
             </div>
           )}

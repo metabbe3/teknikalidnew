@@ -1,5 +1,6 @@
 import type { TradingPlan } from "@/lib/trading-plan";
 import type { McResult } from "@/lib/monte-carlo";
+import { AlertTriangle } from "lucide-react";
 import { formatRp } from "@/lib/utils";
 
 const confidenceStyles = {
@@ -32,7 +33,7 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
           <div className="flex items-center gap-1.5">
             {isWaitAndSee && (
               <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-bearish-bg text-bearish">
-                Wait &amp; See
+                Tunggu dulu
               </span>
             )}
             {isBOW && (
@@ -41,10 +42,32 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
               </span>
             )}
             <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${confidenceStyles[plan.confidence]}`}>
-              {confidenceLabels[plan.confidence]}
+              Keyakinan: {confidenceLabels[plan.confidence]}
             </span>
           </div>
         </div>
+
+        {plan.suggestion && (
+          <div className={`flex items-start gap-1.5 ${isWaitAndSee ? "bg-bearish/10 -mx-1 px-2.5 py-2 rounded-lg" : isBOW ? "bg-amber-500/10 -mx-1 px-2.5 py-2 rounded-lg" : "bg-bg-hover -mx-1 px-2.5 py-2 rounded-lg"}`}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`shrink-0 mt-0.5 ${isWaitAndSee ? "text-bearish" : isBOW ? "text-amber-500" : "text-text-tertiary"}`} aria-hidden="true">
+              {isWaitAndSee ? (
+                <>
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                </>
+              ) : (
+                <>
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="16" x2="12" y2="12" />
+                  <line x1="12" y1="8" x2="12.01" y2="8" />
+                </>
+              )}
+            </svg>
+            <p className={`text-[11px] leading-snug ${isWaitAndSee ? "text-bearish font-medium" : isBOW ? "text-amber-800 font-medium" : "text-text-secondary"}`}>
+              {plan.suggestion}
+            </p>
+          </div>
+        )}
 
         <div className="h-px bg-border/60" />
 
@@ -57,16 +80,16 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
 
         <div className={`space-y-2 ${isWaitAndSee ? "opacity-50" : ""}`}>
           <Row
-            label={isBOW || isWaitAndSee ? "Entry (Limit)" : "Entry"}
+            label="Beli di (Entry)"
             value={formatRp(plan.entry)}
             detail={plan.entryZone}
             valueClass="text-accent"
           />
-          <Row label="TP 1" value={formatRp(plan.tp1)} detail={`(${plan.tp1Source})`} valueClass="text-bullish" />
+          <Row label="Target 1 (TP1)" value={formatRp(plan.tp1)} detail={`(${plan.tp1Source})`} valueClass="text-bullish" />
           {plan.tp2 && (
-            <Row label="TP 2" value={formatRp(plan.tp2)} detail={`(${plan.tp2Source})`} valueClass="text-bullish" />
+            <Row label="Target 2 (TP2)" value={formatRp(plan.tp2)} detail={`(${plan.tp2Source})`} valueClass="text-bullish" />
           )}
-          <Row label="Stop Loss" value={formatRp(plan.sl)} detail={`(${plan.slSource})`} valueClass="text-bearish" />
+          <Row label="Batas rugi (Stop Loss)" value={formatRp(plan.sl)} detail={`(${plan.slSource})`} valueClass="text-bearish" />
         </div>
 
         {mc && (
@@ -103,7 +126,7 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
             </details>
             {!setupLayak && (
               <p className="text-[10px] leading-snug text-text-tertiary bg-bg-hover -mx-1 px-2.5 py-1.5 rounded-lg">
-                ⚠️ Setup belum layak (Risk : Reward 1 : {plan.riskReward.toFixed(1)}) — angka peluang di atas hanya simulasi statistik, bukan sinyal entry.
+                <AlertTriangle className="inline h-3 w-3 -mt-0.5 align-middle" aria-hidden="true" />{" "}Setup belum layak (Rugi : Untung 1 : {plan.riskReward.toFixed(1).replace(".", ",")}) — angka peluang di atas hanya simulasi statistik, bukan sinyal entry.
               </p>
             )}
           </>
@@ -112,36 +135,11 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
         <div className="h-px bg-border/60" />
 
         <div className="flex items-center justify-between">
-          <span className="text-xs text-text-secondary">Risk : Reward</span>
+          <span className="text-xs text-text-secondary">Rugi : Untung</span>
           <span className={`text-sm font-bold tabular-nums ${isWaitAndSee ? "text-bearish" : ""}`}>
-            1 : {plan.riskReward.toFixed(1)}
+            1 : {plan.riskReward.toFixed(1).replace(".", ",")}
           </span>
         </div>
-
-        {plan.suggestion && (
-          <>
-            <div className="h-px bg-border/60" />
-            <div className={`flex items-start gap-1.5 ${isWaitAndSee ? "bg-red-50/80 -mx-1 px-2.5 py-2 rounded-lg" : isBOW ? "bg-amber-50/60 -mx-1 px-2.5 py-2 rounded-lg" : ""}`}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`shrink-0 mt-0.5 ${isWaitAndSee ? "text-bearish" : isBOW ? "text-amber-500" : "text-text-tertiary"}`} aria-hidden="true">
-                {isWaitAndSee ? (
-                  <>
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
-                  </>
-                ) : (
-                  <>
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="12" y1="16" x2="12" y2="12" />
-                    <line x1="12" y1="8" x2="12.01" y2="8" />
-                  </>
-                )}
-              </svg>
-              <p className={`text-[11px] leading-snug ${isWaitAndSee ? "text-red-800 font-medium" : isBOW ? "text-amber-800 font-medium" : "text-text-secondary"}`}>
-                {plan.suggestion}
-              </p>
-            </div>
-          </>
-        )}
 
         {plan.warnings.length > 0 && (
           <>

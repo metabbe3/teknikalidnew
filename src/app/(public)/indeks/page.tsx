@@ -102,7 +102,7 @@ export default function IndexListingPage() {
                 {idx.description}
               </p>
               <div className="flex flex-wrap gap-1.5 mt-3">
-                {idx.stocks.slice(0, 10).map((ticker) => (
+                {idx.stocks.slice(0, 6).map((ticker) => (
                   <span
                     key={ticker}
                     className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-accent/10 text-accent"
@@ -110,14 +110,21 @@ export default function IndexListingPage() {
                     {ticker}
                   </span>
                 ))}
-                {idx.stocks.length > 10 && (
+                {idx.stocks.length > 6 && (
                   <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-accent/10 text-accent">
-                    +{idx.stocks.length - 10}
+                    +{idx.stocks.length - 6}
                   </span>
                 )}
               </div>
             </Link>
           ))}
+        </div>
+
+        <div className="pt-4 border-t border-border/50 text-center text-sm text-text-secondary">
+          Ingin menyaring seluruh saham BEI di luar indeks di atas?{" "}
+          <Link href="/stocks" className="text-accent hover:underline font-medium">
+            Buka daftar semua saham →
+          </Link>
         </div>
       </div>
     </>

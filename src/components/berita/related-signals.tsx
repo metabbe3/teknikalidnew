@@ -11,7 +11,7 @@ const SIGNALS = [
   { key: "pullback_sma20", href: "/saham-pullback-sma20", label: "Saham Pullback MA20", desc: "Harga bergerak dekat MA20 — area menarik swing trader." },
 ] as const;
 
-export async function RelatedSignals({ ticker }: { ticker: string | null }) {
+async function resolveRelatedSignals(ticker: string | null): Promise<string[] | null> {
   try {
     if (!ticker) return null;
 
@@ -64,32 +64,41 @@ export async function RelatedSignals({ ticker }: { ticker: string | null }) {
     };
 
     const keys = SIGNALS.map((s) => s.key);
-    const selected = keys.filter((k) => contextual[k]).slice(0, 3);
+    const selected = keys.filter((k) => contextual[k]).slice(0, 2);
     for (const k of keys) {
       if (selected.length >= 2) break;
       if (!selected.includes(k)) selected.push(k);
     }
-
-    return (
-      <div className="mt-8 space-y-3">
-        <p className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">Sinyal Terkait</p>
-        <div className="space-y-2">
-          {selected.map((k) => {
-            const s = SIGNALS.find((x) => x.key === k)!;
-            return (
-              <Link key={k} href={s.href} className="group block bg-bg-card rounded-xl depth-shadow p-4 hover:depth-shadow-hover transition-all">
-                <p className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors">{s.label}</p>
-                <p className="text-sm text-text-secondary mt-1">{s.desc}</p>
-              </Link>
-            );
-          })}
-          <Link href="/stocks" className="group block bg-bg-card rounded-xl depth-shadow p-4 hover:depth-shadow-hover transition-all border border-border">
-            <p className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors">Screener Saham — semua sinyal real-time</p>
-          </Link>
-        </div>
-      </div>
-    );
+    return selected;
   } catch {
     return null;
   }
+}
+
+export async function RelatedSignals({ ticker }: { ticker: string | null }) {
+  const selected = await resolveRelatedSignals(ticker);
+  if (!selected || selected.length === 0) return null;
+
+  return (
+    <div className="mt-6 space-y-2">
+      <p className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">Sinyal Terkait</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {selected.slice(0, 2).map((k) => {
+          const s = SIGNALS.find((x) => x.key === k)!;
+          return (
+            <Link
+              key={k}
+              href={s.href}
+              className="group block bg-bg-card rounded-xl depth-shadow p-3.5 hover:depth-shadow-hover transition-all border border-border/60"
+            >
+              <p className="text-xs font-semibold text-text-primary group-hover:text-accent transition-colors truncate">
+                {s.label}
+              </p>
+              <p className="text-[11px] text-text-secondary mt-0.5 line-clamp-1">{s.desc}</p>
+            </Link>
+          );
+        })}
+      </div>
+    </div>
+  );
 }

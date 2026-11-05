@@ -96,20 +96,6 @@ export default async function PasarPage() {
           </div>
         </PageHero>
         <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
-          {weekend && (
-            <Card>
-              <CardContent className="text-sm text-muted-foreground py-4">
-                Akhir pekan — bursa tutup. Rekap sesi Jumat terakhir:
-              </CardContent>
-            </Card>
-          )}
-          {afterClose && (
-            <Card>
-              <CardContent className="text-sm text-muted-foreground py-4">
-                Pasar sudah tutup hari ini — berikut rekap sesi terakhir.
-              </CardContent>
-            </Card>
-          )}
           <RecapBlock
             ihsg={recap.ihsg}
             topSignals={recap.topSignals}
@@ -440,7 +426,7 @@ function TopSignalsSection({ items, sessionDate }: { items: PasarTopSignal[]; se
         <ChangeBadge pct={t.changePercent} className="w-20 text-right" />
         <div
           className="w-28 text-right text-xs font-semibold tabular-nums shrink-0"
-          title={`Skor sinyal ${t.signalScore !== null ? formatDecimalId(t.signalScore, 2) : "—"} — rangkuman indikator teknikal, bukan rekomendasi. Catatan: skor teknikal ≠ pergerakan harga hari ini — saham bisa turun hari ini walau skornya kuat.`}
+          title={`Skor sinyal ${t.signalScore !== null ? formatDecimalId(t.signalScore, 2) : "—"}`}
         >
           {t.signalScore !== null ? (
             <div className="flex flex-col items-end gap-0.5">
@@ -497,8 +483,8 @@ function TopSignalsSection({ items, sessionDate }: { items: PasarTopSignal[]; se
           )}
         </CardContent>
       </Card>
-      <p className="mt-2 text-xs text-text-tertiary">
-        Skor sinyal (−1 s.d. +1) adalah rangkuman otomatis indikator teknikal — bukan rekomendasi beli. Klik emiten untuk melihat rincian indikator di balik skornya.
+      <p className="mt-2 text-xs text-text-tertiary leading-relaxed">
+        Skor sinyal (−1 s.d. +1) adalah rangkuman otomatis indikator teknikal, bukan rekomendasi beli. Catatan: skor teknikal ≠ pergerakan harga hari ini — saham bisa turun hari ini walau skornya kuat. Klik emiten untuk melihat rincian indikator di balik skornya.
       </p>
       <Link
         href="/swing"
@@ -516,16 +502,36 @@ function TopSignalsSection({ items, sessionDate }: { items: PasarTopSignal[]; se
 
 function Disclaimer() {
   return (
-    <Card className="border-dashed">
-      <CardContent className="py-4 flex gap-3 items-start">
-        <AlertTriangle className="h-4 w-4 text-text-tertiary mt-0.5 shrink-0" aria-hidden />
-        <p className="text-xs text-text-tertiary leading-relaxed">
-          <strong className="text-text-secondary">Disclaimer:</strong> Halaman ini adalah monitor pasar real-time,{" "}
-          <strong className="text-text-secondary">bukan rekomendasi jual beli</strong>. Seluruh angka berasal dari data
-          bursa dan indikator teknikal yang dihitung otomatis; keputusan investasi sepenuhnya tanggung jawab Anda.
-          Perdagangkan saham mengandung risiko kehilangan modal.
-        </p>
-      </CardContent>
-    </Card>
+    <div className="space-y-4">
+      <Card className="border-dashed">
+        <CardContent className="py-4 flex gap-3 items-start">
+          <AlertTriangle className="h-4 w-4 text-text-tertiary mt-0.5 shrink-0" aria-hidden />
+          <p className="text-xs text-text-tertiary leading-relaxed">
+            <strong className="text-text-secondary">Disclaimer:</strong> Halaman ini adalah monitor pasar real-time,{" "}
+            <strong className="text-text-secondary">bukan rekomendasi jual beli</strong>. Seluruh angka berasal dari data
+            bursa dan indikator teknikal yang dihitung otomatis; keputusan investasi sepenuhnya tanggung jawab Anda.
+            Perdagangan saham mengandung risiko kehilangan modal.
+          </p>
+        </CardContent>
+      </Card>
+      <div className="rounded-xl border border-border bg-bg-card p-4 text-center sm:text-left sm:flex sm:items-center sm:justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold text-text-primary">
+            Kabari saya kalau ada kandidat baru
+          </p>
+          <p className="text-xs text-text-tertiary mt-0.5">
+            Pantau pergerakan pasar dan sinyal baru langsung di Telegram Anda
+          </p>
+        </div>
+        <a
+          href="https://t.me/TeknikalidAgentBot?start=web_pasar"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 sm:mt-0 inline-flex items-center justify-center gap-2 rounded-lg bg-accent text-white px-4 py-2.5 text-xs font-semibold hover:bg-accent/90 transition-colors shrink-0"
+        >
+          Aktifkan di Telegram — TeknikalAgent
+        </a>
+      </div>
+    </div>
   );
 }

@@ -88,8 +88,10 @@ export default async function KalenderDividenPage() {
     failed = true;
   }
   const now = new Date();
-  const upcoming = rows.filter((r) => r.cumDate >= now);
-  const past = rows.filter((r) => r.cumDate < now).reverse();
+  const wibNow = new Date(now.getTime() + 7 * 3600 * 1000);
+  const todayStartWib = new Date(Date.UTC(wibNow.getUTCFullYear(), wibNow.getUTCMonth(), wibNow.getUTCDate()) - 7 * 3600 * 1000);
+  const upcoming = rows.filter((r) => r.cumDate >= todayStartWib);
+  const past = rows.filter((r) => r.cumDate < todayStartWib).reverse();
   const upcomingCount = upcoming.length;
 
   const jsonLd = {
@@ -177,12 +179,12 @@ export default async function KalenderDividenPage() {
                     <th className="text-left px-3 py-2">Cum Date</th>
                     <th className="text-left px-3 py-2">Emiten</th>
                     <th className="text-right px-3 py-2">Dividen/Lbr</th>
-                    <th className="text-right px-3 py-2">Harga</th>
-                    <th className="text-right px-3 py-2">Modal 1 Lot</th>
+                    <th className="hidden sm:table-cell text-right px-3 py-2">Harga</th>
+                    <th className="hidden sm:table-cell text-right px-3 py-2">Modal 1 Lot</th>
                     <th className="text-right px-3 py-2">Est. Yield</th>
-                    <th className="text-right px-3 py-2">Skor Sinyal</th>
-                    <th className="text-left px-3 py-2">Ex Date</th>
-                    <th className="text-left px-3 py-2">Bayar</th>
+                    <th className="hidden sm:table-cell text-right px-3 py-2">Skor Sinyal</th>
+                    <th className="hidden sm:table-cell text-left px-3 py-2">Ex Date</th>
+                    <th className="hidden sm:table-cell text-left px-3 py-2">Bayar</th>
                     <th className="text-center px-3 py-2">Pantau</th>
                   </tr>
                 </thead>
@@ -199,32 +201,38 @@ export default async function KalenderDividenPage() {
                           <span className="block text-xs text-text-tertiary max-w-[200px] truncate" title={r.name}>{r.name}</span>
                         </td>
                         <td className="px-3 py-2 text-right font-mono tabular-nums">{fmtRp(r.perShare)}</td>
-                        <td className="px-3 py-2 text-right font-mono tabular-nums text-text-secondary">{r.close !== null ? formatPrice(r.close) : "—"}</td>
-                        <td className="px-3 py-2 text-right font-mono tabular-nums text-text-secondary">{r.close !== null ? formatPrice(r.close * 100) : "—"}</td>
+                        <td className="hidden sm:table-cell px-3 py-2 text-right font-mono tabular-nums text-text-secondary">{r.close !== null ? formatPrice(r.close) : "—"}</td>
+                        <td className="hidden sm:table-cell px-3 py-2 text-right font-mono tabular-nums text-text-secondary">{r.close !== null ? formatPrice(r.close * 100) : "—"}</td>
                         <td className="px-3 py-2 text-right font-mono tabular-nums">{yieldPct !== null ? `${yieldPct.toFixed(2).replace(".", ",")}%` : "—"}</td>
-                        <td className="px-3 py-2 text-right font-mono tabular-nums font-semibold">
+                        <td className="hidden sm:table-cell px-3 py-2 text-right font-mono tabular-nums font-semibold">
                           {r.signalScore !== null
-                            ? <span className={r.signalScore > 0 ? "text-bullish" : r.signalScore < 0 ? "text-bearish" : "text-text-secondary"}>{r.signalScore.toFixed(2).replace(".", ",")}</span>
+                            ? <span className={r.signalScore > 0 ? "text-bullish" : r.signalScore < 0 ? "text-bearish" : "text-text-secondary"}>{r.signalScore > 0 ? "+" : ""}{r.signalScore.toFixed(2).replace(".", ",")}</span>
                             : "—"}
                         </td>
-                        <td className="px-3 py-2 font-mono text-xs whitespace-nowrap text-text-secondary">{fmtDate(r.exDate)}</td>
-                        <td className="px-3 py-2 font-mono text-xs whitespace-nowrap text-text-secondary">{fmtDate(r.paymentDate)}</td>
+                        <td className="hidden sm:table-cell px-3 py-2 font-mono text-xs whitespace-nowrap text-text-secondary">{fmtDate(r.exDate)}</td>
+                        <td className="hidden sm:table-cell px-3 py-2 font-mono text-xs whitespace-nowrap text-text-secondary">{fmtDate(r.paymentDate)}</td>
                         <td className="px-3 py-2 text-center"><GuestStar ticker={r.ticker} compact /></td>
                       </tr>
                     );
                   })}
                   {upcoming.length === 0 && (
-                    <tr><td colSpan={8} className="px-3 py-6 text-center text-sm text-text-tertiary">Belum ada jadwal cum date baru — bursa biasanya ramai pengumuman dividen setelah RUPS (Februari-Juni).</td></tr>
+                    <tr><td colSpan={10} className="px-3 py-6 text-center text-sm text-text-tertiary">Belum ada jadwal cum date baru — bursa biasanya ramai pengumuman dividen setelah RUPS (Februari-Juni).</td></tr>
                   )}
                 </tbody>
               </table>
             </div>
 
             {past.length > 0 && (
-              <>
-                <h2 className="mt-8 text-base font-semibold text-text-primary">Baru Berlalu (45 Hari Terakhir)</h2>
-                <p className="text-xs text-text-tertiary mb-3">Pembeli setelah tanggal ini tidak lagi berhak dividen periode tersebut.</p>
-                <div className="overflow-x-auto rounded-lg border border-border">
+              <details className="mt-8 group rounded-lg border border-border bg-bg-card p-4">
+                <summary className="flex items-center justify-between cursor-pointer list-none select-none">
+                  <div>
+                    <h2 className="text-base font-semibold text-text-primary inline">Baru Berlalu (45 Hari Terakhir)</h2>
+                    <span className="text-xs text-text-tertiary ml-2">({past.length} emiten)</span>
+                    <p className="text-xs text-text-tertiary mt-0.5">Pembeli setelah tanggal ini tidak lagi berhak dividen periode tersebut.</p>
+                  </div>
+                  <span className="text-xs text-text-tertiary transition-transform group-open:rotate-180">▼</span>
+                </summary>
+                <div className="mt-3 overflow-x-auto rounded-lg border border-border">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="bg-bg-hover text-text-tertiary text-xs">
@@ -250,7 +258,7 @@ export default async function KalenderDividenPage() {
                     </tbody>
                   </table>
                 </div>
-              </>
+              </details>
             )}
           </>
         )}
@@ -265,7 +273,7 @@ export default async function KalenderDividenPage() {
           </p>
           <p>
             Dividen tinggi bukan satu-satunya pertimbangan. Cek <Link href="/saham-dividen" className="text-accent hover:underline">daftar saham dividen ber-yield tinggi</Link>,
-            bandingkan dengan <Link href="/screener" className="text-accent hover:underline">saringan indikator teknikal</Link>,
+            bandingkan dengan <Link href="/stocks?view=screener" className="text-accent hover:underline">saringan indikator teknikal</Link>,
             dan pastikan tren harga emiten sedang sehat di halaman sahamnya sebelum memutuskan membeli menjelang cum date.
           </p>
         </div>

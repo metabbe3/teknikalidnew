@@ -7,7 +7,6 @@ import { SITE_URL, IDX40_TICKERS } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
 import { ArticleContent, extractHeadings, estimateReadingTime, extractTickers } from "@/components/article/article-renderer";
 import { ArrowLeft, Clock, ChevronRight } from "lucide-react";
-import { RegisterCtaBar } from "@/components/ui/register-cta-bar";
 import { ShareButtons } from "@/components/ui/share-buttons";
 import { ArticleType } from "@/generated/prisma/client";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
@@ -16,7 +15,6 @@ import { stripMarkdown } from "@/lib/utils";
 import { SnapshotBriefing, type SnapshotBriefingData } from "@/components/berita/snapshot-briefing";
 import { RelatedSignals } from "@/components/berita/related-signals";
 import { TelegramSubscribeCta } from "@/components/telegram/subscribe-cta";
-import RadarCtaLink from "@/components/seo/radar-cta-link";
 import { decimalToNumber, bigIntToNumber } from "@/lib/serialize";
 import { isStaleArticle, DATA_SOURCE_LABEL } from "@/domains/article/article-freshness";
 
@@ -95,7 +93,7 @@ export default async function BeritaArticlePage({
 
   if (!article || article.status !== "PUBLISHED" || !BERITA_TYPES.includes(article.articleType)) notFound();
 
-  const headings = extractHeadings(article.content);
+  const headings = extractHeadings(article.content, article.title);
   const readingTime = estimateReadingTime(article.content);
   const mentionedTickers = extractTickers(article.content);
   const relatedSignalTicker = article.tickerTag ?? mentionedTickers[0] ?? null;
@@ -191,7 +189,7 @@ export default async function BeritaArticlePage({
           ],
         },
         orderBy: { publishedAt: "desc" },
-        take: 5,
+        take: 3,
         select: { id: true, slug: true, title: true, publishedAt: true, articleType: true, tickerTag: true },
       })
     : [];
@@ -204,7 +202,7 @@ export default async function BeritaArticlePage({
         id: { not: article.id },
       },
       orderBy: { publishedAt: "desc" },
-      take: 5,
+      take: 3,
       select: { id: true, slug: true, title: true, publishedAt: true, articleType: true, tickerTag: true },
     });
   }
@@ -276,7 +274,12 @@ export default async function BeritaArticlePage({
             {article.tickerTag && (
               <>
                 <ChevronRight className="h-3 w-3 opacity-40" />
-                <span className="text-accent">{article.tickerTag.replace(".JK", "")}</span>
+                <Link
+                  href={`/stocks/${article.tickerTag}`}
+                  className="text-accent hover:underline transition-colors"
+                >
+                  {article.tickerTag.replace(".JK", "")}
+                </Link>
               </>
             )}
             <ChevronRight className="h-3 w-3 opacity-40" />
@@ -291,15 +294,25 @@ export default async function BeritaArticlePage({
             <div>
               {/* Article header */}
               <header className="mb-10">
-                <div className="flex items-center gap-2 mb-4">
-                  {article.tickerTag && (
+                <div className="flex flex-wrap items-center gap-2 mb-4">
+                  {article.tickerTag ? (
                     <Link
                       href={`/stocks/${article.tickerTag}`}
-                      className="text-xs font-mono font-semibold text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded hover:bg-blue-500/20 transition-colors"
+                      className="text-xs font-mono font-semibold text-accent bg-accent/10 px-2 py-0.5 rounded hover:bg-accent/20 transition-colors"
                     >
                       {article.tickerTag.replace(".JK", "")}
                     </Link>
-                  )}
+                  ) : mentionedTickers.length > 0 ? (
+                    mentionedTickers.slice(0, 4).map((t) => (
+                      <Link
+                        key={t}
+                        href={`/stocks/${t}`}
+                        className="text-xs font-mono font-semibold text-accent bg-accent/10 px-2 py-0.5 rounded hover:bg-accent/20 transition-colors"
+                      >
+                        {t.replace(".JK", "")}
+                      </Link>
+                    ))
+                  ) : null}
                 </div>
                 <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-text-primary mb-5">
                   {stripMarkdown(article.title)}
@@ -358,7 +371,31 @@ export default async function BeritaArticlePage({
               {briefingData && <SnapshotBriefing data={briefingData} />}
 
               {/* Analysis body */}
-              <ArticleContent content={article.content} />
+              <ArticleContent content={article.content} title={article.title} />
+
+              {/* Jembatan analisa teknikal emiten yang dibahas (Batch C) */}
+              <div className="mt-8 p-4 sm:p-5 rounded-xl border border-border bg-bg-card flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">
+                    Analisa Saham
+                  </p>
+                  <p className="text-sm font-semibold text-text-primary mt-0.5">
+                    {mentionedTickers.length > 0
+                      ? `Lihat analisa teknikal emiten yang dibahas: ${mentionedTickers.map((t) => t.replace(".JK", "")).slice(0, 4).join(", ")}`
+                      : "Lihat analisa teknikal emiten yang dibahas"}
+                  </p>
+                  <p className="text-xs text-text-secondary mt-1">
+                    Cek skor sinyal, support-resistance, dan indikator teknikal lengkap tanpa login.
+                  </p>
+                </div>
+                <Link
+                  href={mentionedTickers.length === 1 ? `/stocks/${mentionedTickers[0]}` : "/stocks"}
+                  className="inline-flex min-h-11 sm:min-h-0 items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-accent text-white text-xs font-semibold hover:bg-accent/90 transition-colors shrink-0"
+                >
+                  <span>Lihat Analisa Saham</span>
+                  <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
+                </Link>
+              </div>
 
               {/* Stock cards for mentioned tickers — first: direct continuation of reading intent */}
               {stockCards.length > 0 && (
@@ -375,18 +412,19 @@ export default async function BeritaArticlePage({
               {/* Contextual signal links (server-rendered, SEO/discovery) */}
               <RelatedSignals ticker={relatedSignalTicker} />
 
-              {/* Pantau via Telegram — artikel ber-ticker (retention-2026-10-28, dismissible).
-                  ret-qw10: Brief Pasar (DAILY_SNAPSHOT, tanpa ticker tunggal) tetap dapat CTA —
-                  arahkan ikut ringkasan pasar harian. */}
-              {article.tickerTag ? (
-                <div className="mt-6">
-                  <TelegramSubscribeCta ticker={article.tickerTag} />
-                </div>
-              ) : article.articleType === ArticleType.DAILY_SNAPSHOT ? (
-                <div className="mt-6">
-                  <TelegramSubscribeCta />
-                </div>
-              ) : null}
+              {/* Pantau via Telegram — aktif untuk semua artikel berita */}
+              <div className="mt-6">
+                <TelegramSubscribeCta
+                  ticker={article.tickerTag ?? (mentionedTickers[0] ?? undefined)}
+                  startParam={
+                    article.tickerTag
+                      ? `web_${article.tickerTag.replace(/\.JK$/, "")}`
+                      : mentionedTickers[0]
+                      ? `web_${mentionedTickers[0].replace(/\.JK$/, "")}`
+                      : "web_berita"
+                  }
+                />
+              </div>
 
               {/* Related articles */}
               {relatedArticles.length > 0 && (
@@ -405,7 +443,7 @@ export default async function BeritaArticlePage({
                             </p>
                           </div>
                           {ra.tickerTag && (
-                            <span className="text-xs font-mono font-semibold text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded shrink-0">
+                            <span className="text-xs font-mono font-semibold text-accent bg-accent/10 px-2 py-0.5 rounded shrink-0">
                               {ra.tickerTag.replace(".JK", "")}
                             </span>
                           )}
@@ -416,8 +454,6 @@ export default async function BeritaArticlePage({
                 </div>
               )}
 
-              <RadarCtaLink />
-
               {/* Source attribution */}
               {article.generationMeta && typeof article.generationMeta === "object" && "sourceUrl" in article.generationMeta && (
                 <div className="mt-8 p-4 bg-bg-card rounded-xl depth-shadow border-l-4 border-accent/30">
@@ -427,32 +463,6 @@ export default async function BeritaArticlePage({
                   </a>
                 </div>
               )}
-
-              {/* Bottom CTA banner */}
-              <div className="akademi-cta-banner mt-12 p-8">
-                <div className="relative z-10 space-y-4">
-                  <p className="text-lg font-semibold text-white">Cek Chart & Sinyal Teknikal</p>
-                  <p className="text-gray-400 text-sm max-w-lg">
-                    Pantau pergerakan harga real-time, RSI, MACD, dan sinyal trading langsung dari halaman saham TeknikalID.
-                  </p>
-                  <div className="flex flex-wrap gap-3 pt-2">
-                    {article.tickerTag && (
-                      <Link href={`/stocks/${article.tickerTag}`} className="bg-accent text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-accent/90 transition-colors press-scale">
-                        Lihat {article.tickerTag.replace(".JK", "")}
-                      </Link>
-                    )}
-                    <Link href="/screener" className="bg-white/10 text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-white/20 transition-colors press-scale">
-                      Buka Screener
-                    </Link>
-                    <Link href="/akademi" className="bg-white/10 text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-white/20 transition-colors press-scale">
-                      Belajar di Akademi
-                    </Link>
-                  </div>
-                </div>
-              </div>
-
-              {/* Register CTA — anon readers (brief + articles are lead surfaces) */}
-              <RegisterCtaBar />
 
               {/* Prev / Next navigation */}
               {(prevArticle || nextArticle) && (

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Download, Link2, Share2 } from "lucide-react";
+import { Check, Link2, Share2 } from "lucide-react";
 import { trackShare } from "@/lib/track-share";
 
 interface ShareButtonsProps {
@@ -57,9 +57,8 @@ function shareContext(url: string): string {
   return "other";
 }
 
-export function ShareButtons({ url, title, text, className, imageUrl, storyImageUrl }: ShareButtonsProps) {
+export function ShareButtons({ url, title, text, className }: ShareButtonsProps) {
   const [copied, setCopied] = useState(false);
-  const [storyState, setStoryState] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   const shareText = text ? `${title} — ${text}` : title;
   const ctx = shareContext(url);
@@ -108,75 +107,9 @@ export function ShareButtons({ url, title, text, className, imageUrl, storyImage
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleStoryShare = async () => {
-    const fetchUrl = storyImageUrl || imageUrl;
-    if (!fetchUrl || storyState === "loading") return;
-    trackShare("story", ctx, path);
-    setStoryState("loading");
-
-    try {
-      const res = await fetch(fetchUrl);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const blob = await res.blob();
-      const file = new File([blob], "teknikalid-stock.png", { type: "image/png" });
-
-      // Mobile: use Web Share API with file support (Instagram Stories, etc.)
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        try {
-          await navigator.share({ files: [file], title, text: shareText });
-          setStoryState("success");
-          setTimeout(() => setStoryState("idle"), 2000);
-          return;
-        } catch {
-          // user cancelled share dialog — fall through to download
-        }
-      }
-
-      // Desktop fallback: download the image
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "teknikalid-stock.png";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(a.href);
-      setStoryState("success");
-      setTimeout(() => setStoryState("idle"), 2000);
-    } catch {
-      setStoryState("error");
-      setTimeout(() => setStoryState("idle"), 2000);
-    }
-  };
-
   return (
     <div className={`flex items-center gap-1.5 ${className ?? ""}`}>
       <span className="text-[10px] font-semibold uppercase tracking-wider text-text-tertiary mr-1">Bagikan</span>
-
-      {(imageUrl || storyImageUrl) && (
-        <button
-          onClick={handleStoryShare}
-          disabled={storyState === "loading"}
-          className={`inline-flex items-center gap-1 px-2.5 h-11 sm:h-8 rounded-full text-white text-xs font-semibold transition-colors press-scale focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500 ${
-            storyState === "error"
-              ? "bg-red-500"
-              : storyState === "success"
-                ? "bg-emerald-500"
-                : "bg-gradient-to-r from-sky-400 to-sky-600 hover:brightness-110"
-          }`}
-          aria-label="Bagikan ke Story atau Download"
-        >
-          {storyState === "loading" ? (
-            <span className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-          ) : storyState === "success" ? (
-            <Check className="w-3.5 h-3.5" />
-          ) : storyState === "error" ? (
-            <span className="text-[10px]">Gagal</span>
-          ) : (
-            <Download className="w-3.5 h-3.5" />
-          )}
-          {storyState === "idle" ? "Story" : storyState === "success" ? "OK!" : ""}
-        </button>
-      )}
 
       <button
         onClick={handleWhatsApp}

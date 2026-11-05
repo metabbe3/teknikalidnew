@@ -67,10 +67,14 @@ import { GuestStockTracker } from "@/components/ui/guest-stock-tracker";
 import { GuestOverlimitBanner } from "@/components/ui/guest-overlimit-banner";
 import { guestHasQuota } from "@/lib/guest-pass";
 import { auth } from "@/lib/auth";
-import { AlertTriangle, Banknote, Newspaper } from "lucide-react";
+import { AlertTriangle, Banknote, Bell, Newspaper, Star } from "lucide-react";
 
 // ponytail: page is per-request SSR (auth-gated data varies by session — can't be SSG).
 export const dynamic = "force-dynamic";
+
+const BIG_CAP_TICKERS = [
+  "BBCA", "BBRI", "BMRI", "TLKM", "ASII", "GOTO", "DSSA", "AADI", "TPIA", "ANTM", "UNVR", "PGAS"
+] as const;
 
 function Dot() {
   return <span className="text-gray-500" aria-hidden="true">·</span>;
@@ -266,6 +270,12 @@ export default async function StockDetailPage({
     ? await stockMarketService.getStockBatchWithIndicators(sectorPeers.slice(0, 8)).catch(() => [])
     : [];
   const peerMap = new Map(peerBatch.map((b) => [b.ticker, b]));
+
+  const cleanTicker = stripJk(ticker);
+  const isBigCap = (BIG_CAP_TICKERS as readonly string[]).includes(cleanTicker);
+  const bridgePeers = isBigCap
+    ? BIG_CAP_TICKERS.filter((t) => t !== cleanTicker)
+    : sectorPeers.slice(0, 6);
 
   const [socialData, { structure: marketStructure }, fundamentalRow, idxCommissioners, idxDirectors, idxShareholders, idxSubsidiaries, idxDividends, relatedArticles, sectorArticles] = await Promise.all([
     prisma.post.aggregate({
@@ -752,7 +762,7 @@ export default async function StockDetailPage({
                   <div className="flex items-center gap-4">
                     <div className="flex flex-col items-center shrink-0">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-3xl font-extrabold tabular-nums leading-none" style={{ color: meta.color }}>
+                        <span className={`text-3xl font-extrabold tabular-nums leading-none ${signalBadge(raw).cls}`} style={{ backgroundColor: "transparent", border: "none", padding: 0 }}>
                           {raw.toFixed(2).replace(".", ",")}
                         </span>
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${signalBadge(raw).cls}`}>
@@ -764,10 +774,9 @@ export default async function StockDetailPage({
                     <div className="h-10 w-px bg-border shrink-0" aria-hidden="true" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-text-primary flex items-center gap-2 flex-wrap">
-                        Sinyal: <span style={{ color: isBull ? "var(--color-bullish)" : isBear ? "var(--color-bearish)" : meta.color }}>{outlook}</span>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: meta.bg, color: meta.color }}>{meta.label}</span>
+                        Sinyal: <span style={{ color: isBull ? "var(--color-bullish)" : isBear ? "var(--color-bearish)" : undefined }} className={!isBull && !isBear ? `${signalBadge(raw).cls} bg-transparent border-0 p-0` : undefined}>{outlook}</span>
                       </p>
-                      <div className="mt-2 h-2 rounded-full bg-bg-hover overflow-hidden relative" role="meter" aria-valuenow={raw} aria-valuemin={-1} aria-valuemax={1} aria-label={`Skor sinyal teknikal ${raw.toFixed(2)} pada skala minus satu sampai plus satu`}>
+                      <div className="mt-2 h-2 rounded-full bg-bg-hover overflow-hidden relative" role="meter" aria-valuenow={raw} aria-valuemin={-1} aria-valuemax={1} aria-label={`Skor sinyal teknikal ${raw.toFixed(2).replace(".", ",")} pada skala minus satu sampai plus satu`}>
                         <div className="h-full rounded-full transition-all duration-700" style={{ width: `${score}%`, backgroundColor: meta.color }} />
                       </div>
                       <p className="mt-1.5 text-[11px] text-text-tertiary">Gabungan 9 indikator teknikal — RSI, MACD, tren, momentum, volume</p>
@@ -793,10 +802,10 @@ export default async function StockDetailPage({
                         </p>
                         <div className="mt-3 grid grid-cols-2 gap-2">
                           <a
-                            href={`/stocks/${ticker}#pantau`}
+                            href="#pantau"
                             className="flex items-center justify-center gap-1.5 min-h-11 rounded-lg border border-border bg-bg hover:bg-bg-hover text-xs font-medium text-text-secondary transition-colors"
                           >
-                            ⭐ Simpan ke pantauan
+                            <Star className="h-3.5 w-3.5" aria-hidden="true" /> Simpan ke pantauan
                           </a>
                           <a
                             href={`https://t.me/TeknikalidBot?start=${ticker.replace(/\.JK$/, "")}_JK`}
@@ -805,7 +814,7 @@ export default async function StockDetailPage({
                             rel="noopener noreferrer"
                             className="flex items-center justify-center gap-1.5 min-h-11 rounded-lg border border-border bg-bg hover:bg-bg-hover text-xs font-medium text-text-secondary transition-colors"
                           >
-                            🔔 Kabari di Telegram
+                            <Bell className="h-3.5 w-3.5" aria-hidden="true" /> Kabari di Telegram
                           </a>
                         </div>
                       </>
@@ -827,6 +836,29 @@ export default async function StockDetailPage({
                     message="Daftar gratis untuk membuka rencana trading, target profit, dan batas cut loss."
                   />
                 )}
+              </div>
+            )}
+
+            {/* Anti-dead-end peer chips (Batch B) */}
+            {bridgePeers.length > 0 && (
+              <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
+                <span className="text-text-tertiary font-medium">
+                  {isBigCap
+                    ? "Bank & Big-Cap Lainnya:"
+                    : `Saham Serupa Sektor ${sectorToBahasa(stock.sector)}:`}
+                </span>
+                {bridgePeers.map((p) => {
+                  const pClean = stripJk(p);
+                  return (
+                    <Link
+                      key={p}
+                      href={`/stocks/${pClean}.JK`}
+                      className="inline-flex min-h-10 sm:min-h-0 items-center rounded-full border border-border bg-bg-card px-2.5 py-1 text-xs font-semibold text-text-secondary hover:border-accent/40 hover:text-accent transition-colors"
+                    >
+                      {pClean}
+                    </Link>
+                  );
+                })}
               </div>
             )}
 
@@ -957,13 +989,13 @@ export default async function StockDetailPage({
               ["indikator", "Indikator"],
               ["analisa", "Analisa"],
               ["asing", "Asing"],
-              ...(fullAccess ? [["plan", "Trading Plan"]] : []),
+              ...(fullAccess ? [["plan", "Rencana Trading"]] : []),
             ].map(([id, label]) => (
               <a
                 key={id}
                 href={`#${id}`}
                 data-engagement={`nav_${id}`} // 28 Okt: sticky nav sebelumnya tak ter-track (anchor jump tak memicu apa pun)
-                className="shrink-0 rounded-full px-3 py-1 text-[11px] font-semibold text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
+                className="shrink-0 rounded-full px-3 py-2.5 min-h-11 inline-flex items-center text-xs font-semibold text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
               >
                 {label}
               </a>
@@ -972,6 +1004,9 @@ export default async function StockDetailPage({
         </div>
 
 
+
+      {/* Target anchor utk pantauan / watchlist / alert sinyal */}
+      <div id="pantau" className="scroll-mt-24" />
 
       {/* Alert preview CTA — anon only: tunjukkan value tersembunyi (alert sinyal) saat saham PUNYA sinyal aktif */}
       {!fullAccess && (
@@ -1015,14 +1050,21 @@ export default async function StockDetailPage({
             <div className="mt-1"><VerdictFeedback ticker={ticker} /></div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div className="space-y-2">
-                <p className="text-text-secondary">
-                  <span className="font-semibold text-text-primary">Sinyal:</span>{' '}
-                  <span style={{ color: outlook === "Bullish" ? "var(--color-bullish)" : outlook === "Bearish" ? "var(--color-bearish)" : "var(--color-text-tertiary)" }}>
-                    {outlook}
-                  </span>
-                  {' — '}
-                  {verdictProse || `Indikator teknikal menunjukkan sinyal ${outlook.toLowerCase()} untuk ${stripJk(ticker)}.`}
-                </p>
+                {(() => {
+                  const anonSignal = signalLabelId(indicators.signalLabel);
+                  const isAnonBull = /bullish|beli|accumulate/i.test(anonSignal);
+                  const isAnonBear = /bearish|jual|sell/i.test(anonSignal);
+                  return (
+                    <p className="text-text-secondary">
+                      <span className="font-semibold text-text-primary">Sinyal:</span>{' '}
+                      <span style={{ color: isAnonBull ? "var(--color-bullish)" : isAnonBear ? "var(--color-bearish)" : "var(--color-text-tertiary)" }}>
+                        {anonSignal}
+                      </span>
+                      {' — '}
+                      {verdictProse || `Indikator teknikal menunjukkan sinyal ${anonSignal.toLowerCase()} untuk ${stripJk(ticker)}.`}
+                    </p>
+                  );
+                })()}
                 <p className="text-text-secondary">
                   <span className="font-semibold text-text-primary">Harga:</span> {formatPrice(close)}
                   {changePercent !== null && ` (${formatPercent(changePercent)})`}
@@ -1423,6 +1465,24 @@ export default async function StockDetailPage({
               </details>
             ))}
           </div>
+
+          {/* CTA Telegram kontekstual setelah FAQ (Batch B) */}
+          <div className="mt-6 pt-4 border-t border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <p className="text-xs text-text-secondary">
+              Pantau sinyal teknikal dan pergerakan {stripJk(ticker)} secara instan.
+            </p>
+            <a
+              href={`https://t.me/TeknikalidAgentBot?start=web_${stripJk(ticker)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 sm:min-h-0 items-center justify-center gap-2 rounded-lg border border-border bg-bg-secondary px-4 py-2 text-xs font-semibold text-text-secondary hover:border-accent/40 hover:text-accent hover:bg-bg-hover transition-colors shrink-0"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" className="text-accent shrink-0" aria-hidden="true">
+                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.121l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.196 1.006.128.832.922z" />
+              </svg>
+              <span>Tanya posisi {stripJk(ticker)} ke TeknikalAgent</span>
+            </a>
+          </div>
         </section>
 
         <StockFAQWidget ticker={ticker} />
@@ -1557,7 +1617,7 @@ export default async function StockDetailPage({
             </Link>
             {/* seo-2026-10-29-p0 (audit #1): link screener kontekstual dari stock page */}
             <Link
-              href="/screener"
+              href="/stocks?view=screener"
               className="inline-flex items-center gap-1 text-xs font-medium text-text-tertiary hover:text-accent transition-colors"
             >
               Saring saham lain by indikator di Screener →

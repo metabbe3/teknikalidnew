@@ -58,10 +58,12 @@ export async function LiveIndicatorExample({ ticker }: { ticker: string }) {
       aria-label={`Contoh live ${sym}`}
     >
       <div className="flex items-center justify-between gap-3 mb-1 flex-wrap">
-        <h2 className="text-lg font-bold text-text-primary flex items-center gap-2">
-          <TrendingUp className="h-5 w-5 text-accent" />
-          Contoh Live: {sym}
-        </h2>
+        <div className="flex items-center gap-2">
+          <TrendingUp className="h-5 w-5 text-accent" aria-hidden />
+          <h2 className="text-lg font-bold text-text-primary">
+            Contoh Live: {sym}
+          </h2>
+        </div>
         <span className={`text-xs font-semibold px-2.5 py-1 rounded-md border ${outlookStyles[outlook]}`}>
           {outlook}
         </span>

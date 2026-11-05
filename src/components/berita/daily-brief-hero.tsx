@@ -84,12 +84,6 @@ export function DailyBriefHero({
           </span>
         </div>
       </Link>
-      <p className="mt-2 text-center text-xs text-text-tertiary">
-        Ingin brief seperti ini tiap hari?{" "}
-        <Link href="/auth/register" className="font-semibold text-accent hover:underline">
-          Daftar gratis
-        </Link>
-      </p>
     </section>
   );
 }

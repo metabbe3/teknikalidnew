@@ -49,12 +49,38 @@ const sanitizeSchema = {
   },
 };
 
-export function extractHeadings(content: string): { id: string; text: string }[] {
+export function extractHeadings(content: string, title?: string): { id: string; text: string }[] {
   const headings: { id: string; text: string }[] = [];
-  const regex = /^## (.+)$/gm;
+  const regex = /^(#{1,2}) (.+)$/gm;
+  const normTitle = title ? normalizeTitle(title) : "";
   let match;
+  let firstHeadingChecked = false;
   while ((match = regex.exec(content)) !== null) {
-    const text = match[1].trim();
+    const level = match[1].length;
+    const text = match[2].trim();
+    const normHeading = normalizeTitle(text);
+    if (!firstHeadingChecked) {
+      firstHeadingChecked = true;
+      // wave2-review (Argon 6 Nov): drop heading pertama HANYA jika duplikat judul.
+      // H1 pertama yang beda teks = konten nyata -> didemote (di remark) & tetap masuk TOC.
+      if (
+        normTitle &&
+        (normHeading === normTitle ||
+          normHeading.startsWith(normTitle) ||
+          normTitle.startsWith(normHeading))
+      ) {
+        continue;
+      }
+    } else {
+      if (
+        normTitle &&
+        (normHeading === normTitle ||
+          normHeading.startsWith(normTitle) ||
+          normTitle.startsWith(normHeading))
+      ) {
+        continue;
+      }
+    }
     const id = text
       .toLowerCase()
       .replace(/[^\w\s-]/g, "")
@@ -84,24 +110,93 @@ export function extractTickers(content: string): string[] {
   return result;
 }
 
-// seo-2026-11-05 (audit 955 halaman): H1 di dalam markdown artikel menyebabkan
-// multi-H1 di 17 halaman (judul dirender 2x: template + "# Judul" di body cron).
-// Demote H1 konten → H2; H1 resmi tunggal milik template judul artikel.
-export function remarkDemoteH1() {
-  return (tree: any) => {
-    const visit = (node: any) => {
-      if (node.type === "heading" && node.depth === 1) node.depth = 2;
-      if (node.children) node.children.forEach(visit);
-    };
-    visit(tree);
+interface MdastNode {
+  type: string;
+  depth?: number;
+  value?: string;
+  children?: MdastNode[];
+}
+
+function getNodeText(node: MdastNode | null | undefined): string {
+  if (!node) return "";
+  if (typeof node.value === "string") return node.value;
+  if (Array.isArray(node.children)) {
+    return node.children.map(getNodeText).join("");
+  }
+  return "";
+}
+
+function normalizeTitle(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .trim();
+}
+
+/**
+ * seo-2026-11-05 / ux-wave2:
+ * 1. Drop the first heading if its text matches the article's H1 title (100% duplicate H2 removal).
+ * 2. Demote any remaining H1 in the markdown body to H2 (single H1 invariant for the page).
+ */
+export function remarkDropDuplicateHeading(title?: string) {
+  return (tree: { children?: MdastNode[] }) => {
+    if (!tree?.children || !Array.isArray(tree.children)) return;
+    const normTitle = title ? normalizeTitle(title) : "";
+    let firstHeadingChecked = false;
+    const newChildren: MdastNode[] = [];
+
+    for (const node of tree.children) {
+      if (node.type === "heading" && (node.depth === 1 || node.depth === 2)) {
+        const headingText = getNodeText(node);
+        const normHeading = normalizeTitle(headingText);
+
+        if (!firstHeadingChecked) {
+          firstHeadingChecked = true;
+          // wave2-review (Argon 6 Nov): HAPUS heading pertama hanya jika duplikat judul.
+          // H1 pertama yang teksnya BEDA = konten nyata -> JANGAN hapus; jatuh ke demote H2 di bawah.
+          if (
+            normTitle &&
+            (normHeading === normTitle ||
+              normHeading.startsWith(normTitle) ||
+              normTitle.startsWith(normHeading))
+          ) {
+            continue;
+          }
+        } else {
+          // If any subsequent heading is identical to title, drop it too
+          if (
+            normTitle &&
+            (normHeading === normTitle ||
+              normHeading.startsWith(normTitle) ||
+              normTitle.startsWith(normHeading))
+          ) {
+            continue;
+          }
+        }
+        // Ensure no depth 1 headings remain in body
+        if (node.depth === 1) {
+          node.depth = 2;
+        }
+        newChildren.push(node);
+      } else {
+        newChildren.push(node);
+      }
+    }
+    tree.children = newChildren;
   };
 }
 
-export function ArticleContent({ content }: { content: string }) {
+export function remarkDemoteH1(title?: string) {
+  return remarkDropDuplicateHeading(title);
+}
+
+export function ArticleContent({ content, title }: { content: string; title?: string }) {
+  const dropDuplicatePlugin = () => remarkDropDuplicateHeading(title);
+
   return (
     <article className="article-prose">
       <Markdown
-        remarkPlugins={[remarkGfm, remarkDirective, remarkCallouts, remarkDemoteH1]}
+        remarkPlugins={[remarkGfm, remarkDirective, remarkCallouts, dropDuplicatePlugin]}
         rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema], rehypeSlug, rehypeStockLinker]}
       >
         {content}
