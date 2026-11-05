@@ -15,6 +15,7 @@ import { CtaSection } from "@/components/home/cta-section";
 import { TickerTape } from "@/components/home/ticker-tape";
 import { SahamStrategyLinks } from "@/components/seo/saham-strategy-links";
 import { PersonalizedBeranda } from "@/components/home/personalized-beranda";
+import { SectorHeatmap } from "@/components/home/sector-heatmap";
 import { HoldingTradingPlans } from "@/components/home/holding-trading-plans";
 import { portfolioRepository } from "@/domains/portfolio/portfolio.repository";
 import { ThesisCard } from "@/components/home/thesis-card";
@@ -196,7 +197,7 @@ export default async function HomePage() {
   const ihsg = ihsgClose !== null ? { close: ihsgClose, change: ihsgChange, changePercent: ihsgChangePercent } : null;
 
   const isClosed = !marketInfo.marketStatus.isOpen;
-  const { gainers, losers } = overview;
+  const { gainers, losers, sectors } = overview;
 
   const topGainer = gainers[0];
   const topLoser = losers[0];
@@ -332,7 +333,7 @@ export default async function HomePage() {
                 Analisa Sekarang
               </Link>
               <Link
-                href="/screener"
+                href="/stocks?view=screener"
                 className="inline-flex items-center gap-2 bg-bg-primary text-text-primary border border-border px-6 py-3 rounded-xl font-semibold hover:border-accent/40 transition-colors press-scale"
               >
                 Coba Screener
@@ -398,6 +399,37 @@ export default async function HomePage() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-10 space-y-14">
+        {/* wave2-review (Argon 6 Nov): konten SSR anon dipulihkan ke DOM untuk
+            Googlebot — dilipat <details> (paritas beranda login), bukan dihapus. */}
+        <details className="group rounded-xl border border-border bg-bg-card p-5">
+          <summary className="cursor-pointer list-none flex items-center justify-between text-text-primary font-semibold text-sm [&::-webkit-details-marker]:hidden">
+            <span className="flex items-center gap-2">
+              <span>Saham Teraktif Hari Ini</span>
+              <span className="text-xs text-text-tertiary font-normal">({gainers.length + losers.length} movers)</span>
+            </span>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-text-tertiary transition-transform duration-200 group-open:rotate-180 shrink-0 ml-2"
+              aria-hidden="true"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </summary>
+          <div className="mt-4 pt-4 border-t border-border space-y-6">
+            <Suspense fallback={<FeaturedSkeleton />}>
+              <FeaturedStocksSection gainers={gainers} losers={losers} isMarketOpen={!isClosed} />
+            </Suspense>
+            <SectorHeatmap sectors={sectors} />
+          </div>
+        </details>
+
         {/* Kalkulator Trading Plan — folded details */}
         <details className="group rounded-xl border border-border bg-bg-card p-6">
           <summary className="cursor-pointer list-none flex items-center justify-between text-text-primary font-semibold text-lg [&::-webkit-details-marker]:hidden">

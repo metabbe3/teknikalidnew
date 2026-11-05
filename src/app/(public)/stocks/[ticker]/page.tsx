@@ -67,7 +67,7 @@ import { GuestStockTracker } from "@/components/ui/guest-stock-tracker";
 import { GuestOverlimitBanner } from "@/components/ui/guest-overlimit-banner";
 import { guestHasQuota } from "@/lib/guest-pass";
 import { auth } from "@/lib/auth";
-import { AlertTriangle, Banknote, Newspaper } from "lucide-react";
+import { AlertTriangle, Banknote, Bell, Newspaper, Star } from "lucide-react";
 
 // ponytail: page is per-request SSR (auth-gated data varies by session — can't be SSG).
 export const dynamic = "force-dynamic";
@@ -776,7 +776,7 @@ export default async function StockDetailPage({
                       <p className="text-sm font-semibold text-text-primary flex items-center gap-2 flex-wrap">
                         Sinyal: <span style={{ color: isBull ? "var(--color-bullish)" : isBear ? "var(--color-bearish)" : undefined }} className={!isBull && !isBear ? `${signalBadge(raw).cls} bg-transparent border-0 p-0` : undefined}>{outlook}</span>
                       </p>
-                      <div className="mt-2 h-2 rounded-full bg-bg-hover overflow-hidden relative" role="meter" aria-valuenow={raw} aria-valuemin={-1} aria-valuemax={1} aria-label={`Skor sinyal teknikal ${raw.toFixed(2)} pada skala minus satu sampai plus satu`}>
+                      <div className="mt-2 h-2 rounded-full bg-bg-hover overflow-hidden relative" role="meter" aria-valuenow={raw} aria-valuemin={-1} aria-valuemax={1} aria-label={`Skor sinyal teknikal ${raw.toFixed(2).replace(".", ",")} pada skala minus satu sampai plus satu`}>
                         <div className="h-full rounded-full transition-all duration-700" style={{ width: `${score}%`, backgroundColor: meta.color }} />
                       </div>
                       <p className="mt-1.5 text-[11px] text-text-tertiary">Gabungan 9 indikator teknikal — RSI, MACD, tren, momentum, volume</p>
@@ -805,7 +805,7 @@ export default async function StockDetailPage({
                             href="#pantau"
                             className="flex items-center justify-center gap-1.5 min-h-11 rounded-lg border border-border bg-bg hover:bg-bg-hover text-xs font-medium text-text-secondary transition-colors"
                           >
-                            ⭐ Simpan ke pantauan
+                            <Star className="h-3.5 w-3.5" aria-hidden="true" /> Simpan ke pantauan
                           </a>
                           <a
                             href={`https://t.me/TeknikalidBot?start=${ticker.replace(/\.JK$/, "")}_JK`}
@@ -814,7 +814,7 @@ export default async function StockDetailPage({
                             rel="noopener noreferrer"
                             className="flex items-center justify-center gap-1.5 min-h-11 rounded-lg border border-border bg-bg hover:bg-bg-hover text-xs font-medium text-text-secondary transition-colors"
                           >
-                            🔔 Kabari di Telegram
+                            <Bell className="h-3.5 w-3.5" aria-hidden="true" /> Kabari di Telegram
                           </a>
                         </div>
                       </>
@@ -1617,7 +1617,7 @@ export default async function StockDetailPage({
             </Link>
             {/* seo-2026-10-29-p0 (audit #1): link screener kontekstual dari stock page */}
             <Link
-              href="/screener"
+              href="/stocks?view=screener"
               className="inline-flex items-center gap-1 text-xs font-medium text-text-tertiary hover:text-accent transition-colors"
             >
               Saring saham lain by indikator di Screener →

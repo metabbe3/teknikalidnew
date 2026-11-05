@@ -327,7 +327,7 @@ export function PersonalizedBeranda() {
             <Link href="/trading-plan" className="px-3 py-2.5 sm:py-1.5 rounded-lg text-[11px] font-medium bg-bg-hover border border-border text-text-secondary hover:text-text-primary hover:bg-bg-card transition-all press-scale">
               Kalkulator Plan
             </Link>
-            <Link href="/screener" className="px-3 py-2.5 sm:py-1.5 rounded-lg text-[11px] font-medium bg-bg-hover border border-border text-text-secondary hover:text-text-primary hover:bg-bg-card transition-all press-scale">
+            <Link href="/stocks?view=screener" className="px-3 py-2.5 sm:py-1.5 rounded-lg text-[11px] font-medium bg-bg-hover border border-border text-text-secondary hover:text-text-primary hover:bg-bg-card transition-all press-scale">
               Screener
             </Link>
             <a

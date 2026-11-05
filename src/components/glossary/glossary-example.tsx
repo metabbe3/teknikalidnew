@@ -14,6 +14,7 @@
 import Link from "next/link";
 import { Sigma } from "lucide-react";
 import { formatPrice, stripJk } from "@/lib/utils";
+import { formatDecimalId } from "@/lib/format-number";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
 import { marketSnapshotService } from "@/domains/stock/market-snapshot.service";
 import type { GlossaryExampleSpec } from "@/lib/glossary-deep-dives";
@@ -21,7 +22,7 @@ import { prisma } from "@/lib/prisma";
 
 function fmtPct(v: number | null | undefined): string {
   if (v == null || !Number.isFinite(v)) return "—";
-  return `${v > 0 ? "+" : ""}${v.toFixed(2)}%`;
+  return `${v > 0 ? "+" : ""}${formatDecimalId(v, 2)}%`;
 }
 function fmtNum(v: number | null | undefined, digits = 2): string {
   if (v == null || !Number.isFinite(v)) return "—";
@@ -42,8 +43,8 @@ function fmtDateStrID(dStr: string | null | undefined): string {
 }
 function fmtMarketCap(v: number | null | undefined): string {
   if (v == null || !Number.isFinite(v)) return "—";
-  if (v >= 1e12) return `Rp${(v / 1e12).toFixed(1)} T`;
-  if (v >= 1e9) return `Rp${(v / 1e9).toFixed(1)} M`;
+  if (v >= 1e12) return `Rp${formatDecimalId(v / 1e12, 1)} T`;
+  if (v >= 1e9) return `Rp${formatDecimalId(v / 1e9, 1)} M`;
   return formatPrice(v);
 }
 

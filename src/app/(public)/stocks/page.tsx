@@ -166,7 +166,7 @@ export default async function StocksPage() {
             name: "Indikator teknikal apa saja yang tersedia di TeknikalID?",
             acceptedAnswer: {
               "@type": "Answer",
-              text: "TeknikalID menyediakan 12+ indikator: RSI, MACD, Bollinger Bands, Supertrend, ADX, Stochastic Oscillator, On-Balance Volume (OBV), ATR, dan Moving Average (SMA 20/50/200). Semua indikator dihitung otomatis dan ditampilkan di chart interaktif.",
+              text: "TeknikalID menyediakan 9 indikator: RSI, MACD, Bollinger Bands, Supertrend, ADX, Stochastic Oscillator, On-Balance Volume (OBV), ATR, dan Moving Average (SMA 20/50/200). Semua indikator dihitung otomatis dan ditampilkan di chart interaktif.",
             },
           },
           {
@@ -278,7 +278,7 @@ export default async function StocksPage() {
           <div className="mt-4 mb-6 space-y-3">
             <div>
               <div className="text-xs font-semibold uppercase tracking-wider text-text-tertiary mb-2">
-                Paling Dicari Malam Ini
+                Paling Dicari Hari Ini
               </div>
               <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                 {POPULAR_BIG_CAPS.map((ticker) => (
@@ -365,7 +365,7 @@ export default async function StocksPage() {
                 <h2 className="text-lg font-bold text-text-primary">Analisa Teknikal Saham IDX — Panduan Lengkap</h2>
                 <p>
                   TeknikalID menyediakan <strong className="text-text-primary">analisa teknikal saham</strong> untuk 956+ saham di Bursa Efek Indonesia (IDX). 
-                  Setiap saham dilengkapi chart interaktif real-time, 12+ indikator teknikal (RSI, MACD, Bollinger Bands, 
+                  Setiap saham dilengkapi chart interaktif real-time, 9 indikator teknikal (RSI, MACD, Bollinger Bands, 
                   Supertrend, ADX, dan lainnya), serta trading plan otomatis berdasarkan Pivot Points &amp; ATR.
                 </p>
                 <p>
@@ -390,7 +390,7 @@ export default async function StocksPage() {
                   <div>
                     <h3 className="text-sm font-semibold text-text-primary">Indikator teknikal apa saja yang tersedia di TeknikalID?</h3>
                     <p className="mt-1 text-xs text-text-secondary leading-relaxed">
-                      TeknikalID menyediakan 12+ indikator: RSI, MACD, Bollinger Bands, Supertrend, ADX, 
+                      TeknikalID menyediakan 9 indikator: RSI, MACD, Bollinger Bands, Supertrend, ADX, 
                       Stochastic Oscillator, On-Balance Volume (OBV), ATR, dan Moving Average (SMA 20/50/200). 
                       Semua indikator dihitung otomatis dan ditampilkan di chart interaktif.
                     </p>

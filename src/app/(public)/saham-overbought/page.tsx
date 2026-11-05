@@ -102,7 +102,7 @@ export default async function SahamOverboughtPage() {
       </div>
 
       <div className="mx-auto max-w-5xl px-4 py-8">
-        <div className="mt-4 rounded-lg border border-amber-300/40 bg-amber-500/5 p-4 text-sm text-text-secondary">
+        <div className="mt-4 rounded-lg border border-amber-500/25 bg-amber-500/5 p-4 text-sm text-text-secondary">
           <strong className="text-text-primary"> Perhatian:</strong> Saham overbought bukan sinyal jual pasti. Dalam tren kuat, RSI bisa bertahan
           diatas 70. Gunakan bersama indikator lain.
         </div>
@@ -159,7 +159,7 @@ export default async function SahamOverboughtPage() {
         <AskAiCta question="Saham overbought ada?" />
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/stocks?view=screener" className="rounded-lg bg-teal-600 px-4 py-3 text-sm font-semibold text-white hover:bg-teal-700"><Search className="inline h-4 w-4" /> Screener Lengkap</Link>
+          <Link href="/stocks?view=screener" className="rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-accent/90"><Search className="inline h-4 w-4" /> Screener Lengkap</Link>
           <Link href="/saham-oversold" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-bg-hover"><Gem className="inline h-4 w-4" /> Saham Oversold</Link>
           <Link href="/saham-golden-cross" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-bg-hover"><TrendingUp className="inline h-4 w-4" /> Saham Golden Cross</Link>
         </div>

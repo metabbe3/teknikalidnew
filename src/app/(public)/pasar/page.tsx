@@ -529,7 +529,7 @@ function Disclaimer() {
           rel="noopener noreferrer"
           className="mt-3 sm:mt-0 inline-flex items-center justify-center gap-2 rounded-lg bg-accent text-white px-4 py-2.5 text-xs font-semibold hover:bg-accent/90 transition-colors shrink-0"
         >
-          Kabari saya kalau ada kandidat baru — TeknikalAgent di Telegram
+          Aktifkan di Telegram — TeknikalAgent
         </a>
       </div>
     </div>

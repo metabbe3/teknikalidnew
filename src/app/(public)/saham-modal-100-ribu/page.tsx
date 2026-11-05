@@ -145,7 +145,7 @@ export default async function SahamModal100RibuPage() {
                     </td>
                     <td className="px-3 py-2 text-right font-mono tabular-nums font-semibold">
                       {r.signalScore !== null
-                        ? <span className={r.signalScore > 0 ? "text-bullish" : r.signalScore < 0 ? "text-bearish" : "text-text-secondary"}>{r.signalScore.toFixed(2).replace(".", ",")}</span>
+                        ? <span className={r.signalScore > 0 ? "text-bullish" : r.signalScore < 0 ? "text-bearish" : "text-text-secondary"}>{r.signalScore > 0 ? "+" : ""}{r.signalScore.toFixed(2).replace(".", ",")}</span>
                         : "—"}
                     </td>
                     <td className="px-3 py-2 text-right font-mono tabular-nums text-text-secondary">{r.rsi14 !== null ? r.rsi14.toFixed(0) : "—"}</td>

@@ -1,5 +1,6 @@
 import type { TradingPlan } from "@/lib/trading-plan";
 import type { McResult } from "@/lib/monte-carlo";
+import { AlertTriangle } from "lucide-react";
 import { formatRp } from "@/lib/utils";
 
 const confidenceStyles = {
@@ -47,7 +48,7 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
         </div>
 
         {plan.suggestion && (
-          <div className={`flex items-start gap-1.5 ${isWaitAndSee ? "bg-red-50/80 -mx-1 px-2.5 py-2 rounded-lg" : isBOW ? "bg-amber-50/60 -mx-1 px-2.5 py-2 rounded-lg" : "bg-bg-hover -mx-1 px-2.5 py-2 rounded-lg"}`}>
+          <div className={`flex items-start gap-1.5 ${isWaitAndSee ? "bg-bearish/10 -mx-1 px-2.5 py-2 rounded-lg" : isBOW ? "bg-amber-500/10 -mx-1 px-2.5 py-2 rounded-lg" : "bg-bg-hover -mx-1 px-2.5 py-2 rounded-lg"}`}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`shrink-0 mt-0.5 ${isWaitAndSee ? "text-bearish" : isBOW ? "text-amber-500" : "text-text-tertiary"}`} aria-hidden="true">
               {isWaitAndSee ? (
                 <>
@@ -62,7 +63,7 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
                 </>
               )}
             </svg>
-            <p className={`text-[11px] leading-snug ${isWaitAndSee ? "text-red-800 font-medium" : isBOW ? "text-amber-800 font-medium" : "text-text-secondary"}`}>
+            <p className={`text-[11px] leading-snug ${isWaitAndSee ? "text-bearish font-medium" : isBOW ? "text-amber-800 font-medium" : "text-text-secondary"}`}>
               {plan.suggestion}
             </p>
           </div>
@@ -125,7 +126,7 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
             </details>
             {!setupLayak && (
               <p className="text-[10px] leading-snug text-text-tertiary bg-bg-hover -mx-1 px-2.5 py-1.5 rounded-lg">
-                ⚠️ Setup belum layak (Rugi : Untung 1 : {plan.riskReward.toFixed(1).replace(".", ",")}) — angka peluang di atas hanya simulasi statistik, bukan sinyal entry.
+                <AlertTriangle className="inline h-3 w-3 -mt-0.5 align-middle" aria-hidden="true" />{" "}Setup belum layak (Rugi : Untung 1 : {plan.riskReward.toFixed(1).replace(".", ",")}) — angka peluang di atas hanya simulasi statistik, bukan sinyal entry.
               </p>
             )}
           </>

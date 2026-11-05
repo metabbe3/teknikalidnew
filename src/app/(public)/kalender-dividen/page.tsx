@@ -206,7 +206,7 @@ export default async function KalenderDividenPage() {
                         <td className="px-3 py-2 text-right font-mono tabular-nums">{yieldPct !== null ? `${yieldPct.toFixed(2).replace(".", ",")}%` : "—"}</td>
                         <td className="hidden sm:table-cell px-3 py-2 text-right font-mono tabular-nums font-semibold">
                           {r.signalScore !== null
-                            ? <span className={r.signalScore > 0 ? "text-bullish" : r.signalScore < 0 ? "text-bearish" : "text-text-secondary"}>{r.signalScore.toFixed(2).replace(".", ",")}</span>
+                            ? <span className={r.signalScore > 0 ? "text-bullish" : r.signalScore < 0 ? "text-bearish" : "text-text-secondary"}>{r.signalScore > 0 ? "+" : ""}{r.signalScore.toFixed(2).replace(".", ",")}</span>
                             : "—"}
                         </td>
                         <td className="hidden sm:table-cell px-3 py-2 font-mono text-xs whitespace-nowrap text-text-secondary">{fmtDate(r.exDate)}</td>

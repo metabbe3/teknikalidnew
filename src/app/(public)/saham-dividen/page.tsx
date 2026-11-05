@@ -278,9 +278,9 @@ export default async function SahamDividenPage() {
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/stocks?view=screener" className="rounded-lg bg-teal-600 px-4 py-3 text-sm font-semibold text-white hover:bg-teal-700"><Search className="inline h-4 w-4" /> Screener Lengkap</Link>
-          <Link href="/saham-blue-chip" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted"><Landmark className="inline h-4 w-4" /> Saham Blue Chip</Link>
-          <Link href="/saham-undervalued" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted"><Gem className="inline h-4 w-4" /> Saham Undervalued</Link>
+          <Link href="/stocks?view=screener" className="rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-accent/90"><Search className="inline h-4 w-4" /> Screener Lengkap</Link>
+          <Link href="/saham-blue-chip" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-bg-hover"><Landmark className="inline h-4 w-4" /> Saham Blue Chip</Link>
+          <Link href="/saham-undervalued" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-bg-hover"><Gem className="inline h-4 w-4" /> Saham Undervalued</Link>
         </div>
       </div>
     </>

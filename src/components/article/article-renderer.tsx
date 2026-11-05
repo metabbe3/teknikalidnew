@@ -61,12 +61,13 @@ export function extractHeadings(content: string, title?: string): { id: string; 
     const normHeading = normalizeTitle(text);
     if (!firstHeadingChecked) {
       firstHeadingChecked = true;
+      // wave2-review (Argon 6 Nov): drop heading pertama HANYA jika duplikat judul.
+      // H1 pertama yang beda teks = konten nyata -> didemote (di remark) & tetap masuk TOC.
       if (
-        level === 1 ||
-        (normTitle &&
-          (normHeading === normTitle ||
-            normHeading.startsWith(normTitle) ||
-            normTitle.startsWith(normHeading)))
+        normTitle &&
+        (normHeading === normTitle ||
+          normHeading.startsWith(normTitle) ||
+          normTitle.startsWith(normHeading))
       ) {
         continue;
       }
@@ -151,13 +152,13 @@ export function remarkDropDuplicateHeading(title?: string) {
 
         if (!firstHeadingChecked) {
           firstHeadingChecked = true;
-          // Heading pertama depth-1 (atau depth-2 yang teksnya identik dgn judul/H1) -> HAPUS dari AST
+          // wave2-review (Argon 6 Nov): HAPUS heading pertama hanya jika duplikat judul.
+          // H1 pertama yang teksnya BEDA = konten nyata -> JANGAN hapus; jatuh ke demote H2 di bawah.
           if (
-            node.depth === 1 ||
-            (normTitle &&
-              (normHeading === normTitle ||
-                normHeading.startsWith(normTitle) ||
-                normTitle.startsWith(normHeading)))
+            normTitle &&
+            (normHeading === normTitle ||
+              normHeading.startsWith(normTitle) ||
+              normTitle.startsWith(normHeading))
           ) {
             continue;
           }

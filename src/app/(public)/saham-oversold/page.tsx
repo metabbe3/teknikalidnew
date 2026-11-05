@@ -301,7 +301,7 @@ export default async function SahamOversoldPage() {
         </details>
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/stocks?view=screener" className="rounded-lg bg-teal-600 px-4 py-3 text-sm font-semibold text-white hover:bg-teal-700">
+          <Link href="/stocks?view=screener" className="rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-accent/90">
             <Search className="inline h-4 w-4" /> Screener Lengkap
           </Link>
           <Link href="/saham-golden-cross" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
