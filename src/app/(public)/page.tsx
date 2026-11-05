@@ -340,7 +340,7 @@ export default async function HomePage() {
                 Coba Screener
               </Link>
               <a
-                href="https://t.me/teknikalid"
+                href="https://t.me/TeknikalidAgentBot?start=kopi_homehero"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-text-primary/80 px-4 py-3 rounded-xl font-medium hover:text-[#229ED9] transition-colors"

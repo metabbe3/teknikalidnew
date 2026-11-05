@@ -808,7 +808,7 @@ export default async function StockDetailPage({
                             <Star className="h-3.5 w-3.5" aria-hidden="true" /> Simpan ke pantauan
                           </a>
                           <a
-                            href={`https://t.me/TeknikalidBot?start=${ticker.replace(/\.JK$/, "")}_JK`}
+                            href={`https://t.me/TeknikalidAgentBot?start=${ticker.replace(/\.JK$/, "")}_JK`}
                             data-engagement="tg_pantau_skor"
                             target="_blank"
                             rel="noopener noreferrer"
@@ -1159,7 +1159,7 @@ export default async function StockDetailPage({
           <h2 className="font-serif text-base font-semibold text-text-primary">Pantau {ticker.replace(/\.JK$/, "")} tiap hari</h2>
           <p className="text-sm text-text-secondary">Dapatkan ringkasan harga &amp; sinyal langsung di Telegram setelah pasar tutup — tanpa perlu login.</p>
           <a
-            href={`https://t.me/TeknikalidBot?start=${encodeURIComponent(ticker.replace(/\.JK$/, "") + "_JK")}`}
+            href={`https://t.me/TeknikalidAgentBot?start=${encodeURIComponent(ticker.replace(/\.JK$/, "") + "_JK")}`}
             data-engagement="tg_pantau_kartu"
             target="_blank"
             rel="noopener noreferrer"

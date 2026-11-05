@@ -47,7 +47,7 @@ export function Footer() {
               Analisa teknikal untuk trader Indonesia — saham IDX dan aset lainnya. Data bersumber dari Yahoo Finance dengan jeda ~5-10 menit. Bukan rekomendasi investasi.
             </p>
             <a
-              href="https://t.me/teknikalid"
+              href="https://t.me/TeknikalidAgentBot?start=kopi_footer"
               target="_blank"
               rel="noopener noreferrer"
               className="mt-3 inline-flex items-center gap-2 rounded-md border border-border bg-surface px-3 py-2 text-xs font-medium text-text-primary transition-colors hover:border-accent/60 hover:text-accent"

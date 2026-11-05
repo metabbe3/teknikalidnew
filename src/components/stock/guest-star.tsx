@@ -78,7 +78,7 @@ export function GuestStar({ ticker, compact = false }: { ticker: string; compact
           Tersimpan di perangkat ini ·{" "}
           <Link href="/stocks#pantauan" className="underline hover:text-accent">lihat pantauan</Link>
           {tickers.length < 3 && (
-            <> · <a data-engagement="tg_pantau_chip" href={`https://t.me/TeknikalidBot?start=${shortT}_JK`} target="_blank" rel="noopener noreferrer" className="underline hover:text-accent">🔔 update sore via Telegram</a></>
+            <> · <a data-engagement="tg_pantau_chip" href={`https://t.me/TeknikalidAgentBot?start=${shortT}_JK`} target="_blank" rel="noopener noreferrer" className="underline hover:text-accent">🔔 update sore via Telegram</a></>
           )}
         </span>
       )}

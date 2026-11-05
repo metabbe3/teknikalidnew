@@ -10,5 +10,7 @@ export function tgDeepLink(tickers: string[], watch = false): string {
     const hex = a.replace(/-/g, "").slice(0, 12);
     if (/^[a-f0-9]{12}$/.test(hex)) anon = `__a_${hex}`;
   } catch { /* private mode */ }
-  return `https://t.me/TeknikalidBot?start=${encodeURIComponent(base + anon)}`;
+  // owner 6 Nov: SEMUA deeplink web → AgentBot (funneling agent). Param lama
+  // (TICKER_JK / watch_) tetap dikirim; agentd mem-parse + seed watchlist.
+  return `https://t.me/TeknikalidAgentBot?start=${encodeURIComponent(base + anon)}`;
 }

@@ -8,7 +8,7 @@ const emptySubscribe = () => () => {};
  * TelegramSubscribeCta (retention-2026-10-28) — CTA subscribe bot TIDAK annoying:
  * - dismissible via localStorage 7 hari (inline variant)
  * - copy halus, bahasa awam, tap target ≥44px, bukan-rekomendasi vibes
- * - SATU PINTU deep-link t.me/TeknikalidBot?start=KODE_JK (identik stock page)
+ * - SATU PINTU deep-link t.me/TeknikalidAgentBot?start=KODE_JK (identik stock page)
  * - footer variant: 1 baris kecil, tanpa dismiss (statis, di server component juga bisa
  *   jika tanpa ticker — tapi dipakai di client parent)
  */
