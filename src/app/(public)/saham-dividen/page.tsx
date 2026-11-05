@@ -173,13 +173,13 @@ export default async function SahamDividenPage() {
             <h2 id="exdate-heading" className="text-lg font-bold">
               Kalender Ex-Date 30 Hari ke Depan
             </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 text-sm text-text-secondary">
               Saham yang masuk ex date di 30 hari ke depan — beli paling lambat sehari sebelum ex date untuk berhak dividen.
             </p>
             <div className="mt-3 overflow-x-auto rounded-lg border">
               <table className="w-full min-w-[640px] text-sm">
                 <thead>
-                  <tr className="border-b bg-muted/50 text-left text-xs text-muted-foreground">
+                  <tr className="border-b bg-bg-hover/50 text-left text-xs text-text-secondary">
                     <th className="px-3 py-2 font-medium">Saham</th>
                     <th className="px-3 py-2 font-medium">Ex Date</th>
                     <th className="px-3 py-2 font-medium">Dividen/Lbr</th>
@@ -195,7 +195,7 @@ export default async function SahamDividenPage() {
                           <Link href={`/stocks/${r.ticker}`} className="font-bold hover:underline">
                             {stripJk(r.ticker)}
                           </Link>
-                          <span className="block text-xs text-muted-foreground">{r.name}</span>
+                          <span className="block text-xs text-text-secondary">{r.name}</span>
                         </td>
                         <td className="whitespace-nowrap px-3 py-2">
                           {fmtTgl(r.exDate)}{" "}
@@ -206,20 +206,20 @@ export default async function SahamDividenPage() {
                           )}
                         </td>
                         <td className="px-3 py-2">{fmtRp(r.perShare)}</td>
-                        <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">{fmtTgl(r.paymentDate)}</td>
+                        <td className="whitespace-nowrap px-3 py-2 text-text-secondary">{fmtTgl(r.paymentDate)}</td>
                       </tr>
                     );
                   })}
                 </tbody>
               </table>
             </div>
-            <p className="mt-2 text-xs text-muted-foreground">
+            <p className="mt-2 text-xs text-text-secondary">
               Jadwal dari pengumuman resmi emiten. Ingin daftar lengkap cum date + estimasi yield?{" "}
               <Link href="/kalender-dividen" className="font-semibold underline">Kalender Dividen BEI</Link>.
             </p>
           </section>
         ) : (
-          <p className="mt-6 text-sm text-muted-foreground">
+          <p className="mt-6 text-sm text-text-secondary">
             Belum ada ex-date dividen terjadwal dalam 30 hari ke depan — cek{" "}
             <Link href="/kalender-dividen" className="underline">kalender dividen lengkap</Link>.
           </p>
@@ -228,7 +228,7 @@ export default async function SahamDividenPage() {
         <div className="mt-6 overflow-x-auto">
           <table className="w-full min-w-[640px] text-sm">
             <thead>
-              <tr className="border-b text-left text-muted-foreground">
+              <tr className="border-b text-left text-text-secondary">
                 <th className="py-2 pr-4 font-medium">Saham</th>
                 <th className="py-2 pr-4 font-medium">Yield</th>
                 <th className="py-2 pr-4 font-medium">Harga</th>
@@ -244,7 +244,7 @@ export default async function SahamDividenPage() {
                     <Link href={`/stocks/${r.ticker}`} className="font-bold hover:underline">
                       {stripJk(r.ticker)}
                     </Link>
-                    <span className="block text-xs text-muted-foreground">{r.name}</span>
+                    <span className="block text-xs text-text-secondary">{r.name}</span>
                   </td>
                   <td className="py-2 pr-4">
                     <span className="rounded bg-bullish/10 px-2 py-0.5 text-xs font-semibold text-bullish">
@@ -272,7 +272,7 @@ export default async function SahamDividenPage() {
             </a>
           </div>
         </div>
-        <p className="mt-2 text-xs text-muted-foreground">
+        <p className="mt-2 text-xs text-text-secondary">
           Menampilkan 20 teratas dari {rows.length} saham. Data fundamental update berkala; harga indikatif.
           Bukan rekomendasi beli.
         </p>
