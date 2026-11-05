@@ -473,6 +473,7 @@ export default async function StockDetailPage({
     .filter((d) => d.type === "cash" && d.exDate && d.exDate >= todayStr && d.amount !== null)
     .sort((a, b) => (a.exDate! < b.exDate! ? -1 : 1))[0] ?? null;
   const upcomingDividendSoon =
+    // eslint-disable-next-line react-hooks/purity
     upcomingDividend && upcomingDividend.exDate! <= new Date(Date.now() + 45 * 86400_000).toISOString().split("T")[0]
       ? upcomingDividend
       : null;
