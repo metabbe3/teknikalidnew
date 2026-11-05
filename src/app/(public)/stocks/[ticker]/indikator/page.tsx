@@ -13,6 +13,20 @@ import { summarizeVerdict, toSnapshot, type Outlook } from "@/lib/verdict-prose"
 
 export const revalidate = 3600; // ISR — past rows immutable, latest day refreshes hourly
 
+type HistoryRange = "90" | "365" | "all";
+
+const RANGE_DAYS_MAP: Record<HistoryRange, number> = {
+  "90": 90,
+  "365": 365,
+  all: 900,
+};
+
+function parseRange(raw?: string | string[]): HistoryRange {
+  const val = Array.isArray(raw) ? raw[0] : raw;
+  if (val === "365" || val === "all") return val;
+  return "90";
+}
+
 interface IndicatorRow {
   date: Date;
   signalLabel: string | null;
@@ -39,7 +53,8 @@ const OUTLOOK_COLOR: Record<Outlook, string> = {
 };
 
 function RsiSparkline({ rows }: { rows: { date: Date; rsi: number | null }[] }) {
-  const vals = rows.map((r) => r.rsi).filter((v): v is number => v !== null);
+  const recent = rows.slice(-90);
+  const vals = recent.map((r) => r.rsi).filter((v): v is number => v !== null);
   if (vals.length < 2) return <p className="text-xs text-muted-foreground">Data RSI belum cukup.</p>;
   const w = 600; const h = 80; const pad = 6;
   const xStep = (w - pad * 2) / (vals.length - 1);
@@ -54,7 +69,7 @@ function RsiSparkline({ rows }: { rows: { date: Date; rsi: number | null }[] }) 
   );
 }
 
-async function loadHistory(tickerRaw: string) {
+async function loadHistory(tickerRaw: string, days: number = 90) {
   const tickerUpper = tickerRaw.toUpperCase();
   const tickerJK = tickerUpper.endsWith(".JK") ? tickerUpper : `${tickerUpper}.JK`;
   const tickerClean = tickerUpper.replace(/\.JK$/, "");
@@ -62,7 +77,10 @@ async function loadHistory(tickerRaw: string) {
   const stock = await stockRepository.findStockByTicker(tickerJK);
   if (!stock) throw new StockNotFoundError(tickerJK);
 
-  const rows = await stockRepository.findIndicatorSeries(stock.id, subDays(new Date(), 900));
+  let rows = await stockRepository.findIndicatorSeries(stock.id, subDays(new Date(), days));
+  if (rows.length === 0 && days < 900) {
+    rows = await stockRepository.findIndicatorSeries(stock.id, subDays(new Date(), 900));
+  }
   if (rows.length === 0) return null;
 
   return { tickerJK, tickerClean, name: stock.name, rows: rows as unknown as IndicatorRow[] };
@@ -75,7 +93,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { ticker } = await params;
   let data;
-  try { data = await loadHistory(ticker); } catch { return {}; }
+  try { data = await loadHistory(ticker, 90); } catch { return {}; }
   if (!data) return {};
   // Canonical: sama dengan halaman utama stocks — uppercase TICKER.JK (seo-2026-10-15-01).
   const tickerJK = data.tickerJK;
@@ -100,26 +118,40 @@ export async function generateMetadata({
   };
 }
 
+interface PageProps {
+  params: Promise<{ ticker: string }>;
+  searchParams?: Promise<{ range?: string | string[] }>;
+}
+
 export default async function IndicatorHistoryPage({
   params,
-}: {
-  params: Promise<{ ticker: string }>;
-}) {
+  searchParams,
+}: PageProps) {
   const { ticker } = await params;
+  const sp = searchParams ? await searchParams : {};
+  const range = parseRange(sp.range);
+  const days = RANGE_DAYS_MAP[range];
+
   let data;
-  try { data = await loadHistory(ticker); }
+  try { data = await loadHistory(ticker, days); }
   catch (e) { if (e instanceof StockNotFoundError) notFound(); throw e; }
   if (!data) notFound();
 
   // seo-2026-10-15-01: non-canonical URL variants (lowercase / missing .JK)
   // 308 to the canonical /stocks/TICKER.JK/indikator so crawlers consolidate.
-  if (ticker !== data.tickerJK) permanentRedirect(`/stocks/${data.tickerJK}/indikator`);
+  if (ticker !== data.tickerJK) {
+    permanentRedirect(
+      range === "90"
+        ? `/stocks/${data.tickerJK}/indikator`
+        : `/stocks/${data.tickerJK}/indikator?range=${range}`
+    );
+  }
 
   const { tickerClean, tickerJK, name, rows } = data;
   const ordered = [...rows].sort((a, b) => b.date.getTime() - a.date.getTime());
   const earliest = rows[0].date;
   const latest = rows[rows.length - 1].date;
-  const spark = rows.map((r) => ({ date: r.date, rsi: decimalToNumber(r.rsi14 as never) }));
+  const spark = rows.slice(-90).map((r) => ({ date: r.date, rsi: decimalToNumber(r.rsi14 as never) }));
 
   return (
     <div className="min-h-screen bg-background">
@@ -183,9 +215,45 @@ export default async function IndicatorHistoryPage({
       {/* Public history table — server-rendered rows, one anchor per date (the SEO core) */}
       <section className="mx-auto max-w-7xl px-4 pb-6">
         <div className="rounded-xl border border-border bg-card overflow-hidden">
-          <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
-            <Activity className="h-4 w-4 text-primary" />
-            <h2 className="font-bold">Verdik Sinyal Harian</h2>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 py-3 border-b border-border">
+            <div className="flex items-center gap-2">
+              <Activity className="h-4 w-4 text-primary" />
+              <h2 className="font-bold">Verdik Sinyal Harian</h2>
+            </div>
+            {/* Rentang selector */}
+            <div className="flex items-center gap-1.5 text-xs">
+              <span className="text-muted-foreground mr-1 hidden sm:inline">Rentang:</span>
+              <Link
+                href={`/stocks/${tickerJK}/indikator`}
+                className={`px-2.5 py-1 rounded-md font-medium transition ${
+                  range === "90"
+                    ? "bg-primary text-primary-foreground font-semibold"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`}
+              >
+                90 Hari
+              </Link>
+              <Link
+                href={`/stocks/${tickerJK}/indikator?range=365`}
+                className={`px-2.5 py-1 rounded-md font-medium transition ${
+                  range === "365"
+                    ? "bg-primary text-primary-foreground font-semibold"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`}
+              >
+                365 Hari
+              </Link>
+              <Link
+                href={`/stocks/${tickerJK}/indikator?range=all`}
+                className={`px-2.5 py-1 rounded-md font-medium transition ${
+                  range === "all"
+                    ? "bg-primary text-primary-foreground font-semibold"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`}
+              >
+                Semua
+              </Link>
+            </div>
           </div>
           <ul>
             {ordered.map((r) => {
@@ -223,6 +291,65 @@ export default async function IndicatorHistoryPage({
               );
             })}
           </ul>
+
+          {/* Footer: Tombol/link "Lihat lebih lama" */}
+          <div className="border-t border-border bg-muted/10 p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <span className="text-muted-foreground">
+              Menampilkan {rows.length} hari ({range === "90" ? "90 hari terakhir" : range === "365" ? "365 hari terakhir" : "semua riwayat"})
+            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              {range === "90" && (
+                <>
+                  <Link
+                    href={`/stocks/${tickerJK}/indikator?range=365`}
+                    className="inline-flex items-center gap-1 font-semibold px-3 py-1.5 rounded-lg border border-border bg-card hover:bg-muted text-foreground transition"
+                  >
+                    Lihat lebih lama (365 hari) →
+                  </Link>
+                  <Link
+                    href={`/stocks/${tickerJK}/indikator?range=all`}
+                    className="inline-flex items-center gap-1 font-semibold px-3 py-1.5 rounded-lg border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground transition"
+                  >
+                    Semua riwayat →
+                  </Link>
+                </>
+              )}
+              {range === "365" && (
+                <>
+                  <Link
+                    href={`/stocks/${tickerJK}/indikator`}
+                    className="text-muted-foreground hover:text-foreground transition px-2 py-1"
+                  >
+                    ← 90 hari
+                  </Link>
+                  <Link
+                    href={`/stocks/${tickerJK}/indikator?range=all`}
+                    className="inline-flex items-center gap-1 font-semibold px-3 py-1.5 rounded-lg border border-border bg-card hover:bg-muted text-foreground transition"
+                  >
+                    Lihat lebih lama (Semua riwayat) →
+                  </Link>
+                </>
+              )}
+              {range === "all" && (
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground">Tampilkan:</span>
+                  <Link
+                    href={`/stocks/${tickerJK}/indikator`}
+                    className="text-primary hover:underline font-semibold"
+                  >
+                    90 hari terbaru
+                  </Link>
+                  <span className="text-muted-foreground">·</span>
+                  <Link
+                    href={`/stocks/${tickerJK}/indikator?range=365`}
+                    className="text-primary hover:underline font-semibold"
+                  >
+                    365 hari
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </section>
 
