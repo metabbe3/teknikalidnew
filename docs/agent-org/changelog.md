@@ -1115,3 +1115,20 @@
 - UNPUSHED di PR #2 (verifikasi setelah merge+rebuild T-1105): bo-1104-02 webhook idempotent 905aa60, bo-1104-04 hotfix agent-bot 500 e33456c, ux-11-04-01 /berita dedup 9186cb1, 10570f1 screener polish.
 - DRIFT: bo-1104-03 night_ready tapi kode Wave-2 (agent_feedback, /api/admin/agent-bot/feedback, webhook verify-via-API) TIDAK ADA di repo mana pun → reslot T-1105, builder harus kerjakan dulu. sec-1103-02 invalid (branch backup/pre-sec-purge-1015 tidak ada di remote). bo-1104-05 = runtime teknikal-agent (agentd live @6412396 sejak 19:55, bukan image web) — flip done.
 - Baseline 5 URL 200 sebelum==sesudah; /api/health ok; worker heartbeat fresh 53s.
+
+## 2026-11-05 07:2x — Content Reviewer QA pagi (read-only; 0 deploy)
+- **45 artikel 24h**: 40 snapshot EXACT vs DB (judul close-to-close 3→4 Nov: harga/%/volume; editorial: breadth 69/717 & 224/509 kanonik-exact, IHSG OHLC + high 4.921,13, oversold 144/241/263 exact dgn definisi non-gorengan-30Okt & aktif+equity, movers/flow/PBID skor 0,56→0,78, KINO/LPIN crossDate, TPIA OHLC+SMA+MACD hist+avg-vol 12 sesi, fundamentals PE/PBV/yield/mcap semua exact). 2 FATAL didaftarkan: **qa-2026-11-05-01** brief-5Nov "21 GC 7 sesi" (7 sesi kanonik = 9; 21 hanya cocok window ≥20 Okt = 12 sesi — pola window-melayang KE-3: qa-04-03/04 kemarin, kini lagi) & **qa-2026-11-05-02** analis-sore-4Nov "bullish cross segar hanya dua" (DB non-gorengan 2-4 Nov = 12 bullish vs 26 bearish; tak ada basis wajar yg menghasilkan 2). Live 6/6 URL 200+render; struktur/disclaimer/meta/link kanonik OK semua (0 typo fatal; 5 editorial + 40 snapshot + 3 editor non-24h-slot).
+- **DEPLOY verifikasi (owner deploy 06:58 WIB, image eaf2e78634b3 dari main 5c424ce)**: 4 commit PR#2 kemarin (905aa60 webhook idempotent, e33456c+3 agent-bot fix, 9186cb1 /berita dedup, 10570f1 screener polish) semua IN origin/main & IN live image → flip **qa_pass** bo-2026-11-04-02, bo-2026-11-04-04, ux-2026-11-04-01 (dedup live: 14 slug, 2×/slug, hero tak dobel), ux-2026-11-04-02 ("Simpan Filter" chunk live). Kereta T-1105-N kini 0 penumpang konten-dev — owner deploy lebih cepat dari jadwal. Worker 3c381b (Kondektur 22:31) fresh 200 + health ok.
+- **0 artikel pagi ini (5 Nov, sampai 07:15)** — generator Mandor diam; sudah di-track P0 **ops-2026-11-05-01** (owner verbatim 4 Nov) — jangan duplikasi task.
+- Pilar: TRUST. Rollback: n/a (read-only; task P1 = SQL patch konten, bukan deploy).
+
+## 2026-11-05 07:3x — CTO PAGI (slot 07:30; 0 deploy oleh saya — verifikasi independent + bookkeeping)
+- KONTEKS: PR #2 night/T-1104-N-pending-merge SUDAH di-push ke main oleh sesi pivot owner (5 commit 05:24-06:56: 4x fix admin agent-bot round-1..4 + web funnel /agent 5c424ce). Deploy app eaf2e78634b3 06:59 oleh sesi pivot (bukan kereta; CEO 07:20 aware). Audit night-merge: 5 commit window-locked dicatat → ceo-decisions (formal, bukan bypass saya).
+- FLIP deployed (5 entry, semua bukti fisik H1):
+  - bo-2026-11-04-02: 905aa60 IN-MAIN (merge-base verified). Webhook Midtrans idempotent.
+  - bo-2026-11-04-04: e33456c IN-MAIN. agent-bot pakai agent_usage_ledger; /api/admin/agent-bot unauth=404 (bukan 500).
+  - ux-2026-11-04-01: /berita href unik (dup hero=0) + ?page=7 "Sudah akhir arsip" — curl fisik.
+  - ux-2026-11-04-02: "Simpan Filter" live di chunk stocks/page-a53c3820a23fa486.js (sweep 29 chunks).
+  - prd-2026-11-05-02: agentd_pulse PID 90406 @07:21 (binary built 07:20, tip 9d1ce12 ⊃ c3f039c starter-alert; strings: copy starter ada). DB 20 tabel agent. NOTE: runtime owner-session masih develop di repo teknikal-agent (MarketPulse) — jangan ganggu.
+- Baseline 6 URL 200 (/, /berita, /saham-dividen, /saham-golden-cross, /stocks/BBCA.JK, /akademi/glosarium); /agent funnel 200 (grep Telegram ✓). Glosarium di /akademi/glosarium (kemarin juga) — /glosarium 404 BUKAN regresi.
+- Rollback: n/a (0 deploy by me) · anchor prod: app eaf2e78634b3 / worker 3c381b97 (4 Nov 22:32).

@@ -40,7 +40,7 @@
       "id": "prd-2026-11-05-02",
       "type": "prd",
       "priority": "P1",
-      "status": "night_ready",
+      "status": "deployed",
       "title": "P1 AGENT FUNNEL (PRD idea-2026-11-04-1): starter alert 1-gratis — agent_alert 0 rows sepanjang sejarah karena alert dikunci paywall PRO (subscription=0, 7/7 user FREE) padahal alerts worker live & lengkap; hidupkan 1 alert utk FREE",
       "source": "Product Agent nightly buffer-keeper 5 Nov (SQL read-only teknikalidnew-db-1 schema agent.*: agent_user=7 (7 baru 7d), agent_subscription=0, agent_alert=0, agent_watchlist=2 chats, agent_message_log=71/4 chats; grep teknikal-agent internal/alerts/worker.go UpgradeUpsellMessage L15-19; teknikal-agent main@6412396 (4 Nov))",
       "spec": "docs/agent-org/specs/prd-2026-11-05-02-agent-starter-alert.md",
@@ -81,7 +81,8 @@
         "deploy_note": "go deploy agentd worker (bukan docker web); DB read-only terpakai 0 migrasi (kolom limit runtime sesuai PRD)"
       },
       "review_estimate_min": 15,
-      "night_done_at": "2026-11-04T23:20+07:00"
+      "night_done_at": "2026-11-04T23:20+07:00",
+      "result": "CTO pagi 5 Nov 07:3x: LIVE — binary /tmp/agentd_pulse (built 07:20 dari night/prd-2026-11-05-02 tip 9d1ce12; c3f039c verified ancestor) running PID 90406 sejak 07:21. Bukti: strings binary memuat copy starter (alert gratis + Starter x6); DB agent 20 tabel; agent_alert 0 rows (wajar — baru terisi saat FREE user buat alert pertama). Rollback: kill 90406 + git revert c3f039c + rebuild agentd."
     },
     {
       "id": "bo-2026-11-01-01",
@@ -4512,7 +4513,7 @@
       "id": "bo-2026-11-04-02",
       "title": "DEPLOY fix webhook Midtrans idempotent + custom_field cross-check (commit 905aa60): replay settlement di-skip (anti premium gratis), planId/amount/userId mismatch ditolak — audit H-2+M-4 4 Nov; verify POST replay settlement tidak menambah masa premium",
       "priority": "P1",
-      "status": "night_ready",
+      "status": "deployed",
       "train": "T-1105-N",
       "labels": [
         "payment",
@@ -4520,8 +4521,10 @@
         "audit-fix"
       ],
       "spec": "commit 905aa60 src/app/api/payment/notification/route.ts",
-      "result": "KONDEKTUR T-1104-N 4 Nov: BELUM LIVE — commit 905aa60 14:42 POST-deploy hook main UNPUSHED (pre-push hook 21:45-07:00 tolak push main; PR #2 night/T-1104-N-pending-merge siap, merge CTO pagi 07:30 lalu rebuild app kereta T-1105). /berita live masih dup=2 + p7 'Belum ada brief' (curl 4 Nov 22:3x). Verdict Sentinel 5 Nov (H3)",
-      "reslot_note": "auto-reslot 2026-11-05: kereta T-1104-N kedaluwarsa -> kereta T-1105-N (reslot_guard.py v3)"
+      "result": "CTO pagi 5 Nov: LIVE — 905aa60 IN-MAIN (merge-base verified; PR#2 dipush sesi pivot owner malam ini, bukan merge saya). App eaf2e78634b3 up 06:59. Rollback: git revert 905aa60.",
+      "reslot_note": "auto-reslot 2026-11-05: kereta T-1104-N kedaluwarsa -> kereta T-1105-N (reslot_guard.py v3)",
+      "qa_verified": "true (Content-Reviewer 5 Nov 07:2x WIB: commit 905aa60 (webhook Midtrans idempotent +25 baris) IN origin/main & IN live image eaf2e78634b3 (owner deploy 06:58 WIB, build dari main). Route /api/payment/notification ada di build app live; guard replay = kode patch terverifikasi tsc 0 di commit; uji replay settlement end-to-end butuh kredensial Midtrans (di luar lingkup reviewer read-only).)",
+      "done_at": "2026-11-05T07:2x WIB"
     },
     {
       "id": "bo-2026-11-04-03",
@@ -4542,7 +4545,7 @@
       "id": "bo-2026-11-04-04",
       "title": "DEPLOY HOTFIX tab Agent Bot kosong (commit e33456c): API /api/admin/agent-bot 500 karena query token kolom tokens_in/tokens_out tidak ada di agent_message_log (42703) — sudah diganti sumber agent_usage_ledger; verify: login /admin → tab Agent Bot menampilkan 6 KPI + users + funnel (bukan kosong), docker logs tanpa PrismaClientKnownRequestError",
       "priority": "P1",
-      "status": "night_ready",
+      "status": "deployed",
       "train": "T-1105-N",
       "labels": [
         "admin",
@@ -4550,20 +4553,24 @@
         "agent-bot"
       ],
       "spec": "commit e33456c src/app/api/admin/agent-bot/route.ts",
-      "result": "KONDEKTUR T-1104-N 4 Nov: BELUM LIVE — commit e33456c 15:34 API agent-bot 42703->500 hotfix UNPUSHED (pre-push hook 21:45-07:00 tolak push main; PR #2 night/T-1104-N-pending-merge siap, merge CTO pagi 07:30 lalu rebuild app kereta T-1105). /berita live masih dup=2 + p7 'Belum ada brief' (curl 4 Nov 22:3x). Verdict Sentinel 5 Nov (H3)",
-      "reslot_note": "auto-reslot 2026-11-05: kereta T-1104-N kedaluwarsa -> kereta T-1105-N (reslot_guard.py v3)"
+      "result": "CTO pagi 5 Nov: LIVE — e33456c IN-MAIN; app eaf2e78634b3 up 06:59. API agent-bot kini baca agent_usage_ledger. Rollback: git revert e33456c.",
+      "reslot_note": "auto-reslot 2026-11-05: kereta T-1104-N kedaluwarsa -> kereta T-1105-N (reslot_guard.py v3)",
+      "qa_verified": "true (Content-Reviewer 5 Nov 07:2x WIB: 4 commit fix Agent Bot (e33456c 42703 tokens_in->ledger, bc1c445 BigInt p50/p90, c7f3034 bigint replacer global, 022859a unwrap wrapper+guard .map, fd874ff ORDER BY t7::bigint) semuanya IN origin/main & IN live image. Route /api/admin/agent-bot ada di build (container ls route.js), endpoint publik = 404 auth-gate — BUKAN 500 TypeError lama.)",
+      "done_at": "2026-11-05T07:2x WIB"
     },
     {
       "id": "ux-2026-11-04-01",
       "priority": "P2",
-      "status": "night_ready",
+      "status": "deployed",
       "train": "T-1105-N",
       "north_star": "CONTENT+TRUST",
       "source": "ux-audit",
       "title": "UX: /berita dedup hero+list (artikel terbaru tampil 2x di layar pertama) + empty-state akhir arsip",
       "spec": "Audit flow (b) landing->berita->artikel terkait. Bug: hero featured (findLatestDailyBrief NEWS tickerTag null) juga lolos filter arsip yang sama -> artikel terbaru tampil 2x di 2 layar pertama mobile (DOM bukti: kartu @382px h252 + duplikat @842px h95). Fix: exclude slug hero di listFilter (findMany+count konsisten; count 68->67, totalPages tetap 6; halaman 7+ memang kosong by design). Empty-state halaman>totalPages (7+) kini 'Sudah akhir arsip' + link balik, alih-alih 'Belum ada brief. Brief pertama terbit setelah pasar tutup' yang menyesatkan (arsip sudah penuh, bukan belum terbit). Frontend-only. DONE WHEN: prod /berita page-1 tanpa href duplikat; halaman 6 tanpa tombol Berikutnya; halaman 7+ tampil 'Sudah akhir arsip'; tsc 0. Pilar: CONTENT + TRUST.",
-      "result": "KONDEKTUR T-1104-N 4 Nov: BELUM LIVE — commit 9186cb1 19:17 /berita dup-hero+empty-state UNPUSHED (pre-push hook 21:45-07:00 tolak push main; PR #2 night/T-1104-N-pending-merge siap, merge CTO pagi 07:30 lalu rebuild app kereta T-1105). /berita live masih dup=2 + p7 'Belum ada brief' (curl 4 Nov 22:3x). Verdict Sentinel 5 Nov (H3)",
-      "reslot_note": "auto-reslot 2026-11-05: kereta T-1104-N kedaluwarsa -> kereta T-1105-N (reslot_guard.py v3)"
+      "result": "CTO pagi 5 Nov: LIVE+verified fisik — curl /berita 07:3x href artikel semua unik (dup hero=0), ?page=7 = \"Sudah akhir arsip\". 9186cb1 IN-MAIN, image eaf2e78634b3. Rollback: git revert 9186cb1.",
+      "reslot_note": "auto-reslot 2026-11-05: kereta T-1104-N kedaluwarsa -> kereta T-1105-N (reslot_guard.py v3)",
+      "qa_verified": "true (Content-Reviewer 5 Nov 07:2x WIB: /berita live pasca owner deploy: 14 slug kartu, setiap slug tepat 2 kemunculan (href + flight data) — hero brief terbaru TIDAK dobel di daftar; commit 9186cb1 IN origin/main & IN live image eaf2e78634b3. Empty-state akhir arsip (page>totalPages) diverifikasi level commit+build.)",
+      "done_at": "2026-11-05T07:2x WIB"
     },
     {
       "id": "bug-2026-11-04-01",
@@ -4581,13 +4588,15 @@
       "id": "ux-2026-11-04-02",
       "title": "Screener guest save-bar polish: copy jargon EN->ID + tap target 44px + tracking label",
       "priority": "P3",
-      "status": "in_train",
+      "status": "deployed",
       "train": "T-1105-N",
       "created_at": "2026-11-04T20:05:00+07:00",
       "assigned_to": "frontend-builder",
       "source": "FE Builder 19:15 shift 4 Nov — audit siklus-2 flow (a) screener pasca trust-badge",
       "kpi": "GROWTH (funnel register screener) + STICKY",
-      "result": "BUILD-ONLY commit 10570f1 (3 file, +6/-5):\n(a) 'Simpan Screen'->'Simpan Filter' — jargon EN->ID, konsisten dgn teks bar 'Simpan filter agar tidak hilang'\n(b) tap target tombol ~28px->44px (min-h-11 inline-flex, selaras CTA lain di flow)\n(c) data-engagement=cta_save_screen_prompt — funnel point sebelumnya gelap (0 event terukur)\n(d) sweep konsistensi: toast 'Screen tersimpan ke akun'->'Filter tersimpan ke akun', aria 'Simpan screen ke akun'->'Simpan filter ini ke akun', saveLabel 'Screen custom'->'Filter Atur Sendiri' (tampil di panel Simpananku)\nBUKTI FISIK: tsc EXIT-0; build EXIT-0 BUILD_ID G883j0qQGLbELTJ0XzOBL; staging :3100 DOM: tombol h=44px minHeight=44px label='Simpan Filter' attr data-engagement ada; panel Simpananku render 'Filter Atur Sendiri'; hasil 264 saham render asli; grep residual 'Simpan Screen' staging=0; SEO invariant H1 'Radar Saham IDX' before=after 2=2, title-tag utuh.\nNaik kereta berikutnya (T-1105-N, 5 Nov malam) — bukan T-1104-N malam ini (verifikasi selesai 20:0x > boarding 22:15 berisiko bentrok manifest final kondektur; kereta tidak menunggu penumpang)."
+      "result": "CTO pagi 5 Nov: LIVE+verified fisik — string \"Simpan Filter\" ditemukan di bundle live /_next/static/chunks/app/(public)/stocks/page-a53c3820a23fa486.js (sweep 29 chunks). 10570f1 IN-MAIN, image eaf2e78634b3. Rollback: git revert 10570f1.",
+      "qa_verified": "true (Content-Reviewer 5 Nov 07:2x WIB: commit 10570f1 IN origin/main & IN live image; marker 'Simpan Filter' grep hit di chunk /app/.next/static build live; halaman /stocks 200. Live lebih cepat dari jadwal kereta T-1105-N via owner deploy 06:58 — kereta tak perlu antar lagi.)",
+      "done_at": "2026-11-05T07:2x WIB"
     },
     {
       "id": "bo-2026-11-04-05",
@@ -4602,6 +4611,58 @@
       ],
       "spec": "commit 6412396 teknikal-agent",
       "result": "KONDEKTUR T-1104-N 4 Nov 22:4x: VERIFIED RUNTIME (bukan image web) — teknikal-agent repo HEAD=6412396 (unpushed=0, hook main-lock tidak berlaku), agentd proses live sejak 19:55 (go run ./cmd/agentd), launchd com.teknikal.agentd.plist; DB agent.agent_memory + agent_usage_ledger + agent_session 16 tabel schema agent.*; trafik 0 jam 22:4x (wajar malam). Klaim builder unit-test 3 hijau konsisten. Verdict Sentinel 5 Nov (H3)"
+    },
+    {
+      "id": "ops-2026-11-05-01",
+      "date": "2026-11-05",
+      "type": "ops",
+      "priority": "P0",
+      "status": "pending",
+      "north_star": "TRUST (data reliable) + CONTENT — moat kenapa-naik",
+      "train": "T-1105-M",
+      "scheduled_slot": "2026-11-05 BE Builder siang 09:30 (expr 30 9 * * 1-5 terverifikasi jobs.json)",
+      "spec": "P0 OWNER VERBATIM 4 Nov — BLOCKER mesin kenapa-*: guardrail konten BELUM DEPLOYED dan generator diam (0 artikel kenapa-* dalam 7d, SQL 5 Nov) padahal pilot GO cap 4/hari (Wave-5 verdict 3 Nov: guardrail WAJIB deployed+dry-run DULU, template-risk nyata). INTENT: implement 4 gate sebelum generator boleh nyala: (1) tiap angka paragraf = ground-truth snapshot SATU PINTU (/api/market, market-snapshot.service); (2) klaim superlatif wajib replay_sql_gate exit 0 dengan parameter --as-of sesi artikel (preseden false-FAIL qa-04-03/04: window GC beda as-of); (3) label tanggal as-of eksak per angka; (4) ticker real + filter non-gorengan konsisten kanonik. DONE WHEN: (a) dry-run 1 batch 4 artikel kenapa-* → replay_sql_gate 4/4 exit 0 + 0 klaim tak-tereplay (cek manual); (b) unit-test gate dua arah (input valid PASS / angka fiktif FAIL); (c) generator tetap OFF sampai (a)+(b) hijau, baru pilot cap 4/hari; (d) changelog + agent-bus. Ref: audits/2026-11-02-bug-hunt.md + verdict Wave-5 3 Nov."
+    },
+    {
+      "id": "ops-2026-11-05-02",
+      "date": "2026-11-05",
+      "type": "ops",
+      "priority": "P2",
+      "status": "pending",
+      "north_star": "TRUST — API publik error ~20% req",
+      "train": "T-1105-M",
+      "scheduled_slot": "2026-11-05 BE Builder siang 09:30 setelah ops-2026-11-05-01 (kalau mepet → weekend BE pagi 08:00)",
+      "spec": "SRE candidate sre-2026-11-04-2 PROMOTE CEO 5 Nov (CTO sore 4 Nov konfirmasi aktif read-only): TypeError b.getTime is not a function 5-12x/24h di /api/me/morning-delta (~25 req/24h, ~20% fail; 200 saat kosong, error saat ada data tracker). Root-cause presisi: morning-delta.service.ts L159+L189 hanya null-check, TIDAK instanceof Date — date-string dari jalur raw-SQL/deserialize lolos guard lalu .sort(b.getTime()). INTENT: failing-test-first (test merah dgn date-string) → fix normalize new Date(d) di L159+L189. DONE WHEN: (a) test merah→hijau di commit terpisah; (b) pasca-deploy 24h error morning-delta di ErrorLog = 0 (SQL); (c) changelog."
+    },
+    {
+      "id": "qa-2026-11-05-01",
+      "date": "2026-11-05",
+      "type": "qa-content",
+      "priority": "P1",
+      "title": "FATAL brief-pasar-idx-2026-11-05: '21 golden cross pada 7 sesi terakhir' — window salah, 7 sesi kanonik = 9",
+      "north_star": "TRUST (angka sinyal harus replayable dari window yang dinyatakan; qa-27-01; pola berulang ke-3)",
+      "status": "pending",
+      "spec": "INTENT: brief-pasar-idx-2026-11-05-reversal-dari-low menulis '21 golden cross pada 7 sesi terakhir (saham aktif non-gorengan)'. Replay DB definisi kanonik (distinct stockId, smaCrossSignal='golden_cross', smaCrossDate, filter aktif+non-gorengan): 7 sesi 27 Okt-4 Nov = 9, BUKAN 21. Angka 21 hanya cocok dengan window >= 20 Okt (12 sesi). Pola berulang KE-3: qa-2026-11-04-03 (19 -> window 11 sesi), qa-2026-11-04-04 (22 -> window 11 sesi), kini 21 -> window 12 sesi — generator brief menghitung GC dengan window melayang tanpa menyebutnya. ACCEPTANCE (DONE WHEN): (a) perbaiki kalimat — pilih '9 golden cross pada 7 sesi terakhir (27 Okt-4 Nov, saham aktif non-gorengan)' ATAU '21 golden cross dalam 12 sesi terakhir (sejak 20 Oktober)' — angka dan label window WAJIB konsisten; (b) grep semua kemunculan '21 golden cross' + '7 sesi' konsisten dengan pilihan, residual frasa lama 0; (c) replay_sql_gate.py exit 0; (d) ISR refresh + curl live render frasa baru. CATATAN GUARDRAIL GENERATOR (perbaiki akar, bukan cuma artikel): pin SQL basis GC ke window sesi-7 kalender trading; window lain hanya boleh dipakai jika ditulis eksplisit di kalimat.",
+      "assigned_to": "cto",
+      "scheduled_slot": "CTO pagi 5 Nov slot 07:30 (SQL patch konten, 0 deploy web)",
+      "result": "",
+      "qa_verified": null,
+      "source": "Content-Reviewer QA pagi 5 Nov (read-only)"
+    },
+    {
+      "id": "qa-2026-11-05-02",
+      "date": "2026-11-05",
+      "type": "qa-content",
+      "priority": "P1",
+      "title": "FATAL analis-sore-2026-11-04: 'bullish cross segar hanya dua (LPIN & KINO)' — DB 12 bullish segar non-gorengan 2-4 Nov",
+      "north_star": "TRUST (klaim komposisi sinyal harus dari satu basis yang dinyatakan; qa-30-01)",
+      "status": "pending",
+      "spec": "INTENT: analis-sore-2026-11-04-pbid menulis 'bearish cross baru justru berdatangan sepanjang 2-4 November (DUTI, DMAS, AADI, SBMA, MPIX, AUTO), sementara bullish cross segar hanya dua - LPIN (4 November) dan KINO (3 November)'. Replay DB StockIndicator asof 4 Nov (emaCrossDate 2-4 Nov, non-gorengan): BULLISH = 12 (2 Nov: ASII, CASA, MPMX, NFCX; 3 Nov: ASBI, KINO, MBAP, WOMF; 4 Nov: DKFT, LPIN, POWR, PRIM), BEARISH = 26. Daftar 6 bearish yang dikutip benar semua tapi tidak lengkap. Tidak ada basis wajar yang menghasilkan 'dua': label sinyal positif + likuid vol>=3jt pun = 5 (CASA, LPIN, KINO, POWR, PRIM). ACCEPTANCE (DONE WHEN): (a) tulis ulang kalimat dari SATU basis eksplisit — mis. '12 bullish cross segar vs 26 bearish (2-4 Nov, non-gorengan)' ATAU '5 bullish cross segar di saham likuid bersinyal positif (CASA, KINO, LPIN, POWR, PRIM)'; (b) grep 'hanya dua' + daftar nama saham konsisten dengan pilihan, residual 0; (c) replay_sql_gate.py exit 0; (d) live render frasa baru.",
+      "assigned_to": "cto",
+      "scheduled_slot": "CTO pagi 5 Nov slot 07:30 (SQL patch konten, 0 deploy web)",
+      "result": "",
+      "qa_verified": null,
+      "source": "Content-Reviewer QA pagi 5 Nov (read-only)"
     }
   ]
 }
