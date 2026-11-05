@@ -48,6 +48,7 @@ import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { IndicatorTooltip } from "@/components/ui/indicator-tooltip";
 import { technicalAnalysisService, computeSignalScore } from "@/domains/stock/technical-analysis.service";
 import { stockRepository } from "@/domains/stock/stock.repository";
+import { compareService } from "@/domains/stock/compare.service";
 import { calculatePivotPoints } from "@/lib/indicators";
 import { summarizeVerdict, toSnapshot } from "@/lib/verdict-prose";
 import { subDays } from "date-fns";
@@ -188,6 +189,9 @@ export default async function StockDetailPage({
   }
 
   const { stock, prices, latest, close, change, changePercent, indicator: indicators, prevIndicator } = detail;
+  // prd-2026-11-05-01 AC5a: 3 kandidat "Bandingkan dengan" (top nilai transaksi
+  // sektor sama) — internal-link loop ticker page → halaman compare -vs-.
+  const comparePeers = await compareService.getComparePeers(ticker).catch(() => [] as string[]);
   // fix owner 1 Nov: shortName tidak lagi dipakai H1 (H1 = ticker murni); meta desc tetap pakai derivasi generateMetadata
   const priceStr = close !== null ? formatPrice(close) : "";
   // seo-dr-1: level batas utk answer block (support/resistance toleran-null)
@@ -843,6 +847,24 @@ export default async function StockDetailPage({
                 )}
                 {smaCrossText && <> · {smaCrossText}</>}.
               </p>
+            )}
+
+            {/* prd-2026-11-05-01 AC5a: Bandingkan dengan — internal-link loop ke /saham/[a]-vs-[b] */}
+            {comparePeers.length > 0 && (
+              <div className="mt-4 pt-3 border-t border-border">
+                <p className="text-[10px] uppercase tracking-wider font-medium text-text-tertiary mb-2">Bandingkan dengan</p>
+                <div className="flex flex-wrap gap-2">
+                  {comparePeers.map((p) => (
+                    <a
+                      key={p}
+                      href={`/saham/${stripJk(ticker).toLowerCase()}-vs-${p.replace(/\.JK$/, "").toLowerCase()}`}
+                      className="text-xs font-medium px-2.5 py-1.5 rounded-full border border-border text-text-secondary hover:border-accent hover:text-accent transition-colors font-mono"
+                    >
+                      {stripJk(ticker)} vs {p.replace(/\.JK$/, "")}
+                    </a>
+                  ))}
+                </div>
+              </div>
             )}
 
             {/* OHLC + 52-week strip — anon-visible (SEO + first impression; data sudah SSR di page) */}

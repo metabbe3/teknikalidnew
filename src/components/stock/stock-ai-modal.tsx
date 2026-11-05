@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { createPortal } from "react-dom";
 import { parseAiText, shareAiStock } from "@/components/stock/stock-ai-shared";
 import { AiMarkdown } from "@/components/ai/ai-markdown";
@@ -85,6 +86,14 @@ function StructuredSummary({ summary, ticker, name }: { summary: string; ticker:
 
 export function StockAiModalButton({ ticker, name, changePercent, isGorengan }: { ticker: string; name: string; changePercent?: number | null; isGorengan?: boolean | null }) {
   const [open, setOpen] = useState(false);
+  // prd-2026-11-05-01 AC5b: CTA "Tanya AI" dari halaman compare membawa ?tanya=<pertanyaan>
+  // — pra-isi pertanyaan compare, auto-open modal+ask, lalu bersihkan param URL (canonical rapi).
+  const searchParams = useSearchParams();
+  const tanyaParam = searchParams.get("tanya");
+  // ?tanya= → auto-open sekali (state lazy di atas supaya tidak flicker loop).
+  useEffect(() => {
+    if (tanyaParam) setOpen(true);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <>
       <button
@@ -94,18 +103,18 @@ export function StockAiModalButton({ ticker, name, changePercent, isGorengan }: 
       >
         <Sparkles aria-hidden="true" className="inline h-4 w-4" /> Analisa AI
       </button>
-      {open && <StockAiModal ticker={ticker} name={name} changePercent={changePercent} isGorengan={isGorengan} onClose={() => setOpen(false)} />}
+      {open && <StockAiModal ticker={ticker} name={name} changePercent={changePercent} isGorengan={isGorengan} initialQuestion={tanyaParam} onClose={() => setOpen(false)} />}
     </>
   );
 }
 
-export function StockAiModal({ ticker, name, changePercent, isGorengan, onClose }: { ticker: string; name: string; changePercent?: number | null; isGorengan?: boolean | null; onClose: () => void }) {
+export function StockAiModal({ ticker, name, changePercent, isGorengan, initialQuestion, onClose }: { ticker: string; name: string; changePercent?: number | null; isGorengan?: boolean | null; initialQuestion?: string | null; onClose: () => void }) {
   const [mounted, setMounted] = useState(false);
   const [summary, setSummary] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [askOpen, setAskOpen] = useState(false);
-  const [question, setQuestion] = useState("");
+  const [askOpen, setAskOpen] = useState(Boolean(initialQuestion));
+  const [question, setQuestion] = useState(initialQuestion ?? "");
   const [answer, setAnswer] = useState<string | null>(null);
   const [asking, setAsking] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);

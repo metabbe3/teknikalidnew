@@ -45,6 +45,15 @@ export function parseCompareSlug(slug: string): [string, string] | null {
   return [a, b];
 }
 
+/** decodeURIComponent aman: malformed (%£) → fallback string mentah (bukan 500). */
+export function safeDecodeCompareSlug(raw: string): string {
+  try {
+    return decodeURIComponent(raw);
+  } catch {
+    return raw;
+  }
+}
+
 /** Kembalikan bentuk .JK (pasangan selalu IDX equity). */
 export function toJk(t: string): string {
   return t.toUpperCase().replace(/\.JK$/, "") + ".JK";
