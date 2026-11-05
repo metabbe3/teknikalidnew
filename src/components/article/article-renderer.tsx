@@ -84,11 +84,24 @@ export function extractTickers(content: string): string[] {
   return result;
 }
 
+// seo-2026-11-05 (audit 955 halaman): H1 di dalam markdown artikel menyebabkan
+// multi-H1 di 17 halaman (judul dirender 2x: template + "# Judul" di body cron).
+// Demote H1 konten → H2; H1 resmi tunggal milik template judul artikel.
+export function remarkDemoteH1() {
+  return (tree: any) => {
+    const visit = (node: any) => {
+      if (node.type === "heading" && node.depth === 1) node.depth = 2;
+      if (node.children) node.children.forEach(visit);
+    };
+    visit(tree);
+  };
+}
+
 export function ArticleContent({ content }: { content: string }) {
   return (
     <article className="article-prose">
       <Markdown
-        remarkPlugins={[remarkGfm, remarkDirective, remarkCallouts]}
+        remarkPlugins={[remarkGfm, remarkDirective, remarkCallouts, remarkDemoteH1]}
         rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema], rehypeSlug, rehypeStockLinker]}
       >
         {content}

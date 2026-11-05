@@ -120,7 +120,9 @@ export async function generateMetadata({
     : `Analisa teknikal saham ${namePair}: skor sinyal (−1 s.d. +1), RSI, MACD, support-resistance, modal 1 lot, dan aliran dana asing — gratis tanpa login.`;
 
   return {
-    title,
+    // seo-2026-11-05 (audit 955): 603/619 title stock >65chr murni karena suffix template
+    // "| TeknikalID" (13chr) — opt-out suffix; brand tetap hadir di og/site_name/domain.
+    title: { absolute: title },
     description,
     keywords: [
       `saham ${name}`,
@@ -642,8 +644,12 @@ export default async function StockDetailPage({
               <div className="min-w-0">
                 <div className="flex items-center gap-2.5 flex-wrap">
                   <StockLogo src={stock.logo} name={stock.name} ticker={ticker} />
-                  {/* fix owner 1 Nov (msg 34872): H1 ringkas ticker saja — nama & frasa keyword turun ke baris H2 di bawah */}
-                  <h1 className="text-2xl font-bold tracking-tight text-text-primary">{stripJk(ticker)}</h1>
+                  {/* fix owner 1 Nov (msg 34872): H1 ringkas ticker saja — nama & frasa keyword turun ke baris H2 di bawah.
+                      seo-2026-11-05: span sr-only = konteks keyword utk crawler (H1 ticker tetap visual-only). */}
+                  <h1 className="text-2xl font-bold tracking-tight text-text-primary">
+                    {stripJk(ticker)}
+                    <span className="sr-only">{` — Harga Saham ${stock.name} Hari Ini`}</span>
+                  </h1>
                   {indicators?.isGorengan && (
                     <span className="text-sm font-bold px-3 py-1 rounded-lg bg-amber-500/15 text-amber-600 border border-amber-500/30 inline-flex items-center gap-1">
                       <AlertTriangle className="inline h-4 w-4" /> Gorengan

@@ -229,6 +229,16 @@ const getCachedSitemap = unstable_cache(
     };
   });
 
+  // seo-2026-11-05: slug Question legacy yang di-redirect app (301) — jangan masuk sitemap.
+  const FAQ_LEGACY_REDIRECT_SLUGS = new Set([
+    "cara-memilih-saham-untuk-pemula-cthzrv",
+    "cara-memilih-saham-untuk-pemula-bb7c51",
+    "cara-memilih-saham-untuk-pemula-i7cx5q",
+    "strategi-swing-trading-saham-uo62xv",
+    "bollinger-bands-cara-menggunakan-indikator-saham",
+    "apa-itu-flipping-dalam-pasar-saham",
+  ]);
+
   // FAQ pages — seo-dr-2: hanya jawaban kaya (>=1500 char ≈ 250 kata) yang masuk sitemap;
   // 115 halaman tanya tipis (122-158 kata) ditarik keluar demi crawl budget.
   const faqPages = await prisma.question.findMany({
@@ -238,6 +248,9 @@ const getCachedSitemap = unstable_cache(
 
   const faqSitemapEntries = faqPages
     .filter((q) => ((q.longAnswer ?? q.shortAnswer)?.length ?? 0) >= 1500)
+    // seo-2026-11-05 (audit 955): exclude slug legacy yang 301 — buang 6 URL redirect
+    // dari sitemap demi crawl budget (4 duplikat suffix + 2 rename: bollinger/flipping).
+    .filter((q) => !FAQ_LEGACY_REDIRECT_SLUGS.has(q.slug))
     .map((q) => ({
       url: `${baseUrl}/akademi/tanya/${q.slug}`,
       lastModified: q.updatedAt,

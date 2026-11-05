@@ -6,6 +6,7 @@ import { ChevronRight, Activity, Lock, TrendingUp } from "lucide-react";
 import { stockRepository } from "@/domains/stock/stock.repository";
 import { StockNotFoundError } from "@/domains/stock/stock.errors";
 import { decimalToNumber } from "@/lib/serialize";
+import { normalizeTickerTitle } from "@/lib/normalize-ticker-title";
 import { SITE_URL } from "@/lib/constants";
 import { safeJsonLd } from "@/lib/safe-json-ld";
 import { summarizeVerdict, toSnapshot, type Outlook } from "@/lib/verdict-prose";
@@ -79,7 +80,8 @@ export async function generateMetadata({
   // Canonical: sama dengan halaman utama stocks — uppercase TICKER.JK (seo-2026-10-15-01).
   const tickerJK = data.tickerJK;
 
-  const title = `Riwayat Indikator Teknikal ${data.name} (${data.tickerClean})`;
+  // seo-2026-11-05: nama full bikin title 77chr — pakai shortName helper (≤30, word-boundary).
+  const title = `Riwayat Indikator ${normalizeTickerTitle(data.name, data.tickerClean)} (${data.tickerClean})`;
   const description = `Arsip riwayat indikator teknikal ${data.name} (${data.tickerClean}) — verdik sinyal harian RSI, MACD, SMA, EMA, dan crossing historis.`;
   return {
     title,

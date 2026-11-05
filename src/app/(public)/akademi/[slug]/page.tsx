@@ -31,7 +31,9 @@ export async function generateMetadata({
 
   return {
     // absolute: opt out of root layout's "%s | TeknikalID" template — avoids double brand
-    title: { absolute: `${article.title} — Akademi TeknikalID` },
+    // seo-2026-11-05: 76 halaman akademi title >90chr karena suffix 20chr — drop suffix,
+    // brand tetap di og:site_name. Judul artikel sendiri sudah deskriptif.
+    title: { absolute: article.title },
     description: article.excerpt,
     alternates: { canonical: `/akademi/${slug}` },
     openGraph: {

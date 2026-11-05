@@ -108,14 +108,18 @@ export async function generateMovementMetadataHelper(
     ? `/saham/${tickerClean.toLowerCase()}/kenapa-${trueDirection}-hari-ini`
     : `/stocks/${tickerClean}.JK`;
 
+  // seo-2026-11-05 (audit 955): 133 halaman /saham/* title >90chr karena nama perusahaan
+  // full + sectorMod. Potong nama di word-boundary utk title (H1/halaman tetap nama full).
+  const shortName =
+    name.length <= 28 ? name : name.slice(0, 28).replace(/\s+\S*$/, "") + "…";
   const title =
     expectedDirection === "naik"
       ? (isActuallyTurun
-          ? `Saham ${name} (${tickerClean}) Turun Hari Ini — Analisis & Sinyal`
-          : `Kenapa Saham ${name} Naik Hari Ini — Analisis ${tickerClean}${sectorMod}`)
+          ? `Saham ${shortName} (${tickerClean}) Turun Hari Ini — Analisis & Sinyal`
+          : `Kenapa Saham ${shortName} (${tickerClean}) Naik Hari Ini`)
       : (isActuallyNaik
-          ? `Saham ${name} (${tickerClean}) Naik Hari Ini — Analisis & Sinyal`
-          : `Kenapa Saham ${name} Turun Hari Ini — Analisis ${tickerClean}${sectorMod}`);
+          ? `Saham ${shortName} (${tickerClean}) Naik Hari Ini — Analisis & Sinyal`
+          : `Kenapa Saham ${shortName} (${tickerClean}) Turun Hari Ini`);
 
   const ogImage = `${SITE_URL}/api/og?title=${encodeURIComponent(title)}&type=movement&ticker=${tickerClean}`;
 
