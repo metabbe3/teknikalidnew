@@ -1131,6 +1131,31 @@ export default async function StockDetailPage({
 
         {/* Daily Analysis — auth-gated (embeds indicator values in narrative) */}
         <span id="analisa" className="block scroll-mt-24" />
+
+        {/* analis-2026-11-05: badge analis above-fold — funnel 8 hari 0 klik dari
+            list bawah; angkat entri ke dekat harga utk uji placement (owner 5 Nov) */}
+        {(() => {
+          const today = new Date();
+          const latestAnalist = relatedArticles.find((ra) => {
+            const ageH = (today.getTime() - new Date(ra.publishedAt).getTime()) / 36e5;
+            return ageH <= 36 && ra.title.toLowerCase().includes("analis");
+          });
+          if (!latestAnalist) return null;
+          return (
+            <Link
+              href={`/berita/${latestAnalist.slug}`}
+              data-engagement="analist_badge_stockpage"
+              className="group flex items-center gap-2 rounded-lg border border-accent/30 bg-accent/5 px-3 py-2 text-sm transition-colors hover:bg-accent/10"
+              aria-label={`Baca analis sore untuk ${stripJk(ticker)} hari ini`}
+            >
+              <span className="font-semibold text-accent">📝 Analis hari ini</span>
+              <span className="min-w-0 flex-1 truncate text-text-secondary group-hover:text-text-primary">
+                {latestAnalist.title}
+              </span>
+              <span aria-hidden className="text-accent">→</span>
+            </Link>
+          );
+        })()}
         {/* seo-2026-10-29-p0 (audit #1): internal link ke artikel kenapa-naik —
             575 halaman artikel dapat backlink kontekstual dari stock page (sebelumnya 0) */}
         <p className="text-xs text-text-tertiary">
