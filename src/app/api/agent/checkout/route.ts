@@ -77,6 +77,10 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
+    // anon → 401 rapi (page /agent redirect ke register)
+    if (/not authenticated|unauthorized/i.test(message)) {
+      return NextResponse.json({ error: "AUTH_REQUIRED" }, { status: 401 });
+    }
     console.error("[agent-checkout]", message);
     return NextResponse.json({ error: "Checkout failed" }, { status: 500 });
   }

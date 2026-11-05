@@ -65,6 +65,10 @@ export async function GET() {
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
+    // anon → 401 rapi (page /agent swap ke CTA register)
+    if (/not authenticated|unauthorized/i.test(message)) {
+      return NextResponse.json({ error: "AUTH_REQUIRED" }, { status: 401 });
+    }
     console.error("[agent-membership]", message);
     return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
