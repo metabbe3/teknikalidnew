@@ -88,7 +88,7 @@ export default async function KalenderDividenPage() {
     failed = true;
   }
   const now = new Date();
-  const wibNow = new Date(Date.now() + 7 * 3600 * 1000);
+  const wibNow = new Date(now.getTime() + 7 * 3600 * 1000);
   const todayStartWib = new Date(Date.UTC(wibNow.getUTCFullYear(), wibNow.getUTCMonth(), wibNow.getUTCDate()) - 7 * 3600 * 1000);
   const upcoming = rows.filter((r) => r.cumDate >= todayStartWib);
   const past = rows.filter((r) => r.cumDate < todayStartWib).reverse();
