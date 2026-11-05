@@ -807,6 +807,22 @@ export default async function StockDetailPage({
                 </div>
               );
             })()}
+
+            {/* Rencana Trading — tepat di bawah Hero Skor Sinyal (sebelum blok indikator) */}
+            {tradingPlan && (
+              <div className="mt-4">
+                <span id="plan" className="block scroll-mt-24" />
+                {fullAccess ? (
+                  <TradingPlanCard plan={tradingPlan} mc={mcProbability} />
+                ) : (
+                  <LoginGate
+                    feature="Rencana Trading"
+                    message="Daftar gratis untuk membuka rencana trading, target profit, dan batas cut loss."
+                  />
+                )}
+              </div>
+            )}
+
             {/* seo-dr-1 (deep-research 641c019): Answer block pemula — modal 1 lot + batas bawah/atas.
                 Angka konkret di HTML (SERP nyata: halaman yang mencetak angka level harga menang). */}
             {close !== null && (
@@ -1308,14 +1324,12 @@ export default async function StockDetailPage({
           <div className="space-y-4">
             {fullAccess ? (
               <div className="space-y-4">
-                <span id="plan" className="block scroll-mt-24" />
-                {tradingPlan && <TradingPlanCard plan={tradingPlan} mc={mcProbability} />}
                 <FundamentalData data={fundamentals} />
               </div>
             ) : (
               <LoginGate
-                feature="Trading Plan & Fundamental"
-                message="Daftar gratis untuk membuka kalkulator trading plan dan data fundamental saham."
+                feature="Data Fundamental"
+                message="Daftar gratis untuk membuka data fundamental saham."
               />
             )}
           </div>

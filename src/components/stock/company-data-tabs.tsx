@@ -51,31 +51,22 @@ export function CompanyDataTabs({ profile, commissioners, directors, shareholder
     { key: "dividen" as TabKey, label: "Dividen", icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z", count: dividends.length },
   ] as TabDef[]).filter((t) => t.count > 0);
 
-  const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey | null>(null);
 
   if (tabs.length === 0) return null;
 
   return (
-    <div className="relative">
+    <details className="group relative">
       {/* Collapsible header */}
-      <button
-        onClick={() => {
-          setIsExpanded(!isExpanded);
-          if (isExpanded) setActiveTab(null);
-          else if (!activeTab && tabs.length > 0) setActiveTab(tabs[0].key);
-        }}
-        className="w-full indicator-card depth-shadow p-4 flex items-center justify-between group hover:border-accent/30 transition-all press-scale"
-        aria-expanded={isExpanded}
+      <summary
+        className="w-full indicator-card depth-shadow p-4 flex items-center justify-between cursor-pointer list-none group hover:border-accent/30 transition-all press-scale [&::-webkit-details-marker]:hidden"
       >
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-accent" aria-hidden="true">
-              <path d="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5m-4 0h4" />
-            </svg>
+            <span className="text-base" aria-hidden="true">🏢</span>
           </div>
           <div className="text-left">
-            <span className="text-sm font-semibold text-text-primary">Data Perusahaan</span>
+            <span className="text-sm font-semibold text-text-primary">Profil Perusahaan</span>
             <span className="ml-2 text-[11px] font-mono text-text-tertiary tabular-nums">{totalCount} data points</span>
           </div>
         </div>
@@ -93,25 +84,25 @@ export function CompanyDataTabs({ profile, commissioners, directors, shareholder
           </div>
           <svg
             width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-            className={`text-text-tertiary transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`}
+            className="text-text-tertiary transition-transform duration-300 group-open:rotate-180"
             aria-hidden="true"
           >
             <polyline points="6 9 12 15 18 9" />
           </svg>
         </div>
-      </button>
+      </summary>
 
-      {/* Expanded content — selalu di DOM utk SEO (audit seo 2026-10-29 #2);
-          visual collapse via class hidden, bukan conditional render */}
-      <div className={`mt-3 fade-in space-y-3 ${isExpanded ? "" : "hidden"}`}>
+      {/* Expanded content — selalu di DOM utk SEO (audit seo 2026-10-29 #2) */}
+      <div className="mt-3 fade-in space-y-3">
           {/* Tab bar */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
             {tabs.map((tab) => (
               <button
                 key={tab.key}
+                type="button"
                 onClick={() => setActiveTab(activeTab === tab.key ? null : tab.key)}
                 className={`flex items-center gap-1.5 px-3.5 py-2 min-h-11 sm:min-h-0 rounded-lg text-sm font-medium transition-all whitespace-nowrap press-scale ${
-                  activeTab === tab.key
+                  (activeTab ?? tabs[0]?.key) === tab.key
                     ? "bg-accent/10 text-accent border border-accent/20"
                     : "bg-white/[0.04] text-text-secondary border border-white/[0.06] hover:bg-white/[0.08] hover:text-text-primary"
                 }`}
@@ -121,7 +112,7 @@ export function CompanyDataTabs({ profile, commissioners, directors, shareholder
                 </svg>
                 {tab.label}
                 <span className={`text-[11px] font-mono tabular-nums ${
-                  activeTab === tab.key ? "text-accent/60" : "text-text-tertiary"
+                  (activeTab ?? tabs[0]?.key) === tab.key ? "text-accent/60" : "text-text-tertiary"
                 }`}>
                   {tab.count}
                 </span>
@@ -139,6 +130,6 @@ export function CompanyDataTabs({ profile, commissioners, directors, shareholder
             {(activeTab ?? tabs[0]?.key) === "dividen" && <DividendHistoryTab dividends={dividends} />}
           </div>
         </div>
-    </div>
+    </details>
   );
 }
