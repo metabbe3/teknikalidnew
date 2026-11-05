@@ -135,8 +135,8 @@ export function IndicatorPanel({
   smaCrossSignal, emaCrossSignal,
   sma20, sma50, sma200, ema12, ema26, prevIndicator,
 }: IndicatorPanelProps) {
-  // Audit UI/UX #2 (30 Okt): Bahasa Sederhana default ON — target user pemula; tombol "Lihat Angka" utk yang mau angka mentah.
-  const [plainMode, setPlainMode] = useState(true);
+  // Audit UI/UX #2 (30 Okt): Bahasa Sederhana default ON — target user pemula (ambiguous 'Lihat Angka' button removed in Wave-2)
+  const plainMode = true;
   const [showAll, setShowAll] = useState(false);
 
   const prev = prevIndicator;
@@ -160,16 +160,6 @@ export function IndicatorPanel({
     <div>
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-text-primary">Indikator Teknikal</h3>
-        <button
-          onClick={() => setPlainMode(!plainMode)}
-          className={`text-[11px] font-medium px-3 py-1.5 min-h-11 sm:min-h-0 rounded-full transition-colors ${
-            plainMode
-              ? "bg-accent/10 text-accent"
-              : "bg-bg-hover text-text-secondary hover:text-text-primary"
-          }`}
-        >
-          {plainMode ? "Lihat Angka" : "Bahasa Sederhana"}
-        </button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

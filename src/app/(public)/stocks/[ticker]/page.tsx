@@ -72,6 +72,10 @@ import { AlertTriangle, Banknote, Newspaper } from "lucide-react";
 // ponytail: page is per-request SSR (auth-gated data varies by session — can't be SSG).
 export const dynamic = "force-dynamic";
 
+const BIG_CAP_TICKERS = [
+  "BBCA", "BBRI", "BMRI", "TLKM", "ASII", "GOTO", "DSSA", "AADI", "TPIA", "ANTM", "UNVR", "PGAS"
+] as const;
+
 function Dot() {
   return <span className="text-gray-500" aria-hidden="true">·</span>;
 }
@@ -266,6 +270,12 @@ export default async function StockDetailPage({
     ? await stockMarketService.getStockBatchWithIndicators(sectorPeers.slice(0, 8)).catch(() => [])
     : [];
   const peerMap = new Map(peerBatch.map((b) => [b.ticker, b]));
+
+  const cleanTicker = stripJk(ticker);
+  const isBigCap = (BIG_CAP_TICKERS as readonly string[]).includes(cleanTicker);
+  const bridgePeers = isBigCap
+    ? BIG_CAP_TICKERS.filter((t) => t !== cleanTicker)
+    : sectorPeers.slice(0, 6);
 
   const [socialData, { structure: marketStructure }, fundamentalRow, idxCommissioners, idxDirectors, idxShareholders, idxSubsidiaries, idxDividends, relatedArticles, sectorArticles] = await Promise.all([
     prisma.post.aggregate({
@@ -827,6 +837,29 @@ export default async function StockDetailPage({
                     message="Daftar gratis untuk membuka rencana trading, target profit, dan batas cut loss."
                   />
                 )}
+              </div>
+            )}
+
+            {/* Anti-dead-end peer chips (Batch B) */}
+            {bridgePeers.length > 0 && (
+              <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
+                <span className="text-text-tertiary font-medium">
+                  {isBigCap
+                    ? "Bank & Big-Cap Lainnya:"
+                    : `Saham Serupa Sektor ${sectorToBahasa(stock.sector)}:`}
+                </span>
+                {bridgePeers.map((p) => {
+                  const pClean = stripJk(p);
+                  return (
+                    <Link
+                      key={p}
+                      href={`/stocks/${pClean}.JK`}
+                      className="inline-flex min-h-10 sm:min-h-0 items-center rounded-full border border-border bg-bg-card px-2.5 py-1 text-xs font-semibold text-text-secondary hover:border-accent/40 hover:text-accent transition-colors"
+                    >
+                      {pClean}
+                    </Link>
+                  );
+                })}
               </div>
             )}
 
@@ -1422,6 +1455,24 @@ export default async function StockDetailPage({
                 <p className="text-xs text-text-secondary mt-1 leading-relaxed">{f.a}</p>
               </details>
             ))}
+          </div>
+
+          {/* CTA Telegram kontekstual setelah FAQ (Batch B) */}
+          <div className="mt-6 pt-4 border-t border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <p className="text-xs text-text-secondary">
+              Pantau sinyal teknikal dan pergerakan {stripJk(ticker)} secara instan.
+            </p>
+            <a
+              href={`https://t.me/TeknikalidAgentBot?start=web_${stripJk(ticker)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 sm:min-h-0 items-center justify-center gap-2 rounded-lg border border-border bg-bg-secondary px-4 py-2 text-xs font-semibold text-text-secondary hover:border-accent/40 hover:text-accent hover:bg-bg-hover transition-colors shrink-0"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" className="text-accent shrink-0" aria-hidden="true">
+                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.121l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.196 1.006.128.832.922z" />
+              </svg>
+              <span>Tanya posisi {stripJk(ticker)} ke TeknikalAgent</span>
+            </a>
           </div>
         </section>
 
