@@ -166,7 +166,7 @@ export default async function BeritaPage({
               <span className="text-text-tertiary">{overview.unchangedCount} stagnan</span>
               {topGainer && (
                 <Link href={`/stocks/${topGainer.ticker}`}
-                  className="hidden sm:inline-flex items-center gap-1 text-text-secondary hover:text-bullish transition-colors">
+                  className="inline-flex items-center gap-1 text-text-secondary hover:text-bullish transition-colors">
                   Top Gainer:
                   <span className="font-mono font-bold text-bullish">{topGainer.ticker.replace(/\.JK$/i, "")}</span>
                   <span className="font-mono text-bullish">+{formatDecimalId(topGainer.changePercent, 2)}%</span>
@@ -174,7 +174,7 @@ export default async function BeritaPage({
               )}
               {topLoser && (
                 <Link href={`/stocks/${topLoser.ticker}`}
-                  className="hidden sm:inline-flex items-center gap-1 text-text-secondary hover:text-bearish transition-colors">
+                  className="inline-flex items-center gap-1 text-text-secondary hover:text-bearish transition-colors">
                   Top Loser:
                   <span className="font-mono font-bold text-bearish">{topLoser.ticker.replace(/\.JK$/i, "")}</span>
                   <span className="font-mono text-bearish">{formatDecimalId(topLoser.changePercent, 2)}%</span>
@@ -308,16 +308,18 @@ export default async function BeritaPage({
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 rounded-xl depth-shadow border border-accent/25 bg-accent/5 p-5">
               <div>
-                <p className="text-sm font-semibold text-text-primary">Brief harian, gratis di inbox beranda Anda</p>
-                <p className="text-xs text-text-tertiary mt-0.5">Daftar — pantauan saham, trading plan, dan notifikasi sinyal.</p>
+                <p className="text-sm font-semibold text-text-primary">Brief harian, gratis di Telegram Anda</p>
+                <p className="text-xs text-text-secondary mt-0.5">Pantau ringkasan pasar, sinyal, dan riset baru tanpa login.</p>
               </div>
-              <Link
-                href="/auth/register"
-                data-engagement="cta_register_berita_card"
+              <a
+                href="https://t.me/TeknikalidAgentBot?start=web_berita"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-engagement="tg_subscribe_click"
                 className="inline-flex items-center gap-1.5 text-sm font-bold text-white bg-accent hover:bg-accent/90 rounded-lg px-4 py-2.5 min-h-11 whitespace-nowrap"
               >
-                Daftar Gratis <ArrowUpRight className="h-4 w-4" aria-hidden />
-              </Link>
+                Pantau via Telegram <ArrowUpRight className="h-4 w-4" aria-hidden />
+              </a>
             </div>
           </div>
         </div>
