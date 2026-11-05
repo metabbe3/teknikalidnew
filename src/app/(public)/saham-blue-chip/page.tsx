@@ -87,8 +87,8 @@ export default function SahamBlueChipPage() {
       />
       <div className="mx-auto max-w-5xl px-4 py-8">
 
-        <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm dark:border-blue-900 dark:bg-blue-950">
-          <strong> Apa itu blue chip?</strong> Saham blue chip adalah saham perusahaan raksasa dengan likuiditas tinggi,
+        <div className="mt-4 rounded-lg border border-bullish/30 bg-bullish/5 p-4 text-sm text-text-secondary">
+          <strong className="text-text-primary"> Apa itu blue chip?</strong> Saham blue chip adalah saham perusahaan raksasa dengan likuiditas tinggi,
           fundamental kuat, dan historis pembagian dividen rutin. Contoh: BBCA, BBRI, TLKM.
         </div>
 
@@ -97,27 +97,38 @@ export default function SahamBlueChipPage() {
             <Link
               key={stock.ticker}
               href={`/stocks/${stock.ticker}`}
-              className="block rounded-lg border p-4 transition hover:border-blue-400 hover:bg-muted/50"
+              className="block rounded-lg border border-border p-4 transition hover:border-accent/40 hover:bg-bg-hover/50"
             >
               <div className="flex items-center justify-between">
-                <span className="text-lg font-bold">{stripJk(stock.ticker)}</span>
-                <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                <span className="text-lg font-bold text-text-primary">{stripJk(stock.ticker)}</span>
+                <span className="rounded bg-accent/10 px-2 py-0.5 text-xs font-semibold text-accent">
                   {stock.sector}
                 </span>
               </div>
-              <p className="mt-1 text-sm text-muted-foreground">{stock.name}</p>
-              <p className="mt-2 text-xs font-semibold text-blue-600">Analisa Teknikal →</p>
+              <p className="mt-1 text-sm text-text-secondary">{stock.name}</p>
+              <p className="mt-2 text-xs font-semibold text-accent">Analisa Teknikal →</p>
             </Link>
           ))}
         </div>
 
-        
+        <div className="mt-4">
+          <a
+            href="https://t.me/TeknikalidAgentBot?start=web_screener_tematik"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-engagement="tg_subscribe_click"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:underline"
+          >
+            🔔 Dapatkan notifikasi sinyal harian via Telegram →
+          </a>
+        </div>
+
         <AskAiCta question="Blue chip yang lagi oke?" />
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/screener" className="rounded-lg bg-teal-600 px-4 py-3 text-sm font-semibold text-white hover:bg-teal-700"><Search className="inline h-4 w-4" /> Screener Lengkap</Link>
-          <Link href="/saham-oversold" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted"><Gem className="inline h-4 w-4" /> Saham Oversold</Link>
-          <Link href="/broker-saham-terbaik" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted"><Landmark className="inline h-4 w-4" /> Broker Saham Terbaik</Link>
+          <Link href="/stocks?view=screener" className="rounded-lg bg-teal-600 px-4 py-3 text-sm font-semibold text-white hover:bg-teal-700"><Search className="inline h-4 w-4" /> Screener Lengkap</Link>
+          <Link href="/saham-oversold" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-bg-hover"><Gem className="inline h-4 w-4" /> Saham Oversold</Link>
+          <Link href="/broker-saham-terbaik" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-bg-hover"><Landmark className="inline h-4 w-4" /> Broker Saham Terbaik</Link>
         </div>
       </div>
     </>

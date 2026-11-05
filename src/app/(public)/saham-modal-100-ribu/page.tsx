@@ -123,7 +123,7 @@ export default async function SahamModal100RibuPage() {
                   <th className="text-right px-3 py-2">Harga/Lbr</th>
                   <th className="text-right px-3 py-2">Modal 1 Lot</th>
                   <th className="text-right px-3 py-2">Perubahan</th>
-                  <th className="text-right px-3 py-2">Skor</th>
+                  <th className="text-right px-3 py-2">Skor Sinyal</th>
                   <th className="text-right px-3 py-2">RSI-14</th>
                   <th className="text-center px-3 py-2">Pantau</th>
                 </tr>
@@ -198,7 +198,7 @@ export default async function SahamModal100RibuPage() {
           </p>
           <p>
             Setelah menemukan kandidat terjangkau, langkah paling penting adalah memeriksa{" "}
-            <Link href="/screener" className="text-accent hover:underline">kesehatan trennya lewat saringan sinyal</Link>{" "}
+            <Link href="/stocks?view=screener" className="text-accent hover:underline">kesehatan trennya lewat saringan sinyal</Link>{" "}
             dan membaca analisa lengkap di halaman sahamnya — gratis tanpa login.
           </p>
         </div>

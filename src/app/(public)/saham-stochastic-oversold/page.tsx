@@ -4,10 +4,11 @@ import { PageHero } from "@/components/layout/page-hero";
 import { AskAiCta } from "@/components/seo/ask-ai-cta";
 import Link from "next/link";
 import { fetchScreenerRows } from "@/components/signal/screener-data";
-import { formatPrice, formatPercent, stripJk, changeColor, rsiColor } from "@/lib/utils";
+import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { formatDecimalId } from "@/lib/format-number";
 import { SITE_URL } from "@/lib/constants";
 import { BookOpen, Search, Target, TrendingUp } from "lucide-react";
+import { GuestStar } from "@/components/stock/guest-star";
 
  // 12 Okt: failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal // 5 min ISR
 
@@ -91,6 +92,14 @@ export default async function SahamStochasticOversoldPage() {
     ],
   };
 
+  const topScored = [...stocks]
+    .filter((s): s is typeof s & { ticker: string; signalScore: number } => typeof (s as any).signalScore === "number" && (s as any).signalScore !== null)
+    .sort((a, b) => b.signalScore - a.signalScore)
+    .slice(0, 3);
+  const topScoredText = topScored.length > 0
+    ? ` · 3 skor tertinggi hari ini: ${topScored.map((s) => `${stripJk(s.ticker)} (${s.signalScore > 0 ? "+" : ""}${formatDecimalId(s.signalScore, 2)})`).join(", ")}`
+    : "";
+
   return (
     <>
       <script
@@ -102,70 +111,149 @@ export default async function SahamStochasticOversoldPage() {
       <PageHero
         eyebrow="Saham IDX"
         title="Saham Stochastic Oversold Hari Ini"
-        description="Daftar saham IDX dengan Stochastic %K dan %D dibawah 20 — potensi reversal naik. Data update setiap 5 menit saat pasar buka."
+        description="Daftar saham IDX dengan Stochastic %K dan %D dibawah 20 — potensi reversal naik. Dihitung dari data penutupan &amp; sesi terakhir BEI."
       />
       <div className="mx-auto max-w-5xl px-4 py-8">
 
-        <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm dark:border-blue-900 dark:bg-blue-950">
-          <strong> Apa itu stochastic oversold?</strong> Stochastic Oscillator mengukur di mana harga tertutup
+        <div className="mt-4 rounded-lg border border-bullish/30 bg-bullish/5 p-4 text-sm text-text-secondary">
+          <strong className="text-text-primary"> Apa itu stochastic oversold?</strong> Stochastic Oscillator mengukur di mana harga tertutup
           relatif terhadap range tinggi–rendah tertentu. Bila %K dan %D dibawah 20, harga tertutup di bagian
           bawah range — tekanan jual berlebih dan potensi rebound mulai muncul.
         </div>
 
-        <div className="mt-6 space-y-4 text-sm leading-relaxed text-text-secondary">
-          <p className="rounded-lg bg-bg-hover/60 px-3 py-2 text-[13px]" data-seo-dr="live-count">
-            Per {new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })},
+        <div className="mt-4">
+          <p className="rounded-lg bg-bg-hover/60 px-3 py-2 text-[13px] text-text-secondary" data-seo-dr="live-count">
+            Per {new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakarta" })},
             terdapat <strong className="text-text-primary">{stocks.length} saham aktif BEI</strong> yang lolos
-            saringan ini (sudah difilter dari saham gorengan) — daftar lengkapnya di tabel bawah, gratis tanpa login.
-          </p>
-          <p>
-            <strong className="text-text-primary">Saham stochastic oversold hari ini</strong> merujuk pada saham di
-            Bursa Efek Indonesia (BEI) yang garis %K maupun %D pada Stochastic Oscillator-nya berada dibawah 20.
-            Berbeda dengan RSI yang mengukur kecepatan perubahan harga, Stochastic membandingkan harga penutupan
-            terakhir terhadap range tertinggi–terendah dalam periode tertentu (biasanya 14 hari). Nilai dibawah 20
-            berarti harga menutup sangat dekat ke titik terendah range-nya — sinyal klasik tekanan jual yang habis.
-          </p>
-          <p>
-            Trader reversal memanfaatkan kondisi ini untuk mengidentifikasi titik beli potensial: ketika %K
-            memotong %D ke atas dari zona dibawah 20, sering muncul pantulan harga jangka pendek. Kekuatan sinyal
-            meningkat bila konfirmasi datang dari indikator lain — misalnya RSI yang juga oversold, candlestick
-            reversal (hammer, bullish engulfing), atau harga berhenti di level support kuat.
-          </p>
-          <p>
-            Yang harus diwaspadai: di <strong className="text-text-primary">tren turun yang kuat</strong>, Stochastic
-            bisa tertahan dibawah 20 selama berhari-hari (stik oversold) — membeli terlalu cepat berisiko
-            &ldquo;menangkap pisau jatuh&rdquo;. Selalu tunggu persilangan %K/%D ke atas dan padukan dengan volume
-            serta struktur pasar sebelum mengambil posisi.
+            saringan ini (sudah difilter dari saham gorengan){topScoredText} — daftar lengkap di bawah, gratis tanpa login.
           </p>
         </div>
 
-        <div className="mt-8 space-y-6">
-          <h2 className="text-lg font-bold text-text-primary">Strategi & Risiko Trading Stochastic Oversold</h2>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="rounded-lg border border-border p-4">
-              <h3 className="text-sm font-semibold text-text-primary mb-2">Kapan masuk (entry)</h3>
-              <p className="text-xs text-text-secondary leading-relaxed">
-                Sinyal terkuat adalah <em>%K memotong %D ke atas</em> dari zona dibawah 20, terutama bila disertai
-                divergensi bullish (harga membuat low lebih rendah tapi Stochastic membuat low lebih tinggi). Tunggu
-                candlestick bullish penutup sebagai konfirmasi akhir. Entry paling aman saat harga ditahan di support
-                kuat dan volume mulai meningkat.
-              </p>
-            </div>
-            <div className="rounded-lg border border-border p-4">
-              <h3 className="text-sm font-semibold text-text-primary mb-2">Manajemen risiko</h3>
-              <p className="text-xs text-text-secondary leading-relaxed">
-                Pasang stop-loss ketat dibawah swing-low terdekat — reversal stochastic gagal bisa lanjut turun
-                tajam di pasar trending. Posisi kecil (position sizing) karena volatilitas tinggi, target risk/reward
-                minimal 1:2. Jangan averaging down tanpa rencana. Hindari membeli saham gorengan yang hanya oversold
-                karena manipulasi pasar.
-              </p>
-            </div>
+        {/* Tabel Saham di atas fold */}
+        <div className="mt-6 overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b text-left">
+                <th className="py-2 pr-4 font-semibold">Ticker</th>
+                <th className="py-2 pr-4 font-semibold">Nama</th>
+                <th className="py-2 pr-4 font-semibold">Harga</th>
+                <th className="py-2 pr-4 font-semibold">Perubahan</th>
+                <th className="py-2 pr-4 font-semibold">Skor Sinyal</th>
+                <th className="py-2 pr-4 font-semibold">Pantau</th>
+              </tr>
+            </thead>
+            <tbody>
+              {failed ? (
+                <tr>
+                  <td colSpan={6} className="py-8 text-center text-text-secondary">
+                    Data sinyal sementara tidak dapat dimuat — sedang diperbarui. Mohon muat ulang dalam beberapa menit.
+                  </td>
+                </tr>
+              ) : stocks.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-8 text-center text-text-secondary">
+                    Belum ada saham stochastic oversold saat ini. Cek lagi nanti saat pasar buka.
+                  </td>
+                </tr>
+              ) : (
+                stocks.map((stock) => {
+                  const s = stock as { ticker: string; name: string; close: number | null; changePercent: number | null; signalScore: number | null };
+                  return (
+                    <tr key={s.ticker} className="border-b hover:bg-bg-hover/50">
+                      <td className="py-2 pr-4">
+                        <Link href={`/stocks/${s.ticker}`} className="font-semibold text-accent hover:underline inline-block py-1.5">
+                          {stripJk(s.ticker)}
+                        </Link>
+                      </td>
+                      <td className="py-2 pr-4 text-text-secondary">{s.name}</td>
+                      <td className="py-2 pr-4"><span data-live-price={(s ?? stock).ticker}>{s.close !== null ? formatPrice(s.close) : "—"}</span></td>
+                      <td className={`py-2 pr-4 ${s.changePercent !== null ? changeColor(s.changePercent) : ""}`}>
+                        {s.changePercent !== null ? formatPercent(s.changePercent) : "—"}
+                      </td>
+                      <td className={`py-2 pr-4 font-mono tabular-nums ${s.signalScore !== null ? (s.signalScore > 0 ? "text-bullish" : s.signalScore < 0 ? "text-bearish" : "") : ""}`}>
+                        {s.signalScore !== null ? (s.signalScore > 0 ? `+${formatDecimalId(s.signalScore, 2)}` : formatDecimalId(s.signalScore, 2)) : "—"}
+                      </td>
+                      <td className="py-2 pr-4"><GuestStar ticker={s.ticker} compact /></td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+
+          <div className="mt-4">
+            <a
+              href="https://t.me/TeknikalidAgentBot?start=web_screener_tematik"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-engagement="tg_subscribe_click"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:underline"
+            >
+              🔔 Dapatkan notifikasi sinyal harian via Telegram →
+            </a>
           </div>
         </div>
 
-        <div className="mt-8">
-          <h2 className="text-lg font-bold text-text-primary mb-4">Pertanyaan Umum seputar Saham Stochastic Oversold</h2>
-          <div className="space-y-4">
+        <AskAiCta question="Stochastic oversold ada?" />
+
+        {/* Strategi & Risiko — folded into details */}
+        <details className="mt-8 group rounded-xl border border-border/70 bg-bg-card p-5">
+          <summary className="cursor-pointer font-semibold text-text-primary flex items-center justify-between list-none">
+            <h2 className="text-base font-bold text-text-primary">Strategi &amp; Risiko Trading Stochastic Oversold</h2>
+            <span className="text-text-tertiary text-xs transition-transform group-open:rotate-180">▼</span>
+          </summary>
+          <div className="mt-4 pt-4 border-t border-border/40 space-y-6">
+            <div className="space-y-4 text-sm leading-relaxed text-text-secondary">
+              <p>
+                <strong className="text-text-primary">Saham stochastic oversold hari ini</strong> merujuk pada saham di
+                Bursa Efek Indonesia (BEI) yang garis %K maupun %D pada Stochastic Oscillator-nya berada dibawah 20.
+                Berbeda dengan RSI yang mengukur kecepatan perubahan harga, Stochastic membandingkan harga penutupan
+                terakhir terhadap range tertinggi–terendah dalam periode tertentu (biasanya 14 hari). Nilai dibawah 20
+                berarti harga menutup sangat dekat ke titik terendah range-nya — sinyal klasik tekanan jual yang habis.
+              </p>
+              <p>
+                Trader reversal memanfaatkan kondisi ini untuk mengidentifikasi titik beli potensial: ketika %K
+                memotong %D ke atas dari zona dibawah 20, sering muncul pantulan harga jangka pendek. Kekuatan sinyal
+                meningkat bila konfirmasi datang dari indikator lain — misalnya RSI yang juga oversold, candlestick
+                reversal (hammer, bullish engulfing), atau harga berhenti di level support kuat.
+              </p>
+              <p>
+                Yang harus diwaspadai: di <strong className="text-text-primary">tren turun yang kuat</strong>, Stochastic
+                bisa tertahan dibawah 20 selama berhari-hari (stik oversold) — membeli terlalu cepat berisiko
+                &ldquo;menangkap pisau jatuh&rdquo;. Selalu tunggu persilangan %K/%D ke atas dan padukan dengan volume
+                serta struktur pasar sebelum mengambil posisi.
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="rounded-lg border border-border p-4">
+                <h3 className="text-sm font-semibold text-text-primary mb-2">Kapan masuk (entry)</h3>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  Sinyal terkuat adalah <em>%K memotong %D ke atas</em> dari zona dibawah 20, terutama bila disertai
+                  divergensi bullish (harga membuat low lebih rendah tapi Stochastic membuat low lebih tinggi). Tunggu
+                  candlestick bullish penutup sebagai konfirmasi akhir. Entry paling aman saat harga ditahan di support
+                  kuat dan volume mulai meningkat.
+                </p>
+              </div>
+              <div className="rounded-lg border border-border p-4">
+                <h3 className="text-sm font-semibold text-text-primary mb-2">Manajemen risiko</h3>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  Pasang stop-loss ketat dibawah swing-low terdekat — reversal stochastic gagal bisa lanjut turun
+                  tajam di pasar trending. Posisi kecil (position sizing) karena volatilitas tinggi, target risk/reward
+                  minimal 1:2. Jangan averaging down tanpa rencana. Hindari membeli saham gorengan yang hanya oversold
+                  karena manipulasi pasar.
+                </p>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        {/* FAQ — folded into details */}
+        <details className="mt-4 group rounded-xl border border-border/70 bg-bg-card p-5">
+          <summary className="cursor-pointer font-semibold text-text-primary flex items-center justify-between list-none">
+            <h2 className="text-base font-bold text-text-primary">Pertanyaan Umum seputar Saham Stochastic Oversold</h2>
+            <span className="text-text-tertiary text-xs transition-transform group-open:rotate-180">▼</span>
+          </summary>
+          <div className="mt-4 pt-4 border-t border-border/40 space-y-4">
             <div>
               <h3 className="text-sm font-semibold text-text-primary">Apa itu saham stochastic oversold?</h3>
               <p className="mt-1 text-xs text-text-secondary leading-relaxed">
@@ -188,74 +276,19 @@ export default async function SahamStochasticOversoldPage() {
               </p>
             </div>
           </div>
-        </div>
-
-        <div className="mt-6 overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b text-left">
-                <th className="py-2 pr-4 font-semibold">Ticker</th>
-                <th className="py-2 pr-4 font-semibold">Nama</th>
-                <th className="py-2 pr-4 font-semibold">Harga</th>
-                <th className="py-2 pr-4 font-semibold">Perubahan</th>
-                <th className="py-2 pr-4 font-semibold">RSI</th>
-                <th className="py-2 pr-4 font-semibold">Sinyal</th>
-              </tr>
-            </thead>
-            <tbody>
-              {failed ? (
-                <tr>
-                  <td colSpan={6} className="py-8 text-center text-muted-foreground">
-                    Data sinyal sementara tidak dapat dimuat — sedang diperbarui. Mohon muat ulang dalam beberapa menit.
-                  </td>
-                </tr>
-              ) : stocks.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-8 text-center text-muted-foreground">
-                    Belum ada saham stochastic oversold saat ini. Cek lagi nanti saat pasar buka.
-                  </td>
-                </tr>
-              ) : (
-                stocks.map((stock) => {
-                  const s = stock as { ticker: string; name: string; close: number | null; changePercent: number | null; rsi14: number | null; signalLabel: string | null };
-                  return (
-                    <tr key={s.ticker} className="border-b hover:bg-muted/50">
-                      <td className="py-2 pr-4">
-                        <Link href={`/stocks/${s.ticker}`} className="font-semibold text-blue-600 hover:underline inline-block py-1.5">
-                          {stripJk(s.ticker)}
-                        </Link>
-                      </td>
-                      <td className="py-2 pr-4 text-muted-foreground">{s.name}</td>
-                      <td className="py-2 pr-4"><span data-live-price={(s ?? stock).ticker}>{s.close !== null ? formatPrice(s.close) : "—"}</span></td>
-                      <td className={`py-2 pr-4 ${s.changePercent !== null ? changeColor(s.changePercent) : ""}`}>
-                        {s.changePercent !== null ? formatPercent(s.changePercent) : "—"}
-                      </td>
-                      <td className={`py-2 pr-4 font-semibold ${s.rsi14 !== null ? rsiColor(s.rsi14) : ""}`}>
-                        {s.rsi14 !== null ? formatDecimalId(s.rsi14, 1) : "—"}
-                      </td>
-                      <td className="py-2 pr-4 text-muted-foreground">{s.signalLabel ?? "—"}</td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        
-        <AskAiCta question="Stochastic oversold ada?" />
+        </details>
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/screener" className="rounded-lg bg-teal-600 px-4 py-3 text-sm font-semibold text-white hover:bg-teal-700">
+          <Link href="/stocks?view=screener" className="rounded-lg bg-teal-600 px-4 py-3 text-sm font-semibold text-white hover:bg-teal-700">
             <Search className="inline h-4 w-4" /> Screener Lengkap
           </Link>
-          <Link href="/saham-oversold" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">
+          <Link href="/saham-oversold" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
             <Target className="inline h-4 w-4" /> Saham RSI Oversold (&lt; 30)
           </Link>
-          <Link href="/saham-macd-bullish" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">
+          <Link href="/saham-macd-bullish" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
             <TrendingUp className="inline h-4 w-4" /> Saham MACD Bullish
           </Link>
-          <Link href="/akademi/stochastic-oscillator-cara-membaca-dan-strategi" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted">
+          <Link href="/akademi/stochastic-oscillator-cara-membaca-dan-strategi" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
             <BookOpen className="inline h-4 w-4" /> Belajar Stochastic
           </Link>
         </div>

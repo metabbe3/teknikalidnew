@@ -9,6 +9,7 @@ import { stripJk } from "@/lib/utils";
 import { formatDecimalId } from "@/lib/format-number";
 import Link from "next/link";
 import { Gem, Landmark, Search } from "lucide-react";
+import { GuestStar } from "@/components/stock/guest-star";
 
 export const dynamic = "force-dynamic";
 
@@ -159,8 +160,8 @@ export default async function SahamDividenPage() {
       />
       <div className="mx-auto max-w-5xl px-4 py-8">
 
-        <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm dark:border-blue-900 dark:bg-blue-950">
-          <strong> Apa itu dividend yield?</strong> Yield = besarnya dividen setahun dibagi harga saham.
+        <div className="mt-4 rounded-lg border border-bullish/30 bg-bullish/5 p-4 text-sm text-text-secondary">
+          <strong className="text-text-primary"> Apa itu dividend yield?</strong> Yield = besarnya dividen setahun dibagi harga saham.
           Yield 8% artinya setiap Rp100 yang Anda investasikan memberi sekitar Rp8 dividen per tahun —
           asalkan dividen dan harga bertahan.
         </div>
@@ -232,7 +233,8 @@ export default async function SahamDividenPage() {
                 <th className="py-2 pr-4 font-medium">Yield</th>
                 <th className="py-2 pr-4 font-medium">Harga</th>
                 <th className="py-2 pr-4 font-medium">PE</th>
-                <th className="py-2 font-medium">Sektor</th>
+                <th className="py-2 pr-4 font-medium">Sektor</th>
+                <th className="py-2 pr-4 font-medium">Pantau</th>
               </tr>
             </thead>
             <tbody>
@@ -245,17 +247,30 @@ export default async function SahamDividenPage() {
                     <span className="block text-xs text-muted-foreground">{r.name}</span>
                   </td>
                   <td className="py-2 pr-4">
-                    <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700 dark:bg-green-950 dark:text-green-300">
+                    <span className="rounded bg-bullish/10 px-2 py-0.5 text-xs font-semibold text-bullish">
                       {r.dividendYield != null ? `${formatDecimalId(r.dividendYield, 2)}%` : "-"}
                     </span>
                   </td>
                   <td className="py-2 pr-4">{r.close != null ? r.close.toLocaleString("id-ID") : "-"}</td>
                   <td className="py-2 pr-4">{r.pe != null ? formatDecimalId(r.pe, 1) : "-"}</td>
                   <td className="py-2 text-xs">{r.sector}</td>
+                  <td className="py-2 pr-4"><GuestStar ticker={r.ticker} compact /></td>
                 </tr>
               ))}
             </tbody>
           </table>
+
+          <div className="mt-4">
+            <a
+              href="https://t.me/TeknikalidAgentBot?start=web_screener_tematik"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-engagement="tg_subscribe_click"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:underline"
+            >
+              🔔 Dapatkan notifikasi sinyal harian via Telegram →
+            </a>
+          </div>
         </div>
         <p className="mt-2 text-xs text-muted-foreground">
           Menampilkan 20 teratas dari {rows.length} saham. Data fundamental update berkala; harga indikatif.
@@ -263,7 +278,7 @@ export default async function SahamDividenPage() {
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/screener" className="rounded-lg bg-teal-600 px-4 py-3 text-sm font-semibold text-white hover:bg-teal-700"><Search className="inline h-4 w-4" /> Screener Lengkap</Link>
+          <Link href="/stocks?view=screener" className="rounded-lg bg-teal-600 px-4 py-3 text-sm font-semibold text-white hover:bg-teal-700"><Search className="inline h-4 w-4" /> Screener Lengkap</Link>
           <Link href="/saham-blue-chip" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted"><Landmark className="inline h-4 w-4" /> Saham Blue Chip</Link>
           <Link href="/saham-undervalued" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted"><Gem className="inline h-4 w-4" /> Saham Undervalued</Link>
         </div>

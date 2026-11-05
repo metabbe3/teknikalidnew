@@ -8,6 +8,7 @@ import { stripJk } from "@/lib/utils";
 import { formatDecimalId } from "@/lib/format-number";
 import Link from "next/link";
 import { Gem, PiggyBank, Search } from "lucide-react";
+import { GuestStar } from "@/components/stock/guest-star";
 
 export const dynamic = "force-dynamic";
 
@@ -94,8 +95,8 @@ export default async function SahamValueGrowthPage() {
       />
       <div className="mx-auto max-w-5xl px-4 py-8">
 
-        <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm dark:border-blue-900 dark:bg-blue-950">
-          <strong> Kenapa value growth?</strong> Saham murah saja bisa lama bergerak; saham bertumbuh saja
+        <div className="mt-4 rounded-lg border border-bullish/30 bg-bullish/5 p-4 text-sm text-text-secondary">
+          <strong className="text-text-primary"> Kenapa value growth?</strong> Saham murah saja bisa lama bergerak; saham bertumbuh saja
           bisa kemahalan. Gabungan keduanya — valuasi wajar + laba naik — adalah pola yang dicari banyak
           investor jangka menengah.
         </div>
@@ -105,41 +106,55 @@ export default async function SahamValueGrowthPage() {
         <div className="mt-6 overflow-x-auto">
           <table className="w-full min-w-[640px] text-sm">
             <thead>
-              <tr className="border-b text-left text-muted-foreground">
+              <tr className="border-b text-left text-text-secondary">
                 <th className="py-2 pr-4 font-medium">Saham</th>
                 <th className="py-2 pr-4 font-medium">PE</th>
                 <th className="py-2 pr-4 font-medium">EPS</th>
                 <th className="py-2 pr-4 font-medium">Harga</th>
                 <th className="py-2 font-medium">Sektor</th>
+                <th className="py-2 pr-4 font-medium">Pantau</th>
               </tr>
             </thead>
             <tbody>
               {top.map((r) => (
-                <tr key={r.ticker} className="border-b last:border-0">
+                <tr key={r.ticker} className="border-b last:border-0 hover:bg-bg-hover/50">
                   <td className="py-2 pr-4">
-                    <Link href={`/stocks/${r.ticker}`} className="font-bold hover:underline">
+                    <Link href={`/stocks/${r.ticker}`} className="font-bold text-accent hover:underline">
                       {stripJk(r.ticker)}
                     </Link>
-                    <span className="block text-xs text-muted-foreground">{r.name}</span>
+                    <span className="block text-xs text-text-secondary">{r.name}</span>
                   </td>
                   <td className="py-2 pr-4 font-semibold">{r.pe != null ? formatDecimalId(r.pe, 1) : "-"}</td>
                   <td className="py-2 pr-4">{r.eps != null ? r.eps.toFixed(0) : "-"}</td>
                   <td className="py-2 pr-4">{r.close != null ? r.close.toLocaleString("id-ID") : "-"}</td>
                   <td className="py-2 text-xs">{r.sector}</td>
+                  <td className="py-2 pr-4"><GuestStar ticker={r.ticker} compact /></td>
                 </tr>
               ))}
             </tbody>
           </table>
+
+          <div className="mt-4">
+            <a
+              href="https://t.me/TeknikalidAgentBot?start=web_screener_tematik"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-engagement="tg_subscribe_click"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:underline"
+            >
+              🔔 Dapatkan notifikasi sinyal harian via Telegram →
+            </a>
+          </div>
         </div>
-        <p className="mt-2 text-xs text-muted-foreground">
+        <p className="mt-2 text-xs text-text-secondary">
           Menampilkan 20 teratas dari {rows.length} saham. Data fundamental update berkala; harga indikatif.
           Bukan rekomendasi beli.
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/screener" className="rounded-lg bg-teal-600 px-4 py-3 text-sm font-semibold text-white hover:bg-teal-700"><Search className="inline h-4 w-4" /> Screener Lengkap</Link>
-          <Link href="/saham-undervalued" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted"><Gem className="inline h-4 w-4" /> Saham Undervalued</Link>
-          <Link href="/saham-dividen" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-muted"><PiggyBank className="inline h-4 w-4" /> Saham Dividen Tinggi</Link>
+          <Link href="/stocks?view=screener" className="rounded-lg bg-teal-600 px-4 py-3 text-sm font-semibold text-white hover:bg-teal-700"><Search className="inline h-4 w-4" /> Screener Lengkap</Link>
+          <Link href="/saham-undervalued" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-bg-hover"><Gem className="inline h-4 w-4" /> Saham Undervalued</Link>
+          <Link href="/saham-dividen" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-bg-hover"><PiggyBank className="inline h-4 w-4" /> Saham Dividen Tinggi</Link>
         </div>
       </div>
     </>
