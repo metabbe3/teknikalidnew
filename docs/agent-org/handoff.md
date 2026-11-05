@@ -1558,3 +1558,10 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - CTO note CEO: agentd_pulse /tmp TANPA supervisor (plist ada, tak loaded; restart 2x pagi) vs funnel /agent live 06:59 — rekomendasi A: launchctl load hari ini, B: containerize minggu ini.
 - JEBAKAN BARU: docker exec psql + heredoc stdin TANPA -i = exit 0 palsu, 0 query jalan (RC=0 padahal stdin kosong) — WAJIB -c "..." eksplisit / docker exec -i; verifikasi pasca-patch position()=0 bukan RC.
 - Rollback: n/a (0 deploy by me) · anchor: app eaf2e78634b3 (06:59) / worker 3c381b97 · backup artikel /tmp/qa1105-backup/ + DB 2026-11-04T01:15.
+
+## 2026-11-05 18:50 — CTO sore 16:45 (sec-1103-01 verify-only + ops-27-02 fase-2 LWW; 0 deploy)
+- State: sehat; site 200 TTFB 0.24s; 3 container healthy (app eaf2e78634b3 06:59, worker 3c381b97 Kemis 22:32); EOD 5 Nov IN (MAX=today); symlink queue+backlog 2/2 hidup; 0 deploy slot ini.
+- Barusan: sec-2026-11-03-01 done verify-only — PREMIS BASI (HostIp=127.0.0.1, LAN refused exit7, lp_verify 2/2 OK; '--host 0.0.0.0' cuma listener intra-container). ops-2026-10-27-02 fase-2 SHIPPED — backlog_health.py merge kini LWW by updated_at (selftest RED→GREEN 6/6, live exit-0); writer forensik di lessons.
+- In-flight: bo-1104-03 Wave-2 + bug-1104-01 = slot 18:30 BE malam (build-only, naik T-1105-N 22:15 bila hijau); prd-1105-01 compare = FE/BE slot berikutnya; ops-11-05-03 P0 window-pinning = 6 Nov 09:30 BE; VERIFIKASI sweep-24h ops-27-02 (0 regresi status) = slot 6 Nov; bo-1104-01 telemetri AI = backoffice 03:00 besok.
+- Jebakan: (1) alert backlog 36>cap12 + stagnan roadmap-pro/prod-17-01 = PRE-EXISTING domain ops-27-03/CEO verdict, bukan efek patch LWW — jangan salah diagnosa; (2) lightpanda '--host 0.0.0.0' di Cmd container = wajib agar port-forward jalan, JANGAN di-"fix" jadi 127.0.0.1 (matikan CDP intra-container); (3) deploy budget 5 Nov: pivot 06:59 owner = 1/2; kereta T-1105-N 22:15 masih bisa jalan.
+- Langkah pertama slot berikutnya: baca queue → entry slot-nya masing-masing (bo-1104-03/bug-1104-01 18:30 BE) → cek hasil sweep LWW 24h (0 regresi) → flip done bila hijau.

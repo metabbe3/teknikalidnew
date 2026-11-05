@@ -1138,3 +1138,14 @@
 - qa-2026-11-05-02: analis-sore-2026-11-04 "bullish segar hanya dua" → "12 emiten non-gorengan (termasuk LPIN/KINO) vs total 26 bearish" (replay: bullish=12, bearish=26; daftar 6 benar tapi tak lengkap). Bukti idem + gate exit-0.
 - Root-fix dispatch ops-2026-11-05-03 P0 (generator window pinning). sec-1103-02 REJECT-premise (remote 42 branch 0 sessions; lokal strip 09:30). Pilar: TRUST.
 - Rollback: UPDATE-reverse dari /tmp/qa1105-backup/ · anchor app eaf2e78634b3 / worker 3c381b97.
+
+## 2026-11-05 18:3x — CTO SORE (slot 16:45; sec-1103-01 verify-only; 0 deploy)
+- sec-2026-11-03-01: PREMIS BASI — inspect: HostConfig.PortBindings 9223 HostIp=127.0.0.1 (bukan 0.0.0.0); lsof/netstat listen 127.0.0.1:9223 saja; LAN 192.168.68.113:9223 REFUSED exit=7. '--host 0.0.0.0' di Cmd hanya listener INTRA-container (bridge network) — wajib agar port-forward jalan, bukan eksposur LAN. NetworkMode=bridge (bukan host). Smoke lp_verify.py 2/2 OK (/, /stocks); cdp_lock/tab_reaper tanpa perubahan endpoint. 0 spawner script/plist re-create binding liar (grep LaunchAgents kosong). Bukti fisik: lsof + inspect JSON di atas; binding persist via PortBindings config (survive restart).
+- Task di-flip done tanpa perubahan infra. Pilar: TRUST.
+- Rollback: n/a (0 deploy, 0 perubahan) · anchor prod: app eaf2e78634b3 / worker 3c381b97.
+
+## 2026-11-05 18:45 — CTO SORE slot 16:45 (ops-2026-10-27-02 fase-2 LWW; 0 deploy)
+- ops-2026-10-27-02: drift-guard LWW SHIPPED — backlog_health.py `_merge_into_docs` (L157-201) kini entry-level last-write-wins by updated_at/status_at; tie/tanpa-ts → datadir menang; field non-status fill-empty dari loser. Insiden akar: union-merge fill-empty-only tak pernah menimpa status basi → 2 entry ter-regresi 26-27 Okt.
+- Bukti: failing-test-first selftest 6/6 RED→GREEN (T1 stale-pending kalah vs fresh-done; T2 docs-fresh tak diregresi; T2b no-ts; T3 jalur _try_restore penuh + symlink utuh); live run exit-0; symlink queue+backlog 2/2 hidup; 0 alert drift baru. Writer forensik dilengkapi di lessons-learned (agent tulis JSON langsung; mirror_sync & git commit terbukti bukan penyebab).
+- DONE WHEN: (a) writer didokumentasi lessons ✓ (b) fixture mirror-stale status lama tak menghidupkan lagi ✓ (c) sweep 24h = verifikasi slot 6 Nov (dicatat di entry+handoff). Pilar: TRUST. SEC GATE: N/A (host-script org-state, bukan auth/input/db/money aplikasi).
+- Rollback: n/a (host-script, 0 deploy web) — revert = kembalikan _merge_into_docs lama dari .bak statejson · anchor prod: app eaf2e78634b3 / worker 3c381b97.

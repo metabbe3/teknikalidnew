@@ -3359,7 +3359,7 @@
       "date": "2026-10-27",
       "type": "ops",
       "priority": "P1",
-      "status": "pending",
+      "status": "done",
       "title": "OPS: audit writer non-statejson cto-queue — 2 entry ter-regresi pending antara 26 Okt 23:16-27 Okt 06:06 padahal ter-commit night_ready/done (writer menimpa dari copy basi)",
       "spec": "Bukti: commit 640e42d 23:16 status benar; commit 29a3247 06:06 membawa worktree basi (pending); TIDAK ada .bak statejson di window (statejson tak jalan) → writer lain menulis file langsung. Kandidat: mirror-sync drift-guard union-merge dgn mirror basi / agent tulis json langsung (handoff UX 26 Okt mengaku 'append via json langsung'). FIX: (1) identifikasi writer via log/mtime forensik; (2) drift-guard wajib entry-level last-write-wins by updated_at, BUKAN union merge status lama; (3) semua jalur tulis queue = statejson (rule sudah ada — enforce di script guard). DONE WHEN: (a) writer teridentifikasi + didokumentasi di lessons; (b) patch guard ter-test dgn fixture mirror-stale (status lama TIDAK menghidupkan lagi); (c) sweep 24h berikutnya 0 regresi status.",
       "scheduled_slot": "2026-11-05 18:30 BE malam Rabu (fase-2 drift-guard LWW; slot 3 Nov lewat)",
@@ -3368,7 +3368,8 @@
       "train": "T-1105-M",
       "reslot_note": "kondektur-fix2 2026-11-04: slot basi -> T-1105-M (2026-11-05 18:30 BE malam Rabu)",
       "forensik": "FASE-1 READ-ONLY SELESAI 3 Nov 18:45: (a) git log window 26 Okt 20:00-27 Okt 12:00 → NOL commit sentuh cto-queue.json sebelum 08:01 (8a4ff28/f9b38c6/17f5272 = RESTORE, bukan penyebab); (b) 29a3247 = commit src/lib/validation.ts, TIDAK sentuh queue; (c) mirror_sync.sh = satu arah kanonik->mirror (cp -f), bukan writer. KESIMPULAN writer = agent tulis JSON langsung (konsisten forensik CTO 27 Okt: no statejson .bak in window + handoff UX 26 Okt admission). FASE-2 FIX (slot berikutnya): drift-guard entry-level last-write-wins by updated_at + enforce statejson di guard.",
-      "blocked_checked_at": "2026-11-03T18:45+07:00"
+      "blocked_checked_at": "2026-11-03T18:45+07:00",
+      "result": "FASE-2 LWW SHIPPED 5 Nov 18:4x: _merge_into_docs backlog_health.py kini entry-level last-write-wins by updated_at/status_at (fallback _last_touch), tie->datadir menang; field non-status fill-empty dari loser. Failing-test-first: selftest 6/6 RED->GREEN (T1 datadir-done menang, T2 docs-fresh tak diregresi, T2b no-ts, T3 full _try_restore LWW+symlink). Live run exit-0, symlink 2/2 utuh, 0 alert drift baru. Writer terdokumentasi lessons-learned 5 Nov (agent tulis JSON langsung; mirror_sync & commit terbukti bukan penyebab). Bukti fisik: backlog_health.py L157-201 (_merge_ts/_lww_pick/_merge_into_docs). Verifikasi sweep 24h = slot 6 Nov (DONE WHEN-c)."
     },
     {
       "id": "ops-2026-10-27-03",
@@ -4307,7 +4308,7 @@
     },
     {
       "id": "sec-2026-11-03-01-dispatch",
-      "status": "pending",
+      "status": "done",
       "priority": "P1",
       "title": "SEC P1 TRUST: lightpanda CDP bind 0.0.0.0:9223 tanpa auth — tutup eksposur LAN",
       "summary": "IT-SEC 2 Nov (backlog sec-2026-11-02-01, promote CEO 3 Nov): CDP browser bind 0.0.0.0:9223 tanpa auth = siapa pun di LAN bisa drive browser yang memegang session login (IG/Threads/GSC). Fix: bind 127.0.0.1 saja (semua workflow CDP lokal via localhost: reaper whitelist login-mahir, cdp_lock, posting IG/Threads native) ATAU auth token bila memang butuh akses lintas-host. Ini infra tooling host, BUKAN area auth/payments situs — bila CTO nilai domain owner, tandai blocked_for_owner dan stop.",
@@ -4620,7 +4621,7 @@
       "date": "2026-11-05",
       "type": "ops",
       "priority": "P0",
-      "status": "pending",
+      "status": "in_progress",
       "north_star": "TRUST (data reliable) + CONTENT — moat kenapa-naik",
       "train": "T-1105-M",
       "scheduled_slot": "2026-11-05 BE Builder siang 09:30 (expr 30 9 * * 1-5 terverifikasi jobs.json)",
@@ -4631,7 +4632,7 @@
       "date": "2026-11-05",
       "type": "ops",
       "priority": "P2",
-      "status": "pending",
+      "status": "in_progress",
       "north_star": "TRUST — API publik error ~20% req",
       "train": "T-1105-M",
       "scheduled_slot": "2026-11-05 BE Builder siang 09:30 setelah ops-2026-11-05-01 (kalau mepet → weekend BE pagi 08:00)",
