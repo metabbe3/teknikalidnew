@@ -1,4 +1,5 @@
 import { signalLabelId } from "@/lib/signal-label-id";
+import { signalBadge } from "@/lib/seo/signal-badge";
 import { type Metadata } from "next";
 import { safeJsonLd } from "@/lib/safe-json-ld";
 import { notFound, redirect } from "next/navigation";
@@ -472,6 +473,7 @@ export default async function StockDetailPage({
     .filter((d) => d.type === "cash" && d.exDate && d.exDate >= todayStr && d.amount !== null)
     .sort((a, b) => (a.exDate! < b.exDate! ? -1 : 1))[0] ?? null;
   const upcomingDividendSoon =
+    // eslint-disable-next-line react-hooks/purity
     upcomingDividend && upcomingDividend.exDate! <= new Date(Date.now() + 45 * 86400_000).toISOString().split("T")[0]
       ? upcomingDividend
       : null;
@@ -749,9 +751,14 @@ export default async function StockDetailPage({
                 <div className="mt-4 rounded-xl border border-border bg-bg-card p-4 depth-shadow" aria-label="Skor sinyal teknikal">
                   <div className="flex items-center gap-4">
                     <div className="flex flex-col items-center shrink-0">
-                      <span className="text-3xl font-extrabold tabular-nums leading-none" style={{ color: meta.color }}>
-                        {raw.toFixed(2).replace(".", ",")}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-3xl font-extrabold tabular-nums leading-none" style={{ color: meta.color }}>
+                          {raw.toFixed(2).replace(".", ",")}
+                        </span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${signalBadge(raw).cls}`}>
+                          {signalBadge(raw).label}
+                        </span>
+                      </div>
                       <span className="text-[10px] font-semibold text-text-tertiary mt-0.5">Skor Sinyal (−1 s.d. +1)</span>
                     </div>
                     <div className="h-10 w-px bg-border shrink-0" aria-hidden="true" />
@@ -807,6 +814,22 @@ export default async function StockDetailPage({
                 </div>
               );
             })()}
+
+            {/* Rencana Trading — tepat di bawah Hero Skor Sinyal (sebelum blok indikator) */}
+            {tradingPlan && (
+              <div className="mt-4">
+                <span id="plan" className="block scroll-mt-24" />
+                {fullAccess ? (
+                  <TradingPlanCard plan={tradingPlan} mc={mcProbability} />
+                ) : (
+                  <LoginGate
+                    feature="Rencana Trading"
+                    message="Daftar gratis untuk membuka rencana trading, target profit, dan batas cut loss."
+                  />
+                )}
+              </div>
+            )}
+
             {/* seo-dr-1 (deep-research 641c019): Answer block pemula — modal 1 lot + batas bawah/atas.
                 Angka konkret di HTML (SERP nyata: halaman yang mencetak angka level harga menang). */}
             {close !== null && (
@@ -1308,14 +1331,12 @@ export default async function StockDetailPage({
           <div className="space-y-4">
             {fullAccess ? (
               <div className="space-y-4">
-                <span id="plan" className="block scroll-mt-24" />
-                {tradingPlan && <TradingPlanCard plan={tradingPlan} mc={mcProbability} />}
                 <FundamentalData data={fundamentals} />
               </div>
             ) : (
               <LoginGate
-                feature="Trading Plan & Fundamental"
-                message="Daftar gratis untuk membuka kalkulator trading plan dan data fundamental saham."
+                feature="Data Fundamental"
+                message="Daftar gratis untuk membuka data fundamental saham."
               />
             )}
           </div>

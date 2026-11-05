@@ -69,7 +69,10 @@ export const dynamic = "force-dynamic";
 function FeaturedSkeleton() {
   return (
     <section className="space-y-5">
-      <SectionHeading title="Paling Banyak Diperdagangkan" />
+      <div className="flex items-center gap-2.5 mb-5" aria-hidden="true">
+        <span className="h-6 w-1 rounded-full bg-accent/40 animate-pulse" />
+        <div className="h-6 w-56 bg-bg-card rounded-md animate-pulse" />
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
         {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="h-[120px] bg-bg-card rounded-xl animate-pulse" />
@@ -82,7 +85,10 @@ function FeaturedSkeleton() {
 function SectorSkeleton() {
   return (
     <section className="space-y-5">
-      <SectionHeading title="Performa Sektor" />
+      <div className="flex items-center gap-2.5 mb-5" aria-hidden="true">
+        <span className="h-6 w-1 rounded-full bg-accent/40 animate-pulse" />
+        <div className="h-6 w-36 bg-bg-card rounded-md animate-pulse" />
+      </div>
       <div className="flex flex-wrap gap-3">
         {Array.from({ length: 8 }).map((_, i) => (
           <div key={i} className="h-[80px] min-w-[140px] bg-bg-card rounded-xl animate-pulse" />
@@ -95,7 +101,10 @@ function SectorSkeleton() {
 function PreviewSkeleton() {
   return (
     <section className="space-y-5">
-      <SectionHeading eyebrow="coba gratis" title="Coba Fitur Analisa" />
+      <div className="flex items-center gap-2.5 mb-5" aria-hidden="true">
+        <span className="h-6 w-1 rounded-full bg-accent/40 animate-pulse" />
+        <div className="h-6 w-44 bg-bg-card rounded-md animate-pulse" />
+      </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {Array.from({ length: 3 }).map((_, i) => (
           <div key={i} className="h-[200px] bg-bg-card rounded-xl animate-pulse" />

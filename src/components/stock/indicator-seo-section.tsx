@@ -137,20 +137,41 @@ export function IndicatorSeoSection({
   if (blocks.length === 0) return null;
 
   return (
-    <section aria-label={`Analisa Indikator ${clean}`} className="space-y-4">
-      {blocks.map((block) => (
-        <div
-          key={block.id}
-          className="bg-bg-card rounded-xl border border-border p-5 depth-shadow"
-        >
-          <h2 className="text-lg font-semibold text-text-primary mb-2">
-            {block.heading}
-          </h2>
-          <p className="text-sm text-text-secondary leading-relaxed">
-            {block.text}
-          </p>
+    <section aria-label={`Analisa Indikator ${clean}`} className="bg-bg-card rounded-xl border border-border p-5 depth-shadow">
+      <details className="group">
+        <summary className="cursor-pointer list-none flex items-center justify-between text-sm sm:text-base font-semibold text-text-primary [&::-webkit-details-marker]:hidden">
+          <span>📖 Baca Penjelasan Lengkap Indikator {clean} (RSI, MACD, dll)</span>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-text-tertiary transition-transform duration-200 group-open:rotate-180 shrink-0 ml-2"
+            aria-hidden="true"
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </summary>
+        <div className="space-y-4 mt-4 pt-4 border-t border-border">
+          {blocks.map((block) => (
+            <div
+              key={block.id}
+              className="bg-bg-hover/50 rounded-lg p-4 border border-border/50"
+            >
+              <h2 className="text-base font-semibold text-text-primary mb-2">
+                {block.heading}
+              </h2>
+              <p className="text-sm text-text-secondary leading-relaxed">
+                {block.text}
+              </p>
+            </div>
+          ))}
         </div>
-      ))}
+      </details>
     </section>
   );
 }

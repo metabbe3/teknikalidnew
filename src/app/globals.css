@@ -1417,3 +1417,29 @@ button:focus-visible,
 @media (prefers-reduced-motion: reduce) {
   .sparkle-working, .sparkle-working::after { animation: none; }
 }
+
+/* Signal score badges (situs-wide) */
+.badge-strong {
+  background-color: var(--color-bullish-bg);
+  color: var(--color-bullish);
+  border: 1px solid rgba(13, 148, 136, 0.25);
+}
+
+.badge-warm {
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning);
+  border: 1px solid rgba(180, 83, 9, 0.25);
+}
+
+.badge-neutral {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-tertiary);
+  border: 1px solid var(--color-border);
+}
+
+.badge-risk {
+  background-color: var(--color-bearish-bg);
+  color: var(--color-bearish);
+  border: 1px solid rgba(220, 38, 38, 0.25);
+}
+

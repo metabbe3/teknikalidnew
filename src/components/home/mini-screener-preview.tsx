@@ -6,11 +6,11 @@ import { StockLogo } from "@/components/stock/stock-logo";
 import { stripJk, formatPrice, formatPercent, changeColor } from "@/lib/utils";
 
 const PRESETS = [
-  { key: "rsi_oversold", label: "RSI Oversold" },
-  { key: "volume_spike", label: "Volume Spike" },
-  { key: "golden_cross", label: "Golden Cross" },
-  { key: "macd_bullish", label: "MACD Bullish" },
-  { key: "hype_alert", label: "Hype Alert" },
+  { key: "rsi_oversold", label: "Mulai Mantul · RSI Oversold" },
+  { key: "volume_spike", label: "Volume Meledak" },
+  { key: "golden_cross", label: "Tren Naik Baru · Golden Cross" },
+  { key: "macd_bullish", label: "Momentum Kuat · MACD" },
+  { key: "hype_alert", label: "Lagi Ramai · Hype" },
 ];
 
 interface ScreenerResult {

@@ -26,8 +26,8 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
       <div className="p-4 space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-sm font-semibold">Kalkulator Trading Plan</h2>
-            <p className="text-[10px] text-text-tertiary mt-0.5">Sumber: Pivot Points & ATR</p>
+            <h2 className="text-sm font-semibold">Rencana Trading: Area Beli, Target &amp; Cut Loss</h2>
+            <p className="text-[10px] text-text-tertiary mt-0.5">Sumber: Pivot Points &amp; ATR</p>
           </div>
           <div className="flex items-center gap-1.5">
             {isWaitAndSee && (

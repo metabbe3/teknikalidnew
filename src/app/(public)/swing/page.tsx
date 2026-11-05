@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { signalBadge } from "@/lib/seo/signal-badge";
 import { PageHero } from "@/components/layout/page-hero";
 import { StockLogo } from "@/components/stock/stock-logo";
 import { GET, type SwingMarketResponse } from "@/app/api/market/swing/route";
@@ -12,12 +13,12 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Setup Swing Saham Hari Ini — teknikal.id",
   description:
-    "Katalog setup swing trading saham IDX hari ini dengan skor teknikal kuantitatif, estimasi rasio Risk:Reward berbasis ATR, RSI, dan jarak SMA50 dilengkapi bukti backtest historis 20 hari.",
+    "Katalog setup swing trading saham IDX hari ini dengan skor sinyal, estimasi rasio Risk:Reward berbasis ATR, RSI, dan jarak SMA50 dilengkapi bukti backtest historis 20 hari.",
   alternates: { canonical: "/swing" },
   openGraph: {
     title: "Setup Swing Saham Hari Ini — teknikal.id",
     description:
-      "Daftar 10 kandidat swing trading saham IDX teratas dengan skor teknikal kuantitatif dan bukti backtest forward return 20 hari perdagangan.",
+      "Daftar 10 kandidat swing trading saham IDX teratas dengan skor sinyal dan bukti backtest forward return 20 hari perdagangan.",
   },
 };
 
@@ -110,50 +111,7 @@ export default async function SwingPage() {
       </PageHero>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-8 space-y-12">
-        {/* ── Static Intro SEO Text ── */}
-        <section className="rounded-xl border border-border bg-bg-card p-6 sm:p-8 space-y-4">
-          <div className="flex items-center gap-2 text-text-primary font-semibold text-lg">
-            <Target className="h-5 w-5 text-accent" />
-            <h2>Metodologi & Panduan Eksekusi Swing Trading</h2>
-          </div>
-          <p className="text-sm text-text-secondary leading-relaxed">
-            Swing trading adalah strategi memanfaatkan ayunan tren harga jangka menengah dengan jangka waktu simpan
-            2 hingga 8 minggu. Berbeda dengan scalping atau day trading yang menuntut pemantauan layar setiap menit,
-            swing trading dirancang bagi pelaku pasar yang ingin menangkap pergerakan substansial saat momentum akumulasi
-            atau konfirmasi pembalikan arah (reversal) sedang berlangsung.
-          </p>
-          <div className="grid gap-4 sm:grid-cols-3 pt-2">
-            <div className="rounded-lg border border-border/80 bg-bg-primary/50 p-4">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-text-tertiary mb-1">
-                1. Skor Kuantitatif
-              </h3>
-              <p className="text-xs text-text-secondary leading-relaxed">
-                Skor sinyal menggabungkan konfirmasi moving average (SMA20/50/200), RSI14, MACD, dan Supertrend yang
-                dipetakan ke skala kesehatan 0–100 untuk mengeliminasi bias subjektif.
-              </p>
-            </div>
-            <div className="rounded-lg border border-border/80 bg-bg-primary/50 p-4">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-text-tertiary mb-1">
-                2. Stop Loss Berbasis ATR
-              </h3>
-              <p className="text-xs text-text-secondary leading-relaxed">
-                Level pembatas risiko dihitung secara dinamis dari Average True Range (1,5× ATR) guna mencegah
-                penutupan posisi prematur akibat noise volatilitas normal harian.
-              </p>
-            </div>
-            <div className="rounded-lg border border-border/80 bg-bg-primary/50 p-4">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-text-tertiary mb-1">
-                3. Rasio Risk:Reward
-              </h3>
-              <p className="text-xs text-text-secondary leading-relaxed">
-                Hanya setup dengan potensi keuntungan yang sepadan terhadap risiko terukur yang layak dieksekusi.
-                Rasio minimal 1:1,5 memastikan pertumbuhan portofolio bertahan jangka panjang.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* ── Table Top 10 Kandidat Swing ── */}
+        {/* ── Table Top 10 Kandidat Swing (paling atas) ── */}
         <section className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
             <div>
@@ -168,7 +126,7 @@ export default async function SwingPage() {
               </p>
             </div>
             <span className="text-xs text-text-tertiary">
-              Klik nama saham untuk analisis chart & indikator detail
+              Klik nama saham untuk analisis chart &amp; indikator detail
             </span>
           </div>
 
@@ -184,7 +142,7 @@ export default async function SwingPage() {
                       Harga Terakhir
                     </th>
                     <th scope="col" className="px-3 py-3.5">
-                      Skor Kesehatan
+                      Skor Sinyal
                     </th>
                     <th scope="col" className="px-3 py-3.5">
                       R:R Estimasi
@@ -237,20 +195,16 @@ export default async function SwingPage() {
                           {formatPrice(c.close)}
                         </td>
 
-                        {/* Skor Kesehatan */}
+                        {/* Skor Sinyal */}
                         <td className="px-3 py-3">
                           <div className="flex flex-col gap-1 items-start">
                             <span
-                              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold tabular-nums"
-                              style={{
-                                color: c.healthMeta.color,
-                                backgroundColor: c.healthMeta.bg,
-                              }}
+                              className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold tabular-nums ${signalBadge(c.signalScore).cls}`}
                             >
-                              {c.healthScore !== null ? c.healthScore : "—"} / 100
+                              {formatDecimalId(c.signalScore, 2)}
                             </span>
                             <span className="text-[11px] text-text-tertiary font-medium">
-                              {c.healthMeta.label}
+                              {signalBadge(c.signalScore).label}
                             </span>
                           </div>
                         </td>
@@ -303,19 +257,97 @@ export default async function SwingPage() {
           </div>
         </section>
 
-        {/* ── Section Bukti Backtest ── */}
-        <section className="space-y-6">
-          <div className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-accent" />
-            <div>
-              <h2 className="text-lg font-semibold tracking-tight text-text-primary">
-                Bukti Backtest Historis (Forward Return 20 Hari)
-              </h2>
-              <p className="text-xs text-text-secondary mt-0.5">
-                Evaluasi empiris seluruh sinyal saham IDX selama 24 bulan terakhir tanpa look-ahead bias.
-              </p>
+        {/* ── Metodologi & Panduan Eksekusi Swing Trading ── */}
+        <details className="group rounded-xl border border-border bg-bg-card p-6 sm:p-8">
+          <summary className="cursor-pointer list-none flex items-center justify-between text-text-primary font-semibold text-lg [&::-webkit-details-marker]:hidden">
+            <div className="flex items-center gap-2">
+              <Target className="h-5 w-5 text-accent" />
+              <h2>Metodologi &amp; Panduan Eksekusi Swing Trading</h2>
+            </div>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-text-tertiary transition-transform duration-200 group-open:rotate-180 shrink-0 ml-2"
+              aria-hidden="true"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </summary>
+          <div className="mt-4 pt-4 border-t border-border space-y-4">
+            <p className="text-sm text-text-secondary leading-relaxed">
+              Swing trading adalah strategi memanfaatkan ayunan tren harga jangka menengah dengan jangka waktu simpan
+              2 hingga 8 minggu. Berbeda dengan scalping atau day trading yang menuntut pemantauan layar setiap menit,
+              swing trading dirancang bagi pelaku pasar yang ingin menangkap pergerakan substansial saat momentum akumulasi
+              atau konfirmasi pembalikan arah (reversal) sedang berlangsung.
+            </p>
+            <div className="grid gap-4 sm:grid-cols-3 pt-2">
+              <div className="rounded-lg border border-border/80 bg-bg-primary/50 p-4">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-text-tertiary mb-1">
+                  1. Skor Sinyal
+                </h3>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  Skor sinyal menggabungkan konfirmasi moving average (SMA20/50/200), RSI14, MACD, dan Supertrend yang
+                  dipetakan ke skala kesehatan 0–100 untuk mengeliminasi bias subjektif.
+                </p>
+              </div>
+              <div className="rounded-lg border border-border/80 bg-bg-primary/50 p-4">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-text-tertiary mb-1">
+                  2. Stop Loss Berbasis ATR
+                </h3>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  Level pembatas risiko dihitung secara dinamis dari Average True Range (1,5× ATR) guna mencegah
+                  penutupan posisi prematur akibat noise volatilitas normal harian.
+                </p>
+              </div>
+              <div className="rounded-lg border border-border/80 bg-bg-primary/50 p-4">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-text-tertiary mb-1">
+                  3. Rasio Risk:Reward
+                </h3>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  Hanya setup dengan potensi keuntungan yang sepadan terhadap risiko terukur yang layak dieksekusi.
+                  Rasio minimal 1:1,5 memastikan pertumbuhan portofolio bertahan jangka panjang.
+                </p>
+              </div>
             </div>
           </div>
+        </details>
+
+        {/* ── Section Bukti Backtest ── */}
+        <details className="group rounded-xl border border-border bg-bg-card p-6 sm:p-8">
+          <summary className="cursor-pointer list-none flex items-center justify-between text-text-primary font-semibold text-lg [&::-webkit-details-marker]:hidden">
+            <div className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-accent" />
+              <div>
+                <h2 className="text-lg font-semibold tracking-tight text-text-primary">
+                  Bukti Backtest Historis (Forward Return 20 Hari)
+                </h2>
+                <p className="text-xs text-text-secondary mt-0.5">
+                  Evaluasi empiris seluruh sinyal saham IDX selama 24 bulan terakhir tanpa look-ahead bias.
+                </p>
+              </div>
+            </div>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-text-tertiary transition-transform duration-200 group-open:rotate-180 shrink-0 ml-2"
+              aria-hidden="true"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </summary>
+          <div className="mt-4 pt-4 border-t border-border space-y-6">
 
           <div className="grid gap-4 sm:grid-cols-2">
             {/* Kartu Ambang P95 (0.34) */}
@@ -442,7 +474,8 @@ export default async function SwingPage() {
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </details>
 
         {/* ── Disclaimer Singkat ── */}
         <section className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-4 sm:p-5 flex items-start gap-3.5">
