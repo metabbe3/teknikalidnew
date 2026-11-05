@@ -67,7 +67,7 @@ export function CompanyDataTabs({ profile, commissioners, directors, shareholder
           </div>
           <div className="text-left">
             <span className="text-sm font-semibold text-text-primary">Profil Perusahaan</span>
-            <span className="ml-2 text-[11px] font-mono text-text-tertiary tabular-nums">{totalCount} data points</span>
+            <span className="ml-2 text-[11px] text-text-tertiary">Profil, pengurus &amp; dividen</span>
           </div>
         </div>
         <div className="flex items-center gap-2">

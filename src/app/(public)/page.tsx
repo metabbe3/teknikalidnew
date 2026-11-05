@@ -278,7 +278,7 @@ async function TradingPlanPreview() {
         </Link>
         <Link href="/pasar" data-engagement="funnel_home_pasar" className="group flex flex-col items-center gap-1.5 p-3.5 rounded-xl bg-bg-card border border-border hover:border-accent/40 depth-shadow transition-all">
           <span className="text-lg" aria-hidden>📰</span>
-          <span className="text-xs font-semibold text-text-secondary group-hover:text-accent transition-colors">Koran Pasar Live</span>
+          <span className="text-xs font-semibold text-text-secondary group-hover:text-accent transition-colors">Koran Saham Live</span>
           <span className="text-[10px] text-text-tertiary text-center leading-tight">Ringkasan hari ini</span>
         </Link>
         <Link href="/paper-trading" data-engagement="funnel_home_paper" className="group flex flex-col items-center gap-1.5 p-3.5 rounded-xl bg-bg-card border border-border hover:border-accent/40 depth-shadow transition-all">
@@ -479,9 +479,6 @@ export default async function HomePage() {
             <h1 className="mt-5 font-serif text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.03] text-text-primary">
               Analisa Saham IDX Tanpa Nebak-Nebak
             </h1>
-            <p className="mt-3 text-xl sm:text-2xl font-semibold tracking-tight text-text-primary">
-              Trading <span className="text-bullish">tanpa nebak-nebak.</span>
-            </p>
             <p className="mt-5 text-base sm:text-lg text-text-secondary max-w-xl leading-relaxed">
               Chart profesional, 9 indikator teknikal, dan screener untuk{" "}
               <span className="font-semibold text-text-primary">{totalStocks}+ saham IDX</span>. Gratis.

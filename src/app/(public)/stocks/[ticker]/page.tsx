@@ -802,7 +802,7 @@ export default async function StockDetailPage({
                         </p>
                         <div className="mt-3 grid grid-cols-2 gap-2">
                           <a
-                            href={`/stocks/${ticker}#pantau`}
+                            href="#pantau"
                             className="flex items-center justify-center gap-1.5 min-h-11 rounded-lg border border-border bg-bg hover:bg-bg-hover text-xs font-medium text-text-secondary transition-colors"
                           >
                             ⭐ Simpan ke pantauan
@@ -1004,6 +1004,9 @@ export default async function StockDetailPage({
         </div>
 
 
+
+      {/* Target anchor utk pantauan / watchlist / alert sinyal */}
+      <div id="pantau" className="scroll-mt-24" />
 
       {/* Alert preview CTA — anon only: tunjukkan value tersembunyi (alert sinyal) saat saham PUNYA sinyal aktif */}
       {!fullAccess && (

@@ -324,9 +324,14 @@ export default async function SwingPage() {
             <div className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5 text-accent" />
               <div>
-                <h2 className="text-lg font-semibold tracking-tight text-text-primary">
-                  Bukti Backtest Historis (Forward Return 20 Hari)
-                </h2>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h2 className="text-lg font-semibold tracking-tight text-text-primary">
+                    Bukti Backtest Historis (Forward Return 20 Hari)
+                  </h2>
+                  <span className="text-xs font-bold tabular-nums text-bullish bg-bullish-bg border border-bullish/30 px-2 py-0.5 rounded-full">
+                    Win Rate {formatPercentPlain(stats34.winRate, true)}
+                  </span>
+                </div>
                 <p className="text-xs text-text-secondary mt-0.5">
                   Evaluasi empiris seluruh sinyal saham IDX selama 24 bulan terakhir tanpa look-ahead bias.
                 </p>
@@ -492,6 +497,26 @@ export default async function SwingPage() {
             </p>
           </div>
         </section>
+
+        {/* Telegram Bot CTA */}
+        <div className="rounded-xl border border-border bg-bg-card p-4 text-center sm:text-left sm:flex sm:items-center sm:justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold text-text-primary">
+              Kabari saya kalau ada kandidat baru
+            </p>
+            <p className="text-xs text-text-tertiary mt-0.5">
+              Notifikasi setup swing trading otomatis saat sinyal baru terkonfirmasi
+            </p>
+          </div>
+          <a
+            href="https://t.me/TeknikalidAgentBot?start=web_swing"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 sm:mt-0 inline-flex items-center justify-center gap-2 rounded-lg bg-accent text-white px-4 py-2.5 text-xs font-semibold hover:bg-accent/90 transition-colors shrink-0"
+          >
+            Kabari saya kalau ada kandidat baru — TeknikalAgent di Telegram
+          </a>
+        </div>
       </div>
     </div>
   );
