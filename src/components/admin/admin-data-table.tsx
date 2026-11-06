@@ -22,6 +22,7 @@ interface AdminDataTableProps<T> {
   emptyMessage?: string;
   keyFn: (row: T, index: number) => string | number;
   loadingRows?: number;
+  onRowClick?: (row: T) => void;
 }
 
 export function AdminDataTable<T>({
@@ -31,6 +32,7 @@ export function AdminDataTable<T>({
   emptyMessage = "No data available",
   keyFn,
   loadingRows = 5,
+  onRowClick,
 }: AdminDataTableProps<T>) {
   if (loading) {
     return (
@@ -64,7 +66,11 @@ export function AdminDataTable<T>({
         </TableHeader>
         <TableBody>
           {data.map((row, i) => (
-            <TableRow key={keyFn(row, i)} className={`${i % 2 === 1 ? "bg-gray-50/70" : ""} hover:bg-blue-50/40 transition-colors border-b border-gray-100/60`}>
+            <TableRow
+              key={keyFn(row, i)}
+              onClick={onRowClick ? () => onRowClick(row) : undefined}
+              className={`${i % 2 === 1 ? "bg-gray-50/70" : ""} hover:bg-blue-50/40 transition-colors border-b border-gray-100/60 ${onRowClick ? "cursor-pointer" : ""}`}
+            >
               {columns.map((col) => (
                 <TableCell key={col.header} className={col.className}>
                   {col.cell(row, i)}
