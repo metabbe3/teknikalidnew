@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { PromoBanner } from "@/components/auth/promo-banner";
 
 export default function CompleteProfilePage() {
   const { data: session, update } = useSession();
@@ -115,6 +116,8 @@ export default function CompleteProfilePage() {
           <h1 className="text-xl font-bold">Lengkapi Profil</h1>
           <p className="text-text-secondary text-sm mt-1">Pilih username untuk akun kamu</p>
         </div>
+
+        <PromoBanner />
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
