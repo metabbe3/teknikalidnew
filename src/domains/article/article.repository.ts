@@ -319,6 +319,21 @@ export const articleRepository = {
       .then((rows) => rows.map((r) => r.title));
   },
 
+  /**
+   * ops-2026-11-05-01: jumlah artikel movement PUBLISHED hari ini (UTC) —
+   * basis kuota pilot cap 4/hari. Konvensi hari sama dengan cek
+   * "Already generated today" di movement-analysis.service.
+   */
+  async countMovementPublishedToday(): Promise<number> {
+    return prisma.article.count({
+      where: {
+        articleType: ArticleType.MOVEMENT_ANALYSIS,
+        status: ArticleStatus.PUBLISHED,
+        publishedAt: { gte: new Date(new Date().toISOString().slice(0, 10)) },
+      },
+    });
+  },
+
   async findTickersNeedingGeneration(batchSize: number, allTickers: string[]): Promise<string[]> {
     const existing = await prisma.article.findMany({
       where: { articleType: ArticleType.STOCK_ANALYSIS, tickerTag: { not: null } },

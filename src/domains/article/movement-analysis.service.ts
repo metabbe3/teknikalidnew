@@ -8,6 +8,7 @@ import { articleRepository } from "./article.repository";
 import { aiChat } from "@/lib/ai-client";
 import { gatherMarketContext, formatMarketContextForPrompt, type MarketContext } from "./article-fact-check";
 import { runGenerationGuards } from "./article-guards";
+import { replayMovementNumbers, selectPilotCandidates, extractAllowedNumbers } from "./movement-replay-gate";
 import { marketEngine } from "@/lib/market-engine";
 
 // ── Types ──
@@ -18,6 +19,14 @@ interface MovementResult {
   slug: string;
   title: string;
   articleId: string;
+  /** Dry-run only (ops-2026-11-05-01): konten final pasca-guard, tidak ditulis ke DB. */
+  content?: string;
+  /** Dry-run only: status final publish/draft setelah replay gate. */
+  status?: "publish" | "draft";
+  /** Dry-run only: label tanggal sesi data (gate as-of). */
+  asOfLong?: string;
+  /** Dry-run only: ringkasan hasil replay gate angka. */
+  replay?: { passed: boolean; checked: number; failureKinds: string[] };
 }
 
 interface BatchResult {
@@ -32,6 +41,12 @@ const MIN_CHANGE_PERCENT = 3.0;
 const MAX_MOVERS_PER_RUN = 50;
 /** Concurrency AI generate per batch — 3 paralel (timeout agen 18 mnt, ~20 dtk/saham). */
 const GENERATE_CONCURRENCY = 3;
+/**
+ * ops-2026-11-05-01: pilot cap 4 artikel/hari (mandat owner 4 Nov via Wave-5).
+ * Generator tetap OFF di cron sampai guardrail terbukti hijau di dry-run;
+ * cap ini mengunci laju saat pilot dinyalakan.
+ */
+const MOVEMENT_PILOT_DAILY_CAP = 4;
 
 // ── Helpers ──
 
@@ -68,8 +83,8 @@ function volRatio(current: number | null, avg: number | null): string {
 
 // ── Step 1: Find top movers (SQL di stockRepository — SATU PINTU, fix-2026-10-26-11) ──
 
-async function findTopMovers(): Promise<MovementMoverRow[]> {
-  return stockRepository.findMovementMovers(MIN_CHANGE_PERCENT, MAX_MOVERS_PER_RUN);
+async function findTopMovers(minChangePercent: number = MIN_CHANGE_PERCENT): Promise<MovementMoverRow[]> {
+  return stockRepository.findMovementMovers(minChangePercent, MAX_MOVERS_PER_RUN);
 }
 
 // ── Step 2: Build the AI prompt with real DB data ──
@@ -77,10 +92,12 @@ async function findTopMovers(): Promise<MovementMoverRow[]> {
 function buildMovementPrompt(
   mover: MovementMoverRow,
   marketContextStr: string,
+  asOfLong?: string | null,
 ): { system: string; user: string } {
   const t = mover.ticker.replace(".JK", "");
   const direction = (mover.changePercent ?? 0) >= 0 ? "naik" : "turun";
   const changeStr = pct(mover.changePercent);
+  const asOf = asOfLong ?? "sesi terakhir";
 
   const system = `Anda adalah analis pasar saham Indonesia yang menulis untuk TeknikalID, platform analisa saham IDX.
 
@@ -93,9 +110,12 @@ ATURAN KRITIS:
 4. Target keyword utama: "kenapa saham ${t} ${direction} hari ini"
 5. Target keyword sekunder: "harga saham ${t} hari ini", "analisa saham ${t}", "saham ${t} ${direction}"
 6. Sertakan disclaimer di akhir bahwa ini bukan rekomendasi jual/beli.
-7. JANGAN gunakan markdown table. Gunakan paragraf dan bullet points.`;
+7. JANGAN gunakan markdown table. Gunakan paragraf dan bullet points.
+8. WAJIB menyebut tanggal data (persis: ${asOf}) minimal satu kali di paragraf pertama.`;
 
   const user = `## DATA SAHAM ${t} HARI INI (WAJIB GUNAKAN DATA INI, JANGAN MEMBUAT ANGKA SENDIRI)
+
+**Data per penutupan sesi: ${asOf}**
 
 **Saham:** ${mover.name} (${t})
 **Sektor:** ${mover.sector}
@@ -169,10 +189,22 @@ Lihat pergerakan harga ${mover.name} secara real-time lengkap dengan chart inter
 
 // ── Step 3: Generate movement analysis for a single stock ──
 
-async function generateForStock(mover: MovementMoverRow, marketContextStr: string, marketCtx: MarketContext): Promise<MovementResult> {
+/** ops-2026-11-05-01: label tanggal sesi data (gate as-of) dari bar EOD terakhir. */
+function movementAsOfLabels(mover: MovementMoverRow): { asOfLong: string | null; asOfShort: string | null } {
+  if (!mover.priceDate) return { asOfLong: null, asOfShort: null };
+  const d = new Date(mover.priceDate);
+  if (Number.isNaN(d.getTime())) return { asOfLong: null, asOfShort: null };
+  return {
+    asOfLong: d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }),
+    asOfShort: d.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }),
+  };
+}
+
+async function generateForStock(mover: MovementMoverRow, marketContextStr: string, marketCtx: MarketContext, dryRun = false): Promise<MovementResult> {
   const t = mover.ticker.replace(".JK", "");
   const direction = (mover.changePercent ?? 0) >= 0 ? "naik" : "turun";
   const changeStr = pct(mover.changePercent);
+  const { asOfLong, asOfShort } = movementAsOfLabels(mover);
 
   // Evergreen slug — update same article each day
   const slug = `kenapa-saham-${t.toLowerCase()}-${direction}-hari-ini`;
@@ -184,7 +216,7 @@ async function generateForStock(mover: MovementMoverRow, marketContextStr: strin
     throw new Error(`Already generated for ${t} today`);
   }
 
-  const { system, user } = buildMovementPrompt(mover, marketContextStr);
+  const { system, user } = buildMovementPrompt(mover, marketContextStr, asOfLong);
 
   console.info(`[MovementAnalysis] Generating for ${t} (${changeStr})...`);
 
@@ -214,15 +246,63 @@ async function generateForStock(mover: MovementMoverRow, marketContextStr: strin
   const title = guards.title;
   const excerpt = `${mover.name} (${t}) ${direction} ${changeStr} ke ${price(mover.close)}. Analisis lengkap alasan pergerakan harga, indikator teknikal, dan fundamental saham ${t} hari ini.`;
 
+  // ── ops-2026-11-05-01: GATE 1+2+4 — replay angka deterministik vs ground truth SATU PINTU.
+  // GATE 3 (as-of) = replayMovementNumbers menuntut tanggal sesi ada di konten.
+  // allowedNumbers = angka market context (IHSG, top gainers) yang memang
+  // DIBERIKAN ke prompt — kutipan sah, bukan karangan; diekstrak dari teks data
+  // mover + marketContextStr (sumber yang sama yang dilihat AI).
+  // Replay fail → status turun ke DRAFT (tidak publish), bukan throw — artikel
+  // tersimpan untuk inspeksi, tapi tidak pernah tampil publish dengan angka tak-tereplay.
+  const dataGivenText =
+    `${mover.ticker} ${mover.name} ${mover.sector} ${price(mover.close)} ${price(mover.prevClose)} ` +
+    `${price(mover.high)} ${price(mover.low)} ${price(mover.open)} ${pct(mover.changePercent)} ` +
+    `${fmtVol(mover.volume)} ${volRatio(mover.volume, mover.avgVolume5d)} ${price(mover.week52Low)} ${price(mover.week52High)} ` +
+    `${mover.rsi14 ?? ""} ${mover.macdHist ?? ""} ${mover.adx ?? ""} ${price(mover.sma20)} ${price(mover.sma50)} ${price(mover.sma200)} ` +
+    `${price(mover.supertrend)} ${price(mover.bbLower)} ${price(mover.bbUpper)} ${mover.pe ?? ""} ${mover.pb ?? ""} ` +
+    `${fmtMC(mover.marketCap)} ${price(mover.eps)} ${mover.dividendYield ?? ""} ${marketContextStr}`;
+  const allowedNumbers = extractAllowedNumbers(dataGivenText);
+  const replay = replayMovementNumbers(guards.content, mover, {
+    asOfLong: asOfLong ?? "sesi terakhir",
+    asOfShort: asOfShort ?? "sesi terakhir",
+    allowedNumbers,
+  });
+  const failureKinds = [...new Set(replay.failures.map((f) => f.kind))].slice(0, 5);
+  const finalStatus: "publish" | "draft" = guards.status === "publish" && replay.passed ? "publish" : "draft";
+  console.info(
+    `[ReplayGate] path=movement ${t} checked=${replay.checked} passed=${replay.passed}` +
+      (failureKinds.length ? ` failures=${failureKinds.join(",")}` : ""),
+  );
+
+  const replayMeta: Record<string, string> = {
+    movementReplayPassed: String(replay.passed),
+    movementReplayChecked: String(replay.checked),
+    ...(failureKinds.length ? { movementReplayFailures: failureKinds.join(",") } : {}),
+  };
+
+  // DRY-RUN (ops-2026-11-05-01): verifikasi guardrail tanpa tulis DB apa pun.
+  if (dryRun) {
+    return {
+      ticker: mover.ticker,
+      direction: direction as "naik" | "turun",
+      slug,
+      title,
+      articleId: "dry-run",
+      content: guards.content,
+      status: finalStatus,
+      asOfLong: asOfLong ?? undefined,
+      replay: { passed: replay.passed, checked: replay.checked, failureKinds },
+    };
+  }
+
   // Upsert: update existing article or create new
   if (existing) {
     const updated = await articleRepository.update(existing.id, {
       title,
       excerpt,
       content: guards.content,
-      status: guards.status === "draft" ? ArticleStatus.DRAFT : ArticleStatus.PUBLISHED,
-      ...(guards.status === "publish" ? { publishedAt: new Date() } : {}),
-      generationMeta: guards.meta,
+      status: finalStatus === "draft" ? ArticleStatus.DRAFT : ArticleStatus.PUBLISHED,
+      ...(finalStatus === "publish" ? { publishedAt: new Date() } : {}),
+      generationMeta: { ...guards.meta, ...replayMeta },
     });
     return {
       ticker: mover.ticker,
@@ -243,11 +323,11 @@ async function generateForStock(mover: MovementMoverRow, marketContextStr: strin
     content: guards.content,
     authorId: adminUser.id,
     articleType: ArticleType.MOVEMENT_ANALYSIS,
-    status: guards.status === "draft" ? ArticleStatus.DRAFT : ArticleStatus.PUBLISHED,
+    status: finalStatus === "draft" ? ArticleStatus.DRAFT : ArticleStatus.PUBLISHED,
     tickerTag: mover.ticker,
     tags: [t, direction, mover.sector, "analisa-saham", "pergerakan-harga"],
     aiProvider: process.env.ANTHROPIC_MODEL || "qd/qmodel_latest",
-    generationMeta: guards.meta,
+    generationMeta: { ...guards.meta, ...replayMeta },
   });
 
   return {
@@ -265,21 +345,42 @@ export const movementAnalysisService = {
   /**
    * Scan all stocks for >3% movers, generate AI movement analysis for each.
    * Called by the gen_movement_analysis agent after daily snapshot generation.
+   *
+   * ops-2026-11-05-01: opts.dryRun = jalur verifikasi guardrail TANPA tulis DB;
+   * opts.minChangePercent override (dry-run memakai ambang lebih rendah agar
+   * ada kandidat walau pasar sepi). Pilot cap MOVEMENT_PILOT_DAILY_CAP/hari,
+   * gorengan dikecualikan (selectPilotCandidates).
    */
-  async runBatchGeneration(maxStocks?: number): Promise<BatchResult> {
+  async runBatchGeneration(maxStocks?: number, opts?: { minChangePercent?: number; dryRun?: boolean }): Promise<BatchResult> {
     console.info("[MovementAnalysis] Scanning for top movers...");
 
-    const movers = await findTopMovers();
+    const movers = await findTopMovers(opts?.minChangePercent ?? MIN_CHANGE_PERCENT);
 
     if (movers.length === 0) {
-      console.info("[MovementAnalysis] No stocks moved >3% today. Skipping.");
+      console.info("[MovementAnalysis] No stocks moved enough today. Skipping.");
       return { generated: [], skipped: [], errors: [] };
     }
 
-    console.info(`[MovementAnalysis] Found ${movers.length} movers >${MIN_CHANGE_PERCENT}%`);
+    console.info(`[MovementAnalysis] Found ${movers.length} movers >= ${opts?.minChangePercent ?? MIN_CHANGE_PERCENT}%`);
 
-    // Limit if specified
-    const stocks = maxStocks ? movers.slice(0, maxStocks) : movers;
+    // ── ops-2026-11-05-01: pilot quota (cap 4/hari) + filter non-gorengan ──
+    // Urutan PENTING: filter gorengan + kuota DULU, baru maxStocks — kalau
+    // slice dulu, top-N berisi gorengan memakan slot kandidat sahih
+    // (dry-run 6 Nov: top-4 = 3 gorengan → cuma 1 artikel).
+    const quota = opts?.dryRun
+      ? MOVEMENT_PILOT_DAILY_CAP
+      : Math.max(0, MOVEMENT_PILOT_DAILY_CAP - (await articleRepository.countMovementPublishedToday()));
+    const gorenganSkipped = movers.filter((m) => m.isGorengan === true).map((m) => m.ticker.replace(".JK", ""));
+    if (gorenganSkipped.length) {
+      console.info(`[MovementAnalysis] Pilot filter: skip gorengan ${gorenganSkipped.join(", ")}`);
+    }
+    console.info(`[MovementAnalysis] Pilot cap ${MOVEMENT_PILOT_DAILY_CAP}/hari — kuota tersisa ${quota}`);
+    if (quota <= 0) {
+      console.info("[MovementAnalysis] Daily cap reached — stop.");
+      return { generated: [], skipped: ["daily-cap-reached"], errors: [] };
+    }
+    const candidates = selectPilotCandidates(movers, { quotaRemaining: quota });
+    const stocks = maxStocks ? candidates.slice(0, maxStocks) : candidates;
 
     // Gather market context once (IHSG, sector trends)
     const marketCtx = await gatherMarketContext();
@@ -297,7 +398,7 @@ export const movementAnalysisService = {
         limit(async () => {
           const t = mover.ticker.replace(".JK", "");
           try {
-            const result = await generateForStock(mover, marketContextStr, marketCtx);
+            const result = await generateForStock(mover, marketContextStr, marketCtx, opts?.dryRun === true);
             generated.push(result);
             console.info(`[MovementAnalysis] ✅ ${t} (${pct(mover.changePercent)}) → ${result.slug}`);
           } catch (err) {
@@ -383,6 +484,7 @@ export const movementAnalysisService = {
       dividendYield: fundamental ? decimalToNumber(fundamental.dividendYield) : null,
       week52High: decimalToNumber(week52._max.high),
       week52Low: decimalToNumber(week52._min.low),
+      priceDate: latest.date,
     };
 
     const marketCtx = await gatherMarketContext([t]);

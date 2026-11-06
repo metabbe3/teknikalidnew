@@ -281,16 +281,29 @@ export async function fetchQuotesBatch(tickers: string[]) {
     }
   });
 
-  // Patch null/priceless entries (indices the scanner misses) via Yahoo v8.
-  for (const entry of results) {
-    if (entry.quote != null && entry.quote.regularMarketPrice != null) continue;
-    const v8 = await fetchQuoteV8(entry.ticker);
-    if (!v8) continue;
-    const v8Parsed = QuoteSchema.safeParse(v8);
-    if (v8Parsed.success) {
-      entry.quote = v8Parsed.data;
-      console.error(`[MarketQuotes] v8 chart fallback used for ${entry.ticker}`);
-    }
+  // Patch null/priceless entries (indices the scanner misses) via Yahoo v8 in parallel.
+  const missingEntries = results.filter(
+    (entry) => entry.quote == null || entry.quote.regularMarketPrice == null
+  );
+  if (missingEntries.length > 0) {
+    const v8Limit = pLimit(6);
+    await Promise.all(
+      missingEntries.map((entry) =>
+        v8Limit(async () => {
+          try {
+            const v8 = await fetchQuoteV8(entry.ticker);
+            if (!v8) return;
+            const v8Parsed = QuoteSchema.safeParse(v8);
+            if (v8Parsed.success) {
+              entry.quote = v8Parsed.data;
+              console.error(`[MarketQuotes] v8 chart fallback used for ${entry.ticker}`);
+            }
+          } catch (err) {
+            console.error(`[MarketQuotes] v8 fallback failed for ${entry.ticker}`, err);
+          }
+        })
+      )
+    );
   }
 
   return results;

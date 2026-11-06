@@ -139,6 +139,28 @@ function buildCandidate(
   return null;
 }
 
+export function toSafeDate(val: unknown): Date | null {
+  if (val == null) return null;
+  if (val instanceof Date) {
+    return Number.isNaN(val.getTime()) ? null : val;
+  }
+  if (typeof val === "string") {
+    const d = new Date(val);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
+  return null;
+}
+
+export function pickLatestDate(
+  dates: (Date | string | null | undefined)[]
+): Date | null {
+  const safeDates = dates
+    .map(toSafeDate)
+    .filter((d): d is Date => d !== null);
+  if (safeDates.length === 0) return null;
+  return safeDates.sort((a, b) => b.getTime() - a.getTime())[0];
+}
+
 export const morningDeltaService = {
   // ret-qw2: jalur anonim — sama persis dengan getMorningDelta setelah resolusi ticker,
   // dipakai oleh /api/me/morning-delta?tickers= (guest watchlist localStorage).
@@ -153,10 +175,7 @@ export const morningDeltaService = {
       .sort((a, b) => b.rank - a.rank)
       .slice(0, 3)
       .map((c) => c.bullet);
-    const latestDate = stocks
-      .map((s) => s.indicators[0]?.date ?? null)
-      .filter((d: Date | null): d is Date => d !== null)
-      .sort((a, b) => b.getTime() - a.getTime())[0];
+    const latestDate = pickLatestDate(stocks.map((s) => s.indicators[0]?.date));
     return {
       asOf: latestDate ? latestDate.toISOString() : null,
       trackedCount: stocks.length,
@@ -183,10 +202,7 @@ export const morningDeltaService = {
       .slice(0, 3)
       .map((c) => c.bullet);
 
-    const latestDate = stocks
-      .map((s) => s.indicators[0]?.date ?? null)
-      .filter((d: Date | null): d is Date => d !== null)
-      .sort((a, b) => b.getTime() - a.getTime())[0];
+    const latestDate = pickLatestDate(stocks.map((s) => s.indicators[0]?.date));
 
     return {
       asOf: latestDate ? latestDate.toISOString() : null,
