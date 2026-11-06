@@ -787,6 +787,18 @@ export default async function StockDetailPage({
                     </div>
                   </div>
                   <SignalBreakdownDetails breakdown={signalBreakdown} />
+                  {/* Cross-sell agent (owner 6 Nov): konsultasi via bot — selalu tampil di fold-1 */}
+                  <div className="mt-3">
+                    <a
+                      href={`https://t.me/TeknikalidAgentBot?start=${encodeURIComponent(stripJk(ticker) + "_JK")}`}
+                      data-engagement="tg_tanya_agent_fold1"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-1.5 min-h-11 rounded-lg bg-accent-bright px-3 text-xs font-semibold text-white transition-colors hover:brightness-110"
+                    >
+                      💬 Tanya AI soal {stripJk(ticker)} — gratis 3x
+                    </a>
+                  </div>
                   {/* ret-qw7: arah skor 5 sesi — reason-to-check-back-later */}
                   {(() => {
                     const series = (detail.scoreSeries ?? []).map((r) => r.score).filter((v): v is number => v !== null);
