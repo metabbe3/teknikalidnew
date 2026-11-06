@@ -58,6 +58,7 @@ import { articleRepository } from "@/domains/article/article.repository";
 import { DATA_SOURCE_LABEL } from "@/domains/article/article-freshness";
 import { ArticleContent } from "@/components/article/article-renderer";
 import { IDX_STOCKS } from "@/lib/idx-stocks";
+import { getIndicesForTicker } from "@/lib/idx-indices";
 import { prisma } from "@/lib/prisma";
 import { buildForeignRows } from "@/domains/stock/foreign-flow.util";
 import { portfolioService } from "@/domains/portfolio/portfolio.service";
@@ -277,6 +278,7 @@ export default async function StockDetailPage({
   const bridgePeers = isBigCap
     ? BIG_CAP_TICKERS.filter((t) => t !== cleanTicker)
     : sectorPeers.slice(0, 6);
+  const memberIndices = getIndicesForTicker(ticker);
 
   // Fase T2: SATU PINTU batch indicators peer se-sektor / big-cap anchors (maks 12 kode)
   // di dalam Promise.all paralel agar TTFB tidak bertambah serial.
@@ -899,6 +901,23 @@ export default async function StockDetailPage({
                     </Link>
                   );
                 })}
+              </div>
+            )}
+
+            {/* Fase T6: Internal link balik ke indeks tempat saham terdaftar */}
+            {memberIndices.length > 0 && (
+              <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-xs">
+                <span className="text-text-tertiary font-medium">Anggota Indeks:</span>
+                {memberIndices.map((m) => (
+                  <Link
+                    key={m.slug}
+                    href={`/indeks/${m.slug}`}
+                    data-engagement="nav_stockToIndeksBadge"
+                    className="inline-flex min-h-9 sm:min-h-0 items-center rounded-full border border-accent/30 bg-accent/5 px-2.5 py-1 text-xs font-semibold text-accent hover:bg-accent/15 transition-colors"
+                  >
+                    Indeks {m.name}
+                  </Link>
+                ))}
               </div>
             )}
 

@@ -20,6 +20,7 @@ services:
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
       - CRON_SECRET=${CRON_SECRET:-}
+      - SERVICE_TOKEN=${SERVICE_TOKEN:-}
       - ANTHROPIC_AUTH_TOKEN=${ANTHROPIC_AUTH_TOKEN:-}
       - ANTHROPIC_BASE_URL=${ANTHROPIC_BASE_URL:-}
       - ANTHROPIC_MODEL=${ANTHROPIC_MODEL:-glm-5.1}
@@ -78,6 +79,7 @@ services:
       - API_TIMEOUT_MS=${API_TIMEOUT_MS:-300000}
       - SITE_URL=${SITE_URL:-http://app:3000}
       - CRON_SECRET=${CRON_SECRET:-}
+      - SERVICE_TOKEN=${SERVICE_TOKEN:-}
     command: ["npx", "tsx", "src/worker/agent-worker.ts"]
     depends_on:
       db:

@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { wibDayKey } from "@/lib/datetime-wib";
+import { stripJk } from "@/lib/utils";
+import { extractArticleTickers } from "@/lib/rehype-stock-linker";
 
 export interface DailyBriefHeroData {
   slug: string;
@@ -56,34 +58,57 @@ export function DailyBriefHero({
     );
   }
 
+  const heroTickers = extractArticleTickers(
+    { title: brief.title, excerpt: brief.excerpt },
+    4,
+  );
+
   return (
     <section aria-label="Brief pasar hari ini" className="mb-6">
-      <Link
-        href={`/berita/${brief.slug}`}
-        data-engagement="brief_open"
-        className="group block rounded-xl border border-accent/25 bg-gradient-to-br from-accent/5 to-transparent p-5 hover:depth-shadow-hover transition-all"
-      >
-        <div className="flex items-center gap-2">
-          <span className="rounded-full bg-accent/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent">
-            Brief Pagi
-          </span>
-          <span className="text-xs text-text-tertiary">{relativeDayId(new Date(brief.publishedAt))}</span>
-        </div>
-        <h2 className="mt-2.5 font-heading text-lg sm:text-xl font-bold text-text-primary leading-snug group-hover:text-accent transition-colors">
-          {brief.title}
-        </h2>
-        {brief.excerpt && (
-          <p className="mt-1.5 text-sm text-text-secondary leading-relaxed line-clamp-2">{brief.excerpt}</p>
+      <article className="rounded-xl border border-accent/25 bg-gradient-to-br from-accent/5 to-transparent p-5 hover:depth-shadow-hover transition-all">
+        <Link
+          href={`/berita/${brief.slug}`}
+          data-engagement="brief_open"
+          className="group block"
+        >
+          <div className="flex items-center gap-2">
+            <span className="rounded-full bg-accent/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent">
+              Brief Pagi
+            </span>
+            <span className="text-xs text-text-tertiary">{relativeDayId(new Date(brief.publishedAt))}</span>
+          </div>
+          <h2 className="mt-2.5 font-heading text-lg sm:text-xl font-bold text-text-primary leading-snug group-hover:text-accent transition-colors">
+            {brief.title}
+          </h2>
+          {brief.excerpt && (
+            <p className="mt-1.5 text-sm text-text-secondary leading-relaxed line-clamp-2">{brief.excerpt}</p>
+          )}
+          <div className="mt-3 flex flex-wrap items-center gap-4">
+            <span className="text-sm font-semibold text-accent group-hover:underline">
+              Baca brief lengkap →
+            </span>
+            <span className="text-xs text-text-tertiary">
+              Semua saham yang disebut otomatis terhubung ke chart-nya
+            </span>
+          </div>
+        </Link>
+        {heroTickers.length > 0 && (
+          <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-accent/15 pt-2.5">
+            <span className="text-[11px] font-medium text-text-tertiary mr-0.5">Saham disebut:</span>
+            {heroTickers.map((t) => (
+              <Link
+                key={t}
+                href={`/stocks/${t}`}
+                data-engagement="chip_beritaArchiveTicker"
+                data-nav-label="nav_newsTickerChip_click"
+                className="inline-flex items-center rounded-md border border-accent/25 bg-accent/10 px-2 py-0.5 font-mono text-xs font-semibold text-accent hover:bg-accent/20 transition-colors"
+              >
+                {stripJk(t)}
+              </Link>
+            ))}
+          </div>
         )}
-        <div className="mt-3 flex flex-wrap items-center gap-4">
-          <span className="text-sm font-semibold text-accent group-hover:underline">
-            Baca brief lengkap →
-          </span>
-          <span className="text-xs text-text-tertiary">
-            Semua saham yang disebut otomatis terhubung ke chart-nya
-          </span>
-        </div>
-      </Link>
+      </article>
     </section>
   );
 }

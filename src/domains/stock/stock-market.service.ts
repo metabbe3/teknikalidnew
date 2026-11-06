@@ -161,31 +161,95 @@ export const stockMarketService = {
   async getStockBatchWithIndicators(tickers: string[]) {
     if (tickers.length === 0) return [];
 
-    const stocks = await stockRepository.findStocksByTickersWithIndicators(tickers);
+    const rows = await stockRepository.findStocksBatchLateral(tickers);
 
-    return stocks.map((s) => {
-      const prices = dedupeStalePrices(s.prices);
-      const latest = prices[0];
-      const prev = prices[1];
-      const { close, change, changePercent } = computeChange(latest, prev);
-      const indicator = s.indicators?.[0];
+    // Map by ticker for fast lookup and preserving caller's input order
+    const rowMap = new Map<string, (typeof rows)[0]>();
+    for (const r of rows) {
+      rowMap.set(r.ticker.toUpperCase(), r);
+      if (r.ticker.endsWith(".JK")) {
+        rowMap.set(r.ticker.replace(/\.JK$/, "").toUpperCase(), r);
+      }
+    }
+
+    // Match requested tickers in order and deduplicate
+    const seen = new Set<string>();
+    const unique: (typeof rows)[0][] = [];
+    for (const t of tickers) {
+      const match = rowMap.get(t.trim().toUpperCase());
+      if (match && !seen.has(match.ticker)) {
+        seen.add(match.ticker);
+        unique.push(match);
+      }
+    }
+
+    return unique.map((s) => {
+      const close = s.close;
+      const prevClose = s.prevClose;
+      const change = close !== null && prevClose !== null ? close - prevClose : null;
+      const changePercent =
+        close !== null && prevClose !== null ? marketEngine.pctChange(close, prevClose) : null;
 
       return {
         ticker: s.ticker,
         name: s.name,
         sector: s.sector,
+        listingBoard: s.listingBoard ?? null,
         close,
         change,
         changePercent,
-        volume: latest ? bigIntToNumber(latest.volume) : null,
-        rsi14: indicator ? decimalToNumber(indicator.rsi14) : null,
-        sma20: indicator ? decimalToNumber(indicator.sma20) : null,
-        signalScore: indicator ? decimalToNumber(indicator.signalScore) : null,
-        signalLabel: indicator?.signalLabel ?? null,
-        macdHist: indicator ? decimalToNumber(indicator.macdHist) : null,
-        isGorengan: indicator?.isGorengan ?? false,
+        volume: s.volume,
+        open: s.open,
+        high: s.high,
+        low: s.low,
+        prevClose,
+        date: s.date ? s.date.toISOString() : null,
+        rsi14: s.rsi14,
+        sma20: s.sma20,
+        signalScore: s.signalScore,
+        signalLabel: s.signalLabel,
+        macdHist: s.macdHist,
+        isGorengan: s.isGorengan,
+        indicators: {
+          rsi14: s.rsi14,
+          sma20: s.sma20,
+          signalScore: s.signalScore,
+          signalLabel: s.signalLabel,
+          macdHist: s.macdHist,
+          isGorengan: s.isGorengan,
+        },
       };
     });
+  },
+
+  async getStockUniverse(sector?: string) {
+    const cacheKey = `stock-universe:equity:${sector ?? "all"}`;
+    const cached = stockCache.get(cacheKey);
+    if (cached) return cached;
+
+    const stocks = await stockRepository.findActiveStocksWithPrices(
+      { assetClass: "EQUITY", ...(sector ? { sector } : {}) },
+      false
+    );
+
+    const result = stocks.map((stock) => {
+      const close = stock.close;
+      const prevClose = stock.prevClose;
+      const change = close !== null && prevClose !== null ? close - prevClose : null;
+      const changePercent =
+        close !== null && prevClose !== null ? marketEngine.pctChange(close, prevClose) : null;
+
+      return {
+        ticker: stock.ticker,
+        name: stock.name,
+        close,
+        change,
+        changePercent,
+      };
+    });
+
+    stockCache.set(cacheKey, result, 300_000);
+    return result;
   },
 
   async getStockList(sector?: string): Promise<StockListRow[]> {

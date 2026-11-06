@@ -24,18 +24,21 @@ const MAX_TICKERS = 120;
 export async function GET(request: NextRequest) {
   try {
     const raw = request.nextUrl.searchParams.get("s") ?? "";
-    const tickers = raw
-      .split(",")
-      .map((t) => t.trim())
-      .filter(Boolean)
-      .map((t) => (t.includes(".") || t.startsWith("^") ? t : `${t}.JK`))
-      .slice(0, MAX_TICKERS);
+    const tickers = Array.from(
+      new Set(
+        raw
+          .split(",")
+          .map((t) => t.trim().toUpperCase())
+          .filter(Boolean)
+          .map((t) => (t.includes(".") || t.startsWith("^") ? t : `${t}.JK`))
+      )
+    ).slice(0, MAX_TICKERS);
 
     if (tickers.length === 0) {
       return NextResponse.json({ quotes: [], ts: Date.now() });
     }
 
-    const cacheKey = `live-quotes:${tickers.join(",")}`;
+    const cacheKey = `live-quotes:${[...tickers].sort().join(",")}`;
     const cached = CACHE.get(cacheKey);
     if (cached) {
       return NextResponse.json(cached);

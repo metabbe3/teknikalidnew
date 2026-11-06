@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { claimGuestTicker, serializeGuestPass } from "@/lib/guest-pass";
 import { beaconKey, beaconRateLimited, claimUnderServerCap } from "@/lib/guest-pass-limit";
+import { detectBot } from "@/lib/bot-detect";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,17 @@ export const dynamic = "force-dynamic";
  */
 export async function POST(request: NextRequest) {
   try {
+    const clientIp =
+      request.headers.get("cf-connecting-ip")?.trim() ||
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      request.headers.get("x-real-ip")?.trim() ||
+      null;
+    const ua = request.headers.get("user-agent") ?? "";
+    const { isBot } = await detectBot(ua, clientIp);
+    if (isBot) {
+      return NextResponse.json({ ok: true, count: 0, capped: false });
+    }
+
     const key = beaconKey(
       request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null,
       request.headers.get("user-agent"),

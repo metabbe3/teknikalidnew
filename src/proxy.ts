@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { timingSafeEqual } from "crypto";
 import { auth } from "@/lib/auth";
 import { ALL_TICKERS } from "@/lib/constants";
 import { isBlocked, block as blockIp } from "@/lib/ip-blocklist";
@@ -91,6 +92,22 @@ const DASHBOARD_REDIRECTS: Record<string, string> = {
   "/dashboard/settings": "/settings",
   "/dashboard/trading-plan": "/trading-plan",
 };
+
+function isTrustedServiceRequest(request: NextRequest): boolean {
+  const token = process.env.SERVICE_TOKEN;
+  if (!token) return false;
+  const incoming =
+    request.headers.get("mService-Token") ??
+    request.headers.get("mservice-token") ??
+    (request.headers.get("authorization")?.startsWith("Bearer ")
+      ? request.headers.get("authorization")!.slice(7)
+      : null);
+  if (!incoming) return false;
+  const a = Buffer.from(incoming);
+  const b = Buffer.from(token);
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(a, b);
+}
 
 function rateLimited(map: Map<string, { count: number; resetAt: number }>, ip: string, limit: number, window: number): boolean {
   const now = Date.now();
@@ -239,8 +256,10 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  const isTrustedService = isTrustedServiceRequest(request);
+
   if (request.nextUrl.pathname.startsWith("/api/") && !request.nextUrl.pathname.includes("/api/auth/session")) {
-    if (rateLimited(rateLimitMap, ip, RATE_LIMIT, RATE_WINDOW)) {
+    if (!isTrustedService && rateLimited(rateLimitMap, ip, RATE_LIMIT, RATE_WINDOW)) {
       recordApiRequest(ip, request.nextUrl.pathname, 429);
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
@@ -252,9 +271,9 @@ export async function proxy(request: NextRequest) {
   const isDataRoute =
     pathname === "/stocks" || pathname.startsWith("/stocks/") ||
     pathname.startsWith("/screener") || pathname.startsWith("/crypto") ||
-    pathname.startsWith("/api/stocks/") || pathname.startsWith("/api/screener") ||
+    pathname.startsWith("/api/stocks") || pathname.startsWith("/api/screener") ||
     pathname.startsWith("/api/crypto");
-  if (isDataRoute && (await isBlocked(ip))) {
+  if (isDataRoute && !isTrustedService && (await isBlocked(ip))) {
     // Dev/member whitelist: forgive a blocked IP if it's allowlisted (anon dev scripts)
     // or the request is authenticated (devs/members). Authed scrapers are still caught
     // by the pageview route's account-ban; the session revalidates from DB within ~60s.
@@ -267,7 +286,7 @@ export async function proxy(request: NextRequest) {
 
   // Stricter limit on scrape-prone stock data endpoints (+ IP cooldown for repeat offenders)
   const isStockApi = pathname.startsWith("/api/stocks/") || pathname.startsWith("/api/screener");
-  if (isStockApi) {
+  if (isStockApi && !isTrustedService) {
     const blockedUntil = blockedIps.get(ip);
     if (blockedUntil && blockedUntil > Date.now()) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });

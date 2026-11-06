@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 type Membership = {
+  email?: string;
   chatBound: boolean;
   chatId: string | null;
   tier: string;
@@ -65,18 +66,31 @@ harga menyentuh Rp4.620.`}
 /* SATU PINTU KELUHAN (owner 6 Nov "biar gak bingung complain dimana"):
  * form kecil di halaman agent → /api/agent/complain → tabel sama dgn /keluhan bot.
  */
-function ComplainBox() {
+function ComplainBox({ defaultEmail = "" }: { defaultEmail?: string }) {
+  const [email, setEmail] = useState(defaultEmail);
+  const [emailTouched, setEmailTouched] = useState(false);
   const [text, setText] = useState("");
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (!emailTouched && defaultEmail) {
+      setEmail(defaultEmail);
+    }
+  }, [defaultEmail, emailTouched]);
+
   const submit = async () => {
     if (text.trim().length < 5) return;
     setBusy(true);
     try {
+      const trimmedEmail = email.trim();
       const r = await fetch("/api/agent/complain", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({
+          message: text,
+          ...(trimmedEmail ? { email: trimmedEmail } : {}),
+        }),
       });
       if (r.ok) { setSent(true); setText(""); }
     } finally { setBusy(false); }
@@ -98,13 +112,24 @@ function ComplainBox() {
         Masalah pembayaran, jawaban bot, apa pun — langsung ke tim, tanpa bingung harus ke mana.
         (Di bot Telegram juga bisa: ketik <code>/keluhan</code>)
       </p>
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => {
+          setEmailTouched(true);
+          setEmail(e.target.value);
+        }}
+        maxLength={160}
+        placeholder="Email untuk balasan (opsional)…"
+        className="mt-3 w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text-primary outline-none focus:border-accent"
+      />
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
         rows={3}
         maxLength={2000}
         placeholder="Tulis keluhanmu…"
-        className="mt-3 w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text-primary outline-none focus:border-accent"
+        className="mt-2 w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text-primary outline-none focus:border-accent"
       />
       <div className="mt-2 flex justify-end">
         <Button size="sm" onClick={submit} disabled={busy || text.trim().length < 5}>
@@ -119,7 +144,8 @@ export default function AgentPage() {
   const [mem, setMem] = useState<Membership | null>(null);
   const [loading, setLoading] = useState(true);
   const [bindUrl, setBindUrl] = useState<string | null>(null);
-  const [paying, setPaying] = useState(false);
+  const [payingTier, setPayingTier] = useState<"basic" | "pro" | null>(null);
+  const paying = payingTier !== null;
   const [msg, setMsg] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -152,7 +178,7 @@ export default function AgentPage() {
   };
 
   const checkout = async (tier: "basic" | "pro") => {
-    setPaying(true);
+    setPayingTier(tier);
     setMsg(null);
     try {
       const r = await fetch("/api/agent/checkout", {
@@ -175,7 +201,7 @@ export default function AgentPage() {
       }
       setMsg(j.message ?? "Checkout gagal — coba beberapa saat lagi.");
     } finally {
-      setPaying(false);
+      setPayingTier(null);
     }
   };
 
@@ -418,8 +444,8 @@ export default function AgentPage() {
                 disabled={paying || !mem?.chatBound}
                 className="w-full"
               >
-                {paying
-                  ? "Memproses…"
+                {payingTier === "basic"
+                  ? "Memproses Night Trader…"
                   : mem?.promoUsed
                     ? "Langganan Night Trader"
                     : "Ambil Bulan Pertama Rp14.900"}
@@ -457,7 +483,11 @@ export default function AgentPage() {
                 variant="outline"
                 className="w-full"
               >
-                Langganan Pro
+                {payingTier === "pro"
+                  ? "Memproses Pro…"
+                  : mem?.promoUsed
+                    ? "Langganan Pro"
+                    : "Ambil Pro Bulan Pertama Rp29.000"}
               </Button>
             </div>
           </div>
@@ -524,7 +554,7 @@ export default function AgentPage() {
 
       {/* ============ SECTION 5b: SATU PINTU KELUHAN ============ */}
       <section className="space-y-3">
-        <ComplainBox />
+        <ComplainBox defaultEmail={mem?.email ?? ""} />
       </section>
 
       {/* ============ SECTION 6: CTA PENUTUP ============ */}

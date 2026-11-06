@@ -8,6 +8,7 @@ import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { formatPrice, formatPercent, stripJk, changeColor, rsiColor } from "@/lib/utils";
 import { formatDecimalId } from "@/lib/format-number";
 import { signalBadge } from "@/lib/seo/signal-badge";
+import { SahamStrategyLinks } from "@/components/seo/saham-strategy-links";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 3600;
@@ -48,7 +49,7 @@ export default async function IndexDetailPage({
   if (!idx) notFound();
 
   const stocks = await stockMarketService.getStockBatchWithIndicators(
-    idx.stocks.slice(0, 30)
+    idx.stocks.slice(0, 80)
   );
 
   const advancingCount = stocks.filter((s) => s.changePercent !== null && s.changePercent > 0).length;
@@ -91,6 +92,17 @@ export default async function IndexDetailPage({
             item: `${SITE_URL}/indeks/${idx.slug}`,
           },
         ],
+      },
+      {
+        "@type": "ItemList",
+        name: `Konstituen ${idx.fullName}`,
+        numberOfItems: stocks.length,
+        itemListElement: stocks.slice(0, 20).map((s, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: `${stripJk(s.ticker)} — ${s.name}`,
+          url: `${SITE_URL}/stocks/${s.ticker}`,
+        })),
       },
     ],
   };
@@ -187,6 +199,21 @@ export default async function IndexDetailPage({
                 )}
               </div>
             )}
+          </div>
+
+          <div className="mb-4 rounded-xl border border-accent/30 bg-accent/5 p-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <p className="text-xs sm:text-sm text-text-secondary">
+              Bingung memilih saham konstituen <strong className="text-text-primary">{idx.name}</strong> dengan momentum terbaik hari ini?
+            </p>
+            <a
+              href={`https://t.me/TeknikalidAgentBot?start=${encodeURIComponent("web_indeks_" + idx.slug.replace(/-/g, ""))}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-engagement="funnel_indeksBotCta"
+              className="inline-flex items-center justify-center rounded-lg bg-accent px-3.5 py-2 text-xs font-semibold text-white hover:bg-accent/90 transition-colors shrink-0"
+            >
+              {`💬 Tanya AI: Saham ${idx.name} mana paling potensial hari ini? — Gratis 3x`}
+            </a>
           </div>
 
           {/* Desktop table */}
@@ -311,6 +338,32 @@ export default async function IndexDetailPage({
             })}
           </div>
         </div>
+
+        {/* Cross-link antar indeks */}
+        <section aria-label="Indeks saham BEI lainnya" className="space-y-3 pt-4 border-t border-border/60">
+          <h2 className="text-base font-semibold text-text-primary">
+            Jelajahi Indeks Saham BEI Lainnya
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
+            {IDX_INDICES.filter((i) => i.slug !== idx.slug).map((other) => (
+              <Link
+                key={other.slug}
+                href={`/indeks/${other.slug}`}
+                data-engagement="nav_indeksCrossLink"
+                className="group block rounded-xl border border-border bg-bg-card p-3 hover:border-accent/40 hover:depth-shadow-hover transition-all"
+              >
+                <p className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors">
+                  {other.name}
+                </p>
+                <p className="text-[11px] text-text-tertiary mt-0.5">
+                  {other.stocks.length} saham konstituen →
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <SahamStrategyLinks compact />
 
         {/* Back link */}
         <Link

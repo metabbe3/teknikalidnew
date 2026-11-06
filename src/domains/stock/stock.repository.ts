@@ -109,6 +109,124 @@ export const stockRepository = {
     });
   },
 
+  /**
+   * Batch stock reader dengan JOIN LATERAL (0 seq scan pada StockPrice & StockIndicator).
+   * Menormalisasi input ticker (.JK / bare / ^JKSE), mengambil baris aktif dari "Stock",
+   * menggabungkan OHLCV terbaru + prevClose non-stale via LEFT JOIN LATERAL, serta indikator 1d.
+   */
+  async findStocksBatchLateral(tickers: string[]) {
+    if (tickers.length === 0) return [];
+
+    const normalized = Array.from(
+      new Set(tickers.map((t) => t.trim().toUpperCase()).filter(Boolean))
+    );
+    if (normalized.length === 0) return [];
+
+    // Support both BBCA and BBCA.JK, as well as indices like ^JKSE
+    const lookupTickers = Array.from(
+      new Set(
+        normalized.flatMap((t) => {
+          if (t.startsWith("^")) return [t];
+          if (t.endsWith(".JK")) return [t, t.replace(/\.JK$/, "")];
+          return [t, `${t}.JK`];
+        })
+      )
+    );
+
+    const rows = await prisma.$queryRaw<
+      {
+        id: number;
+        ticker: string;
+        name: string;
+        sector: string;
+        listingBoard: string | null;
+        isActive: boolean;
+        assetClass: string;
+        open: number | null;
+        high: number | null;
+        low: number | null;
+        close: number | null;
+        prevClose: number | null;
+        volume: number | null;
+        date: Date | null;
+        rsi14?: number | null;
+        sma20?: number | null;
+        signalScore?: number | null;
+        signalLabel?: string | null;
+        macdHist?: number | null;
+        isGorengan?: boolean | null;
+      }[]
+    >(Prisma.sql`
+      SELECT
+        s.id,
+        s.ticker,
+        s.name,
+        s.sector,
+        s."listingBoard",
+        s."isActive",
+        s."assetClass",
+        lb.open::float8 AS open,
+        lb.high::float8 AS high,
+        lb.low::float8 AS low,
+        lb.close::float8 AS close,
+        prev.close::float8 AS "prevClose",
+        lb.volume::float8 AS volume,
+        lb.date AS date,
+        si.rsi14::float8 AS rsi14,
+        si.sma20::float8 AS sma20,
+        si."signalScore"::float8 AS "signalScore",
+        si."signalLabel",
+        si."macdHist"::float8 AS "macdHist",
+        si."isGorengan"
+      FROM "Stock" s
+      LEFT JOIN LATERAL (
+        SELECT open, high, low, close, volume, date FROM "StockPrice"
+        WHERE "stockId" = s.id AND (volume > 0 OR s.ticker LIKE '^%')
+        ORDER BY date DESC
+        LIMIT 1
+      ) lb ON true
+      LEFT JOIN LATERAL (
+        SELECT close FROM "StockPrice"
+        WHERE "stockId" = s.id AND (volume > 0 OR s.ticker LIKE '^%') AND date < lb.date AND NOT (close = lb.close AND volume = lb.volume)
+        ORDER BY date DESC
+        LIMIT 1
+      ) prev ON true
+      LEFT JOIN LATERAL (
+        SELECT rsi14, sma20, "signalScore", "signalLabel", "macdHist", "isGorengan"
+        FROM "StockIndicator"
+        WHERE "stockId" = s.id AND interval = '1d'
+        ORDER BY date DESC
+        LIMIT 1
+      ) si ON true
+      WHERE s.ticker IN (${Prisma.join(lookupTickers)})
+        AND s."isActive" = true
+      ORDER BY s.ticker ASC
+    `);
+
+    return rows.map((r) => ({
+      id: Number(r.id),
+      ticker: r.ticker,
+      name: r.name,
+      sector: r.sector,
+      listingBoard: r.listingBoard ?? null,
+      isActive: r.isActive,
+      assetClass: r.assetClass,
+      open: r.open != null ? Number(r.open) : null,
+      high: r.high != null ? Number(r.high) : null,
+      low: r.low != null ? Number(r.low) : null,
+      close: r.close != null ? Number(r.close) : null,
+      prevClose: r.prevClose != null ? Number(r.prevClose) : null,
+      volume: r.volume != null ? Number(r.volume) : null,
+      date: r.date ? new Date(r.date) : null,
+      rsi14: r.rsi14 != null ? Number(r.rsi14) : null,
+      sma20: r.sma20 != null ? Number(r.sma20) : null,
+      signalScore: r.signalScore != null ? Number(r.signalScore) : null,
+      signalLabel: r.signalLabel ?? null,
+      macdHist: r.macdHist != null ? Number(r.macdHist) : null,
+      isGorengan: Boolean(r.isGorengan),
+    }));
+  },
+
   // Latest 2 daily indicators + latest 2 closes for day-over-day delta (morning-delta card)
   // All active crypto stocks with latest 2 closes + latest indicator (for /crypto list).
   findCryptoStocksWithIndicators() {
@@ -172,7 +290,10 @@ export const stockRepository = {
         close: r.close == null ? null : Number(r.close),
         prevClose: r.prevClose == null ? null : Number(r.prevClose),
         indicators: Array.isArray(r.indicators)
-          ? (r.indicators as { date: Date; signalLabel: string | null; macdHist: unknown; smaCrossSignal: string | null; emaCrossSignal: string | null }[])
+          ? (r.indicators as Array<{ date: string | Date; signalLabel: string | null; macdHist: unknown; smaCrossSignal: string | null; emaCrossSignal: string | null }>).map((ind) => ({
+              ...ind,
+              date: ind.date instanceof Date ? ind.date : new Date(ind.date),
+            }))
           : [],
       }));
     });
@@ -1490,6 +1611,7 @@ export async function findPrevClosesByTicker(tickers: string[], opts?: { include
     where: { ticker: { in: tickers } },
     select: { id: true, ticker: true },
   });
+  if (stocks.length === 0) return new Map<string, number>();
   // prev trading day = tanggal EOD terbaru < hari ini (level pasar, bukan per-saham)
   // includeToday: acuan = EOD terbaru <= hari ini (bukan < hari ini). Dipakai payload
   // CLOSED_WIB live-quotes: setelah EOD sync hari ini masuk, price yang ditampilkan
