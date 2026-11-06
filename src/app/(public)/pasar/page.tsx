@@ -9,11 +9,6 @@ import { PageHero } from "@/components/layout/page-hero";
 import { AgentKopiBanner } from "@/components/telegram/agent-kopi-banner";
 import dynamicImport from "next/dynamic";
 
-// Owner 30 Okt: tanya AI langsung dari /pasar (halaman traffic #1) — mode MARKET
-const ScreenerAiButton = dynamicImport(
-  () => import("@/components/screener/screener-ai-modal").then((m) => ({ default: m.ScreenerAiButton })),
-  { loading: () => <span className="inline-block h-[34px] w-[120px] animate-pulse rounded-full" /> },
-);
 import { pasarLiveService, isLiveWindow, isMarketHours, wibNow, wibHHMM, type PasarTopSignal, type PasarForeignItem, isWibWeekday } from "@/domains/stock/pasar-live.service";
 import { marketSnapshotService } from "@/domains/stock/market-snapshot.service";
 import { dateLabel, formatPrice, formatPercent, formatVolume, stripJk  } from "@/lib/utils";
@@ -83,9 +78,14 @@ export default async function PasarPage() {
             </span>
             <WibClock />
             <span className="text-text-tertiary text-sm">·</span>
-            <span className="text-sm text-text-tertiary">
-              Tanya kondisi pasar? <ScreenerAiButton />
-            </span>
+            <a
+              href="https://t.me/TeknikalidAgentBot?start=kopi_pasar"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-medium text-accent hover:underline"
+            >
+              Tanya kondisi pasar di AI — gratis 3x
+            </a>
             {oversoldCountWeekend >= 150 && (
               <Link
                 href="/saham-oversold"
@@ -140,9 +140,14 @@ export default async function PasarPage() {
           </span>
           <WibClock />
           <span className="text-text-tertiary text-sm">·</span>
-          <span className="text-sm text-text-tertiary">
-            Bingung sama pasar? <ScreenerAiButton />
-          </span>
+          <a
+            href="https://t.me/TeknikalidAgentBot?start=kopi_pasar"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm font-medium text-accent hover:underline"
+          >
+            Bingung sama pasar? Tanya AI di Telegram — gratis 3x
+          </a>
           {oversoldCount >= 150 && (
             <Link
               href="/saham-oversold"

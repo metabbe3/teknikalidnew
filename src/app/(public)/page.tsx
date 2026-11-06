@@ -29,10 +29,6 @@ import { MarketBreathStrip } from "@/components/ui/market-breath-strip";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Zap } from "lucide-react";
 
-const ScreenerAiButton = dynamicImport(
-  () => import("@/components/screener/screener-ai-modal").then((m) => ({ default: m.ScreenerAiButton })),
-  { loading: () => <span className="h-[34px] w-[120px] animate-pulse rounded-full" /> },
-);
 const HeroSearch = dynamicImport(
   () => import("@/components/home/hero-search").then((m) => ({ default: m.HeroSearch })),
   { loading: () => <div className="h-[52px] bg-bg-card rounded-xl animate-pulse" /> },
@@ -344,7 +340,6 @@ export default async function HomePage() {
               {/* Owner 24 Okt: tombol AI — cari saham sesuai kriteria bahasa manusia */}
               <p className="mt-2.5 text-xs text-text-tertiary">
                 Belum tahu cari apa?{" "}
-                <ScreenerAiButton />
               </p>
             </div>
 
