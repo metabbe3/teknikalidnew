@@ -9,6 +9,8 @@ import { weeklyReportService } from "@/domains/stock/weekly-report.service";
 import { articleRepository } from "@/domains/article/article.repository";
 import { DailyBriefHero } from "@/components/berita/daily-brief-hero";
 import { formatDecimalId } from "@/lib/format-number";
+import { stripJk } from "@/lib/utils";
+import { extractArticleTickers } from "@/lib/rehype-stock-linker";
 
 // force-dynamic (RCA 17 Okt): ISR prerender fire-soft saat build tanpa DB membekukan
 // "Belum ada brief" selamanya — revalidate 300s tidak pernah mengisi karena cache
@@ -86,8 +88,8 @@ export default async function BeritaPage({
       orderBy: { publishedAt: "desc" },
       skip,
       take: pageSize,
-      select: { slug: true, title: true, excerpt: true, publishedAt: true, articleType: true },
-    }).catch(() => [] as { slug: string; title: string; excerpt: string | null; publishedAt: Date; articleType: ArticleType }[]),
+      select: { slug: true, title: true, excerpt: true, publishedAt: true, articleType: true, tickerTag: true, tags: true },
+    }).catch(() => [] as { slug: string; title: string; excerpt: string | null; publishedAt: Date; articleType: ArticleType; tickerTag: string | null; tags: string[] }[]),
     prisma.article.count({
       where: listFilter,
     }).catch(() => 0),
@@ -118,6 +120,10 @@ export default async function BeritaPage({
   }).format(new Date());
   const topGainer = overview.gainers[0];
   const topLoser = overview.losers[0];
+  const heroMovers = [
+    ...overview.gainers.slice(0, 2),
+    ...overview.losers.slice(0, 2),
+  ];
 
   const breadcrumbJsonLd = JSON.stringify({
     "@context": "https://schema.org",
@@ -188,6 +194,53 @@ export default async function BeritaPage({
           {/* ── Featured daily brief ── */}
           <DailyBriefHero brief={brief ? { slug: brief.slug, title: brief.title, excerpt: brief.excerpt, publishedAt: brief.publishedAt } : null} />
 
+          {/* ── Strip 4 saham penggerak hari ini + CTA Bot (T3) ── */}
+          <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-border bg-bg-card p-3.5 depth-shadow">
+            <div className="flex flex-wrap items-center gap-1.5 min-w-0">
+              <span className="text-xs font-semibold text-text-secondary mr-1">
+                Penggerak Hari Ini:
+              </span>
+              {heroMovers.length > 0 ? (
+                heroMovers.map((m) => {
+                  const isPos = m.changePercent >= 0;
+                  return (
+                    <Link
+                      key={m.ticker}
+                      href={`/stocks/${m.ticker}`}
+                      data-engagement="chip_beritaHeroMover"
+                      data-nav-label="nav_newsTickerChip_click"
+                      className="inline-flex min-h-8 items-center gap-1 rounded-md border border-border bg-bg/80 px-2 py-0.5 font-mono text-xs font-semibold hover:border-accent/40 hover:bg-bg-hover transition-colors"
+                    >
+                      <span className="text-text-primary">{stripJk(m.ticker)}</span>
+                      <span className={isPos ? "text-bullish" : "text-bearish"}>
+                        {isPos ? "+" : ""}
+                        {formatDecimalId(m.changePercent, 1)}%
+                      </span>
+                    </Link>
+                  );
+                })
+              ) : (
+                <Link
+                  href="/stocks"
+                  data-engagement="chip_beritaHeroMover"
+                  data-nav-label="nav_newsTickerChip_click"
+                  className="inline-flex min-h-8 items-center rounded-md border border-accent/25 bg-accent/10 px-2.5 py-0.5 text-xs font-semibold text-accent hover:bg-accent/20 transition-colors"
+                >
+                  Lihat Radar Saham IDX →
+                </Link>
+              )}
+            </div>
+            <a
+              href="https://t.me/TeknikalidAgentBot?start=web_berita"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-engagement="funnel_beritaHeroBotCta"
+              className="inline-flex min-h-9 items-center justify-center rounded-lg border border-accent/30 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent hover:bg-accent/20 transition-colors shrink-0"
+            >
+              📲 Kirim Brief Pagi Otomatis ke Telegram
+            </a>
+          </div>
+
           {/* ── Brief & article archive ── */}
           <section aria-label="Arsip brief dan artikel">
             <div className="flex items-center justify-between mb-4">
@@ -215,25 +268,47 @@ export default async function BeritaPage({
               )
             ) : (
               <div className="divide-y divide-border rounded-xl border border-border bg-bg-card">
-                {briefsArchive.map((a) => (
-                  <Link
-                    key={a.slug}
-                    href={`/berita/${a.slug}`}
-                    className="group flex items-start gap-4 p-4 first:rounded-t-xl last:rounded-b-xl hover:bg-bg-hover/50 transition-colors"
-                  >
-                    <time className="shrink-0 pt-0.5 text-xs font-mono text-text-tertiary tabular-nums w-20">
-                      {fmtDateId(a.publishedAt).replace(/ 20\d\d$/, "")}
-                    </time>
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-text-primary leading-snug group-hover:text-accent transition-colors">
-                        {a.title}
-                      </p>
-                      {a.excerpt && (
-                        <p className="mt-1 text-xs text-text-secondary line-clamp-1 leading-relaxed">{a.excerpt}</p>
-                      )}
-                    </div>
-                  </Link>
-                ))}
+                {briefsArchive.map((a) => {
+                  const tickers = extractArticleTickers(a, 3);
+                  return (
+                    <article
+                      key={a.slug}
+                      className="flex items-start gap-4 p-4 first:rounded-t-xl last:rounded-b-xl hover:bg-bg-hover/50 transition-colors"
+                    >
+                      <time className="shrink-0 pt-0.5 text-xs font-mono text-text-tertiary tabular-nums w-20">
+                        {fmtDateId(a.publishedAt).replace(/ 20\d\d$/, "")}
+                      </time>
+                      <div className="min-w-0 flex-1">
+                        <Link
+                          href={`/berita/${a.slug}`}
+                          className="group block"
+                        >
+                          <p className="text-sm font-semibold text-text-primary leading-snug group-hover:text-accent transition-colors">
+                            {a.title}
+                          </p>
+                          {a.excerpt && (
+                            <p className="mt-1 text-xs text-text-secondary line-clamp-1 leading-relaxed">{a.excerpt}</p>
+                          )}
+                        </Link>
+                        {tickers.length > 0 && (
+                          <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                            {tickers.map((t) => (
+                              <Link
+                                key={t}
+                                href={`/stocks/${t}`}
+                                data-engagement="chip_beritaArchiveTicker"
+                                data-nav-label="nav_newsTickerChip_click"
+                                className="inline-flex items-center rounded-md border border-accent/25 bg-accent/10 px-1.5 py-0.5 font-mono text-[11px] font-semibold text-accent hover:bg-accent/20 transition-colors"
+                              >
+                                {stripJk(t)}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </article>
+                  );
+                })}
               </div>
             )}
 
