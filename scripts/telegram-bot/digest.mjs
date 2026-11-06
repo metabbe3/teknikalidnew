@@ -26,12 +26,23 @@ const LOCK = '/tmp/tg-digest.lock';
 const wibDate = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta' }).format(new Date());
 const DIGEST_SLUG = `watch-digest-${wibDate()}`;
 
+// --- jam sopan (konvensi notify.mjs): kirim hanya 06:00-22:30 WIB ---
+// launchd coalesce run-terlewat saat Mac tidur — tanpa guard, bangun jam 23x = ping tengah malam.
+// Skip bukan kegagalan: log + CronLog 'skipped', hari bursa berikutnya normal.
+const WIB_HOUR = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Jakarta', hour: '2-digit', hour12: false }).format(new Date()));
+if (!DRY && (WIB_HOUR < 6 || WIB_HOUR >= 22.5)) {
+  process.stdout.write(JSON.stringify({ skipped: 'outside-polite-hours', wibHour: WIB_HOUR }) + '\n');
+  process.exit(0);
+}
+
 // --- lockfile anti double-run (AC3) — hanya untuk run nyata ---
 if (!DRY) {
   if (existsSync(LOCK)) {
     const held = readFileSync(LOCK, 'utf8').trim();
     let alive = false;
-    try { process.kill(Number(held), 0); alive = true; } catch (e) { alive = e.code !== 'ESRCH'; }
+    if (Number.isFinite(Number(held))) {
+      try { process.kill(Number(held), 0); alive = true; } catch (e) { alive = e.code !== 'ESRCH'; }
+    }
     if (alive) { process.stdout.write(JSON.stringify({ skipped: 'lock-held', pid: held }) + '\n'); process.exit(0); }
     console.error(`[tg-digest] stale lock pid=${held} — steal`);
   }
