@@ -52,11 +52,15 @@ async function send(chatId, text) {
 }
 
 // --- retry connect 3x backoff 5s (AC3) ---
-const c = new Client({ connectionString: process.env.DATABASE_URL });
+// pg Client TIDAK bisa di-reuse setelah connect gagal ("Client has already been
+// connected") — Client BARU per attempt, bukan reconnect client lama.
+let c = null;
 for (let attempt = 1; attempt <= 3; attempt++) {
-  try { await c.connect(); break; }
+  const cand = new Client({ connectionString: process.env.DATABASE_URL });
+  try { await cand.connect(); c = cand; break; }
   catch (e) {
     console.error(`[tg-digest] pg connect attempt ${attempt}/3 fail: ${e.code || e.message}`);
+    try { await cand.end(); } catch (e2) { /* sudah mati */ }
     if (attempt === 3) { console.error('[tg-digest] DB unreachable setelah 3 percobaan — abort'); process.exit(1); }
     await new Promise(r => setTimeout(r, 5000));
   }
@@ -178,10 +182,10 @@ for (const { chatId } of chats.rows) {
 process.stdout.write(JSON.stringify({ dry: DRY, ok, fail, skippedDup, slug: DIGEST_SLUG, tickers: Object.keys(data).length }) + '\n');
 // tracking-audit G10: catat hasil digest ke CronLog — kegagalan bot tak lagi senyap
 try {
-  await c.query('INSERT INTO "CronLog" ("jobName", status, result, "triggeredBy") VALUES ($1,$2,$3,$4)', [
+  await c.query('INSERT INTO "CronLog" ("jobName", status, result, "triggeredBy", "durationMs") VALUES ($1,$2,$3,$4,$5)', [
     'tg-digest', fail > 0 ? 'error' : 'success',
     JSON.stringify({ dry: DRY, ok, fail, skippedDup, tickers: tickers.length }).slice(0, 200),
-    'system',
+    'system', 0,
   ]);
 } catch (e) { console.error('cronlog fail', e.message); }
 process.exit(fail > 0 ? 1 : 0);
