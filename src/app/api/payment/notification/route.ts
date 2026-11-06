@@ -59,7 +59,12 @@ export async function POST(request: NextRequest) {
     // ATAU status mismatch => tolak activation, Midtrans akan retry bila asli.
     try {
       const core = getCoreApi();
-      const vt = (await core.transactionStatus(order_id)) as {
+      // midtrans-client v2: method = core.transaction.status(orderId) — bukan .transactionStatus
+      // (bug 6 Nov: owner bayar QRIS settlement, webhook masuk 2x tapi fail-closed reject karena
+      // TypeError "a.transactionStatus is not a function" → subscription gak pernah aktif).
+      const vt = (await (core as unknown as {
+        transaction: { status: (id: string) => Promise<unknown> };
+      }).transaction.status(order_id)) as {
         transaction_status?: string;
         gross_amount?: string;
       };
