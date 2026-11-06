@@ -1,34 +1,37 @@
 import Link from "next/link";
 
 /**
- * AgentKopiBanner (owner 6 Nov: "cross selling ... AI AGENT SAHAM SEHARGA NGOPI").
- * Banner dismiss-less 1 baris utk halaman high-traffic (home anon, /pasar, /swing,
- * 14 halaman /saham-*). Server component, zero JS, design token existing.
- * Copy anti-slop: harga jujur, tanpa buzzword, tanpa emoji dekoratif.
+ * AgentKopiBanner (owner 6 Nov: "cross selling ... AI AGENT SAHARGA NGOPI",
+ * upgrade 6 Nov sesuai rekomendasi Argon: kartu produk ringkas + harga coret).
+ * Banner utk halaman high-traffic (home anon, /pasar, /swing, 14 halaman /saham-*).
+ * Server component, zero JS, design token existing. Copy anti-slop.
  */
 export function AgentKopiBanner({ source = "web" }: { source?: string }) {
   return (
     <aside className="rounded-xl border border-border bg-bg-card p-4 sm:p-5">
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-text-primary">
-            Sibuk kerja siang, males mantengin chart tiap malam?
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+        <div className="min-w-0 flex-1">
+          <p className="font-mono text-xs text-text-tertiary">BOT TELEGRAM · @TEKNIKALIDAGENTBOT</p>
+          <p className="mt-1 text-sm font-semibold text-text-primary">
+            Malas cek grafik satu-satu? Tanya level support &amp; pasang alert harga langsung di Telegram.
           </p>
-          <p className="text-sm text-text-secondary mt-0.5">
-            Ada asisten saham AI di Telegram — jagain harga, kirim rekap sore 19.00 WIB,
-            bisa ditanya kapan saja. Coba 3x tanya gratis. Cocok? Lanjut bulan pertama{" "}
-            <span className="font-semibold text-text-primary">Rp14.900</span> — seharga
-            segelas kopi, selanjutnya Rp29.000/bulan.
+          <p className="mt-0.5 text-xs text-text-secondary">
+            Ketik kode saham (misal: BBCA), bot langsung kirim ringkasan teknikal dan pantau target harga Anda.
           </p>
         </div>
-        <Link
-          href={`https://t.me/TeknikalidAgentBot?start=kopi_${source}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="shrink-0 inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-accent/90 transition-colors min-h-[44px]"
-        >
-          Coba Gratis di Telegram
-        </Link>
+        <div className="flex shrink-0 flex-col gap-2 sm:items-end">
+          <p className="text-xs text-text-secondary">
+            Coba 3 chat gratis · Paket bulanan{" "}
+            <span className="line-through text-text-tertiary">Rp29.000</span>{" "}
+            <span className="font-semibold text-text-primary">Rp14.900</span>
+          </p>
+          <Link
+            href={`/agent?from=kopi_${source}`}
+            className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent/90"
+          >
+            Coba Bot Telegram
+          </Link>
+        </div>
       </div>
       <p className="mt-2 text-xs text-text-tertiary">
         Semua data dan angka di web ini tetap gratis — yang berbayar hanya asisten-nya.
