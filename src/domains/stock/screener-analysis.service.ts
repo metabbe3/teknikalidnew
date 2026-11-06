@@ -1,12 +1,43 @@
 import { prisma } from "@/lib/prisma";
-import { computeChange, decimalToNumber, bigIntToNumber } from "@/lib/serialize";
+import { decimalToNumber, bigIntToNumber } from "@/lib/serialize";
 import { calculatePivotPoints } from "@/lib/indicators";
 import { stockRepository } from "./stock.repository";
-import { buildIndicatorWhere, VOLUME_SPIKE_MULTIPLIER, VALID_PRESETS } from "./indicator.service";
+import { buildIndicatorWhere, VOLUME_SPIKE_MULTIPLIER, VALID_PRESETS, type PresetKey } from "./indicator.service";
 import { cachedEod, eodKey } from "./eod-cache";
 import { isOversoldSignal } from "./radar-filter";
 import { marketEngine } from "./market-snapshot.service";
 import { excludeIndexRows } from "./screener-filter";
+
+export type CustomScreenerFilters = {
+  rsiMin?: number; rsiMax?: number;
+  volumeMinMultiplier?: number;
+  aboveSma200?: boolean; belowSma200?: boolean;
+  macdBullish?: boolean;
+  stochKMin?: number; stochKMax?: number;
+  adxMin?: number;
+  bbSqueeze?: boolean;
+  signalScoreMin?: number; signalScoreMax?: number;
+  sector?: string[];
+  priceMin?: number; priceMax?: number;
+  excludeGorengan?: boolean;
+  sortBy?: string;
+  sortOrder?: string;
+  assetClass?: "EQUITY" | "CRYPTO";
+};
+
+function hashCustomFilters(filters: CustomScreenerFilters): string {
+  const sorted: Record<string, unknown> = {};
+  for (const k of Object.keys(filters).sort()) {
+    const val = (filters as Record<string, unknown>)[k];
+    if (val === undefined) continue;
+    if (Array.isArray(val)) {
+      sorted[k] = [...val].sort();
+    } else {
+      sorted[k] = val;
+    }
+  }
+  return JSON.stringify(sorted);
+}
 
 export const screenerAnalysisService = {
   async screenerQuery(preset: string, assetClass: "EQUITY" | "CRYPTO" = "EQUITY") {
@@ -117,16 +148,23 @@ export const screenerAnalysisService = {
       }));
     }
 
-    const where = buildIndicatorWhere(preset as any, latestDate, assetClass);
+    const where = buildIndicatorWhere(preset as PresetKey, latestDate, assetClass);
     const results = await stockRepository.findIndicatorsByDate(latestDate, where);
+    const stockIds = results.map((r) => r.stockId);
+    const barsMap = await stockRepository.findLatestBarsWithPrev(stockIds);
 
     let stocks = results.map((r) => {
-      const prices = r.stock.prices;
-      const { close, changePercent } = computeChange(prices[0], prices[1]);
+      const bar = barsMap.get(r.stockId);
+      const close = bar?.close ?? null;
+      const prevClose = bar?.prevClose ?? null;
+      const changePercent =
+        close !== null && prevClose !== null
+          ? marketEngine.pctChange(close, prevClose)
+          : null;
       return {
         ticker: r.stock.ticker, name: r.stock.name, sector: r.stock.sector,
         close, changePercent,
-        volume: prices[0] ? bigIntToNumber(prices[0].volume) : null,
+        volume: bar?.volume ?? null,
         rsi14: decimalToNumber(r.rsi14),
         sma20: decimalToNumber(r.sma20),
         smaCrossSignal: r.smaCrossSignal,
@@ -215,7 +253,18 @@ export const screenerAnalysisService = {
     hasVolumeSpike: boolean;
     upsideToSma20: number | null;
   }[]> {
-    const stocks = await stockRepository.findOversoldStocks(assetClass);
+    const latestDateRow = await stockRepository.getLatestIndicatorDate(assetClass);
+    if (!latestDateRow) return [];
+    const latestDate = latestDateRow.date;
+
+    const indicators = await stockRepository.findOversoldIndicatorsByDate(latestDate, assetClass);
+    if (indicators.length === 0) return [];
+
+    const stockIds = indicators.map((ind) => ind.stockId);
+    const [barsMap, avgVolMap] = await Promise.all([
+      stockRepository.findLatestBarsWithPrev(stockIds),
+      stockRepository.findAvgVolumeByStockIds(stockIds),
+    ]);
 
     // Intermediate type carrying stockId for avg volume lookup
     type Intermediate = {
@@ -223,7 +272,7 @@ export const screenerAnalysisService = {
       ticker: string;
       name: string;
       sector: string;
-      close: number | null;
+      close: number;
       changePercent: number | null;
       rsi14: number | null;
       stochK: number | null;
@@ -234,59 +283,51 @@ export const screenerAnalysisService = {
       sma20: number | null;
     };
 
-    const filtered = stocks
-      .map((s): Intermediate | null => {
-        const prices = s.prices;
-        const latest = prices[0];
-        const prev = prices[1];
-        const indicator = s.indicators?.[0];
-        if (!latest || !indicator) return null;
+    const filtered: Intermediate[] = [];
+    for (const ind of indicators) {
+      const bar = barsMap.get(ind.stockId);
+      if (!bar || bar.close === null) continue;
+      const close = bar.close;
 
-        const rsi14 = decimalToNumber(indicator.rsi14);
-        const stochK = decimalToNumber(indicator.stochK);
-        const stochD = decimalToNumber(indicator.stochD);
+      // Exclude gocap stocks (price ≤ 50)
+      if (close <= 50) continue;
 
-        // bug-2026-10-25-01: nilai 0 = indikator kosong (bukan oversold) —
-        // predikat diekstrak ke radar-filter.ts (guard > 0, selftest 3/3).
-        const isRsiOversold = isOversoldSignal(rsi14, null, null);
-        const isStochOversold = isOversoldSignal(null, stochK, stochD);
+      const rsi14 = decimalToNumber(ind.rsi14);
+      const stochK = decimalToNumber(ind.stochK);
+      const stochD = decimalToNumber(ind.stochD);
 
-        if (!isRsiOversold && !isStochOversold) return null;
+      // bug-2026-10-25-01: nilai 0 = indikator kosong (bukan oversold) —
+      // predikat diekstrak ke radar-filter.ts (guard > 0, selftest 3/3).
+      const isRsiOversold = isOversoldSignal(rsi14, null, null);
+      const isStochOversold = isOversoldSignal(null, stochK, stochD);
 
-        const { close, changePercent } = computeChange(latest, prev);
+      if (!isRsiOversold && !isStochOversold) continue;
 
-        // Exclude gocap stocks (price ≤ 50)
-        if (close !== null && close <= 50) return null;
+      const changePercent =
+        bar.prevClose !== null ? marketEngine.pctChange(close, bar.prevClose) : null;
 
-        // Calculate S1 support
-        const high = decimalToNumber(latest.high);
-        const low = decimalToNumber(latest.low);
-        let support1: number | null = null;
-        if (close !== null && high !== null && low !== null) {
-          support1 = calculatePivotPoints(high, low, close).s1;
-        }
+      // Calculate S1 support
+      let support1: number | null = null;
+      if (bar.high !== null && bar.low !== null) {
+        support1 = calculatePivotPoints(bar.high, bar.low, close).s1;
+      }
 
-        return {
-          stockId: s.id,
-          ticker: s.ticker,
-          name: s.name,
-          sector: s.sector,
-          close,
-          changePercent,
-          rsi14,
-          stochK,
-          stochD,
-          support1,
-          isDeepOversold: isRsiOversold && isStochOversold,
-          currentVolume: bigIntToNumber(latest.volume),
-          sma20: decimalToNumber(indicator.sma20),
-        };
-      })
-      .filter((r): r is Intermediate => r !== null);
-
-    // Fetch 20-day average volumes for filtered stocks
-    const stockIds = filtered.map((r) => r.stockId);
-    const avgVolMap = await stockRepository.findAvgVolumeByStockIds(stockIds);
+      filtered.push({
+        stockId: ind.stockId,
+        ticker: ind.stock.ticker,
+        name: ind.stock.name,
+        sector: ind.stock.sector,
+        close,
+        changePercent,
+        rsi14,
+        stochK,
+        stochD,
+        support1,
+        isDeepOversold: isRsiOversold && isStochOversold,
+        currentVolume: bar.volume,
+        sma20: decimalToNumber(ind.sma20),
+      });
+    }
 
     const results = filtered.map((r) => {
       const avgVolume = avgVolMap.get(r.stockId);
@@ -327,22 +368,17 @@ export const screenerAnalysisService = {
     return results;
   },
 
-  async customScreenerQuery(filters: {
-    rsiMin?: number; rsiMax?: number;
-    volumeMinMultiplier?: number;
-    aboveSma200?: boolean; belowSma200?: boolean;
-    macdBullish?: boolean;
-    stochKMin?: number; stochKMax?: number;
-    adxMin?: number;
-    bbSqueeze?: boolean;
-    signalScoreMin?: number; signalScoreMax?: number;
-    sector?: string[];
-    priceMin?: number; priceMax?: number;
-    excludeGorengan?: boolean;
-    sortBy?: string;
-    sortOrder?: string;
-    assetClass?: "EQUITY" | "CRYPTO";
-  }) {
+  async customScreenerQuery(filters: CustomScreenerFilters) {
+    const filterHash = hashCustomFilters(filters);
+    const rows = await cachedEod(
+      eodKey("screener-custom", filterHash),
+      async () => this._customScreenerQueryUncached(filters),
+      60 * 1000
+    );
+    return excludeIndexRows(rows);
+  },
+
+  async _customScreenerQueryUncached(filters: CustomScreenerFilters) {
     const latestDateRow = await stockRepository.getLatestIndicatorDate(filters.assetClass);
     if (!latestDateRow) return [];
 
@@ -396,14 +432,21 @@ export const screenerAnalysisService = {
 
     Object.assign(where, indicatorConditions);
     const results = await stockRepository.findIndicatorsByDate(latestDate, where);
+    const stockIds = results.map((r) => r.stockId);
+    const barsMap = await stockRepository.findLatestBarsWithPrev(stockIds);
 
     let stocks = results.map((r) => {
-      const prices = r.stock.prices;
-      const { close, changePercent } = computeChange(prices[0], prices[1]);
+      const bar = barsMap.get(r.stockId);
+      const close = bar?.close ?? null;
+      const prevClose = bar?.prevClose ?? null;
+      const changePercent =
+        close !== null && prevClose !== null
+          ? marketEngine.pctChange(close, prevClose)
+          : null;
       return {
         ticker: r.stock.ticker, name: r.stock.name, sector: r.stock.sector,
         close, changePercent,
-        volume: prices[0] ? bigIntToNumber(prices[0].volume) : null,
+        volume: bar?.volume ?? null,
         rsi14: decimalToNumber(r.rsi14),
         sma20: decimalToNumber(r.sma20),
         sma200: decimalToNumber(r.sma200),
@@ -504,10 +547,18 @@ export const dailyRadarService = {
 
     const where = buildIndicatorWhere("golden_cross", latestDate, assetClass);
     const rows = await stockRepository.findIndicatorsByDate(latestDate, where);
+    const stockIds = rows.map((r) => r.stockId);
+    const barsMap = await stockRepository.findLatestBarsWithPrev(stockIds);
 
     const items: DailyRadarItem[] = rows
       .map((r) => {
-        const { close, changePercent } = computeChange(r.stock.prices[0], r.stock.prices[1]);
+        const bar = barsMap.get(r.stockId);
+        const close = bar?.close ?? null;
+        const prevClose = bar?.prevClose ?? null;
+        const changePercent =
+          close !== null && prevClose !== null
+            ? marketEngine.pctChange(close, prevClose)
+            : null;
         return {
           ticker: r.stock.ticker,
           name: r.stock.name,

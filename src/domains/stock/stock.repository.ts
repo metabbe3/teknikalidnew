@@ -5,6 +5,33 @@ import { INTERVAL } from "@/lib/constants";
 import { toDateKey } from "@/lib/utils";
 
 /** Row findMovementMovers — dipakai movement-analysis (article domain). */
+export interface ActiveStockWithPricesRow {
+  id: number;
+  ticker: string;
+  name: string;
+  sector: string;
+  listingBoard: string | null;
+  isActive: boolean;
+  assetClass: string;
+  close: number | null;
+  prevClose: number | null;
+  volume: number | null;
+  date: Date | null;
+  rsi14: number | null;
+  sma20: number | null;
+  signalScore: number | null;
+  signalLabel: string | null;
+  isGorengan: boolean;
+  prices: Array<{ close: number; volume: number; date: Date }>;
+  indicators: Array<{
+    rsi14: number | null;
+    sma20: number | null;
+    signalScore: number | null;
+    signalLabel: string | null;
+    isGorengan: boolean;
+  }>;
+}
+
 export interface MovementMoverRow {
   ticker: string;
   name: string;
@@ -36,6 +63,8 @@ export interface MovementMoverRow {
   low: number | null;
   open: number | null;
   isGorengan: boolean | null;
+  /** Tanggal bar EOD terakhir — basis asOf artikel movement (replay gate). */
+  priceDate: Date | null;
 }
 
 export const stockRepository = {
@@ -222,42 +251,152 @@ export const stockRepository = {
       .slice(0, take);
   },
 
-  findActiveStocksWithPrices(where?: { sector?: string; assetClass?: "EQUITY" | "CRYPTO" }, includeIndicators = true) {
-    return prisma.stock.findMany({
-      where: { isActive: true, ...where },
-      orderBy: { ticker: "asc" },
+  async findActiveStocksWithPrices(
+    where?: { sector?: string; assetClass?: "EQUITY" | "CRYPTO"; includeInactive?: boolean },
+    includeIndicators = true
+  ): Promise<ActiveStockWithPricesRow[]> {
+    const rows = await prisma.$queryRaw<
+      {
+        id: number;
+        ticker: string;
+        name: string;
+        sector: string;
+        listingBoard: string | null;
+        isActive: boolean;
+        assetClass: string;
+        close: number | null;
+        prevClose: number | null;
+        volume: number | null;
+        date: Date | null;
+        rsi14?: number | null;
+        sma20?: number | null;
+        signalScore?: number | null;
+        signalLabel?: string | null;
+        isGorengan?: boolean | null;
+      }[]
+    >(Prisma.sql`
+      SELECT
+        s.id,
+        s.ticker,
+        s.name,
+        s.sector,
+        s."listingBoard",
+        s."isActive",
+        s."assetClass",
+        lb.close::float8 AS close,
+        prev.close::float8 AS "prevClose",
+        lb.volume::float8 AS volume,
+        lb.date AS date
+        ${includeIndicators ? Prisma.sql`,
+        si.rsi14::float8 AS rsi14,
+        si.sma20::float8 AS sma20,
+        si."signalScore"::float8 AS "signalScore",
+        si."signalLabel",
+        si."isGorengan"` : Prisma.empty}
+      FROM "Stock" s
+      LEFT JOIN LATERAL (
+        SELECT close, volume, date FROM "StockPrice"
+        WHERE "stockId" = s.id AND volume > 0
+        ORDER BY date DESC
+        LIMIT 1
+      ) lb ON true
+      LEFT JOIN LATERAL (
+        SELECT close FROM "StockPrice"
+        WHERE "stockId" = s.id AND volume > 0 AND date < lb.date AND NOT (close = lb.close AND volume = lb.volume)
+        ORDER BY date DESC
+        LIMIT 1
+      ) prev ON true
+      ${includeIndicators ? Prisma.sql`
+      LEFT JOIN LATERAL (
+        SELECT rsi14, sma20, "signalScore", "signalLabel", "isGorengan"
+        FROM "StockIndicator"
+        WHERE "stockId" = s.id AND interval = '1d'
+        ORDER BY date DESC
+        LIMIT 1
+      ) si ON true` : Prisma.empty}
+      WHERE 1=1
+      ${where?.includeInactive ? Prisma.empty : Prisma.sql`AND s."isActive" = true`}
+      ${where?.sector ? Prisma.sql`AND s.sector = ${where.sector}` : Prisma.empty}
+      ${where?.assetClass ? Prisma.sql`AND s."assetClass"::text = ${where.assetClass}` : Prisma.empty}
+      ORDER BY s.ticker ASC
+    `);
+
+    return rows.map((r) => {
+      const close = r.close != null ? Number(r.close) : null;
+      const prevClose = r.prevClose != null ? Number(r.prevClose) : null;
+      const volume = r.volume != null ? Number(r.volume) : null;
+      const date = r.date ? new Date(r.date) : null;
+      const rsi14 = r.rsi14 != null ? Number(r.rsi14) : null;
+      const sma20 = r.sma20 != null ? Number(r.sma20) : null;
+      const signalScore = r.signalScore != null ? Number(r.signalScore) : null;
+      const signalLabel = r.signalLabel ?? null;
+      const isGorengan = Boolean(r.isGorengan);
+
+      const prices: Array<{ close: number; volume: number; date: Date }> = [];
+      if (close !== null && date !== null) {
+        prices.push({ close, volume: volume ?? 0, date });
+        if (prevClose !== null) {
+          prices.push({ close: prevClose, volume: 0, date });
+        }
+      }
+
+      const indicators: Array<{ rsi14: number | null; sma20: number | null; signalScore: number | null; signalLabel: string | null; isGorengan: boolean }> = [];
+      if (includeIndicators && (rsi14 !== null || sma20 !== null || signalScore !== null || signalLabel !== null)) {
+        indicators.push({ rsi14, sma20, signalScore, signalLabel, isGorengan });
+      }
+
+      return {
+        id: Number(r.id),
+        ticker: r.ticker,
+        name: r.name,
+        sector: r.sector,
+        listingBoard: r.listingBoard ?? null,
+        isActive: r.isActive,
+        assetClass: r.assetClass,
+        close,
+        prevClose,
+        volume,
+        date,
+        rsi14,
+        sma20,
+        signalScore,
+        signalLabel,
+        isGorengan,
+        prices,
+        indicators,
+      };
+    });
+  },
+
+  findOversoldIndicatorsByDate(latestDate: Date, assetClass?: "EQUITY" | "CRYPTO") {
+    return prisma.stockIndicator.findMany({
+      where: {
+        date: latestDate,
+        interval: INTERVAL.DAY,
+        stock: {
+          isActive: true,
+          ...(assetClass ? { assetClass } : {}),
+        },
+        OR: [
+          // bug-2026-10-25-01: gt 0 — nilai 0 = indikator kosong (SUPR.JK
+          // tampil RSI 0.0 di radar), bukan oversold sungguhan.
+          { rsi14: { gt: 0, lte: 30 } },
+          { AND: [{ stochK: { gt: 0, lte: 20 } }, { stochD: { gt: 0, lte: 20 } }] },
+        ],
+      },
+      orderBy: { stock: { ticker: "asc" } },
       include: {
-        prices: { where: { volume: { gt: 0 } }, orderBy: { date: "desc" }, take: 6 },
-        ...(includeIndicators ? {
-          indicators: { orderBy: { date: "desc" }, take: 1, where: { interval: INTERVAL.DAY } },
-        } : {}),
+        stock: {
+          select: { id: true, ticker: true, name: true, sector: true },
+        },
       },
     });
   },
 
-  findOversoldStocks(assetClass?: "EQUITY" | "CRYPTO") {
-    return prisma.stock.findMany({
-      where: {
-        isActive: true,
-        ...(assetClass ? { assetClass } : {}),
-        indicators: {
-          some: {
-            interval: INTERVAL.DAY,
-            OR: [
-              // bug-2026-10-25-01: gt 0 — nilai 0 = indikator kosong (SUPR.JK
-              // tampil RSI 0.0 di radar), bukan oversold sungguhan.
-              { rsi14: { gt: 0, lte: 30 } },
-              { AND: [{ stochK: { gt: 0, lte: 20 } }, { stochD: { gt: 0, lte: 20 } }] },
-            ],
-          },
-        },
-      },
-      orderBy: { ticker: "asc" },
-      include: {
-        prices: { orderBy: { date: "desc" }, take: 6 },
-        indicators: { orderBy: { date: "desc" }, take: 1, where: { interval: INTERVAL.DAY } },
-      },
-    });
+  async findOversoldStocks(assetClass?: "EQUITY" | "CRYPTO") {
+    const latestDateRow = await this.getLatestIndicatorDate(assetClass);
+    if (!latestDateRow) return [];
+    return this.findOversoldIndicatorsByDate(latestDateRow.date, assetClass);
   },
 
   // ── StockPrice reads ──
@@ -370,15 +509,36 @@ export const stockRepository = {
   // loop ≤120 findMany per ticker. Kolom NULL-toleran: saham tanpa prev bar
   // tetap dikembalikan (prevClose null) supaya caller bisa skip eksplisit.
   findLatestBarsWithPrev(stockIds: number[]): Promise<
-    Map<number, { close: number | null; prevClose: number | null; volume: number | null; date: Date }>
+    Map<
+      number,
+      {
+        close: number | null;
+        prevClose: number | null;
+        volume: number | null;
+        date: Date;
+        open: number | null;
+        high: number | null;
+        low: number | null;
+      }
+    >
   > {
     if (stockIds.length === 0) return Promise.resolve(new Map());
     return prisma.$queryRaw<
-      { stockId: number; close: number | null; prevClose: number | null; volume: number | null; date: Date }[]
+      {
+        stockId: number;
+        close: number | null;
+        prevClose: number | null;
+        volume: number | null;
+        date: Date;
+        open: number | null;
+        high: number | null;
+        low: number | null;
+      }[]
     >`
-      SELECT lb."stockId", lb.close::float8 AS close, p.close::float8 AS "prevClose", lb.volume::float8 AS volume, lb.date
+      SELECT lb."stockId", lb.close::float8 AS close, p.close::float8 AS "prevClose", lb.volume::float8 AS volume, lb.date,
+             lb.open::float8 AS open, lb.high::float8 AS high, lb.low::float8 AS low
       FROM "StockPrice" lb
-      JOIN LATERAL (
+      LEFT JOIN LATERAL (
         SELECT close FROM "StockPrice"
         WHERE "stockId" = lb."stockId" AND date < lb.date
         ORDER BY date DESC LIMIT 1
@@ -389,13 +549,27 @@ export const stockRepository = {
         ORDER BY "stockId", date DESC
       )
     `.then((rows) => {
-      const map = new Map<number, { close: number | null; prevClose: number | null; volume: number | null; date: Date }>();
+      const map = new Map<
+        number,
+        {
+          close: number | null;
+          prevClose: number | null;
+          volume: number | null;
+          date: Date;
+          open: number | null;
+          high: number | null;
+          low: number | null;
+        }
+      >();
       for (const r of rows) {
         map.set(Number(r.stockId), {
           close: r.close == null ? null : Number(r.close),
           prevClose: r.prevClose == null ? null : Number(r.prevClose),
           volume: r.volume == null ? null : Number(r.volume),
           date: r.date,
+          open: r.open == null ? null : Number(r.open),
+          high: r.high == null ? null : Number(r.high),
+          low: r.low == null ? null : Number(r.low),
         });
       }
       return map;
@@ -433,7 +607,6 @@ export const stockRepository = {
    * menghapus enrich loop N+1 (2 query × ≤50 mover per batch).
    */
   async findMovementMovers(minChangePercent: number, limitCount: number): Promise<MovementMoverRow[]> {
-    const yesterday = subDays(new Date(), 1);
     const rows = await prisma.$queryRaw<MovementMoverRow[]>`
       WITH latest_prices AS (
         SELECT DISTINCT ON (sp."stockId")
@@ -446,15 +619,6 @@ export const stockRepository = {
           sp.date
         FROM "StockPrice" sp
         WHERE sp.date >= ${subDays(new Date(), 7)}
-        ORDER BY sp."stockId", sp.date DESC
-      ),
-      prev_prices AS (
-        SELECT DISTINCT ON (sp."stockId")
-          sp."stockId",
-          sp.close AS prev_close
-        FROM "StockPrice" sp
-        WHERE sp.date >= ${subDays(new Date(), 10)}
-          AND sp.date < ${yesterday}
         ORDER BY sp."stockId", sp.date DESC
       ),
       avg_volumes AS (
@@ -500,6 +664,7 @@ export const stockRepository = {
         lp.high::float8 AS "high",
         lp.low::float8 AS "low",
         lp.open::float8 AS "open",
+        lp.date AS "priceDate",
         f."pe"::float8 AS "pe",
         f."pb"::float8 AS "pb",
         f."marketCap"::float8 AS "marketCap",
@@ -509,7 +674,17 @@ export const stockRepository = {
         w.low52 AS "week52Low"
       FROM latest_prices lp
       JOIN "Stock" s ON s.id = lp."stockId"
-      LEFT JOIN prev_prices pp ON pp."stockId" = lp."stockId"
+      -- ops-2026-11-05-01: prev = bar sesi strictly-before bar terbaru per saham
+      -- (pengganti CTE prev_prices window-melayang). LEFT JOIN LATERAL menjamin
+      -- prev selalu sesi DISTINCT sebelum latest, kapan pun query dijalankan.
+      LEFT JOIN LATERAL (
+        SELECT sp2.close AS prev_close
+        FROM "StockPrice" sp2
+        WHERE sp2."stockId" = lp."stockId"
+          AND sp2.date < lp.date
+        ORDER BY sp2.date DESC
+        LIMIT 1
+      ) pp ON true
       LEFT JOIN avg_volumes av ON av."stockId" = lp."stockId"
       LEFT JOIN week52 w ON w."stockId" = lp."stockId"
       LEFT JOIN LATERAL (
@@ -698,9 +873,7 @@ export const stockRepository = {
       where: { interval: INTERVAL.DAY, date, stock: { isActive: true }, ...where },
       include: {
         stock: {
-          include: {
-            prices: { orderBy: { date: "desc" }, take: 2 },
-          },
+          select: { id: true, ticker: true, name: true, sector: true },
         },
       },
     });

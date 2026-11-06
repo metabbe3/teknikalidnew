@@ -51,10 +51,20 @@ interface RawCandidateRow {
   bbUpper: number | null;
 }
 
-// ── Cache module-level 60 detik (market-snapshot doctrine) ──
+// ── Cache module-level 15 menit (market-snapshot doctrine) ──
 let cachedData: SwingMarketResponse | null = null;
 let cacheExpiresAt = 0;
-const CACHE_TTL_MS = 60 * 1000;
+const CACHE_TTL_MS = 15 * 60 * 1000;
+
+// ── Cache backtest 6 jam (data EOD 24 bulan tidak berubah per menit) ──
+interface CachedBacktest {
+  asOf: string;
+  expiresAt: number;
+  stats34: SwingStats;
+  stats20: SwingStats;
+}
+let cachedBacktest: CachedBacktest | null = null;
+const BACKTEST_TTL_MS = 6 * 60 * 60 * 1000;
 
 async function getSwingMarketData(): Promise<SwingMarketResponse> {
   const now = Date.now();
@@ -144,33 +154,47 @@ async function getSwingMarketData(): Promise<SwingMarketResponse> {
     };
   });
 
-  // 3. Query deret EOD historis untuk backtest 24 bulan
-  const backtestRowsRaw = await prisma.$queryRaw<SwingRow[]>`
-    SELECT 
-      si."stockId",
-      si.date,
-      COALESCE(sp."adjClose", sp.close)::float AS close,
-      si."signalScore"::float AS "signalScore",
-      si."signalLabel"
-    FROM "StockIndicator" si
-    JOIN "Stock" s ON s.id = si."stockId"
-    JOIN "StockPrice" sp ON sp."stockId" = si."stockId" AND sp.date = si.date
-    WHERE si.interval = '1d'
-      AND s."isActive" = true
-      AND s."assetClass" = 'EQUITY'
-      AND s.ticker NOT LIKE '^%'
-      AND si.date >= NOW() - INTERVAL '24 months'
-    ORDER BY si."stockId", si.date ASC
-  `;
-
-  // 4. Hitung statistik forward return untuk threshold 0.34 (P95) dan 0.20
-  const stats34 = computeSwingStats(backtestRowsRaw, 0.34);
-  const stats20 = computeSwingStats(backtestRowsRaw, 0.20);
-
   const asOfStr =
     typeof latestDate === "string"
       ? latestDate
       : latestDate.toISOString().slice(0, 10);
+
+  // 3 & 4. Backtest 24 bulan (ambil dari cache jika valid)
+  let stats34: SwingStats;
+  let stats20: SwingStats;
+
+  if (cachedBacktest && cachedBacktest.asOf === asOfStr && now < cachedBacktest.expiresAt) {
+    stats34 = cachedBacktest.stats34;
+    stats20 = cachedBacktest.stats20;
+  } else {
+    const backtestRowsRaw = await prisma.$queryRaw<SwingRow[]>`
+      SELECT 
+        si."stockId",
+        si.date,
+        COALESCE(sp."adjClose", sp.close)::float AS close,
+        si."signalScore"::float AS "signalScore",
+        si."signalLabel"
+      FROM "StockIndicator" si
+      JOIN "Stock" s ON s.id = si."stockId"
+      JOIN "StockPrice" sp ON sp."stockId" = si."stockId" AND sp.date = si.date
+      WHERE si.interval = '1d'
+        AND s."isActive" = true
+        AND s."assetClass" = 'EQUITY'
+        AND s.ticker NOT LIKE '^%'
+        AND si.date >= NOW() - INTERVAL '24 months'
+      ORDER BY si."stockId", si.date ASC
+    `;
+
+    stats34 = computeSwingStats(backtestRowsRaw, 0.34);
+    stats20 = computeSwingStats(backtestRowsRaw, 0.20);
+
+    cachedBacktest = {
+      asOf: asOfStr,
+      expiresAt: now + BACKTEST_TTL_MS,
+      stats34,
+      stats20,
+    };
+  }
 
   const responseData: SwingMarketResponse = {
     asOf: asOfStr,

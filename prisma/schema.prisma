@@ -1177,11 +1177,13 @@ model AiChatLog {
   provider      String?  @db.VarChar(24)
   latencyMs     Int?
   followupClick String?  @db.VarChar(200) // chip label yang diklik user (kualitas jawaban signal)
+  isEval        Boolean  @default(false)
   createdAt     DateTime @default(now())
 
   @@index([createdAt])
   @@index([route, createdAt(sort: Desc)])
   @@index([ticker])
+  @@index([isEval, createdAt])
 }
 
 // Skor evaluasi Tanya AI oleh judge LLM (owner 30 Okt) — tren kualitas harian.

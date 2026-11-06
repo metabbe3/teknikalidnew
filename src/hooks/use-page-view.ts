@@ -10,14 +10,29 @@ function getTrackingData(pathname: string) {
   // tracking-audit G6: referrer hanya utk ENTRY pertama sesi (SPA navigasi selanjutnya
   // membawa document.referrer lengket → bing.com terhitung 5x lipat). Navigasi internal
   // dikirim sebagai referrer internal agar asal kunjungan tetap terlacak.
-  const isEntry = !sessionStorage.getItem("eng_entry_done");
+  let isEntry = false;
+  try {
+    isEntry = !sessionStorage.getItem("eng_entry_done");
+  } catch {
+    isEntry = false;
+  }
   let referrer: string | undefined;
   if (typeof document !== "undefined") {
     if (isEntry) {
       referrer = document.referrer || undefined;
       try { sessionStorage.setItem("eng_entry_done", "1"); } catch { /* silent */ }
     } else {
-      referrer = window.location.origin + document.documentElement.dataset.prevPath || undefined;
+      let prevPath: string | null = null;
+      try {
+        prevPath = document.documentElement.dataset.prevPath || sessionStorage.getItem("eng_prev_path");
+      } catch {
+        prevPath = document.documentElement.dataset.prevPath ?? null;
+      }
+      if (prevPath && prevPath.startsWith("/")) {
+        referrer = window.location.origin + prevPath;
+      } else {
+        referrer = document.referrer || undefined;
+      }
     }
   }
   // tracking-audit G6: path TANPA query string (URL sosmed fbclid >255 char ditolak Zod 400
@@ -106,6 +121,12 @@ export function usePageView() {
       }).catch(() => {
         // Silently ignore failures
       });
+    }
+
+    try {
+      sessionStorage.setItem("eng_prev_path", pathname);
+    } catch {
+      // silent
     }
   }, [pathname]);
 }

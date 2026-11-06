@@ -79,6 +79,15 @@ export async function detectBot(
     return { isBot: true, reason: "short-ua", datacenter: false };
   }
 
+  // Meta link-preview crawler on IPv6 block 2a03:2880::/32 (AS32934).
+  // Preview crawlers use generic browser UA (Chrome 74, etc.) without in-app markers.
+  // In-app browsers used by real humans contain Barcelona (Threads), Instagram, FBAN/FBAV (Facebook).
+  if (ip && /^2a03:2880:/i.test(ip.trim())) {
+    if (!/Barcelona|Instagram|FBAN|FBAV/i.test(userAgent)) {
+      return { isBot: true, reason: "meta-preview-crawler", datacenter: true };
+    }
+  }
+
   // 4. Datacenter ASN (async lookup, 24h-cached). Ceiling: ip-api free tier is
   // 45/min; under sustained >45-new-IPs/min bursts this fail-softs to non-datacenter
   // and misses. Upgrade path: local GeoLite2 DB if that ever bites.

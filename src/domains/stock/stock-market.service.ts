@@ -197,9 +197,10 @@ export const stockMarketService = {
     const stocks = await stockRepository.findActiveStocksWithPrices({ assetClass: "EQUITY", ...(sector ? { sector } : {}) });
 
     const result = stocks.map((stock) => {
-      const prices = dedupeStalePrices(stock.prices);
-      const { close, change, changePercent } = computeChange(prices[0], prices[1]);
-      const indicator = stock.indicators?.[0];
+      const close = stock.close;
+      const prevClose = stock.prevClose;
+      const change = close !== null && prevClose !== null ? close - prevClose : null;
+      const changePercent = close !== null && prevClose !== null ? marketEngine.pctChange(close, prevClose) : null;
 
       return {
         ticker: stock.ticker,
@@ -209,11 +210,11 @@ export const stockMarketService = {
         close,
         change,
         changePercent,
-        volume: prices[0] ? bigIntToNumber(prices[0].volume) : null,
-        rsi14: indicator ? decimalToNumber(indicator.rsi14) : null,
-        sma20: indicator ? decimalToNumber(indicator.sma20) : null,
+        volume: stock.volume,
+        rsi14: stock.rsi14,
+        sma20: stock.sma20,
         // ret-qw5: skor 0-1 utk kolom landing SEO (kalender dividen/asing/modal 100rb)
-        signalScore: indicator ? decimalToNumber(indicator.signalScore) : null,
+        signalScore: stock.signalScore,
       };
     });
 
@@ -229,9 +230,10 @@ export const stockMarketService = {
     const stocks = await stockRepository.findActiveStocksWithPrices({ assetClass: "CRYPTO" });
 
     const result = stocks.map((stock) => {
-      const prices = dedupeStalePrices(stock.prices);
-      const { close, change, changePercent } = computeChange(prices[0], prices[1]);
-      const indicator = stock.indicators?.[0];
+      const close = stock.close;
+      const prevClose = stock.prevClose;
+      const change = close !== null && prevClose !== null ? close - prevClose : null;
+      const changePercent = close !== null && prevClose !== null ? marketEngine.pctChange(close, prevClose) : null;
 
       return {
         ticker: stock.ticker,
@@ -241,10 +243,10 @@ export const stockMarketService = {
         close,
         change,
         changePercent,
-        volume: prices[0] ? bigIntToNumber(prices[0].volume) : null,
-        rsi14: indicator ? decimalToNumber(indicator.rsi14) : null,
-        sma20: indicator ? decimalToNumber(indicator.sma20) : null,
-        signalScore: indicator ? decimalToNumber(indicator.signalScore) : null, // ret-qw5 (crypto: null-safe)
+        volume: stock.volume,
+        rsi14: stock.rsi14,
+        sma20: stock.sma20,
+        signalScore: stock.signalScore, // ret-qw5 (crypto: null-safe)
       };
     });
 
@@ -785,7 +787,10 @@ export const stockMarketService = {
     return stockRepository.findStocksByTickersWithIndicators(tickers);
   },
 
-  async findActiveStocksWithPrices(where?: { sector?: string }, includeIndicators = true) {
+  async findActiveStocksWithPrices(
+    where?: { sector?: string; assetClass?: "EQUITY" | "CRYPTO"; includeInactive?: boolean },
+    includeIndicators = true
+  ) {
     return stockRepository.findActiveStocksWithPrices(where, includeIndicators);
   },
 

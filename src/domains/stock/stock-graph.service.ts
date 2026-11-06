@@ -1,6 +1,5 @@
 import { stockRepository } from "./stock.repository";
 import { INTERVAL } from "@/lib/constants";
-import { decimalToNumber } from "@/lib/serialize";
 import { marketEngine } from "./market-snapshot.service";
 
 export interface StockNeighbor {
@@ -38,17 +37,14 @@ export async function computeNeighbors(ticker: string, limit = 3): Promise<Stock
   const neighbors: StockNeighbor[] = [];
   for (const m of mates) {
     if (m.ticker === stock.ticker) continue; // exclude self
-    const latest = m.prices[0];
-    const prev = m.prices[1];
-    const close = latest ? decimalToNumber(latest.close) : null;
-    const prevClose = prev ? decimalToNumber(prev.close) : null;
+    const close = m.close;
+    const prevClose = m.prevClose;
     // fix-2026-10-26-12 item(4): rumus via marketEngine (SATU PINTU) — dulu
     // inline kedua di luar pintu (audit 26 Okt); prev<=0 → null, bukan NaN.
     const changePercent = close !== null && prevClose !== null
       ? marketEngine.pctChange(close, prevClose)
       : null;
     const change = close !== null && prevClose !== null ? close - prevClose : null;
-    const ind = m.indicators[0];
     neighbors.push({
       ticker: m.ticker,
       name: m.name,
@@ -56,9 +52,9 @@ export async function computeNeighbors(ticker: string, limit = 3): Promise<Stock
       close,
       change,
       changePercent,
-      signalLabel: ind?.signalLabel ?? null,
-      signalScore: ind ? decimalToNumber(ind.signalScore) : null,
-      isGorengan: ind?.isGorengan ?? false,
+      signalLabel: m.signalLabel ?? null,
+      signalScore: m.signalScore,
+      isGorengan: m.isGorengan,
     });
   }
 

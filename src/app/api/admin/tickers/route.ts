@@ -3,40 +3,25 @@ import { requireAdmin } from "@/lib/auth-guard";
 import { handleApiError } from "@/lib/api-error";
 import { prisma } from "@/lib/prisma";
 import { stockRepository } from "@/domains/stock/stock.repository";
-import { computeChange, bigIntToNumber } from "@/lib/serialize";
-import { Prisma } from "@/generated/prisma/client";
+import { marketEngine } from "@/lib/market-engine";
 
 export const dynamic = "force-dynamic";
-
-// Common shape of both query branches (prices-only include)
-type StockRow = {
-  id: number;
-  ticker: string;
-  name: string;
-  sector: string;
-  isActive: boolean;
-  prices: { close: Prisma.Decimal; volume: bigint; date: Date }[] | undefined;
-};
 
 export async function GET(request: NextRequest) {
   try {
     await requireAdmin();
     const includeInactive = request.nextUrl.searchParams.get("all") === "1";
 
-    const stocks: StockRow[] = includeInactive
-      ? // Same shape as findActiveStocksWithPrices, minus the isActive filter
-        await prisma.stock.findMany({
-          where: { assetClass: "EQUITY" },
-          orderBy: { ticker: "asc" },
-          include: { prices: { where: { volume: { gt: 0 } }, orderBy: { date: "desc" }, take: 6 } },
-        })
-      : await stockRepository.findActiveStocksWithPrices(undefined, false);
+    const stocks = await stockRepository.findActiveStocksWithPrices(
+      { assetClass: "EQUITY", includeInactive },
+      false
+    );
 
     const tickers = stocks.map((stock) => {
-      const prices = stock.prices ?? [];
-      const latest = prices[0];
-      const prev = prices[1];
-      const { close, change, changePercent } = computeChange(latest, prev);
+      const close = stock.close;
+      const prevClose = stock.prevClose;
+      const change = close !== null && prevClose !== null ? close - prevClose : null;
+      const changePercent = close !== null && prevClose !== null ? marketEngine.pctChange(close, prevClose) : null;
 
       return {
         id: stock.id,
@@ -47,8 +32,8 @@ export async function GET(request: NextRequest) {
         latestPrice: close,
         change,
         changePercent,
-        volume: latest ? bigIntToNumber(latest.volume) : null,
-        lastUpdate: latest?.date?.toISOString() ?? null,
+        volume: stock.volume,
+        lastUpdate: stock.date ? stock.date.toISOString() : null,
       };
     });
 
