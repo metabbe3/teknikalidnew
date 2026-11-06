@@ -66,7 +66,7 @@ const SIGNAL_OVERALL: Record<string, { icon: string; color: string; label: strin
   STRONG_SELL: { icon: "▼", color: "text-bearish", label: "Bearish" },
 };
 
-export function PersonalizedBeranda() {
+export function PersonalizedBeranda({ agentUpsell = false }: { agentUpsell?: boolean }) {
   const { data, isLoading } = useDashboardSummary();
   const claimReward = useClaimDailyReward();
   const { data: portfolio } = usePortfolio();
@@ -447,8 +447,33 @@ export function PersonalizedBeranda() {
               )}
             </div>
           )}
-        </Card>
+         </Card>
       </div>
+
+      {/* Pancingan agent (owner 6 Nov sore): login tanpa langganan → ajakan coba
+          3 chat gratis / ambil paket — di bawah portofolio, bukan di atas. */}
+      {agentUpsell && (
+        <aside className="mt-6 rounded-xl border border-border bg-bg-card p-4 sm:p-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+            <div className="min-w-0">
+              <p className="font-mono text-xs text-text-tertiary">BOT TELEGRAM · @TEKNIKALIDAGENTBOT</p>
+              <p className="mt-1 text-sm font-semibold text-text-primary">
+                Mau bot yang jagain saham incaranmu di Telegram?
+              </p>
+              <p className="mt-0.5 text-xs text-text-secondary">
+                Rekap sore 19.00 WIB, alert saat harga kena area beli, bisa ditanya kapan saja.
+                Coba 3 chat gratis dulu.
+              </p>
+            </div>
+            <Link
+              href="/agent?from=porto_home"
+              className="inline-flex min-h-[44px] shrink-0 items-center justify-center rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent/90"
+            >
+              Coba Bot Telegram
+            </Link>
+          </div>
+        </aside>
+      )}
     </div>
   );
 }

@@ -186,6 +186,29 @@ export default async function HomePage() {
     marketSnapshotService.getOversoldCount(),
   ]);
 
+  // Cross-sell agent (owner 6 Nov sore): pengguna login TANPA langganan agent
+  // lihat kartu pancingan di bawah portofolio — query server-side, zero-req tambahan di client.
+  let agentUpsell = false;
+  if (currentUser?.email) {
+    const bindRows = await prisma
+      .$queryRawUnsafe<Array<{ chat_id: string }>>(
+        `SELECT chat_id::text FROM agent.agent_web_binding WHERE email = $1 LIMIT 1`,
+        currentUser.email
+      )
+      .catch(() => [] as Array<{ chat_id: string }>);
+    if (!bindRows.length) {
+      agentUpsell = true; // belum bind bot → pancingan coba gratis
+    } else {
+      const subRows = await prisma
+        .$queryRawUnsafe<Array<{ status: string }>>(
+          `SELECT status FROM agent.agent_subscription WHERE chat_id = $1 AND status = 'paid' LIMIT 1`,
+          bindRows[0].chat_id
+        )
+        .catch(() => [] as Array<{ status: string }>);
+      agentUpsell = subRows.length === 0; // bind tapi belum bayar → pancingan paket
+    }
+  }
+
   // Compute IHSG change
   const ihsgLatest = ihsgPrices?.[0];
   const ihsgPrev = ihsgPrices?.[1];
@@ -224,7 +247,7 @@ export default async function HomePage() {
           {/* Owner 18 Okt: PORTOFOLIO dulu — seperti dashboard pribadi.
               Urutan: portofolio+watchlist → trading plan holdings → delta+streak
               → movers → tesis → quick tools. */}
-          <PersonalizedBeranda />
+          <PersonalizedBeranda agentUpsell={agentUpsell} />
           <HoldingTradingPlans tickers={holdings.map((h) => h.stockTicker)} />
           <details className="group rounded-xl border border-border bg-bg-card p-5">
             <summary className="cursor-pointer list-none flex items-center justify-between text-text-primary font-semibold text-sm [&::-webkit-details-marker]:hidden">
