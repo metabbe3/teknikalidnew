@@ -62,6 +62,59 @@ harga menyentuh Rp4.620.`}
   );
 }
 
+/* SATU PINTU KELUHAN (owner 6 Nov "biar gak bingung complain dimana"):
+ * form kecil di halaman agent → /api/agent/complain → tabel sama dgn /keluhan bot.
+ */
+function ComplainBox() {
+  const [text, setText] = useState("");
+  const [sent, setSent] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const submit = async () => {
+    if (text.trim().length < 5) return;
+    setBusy(true);
+    try {
+      const r = await fetch("/api/agent/complain", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ message: text }),
+      });
+      if (r.ok) { setSent(true); setText(""); }
+    } finally { setBusy(false); }
+  };
+  if (sent) {
+    return (
+      <div className="rounded-xl border border-border bg-bg-card p-4 text-sm text-text-secondary">
+        ✅ Keluhanmu tercatat. Kami balas via email/chat Telegram terikat maks 24 jam.
+        <button className="ml-2 underline hover:text-accent" onClick={() => setSent(false)}>
+          kirim lagi
+        </button>
+      </div>
+    );
+  }
+  return (
+    <div className="rounded-xl border border-border bg-bg-card p-4">
+      <p className="text-sm font-medium text-text-primary">Ada masalah? Sampaikan di sini</p>
+      <p className="mt-1 text-xs text-text-tertiary">
+        Masalah pembayaran, jawaban bot, apa pun — langsung ke tim, tanpa bingung harus ke mana.
+        (Di bot Telegram juga bisa: ketik <code>/keluhan</code>)
+      </p>
+      <textarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        rows={3}
+        maxLength={2000}
+        placeholder="Tulis keluhanmu…"
+        className="mt-3 w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text-primary outline-none focus:border-accent"
+      />
+      <div className="mt-2 flex justify-end">
+        <Button size="sm" onClick={submit} disabled={busy || text.trim().length < 5}>
+          {busy ? "Mengirim…" : "Kirim keluhan"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export default function AgentPage() {
   const [mem, setMem] = useState<Membership | null>(null);
   const [loading, setLoading] = useState(true);
@@ -451,6 +504,10 @@ export default function AgentPage() {
               a: "Bisa. Daftar akun gratis di web ini lalu klik Hubungkan Telegram. Anda langsung mendapat 3 kuota perintah gratis untuk menguji bot dengan saham pilihan Anda.",
             },
             {
+              q: "Kalau ada masalah / keluhan, ke mana saya menghubungi?",
+              a: "Langsung dari tempat kamu berada: di bot Telegram ketik /keluhan (atau 'mau komplain'), di web isi form 'Ada masalah?' di bawah halaman ini. Keduanya masuk ke satu tim yang sama — dibalas maks 24 jam.",
+            },
+            {
               q: "Bisa berhenti langganan kapan saja?",
               a: "Bisa, tanpa penalti. Pembayaran diproses Midtrans (QRIS/e-wallet).",
             },
@@ -463,6 +520,11 @@ export default function AgentPage() {
             </details>
           ))}
         </div>
+      </section>
+
+      {/* ============ SECTION 5b: SATU PINTU KELUHAN ============ */}
+      <section className="space-y-3">
+        <ComplainBox />
       </section>
 
       {/* ============ SECTION 6: CTA PENUTUP ============ */}

@@ -16,6 +16,7 @@ type ActionBody = {
   turns?: number;
   email?: string;
   reason?: string;
+  complaintId?: string;
 };
 
 const json = (data: unknown, status = 200) =>
@@ -94,6 +95,29 @@ export async function POST(request: NextRequest) {
         void res;
         await audit("ADD_TURNS", { chatId: String(chatId), turns, reason });
         return json({ ok: true, message: `+${turns} turn dikompensasi`, remaining: res[0] });
+      }
+
+      case "LIST_COMPLAINTS": {
+        // Owner 6 Nov: satu pintu keluhan (bot /keluhan + web form) — list utk admin panel.
+        const rows = await prisma.$queryRawUnsafe<Array<{
+          id: number; chat_id: bigint; message: string; status: string; created_at: Date;
+        }>>(
+          `SELECT id, chat_id, message, status, created_at
+             FROM agent.agent_complaint
+            WHERE status = 'open'
+            ORDER BY created_at DESC LIMIT 50`
+        );
+        return json({ ok: true, complaints: rows });
+      }
+
+      case "RESOLVE_COMPLAINT": {
+        if (!body.complaintId) return json({ error: "complaintId wajib" }, 400);
+        await prisma.$queryRawUnsafe(
+          `UPDATE agent.agent_complaint SET status = 'resolved' WHERE id = $1`,
+          BigInt(body.complaintId)
+        );
+        await audit("RESOLVE_COMPLAINT", { complaintId: String(body.complaintId), reason });
+        return json({ ok: true });
       }
 
       case "RESET_TRIAL_MASS": {
