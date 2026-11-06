@@ -66,7 +66,11 @@ async function runQuestion(route: string, body: Record<string, unknown>): Promis
   // agar lolos same-origin check proxy; POST lintas-situs dari browser tetap diblokir.
   const res = await fetch(`${base}/api/ai/${route === "stock" ? "stock" : "screener"}`, {
     method: "POST",
-    headers: { "content-type": "application/json", origin: base },
+    headers: {
+      "content-type": "application/json",
+      origin: base,
+      "x-ai-eval": process.env.CRON_SECRET ?? "",
+    },
     body: JSON.stringify(body),
   });
   const j = (await res.json()) as { text?: string; error?: string };

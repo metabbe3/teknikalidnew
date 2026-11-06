@@ -156,7 +156,14 @@ export async function POST(req: NextRequest) {
 
   // v2 (owner 30 Okt): authed dari SESSION server (anti-spoof) + dua lapis jam/hari + pesan konversi
   let authed = false;
-  try { const sess = await auth(); authed = !!(sess && sess.user); } catch { authed = false; }
+  let sessionUserId: string | null = null;
+  try {
+    const sess = await auth();
+    authed = !!(sess && sess.user);
+    sessionUserId = sess?.user?.id ?? null;
+  } catch {
+    authed = false;
+  }
   const rd = aiRateCheck(ip, authed);
   if (rd.limited) {
     return NextResponse.json(
@@ -171,6 +178,14 @@ export async function POST(req: NextRequest) {
   } catch {
     return NextResponse.json({ error: "Body JSON tidak valid" }, { status: 400 });
   }
+
+  const cleanAnonId =
+    typeof body.anonId === "string" && /^[a-f0-9-]{8,36}$/i.test(body.anonId)
+      ? body.anonId
+      : null;
+  const isEval = Boolean(
+    process.env.CRON_SECRET && req.headers.get("x-ai-eval") === process.env.CRON_SECRET
+  );
 
   // G1 (juri Claude 30 Okt): question tanpa mode → ask (bukan summarize dgn context kosong)
   const hasQuestion = typeof body.question === "string" && body.question.trim().length > 0;
@@ -331,11 +346,7 @@ export async function POST(req: NextRequest) {
           const pasarCtx = await buildPasarContext().catch(() => null);
           const ctx = { ...context, marketContext: pasarCtx ? { ihsg: pasarCtx.ihsg, asingNetSellTop: pasarCtx.foreignNetSell, asingNetBuyTop: pasarCtx.foreignNetBuy } : null, asOf: new Date().toISOString().slice(0, 10), ...(tickerRescue ? { tickerCorrection: `User menulis "${tickerRescue.from}" — itu typo; ticker yang benar adalah ${tickerRescue.to}. Konfirmasi koreksi di kalimat PERTAMA ("Sepertinya maksudnya ${tickerRescue.to} ya"), lalu analisa ${tickerRescue.to} LANGSUNG dengan data teknikal/fundamental yang sudah ada di data — DILARANG berkata data tidak tersedia atau minta user kirim data.` } : {}) };
           const text = await glmCall(ctx, mode, question, chatHistory);
-          // flywheel (owner 30 Okt): log QA fire-and-forget
-          prisma.aiChatLog
-            .create({ data: { route: "stock", mode, ticker: String(clientContext.ticker ?? "").replace(/\.JK$/i, ""), question: question.slice(0, 500), answer: text.slice(0, 8000), provider: "glm-flash", latencyMs: Date.now() - __t0, anonId: (body as Record<string, unknown>).anonId as string | undefined ?? null, userId: (body as Record<string, unknown>).userId as string | undefined ?? null } })
-            .catch(() => {});
-          return { ok: true, text, ms: 0, provider: "glm-flash" };
+          return { ok: true, text, ms: Date.now() - __t0, provider: "glm-flash" };
         } catch (e) {
           glmErr = e instanceof Error ? e.message : "glm error";
           console.warn(`[ai/stock] GLM flash gagal (${glmErr}) → fallback MLX`);
@@ -365,6 +376,24 @@ export async function POST(req: NextRequest) {
     if (!data.ok || !data.text) {
       return NextResponse.json({ error: "AI tidak menghasilkan jawaban" }, { status: 502 });
     }
+
+    // flywheel (owner 30 Okt): log QA fire-and-forget
+    prisma.aiChatLog
+      .create({
+        data: {
+          route: "stock",
+          mode,
+          ticker: String(clientContext.ticker ?? "").replace(/\.JK$/i, ""),
+          question: question.slice(0, 500),
+          answer: data.text.slice(0, 8000),
+          provider: data.provider ?? "glm-flash",
+          latencyMs: data.ms || (Date.now() - __t0),
+          anonId: cleanAnonId,
+          userId: sessionUserId,
+          isEval,
+        },
+      })
+      .catch(() => {});
     return NextResponse.json({ ok: true, text: data.text, ms: data.ms, provider: data.provider ?? "mlx" });
   } catch (e) {
     if (e instanceof QueueFullError) {

@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 import { parseAiText, shareAiStock } from "@/components/stock/stock-ai-shared";
 import { AiMarkdown } from "@/components/ai/ai-markdown";
 import { Sparkles } from "lucide-react";
+import { getAnonIdSafe } from "@/lib/anon-id-safe";
 
 /**
  * Modal AI untuk stock-card di halaman /stocks — analisa + tanya saham
@@ -126,7 +127,7 @@ export function StockAiModal({ ticker, name, changePercent, isGorengan, initialQ
         const res = await fetch("/api/ai/stock", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ mode: "summarize", ticker, name }),
+          body: JSON.stringify({ mode: "summarize", ticker, name, anonId: getAnonIdSafe() }),
         });
         const json = await res.json();
         if (cancelled) return;
@@ -160,7 +161,7 @@ export function StockAiModal({ ticker, name, changePercent, isGorengan, initialQ
       const res = await fetch("/api/ai/stock", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: "ask", ticker, name, question }),
+        body: JSON.stringify({ mode: "ask", ticker, name, question, anonId: getAnonIdSafe() }),
       });
       const json = await res.json();
       setAnswer(res.ok && json.ok ? json.text : `⚠ ${json.error ?? "Gagal"}`);

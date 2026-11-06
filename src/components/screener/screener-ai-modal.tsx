@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Sparkles, Loader2 } from "lucide-react";
 import { formatDecimalId } from "@/lib/format-number";
+import { getAnonIdSafe } from "@/lib/anon-id-safe";
 
 /**
  * Tanya AI Screener — tombol di /stocks, modal chat bahasa manusia.
@@ -99,7 +100,7 @@ export function ScreenerAiButton() {
       const res = await fetch("/api/ai/screener", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: query }),
+        body: JSON.stringify({ question: query, anonId: getAnonIdSafe() }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Gagal");

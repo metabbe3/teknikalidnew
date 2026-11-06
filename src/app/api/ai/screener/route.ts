@@ -195,7 +195,14 @@ export async function POST(req: NextRequest) {
 
   // v2 (owner 30 Okt): authed dari SESSION server (anti-spoof) + dua lapis jam/hari + pesan konversi
   let authed = false;
-  try { const sess = await auth(); authed = !!(sess && sess.user); } catch { authed = false; }
+  let sessionUserId: string | null = null;
+  try {
+    const sess = await auth();
+    authed = !!(sess && sess.user);
+    sessionUserId = sess?.user?.id ?? null;
+  } catch {
+    authed = false;
+  }
   const rd = aiRateCheck(ip, authed);
   if (rd.limited) {
     return NextResponse.json(
@@ -204,12 +211,20 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: { question?: string; preset?: string };
+  let body: { question?: string; preset?: string; anonId?: string; userId?: string };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Body JSON tidak valid" }, { status: 400 });
   }
+
+  const cleanAnonId =
+    typeof body.anonId === "string" && /^[a-f0-9-]{8,36}$/i.test(body.anonId)
+      ? body.anonId
+      : null;
+  const isEval = Boolean(
+    process.env.CRON_SECRET && req.headers.get("x-ai-eval") === process.env.CRON_SECRET
+  );
 
   const question = (body.question ?? "").slice(0, 500).trim();
   // multi-turn chat (owner 30 Okt: FAB harus kayak chatbot): history dari client, sanitasi ketat
@@ -362,7 +377,18 @@ export async function POST(req: NextRequest) {
 
     // flywheel (owner 30 Okt): log QA — fire-and-forget, jangan blok/gagalkan response
     prisma.aiChatLog
-      .create({ data: { route: "screener", question: question.slice(0, 500), answer: String(payload.text ?? "").slice(0, 8000), provider: payload.provider ?? null, latencyMs: data.ms ?? null, anonId: (body as Record<string, unknown>).anonId as string | undefined ?? null, userId: (body as Record<string, unknown>).userId as string | undefined ?? null } })
+      .create({
+        data: {
+          route: "screener",
+          question: question.slice(0, 500),
+          answer: String(payload.text ?? "").slice(0, 8000),
+          provider: payload.provider ?? null,
+          latencyMs: data.ms ?? null,
+          anonId: cleanAnonId,
+          userId: sessionUserId,
+          isEval,
+        },
+      })
       .catch(() => {});
     return NextResponse.json(payload);
   } catch (e) {

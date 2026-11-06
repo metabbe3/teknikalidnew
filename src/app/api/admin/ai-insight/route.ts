@@ -44,23 +44,24 @@ async function getAiInsight(now: Date = new Date()): Promise<AiInsightOverview> 
 
   const [totalsRows, routeRows, dayRows, tickerRows, evalRows] = await Promise.all([
     prisma.$queryRaw<TotalsRow[]>`
-      SELECT count(*) FILTER (WHERE "createdAt" >= ${since24h}) AS n24,
-             count(*) FILTER (WHERE "createdAt" >= ${since7d}) AS n7,
+      SELECT count(*) FILTER (WHERE "createdAt" >= ${since24h} AND "isEval" = false) AS n24,
+             count(*) FILTER (WHERE "createdAt" >= ${since7d} AND "isEval" = false) AS n7,
              count(*) FILTER (WHERE "createdAt" >= ${since7d}
+                               AND "isEval" = false
                                AND ("userId" IS NOT NULL OR "anonId" IS NOT NULL)) AS attributed7
       FROM "AiChatLog"`,
     prisma.$queryRaw<RouteRow[]>`
       SELECT route, count(*) AS n, avg("latencyMs") AS avg_lat
-      FROM "AiChatLog" WHERE "createdAt" >= ${since7d}
+      FROM "AiChatLog" WHERE "createdAt" >= ${since7d} AND "isEval" = false
       GROUP BY route ORDER BY n DESC`,
     prisma.$queryRaw<DayRow[]>`
       SELECT date_trunc('day', "createdAt" + interval '7 hours') AS d,
              count(*) AS n, avg("latencyMs") AS avg_lat
-      FROM "AiChatLog" WHERE "createdAt" >= ${since14d}
+      FROM "AiChatLog" WHERE "createdAt" >= ${since14d} AND "isEval" = false
       GROUP BY 1 ORDER BY 1`,
     prisma.$queryRaw<TickerRow[]>`
       SELECT ticker, count(*) AS n
-      FROM "AiChatLog" WHERE "createdAt" >= ${since7d}
+      FROM "AiChatLog" WHERE "createdAt" >= ${since7d} AND "isEval" = false
         AND ticker IS NOT NULL AND ticker <> ''
       GROUP BY ticker ORDER BY n DESC LIMIT 8`,
     prisma.$queryRaw<EvalDayRow[]>`

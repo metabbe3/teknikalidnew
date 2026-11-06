@@ -22,6 +22,7 @@ import { Sparkles, X, Send, ArrowUpRight } from "lucide-react";
 import { AiMarkdown } from "@/components/ai/ai-markdown";
 import { detectTickerInText, isPlausibleTicker } from "@/lib/ai-ticker-guard";
 import { splitFollowUps } from "@/lib/ai-followups";
+import { getAnonIdSafe } from "@/lib/anon-id-safe";
 
 const QUICK_CHIPS = [
   "Saham apa yang lagi oke hari ini?",
@@ -114,8 +115,8 @@ export function AskAiFab() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(
           effTicker
-            ? { mode: "ask", ticker: `${effTicker}.JK`, question: text, history }
-            : { question: text, history },
+            ? { mode: "ask", ticker: `${effTicker}.JK`, question: text, history, anonId: getAnonIdSafe() }
+            : { question: text, history, anonId: getAnonIdSafe() },
         ),
       });
       const data = await res.json();
@@ -125,7 +126,7 @@ export function AskAiFab() {
         const r2 = await fetch("/api/ai/stock", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ mode: "ask", ticker: `${data.ticker}.JK`, question: text, history }),
+          body: JSON.stringify({ mode: "ask", ticker: `${data.ticker}.JK`, question: text, history, anonId: getAnonIdSafe() }),
         });
         const d2 = await r2.json();
         if (r2.ok && d2.ok) Object.assign(data, { text: d2.text });
