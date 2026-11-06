@@ -48,7 +48,7 @@ export async function GET() {
              u.last_active_at AS "lastActive",
              p.onb_done AS "onbDone"
       FROM agent.agent_user u
-      LEFT JOIN agent.agent_subscription s ON s.chat_id = u.chat_id AND s.status = 'active'
+      LEFT JOIN agent.agent_subscription s ON s.chat_id = u.chat_id AND s.status IN ('paid','active')
       LEFT JOIN agent.agent_profile p ON p.chat_id = u.chat_id
       ORDER BY u.last_active_at DESC NULLS LAST
       LIMIT 30
@@ -90,7 +90,7 @@ export async function GET() {
           WHERE l.chat_id=u.chat_id AND l.created_at >= now() - interval '7 days'),0)::text AS out7,
         u.last_active_at AS "lastActive"
       FROM agent.agent_user u
-      LEFT JOIN agent.agent_subscription s ON s.chat_id=u.chat_id AND s.status='active'
+      LEFT JOIN agent.agent_subscription s ON s.chat_id=u.chat_id AND s.status IN ('paid','active')
       ORDER BY (SELECT coalesce(sum(l.tokens_in+l.tokens_out),0) FROM agent.agent_usage_ledger l
         WHERE l.chat_id=u.chat_id AND l.created_at >= now() - interval '7 days') DESC NULLS LAST
       LIMIT 20
@@ -136,7 +136,7 @@ export async function GET() {
         (SELECT count(*) FROM agent.agent_user) AS total,
         (SELECT count(*) FROM agent.agent_profile WHERE onb_done = true) AS onb,
         (SELECT count(DISTINCT chat_id) FROM agent.agent_message_log WHERE created_at >= now() - interval '7 days') AS act7,
-        (SELECT count(*) FROM agent.agent_subscription WHERE status='active' AND tier <> 'free') AS paid
+        (SELECT count(*) FROM agent.agent_subscription WHERE status IN ('paid','active') AND tier <> 'free') AS paid
     `;
 
     // Wave-2 (bo-2026-11-04-03): feedback 👍/👎 14d + tool-audit per-tool 7d.
