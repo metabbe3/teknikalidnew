@@ -223,6 +223,8 @@ const UTM_SOURCE_PLATFORMS: Record<string, string> = {
   x: "Twitter/X",
   tiktok: "TikTok",
   telegram: "Telegram",
+  tg: "Telegram",
+  tg_digest: "Telegram",
   whatsapp: "WhatsApp",
   youtube: "YouTube",
   linkedin: "LinkedIn",

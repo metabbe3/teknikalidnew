@@ -5,7 +5,7 @@ import { getClientIp, lookupAsn, isDatacenter } from "@/lib/ip-asn";
 import { detectBot } from "@/lib/bot-detect";
 import { isBlocked } from "@/lib/ip-blocklist";
 import { moderationService } from "@/domains/moderation/moderation.service";
-import { parseBody, schemas, extractPageviewAttribution } from "@/lib/validation";
+import { parseBody, schemas, extractPageviewAttribution, parseUtmParam } from "@/lib/validation";
 
 export const dynamic = "force-dynamic";
 
@@ -94,9 +94,12 @@ export async function POST(request: NextRequest) {
     // Growth-audit 29 Okt: UTM eksplisit dari hook (field body) MENANG atas extract
     // — sebelumnya di-strip Zod → utmSource NULL utk 100% klik sosmed.
     const extracted = extractPageviewAttribution(data.path);
-    const utmSource = data.utmSource ?? extracted.utmSource;
-    const utmMedium = data.utmMedium ?? extracted.utmMedium;
-    const utmCampaign = data.utmCampaign ?? extracted.utmCampaign;
+    const cookieUtmSource = parseUtmParam(request.cookies.get("utm_source")?.value);
+    const cookieUtmMedium = parseUtmParam(request.cookies.get("utm_medium")?.value);
+    const cookieUtmCampaign = parseUtmParam(request.cookies.get("utm_campaign")?.value);
+    const utmSource = data.utmSource ?? extracted.utmSource ?? cookieUtmSource;
+    const utmMedium = data.utmMedium ?? extracted.utmMedium ?? (cookieUtmSource ? cookieUtmMedium : null);
+    const utmCampaign = data.utmCampaign ?? extracted.utmCampaign ?? (cookieUtmSource ? cookieUtmCampaign : null);
     const path = extracted.path;
 
     // Skip internal / admin paths
@@ -150,10 +153,15 @@ export async function POST(request: NextRequest) {
       // dedup is advisory; fall through and record
     }
 
+    // telemetry-hygiene (T1): tab lawas / string template undefined dinormalisasi ke null
+    const rawRef = data.referrer;
+    const cleanReferrer =
+      rawRef && !/teknikal\.idundefined/i.test(rawRef) ? rawRef : null;
+
     await prisma.pageView.create({
       data: {
         path,
-        referrer: data.referrer ?? null,
+        referrer: cleanReferrer,
         userId,
         anonId,
         ip,
@@ -164,6 +172,26 @@ export async function POST(request: NextRequest) {
         isBot: isBot || blocked,
       },
     });
+
+    // FASE T5: catat funnel_digestClick saat sesi ber-UTM telegram masuk (non-bot)
+    if (
+      !isBot &&
+      !blocked &&
+      (utmSource === "telegram" || utmSource === "tg" || utmSource === "tg_digest") &&
+      (utmMedium === "bot" || utmCampaign === "daily_digest" || utmSource === "tg_digest")
+    ) {
+      await prisma.engagementEvent
+        .create({
+          data: {
+            anonId: anonId ?? "00000000-0000-0000-0000-000000000000",
+            path,
+            type: "cta_click",
+            label: "funnel_digestClick",
+            valueNum: 1,
+          },
+        })
+        .catch(() => {});
+    }
 
     // Auto-suspend scrapers (fire-and-forget). Only logged-in fast-sweepers are
     // banned; anonymous stock-page browsing is left alone to avoid false-positive

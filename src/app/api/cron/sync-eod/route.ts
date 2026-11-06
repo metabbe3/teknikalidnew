@@ -6,6 +6,7 @@ import { thesisService } from "@/domains/thesis/thesis.service";
 import { withCronLogging } from "@/domains/cron-monitoring/with-cron-logging";
 import { withTimeout } from "@/domains/cron-monitoring/with-timeout";
 import { clearEodCaches } from "@/domains/stock/eod-cache";
+import { telegramDigestService } from "@/domains/telegram/telegram-digest.service";
 
 // sec-2026-10-22-01: ceiling runtime (historis 30d: max 25,8s avg 22,3s → 120s ≈ 5x max).
 // sync-eod idempotent (upsert) dan dijadwalkan tiap hari — hasil race yang telat diabaikan.
@@ -34,6 +35,10 @@ export async function GET(request: NextRequest) {
       }
       // Pasca-sync: segarkan cache EOD screener/radar instan (ref-2026-10-17-03).
       try { clearEodCaches(); } catch (e) { console.error("[eod-cache-clear]", e); }
+      // FASE T5: Fallback pengiriman digest harian Telegram (idempoten via digest:YYYY-MM-DD di TelegramSent).
+      await telegramDigestService
+        .runDailyDigest()
+        .catch((err) => console.error("[tg-digest]", err));
       return { status: 200, body: { success: true } };
       }, 120_000, "sync-eod"),
     );

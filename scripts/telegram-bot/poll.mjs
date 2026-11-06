@@ -1,6 +1,7 @@
 // TeknikalidBot — polling handler (Mac mini). pg langsung, tanpa prisma client.
 // /start BBCA → subscribe · /stop <KODE> · /list · /help
 import { createRequire } from 'node:module';
+import { tgWebUrl } from './utm.mjs';
 const require = createRequire('/Users/nicholasandriansurjadi/.hermes/opt/tgbot/');
 const pg = require('pg');
 const { Client } = pg;
@@ -65,17 +66,20 @@ async function handle(msg, c) {
         return send(chatId, `✅ <b>${q.rows.length} saham</b> masuk pantauanmu:\n${q.rows.map(r => '• <b>' + r.ticker.replace('.JK','') + '</b> ' + r.name).join('\n')}\n\nUpdate harian jam 16:50 WIB — lengkap dengan perubahan skor sinyal &amp; aliran asing.\n/list — lihat semua`);
       }
       const code = normTicker(rawArg);
-      if (!code) return send(chatId, '📈 <b>TeknikalID Pantau</b>\n\nPantau saham favoritmu — update tiap hari jam 16:50 WIB setelah pasar tutup, langsung ke chat ini.\n\nCara pakai: buka halaman saham di teknikal.id, klik tombol <b>"Pantau via Telegram"</b>, atau kirim:\n<code>/start BBCA</code>\n\nPerintah lain: /list · /stop BBCA · /help');
+      if (!code) return send(chatId, `📈 <b>TeknikalID Pantau</b>\n\nPantau saham favoritmu — update tiap hari jam 16:50 WIB setelah pasar tutup, langsung ke chat ini.\n\nCara pakai: buka halaman saham di <a href="${tgWebUrl('/stocks', 'bot_command')}">teknikal.id</a>, klik tombol <b>"Pantau via Telegram"</b>, atau kirim:\n<code>/start BBCA</code>\n\nPerintah lain: /list · /pasar · /stop BBCA · /help`);
       const q = await c.query('SELECT ticker, name FROM "Stock" WHERE ticker=$1 AND "assetClass"=$2', [code+'.JK','EQUITY']);
       if (!q.rows.length) return send(chatId, `❌ Kode <b>${code}</b> tidak ditemukan di teknikal.id. Cek lagi kodenya ya.`);
       const st = q.rows[0];
       await c.query('INSERT INTO "TelegramWatch" ("chatId",ticker,"anonPrefix") VALUES ($1,$2,$3) ON CONFLICT ("chatId",ticker) DO UPDATE SET active=true, "anonPrefix"=COALESCE(EXCLUDED."anonPrefix","TelegramWatch"."anonPrefix")', [chatId, st.ticker, anonPrefix]);
-      return send(chatId, `✅ <b>${st.ticker}</b> (${st.name}) masuk pantauanmu.\n\nUpdate harian jam 16:50 WIB: harga, perubahan, sinyal, + link Analis Sore.\n\n/list — lihat semua · /stop ${code} — berhenti`);
+      return send(chatId, `✅ <b><a href="${tgWebUrl(`/stocks/${st.ticker}`, 'bot_command')}">${st.ticker}</a></b> (${st.name}) masuk pantauanmu.\n\nUpdate harian jam 16:50 WIB: harga, perubahan, sinyal, + link Analis Sore.\n\n/list — lihat semua · /stop ${code} — berhenti`);
     }
     if (text.startsWith('/list')) {
       const q = await c.query('SELECT ticker FROM "TelegramWatch" WHERE "chatId"=$1 AND active=true ORDER BY "createdAt"', [chatId]);
       if (!q.rows.length) return send(chatId, 'Belum ada saham terpantau. Kirim /start BBCA untuk menambah.');
-      return send(chatId, '📡 <b>Pantauanmu</b>:\n' + q.rows.map(r=>`• ${r.ticker.replace('.JK','')}`).join('\n') + '\n\nUpdate berikutnya jam 16:50 WIB.');
+      return send(chatId, '📡 <b>Pantauanmu</b>:\n' + q.rows.map(r=>`• <a href="${tgWebUrl(`/stocks/${r.ticker}`, 'bot_command')}">${r.ticker.replace('.JK','')}</a>`).join('\n') + '\n\nUpdate berikutnya jam 16:50 WIB.');
+    }
+    if (text.startsWith('/pasar')) {
+      return send(chatId, `📊 <b>Radar &amp; Koran Pasar Live</b>\n\nBuka ringkasan pasar hari ini:\n${tgWebUrl('/pasar', 'bot_command')}`);
     }
     if (text.startsWith('/stop')) {
       const code = normTicker(text.split(/\s+/)[1]);
@@ -83,7 +87,7 @@ async function handle(msg, c) {
       await c.query('UPDATE "TelegramWatch" SET active=false WHERE "chatId"=$1 AND ticker=$2', [chatId, code+'.JK']);
       return send(chatId, `🚫 <b>${code}</b> dihapus dari pantauan. Kirim /start ${code} kalau mau lagi.`);
     }
-    if (text.startsWith('/help')) return send(chatId, 'Perintah:\n/start BBCA — pantau saham\n/list — daftar pantauan\n/stop BBCA — berhenti pantau\n\nData oleh teknikal.id — bukan rekomendasi jual-beli.');
+    if (text.startsWith('/help') || text.startsWith('/bantuan')) return send(chatId, `Perintah:\n/start BBCA — pantau saham\n/list — daftar pantauan\n/pasar — buka Koran Pasar\n/stop BBCA — berhenti pantau\n\nData oleh <a href="${tgWebUrl('/stocks', 'bot_command')}">teknikal.id</a> — bukan rekomendasi jual-beli.`);
 
     // admin aktif (29 Okt): pesan bebas → balas GLM + log ke DB (dulu: diabaikan senyap)
     if (text && !text.startsWith('/')) {

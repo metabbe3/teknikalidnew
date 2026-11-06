@@ -2,12 +2,12 @@
 // Dedupe via tabel TelegramSent {chatId, slug}; window 36 jam; jam sopan 06:00-22:00 WIB.
 // Jalankan tiap 30 mnt oleh cron. Silent-healthy: tak ada artikel baru → exit 0 diam.
 import { createRequire } from 'node:module';
+import { tgWebUrl } from './utm.mjs';
 const require = createRequire('/Users/nicholasandriansurjadi/.hermes/opt/tgbot/');
 const pg = require('pg');
 const { Client } = pg;
 const TOK = process.env.TELEGRAM_BOT_TOKEN;
 const API = `https://api.telegram.org/bot${TOK}`;
-const BASE = 'https://teknikal.id/berita/';
 
 async function send(chatId, text) {
   const r = await fetch(`${API}/sendMessage`, { method:'POST', headers:{'Content-Type':'application/json'},
@@ -43,8 +43,11 @@ for (const a of arts.rows) {
     const dup = await c.query('SELECT 1 FROM "TelegramSent" WHERE "chatId"=$1 AND slug=$2', [chatId, a.slug]);
     if (dup.rows.length) { skipped++; continue; }
     const code = a.tickerTag.replace('.JK','');
+    const articleUrl = tgWebUrl(`/berita/${a.slug}`, 'watchlist_alert');
+    const stockUrl = tgWebUrl(`/stocks/${a.tickerTag}`, 'watchlist_alert');
+    const homeUrl = tgWebUrl('/', 'watchlist_alert');
     const ok = await send(chatId,
-      `📰 <b>Riset baru: ${code}</b>\n\n${a.title}\n\nBaca analisis lengkapnya:\n${BASE}${a.slug}\n\n— teknikal.id · bukan rekomendasi jual-beli`);
+      `📰 <b>Riset baru: <a href="${stockUrl}">${code}</a></b>\n\n${a.title}\n\nBaca analisis lengkapnya:\n${articleUrl}\n\n— <a href="${homeUrl}">teknikal.id</a> · bukan rekomendasi jual-beli`);
     if (ok) {
       await c.query('INSERT INTO "TelegramSent" ("chatId", slug) VALUES ($1,$2) ON CONFLICT DO NOTHING', [chatId, a.slug]);
       sent++;

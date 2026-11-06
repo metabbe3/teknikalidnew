@@ -1131,6 +1131,17 @@ model TelegramWatch {
   @@index([anonPrefix])
 }
 
+// FASE T5: daftarkan TelegramSent (sudah live di DB: PK ("chatId", slug)).
+// Kunci dedup harian digest memakai kind = "digest:YYYY-MM-DD" yang disimpan di kolom slug.
+model TelegramSent {
+  chatId String
+  slug   String
+  sentAt DateTime @default(now()) @db.Timestamptz(6)
+
+  @@id([chatId, slug])
+  @@unique([chatId, slug])
+}
+
 model ShareEvent {
   id        Int      @id @default(autoincrement())
   target    String   @db.VarChar(16) // whatsapp | x | telegram | copy | story

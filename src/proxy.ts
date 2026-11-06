@@ -476,6 +476,17 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // FASE T5: UTM pass-through untuk landing dari bot Telegram (?ref=telegram atau ?utm_source=telegram)
+  const refParam = request.nextUrl.searchParams.get("ref")?.toLowerCase();
+  const utmSourceParam = request.nextUrl.searchParams.get("utm_source")?.toLowerCase();
+  if (refParam === "telegram" || refParam === "tg" || utmSourceParam === "telegram" || utmSourceParam === "tg") {
+    const medium = request.nextUrl.searchParams.get("utm_medium") || "bot";
+    const campaign = request.nextUrl.searchParams.get("utm_campaign") || (refParam ? "bot_ref" : "bot_link");
+    response.cookies.set("utm_source", "telegram", { path: "/", maxAge: 86400, sameSite: "lax" });
+    response.cookies.set("utm_medium", medium.slice(0, 32), { path: "/", maxAge: 86400, sameSite: "lax" });
+    response.cookies.set("utm_campaign", campaign.slice(0, 64), { path: "/", maxAge: 86400, sameSite: "lax" });
+  }
+
   return response;
 }
 

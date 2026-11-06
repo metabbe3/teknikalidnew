@@ -55,6 +55,37 @@ function getTrackingData(pathname: string) {
       utmSource = utmSource || "google";
       utmMedium = utmMedium || "cpc";
     }
+
+    // FASE T5: UTM pass-through dari bot Telegram (?ref=telegram / ?ref=tg)
+    const refParam = params.get("ref")?.toLowerCase();
+    if (refParam === "telegram" || refParam === "tg") {
+      utmSource = utmSource || "telegram";
+      utmMedium = utmMedium || "bot";
+      utmCampaign = utmCampaign || "bot_ref";
+    }
+
+    // Simpan ke cookie/sessionStorage bila datang dari telegram agar navigasi di sesi ini tetap ter-atribusi
+    if (utmSource === "telegram" || utmSource === "tg" || utmSource === "tg_digest") {
+      try {
+        document.cookie = `utm_source=telegram; path=/; max-age=86400; SameSite=Lax`;
+        document.cookie = `utm_medium=${encodeURIComponent(utmMedium || "bot")}; path=/; max-age=86400; SameSite=Lax`;
+        if (utmCampaign) {
+          document.cookie = `utm_campaign=${encodeURIComponent(utmCampaign)}; path=/; max-age=86400; SameSite=Lax`;
+        }
+      } catch {
+        // ignore cookie write errors
+      }
+    } else if (!utmSource && isEntry && typeof document !== "undefined") {
+      // Fallback: bila in-app browser me-redirect atau strip query tetapi cookie utm_source=telegram aktif
+      const cookieMatch = document.cookie.match(/(?:^|;\s*)utm_source=([^;]+)/);
+      if (cookieMatch && cookieMatch[1] === "telegram") {
+        utmSource = "telegram";
+        const medMatch = document.cookie.match(/(?:^|;\s*)utm_medium=([^;]+)/);
+        const campMatch = document.cookie.match(/(?:^|;\s*)utm_campaign=([^;]+)/);
+        utmMedium = medMatch ? decodeURIComponent(medMatch[1]) : "bot";
+        utmCampaign = campMatch ? decodeURIComponent(campMatch[1]) : undefined;
+      }
+    }
   }
 
   // ret-qw1 (retention-riset 2026-10-30): identitas perangkat anonim — key sama "eng_anon"

@@ -64,4 +64,12 @@ export const CRON_JOB_REGISTRY: CronJobDefinition[] = [
     method: "POST",
     route: "/api/cron/cleanup-snapshots",
   },
+  {
+    jobName: "telegram-digest",
+    displayName: "Telegram Daily Digest",
+    description: "Sends daily market breadth, top movers, and latest brief to Telegram subscribers (idempotent per WIB day)",
+    schedule: "Weekdays 07:15 WIB / auto-piggyback on sync-eod & generate-articles",
+    method: "POST",
+    route: "/api/cron/telegram-digest",
+  },
 ];

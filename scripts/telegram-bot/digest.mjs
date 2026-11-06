@@ -6,12 +6,12 @@
 //   - tiap ticker jadi tautan langsung ke halaman sahamnya (1 ketukan balik ke web)
 // Angka dari DB saja — bukan rekomendasi.
 import { createRequire } from 'node:module';
+import { tgWebUrl } from './utm.mjs';
 const require = createRequire('/Users/nicholasandriansurjadi/.hermes/opt/tgbot/');
 const pg = require('pg');
 const { Client } = pg;
 const TOK = process.env.TELEGRAM_BOT_TOKEN;
 const API = `https://api.telegram.org/bot${TOK}`;
-const SITE = 'https://teknikal.id';
 
 async function send(chatId, text) {
   const r = await fetch(`${API}/sendMessage`, { method:'POST', headers:{'Content-Type':'application/json'},
@@ -85,7 +85,7 @@ const fmtRpM = (v) => {
 function lineFor(ticker) {
   const d = data[ticker];
   const bare = ticker.replace('.JK','');
-  const link = `<a href="${SITE}/stocks/${ticker}?utm_source=tg_digest">${bare}</a>`;
+  const link = `<a href="${tgWebUrl(`/stocks/${ticker}`, 'daily_digest')}">${bare}</a>`;
   if (!d || !d.last) return `• ${bare} — data belum tersedia`;
   const arrow = d.chg === null ? '⚪' : d.chg >= 0 ? '🟢' : '🔴';
   let mid = `<b>${link}</b> ${d.last.toLocaleString('id-ID')}`;
@@ -111,8 +111,8 @@ for (const { chatId } of chats.rows) {
   const rows = await c.query('SELECT ticker FROM "TelegramWatch" WHERE "chatId"=$1 AND active=true ORDER BY "createdAt"', [chatId]);
   const sorted = rows.rows.map(r => r.ticker).sort((a, b) => (data[b]?.interesting ? 1 : 0) - (data[a]?.interesting ? 1 : 0));
   const lines = sorted.map(lineFor).join('\n');
-  const txt = `📈 <b>Pantauanmu hari ini</b>\n\n${lines}\n\n👉 Analis Sore hari ini: ${SITE}/berita?utm_source=tg_digest\n\n— teknikal.id · data harian, bukan rekomendasi jual-beli`;
-  (await send(chatId, txt)) ? ok++ : fail++;
+  const txt = `📈 <b>Pantauanmu hari ini</b>\n\n${lines}\n\n👉 Analis Sore hari ini: ${tgWebUrl('/berita', 'daily_digest')} · Radar Pasar: ${tgWebUrl('/pasar', 'daily_digest')}\n\n— teknikal.id · data harian, bukan rekomendasi jual-beli`;
+  if (await send(chatId, txt)) ok++; else fail++;
 }
 console.log(JSON.stringify({ ok, fail, tickers: Object.keys(data).length }));
 // tracking-audit G10: catat hasil digest ke CronLog — kegagalan bot tak lagi senyap

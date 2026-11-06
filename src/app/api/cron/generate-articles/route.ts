@@ -5,6 +5,7 @@ import { agentHubService } from "@/domains/agent-hub/agent-hub.service";
 import { agentHubRepository } from "@/domains/agent-hub/agent-hub.repository";
 import { withCronLogging } from "@/domains/cron-monitoring/with-cron-logging";
 import { withTimeout } from "@/domains/cron-monitoring/with-timeout";
+import { telegramDigestService } from "@/domains/telegram/telegram-digest.service";
 import type { AgentType } from "@/domains/agent-hub/agent-hub.types";
 
 /**
@@ -76,6 +77,12 @@ export async function POST(request: NextRequest) {
         });
         dispatched.push(`gen_daily_brief: ${briefJob.id}`);
       }
+
+      // 5. FASE T5: Kirim digest harian Telegram secara otomatis & idempoten (digest:YYYY-MM-DD).
+      //    Fire-soft via .catch() agar kegagalan Telegram tidak pernah menggagalkan cron utama.
+      await telegramDigestService
+        .runDailyDigest()
+        .catch((err) => console.error("[tg-digest]", err));
 
       return {
         status: 200,
