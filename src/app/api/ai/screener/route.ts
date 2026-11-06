@@ -1,4 +1,5 @@
 import { isPlausibleTicker, extractTickersRanked } from "@/lib/ai-ticker-guard";
+import { sanitizeAiText } from "@/lib/ai-sanitize";
 import { buildStockAiContext } from "../stock/context";
 import { aiRateCheck } from "@/lib/ai-rate-limit";
 import { auth } from "@/lib/auth";
@@ -120,6 +121,7 @@ const GLM_SYSTEM = [
   "GLOSARIUM SATUAN: asing = 'Rp X miliar' konsisten; volume = 'juta lembar'; desimal koma max 2 angka; harga titik ribuan. Semua ticker yang disebut WAJIB link [TICKER](/stocks/TICKER.JK) — jangan campur bold dan link.",
   "BAHASA AWAM (juri 3 Nov): istilah teknikal (RSI, MACD, SMA, golden cross) saat pertama muncul beri terjemahan mini dalam kurung — mis. 'RSI (indeks momentum 0-100)' — pembaca awam paham tanpa kamus.",
   "VARIASI PEMBUKA: jangan semua jawaban dimulai kondisi IHSG — variasikan sudut (sahamnya dulu, asingnya dulu, dsb.). Bahasa santai natural; larangan kata dipaksa gaul: 'tuang', 'kelola besar', 'kepenjeblokan'.",
+  "BAHASA MURNI INDONESIA (DILARANG KERAS): DILARANG menyisipkan HURUF/KARAKTER Cina/Jepang/Korea dalam jawaban — 100% huruf Latin + angka. Kasus nyata: 'lagi喜庆 banget' = cacat produk serius. Kalau ragu dengan ejaan kata, tulis ulang pakai huruf Latin baku.",
   "BARIS PALING AKHIR WAJIB: '[FOLLOWUPS] Pertanyaan 1? | Pertanyaan 2? | Pertanyaan 3?' — 3 ide pertanyaan lanjutan singkat (<40 karakter, relevan konteks pasar/ticker barusan).",
 ].join(" ");
 
@@ -168,8 +170,11 @@ async function glmScreenerChat(
       throw new Error(`GLM ${res.status}: ${errBody.slice(0, 200)}`);
     }
     const data = (await res.json()) as { content?: { type: string; text?: string }[] };
-    const text = (data.content ?? []).filter((b) => b.type === "text").map((b) => b.text ?? "").join("").trim();
-    if (!text) throw new Error("GLM empty");
+    const raw = (data.content ?? []).filter((b) => b.type === "text").map((b) => b.text ?? "").join("").trim();
+    if (!raw) throw new Error("GLM empty");
+    // Loop 6 Nov: jaring anti-CJK — GLM kadang hallucinate karakter Mandarin di
+    // teks Indonesia (kasus nyata 5 Nov "喜庆"); strip deterministik sebelum pakai.
+    const { text } = sanitizeAiText(raw);
     return text;
   } finally {
     clearTimeout(to);

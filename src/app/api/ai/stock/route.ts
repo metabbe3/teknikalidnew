@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { buildPasarContext } from "@/lib/ai-pasar-context";
 import { prisma } from "@/lib/prisma";
 import { isPlausibleTicker, extractTickersRanked, rescueTypoTicker } from "@/lib/ai-ticker-guard";
+import { sanitizeAiText } from "@/lib/ai-sanitize";
 import { NextRequest, NextResponse } from "next/server";
 import { buildStockAiContext } from "./context";
 import { stockRepository } from "@/domains/stock/stock.repository";
@@ -52,6 +53,7 @@ const GLM_SYSTEM = [
   "GLOSARIUM SATUAN (juri Claude): aliran asing = 'Rp X miliar' (bukan 'M'), volume = 'juta lembar', desimal pakai koma maksimal 2 angka (3,49 bukan 3,4912), harga pakai titik ribuan (Rp4.940). Konsisten satu format di seluruh jawaban.",
   "BAHASA AWAM (juri 3 Nov): istilah teknikal saat PERTAMA muncul wajib diterjemahkan mini dalam kurung — 'MACD (selisih momentum naik-turun harga)', 'OBV (aliran volume beli vs jual)', 'SMA20 (rata-rata harga 20 hari terakhir)', 'RSI (indeks momentum 0-100, >70 jenuh beli)'. Skor sinyal berskala -1 s/d +1: selalu sebut artinya ('-0,36 = condong melemah'). Pembaca awam harus paham jawaban tanpa buka kamus.",
   "BAHASA: santai tapi JANGAN paksa gaul — kalau ragu dengan sebuah kata gaul, pakai bahasa Indonesia baku sehari-hari (larangan: 'tuang', 'kelola besar', 'kepenjeblokan', 'serok'). Typos = bot murahan.",
+  "BAHASA MURNI INDONESIA (DILARANG KERAS): DILARANG menyisipkan HURUF/KARAKTER Cina/Jepang/Korea dalam jawaban — 100% huruf Latin + angka. Kasus nyata: 'lagi喜庆 banget' = cacat produk serius. Kalau ragu dengan ejaan kata, tulis ulang pakai huruf Latin baku.",
   "EMPATI NYANGKUT: bila ada posisiUser minus atau kata nyangkut/boncos, buka dengan 1 kalimat validasi emosi manusiawi sebelum angka; jangan menggurui.",
   "BARIS PALING AKHIR WAJIB: '[FOLLOWUPS] Pertanyaan 1? | Pertanyaan 2? | Pertanyaan 3?' — 3 ide lanjutan singkat (<40 karakter, relevan konteks barusan).",
 ].join(" ");
@@ -101,8 +103,11 @@ async function glmCall(
     });
     if (!res.ok) throw new Error(`GLM ${res.status}`);
     const data = (await res.json()) as { content?: { type: string; text?: string }[] };
-    const text = (data.content ?? []).filter((b) => b.type === "text").map((b) => b.text ?? "").join("").trim();
-    if (!text) throw new Error("GLM empty");
+    const raw = (data.content ?? []).filter((b) => b.type === "text").map((b) => b.text ?? "").join("").trim();
+    if (!raw) throw new Error("GLM empty");
+    // Loop 6 Nov: jaring anti-CJK — GLM kadang hallucinate karakter Mandarin di
+    // teks Indonesia (kasus nyata 5 Nov "喜庆"); strip deterministik sebelum pakai.
+    const { text } = sanitizeAiText(raw);
     return text;
   } finally {
     clearTimeout(to);
