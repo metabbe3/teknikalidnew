@@ -68,6 +68,8 @@ import { GuestOverlimitBanner } from "@/components/ui/guest-overlimit-banner";
 import { guestHasQuota } from "@/lib/guest-pass";
 import { auth } from "@/lib/auth";
 import { BouncerHook } from "@/components/stock/bouncer-hook";
+import { StrongerPeersStrip } from "@/components/stock/stronger-peers-strip";
+import { StockAiPromptChips } from "@/components/stock/stock-ai-prompt-chips";
 import { tgDeepLink } from "@/lib/tg-deeplink";
 import { AlertTriangle, Banknote, Newspaper, Star } from "lucide-react";
 
@@ -270,19 +272,31 @@ export default async function StockDetailPage({
     ? IDX_STOCKS.filter((s) => s.sector === stock.sector && s.ticker !== ticker).map((s) => s.ticker)
     : [];
 
-  // Owner 24 Okt: chips sektor "terlalu simple" → 6 peer pertama jadi mini-cards dgn harga+%
-  const peerBatch = sectorPeers.length
-    ? await stockMarketService.getStockBatchWithIndicators(sectorPeers.slice(0, 8)).catch(() => [])
-    : [];
-  const peerMap = new Map(peerBatch.map((b) => [b.ticker, b]));
-
   const cleanTicker = stripJk(ticker);
   const isBigCap = (BIG_CAP_TICKERS as readonly string[]).includes(cleanTicker);
   const bridgePeers = isBigCap
     ? BIG_CAP_TICKERS.filter((t) => t !== cleanTicker)
     : sectorPeers.slice(0, 6);
 
-  const [socialData, { structure: marketStructure }, fundamentalRow, idxCommissioners, idxDirectors, idxShareholders, idxSubsidiaries, idxDividends, relatedArticles, sectorArticles] = await Promise.all([
+  // Fase T2: SATU PINTU batch indicators peer se-sektor / big-cap anchors (maks 12 kode)
+  // di dalam Promise.all paralel agar TTFB tidak bertambah serial.
+  const peerCandidates = sectorPeers.length >= 3
+    ? sectorPeers.slice(0, 12)
+    : Array.from(new Set([...sectorPeers, ...BIG_CAP_TICKERS.map((t) => `${t}.JK`).filter((t) => t !== ticker)])).slice(0, 12);
+
+  const [
+    socialData,
+    { structure: marketStructure },
+    fundamentalRow,
+    idxCommissioners,
+    idxDirectors,
+    idxShareholders,
+    idxSubsidiaries,
+    idxDividends,
+    relatedArticles,
+    sectorArticles,
+    peerBatch,
+  ] = await Promise.all([
     prisma.post.aggregate({
       where: { tickerTag: ticker, createdAt: { gte: subDays(new Date(), 7) } },
       _count: true,
@@ -314,7 +328,12 @@ export default async function StockDetailPage({
           select: { id: true, slug: true, title: true, publishedAt: true, tickerTag: true },
         })
       : [],
+    peerCandidates.length > 0
+      ? stockMarketService.getStockBatchWithIndicators(peerCandidates).catch(() => [])
+      : Promise.resolve([]),
   ]);
+
+  const peerMap = new Map(peerBatch.map((b) => [b.ticker, b]));
 
   // Aliran dana asing 5 sesi terakhir (usp-2026-10-24-04) — graceful: kosong → section hidden.
   // Aliran dana asing: SATU batch harga utk semua tanggal (code-audit-tk-2,
@@ -799,6 +818,12 @@ export default async function StockDetailPage({
                       💬 Tanya AI soal {stripJk(ticker)} — gratis 3x
                     </a>
                   </div>
+                  {/* Fase T2: Chip prompt tanya AI 1-klik kontekstual */}
+                  <StockAiPromptChips
+                    ticker={ticker}
+                    rsi14={indicators?.rsi14 ?? null}
+                    signalScore={indicators?.signalScore ?? null}
+                  />
                   {/* ret-qw7: arah skor 5 sesi — reason-to-check-back-later */}
                   {(() => {
                     const series = (detail.scoreSeries ?? []).map((r) => r.score).filter((v): v is number => v !== null);
@@ -830,6 +855,14 @@ export default async function StockDetailPage({
                 </div>
               );
             })()}
+
+            {/* Fase T2: Saham sejenis bersinyal lebih kuat (<35% scroll) */}
+            <StrongerPeersStrip
+              currentTicker={ticker}
+              currentScore={indicators?.signalScore ?? null}
+              sectorLabel={sectorToBahasa(stock.sector)}
+              peers={peerBatch}
+            />
 
             {/* Rencana Trading — tepat di bawah Hero Skor Sinyal (sebelum blok indikator) */}
             {tradingPlan && (
