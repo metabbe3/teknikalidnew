@@ -303,6 +303,24 @@ export default async function StocksPage() {
                   <ArrowUpRight className="h-3 w-3 shrink-0 text-text-tertiary" aria-hidden />
                 </Link>
               ))}
+              <Link
+                href="/stocks?view=swing"
+                data-engagement="chip_stocksQuickSwing"
+                data-nav-label="nav_hubTabSwing_click"
+                className="inline-flex min-h-11 sm:min-h-0 items-center gap-1 rounded-full border border-accent/30 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent hover:bg-accent/20 transition-colors active:scale-[0.98]"
+              >
+                <span>🎯 Setup Swing (Entry &amp; TP)</span>
+                <ArrowUpRight className="h-3 w-3 shrink-0" aria-hidden />
+              </Link>
+              <Link
+                href="/stocks?view=pasar"
+                data-engagement="chip_stocksQuickPasar"
+                data-nav-label="nav_hubTabPasar_click"
+                className="inline-flex min-h-11 sm:min-h-0 items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-500/20 transition-colors active:scale-[0.98]"
+              >
+                <span>⚡ Radar Pasar Live</span>
+                <ArrowUpRight className="h-3 w-3 shrink-0" aria-hidden />
+              </Link>
             </div>
           </div>
 
