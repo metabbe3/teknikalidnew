@@ -67,6 +67,8 @@ import { GuestStockTracker } from "@/components/ui/guest-stock-tracker";
 import { GuestOverlimitBanner } from "@/components/ui/guest-overlimit-banner";
 import { guestHasQuota } from "@/lib/guest-pass";
 import { auth } from "@/lib/auth";
+import { BouncerHook } from "@/components/stock/bouncer-hook";
+import { tgDeepLink } from "@/lib/tg-deeplink";
 import { AlertTriangle, Banknote, Newspaper, Star } from "lucide-react";
 
 // ponytail: page is per-request SSR (auth-gated data varies by session — can't be SSG).
@@ -1004,6 +1006,16 @@ export default async function StockDetailPage({
         </div>
       </section>
 
+      {/* Hook konversi price-checker mobile untuk guest */}
+      {!isAuthed && (
+        <BouncerHook
+          ticker={ticker}
+          signalScore={indicators?.signalScore ?? null}
+          signalLabel={indicators?.signalLabel ?? null}
+          isAuthed={isAuthed}
+        />
+      )}
+
         {/* Sticky nav — nempel setelah price card terlewat */}
         <div className="sticky top-[57px] z-40 border-b border-border bg-bg-primary/95 backdrop-blur">
           <div className="max-w-7xl mx-auto px-4 py-1.5 flex gap-1 overflow-x-auto">
@@ -1176,6 +1188,21 @@ export default async function StockDetailPage({
             </p>
           </section>
         )}
+
+        {/* Tanya analisa via Agent (funnel agent-first) — guest-visible, no-login */}
+        <section className="bg-bg-card rounded-xl border border-border p-5 space-y-2" aria-label={`Tanya analisa apa pun soal ${stripJk(ticker)}`}>
+          <h2 className="font-serif text-base font-semibold text-text-primary">Tanya analisa apa pun soal {stripJk(ticker)}</h2>
+          <p className="text-sm text-text-secondary">Skor sinyal, level support/resistance, dan jawaban instan lainnya — 3x gratis.</p>
+          <a
+            href={tgDeepLink([ticker])}
+            data-engagement="tg_tanya_agent_card"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90"
+          >
+            💬 Tanya AI Gratis
+          </a>
+        </section>
 
         {/* Pantau via Telegram (retention-2026-10-28) — guest-visible, no-login, bahasa awam, tap target 44px */}
         <section className="bg-bg-card rounded-xl border border-border p-5 space-y-2" aria-label="Pantau via Telegram">
