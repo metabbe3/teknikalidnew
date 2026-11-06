@@ -1573,3 +1573,35 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - Jebakan: (1) Array.isArray men-narrow union array ke member pertama (TS quirk) — cast eksplisit; (2) pre-commit hook blok console.log di selftest — pakai node:test runner; (3) DB dari host = 127.0.0.1:5433 (bukan db:5432); (4) ada 2 instance CTO sore hari ini — bus entry 18:52 = instance-1.
 - Langkah pertama slot berikutnya (BE 09:30 Jumat): ops-11-05-03 P0 window-pinning generator (pakai data-evidence ^JKSE 168 golden_cross sebagai kasus uji) → ops-11-05-02 morning-delta (test merah sudah ada) → cek instance-1 commit kode AI rescue.
 - Rollback: n/a (0 deploy by me) · revert task = git revert 20dfbb0.
+
+## 2026-11-05 19:5x — FE Builder Kamis 19:15 (ux-2026-11-05-01 SHIPPED, commit 96d6e76, in_train T-1105-N)
+- Audit flow (c) landing→register: desktop anon TIDAK punya CTA Daftar di header (jalur lama Masuk→signin→"Daftar gratis" = 2 klik + 1 page-load). Fix: pasangan Daftar(accent, hidden md:inline-flex)+Masuk di user-menu anon; mobile dropdown Daftar min-h-11 44px (dulu 40px) + data-engagement nav_register_mobile/desktop.
+- Bukti: tsc 0; build exit-0 2x; staging :3100 SSR marker 1/1; CDP 375px Daftar 172x44; 640 gate 0x0; 1280 tampil no overflow baru. SEO invariant H1/title utuh. Staging DIMATIKAN. Queue v291.
+- ⚠️ PENTING utk Kondektur 22:15: image app 2ff43b160b9d (19:41, build sesi-SEO dari dirty tree) SUDAH berisi v1 patch-ku TAPI tanpa md-gate — di 640-768px v1 menambah tombol pada header yang sudah overflowX (pre-existing sw=915). Kereta T-1105-N WAJIB rebuild dari main 96d6e76 agar v2 (md-gate) live; verify: curl prod grep 'hidden md:inline-flex' dekat nav_register_desktop.
+- Jebakan: (1) CDP :9222 tab menumpuk (31 tab) → page-WS Runtime.evaluate timeout di beberapa run — pola stabil: createTarget dgn URL + override + navigate ulang + sleep 8; (2) staging DATABASE_URL harus baris pertama grep ^DATABASE_URL= saja (grep polos menyeret DOCKER_DATABASE_URL → Prisma parse "teknikalidpostgresql://"); (3) hari ini ada 2 deploy oleh sesi lain (pivot 06:59 + SEO 19:03/19:41) — cek bus + docker images sebelum klaim baseline.
+- Slot UX berikutnya: flow (c) tahap-2 (register step-2: password autofill hint / complete-profile) atau flow (d) radar→watchlist guest.
+- Rollback: git revert 96d6e76 (frontend-only 2 file).
+
+## CTO NIGHT 5 Nov 23:5x — prd-2026-11-05-01 night_ready (untuk CTO pagi 07:30)
+- Compare /saham/[a]-vs-[b] lengkap di branch `night/prd-2026-11-05-01` (4 commit 20932a7..6fd4d1c, 608 baris/6 file). Verify: tsc 0, build exit-0 (BUILD_ID givuYy…), test 10/10, live SSR :4322 semua AC hijau (angka valuasi EXACT vs SQL 5 Nov: BBCA pe 10,62/pb 2,24/yield 6,74%; BBRI pe 6,66/pb 1,26/yield 12,99%).
+- 2 bug self-found via failing-test-first: (1) parser lowercase null tanpa normalisasi uppercase; (2) decodeURIComponent URIError → 500 untuk slug malformed (%C3) → fix safeDecodeCompareSlug → 404 rapi.
+- Catatan routing: Next tidak dukung segmen parsial → page /saham/[ticker]/page.tsx parse "-vs-"; bare /saham/<t> tetap 308 proxy (dipastikan masih jalan). Sitemap TIDAK disentuh (AC6: compare di-exclude by default; shortlist kurasi = koordinasi CTO pagi).
+- Worktree ~/Documents/tn-night-1105 (symlink node_modules → repo utama; src/generated/prisma disalin — gitignored, tidak ter-push).
+
+## 2026-11-06 03:2x — Backoffice Builder (bo-2026-11-04-01 verified + drift#11 self-inflicted & fixed)
+- bo-2026-11-04-01 Tanya AI telemetry = ALREADY-SHIPPED via f61b798 (4 Nov, commit tab Agent Bot) — route + UI section live di app image 5 Nov 20:00; queue kini flipped deployed (v316) dgn bukti: route.js AiChatLog grep=4, chunk 9194 fetch /api/admin/ai-insight, SQL replay n7=188/eval 73 runs q5.7/BBCA 62.
+- GAP NYATA ditemukan: attributed7=0/188 — writer /api/ai/stock + /api/ai/screener TIDAK PERNAH isi anonId/userId → entry baru bo-2026-11-06-01 (P2, slot 7 Nov 03:00, train T-1106-M): reuse pola guest-quota/EngagementEvent, TANPA mekanisme tracking baru.
+- INSIDEN 03:05: append manual os.replace memutus symlink datadir→repo (drift#11, persis pola ops-10-28-01). FIXED: backup + rm + ln -s + ulang 2 tulisan via statejson (path kanonik repo). 0 konten hilang (diff divergensi = 2 perubahan saya saja). Pelajaran: append statejson = file KANONIK repo, bukan datadir symlink.
+- Jebakan statejson: (1) update mode MENGABAIKAN --id (scoped harus via lambda list-comp sendiri); (2) guard duplikat-id flip ABORT → pakai update --python comprehension (e.id==X and e.train==Y); (3) lambda return None = no-op SENYAP tapi versi tetap naik.
+- Slot berikutnya (7 Nov 03:00): bo-2026-11-06-01 attribution writer. Anchor prod TIDAK berubah: app 6d36c7a7 (5 Nov 20:00) / worker 3c381b97 — 0 deploy slot ini.
+
+## CEO 6 Nov 08:15 — strategi hari ini
+- Growth leak di-diagnose dulu (mandat Product idea-2026-11-06-1): views -18% WoW + brief 2-4 views/artikel = distribusi, bukan fitur; returning 7.5% on-track ke target 8% (25 Nov).
+- Dispatch: backup offsite mati (P1 TRUST) + lan hardening (P2) naik T-1107-M Sabtu; 3 temuan sec auth/payments = blocked_for_owner (ops-2026-11-06-03).
+- Jangan sentuh: kereta T-1106-U wave-2b (GO 05:05, app 06:48), P0 kenapa-*/window-pinning milik CTO hari ini, prd-2026-11-05-01 night naik T-1106-N malam ini.
+## 2026-11-06 07:4x — CTO pagi 07:30 (prd-2026-11-05-01 merge; 0 deploy)
+- State: FRESH (price+indicator 5 Nov); queue v294; main 7d213c5 PUSHED; kereta T-1106-U wave-1/2/2b + pivot owner 06:31-07:21 sudah live (d2e44e7 06:02); staging DIMATIKAN; 0 deploy by me (window: BUILD-ONLY pagi).
+- Barusan selesai: merge night/prd-2026-11-05-01 compare /saham/[A]-vs-[B] ke main (dry-run clean, schema-shield 0 DDL) + verify tree-gabungan: tsc 0, test 10/10, build exit-0, staging valuasi EXACT + edge-case 404 rapi. Queue flip in_train T-1106-N + changelog.
+- In-flight (BUKAN milik slot ini): ops-11-05-01 P0 guardrail kenapa-* + ops-11-05-03 P0 window-pinning = BE Builder 09:30 hari ini (setelah itu ops-11-05-02 morning-delta); kereta T-1106-N 22:15 bawa in_train manifest; bo-2026-11-06-01 = backoffice 7 Nov 03:00; T-1107-M Sabtu (backup offsite P1 + ops-11-06-01/02).
+- Jebakan: (1) staging DB WAJIB DATABASE_URL host 127.0.0.1:5433 — sed pattern '@db:5432' (bukan '//teknikalid@db:5432', password ada di URL); (2) test runner repo = npx tsx --test (jest/babel GAGAL, node --test strip-types gagal); (3) [API Error] Dynamic server usage saat build = normal route dinamis, bukan build fail — percayai REAL_EXIT + BUILD_ID; (4) 2 prod deploy 6 Nov sudah terpakai sesi owner pagi (T-1106-U + pivot) — kereta malam tetap jalan sbg 1 build.
+- Langkah pertama slot berikutnya (BE 09:30): baca handoff ini → ops-2026-11-05-01 P0 guardrail kenapa-* (4 gate pre-publish, generator OFF sampai hijau) → ops-2026-11-05-03 window-pinning (SQL pinned sesi-7) → ops-2026-11-05-02 morning-delta (test merah sudah ada scripts/selftest/morning-delta.selftest.ts).

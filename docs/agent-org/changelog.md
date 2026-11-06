@@ -1157,3 +1157,10 @@
 - BONUS dispatch-worthy: ^JKSE punya 168 baris golden_cross + 100 death_cross historis di StockIndicator — kandidat kontaminasi hitungan "N emiten golden cross" di pipeline konten (kelas pola qa-11-05-01); evaluai di entry ops-11-05-03/queue.
 - Pilar: TRUST. SEC GATE: N/A (post-filter read-path, tanpa input/auth/db/money baru).
 - Rollback: git revert 20dfbb0 (frontend+service murni, 3 file) · anchor prod: app eaf2e78634b3 / worker 3c381b97.
+
+## 2026-11-06 07:3x — CTO pagi 07:30 — prd-2026-11-05-01 merge night_ready (BUILD-ONLY)
+- task-id: prd-2026-11-05-01 · type: prd (feature) · PRD: im-2026-10-29-3 / idea-2026-10-29-1
+- deploy hash: BELUM deploy — merge commit main 7d213c5 (git push menyusul kereta T-1106-N 22:15); BUILD_ID AkB_JlQxu76f7yFXIAh0y
+- verify bukti: staging :3100 /saham/bbca-vs-bbri HTTP 200, valuasi EXACT (BBCA pe 10,62 / yield 6,74%; BBRI pe 6,66 / yield 12,98%), malformed slug 404 (dulu 500), 3-ticker 404, bare ticker 308 utuh, home/stocks 200; tsc 0 error; test compare 10/10 PASS (npx tsx --test); build REAL_EXIT=0
+- QA: pending — QA verdict oleh SENTINEL 22:00 / kereta T-1106-N pasca-deploy (H3: builder tidak self-verify)
+- impact_check_due: 2026-11-09 (GROWTH: pemakaian route compare di server log; AI-SEARCH: share pertanyaan vs-type di AiChatLog)
