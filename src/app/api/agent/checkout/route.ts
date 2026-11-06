@@ -31,21 +31,28 @@ export async function POST(request: NextRequest) {
         { status: 409 }
       );
     }
-    const chatId = rows[0].chat_id;
+    const chatIdNum = Number.parseInt(String(rows[0].chat_id), 10);
+    if (!Number.isSafeInteger(chatIdNum) || Number.isNaN(chatIdNum) || chatIdNum === 0) {
+      return NextResponse.json(
+        { error: "INVALID_CHAT_ID", message: "ID chat Telegram tidak valid. Silakan hubungkan ulang." },
+        { status: 400 }
+      );
+    }
 
     // Promo eligibility: 1x per chat (agent.agent_promo_redemption) — cek server-side.
     let usePromo = promo === true;
     if (usePromo) {
       const redeemed = await prisma.$queryRawUnsafe<Array<{ n: string }>>(
         `SELECT count(*)::text AS n FROM agent.agent_promo_redemption WHERE chat_id = $1`,
-        chatId
+        chatIdNum
       );
       if (Number(redeemed[0]?.n ?? "0") > 0) usePromo = false;
     }
 
     const price = usePromo ? (tier === "basic" ? 14900 : 29000) : tier === "basic" ? 29000 : 79000;
+    const tierLabel = tier === "pro" ? "Pro" : "Night Trader";
     const tierTag = usePromo ? `PROMO${tier.toUpperCase()}` : tier.toUpperCase();
-    const orderId = `TA-${chatId}-${tierTag}-${Date.now()}`;
+    const orderId = `TA-${chatIdNum}-${tierTag}-${Date.now()}`;
 
     const snap = getSnap();
     const parameter = {
@@ -56,8 +63,8 @@ export async function POST(request: NextRequest) {
           price,
           quantity: 1,
           name: usePromo
-            ? `TeknikalAgent ${tier === "basic" ? "Night Trader" : "Pro"} — bulan pertama ${price === 14900 ? "Rp14.900" : "Rp29.000"}`
-            : `TeknikalAgent ${tier === "basic" ? "Night Trader" : "Pro"}`,
+            ? `TeknikalAgent ${tierLabel} — bulan pertama ${tier === "pro" ? "Rp29.000" : "Rp14.900"}`
+            : `TeknikalAgent ${tierLabel}`,
           category: "Subscription",
         },
       ],
@@ -72,6 +79,8 @@ export async function POST(request: NextRequest) {
       token: tx.token,
       redirect_url: tx.redirect_url,
       order_id: orderId,
+      tier,
+      tier_label: tierLabel,
       price,
       promo: usePromo,
     });

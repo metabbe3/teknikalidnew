@@ -13,8 +13,11 @@ export async function GET() {
       `SELECT chat_id::text FROM agent.agent_web_binding WHERE email = $1 LIMIT 1`,
       session.email
     );
-    const chatBound = bindRows.length > 0;
-    const chatId = chatBound ? bindRows[0].chat_id : null;
+    const rawChatId = bindRows.length > 0 ? bindRows[0].chat_id : null;
+    const chatIdNum = rawChatId !== null ? Number.parseInt(String(rawChatId), 10) : Number.NaN;
+    const chatBound =
+      Number.isSafeInteger(chatIdNum) && !Number.isNaN(chatIdNum) && chatIdNum !== 0;
+    const chatId = chatBound ? String(chatIdNum) : null;
 
     let tier = "free";
     let status: string | null = null;
@@ -23,12 +26,12 @@ export async function GET() {
     let maxTurns = 90;
     let promoUsed = false;
 
-    if (chatId) {
+    if (chatBound) {
       const subRows = await prisma.$queryRawUnsafe<
         Array<{ tier: string; status: string; period_end: Date | null }>
       >(
         `SELECT tier, status, period_end FROM agent.agent_subscription WHERE chat_id = $1 LIMIT 1`,
-        chatId
+        chatIdNum
       );
       if (subRows.length) {
         tier = subRows[0].tier;
@@ -39,17 +42,17 @@ export async function GET() {
       const usageRows = await prisma.$queryRawUnsafe<Array<{ turns: string }>>(
         `SELECT coalesce(sum(turns_used),0)::text AS turns FROM agent.agent_usage_ledger
          WHERE chat_id = $1 AND month = to_char(now() AT TIME ZONE 'Asia/Jakarta', 'YYYY-MM')`,
-        chatId
+        chatIdNum
       );
       turnsUsed = Number(usageRows[0]?.turns ?? "0");
 
       const promoRows = await prisma.$queryRawUnsafe<Array<{ n: string }>>(
         `SELECT count(*)::text AS n FROM agent.agent_promo_redemption WHERE chat_id = $1`,
-        chatId
+        chatIdNum
       );
       promoUsed = Number(promoRows[0]?.n ?? "0") > 0;
 
-      maxTurns = tier === "basic" ? 150 : tier === "pro" ? 600 : tier === "premium" ? 1500 : 90;
+      maxTurns = tier === "basic" ? 150 : tier === "pro" ? 400 : tier === "premium" ? 1000 : 90;
     }
 
     return NextResponse.json({
