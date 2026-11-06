@@ -10,6 +10,11 @@ export async function GET(request: NextRequest) {
     const [data, error] = parseQuery(request.nextUrl.searchParams, schemas.stockList);
     if (error) return error;
 
+    if (data.mode === "universe") {
+      const result = await stockMarketService.getStockUniverse(data.sector);
+      return NextResponse.json(result);
+    }
+
     const result = await stockMarketService.getStockList(data.sector);
     return NextResponse.json(result);
   } catch (error) {
