@@ -199,6 +199,7 @@ export const schemas = {
   // stocks - GET query
   stockList: z.object({
     sector: z.string().optional(),
+    mode: z.enum(["universe", "full"]).optional(),
   }),
 
   // screener - GET query
