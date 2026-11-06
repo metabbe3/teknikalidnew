@@ -67,7 +67,7 @@ import { GuestStockTracker } from "@/components/ui/guest-stock-tracker";
 import { GuestOverlimitBanner } from "@/components/ui/guest-overlimit-banner";
 import { guestHasQuota } from "@/lib/guest-pass";
 import { auth } from "@/lib/auth";
-import { AlertTriangle, Banknote, Bell, Newspaper, Star } from "lucide-react";
+import { AlertTriangle, Banknote, Newspaper, Star } from "lucide-react";
 
 // ponytail: page is per-request SSR (auth-gated data varies by session — can't be SSG).
 export const dynamic = "force-dynamic";
@@ -806,15 +806,6 @@ export default async function StockDetailPage({
                             className="flex items-center justify-center gap-1.5 min-h-11 rounded-lg border border-border bg-bg hover:bg-bg-hover text-xs font-medium text-text-secondary transition-colors"
                           >
                             <Star className="h-3.5 w-3.5" aria-hidden="true" /> Simpan ke pantauan
-                          </a>
-                          <a
-                            href={`https://t.me/TeknikalidAgentBot?start=${ticker.replace(/\.JK$/, "")}_JK`}
-                            data-engagement="tg_pantau_skor"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-1.5 min-h-11 rounded-lg border border-border bg-bg hover:bg-bg-hover text-xs font-medium text-text-secondary transition-colors"
-                          >
-                            <Bell className="h-3.5 w-3.5" aria-hidden="true" /> Kabari di Telegram
                           </a>
                         </div>
                       </>
