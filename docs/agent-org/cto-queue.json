@@ -4831,33 +4831,36 @@
       "date": "2026-11-06",
       "type": "qa",
       "priority": "P1",
-      "status": "pending",
+      "status": "deployed",
       "source": "content-reviewer-0700",
       "north_star": "TRUST",
       "title": "FATAL brief-pasar-idx-2026-11-06: golden cross \"23 dalam 7 sesi terakhir\" — window salah (ke-4 beruntun)",
-      "spec": "INTENT: pola window-melayang ke-4 (qa-04-03, qa-04-04, qa-05-01, kini lagi) meski root-fix ops-2026-11-05-03 P0 masih pending. Replay kanonik as-of 5 Nov, non-gorengan, emaCrossSignal=bullish, emaCrossDate window: 7 sesi 27 Okt-5 Nov = 18; angka 23 hanya cocok window 8 sesi 26 Okt-5 Nov. ACCEPTANCE: (1) UPDATE kalimat jadi \"18 golden cross pada 7 sesi 27 Oktober-5 November (equity aktif non-gorengan)\"; (2) grep position(\"23 golden cross\")=0 dan frasa baru=1; (3) replay_sql_gate slug --as-of 2026-11-05 exit 0; (4) curl live 2x frasa baru. BUKTI H1: position lama=0 DB+live."
+      "spec": "INTENT: pola window-melayang ke-4 (qa-04-03, qa-04-04, qa-05-01, kini lagi) meski root-fix ops-2026-11-05-03 P0 masih pending. Replay kanonik as-of 5 Nov, non-gorengan, emaCrossSignal=bullish, emaCrossDate window: 7 sesi 27 Okt-5 Nov = 18; angka 23 hanya cocok window 8 sesi 26 Okt-5 Nov. ACCEPTANCE: (1) UPDATE kalimat jadi \"18 golden cross pada 7 sesi 27 Oktober-5 November (equity aktif non-gorengan)\"; (2) grep position(\"23 golden cross\")=0 dan frasa baru=1; (3) replay_sql_gate slug --as-of 2026-11-05 exit 0; (4) curl live 2x frasa baru. BUKTI H1: position lama=0 DB+live.",
+      "result": "CTO sore 18:30: body+heading GC 23->18 (7 sesi 27Okt-5Nov, replay=18 vs window-8=23); excerpt 23->18 'segar' (bonus finding: excerpt varchar field juga bawa angka); bukti: grep DB old=0/new>0, curl live brief 4 marker baru, old=0. Terhubung ops-2026-11-05-03 (root-fix generator)."
     },
     {
       "id": "qa-2026-11-06-02",
       "date": "2026-11-06",
       "type": "qa",
       "priority": "P1",
-      "status": "pending",
+      "status": "deployed",
       "source": "content-reviewer-0700",
       "north_star": "TRUST",
       "title": "FATAL brief-pasar-idx-2026-11-06: cross-day oversold Rabu — \"241\" adalah angka Selasa 3 Nov, Rabu 4 Nov = 264",
-      "spec": "INTENT: kalimat \"kebalikan dari sesi Rabu yang sempat mencatat 241 saham oversold\" salah hari: DB all-basis interval 1d RSI<30 = Selasa 3 Nov 242, Rabu 4 Nov 264 (angka 241 tak persis cocok window mana pun; 242/264 pasangan yang benar). Sesi artikel = Kamis 5 Nov, basis artikel all (177 oversold 5 Nov = API exact). ACCEPTANCE: (1) ganti \"sesi Rabu yang sempat mencatat 241 saham oversold\" -> \"sesi Rabu yang sempat mencatat 264 saham oversold\"; (2) grep position(\"241\")=0 di slug ini; (3) curl live frasa baru; (4) catat ke ops-2026-11-05-03: generator brief perlu guard cross-day per-dataset (pola qa-27-01 berulang ke-N)."
+      "spec": "INTENT: kalimat \"kebalikan dari sesi Rabu yang sempat mencatat 241 saham oversold\" salah hari: DB all-basis interval 1d RSI<30 = Selasa 3 Nov 242, Rabu 4 Nov 264 (angka 241 tak persis cocok window mana pun; 242/264 pasangan yang benar). Sesi artikel = Kamis 5 Nov, basis artikel all (177 oversold 5 Nov = API exact). ACCEPTANCE: (1) ganti \"sesi Rabu yang sempat mencatat 241 saham oversold\" -> \"sesi Rabu yang sempat mencatat 264 saham oversold\"; (2) grep position(\"241\")=0 di slug ini; (3) curl live frasa baru; (4) catat ke ops-2026-11-05-03: generator brief perlu guard cross-day per-dataset (pola qa-27-01 berulang ke-N).",
+      "result": "CTO sore 18:30: 241->264 (replay RSI<30 1d: Selasa3Nov=242, Rabu4Nov=264, Kamis5Nov=177 — persis QA spec). grep DB old=0; curl live 264 tampil. Catat guard cross-day ke ops-2026-11-05-03."
     },
     {
       "id": "qa-2026-11-06-03",
       "date": "2026-11-06",
       "type": "qa",
       "priority": "P1",
-      "status": "pending",
+      "status": "deployed",
       "source": "content-reviewer-0700",
       "north_star": "TRUST",
       "title": "FATAL 2 artikel (analis-sore-5Nov + analis-pagi-6Nov): net buy asing GOTO \"1,71 miliar lembar dalam 7 hari sesi\" tak ter-replikasi DB (riil 7 sesi 28 Okt-5 Nov = +2,63 miliar)",
-      "spec": "INTENT: DB ForeignFlow unit = lembar (worker pasar-live.service.ts: netValue=(buy-sell)*close — klaim Rp41 jt dgn close 24 konsisten dgn unit lembar, jadi hanya JUMLAH yang salah). Replay GOTO net 7 sesi kalender 28 Okt-5 Nov = +2,63 miliar lembar; tidak ada window (5/6/7 sesi) yang menghasilkan 1,71. Angka 1,71 muncul 2x di 2 artikel berbeda = copy saling menular. ACCEPTANCE: (1) UPDATE kedua slug: \"1,71 miliar lembar\" -> \"2,63 miliar lembar\" + \"sekitar Rp41 miliar\" -> \"sekitar Rp63 miliar\" (2,63 M x Rp24), ATAU ganti klaim ke nilai Rp dari halaman /aliran-dana-asing; (2) grep kedua slug position(\"1,71 miliar lembar\")=0; (3) replay gate exit 0; (4) curl live 2x per slug."
+      "spec": "INTENT: DB ForeignFlow unit = lembar (worker pasar-live.service.ts: netValue=(buy-sell)*close — klaim Rp41 jt dgn close 24 konsisten dgn unit lembar, jadi hanya JUMLAH yang salah). Replay GOTO net 7 sesi kalender 28 Okt-5 Nov = +2,63 miliar lembar; tidak ada window (5/6/7 sesi) yang menghasilkan 1,71. Angka 1,71 muncul 2x di 2 artikel berbeda = copy saling menular. ACCEPTANCE: (1) UPDATE kedua slug: \"1,71 miliar lembar\" -> \"2,63 miliar lembar\" + \"sekitar Rp41 miliar\" -> \"sekitar Rp63 miliar\" (2,63 M x Rp24), ATAU ganti klaim ke nilai Rp dari halaman /aliran-dana-asing; (2) grep kedua slug position(\"1,71 miliar lembar\")=0; (3) replay gate exit 0; (4) curl live 2x per slug.",
+      "result": "CTO sore 18:30: 2 artikel (sore-5Nov+pagi-6Nov): 1,71M->2,63M lembar (replay GOTO.JK ForeignFlow 28Okt-5Nov net=+2,63 miliar) + Rp41M->Rp63M (2,63M x Rp24); excerpt pagi juga. Live: pagi 13x 2,63 + 2x Rp63; sore 4x 2,63 + 2x Rp63; old=0 semua."
     },
     {
       "id": "ops-2026-11-06-04",
