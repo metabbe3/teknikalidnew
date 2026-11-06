@@ -46,6 +46,21 @@ const STRATEGY_PAGES = [
     desc: "SMA50 menembus SMA200 — sinyal bullish.",
   },
   {
+    href: "/saham-akumulasi",
+    title: "Saham Akumulasi Hari Ini",
+    desc: "Volume beli dominan (OBV meningkat).",
+  },
+  {
+    href: "/saham-uptrend",
+    title: "Saham Uptrend Hari Ini",
+    desc: "Supertrend bullish — tren naik terkonfirmasi.",
+  },
+  {
+    href: "/saham-di-atas-ma200",
+    title: "Saham di Atas MA200 Hari Ini",
+    desc: "Harga di atas SMA 200 hari — tren jangka panjang.",
+  },
+  {
     href: "/saham-volume-spike",
     title: "Saham Volume Spike Hari Ini",
     desc: "Volume melonjak — uang besar masuk.",
@@ -101,6 +116,7 @@ export function SahamStrategyLinks({ compact = false }: { compact?: boolean }) {
           <Link
             key={p.href}
             href={p.href}
+            data-engagement="nav_strategyCrossLink"
             className="group block rounded-xl border border-border bg-bg-card p-3 hover:depth-shadow-hover transition-all"
           >
             <p className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors leading-snug">
@@ -114,7 +130,7 @@ export function SahamStrategyLinks({ compact = false }: { compact?: boolean }) {
         <div className="flex flex-wrap gap-x-3 gap-y-1.5 text-[11px] text-text-tertiary">
           <span className="uppercase tracking-[0.1em] font-semibold">Lainnya</span>
           {rest.map((p) => (
-            <Link key={p.href} href={p.href} className="hover:text-accent transition-colors">
+            <Link key={p.href} href={p.href} data-engagement="nav_strategyCrossLink" className="hover:text-accent transition-colors">
               {p.title}
             </Link>
           ))}

@@ -155,4 +155,71 @@ export const IDX_INDICES: IDXIndex[] = [
       "AMRT.JK",
     ],
   },
+  {
+    slug: "idxbumn20",
+    name: "IDX BUMN20",
+    fullName: "Indeks IDX BUMN20 BEI",
+    description:
+      "Indeks IDX BUMN20 berisi saham-saham Badan Usaha Milik Negara (BUMN), BUMD, dan afiliasinya yang paling likuid di Bursa Efek Indonesia — mulai dari perbankan Himbara, telekomunikasi, energi, hingga tambang dan konstruksi. Pantau daftar saham BUMN BEI hari ini beserta harga terbaru dan skor sinyal teknikal.",
+    stocks: [
+      "BMRI.JK",
+      "BBRI.JK",
+      "BBNI.JK",
+      "BBTN.JK",
+      "BRIS.JK",
+      "TLKM.JK",
+      "MTEL.JK",
+      "PGAS.JK",
+      "PTBA.JK",
+      "ANTM.JK",
+      "TINS.JK",
+      "SMGR.JK",
+      "JSMR.JK",
+      "ELSA.JK",
+      "PGEO.JK",
+      "ADHI.JK",
+      "PTPP.JK",
+      "WIKA.JK",
+    ],
+  },
+  {
+    slug: "idx80",
+    name: "IDX80",
+    fullName: "Indeks IDX80 BEI",
+    description:
+      "Indeks IDX80 mengukur kinerja harga 80 saham dengan likuiditas tinggi dan kapitalisasi pasar besar-menengah di Bursa Efek Indonesia. IDX80 mencakup seluruh saham LQ45 ditambah saham lapis kedua paling aktif diperdagangkan, menjadikannya acuan utama untuk screening swing trading dan investasi saham likuid BEI.",
+    stocks: [
+      "AADI.JK","ACES.JK","ADMR.JK","ADRO.JK","AKRA.JK","AMMN.JK","AMRT.JK","ANTM.JK","ARTO.JK","ASII.JK",
+      "AUTO.JK","AVIA.JK","BBCA.JK","BBNI.JK","BBRI.JK","BBTN.JK","BFIN.JK","BMRI.JK","BMTR.JK","BREN.JK",
+      "BRIS.JK","BRMS.JK","BRPT.JK","BSDE.JK","BTPS.JK","BUKA.JK","CMRY.JK","CPIN.JK","CTRA.JK","CUAN.JK",
+      "DSNG.JK","DSSA.JK","ELSA.JK","EMTK.JK","ENRG.JK","ERAA.JK","ESSA.JK","EXCL.JK","GGRM.JK","GOTO.JK",
+      "HEAL.JK","HRUM.JK","ICBP.JK","INCO.JK","INDF.JK","INDY.JK","INKP.JK","INTP.JK","ISAT.JK","ITMG.JK",
+      "JPFA.JK","JSMR.JK","KLBF.JK","LSIP.JK","MAPA.JK","MAPI.JK","MBMA.JK","MDKA.JK","MEDC.JK","MIKA.JK",
+      "MNCN.JK","MTEL.JK","MYOR.JK","NCKL.JK","PANI.JK","PGAS.JK","PGEO.JK","PNBN.JK","PTBA.JK","PTRO.JK",
+      "PWON.JK","SCMA.JK","SIDO.JK","SILO.JK","SMGR.JK","TINS.JK","TKIM.JK","TLKM.JK","TOWR.JK","UNTR.JK",
+    ],
+  },
+  {
+    slug: "jii70",
+    name: "JII70",
+    fullName: "Jakarta Islamic Index 70 (JII70)",
+    description:
+      "Jakarta Islamic Index 70 (JII70) berisi 70 saham syariah paling likuid di Bursa Efek Indonesia yang masuk dalam Daftar Efek Syariah (DES) OJK dan memenuhi kriteria DSN-MUI. JII70 memberikan pilihan saham halal yang lebih luas dibanding JII (30 saham) untuk investor syariah dan swing trader.",
+    stocks: [
+      "AADI.JK","ACES.JK","ADHI.JK","ADMR.JK","ADRO.JK","AKRA.JK","AMMN.JK","AMRT.JK","ANTM.JK","ARNA.JK",
+      "ASRI.JK","AUTO.JK","AVIA.JK","BMTR.JK","BRIS.JK","BRMS.JK","BRPT.JK","BSDE.JK","BTPS.JK","CDIA.JK",
+      "CMRY.JK","CPIN.JK","CTRA.JK","DEWA.JK","DMAS.JK","DSNG.JK","DSSA.JK","ELSA.JK","EMTK.JK","ENRG.JK",
+      "ERAA.JK","ESSA.JK","EXCL.JK","GGRM.JK","HEAL.JK","HRUM.JK","ICBP.JK","INCO.JK","INDF.JK","INDY.JK",
+      "INKP.JK","INTP.JK","ISAT.JK","ITMG.JK","JPFA.JK","JSMR.JK","KLBF.JK","LSIP.JK","MAPA.JK","MAPI.JK",
+      "MBMA.JK","MDKA.JK","MEDC.JK","MIKA.JK","MNCN.JK","MPMX.JK","MTEL.JK","MYOR.JK","NCKL.JK","PANI.JK",
+      "PGAS.JK","PGEO.JK","PTBA.JK","PTPP.JK","PTRO.JK","PWON.JK","SCMA.JK","SIDO.JK","TLKM.JK","UNTR.JK",
+    ],
+  },
 ];
+
+export function getIndicesForTicker(ticker: string): IDXIndex[] {
+  const normalized = ticker.toUpperCase().endsWith(".JK")
+    ? ticker.toUpperCase()
+    : `${ticker.toUpperCase()}.JK`;
+  return IDX_INDICES.filter((idx) => idx.stocks.includes(normalized));
+}

@@ -18,9 +18,18 @@ export function AskAiCta({ question }: { question: string }) {
             dari data pasar terbaru, bukan karangan.
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
+            <a
+              href="https://t.me/TeknikalidAgentBot?start=web_seo_tanya"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-engagement="funnel_askAiCtaBot"
+              className="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent/90"
+            >
+              💬 Tanya langsung di Telegram AI — gratis 3x
+            </a>
             <Link
               href={href}
-              className="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent/90"
+              className="rounded-lg border border-accent/40 bg-accent/10 px-4 py-2 text-sm font-semibold text-accent hover:bg-accent/20"
             >
               {question}
             </Link>
