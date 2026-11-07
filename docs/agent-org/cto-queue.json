@@ -4762,7 +4762,7 @@
       "id": "ops-2026-11-05-03",
       "title": "P0 TRUST ROOT-FIX: pin window SQL generator brief-pasar/analis-sore — angka sinyal WAJIB dari window yang dinyatakan di kalimat (pola GC window-melayang ke-3: qa-04-03, qa-04-04, qa-11-05-01)",
       "priority": "P0",
-      "status": "pending",
+      "status": "in_train",
       "labels": [
         "qa-escalation",
         "trust",
@@ -4776,7 +4776,8 @@
       "train": "T-1107-M",
       "spec": "INTENT: generator brief-pasar-idx & analis-sore menghitung golden-cross/bullish-cross dengan window SESI MELAYANG tanpa menyebutkannya di kalimat — 3x FATAL berulang (qa-2026-11-04-03 19->window-11-sesi, qa-2026-11-04-04 22->window-11-sesi, qa-2026-11-05-01 21->window-3-sesi-lebih-panjang). Patch artikel hanya obat simptomatik; akar = SQL basis generator tidak dipatok ke window sesi-7 kalender-trading yang ditulis artikel. ACCEPTANCE (DONE WHEN): (1) lokasi generator (jalur night-prep/brief generator di teknikalidnew, kandidat: scripts/tknkl_article_sweep.py + pipeline brief-pasar) dan query GC/EMA-cross yang dipakai; (2) window dipatok ke jumlah sesi kalender-trading yang dinyatakan (7 sesi = 7 hari bursa terakhir dari asof, BUKAN hari kalender melayang) dan angka di kalimat = output query itu; (3) failing-test-first: test yang menyatakan window N sesi lalu membandingkan angka artikel vs query pinned — merah sebelum fix, hijau sesudah; (3) dry-run generator 1 artikel brief-pasar dgn window pinned + replay_sql_gate exit 0; (4) PR merge / commit dgn bukti fisik file:line. Catatan: terkait ops-2026-11-05-01 (guardrail kenapa-*) — beda mesin (guardrail = pre-publish gate; ini = SQL window pinning) tapi satu keluarga akar: angka konten dari SATU basis kanonik yang dinyatakan.",
       "created_at": "2026-11-05T08:0x+07:00 (CTO pagi, eskalasi qa-2026-11-05-01)",
-      "reslot_note": "auto-reslot 2026-11-07: kereta T-1106-M kedaluwarsa -> kereta T-1107-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-07: kereta T-1106-M kedaluwarsa -> kereta T-1107-M (reslot_guard.py v3)",
+      "result": "BUILD-ONLY done 08:35: repo fix 188ad2e (getSignalCounts 7-SESI SATU PINTU + blok KANONIK prompt + fail-open null) + test merah cc190f0→hijau 3/3; parity 3 jalur EXACT GC14/DC20/EMA18/54 window 2026-10-29..11-06 (repo service · mandor_brief.py · teknikalid_growth.py); dry-run prompt blok kanonik masuk (DRYRUN OK); tsc 0; build 0 BUILD_ID 08:31; push origin/main dbda3fe..188ad2e rev-list=0. Host scripts patched: mandor_brief kalender-6d→sesi-pinned (AST OK, run parity 14/18/54+window_sesi), growth market-brief-data +signal_counts_kanonik. Naik kereta T-1107-M; verify pasca-deploy: selftest 3/3 di staging/live konteks, brief Senin 10:00 pakai angka kanonik."
     },
     {
       "id": "ux-2026-11-05-01",
@@ -4819,9 +4820,10 @@
       "source": "sec-2026-11-05-04 (SRE audit 5 Nov)",
       "spec": "INTENT: Offsite backup MATI sejak 3 Nov (rclone gdrive token expired — audit sec-2026-11-05-04). Data teknikal.id hanya on-host = risiko total-loss. FIX: refresh rclone token, verifikasi transfer baru, jadwalkan ulang cron backup + alert bila backup >24h gagal (hook sre_brief). 0 deploy web. DONE WHEN: listing file backup offsite <24h terverifikasi + alert backup-fail teruji (fail-open DILARANG).",
       "done_when": "listing backup offsite <24h + alert backup-fail teruji",
-      "status": "pending",
+      "status": "blocked_external",
       "scheduled_slot": "2026-11-07 BE weekend pagi 08:00 setelah ops-11-05-03 (reslot CTO 7 Nov dari slot hantu 09:30; overflow ke siang 13:30)",
-      "train": "T-1107-M"
+      "train": "T-1107-M",
+      "result": "PARTIAL 08:45: bagian alert SELESAI (sre_brief.py +blok offsite marker mtime>24h / marker-hilang=ALERT; AST OK + run live: \"offsite gdrive: marker TIDAK ADA — MATI <<< ALERT\" — fail-open tertutup). Bagian refresh rclone BLOCKED_EXTERNAL (kredensial owner): temuan read-only = rclone gdrive \"empty token found - please run rclone config reconnect gdrive:\" (audit sec-11-05-04 benar, mati sejak 3 Nov); cron offsite 43c3452b406d disabled + NOTICE client_id shared Google Drive dipensiunkan 2026. Backup LOKAL sehat (db-20261107.sql.gz 57.5MB 01:15, last-success 2026-11-07T01:15, sre_brief OK 7.3h). NEEDS owner: (1) rclone config reconnect gdrive: (OAuth browser, ~2 mnt) ATAU buat own client_id Google (shared client_id rclone dipensiunkan 2026 — REKOMENDASI: own client_id sekalian); (2) re-enable cron offsite_backup_sync 43c3452b406d (01:45); (3) verify: rclone lsl gdrive:backups-macmini/teknikalid-db | tail -1 umur <24h + marker ~/backups/offsite-last-success muncul. Risiko: data hanya on-host sampah disk = total-loss; RPO offsite 4 hari dan bertambah. Rollback: n/a (host script read-only alert)."
     },
     {
       "id": "ops-2026-11-06-02",
