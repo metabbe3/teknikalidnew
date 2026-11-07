@@ -1220,3 +1220,20 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - status: blocked_external — refresh OAuth Google = kredensial owner; owner package di field result (3 langkah + verify + risiko RPO 4 hari+)
 - QA: verdict SENTINEL 22:00 (H3). Pilar: TRUST (data reliable: disaster recovery).
 - catatan: hivePOS backups stale 151h/147h ikut ter-alert (hivePOS decommissioned 1 Nov — expected, bukan insiden baru)
+
+## 2026-11-07 13:30 — CTO weekend siang (ops-11-06-04 + ops-11-06-05 + ops-11-06-02)
+- task-id: ops-2026-11-06-04, ops-2026-11-06-05, ops-2026-11-06-02 | type: ops (freeze-compliant: TRUST/hardening) | PRD: n/a (ops)
+- deploy hash: none (0 deploy; host-side + script patch, commit a49255f scripts/deploy.sh)
+- verify bukti: (04) gate merah pada drift live 110428s + syntax OK + green-path 34s; (05) launchctl running PID 19635 + smoke 401 webhook; (02) lsof 127.0.0.1:9101/:8766 + LAN refused 000 + loopback 401 + probe container→host.docker.internal 200
+- QA: Sentinel 22:00 (H3 — bukti fisik dicatat, verdict oleh Sentinel)
+- impact_check_due: 2026-11-10
+- INSIDEN minor: agentd downtime 13:36:50-13:39:51 (3 menit, race reload launchd) — pulih sendiri; owner chat aktif lagi 13:40:32
+
+## 2026-11-07 17:2x — CTO weekend sore (qa-11-07-02 + qa-11-07-03 content-patch; 0 deploy)
+- task-id: qa-2026-11-07-02, qa-2026-11-07-03 | type: ops (bugfix konten TRUST) | PRD: n/a (ops)
+- deploy hash: n/a (DB content-patch; 0 deploy — prod image UTUH)
+- patch: rekap-pasar-mingguan-2026-11-07 → 241→242 saham oversold (Selasa 3 Nov, all-basis replay 242) · 'PGAS melesat 8,6%'→'melonjak 3,8%' (close-to-close 1320→1370 = +3,79%) · GC '21'→'14' + window eksplisit '7 sesi (29 Okt–6 Nov)' (heading+body+excerpt). brief-pasar-idx-2026-11-06-rebound-logam-dan-bank → GC '18'→'13' + window '27'→'28 Oktober-5 November' (content+excerpt). 8 UPDATE content + 1 excerpt, rowcount 1/1/1/1/1/1/1/1/1. Backup valid 2026-11-07T01:15 (<24h); WHERE sempit slug eksak.
+- replay pra-patch (basis kanonik getSignalCounts 188ad2e): rekap basis Jumat 6 Nov window 29 Okt–6 Nov = GC 14 (repo-exact, parity BE pagi 14/20); brief basis Kamis 5 Nov window 28 Okt–5 Nov = GC 13 (snapshot rows basis 5 Nov); PGAS weekly 30 Okt→6 Nov 1320→1430 = +8,33% (klaim +8,3% baris UNVR/PGAS weekly TIDAK disentuh — valid); UNVR +8,99% ≈ 9,0% valid; oversold per-sesi 242/264/177 replay cocok.
+- verify H2: position(old, content+excerpt) = 0 SEMUA (241 saham/melesat 8,6/21 golden/21 emiten/18 golden/27 Oktober); LIVE before→after: rekap old 2/2/3 → 0/0/0, new 242×2+3,8×2+GC14×3; brief old 18GC×4 → 0, new GC13×4; kedua URL 200. ISR regen ≤45 dtk (updatedAt=now()).
+- QA: verdict SENTINEL 22:00 (H3). Pilar: TRUST (angka ter-replikasi).
+- impact_check_due: 2026-11-10 (brief Senin 9 Nov pakai kanonik GC — jalur karang-angka ditutup ops-11-05-03)
