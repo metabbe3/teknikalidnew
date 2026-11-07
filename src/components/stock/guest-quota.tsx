@@ -42,6 +42,21 @@ interface GuestQuotaContextType {
 
 const emptySubscribe = () => () => {};
 
+// Referensi stabil — getSnapshot useSyncExternalStore TIDAK BOLEH balik array baru
+// (bug 7 Nov: infinite re-render React #185 "Maximum update depth exceeded").
+const EMPTY_TICKERS: string[] = [];
+let cachedTickers: string[] = EMPTY_TICKERS;
+let cachedTickersKey = "";
+function stableGuestTickers(): string[] {
+  const state = readGuestStocksQuota();
+  const key = state.date + "|" + state.tickers.join(",");
+  if (key !== cachedTickersKey) {
+    cachedTickersKey = key;
+    cachedTickers = state.tickers;
+  }
+  return cachedTickers;
+}
+
 const GuestQuotaContext = createContext<GuestQuotaContextType | null>(null);
 
 export function useGuestQuota(): GuestQuotaContextType {
@@ -93,13 +108,13 @@ export function GuestQuotaProvider({
     () => false
   );
 
+  // Snapshot harus referensi STABIL antar panggilan (bug 7 Nov: array baru tiap getSnapshot
+  // → React "Maximum update depth" #185 saat hydration). Cache per-ticker, invalidate saat
+  // kunjungan baru dicatat.
   const tickers = useSyncExternalStore(
     emptySubscribe,
-    () => {
-      if (effectiveAuthed) return [];
-      return readGuestStocksQuota().tickers;
-    },
-    () => []
+    () => (effectiveAuthed ? EMPTY_TICKERS : stableGuestTickers()),
+    () => EMPTY_TICKERS
   );
 
   const value: GuestQuotaContextType = {
