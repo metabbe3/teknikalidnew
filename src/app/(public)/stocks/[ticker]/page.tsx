@@ -46,6 +46,7 @@ import {
 } from "@/components/stock/guest-quota";
 import { StockLogo } from "@/components/stock/stock-logo";
 import { StockPortfolioCta } from "@/components/stock/stock-portfolio-cta";
+import { InfoTip } from "@/components/stock/info-tip";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { IndicatorTooltip } from "@/components/ui/indicator-tooltip";
 import { technicalAnalysisService, computeSignalScore } from "@/domains/stock/technical-analysis.service";
@@ -723,15 +724,7 @@ export default async function StockDetailPage({
                     return (
                       <>
                         {" "}
-                        <span
-                          tabIndex={0}
-                          role="note"
-                          className="inline-flex items-center justify-center w-4 h-4 rounded-full border border-border text-[10px] font-serif font-bold text-text-tertiary hover:text-text-primary hover:border-text-secondary cursor-help transition-colors select-none align-middle"
-                          title={desc}
-                          aria-label={`Profil bisnis ${stock.name}: ${desc}`}
-                        >
-                          ⓘ
-                        </span>
+                        <InfoTip label="Profil bisnis" text={desc} />
                         {/* SEO: businessActivity tetap dirender di SSR HTML di dalam H2 tanpa makan tempat visual */}
                         <span className="sr-only"> · {desc}</span>
                       </>
@@ -868,13 +861,7 @@ export default async function StockDetailPage({
                               <span>Sinyal:</span>
                               <span style={{ color: isBull ? "var(--color-bullish)" : isBear ? "var(--color-bearish)" : undefined }} className={!isBull && !isBear ? `${signalBadge(raw).cls} bg-transparent border-0 p-0` : undefined}>{outlook}</span>
                             </p>
-                            <span
-                              className="inline-flex items-center justify-center w-4 h-4 rounded-full border border-border text-[10px] font-serif font-bold text-text-tertiary hover:text-text-primary hover:border-text-secondary cursor-help transition-colors"
-                              title="Gabungan 9 indikator teknikal — RSI, MACD, tren, momentum, volume"
-                              aria-label="Gabungan 9 indikator teknikal — RSI, MACD, tren, momentum, volume"
-                            >
-                              ⓘ
-                            </span>
+                            <InfoTip label="Sinyal" text="Gabungan 9 indikator teknikal — RSI, MACD, tren, momentum, volume" />
                           </div>
                           <div className="mt-1.5 h-2 rounded-full bg-bg-hover overflow-hidden relative" role="meter" aria-valuenow={raw} aria-valuemin={-1} aria-valuemax={1} aria-label={`Skor sinyal teknikal ${raw.toFixed(2).replace(".", ",")} pada skala minus satu sampai plus satu. Gabungan 9 indikator teknikal — RSI, MACD, tren, momentum, volume`}>
                             <div className="h-full rounded-full transition-all duration-700" style={{ width: `${score}%`, backgroundColor: meta.color }} />

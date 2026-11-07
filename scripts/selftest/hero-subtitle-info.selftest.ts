@@ -176,10 +176,9 @@ async function main() {
       pageContent.includes('<span className="sr-only"> · {desc}</span>')
     );
     check(
-      "4b. File page.tsx menyematkan icon ⓘ dengan title={desc} dan aria-label",
-      pageContent.includes("title={desc}") &&
-        pageContent.includes("aria-label={`Profil bisnis ${stock.name}: ${desc}`}") &&
-        pageContent.includes("ⓘ")
+      "4b. File page.tsx menyematkan icon ⓘ dengan InfoTip (tap-to-open mobile + accessible) tanpa native title",
+      pageContent.includes('<InfoTip label="Profil bisnis" text={desc} />') &&
+        !pageContent.includes("title={desc}")
     );
     check(
       "4c. File page.tsx tidak lagi menampilkan deskripsi panjang secara telanjang di H2",
