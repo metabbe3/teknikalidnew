@@ -25,24 +25,28 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
   return (
     <div className={`depth-shadow rounded-xl border overflow-hidden ${isWaitAndSee ? "border-bearish/30" : "border-border"}`}>
       <div className="p-4 space-y-3">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-sm font-semibold">Rencana Trading: Area Beli, Target &amp; Cut Loss</h2>
-            <p className="text-[10px] text-text-tertiary mt-0.5">Sumber: Pivot Points &amp; ATR</p>
-          </div>
-          <div className="flex items-center gap-1.5">
+        <div>
+          <h2 className="text-sm font-semibold text-text-primary">Rencana Trading: Area Beli, Target &amp; Cut Loss</h2>
+          <div className="mt-0.5 flex items-center gap-1.5 text-xs text-text-tertiary flex-wrap">
+            <span>Sumber: Pivot &amp; ATR</span>
+            <span aria-hidden="true">·</span>
             {isWaitAndSee && (
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-bearish-bg text-bearish">
-                Tunggu dulu
-              </span>
+              <>
+                <span className="font-semibold text-bearish">Tunggu dulu</span>
+                <span aria-hidden="true">·</span>
+              </>
             )}
             {isBOW && (
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
-                Antri Beli (BOW)
-              </span>
+              <>
+                <span className="font-semibold text-amber-700 dark:text-amber-400">Antri Beli (BOW)</span>
+                <span aria-hidden="true">·</span>
+              </>
             )}
-            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${confidenceStyles[plan.confidence]}`}>
-              Keyakinan: {confidenceLabels[plan.confidence]}
+            <span>
+              Keyakinan:{" "}
+              <span className={`px-1.5 py-0.5 rounded text-[11px] font-semibold ${confidenceStyles[plan.confidence]}`}>
+                {confidenceLabels[plan.confidence]}
+              </span>
             </span>
           </div>
         </div>

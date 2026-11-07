@@ -777,121 +777,143 @@ export default async function StockDetailPage({
 
             {/* Guest Quota Provider (W1a, Freemium 3 Saham) */}
             <GuestQuotaProvider ticker={stripJk(ticker)} isAuthed={isAuthed}>
-            {/* Skor Sinyal hero — verdict instan (riset NBER: 6 menit riset, verdict dulu baru data).
-                SSR utk semua visitor: trust builder + rich answer utk crawler. */}
-            {indicators && indicators.signalScore !== null && indicators.signalScore !== undefined && (() => {
-              // product-audit-2026-10-29 #2: unifikasi skala — tampilkan skor brand 0,00-1,00
-              // (konsisten /pasar Top-20) alih-alih konversi 0-100 yang membelah identitas.
-              const raw = indicators.signalScore;
-              const score = signalToHealthScore(raw); // tetap utk meta warna/label band
-              if (score === null) return null;
-              const meta = healthScoreMeta(score);
-              const outlook = signalLabelId(indicators.signalLabel);
-              const isBull = /bullish|beli|accumulate/i.test(outlook);
-              const isBear = /bearish|jual|sell/i.test(outlook);
-              return (
-                <div className="mt-4 rounded-xl border border-border bg-bg-card p-4 depth-shadow" aria-label="Skor sinyal teknikal">
-                  <div className="flex items-center gap-4">
-                    <div className="flex flex-col items-center shrink-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className={`text-3xl font-extrabold tabular-nums leading-none ${signalBadge(raw).cls}`} style={{ backgroundColor: "transparent", border: "none", padding: 0 }}>
-                          {raw.toFixed(2).replace(".", ",")}
-                        </span>
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${signalBadge(raw).cls}`}>
-                          {signalBadge(raw).label}
-                        </span>
-                      </div>
-                      <span className="text-[10px] font-semibold text-text-tertiary mt-0.5">Skor Sinyal (−1 s.d. +1)</span>
-                    </div>
-                    <div className="h-10 w-px bg-border shrink-0" aria-hidden="true" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-text-primary flex items-center gap-2 flex-wrap">
-                        Sinyal: <span style={{ color: isBull ? "var(--color-bullish)" : isBear ? "var(--color-bearish)" : undefined }} className={!isBull && !isBear ? `${signalBadge(raw).cls} bg-transparent border-0 p-0` : undefined}>{outlook}</span>
-                      </p>
-                      <div className="mt-2 h-2 rounded-full bg-bg-hover overflow-hidden relative" role="meter" aria-valuenow={raw} aria-valuemin={-1} aria-valuemax={1} aria-label={`Skor sinyal teknikal ${raw.toFixed(2).replace(".", ",")} pada skala minus satu sampai plus satu`}>
-                        <div className="h-full rounded-full transition-all duration-700" style={{ width: `${score}%`, backgroundColor: meta.color }} />
-                      </div>
-                      <p className="mt-1.5 text-[11px] text-text-tertiary">Gabungan 9 indikator teknikal — RSI, MACD, tren, momentum, volume</p>
-                    </div>
-                  </div>
-                  <GuestSignalBreakdownGate breakdown={signalBreakdown} ticker={stripJk(ticker)} isAuthed={isAuthed} />
-                  {/* Cross-sell agent (owner 6 Nov): konsultasi via bot — selalu tampil di fold-1 */}
-                  <div className="mt-3">
+            <div className={`mt-4 ${tradingPlan ? "grid grid-cols-1 lg:grid-cols-2 gap-4 items-start" : "space-y-4"}`}>
+              {/* Kolom 1 di Desktop, Bagian PERTAMA di Mobile: Trading Plan */}
+              {tradingPlan && (
+                <div className="space-y-2.5">
+                  <span id="plan" className="block scroll-mt-24" />
+                  {fullAccess ? (
+                    <GuestTradingPlanGate
+                      ticker={stripJk(ticker)}
+                      plan={tradingPlan}
+                      mc={mcProbability}
+                      isAuthed={isAuthed}
+                    />
+                  ) : (
+                    <LoginGate
+                      feature="Rencana Trading"
+                      message="Daftar gratis untuk membuka rencana trading, target profit, dan batas cut loss."
+                    />
+                  )}
+                  {/* Target B: Card Tanya AI disederhanakan jadi 1 baris kecil di bawah trading plan */}
+                  <div>
                     <a
-                      href={`https://t.me/TeknikalidAgentBot?start=${encodeURIComponent(stripJk(ticker) + "_JK")}`}
-                      data-engagement="tg_tanya_agent_fold1"
+                      href={`https://t.me/TeknikalidAgentBot?start=src_ask_${stripJk(ticker)}`}
+                      data-engagement="agent_deeplink_compact"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-1.5 min-h-11 rounded-lg bg-accent-bright px-3 text-xs font-semibold text-white transition-colors hover:brightness-110"
+                      className="flex items-center justify-between rounded-lg border border-border/80 bg-bg-card/70 px-3 py-2 text-xs font-medium text-text-secondary hover:text-accent hover:border-accent/40 transition-colors"
                     >
-                      💬 Tanya AI soal {stripJk(ticker)} — gratis 3x
+                      <span className="flex items-center gap-1.5 truncate">
+                        <span>🤖 Tanya AI soal {stripJk(ticker)} · gratis 3x →</span>
+                      </span>
                     </a>
+                    {/* Panduan cepat: 3 tombol prompt chips di dalam collapse <details> default tertutup */}
+                    <details className="group mt-1.5 text-xs text-text-tertiary">
+                      <summary className="cursor-pointer text-[11px] font-medium text-text-tertiary hover:text-text-secondary list-none flex items-center gap-1 px-1 py-0.5 [&::-webkit-details-marker]:hidden">
+                        <span>💡 Panduan cepat tanya AI</span>
+                        <span className="transition-transform duration-200 group-open:rotate-180" aria-hidden="true">▾</span>
+                      </summary>
+                      <div className="mt-1">
+                        <StockAiPromptChips
+                          ticker={ticker}
+                          rsi14={indicators?.rsi14 ?? null}
+                          signalScore={indicators?.signalScore ?? null}
+                        />
+                      </div>
+                    </details>
                   </div>
-                  {/* Fase T2: Chip prompt tanya AI 1-klik kontekstual */}
-                  <StockAiPromptChips
-                    ticker={ticker}
-                    rsi14={indicators?.rsi14 ?? null}
-                    signalScore={indicators?.signalScore ?? null}
-                  />
-                  {/* ret-qw7: arah skor 5 sesi — reason-to-check-back-later */}
-                  {(() => {
-                    const series = (detail.scoreSeries ?? []).map((r) => r.score).filter((v): v is number => v !== null);
-                    if (series.length < 3) return null;
-                    const oldest = series[0];
-                    const newest = series[series.length - 1];
-                    const diff = newest - oldest;
-                    const fmt = (v: number) => v.toFixed(2).replace(".", ",");
-                    return (
-                      <>
-                        <p className="mt-3 text-[12px] text-text-secondary">
-                          Arah 5 sesi terakhir: {fmt(oldest)} → {fmt(newest)}{" "}
-                          <span className={diff > 0.04 ? "text-bullish font-semibold" : diff < -0.04 ? "text-bearish font-semibold" : "text-text-tertiary"}>
-                            ({diff > 0 ? "menguat +" : diff < 0 ? "melemah " : "stabil "}{fmt(Math.abs(diff))})
-                          </span>
-                          <span className="text-text-tertiary"> · dihitung dari penutupan sesi terakhir</span>
-                        </p>
-                        <div className="mt-3 grid grid-cols-2 gap-2">
-                          <a
-                            href="#pantau"
-                            className="flex items-center justify-center gap-1.5 min-h-11 rounded-lg border border-border bg-bg hover:bg-bg-hover text-xs font-medium text-text-secondary transition-colors"
-                          >
-                            <Star className="h-3.5 w-3.5" aria-hidden="true" /> Simpan ke pantauan
-                          </a>
-                        </div>
-                      </>
-                    );
-                  })()}
                 </div>
-              );
-            })()}
+              )}
 
-            {/* Fase T2: Saham sejenis bersinyal lebih kuat (<35% scroll) */}
-            <StrongerPeersStrip
-              currentTicker={ticker}
-              currentScore={indicators?.signalScore ?? null}
-              sectorLabel={sectorToBahasa(stock.sector)}
-              peers={peerBatch}
-            />
+              {/* Kolom 2 di Desktop, Bagian KEDUA di Mobile: Skor Sinyal & Stronger Peers */}
+              <div className="space-y-4">
+                {/* Skor Sinyal hero (dipadatkan) — verdict instan */}
+                {indicators && indicators.signalScore !== null && indicators.signalScore !== undefined && (() => {
+                  // product-audit-2026-10-29 #2: unifikasi skala — tampilkan skor brand 0,00-1,00
+                  const raw = indicators.signalScore;
+                  const score = signalToHealthScore(raw); // tetap utk meta warna/label band
+                  if (score === null) return null;
+                  const meta = healthScoreMeta(score);
+                  const outlook = signalLabelId(indicators.signalLabel);
+                  const isBull = /bullish|beli|accumulate/i.test(outlook);
+                  const isBear = /bearish|jual|sell/i.test(outlook);
+                  return (
+                    <div className="rounded-xl border border-border bg-bg-card p-4 depth-shadow" aria-label="Skor sinyal teknikal">
+                      <div className="flex items-center gap-4">
+                        <div className="flex flex-col items-center shrink-0">
+                          <div className="flex items-center gap-1.5">
+                            <span className={`text-3xl font-extrabold tabular-nums leading-none ${signalBadge(raw).cls}`} style={{ backgroundColor: "transparent", border: "none", padding: 0 }}>
+                              {raw.toFixed(2).replace(".", ",")}
+                            </span>
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${signalBadge(raw).cls}`}>
+                              {signalBadge(raw).label}
+                            </span>
+                          </div>
+                          <span className="text-[10px] font-semibold text-text-tertiary mt-0.5">Skor Sinyal (−1 s.d. +1)</span>
+                        </div>
+                        <div className="h-10 w-px bg-border shrink-0" aria-hidden="true" />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-1 flex-wrap">
+                            <p className="text-sm font-semibold text-text-primary flex items-center gap-1.5 flex-wrap">
+                              <span>Sinyal:</span>
+                              <span style={{ color: isBull ? "var(--color-bullish)" : isBear ? "var(--color-bearish)" : undefined }} className={!isBull && !isBear ? `${signalBadge(raw).cls} bg-transparent border-0 p-0` : undefined}>{outlook}</span>
+                            </p>
+                            <span
+                              className="inline-flex items-center justify-center w-4 h-4 rounded-full border border-border text-[10px] font-serif font-bold text-text-tertiary hover:text-text-primary hover:border-text-secondary cursor-help transition-colors"
+                              title="Gabungan 9 indikator teknikal — RSI, MACD, tren, momentum, volume"
+                              aria-label="Gabungan 9 indikator teknikal — RSI, MACD, tren, momentum, volume"
+                            >
+                              ⓘ
+                            </span>
+                          </div>
+                          <div className="mt-1.5 h-2 rounded-full bg-bg-hover overflow-hidden relative" role="meter" aria-valuenow={raw} aria-valuemin={-1} aria-valuemax={1} aria-label={`Skor sinyal teknikal ${raw.toFixed(2).replace(".", ",")} pada skala minus satu sampai plus satu. Gabungan 9 indikator teknikal — RSI, MACD, tren, momentum, volume`}>
+                            <div className="h-full rounded-full transition-all duration-700" style={{ width: `${score}%`, backgroundColor: meta.color }} />
+                          </div>
+                        </div>
+                      </div>
+                      <GuestSignalBreakdownGate breakdown={signalBreakdown} ticker={stripJk(ticker)} isAuthed={isAuthed} />
+                      {/* ret-qw7: arah skor 5 sesi — reason-to-check-back-later */}
+                      {(() => {
+                        const series = (detail.scoreSeries ?? []).map((r) => r.score).filter((v): v is number => v !== null);
+                        if (series.length < 3) return null;
+                        const oldest = series[0];
+                        const newest = series[series.length - 1];
+                        const diff = newest - oldest;
+                        const fmt = (v: number) => v.toFixed(2).replace(".", ",");
+                        return (
+                          <>
+                            <p className="mt-2.5 text-[11px] text-text-secondary leading-snug">
+                              Arah 5 sesi terakhir: {fmt(oldest)} → {fmt(newest)}{" "}
+                              <span className={diff > 0.04 ? "text-bullish font-semibold" : diff < -0.04 ? "text-bearish font-semibold" : "text-text-tertiary"}>
+                                ({diff > 0 ? "menguat +" : diff < 0 ? "melemah " : "stabil "}{fmt(Math.abs(diff))})
+                              </span>
+                              <span className="text-text-tertiary"> · sesi terakhir</span>
+                            </p>
+                            <div className="mt-2">
+                              <a
+                                href="#pantau"
+                                className="inline-flex items-center justify-center gap-1.5 min-h-9 px-3 rounded-lg border border-border bg-bg hover:bg-bg-hover text-xs font-medium text-text-secondary transition-colors"
+                              >
+                                <Star className="h-3.5 w-3.5" aria-hidden="true" /> Simpan ke pantauan
+                              </a>
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </div>
+                  );
+                })()}
 
-            {/* Rencana Trading — tepat di bawah Hero Skor Sinyal (sebelum blok indikator) */}
-            {tradingPlan && (
-              <div className="mt-4">
-                <span id="plan" className="block scroll-mt-24" />
-                {fullAccess ? (
-                  <GuestTradingPlanGate
-                    ticker={stripJk(ticker)}
-                    plan={tradingPlan}
-                    mc={mcProbability}
-                    isAuthed={isAuthed}
-                  />
-                ) : (
-                  <LoginGate
-                    feature="Rencana Trading"
-                    message="Daftar gratis untuk membuka rencana trading, target profit, dan batas cut loss."
-                  />
-                )}
+                {/* Fase T2: Saham sejenis bersinyal lebih kuat (<35% scroll) */}
+                <StrongerPeersStrip
+                  currentTicker={ticker}
+                  currentScore={indicators?.signalScore ?? null}
+                  sectorLabel={sectorToBahasa(stock.sector)}
+                  peers={peerBatch}
+                />
               </div>
-            )}
+            </div>
             </GuestQuotaProvider>
 
             {/* Anti-dead-end peer chips (Batch B) */}
