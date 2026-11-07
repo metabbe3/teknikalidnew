@@ -1204,3 +1204,19 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - verify: queue v322→v327 via statejson (5 flip scheduled_slot); expr cron diverifikasi langsung jobs.json — BE weekend pagi=0 8 * * 6,0, siang=30 13 * * 6,0, "Sabtu 09:30"=30 9 * * 1-5 TIDAK JALAN Sabtu
 - dampak: P0 ops-11-05-03 + P1 ops-11-06-01 kini masuk slot real hari ini 08:00; gate CreatedAt ops-11-06-04 masuk 13:30 pra-kereta T-1107-M
 - QA: verdict SENTINEL 22:00 (H3). Pilar: TRUST.
+
+## 2026-11-07 08:3x — BE weekend pagi 08:00 (ops-2026-11-05-03 BUILD-ONLY; 0 deploy)
+- task-id: ops-2026-11-05-03 | type: ops (bugfix TRUST, root-fix generator) | PRD: n/a
+- deploy hash: n/a BUILD-ONLY — commit fix 188ad2e + test cc190f0, push origin/main dbda3fe..188ad2e (rev-list 0); naik kereta T-1107-M (Kondektur 22:15)
+- verify: selftest signal-window-pinning 3/3 (MERAH cc190f0 dulu → HIJAU; parity bug 37≠14 tertangkap SEBELUM deploy — syarat tanggal wajib DI DALAM FILTER, smaCrossSignal persist antar-sesi); tsc 0; build 0 (BUILD_ID 08:31); dry-run gatherMarketContext → blok 'SINYAL TEKNIKAL 7 SESI TERAKHIR (KANONIK)' di prompt, GC14/DC20/EMA18/54 window 2026-10-29..2026-11-06; parity 3 jalur EXACT (repo getSignalCounts · mandor_brief.py signals_kanonik · teknikalid_growth.py signal_counts_kanonik)
+- host scripts: mandor_brief.py kalender-6d→sesi-pinned (AST OK + run live parity 14/18/54+window_sesi); teknikalid_growth.py market-brief-data +signal_counts_kanonik
+- QA: verdict SENTINEL 22:00 (H3) + verify pasca-deploy kereta: brief Senin 9 Nov 10:00 WAJIB pakai angka kanonik (angka kecil 1-2 digit, sebut window)
+- impact_check_due: 2026-11-10 (brief Senin + qa-11-07-01 'GC 18/21' tak boleh kambuh)
+- catatan: claude_gated 2x gagal (autocompact thrash + model glm-5.3 unrecognized oleh Claude Code) → fallback manual sesuai gateguard; generator FATAL ke-5/6 (qa-11-07-01 brief-6Nov '18 GC' + rekap '21') tercatat reviewer 07:00 — root-cause cocok (context tanpa angka sinyal), fix ini menutup jalur karang angka. Pilar: TRUST (North Star: data reliable).
+
+## 2026-11-07 08:4x — BE weekend pagi 08:00 (ops-2026-11-06-01 partial; 0 deploy)
+- task-id: ops-2026-11-06-01 | type: ops (backup offsite + alert) | PRD: n/a
+- verify: sre_brief.py AST OK + run live: 'teknikal host fresh 7.3h [OK]' + BARU 'offsite gdrive: marker TIDAK ADA — MATI <<< ALERT' (fail-open tertutup); rclone gdrive = 'empty token found' (mati 3 Nov, benar vs sec-11-05-04); cron offsite 43c3452b406d disabled
+- status: blocked_external — refresh OAuth Google = kredensial owner; owner package di field result (3 langkah + verify + risiko RPO 4 hari+)
+- QA: verdict SENTINEL 22:00 (H3). Pilar: TRUST (data reliable: disaster recovery).
+- catatan: hivePOS backups stale 151h/147h ikut ter-alert (hivePOS decommissioned 1 Nov — expected, bukan insiden baru)
