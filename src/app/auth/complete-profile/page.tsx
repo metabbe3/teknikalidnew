@@ -169,7 +169,7 @@ export default function CompleteProfilePage() {
                 aria-invalid={usernameTouched && !usernameValid}
                 aria-describedby="username-hint"
                 className={`w-full bg-bg-hover border rounded-xl px-3 py-2 text-sm font-mono pr-8 focus:outline-none focus:ring-1 focus:ring-accent ${
-                  usernameTouched && usernameTaken ? "border-bearish" : "border-border"
+                  usernameTaken ? "border-bearish" : "border-border"
                 }`}
                 placeholder="trader_jakarta"
               />
@@ -177,7 +177,7 @@ export default function CompleteProfilePage() {
                 <Check className="h-4 w-4 text-bullish absolute right-2.5 top-1/2 -translate-y-1/2" aria-hidden />
               )}
             </div>
-            {usernameTouched && usernameTaken ? (
+            {usernameTaken ? (
               <p id="username-hint" className="text-xs text-bearish mt-1">Username sudah dipakai — coba yang lain</p>
             ) : (
               <p id="username-hint" className="text-[10px] text-text-secondary mt-1">3-20 karakter, huruf, angka, underscore</p>
