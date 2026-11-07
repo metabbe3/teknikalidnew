@@ -4,31 +4,88 @@
 //   - skor 2 sesi terakhir: tampilkan "0,48 → 0,66" saat |Δ|>=0.08 atau label berubah
 //   - 1 ForeignFlow terbaru + StockDividend cumDate <=7 hari
 //   - tiap ticker jadi tautan langsung ke halaman sahamnya (1 ketukan balik ke web)
-// Angka dari DB saja — bukan rekomendasi.
+// Angka dari DB saja — bukan rekomendasi jual-beli.
+//
+// prd-2026-11-06-01 (CTO NIGHT 6 Nov) — hardening AC3+AC5:
+//   - retry pg connect 3x backoff 5s (pelajaran ECONNREFUSED 5 Nov: proses mati-surip tanpa retry)
+//   - lockfile /tmp/tg-digest.lock anti double-run (stale-lock steal berdasar PID)
+//   - INSERT TelegramSent per kirim (slug watch-digest-YYYY-MM-DD WIB) + pre-check dup —
+//     kanon angka kirim ada di DB, re-run idempotent
+//   - kegagalan TAK senyap: baris [tg-digest] ... bisa digrep sre_brief + exit code 1 saat ada fail
+//   - --dry-run: build pesan penuh, tampilkan preview, 0 kirim, 0 insert, tanpa lockfile
 import { createRequire } from 'node:module';
+import { existsSync, readFileSync, writeFileSync, unlinkSync } from 'node:fs';
 import { tgWebUrl } from './utm.mjs';
 const require = createRequire('/Users/nicholasandriansurjadi/.hermes/opt/tgbot/');
 const pg = require('pg');
 const { Client } = pg;
 const TOK = process.env.TELEGRAM_BOT_TOKEN;
 const API = `https://api.telegram.org/bot${TOK}`;
+const DRY = process.argv.includes('--dry-run');
+const LOCK = '/tmp/tg-digest.lock';
+const wibDate = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta' }).format(new Date());
+const DIGEST_SLUG = `watch-digest-${wibDate()}`;
+
+// --- jam sopan (konvensi notify.mjs): kirim hanya 06:00-22:30 WIB ---
+// launchd coalesce run-terlewat saat Mac tidur — tanpa guard, bangun jam 23x = ping tengah malam.
+// Skip bukan kegagalan: log + CronLog 'skipped', hari bursa berikutnya normal.
+const WIB_HOUR = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Jakarta', hour: '2-digit', hour12: false }).format(new Date()));
+if (!DRY && (WIB_HOUR < 6 || WIB_HOUR >= 22.5)) {
+  process.stdout.write(JSON.stringify({ skipped: 'outside-polite-hours', wibHour: WIB_HOUR }) + '\n');
+  process.exit(0);
+}
+
+// --- lockfile anti double-run (AC3) — hanya untuk run nyata ---
+if (!DRY) {
+  if (existsSync(LOCK)) {
+    const held = readFileSync(LOCK, 'utf8').trim();
+    let alive = false;
+    if (Number.isFinite(Number(held))) {
+      try { process.kill(Number(held), 0); alive = true; } catch (e) { alive = e.code !== 'ESRCH'; }
+    }
+    if (alive) { process.stdout.write(JSON.stringify({ skipped: 'lock-held', pid: held }) + '\n'); process.exit(0); }
+    console.error(`[tg-digest] stale lock pid=${held} — steal`);
+  }
+  writeFileSync(LOCK, String(process.pid));
+  process.on('exit', () => {
+    try { if (readFileSync(LOCK, 'utf8').trim() === String(process.pid)) unlinkSync(LOCK); } catch (e) { /* sudah dihapus */ }
+  });
+}
 
 async function send(chatId, text) {
   const r = await fetch(`${API}/sendMessage`, { method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ chat_id: chatId, text, parse_mode:'HTML', link_preview_options:{ is_disabled:true } }) }).catch(()=>null);
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode:'HTML', link_preview_options:{ is_disabled:true } }) }).catch(e => {
+    console.error(`[tg-digest] telegram fetch error chat=${chatId}: ${e.message}`);
+    return null;
+  });
+  if (r && r.status !== 200) console.error(`[tg-digest] telegram send fail chat=${chatId} http=${r.status}`);
   return r && r.status === 200;
 }
 
-const c = new Client({ connectionString: process.env.DATABASE_URL });
-await c.connect();
+// --- retry connect 3x backoff 5s (AC3) ---
+// pg Client TIDAK bisa di-reuse setelah connect gagal ("Client has already been
+// connected") — Client BARU per attempt, bukan reconnect client lama.
+let c = null;
+for (let attempt = 1; attempt <= 3; attempt++) {
+  const cand = new Client({ connectionString: process.env.DATABASE_URL });
+  try { await cand.connect(); c = cand; break; }
+  catch (e) {
+    console.error(`[tg-digest] pg connect attempt ${attempt}/3 fail: ${e.code || e.message}`);
+    try { await cand.end(); } catch (e2) { /* sudah mati */ }
+    if (attempt === 3) { console.error('[tg-digest] DB unreachable setelah 3 percobaan — abort'); process.exit(1); }
+    await new Promise(r => setTimeout(r, 5000));
+  }
+}
 
 // saham unik terpantau
 const w = await c.query('SELECT DISTINCT ticker FROM "TelegramWatch" WHERE active=true');
-if (!w.rows.length) { console.log('no watches'); process.exit(0); }
+if (!w.rows.length) { process.stdout.write('no watches\n'); process.exit(0); }
 const tickers = w.rows.map(r => r.ticker);
 
 // data semua ticker dalam 1 query LATERAL (hindari N+1 × query tunggal per ticker)
-const q = await c.query(`
+let q;
+try {
+  q = await c.query(`
   SELECT s.ticker,
     px.close AS last, px_prev.close AS prev,
     si."signalScore" AS score, si_prev."signalScore" AS score_prev,
@@ -56,7 +113,11 @@ const q = await c.query(`
     SELECT ("cumDate" - CURRENT_DATE) AS cum FROM "StockDividend" sd
     WHERE sd."stockId"=s.id AND sd."cumDate" >= CURRENT_DATE AND sd."cumDate" <= CURRENT_DATE + 7 ORDER BY sd."cumDate" LIMIT 1
   ) div ON true
-  WHERE s.ticker = ANY($1)`, [tickers]).catch(e => { console.error('query fail', e.message); return { rows: [] }; });
+  WHERE s.ticker = ANY($1)`, [tickers]);
+} catch (e) {
+  console.error(`[tg-digest] data query fail: ${e.message}`);
+  process.exit(1);
+}
 
 const data = {};
 for (const r of q.rows) {
@@ -105,22 +166,37 @@ function lineFor(ticker) {
 }
 
 // kirim per chat — ticker "menarik" (berubah) diurutkan ke atas
+// pre-check TelegramSent(slug=watch-digest-<tgl WIB>) + INSERT per kirim sukses = idempotent & ber-kanon DB (AC3)
 const chats = await c.query('SELECT DISTINCT "chatId" FROM "TelegramWatch" WHERE active=true');
-let ok = 0, fail = 0;
+let ok = 0, fail = 0, skippedDup = 0, previewed = false;
 for (const { chatId } of chats.rows) {
+  if (!DRY) {
+    const dup = await c.query('SELECT 1 FROM "TelegramSent" WHERE "chatId"=$1 AND slug=$2', [chatId, DIGEST_SLUG]);
+    if (dup.rows.length) { skippedDup++; continue; }
+  }
   const rows = await c.query('SELECT ticker FROM "TelegramWatch" WHERE "chatId"=$1 AND active=true ORDER BY "createdAt"', [chatId]);
   const sorted = rows.rows.map(r => r.ticker).sort((a, b) => (data[b]?.interesting ? 1 : 0) - (data[a]?.interesting ? 1 : 0));
   const lines = sorted.map(lineFor).join('\n');
   const txt = `📈 <b>Pantauanmu hari ini</b>\n\n${lines}\n\n👉 Analis Sore hari ini: ${tgWebUrl('/berita', 'daily_digest')} · Radar Pasar: ${tgWebUrl('/pasar', 'daily_digest')}\n\n— teknikal.id · data harian, bukan rekomendasi jual-beli`;
-  if (await send(chatId, txt)) ok++; else fail++;
+  if (DRY) {
+    ok++;
+    if (!previewed) { previewed = true; process.stdout.write(`--- preview chat=${chatId} ---\n${txt}\n`); }
+    continue;
+  }
+  if (await send(chatId, txt)) {
+    ok++;
+    try {
+      await c.query('INSERT INTO "TelegramSent" ("chatId", slug) VALUES ($1,$2) ON CONFLICT DO NOTHING', [chatId, DIGEST_SLUG]);
+    } catch (e) { console.error(`[tg-digest] TelegramSent insert fail chat=${chatId}: ${e.message}`); }
+  } else { fail++; }
 }
-console.log(JSON.stringify({ ok, fail, tickers: Object.keys(data).length }));
+process.stdout.write(JSON.stringify({ dry: DRY, ok, fail, skippedDup, slug: DIGEST_SLUG, tickers: Object.keys(data).length }) + '\n');
 // tracking-audit G10: catat hasil digest ke CronLog — kegagalan bot tak lagi senyap
 try {
-  await c.query('INSERT INTO "CronLog" ("jobName", status, result, "triggeredBy") VALUES ($1,$2,$3,$4)', [
-    'tg-digest', ok > 0 || tickers.length === 0 ? 'success' : 'error',
-    JSON.stringify({ ok, fail, tickers: tickers.length }).slice(0, 200),
-    'system',
+  await c.query('INSERT INTO "CronLog" ("jobName", status, result, "triggeredBy", "durationMs") VALUES ($1,$2,$3,$4,$5)', [
+    'tg-digest', fail > 0 ? 'error' : 'success',
+    JSON.stringify({ dry: DRY, ok, fail, skippedDup, tickers: tickers.length }).slice(0, 200),
+    'system', 0,
   ]);
 } catch (e) { console.error('cronlog fail', e.message); }
-process.exit(0);
+process.exit(fail > 0 ? 1 : 0);
