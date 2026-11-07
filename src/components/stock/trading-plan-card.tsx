@@ -1,6 +1,5 @@
 import type { TradingPlan } from "@/lib/trading-plan";
 import type { McResult } from "@/lib/monte-carlo";
-import { AlertTriangle } from "lucide-react";
 import { formatRp } from "@/lib/utils";
 
 const confidenceStyles = {
@@ -21,6 +20,18 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
   // Audit UI/UX #3b (30 Okt): setup layak = bukan wait&see, R:R ≥ 1, EV ≥ 0 — angka hijau besar
   // hanya utk setup layak; selain itu netral + warning eksplisit (anti-mislead pemula).
   const setupLayak = !isWaitAndSee && plan.riskReward >= 1 && (mc?.evPerShare ?? 0) >= 0;
+
+  const allWarnings: { text: string; isSim?: boolean }[] = [
+    ...plan.warnings.map((w) => ({ text: w, isSim: false })),
+    ...(mc && !setupLayak
+      ? [
+          {
+            text: `Setup belum layak (Rugi : Untung 1 : ${plan.riskReward.toFixed(1).replace(".", ",")}) — angka peluang di atas hanya simulasi statistik, bukan sinyal entry.`,
+            isSim: true,
+          },
+        ]
+      : []),
+  ];
 
   return (
     <div className={`depth-shadow rounded-xl border overflow-hidden ${isWaitAndSee ? "border-bearish/30" : "border-border"}`}>
@@ -128,11 +139,6 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
               </div>
               </div>
             </details>
-            {!setupLayak && (
-              <p className="text-[10px] leading-snug text-text-tertiary bg-bg-hover -mx-1 px-2.5 py-1.5 rounded-lg">
-                <AlertTriangle className="inline h-3 w-3 -mt-0.5 align-middle" aria-hidden="true" />{" "}Setup belum layak (Rugi : Untung 1 : {plan.riskReward.toFixed(1).replace(".", ",")}) — angka peluang di atas hanya simulasi statistik, bukan sinyal entry.
-              </p>
-            )}
           </>
         )}
 
@@ -145,21 +151,41 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
           </span>
         </div>
 
-        {plan.warnings.length > 0 && (
-          <>
-            <div className="space-y-1.5">
-              {plan.warnings.map((w, i) => (
+        {allWarnings.length > 0 && (
+          <details
+            data-engagement="trading_plan_warnings_buka"
+            className="group rounded-lg bg-amber-500/10 border border-amber-500/25 px-2.5 py-1.5 text-[11px]"
+          >
+            <summary className="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden select-none">
+              <span className="font-semibold text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
+                <span aria-hidden="true">⚠️</span>
+                <span>{allWarnings.length} catatan risiko</span>
+              </span>
+              <span className="text-[10px] text-amber-700/80 dark:text-amber-400/80 flex items-center gap-1 shrink-0 ml-2">
+                <span className="group-open:hidden">lihat</span>
+                <span className="hidden group-open:inline">tutup</span>
+                <span className="transition-transform duration-200 group-open:rotate-180" aria-hidden="true">▾</span>
+              </span>
+            </summary>
+            <div className="space-y-1.5 pt-2 mt-2 border-t border-amber-500/20">
+              {allWarnings.map((w, i) => (
                 <div key={i} className="flex items-start gap-1.5">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-amber-500 shrink-0 mt-0.5" aria-hidden="true">
-                    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                    <line x1="12" y1="9" x2="12" y2="13" />
-                    <line x1="12" y1="17" x2="12.01" y2="17" />
-                  </svg>
-                  <p className="text-[11px] text-text-secondary leading-snug">{w}</p>
+                  {w.isSim ? (
+                    <span className="text-xs shrink-0 mt-0.5 leading-none select-none" aria-hidden="true">
+                      🔬
+                    </span>
+                  ) : (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-amber-500 shrink-0 mt-0.5" aria-hidden="true">
+                      <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                      <line x1="12" y1="9" x2="12" y2="13" />
+                      <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                  )}
+                  <p className="text-[11px] text-text-secondary leading-snug">{w.text}</p>
                 </div>
               ))}
             </div>
-          </>
+          </details>
         )}
       </div>
 

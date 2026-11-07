@@ -358,8 +358,8 @@ export default function DailyAnalysisSection(props: DailyAnalysisSectionProps) {
         )}
 
         {/* Footer */}
-        <div className="pt-4 border-t border-border/50 flex items-center justify-between gap-4 flex-wrap">
-          <p className="text-xs text-text-secondary leading-relaxed max-w-xl">
+        <div className="pt-3 border-t border-border/50 flex items-center justify-between gap-3 flex-wrap">
+          <p className="text-[10px] text-text-tertiary leading-snug">
             Analisa ini berdasarkan data teknikal & fundamental historis — bukan rekomendasi jual/beli.
             Selalu lakukan riset mandiri sebelum mengambil keputusan investasi.
           </p>

@@ -28,13 +28,11 @@ import { monteCarloTpFirst } from "@/lib/monte-carlo";
 import { cachedEod, eodKey } from "@/domains/stock/eod-cache";
 import { HypeWarningBadge } from "@/components/stock/hype-warning-badge";
 import { isHscTicker } from "@/lib/hsc-stocks";
-import { StockDiscussion } from "@/components/community/stock-discussion";
 import { RegistrationInlinePrompt } from "@/components/ui/registration-inline-prompt";
 import { StockActionBadge } from "@/components/stock/stock-action-badge";
 import { RepeatVisitHint } from "@/components/stock/repeat-visit-hint";
 import { VerdictFeedback } from "@/components/stock/verdict-feedback";
 import { AlertPreviewCard } from "@/components/stock/alert-preview-card";
-import { SentimentGauge } from "@/components/stock/sentiment-gauge";
 import { PresenceBadge } from "@/components/stock/presence-badge";
 import { StockAlertBanner } from "@/components/stock/stock-alert-banner";
 import { StockFAQWidget } from "@/components/faq/stock-faq-widget";
@@ -714,17 +712,28 @@ export default async function StockDetailPage({
                   <span className="text-text-tertiary" aria-hidden="true">·</span>
                   <span className="text-xs text-text-tertiary font-medium">{sectorToBahasa(stock.sector)}</span>
                 </div>
-                <h2 className="text-sm text-text-secondary mt-0.5 truncate font-semibold">
+                <h2 className="text-sm text-text-secondary mt-0.5 font-semibold">
                   {/* fix owner 1 Nov: baris nama jadi H2 — H1 tetap murni ticker, crawler baca keyword di sini */}
                   <span className="text-text-tertiary font-medium">Harga Saham Hari Ini &amp; Analisa Teknikal </span>
                   <span className="font-medium">{stock.name}</span>
                   {(() => {
-                    const desc = stock.businessActivity?.trim() || stock.subSector?.trim();
-                    if (!desc) return null;
+                    const rawDesc = stock.businessActivity?.trim() || stock.subSector?.trim();
+                    if (!rawDesc) return null;
+                    const desc = rawDesc.charAt(0).toUpperCase() + rawDesc.slice(1);
                     return (
                       <>
-                        <span className="text-text-tertiary" aria-hidden="true"> · </span>
-                        <span className="text-text-tertiary font-normal">{desc.charAt(0).toUpperCase() + desc.slice(1)}</span>
+                        {" "}
+                        <span
+                          tabIndex={0}
+                          role="note"
+                          className="inline-flex items-center justify-center w-4 h-4 rounded-full border border-border text-[10px] font-serif font-bold text-text-tertiary hover:text-text-primary hover:border-text-secondary cursor-help transition-colors select-none align-middle"
+                          title={desc}
+                          aria-label={`Profil bisnis ${stock.name}: ${desc}`}
+                        >
+                          ⓘ
+                        </span>
+                        {/* SEO: businessActivity tetap dirender di SSR HTML di dalam H2 tanpa makan tempat visual */}
+                        <span className="sr-only"> · {desc}</span>
                       </>
                     );
                   })()}
@@ -778,9 +787,9 @@ export default async function StockDetailPage({
             {/* Guest Quota Provider (W1a, Freemium 3 Saham) */}
             <GuestQuotaProvider ticker={stripJk(ticker)} isAuthed={isAuthed}>
             <div className={`mt-4 ${tradingPlan ? "grid grid-cols-1 lg:grid-cols-2 gap-4 items-start" : "space-y-4"}`}>
-              {/* Kolom 1 di Desktop, Bagian PERTAMA di Mobile: Trading Plan */}
+              {/* Kolom KANAN di Desktop, Bagian PERTAMA di Mobile: Trading Plan */}
               {tradingPlan && (
-                <div className="space-y-2.5">
+                <div className="space-y-2.5 order-1 lg:order-2">
                   <span id="plan" className="block scroll-mt-24" />
                   {fullAccess ? (
                     <GuestTradingPlanGate
@@ -826,8 +835,8 @@ export default async function StockDetailPage({
                 </div>
               )}
 
-              {/* Kolom 2 di Desktop, Bagian KEDUA di Mobile: Skor Sinyal & Stronger Peers */}
-              <div className="space-y-4">
+              {/* Kolom KIRI di Desktop, Bagian KEDUA di Mobile: Skor Sinyal & Ringkasan Pasar */}
+              <div className="space-y-4 order-2 lg:order-1">
                 {/* Skor Sinyal hero (dipadatkan) — verdict instan */}
                 {indicators && indicators.signalScore !== null && indicators.signalScore !== undefined && (() => {
                   // product-audit-2026-10-29 #2: unifikasi skala — tampilkan skor brand 0,00-1,00
@@ -912,133 +921,133 @@ export default async function StockDetailPage({
                   sectorLabel={sectorToBahasa(stock.sector)}
                   peers={peerBatch}
                 />
+
+                {/* Anti-dead-end peer chips (Batch B) */}
+                {bridgePeers.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                    <span className="text-text-tertiary font-medium">
+                      {isBigCap
+                        ? "Bank & Big-Cap Lainnya:"
+                        : `Saham Serupa Sektor ${sectorToBahasa(stock.sector)}:`}
+                    </span>
+                    {bridgePeers.map((p) => {
+                      const pClean = stripJk(p);
+                      return (
+                        <Link
+                          key={p}
+                          href={`/stocks/${pClean}.JK`}
+                          className="inline-flex min-h-10 sm:min-h-0 items-center rounded-full border border-border bg-bg-card px-2.5 py-1 text-xs font-semibold text-text-secondary hover:border-accent/40 hover:text-accent transition-colors"
+                        >
+                          {pClean}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Fase T6: Internal link balik ke indeks tempat saham terdaftar */}
+                {memberIndices.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                    <span className="text-text-tertiary font-medium">Anggota Indeks:</span>
+                    {memberIndices.map((m) => (
+                      <Link
+                        key={m.slug}
+                        href={`/indeks/${m.slug}`}
+                        data-engagement="nav_stockToIndeksBadge"
+                        className="inline-flex min-h-9 sm:min-h-0 items-center rounded-full border border-accent/30 bg-accent/5 px-2.5 py-1 text-xs font-semibold text-accent hover:bg-accent/15 transition-colors"
+                      >
+                        Indeks {m.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+
+                {/* seo-dr-1 (deep-research 641c019): Answer block pemula — modal 1 lot + batas bawah/atas.
+                    Angka konkret di HTML (SERP nyata: halaman yang mencetak angka level harga menang). */}
+                {close !== null && (
+                  <p className="text-[13px] leading-relaxed text-text-secondary">
+                    <strong className="text-text-primary">Ringkas untuk pemula:</strong> 1 lot (100 lembar) {stripJk(ticker)} = <strong className="text-text-primary">{formatPrice(close * 100)}</strong>
+                    {supLevel !== null && close > supLevel && (
+                      <> · batas bawah (support) sekitar <strong className="text-text-primary">{formatPrice(supLevel)}</strong></>
+                    )}
+                    {resLevel !== null && resLevel > 0 && (
+                      <> · batas atas (resistance) sekitar <strong className="text-text-primary">{formatPrice(resLevel)}</strong></>
+                    )}
+                    {smaCrossText && <> · {smaCrossText}</>}.
+                  </p>
+                )}
+
+                {/* prd-2026-11-05-01 AC5a: Bandingkan dengan — internal-link loop ke /saham/[a]-vs-[b] */}
+                {comparePeers.length > 0 && (
+                  <div className="pt-3 border-t border-border">
+                    <p className="text-[10px] uppercase tracking-wider font-medium text-text-tertiary mb-2">Bandingkan dengan</p>
+                    <div className="flex flex-wrap gap-2">
+                      {comparePeers.map((p) => (
+                        <a
+                          key={p}
+                          href={`/saham/${stripJk(ticker).toLowerCase()}-vs-${p.replace(/\.JK$/, "").toLowerCase()}`}
+                          className="text-xs font-medium px-2.5 py-1.5 rounded-full border border-border text-text-secondary hover:border-accent hover:text-accent transition-colors font-mono"
+                        >
+                          {stripJk(ticker)} vs {p.replace(/\.JK$/, "")}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* OHLC + 52-week strip — anon-visible (SEO + first impression; data sudah SSR di page) */}
+                {close !== null && (
+                  <div className="pt-3 border-t border-border">
+                    {/* Section nav dipindah ke sticky bar tunggal di bawah (dedupe 15 Okt — dulu 2 baris identik) */}
+
+                    <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2 text-xs" aria-label="Statistik harga hari ini">
+                      <span className="inline-flex items-baseline gap-1.5">
+                        <span className="text-[10px] uppercase tracking-wider font-medium text-text-tertiary">Buka</span>
+                        <span className="font-mono font-semibold text-text-secondary tabular-nums">{latest ? formatPrice(decimalToNumber(latest.open) ?? close) : "—"}</span>
+                      </span>
+                      <span className="inline-flex items-baseline gap-1.5">
+                        <span className="text-[10px] uppercase tracking-wider font-medium text-text-tertiary">Tertinggi</span>
+                        <span className="font-mono font-semibold text-text-secondary tabular-nums">{latestHigh !== null ? formatPrice(latestHigh) : "—"}</span>
+                      </span>
+                      <span className="inline-flex items-baseline gap-1.5">
+                        <span className="text-[10px] uppercase tracking-wider font-medium text-text-tertiary">Terendah</span>
+                        <span className="font-mono font-semibold text-text-secondary tabular-nums">{latestLow !== null ? formatPrice(latestLow) : "—"}</span>
+                      </span>
+                      <span className="inline-flex items-baseline gap-1.5">
+                        <span className="text-[10px] uppercase tracking-wider font-medium text-text-tertiary">Volume</span>
+                        <span className="font-mono font-semibold text-text-secondary tabular-nums">{latestVolume > 0 ? formatVolume(latestVolume) : "—"}</span>
+                      </span>
+                      <span className="hidden sm:inline-block self-center w-px h-3.5 bg-border" aria-hidden="true" />
+                      <span className="inline-flex items-baseline gap-1.5">
+                        <span className="text-[10px] uppercase tracking-wider font-medium text-text-tertiary">52mgg</span>
+                        <span className="font-mono font-semibold text-text-secondary tabular-nums">
+                          {detail.week52Low !== null && detail.week52High !== null ? `${formatPrice(detail.week52Low)}–${formatPrice(detail.week52High)}` : "—"}
+                        </span>
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 basis-full sm:basis-auto">
+                        <span className="text-[10px] uppercase tracking-wider font-medium text-text-tertiary">Posisi</span>
+                        {detail.week52Low !== null && detail.week52High !== null && detail.week52High > detail.week52Low ? (
+                          <>
+                            <div className="h-1 w-16 rounded-full bg-bg-hover overflow-hidden" role="img" aria-label={`Posisi harga dalam rentang 52 minggu: ${Math.round(((close - detail.week52Low) / (detail.week52High - detail.week52Low)) * 100)}%`}>
+                              <div className={`h-full rounded-full ${changePercent !== null && changePercent < 0 ? "bg-bearish" : "bg-bullish"}`} style={{ width: `${Math.min(100, Math.max(0, ((close - detail.week52Low) / (detail.week52High - detail.week52Low)) * 100))}%` }} />
+                            </div>
+                            <span className="font-mono font-semibold text-text-secondary tabular-nums">{Math.round(((close - detail.week52Low) / (detail.week52High - detail.week52Low)) * 100)}%</span>
+                          </>
+                        ) : (
+                          <span className="font-mono text-text-secondary">—</span>
+                        )}
+                      </span>
+                    </div>
+                    {latest && (
+                      <p className="mt-2 text-[10px] text-text-tertiary font-mono">
+                        EOD {new Date(latest.date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })} · <span data-live-fresh data-fresh-eod="live saat pasar buka">live saat pasar buka</span>
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
             </GuestQuotaProvider>
-
-            {/* Anti-dead-end peer chips (Batch B) */}
-            {bridgePeers.length > 0 && (
-              <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
-                <span className="text-text-tertiary font-medium">
-                  {isBigCap
-                    ? "Bank & Big-Cap Lainnya:"
-                    : `Saham Serupa Sektor ${sectorToBahasa(stock.sector)}:`}
-                </span>
-                {bridgePeers.map((p) => {
-                  const pClean = stripJk(p);
-                  return (
-                    <Link
-                      key={p}
-                      href={`/stocks/${pClean}.JK`}
-                      className="inline-flex min-h-10 sm:min-h-0 items-center rounded-full border border-border bg-bg-card px-2.5 py-1 text-xs font-semibold text-text-secondary hover:border-accent/40 hover:text-accent transition-colors"
-                    >
-                      {pClean}
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Fase T6: Internal link balik ke indeks tempat saham terdaftar */}
-            {memberIndices.length > 0 && (
-              <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-xs">
-                <span className="text-text-tertiary font-medium">Anggota Indeks:</span>
-                {memberIndices.map((m) => (
-                  <Link
-                    key={m.slug}
-                    href={`/indeks/${m.slug}`}
-                    data-engagement="nav_stockToIndeksBadge"
-                    className="inline-flex min-h-9 sm:min-h-0 items-center rounded-full border border-accent/30 bg-accent/5 px-2.5 py-1 text-xs font-semibold text-accent hover:bg-accent/15 transition-colors"
-                  >
-                    Indeks {m.name}
-                  </Link>
-                ))}
-              </div>
-            )}
-
-            {/* seo-dr-1 (deep-research 641c019): Answer block pemula — modal 1 lot + batas bawah/atas.
-                Angka konkret di HTML (SERP nyata: halaman yang mencetak angka level harga menang). */}
-            {close !== null && (
-              <p className="mt-3 text-[13px] leading-relaxed text-text-secondary">
-                <strong className="text-text-primary">Ringkas untuk pemula:</strong> 1 lot (100 lembar) {stripJk(ticker)} = <strong className="text-text-primary">{formatPrice(close * 100)}</strong>
-                {supLevel !== null && close > supLevel && (
-                  <> · batas bawah (support) sekitar <strong className="text-text-primary">{formatPrice(supLevel)}</strong></>
-                )}
-                {resLevel !== null && resLevel > 0 && (
-                  <> · batas atas (resistance) sekitar <strong className="text-text-primary">{formatPrice(resLevel)}</strong></>
-                )}
-                {smaCrossText && <> · {smaCrossText}</>}.
-              </p>
-            )}
-
-            {/* prd-2026-11-05-01 AC5a: Bandingkan dengan — internal-link loop ke /saham/[a]-vs-[b] */}
-            {comparePeers.length > 0 && (
-              <div className="mt-4 pt-3 border-t border-border">
-                <p className="text-[10px] uppercase tracking-wider font-medium text-text-tertiary mb-2">Bandingkan dengan</p>
-                <div className="flex flex-wrap gap-2">
-                  {comparePeers.map((p) => (
-                    <a
-                      key={p}
-                      href={`/saham/${stripJk(ticker).toLowerCase()}-vs-${p.replace(/\.JK$/, "").toLowerCase()}`}
-                      className="text-xs font-medium px-2.5 py-1.5 rounded-full border border-border text-text-secondary hover:border-accent hover:text-accent transition-colors font-mono"
-                    >
-                      {stripJk(ticker)} vs {p.replace(/\.JK$/, "")}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* OHLC + 52-week strip — anon-visible (SEO + first impression; data sudah SSR di page) */}
-            {close !== null && (
-              <div className="mt-4 pt-3 border-t border-border">
-                {/* Section nav dipindah ke sticky bar tunggal di bawah (dedupe 15 Okt — dulu 2 baris identik) */}
-
-              <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2 text-xs" aria-label="Statistik harga hari ini">
-                  <span className="inline-flex items-baseline gap-1.5">
-                    <span className="text-[10px] uppercase tracking-wider font-medium text-text-tertiary">Buka</span>
-                    <span className="font-mono font-semibold text-text-secondary tabular-nums">{latest ? formatPrice(decimalToNumber(latest.open) ?? close) : "—"}</span>
-                  </span>
-                  <span className="inline-flex items-baseline gap-1.5">
-                    <span className="text-[10px] uppercase tracking-wider font-medium text-text-tertiary">Tertinggi</span>
-                    <span className="font-mono font-semibold text-text-secondary tabular-nums">{latestHigh !== null ? formatPrice(latestHigh) : "—"}</span>
-                  </span>
-                  <span className="inline-flex items-baseline gap-1.5">
-                    <span className="text-[10px] uppercase tracking-wider font-medium text-text-tertiary">Terendah</span>
-                    <span className="font-mono font-semibold text-text-secondary tabular-nums">{latestLow !== null ? formatPrice(latestLow) : "—"}</span>
-                  </span>
-                  <span className="inline-flex items-baseline gap-1.5">
-                    <span className="text-[10px] uppercase tracking-wider font-medium text-text-tertiary">Volume</span>
-                    <span className="font-mono font-semibold text-text-secondary tabular-nums">{latestVolume > 0 ? formatVolume(latestVolume) : "—"}</span>
-                  </span>
-                  <span className="hidden sm:inline-block self-center w-px h-3.5 bg-border" aria-hidden="true" />
-                  <span className="inline-flex items-baseline gap-1.5">
-                    <span className="text-[10px] uppercase tracking-wider font-medium text-text-tertiary">52mgg</span>
-                    <span className="font-mono font-semibold text-text-secondary tabular-nums">
-                      {detail.week52Low !== null && detail.week52High !== null ? `${formatPrice(detail.week52Low)}–${formatPrice(detail.week52High)}` : "—"}
-                    </span>
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 basis-full sm:basis-auto">
-                    <span className="text-[10px] uppercase tracking-wider font-medium text-text-tertiary">Posisi</span>
-                    {detail.week52Low !== null && detail.week52High !== null && detail.week52High > detail.week52Low ? (
-                      <>
-                        <div className="h-1 w-16 rounded-full bg-bg-hover overflow-hidden" role="img" aria-label={`Posisi harga dalam rentang 52 minggu: ${Math.round(((close - detail.week52Low) / (detail.week52High - detail.week52Low)) * 100)}%`}>
-                          <div className={`h-full rounded-full ${changePercent !== null && changePercent < 0 ? "bg-bearish" : "bg-bullish"}`} style={{ width: `${Math.min(100, Math.max(0, ((close - detail.week52Low) / (detail.week52High - detail.week52Low)) * 100))}%` }} />
-                        </div>
-                        <span className="font-mono font-semibold text-text-secondary tabular-nums">{Math.round(((close - detail.week52Low) / (detail.week52High - detail.week52Low)) * 100)}%</span>
-                      </>
-                    ) : (
-                      <span className="font-mono text-text-secondary">—</span>
-                    )}
-                  </span>
-                </div>
-                {latest && (
-                  <p className="mt-2 text-[10px] text-text-tertiary font-mono">
-                    EOD {new Date(latest.date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })} · <span data-live-fresh data-fresh-eod="live saat pasar buka">live saat pasar buka</span>
-                  </p>
-                )}
-              </div>
-            )}
 
             {/* Indicator strip anon DIHAPUS (20 Okt) — redundan: Skor Sinyal hero SSR
                 (sinyal+gauge) + 4 kartu indikator hero di bawah + guest meter CTA register */}
@@ -1270,7 +1279,7 @@ export default async function StockDetailPage({
               </span>{' '}
               {foreignLatest.netValue! >= 0 ? "akumulasi asing" : "distribusi asing"}.
             </p>
-            <p className="text-xs text-text-tertiary">
+            <p className="text-[10px] text-text-tertiary leading-snug">
               Jejak dana institusi asing = konteks informasi, bukan rekomendasi beli/jual. Lihat agregat pasar di <a className="text-accent hover:underline" href="/pasar">Koran Saham Live</a>.
             </p>
           </section>
@@ -1587,9 +1596,7 @@ export default async function StockDetailPage({
 
         {/* Daily Analysis moved up — right after chart */}
 
-        <SentimentGauge ticker={ticker} />
         <RegistrationInlinePrompt ticker={ticker} />
-        <StockDiscussion ticker={ticker} />
 
         {/* Visible FAQ — must match the FAQPage JSON-LD above (single source: faqItems) */}
         <section aria-label="Pertanyaan umum" className="bg-bg-card border border-border rounded-xl p-5">

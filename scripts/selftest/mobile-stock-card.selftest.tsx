@@ -12,7 +12,9 @@ import assert from "node:assert/strict";
 import { TradingPlanCard } from "../../src/components/stock/trading-plan-card";
 import { SignalBreakdownDetails } from "../../src/components/stock/signal-breakdown-details";
 import { StockAiPromptChips } from "../../src/components/stock/stock-ai-prompt-chips";
+import DailyAnalysisSection from "../../src/components/stock/daily-analysis-section";
 import type { TradingPlan } from "../../src/lib/trading-plan";
+import type { McResult } from "../../src/lib/monte-carlo";
 
 interface WrappedElement {
   tagName: string;
@@ -160,6 +162,130 @@ async function main() {
     check(
       "1d. Baris meta memuat Keyakinan: Sedang",
       content.includes("Keyakinan:") && content.includes("Sedang")
+    );
+  }
+
+  // 1-bis. TradingPlanCard collapsible warnings check (Task 2)
+  {
+    const planWithWarnings: TradingPlan = {
+      ...mockPlan,
+      warnings: [
+        "Market Structure menunjukkan Lower Lows (downtrend terkonfirmasi).",
+        "Volume distribusi tinggi di sesi terakhir.",
+      ],
+    };
+    const html = renderToStaticMarkup(<TradingPlanCard plan={planWithWarnings} />);
+    const root = parseHtml(html);
+    const details = root.querySelector("details");
+    const summary = root.querySelector("summary");
+    const content = root.textContent();
+
+    check(
+      "1e. Catatan risiko dibungkus native <details> yang collapsible",
+      details !== null && details.getAttribute("data-engagement") === "trading_plan_warnings_buka"
+    );
+    check(
+      "1f. Details catatan risiko default tertutup (tanpa atribut open)",
+      details !== null && !details.hasAttribute("open")
+    );
+    check(
+      "1g. Summary menampilkan satu baris ringkas dengan jumlah risiko",
+      summary !== null && summary.textContent().includes("2 catatan risiko") && summary.textContent().includes("⚠️")
+    );
+    check(
+      "1h. Isi lengkap catatan risiko tetap dirender di DOM (SEO & aksesibilitas)",
+      content.includes("Market Structure menunjukkan Lower Lows") &&
+        content.includes("Volume distribusi tinggi di sesi terakhir")
+    );
+  }
+
+  // 1-ter. TradingPlanCard Monte Carlo simulation warning in collapse (Batch-2)
+  {
+    const mcResult: McResult = {
+      simulations: 1000,
+      winRate: 0.35,
+      slRate: 0.55,
+      neitherRate: 0.1,
+      evPerShare: -25,
+      horizonDays: 14,
+    };
+    const planUnfavorable: TradingPlan = {
+      ...mockPlan,
+      riskReward: 0.8,
+      warnings: ["Volume distribusi tinggi di sesi terakhir."],
+    };
+    const html = renderToStaticMarkup(<TradingPlanCard plan={planUnfavorable} mc={mcResult} />);
+    const root = parseHtml(html);
+    const allDetails = root.querySelectorAll("details");
+    const warningDetails = allDetails.find((d) => d.getAttribute("data-engagement") === "trading_plan_warnings_buka");
+    const warningSummary = warningDetails?.querySelector("summary");
+    const content = warningDetails ? warningDetails.textContent() : "";
+
+    check(
+      "1i. Warning simulasi statistik masuk ke dalam collapse catatan risiko (total 2)",
+      warningSummary !== null && warningSummary !== undefined && warningSummary.textContent().includes("2 catatan risiko")
+    );
+    check(
+      "1j. Warning simulasi statistik memiliki prefix 🔬 dan teks lengkap di DOM",
+      content.includes("🔬") && content.includes("angka peluang di atas hanya simulasi statistik, bukan sinyal entry")
+    );
+    check(
+      "1k. Tidak ada baris warning simulasi terpisah di luar details",
+      !html.includes('bg-bg-hover -mx-1 px-2.5 py-1.5 rounded-lg')
+    );
+  }
+
+  // 1-quater. Batch-2 Disclaimers compactness check
+  {
+    const mockDailyProps = {
+      ticker: "BBCA",
+      stockName: "Bank Central Asia Tbk",
+      sector: "Financials",
+      close: 10000,
+      change: 100,
+      changePercent: 1.01,
+      high: 10100,
+      low: 9900,
+      volume: 50000000,
+      week52High: 10500,
+      week52Low: 8500,
+      rsi14: 55,
+      macdHist: 10,
+      sma20: 9900,
+      sma50: 9800,
+      sma200: 9500,
+      adx: 25,
+      stochK: 60,
+      stochD: 55,
+      supertrend: 9700,
+      atr: 150,
+      obvTrend: "bullish",
+      signalLabel: "Beli",
+      signalScore: 70,
+      emaCrossSignal: "bullish",
+      smaCrossSignal: "bullish",
+      bbUpper: 10200,
+      bbLower: 9800,
+      pe: 20,
+      pb: 4.5,
+      eps: 500,
+      dividendYield: 2.5,
+      marketCap: 1200000000000000,
+      pivotR1: 10100,
+      pivotS1: 9900,
+    };
+    const html = renderToStaticMarkup(<DailyAnalysisSection {...mockDailyProps} />);
+    const root = parseHtml(html);
+    const content = root.textContent();
+
+    check(
+      "1l. Disclaimer analisa harian tetap utuh di DOM untuk SEO",
+      content.includes("Analisa ini berdasarkan data teknikal & fundamental historis — bukan rekomendasi jual/beli") &&
+        content.includes("Selalu lakukan riset mandiri sebelum mengambil keputusan investasi")
+    );
+    check(
+      "1m. Disclaimer analisa harian menggunakan kelas compact text-[10px] text-text-tertiary",
+      html.includes("text-[10px] text-text-tertiary leading-snug")
     );
   }
 
