@@ -77,15 +77,37 @@ fi
 echo "$CHANGED" | grep -qE "^prisma/" && NEEDS_MIGRATION=true
 
 # ── 2. Rebuild and restart ──────────────────────────────────────────
+# ops-2026-11-06-04: build ATOMIK app+worker satu perintah — mencegah drift
+# image (app baru / worker lama) yang terjadi 5-6 Nov oleh deploy app-only.
 if [ "$NEEDS_REBUILD" = true ]; then
-  log "Rebuilding Docker containers..."
-  docker compose build app 2>&1 | tee -a "$LOG_FILE"
+  log "Rebuilding Docker containers (app+worker, atomik)..."
+  docker compose build app worker 2>&1 | tee -a "$LOG_FILE"
 fi
 
 log "Restarting containers..."
 docker compose up -d 2>&1 | tee -a "$LOG_FILE"
 
-# ── 3. Wait for app to be healthy ───────────────────────────────────
+# ── 3. GATE: pasangan image app==worker (ops-2026-11-06-04) ────────
+# Drift image (app baru/worker lama) terjadi 5-6 Nov via deploy app-only.
+# Gate: CreatedAt KEDUA image harus identik (build atomik satu perintah).
+# Toleransi 5 menit utk build non-paralel yang miring beberapa detik.
+APP_IMG=$(docker inspect teknikalidnew-app-1 --format '{{.Image}}' 2>/dev/null)
+WRK_IMG=$(docker inspect teknikalidnew-worker-1 --format '{{.Image}}' 2>/dev/null)
+if [ -n "$APP_IMG" ] && [ -n "$WRK_IMG" ]; then
+  APP_CREATED=$(docker inspect "$APP_IMG" --format '{{.Created}}' 2>/dev/null | sed -E 's/\.[0-9]+Z$/Z/')
+  WRK_CREATED=$(docker inspect "$WRK_IMG" --format '{{.Created}}' 2>/dev/null | sed -E 's/\.[0-9]+Z$/Z/')
+  if [ -n "$APP_CREATED" ] && [ -n "$WRK_CREATED" ]; then
+    DRIFT_S=$(python3 -c "from datetime import datetime;print(int(abs((datetime.fromisoformat('$APP_CREATED'.replace('Z','+00:00'))-datetime.fromisoformat('$WRK_CREATED'.replace('Z','+00:00'))).total_seconds())))" 2>/dev/null || echo -1)
+    if [ "$DRIFT_S" -lt 0 ] || [ "$DRIFT_S" -gt 300 ]; then
+      log "ERROR: image drift app/worker ${DRIFT_S}s > toleransi 300s (app=$APP_CREATED worker=$WRK_CREATED)."
+      log "Deploy DIBATALKAN — jalankan 'docker compose build app worker' atomik dulu."
+      exit 1
+    fi
+    log "Gate atomik OK: app/worker CreatedAt selisih ${DRIFT_S}s."
+  fi
+fi
+
+# ── 4. Wait for app to be healthy ───────────────────────────────────
 log "Waiting for app to start..."
 for i in $(seq 1 30); do
   if curl -sf http://localhost:3000/api/health > /dev/null 2>&1; then
