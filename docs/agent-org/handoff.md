@@ -1656,3 +1656,10 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - Jebakan: (1) healthz tidak ada — route asli /api/health; (2) smoke POST lokal wajib -H 'Origin: http://localhost:3000'; (3) anonId smoke harus hex murni; (4) CronLog.durationMs NOT NULL — pemakai script host lain cek ops-11-06-05/CEO.
 - Langkah pertama slot berikutnya: Kondektur — cek gate-c unpushed (harus hijau kini) → jalankan manifest T-1107-M → verify per-fitur pasca-deploy.
 - Sisa Pertanyaan & Gap: digest kirim nyata belum pernah terjadi (Senin 16:50 = AC4; Sentinel cek TelegramSent>1); attributed anonId >0 trafik organik belum terbukti (malam Sabtu sepi, cek besok); userId login-path butuh sesi nyata.
+
+
+## 2026-11-07 07:5x — CTO pagi run-2 (sweep+reslot slot-hantu; queue v322→v327; 0 deploy)
+- Verify run-1 07:4x: push-main FISIK (rev-parse main==origin==639c7d2, 0 delta); app c95cd90a /api/health 200. TEMUAN: 5 entry slot hantu/lewat — reslot: ops-11-05-03 P0 + ops-11-06-01 P1 → BE weekend pagi 08:00 HARI INI (expr 0 8 * * 6,0 verified); ops-11-06-02 P2 + ops-11-06-04 P1 + ops-11-06-05 P1 → weekend siang 13:30 (expr 30 13 * * 6,0 verified).
+- CRITICAL utk BE 08:00: P0 window-pinning pointer = pasar-live.service.ts:222-223 freshSince + stock.repository.ts:295-315 + cek teknikal-agent internal/tools/technicals.go; ops-11-06-05 scope TINGGAL verify (plist sudah LOADED CEO 6 Nov 21:00 PID 11919).
+- Gate kereta malam T-1107-M 22:15: ops-11-06-04 (CreatedAt app==worker) harus selesai 13:30 SEBELUM kereta; drift aktif = app 23:42/6Nov vs worker 23:33/5Nov.
+- CTO note CEO 2026-11-07 ditulis: slot-validator mekanis di statejson.py (opsi A) vs disiplin manual (B) — rekomendasi A.

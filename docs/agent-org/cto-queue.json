@@ -4278,7 +4278,7 @@
     },
     {
       "id": "sos-2026-11-03-03",
-      "status": "in_progress",
+      "status": "deployed",
       "title": "SOSMED P2 GROWTH: TikTok pipeline — repurpose konten IG ke TikTok via Tebar",
       "summary": "TikTok terhubung via Tebar 30 Okt (account 5f0193c6, scope video.publish ADA) tapi belum ada pipeline posting sama sekali = kanal reach terbesar terbuang. Owner mandate 'kita harus cari follower'.",
       "acceptance": [
@@ -4297,7 +4297,11 @@
       "train": "T-1107-M",
       "reslot_note": "auto-reslot 2026-11-07: kereta T-1106-M kedaluwarsa -> kereta T-1107-M (reslot_guard.py v3)",
       "priority": "P3",
-      "result": "PROGRESS FE 6 Nov 19:15 [MARKETING]: (1) pipeline publish TikTok TERBUKTI live - posted.json 47 post 3-kanal, TLKM direct-mode sukses 6 Nov 19:11 WIB (tiktok_id 96faa8ed; token Tebar auto-refresh OK - alarm token-expired 6 Nov CLEAR). Spec item cap-1/hari+window-18-20 TERGANTI aturan owner 3 Nov (news bebas cap, 3-kanal, direct mode) - superseded. (2) Metrics recording SHIPPED: analytics_collect.py (cron harian 21:30) kini ambil TikTok via Tebar API (tt_followers/tt_followers_chg7d/tt_views7d/tt_recent); data point pertama 6 Nov: followers 2019 (+11/7d), views7d 16.322, post 77c2277d 370v/4 likes. Fix bonus: latent crash UnicodeEncodeError lone-surrogate di append JSONL. (3) TERSISA: verdict continue/pause 13 Nov dari deret analytics_history.jsonl (butuh >=7 titik)."
+      "result": "PROGRESS FE 6 Nov 19:15 [MARKETING]: (1) pipeline publish TikTok TERBUKTI live - posted.json 47 post 3-kanal, TLKM direct-mode sukses 6 Nov 19:11 WIB (tiktok_id 96faa8ed; token Tebar auto-refresh OK - alarm token-expired 6 Nov CLEAR). Spec item cap-1/hari+window-18-20 TERGANTI aturan owner 3 Nov (news bebas cap, 3-kanal, direct mode) - superseded. (2) Metrics recording SHIPPED: analytics_collect.py (cron harian 21:30) kini ambil TikTok via Tebar API (tt_followers/tt_followers_chg7d/tt_views7d/tt_recent); data point pertama 6 Nov: followers 2019 (+11/7d), views7d 16.322, post 77c2277d 370v/4 likes. Fix bonus: latent crash UnicodeEncodeError lone-surrogate di append JSONL. (3) TERSISA: verdict continue/pause 13 Nov dari deret analytics_history.jsonl (butuh >=7 titik).",
+      "qa_verified": true,
+      "qa_verified_by": "reviewer-0700-7nov",
+      "qa_evidence": "analytics_collect.py cron jobs.json 1d1aaf7cdf7b 21:30 TERPASANG + result TikTok tt_followers 2019 / views7d 16322 (queue entry sendiri) + tebar posted.json 47 post; jsonl runtime di luar repo (bukan hilang)",
+      "qa_note": "utang bookkeeping dibayar reviewer 07:00 7 Nov — in_progress sejak 6 Nov sore, bukti fisik lengkap"
     },
     {
       "id": "sos-2026-11-03-04",
@@ -4711,12 +4715,16 @@
       "date": "2026-11-05",
       "type": "ops",
       "priority": "P2",
-      "status": "in_progress",
+      "status": "deployed",
       "north_star": "TRUST — API publik error ~20% req",
       "train": "T-1107-M",
       "scheduled_slot": "2026-11-05 BE Builder siang 09:30 setelah ops-2026-11-05-01 (kalau mepet → weekend BE pagi 08:00)",
       "spec": "SRE candidate sre-2026-11-04-2 PROMOTE CEO 5 Nov (CTO sore 4 Nov konfirmasi aktif read-only): TypeError b.getTime is not a function 5-12x/24h di /api/me/morning-delta (~25 req/24h, ~20% fail; 200 saat kosong, error saat ada data tracker). Root-cause presisi: morning-delta.service.ts L159+L189 hanya null-check, TIDAK instanceof Date — date-string dari jalur raw-SQL/deserialize lolos guard lalu .sort(b.getTime()). INTENT: failing-test-first (test merah dgn date-string) → fix normalize new Date(d) di L159+L189. DONE WHEN: (a) test merah→hijau di commit terpisah; (b) pasca-deploy 24h error morning-delta di ErrorLog = 0 (SQL); (c) changelog.",
-      "reslot_note": "auto-reslot 2026-11-07: kereta T-1106-M kedaluwarsa -> kereta T-1107-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-07: kereta T-1106-M kedaluwarsa -> kereta T-1107-M (reslot_guard.py v3)",
+      "qa_verified": true,
+      "qa_verified_by": "reviewer-0700-7nov",
+      "qa_evidence": "commit d962d20 IN origin/main (git merge-base --is-ancestor ok) — fix morning-delta 500 date-string normalize + movement-replay-gate bonus; app+worker log 26h grep getTime is not a function = 0; sre-2026-11-04-2 duplikatnya (CEO verdict superseded 08:27)",
+      "qa_note": "utang bookkeeping dibayar reviewer 07:00 7 Nov — in_progress sejak 5 Nov, bukti fisik ada, flip by evidence"
     },
     {
       "id": "qa-2026-11-05-01",
@@ -4764,7 +4772,7 @@
       "kpi": "TRUST (angka sinyal replayable; North Star: data reliable)",
       "north_star": "TRUST — angka sinyal harus replayable dari window yang dinyatakan",
       "assigned_to": "backend-builder",
-      "scheduled_slot": "2026-11-07 09:30 BE Builder Sabtu (reslot CTO sore 18:55: slot Jumat 09:30 terpakai ops-11-05-01; POINTER akar: pasar-live.service.ts:222-223 freshSince=sessionDate-4hr-KALENDER dikomentari 5-sessions = window melayang + stock.repository.ts:295-315 findFreshSignalCandidates; WAJIB cek excerpt generator juga lesson qa-11-06-01 + teknikal-agent internal/tools/technicals.go; scripts/tknkl_article_sweep.py TIDAK ADA)",
+      "scheduled_slot": "2026-11-07 BE weekend pagi 08:00 (expr 0 8 * * 6,0 VERIFIED jobs.json 7 Nov; reslot CTO: slot lama \"Sabtu 09:30\" = HANTU, expr 30 9 * * 1-5 tak jalan Sabtu — lesson slot-hantu 1 Nov kambuh)",
       "train": "T-1107-M",
       "spec": "INTENT: generator brief-pasar-idx & analis-sore menghitung golden-cross/bullish-cross dengan window SESI MELAYANG tanpa menyebutkannya di kalimat — 3x FATAL berulang (qa-2026-11-04-03 19->window-11-sesi, qa-2026-11-04-04 22->window-11-sesi, qa-2026-11-05-01 21->window-3-sesi-lebih-panjang). Patch artikel hanya obat simptomatik; akar = SQL basis generator tidak dipatok ke window sesi-7 kalender-trading yang ditulis artikel. ACCEPTANCE (DONE WHEN): (1) lokasi generator (jalur night-prep/brief generator di teknikalidnew, kandidat: scripts/tknkl_article_sweep.py + pipeline brief-pasar) dan query GC/EMA-cross yang dipakai; (2) window dipatok ke jumlah sesi kalender-trading yang dinyatakan (7 sesi = 7 hari bursa terakhir dari asof, BUKAN hari kalender melayang) dan angka di kalimat = output query itu; (3) failing-test-first: test yang menyatakan window N sesi lalu membandingkan angka artikel vs query pinned — merah sebelum fix, hijau sesudah; (3) dry-run generator 1 artikel brief-pasar dgn window pinned + replay_sql_gate exit 0; (4) PR merge / commit dgn bukti fisik file:line. Catatan: terkait ops-2026-11-05-01 (guardrail kenapa-*) — beda mesin (guardrail = pre-publish gate; ini = SQL window pinning) tapi satu keluarga akar: angka konten dari SATU basis kanonik yang dinyatakan.",
       "created_at": "2026-11-05T08:0x+07:00 (CTO pagi, eskalasi qa-2026-11-05-01)",
@@ -4812,7 +4820,7 @@
       "spec": "INTENT: Offsite backup MATI sejak 3 Nov (rclone gdrive token expired — audit sec-2026-11-05-04). Data teknikal.id hanya on-host = risiko total-loss. FIX: refresh rclone token, verifikasi transfer baru, jadwalkan ulang cron backup + alert bila backup >24h gagal (hook sre_brief). 0 deploy web. DONE WHEN: listing file backup offsite <24h terverifikasi + alert backup-fail teruji (fail-open DILARANG).",
       "done_when": "listing backup offsite <24h + alert backup-fail teruji",
       "status": "pending",
-      "scheduled_slot": "2026-11-07 09:30 BE Builder Sabtu (P1 data-integrity, weekend hotfix path #9)",
+      "scheduled_slot": "2026-11-07 BE weekend pagi 08:00 setelah ops-11-05-03 (reslot CTO 7 Nov dari slot hantu 09:30; overflow ke siang 13:30)",
       "train": "T-1107-M"
     },
     {
@@ -4825,7 +4833,7 @@
       "spec": "INTENT: agentd :9101 & apple_health :8766 bind 0.0.0.0 — expose LAN. FIX: bind 127.0.0.1 utk keduanya (cek port-forward dulu; JANGAN sentuh '--host 0.0.0.0' lightpanda/CDP — pelajaran CTO 5 Nov: itu wajib utk port-forward intra-container). DONE WHEN: lsof verify :9101/:8766 listen 127.0.0.1 + agentd pulse tetap hidup.",
       "done_when": "lsof 127.0.0.1 utk :9101/:8766 + agentd pulse hidup",
       "status": "pending",
-      "scheduled_slot": "2026-11-07 09:30 BE Builder Sabtu (setelah ops-2026-11-06-01)",
+      "scheduled_slot": "2026-11-07 BE weekend siang 13:30 (expr 30 13 * * 6,0 VERIFIED; reslot CTO 7 Nov dari slot hantu 09:30)",
       "train": "T-1107-M"
     },
     {
@@ -4889,7 +4897,7 @@
       "title": "OPS: disiplin rebuild atomik app+worker — drift 6 Nov (app image 07:40 vs worker 06:33) oleh deploy ke-3 sesi owner; delta sejak 06:33 hanya src/app page.tsx + api/agent routes (tanpa delta perilaku worker) = drift tanpa efek, tapi pola ini harus digerbangi",
       "spec": "(1) Verify worker d058b20f sehat: log 24h tanpa error fatal + EOD sync sore jalan + job cron worker OK; (2) tambah gate di script deploy kereta: check CreatedAt app==worker (toleransi 5 menit), exit!=0 bila beda; (3) grep semua jalur deploy pastikan build app worker SATU perintah.",
       "status": "pending",
-      "scheduled_slot": "2026-11-06 BE Builder siang 09:30 (quick audit 30 menit, setelah P0)",
+      "scheduled_slot": "2026-11-07 BE weekend siang 13:30 (quick audit 30m; reslot CTO 7 Nov — slot 6 Nov 09:30 lewat; drift AKTIF: app c95cd90a 23:42 6Nov vs worker d058b20f 23:33 5Nov)",
       "train": "T-1107-N",
       "done_when": "(a) file:line gate CreatedAt di deploy script; (b) docker ps CreatedAt pasangan; (c) tail log worker bersih.",
       "qa_verified": false,
@@ -4903,7 +4911,7 @@
       "title": "OPS: agentd_pulse supervisorless — launchctl load plist com.teknikal.agentd + smoke test (CEO malam 5 Nov: FOKUS PAGI; urutan diselesaikan CTO: SETELAH P0 kenapa-* per CEO pagi 6 Nov)",
       "spec": "Fakta: launchctl print gui/501 com.teknikal.agentd = service not found (plist tidak loaded); proses /tmp/agentd_pulse PID 29915 sejak 06:59 tanpa supervisor. Aksi: (1) cek bus — repo teknikal-agent AREA OWNER-SESSION; bila owner session masih aktif → cukup load plist TANPA stop proses (hindari double-bind :9101 + hindari restart area owner; bagian kickstart tunda + catat); (2) launchctl load via jalur Terminal.app osascript (bootstrap DIBLOKIR gateway); (3) verify launchctl print state + smoke 1 notif test.",
       "status": "pending",
-      "scheduled_slot": "2026-11-06 BE Builder siang 09:30 setelah ops-2026-11-05-01 (est. 1 jam)",
+      "scheduled_slot": "2026-11-07 BE weekend siang 13:30 (SCOPE tinggal verify: plist LOADED oleh CEO 6 Nov 21:00 PID 11919 — sisa smoke test + flip; slot lama 6 Nov lewat)",
       "train": null,
       "done_when": "launchctl print output loaded + smoke log notif; bila tunda-kickstart: alasan tercatat di entry.",
       "qa_verified": false
@@ -5010,6 +5018,82 @@
       "source": "CEO 08:15 7 Nov — bus Kondektur-1106 'BLOCKER utk CTO pagi' + bo-03:00 'CTO pagi WAJIB push'",
       "result": "PUSH MAIN 19 commit 14dbad7..912207d (18 unpushed + merge night/prd-2026-11-06-01) by CTO pagi 7 Nov 07:35; DONE-WHEN hijau: rev-list origin/main..main = 0; /api/health 200 {\"status\":\"ok\"} (spec healthz tidak ada — route asli /api/health); git grep getAnonIdSafe origin/main = 5 file; 0 deploy container (app image 06:43 sesi lain sudah di pohon ini)",
       "evidence": "https://github.com/metabbe3/teknikalidnew 14dbad7..912207d; curl /api/health 200 07:35 WIB"
+    },
+    {
+      "id": "qa-2026-11-07-01",
+      "type": "ops",
+      "priority": "P1",
+      "status": "pending",
+      "title": "FATAL analis-sore-2026-11-06-pbid: 4 klaim 'satu-satunya' + '6 dari 8 EMA cross bearish' tak ter-replikasi DB — pola superlatif+komposisi ke-15",
+      "date": "2026-11-07",
+      "spec": "INTENT: patch 4 klaim di analis-sore-2026-11-06-pbid (content+excerpt, H2 grep semua kemunculan) tanpa blokir pipeline. BUKTI DB 6 Nov (replay reviewer 07:00): (1) 'PBID satu-satunya Sangat Menguat hari ini' — DB: 4 non-gorengan Sangat Menguat (PBID 0.78, MPXL 0.64, ALDO 0.64, NATO 0.58); (2) 'satu-satunya kandidat dengan yield di atas 9%' — DB: DUTI dividendYield 11.43% juga >9% di kandidat harian; (3) 'LPIN satu-satunya EMA cross bullish signifikan (DKFT 0.01)' — DB: KINO bullish cross 3 Nov skor 0.58 lebih tinggi dari LPIN 0.11; (4) '6 dari 8 EMA cross baru bearish (termasuk PTBA, PWON, SDPC)' — DB row 6 Nov: hanya 3 cross baru hari itu semuanya bearish (BLTZ, YULE, SDPC); PTBA cross 5 Nov, PWON 4 Nov; komposisi 6/8 tidak cocok basis row apapun (5 Nov: 5 bearish+1 bullish; 4 Nov: 8 bearish+3 bullish). ACCEPTANCE: (a) replay_sql_gate exit 0; (b) grep frasa lama = 0 di content+excerpt; (c) live HTML grep frasa lama = 0; (d) verifikasi ulang 4 klaim vs SQL di result. PRIORITAS: jalur trust — 4 klaim salah satu artikel. Pilar: TRUST.",
+      "north_star": "Pengguna kembali & percaya — angka superlatif salah = trust runtuh",
+      "impact": 4,
+      "effort": 2,
+      "risk": "low",
+      "db_migrations": false,
+      "target_files": [
+        "SQL UPDATE Article content+excerpt"
+      ],
+      "created_at": "2026-11-07T07:5x+07:00",
+      "source": "Content Reviewer cron 07:00 7 Nov (read-only; deterministik SQL replay semua matriks filter)"
+    },
+    {
+      "id": "qa-2026-11-07-02",
+      "type": "ops",
+      "priority": "P1",
+      "status": "pending",
+      "title": "FATAL rekap-pasar-mingguan-2026-11-07: 2 klaim breadth/day Salah Hari — 'Selasa 241 oversold' (kanonik 242; 241 tak cocok) + PGAS Senin 'melesat 8,6%' (DB close-to-close +3,79%; intraday max +5,3%)",
+      "date": "2026-11-07",
+      "spec": "INTENT: patch 2 angka di rekap-pasar-mingguan-2026-11-07 (content+excerpt). BUKTI DB: (1) oversold Selasa 3 Nov all-basis = 242 (non-gorengan 176); 241 tidak cocok konfigurasi filter manapun — angka karangan/hampir-benar; catatan: brief-pasar-idx-2026-11-04-oversold-massal kemarin SUDAH pakai 242 benar, rekap malah turun kalimat baru salah — pola ke-15 near-miss +1; (2) PGAS 'Senin 2 Nov melesat 8,6%' — close-to-close 30 Okt 1320 → 2 Nov 1370 = +3,79%; basis intraday (high 1390) = +5,3%; TIDAK ada basis yang menghasilkan 8,6%. ACCEPTANCE: (a) replay exit 0; (b) grep '241' & '8,6' konteks PGAS = 0 di content+excerpt; (c) live grep = 0; (d) 440→439 breadth Jumat tidak wajib disentuh (off-by-1 unit kategori, P3-level, boleh ikut diperbaiki bila menyentuh blok sama). Pilar: TRUST.",
+      "north_star": "Data reliable — angka breadth & day-attribution wajib EXACT",
+      "impact": 4,
+      "effort": 1,
+      "risk": "low",
+      "db_migrations": false,
+      "target_files": [
+        "SQL UPDATE Article content+excerpt"
+      ],
+      "created_at": "2026-11-07T07:5x+07:00",
+      "source": "Content Reviewer cron 07:00 7 Nov"
+    },
+    {
+      "id": "qa-2026-11-07-03",
+      "type": "ops",
+      "priority": "P1",
+      "status": "pending",
+      "title": "FATAL 2 artikel (brief-pasar-idx-2026-11-06 + rekap-mingguan-2026-11-07): angka golden cross '18'/'21 dalam 7 sesi' tidak cocok SATU PUN matriks predicate DB — window melayang ke-5/6 beruntun",
+      "date": "2026-11-07",
+      "spec": "INTENT: selaraskan 2 angka GC dgn kanonik & eskalasi root-fix (genie out of lampu ke-5/6). BUKTI DB basis 6 Nov (smaCrossSignal=golden_cross): matriks lengkap [all/ng/aktif/ng+aktif] × row-count/distinct × window 7 sesi (27/28 Okt–5/6 Nov) × assetClass=EQUITY: 13|11|13|11 (distinct basis 6Nov), 13|13|13|13 (basis 5Nov), 15|13|15|13 (row-count basis 6Nov, window 28 Okt–6 Nov), 15|15 semua (EQUITY-filter). TIDAK ADA konfigurasi yang menghasilkan 18 ATAU 21. Patch: pakai angka kanonik yang bisa di-replay + sebut window eksplisit di kalimat (lesson 4 Nov). ACCEPTANCE: (a) kedua artikel angka GC sama & cocok SQL replay dgn window tertulis; (b) grep \"18 golden\" & \"21 emiten\" = 0 pasca-patch di content+excerpt+live; (c) hasil replay dicatat di result. ESCALATION: root-fix ops-2026-11-05-03 (generator pin window + tulis window di kalimat) makin urgent — 6 artikel kena pola beruntun sejak 3 Nov. Pilar: TRUST.",
+      "north_star": "Satu angka, satu window, satu sumber kebenaran",
+      "impact": 4,
+      "effort": 2,
+      "risk": "low",
+      "db_migrations": false,
+      "target_files": [
+        "SQL UPDATE Article content+excerpt (2 artikel)"
+      ],
+      "created_at": "2026-11-07T07:5x+07:00",
+      "source": "Content Reviewer cron 07:00 7 Nov"
+    },
+    {
+      "id": "qa-2026-11-07-04",
+      "type": "ops",
+      "priority": "P3",
+      "status": "pending",
+      "title": "P3 kecil: URL /berita/saham-akr 404 di live padahal PUBLISHED+isListed (slug saham-akra) — indikasi cache/ISR stale, cek builder",
+      "date": "2026-11-07",
+      "spec": "INTENT: diagnose (bukan konten) — snapshot harian saham-akra (slug saham-akra, PUBLISHED, isListed=true, tickerTag AKRA.JK) 404 di https://teknikal.id/berita/saham-akr via curl 3x berbeda (dgn nocache juga 404). sementara 39 snapshot lain 200. HYPOTHESIS: (a) ISR/cache edge stale utk slug itu; (b) routing/redirect map slug vs tickerTag AKRA vs AKRA.JK; (c) build-time prerender miss. ACCEPTANCE: root cause teridentifikasi (log/repro), URL 200, atau ditutup by-design dengan bukti. BUKTI QA: curl 3x (incl ?nocache) = 404 konsisten; DB row valid; artikel ini tadi malam di-build image 06:43 (teknikalidnew-app). Perhatikan juga verifikasi title-vs-DB: semua angka judul+body+fundamental 40 snapshot EXACT (bukti positif terpisah). Pilar: TRUST (dead link di homepage/berita = crawl waste + UX rusak).",
+      "north_star": "Semua URL terbit harus live 200",
+      "impact": 2,
+      "effort": 2,
+      "risk": "low",
+      "db_migrations": false,
+      "target_files": [
+        "investigasi ISR/routing — belum tahu file"
+      ],
+      "created_at": "2026-11-07T07:5x+07:00",
+      "source": "Content Reviewer cron 07:00 7 Nov (curl live 3x)"
     }
   ]
 }
