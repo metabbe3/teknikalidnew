@@ -64,6 +64,11 @@ const MOVER_VOLUME_FLOOR = 1_000_000;
 // berubah saat EOD sync; hindari 2 query aggregate tiap render halaman).
 const OVERSOLD_CACHE_KEY = "oversold-count-v1";
 const OVERSOLD_TTL_MS = 300_000;
+// ops-2026-11-05-03: cache signal counts window 7-SESI (pinned trading sessions,
+// bukan hari kalender). 3x FATAL konten: LLM mengarang "19/21/22 golden cross"
+// karena context tak memuat angka sinyal; angka kanonik sekarang SATU PINTU di sini.
+const SIGNAL_COUNTS_CACHE_KEY = "signal-counts-v1";
+const SIGNAL_COUNTS_TTL_MS = 300_000;
 
 type SessionRow = { ticker: string; name: string; sector: string; close: number; prev: number; volume: bigint };
 
@@ -75,6 +80,22 @@ export interface VolumeLeaderRow {
   close: number | null;
   prev: number | null;
   volume: number;
+}
+
+/**
+ * Signal counts kanonik window 7 SESI bursa (ops-2026-11-05-03).
+ * Window = 7 tanggal sesi DISTINCT terakhir (equity aktif, volume > 0),
+ * BUKAN hari kalender — pola kalender "max(date) - interval '6 days'"
+ * melewatkan/memotong sesi lintas weekend dan menghasilkan angka yang
+ * tidak bisa di-replay dari kalimat artikel.
+ */
+export interface SignalCounts {
+  sessionDate: string;
+  windowStartDate: string;
+  goldenCross7s: number;
+  deathCross7s: number;
+  emaBullish7s: number;
+  emaBearish7s: number;
 }
 
 async function computeSnapshot(): Promise<MarketSnapshot> {
@@ -213,6 +234,71 @@ export const marketSnapshotService = {
     } catch {
       return 0;
     }
+  },
+
+  /**
+   * Signal counts window 7 SESI bursa — SATU PINTU (ops-2026-11-05-03).
+   * Dipakai gatherMarketContext agar generator brief/analis tidak lagi
+   * mengarang jumlah golden cross / EMA cross (3x FATAL: qa-11-04-03/04, qa-11-05-01).
+   * Window pinned: 7 tanggal sesi DISTINCT terakhir ber-volume — definisi
+   * identik dengan selftest signal-window-pinning (parity layer B).
+   * Throw saat DB gagal — pemanggil konten punya catch-null fallback sendiri
+   * (fail-open context, bukan fail-open angka).
+   */
+  async getSignalCounts(): Promise<SignalCounts> {
+    const cached = stockCache.get(SIGNAL_COUNTS_CACHE_KEY);
+    if (cached) return cached as SignalCounts;
+
+    const sessionRows = await prisma.$queryRaw<Array<{ date: Date }>>`
+      SELECT DISTINCT sp.date
+      FROM "StockPrice" sp
+      JOIN "Stock" s ON s.id = sp."stockId"
+      WHERE s."assetClass" = 'EQUITY' AND s."isActive" = true AND sp.volume > 0
+      ORDER BY sp.date DESC
+      LIMIT 7`;
+    if (sessionRows.length < 7) {
+      throw new Error(`getSignalCounts: butuh 7 sesi, hanya ada ${sessionRows.length}`);
+    }
+    const sessionDate = sessionRows[0].date;
+    const windowStartDate = sessionRows[6].date;
+
+    const counts = await prisma.$queryRaw<Array<{
+      gc: bigint; dc: bigint; eb: bigint; es: bigint;
+    }>>`
+      SELECT
+        count(DISTINCT si."stockId") FILTER (
+          WHERE si."smaCrossSignal" = 'golden_cross'
+            AND si."smaCrossDate" >= ${windowStartDate} AND si."smaCrossDate" <= ${sessionDate}
+        )::bigint AS gc,
+        count(DISTINCT si."stockId") FILTER (
+          WHERE si."smaCrossSignal" = 'death_cross'
+            AND si."smaCrossDate" >= ${windowStartDate} AND si."smaCrossDate" <= ${sessionDate}
+        )::bigint AS dc,
+        count(DISTINCT si."stockId") FILTER (
+          WHERE si."emaCrossSignal" = 'bullish'
+            AND si."emaCrossDate" >= ${windowStartDate} AND si."emaCrossDate" <= ${sessionDate}
+        )::bigint AS eb,
+        count(DISTINCT si."stockId") FILTER (
+          WHERE si."emaCrossSignal" = 'bearish'
+            AND si."emaCrossDate" >= ${windowStartDate} AND si."emaCrossDate" <= ${sessionDate}
+        )::bigint AS es
+      FROM "StockIndicator" si
+      JOIN "Stock" s ON s.id = si."stockId"
+      WHERE si.interval = '1d'
+        AND s."isActive" = true AND s."assetClass" = 'EQUITY' AND s.ticker NOT LIKE '^%'
+        AND COALESCE(si."isGorengan", false) = false`;
+    const row = counts[0] ?? { gc: BigInt(0), dc: BigInt(0), eb: BigInt(0), es: BigInt(0) };
+
+    const out: SignalCounts = {
+      sessionDate: sessionDate.toISOString().slice(0, 10),
+      windowStartDate: windowStartDate.toISOString().slice(0, 10),
+      goldenCross7s: bigIntToNumber(row.gc) ?? 0,
+      deathCross7s: bigIntToNumber(row.dc) ?? 0,
+      emaBullish7s: bigIntToNumber(row.eb) ?? 0,
+      emaBearish7s: bigIntToNumber(row.es) ?? 0,
+    };
+    stockCache.set(SIGNAL_COUNTS_CACHE_KEY, out, SIGNAL_COUNTS_TTL_MS);
+    return out;
   },
 
   /**

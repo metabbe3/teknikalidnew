@@ -731,7 +731,7 @@ export const articleService = {
         : []),
       `Tulis BRIEF PASAR HARI INI untuk ${dateId} (pasar IDX).`,
       "Struktur: (1) ringkasan singkat kondisi pasar dan breadth, (2) top movers hari ini dengan alasan teknikalnya,",
-      "(3) sinyal teknikal yang menonjol — golden cross / death cross / oversold baru — sebut ticker spesifik,",
+      "(3) sinyal teknikal yang menonjol — gunakan HANYA angka kanonik dari blok SINYAL TEKNIKAL di context (golden cross / death cross / EMA cross 7 sesi) dan sebut ticker spesifik dari tabel saham,",
       "(4) apa yang perlu dipantau besok.",
       "WAJIB menyebut ticker spesifik (format 4 huruf, mis. BBCA, TLKM) agar ter-link otomatis ke chart sahamnya.",
       "Volume di data dalam SATUAN SAHAM — tulis 'juta saham'/'ribu saham', JANGAN pernah 'lot'.",

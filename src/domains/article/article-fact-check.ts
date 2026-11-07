@@ -2,6 +2,7 @@ import { createAIClient } from "@/lib/ai-client";
 import { IDX40 } from "@/lib/constants";
 import { decimalToNumber, bigIntToNumber } from "@/lib/serialize";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
+import { marketSnapshotService, type SignalCounts } from "@/domains/stock/market-snapshot.service";
 import { fetchQuote } from "@/lib/yahoo-finance";
 import { passesTitleGuard } from "./title-guard";
 import { articleRepository } from "./article.repository";
@@ -30,6 +31,13 @@ export interface MarketContext {
     rsi14: number | null;
     sector: string;
   }>;
+  /**
+   * ops-2026-11-05-03: signal counts kanonik window 7 SESI — angka SATU-SATU
+   * yang boleh dipakai generator untuk klaim jumlah golden cross / EMA cross.
+   * Null = query gagal (fail-open context); generator harus TIDAK menyebut
+   * angka sinyal ketika null.
+   */
+  signals: SignalCounts | null;
 }
 
 export interface ExtractedClaim {
@@ -198,7 +206,15 @@ export async function gatherMarketContext(tickers?: string[]): Promise<MarketCon
     }
   }
 
-  return { date, latestSessionDate, ihsg, usdIdr, topStocks, relatedStocks };
+  // ops-2026-11-05-03: signal counts kanonik (window 7 sesi, SATU PINTU service).
+  // Fail-open context: null saat DB error — prompt lalu TIDAK memuat blok sinyal,
+  // dan aturan angka melarang generator menyebut jumlah sinyal sendiri.
+  const signals = await marketSnapshotService.getSignalCounts().catch((err) => {
+    console.warn("[FactCheck] getSignalCounts failed (signals=null):", err instanceof Error ? err.message : err);
+    return null;
+  });
+
+  return { date, latestSessionDate, ihsg, usdIdr, topStocks, relatedStocks, signals };
 }
 
 // ── Format market context for prompt injection ──
@@ -240,6 +256,17 @@ export function formatMarketContextForPrompt(ctx: MarketContext): string {
         : "";
       lines.push(`- ${s.ticker} (${s.name}, Sektor: ${s.sector}): ${price}${change}`);
     }
+  }
+
+  if (ctx.signals) {
+    const sig = ctx.signals;
+    lines.push("");
+    lines.push(`**SINYAL TEKNIKAL 7 SESI TERAKHIR (KANONIK — sesi ${sig.windowStartDate} s/d ${sig.sessionDate}; ANGKA INI SATU-SATUNYA YANG BOLEH DIPAKAI)**:`);
+    lines.push(`- Golden cross (SMA 20/50): ${sig.goldenCross7s} saham`);
+    lines.push(`- Death cross (SMA 20/50): ${sig.deathCross7s} saham`);
+    lines.push(`- EMA cross bullish: ${sig.emaBullish7s} saham`);
+    lines.push(`- EMA cross bearish: ${sig.emaBearish7s} saham`);
+    lines.push("DILARANG menghitung ulang, mengubah, atau menyebut jumlah sinyal lain di luar empat angka ini.");
   }
 
   lines.push("");
