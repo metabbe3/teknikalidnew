@@ -41,6 +41,11 @@ import { StockFAQWidget } from "@/components/faq/stock-faq-widget";
 import { CompanyDataTabs } from "@/components/stock/company-data-tabs";
 import { StockPaperPosition } from "@/components/paper-trading/stock-paper-position";
 import { SignalBreakdownDetails } from "@/components/stock/signal-breakdown-details";
+import {
+  GuestQuotaProvider,
+  GuestTradingPlanGate,
+  GuestSignalBreakdownGate,
+} from "@/components/stock/guest-quota";
 import { StockLogo } from "@/components/stock/stock-logo";
 import { StockPortfolioCta } from "@/components/stock/stock-portfolio-cta";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
@@ -770,6 +775,8 @@ export default async function StockDetailPage({
               {close === null && <RepeatVisitHint ticker={ticker} />}
             </div>
 
+            {/* Guest Quota Provider (W1a, Freemium 3 Saham) */}
+            <GuestQuotaProvider ticker={stripJk(ticker)} isAuthed={isAuthed}>
             {/* Skor Sinyal hero — verdict instan (riset NBER: 6 menit riset, verdict dulu baru data).
                 SSR utk semua visitor: trust builder + rich answer utk crawler. */}
             {indicators && indicators.signalScore !== null && indicators.signalScore !== undefined && (() => {
@@ -807,7 +814,7 @@ export default async function StockDetailPage({
                       <p className="mt-1.5 text-[11px] text-text-tertiary">Gabungan 9 indikator teknikal — RSI, MACD, tren, momentum, volume</p>
                     </div>
                   </div>
-                  <SignalBreakdownDetails breakdown={signalBreakdown} />
+                  <GuestSignalBreakdownGate breakdown={signalBreakdown} ticker={stripJk(ticker)} isAuthed={isAuthed} />
                   {/* Cross-sell agent (owner 6 Nov): konsultasi via bot — selalu tampil di fold-1 */}
                   <div className="mt-3">
                     <a
@@ -871,7 +878,12 @@ export default async function StockDetailPage({
               <div className="mt-4">
                 <span id="plan" className="block scroll-mt-24" />
                 {fullAccess ? (
-                  <TradingPlanCard plan={tradingPlan} mc={mcProbability} />
+                  <GuestTradingPlanGate
+                    ticker={stripJk(ticker)}
+                    plan={tradingPlan}
+                    mc={mcProbability}
+                    isAuthed={isAuthed}
+                  />
                 ) : (
                   <LoginGate
                     feature="Rencana Trading"
@@ -880,6 +892,7 @@ export default async function StockDetailPage({
                 )}
               </div>
             )}
+            </GuestQuotaProvider>
 
             {/* Anti-dead-end peer chips (Batch B) */}
             {bridgePeers.length > 0 && (
