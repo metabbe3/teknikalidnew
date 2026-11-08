@@ -4541,7 +4541,11 @@
       "result": "SHIPPED oleh slot BE 5-6 Nov; verify Backoffice 8 Nov (H3: bukti fisik bukan verdict): (1) feedback live: agent.agent_feedback 3 rows (owner 500212724, all up, 2x 5Nov + 1x 6Nov); bot cmd/agentd/handler_callbacks.go:756 tombol Wave-2; panel agentbot-tab.tsx:296-329. (2) tool-audit live: agent.agent_tool_audit 191 rows, 7d get_technicals 22/p50 102ms, compare_stocks 6/p50 1056ms outlier; API agent-bot/route.ts:151-156 n/errs/p50/p90. (3) verify-via-API Midtrans live: grep \"Verify-via-API mismatch\" HIT di .next/server/app/api/payment/notification/route.js container app; commit fc9ff80 (fix crash 6 Nov, transaksi pertama owner). Replay settlement tidak diulang (bukti banked audit 4 Nov).",
       "scheduled_slot": "2026-11-05 18:30 BE malam Kamis BUILD-ONLY (Wave-2 feedback + webhook verify-via-API; boarding gate: bukti fisik replay+panel; naik kereta T-1105-N 22:15 bila hijau — cap deploy 2/hari: pivot 06:59 sudah pakai 1)",
       "reslot_note": "auto-reslot 2026-11-07: kereta T-1106-N kedaluwarsa -> kereta T-1107-N (reslot_guard.py v3)",
-      "verified_by": "backoffice-builder 2026-11-08 03:1x WIB"
+      "verified_by": "backoffice-builder 2026-11-08 03:1x WIB",
+      "qa_verified": true,
+      "qa_note": "TRUE 8Nov 22:xx Sentinel: feedback 3 rows + tool_audit 192 rows (get_technicals 7d=22) + grep Verify-via-API HIT container + handler_callbacks.go:793; replay settlement BANKED audit 4Nov (verifier 45 kirim-dgn-catatan; gofmt drift pre-existing commit lain)",
+      "qa_verified_at": "2026-11-08 22:1x WIB (sentinel-2200)",
+      "qa_verified_by": "sentinel-2200"
     },
     {
       "id": "bo-2026-11-04-04",
@@ -4726,7 +4730,11 @@
       "spec": "INTENT: generator brief-pasar-idx & analis-sore menghitung golden-cross/bullish-cross dengan window SESI MELAYANG tanpa menyebutkannya di kalimat — 3x FATAL berulang (qa-2026-11-04-03 19->window-11-sesi, qa-2026-11-04-04 22->window-11-sesi, qa-2026-11-05-01 21->window-3-sesi-lebih-panjang). Patch artikel hanya obat simptomatik; akar = SQL basis generator tidak dipatok ke window sesi-7 kalender-trading yang ditulis artikel. ACCEPTANCE (DONE WHEN): (1) lokasi generator (jalur night-prep/brief generator di teknikalidnew, kandidat: scripts/tknkl_article_sweep.py + pipeline brief-pasar) dan query GC/EMA-cross yang dipakai; (2) window dipatok ke jumlah sesi kalender-trading yang dinyatakan (7 sesi = 7 hari bursa terakhir dari asof, BUKAN hari kalender melayang) dan angka di kalimat = output query itu; (3) failing-test-first: test yang menyatakan window N sesi lalu membandingkan angka artikel vs query pinned — merah sebelum fix, hijau sesudah; (3) dry-run generator 1 artikel brief-pasar dgn window pinned + replay_sql_gate exit 0; (4) PR merge / commit dgn bukti fisik file:line. Catatan: terkait ops-2026-11-05-01 (guardrail kenapa-*) — beda mesin (guardrail = pre-publish gate; ini = SQL window pinning) tapi satu keluarga akar: angka konten dari SATU basis kanonik yang dinyatakan.",
       "created_at": "2026-11-05T08:0x+07:00 (CTO pagi, eskalasi qa-2026-11-05-01)",
       "reslot_note": "auto-reslot 2026-11-08: kereta T-1107-M kedaluwarsa -> kereta T-1108-M (reslot_guard.py v3)",
-      "result": "BUILD-ONLY done 08:35: repo fix 188ad2e (getSignalCounts 7-SESI SATU PINTU + blok KANONIK prompt + fail-open null) + test merah cc190f0→hijau 3/3; parity 3 jalur EXACT GC14/DC20/EMA18/54 window 2026-10-29..11-06 (repo service · mandor_brief.py · teknikalid_growth.py); dry-run prompt blok kanonik masuk (DRYRUN OK); tsc 0; build 0 BUILD_ID 08:31; push origin/main dbda3fe..188ad2e rev-list=0. Host scripts patched: mandor_brief kalender-6d→sesi-pinned (AST OK, run parity 14/18/54+window_sesi), growth market-brief-data +signal_counts_kanonik. Naik kereta T-1107-M; verify pasca-deploy: selftest 3/3 di staging/live konteks, brief Senin 10:00 pakai angka kanonik. | KONDEKTUR-1107 7 Nov 23:0x WIB (deploy window): NO-NEW-DEPLOY — build atomik GAGAL OOM Docker VM 3.8GB (2 attempt: 22:19 worker-target, 22:33 retry COMPOSE_PARALLEL_LIMIT=1 app-target, RC=1; buildcache 4.9GB sudah pruned dulu). VERIFIED LIVE di image app 9f283f2ce104 (14:26 WIB = setara main 6dfd562: favicon md5 b2fbb98258f5 EXACT commit 5c4378b) — bukti fisik fresh: (ux-11-07-01) \"Akun berhasil dibuat\" + complete_profile_success di complete-profile/page.js, /auth/complete-profile 200; (ops-11-05-03) getSignalCounts 7 file di .next/server, /pasar + /laporan-pasar 200. Worker drift d058b20f TETAP (gate ops-11-06-04 by-design merah, 110.4ks) tapi POLL_INTERVAL_MS=30_000 verified di container. INSIDEN: OOM build me-restart Docker VM 22:28 → db exit-137 recovery → app crash-loop P1001 → PROD 502 ~11 mnt (22:28-22:39), pulih manual docker start db; kini app/worker/db healthy + teknikal.id 200. ROOT-FIX utk besok: naikkan Docker VM memory (16GB host, VM cuma 3.8GB) ATAU worker stage tanpa next-build penuh."
+      "result": "BUILD-ONLY done 08:35: repo fix 188ad2e (getSignalCounts 7-SESI SATU PINTU + blok KANONIK prompt + fail-open null) + test merah cc190f0→hijau 3/3; parity 3 jalur EXACT GC14/DC20/EMA18/54 window 2026-10-29..11-06 (repo service · mandor_brief.py · teknikalid_growth.py); dry-run prompt blok kanonik masuk (DRYRUN OK); tsc 0; build 0 BUILD_ID 08:31; push origin/main dbda3fe..188ad2e rev-list=0. Host scripts patched: mandor_brief kalender-6d→sesi-pinned (AST OK, run parity 14/18/54+window_sesi), growth market-brief-data +signal_counts_kanonik. Naik kereta T-1107-M; verify pasca-deploy: selftest 3/3 di staging/live konteks, brief Senin 10:00 pakai angka kanonik. | KONDEKTUR-1107 7 Nov 23:0x WIB (deploy window): NO-NEW-DEPLOY — build atomik GAGAL OOM Docker VM 3.8GB (2 attempt: 22:19 worker-target, 22:33 retry COMPOSE_PARALLEL_LIMIT=1 app-target, RC=1; buildcache 4.9GB sudah pruned dulu). VERIFIED LIVE di image app 9f283f2ce104 (14:26 WIB = setara main 6dfd562: favicon md5 b2fbb98258f5 EXACT commit 5c4378b) — bukti fisik fresh: (ux-11-07-01) \"Akun berhasil dibuat\" + complete_profile_success di complete-profile/page.js, /auth/complete-profile 200; (ops-11-05-03) getSignalCounts 7 file di .next/server, /pasar + /laporan-pasar 200. Worker drift d058b20f TETAP (gate ops-11-06-04 by-design merah, 110.4ks) tapi POLL_INTERVAL_MS=30_000 verified di container. INSIDEN: OOM build me-restart Docker VM 22:28 → db exit-137 recovery → app crash-loop P1001 → PROD 502 ~11 mnt (22:28-22:39), pulih manual docker start db; kini app/worker/db healthy + teknikal.id 200. ROOT-FIX utk besok: naikkan Docker VM memory (16GB host, VM cuma 3.8GB) ATAU worker stage tanpa next-build penuh.",
+      "qa_verified": "partial",
+      "qa_note": "PARTIAL 8Nov 22:xx Sentinel: core LIVE tervalidasi (selftest 3/3 fail=0; getSignalCounts 7 file .next/server; /pasar+/laporan-pasar 200; 188ad2e ancestor main) TAPI acceptance brief-Senin-kanonik baru bisa dicek Senin 10:00 + status in_train — re-verify Senin (verifier 78)",
+      "qa_verified_at": "2026-11-08 22:1x WIB (sentinel-2200)",
+      "qa_verified_by": "sentinel-2200"
     },
     {
       "id": "ux-2026-11-05-01",
@@ -4987,7 +4995,7 @@
       "id": "qa-2026-11-07-01",
       "type": "ops",
       "priority": "P1",
-      "status": "superseded",
+      "status": "done",
       "title": "FATAL analis-sore-2026-11-06-pbid: 4 klaim 'satu-satunya' + '6 dari 8 EMA cross bearish' tak ter-replikasi DB — pola superlatif+komposisi ke-15",
       "date": "2026-11-07",
       "spec": "INTENT: patch 4 klaim di analis-sore-2026-11-06-pbid (content+excerpt, H2 grep semua kemunculan) tanpa blokir pipeline. BUKTI DB 6 Nov (replay reviewer 07:00): (1) 'PBID satu-satunya Sangat Menguat hari ini' — DB: 4 non-gorengan Sangat Menguat (PBID 0.78, MPXL 0.64, ALDO 0.64, NATO 0.58); (2) 'satu-satunya kandidat dengan yield di atas 9%' — DB: DUTI dividendYield 11.43% juga >9% di kandidat harian; (3) 'LPIN satu-satunya EMA cross bullish signifikan (DKFT 0.01)' — DB: KINO bullish cross 3 Nov skor 0.58 lebih tinggi dari LPIN 0.11; (4) '6 dari 8 EMA cross baru bearish (termasuk PTBA, PWON, SDPC)' — DB row 6 Nov: hanya 3 cross baru hari itu semuanya bearish (BLTZ, YULE, SDPC); PTBA cross 5 Nov, PWON 4 Nov; komposisi 6/8 tidak cocok basis row apapun (5 Nov: 5 bearish+1 bullish; 4 Nov: 8 bearish+3 bullish). ACCEPTANCE: (a) replay_sql_gate exit 0; (b) grep frasa lama = 0 di content+excerpt; (c) live HTML grep frasa lama = 0; (d) verifikasi ulang 4 klaim vs SQL di result. PRIORITAS: jalur trust — 4 klaim salah satu artikel. Pilar: TRUST.",
@@ -5001,7 +5009,7 @@
       ],
       "created_at": "2026-11-07T07:5x+07:00",
       "source": "Content Reviewer cron 07:00 7 Nov (read-only; deterministik SQL replay semua matriks filter)",
-      "result": "SUPERSEDED by qa-2026-11-08-01 (CTO 8 Nov): task sama (patch 4 superlatif PBID), CEO sudah reslot final Senin 07:30; entry ini duplikat scheduling dari Reviewer 7 Nov — bukti DB replay tetap valid dan diwariskan",
+      "result": "DIEKSEKUSI via qa-2026-11-08-01 oleh CTO weekend 8 Nov (pull-forward, bukan Senin 07:30) — lihat bukti lengkap di entry qa-2026-11-08-01. Semua 4 klaim + excerpt dipatch, H2 grep old=0, replay PASS.",
       "scheduled_slot": "None"
     },
     {
@@ -5181,42 +5189,61 @@
       "date": "2026-11-08",
       "type": "ops",
       "priority": "P1",
-      "status": "pending",
+      "status": "done",
       "north_star": "TRUST — konten akurat = moat",
       "train": "T-1109-M",
       "scheduled_slot": "2026-11-09 BE Builder pagi 07:30 (expr 30 7 * * * VERIFIED; DB-patch cepat 0-build — selesai SEBELUM slot siang; ops-11-08-01 deploy-fix lanjut di slot 09:30)",
-      "spec": "Lanjutan Reviewer 7 Nov: qa-2026-11-07-01 patch 4 klaim superlatif analis-sore-2026-11-06-pbid TETAP PENDING (antrian terakhir dari 4 entry QA 7 Nov; 02/03 sudah selesai CTO sore). BUKTI DB replay reviewer sudah lengkap di entry qa-2026-11-07-01 (4 non-gorengan Sangat Menguat: PBID 0.78 MPXL 0.64 ALDO 0.64 NATO 0.58; klaim yield-satu-satunya salah). INTENT: patch content+excerpt H2-grep semua kemunculan, replay gate exit 0, live verify before/after — pola exact qa-11-07-02/03 (CTO sore 7 Nov). DONE WHEN: H2 grep old-claims=0 di content+excerpt; replay_sql_gate exit 0; curl live before/after tercatat changelog; pipeline konten tidak blocked."
+      "spec": "Lanjutan Reviewer 7 Nov: qa-2026-11-07-01 patch 4 klaim superlatif analis-sore-2026-11-06-pbid TETAP PENDING (antrian terakhir dari 4 entry QA 7 Nov; 02/03 sudah selesai CTO sore). BUKTI DB replay reviewer sudah lengkap di entry qa-2026-11-07-01 (4 non-gorengan Sangat Menguat: PBID 0.78 MPXL 0.64 ALDO 0.64 NATO 0.58; klaim yield-satu-satunya salah). INTENT: patch content+excerpt H2-grep semua kemunculan, replay gate exit 0, live verify before/after — pola exact qa-11-07-02/03 (CTO sore 7 Nov). DONE WHEN: H2 grep old-claims=0 di content+excerpt; replay_sql_gate exit 0; curl live before/after tercatat changelog; pipeline konten tidak blocked.",
+      "result": "CTO weekend Minggu 8 Nov 08:3x (pull-forward dari jadwal Senin 07:30 — weekend mode, FATAL live): DONE. Patch 4 klaim superlatif analys-sore-2026-11-06-pbid + excerpt (content 8 UPDATE + excerpt 1 + koreksi typo sendiri + 1 klaim tambahan self-caught). Bukti: occ satu-satunya=0 di content+excerpt; live 200 old=0 (PBID satu-satunya=0, 6 dari 8=0), new tampil (skor tertinggi 0,78 ×2, dari 11 EMA ×2); replay_sql_gate PASS exit 0. Backup 2026-11-08T01:15 valid. Bukti DB mandiri: Sangat Menguat non-gorengan 6Nov = PBID .78 MPXL .64 ALDO .64 (klaim tunggal salah); yield>9 universe scan = 70+ emiten incl DUTI 11,4 (klaim yield-satunya salah); LPIN .11 < KINO .58 3Nov (klaim signifikan-satunya salah); cross baru 6Nov = 3 bearish semua (BLTZ/YULE/SDPC), PTBA 5Nov PWON 4Nov → diganti fakta 2-sesi 11 cross 8 bearish; klaim BBCA big-cap-satunya juga salah (ForeignFlow 7hr: BRIS +18,5jt BBNI +14jt) → diturunkan jadi salah-satu-dari-beberapa.",
+      "qa_verified": true,
+      "qa_note": "TRUE 8Nov 22:xx Sentinel: DB pos(satu-satunya)=0 c+e, 6-dari-8=0; live 0,78x6 dari-11x3; replay PASS exit0 (verifier 55 kirim-dgn-catatan)",
+      "qa_verified_at": "2026-11-08 22:1x WIB (sentinel-2200)",
+      "qa_verified_by": "sentinel-2200"
     },
     {
       "id": "qa-2026-11-08-02",
       "date": "2026-11-08",
       "type": "ops",
       "priority": "P1",
-      "status": "pending",
+      "status": "done",
       "north_star": "TRUST (angka konten = replay EXACT)",
       "scheduled_slot": "2026-11-09 07:30 BE pagi (gabung qa-2026-11-08-01; DB-patch 0-build, ISR)",
-      "spec": "INTENT: patch 2 FATAL + 1 minor di rekap-pasar-mingguan-2026-11-07 (content+excerpt, H2 grep SEMUA kemunculan). BUKTI DB (replay reviewer 8 Nov, StockPrice basis 30 Okt->6 Nov, saham isActive): (1) FATAL superlatif: 'kenaikan tertinggi pasar sepekan sebenarnya milik TMPO (+57,0%)' SALAH — #1 full-universe = AIMS +126,0% (520->1175, turnover sepekan Rp34 M, isActive=true); TMPO hanya #2. FIX: sebut AIMS sbg tertinggi (+126%) ATAU turunkan klaim non-superlatif 'TMPO +57% mencolok di kelompok gorengan'; angka TMPO 57,0% sendiri valid. (2) FATAL angka: 'breadth Jumat 232 naik vs 440 turun' -> replay 3 basis varian (isActive, tanpa-filter, anti-suspend 5vs6 Nov) SEMUA = 439 turun; 232 naik valid; teks '440 turun' muncul 2x (section Jumat 6 Nov + Outlook). FIX 440->439 di kedua lokasi. (3) MINOR wording: 'IHSG dibuka stabil di 5.097 hari Senin' — 5.097 = CLOSE Senin (5.096,83; open 5.039,54); ganti 'dibuka'->'ditutup di 5.097' (aritmetika 3,78% close-to-close tetap benar). Angka lain artikel sudah EXACT vs DB (242 Selasa all-basis, GC 14 window 29 Okt-6 Nov kanonik, 177 oversold, IHSG series, losers ASLI/SGER/BRPT/VKTR, MDKA +15,8% Kamis, PGAS 3,8%, BBCA 4,4%, BBRI 0,4%, BREN 17,6/ICBP 15,5/BRIS 14,4/UVCR 11,5, TMPO 57,0). DONE WHEN: position('440 turun')=0 di content+excerpt, frasa superlatif TMPO hilang/direvisi, replay exit 0, live before/after grep, 0 deploy. Pilar: TRUST."
+      "spec": "INTENT: patch 2 FATAL + 1 minor di rekap-pasar-mingguan-2026-11-07 (content+excerpt, H2 grep SEMUA kemunculan). BUKTI DB (replay reviewer 8 Nov, StockPrice basis 30 Okt->6 Nov, saham isActive): (1) FATAL superlatif: 'kenaikan tertinggi pasar sepekan sebenarnya milik TMPO (+57,0%)' SALAH — #1 full-universe = AIMS +126,0% (520->1175, turnover sepekan Rp34 M, isActive=true); TMPO hanya #2. FIX: sebut AIMS sbg tertinggi (+126%) ATAU turunkan klaim non-superlatif 'TMPO +57% mencolok di kelompok gorengan'; angka TMPO 57,0% sendiri valid. (2) FATAL angka: 'breadth Jumat 232 naik vs 440 turun' -> replay 3 basis varian (isActive, tanpa-filter, anti-suspend 5vs6 Nov) SEMUA = 439 turun; 232 naik valid; teks '440 turun' muncul 2x (section Jumat 6 Nov + Outlook). FIX 440->439 di kedua lokasi. (3) MINOR wording: 'IHSG dibuka stabil di 5.097 hari Senin' — 5.097 = CLOSE Senin (5.096,83; open 5.039,54); ganti 'dibuka'->'ditutup di 5.097' (aritmetika 3,78% close-to-close tetap benar). Angka lain artikel sudah EXACT vs DB (242 Selasa all-basis, GC 14 window 29 Okt-6 Nov kanonik, 177 oversold, IHSG series, losers ASLI/SGER/BRPT/VKTR, MDKA +15,8% Kamis, PGAS 3,8%, BBCA 4,4%, BBRI 0,4%, BREN 17,6/ICBP 15,5/BRIS 14,4/UVCR 11,5, TMPO 57,0). DONE WHEN: position('440 turun')=0 di content+excerpt, frasa superlatif TMPO hilang/direvisi, replay exit 0, live before/after grep, 0 deploy. Pilar: TRUST.",
+      "result": "CTO weekend 8 Nov 08:5x: DONE. 4 UPDATE rekap-pasar-mingguan-2026-11-07: superlatif TMPO→AIMS +126% (520→1175, #1 terverifikasi mandiri; TMPO 57% jadi #2 disebut, keduanya gorengan=isGorengan t); 440→439 turun ×2 lokasi (Jumat+Outlook); dibuka→ditutup 5.097 (5.097=close Senin, open 5.039,54). Bukti: occ 440 turun=0; live 200: 440=0, 439×3 tampil, AIMS ticker-link ×2; replay_sql_gate PASS exit 0. Excerpt bersih (tidak memuat klaim salah).",
+      "qa_verified": true,
+      "qa_note": "TRUE 8Nov 22:xx Sentinel: DB pos(440)=0 c+e, dibuka-5.097=0; live 439x3 AIMSx2 (440-live=CSS-hash); replay PASS (verifier 82)",
+      "qa_verified_at": "2026-11-08 22:1x WIB (sentinel-2200)",
+      "qa_verified_by": "sentinel-2200"
     },
     {
       "id": "qa-2026-11-08-03",
       "date": "2026-11-08",
       "type": "ops",
       "priority": "P1",
-      "status": "pending",
+      "status": "done",
       "north_star": "TRUST (ranking/klaim jumlah = COUNT DB deterministik)",
       "scheduled_slot": "2026-11-09 07:30 BE pagi (gabung qa-2026-11-08-01; DB-patch 0-build, ISR)",
-      "spec": "INTENT: selaraskan klaim jumlah di listicle-properti-2026-11-07 (content+excerpt). BUKTI DB (StockIndicator 6 Nov 1d, sector Properties & Real Estate, isActive): label 'Menguat' = 11 emiten — DMAS .44, CSIS .33, JRPT .31, ASPI .29 (RSI 45,41, close 725, turnover sepekan Rp9,1 M), CBPE .29, MTLA .28, DART .22, DUTI .22, BKDP .22, TRIN .20, APLN .20. Artikel (judul '5 Saham Properti dengan Momentum Teknikal Terbaik' + body 'lima emiten properti justru membukukan label Menguat') melewatkan ASPI (rank-4, TIE skor 0,29 dengan CBPE) dan memasukkan MTLA (rank-6) — bukan top-5 persis dan bukan jumlah 11. Data per-emiten yang disebut (skor/RSI/harga DMAS/CSIS/JRPT/CBPE/MTLA + likuiditas DMAS Rp282 M & JRPT Rp6 M) EXACT valid. FIX pilih salah satu: (a) ganti CBPE->ASPI agar benar top-5 by skor (section ASPI: skor 0,29 'Menguat', RSI 45, close 725, likuiditas Rp9 M sepekan — lebih likuid dari CBPE Rp0,06 M), ATAU (b) pertahankan 5 emiten tapi turunkan klaim: '5 dari 11 emiten properti yang mencetak label Menguat' + 1 kalimat seleksi (mis. likuiditas). DONE WHEN: klaim jumlah konsisten replay (top-5 persis ATAU 'dari 11'), excerpt ikut dicek, position('lima emiten properti justru membukukan label')=0 utk opsi (a), live verify, 0 deploy. Pilar: TRUST."
+      "spec": "INTENT: selaraskan klaim jumlah di listicle-properti-2026-11-07 (content+excerpt). BUKTI DB (StockIndicator 6 Nov 1d, sector Properties & Real Estate, isActive): label 'Menguat' = 11 emiten — DMAS .44, CSIS .33, JRPT .31, ASPI .29 (RSI 45,41, close 725, turnover sepekan Rp9,1 M), CBPE .29, MTLA .28, DART .22, DUTI .22, BKDP .22, TRIN .20, APLN .20. Artikel (judul '5 Saham Properti dengan Momentum Teknikal Terbaik' + body 'lima emiten properti justru membukukan label Menguat') melewatkan ASPI (rank-4, TIE skor 0,29 dengan CBPE) dan memasukkan MTLA (rank-6) — bukan top-5 persis dan bukan jumlah 11. Data per-emiten yang disebut (skor/RSI/harga DMAS/CSIS/JRPT/CBPE/MTLA + likuiditas DMAS Rp282 M & JRPT Rp6 M) EXACT valid. FIX pilih salah satu: (a) ganti CBPE->ASPI agar benar top-5 by skor (section ASPI: skor 0,29 'Menguat', RSI 45, close 725, likuiditas Rp9 M sepekan — lebih likuid dari CBPE Rp0,06 M), ATAU (b) pertahankan 5 emiten tapi turunkan klaim: '5 dari 11 emiten properti yang mencetak label Menguat' + 1 kalimat seleksi (mis. likuiditas). DONE WHEN: klaim jumlah konsisten replay (top-5 persis ATAU 'dari 11'), excerpt ikut dicek, position('lima emiten properti justru membukukan label')=0 utk opsi (a), live verify, 0 deploy. Pilar: TRUST.",
+      "result": "CTO weekend 8 Nov 08:5x: DONE. Opsi (b) turunkan klaim: intro lima→11 emiten + kalimat seleksi (skor+likuiditas); merangkum 5→5 dari 11; excerpt MTLA-dst = lima pilihan dari 11. COUNT mandiri Properties Menguat 6Nov isActive = 11 EXACT (DMAS .44 CSIS .33 JRPT .31 CBPE .29 ASPI .29 MTLA .28 DART .23 DUTI .22 BKDP .22 TRIN .20 APLN .20). Bukti: oldIntro/oldMerangkum/oldEX = 0 semua; live 200: 11 emiten ×2, 5 dari 11 ×2, old=0; replay PASS.",
+      "qa_verified": true,
+      "qa_note": "TRUE 8Nov 22:xx Sentinel: DB pos(lima-emiten)=0 c+e; live 11-emitenx2 5-dari-11x2; replay PASS (verifier 78)",
+      "qa_verified_at": "2026-11-08 22:1x WIB (sentinel-2200)",
+      "qa_verified_by": "sentinel-2200"
     },
     {
       "id": "ops-2026-11-08-02",
       "priority": "P1",
-      "status": "pending",
-      "scheduled_slot": "2026-11-08 CTO sore (langsung shift ini — host-script 0-deploy, tanpa nunggu slot)",
+      "status": "done",
+      "scheduled_slot": "2026-11-08 13:30 slot sore (dieksekusi shift ini)",
       "north_star": "TRUST",
       "spec": "[BUGFIX][OPS] OUTAGE PAGI 8 Nov — POST-MORTEM dgn fakta TERKOREKSI (CTO pagi, koreksi via watchdog.log line 12621+): (W1) site 200 SEMALAM s.d. 07:25 (log OK tiap 5 mnt 00:00-07:25); Docker daemon HANG ~07:25-07:30 (bukan down sejak 23:58 — inferensi awal CTO SALAH, electron log sepi bukan mati) -> 502 blip 07:30+07:40 (alert ditahan anti-spam streak=1), DOWN konfirmasi + ALERT Telegram terkirim 07:45, TeknikalID Watchdog LLM */15 restart Docker Desktop 07:48 -> pulih 07:50. Monitoring BEKERJA (deteksi ~15-20 mnt, RTO ~20 mnt). (W2) main-agent (sesi chat owner) build --no-cache 07:54 MELANGGAR warning CEO -> app OOM Killed restart-loop (RestartCount 7-11) -> 502 07:54-08:05; CTO kill build + builder prune 13.81GB -> pulih. PARALEL: CTO-WEEKEND-0800 juga merespon 08:06 (bus 08:08, bukti /tmp/h13_build_full.log). TUGAS: (1) root-cause daemon hang ~07:25 (kandidat: memory pressure host load 8-10, VM 3.8GB, susutan build-retry Kondektur 23:xx — cek docker events + log show 07:00-07:30); (2) evaluasi blip-hold 15 mnt (streak=2 baru alert) — pantas atau perlu escalasi lebih cepat di jam market; (3) tulis artifacts/outage-2026-11-08.md timeline 07:00-08:10 dgn bukti; (4) 1 baris lessons-learned. DONE WHEN: artifacts ada + root-cause (atau 'unconfirmed + next probe') tertulis + lessons +1.",
       "done_when": "artifacts outage md ada + root-cause watchdog tertulis + lessons +1 baris",
-      "result": "",
-      "train": ""
+      "result": "DONE 13:4x WIB. Post-mortem artifacts/outage-2026-11-08.md: timeline ber-bukti (oom-kills ×6 @07:28-07:31 VM console.log.0; db OOMKilled=true; Docker restart 07:48:04; site 200 sejak 08:05). ROOT-CAUSE W1 = kernel OOM-killer VM 3.8GB (daemon koma pasca kontainer dibunuh — bukan hang misterius; trigger spesifik unconfirmed + next probe: docker stats snapshot cron 15-mnt). W2 = build --no-cache main-agent (diketahui). Blip-hold eval: 15 mnt pantas utk non-market, lambat utk market-hours → dispatch ops-2026-11-08-04 fast-path. Lessons +1 (lesson OOM-killer vs 'hang'). 0 deploy. Bukti H1: file artifact 4.793B + changelog 130 entri + queue v377.",
+      "train": "",
+      "qa_verified": true,
+      "qa_note": "TRUE 8Nov 22:xx Sentinel: artifact 4793B EXACT timeline oom-killx6+OOMKilled+07:48:04; fd9ab16 3file +65ins; changelog ##130; 0-deploy image unchanged (verifier 72)",
+      "qa_verified_at": "2026-11-08 22:1x WIB (sentinel-2200)",
+      "qa_verified_by": "sentinel-2200"
     },
     {
       "id": "qa-2026-11-08-04",
@@ -5228,6 +5255,66 @@
       "done_when": "curl saham-akra 200 live + regresi-none bukti",
       "result": "",
       "train": "T-1109-M"
+    },
+    {
+      "id": "ops-2026-11-08-03",
+      "date": "2026-11-08",
+      "type": "ops",
+      "priority": "P2",
+      "status": "pending",
+      "north_star": "TRUST — single-writer state JSON utuh (preseden drift 2x/sepekan)",
+      "train": "T-1109-M",
+      "scheduled_slot": "2026-11-09 07:45 CTO Tech Lead pagi (ride-along host-script 0-deploy, expr 45 7 * * * live)",
+      "spec": "FIX SYMLINK DRIFT hivePOS backlog (bukti: WARNING statejson Council 8 Nov 08:5x — ~/.hermes/data/hivepos-growth/product-backlog.json REGULAR FILE bukan symlink; owner rule 13 Sep kanonik=repo docs/agent-org/). Langkah: (1) temukan repo kanonik hivePOS (cari product-backlog.json di ~/Documents/*/docs/agent-org/), (2) diff isi regular-file vs kanonik — kalau beda merge LWW per updated_at/status_at (pola backlog_health.py), konfirmasi 6 verdict Council 8 Nov (idea-1025-1, sec-1026-01/02, prd-1027/28/29) ikut; (3) rm regular + ln -s kanonik; (4) commit state file di repo. DONE WHEN: ls -la = symlink; python3 ~/.hermes/scripts/statejson.py show <file> TANPA warning symlink; backlog_health hivePOS 0 alert symlink. Pilar TRUST."
+    },
+    {
+      "id": "ux-2026-11-08-01",
+      "type": "ux",
+      "priority": "P2",
+      "status": "in_train",
+      "title": "UX [KONVERSI]+[BUGFIX]: favicon offsets valid + emoji->SVG bell + CTA daftar->register + InfoTip hit-area",
+      "spec": "Audit flow (a) /stocks re-audit pasca layout AGY mobile-stockcard. Temuan live CDP 375px: (1) favicon.ico commit 5c4378b invalid — direktori ICO 4 entry offset=0 semua; Chrome Image() decode FAIL di prod (bukti engine browser) dan dev server next (sharp) 500 SEMUA halaman sejak 7 Nov 14:24; patch offset struktural 70/623/1581/3029, decode OK 64x64. (2) CTA paper-teaser label 'Daftar' tapi href /auth/signin -> register. (3) Emoji bell sebagai ikon di 3 titik -> SVG bell path resmi. (4) InfoTip 16px hit-area -> 36px (-m-2.5 p-2.5). (5) Copy wizard bintang ganda dibersihkan.",
+      "result": "BUILD-ONLY commit a16d480 main lokal (deploy deadlock aktif — JANGAN build hari ini). Bukti fisik: tsc EXIT-0; dev :3105 /stocks/BBCA.JK 200 marker bell-emoji=0 + svg-bell-path=2 + register-href=1 + infotip-hit=2; browser engine: prod favicon decode FAIL vs patched dev OK 64x64; file kini 'MS Windows icon resource - 4 icons PNG'.",
+      "train": "T-1110-M",
+      "scheduled_slot": "kereta malam T-1110-M setelah ops-11-08-01 deploy-deadlock fix (Senin 10 Nov)",
+      "impact": "KPI TRUST (favicon = brand tab browser) + GROWTH (funnel register)",
+      "target_files": "src/app/favicon.ico; src/app/(public)/stocks/[ticker]/page.tsx; src/components/stock/guest-star.tsx; src/components/telegram/subscribe-cta.tsx; src/components/stock/info-tip.tsx; src/components/ui/onboarding-wizard.tsx; src/components/paper-trading/paper-trading-teaser.tsx"
+    },
+    {
+      "id": "ops-2026-11-08-04",
+      "priority": "P2",
+      "status": "pending",
+      "north_star": "TRUST (monitoring responsif jam market)",
+      "scheduled_slot": "2026-11-10 BE siang 09:30 (bundling host-script; setelah ops-11-08-01)",
+      "spec": "[BUGFIX][OPS] sumber: post-mortem ops-2026-11-08-02. Watchdog 502 blip-hold 2-check (~10-15 mnt) terlalu lambat utk jam market: insiden 8 Nov blip 07:30 ditahan streak=1, alert baru 07:45, RTO 20 mnt — hari Minggu masih OK, tapi Sen-Jum 09:00-16:15 WIB user aktif tertinggi. INTENT: market-hours fast-path di site-502-watchdog.sh — fail PERTAMA pada jam market langsung kirim info-level note (bukan megaphone DOWN, bukan restart), streak>=2 tetap syarat alert DOWN penuh; tambah snapshot 'docker stats --no-stream' ke state dir saat fail (bukti pemakan memori utk probe OOM berikutnya). DONE WHEN: (1) dry-run simulasi fail saat jam market → info-note terkirim 1x streak=1 (log bukti); (2) di luar jam market perilaku lama utuh (streak=1 tetap ditahan); (3) changelog + bus. Host-script 0-deploy."
+    },
+    {
+      "id": "fix-2026-11-08-01",
+      "date": "2026-11-08",
+      "type": "fix",
+      "priority": "P1",
+      "status": "deployed",
+      "train": "T-1108-R",
+      "north_star": "KONVERSI (funnel register/login) — bugfix + trust, bukan fitur baru",
+      "title": "FIX [KONVERSI] retro: /auth/login 404 → 308 redirect signin + tombol Daftar-dengan-Google dipindah ke ATAS form email (OAuth-first)",
+      "created_by": "Hermes (owner-order malam 8 Nov, pattern-analysis visitor Bekasi)",
+      "spec": "Pattern analysis funnel 8 Nov: visitor organik XL (157.85.208.112) 23 views/8 saham/16 mnt sampai /auth/register tapi gugur; /auth/login 404; Google btn di bawah form. Fix: next.config.ts redirect 308 /auth/login→/auth/signin; register page restructure Google-first + divider atau.",
+      "result": "Deployed+verified 21:33 WIB commit 6872c93: prod /auth/login→308→signin OK; browser live googleTop 291 < emailTop 411 (Google di atas); marker di chunk page-57683d7ee766a443.js order OK; healthz ok. Register=client-render jadi SSR grep kosong (bukan bug).",
+      "qa_note": "Retro entry pasca Sentinel-2200 8 Nov (gap bookkeeping commit-tanpa-entry). Bukti fisik verified prod oleh Hermes 22:16 WIB: curl 308 + bundle marker order OK."
+    },
+    {
+      "id": "fix-2026-11-08-02",
+      "date": "2026-11-08",
+      "type": "fix",
+      "priority": "P1",
+      "status": "deployed",
+      "train": "T-1108-R",
+      "north_star": "KONVERSI + TRUST — diagnostik error auth (2 user loyal gagal login berulang tanpa jejak)",
+      "title": "FIX [DIAGNOSTIK]: /auth/error — log server-side type + tombol Coba-lagi-dengan-Google utk error OAuth + pesan spesifik OAuthCallbackError/OAuthAccountNotLinked",
+      "created_by": "Hermes (owner-order gas 8 Nov, lanjutan pattern-analysis)",
+      "spec": "Bocor: /auth/error kena 4x oleh 2 user loyal (iPhone 114.12.1.248 register 6x masih anon; user BBRI signin 5x gagal) tapi type error tak pernah dicatat. Fix: console.warn [auth-error] type=… di error page server component; isOAuthIssue → GoogleSignInButton Coba-lagi-dengan-Google + hint cookie; MESSAGES + OAuthCallbackError + OAuthAccountNotLinked.",
+      "result": "Deployed+verified 21:45 WIB commit 006789f: prod /auth/error?error=OAuthCallbackError render tombol+hint+pesan ✓; server log mencatat type (2 type test tercatat) ✓; healthz ok; image b15b0c10.",
+      "qa_note": "Retro entry pasca Sentinel-2200 8 Nov. CATATAN: laporan Sentinel klaim image 9f283f2ce104/belum-deploy = SALAH (baca image lama) — container aktual b15b0c10 started 14:40Z, marker live terverifikasi Hermes 22:16 WIB."
     }
   ]
 }
