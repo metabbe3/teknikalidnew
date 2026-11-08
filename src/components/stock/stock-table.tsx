@@ -164,7 +164,7 @@ export function StockTable({ stocks, sectors, linkBase = "/stocks" }: StockTable
           >
             <button
               onClick={() => setSectorFilter("all")}
-              className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all press-scale ${
+              className={`shrink-0 inline-flex min-h-[44px] items-center px-3 py-1.5 rounded-full text-xs font-medium transition-all press-scale ${
                 sectorFilter === "all"
                   ? "bg-accent text-white"
                   : "bg-bg-card border border-border text-text-secondary hover:text-text-primary hover:border-accent/30"
@@ -176,7 +176,7 @@ export function StockTable({ stocks, sectors, linkBase = "/stocks" }: StockTable
               <button
                 key={sector}
                 onClick={() => setSectorFilter(sector)}
-                className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all press-scale ${
+                className={`shrink-0 inline-flex min-h-[44px] items-center px-3 py-1.5 rounded-full text-xs font-medium transition-all press-scale ${
                   sectorFilter === sector
                     ? "bg-accent text-white"
                     : "bg-bg-card border border-border text-text-secondary hover:text-text-primary hover:border-accent/30"

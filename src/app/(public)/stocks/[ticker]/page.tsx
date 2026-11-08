@@ -724,7 +724,9 @@ export default async function StockDetailPage({
                     return (
                       <>
                         {" "}
-                        <InfoTip label="Profil bisnis" text={desc} />
+                        <span className="inline-flex items-center -m-2.5 p-2.5">
+                          <InfoTip label="Profil bisnis" text={desc} />
+                        </span>
                         {/* SEO: businessActivity tetap dirender di SSR HTML di dalam H2 tanpa makan tempat visual */}
                         <span className="sr-only"> · {desc}</span>
                       </>
@@ -804,7 +806,7 @@ export default async function StockDetailPage({
                       data-engagement="agent_deeplink_compact"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-between rounded-lg border border-border/80 bg-bg-card/70 px-3 py-2 text-xs font-medium text-text-secondary hover:text-accent hover:border-accent/40 transition-colors"
+                      className="flex min-h-[44px] items-center justify-between rounded-lg border border-border/80 bg-bg-card/70 px-3 py-2 text-xs font-medium text-text-secondary hover:text-accent hover:border-accent/40 transition-colors"
                     >
                       <span className="flex items-center gap-1.5 truncate">
                         <span>🤖 Tanya AI soal {stripJk(ticker)} · gratis 3x →</span>
@@ -889,7 +891,7 @@ export default async function StockDetailPage({
                             <div className="mt-2">
                               <a
                                 href="#pantau"
-                                className="inline-flex items-center justify-center gap-1.5 min-h-9 px-3 rounded-lg border border-border bg-bg hover:bg-bg-hover text-xs font-medium text-text-secondary transition-colors"
+                                className="inline-flex items-center justify-center gap-1.5 min-h-[44px] px-3 rounded-lg border border-border bg-bg hover:bg-bg-hover text-xs font-medium text-text-secondary transition-colors"
                               >
                                 <Star className="h-3.5 w-3.5" aria-hidden="true" /> Simpan ke pantauan
                               </a>
