@@ -16,11 +16,13 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Share2, Search, Image as ImageIcon, Link2, Type, X } from "lucide-react";
+import { Share2, Search, Image as ImageIcon, Link2, Type, X, Bot } from "lucide-react";
 import { StockLogo } from "@/components/stock/stock-logo";
 import type { StockRow } from "@/components/stock/stock-table";
 
-const SHOW_AFTER_PX = 300;
+// Owner 8 Nov: bar SELALU tampil (dulu >300px — keluhan "hilang di puncak halaman") +
+// tombol ke-3 "Tanya AI" (soft-sell agent, deeplink src_fab_) sebagai aksen utama.
+const SHOW_AFTER_PX = 0;
 const MIN_CHARS = 1;
 const MAX_RESULTS = 8;
 
@@ -133,22 +135,32 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
         }`}
         style={{ paddingBottom: "0px", marginBottom: "0px" }}
       >
-        <div className="grid grid-cols-2 gap-3 px-4 pt-3" style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
+        <div className="grid grid-cols-3 gap-2 px-4 pt-3" style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
+          <a
+            href={`https://t.me/TeknikalidAgentBot?start=src_fab_${base}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-engagement="fab_ask_agent_click"
+            className="flex items-center justify-center gap-1.5 px-2 py-3 rounded-xl bg-accent text-white border border-transparent depth-shadow text-sm font-medium transition-all press-scale shadow-sm shadow-accent/20"
+          >
+            <Bot className="h-4 w-4" />
+            Tanya AI
+          </a>
           <button
             onClick={() => setSheet(true)}
             data-engagement="fab_share_click"
-            className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-accent text-white border border-transparent depth-shadow text-sm font-medium transition-all press-scale shadow-sm shadow-accent/20"
+            className="flex items-center justify-center gap-2 px-2 py-3 rounded-xl bg-bg-card border border-border hover:border-accent/40 depth-shadow text-sm font-medium text-text-primary transition-all press-scale"
           >
-            <Share2 className="h-4 w-4" />
+            <Share2 className="h-4 w-4 text-accent" />
             Bagikan
           </button>
           <button
             onClick={() => setSearch(true)}
             data-engagement="fab_search_click"
-            className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-bg-card border border-border hover:border-accent/40 depth-shadow text-sm font-medium text-text-primary transition-all press-scale"
+            className="flex items-center justify-center gap-1.5 px-2 py-3 rounded-xl bg-bg-card border border-border hover:border-accent/40 depth-shadow text-sm font-medium text-text-primary transition-all press-scale"
           >
             <Search className="h-4 w-4 text-accent" />
-            Cari Saham
+            Cari
           </button>
         </div>
       </div>

@@ -309,6 +309,22 @@ export function GuestSignalBreakdownGate({
           Daftar gratis untuk buka →
         </Link>
       </div>
+      {/* Owner 8 Nov: soft-sell agent — saat friksi tertinggi (terkunci), tawarkan jalur
+          analisa gratis via Agent Telegram (deeplink src_gate_, funnel tunggal produk) */}
+      <a
+        href={`https://t.me/TeknikalidAgentBot?start=src_gate_${cleanTicker}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        data-engagement="gate_ask_agent_click"
+        className="mt-2 flex min-h-[44px] items-center justify-between rounded-lg border border-accent/30 bg-accent/5 px-3 py-2 text-xs font-medium text-text-secondary hover:border-accent/60 hover:text-accent transition-colors"
+      >
+        <span className="flex items-center gap-1.5 truncate">
+          <span aria-hidden="true">🤖</span>
+          <span>
+            Tetap mau analisa {cleanTicker || "saham ini"}? Tanya AI gratis 3x →
+          </span>
+        </span>
+      </a>
     </div>
   );
 }
