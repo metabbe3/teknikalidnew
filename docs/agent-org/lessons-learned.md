@@ -423,3 +423,14 @@ Ke-3 kalinya klaim kesegaran sinyal lolos generator Mandor: qa-2026-09-27-01 (hi
 ## 2026-11-08 — Inline SQL panjang = 2x rollback sendiri; file .sql + ON_ERROR_STOP = 0
 **Pola:** mengetik UPDATE multi-baris dengan string literal panjang inline di terminal → typo guard LIKE ('kaenaikan'), typo fungsi ('replac'), typo relasi ('article') — 2 batch rollback untung ON_ERROR_STOP. Patch 1 & 3 via file .sql scratch: 0 error.
 **Fix pola:** konten-patch WAJIB tulis .sql ke scratch (write_file) → docker exec -i < file -v ON_ERROR_STOP=1 → verify position(old)=0. Jangan pernah lagi SQL inline multi-statement.
+
+### 2026-11-08 Council — main-agent bypass koordinasi bus (W2 outage)
+- **Pelaku**: main-agent (sesi chat owner) jalankan `docker compose build --no-cache app worker` 07:54 pagi Minggu **tanpa cek bus warning CEO 08:32** ("JANGAN build atomik sebelum ops-11-08-01") → VM 3,8GB pressure → app OOM restart-loop + 502 publik ~11 mnt. CTO pulihkan 07:58 (kill + prune 13,81GB).
+- **Aturan baru (candidate, diajukan via ops-11-08-02)**: task build/deploy wajib pre-flight cek `tail agent-bus.md` untuk warning aktif <24 jam SEBELUM eksekusi — bukan cuma agents org, juga main-agent sesi interaktif. Sistem preseden: charter §8 GateGuard pre-flight.
+- **Watchdog blip-hold 2-check**: 07:30 + 07:40 blip (streak=1) ditahan, 07:45 DOWN terkonfirmasi → alert. Desain benar (anti false-positive saat OOM restart-loop yang intermiten), tapi W1 daemon-hang 07:25 menghasilkan blip juga — eval apakah 15 mnt terlalu lambat untuk market-open; masuk scope ops-11-08-02.
+- **Backlog verdict**: backlog_health alert stagnan ≠ item mati — 3/4 ternyata duplikat queue (sre-1028-1/2) atau sudah live_monitoring (prod-917-01). Cek silang queue dulu sebelum menulis verdict; duplikat backlog↔queue = kelas pemborosan yang berulang.
+- **statejson --python**: argumen = BODY lambda (script prefix sendiri `lambda state: `) — lambda utuh menyebabkan SyntaxError; return harus dict/state (guard tipe). Multi-verdict = list-comprehension perak id + tuple (...)[-1] return state.
+
+## 2026-11-08 — "Docker daemon hang" = OOM-killer VM: cek console.log dulu sebelum menyimpulkan
+**Pola:** insiden 8 Nov 07:25 awalnya dilabel "daemon HANG sebab tak diketahui". Bukti forensik (VM console.log.0 `POST /analytics/track/oom-kills` ×6 @07:28-07:31 + `docker inspect db` OOMKilled=true) menunjukkan kernel OOM-killer VM sebagai penyebab — daemon bukan hang, ia koma setelah kontainernya dibunuh. Inferensi pagi salah 2x sebelum bukti ini.
+**Fix pola:** saat Docker "hang"/tidak responsif: (1) `docker inspect <ctr> --format '{{.State.OOMKilled}}'` semua kontainer; (2) grep `oom-kills` di ~/Library/Containers/com.docker.docker/Data/log/vm/console.log.N (ter-rotasi saat restart — buka .0); (3) docker events buffer KOSONG pasca-restart — jangan pakai sebagai bukti negatif. Post-mortem lengkap: artifacts/outage-2026-11-08.md.

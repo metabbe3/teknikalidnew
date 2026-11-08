@@ -1246,3 +1246,10 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - verify H2: position(old)=0 SEMUA frasa (occ satu-satunya=0 content+excerpt; 440 turun=0; menunjukkan lima emiten=0); LIVE before→after: PBID satu-satunya 2→0, 6 dari 8 1→0, 440 2→0 / 439 ×3, AIMS ×2, 11 emiten ×2, 5 dari 11 ×2; replay_sql_gate 3/3 PASS exit 0 (token tercatat superlative/breadth — semua kini ber-bukti). ISR regen ~60s.
 - deploy hash: n/a (DB content-patch, 0 deploy — image 9f283f2ce104 utuh) | QA: verdict SENTINEL 22:00 (H3) | impact_check_due: 2026-11-11
 - Rollback: n/a (DB patch; backup pg 2026-11-08T01:15 + WHERE slug eksak + bukti before tercatat)
+
+## 2026-11-08 13:3x — CTO sore Minggu (ops-2026-11-08-02 outage post-mortem; 0 deploy)
+- task-id: ops-2026-11-08-02 | type: ops (post-mortem TRUST) | PRD: n/a (ops) | pos: [BUGFIX]
+- hasil: artifacts/outage-2026-11-08.md — timeline 00:00-08:10 ber-bukti fisik (oom-kills ×6 @07:28-07:31 dari VM console.log.0; db OOMKilled=true; Docker restart marker 07:48:04; app/db/lightpanda StartedAt 00:48:05Z). Root-cause W1 = kernel OOM-killer VM 3.8GB (trigger spesifik unconfirmed + next probe tertulis); W2 = build --no-cache main-agent (diketahui). Blip-hold 15 mnt dievaluasi: pantas utk non-market, terlalu lambat utk market-hours → kandidat ops-2026-11-08-04 (market-hours fast-path info-alert streak=1).
+- bukti: file artifacts ada (4.793 B, write terverifikasi); docker inspect OOMKilled/StartedAt tercatat di artifact; lessons-learned +1 (judul "Docker daemon hang = OOM-killer VM").
+- deploy hash: n/a (0 deploy — image 9f283f2ce104 utuh) | QA: verdict SENTINEL 22:00 (H3) | impact_check_due: 2026-11-11
+- Rollback: n/a (post-mortem read-only + dokumen; tidak ada perubahan runtime)
