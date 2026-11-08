@@ -74,11 +74,6 @@ const nextConfig: NextConfig = {
         destination: "/stocks",
         permanent: true,
       },
-      {
-        source: "/sektor/:slug",
-        destination: "/stocks",
-        permanent: true,
-      },
       // Community post shares used to build /community/<id> (404). Real route is /community/post/[id].
       // 308 for links already circulating in chats before the share-modal fix.
       {

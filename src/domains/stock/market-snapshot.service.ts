@@ -43,7 +43,7 @@ export interface MarketSnapshot {
   ihsg: { close: number; changePercent: number } | null;
   gainers: Mover[];
   losers: Mover[];
-  sectors: Record<string, { avgChange: number; count: number }>;
+  sectors: Record<string, { avgChange: number; count: number; advancers: number; decliners: number; unchanged: number }>;
   breadth: { advancers: number; decliners: number; unchanged: number; total: number };
 }
 
@@ -159,9 +159,9 @@ async function computeSnapshot(): Promise<MarketSnapshot> {
   // ponytail: simple arithmetic mean (not market-cap-weighted) — kept from the
   // old overview so sector numbers stay comparable across releases.
   const breadth = marketEngine.breadth(computed);
-  const sectors: Record<string, { avgChange: number; count: number }> = {};
-  for (const { sector, avgChange, count } of marketEngine.sectorAverages(computed)) {
-    sectors[sector] = { avgChange: Number(avgChange.toFixed(2)), count };
+  const sectors: Record<string, { avgChange: number; count: number; advancers: number; decliners: number; unchanged: number }> = {};
+  for (const { sector, avgChange, count, advancers, decliners, unchanged } of marketEngine.sectorAverages(computed)) {
+    sectors[sector] = { avgChange: Number(avgChange.toFixed(2)), count, advancers, decliners, unchanged };
   }
 
   // Doctrine 4: IHSG = ^JKSE session close vs its own prev bar (rule 1).
