@@ -4974,7 +4974,7 @@
           "dom_vs_sql": "AC5 3/3 sektor EXACT (Financials 99/38/39/22 +0,04%; Energy 78/24/45/9 -0,60%; Technology 41/8/27/6 -1,55%) sesi 2026-11-06",
           "live_probe": "localhost:3100: /sektor/perbankan|energi|teknologi 200 SSR; slug sampah 404; /sektor tetap 308 ke /stocks; sitemap.xml 11 URL /sektor/; badge ticker BBCA nav_stockToSector -> /sektor/perbankan (SSR verified)"
         },
-        "commits": "e267219 (test failing-first) + implementasi (di branch, belum push malam ini — push menyusul)",
+        "commits": "e267219 (test failing-first) + 1746e64 (implementasi) + 1472bf1 (handoff notes) — PUSHED origin/night/prd-2026-11-06-02",
         "bug_self_found": "2: (1) en Infrastruktur vs Infrastructures mismatch — selftest A4c2 inverse-check menangkap sebelum deploy; (2) breadth sektor dihitung dari getStockList campur-tanggal (DOM 39/42/24 vs SQL 38/39/22) — fix: advancers/decliners/unchanged ditambahkan ke EngineSectorRow + snapshot (SATU PINTU, backward-compatible), halaman baca dari snapshot",
         "estimasi_review": "20-25 mnt; 7 file (1 baru 301 baris); koordinasi T2 aman — StrongerPeersStrip utuh"
       }
