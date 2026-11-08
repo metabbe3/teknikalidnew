@@ -56,7 +56,7 @@ import { calculatePivotPoints } from "@/lib/indicators";
 import { summarizeVerdict, toSnapshot } from "@/lib/verdict-prose";
 import { subDays } from "date-fns";
 import { SITE_URL, isCryptoTicker } from "@/lib/constants";
-import { sectorToBahasa } from "@/lib/sectors";
+import { sectorToBahasa, getSectorSlug } from "@/lib/sectors";
 import { ShareButtons } from "@/components/ui/share-buttons";
 import { articleRepository } from "@/domains/article/article.repository";
 import { DATA_SOURCE_LABEL } from "@/domains/article/article-freshness";
@@ -711,7 +711,26 @@ export default async function StockDetailPage({
                     </span>
                   )}
                   <span className="text-text-tertiary" aria-hidden="true">·</span>
-                  <span className="text-xs text-text-tertiary font-medium">{sectorToBahasa(stock.sector)}</span>
+                  {/* prd-2026-11-06-02: badge sektor jadi internal-link dua arah ke landing sektor */}
+                  {(() => {
+                    const sectorSlug = stock.sector ? getSectorSlug(stock.sector) : "";
+                    const sectorLabel = sectorToBahasa(stock.sector);
+                    if (sectorSlug) {
+                      return (
+                        <Link
+                          href={`/sektor/${sectorSlug}`}
+                          data-engagement="nav_stockToSector"
+                          className="text-xs font-medium text-text-tertiary hover:text-accent hover:underline underline-offset-2 transition-colors"
+                          title={`Lihat pergerakan seluruh saham sektor ${sectorLabel}`}
+                        >
+                          {sectorLabel}
+                        </Link>
+                      );
+                    }
+                    return (
+                      <span className="text-xs text-text-tertiary font-medium">{sectorLabel}</span>
+                    );
+                  })()}
                 </div>
                 <h2 className="text-sm text-text-secondary mt-0.5 font-semibold">
                   {/* fix owner 1 Nov: baris nama jadi H2 — H1 tetap murni ticker, crawler baca keyword di sini */}
@@ -1148,9 +1167,11 @@ export default async function StockDetailPage({
           items={[
             { label: "Beranda", href: "/" },
             { label: "Saham", href: "/stocks" },
-            ...(stock.sector
-              ? [{ label: sectorToBahasa(stock.sector), href: "/stocks" }]
-              : []),
+            ...(stock.sector && getSectorSlug(stock.sector)
+              ? [{ label: sectorToBahasa(stock.sector), href: `/sektor/${getSectorSlug(stock.sector)}` }]
+              : stock.sector
+                ? [{ label: sectorToBahasa(stock.sector), href: "/stocks" }]
+                : []),
             { label: stripJk(ticker) },
           ]}
         />

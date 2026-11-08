@@ -10,6 +10,7 @@ import { isStaleArticle, isEvergreenIndexed } from "@/domains/article/article-fr
 import KURASI_KEEP from "@/lib/seo/kurasi-keep"; // ADV-2: survivor whitelist kenapa-* pages
 import { prisma } from "@/lib/prisma";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
+import { SECTOR_META } from "@/lib/sectors";
 
 // force-dynamic tetap digunakan karena build stage Next.js tidak memiliki koneksi DB.
 // revalidate=3600 sebelumnya dihapus karena kontradiktif dengan force-dynamic (force-dynamic menang).
@@ -321,6 +322,13 @@ const getCachedSitemap = unstable_cache(
       priority: 0.6,
     })),
     { url: `${baseUrl}/stocks`, lastModified: today, changeFrequency: "daily", priority: 0.9 },
+    // prd-2026-11-06-02: 11 landing sektor SSR (dulu /sektor/:slug 301 ke /stocks — permintaan organik ditelan)
+    ...SECTOR_META.map((sec) => ({
+      url: `${baseUrl}/sektor/${sec.slug}`,
+      lastModified: today,
+      changeFrequency: "daily" as const,
+      priority: 0.8,
+    })),
     // tracking-audit G6: URL 308 dikeluarkan (sudah redirect ke /stocks — jangan dibuang crawl budget)
     { url: `${baseUrl}/akademi`, lastModified: today, changeFrequency: "weekly", priority: 0.8 },
     { url: `${baseUrl}/berita`, lastModified: today, changeFrequency: "daily", priority: 0.8 },

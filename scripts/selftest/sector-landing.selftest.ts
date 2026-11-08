@@ -102,7 +102,18 @@ async function main(): Promise<void> {
       `A4c en name 11 & unik (${enMatches.length})`,
       enMatches.length === 11 && unique(enMatches),
     );
+    // inverse check: setiap pasangan (en, slug) konsisten dgn SECTOR_SLUG_MAP
+    const mapPairs = new Map(
+      [...mapBody.matchAll(/"([^"]+)"\s*:\s*"([^"]+)"/g)].map((m) => [m[1], m[2]]),
+    );
+    const mismatch = slugMatches
+      .map((sl, i) => ({ sl, en: enMatches[i], expect: mapPairs.get(enMatches[i]) ?? null }))
+      .filter((x) => x.expect !== x.sl);
     check(
+      "A4c2 pasangan en↔slug konsisten dgn SECTOR_SLUG_MAP",
+      mismatch.length === 0,
+      mismatch.map((x) => `${x.en}→${x.sl} (map: ${x.expect})`).join(", "),
+    );    check(
       `A4d deskripsi 11 & unik (${descMatches.length})`,
       descMatches.length === 11 && unique(descMatches),
     );

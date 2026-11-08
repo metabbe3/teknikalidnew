@@ -4929,7 +4929,7 @@
       "type": "prd",
       "priority": "P2",
       "prd_id": "idea-2026-11-06-3",
-      "status": "spec_ready",
+      "status": "night_ready",
       "title": "P2 GROWTH/SEO (PRD idea-2026-11-06-3): Landing sektor /sektor/[slug] 11 halaman SSR — whitespace penuh (kini 301 ditelan /stocks), aset siap (SECTORS copy + SECTOR_SLUG_MAP + komponen heatmap), data pergerakan WAJIB via market-snapshot SATU PINTU, 357 ticker-page jadi mesin internal-link",
       "north_star": "GROWTH (traffic organik query 'saham <sektor>' + sesi multi-halaman sektor->ticker) — pilar funnel web->agent (Fact #240-241)",
       "user_story": "Sebagai pencari yang mengetik 'saham perbankan hari ini' di Google, saya ingin satu halaman sektor ber-SSR (heatmap pergerakan, top sinyal skor sektor, daftar saham + link analisa per saham), supaya saya melihat gambaran sektor sekali lihat lalu menyelam ke halaman saham yang relevan.",
@@ -4963,7 +4963,21 @@
       "qa_plan": "Pembangun != pemeriksa. Staging: DOM 3 sektor vs replay SQL kanonik (superlatif dari query asli); sitemap berisi 11 URL; Lighthouse SEO >=95; klik badge tercatat (EngagementEvent label nav_stockToSector). D+28: sesi organik /sektor* >=60/30hr target pola T6.",
       "done_when": "DONE WHEN: (a) 11 URL live 200 + 404 slug sampah; (b) sitemap memuat 11; (c) DOM angka == SQL replay 3 sektor; (d) badge sektor live di ticker page + event tercatat; (e) tsc+build EXIT-0. Redirect lama dihapus terverifikasi (curl /sektor/perbankan = 200 halaman, bukan 301).",
       "scheduled_slot": "2026-11-10+ BE malam (setelah T1-T6 mulai jalan agar badge tidak tabrak T2)",
-      "created_by": "Product Agent buffer-keeper 2026-11-06 22:4x WIB (run gate: buffer teknikal 1 < 3)"
+      "created_by": "Product Agent buffer-keeper 2026-11-06 22:4x WIB (run gate: buffer teknikal 1 < 3)",
+      "branch": "night/prd-2026-11-06-02",
+      "night_result": {
+        "verify": {
+          "tsc": "clean exit 0",
+          "build": "next build --webpack EXIT-0 BUILD_ID Upjzde5pgoEPwDLEsBgpE",
+          "test": "sector-landing.selftest 20/20 PASS (failing-first 6 FAIL sebelum impl)",
+          "lint": "sdlc_lint 0 error",
+          "dom_vs_sql": "AC5 3/3 sektor EXACT (Financials 99/38/39/22 +0,04%; Energy 78/24/45/9 -0,60%; Technology 41/8/27/6 -1,55%) sesi 2026-11-06",
+          "live_probe": "localhost:3100: /sektor/perbankan|energi|teknologi 200 SSR; slug sampah 404; /sektor tetap 308 ke /stocks; sitemap.xml 11 URL /sektor/; badge ticker BBCA nav_stockToSector -> /sektor/perbankan (SSR verified)"
+        },
+        "commits": "e267219 (test failing-first) + implementasi (di branch, belum push malam ini — push menyusul)",
+        "bug_self_found": "2: (1) en Infrastruktur vs Infrastructures mismatch — selftest A4c2 inverse-check menangkap sebelum deploy; (2) breadth sektor dihitung dari getStockList campur-tanggal (DOM 39/42/24 vs SQL 38/39/22) — fix: advancers/decliners/unchanged ditambahkan ke EngineSectorRow + snapshot (SATU PINTU, backward-compatible), halaman baca dari snapshot",
+        "estimasi_review": "20-25 mnt; 7 file (1 baru 301 baris); koordinasi T2 aman — StrongerPeersStrip utuh"
+      }
     },
     {
       "id": "ops-2026-11-07-01",

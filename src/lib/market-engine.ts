@@ -22,6 +22,12 @@ export interface EngineSectorRow {
   sector: string;
   avgChange: number;
   count: number;
+  /** prd-2026-11-06-02: breadth per-sektor dari query kanonik yang sama —
+   *  mencegah halaman sektor menghitung naik/turun sendiri dari sumber campur
+   *  tanggal (breadth-rule qa-30-01). */
+  advancers: number;
+  decliners: number;
+  unchanged: number;
 }
 
 export const marketEngine = {
@@ -55,14 +61,24 @@ export const marketEngine = {
   /** Rata-rata change% per sektor (aritmetik sederhana — doctrine ponytail),
    * urutan entri = first-seen. Konsumen memformat/mengurutkan sendiri. */
   sectorAverages(rows: { sector: string; changePercent: number }[]): EngineSectorRow[] {
-    const m = new Map<string, { total: number; sum: number }>();
+    const m = new Map<string, { total: number; sum: number; adv: number; dec: number; unc: number }>();
     for (const r of rows) {
-      const e = m.get(r.sector) ?? { total: 0, sum: 0 };
+      const e = m.get(r.sector) ?? { total: 0, sum: 0, adv: 0, dec: 0, unc: 0 };
       e.total++;
       e.sum += r.changePercent;
+      if (r.changePercent > 0) e.adv++;
+      else if (r.changePercent < 0) e.dec++;
+      else e.unc++;
       m.set(r.sector, e);
     }
-    return [...m.entries()].map(([sector, { total, sum }]) => ({ sector, avgChange: sum / total, count: total }));
+    return [...m.entries()].map(([sector, { total, sum, adv, dec, unc }]) => ({
+      sector,
+      avgChange: sum / total,
+      count: total,
+      advancers: adv,
+      decliners: dec,
+      unchanged: unc,
+    }));
   },
 
   /** Top movers: n gainer teratas & n loser terbawah (worst-first).
