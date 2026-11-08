@@ -110,7 +110,7 @@ export function OnboardingWizard() {
   const steps: { key: keyof Done; label: string; icon: string }[] = [
     { key: "search", label: "Cari saham apa pun di kolom pencarian", icon: "🔍" },
     { key: "score", label: "Lihat Skor Sinyal — 12 indikator dalam satu angka", icon: "📊" },
-    { key: "star", label: "Tandai ⭐ saham favorit untuk disimpan", icon: "⭐" },
+    { key: "star", label: "Tandai saham favorit untuk disimpan", icon: "⭐" },
   ];
   const completed = steps.filter((s) => done[s.key]).length;
 

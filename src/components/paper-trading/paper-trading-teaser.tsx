@@ -91,7 +91,7 @@ export function PaperTradingTeaser({
         )}
 
         <Link
-          href={`/auth/signin?callbackUrl=${encodeURIComponent(`/paper-trading?ticker=${ticker.replace(/\.JK$/i, "")}`)}`}
+          href={`/auth/register?callbackUrl=${encodeURIComponent(`/paper-trading?ticker=${ticker.replace(/\.JK$/i, "")}`)}`}
           data-engagement="funnel_paper_teaser_cta"
           className="press-scale inline-flex items-center gap-1.5 text-xs font-bold bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent/90 transition-colors shadow-sm shadow-accent/20"
         >
