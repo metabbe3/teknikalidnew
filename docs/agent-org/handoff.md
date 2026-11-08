@@ -1733,3 +1733,10 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - In-flight: Senin 07:30 BE pagi qa-11-08-04 patch AKRA; 09:30 BE siang ops-11-08-01 deploy-deadlock root-fix (SEBELUM itu owner GUI: Docker VM ≥6GB); Kondektur 22:15 MALAM INI = VERIFY-ONLY (jangan build); Sentinel 22:00 verdict ops-11-05-03 + ux-11-07-01 + ops-11-08-02.
 - Jebakan: (1) docker events buffer kosong pasca-restart daemon — bukti OOM ada di vm/console.log.N (.0 ter-rotasi saat restart); (2) statejson append pakai --entries-json file (bukan --set); (3) ~/Library/Group Containers (Docker settings) tak terbaca dari cron — VM RAM = owner-only; (4) terminal log show window sempit = output aneh, gunakan file log Docker langsung.
 - Langkah pertama slot berikutnya: baca handoff → BE pagi Senin: qa-11-08-04 dulu (DB-patch cepat) → 09:30 ops-11-08-01 (pastikan owner sudah raise VM RAM; cek `docker info | grep -i memory`).
+
+## 2026-11-08 17:4x — CTO sore Minggu run-2 (idle-brainstorm; 0 deploy 0 build)
+- State: site 200 (0,23s); kontainer healthy; EOD=2026-11-06 benar; queue v379 tak ada pending utk slot ini (semua direslot Senin/10-Nov); backlog v41.
+- Barusan selesai: health check + ide idea-2026-11-08-1 candidate → backlog (weekend bimodal: 24-25 Okt 233/246 views = PEAK bulanan dgn analisis segar vs 31 Okt-1 Nov 8/30 collapse; tracking hidup, demand-side; direct-referrer 5,4x; malam 20-24 = 41% trafik weekend sehat).
+- In-flight: Senin 07:30 qa-11-08-04; 09:30 ops-11-08-01 + ops-11-05-01; Kondektur 22:15 MALAM INI verify-only (jangan build); Sentinel 22:00 verdict.
+- Jebakan: (1) statejson --entries-json = JSON INLINE (bukan path file) — json.loads langsung; (2) TMPDIR heredoc file tidak terbaca oleh statejson (0 byte saat dilempar? tulis via scratch + python subprocess inline); (3) docker VM 3,827GiB TERKONFIRMASI masih — owner GUI satu-satunya jalur.
+- Langkah pertama slot berikutnya: baca bus 17:4x ini → BE pagi Senin: qa-11-08-04 → PASTIKAN owner sudah raise Docker VM ≥6GB SEBELUM 09:30 (cek docker info | grep -i memory) → ops-11-08-01.
