@@ -257,7 +257,7 @@
         "keputusan": "SETUJU rekomendasi Product: (1) JANGAN gate screener — 2.394 views/30d = mesin time-spent; (2) register hook = 'Simpan Screen/Preset + Watchlist Ticker' — LANJUT KE PRD (spec_ready) oleh Product Agent Kamis 17 Sep 10:15. Widget /sinyal/TICKER DIPISAH jadi mandate top-of-funnel (prod-2026-09-17-04).",
         "gate": "SDLC: engineering dispatch HANYA setelah status spec_ready (prd_id wajib). Council 20 Sep review PRD sebelum CTO build."
       },
-      "note": "CEO 22 Sep 08:15: dispatch engineering -> cto-queue prd-2026-09-17-01 (queue kosong 0 pending, budget 2/hari terpakai 1). Gate lolos: spec_ready + council substitute (CEO approve 20 Sep) + owner FYI auth-adjacent. || PRODUCT VERIFY 24 Sep 10:1x WIB (curl anon -A Mozilla): AC1 'Simpan Screen' SSR live di /stocks?view=screener; AC3 'Pantau' x2 render di /stocks/BBRI.JK; AC4 NO gating — screener tetap render guest; /auth/register 200. LIVE CONFIRMED sejak 22 Sep 19:1x. DATA DAY-2 (22 Sep 19:00-24 Sep): 1 IP sentuh /auth/register+complete-profile -> register BERHASIL 22 Sep 21:02 (user 'Khresna' via Google OAuth) TAPI referrer chain google.com -> BUKAN dari /stocks hook, tidak diatribusikan. Funnel hook sendiri: 0 IP dari area /stocks klik register sejauh ini. AC5 gate tetap 4 minggu (impact check 2026-10-20): baseline 3 IP register-page dari /stocks; target >=10 IP ATAU >=8 register selesai. CTO baseline note konsisten. || PRODUCT MIDPOINT 8 Okt 10:1x WIB (SQL nobot, gate AC5 berjarak 12 hari): register-page area-/stocks IP 30d = 8 (target >=10; sejak-hooks 22 Sep = 7/7 IP register-view juga aktif area /stocks = korelasi hook-area kuat); register selesai 30d = 6 User, sejak-hooks = 3 (target >=8). BELUM LOLOS, tren butuh dorongan -- lever desain = saved-screen (idea-2026-10-03-1, deploy 8 Okt sore). UTM instrumentasi (idea-2026-09-25-1) live 7 Okt: kolom ada, 1 row qatest0710/cronqa (QA CTO), 0 utm organik sebab 0 register-view sejak 5 Okt -- atribusi hook efektif mulai deploy saved-screen. ORGANIK 7d naik 44v (vs 10-14v/mgg survey 5 Okt).",
+      "note": "CEO 22 Sep 08:15: dispatch engineering -> cto-queue prd-2026-09-17-01 (queue kosong 0 pending, budget 2/hari terpakai 1). Gate lolos: spec_ready + council substitute (CEO approve 20 Sep) + owner FYI auth-adjacent. || PRODUCT VERIFY 24 Sep 10:1x WIB (curl anon -A Mozilla): AC1 'Simpan Screen' SSR live di /stocks?view=screener; AC3 'Pantau' x2 render di /stocks/BBRI.JK; AC4 NO gating — screener tetap render guest; /auth/register 200. LIVE CONFIRMED sejak 22 Sep 19:1x. DATA DAY-2 (22 Sep 19:00-24 Sep): 1 IP sentuh /auth/register+complete-profile -> register BERHASIL 22 Sep 21:02 (user 'Khresna' via Google OAuth) TAPI referrer chain google.com -> BUKAN dari /stocks hook, tidak diatribusikan. Funnel hook sendiri: 0 IP dari area /stocks klik register sejauh ini. AC5 gate tetap 4 minggu (impact check 2026-10-20): baseline 3 IP register-page dari /stocks; target >=10 IP ATAU >=8 register selesai. CTO baseline note konsisten. || PRODUCT MIDPOINT 8 Okt 10:1x WIB (SQL nobot, gate AC5 berjarak 12 hari): register-page area-/stocks IP 30d = 8 (target >=10; sejak-hooks 22 Sep = 7/7 IP register-view juga aktif area /stocks = korelasi hook-area kuat); register selesai 30d = 6 User, sejak-hooks = 3 (target >=8). BELUM LOLOS, tren butuh dorongan -- lever desain = saved-screen (idea-2026-10-03-1, deploy 8 Okt sore). UTM instrumentasi (idea-2026-09-25-1) live 7 Okt: kolom ada, 1 row qatest0710/cronqa (QA CTO), 0 utm organik sebab 0 register-view sejak 5 Okt -- atribusi hook efektif mulai deploy saved-screen. ORGANIK 7d naik 44v (vs 10-14v/mgg survey 5 Okt). | COUNCIL 8 Nov: convert-to-monitor — bukan item kerja (analisis 52d; widget hanya via PRD chain setelah unfreeze); ritme review = North Star Weekly Senin 08:40. Status live_monitoring dipertahankan.",
       "prd": {
         "title": "Register Hook: Simpan Screen/Preset + Watchlist Ticker (guest-visible save intent)",
         "date": "2026-09-17",
@@ -2003,7 +2003,7 @@
     {
       "id": "sre-2026-10-28-1",
       "date": "2026-10-28",
-      "status": "dispatched",
+      "status": "superseded",
       "source": "sre",
       "title": "sre_brief.py error-cluster collapse (RE-FILE sre-2026-10-24-1, hilang dari backlog): 2 run berturut-turut 'N error' ternyata 1 event — 24 Okt 7 client-abort/7dtk, 28 Okt 10 MissingCSRF/1,2dtk (auth.js bot-probe pasca-deploy, proteksi justru bekerja). Cluster-collapse by digest+jendela 60s + AUTH_NOISE_RE utk MissingCSRF.",
       "data": {
@@ -2013,12 +2013,13 @@
         "probe": "2026-10-28 09:30"
       },
       "priority": "P3",
-      "insight": "PROMOTE CEO 29 Okt -> ops-2026-10-29-03 (cluster-collapse, host-script, slot longgar pasca queue pending<6)"
+      "insight": "PROMOTE CEO 29 Okt -> ops-2026-10-29-03 (cluster-collapse, host-script, slot longgar pasca queue pending<6)",
+      "note": "VERDICT COUNCIL 8 Nov: duplikat ops-2026-10-29-04 (queue, P3, slot Kondektur 5 Nov — zod quote ^JKSE shortName null, fallback v8). Backlog entry tak pernah dispatch; queue entry = jalur kerja live. Pilar TRUST."
     },
     {
       "id": "sre-2026-10-28-2",
       "date": "2026-10-28",
-      "status": "dispatched",
+      "status": "superseded",
       "source": "sre",
       "title": "pasar-live IHSG (^JKSE): Yahoo v7 quote gagal validasi zod (shortName/longName null) ~46x/24h → selalu fallback v8 chart. Data tetap akurat (fallback sukses 46/46) tapi log error-level tiap tick + 2x panggilan upstream per fetch.",
       "data": {
@@ -2028,7 +2029,8 @@
         "probe": "2026-10-28 09:30"
       },
       "priority": "P3",
-      "insight": "PROMOTE CEO 29 Okt -> ops-2026-10-29-04 (zod nullable ^JKSE, BE T-1030+ SETELAH fix-26-12 merge - file sama)"
+      "insight": "PROMOTE CEO 29 Okt -> ops-2026-10-29-04 (zod nullable ^JKSE, BE T-1030+ SETELAH fix-26-12 merge - file sama)",
+      "note": "VERDICT COUNCIL 8 Nov: duplikat ops-2026-10-29-04 — zod ^JKSE shortName/longName null (P3; log noise + double upstream call, data akurat via fallback v8). Satu jalur kerja. Pilar TRUST."
     },
     {
       "id": "im-2026-10-29-1",
@@ -2398,7 +2400,7 @@
     {
       "id": "sre-2026-11-04-2",
       "title": "Morning-delta TypeError 'b.getTime is not a function' 12x/24h di /api/me/morning-delta — 200 saat kosong, error saat ada data tracker",
-      "status": "candidate",
+      "status": "superseded",
       "source": "sre",
       "date": "2026-11-04",
       "priority": "P2",
@@ -2406,7 +2408,7 @@
         "level": "low",
         "note": "bug API publik"
       },
-      "insight": "KONFIRMASI AKTIF (CTO sore 4 Nov, read-only): 5x TypeError b.getTime 24h (~25 req, ~20% fail). Root-cause PRECISE: morning-delta.service.ts L159+L189 filter cuma null-check, TIDAK instanceof Date; date-string dari jalur raw-SQL/deserialize lolos guard lalu .sort(b.getTime()) throw. FIX 1-baris: normalize new Date(d) + !isNaN guard sebelum sort. Intermiten = hanya payload jalur cache/raw yang kena.",
+      "insight": "KONFIRMASI AKTIF (CTO sore 4 Nov, read-only): 5x TypeError b.getTime 24h (~25 req, ~20% fail). Root-cause PRECISE: morning-delta.service.ts L159+L189 filter cuma null-check, TIDAK instanceof Date; date-string dari jalur raw-SQL/deserialize lolos guard lalu .sort(b.getTime()) throw. FIX 1-baris: normalize new Date(d) + !isNaN guard sebelum sort. Intermiten = hanya payload jalur cache/raw yang kena. | CEO VERDICT 8 Nov (re-apply; verdict 7 Nov hilang di race-repair queue): SUPERSEDED oleh ops-2026-11-05-02 yang sudah DEPLOYED 5 Nov — bukti live: instanceof Date di morning-delta.service.ts L144 + grep b.getTime docker logs 24h = 0 error. Tidak ada pekerjaan tersisa.",
       "data": {
         "errors_24h": 25,
         "errors_exact_match": 12,
@@ -2539,6 +2541,52 @@
       "done_when": "research brief dgn angka per-jenis halaman + 1 rekomendasi berbasis data",
       "data": {
         "drop_reason": "PIVOT 6 Nov 2026: feature freeze — fokus acquisition (fact 252)"
+      }
+    },
+    {
+      "id": "idea-2026-11-07-1",
+      "date": "2026-11-07",
+      "type": "idea",
+      "priority": "P2",
+      "status": "spec_ready",
+      "source": "Product Agent buffer-keeper — mandat CEO 7 Nov: AI-search referral utk Product Agent",
+      "title": "P2 GROWTH/AEO: llms.txt v2 — seksi kenapa-naik/turun (korpus 133 URL di sitemap, hanya 1 di llms.txt) supaya ChatGPT/Perplexity mengutip teknikal.id saat user tanya 'kenapa saham X naik hari ini'",
+      "problem": "AI-referral 30d HANYA 4 PV (chatgpt 3 -> /community, perplexity 1 -> /) meski robots AEO dibuka 3 Nov. llms.txt live 165 URL tanpa korpus kenapa-* (aset Q&A harian paling banyak dikutip mesin). korpus mesin-terbaca = prerequisite citation, belum ada.",
+      "north_star": "GROWTH traffic (AI-search referral) — mandat CEO 7 Nov",
+      "DONE-WHEN": "llms.txt v2 live: seksi kenapa-* >=30 URL terbaru + tanggal sesi + 1 angka ground-trift per item (SATU PINTU); URL total >=195; <=256KB; bucket ai-search growth kpis regex diperluas; review 2 minggu",
+      "research_note": "Riset 7 Nov 22:3x WIB (DB read-only teknikalidnew-db-1 + live curl + repo main @ 6dfd562): (1) PageView 30d isBot=false: Bing 141 = referrer #1 (> Google-search 40), Yahoo/Bing-fed 53, AI-referral 4 (chatgpt 3, perplexity 1), total 3.732. (2) /llms.txt 200: 1.075 baris, 165 URL, 4 seksi (FAQ Question ANSWERED helpfulVotes desc / Artikel 50 terbaru / IDX40 / Halaman Penting), kenapa-* = 1 URL. (3) sitemap 957 URL: 133 kenapa-*, 87 berita/, 16 akademi/tanya, 12 analisa-saham. (4) robots.txt AEO 3 Nov sudah allow PerplexityBot/OAI-SearchBot/GPTBot/ClaudeBot/Applebot-Extended/Amazonbot. (5) generator = src/app/llms.txt/route.ts force-dynamic. (6) Article PUBLISHED 189 by type NEWS 76/EDU 46/DAILY 40/ANALYSIS 27.",
+      "insight": "RisetAnswer-engine butuh korpus terstruktur per-pertanyaan; korpus kenapa-* teknikal.id = 133 unit konten harian bertanggal yang TIDAK diekspos ke llms.txt. Fiksinya murah (extend 1 route) dan terukur (bucket ai-search sudah ada di growth kpis).",
+      "data": {
+        "ai_referral_30d": 4,
+        "bing_30d": 141,
+        "yahoo_30d": 53,
+        "google_30d": 40,
+        "llms_urls": 165,
+        "sitemap_kenapa": 133,
+        "llms_kenapa": 1,
+        "tree_basis": "teknikalidnew main @ 6dfd562, live teknikal.id 7 Nov 22:3x WIB"
+      }
+    },
+    {
+      "id": "idea-2026-11-07-2",
+      "date": "2026-11-07",
+      "type": "idea",
+      "priority": "P2",
+      "status": "spec_ready",
+      "source": "Product Agent buffer-keeper — riset referrer 30d (temuan: ekosistem Bing = organik #1, tak terkelola)",
+      "title": "P2 GROWTH: IndexNow ping saat publish + verifikasi Bing Webmaster — Bing+Yahoo 194 PV/30d (5x Google-search 40) tapi 0 instant-index: 0 kode IndexNow, 0 key file, 0 msvalidate",
+      "problem": "Halaman kenapa-*/analisa harian kehilangan window relevansi jam-jam pertama di mesin pencari #1 situs ini (Bing). Tanpa IndexNow, URL baru menunggu crawl natural; tanpa msvalidate, tidak ada data search-console Bing utk decision.",
+      "north_star": "GROWTH traffic organik non-Google (Bing ecosystem = 52% dari referral search 30d)",
+      "DONE-WHEN": "key IndexNow live 200; ping fire-and-forget di publish path (artikel tetap 100% sukses saat endpoint down — bukti staging); log ping 1 baris terstruktur; patch meta msvalidate ter-gate env (klaim akun = owner); tsc+build EXIT-0",
+      "research_note": "Riset 7 Nov 22:3x WIB (repo main @ 6dfd562 + live): (1) grep -ri indexnow src/ scripts/ = 0 file; public/ tanpa *.key; layout.tsx + src/lib tanpa msvalidate/google-site-verification. (2) PageView 30d isBot=false: Bing 141 + Yahoo 53 = 194 vs Google-search 40 — mesin Bing menyuplai ~83% referral search non-Google-login. (3) Top path Bing: /stocks 50, / 9, /stocks/RUNS.JK 6, indeks 6; top Yahoo: /stocks 11, /indeks 9. (4) Volume publish = objek ping: Article PUBLISHED 189 (NEWS 76, EDUCATIONAL 46, DAILY_SNAPSHOT 40, STOCK_ANALYSIS 27) + kenapa-* 133 di sitemap. (5) IndexNow = protokol gratis 1 key utk Bing/Yandex/Seznam/Naver/Yeti (api.indexnow.org).",
+      "insight": "Bing sudah #1 tanpa satu baris optimasi — IndexNow adalah cheapest win search: 1 key + hook post-publish. Risiko satu-satunya = publish path hot-path, diatasi fire-and-forget + retry + catch.",
+      "data": {
+        "bing_30d": 141,
+        "yahoo_30d": 53,
+        "google_30d": 40,
+        "indexnow_code_files": 0,
+        "published_articles": 189,
+        "tree_basis": "teknikalidnew main @ 6dfd562, live teknikal.id 7 Nov 22:3x WIB"
       }
     }
   ],

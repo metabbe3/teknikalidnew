@@ -8,7 +8,7 @@
     {
       "id": "sec-2026-10-22-01",
       "date": "2026-10-22",
-      "status": "dispatched",
+      "status": "dropped_cleanup_6nov",
       "source": "itsec-red",
       "exploitability": "rendah",
       "title": "[RED][DOS/PERF] cron endpoints (resolve-predictions dkk) tanpa timeout guard — edb29bb fix perf bagus (15.5jt→1 row/stock) tapi seluruh /api/cron/* tanpa rate-limit/timeout; CRON_SECRET wajib (401 verified di kode) — blast hanya internal",
@@ -16,7 +16,8 @@
         "evidence": "route.ts L8 Bearer CRON_SECRET check; tidak ada rate-limit di middleware utk /api/cron",
         "impact": "jika CRON_SECRET leak, endpoint bisa di-spam → DB load (kini jauh lebih murah pasca-fix)",
         "fix_hint": "n/a mayor — catat secret-rotation CRON_SECRET di runbook",
-        "probe": "2026-10-22 21:30"
+        "probe": "2026-10-22 21:30",
+        "drop_reason": "Owner 6 Nov malam: buang backlog tak kepakai — stale 15d dispatched — re-file kalau muncul lagi di SRE brief"
       },
       "priority": "P3",
       "insight": "CEO verdict 23 Okt: PROMOTE (cto verdict APPROVE P3, exploitability rendah — butuh CRON_SECRET). Kereta T-1024-N. Pilar TRUST."
@@ -24,7 +25,7 @@
     {
       "id": "sec-2026-10-22-02",
       "date": "2026-10-22",
-      "status": "dispatched",
+      "status": "dropped_cleanup_6nov",
       "source": "itsec-blue",
       "exploitability": "rendah",
       "title": "[BLUE][DEPS] npm audit teknikalidnew --omit=dev: 8 HIGH — follow-redirects 1.16.0 (2 GHSA, dep midtrans-client/axios 1.20.0) + braces stack-exhaustion (shadcn CLI dep); follow-redirects fix = npm audit fix non-breaking",
@@ -32,7 +33,8 @@
         "evidence": "npm ls: follow-redirects@1.16.0 via midtrans-client@1.4.3→axios@1.20.0",
         "impact": "follow-redirects dipakai runtime PAYMENTS (midtrans) — array-form header bypass bisa strip credential utk redirect midtrans",
         "fix_hint": "npm audit fix (follow-redirects→1.15.x patch in-range)",
-        "probe": "2026-10-22 local"
+        "probe": "2026-10-22 local",
+        "drop_reason": "Owner 6 Nov malam: buang backlog tak kepakai — stale 15d — deps upgrade = risiko regresi di freeze, tunda unfreeze"
       },
       "priority": "P2",
       "insight": "CEO verdict 23 Okt: PROMOTE (cto verdict APPROVE P2 — follow-redirects via midtrans-client = jalur payments; npm audit fix non-breaking). Kereta T-1023-N malam ini. Pilar TRUST."
@@ -255,7 +257,7 @@
         "keputusan": "SETUJU rekomendasi Product: (1) JANGAN gate screener — 2.394 views/30d = mesin time-spent; (2) register hook = 'Simpan Screen/Preset + Watchlist Ticker' — LANJUT KE PRD (spec_ready) oleh Product Agent Kamis 17 Sep 10:15. Widget /sinyal/TICKER DIPISAH jadi mandate top-of-funnel (prod-2026-09-17-04).",
         "gate": "SDLC: engineering dispatch HANYA setelah status spec_ready (prd_id wajib). Council 20 Sep review PRD sebelum CTO build."
       },
-      "note": "CEO 22 Sep 08:15: dispatch engineering -> cto-queue prd-2026-09-17-01 (queue kosong 0 pending, budget 2/hari terpakai 1). Gate lolos: spec_ready + council substitute (CEO approve 20 Sep) + owner FYI auth-adjacent. || PRODUCT VERIFY 24 Sep 10:1x WIB (curl anon -A Mozilla): AC1 'Simpan Screen' SSR live di /stocks?view=screener; AC3 'Pantau' x2 render di /stocks/BBRI.JK; AC4 NO gating — screener tetap render guest; /auth/register 200. LIVE CONFIRMED sejak 22 Sep 19:1x. DATA DAY-2 (22 Sep 19:00-24 Sep): 1 IP sentuh /auth/register+complete-profile -> register BERHASIL 22 Sep 21:02 (user 'Khresna' via Google OAuth) TAPI referrer chain google.com -> BUKAN dari /stocks hook, tidak diatribusikan. Funnel hook sendiri: 0 IP dari area /stocks klik register sejauh ini. AC5 gate tetap 4 minggu (impact check 2026-10-20): baseline 3 IP register-page dari /stocks; target >=10 IP ATAU >=8 register selesai. CTO baseline note konsisten. || PRODUCT MIDPOINT 8 Okt 10:1x WIB (SQL nobot, gate AC5 berjarak 12 hari): register-page area-/stocks IP 30d = 8 (target >=10; sejak-hooks 22 Sep = 7/7 IP register-view juga aktif area /stocks = korelasi hook-area kuat); register selesai 30d = 6 User, sejak-hooks = 3 (target >=8). BELUM LOLOS, tren butuh dorongan -- lever desain = saved-screen (idea-2026-10-03-1, deploy 8 Okt sore). UTM instrumentasi (idea-2026-09-25-1) live 7 Okt: kolom ada, 1 row qatest0710/cronqa (QA CTO), 0 utm organik sebab 0 register-view sejak 5 Okt -- atribusi hook efektif mulai deploy saved-screen. ORGANIK 7d naik 44v (vs 10-14v/mgg survey 5 Okt).",
+      "note": "CEO 22 Sep 08:15: dispatch engineering -> cto-queue prd-2026-09-17-01 (queue kosong 0 pending, budget 2/hari terpakai 1). Gate lolos: spec_ready + council substitute (CEO approve 20 Sep) + owner FYI auth-adjacent. || PRODUCT VERIFY 24 Sep 10:1x WIB (curl anon -A Mozilla): AC1 'Simpan Screen' SSR live di /stocks?view=screener; AC3 'Pantau' x2 render di /stocks/BBRI.JK; AC4 NO gating — screener tetap render guest; /auth/register 200. LIVE CONFIRMED sejak 22 Sep 19:1x. DATA DAY-2 (22 Sep 19:00-24 Sep): 1 IP sentuh /auth/register+complete-profile -> register BERHASIL 22 Sep 21:02 (user 'Khresna' via Google OAuth) TAPI referrer chain google.com -> BUKAN dari /stocks hook, tidak diatribusikan. Funnel hook sendiri: 0 IP dari area /stocks klik register sejauh ini. AC5 gate tetap 4 minggu (impact check 2026-10-20): baseline 3 IP register-page dari /stocks; target >=10 IP ATAU >=8 register selesai. CTO baseline note konsisten. || PRODUCT MIDPOINT 8 Okt 10:1x WIB (SQL nobot, gate AC5 berjarak 12 hari): register-page area-/stocks IP 30d = 8 (target >=10; sejak-hooks 22 Sep = 7/7 IP register-view juga aktif area /stocks = korelasi hook-area kuat); register selesai 30d = 6 User, sejak-hooks = 3 (target >=8). BELUM LOLOS, tren butuh dorongan -- lever desain = saved-screen (idea-2026-10-03-1, deploy 8 Okt sore). UTM instrumentasi (idea-2026-09-25-1) live 7 Okt: kolom ada, 1 row qatest0710/cronqa (QA CTO), 0 utm organik sebab 0 register-view sejak 5 Okt -- atribusi hook efektif mulai deploy saved-screen. ORGANIK 7d naik 44v (vs 10-14v/mgg survey 5 Okt). | COUNCIL 8 Nov: convert-to-monitor — bukan item kerja (analisis 52d; widget hanya via PRD chain setelah unfreeze); ritme review = North Star Weekly Senin 08:40. Status live_monitoring dipertahankan.",
       "prd": {
         "title": "Register Hook: Simpan Screen/Preset + Watchlist Ticker (guest-visible save intent)",
         "date": "2026-09-17",
@@ -508,11 +510,13 @@
       "id": "idea-2026-09-23-1",
       "date": "2026-09-23",
       "priority": "P3",
-      "status": "deferred",
+      "status": "dropped_freeze_6nov",
       "source": "cto-idle",
       "title": "Cross-link ticker-detail -> signal pages (related-signals di /stocks/[ticker])",
       "hypothesis": "133 IP/30d baca detail ticker tapi cuma 15% sampai /saham-* — pola related-signals (komponen SUDAH ADA di artikel, council-13-02) tinggal dipasang di detail ticker utk ticker yg punya smaCrossSignal aktif. Effort 1 (reuse), menunggu prod-19-01 terukur dulu biar efek link-equity tak tercampur.",
-      "data": "CTO sore 23 Sep: ticker-detail 1.710v/133 IP, cross 20 IP (15%); 87% views GC berasal dari /stocks (21 Sep survey) = link equity dari nav proven; komponen related-signals.tsx existing (commit f75dd7d).",
+      "data": {
+        "drop_reason": "PIVOT 6 Nov 2026: feature freeze — fokus acquisition (fact 252)"
+      },
       "note": " || CEO 24 Sep 08:15: DEFER — jangan campur atribusi link-equity saat widget mingguan (prod-19-01) baru live; review pasca gate AC6 2026-10-22. || COUNCIL 11 Okt 2026 VERDICT=schedule: scheduled_slot 2026-10-22 (review pasca gate AC6 widget mingguan; jangan campur atribusi link-equity sebelum itu).",
       "review_date": "2026-11-10",
       "scheduled_slot": "2026-10-22",
@@ -1472,7 +1476,7 @@
       "id": "idea-2026-10-16-1",
       "date": "2026-10-16",
       "priority": "P2",
-      "status": "researched",
+      "status": "dropped_freeze_6nov",
       "source": "CEO mandate 16 Okt (Researcher: INTAKE GAP — stok spec_ready 2 < target 8-12)",
       "title": "PRODUCT MANDATE: refill pipeline spec_ready 8-12 — generate kandidat product dari data (user feedback, funnel anomaly, competitor gap)",
       "north_star": "semua pilar — pipeline kereta 4-8 task/hari butuh stok; kualitas gate #1 (done_when wajib)",
@@ -1486,7 +1490,10 @@
       "research_brief": "Researcher 17 Okt: VERDICT BUILD-AFTER-PRD (PRD missing target_files/effort/risk/dependencies; untuk tugas analisis read-only target_files boleh diisi 'n/a (analisis data)' eksplisit, risk minimal). Pola refill kandidat dari data+feedback = best practice industry. BEST PRACTICE: (1) triangulasi quant funnel + minimal 1 sumber kualitatif per kandidat (Torres: quant kasih WHERE, qual kasih WHY); (2) gate dua-tahap: research_brief -> spec+done_when sebelum spec_ready; tanpa done_when tidak masuk hitungan stok; (3) tiap kandidat bawa scoring dampak-pilar North Star x effort agar dispatch pagi bisa pilih cepat; (4) idea tak jadi spec_ready dalam 14 hari auto-deprioritize (backlog aging); (5) competitor gap = sinyal saja, wajib sanity-check data internal (views/register) sebelum spec. ANTI-PATTERN: analytics-only discovery; backlog bloat demi kejar angka 8-12 (8 solid > 12 lemah); feature factory yang makn stok tanpa link pilar KPI. SUMBER: producttalk.org/opportunity-solution-trees; svpg.com/product-discovery-anti-patterns; svpg.com/the-opportunity-backlog; atlassian.com/agile/kanban/wip-limits. BUKTI: KUAT utk pola umum (Torres/Cagan/kanban); angka target 8-12 = keputusan dari data konsumsi internal.",
       "insight": "DEFER CEO 4 Nov (perpanjang): cross-link ticker→signal pages — tunggu verdict sitemap/GSC batch-1 + council STOP signal-content masih berlaku. Review 10 Nov bareng idea-09-23-1.",
       "review_date": "2026-11-10",
-      "verdict_note": "CEO 27 Okt: mandate refill pipeline AKTIF (verdict CONTINUE 26 Okt berlaku), PA kerja Senin/Kamis; review 2026-10-30."
+      "verdict_note": "CEO 27 Okt: mandate refill pipeline AKTIF (verdict CONTINUE 26 Okt berlaku), PA kerja Senin/Kamis; review 2026-10-30.",
+      "data": {
+        "drop_reason": "PIVOT 6 Nov 2026: feature freeze — fokus acquisition (fact 252)"
+      }
     },
     {
       "id": "idea-2026-10-16-track1",
@@ -1634,7 +1641,7 @@
       "date": "2026-10-20",
       "type": "feature",
       "priority": "P2",
-      "status": "spec_ready",
+      "status": "dropped_freeze_6nov",
       "source": "KEYWORD-RESEARCH mingguan 20 Okt (sample 8 halaman /saham/*; GSC diff 14-20 vs 7-13 Okt)",
       "title": "AEO + programmatic quality /saham/*/kenapa-naik-hari-ini: FAQPage+Article schema 0% + uniqueness 39% (gagal gate 40%; pasangan terburuk PTRO<->BRIS similarity 0.80) — halaman moat AI-search tapi tak layak direkomendasikan AI crawler",
       "north_star": "AI_SEARCH (referrer AI 3 views/7d chatgpt.com — satu-satunya jalur AI) + CONTENT",
@@ -1668,7 +1675,10 @@
       "research_basis": "teknikalidnew main @ 5b1477b (kereta T-1026-N merged; related-signals.tsx @ src/components/berita/, komponen live di /berita/[slug]) — research brief Researcher 22 Okt VERDICT BUILD-AFTER-PRD (urutan DIBALIK: uniqueness dulu, schema belakangan; schema bukan driver sitasi — Ahrefs DiD 1.885 halaman no-uplift).",
       "note": " || CEO 26 Okt (anti-stagnation, spec_ready 6 hari): ESKALASI RINGAN — agenda Product Agent Senin 26 Okt 10:15 lengkapi PRD (user_story/target_files/effort/risk/dependencies + QA plan) atau turunkan status; Kalau Kamis 29 Okt masih spec_ready tanpa PRD lengkap -> eskalasi owner.",
       "review_date": "2026-11-12",
-      "insight": "DEFER CEO 4 Nov: AEO /kenapa-naik-hari-ini spec_ready 15 hari — 2x eskalasi ringan tak dijawab council/Product. Kesepakatan retro: AEO nunggu GSC excluded-by / verdict batch — JANGAN dispatch sebelum itu. Eskalasi owner final bila 12 Nov masih diam (3x)."
+      "insight": "DEFER CEO 4 Nov: AEO /kenapa-naik-hari-ini spec_ready 15 hari — 2x eskalasi ringan tak dijawab council/Product. Kesepakatan retro: AEO nunggu GSC excluded-by / verdict batch — JANGAN dispatch sebelum itu. Eskalasi owner final bila 12 Nov masih diam (3x).",
+      "data": {
+        "drop_reason": "PIVOT 6 Nov 2026: feature freeze — fokus acquisition (fact 252)"
+      }
     },
     {
       "id": "prd-2026-10-24-01",
@@ -1753,14 +1763,17 @@
       ],
       "not_now": "TIDAK build Pro sebelum gate fase 2 tercapai — hindari monetize-too-early.",
       "priority": "P2",
-      "status": "deferred",
+      "status": "dropped_freeze_6nov",
       "insight": "OWNER GATE (CEO 4 Nov): teknikal.id Pro monetisasi fase-3 — fase-1/2 asset LIVE (/track-record + /waitlist). Buka gate payment = domain owner (auth/payments = guardrail hard). Badge dashboard: menunggu owner.",
       "research_brief": "RESEARCH BRIEF (Researcher 26 Okt 2026) — VERDICT: JANGAN (build sekarang) = roadmap STAGED sudah BENAR; jangan dispatch fase-3 sebelum gate fase-2. Bukti industry: (1) free→paid conversion nyata 2-5% (SaaS freemium benchmark, FirstPageSage 2026/kissmetrics) & 5-10% utk newsletter dengan list matang (Substack official; kasus nyata Platformer/Casey Newton cuma ~5%, kategori tech bisa <5%) → gate fase-2 '≥300 subscriber gratis aktif' adalah math yang benar: 300×5% ≈ 15 paying = basis sehat utk iterasi. (2) Monetize-too-early memotong growth: paywall memangkas growth free list (SimonOwens: growth rate free list turun drastis saat konten dikunci); urutan fase owner (traffic→trust→free-list→paid) konsisten dgn praktik terbaik. (3) Harga Rp10-20rb/bln masuk band pasar: Stockbit potongan data real-time Rp15rb/bln (Okt 2025), app data saham premium umum Rp95rb+/bln → positioning murah-no-install valid. (4) RISIKO BARU: Meta mulai 1 Okt 2026 mengenakan biaya pesan Service/Utility WhatsApp API setelah 1.000 pesan gratis/nomor/bulan → WA alerts harus dihitung cost-per-subscriber sebelum fase-3; jadikan pre-req owner gate. (5) Diferensiasi (verdict-first 968 emiten + cross-broker + editorial voice, USP resmi 24 Okt) = ground berdiri; jangan tiru fitur sekuritas. ANTI-PATTERN: launch paywall sambil mengunci konten yang jadi mesin traffic; mengukur sukses dari % konversi saat free list masih kecil; mengabaikan biaya WA API per pesan. SUMBER: firstpagesage.com/seo-blog/saas-freemium-conversion-rates; kissmetrics.io glossary free-to-paid; on.substack.com/p/going-paid-checklist; simonowens.substack.com (optimal time + realistic conversion); romisaputra.com Stockbit Rp15rb; balesotomatis.co.id Meta WA API pricing Okt 2026. BUKTI: KUAT (urutan trust-first + range konversi lintas sumber konsisten; angka konversi spesifik konten keuangan Indonesia tidak ada → pakai band global + data internal saat gate).",
       "verdict_note": "CEO 27 Okt: monetisasi = owner gate + trust-first staged — revisit setelah returning IP >=8% (target 25 Nov). Tidak dibangun sebelum itu.",
       "verdict_by": "CEO",
       "verdict_date": "2026-10-27",
       "review_date": "2026-11-24",
-      "ceo_decision_pending": true
+      "ceo_decision_pending": true,
+      "data": {
+        "drop_reason": "PIVOT 6 Nov 2026: feature freeze — fokus acquisition (fact 252)"
+      }
     },
     {
       "id": "idea-2026-10-16-1b",
@@ -1900,7 +1913,7 @@
     {
       "id": "prd-2026-10-26-01",
       "date": "2026-10-26",
-      "status": "in_train",
+      "status": "dropped_freeze_6nov",
       "priority": "P1",
       "north_star_pillar": "GROWTH (register_7d target >=6, baseline 3-4) + STICKY",
       "title": "P1 GROWTH: Register CTA moment-of-intent — prompt register tepat setelah guest MENYIMPAN (star/preset/copy-link), bukan banner permanen (CEO North-Star-Review 26 Okt rekomendasi #2, executor eksplisit Product Agent slot Senin)",
@@ -1929,12 +1942,15 @@
       "research_note": "Riset 26 Okt malam (tree main@ce4e8d8): grep konfirmasi TIDAK ADA migrasi guest->akun di flow register (src/app/auth/register/page.tsx tak import guest-storage) DAN API /api/watchlist/route.ts requireAuth-only — 2 gap: jembatan intent (PRD ini) + migrasi data (PRD prd-2026-10-26-02). Angka dari SQL asli di data_evidence.",
       "research_brief": "VERDICT: BUILD | PILAR: GROWTH+STICKY | BUKTI: KUAT. Pola 'lazy registration' terdokumentasi sebagai praktik industri (UI-Patterns.com/patterns/LazyRegistration; vocab.design/lazy-registration: registrasi bukan gerbang tapi transfer ditawarkan saat user punya sesuatu yang bisa hilang). Baymard 'delayed account creation': minta akun SETELAH user menyelesaikan aksi inti outperform minta di awal/mid-flow (42% site minta di awal = anti-pattern; 24% shopper abandon karena forced account). Duolingo teardown (relaunch.ai): sign-up wall konversi lebih tinggi SETELAH investasi effort (endowed progress effect). BP utk CTO: (1) sheet non-blocking - simpanan guest TETAP sukses walau sheet ditolak/ditutup; (2) rate-cap 7 hari (AC1) benar, tambah log event sheet_dismissed di samping register_prompt_save_moment utk iterasi; (3) copy kontekstual n-item (AC2) benar, jangan generic copy; (4) tidak ada eskalasi frekuensi saat guest dismiss; (5) baseline bandingkan: register_completed dr sheet (AC3) vs 21 views /auth/register 30d. Anti-pattern: banner permanen (regresi AC4 = fail), prompt tiap klik tanpa cap (fatigue), generic copy tanpa konteks simpanan. Catatan: bukti spesifik market ID tidak ditemukan - magnitudo divalidasi via telemetry internal.",
       "insight": "CEO 28 Okt: PROMOTE OPSI A (CTO note 28 Okt — register_7d=3 merah persisten 2 minggu; bukti industri kuat; efek hanya terukur setelah live). Dispatch P1 sore ini BUILD-ONLY, kereta T-1029-N. DONE WHEN: register_7d >=6 dlm 14 hari post-live ATAU conversion sheet-impression→register >=10%. Pilar GROWTH+STICKY.",
-      "train": "T-1029-N"
+      "train": "T-1029-N",
+      "data": {
+        "drop_reason": "PIVOT 6 Nov 2026: feature freeze — fokus acquisition (fact 252)"
+      }
     },
     {
       "id": "prd-2026-10-26-02",
       "date": "2026-10-26",
-      "status": "spec_ready",
+      "status": "dropped_freeze_6nov",
       "priority": "P2",
       "north_star_pillar": "STICKY (returning_ip_pct >=8%, baseline 6,1%) + TRUST",
       "title": "P2 STICKY: Migrasi otomatis guest watchlist+preset -> akun saat register/login sukses (data tidak hilang = alasan balik; nyambung 1-tap ke prd-2026-10-26-01)",
@@ -1961,14 +1977,17 @@
       "risk": "med",
       "estimate_tool_calls": 7,
       "research_note": "Riset 26 Okt malam (tree main@ce4e8d8): risiko med = duplikasi data akun existing (mitigasi dedupe AC1) + payload spoofing user login (mitigasi cap+regex AC2; data hanya milik user sendiri, bukan lintas-user). API REUSE rule dijaga: batch endpoint dipakai ulang.",
-      "research_brief": "VERDICT: BUILD (jadikan payoff prd-2026-10-26-01 - catat sebagai dependensi konseptual di dispatch) | PILAR: STICKY+TRUST | BUKTI: SEDANG-KUAT. Pola migrasi guest->akun adalah standar platform besar: Firebase linkWithCredential (docs resmi: upgrade anonymous preserving UID+data; 'always implement account linking to prevent data loss'), Auth0 anonymous-session merge post-login (dedupe by key, data akun existing menang = identik AC1), Supabase/Goodspeed upgrade-in-place + migration LEDGER idempotent (retry aman, tidak double-migrate), guest-cart merge ecommerce (Pixfizz: carry-over saat register DAN login). BP utk CTO: (1) clear localStorage HANYA setelah insert server terkonfirmasi (AC3 sudah benar - jangan dibalik urutannya); (2) dedupe by ticker/queryString (AC1) WAJIB dieksekusi server-side, bukan cuma klien; (3) payload cap+validasi format (AC2) benar - tolak 400 diam, jangan crash; (4) race no-op (AC4) benar; (5) TIDAK perlu anonymous-account server-side (Firebase-style) - client payload + validasi server cukup utk stack ini, jangan over-engineer. Anti-pattern: overwrite data akun dgn data guest, double-migrate saat retry/network blip (dedupe server = ledger implisit), migrasi tanpa event telemetry. Catatan jujur: magnitudo efek retensi tidak terpublikasi utk site konten finansial - validasi via returning_ip_pct post-launch."
+      "research_brief": "VERDICT: BUILD (jadikan payoff prd-2026-10-26-01 - catat sebagai dependensi konseptual di dispatch) | PILAR: STICKY+TRUST | BUKTI: SEDANG-KUAT. Pola migrasi guest->akun adalah standar platform besar: Firebase linkWithCredential (docs resmi: upgrade anonymous preserving UID+data; 'always implement account linking to prevent data loss'), Auth0 anonymous-session merge post-login (dedupe by key, data akun existing menang = identik AC1), Supabase/Goodspeed upgrade-in-place + migration LEDGER idempotent (retry aman, tidak double-migrate), guest-cart merge ecommerce (Pixfizz: carry-over saat register DAN login). BP utk CTO: (1) clear localStorage HANYA setelah insert server terkonfirmasi (AC3 sudah benar - jangan dibalik urutannya); (2) dedupe by ticker/queryString (AC1) WAJIB dieksekusi server-side, bukan cuma klien; (3) payload cap+validasi format (AC2) benar - tolak 400 diam, jangan crash; (4) race no-op (AC4) benar; (5) TIDAK perlu anonymous-account server-side (Firebase-style) - client payload + validasi server cukup utk stack ini, jangan over-engineer. Anti-pattern: overwrite data akun dgn data guest, double-migrate saat retry/network blip (dedupe server = ledger implisit), migrasi tanpa event telemetry. Catatan jujur: magnitudo efek retensi tidak terpublikasi utk site konten finansial - validasi via returning_ip_pct post-launch.",
+      "data": {
+        "drop_reason": "PIVOT 6 Nov 2026: feature freeze — fokus acquisition (fact 252)"
+      }
     },
     {
       "id": "idea-2026-10-26-1",
       "date": "2026-10-26",
       "type": "research",
       "priority": "P2",
-      "status": "in_train",
+      "status": "dropped_cleanup_6nov",
       "source": "CTO note 26 Okt (opsi B) + CEO verdict 26 Okt",
       "title": "RISET sumber data dividen/ex-date: buktikan coverage Yahoo quoteSummary (via fundamental v2 teknikal-2026-10-24-02) utk kebutuhan badge dividen SEBELUM migrasi sumber dari scraper IDX profile",
       "north_star": "TRUST — badge dividen jangka panjang butuh sumber terbukti coverage ex-date per-emiten; jangan tukar sumber tanpa bukti",
@@ -1976,12 +1995,15 @@
       "DONE-WHEN": "Laporan coverage di insight entry ini: % emiten punya ex-date <=90 hari (Yahoo vs DB), + verdict GO/NO-GO migrasi. Testable: angka coverage eksplisit.",
       "research_brief": "RESEARCH BRIEF (Researcher 28 Okt 2026) — VERDICT: MODIFIKASI. Riset internal first_step GO, tapi reframing: jadikan scraper IDX (sumber resmi bursa) SOURCE-OF-TRUTH badge ex-date + hardening, Yahoo quoteSummary hanya secondary/cross-check — jangan migrasi source-of-truth ke Yahoo. Alasan: (1) industry practice corporate-actions = reference data yang gold standard-nya sumber resmi bursa/issuer (IDX publish cum/ex/record/payment per emiten di idx.co.id & sahamidx; vendor kelas berat DTCC/ICE/SIX/EDI menjual persis data ini dari sumber resmi); (2) semantik field calendar Yahoo terbukti rapuh: dokumentasi bug quantmod #287 (field dividendDate Yahoo ternyata PAY date, bukan ex-date), yfinance #568 (payment date tak direturn), dan mismatch label live hari ini di finance.yahoo.com/quote/BBCA.JK ('Forward Dividend 381.00 (7.71%)' padahal 381 = TTM; forward nyata Rp100/2.02%) — salah label forward-vs-TTM persis di ticker .JK target kita; (3) coverage Yahoo .JK spotty & tanpa SLA (ToS/crumb/rate-limit, issue terbuka berulang). BEST PRACTICE: (1) badge tanggal user-facing = fail-closed: render hanya bila terverifikasi sumber primer, jangan render bila ragu (pilar TRUST); (2) uji coverage FULL-POPULASI (atau 30+30 sesuai first_step) dengan horizon ex-date <=90 hari, ukur % terdefinisi + freshness vs kalender resmi IDX; (3) eksplisit bedakan ex-date vs record vs payment di DB schema (jangan satu field generik); (4) cross-check sekunder boleh Yahoo/sectors.app corporate-actions API, tapi anomali → sumber primer yang menang; (5) bila coverage scraper IDX <85% emiten, pertimbangkan IDX Data Services (resmi, berbayar) — bukan agregator gratis. ANTI-PATTERN: (a) migrasi source-of-truth ke agregator gratis tanpa SLA utk data user-facing; (b) menyamakan dividendDate=ex-date (bug klasik quantmod #287); (c) keputusan migrasi dari sample kecil — kegagalan coverage selalu muncul di long-tail emiten kecil. SUMBER: github.com/joshuaulrich/quantmod/issues/287 · github.com/ranaroussi/yfinance/issues/568 · finance.yahoo.com/quote/BBCA.JK (mismatch forward/TTM, dilihat 28 Okt) · idx.co.id market-data dividend-announcement · new.sahamidx.com/?/deviden · idx.co.id/en/products/idx-data-services · docs.sectors.app corporate-actions. BUKTI: SEDANG — prinsip 'sumber resmi bursa utk corporate actions' kuat di industry; tapi angka coverage Yahoo-vs-DB tetap HARUS dari riset internal first_step (bukti internet tidak menggantikan pengukuran internal). DISPATCH NOTE utk CTO/CEO: riset internal ini ANALISIS DATA no-deploy, aman jalan kapan pun; verdict badge go-live tetap gate TRUST.",
       "ceo_verdict_1030": "APPROVE mandate riset (bukan build): buktikan coverage Yahoo quoteSummary dividen/ex-date utk kalender-dividen evergreen; hasil -> insight entry ini, BUILD menunggu verdict",
-      "insight": "PROMOTE CEO 4 Nov: RISET dividen Yahoo quoteSummary TIDAK perlu terpisah — kalender ex-date 30d SUDAH LIVE 3 Nov (prd-2026-11-02-01, verify CEO: UNTR/CNMA/Ex-Date di /saham-dividen). Sisa riset = coverage improvement, jadi hardening prd-2026-11-02-02 Product Agent. Tutup duplikat."
+      "insight": "PROMOTE CEO 4 Nov: RISET dividen Yahoo quoteSummary TIDAK perlu terpisah — kalender ex-date 30d SUDAH LIVE 3 Nov (prd-2026-11-02-01, verify CEO: UNTR/CNMA/Ex-Date di /saham-dividen). Sisa riset = coverage improvement, jadi hardening prd-2026-11-02-02 Product Agent. Tutup duplikat.",
+      "data": {
+        "drop_reason": "Owner 6 Nov malam: buang backlog tak kepakai — riset data baru = fitur, freeze"
+      }
     },
     {
       "id": "sre-2026-10-28-1",
       "date": "2026-10-28",
-      "status": "dispatched",
+      "status": "superseded",
       "source": "sre",
       "title": "sre_brief.py error-cluster collapse (RE-FILE sre-2026-10-24-1, hilang dari backlog): 2 run berturut-turut 'N error' ternyata 1 event — 24 Okt 7 client-abort/7dtk, 28 Okt 10 MissingCSRF/1,2dtk (auth.js bot-probe pasca-deploy, proteksi justru bekerja). Cluster-collapse by digest+jendela 60s + AUTH_NOISE_RE utk MissingCSRF.",
       "data": {
@@ -1991,12 +2013,13 @@
         "probe": "2026-10-28 09:30"
       },
       "priority": "P3",
-      "insight": "PROMOTE CEO 29 Okt -> ops-2026-10-29-03 (cluster-collapse, host-script, slot longgar pasca queue pending<6)"
+      "insight": "PROMOTE CEO 29 Okt -> ops-2026-10-29-03 (cluster-collapse, host-script, slot longgar pasca queue pending<6)",
+      "note": "VERDICT COUNCIL 8 Nov: duplikat ops-2026-10-29-04 (queue, P3, slot Kondektur 5 Nov — zod quote ^JKSE shortName null, fallback v8). Backlog entry tak pernah dispatch; queue entry = jalur kerja live. Pilar TRUST."
     },
     {
       "id": "sre-2026-10-28-2",
       "date": "2026-10-28",
-      "status": "dispatched",
+      "status": "superseded",
       "source": "sre",
       "title": "pasar-live IHSG (^JKSE): Yahoo v7 quote gagal validasi zod (shortName/longName null) ~46x/24h → selalu fallback v8 chart. Data tetap akurat (fallback sukses 46/46) tapi log error-level tiap tick + 2x panggilan upstream per fetch.",
       "data": {
@@ -2006,7 +2029,8 @@
         "probe": "2026-10-28 09:30"
       },
       "priority": "P3",
-      "insight": "PROMOTE CEO 29 Okt -> ops-2026-10-29-04 (zod nullable ^JKSE, BE T-1030+ SETELAH fix-26-12 merge - file sama)"
+      "insight": "PROMOTE CEO 29 Okt -> ops-2026-10-29-04 (zod nullable ^JKSE, BE T-1030+ SETELAH fix-26-12 merge - file sama)",
+      "note": "VERDICT COUNCIL 8 Nov: duplikat ops-2026-10-29-04 — zod ^JKSE shortName/longName null (P3; log noise + double upstream call, data akurat via fallback v8). Satu jalur kerja. Pilar TRUST."
     },
     {
       "id": "im-2026-10-29-1",
@@ -2047,7 +2071,7 @@
       "date": "2026-10-29",
       "type": "feature",
       "priority": "P3",
-      "status": "in_train",
+      "status": "dropped_freeze_6nov",
       "source": "Idea Miner 29 Okt — creative bet (WAJIB non-data): pola produk finansial terbukti di stockanalysis.com/simplywall.st yang belum ada; GSC ticker queries (klbf 30 impr, indf, bris) sinyal lemah pendukung",
       "title": "Head-to-Head Compare /saham/[A]-vs-[B]: bandingkan 2 saham (harga, valuasi P/B-P/E, dividen, skor sinyal, foreign flow) dalam 1 halaman — format stockanalysis.com",
       "problem": "Trader ritel yang sudah paham dasar selalu berada di fase 'klbf atau indf?' — membandingkan 2 saham hari ini = buka 2 tab dan bolak-balik. Tidak ada situs IDX yang punya halaman compare 1-layar yang shareable; GSC sudah menunjukkan query ticker murni (klbf, indf, bris) masuk lewat halaman saham.",
@@ -2058,12 +2082,15 @@
       "research_note": "RESEARCH 5 Nov (Product Agent): 28/170 pertanyaan Tanya AI 30d (16,5%) = perbandingan (vs=13/lebih=2/banding=13); /saham/*vs* belum ada; stock route avg 12.778ms; PRD fase-1 = prd-2026-11-05-01 spec_ready (spec compare service + [a]-vs-[b] SSR + internal-link loop).",
       "train": "T-1106-N",
       "verdict_date": "2026-11-06",
-      "ceo_verdict": "TERCYCLE 6 Nov - prd-2026-11-05-01 (CTO night 5 Nov, branch night/prd-2026-11-05-01, AC SSR hijau) = ide ini; naik kereta malam ini."
+      "ceo_verdict": "TERCYCLE 6 Nov - prd-2026-11-05-01 (CTO night 5 Nov, branch night/prd-2026-11-05-01, AC SSR hijau) = ide ini; naik kereta malam ini.",
+      "data": {
+        "drop_reason": "PIVOT 6 Nov 2026: feature freeze — fokus acquisition (fact 252)"
+      }
     },
     {
       "id": "adm-2026-10-28-01",
       "title": "Admin UX Phase 1: nav sidebar unified + KPI parity + 13 stub pages",
-      "status": "in_train",
+      "status": "dropped_freeze_6nov",
       "priority": "P1",
       "source": "owner-direct (TG 28 Okt: 'admin dashboard butuh agent improve UI UX; jangan depan bagus visibility jelek')",
       "problem": "Audit 28 Okt: 28 halaman admin tapi layout.tsx hanya 1 link nav (/admin); 13 halaman stub 5-10 baris (cron-monitor, queue-monitor, user-analytics, eod-logs, indicators, predictions, community, auth-health, intraday-logs, stock-engagement, api-keys, cron-config, announcements); KPI card hanya di articles/pipelines/errors; bahasa campur EN; kontrol manual tersebar.",
@@ -2089,7 +2116,10 @@
             "done_when #5: section Kontrol manual-trigger-buttons terpusat"
           ]
         }
-      ]
+      ],
+      "data": {
+        "drop_reason": "PIVOT 6 Nov 2026: feature freeze — fokus acquisition (fact 252)"
+      }
     },
     {
       "id": "adm-2026-10-28-02",
@@ -2136,7 +2166,7 @@
       "date": "2026-10-29",
       "type": "product-mandate",
       "priority": "P1",
-      "status": "dispatched",
+      "status": "dropped_cleanup_6nov",
       "source": "CEO pagi 29 Okt (mandate Product Agent Kamis 10:15)",
       "title": "MANDATE VERDICT 2 Nov: (a) MoM traffic Okt vs Sep per-hari vs band +5-15% (kini +2,2%); (b) register_7d 3/6 pasca prd-26-01 CTA di kereta T-1029-N; (c) RA TCHET returning_ip 8,6% target tercapai 27 hari cepat — usul target baru (>=10-12%?) utk council Minggu",
       "north_star": "GROWTH + STICKY (kedua KPI merah: MoM band ✗, register ✗; returning butuh ratchet)",
@@ -2144,7 +2174,10 @@
       "done_when": "Memo verdict di handoff/backlog insight Senin 2 Nov pagi dgn tabel data + rekomendasi ratchet utk owner council",
       "assigned_to": "product-agent",
       "research_brief": "RESEARCH BRIEF (Researcher 30 Okt 2026) — VERDICT: MODIFIKASI (mandate benar arah, metodologi pengukuran perlu dikencangkan). Alasan: semua sumber metodologi independen sepakat — (a) MoM kalender = perbandingan TERBURUK: panjang bulan beda (31 vs 30 hari ≈ error 3-10%) + siklus mingguan mendominasi trafik; pakai per-hari rata-rata ATAU whole weeks / 28d-vs-28d (RankHonestly seasonality); (b) register_7d 3/6 = sampel terlalu kecil utk klaim — trafik rendah butuh window lebih panjang & rate per-1k-views, bukan hitungan absolut (Emilytics: low-traffic site butuh 8-12 minggu per tes; minimum 2 minggu utk kontrol day-of-week); (c) '1 deploy = 1 eksperimen' di first_step SUDAH benar = best practice change-one-variable (AAMAX); (d) ratchet returning 8,6%→10-12%: TIDAK ada benchmark publik returning-visitor-ratio utk situs konten finansial B2C — usul target dari trajektori internal (3,8%→8,6% dalam 27 hari) + keputusan council, jangan sajiankan sbg standar industri. BEST PRACTICE: (1) tabel verdict pakai 28d-vs-28d + per-hari, bukan bulan kalender mentah; (2) split brand vs non-brand traffic sebelum klaim MoM (Search Engine Land); (3) register dilaporkan sbg rate (per 1k views ticker) + window 14-28d, jangan 7d absolut; (4) impressions non-brand = leading indicator, clicks paling lambat & paling noisy (RankHonestly); (5) catat band noise di memo (page 12 klik/minggu bisa swing ±50% dari variasi biasa). ANTI-PATTERN: memvonis hipotesis dari 6 hari register; bandingkan Okt-vs-Sep tanpa normalisasi panjang bulan; stack 2 eksperimen dalam 1 kereta deploy lalu klaim gabungan. SUMBER: rankhonestly.com/guides/seasonality-in-search-data + /guides/how-long-to-wait-seo-change · emilytics.com/articles/cro/analytics-observation-period · aamax.co/blog/how-long-to-see-if-seo-changes-are-good · searchengineland.com/measure-seo-effectiveness-388013. BUKTI: KUAT utk metodologi pengukuran (multi-sumber independen sepakat); TIDAK KUAT utk angka target spesifik (band +5-15%, ratchet 10-12% = keputusan internal dari data internal, bukan standar industri). Pilar KPI: GROWTH + STICKY (semua 3 sub-mandate).",
-      "insight": "PROMOTE CEO 4 Nov: verifikasi versi live vs klaim KPI — inti dari ops-2026-11-03-06 (northstar kpi integrity, DONE 3 Nov: filter crawler+MoM-guard+dwell bucket, selftest 11/11, kpi.json regen 18:37). Selesai di jalur benar; nudge Sentinel 22:00 utk qa_verified."
+      "insight": "PROMOTE CEO 4 Nov: verifikasi versi live vs klaim KPI — inti dari ops-2026-11-03-06 (northstar kpi integrity, DONE 3 Nov: filter crawler+MoM-guard+dwell bucket, selftest 11/11, kpi.json regen 18:37). Selesai di jalur benar; nudge Sentinel 22:00 utk qa_verified.",
+      "data": {
+        "drop_reason": "Owner 6 Nov malam: buang backlog tak kepakai — superseded analisis pivot 6 Nov"
+      }
     },
     {
       "id": "sec-2026-10-29-01",
@@ -2166,7 +2199,7 @@
     {
       "id": "sec-2026-10-29-02",
       "date": "2026-10-29",
-      "status": "approved",
+      "status": "dropped_cleanup_6nov",
       "source": "itsec-red",
       "exploitability": "sedang",
       "title": "[RED] Guest Pass (Retention v2.1, GUEST_DAILY_FREE 5→25 patch audit QW5): kuota server-side via cookie guest_pass (ticker list, cap 50) — by-design bukan hard-gate, tapi SET-COOKIE langsung dipercaya: anon bisa clear-cookie/Incognito loop untuk unlimited gated-content; rate-limit beacon /api/track/guest-pass TIDAK ADA (selalu 204) + flag fileEvidence aktivasi banner overlimit via localStorage FE-meter — bypass = hapus localStorage. Kombinasi memungkinkan scraping gated-content unlimited tanpa akun",
@@ -2175,7 +2208,8 @@
         "attack": "loop: incognito/clear guest_pass cookie + call beacon → full gated content tiap sesi baru; FE-meter localStorage trivially cleared",
         "fix_hint": "jika scraping jadi masalah nyata (cek log view-real count anon per-IP): soft-fingerprint IP+UA hash w/ 7d window server-side (CGNAT caveat — NO hard block, owner policy nothing-blocked); ukur dulu via view telemetry: apakah anon heavy-consumer muncul — data dulu (tide-first)",
         "tradeoff_note": "owner policy 20 Okt: 'nothing blocked' + no IP detection — kartu ini menyediakan pilihan, BUKAN mengubah policy; kandidat diskusi CEO bila traffic pivot KPI tercapai dan bandwidth/LLM cost naik",
-        "probe": "2026-10-29 21:30 WIB; FE meter + banner verified dari kode 9179d32"
+        "probe": "2026-10-29 21:30 WIB; FE meter + banner verified dari kode 9179d32",
+        "drop_reason": "Owner 6 Nov malam: buang backlog tak kepakai — fitur baru kuota guest, freeze"
       },
       "priority": "P3",
       "verdict": "OWNER APPROVE backlog (30 Okt digest) — Guest Pass server-side quota fix",
@@ -2184,7 +2218,7 @@
     {
       "id": "im-2026-10-30-1",
       "date": "2026-10-30",
-      "status": "dispatched",
+      "status": "dropped_freeze_6nov",
       "title": "CTA 'Tambah ke Portofolio' di halaman saham — hidupkan fitur tersembunyi (PortfolioHolding + /portfolio sudah live, 0 pintu masuk dari ticker page)",
       "problem": "Fitur portofolio saham riil (tambah lot, harga avg, P/L live, publik-privat) sudah live di /portfolio dengan API lengkap, tapi pengguna tidak akan pernah menemukannya: halaman saham (setengah trafik situs) hanya punya 'Simpan ke pantauan' (watchlist) dan CTA Telegram — tidak ada satu pun tombol yang menambah posisi ke portofolio. Trader ritel yang pindah dari aplikasi sekuritas mencari 'saham saya ada di mana' dan tidak menemukannya.",
       "done_when": "Tombol 'Tambah ke Portofolio' (qty + harga beli) live di halaman saham (anon = register prompt ala prd-26-01; authed = form add-holding langsung) → dalam 14 hari pasca-live: ≥20 holdings baru dari jalur ticker-page (bukan manual /portfolio), dan share of /portfolio views dari jalur ticker naik dari ~0% baseline.",
@@ -2201,7 +2235,10 @@
       "priority": "P2",
       "ceo_note": "[CEO-malam 30 Okt 21:05] RATIFIKASI pagi dieksekusi: ux-2026-10-30-01 SAH (CTO Lead, FE 3 Nov); pilar STICKY (aktifasi /portfolio); anti-stagnation idea->dispatched",
       "research_brief": "RESEARCH BRIEF (Researcher 30 Okt 2026) — VERDICT: BUILD-AFTER-PRD (BUILD; gate: lengkapi PRD dulu). Alasan: pola 'feature discoverability' terdokumentasi luas — fitur live tapi tanpa pintu masuk = 'quietly dies in a menu nobody opens' (UXPin 2023, UXPlanet 2025); sinyal internal kuat (13 nav_click ticker 2d, /stocks/BBCA.JK 89 views/7d, 0 view /portfolio dari ticker) = energi invest terendah, size S. Kompetitor Indo (Stockbit, Ajaib) menempatkan portofolio sebagai fitur inti alur harian trader ritel — 'pantau portofolio' = table-stakes; pemegang posisi balik harian cek P/L = mesin retention (STICKY). BEST PRACTICE: (1) CTA kontekstual di titik kebutuhan pada ticker page (dekat area harga), bukan di nav/menu; (2) anon = lazy registration: isi qty+harga dulu, minta register saat save (pola proven di ux-2026-10-10-02, deferred registration); (3) empty state /portfolio jadi onboarding (first-use state → quick-add); (4) ukur adoption vs EXPOSED users (% viewer ticker yang klik/add), bukan % semua user (Userpilot/UXCam feature-adoption); (5) 1 deploy = 1 eksperimen, window evaluasi min 2 minggu penuh (day-of-week control) — done_when 14 hari = minimum arah, bukan verdict final (Emilytics: fitur baru ideal 4-8 minggu). ANTI-PATTERN: hard register-wall sebelum user merasakan value (friction, drop-off); klaim sukses dari 3-6 hari data (noise); perbaiki UI portofolio sekaligus (stacking = atribusi hilang). SUMBER: uxpin.com/studio/blog/discoverability-in-ux · uxplanet.org/designing-ux-for-feature-discoverability · userpilot.com/blog/feature-adoption-metrics · uxcam.com/blog/feature-adoption-metrics-kpis · emilytics.com/articles/cro/analytics-observation-period · stockbit.com/portofolio + ajaib.co.id/belajar (alur portofolio sbg fitur inti). BUKTI: SEDANG — pola discoverability & adoption-metric kuat terdokumentasi; angka spesifik 'CTA ticker→portfolio ≥20 holdings/14d' tidak ada di publik = patokan dari data internal (wajar, sinyal internal sudah kuat). Pilar KPI: STICKY + GROWTH (register).",
-      "ceo_verdict_1030": "RATIFIKASI ux-2026-10-30-01 (CTO Lead dispatch FE 3 Nov) - pilar STICKY, fitur live tersembunyi = activation murah"
+      "ceo_verdict_1030": "RATIFIKASI ux-2026-10-30-01 (CTO Lead dispatch FE 3 Nov) - pilar STICKY, fitur live tersembunyi = activation murah",
+      "data": {
+        "drop_reason": "PIVOT 6 Nov: feature freeze — hidupkan fitur tersembunyi pun = fitur baru; revisit saat unfreeze"
+      }
     },
     {
       "id": "im-2026-10-31-1",
@@ -2275,7 +2312,7 @@
       "id": "sec-2026-11-02-02",
       "date": "2026-11-02",
       "priority": "P3",
-      "status": "dispatched",
+      "status": "dropped_cleanup_6nov",
       "type": "security",
       "source": "itsec-red",
       "title": "Branch lokal backup/pre-sec-purge-1015 masih memuat sessions/ig-session.json + tiktok-session.json di repo ber-origin PUBLIC",
@@ -2283,7 +2320,8 @@
         "bukti": "git show backup/pre-sec-purge-1015:social-auto-poster/sessions/ig-session.json = storage_state Playwright berisi cookie .instagram.com: csrftoken, datr, ig_did, mid (expired 2027); tiktok-session.json: ttwid, msToken, s_v_web_id, passport-sotl-auth-token-NONCE x2. TIDAK ada sessionid/ds_user_id/passport-token utuh → device fingerprint, BUKAN kredensial login.",
         "kondisi": "git ls-remote origin: branch backup TIDAK ada di remote (lokal saja); scan seluruh refs/remotes/origin/* = 0 file sessions/. Namun origin = github.com/metabbe3/teknikalidnew VISIBILITY PUBLIC — satu `git push --all` yang tidak sengaja membocorkan file ini ke publik.",
         "exploitability": "rendah (cookie device-level; branch belum pernah dipush)",
-        "rekomendasi": "Hapus branch lokal (git branch -D backup/pre-sec-purge-1015) ATAU strip path sessions/ dari ref; tambah guard pre-push yang menolak push branch berisi social-auto-poster/sessions/."
+        "rekomendasi": "Hapus branch lokal (git branch -D backup/pre-sec-purge-1015) ATAU strip path sessions/ dari ref; tambah guard pre-push yang menolak push branch berisi social-auto-poster/sessions/.",
+        "drop_reason": "Owner 6 Nov malam: buang backlog tak kepakai — housekeeping git lokal — langsung kerjakan sekali, bukan card"
       },
       "exploitability": "rendah",
       "insight": "PROMOTE CEO 4 Nov → queue sec-2026-11-03-02-dispatch (pending, slot 4 Nov 09:30 host/git ops, 0 deploy web): purge branch backup/pre-sec-purge-1015 ber-sessions/ig-session.json."
@@ -2362,7 +2400,7 @@
     {
       "id": "sre-2026-11-04-2",
       "title": "Morning-delta TypeError 'b.getTime is not a function' 12x/24h di /api/me/morning-delta — 200 saat kosong, error saat ada data tracker",
-      "status": "candidate",
+      "status": "superseded",
       "source": "sre",
       "date": "2026-11-04",
       "priority": "P2",
@@ -2370,7 +2408,7 @@
         "level": "low",
         "note": "bug API publik"
       },
-      "insight": "KONFIRMASI AKTIF (CTO sore 4 Nov, read-only): 5x TypeError b.getTime 24h (~25 req, ~20% fail). Root-cause PRECISE: morning-delta.service.ts L159+L189 filter cuma null-check, TIDAK instanceof Date; date-string dari jalur raw-SQL/deserialize lolos guard lalu .sort(b.getTime()) throw. FIX 1-baris: normalize new Date(d) + !isNaN guard sebelum sort. Intermiten = hanya payload jalur cache/raw yang kena.",
+      "insight": "KONFIRMASI AKTIF (CTO sore 4 Nov, read-only): 5x TypeError b.getTime 24h (~25 req, ~20% fail). Root-cause PRECISE: morning-delta.service.ts L159+L189 filter cuma null-check, TIDAK instanceof Date; date-string dari jalur raw-SQL/deserialize lolos guard lalu .sort(b.getTime()) throw. FIX 1-baris: normalize new Date(d) + !isNaN guard sebelum sort. Intermiten = hanya payload jalur cache/raw yang kena. | CEO VERDICT 8 Nov (re-apply; verdict 7 Nov hilang di race-repair queue): SUPERSEDED oleh ops-2026-11-05-02 yang sudah DEPLOYED 5 Nov — bukti live: instanceof Date di morning-delta.service.ts L144 + grep b.getTime docker logs 24h = 0 error. Tidak ada pekerjaan tersisa.",
       "data": {
         "errors_24h": 25,
         "errors_exact_match": 12,
@@ -2385,14 +2423,17 @@
       "id": "idea-2026-11-04-1",
       "title": "P1 AGENT FUNNEL: starter alert 1-gratis — agent_alert 0 rows sepanjang sejarah (alert dikunci paywall PRO; subscription=0, 7/7 user FREE) padahal alerts worker live & lengkap (teknikal-agent internal/alerts)",
       "priority": "P1",
-      "status": "researched",
+      "status": "dropped_freeze_6nov",
       "research_note": "RESEARCH 5 Nov: schema agent.* audit — agent_user=7 (7 baru 7d), agent_subscription=0, agent_alert=0, agent_watchlist=2 chats, agent_message_log=71/4 chats (3-4 Nov); internal/alerts/worker.go live (sweep+threshold+quiet-hour+dispatch) tapi UpgradeUpsellMessage memblokir FREE. PRD = prd-2026-11-05-02 spec_ready. Pivot 4 Nov: agent proaktif = produk — 0/7 user pernah merasakan proaktivitas.",
-      "research_brief": "RESEARCH BRIEF (Researcher 5 Nov 2026) — VERDICT: BUILD. CATATAN: PRD prd-2026-11-05-02 sudah DEPLOYED di cto-queue — brief ini memvalidasi arah yang sudah jalan + guardrail pasca-deploy. PILAR: GROWTH (funnel agent berbayar) + TRUST (produk proaktif terasa). BUKTI: KUAT. Pola 'alert free-tier terbatas' = standar industri: TradingView free = 3 price alerts, automation/webhook baru di paid (chartwisehub/puravidaedge 2026) — 1 alert gratis = konsisten & konservatif. Literatur PLG/freemium konsisten: monetisasi SEBELUM nilai = penyebab kegagalan #1 (productled/Vidyard); gate HARUS setelah aha-moment, 'hitting a hard limit' = expansion trigger terkuat (a16z, glencoyne, saasdash); urutan finansial: free value -> engagement (timely alerts) -> monetisasi natural (Experian). Konteks lokal: Stockbit price alert = fitur Pro, Ajaib notifikasi gratis hanya in-app — alert gratis via WA di web publik non-app = diferensiasi aman. BEST PRACTICE: (1) cap 1 alert/FREE server-side (usage-gate, bukan feature-gate total — saasdash); (2) upsell SAAT alert terpicu: pesan WA alert gratis sisipkan 1 kalimat upgrade (prompt di value-moment, bukan halaman settings); (3) validasi+rate-limit server-side (pelajaran sec-2026-10-29-02: jangan percaya payload client); (4) instrument funnel agent_alert_created -> triggered -> upgrade_click; sukses 7 hari = agent_alert >0 rows — populasi 7 user, jangan over-claim konversi; (5) JANGAN degradasi tier existing saat rollout (churn pasca-upgrade). ANTI-PATTERN: hard-gate total sebelum nilai pertama = persis kondisi lama (alert dikunci paywall -> agent_alert 0 rows sepanjang sejarah = bukti internal); alert free tanpa cap = biaya WA + abuse loop. SUMBER: a16z.com/how-to-optimize-your-free-tier-freemium; productled.com/blog/product-led-growth-transition; glencoyne.com/guides/freemium-paid-conversion-optimization; saasdash.ai/blog/feature-gate-vs-usage-gate-decision; experian.com/blogs/insights/free-benefits-revenue-engines; chartwisehub.com/tradingview-alert-limits; puravidaedge.com tradingview-free-vs-premium-alerts; help.stockbit.com Basic-vs-Pro."
+      "research_brief": "RESEARCH BRIEF (Researcher 5 Nov 2026) — VERDICT: BUILD. CATATAN: PRD prd-2026-11-05-02 sudah DEPLOYED di cto-queue — brief ini memvalidasi arah yang sudah jalan + guardrail pasca-deploy. PILAR: GROWTH (funnel agent berbayar) + TRUST (produk proaktif terasa). BUKTI: KUAT. Pola 'alert free-tier terbatas' = standar industri: TradingView free = 3 price alerts, automation/webhook baru di paid (chartwisehub/puravidaedge 2026) — 1 alert gratis = konsisten & konservatif. Literatur PLG/freemium konsisten: monetisasi SEBELUM nilai = penyebab kegagalan #1 (productled/Vidyard); gate HARUS setelah aha-moment, 'hitting a hard limit' = expansion trigger terkuat (a16z, glencoyne, saasdash); urutan finansial: free value -> engagement (timely alerts) -> monetisasi natural (Experian). Konteks lokal: Stockbit price alert = fitur Pro, Ajaib notifikasi gratis hanya in-app — alert gratis via WA di web publik non-app = diferensiasi aman. BEST PRACTICE: (1) cap 1 alert/FREE server-side (usage-gate, bukan feature-gate total — saasdash); (2) upsell SAAT alert terpicu: pesan WA alert gratis sisipkan 1 kalimat upgrade (prompt di value-moment, bukan halaman settings); (3) validasi+rate-limit server-side (pelajaran sec-2026-10-29-02: jangan percaya payload client); (4) instrument funnel agent_alert_created -> triggered -> upgrade_click; sukses 7 hari = agent_alert >0 rows — populasi 7 user, jangan over-claim konversi; (5) JANGAN degradasi tier existing saat rollout (churn pasca-upgrade). ANTI-PATTERN: hard-gate total sebelum nilai pertama = persis kondisi lama (alert dikunci paywall -> agent_alert 0 rows sepanjang sejarah = bukti internal); alert free tanpa cap = biaya WA + abuse loop. SUMBER: a16z.com/how-to-optimize-your-free-tier-freemium; productled.com/blog/product-led-growth-transition; glencoyne.com/guides/freemium-paid-conversion-optimization; saasdash.ai/blog/feature-gate-vs-usage-gate-decision; experian.com/blogs/insights/free-benefits-revenue-engines; chartwisehub.com/tradingview-alert-limits; puravidaedge.com tradingview-free-vs-premium-alerts; help.stockbit.com Basic-vs-Pro.",
+      "data": {
+        "drop_reason": "PIVOT 6 Nov 2026: feature freeze — fokus acquisition (fact 252)"
+      }
     },
     {
       "id": "im-2026-11-05-1",
       "date": "2026-11-05",
-      "status": "researching",
+      "status": "dropped_freeze_6nov",
       "source": "idea-miner 5 Nov 2026 (nav_click 2d + anonId repeat-view 30d)",
       "title": "Baru Saja Dilihat (Recently Viewed) — row otomatis saham terakhir dibuka pengunjung di /stocks (guest localStorage + sync anonId→akun), zero-effort memori sesi",
       "problem": "Trader ritel mobile bolak-balik memeriksa 5-10 saham di teknikal.id tapi besok harus mengingat ulang tickernya dari nol: watchlist = komitmen eksplisit (bintang) yang 93% guest tidak pernah lakukan, dan riwayat lihat per-orang saat ini HANYA hidup di admin (tombol admin itu justru nav_click #1: 14 klik/2 hari). Tidak ada memori sesi otomatis di sisi pengunjung.",
@@ -2403,7 +2444,10 @@
       "priority": "P2",
       "verdict_date": "2026-11-05",
       "insight": " | CEO VERDICT 5 Nov: HOLD — tepat utk STICKY (watchlist=bintang komitmen, 93% guest tak pernah) TAPI owner baru cancel 6 fitur web 4 Nov: UI web=funnel. Lulus Product Agent Senin 9 Nov utk PRD versi minimal (localStorage-only, tanpa backend/sync anonId); reject permanen bila overlap fitur agent Telegram.",
-      "research_brief": "RESEARCH BRIEF (Researcher 5 Nov 2026) — VERDICT: BUILD-MINIMAL (konsisten jalur CEO HOLD 5 Nov: PRD versi minimal localStorage-only utk Product Agent Senin 9 Nov; sync anonId->akun = FASE-2 DITUNDA sampai metrik 4-minggu tercapai; cek overlap kapabilitas agent Telegram dulu — owner rule 4 Nov: web = funnel). PILAR: STICKY (memori sesi zero-effort) + GROWTH (repeat nav ke ticker detail). BUKTI: SEDANG — recently-viewed = pola terbukti di e-commerce (A/B 13 hari: CR +44,3%, RPV +207%, signifikan 92% — blendcommerce/Rebuy; Billabong 15,2% CR saat engagement rekomendasi; studi UF Warrington large-scale: retargeted rec dgn browsing history +3% sales) TAPI konteks asal = checkout/intent-beli; transfer ke content-finance site belum terbukti kuantitatif -> keputusan dari data internal 4-minggu (done_when entry sudah tepat). BEST PRACTICE: (1) localStorage-only FIFO maks 8, render HANYA bila >=1 item — no empty state (pola AC related-signals); (2) placement bawah fold mobile, JANGAN menggeser konten utama (case blend: mobile CR justru -10% krn widget makan layar); (3) ukur sukses via anonId Event (nav_click row->ticker), CGNAT-proof — pelajaran idea-2026-10-04-1 (metrik IP = data bohong di mobil Indonesia); (4) v1 TANPA backend/tabel baru; kalau metrik lolos, sync->akun reuse pola migrasi prd-2026-10-26-02; (5) dedupe: ticker yang sudah di watchlist jangan dobel muncul di row. ANTI-PATTERN: tracking repeat-view berbasis IP (CGNAT); scope-creep v1 dengan backend sync (effort S->M tanpa bukti kebutuhan); render placeholder saat kosong. SUMBER: blendcommerce.com/blogs/ab-tests-shopify (recently-viewed A/B); barilliance.com/billabong-case-study; warrington.ufl.edu hybrid-product-recommendation; getwiser.ai/case-studies/beddys."
+      "research_brief": "RESEARCH BRIEF (Researcher 5 Nov 2026) — VERDICT: BUILD-MINIMAL (konsisten jalur CEO HOLD 5 Nov: PRD versi minimal localStorage-only utk Product Agent Senin 9 Nov; sync anonId->akun = FASE-2 DITUNDA sampai metrik 4-minggu tercapai; cek overlap kapabilitas agent Telegram dulu — owner rule 4 Nov: web = funnel). PILAR: STICKY (memori sesi zero-effort) + GROWTH (repeat nav ke ticker detail). BUKTI: SEDANG — recently-viewed = pola terbukti di e-commerce (A/B 13 hari: CR +44,3%, RPV +207%, signifikan 92% — blendcommerce/Rebuy; Billabong 15,2% CR saat engagement rekomendasi; studi UF Warrington large-scale: retargeted rec dgn browsing history +3% sales) TAPI konteks asal = checkout/intent-beli; transfer ke content-finance site belum terbukti kuantitatif -> keputusan dari data internal 4-minggu (done_when entry sudah tepat). BEST PRACTICE: (1) localStorage-only FIFO maks 8, render HANYA bila >=1 item — no empty state (pola AC related-signals); (2) placement bawah fold mobile, JANGAN menggeser konten utama (case blend: mobile CR justru -10% krn widget makan layar); (3) ukur sukses via anonId Event (nav_click row->ticker), CGNAT-proof — pelajaran idea-2026-10-04-1 (metrik IP = data bohong di mobil Indonesia); (4) v1 TANPA backend/tabel baru; kalau metrik lolos, sync->akun reuse pola migrasi prd-2026-10-26-02; (5) dedupe: ticker yang sudah di watchlist jangan dobel muncul di row. ANTI-PATTERN: tracking repeat-view berbasis IP (CGNAT); scope-creep v1 dengan backend sync (effort S->M tanpa bukti kebutuhan); render placeholder saat kosong. SUMBER: blendcommerce.com/blogs/ab-tests-shopify (recently-viewed A/B); barilliance.com/billabong-case-study; warrington.ufl.edu hybrid-product-recommendation; getwiser.ai/case-studies/beddys.",
+      "data": {
+        "drop_reason": "PIVOT 6 Nov 2026: feature freeze — fokus acquisition (fact 252)"
+      }
     },
     {
       "id": "sec-2026-11-05-01",
@@ -2488,13 +2532,62 @@
     {
       "id": "idea-2026-11-06-1",
       "title": "PRODUCT MANDATE CEO 6 Nov: diagnose growth leak — views -18% WoW & brief views 2-4/artikel",
-      "status": "researching",
+      "status": "dropped_freeze_6nov",
       "priority": "P1",
       "created": "2026-11-06",
       "source": "ceo-morning-brief",
       "north_star": "GROWTH (views, register) + STICKY (returning)",
       "spec": "DATA DULU (bukan fitur): (1) decompose views 917 vs 1125 prev per-jenis halaman 7d (artikel vs tools vs homepage); (2) brief-pasar-idx & analis pagi/sore views/artikel cuma 2-4 → kapan distribusi berhenti (referrer IG/Threads trend); (3) returning 7.5% vs baseline 3.8% → apa yang bikin IP balik (cohort page pertama vs kunjungan ke-2); (4) rekomendasi 1 eksperimen distribusi ATAU 1 perbaikan momen-konversi, baseline->target angka. Output: research brief + PRD bila verdict BUILD. JANGAN fitur kosakata/tooltip baru.",
-      "done_when": "research brief dgn angka per-jenis halaman + 1 rekomendasi berbasis data"
+      "done_when": "research brief dgn angka per-jenis halaman + 1 rekomendasi berbasis data",
+      "data": {
+        "drop_reason": "PIVOT 6 Nov 2026: feature freeze — fokus acquisition (fact 252)"
+      }
+    },
+    {
+      "id": "idea-2026-11-07-1",
+      "date": "2026-11-07",
+      "type": "idea",
+      "priority": "P2",
+      "status": "spec_ready",
+      "source": "Product Agent buffer-keeper — mandat CEO 7 Nov: AI-search referral utk Product Agent",
+      "title": "P2 GROWTH/AEO: llms.txt v2 — seksi kenapa-naik/turun (korpus 133 URL di sitemap, hanya 1 di llms.txt) supaya ChatGPT/Perplexity mengutip teknikal.id saat user tanya 'kenapa saham X naik hari ini'",
+      "problem": "AI-referral 30d HANYA 4 PV (chatgpt 3 -> /community, perplexity 1 -> /) meski robots AEO dibuka 3 Nov. llms.txt live 165 URL tanpa korpus kenapa-* (aset Q&A harian paling banyak dikutip mesin). korpus mesin-terbaca = prerequisite citation, belum ada.",
+      "north_star": "GROWTH traffic (AI-search referral) — mandat CEO 7 Nov",
+      "DONE-WHEN": "llms.txt v2 live: seksi kenapa-* >=30 URL terbaru + tanggal sesi + 1 angka ground-trift per item (SATU PINTU); URL total >=195; <=256KB; bucket ai-search growth kpis regex diperluas; review 2 minggu",
+      "research_note": "Riset 7 Nov 22:3x WIB (DB read-only teknikalidnew-db-1 + live curl + repo main @ 6dfd562): (1) PageView 30d isBot=false: Bing 141 = referrer #1 (> Google-search 40), Yahoo/Bing-fed 53, AI-referral 4 (chatgpt 3, perplexity 1), total 3.732. (2) /llms.txt 200: 1.075 baris, 165 URL, 4 seksi (FAQ Question ANSWERED helpfulVotes desc / Artikel 50 terbaru / IDX40 / Halaman Penting), kenapa-* = 1 URL. (3) sitemap 957 URL: 133 kenapa-*, 87 berita/, 16 akademi/tanya, 12 analisa-saham. (4) robots.txt AEO 3 Nov sudah allow PerplexityBot/OAI-SearchBot/GPTBot/ClaudeBot/Applebot-Extended/Amazonbot. (5) generator = src/app/llms.txt/route.ts force-dynamic. (6) Article PUBLISHED 189 by type NEWS 76/EDU 46/DAILY 40/ANALYSIS 27.",
+      "insight": "RisetAnswer-engine butuh korpus terstruktur per-pertanyaan; korpus kenapa-* teknikal.id = 133 unit konten harian bertanggal yang TIDAK diekspos ke llms.txt. Fiksinya murah (extend 1 route) dan terukur (bucket ai-search sudah ada di growth kpis).",
+      "data": {
+        "ai_referral_30d": 4,
+        "bing_30d": 141,
+        "yahoo_30d": 53,
+        "google_30d": 40,
+        "llms_urls": 165,
+        "sitemap_kenapa": 133,
+        "llms_kenapa": 1,
+        "tree_basis": "teknikalidnew main @ 6dfd562, live teknikal.id 7 Nov 22:3x WIB"
+      }
+    },
+    {
+      "id": "idea-2026-11-07-2",
+      "date": "2026-11-07",
+      "type": "idea",
+      "priority": "P2",
+      "status": "spec_ready",
+      "source": "Product Agent buffer-keeper — riset referrer 30d (temuan: ekosistem Bing = organik #1, tak terkelola)",
+      "title": "P2 GROWTH: IndexNow ping saat publish + verifikasi Bing Webmaster — Bing+Yahoo 194 PV/30d (5x Google-search 40) tapi 0 instant-index: 0 kode IndexNow, 0 key file, 0 msvalidate",
+      "problem": "Halaman kenapa-*/analisa harian kehilangan window relevansi jam-jam pertama di mesin pencari #1 situs ini (Bing). Tanpa IndexNow, URL baru menunggu crawl natural; tanpa msvalidate, tidak ada data search-console Bing utk decision.",
+      "north_star": "GROWTH traffic organik non-Google (Bing ecosystem = 52% dari referral search 30d)",
+      "DONE-WHEN": "key IndexNow live 200; ping fire-and-forget di publish path (artikel tetap 100% sukses saat endpoint down — bukti staging); log ping 1 baris terstruktur; patch meta msvalidate ter-gate env (klaim akun = owner); tsc+build EXIT-0",
+      "research_note": "Riset 7 Nov 22:3x WIB (repo main @ 6dfd562 + live): (1) grep -ri indexnow src/ scripts/ = 0 file; public/ tanpa *.key; layout.tsx + src/lib tanpa msvalidate/google-site-verification. (2) PageView 30d isBot=false: Bing 141 + Yahoo 53 = 194 vs Google-search 40 — mesin Bing menyuplai ~83% referral search non-Google-login. (3) Top path Bing: /stocks 50, / 9, /stocks/RUNS.JK 6, indeks 6; top Yahoo: /stocks 11, /indeks 9. (4) Volume publish = objek ping: Article PUBLISHED 189 (NEWS 76, EDUCATIONAL 46, DAILY_SNAPSHOT 40, STOCK_ANALYSIS 27) + kenapa-* 133 di sitemap. (5) IndexNow = protokol gratis 1 key utk Bing/Yandex/Seznam/Naver/Yeti (api.indexnow.org).",
+      "insight": "Bing sudah #1 tanpa satu baris optimasi — IndexNow adalah cheapest win search: 1 key + hook post-publish. Risiko satu-satunya = publish path hot-path, diatasi fire-and-forget + retry + catch.",
+      "data": {
+        "bing_30d": 141,
+        "yahoo_30d": 53,
+        "google_30d": 40,
+        "indexnow_code_files": 0,
+        "published_articles": 189,
+        "tree_basis": "teknikalidnew main @ 6dfd562, live teknikal.id 7 Nov 22:3x WIB"
+      }
     }
   ],
   "items": []
