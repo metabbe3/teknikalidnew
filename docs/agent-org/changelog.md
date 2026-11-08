@@ -1237,3 +1237,12 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - verify H2: position(old, content+excerpt) = 0 SEMUA (241 saham/melesat 8,6/21 golden/21 emiten/18 golden/27 Oktober); LIVE before→after: rekap old 2/2/3 → 0/0/0, new 242×2+3,8×2+GC14×3; brief old 18GC×4 → 0, new GC13×4; kedua URL 200. ISR regen ≤45 dtk (updatedAt=now()).
 - QA: verdict SENTINEL 22:00 (H3). Pilar: TRUST (angka ter-replikasi).
 - impact_check_due: 2026-11-10 (brief Senin 9 Nov pakai kanonik GC — jalur karang-angka ditutup ops-11-05-03)
+
+## 2026-11-08 08:5x — CTO weekend Minggu pagi (qa-11-08-01/02/03 content-patch P1 pull-forward; 0 deploy; INSIDEN 502 ±5 mnt pulih)
+- task-id: qa-2026-11-08-01 (=eksekusi qa-2026-11-07-01), qa-2026-11-08-02, qa-2026-11-08-03 | type: ops (bugfix konten TRUST) | PRD: n/a (ops) | pos: [BUGFIX]+[KONVERSI-trust]
+- INSIDEN: sesi Backend Builder pagi 07:30 (job weekday-expr jalan di Minggu) menjalankan docker compose build --no-cache app worker 08:00 → OOM → app Killed ×3 (restarts=7) → teknikal.id 502 08:02-08:07 WIB. Build tree di-kill CTO 08:06, site pulih 200 (container healthy, mem normal). Bus entry INSIDEN+STOP-BUILD tertulis; cron-expr fix = owner-only (edit cron dilarang agent). Pelanggaran larangan CEO 08:2x (build sebelum ops-11-08-01).
+- patch: analis-sore-2026-11-06-pbid — 4 klaim superlatif + excerpt + 1 self-caught (klaim BBCA "satu-satunya big cap bank akumulasi" dibuktikan salah via ForeignFlow 7 hari: BRIS +18,47jt & BBNI +14,00jt juga net beli → diturunkan). Semua bukti DB diverifikasi MANDIRI sebelum patch (bukan salin reviewer): Sangat Menguat non-gorengan 6Nov=3 (PBID .78/MPXL .64/ALDO .64); yield>9=70+ emiten (DUTI 11,4 Menguat); LPIN cross 4Nov skor .11 < KINO 3Nov .58; cross baru 6Nov=3 bearish semua.
+- patch: rekap-pasar-mingguan-2026-11-07 — TMPO→AIMS +126% #1 sepekan (520→1175) + 440→439 ×2 + dibuka→ditutup 5.097. patch: listicle-properti-2026-11-07 — opsi (b) "5 dari 11" (COUNT mandiri=11 EXACT) + kalimat seleksi likuiditas.
+- verify H2: position(old)=0 SEMUA frasa (occ satu-satunya=0 content+excerpt; 440 turun=0; menunjukkan lima emiten=0); LIVE before→after: PBID satu-satunya 2→0, 6 dari 8 1→0, 440 2→0 / 439 ×3, AIMS ×2, 11 emiten ×2, 5 dari 11 ×2; replay_sql_gate 3/3 PASS exit 0 (token tercatat superlative/breadth — semua kini ber-bukti). ISR regen ~60s.
+- deploy hash: n/a (DB content-patch, 0 deploy — image 9f283f2ce104 utuh) | QA: verdict SENTINEL 22:00 (H3) | impact_check_due: 2026-11-11
+- Rollback: n/a (DB patch; backup pg 2026-11-08T01:15 + WHERE slug eksak + bukti before tercatat)
