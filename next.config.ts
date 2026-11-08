@@ -45,6 +45,12 @@ const nextConfig: NextConfig = {
         destination: "/stocks?view=screener",
         permanent: true,
       },
+      // Owner 8 Nov: /auth/login = 404 — pengguna nyasar/link lama harus mendarat di signin (308).
+      {
+        source: "/auth/login",
+        destination: "/auth/signin",
+        permanent: true,
+      },
       // ── Feature prune 2026-11-03 (owner: "buang yang tidak perlu") ──
       // Dead features removed. 308 permanent so any accumulated link equity passes
       // to the closest live surface; GSC will drop the old URLs from the index.
