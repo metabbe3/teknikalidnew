@@ -2738,7 +2738,7 @@
       "type": "feat-admin",
       "priority": "P1",
       "spec": "Owner 23 Okt: DAU/MAU di Users tab tidak mencerminkan aktivitas browsing + ingin lihat saham yang dilihat per user. SUDAH DIKERJAKAN di main e032849: (1) activeWhere DAU/MAU kini include pageViews authed non-bot; (2) endpoint /api/admin/user-analytics/[userId]/stocks (top 10 ticker 30 hari + last active); (3) UserManagementTab expandable 'Lihat saham yang dibuka'. Per-user dwell tracking di-skip (privacy).",
-      "status": "qa_pass",
+      "status": "deployed",
       "train": "T-1109-M",
       "done_when": "post-deploy: /admin Users tab DAU/MAU > 0 konsisten dgn realita (ada authed views harian); klik 'Lihat saham yang dibuka' di user dgn views menampilkan chips ticker; curl endpoint 401 tanpa admin session",
       "result": "PARSIAL (28 Okt): DAU/MAU browsing-based LIVE (activeWhere di user-analytics route), tapi 'saham dilihat per user' belum — reslot T-1029-N lanjutan bagian itu",
@@ -2747,7 +2747,8 @@
       "qa_verified": true,
       "qa_verified_by": "reviewer",
       "qa_verified_at": "2026-10-24T08:50+07:00",
-      "reslot_note": "auto-reslot 2026-11-09: kereta T-1108-M kedaluwarsa -> kereta T-1109-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-09: kereta T-1108-M kedaluwarsa -> kereta T-1109-M (reslot_guard.py v3)",
+      "kondektur_note": "KONDEKTUR-1109 VERIFY-ONLY: route api/admin/user-analytics/[userId]/stocks ADA di bundle image e54d15b8; curl anon = 404 route-level (guard sesuai done_when); QA admin-UI interaktif = jatah Sentinel/CTO"
     },
     {
       "id": "ux-2026-10-23-01",
@@ -3623,7 +3624,7 @@
       "date": "2026-10-29",
       "type": "ops",
       "priority": "P3",
-      "status": "qa_pass",
+      "status": "deployed",
       "train": "T-1109-M",
       "title": "UX: emoji pass-4 Lucide (auth-error, quota-meter) + drop dekoratif (about, overlimit banner)",
       "north_star": "STICKY + TRUST — konsistensi visual ui-craft rule #4",
@@ -3633,7 +3634,8 @@
       "qa_verified": true,
       "verified_by": "reviewer",
       "completed_at": "2026-10-30 07:10 WIB",
-      "reslot_note": "auto-reslot 2026-11-09: kereta T-1108-M kedaluwarsa -> kereta T-1109-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-09: kereta T-1108-M kedaluwarsa -> kereta T-1109-M (reslot_guard.py v3)",
+      "kondektur_note": "KONDEKTUR-1109 VERIFY-ONLY: /auth/error 200; chunk app/auth/error/page-69dfb45b93c6e025.js lucide=1, emoji dekoratif=0 di image e54d15b8"
     },
     {
       "id": "qw-audit-tk-1",
@@ -4129,7 +4131,7 @@
       "type": "prd",
       "priority": "P2",
       "prd_id": "prd-2026-10-26-02 (kanonik: product-backlog.json — MIRROR ke queue 2 Nov, anti-stagnation)",
-      "status": "qa_pass",
+      "status": "deployed",
       "title": "P2 STICKY: Migrasi otomatis guest watchlist+preset -> akun saat register/login sukses (data tidak hilang = alasan balik; nyambung 1-tap ke prd-2026-10-26-01)",
       "north_star": "STICKY (returning_ip_pct >=8%; baseline GROWTH-PLAN 2 Nov: returning rolling-7d 2,3% — KPI MERAH utama) + TRUST",
       "user_story": "Sebagai guest yang punya watchlist/preset tersimpan di perangkat, saat saya akhirnya register/login dari device yang sama, saya ingin semua simpanan saya otomatis pindah ke akun, supaya saya tidak mulai dari nol dan tidak kehilangan apa yang sudah saya kumpulkan.",
@@ -4167,7 +4169,8 @@
       "reslot_note": "auto-reslot 2026-11-09: kereta T-1108-N kedaluwarsa -> kereta T-1109-N (reslot_guard.py v3)",
       "deployed_at": "2026-11-03 18:45 (rekonstruksi CTO 4 Nov: image f2c0885e1c79)",
       "qa_verified": "true (Content-Reviewer 6 Nov 07:5x bukti fisik live app build 07:01 WIB dari main c7dc7be: ux-2026-10-30-01 CTA portofolio di /stocks/BBCA.JK; prd-2026-11-02-01 blok Ex-Date di /saham-dividen grep=2; prd-2026-11-02-03 term-link glosarium di /akademi/glosarium grep=2; bo-2026-11-03-01 git grep origin/main Returning-Visitor=5 hit 2 file admin; prd-2026-10-26-02 guest-migration marker pending_post_register di main (CTO 4 Nov changelog) — flip deployed->qa_pass utang dibayar",
-      "qa_note": "QA 5Nov: grep image /app/.next = pending_post_register di 9 file; 9058336 ancestor origin/main"
+      "qa_note": "QA 5Nov: grep image /app/.next = pending_post_register di 9 file; 9058336 ancestor origin/main",
+      "kondektur_note": "KONDEKTUR-1109 VERIFY-ONLY: marker pending_post_register 3 file + guest_watchlist 3 file di image live e54d15b8 (9058336 ancestor origin/main)"
     },
     {
       "id": "bo-2026-11-03-01",
@@ -4719,7 +4722,7 @@
       "id": "ops-2026-11-05-03",
       "title": "P0 TRUST ROOT-FIX: pin window SQL generator brief-pasar/analis-sore — angka sinyal WAJIB dari window yang dinyatakan di kalimat (pola GC window-melayang ke-3: qa-04-03, qa-04-04, qa-11-05-01)",
       "priority": "P0",
-      "status": "in_train",
+      "status": "deployed",
       "labels": [
         "qa-escalation",
         "trust",
@@ -4738,7 +4741,8 @@
       "qa_verified": "partial",
       "qa_note": "PARTIAL 8Nov 22:xx Sentinel: core LIVE tervalidasi (selftest 3/3 fail=0; getSignalCounts 7 file .next/server; /pasar+/laporan-pasar 200; 188ad2e ancestor main) TAPI acceptance brief-Senin-kanonik baru bisa dicek Senin 10:00 + status in_train — re-verify Senin (verifier 78)",
       "qa_verified_at": "2026-11-08 22:1x WIB (sentinel-2200)",
-      "qa_verified_by": "sentinel-2200"
+      "qa_verified_by": "sentinel-2200",
+      "kondektur_note": "KONDEKTUR-1109 22:3x VERIFY-ONLY (kode 188ad2e ancestor origin/main, image live e54d15b8 sesi lain 18:44): getSignalCounts 7 file .next/server + string 7-sesi 8 file + /pasar 200 + /laporan-pasar 200 + artikel Senin brief-pasar-idx-2026-11-09-rebound-bank menyatakan window 7 sesi bursa tersurat — acceptance brief-Senin-kanonik terpenuhi di bukti fisik; verdict final milik Sentinel"
     },
     {
       "id": "ux-2026-11-05-01",
