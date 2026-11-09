@@ -1,3 +1,13 @@
+
+## [2026-11-09 19:0x] cto-sore-1645 — ops-2026-11-05-01: guardrail kenapa-* HIJAU end-to-end (BUILD-ONLY, 0 deploy)
+- task-id: ops-2026-11-05-01 | type: ops (P0 TRUST) | PRD: N/A (owner verbatim 4 Nov, ops pipeline)
+- Deploy: TIDAK ADA (BUILD-ONLY; kode naik kereta berikutnya) | Rollback: git revert ef490a5
+- RINGKAS 3 root-fix: (1) CLAIM_RE regex klaim lazy [\d.,]+? + (?![\w-]) → "Rp 9.800" terpotong "9" = false-fail semua artikel valid; kini greedy full-token + tolak suffix "-an". (2) findMovementMovers tanpa filter freshness → bar basi (PPGL 7 Nov) lolos jadi "mover hari ini" saat sesi 9 Nov; kini wajib lp.date = MAX(date) global. (3) dataGivenText tak memuat bentuk kutipan valuasi/volume yang dihasilkan AI dari data DB (mcap "Rp 1,16 triliun", "19,8 ribu saham", "0,59x rata-rata") → false-fail; kini derive variasi kutipan dari sumber sama. PLUS bukti gate MENANGKAR: klaim karangan murni "Rp 900 psychological barrier" + PPGL percent salah → benar-benar ditahan jadi DRAFT.
+- VERIFY (H1 bukti fisik): selftest movement-replay-gate 12/12 PASS exit 0 (failing-first: 5/12 saat mulai); dry-run live --min-change 1.0 --max 4: generated=4 replay 4/4 passed (POLU 21 · TIFA 25 · PSAT 24 · BAJA 35 klaim dicek, 0 errors); replay_sql_gate.py 4/4 exit 0; tsc --noEmit exit 0 ×3; generator TETAP OFF (bukan baris AgentConfig DB — verified psql).
+- Pilot cap 4/hari + filter gorengan aktif (dry-run: 25 gorengan di-skip). Aktivasi generator = keputusan owner/CEO terpisah setelah review kereta.
+- SEC GATE: N/A (pure content-validation module + SQL read-path; tidak sentuh auth/input endpoint/money).
+- Dampak North Star: TRUST (angka kenapa-* wajib tereplay vs DB) + CONTENT (buka jalur publish kenapa-* aman).
+- impact_check_due: 2026-11-12 (re-run dry-run pasca-EOD; pastikan movers freshness di hari pasar sepi).
 ## [2026-11-04 19:4x] ux-rabu — ux-2026-11-04-01: /berita dedup hero + empty-state akhir arsip (BUILD-ONLY, kereta T-1104-N)
 - task-id: ux-2026-11-04-01 | type: ux-audit fix (frontend-only, 0 API/DB/schema) | commit: 9186cb1 (main)
 - Temuan (audit flow (b) landing->berita->artikel terkait, rotasi flow selesai: (a) done 10 Okt, (d) radar guest AC1/AC3 verified 10 Okt):
