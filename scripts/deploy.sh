@@ -94,8 +94,10 @@ docker compose up -d 2>&1 | tee -a "$LOG_FILE"
 APP_IMG=$(docker inspect teknikalidnew-app-1 --format '{{.Image}}' 2>/dev/null)
 WRK_IMG=$(docker inspect teknikalidnew-worker-1 --format '{{.Image}}' 2>/dev/null)
 if [ -n "$APP_IMG" ] && [ -n "$WRK_IMG" ]; then
-  APP_CREATED=$(docker inspect "$APP_IMG" --format '{{.Created}}' 2>/dev/null | sed -E 's/\.[0-9]+Z$/Z/')
-  WRK_CREATED=$(docker inspect "$WRK_IMG" --format '{{.Created}}' 2>/dev/null | sed -E 's/\.[0-9]+Z$/Z/')
+  # Strip SELURUH fraksi detik (bukan hanya .NNNZ) — OrbStack mengembalikan
+  # nanodetik + offset +07:00; fromisoformat menolak 9-digit fraksi (ops-11-08-01).
+  APP_CREATED=$(docker inspect "$APP_IMG" --format '{{.Created}}' 2>/dev/null | sed -E 's/\.[0-9]+//')
+  WRK_CREATED=$(docker inspect "$WRK_IMG" --format '{{.Created}}' 2>/dev/null | sed -E 's/\.[0-9]+//')
   if [ -n "$APP_CREATED" ] && [ -n "$WRK_CREATED" ]; then
     DRIFT_S=$(python3 -c "from datetime import datetime;print(int(abs((datetime.fromisoformat('$APP_CREATED'.replace('Z','+00:00'))-datetime.fromisoformat('$WRK_CREATED'.replace('Z','+00:00'))).total_seconds())))" 2>/dev/null || echo -1)
     if [ "$DRIFT_S" -lt 0 ] || [ "$DRIFT_S" -gt 300 ]; then
