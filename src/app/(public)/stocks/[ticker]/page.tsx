@@ -1544,15 +1544,6 @@ export default async function StockDetailPage({
             )}
             {/* Owner 26 Okt: funnel aksi — compare (modal pilih pembanding) + paper-trading */}
             <TickerFunnelActions ticker={ticker} />
-            {/* Owner 26 Okt: FAB mobile-only (share sheet multi-mode + cari saham) — desktop md:hidden */}
-            <TickerFab
-              ticker={ticker}
-              base={stripJk(ticker)}
-              price={close !== null ? formatPrice(close) : null}
-              changePercent={changePercent}
-              signalLabel={indicators?.signalLabel ?? null}
-              signalScore={indicators?.signalScore ?? null}
-            />
             {/* Owner 24 Okt: funnel belajar — EduCard kontekstual (RSI/MACD → akademi) */}
             <EduCard
               rsi14={indicators?.rsi14 ?? null}
@@ -1683,8 +1674,19 @@ export default async function StockDetailPage({
                 <summary className="text-sm font-semibold text-text-primary">{f.q}</summary>
                 <p className="text-xs text-text-secondary mt-1 leading-relaxed">{f.a}</p>
               </details>
+
             ))}
           </div>
+
+            {/* Owner 26 Okt: FAB mobile-only (share sheet multi-mode + cari saham) — desktop md:hidden */}
+            <TickerFab
+              ticker={ticker}
+              base={stripJk(ticker)}
+              price={close !== null ? formatPrice(close) : null}
+              changePercent={changePercent}
+              signalLabel={indicators?.signalLabel ?? null}
+              signalScore={indicators?.signalScore ?? null}
+            />
 
           {/* CTA Telegram kontekstual setelah FAQ (Batch B) */}
           <div className="mt-6 pt-4 border-t border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
