@@ -1,6 +1,7 @@
 import type { TradingPlan } from "@/lib/trading-plan";
 import type { McResult } from "@/lib/monte-carlo";
 import { formatRp } from "@/lib/utils";
+import { InfoTip } from "@/components/stock/info-tip";
 
 const confidenceStyles = {
   high: "bg-bullish-bg text-bullish",
@@ -78,8 +79,13 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
                 </>
               )}
             </svg>
+            {/* owner 10 Nov: paragraf panjang → 1 kalimat kunci + ⓘ tooltip (teks penuh tetap SSR utk SEO) */}
             <p className={`text-[11px] leading-snug ${isWaitAndSee ? "text-bearish font-medium" : isBOW ? "text-amber-800 font-medium" : "text-text-secondary"}`}>
-              {plan.suggestion}
+              <span className="sr-only">{plan.suggestion}</span>
+              <span aria-hidden="true">
+                {isWaitAndSee ? "Setup belum layak — tunggu konfirmasi." : isBOW ? "Antri beli di area support — sabar." : "Ikuti rencana di bawah dengan disiplin."}{" "}
+                <InfoTip label="Catatan rencana" text={plan.suggestion} />
+              </span>
             </p>
           </div>
         )}
