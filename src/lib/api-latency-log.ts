@@ -114,19 +114,17 @@ async function flush(): Promise<void> {
   }
 }
 
-let timerStarted = false;
-function ensureTimer(): void {
-  if (timerStarted) return;
-  timerStarted = true;
-  setInterval(() => void flush(), FLUSH_MS).unref?.();
-}
+// Timer dimulai saat modul dimuat (bukan lazy): flush berkala harus jalan sendiri
+// walau belum ada request admin. unref() dihilangkan di server runtime agar timer
+// tidak dibuang event loop (edge custom-server).
+const _flushTimer = setInterval(() => void flush(), FLUSH_MS);
+(_flushTimer as unknown as { unref?: () => void }).unref?.();
 
 /** Dipanggil dari /api/admin/monitoring: snapshot live + tail file terakhir. */
 export async function getLatencySnapshot(): Promise<{
   live: unknown[];
   recent: unknown[];
 }> {
-  ensureTimer();
   const live: unknown[] = [];
   for (const [route, s] of stats) {
     live.push({
