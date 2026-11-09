@@ -8,6 +8,7 @@
   --color-bg-primary: #f8fafc;
   --color-bg-card: #ffffff;
   --color-bg-hover: #f5f5f4;
+  --color-bg-tertiary: #ebe9e6;
   --color-bg-surface: rgba(255, 255, 255, 0.95);
   --color-text-primary: #1c1917;
   --color-text-secondary: #635c56;
@@ -293,8 +294,12 @@ button:focus-visible,
   .animate-pulse,
   .pulse-dot,
   .market-dot-pulse,
-  .ticker-tape-inner {
-    animation: none;
+  .ticker-tape-inner,
+  .skeleton-shimmer,
+  .cta-shine,
+  [class*="animate-[shine"],
+  [class*="animate-[ai-eq-bar"] {
+    animation: none !important;
   }
   .glow-bullish,
   .glow-bearish {
@@ -1219,9 +1224,14 @@ button:focus-visible,
   to { opacity: 0; transform: translateX(100%) scale(0.95); }
 }
 
-/* ─── Paper Trading: Skeleton Shimmer ─── */
+/* ─── Skeleton Shimmer & Uiverse Polish Keyframes ─── */
 .skeleton-shimmer {
-  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-tertiary) 0%,
+    var(--color-bg-hover) 50%,
+    var(--color-bg-tertiary) 100%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
   border-radius: 8px;
@@ -1229,6 +1239,13 @@ button:focus-visible,
 @keyframes shimmer {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
+}
+@keyframes shine {
+  to { transform: translateX(100%); }
+}
+@keyframes ai-eq-bar {
+  0%, 100% { transform: scaleY(0.35); opacity: 0.55; }
+  50% { transform: scaleY(1); opacity: 1; }
 }
 
 /* ─── Paper Trading: Live Pulse Dot ─── */

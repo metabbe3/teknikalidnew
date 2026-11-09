@@ -202,8 +202,12 @@ export function PricingBox() {
             <Button
               onClick={() => checkout("basic")}
               disabled={paying || (hasProvider && !mem?.chatBound)}
-              className="w-full"
+              className="group relative w-full overflow-hidden"
             >
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-[shine_1s] motion-reduce:group-hover:animate-none"
+              />
               {payingTier === "basic"
                 ? "Memproses Night Trader…"
                 : mem?.promoUsed

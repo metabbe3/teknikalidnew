@@ -13,17 +13,17 @@ import { getAnonIdSafe } from "@/lib/anon-id-safe";
 
 const CandlestickChart = dynamic(
   () => import("@/components/chart/candlestick-chart").then((mod) => mod.CandlestickChart),
-  { ssr: false, loading: () => <div className="w-full h-[450px] bg-bg-card rounded-xl animate-pulse" /> }
+  { ssr: false, loading: () => <div className="w-full h-[450px] rounded-xl skeleton-shimmer" /> }
 );
 
 const RsiPanel = dynamic(
   () => import("@/components/chart/rsi-panel"),
-  { ssr: false, loading: () => <div className="w-full h-[120px] bg-bg-card rounded-b-lg animate-pulse" /> }
+  { ssr: false, loading: () => <div className="w-full h-[120px] rounded-b-lg skeleton-shimmer" /> }
 );
 
 const MacdPanel = dynamic(
   () => import("@/components/chart/macd-panel"),
-  { ssr: false, loading: () => <div className="w-full h-[120px] bg-bg-card rounded-b-lg animate-pulse" /> }
+  { ssr: false, loading: () => <div className="w-full h-[120px] rounded-b-lg skeleton-shimmer" /> }
 );
 
 interface ChartSectionProps {
@@ -87,11 +87,11 @@ export function ChartSection({ ticker }: ChartSectionProps) {
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex bg-bg-card depth-shadow rounded-lg p-0.5">
             {RANGE_KEYS.map((r) => (
-              <div key={r} className="px-3 py-1 text-xs rounded-md bg-bg-hover animate-pulse w-10 h-6" />
+              <div key={r} className="px-3 py-1 text-xs rounded-md skeleton-shimmer w-10 h-6" />
             ))}
           </div>
         </div>
-        <div className="w-full h-[450px] bg-bg-card rounded-xl animate-pulse" />
+        <div className="w-full h-[450px] rounded-xl skeleton-shimmer" />
       </div>
     );
   }

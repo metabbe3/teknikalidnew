@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { createPortal } from "react-dom";
 import { parseAiText, shareAiStock } from "@/components/stock/stock-ai-shared";
 import { AiMarkdown } from "@/components/ai/ai-markdown";
+import { AiThinking } from "@/components/ui/ai-thinking";
 import { Sparkles } from "lucide-react";
 import { getAnonIdSafe } from "@/lib/anon-id-safe";
 
@@ -209,14 +210,13 @@ export function StockAiModal({ ticker, name, changePercent, isGorengan, initialQ
         <div className="px-5 py-4 overflow-y-auto space-y-4">
           {loading && (
             <div className="space-y-3 py-2">
-              {/* Progress bar — AI lokal butuh ~8 dtk */}
-              <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-bg-tertiary">
-                <div className="ai-progress absolute inset-y-0 left-0 w-1/3 rounded-full bg-accent" />
+              <AiThinking />
+              <div className="space-y-2" aria-hidden="true">
+                <div className="h-3 rounded skeleton-shimmer w-full" />
+                <div className="h-3 rounded skeleton-shimmer w-11/12" />
+                <div className="h-3 rounded skeleton-shimmer w-4/5" />
               </div>
-              <div className="h-3 bg-bg-tertiary rounded animate-pulse w-full" />
-              <div className="h-3 bg-bg-tertiary rounded animate-pulse w-11/12" />
-              <div className="h-3 bg-bg-tertiary rounded animate-pulse w-4/5" />
-              <p className="text-[11px] text-text-tertiary pt-2">🧠 Menganalisa {name}… <span className="ai-pct">±8 dtk</span></p>
+              <p className="text-[11px] text-text-tertiary pt-1">Menganalisa {name}… <span className="ai-pct">±8 dtk</span></p>
             </div>
           )}
           {error && <p className="text-sm text-bearish">{error}</p>}
@@ -271,6 +271,11 @@ export function StockAiModal({ ticker, name, changePercent, isGorengan, initialQ
                   {asking ? "…" : "Kirim"}
                 </button>
               </div>
+              {asking && !answer && (
+                <div className="rounded-xl bg-bg-tertiary/50 p-3">
+                  <AiThinking />
+                </div>
+              )}
               {answer && <div className="rounded-xl bg-bg-tertiary/50 p-3"><AiMarkdown text={answer} /></div>}
             </div>
           ) : (
