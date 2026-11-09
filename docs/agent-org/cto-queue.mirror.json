@@ -4659,7 +4659,7 @@
       "status": "pending",
       "north_star": "TRUST (data reliable) + CONTENT — moat kenapa-naik",
       "train": "T-1109-M",
-      "scheduled_slot": "2026-11-09 BE Builder siang 09:30 (gabung ops-11-08-01, expr 30 9 * * 1-5 VERIFIED; utang guardrail kenapa-* — re-plan dgn deploy-fix sebagai satu paket kerja hari Senin)",
+      "scheduled_slot": "2026-11-09 18:30 BE malam BUILD (guardrail 4-gate + dry-run 4 artikel kenapa-* + unit-test dua arah; reslot dari siang 09:30 oleh CTO siang — budget-reserve #19: sisa call slot siang <12 utk P0 berat ~2h; dependency ops-11-08-01 sudah clear + deploy gate hijau, malam ini langsung kerja)",
       "spec": "P0 OWNER VERBATIM 4 Nov — BLOCKER mesin kenapa-*: guardrail konten BELUM DEPLOYED dan generator diam (0 artikel kenapa-* dalam 7d, SQL 5 Nov) padahal pilot GO cap 4/hari (Wave-5 verdict 3 Nov: guardrail WAJIB deployed+dry-run DULU, template-risk nyata). INTENT: implement 4 gate sebelum generator boleh nyala: (1) tiap angka paragraf = ground-truth snapshot SATU PINTU (/api/market, market-snapshot.service); (2) klaim superlatif wajib replay_sql_gate exit 0 dengan parameter --as-of sesi artikel (preseden false-FAIL qa-04-03/04: window GC beda as-of); (3) label tanggal as-of eksak per angka; (4) ticker real + filter non-gorengan konsisten kanonik. DONE WHEN: (a) dry-run 1 batch 4 artikel kenapa-* → replay_sql_gate 4/4 exit 0 + 0 klaim tak-tereplay (cek manual); (b) unit-test gate dua arah (input valid PASS / angka fiktif FAIL); (c) generator tetap OFF sampai (a)+(b) hijau, baru pilot cap 4/hari; (d) changelog + agent-bus. Ref: audits/2026-11-02-bug-hunt.md + verdict Wave-5 3 Nov.",
       "reslot_note": "auto-reslot 2026-11-08: kereta T-1107-M kedaluwarsa -> kereta T-1108-M (reslot_guard.py v3)"
     },
@@ -5184,12 +5184,13 @@
       "date": "2026-11-08",
       "type": "ops",
       "priority": "P1",
-      "status": "pending",
+      "status": "done",
       "north_star": "TRUST — deploy pipeline hidup; tanpa ini semua pilar tertahan (deploy path mati)",
       "train": "T-1109-M",
       "scheduled_slot": "2026-11-09 BE Builder siang 09:30 (expr 30 9 * * 1-5 VERIFIED jobs.json; kerja berat Dockerfile+build atomik ~2h, TIDAK diweekend — risiko downtime; jalur paralel dgn qa-11-08-01 di slot pagi)",
       "spec": "DEPLOY DEADLOCK ROOT-FIX (sumber: Kondektur-1107 + bus 03:3x BACKOFFICE-03). BUKTI: build atomik docker compose build app worker OOM 2x (7 Nov 22:19+22:33, cannot allocate memory npm run build) di Docker VM 3.8GB — worker Dockerfile target=builder menjalankan next-build PENUH (2x next-build > RAM), OOM me-restart Docker VM -> db exit-137 -> teknikal.id 502 ~11 mnt (insiden, pulih manual). AKIBAT KINI: gate deploy.sh CreatedAt (ops-11-06-04) MERAH permanen (drift app image 11-07 14:26 vs worker 11-06 06:33) = SEMUA deploy blocked (ops-11-04-02 logo-404 user-facing, qa-2026-11-07-01 patch, PRD spec_ready menumpuk). INTENT root-fix jalur-(b) 0-downtime: refactor multi-stage Dockerfile worker supaya TIDAK menjalankan next-build penuh (reuse artifact/build-output dari stage app) — 1x next-build muat di 3.8GB. Alternatif (a) naikkan Docker VM >=6GB = OWNER-ONLY (restart Docker = downtime prod, preseden insiden 7 Nov) — JANGAN eksekusi, tulis proposal di result. WARNING utk Kondektur 8 Nov 22:15: JANGAN coba build atomik lagi sebelum fix ini (OOM = risiko 502 ulang); gate merah = SKIP deploy, manifest bawa Senin. DONE WHEN: (1) docker compose build app worker EXIT-0 di VM 3.8GB (log bukti); (2) CreatedAt app==worker delta <=300s; (3) deploy.sh gate hijau dry-run; (4) teknikal.id 200 sepanjang proses (curl monitor 3x); (5) worker baru jalan, POLL_INTERVAL_MS=30_000 terjaga.",
-      "cto_note_ceo_20261109": "CEO 9 Nov 06:55: deploy atomic app+worker terjadi 06:41 WIB TANPA entry bus (image kembar 15b65f69c814/e673e2de108c, VM kini 7.8GiB — owner sudah raise). SLOT 09:30 = VERIFY-FIRST: cek apakah root-fix sudah dieksekusi sesi lain (H13 /api/market/fundamental+fundflow sudah 200-live dgn data BBCA ok). Kalau sudah: verify marker Dockerfile worker-reuse + build atomik, tulis bus, close task — JANGAN rebuild. Reconciliation pelaku deploy 21:40 (8 Nov) + 06:41 (9 Nov) masih shadow — cek docker inspect label GIT_SHA + hermes cron runs."
+      "cto_note_ceo_20261109": "CEO 9 Nov 06:55: deploy atomic app+worker terjadi 06:41 WIB TANPA entry bus (image kembar 15b65f69c814/e673e2de108c, VM kini 7.8GiB — owner sudah raise). SLOT 09:30 = VERIFY-FIRST: cek apakah root-fix sudah dieksekusi sesi lain (H13 /api/market/fundamental+fundflow sudah 200-live dgn data BBCA ok). Kalau sudah: verify marker Dockerfile worker-reuse + build atomik, tulis bus, close task — JANGAN rebuild. Reconciliation pelaku deploy 21:40 (8 Nov) + 06:41 (9 Nov) masih shadow — cek docker inspect label GIT_SHA + hermes cron runs.",
+      "result": "VERIFY-FIRST per CEO note 06:55: deploy atomic owner 06:41 VALID (image app 15b65f69c814 06:41:50 == worker e673e2de108c 06:41:46, delta 4s<=300s; VM 7.8GiB; jalur-a owner, jalur-b Dockerfile worker-reuse TIDAK diperlukan). H13 /api/market/fundamental+fundflow BBCA 200 live data benar; worker healthy 0 error; site 200 0.4s. TEMUAN+FIX tambahan: gate deploy.sh CreatedAt BUG — OrbStack nanodetik+07:00 ditolak fromisoformat -> DRIFT=-1 palsu -> SEMUA deploy blocked; fix strip fraksi penuh commit 4ac9ffc (bash -n OK + dry-run gate drift kini lolos: 4s). Juga: push 2 commit ITSEC tertunda + commit org-state (deploy.sh clean-tree gate kini lolos). Deploy pipeline KINI HIJAU end-to-end. Bukti: docker images CreatedAt 06:41:46/50; curl 200; commit 4ac9ffc di main."
     },
     {
       "id": "qa-2026-11-08-01",
@@ -5255,12 +5256,12 @@
     {
       "id": "qa-2026-11-08-04",
       "priority": "P2",
-      "status": "pending",
+      "status": "done",
       "scheduled_slot": "2026-11-09 07:30 BE pagi (gabung qa-11-08-01/02/03 batch DB-patch 0-build; expr 30 7 * * * VERIFIED)",
       "north_star": "TRUST",
       "spec": "[BUGFIX][KONVERSI] REVIEWER-0700 8 Nov: qa-11-07-04 diagnose saham-akra 404 DIANGKAT jadi patch task (akses publik, jalur trust/konversi): snapshot saham-akra PUBLISHED + isListed=true + tickerTag AKRA.JK tapi live 404. Pola dugaan: resolve route slug vs ticker mismatch / cache ISR lama / revalidate path tak menyentuh slug non-template. Langkah: reproduksi curl live 404, cek resolve logic route saham/[slug], cek ISR/revalidate, patch jalur resolve ATAU re-publish slug, verify 200 live. DONE WHEN: curl live saham-akra 200 + 1 artikel saham-* random lain 200 (regresi-none) + bukti before/after di result. 0-build kalau jalur DB/cache; kalau butuh deploy -> ikut kereta T-1109-M.",
       "done_when": "curl saham-akra 200 live + regresi-none bukti",
-      "result": "",
+      "result": "FALSE-POSITIVE (reviewer salah route, pola CEO signup-vs-register): /saham-akra root = pola URL yang TIDAK PERNAH ada (PageView path itu=0, 0 link internal, 0 sitemap entry). Jalur kanonik /berita/saham-akra = 308 -> /stocks/AKRA.JK = 200 (curl -L 200) = BY DESIGN snapshot pasca-EOD (trap handoff 15 Sep). Semua saham-* saudaraanya identik (unvr/antm/adro 404 root, /berita/* 308->stocks 200). Artikel saham-akra PUBLISHED isListed=true utuh. 0 kode 0 build 0 deploy. Regression-none: saham-unvr/towr/untr /berita 308->stocks 200.",
       "train": "T-1109-M"
     },
     {
@@ -5353,13 +5354,14 @@
       "date": "2026-11-09",
       "type": "qa-content-fix",
       "priority": "P1",
-      "status": "pending",
+      "status": "done",
       "assigned_to": "cto-pagi",
       "pos": "[KONVERSI-trust]",
       "north_star": "TRUST (angka breadth & superlatif = data reliable; klaim salah di artikel pagi = trust runtuh)",
       "title": "FATAL QA 9 Nov: analis-pagi-2026-11-09-pbid — breadth \"292 stagnan\" salah vs DB 162 (kanonik 231/440/162, 2x live) + \"PBID satu-satunya Sangat Menguat\" salah (DB=4: PBID .78/ALKA .72/MPXL .64/ALDO .64)",
       "spec": "INTENT: patch konten analis-pagi-2026-11-09-pbid pasca-publish (reviewer 07:4x 9 Nov, post-publish QA — jangan blok pipeline). ACCEPTANCE: (1) position('292 stagnan', content+excerpt)=0 DAN grep live '292 stagnan'=0 — ganti dengan trio kanonik satu-pintu 231/440/162 (snapshot 6 Nov); (2) klaim 'satu-satunya sinyal Sangat Menguat' (heading+body, 2 kemunculan) dihapus/ditulis ulang — opsi aman terverifikasi DB: 'skor tertinggi hasil scan pagi ini, 0,78' (B2 ranking penuh PBID #1); (3) excerpt ikut konsisten; (4) replay_sql_gate.py analis-pagi-2026-11-09-pbid exit 0 sebelum UPDATE; (5) H2: semua kemunculan lama DB+live=0; (6) minor sekalian: net asing pasar Jumat DB=128,7 M vs kutipan Kontan 328,2 M — pertahankan atribusi eksplisit 'dikutip Kontan' atau samakan dengan data sendiri.",
-      "scheduled_slot": "2026-11-09 BE siang 09:30 SETELAH ops-11-08-01 verify-first (DB-patch 0-build; expr 30 9 * * 1-5 VERIFIED 9 Nov). PATCH: analis-pagi-2026-11-09-pbid \"292 stagnan\"->\"162 stagnan\" (kanonik 6 Nov; live masih 292 per spot-check CTO 07:52) + \"satu-satunya Sinyal Sangat Menguat\"->\"skor sinyal tertinggi\" (DB 6 Nov: 4 emiten Sangat Menguat). BUKTI H1: position(292)=0 post-patch + grep live old=0 + replay gate exit 0"
+      "scheduled_slot": "2026-11-09 BE siang 09:30 SETELAH ops-11-08-01 verify-first (DB-patch 0-build; expr 30 9 * * 1-5 VERIFIED 9 Nov). PATCH: analis-pagi-2026-11-09-pbid \"292 stagnan\"->\"162 stagnan\" (kanonik 6 Nov; live masih 292 per spot-check CTO 07:52) + \"satu-satunya Sinyal Sangat Menguat\"->\"skor sinyal tertinggi\" (DB 6 Nov: 4 emiten Sangat Menguat). BUKTI H1: position(292)=0 post-patch + grep live old=0 + replay gate exit 0",
+      "result": "PATCH DONE 09:39-09:41 WIB 09:30-slot. SQL: UPDATE Article SET content=replace(replace(content,'292 stagnan','162 stagnan'),'## PBID — Satu-satunya Sinyal \"Sangat Menguat\"','## PBID — Skor Sinyal Tertinggi Hasil Scan Pagi Ini') WHERE slug='analis-pagi-2026-11-09-pbid' (UPDATE 1; backup 01:15 valid; replay gate PASS exit 0 pra-patch). H2 BUKTI: DB position('292 stagnan')=0, satu-satunya ci=0; LIVE /berita/analis-pagi-2026-11-09-pbid before 292=2+satu-satunya=2 -> after 292=0, satu-satunya=0, 162=2, heading baru=2 (HTTP 200). Excerpt & title sudah bersih pra-patch. Minor Kontan: atribusi 'data BEI, dikutip Kontan' SUDAH eksplisit = dipertahankan. URL live = /berita/<slug> (bukan /artikel/)."
     },
     {
       "id": "qa-2026-11-09-02",
@@ -5373,6 +5375,18 @@
       "title": "favicon.ico LIVE masih versi korup offset-0 — commit a16d480 hanya patch src/app/favicon.ico, public/favicon.ico (yang disajikan prod) tidak ikut",
       "spec": "INTENT: ux-2026-11-08-01 fix belum sampai prod utk /favicon.ico. Bukti reviewer 07:3x: live byte md5=b2fbb98258f544e5f8cc15a72a13a531 identik public/favicon.ico lama (mtime 7 Nov), 4 entry ICO offset=0 (semua melewati header); src/app/favicon.ico sudah benar (70/623/1581/3029, sum=4765 exact). ACCEPTANCE: (1) salin src/app/favicon.ico → public/favicon.ico (byte identik); (2) verify repo: ICO parse offset>0 + PIL decode OK; (3) naik ke prod via KERETA berikutnya (DILARANG build solo — gate ops-11-08-01/OOM), lalu live verify: md5 != b2fbb982... + ICO parse valid; (4) catat di bus saat kereta naik.",
       "scheduled_slot": "2026-11-09 BE malam 18:30 BUILD-ONLY bundling prd-11-07-01/02 (copy src/app/favicon.ico MD5 617ed096 -> public/favicon.ico masih korup b2fbb982 = live; 1-file commit; naik kereta malam bila gate hijau pre-22:00, else T-1110-M. Spot-check CTO 07:52: MD5 live == public/ korup, src/ benar"
+    },
+    {
+      "id": "feat-2026-11-09-01",
+      "kind": "feature",
+      "title": "Reply-Hook: kesimpulan-first compare + auto-link web teknikal.id (owner approve 9 Nov 'biar orang ketagihan')",
+      "status": "done",
+      "repo": "teknikal-agent",
+      "commit": "0dbb567",
+      "spec": "compare=kesimpulan dulu; tombol URL teknikal.id/stocks/T.JK di-inject sistem dari tool-call (bukan LLM), max 3, filter delisted; tanpa ticker=tanpa link",
+      "result": "commit 0dbb567 (8 file +633): weblink.go 196L + test 283L; go build OK; go test fresh 3 pkg PASS; gofmt bersih; go vet bersih; deploy binary /tmp/agentd_pulse + kickstart; healthz ok jobs_failed 0; /stocks/BBCA.JK 200",
+      "qa_note": "URL dari ToolInvocation args (bukan teks jawaban) — anti-halusinasi; delisted filter utk isActive=false; DEEPLINK-WEB path /stocks/T.JK sesuai",
+      "deployed": true
     }
   ]
 }
