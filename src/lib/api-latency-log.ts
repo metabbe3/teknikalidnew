@@ -11,11 +11,9 @@
  * bucket histogram (10ms buckets up to 2s+) — enough precision to rank slow
  * endpoints without storing every sample.
  */
-import { appendFile, mkdir } from "node:fs/promises";
-import { dirname } from "node:path";
-
-const LOG_PATH = "logs/api-latency.jsonl";
-const FLUSH_MS = 30_000;
+// adm-2026-11-09 rev2: middleware runtime tidak dapat diandalkan utk file IO —
+// ring murni di globalThis (survive HMR, shared per process). Window = 30 menit terakhir.
+const WINDOW_MS = 30 * 60_000;
 
 // 10ms buckets, up to 2s (201 buckets). Anything above clamps into the last bucket.
 const BUCKET_MS = 10;
@@ -31,9 +29,9 @@ interface RouteStat {
   updatedAt: number;
 }
 
-const stats = new Map<string, RouteStat>();
-let flushing = false;
-let lastFlushHadData = false;
+// globalThis: middleware & route handler bisa jalan module-instance berbeda dalam 1 proses.
+const g = globalThis as unknown as { __apiLatencyStats?: Map<string, RouteStat> };
+const stats: Map<string, RouteStat> = (g.__apiLatencyStats ??= new Map());
 
 /** Coarse route prefix: /api/stocks/BBCA/history → /api/stocks/BBCA (2 segmen —
  *  cukup spesifik utk "endpoint mana yang lamban", cukup kasar utk tidak meledak). */
@@ -82,51 +80,16 @@ function percentile(hist: number[], count: number, p: number): number {
   return MAX_BUCKET * BUCKET_MS;
 }
 
-async function flush(): Promise<void> {
-  if (flushing) return;
-  flushing = true;
-  try {
-    const rows: unknown[] = [];
-    for (const [route, s] of stats) {
-      rows.push({
-        route,
-        count: s.count,
-        avgMs: Math.round(s.totalMs / Math.max(s.count, 1)),
-        p95Ms: percentile(s.hist, s.count, 0.95),
-        p99Ms: percentile(s.hist, s.count, 0.99),
-        maxMs: Math.round(s.maxMs),
-        slow: s.slow,
-        err5xx: s.err,
-        at: new Date().toISOString(),
-      });
-    }
-    if (rows.length) {
-      await mkdir(dirname(LOG_PATH), { recursive: true });
-      await appendFile(LOG_PATH, rows.map((r) => JSON.stringify(r)).join("\n") + "\n", "utf8");
-      lastFlushHadData = true;
-    }
-    // reset agregat setelah flush (file = rolling window terakhir per flush)
-    stats.clear();
-  } catch {
-    /* file IO gagal (RO fs?) — tetap lanjut, ring akan di-cull */
-  } finally {
-    flushing = false;
-  }
-}
 
-// Timer dimulai saat modul dimuat (bukan lazy): flush berkala harus jalan sendiri
-// walau belum ada request admin. unref() dihilangkan di server runtime agar timer
-// tidak dibuang event loop (edge custom-server).
-const _flushTimer = setInterval(() => void flush(), FLUSH_MS);
-(_flushTimer as unknown as { unref?: () => void }).unref?.();
-
-/** Dipanggil dari /api/admin/monitoring: snapshot live + tail file terakhir. */
+/** Dipanggil dari /api/admin/monitoring: snapshot ring (window 30 menit). */
 export async function getLatencySnapshot(): Promise<{
   live: unknown[];
   recent: unknown[];
 }> {
+  const cutoff = Date.now() - WINDOW_MS;
   const live: unknown[] = [];
   for (const [route, s] of stats) {
+    if (s.updatedAt && s.updatedAt < cutoff && s.updatedAt !== 0) continue; // route idle >30 mnt
     live.push({
       route,
       count: s.count,
@@ -138,24 +101,5 @@ export async function getLatencySnapshot(): Promise<{
       err5xx: s.err,
     });
   }
-  let recent: unknown[] = [];
-  try {
-    const { readFile } = await import("node:fs/promises");
-    const txt = await readFile(LOG_PATH, "utf8").catch(() => "");
-    const lines = txt.trim().split("\n").filter(Boolean);
-    // ambil flush terakhir per route dari ≤300 baris akhir
-    const last = new Map<string, unknown>();
-    for (const line of lines.slice(-300)) {
-      try {
-        const obj = JSON.parse(line) as { route?: string };
-        if (obj.route) last.set(obj.route, obj);
-      } catch {
-        /* skip baris korup */
-      }
-    }
-    recent = [...last.values()];
-  } catch {
-    /* fs tidak tersedia — kembalikan kosong */
-  }
-  return { live, recent };
+  return { live, recent: [] };
 }
