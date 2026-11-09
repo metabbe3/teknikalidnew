@@ -830,6 +830,11 @@ export const stockRepository = {
       ) f ON true
       WHERE pp.prev_close IS NOT NULL
         AND pp.prev_close > 0
+        -- ops-2026-11-05-01 dry-run PPGL: bar basi (7 Nov) lolos sebagai
+        -- "mover hari ini" padahal saham tidak ikut sesi terbaru → artikel
+        -- "hari ini" dengan data sesi lama. Wajib: bar kandidat = sesi
+        -- terbaru global (EOD hari itu), bukan bar terakhir per-saham.
+        AND lp.date::date = (SELECT MAX(date)::date FROM "StockPrice")
         AND ABS((lp.close - pp.prev_close) / pp.prev_close * 100) >= ${minChangePercent}
         AND s.ticker != '^JKSE'
       ORDER BY ABS((lp.close - pp.prev_close) / pp.prev_close * 100) DESC

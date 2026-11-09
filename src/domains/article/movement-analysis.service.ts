@@ -259,7 +259,14 @@ async function generateForStock(mover: MovementMoverRow, marketContextStr: strin
     `${fmtVol(mover.volume)} ${volRatio(mover.volume, mover.avgVolume5d)} ${price(mover.week52Low)} ${price(mover.week52High)} ` +
     `${mover.rsi14 ?? ""} ${mover.macdHist ?? ""} ${mover.adx ?? ""} ${price(mover.sma20)} ${price(mover.sma50)} ${price(mover.sma200)} ` +
     `${price(mover.supertrend)} ${price(mover.bbLower)} ${price(mover.bbUpper)} ${mover.pe ?? ""} ${mover.pb ?? ""} ` +
-    `${fmtMC(mover.marketCap)} ${price(mover.eps)} ${mover.dividendYield ?? ""} ${marketContextStr}`;
+    `${fmtMC(mover.marketCap)} ${price(mover.eps)} ${mover.dividendYield ?? ""} ${marketContextStr}` +
+    // ops-2026-11-05-01 dry-run PSAT: AI mengutip valuasi (P/B, market cap,
+    // EPS) & volume-dalam-ribu dari data DB, tapi string di atas tak memuat
+    // bentuk yang dikutip ("Rp 1,16 triliun", "19,8 ribu saham", "0,59x")
+    // → false-fail replay. Derive variasi kutipan dari sumber yang sama.
+    ` P/B ${mover.pb ?? ""}x ${fmtMC(mover.marketCap)} EPS ${price(mover.eps)} ` +
+    `volume ${fmtVol(mover.volume)} dari ${fmtVol(mover.avgVolume5d)} rata-rata ` +
+    `${volRatio(mover.volume, mover.avgVolume5d)} rata-rata`;
   const allowedNumbers = extractAllowedNumbers(dataGivenText);
   const replay = replayMovementNumbers(guards.content, mover, {
     asOfLong: asOfLong ?? "sesi terakhir",

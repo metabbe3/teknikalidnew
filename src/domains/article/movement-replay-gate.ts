@@ -97,11 +97,15 @@ export interface MovementReplayResult {
 // (market cap → harga → volume → rasio → persen). matchAll tidak overlap
 // (lastIndex maju) = konsumsi token: satu span tak bisa jadi 2 klaim.
 // ops-2026-11-05-01 dry-run MKNT: tanda minus ikut ditangkap (bbLower "Rp -9").
-// (?![\w-]) menolak nominal kasar "Rp 1.800-an"/"Rp 3.660." (suffix -an/.) —
-// bukan klaim harga presisi (dry-run RATU: "area Rp 1.800-an" false-fail).
-// ES2017 (tsconfig target): named groups tak didukung → grup bernomor + map nama.
+// (?!\d) = greedy full number token: "Rp 9.800" harus konsumsi "9.800" utuh,
+// bukan berhenti di "9" (bug lazy+[\w-] lama → false-fail harga di dry-run).
+// (?!\d)(?![\d.,-]*[a-zà-ÿ]) = greedy full number token DAN tolak suffix
+// menempel seperti "1.800-an": lookahead berlaku di semua titik backtrack,
+// jadi prefix "1"/"1.8"/"1.80" juga gagal → klaim kasar di-skip utuh
+// (bug lazy+[\w-] lama → false-fail harga; dry-run RATU "Rp 1.800-an").
+// target): named groups tak didukung → grup bernomor + map nama.
 const CLAIM_RE =
-  /Rp\s*(-?[\d.,]+?)(?![\w-])(?:\s*(triliun|miliar)\b)?|([\d.,]+)\s*(miliar|juta|ribu)\s+saham|([\d.,]+)\s+saham\b|([\d.,]+)\s*[x×]\s*rata-rata|([+-]?[\d.,]+)\s*(?:%|persen)/gi;
+  /Rp\s*(-?\d[\d.,]*\d|\d)(?!\d)(?![\d.,-]*[a-zà-ÿ])(?:\s*(triliun|miliar)\b(?!-?\d))?|(\d[\d.,]*\d|\d)\s*(miliar|juta|ribu)\s+saham|(\d[\d.,]*\d|\d)\s+saham\b|(\d[\d.,]*\d|\d)\s*[x×]\s*rata-rata|([+-]?\d[\d.,]*\d|\d)\s*(?:%|persen)/gi;
 const CLAIM_GROUP_NAMES = ["rp", "capUnit", "vol", "volUnit", "volPlain", "ratio", "pct"];
 
 /**
