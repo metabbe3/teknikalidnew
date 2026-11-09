@@ -241,8 +241,8 @@ export const stockSyncService = {
       const pct = typeof s.Persentase === "number" && s.Persentase >= 0 ? Math.min(s.Persentase, 9999.99) : null;
       const assets = typeof s.JumlahAset === "number" && s.JumlahAset >= 0 ? Math.min(s.JumlahAset, 99999999999999999999.99) : null;
       return {
-        name: s.Nama,
-        businessType: s.BidangUsaha?.replace(/\r\n/g, " ") || null,
+        name: s.Nama?.slice(0, 255) ?? null,
+        businessType: s.BidangUsaha?.replace(/\r\n/g, " ")?.slice(0, 255) || null,
         totalAssets: assets,
         ownershipPercent: pct,
       };
