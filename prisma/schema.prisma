@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
+  previewFeatures = ["partialIndexes"]
 }
 
 datasource db {
@@ -8,52 +9,44 @@ datasource db {
 }
 
 model Stock {
-  id           Int        @id @default(autoincrement())
-  ticker       String     @unique @db.VarChar(20)
-  name         String     @db.VarChar(255)
-  sector       String     @db.VarChar(100)
-  listingBoard String?    @db.VarChar(50)
-  assetClass   AssetClass @default(EQUITY)
-  isActive     Boolean    @default(true)
-  // Status Daftar Efek Syariah (DES OJK / ISSI BEI) — null = belum disinkron; jangan ditebak AI (riset Argon G3)
-  isSyariah    Boolean?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-
-  // Company profile (from IDX)
-  subSector   String?   @db.VarChar(100)
-  listingDate DateTime? @db.Date
-  address     String?   @db.VarChar(500)
-  website     String?   @db.VarChar(255)
-  phone       String?   @db.VarChar(50)
-  email       String?   @db.VarChar(100)
-  logo        String?   @db.VarChar(500)
-
-  // Enhanced profile (from IDX detail API)
-  industry         String? @db.VarChar(100)
-  subIndustry      String? @db.VarChar(100)
-  fax              String? @db.VarChar(50)
-  npwp             String? @db.VarChar(50)
-  businessActivity String? @db.VarChar(500)
-
-  // Trading info (from IDX trading API)
+  id                      Int                 @id @default(autoincrement())
+  ticker                  String              @unique @db.VarChar(20)
+  name                    String              @db.VarChar(255)
+  sector                  String              @db.VarChar(100)
+  isActive                Boolean             @default(true)
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+  listingBoard            String?             @db.VarChar(50)
+  address                 String?             @db.VarChar(500)
+  email                   String?             @db.VarChar(100)
+  fax                     String?             @db.VarChar(50)
+  industry                String?             @db.VarChar(100)
+  listingDate             DateTime?           @db.Date
+  logo                    String?             @db.VarChar(500)
+  npwp                    String?             @db.VarChar(50)
+  phone                   String?             @db.VarChar(50)
+  subIndustry             String?             @db.VarChar(100)
+  subSector               String?             @db.VarChar(100)
+  website                 String?             @db.VarChar(255)
+  businessActivity        String?             @db.VarChar(500)
+  foreignOwnershipPercent Decimal?            @db.Decimal(6, 2)
+  isinCode                String?             @db.VarChar(20)
   listedShares            BigInt?
-  foreignOwnershipPercent Decimal? @db.Decimal(6, 2)
-  isinCode                String?  @db.VarChar(20)
-
-  prices            StockPrice[]
-  indicators        StockIndicator[]
-  fundamentals      StockFundamental[]
-  shareholders      StockShareholder[]
-  directors         StockDirector[]
-  commissioners     StockCommissioner[]
-  subsidiaries      StockSubsidiary[]
-  dividends         StockDividend[]
-  watchlist         Watchlist[]
-  paperPositions    PaperPosition[]
-  paperOrders       PaperOrder[]
-  portfolioHoldings PortfolioHolding[]
-  foreignFlows      ForeignFlow[]
+  assetClass              AssetClass          @default(EQUITY)
+  isSyariah               Boolean?
+  foreignFlows            ForeignFlow[]
+  paperOrders             PaperOrder[]
+  paperPositions          PaperPosition[]
+  portfolioHoldings       PortfolioHolding[]
+  commissioners           StockCommissioner[]
+  directors               StockDirector[]
+  dividends               StockDividend[]
+  fundamentals            StockFundamental[]
+  indicators              StockIndicator[]
+  prices                  StockPrice[]
+  shareholders            StockShareholder[]
+  subsidiaries            StockSubsidiary[]
+  watchlist               Watchlist[]
 
   @@index([isinCode])
   @@index([sector])
@@ -71,8 +64,7 @@ model StockPrice {
   close    Decimal  @db.Decimal(12, 2)
   volume   BigInt
   adjClose Decimal? @db.Decimal(12, 2)
-
-  stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  stock    Stock    @relation(fields: [stockId], references: [id], onDelete: Cascade)
 
   @@unique([stockId, date])
   @@index([stockId, date(sort: Desc)])
@@ -80,69 +72,62 @@ model StockPrice {
 }
 
 model StockIndicator {
-  id       Int      @id @default(autoincrement())
-  stockId  Int
-  date     DateTime @db.Date
-  interval String   @db.VarChar(10)
-
-  sma20  Decimal? @db.Decimal(12, 2)
-  sma50  Decimal? @db.Decimal(12, 2)
-  sma200 Decimal? @db.Decimal(12, 2)
-  ema12  Decimal? @db.Decimal(12, 2)
-  ema26  Decimal? @db.Decimal(12, 2)
-
-  rsi14      Decimal? @db.Decimal(8, 2)
-  macdLine   Decimal? @db.Decimal(12, 4)
-  macdSignal Decimal? @db.Decimal(12, 4)
-  macdHist   Decimal? @db.Decimal(12, 4)
-
-  bbUpper  Decimal? @db.Decimal(12, 2)
-  bbMiddle Decimal? @db.Decimal(12, 2)
-  bbLower  Decimal? @db.Decimal(12, 2)
-
-  stochK         Decimal?  @db.Decimal(8, 2)
-  stochD         Decimal?  @db.Decimal(8, 2)
+  id             Int       @id @default(autoincrement())
+  stockId        Int
+  date           DateTime  @db.Date
+  interval       String    @db.VarChar(10)
+  sma20          Decimal?  @db.Decimal(12, 2)
+  sma50          Decimal?  @db.Decimal(12, 2)
+  sma200         Decimal?  @db.Decimal(12, 2)
+  ema12          Decimal?  @db.Decimal(12, 2)
+  ema26          Decimal?  @db.Decimal(12, 2)
+  rsi14          Decimal?  @db.Decimal(8, 2)
+  macdLine       Decimal?  @db.Decimal(12, 4)
+  macdSignal     Decimal?  @db.Decimal(12, 4)
+  macdHist       Decimal?  @db.Decimal(12, 4)
+  bbUpper        Decimal?  @db.Decimal(12, 2)
+  bbMiddle       Decimal?  @db.Decimal(12, 2)
+  bbLower        Decimal?  @db.Decimal(12, 2)
   adx            Decimal?  @db.Decimal(8, 2)
-  vwap           Decimal?  @db.Decimal(12, 2)
   atr            Decimal?  @db.Decimal(12, 2)
+  emaCrossDate   DateTime? @db.Date
+  emaCrossSignal String?   @db.VarChar(20)
+  smaCrossDate   DateTime? @db.Date
+  smaCrossSignal String?   @db.VarChar(20)
+  stochD         Decimal?  @db.Decimal(8, 2)
+  stochK         Decimal?  @db.Decimal(8, 2)
+  vwap           Decimal?  @db.Decimal(12, 2)
   obv            Decimal?  @db.Decimal(16, 2)
   obvTrend       String?   @db.VarChar(15)
   supertrend     Decimal?  @db.Decimal(12, 2)
-  smaCrossSignal String?   @db.VarChar(20)
-  smaCrossDate   DateTime? @db.Date
-  emaCrossSignal String?   @db.VarChar(20)
-  emaCrossDate   DateTime? @db.Date
-
-  signalScore Decimal? @db.Decimal(5, 2)
-  signalLabel String?  @db.VarChar(20)
-  isGorengan  Boolean  @default(false)
-
-  stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  isGorengan     Boolean   @default(false)
+  signalLabel    String?   @db.VarChar(20)
+  signalScore    Decimal?  @db.Decimal(5, 2)
+  stock          Stock     @relation(fields: [stockId], references: [id], onDelete: Cascade)
 
   @@unique([stockId, date, interval])
   @@index([stockId, date(sort: Desc)])
   @@index([stockId, interval, date(sort: Desc)])
   @@index([interval, date])
+  @@index([date, stockId], map: "StockIndicator_oversold_screen_idx", where: raw("(((\"interval\")::text = '1d'::text) AND ((rsi14 <= (30)::numeric) OR ((\"stochK\" <= (20)::numeric) AND (\"stochD\" <= (20)::numeric))))"))
+  @@index([smaCrossSignal, smaCrossDate(sort: Desc)], map: "StockIndicator_sma_cross_screen_idx", where: raw("(((\"interval\")::text = '1d'::text) AND (\"smaCrossSignal\" IS NOT NULL))"))
 }
 
 model StockFundamental {
-  id            Int      @id @default(autoincrement())
-  stockId       Int
-  date          DateTime @db.Date
-  pe            Decimal? @db.Decimal(10, 2)
-  forwardPe     Decimal? @db.Decimal(10, 2)
-  pb            Decimal? @db.Decimal(10, 2)
-  eps           Decimal? @db.Decimal(12, 2)
-  dividendYield Decimal? @db.Decimal(6, 4)
-  marketCap     BigInt
-
-  // Extended fields (from Yahoo Finance)
-  sharesOutstanding        BigInt?
-  beta                     Decimal? @db.Decimal(8, 4)
+  id                       Int      @id @default(autoincrement())
+  stockId                  Int
+  date                     DateTime @db.Date
+  pe                       Decimal? @db.Decimal(10, 2)
+  forwardPe                Decimal? @db.Decimal(10, 2)
+  pb                       Decimal? @db.Decimal(10, 2)
+  eps                      Decimal? @db.Decimal(12, 2)
+  dividendYield            Decimal? @db.Decimal(6, 4)
+  marketCap                BigInt
   averageDailyVolume3Month BigInt?
+  beta                     Decimal? @db.Decimal(8, 4)
   bookValue                Decimal? @db.Decimal(12, 2)
-
-  stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  sharesOutstanding        BigInt?
+  stock                    Stock    @relation(fields: [stockId], references: [id], onDelete: Cascade)
 
   @@unique([stockId, date])
   @@index([date, pe])
@@ -158,8 +143,7 @@ model StockShareholder {
   shares    Decimal? @db.Decimal(20, 2)
   percent   Decimal? @db.Decimal(6, 2)
   updatedAt DateTime @updatedAt
-
-  stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  stock     Stock    @relation(fields: [stockId], references: [id], onDelete: Cascade)
 
   @@index([stockId])
 }
@@ -172,8 +156,7 @@ model StockDirector {
   type        String   @db.VarChar(20)
   independent Boolean  @default(false)
   updatedAt   DateTime @updatedAt
-
-  stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  stock       Stock    @relation(fields: [stockId], references: [id], onDelete: Cascade)
 
   @@index([stockId])
 }
@@ -185,8 +168,7 @@ model StockCommissioner {
   position    String?  @db.VarChar(100)
   independent Boolean  @default(false)
   updatedAt   DateTime @updatedAt
-
-  stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  stock       Stock    @relation(fields: [stockId], references: [id], onDelete: Cascade)
 
   @@index([stockId])
 }
@@ -199,8 +181,7 @@ model StockSubsidiary {
   totalAssets      Decimal? @db.Decimal(20, 2)
   ownershipPercent Decimal? @db.Decimal(6, 2)
   updatedAt        DateTime @updatedAt
-
-  stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  stock            Stock    @relation(fields: [stockId], references: [id], onDelete: Cascade)
 
   @@index([stockId])
 }
@@ -211,10 +192,9 @@ model ForeignFlow {
   id          Int      @id @default(autoincrement())
   stockId     Int
   date        DateTime @db.Date
-  foreignBuy  Decimal  @db.Decimal(20, 2) // LEMBAR beli asing (IDX TradingSummary)
-  foreignSell Decimal  @db.Decimal(20, 2) // LEMBAR jual asing (IDX TradingSummary)
-
-  stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  foreignBuy  Decimal  @db.Decimal(20, 2)
+  foreignSell Decimal  @db.Decimal(20, 2)
+  stock       Stock    @relation(fields: [stockId], references: [id], onDelete: Cascade)
 
   @@unique([stockId, date])
   @@index([date, foreignBuy(sort: Desc)])
@@ -234,8 +214,7 @@ model StockDividend {
   recordDate  DateTime? @db.Date
   paymentDate DateTime? @db.Date
   updatedAt   DateTime  @updatedAt
-
-  stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  stock       Stock     @relation(fields: [stockId], references: [id], onDelete: Cascade)
 
   @@unique([stockId, year, type])
   @@index([stockId, year(sort: Desc)])
@@ -252,78 +231,66 @@ model CachedApiCall {
   @@index([expiresAt])
 }
 
-// ── Auth (NextAuth) ──────────────────────────────────────
-
 model User {
-  id               String    @id @default(cuid())
-  email            String    @unique
-  emailVerified    DateTime?
-  name             String?
-  username         String    @unique
-  image            String?
-  // tracking-audit G6: identitas anonim PERTAMA sebelum daftar — retensi histori menyatu
-  initialAnonId    String?   @db.VarChar(36)
-  bio              String?   @db.VarChar(200)
-  socialLinks      Json?
-  role             Role      @default(USER)
-  isPremium        Boolean   @default(false)
-  premiumPlan      String?   @db.VarChar(20)
-  premiumExpiresAt DateTime?
-  reputation       Int       @default(0)
-  lastDailyClaimAt DateTime?
-  dailyStreak      Int       @default(0)
-  customTitle      String?   @db.VarChar(30)
-  bannedAt         DateTime?
-  signupIp         String?   @db.VarChar(45)
-  signupAsn        String?   @db.VarChar(20)
-  flaggedAt        DateTime?
-  sessionVersion   Int       @default(0)
-  portfolioPublic  Boolean   @default(false)
-  createdAt        DateTime  @default(now())
-
+  id                  String               @id @default(cuid())
+  email               String               @unique
+  name                String?
+  username            String               @unique
+  image               String?
+  bio                 String?              @db.VarChar(200)
+  role                Role                 @default(USER)
+  bannedAt            DateTime?
+  createdAt           DateTime             @default(now())
+  reputation          Int                  @default(0)
+  socialLinks         Json?
+  sessionVersion      Int                  @default(0)
+  emailVerified       DateTime?
+  customTitle         String?              @db.VarChar(30)
+  dailyStreak         Int                  @default(0)
+  lastDailyClaimAt    DateTime?
+  portfolioPublic     Boolean              @default(false)
+  isPremium           Boolean              @default(false)
+  premiumExpiresAt    DateTime?
+  premiumPlan         String?              @db.VarChar(20)
+  flaggedAt           DateTime?
+  signupAsn           String?              @db.VarChar(20)
+  signupIp            String?              @db.VarChar(45)
+  initialAnonId       String?              @db.VarChar(36)
   accounts            Account[]
-  sessions            Session[]
-  posts               Post[]
-  comments            Comment[]
-  watchlist           Watchlist[]
-  likes               Like[]
-  reports             Report[]
-  following           Follow[]             @relation("Following")
-  followers           Follow[]             @relation("Followers")
-  blocking            Block[]              @relation("Blocking")
-  blocked             Block[]              @relation("Blocked")
-  stockFollows        StockFollow[]
-  notifications       Notification[]       @relation("Notifications")
-  notificationActions Notification[]       @relation("NotificationActions")
-  bookmarks           Bookmark[]
-  reposts             Repost[]
-  reactions           Reaction[]
-  pollVotes           PollVote[]
+  achievements        Achievement[]
   articles            Article[]
   reviewedArticles    Article[]            @relation("ReviewedArticles")
   auditLogs           AuditLog[]
+  blocked             Block[]              @relation("Blocked")
+  blocking            Block[]              @relation("Blocking")
+  bookmarks           Bookmark[]
+  comments            Comment[]
+  following           Follow[]             @relation("Following")
+  followers           Follow[]             @relation("Followers")
   imageGenJobs        ImageGenerationJob[]
-  portfolioHoldings   PortfolioHolding[]
-  achievements        Achievement[]
+  likes               Like[]
+  notificationActions Notification[]       @relation("NotificationActions")
+  notifications       Notification[]       @relation("Notifications")
+  pageViews           PageView[]
   paperAccount        PaperAccount?
+  payments            Payment[]
+  pollVotes           PollVote[]
+  portfolioHoldings   PortfolioHolding[]
+  posts               Post[]
   submittedQuestions  Question[]
   questionFeedback    QuestionFeedback[]
-  payments            Payment[]
-  pageViews           PageView[]
-  shareEvents         ShareEvent[]
+  reactions           Reaction[]
+  reports             Report[]
+  reposts             Repost[]
   savedScreeners      SavedScreener[]
   screenerAlerts      ScreenerAlert[]
+  sessions            Session[]
+  shareEvents         ShareEvent[]
+  stockFollows        StockFollow[]
   theses              StockThesis[]
-}
+  watchlist           Watchlist[]
 
-enum Role {
-  USER
-  ADMIN
-}
-
-enum AssetClass {
-  EQUITY
-  CRYPTO
+  @@index([initialAnonId])
 }
 
 model Account {
@@ -360,34 +327,31 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// ── Community ────────────────────────────────────────────
-
 model Post {
-  id                   String    @id @default(cuid())
-  content              String    @db.VarChar(1000)
-  tickerTag            String?   @db.VarChar(20)
+  id                   String               @id @default(cuid())
+  content              String               @db.VarChar(1000)
+  tickerTag            String?              @db.VarChar(20)
   authorId             String
-  imageUrl             String?   @db.VarChar(1000)
-  likesCount           Int       @default(0)
-  commentsCount        Int       @default(0)
-  repostsCount         Int       @default(0)
-  predictionTarget     Decimal?  @db.Decimal(12, 2)
-  predictionDirection  String?   @db.VarChar(10)
-  predictionOutcome    String?   @db.VarChar(10)
+  likesCount           Int                  @default(0)
+  commentsCount        Int                  @default(0)
+  createdAt            DateTime             @default(now())
+  predictionDirection  String?              @db.VarChar(10)
+  predictionTarget     Decimal?             @db.Decimal(12, 2)
+  predictionOutcome    String?              @db.VarChar(10)
   predictionResolvedAt DateTime?
-  createdAt            DateTime  @default(now())
-  pinned               Boolean   @default(false)
-
-  author        User                 @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  comments      Comment[]
-  likes         Like[]
-  bookmarks     Bookmark[]
-  notifications Notification[]
-  imageGenJobs  ImageGenerationJob[]
-  tags          PostTag[]
-  reposts       Repost[]
-  reactions     Reaction[]
-  poll          Poll?
+  imageUrl             String?              @db.VarChar(1000)
+  pinned               Boolean              @default(false)
+  repostsCount         Int                  @default(0)
+  bookmarks            Bookmark[]
+  comments             Comment[]
+  imageGenJobs         ImageGenerationJob[]
+  likes                Like[]
+  notifications        Notification[]
+  poll                 Poll?
+  author               User                 @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  tags                 PostTag[]
+  reactions            Reaction[]
+  reposts              Repost[]
 
   @@index([tickerTag])
   @@index([createdAt(sort: Desc)])
@@ -412,9 +376,8 @@ model Repost {
   userId    String
   postId    String
   createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId])
   @@index([userId])
@@ -435,9 +398,8 @@ model ImageGenerationJob {
   postId          String?
   createdAt       DateTime  @default(now())
   completedAt     DateTime?
-
-  requester User? @relation(fields: [requestedBy], references: [id], onDelete: Cascade)
-  post      Post? @relation(fields: [postId], references: [id], onDelete: SetNull)
+  post            Post?     @relation(fields: [postId], references: [id])
+  requester       User      @relation(fields: [requestedBy], references: [id], onDelete: Cascade)
 
   @@index([status])
   @@index([requestedBy])
@@ -445,18 +407,17 @@ model ImageGenerationJob {
 }
 
 model Comment {
-  id          String   @id @default(cuid())
-  content     String   @db.VarChar(500)
-  authorId    String
-  postId      String?
-  stockTicker String?  @db.VarChar(20)
-  parentId    String?
-  createdAt   DateTime @default(now())
-
+  id            String         @id @default(cuid())
+  content       String         @db.VarChar(500)
+  authorId      String
+  postId        String?
+  stockTicker   String?        @db.VarChar(20)
+  parentId      String?
+  createdAt     DateTime       @default(now())
   author        User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  post          Post?          @relation(fields: [postId], references: [id], onDelete: Cascade)
   parent        Comment?       @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
   replies       Comment[]      @relation("CommentReplies")
+  post          Post?          @relation(fields: [postId], references: [id], onDelete: Cascade)
   notifications Notification[]
 
   @@index([postId])
@@ -472,29 +433,25 @@ model Watchlist {
   userId      String
   stockTicker String
   createdAt   DateTime @default(now())
-
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  stock Stock @relation(fields: [stockTicker], references: [ticker], onDelete: Cascade)
+  stock       Stock    @relation(fields: [stockTicker], references: [ticker], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, stockTicker])
   @@index([userId])
 }
 
-// A user's committed directional thesis on a stock (target/stop/rationale).
-// Breach state is computed on-demand against live price + signal (no cron).
 model StockThesis {
   id                 String   @id @default(cuid())
   userId             String
   ticker             String   @db.VarChar(20)
-  bias               String   @db.VarChar(10) // BULLISH | BEARISH | NEUTRAL
+  bias               String   @db.VarChar(10)
   targetPrice        Decimal? @db.Decimal(12, 2)
   stopLoss           Decimal? @db.Decimal(12, 2)
   rationale          String?  @db.VarChar(280)
-  lastNotifiedBreach String?  @db.VarChar(20)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lastNotifiedBreach String?  @db.VarChar(20)
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, ticker])
   @@index([userId])
@@ -511,9 +468,8 @@ model PortfolioHolding {
   notes       String?  @db.VarChar(200)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  stock Stock @relation(fields: [stockTicker], references: [ticker], onDelete: Cascade)
+  stock       Stock    @relation(fields: [stockTicker], references: [ticker], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, stockTicker])
   @@index([userId])
@@ -524,20 +480,10 @@ model Like {
   id     String @id @default(cuid())
   userId String
   postId String
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId])
-}
-
-enum ReactionType {
-  LIKE
-  BULLISH
-  BEARISH
-  INSIGHTFUL
-  ROCKET
-  FIRE
 }
 
 model Reaction {
@@ -546,9 +492,8 @@ model Reaction {
   postId    String
   type      ReactionType
   createdAt DateTime     @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post      Post         @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId])
   @@index([postId])
@@ -557,47 +502,42 @@ model Reaction {
 }
 
 model Poll {
-  id        String    @id @default(cuid())
-  postId    String    @unique
-  createdAt DateTime  @default(now())
+  id        String       @id @default(cuid())
+  postId    String       @unique
+  createdAt DateTime     @default(now())
   closesAt  DateTime?
-
-  post    Post         @relation(fields: [postId], references: [id], onDelete: Cascade)
-  options PollOption[]
-  votes   PollVote[]
+  post      Post         @relation(fields: [postId], references: [id], onDelete: Cascade)
+  options   PollOption[]
+  votes     PollVote[]
 
   @@index([createdAt(sort: Desc)])
 }
 
 model PollOption {
-  id         String @id @default(cuid())
+  id         String     @id @default(cuid())
   pollId     String
-  text       String @db.VarChar(100)
-  order      Int    @default(0)
-  votesCount Int    @default(0)
-
-  poll  Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
-  votes PollVote[]
+  text       String     @db.VarChar(100)
+  order      Int        @default(0)
+  votesCount Int        @default(0)
+  poll       Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  votes      PollVote[]
 
   @@index([pollId, order])
 }
 
 model PollVote {
-  id        String   @id @default(cuid())
+  id        String     @id @default(cuid())
   optionId  String
   pollId    String
   userId    String
-  createdAt DateTime @default(now())
-
-  option PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
-  poll   Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
-  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+  option    PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  poll      Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, pollId])
   @@index([optionId])
 }
-
-// ── Moderation ───────────────────────────────────────────
 
 model Report {
   id         String       @id @default(cuid())
@@ -607,41 +547,19 @@ model Report {
   reason     ReportReason
   status     ReportStatus @default(PENDING)
   createdAt  DateTime     @default(now())
-
-  reporter User @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+  reporter   User         @relation(fields: [reporterId], references: [id], onDelete: Cascade)
 
   @@index([status])
   @@index([createdAt(sort: Desc)])
 }
-
-enum ReportTarget {
-  POST
-  COMMENT
-}
-
-enum ReportReason {
-  SPAM
-  ABUSE
-  MISINFORMATION
-  OTHER
-}
-
-enum ReportStatus {
-  PENDING
-  REVIEWED
-  DISMISSED
-}
-
-// ── Social ──────────────────────────────────────────────
 
 model Follow {
   id          String   @id @default(cuid())
   followerId  String
   followingId String
   createdAt   DateTime @default(now())
-
-  follower  User @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
-  following User @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+  follower    User     @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
 
   @@unique([followerId, followingId])
   @@index([followingId])
@@ -653,9 +571,8 @@ model Block {
   blockerId String
   blockedId String
   createdAt DateTime @default(now())
-
-  blocker User @relation("Blocking", fields: [blockerId], references: [id], onDelete: Cascade)
-  blocked User @relation("Blocked", fields: [blockedId], references: [id], onDelete: Cascade)
+  blocked   User     @relation("Blocked", fields: [blockedId], references: [id], onDelete: Cascade)
+  blocker   User     @relation("Blocking", fields: [blockerId], references: [id], onDelete: Cascade)
 
   @@unique([blockerId, blockedId])
   @@index([blockedId])
@@ -667,27 +584,11 @@ model StockFollow {
   userId    String
   ticker    String   @db.VarChar(20)
   createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, ticker])
   @@index([ticker])
   @@index([userId])
-}
-
-enum NotificationType {
-  LIKE
-  COMMENT
-  MENTION
-  FOLLOW
-  STOCK_POST
-  REACTION
-  STOCK_ALERT
-  AGENT_ALERT
-  RE_ENGAGE
-  SCREENER_MATCH
-  SITE_ANNOUNCEMENT
-  THESIS_BREACH
 }
 
 model Notification {
@@ -697,15 +598,14 @@ model Notification {
   actorId     String?
   postId      String?
   commentId   String?
-  ticker      String?          @db.VarChar(20)
-  meta        Json?
   read        Boolean          @default(false)
   createdAt   DateTime         @default(now())
-
-  recipient User     @relation("Notifications", fields: [recipientId], references: [id], onDelete: Cascade)
-  actor     User?    @relation("NotificationActions", fields: [actorId], references: [id], onDelete: SetNull)
-  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
-  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  meta        Json?
+  ticker      String?          @db.VarChar(20)
+  actor       User?            @relation("NotificationActions", fields: [actorId], references: [id], onUpdate: NoAction)
+  comment     Comment?         @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  post        Post?            @relation(fields: [postId], references: [id], onDelete: Cascade)
+  recipient   User             @relation("Notifications", fields: [recipientId], references: [id], onDelete: Cascade)
 
   @@index([recipientId, read, createdAt(sort: Desc)])
   @@index([actorId])
@@ -716,36 +616,11 @@ model Bookmark {
   userId    String
   postId    String
   createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId])
   @@index([userId])
-}
-
-enum ArticleStatus {
-  DRAFT
-  PUBLISHED
-}
-
-enum ArticleType {
-  STOCK_ANALYSIS
-  EDUCATIONAL
-  NEWS
-  GENERAL
-  DAILY_SNAPSHOT
-  MOVEMENT_ANALYSIS
-}
-
-// Phase 3 SEO: staged rollout of the 766 unpromoted stocks. A WaveAssignment
-// tracks each ticker from PENDING (ranked) → GENERATED (landing article exists,
-// NOT yet indexed) → PROMOTED (human-reviewed, enters sitemap) / REJECTED.
-enum WaveStatus {
-  PENDING
-  GENERATED
-  PROMOTED
-  REJECTED
 }
 
 model Article {
@@ -753,25 +628,24 @@ model Article {
   slug            String        @unique @db.VarChar(255)
   title           String        @db.VarChar(255)
   excerpt         String        @db.VarChar(500)
-  coverImageUrl   String?       @db.VarChar(1000)
-  content         String        @db.Text
+  content         String
   authorId        String
-  reviewedById    String?
   tags            String[]      @default([])
-  status          ArticleStatus @default(DRAFT)
-  articleType     ArticleType   @default(STOCK_ANALYSIS)
-  aiProvider      String?       @db.VarChar(20)
-  tickerTag       String?       @db.VarChar(20)
-  generationMeta  Json?
-  version         Int           @default(1)
-  lastGeneratedAt DateTime      @default(now())
-  isListed        Boolean       @default(true)
   publishedAt     DateTime      @default(now())
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
-
-  author     User  @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  reviewedBy User? @relation("ReviewedArticles", fields: [reviewedById], references: [id], onDelete: NoAction)
+  aiProvider      String?       @db.VarChar(20)
+  articleType     ArticleType   @default(STOCK_ANALYSIS)
+  generationMeta  Json?
+  status          ArticleStatus @default(DRAFT)
+  tickerTag       String?       @db.VarChar(20)
+  lastGeneratedAt DateTime      @default(now())
+  version         Int           @default(1)
+  isListed        Boolean       @default(true)
+  coverImageUrl   String?       @db.VarChar(1000)
+  reviewedById    String?
+  author          User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  reviewedBy      User?         @relation("ReviewedArticles", fields: [reviewedById], references: [id], onDelete: NoAction)
 
   @@index([reviewedById])
   @@index([publishedAt])
@@ -801,8 +675,7 @@ model AuditLog {
   details   Json?
   ipAddress String?  @db.VarChar(45)
   createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([action])
@@ -820,7 +693,470 @@ model Achievement {
   @@index([userId])
 }
 
-// ── Paper Trading ─────────────────────────────────────────
+model PaperAccount {
+  id             String          @id @default(cuid())
+  userId         String          @unique
+  balance        Decimal         @db.Decimal(16, 2)
+  initialBalance Decimal         @db.Decimal(16, 2)
+  isPublic       Boolean         @default(false)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders         PaperOrder[]
+  positions      PaperPosition[]
+
+  @@index([userId])
+}
+
+model PaperPosition {
+  id              String              @id @default(cuid())
+  accountId       String
+  stockTicker     String
+  side            PaperTradeSide      @default(BUY)
+  entryPrice      Decimal             @db.Decimal(12, 2)
+  quantity        Int
+  status          PaperPositionStatus @default(OPEN)
+  stopLossPrice   Decimal?            @db.Decimal(12, 2)
+  takeProfitPrice Decimal?            @db.Decimal(12, 2)
+  reason          String?             @db.VarChar(500)
+  strategyTags    Json?
+  mood            PaperMood?
+  closePrice      Decimal?            @db.Decimal(12, 2)
+  realizedPnl     Decimal?            @db.Decimal(16, 2)
+  realizedPnlPct  Decimal?            @db.Decimal(8, 2)
+  openedAt        DateTime            @default(now())
+  closedAt        DateTime?
+  account         PaperAccount        @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  stock           Stock               @relation(fields: [stockTicker], references: [ticker], onDelete: Cascade)
+
+  @@index([accountId])
+  @@index([stockTicker])
+  @@index([status])
+}
+
+model PaperOrder {
+  id           String           @id @default(cuid())
+  accountId    String
+  stockTicker  String
+  side         PaperTradeSide
+  orderType    PaperOrderType
+  quantity     Int
+  targetPrice  Decimal          @db.Decimal(12, 2)
+  status       PaperOrderStatus @default(PENDING)
+  positionId   String?
+  reason       String?          @db.VarChar(500)
+  strategyTags Json?
+  mood         PaperMood?
+  filledAt     DateTime?
+  filledPrice  Decimal?         @db.Decimal(12, 2)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  account      PaperAccount     @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  stock        Stock            @relation(fields: [stockTicker], references: [ticker], onDelete: Cascade)
+
+  @@index([accountId])
+  @@index([status])
+  @@index([stockTicker, status])
+}
+
+model AgentJob {
+  id          String    @id @default(cuid())
+  agentType   String    @db.VarChar(50)
+  status      String    @default("pending") @db.VarChar(20)
+  priority    Int       @default(5)
+  payload     Json
+  result      Json?
+  error       String?
+  attempts    Int       @default(0)
+  maxAttempts Int       @default(3)
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  parentJobId String?
+
+  @@index([status, priority])
+  @@index([agentType, status])
+  @@index([createdAt])
+  @@index([parentJobId])
+}
+
+model AgentConfig {
+  id           String   @id @default(cuid())
+  agentType    String   @unique @db.VarChar(50)
+  isEnabled    Boolean  @default(true)
+  systemPrompt String?
+  scheduleCron String?  @db.VarChar(50)
+  scheduleMeta Json?
+  config       Json?
+  updatedAt    DateTime @updatedAt
+  createdAt    DateTime @default(now())
+
+  @@index([agentType])
+}
+
+model CronLog {
+  id           Int      @id @default(autoincrement())
+  jobName      String   @db.VarChar(50)
+  status       String   @db.VarChar(20)
+  startedAt    DateTime @default(now())
+  durationMs   Int
+  result       Json?
+  errorMessage String?
+  triggeredBy  String   @default("cron") @db.VarChar(20)
+
+  @@index([jobName, startedAt(sort: Desc)])
+  @@index([startedAt])
+}
+
+model Question {
+  id              String             @id @default(cuid())
+  slug            String             @unique @db.VarChar(255)
+  question        String             @db.VarChar(500)
+  shortAnswer     String             @db.VarChar(1000)
+  longAnswer      String?
+  format          QuestionFormat     @default(FAQ)
+  category        String             @db.VarChar(50)
+  tags            String[]           @default([])
+  relatedTickers  String[]           @default([])
+  source          QuestionSource     @default(AI_GENERATED)
+  status          QuestionStatus     @default(ANSWERED)
+  submittedById   String?
+  aiProvider      String?            @db.VarChar(20)
+  generationMeta  Json?
+  views           Int                @default(0)
+  helpfulVotes    Int                @default(0)
+  unhelpfulVotes  Int                @default(0)
+  metaDescription String?            @db.VarChar(300)
+  publishedAt     DateTime           @default(now())
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  submittedBy     User?              @relation(fields: [submittedById], references: [id])
+  feedback        QuestionFeedback[]
+
+  @@index([status, category])
+  @@index([status, publishedAt(sort: Desc)])
+  @@index([relatedTickers])
+}
+
+model QuestionFeedback {
+  id         String   @id @default(cuid())
+  questionId String
+  userId     String
+  isHelpful  Boolean
+  createdAt  DateTime @default(now())
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questionId])
+  @@index([questionId])
+}
+
+model Payment {
+  id          String    @id @default(cuid())
+  orderId     String    @unique
+  userId      String?
+  planId      String    @db.VarChar(20)
+  amount      Int
+  status      String    @db.VarChar(20)
+  paymentType String?   @db.VarChar(30)
+  paidAt      DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  user        User?     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([expiresAt])
+}
+
+model SignalFeedback {
+  id         String   @id @default(cuid())
+  ticker     String   @db.VarChar(20)
+  isAccurate Boolean
+  ipHash     String   @db.VarChar(64)
+  createdAt  DateTime @default(now())
+
+  @@index([ticker, createdAt])
+}
+
+model PageView {
+  id          Int      @id @default(autoincrement())
+  path        String   @db.VarChar(255)
+  referrer    String?  @db.VarChar(500)
+  userId      String?
+  ip          String?  @db.VarChar(45)
+  userAgent   String?  @db.VarChar(500)
+  createdAt   DateTime @default(now())
+  isBot       Boolean  @default(false)
+  utmSource   String?  @db.VarChar(32)
+  utmMedium   String?  @db.VarChar(32)
+  utmCampaign String?  @db.VarChar(64)
+  anonId      String?  @db.VarChar(36)
+  user        User?    @relation(fields: [userId], references: [id])
+
+  @@index([path])
+  @@index([createdAt])
+  @@index([path, createdAt(sort: Desc)])
+  @@index([isBot])
+  @@index([anonId, createdAt])
+  @@index([ip, createdAt], where: raw("(ip IS NOT NULL)"))
+  @@index([userId, createdAt(sort: Desc)])
+}
+
+model AppErrorLog {
+  id          Int       @id @default(autoincrement())
+  fingerprint String    @unique @db.VarChar(64)
+  kind        String    @db.VarChar(16)
+  path        String?   @db.VarChar(255)
+  message     String    @db.VarChar(500)
+  count       Int       @default(1)
+  anonId      String?   @db.VarChar(36)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+  fixed       Boolean   @default(false)
+  fixedAt     DateTime? @db.Timestamp(6)
+  fixedNote   String?   @db.VarChar(200)
+
+  @@index([fingerprint])
+  @@index([createdAt(sort: Desc)])
+}
+
+model TelegramWatch {
+  id         String    @id @default(dbgenerated("(gen_random_uuid())::text"))
+  chatId     String
+  ticker     String
+  lang       String?   @default("id")
+  active     Boolean?  @default(true)
+  createdAt  DateTime? @default(now()) @db.Timestamptz(6)
+  anonPrefix String?   @db.VarChar(16)
+
+  @@unique([chatId, ticker])
+  @@index([anonPrefix])
+}
+
+model TelegramSent {
+  chatId String
+  slug   String
+  sentAt DateTime? @default(now()) @db.Timestamptz(6)
+
+  @@id([chatId, slug])
+}
+
+model ShareEvent {
+  id        Int      @id @default(autoincrement())
+  target    String   @db.VarChar(16)
+  context   String   @db.VarChar(16)
+  path      String   @db.VarChar(255)
+  userId    String?
+  ip        String?  @db.VarChar(45)
+  userAgent String?  @db.VarChar(500)
+  isBot     Boolean  @default(false)
+  createdAt DateTime @default(now())
+  anonId    String?  @db.VarChar(36)
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([createdAt])
+  @@index([target, createdAt(sort: Desc)])
+  @@index([context, createdAt])
+  @@index([isBot])
+  @@index([anonId])
+}
+
+model BotInbox {
+  id        Int      @id @default(autoincrement())
+  chatId    String   @db.VarChar(32)
+  fromName  String?  @db.VarChar(80)
+  text      String?
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([chatId, createdAt(sort: Desc)], map: "botinbox_chat_idx")
+}
+
+model AiChatLog {
+  id            Int      @id @default(autoincrement())
+  anonId        String?  @db.VarChar(36)
+  userId        String?
+  route         String   @db.VarChar(16)
+  mode          String?  @db.VarChar(16)
+  ticker        String?  @db.VarChar(12)
+  question      String   @db.VarChar(500)
+  answer        String
+  provider      String?  @db.VarChar(24)
+  latencyMs     Int?
+  followupClick String?  @db.VarChar(200)
+  createdAt     DateTime @default(now())
+  isEval        Boolean  @default(false)
+
+  @@index([createdAt])
+  @@index([route, createdAt(sort: Desc)])
+  @@index([ticker])
+  @@index([isEval, createdAt])
+}
+
+model AiEvalRun {
+  id           Int      @id @default(autoincrement())
+  question     String   @db.VarChar(500)
+  route        String   @db.VarChar(16)
+  ticker       String?  @db.VarChar(12)
+  answer       String
+  routingScore Int
+  qualityScore Int
+  fitScore     Int
+  notes        String?
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model EngagementEvent {
+  id        Int      @id @default(autoincrement())
+  anonId    String   @db.VarChar(36)
+  path      String   @db.VarChar(255)
+  type      String   @db.VarChar(16)
+  label     String?  @db.VarChar(64)
+  valueNum  Int?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([type, createdAt(sort: Desc)])
+  @@index([anonId, createdAt])
+  @@index([path])
+}
+
+model SavedScreener {
+  id              String         @id @default(cuid())
+  userId          String
+  name            String         @db.VarChar(100)
+  description     String?        @db.VarChar(255)
+  filters         Json
+  tradingStyle    String?        @db.VarChar(30)
+  isDefault       Boolean        @default(false)
+  lastRunAt       DateTime?
+  lastResultCount Int?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  alert           ScreenerAlert?
+
+  @@unique([userId, name])
+  @@index([userId])
+}
+
+model ScreenerAlert {
+  id              String        @id @default(cuid())
+  userId          String
+  savedScreenerId String        @unique
+  isEnabled       Boolean       @default(true)
+  frequency       String        @default("daily") @db.VarChar(20)
+  lastTriggeredAt DateTime?
+  lastMatchCount  Int?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  savedScreener   SavedScreener @relation(fields: [savedScreenerId], references: [id], onDelete: Cascade)
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isEnabled, frequency])
+}
+
+/// Persistent IP blocklist (populated on ban / scrape-escalation; checked in proxy.ts).
+model BlockedIp {
+  id           String    @id @default(cuid())
+  ip           String    @unique
+  reason       String    @db.VarChar(255)
+  bannedUserId String?
+  createdAt    DateTime  @default(now())
+  expiresAt    DateTime?
+
+  @@index([ip])
+}
+
+/// Waitlist "Brief Pasar 06:30" (prd-2026-10-16-02). value = email plain
+/// (untuk kirim) atau nomor WA ter-normalisasi (hash utk privasi publik).
+model WaitlistSubscriber {
+  id        Int      @id @default(autoincrement())
+  channel   String   @db.VarChar(8)
+  value     String   @unique @db.VarChar(255)
+  source    String   @default("waitlist-landing") @db.VarChar(64)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum AssetClass {
+  EQUITY
+  CRYPTO
+}
+
+enum ReactionType {
+  LIKE
+  BULLISH
+  BEARISH
+  INSIGHTFUL
+  ROCKET
+  FIRE
+}
+
+enum ReportTarget {
+  POST
+  COMMENT
+}
+
+enum ReportReason {
+  SPAM
+  ABUSE
+  MISINFORMATION
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  DISMISSED
+}
+
+enum NotificationType {
+  LIKE
+  COMMENT
+  MENTION
+  FOLLOW
+  STOCK_POST
+  REACTION
+  STOCK_ALERT
+  AGENT_ALERT
+  RE_ENGAGE
+  SCREENER_MATCH
+  THESIS_BREACH
+  SITE_ANNOUNCEMENT
+}
+
+enum ArticleStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum ArticleType {
+  STOCK_ANALYSIS
+  EDUCATIONAL
+  NEWS
+  GENERAL
+  DAILY_SNAPSHOT
+  MOVEMENT_ANALYSIS
+}
+
+enum WaveStatus {
+  PENDING
+  GENERATED
+  PROMOTED
+  REJECTED
+}
 
 enum PaperTradeSide {
   BUY
@@ -852,135 +1188,6 @@ enum PaperMood {
   NEUTRAL
 }
 
-model PaperAccount {
-  id             String   @id @default(cuid())
-  userId         String   @unique
-  balance        Decimal  @db.Decimal(16, 2)
-  initialBalance Decimal  @db.Decimal(16, 2)
-  isPublic       Boolean  @default(false)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  positions PaperPosition[]
-  orders    PaperOrder[]
-
-  @@index([userId])
-}
-
-model PaperPosition {
-  id          String              @id @default(cuid())
-  accountId   String
-  stockTicker String
-  side        PaperTradeSide      @default(BUY)
-  entryPrice  Decimal             @db.Decimal(12, 2)
-  quantity    Int
-  status      PaperPositionStatus @default(OPEN)
-
-  stopLossPrice   Decimal? @db.Decimal(12, 2)
-  takeProfitPrice Decimal? @db.Decimal(12, 2)
-
-  reason       String?    @db.VarChar(500)
-  strategyTags Json?
-  mood         PaperMood?
-
-  closePrice     Decimal? @db.Decimal(12, 2)
-  realizedPnl    Decimal? @db.Decimal(16, 2)
-  realizedPnlPct Decimal? @db.Decimal(8, 2)
-
-  openedAt DateTime  @default(now())
-  closedAt DateTime?
-
-  account PaperAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  stock   Stock        @relation(fields: [stockTicker], references: [ticker], onDelete: Cascade)
-
-  @@index([accountId])
-  @@index([stockTicker])
-  @@index([status])
-}
-
-model PaperOrder {
-  id          String           @id @default(cuid())
-  accountId   String
-  stockTicker String
-  side        PaperTradeSide
-  orderType   PaperOrderType
-  quantity    Int
-  targetPrice Decimal          @db.Decimal(12, 2)
-  status      PaperOrderStatus @default(PENDING)
-
-  positionId String?
-
-  reason       String?    @db.VarChar(500)
-  strategyTags Json?
-  mood         PaperMood?
-
-  filledAt    DateTime?
-  filledPrice Decimal?  @db.Decimal(12, 2)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  account PaperAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  stock   Stock        @relation(fields: [stockTicker], references: [ticker], onDelete: Cascade)
-
-  @@index([accountId])
-  @@index([status])
-  @@index([stockTicker, status])
-}
-
-model AgentJob {
-  id          String    @id @default(cuid())
-  agentType   String    @db.VarChar(50)
-  status      String    @default("pending") @db.VarChar(20)
-  priority    Int       @default(5)
-  payload     Json
-  result      Json?
-  error       String?   @db.Text
-  attempts    Int       @default(0)
-  maxAttempts Int       @default(3)
-  parentJobId String?
-  startedAt   DateTime?
-  completedAt DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  @@index([status, priority])
-  @@index([agentType, status])
-  @@index([createdAt])
-  @@index([parentJobId])
-}
-
-model AgentConfig {
-  id           String   @id @default(cuid())
-  agentType    String   @unique @db.VarChar(50)
-  isEnabled    Boolean  @default(true)
-  systemPrompt String?  @db.Text
-  scheduleCron String?  @db.VarChar(50)
-  scheduleMeta Json?
-  config       Json?
-  updatedAt    DateTime @updatedAt
-  createdAt    DateTime @default(now())
-
-  @@index([agentType])
-}
-
-model CronLog {
-  id           Int      @id @default(autoincrement())
-  jobName      String   @db.VarChar(50)
-  status       String   @db.VarChar(20)
-  startedAt    DateTime @default(now())
-  durationMs   Int
-  result       Json?
-  errorMessage String?  @db.Text
-  triggeredBy  String   @default("cron") @db.VarChar(20)
-
-  @@index([jobName, startedAt(sort: Desc)])
-  @@index([startedAt])
-}
-
-// --- FAQ / Q&A System ---
-
 enum QuestionSource {
   AI_GENERATED
   USER_SUBMITTED
@@ -996,296 +1203,4 @@ enum QuestionStatus {
 enum QuestionFormat {
   FAQ
   MINI_ARTICLE
-}
-
-model Question {
-  id              String         @id @default(cuid())
-  slug            String         @unique @db.VarChar(255)
-  question        String         @db.VarChar(500)
-  shortAnswer     String         @db.VarChar(1000)
-  longAnswer      String?        @db.Text
-  format          QuestionFormat @default(FAQ)
-  category        String         @db.VarChar(50)
-  tags            String[]       @default([])
-  relatedTickers  String[]       @default([])
-  source          QuestionSource @default(AI_GENERATED)
-  status          QuestionStatus @default(ANSWERED)
-  submittedById   String?
-  aiProvider      String?        @db.VarChar(20)
-  generationMeta  Json?
-  views           Int            @default(0)
-  helpfulVotes    Int            @default(0)
-  unhelpfulVotes  Int            @default(0)
-  metaDescription String?        @db.VarChar(300)
-  publishedAt     DateTime       @default(now())
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-
-  submittedBy User?              @relation(fields: [submittedById], references: [id], onDelete: SetNull)
-  feedback    QuestionFeedback[]
-
-  @@index([status, category])
-  @@index([status, publishedAt(sort: Desc)])
-  @@index([relatedTickers])
-}
-
-model QuestionFeedback {
-  id         String   @id @default(cuid())
-  questionId String
-  userId     String
-  isHelpful  Boolean
-  createdAt  DateTime @default(now())
-
-  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, questionId])
-  @@index([questionId])
-}
-
-model Payment {
-  id          String    @id @default(cuid())
-  orderId     String    @unique
-  userId      String?
-  planId      String    @db.VarChar(20)
-  amount      Int
-  status      String    @db.VarChar(20)
-  paymentType String?   @db.VarChar(30)
-  paidAt      DateTime?
-  expiresAt   DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  @@index([userId])
-  @@index([status])
-  @@index([expiresAt])
-}
-
-// Feedback 👍/👎 pasif pada kartu verdict halaman saham (owner 27 Okt).
-// Anonymous (tanpa login) — dedup via hash IP+UA per ticker+harinya; pola FAQ vote.
-model SignalFeedback {
-  id        String   @id @default(cuid())
-  ticker    String   @db.VarChar(20)
-  isAccurate Boolean
-  ipHash    String   @db.VarChar(64)
-  createdAt DateTime @default(now())
-
-  @@index([ticker, createdAt])
-}
-
-model PageView {
-  id        Int      @id @default(autoincrement())
-  path      String   @db.VarChar(255)
-  referrer  String?  @db.VarChar(500)
-  userId    String?
-  ip        String?  @db.VarChar(45)
-  userAgent String?  @db.VarChar(500)
-  utmSource String?  @db.VarChar(32)
-  utmMedium String?  @db.VarChar(32)
-  utmCampaign String? @db.VarChar(64)
-  anonId    String?  @db.VarChar(36) // ret-qw1: UUID perangkat localStorage "eng_anon" (kompatibel EngagementEvent)
-  isBot     Boolean  @default(false)
-  createdAt DateTime @default(now())
-
-  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  @@index([path])
-  @@index([createdAt])
-  @@index([path, createdAt(sort: Desc)])
-  @@index([isBot])
-  @@index([anonId, createdAt]) // ret-qw1
-}
-
-// Share-button clicks (WhatsApp/X/Telegram/Copy/Story), first-party DB log.
-// target/context are short enum-like strings.
-// tracking-audit G5: error log first-party Rp0 — pengganti Sentry mati.
-model AppErrorLog {
-  id          Int      @id @default(autoincrement())
-  fingerprint String   @unique @db.VarChar(64)
-  kind        String   @db.VarChar(16) // api | client | cron | bot
-  path        String?  @db.VarChar(255)
-  message     String   @db.VarChar(500)
-  count       Int      @default(1)
-  anonId      String?  @db.VarChar(36)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now()) @updatedAt
-
-  @@index([fingerprint])
-  @@index([createdAt(sort: Desc)])
-}
-
-// tracking-audit G3: daftarkan TelegramWatch (sudah live di DB via bot, belum di schema).
-model TelegramWatch {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  chatId      String
-  ticker      String
-  lang        String?  @default("id")
-  active      Boolean  @default(true)
-  // jembatan web→bot: 12-hex pertama anonId dari deep-link ?start=...__a_<12hex>
-  anonPrefix  String?  @db.VarChar(16)
-  createdAt   DateTime @default(now()) @db.Timestamptz(6)
-
-  @@unique([chatId, ticker])
-  @@index([anonPrefix])
-}
-
-// FASE T5: daftarkan TelegramSent (sudah live di DB: PK ("chatId", slug)).
-// Kunci dedup harian digest memakai kind = "digest:YYYY-MM-DD" yang disimpan di kolom slug.
-model TelegramSent {
-  chatId String
-  slug   String
-  sentAt DateTime @default(now()) @db.Timestamptz(6)
-
-  @@id([chatId, slug])
-  @@unique([chatId, slug])
-}
-
-model ShareEvent {
-  id        Int      @id @default(autoincrement())
-  target    String   @db.VarChar(16) // whatsapp | x | telegram | copy | story
-  context   String   @db.VarChar(16) // asset | saham | berita | akademi | community | other
-  path      String   @db.VarChar(255)
-  userId    String?
-  anonId    String?  @db.VarChar(36) // tracking-audit G2: join PageView↔ShareEvent
-  ip        String?  @db.VarChar(45)
-  userAgent String?  @db.VarChar(500)
-  isBot     Boolean  @default(false)
-  createdAt DateTime @default(now())
-
-  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  @@index([createdAt])
-  @@index([target, createdAt(sort: Desc)])
-  @@index([context, createdAt])
-  @@index([isBot])
-}
-
-// Pesan bebas masuk ke bot (admin-aktif 29 Okt: dibalas GLM + dilog utk review owner)
-model BotInbox {
-  id        Int      @id @default(autoincrement())
-  chatId    String   @db.VarChar(32)
-  fromName  String?  @db.VarChar(80)
-  text      String?
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-
-  @@index([chatId, createdAt(sort: Desc)])
-}
-
-// Engagement telemetry: dwell/scroll/CTA beacons (no PII — anonId is a client-side uuid).
-// Flywheel Tanya AI (owner 30 Okt: "looping terus agar enhance berkembang") —
-// log tiap QA: bahan eval harian (agent enhancer), cluster pertanyaan (RAG gap), dampak product.
-model AiChatLog {
-  id            Int      @id @default(autoincrement())
-  anonId        String?  @db.VarChar(36)
-  userId        String?
-  route         String   @db.VarChar(16) // stock | screener
-  mode          String?  @db.VarChar(16) // ask | summarize
-  ticker        String?  @db.VarChar(12)
-  question      String   @db.VarChar(500)
-  answer        String   @db.Text
-  provider      String?  @db.VarChar(24)
-  latencyMs     Int?
-  followupClick String?  @db.VarChar(200) // chip label yang diklik user (kualitas jawaban signal)
-  isEval        Boolean  @default(false)
-  createdAt     DateTime @default(now())
-
-  @@index([createdAt])
-  @@index([route, createdAt(sort: Desc)])
-  @@index([ticker])
-  @@index([isEval, createdAt])
-}
-
-// Skor evaluasi Tanya AI oleh judge LLM (owner 30 Okt) — tren kualitas harian.
-model AiEvalRun {
-  id            Int      @id @default(autoincrement())
-  question      String   @db.VarChar(500)
-  route         String   @db.VarChar(16)
-  ticker        String?  @db.VarChar(12)
-  answer        String   @db.Text
-  routingScore  Int
-  qualityScore  Int
-  fitScore      Int
-  notes         String?  @db.Text
-  createdAt     DateTime @default(now())
-
-  @@index([createdAt])
-}
-
-model EngagementEvent {
-  id        Int      @id @default(autoincrement())
-  anonId    String   @db.VarChar(36)
-  path      String   @db.VarChar(255)
-  type      String   @db.VarChar(16) // dwell_tick | scroll_max | cta_click
-  label     String?  @db.VarChar(64) // star_add | preset_copy | radar_open | preset_save
-  valueNum  Int? // detik utk dwell_tick, persen utk scroll_max
-  createdAt DateTime @default(now())
-
-  @@index([createdAt])
-  @@index([type, createdAt(sort: Desc)])
-  @@index([anonId, createdAt])
-  @@index([path])
-}
-
-model SavedScreener {
-  id              String    @id @default(cuid())
-  userId          String
-  name            String    @db.VarChar(100)
-  description     String?   @db.VarChar(255)
-  filters         Json
-  tradingStyle    String?   @db.VarChar(30)
-  isDefault       Boolean   @default(false)
-  lastRunAt       DateTime?
-  lastResultCount Int?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-
-  user  User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  alert ScreenerAlert?
-
-  @@unique([userId, name])
-  @@index([userId])
-}
-
-model ScreenerAlert {
-  id              String    @id @default(cuid())
-  userId          String
-  savedScreenerId String    @unique
-  isEnabled       Boolean   @default(true)
-  frequency       String    @default("daily") @db.VarChar(20)
-  lastTriggeredAt DateTime?
-  lastMatchCount  Int?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  savedScreener SavedScreener @relation(fields: [savedScreenerId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([isEnabled, frequency])
-}
-
-/// Persistent IP blocklist (populated on ban / scrape-escalation; checked in proxy.ts).
-model BlockedIp {
-  id           String    @id @default(cuid())
-  ip           String    @unique
-  reason       String    @db.VarChar(255)
-  bannedUserId String?
-  createdAt    DateTime  @default(now())
-  expiresAt    DateTime?
-
-  @@index([ip])
-}
-
-/// Waitlist "Brief Pasar 06:30" (prd-2026-10-16-02). value = email plain
-/// (untuk kirim) atau nomor WA ter-normalisasi (hash utk privasi publik).
-model WaitlistSubscriber {
-  id        Int      @id @default(autoincrement())
-  channel   String   @db.VarChar(8) // "wa" | "email"
-  value     String   @unique @db.VarChar(255)
-  source    String   @default("waitlist-landing") @db.VarChar(64)
-  createdAt DateTime @default(now())
-
-  @@index([createdAt])
 }

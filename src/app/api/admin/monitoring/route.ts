@@ -42,7 +42,8 @@ async function getErrors() {
     const rows = await prisma.appErrorLog.findMany({
       orderBy: { updatedAt: "desc" },
       take: 20,
-      select: { kind: true, path: true, message: true, count: true, createdAt: true, updatedAt: true },
+      where: { fixed: false }, // fix-2026-11-09: hanya error AKTIF; yang sudah difix masuk riwayat (kolom fixed/fixedAt/fixedNote)
+      select: { kind: true, path: true, message: true, count: true, createdAt: true, updatedAt: true, fixed: true, fixedAt: true, fixedNote: true },
     });
     return rows;
   } catch {
