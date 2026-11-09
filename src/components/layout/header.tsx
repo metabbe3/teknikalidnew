@@ -126,6 +126,23 @@ export function Header() {
               </Link>
             );
           })}
+          <Link
+            href="/agent"
+            aria-current={isActive(pathname, "/agent") ? "page" : undefined}
+            className={`relative px-3 py-1.5 rounded-md transition-colors duration-150 ${
+              isActive(pathname, "/agent")
+                ? "text-accent font-semibold"
+                : "text-text-secondary hover:text-text-primary hover:bg-bg-hover/50"
+            }`}
+          >
+            Agent
+            {isActive(pathname, "/agent") && (
+              <span
+                aria-hidden
+                className="absolute left-2 right-2 -bottom-[7px] h-[2.5px] rounded-full bg-accent"
+              />
+            )}
+          </Link>
 
           {/* Tools dropdown (demoted: compare, paper-trading) */}
           <div className="relative">
@@ -229,6 +246,18 @@ export function Header() {
               </Link>
             );
           })}
+          <Link
+            href="/agent"
+            onClick={() => setMenuOpen(false)}
+            className={`block py-2.5 px-3 rounded-lg text-sm font-medium transition-colors border-l-[3px] ${
+              isActive(pathname, "/agent")
+                ? "text-accent font-semibold bg-accent/10 border-accent"
+                : "text-text-secondary hover:text-text-primary hover:bg-bg-hover border-transparent"
+            }`}
+            aria-current={isActive(pathname, "/agent") ? "page" : undefined}
+          >
+            Agent
+          </Link>
           {/* product-audit-2026-10-29 QW1: Tools buat SEMUA pengunjung (dulu cuma login;
               62,3% trafik mobile eksternal tak bisa akses /pasar dkk). Label = bahasa awam. */}
           <button

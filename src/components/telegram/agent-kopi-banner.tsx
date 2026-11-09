@@ -8,33 +8,36 @@ import Link from "next/link";
  */
 export function AgentKopiBanner({ source = "web" }: { source?: string }) {
   return (
-    <aside className="rounded-xl border border-border bg-bg-card p-4 sm:p-5">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-        <div className="min-w-0 flex-1">
+    <aside className="rounded-xl border border-border bg-bg-card p-4 sm:p-5" data-source={source}>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <div className="min-w-0 flex-1 space-y-1.5">
           <p className="font-mono text-xs text-text-tertiary">BOT TELEGRAM · @TEKNIKALIDAGENTBOT</p>
-          <p className="mt-1 text-sm font-semibold text-text-primary">
+          <p className="text-sm font-semibold text-text-primary">
             Malas cek grafik satu-satu? Tanya level support &amp; pasang alert harga langsung di Telegram.
           </p>
-          <p className="mt-0.5 text-xs text-text-secondary">
-            Ketik kode saham (misal: BBCA), bot langsung kirim ringkasan teknikal dan pantau target harga Anda.
+          <p className="text-xs font-semibold text-text-primary">
+            Gratis 3x/hari · Night Trader Rp29rb/bln · Pro Rp79rb/bln
           </p>
+          <div className="space-y-0.5 text-xs text-text-secondary">
+            <p>
+              <span className="font-medium text-text-primary">Night Trader:</span> alert harga &amp; sinyal sore
+            </p>
+            <p>
+              <span className="font-medium text-text-primary">Pro:</span> semua fitur + backtest &amp; evaluasi
+            </p>
+          </div>
         </div>
         <div className="flex shrink-0 flex-col gap-2 sm:items-end">
-          <p className="text-xs text-text-secondary">
-            Coba 3 chat gratis · Paket bulanan{" "}
-            <span className="line-through text-text-tertiary">Rp29.000</span>{" "}
-            <span className="font-semibold text-text-primary">Rp14.900</span>
-          </p>
           <Link
-            href={`/agent?from=kopi_${source}`}
+            href="/agent"
             className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent/90"
           >
-            Coba Bot Telegram
+            Lihat Agent
           </Link>
         </div>
       </div>
-      <p className="mt-2 text-xs text-text-tertiary">
-        Semua data dan angka di web ini tetap gratis — yang berbayar hanya asisten-nya.
+      <p className="mt-2.5 text-xs text-text-tertiary">
+        Semua data dan angka di web ini tetap gratis, yang berbayar hanya asisten di Telegram.
       </p>
     </aside>
   );

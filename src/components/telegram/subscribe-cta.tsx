@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, useSyncExternalStore } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 const emptySubscribe = () => () => {};
 
@@ -124,5 +126,425 @@ export function TelegramSubscribeCta({
         Pantau via Telegram
       </a>
     </aside>
+  );
+}
+
+export type AgentMembership = {
+  email?: string;
+  chatBound: boolean;
+  chatId: string | null;
+  tier: string;
+  status: string | null;
+  periodEnd: string | null;
+  turnsUsed: number;
+  maxTurns: number;
+  promoUsed: boolean;
+};
+
+const AGENT_BOT_URL = "https://t.me/TeknikalidAgentBot";
+
+type AgentMembershipCtx = {
+  mem: AgentMembership | null;
+  loading: boolean;
+  bindUrl: string | null;
+  payingTier: "basic" | "pro" | null;
+  paying: boolean;
+  msg: string | null;
+  connected: boolean;
+  startBind: () => Promise<void>;
+  checkout: (tier: "basic" | "pro") => Promise<void>;
+};
+
+const AgentCtx = createContext<AgentMembershipCtx | null>(null);
+
+function useAgentCtx(): AgentMembershipCtx {
+  const ctx = useContext(AgentCtx);
+  if (!ctx) {
+    throw new Error("useAgentCtx must be used within AgentMembershipProvider");
+  }
+  return ctx;
+}
+
+export function AgentMembershipProvider({ children }: { children: React.ReactNode }) {
+  const [mem, setMem] = useState<AgentMembership | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [bindUrl, setBindUrl] = useState<string | null>(null);
+  const [payingTier, setPayingTier] = useState<"basic" | "pro" | null>(null);
+  const paying = payingTier !== null;
+  const [msg, setMsg] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    try {
+      const r = await fetch("/api/agent/membership");
+      if (r.ok) setMem(await r.json());
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const startBind = async () => {
+    setMsg(null);
+    const r = await fetch("/api/agent/bind", { method: "POST" });
+    if (r.ok) {
+      const j = await r.json();
+      setBindUrl(j.bindUrl);
+    } else if (r.status === 401) {
+      window.location.href = "/auth/register?next=/agent&cta=bind";
+      return;
+    } else {
+      setMsg("Gagal membuat token — coba login ulang.");
+    }
+  };
+
+  const checkout = async (tier: "basic" | "pro") => {
+    setPayingTier(tier);
+    setMsg(null);
+    try {
+      const r = await fetch("/api/agent/checkout", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ tier, promo: !mem?.promoUsed }),
+      });
+      if (r.status === 401) {
+        window.location.href = "/auth/register?next=/agent&cta=pay";
+        return;
+      }
+      const j = await r.json();
+      if (r.status === 409 && j.error === "BINDING_REQUIRED") {
+        setMsg("Hubungkan Telegram dulu (langkah 2 di atas) — 10 detik, tanpa isi apa-apa.");
+        return;
+      }
+      if (j.redirect_url) {
+        window.location.href = j.redirect_url as string;
+        return;
+      }
+      setMsg(j.message ?? "Checkout gagal — coba beberapa saat lagi.");
+    } finally {
+      setPayingTier(null);
+    }
+  };
+
+  const connected = !loading && Boolean(mem?.chatBound);
+
+  return (
+    <AgentCtx.Provider
+      value={{
+        mem,
+        loading,
+        bindUrl,
+        payingTier,
+        paying,
+        msg,
+        connected,
+        startBind,
+        checkout,
+      }}
+    >
+      {children}
+    </AgentCtx.Provider>
+  );
+}
+
+export function AgentHeroCta() {
+  const { connected, bindUrl, startBind } = useAgentCtx();
+  return (
+    <div className="flex flex-wrap gap-3 pt-1">
+      {connected ? (
+        <Button onClick={startBind} className="gap-2" size="lg">
+          {bindUrl ? "Buka Telegram & Mulai" : "Hubungkan Telegram — 1 Klik"}
+        </Button>
+      ) : bindUrl ? (
+        <a href={bindUrl} target="_blank" rel="noopener noreferrer">
+          <Button className="gap-2" size="lg">Buka Telegram &amp; Mulai</Button>
+        </a>
+      ) : (
+        <Button onClick={startBind} className="gap-2" size="lg">
+          Hubungkan Telegram — 1 Klik
+        </Button>
+      )}
+      <a href="#paket">
+        <Button variant="outline" size="lg">Lihat Paket Mulai Rp14.900</Button>
+      </a>
+    </div>
+  );
+}
+
+export function AgentConnectionCard() {
+  const { loading, mem, bindUrl, startBind } = useAgentCtx();
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">
+          {loading
+            ? "Memuat status akun…"
+            : mem?.chatBound
+              ? "Akun Telegram Anda sudah terhubung"
+              : bindUrl
+                ? "Langkah 2: Buka Telegram & Mulai"
+                : "Langkah 1: Masuk atau Daftar Akun Terlebih Dahulu"}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {loading ? (
+          <p className="text-sm text-text-secondary">Memuat…</p>
+        ) : mem?.chatBound ? (
+          <div className="space-y-2">
+            <p className="text-sm text-text-primary font-medium">
+              Terhubung (chat {mem.chatId}). Kuota tanya bisa dicek langsung dari bot.
+            </p>
+            <a href={`${AGENT_BOT_URL}?start=web_agentpage`} target="_blank" rel="noopener noreferrer">
+              <Button variant="outline" className="gap-2">Buka Bot di Telegram</Button>
+            </a>
+          </div>
+        ) : bindUrl ? (
+          <div className="space-y-2">
+            <p className="text-sm">
+              Satu klik: buka Telegram, tekan <b>Start</b> — akun langsung terikat dan
+              onboarding bot langsung jalan.
+            </p>
+            <a href={bindUrl} target="_blank" rel="noopener noreferrer">
+              <Button className="gap-2">Buka Telegram &amp; Mulai</Button>
+            </a>
+            <p className="text-xs text-text-tertiary">
+              Link berlaku 15 menit. Akun email kamu yang mengikat langganan Telegram-mu.
+            </p>
+          </div>
+        ) : (
+          <>
+            <p className="text-sm text-text-secondary">
+              Daftar gratis dengan email — setelah itu kembali ke halaman ini dan
+              hubungkan Telegram dalam 1 klik.
+            </p>
+            <Button onClick={startBind} className="gap-2">
+              Daftar Akun Gratis / Hubungkan Telegram — 1 Klik
+            </Button>
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+export function AgentPricingCards() {
+  const { mem, paying, payingTier, msg, checkout } = useAgentCtx();
+  const tierName = (t: string | null | undefined) =>
+    t === "basic" ? "Night Trader" : t === "pro" ? "Pro" : t ? t.toUpperCase() : "-";
+
+  return (
+    <>
+      {mem?.status === "paid" ? (
+        <Card>
+          <CardContent className="space-y-1 pt-6 text-sm">
+            <p className="font-semibold">Paket aktif: {tierName(mem.tier)}</p>
+            {mem.periodEnd && (
+              <p className="text-text-secondary">
+                Aktif s/d {new Date(mem.periodEnd).toLocaleDateString("id-ID")}
+              </p>
+            )}
+            <p className="text-text-secondary">
+              Kuota bulan ini: {mem.turnsUsed}/{mem.maxTurns} turn
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {/* Night Trader — highlight */}
+          <div className="relative space-y-3 rounded-xl border-2 border-accent bg-bg-card p-5">
+            <span className="absolute -top-2.5 left-4 rounded-full bg-accent px-2.5 py-0.5 text-[11px] font-semibold text-white">
+              PILIHAN UTAMA
+            </span>
+            <p className="font-semibold text-text-primary">Night Trader</p>
+            <p className="text-sm text-text-secondary">
+              Untuk trader swing dan pekerja kantoran yang menyusun rencana trading tiap malam.
+            </p>
+            {mem?.promoUsed ? (
+              <p className="text-2xl font-bold text-text-primary">
+                Rp29.000
+                <span className="text-xs font-normal text-text-tertiary"> /bulan</span>
+              </p>
+            ) : (
+              <p className="text-2xl font-bold text-text-primary">
+                <span className="mr-1.5 text-base font-medium text-text-tertiary line-through">Rp29.000</span>
+                Rp14.900
+                <span className="text-xs font-normal text-text-tertiary"> /bulan pertama</span>
+              </p>
+            )}
+            <p className="text-xs text-text-secondary">
+              Bulan berikutnya Rp29.000/bulan. Kurang dari Rp1.000/hari — lebih murah dari parkir motor.
+            </p>
+            <ul className="space-y-1.5 text-sm text-text-secondary">
+              <li>150 kuota tanya bot per bulan (rata-rata 7x tanya saham tiap hari bursa)</li>
+              <li>Simpan hingga 10 saham di watchlist pantauan</li>
+              <li>10 alert harga aktif otomatis via Telegram</li>
+              <li>Ringkasan support, resistance, tren, dan volume harian</li>
+            </ul>
+            <Button
+              onClick={() => checkout("basic")}
+              disabled={paying || !mem?.chatBound}
+              className="w-full"
+            >
+              {payingTier === "basic"
+                ? "Memproses Night Trader…"
+                : mem?.promoUsed
+                  ? "Langganan Night Trader"
+                  : "Ambil Bulan Pertama Rp14.900"}
+            </Button>
+          </div>
+
+          {/* Pro */}
+          <div className="space-y-3 rounded-xl border border-border bg-bg-card p-5">
+            <p className="font-semibold text-text-primary">Pro</p>
+            <p className="text-sm text-text-secondary">
+              Untuk trader aktif yang memantau banyak saham dan pergerakan sektor setiap hari.
+            </p>
+            {mem?.promoUsed ? (
+              <p className="text-2xl font-bold text-text-primary">
+                Rp79.000
+                <span className="text-xs font-normal text-text-tertiary"> /bulan</span>
+              </p>
+            ) : (
+              <p className="text-2xl font-bold text-text-primary">
+                <span className="mr-1.5 text-base font-medium text-text-tertiary line-through">Rp79.000</span>
+                Rp29.000
+                <span className="text-xs font-normal text-text-tertiary"> /bulan pertama</span>
+              </p>
+            )}
+            <p className="text-xs text-text-secondary">Bulan berikutnya Rp79.000/bulan.</p>
+            <ul className="space-y-1.5 text-sm text-text-secondary">
+              <li>400 kuota tanya bot per bulan (leluasa sekitar 20x tiap hari bursa)</li>
+              <li>Simpan hingga 25 saham di watchlist pantauan</li>
+              <li>25 alert harga aktif otomatis via Telegram</li>
+              <li>Cocok untuk cek banyak saham sekaligus saat jam pasar buka</li>
+            </ul>
+            <Button
+              onClick={() => checkout("pro")}
+              disabled={paying || !mem?.chatBound}
+              variant="outline"
+              className="w-full"
+            >
+              {payingTier === "pro"
+                ? "Memproses Pro…"
+                : mem?.promoUsed
+                  ? "Langganan Pro"
+                  : "Ambil Pro Bulan Pertama Rp29.000"}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {!mem?.chatBound && mem?.status !== "paid" && (
+        <p className="text-xs text-amber-600 dark:text-amber-400">
+          Hubungkan Telegram dulu (Langkah 2) untuk membayar.
+        </p>
+      )}
+      {msg && <p className="text-sm text-rose-600">{msg}</p>}
+    </>
+  );
+}
+
+export function AgentComplainBox() {
+  const { mem } = useAgentCtx();
+  const defaultEmail = mem?.email ?? "";
+  const [email, setEmail] = useState(defaultEmail);
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [text, setText] = useState("");
+  const [sent, setSent] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (!emailTouched && defaultEmail) {
+      setEmail(defaultEmail);
+    }
+  }, [defaultEmail, emailTouched]);
+
+  const submit = async () => {
+    if (text.trim().length < 5) return;
+    setBusy(true);
+    try {
+      const trimmedEmail = email.trim();
+      const r = await fetch("/api/agent/complain", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          message: text,
+          ...(trimmedEmail ? { email: trimmedEmail } : {}),
+        }),
+      });
+      if (r.ok) {
+        setSent(true);
+        setText("");
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+  if (sent) {
+    return (
+      <div className="rounded-xl border border-border bg-bg-card p-4 text-sm text-text-secondary">
+        ✅ Keluhanmu tercatat. Kami balas via email/chat Telegram terikat maks 24 jam.
+        <button className="ml-2 underline hover:text-accent" onClick={() => setSent(false)}>
+          kirim lagi
+        </button>
+      </div>
+    );
+  }
+  return (
+    <div className="rounded-xl border border-border bg-bg-card p-4">
+      <p className="text-sm font-medium text-text-primary">Ada masalah? Sampaikan di sini</p>
+      <p className="mt-1 text-xs text-text-tertiary">
+        Masalah pembayaran, jawaban bot, apa pun — langsung ke tim, tanpa bingung harus ke mana.
+        (Di bot Telegram juga bisa: ketik <code>/keluhan</code>)
+      </p>
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => {
+          setEmailTouched(true);
+          setEmail(e.target.value);
+        }}
+        maxLength={160}
+        placeholder="Email untuk balasan (opsional)…"
+        className="mt-3 w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text-primary outline-none focus:border-accent"
+      />
+      <textarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        rows={3}
+        maxLength={2000}
+        placeholder="Tulis keluhanmu…"
+        className="mt-2 w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text-primary outline-none focus:border-accent"
+      />
+      <div className="mt-2 flex justify-end">
+        <Button size="sm" onClick={submit} disabled={busy || text.trim().length < 5}>
+          {busy ? "Mengirim…" : "Kirim keluhan"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+export function AgentClosingCta() {
+  const { connected, bindUrl, mem, paying, startBind, checkout } = useAgentCtx();
+  return (
+    <div className="flex flex-wrap justify-center gap-3">
+      {connected || bindUrl ? (
+        <a href={bindUrl ?? `${AGENT_BOT_URL}?start=web_agentpage`} target="_blank" rel="noopener noreferrer">
+          <Button className="gap-2" size="lg">Hubungkan Telegram (1 Klik)</Button>
+        </a>
+      ) : (
+        <Button onClick={startBind} className="gap-2" size="lg">
+          Daftar &amp; Coba 3 Chat Gratis
+        </Button>
+      )}
+      {mem?.status !== "paid" && (
+        <Button onClick={() => checkout("basic")} variant="outline" size="lg" disabled={paying || !mem?.chatBound}>
+          Ambil Night Trader Rp14.900
+        </Button>
+      )}
+    </div>
   );
 }

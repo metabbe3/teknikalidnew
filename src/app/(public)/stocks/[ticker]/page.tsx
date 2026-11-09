@@ -31,6 +31,7 @@ import { isHscTicker } from "@/lib/hsc-stocks";
 import { RegistrationInlinePrompt } from "@/components/ui/registration-inline-prompt";
 import { StockActionBadge } from "@/components/stock/stock-action-badge";
 import { RepeatVisitHint } from "@/components/stock/repeat-visit-hint";
+import { QuickVerdictBox } from "@/components/stock/signal-verdict";
 import { VerdictFeedback } from "@/components/stock/verdict-feedback";
 import { AlertPreviewCard } from "@/components/stock/alert-preview-card";
 import { PresenceBadge } from "@/components/stock/presence-badge";
@@ -779,6 +780,16 @@ export default async function StockDetailPage({
               {close === null && <RepeatVisitHint ticker={ticker} />}
             </div>
 
+            {/* Quick Verdict Box (data-verdict="quick" · Tren Naik / Tren Turun / Sideways) — langsung di bawah harga, di atas Trading Plan */}
+            <QuickVerdictBox
+              close={close}
+              sma20={indicators?.sma20 ?? null}
+              sma50={indicators?.sma50 ?? null}
+              sma200={indicators?.sma200 ?? null}
+              rsi14={indicators?.rsi14 ?? null}
+              macdHist={indicators?.macdHist ?? null}
+            />
+
             {/* Guest Quota Provider (W1a, Freemium 3 Saham) */}
             <GuestQuotaProvider ticker={stripJk(ticker)} isAuthed={isAuthed}>
             <div className={`mt-4 ${tradingPlan ? "grid grid-cols-1 lg:grid-cols-2 gap-4 items-start" : "space-y-4"}`}>
@@ -809,7 +820,7 @@ export default async function StockDetailPage({
                       className="flex min-h-[44px] items-center justify-between rounded-lg border border-border/80 bg-bg-card/70 px-3 py-2 text-xs font-medium text-text-secondary hover:text-accent hover:border-accent/40 transition-colors"
                     >
                       <span className="flex items-center gap-1.5 truncate">
-                        <span>🤖 Tanya AI soal {stripJk(ticker)} · gratis 3x →</span>
+                        <span>🤖 Tanya AI soal {stripJk(ticker)} · gratis 3x/hari →</span>
                       </span>
                     </a>
                     {/* Panduan cepat: 3 tombol prompt chips di dalam collapse <details> default tertutup */}

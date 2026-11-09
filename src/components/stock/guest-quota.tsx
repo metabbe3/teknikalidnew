@@ -321,7 +321,7 @@ export function GuestSignalBreakdownGate({
         <span className="flex items-center gap-1.5 truncate">
           <span aria-hidden="true">🤖</span>
           <span>
-            Tetap mau analisa {cleanTicker || "saham ini"}? Tanya AI gratis 3x →
+            Tetap mau analisa {cleanTicker || "saham ini"}? Tanya AI gratis 3x/hari →
           </span>
         </span>
       </a>
