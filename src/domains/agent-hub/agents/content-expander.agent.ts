@@ -1,6 +1,7 @@
 import { BaseAgent, type ChainedJobSpec } from "./base-agent";
 import type { AgentType, AgentJobPayload, AgentJobResult } from "../agent-hub.types";
 import { prisma } from "@/lib/prisma";
+import { pingIndexNow } from "@/lib/indexnow";
 
 /**
  * Content Expander
@@ -292,6 +293,9 @@ Format: tulis langsung konten HTML (pakai tag h2, p, ul, li, strong, table)`,
             aiProvider: "anthropic",
           },
         });
+        // IndexNow: submit edukasi baru (jalur ini create PUBLISHED langsung,
+        // di luar articleRepository) — fire-and-forget, /akademi/<slug>.
+        void pingIndexNow([`/akademi/${slug}`]);
         generated.push(slug);
       } catch (e) {
         errors.push(`Error: ${topic} — ${e instanceof Error ? e.message : "unknown"}`);
