@@ -156,17 +156,17 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
 
   return (
     <>
-      {/* ── Pill mobile: Cari (accent) · Bagikan · Tanya AI — tap target 44px (h-11) ── */}
+      {/* ── Pill mobile: Cari (accent) · Bagikan · Tanya AI — tap target 44px (h-11), nowrap ── */}
       <div
         aria-label="Aksi cepat saham"
-        className={`md:hidden fixed z-40 left-1/2 -translate-x-1/2 flex items-center gap-1 p-1 rounded-full bg-bg-card/95 backdrop-blur border border-border depth-shadow transition-all duration-300 ${pillPos} ${
+        className={`md:hidden fixed z-40 left-1/2 -translate-x-1/2 flex items-center gap-0.5 p-1 rounded-full bg-bg-card/95 backdrop-blur border border-border depth-shadow transition-all duration-300 ${pillPos} ${
           shown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
         }`}
       >
         <button
           onClick={() => setSearch(true)}
           data-engagement="fab_search_click"
-          className="flex items-center justify-center gap-1.5 h-11 px-4 rounded-full bg-accent text-white text-sm font-semibold transition-all press-scale shadow-sm shadow-accent/20"
+          className="flex items-center justify-center gap-1 h-11 px-3.5 rounded-full bg-accent text-white text-[13px] font-semibold whitespace-nowrap transition-all press-scale shadow-sm shadow-accent/20"
         >
           <Search className="h-4 w-4" />
           Cari
@@ -174,7 +174,7 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
         <button
           onClick={() => setSheet(true)}
           data-engagement="fab_share_click"
-          className="flex items-center justify-center gap-1.5 h-11 px-4 rounded-full text-sm font-medium text-text-primary hover:bg-bg-hover transition-all press-scale"
+          className="flex items-center justify-center gap-1 h-11 px-3.5 rounded-full text-[13px] font-medium text-text-primary whitespace-nowrap hover:bg-bg-hover transition-all press-scale"
         >
           <Share2 className="h-4 w-4 text-accent" />
           Bagikan
@@ -184,7 +184,7 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
           target="_blank"
           rel="noopener noreferrer"
           data-engagement="fab_ask_agent_click"
-          className="flex items-center justify-center gap-1.5 h-11 px-4 rounded-full text-sm font-medium text-text-primary hover:bg-bg-hover transition-all press-scale"
+          className="flex items-center justify-center gap-1 h-11 px-3.5 rounded-full text-[13px] font-medium text-text-primary whitespace-nowrap hover:bg-bg-hover transition-all press-scale"
         >
           <Bot className="h-4 w-4 text-accent" />
           Tanya AI
