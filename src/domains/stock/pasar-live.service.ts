@@ -79,7 +79,7 @@ export interface PasarSnapshot {
   ihsg: PasarIhsg;
   watchlist: PasarWatchlistItem[];
   topSignals: PasarTopSignal[];
-  foreign: { netBuy: PasarForeignItem[]; netSell: PasarForeignItem[] };
+  foreign: { netBuy: PasarForeignItem[]; netSell: PasarForeignItem[]; flowDate?: Date | null };
   gainers: PasarMover[];
   losers: PasarMover[];
   news: PasarNewsItem[];
@@ -281,12 +281,25 @@ async function getMovers(sessionDate: Date): Promise<{ gainers: PasarMover[]; lo
  */
 const FOREIGN_MAX = 10;
 
-async function getForeignFlow(sessionDate: Date): Promise<{ netBuy: PasarForeignItem[]; netSell: PasarForeignItem[] }> {
-  const rows = await stockRepository.findForeignFlowsByDate(sessionDate, 1000);
+async function getForeignFlow(sessionDate: Date): Promise<{ netBuy: PasarForeignItem[]; netSell: PasarForeignItem[]; flowDate: Date | null }> {
+  // fix-2026-11-09: sesi harga terbaru (mis. Senin ~16:30) bisa belum punya ForeignFlow
+  // (sync IDX TradingSummary jalan malam) → render "0 emiten" jelek. Fallback: pakai
+  // sesi terakhir yang PUNYA data asing + tanggal itu yang ditampilkan (jujur & berguna).
+  let rows = await stockRepository.findForeignFlowsByDate(sessionDate, 1000);
+  let flowDate: Date | null = sessionDate;
+  if (rows.length === 0) {
+    const lastFlowDate = await stockRepository.findLatestForeignFlowDate();
+    if (lastFlowDate) {
+      flowDate = lastFlowDate;
+      rows = await stockRepository.findForeignFlowsByDate(lastFlowDate, 1000);
+    }
+  }
   // Close sesi untuk konversi lembar → Rupiah (satu batch query via repository).
+  // fix-2026-11-09: pakai flowDate (bisa != sessionDate saat fallback sesi sebelumnya).
+  const closeDate = flowDate ?? sessionDate;
   const closeByStock = await stockRepository.findClosesByStockIdsAndDate(
     rows.map((r) => r.stockId),
-    sessionDate,
+    closeDate,
   );
   const items = rows
     .map((r) => {
@@ -301,6 +314,7 @@ async function getForeignFlow(sessionDate: Date): Promise<{ netBuy: PasarForeign
   return {
     netBuy: items.slice(0, FOREIGN_MAX),
     netSell: items.slice(-FOREIGN_MAX).reverse(),
+    flowDate,
   };
 }
 
@@ -444,7 +458,7 @@ export const pasarLiveService = {
     const cached = stockCache.get(YESTERDAY_RECAP_CACHE_KEY) as {
       ihsg: PasarIhsg;
       topSignals: PasarTopSignal[];
-      foreign: { netBuy: PasarForeignItem[]; netSell: PasarForeignItem[] };
+      foreign: { netBuy: PasarForeignItem[]; netSell: PasarForeignItem[]; flowDate?: Date | null };
       gainers: PasarMover[];
       losers: PasarMover[];
       sessionDate: string | null;

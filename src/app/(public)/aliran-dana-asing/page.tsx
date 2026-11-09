@@ -41,9 +41,17 @@ export default async function AliranDanaAsingPage() {
   }
   const netBuy = snap?.foreign.netBuy ?? [];
   const netSell = snap?.foreign.netSell ?? [];
-  const session = snap?.sessionDate
-    ? new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric" }).format(new Date(snap.sessionDate))
+  // fix-2026-11-09: tanggal ASING bisa beda dari tanggal harga (sore pra-sync IDX:
+  // harga live hari ini sudah masuk, data asing masih sesi kemarin). Tampilkan
+  // tanggal data asing yang benar + hint jujur.
+  const flowSession = snap?.foreign.flowDate
+    ? new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric" }).format(new Date(snap.foreign.flowDate))
     : "sesi terakhir";
+  const isFallbackFlow =
+    !!snap?.foreign.flowDate &&
+    !!snap?.sessionDate &&
+    new Date(snap.foreign.flowDate).toISOString().slice(0, 10) !== snap.sessionDate.slice(0, 10);
+  const session = flowSession;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -107,6 +115,11 @@ export default async function AliranDanaAsingPage() {
           bersih asing (net foreign buy), <strong className="text-text-primary">{netSell.length} emiten</strong> dijual
           bersih. Terbesar: {netBuy[0] ? `${netBuy[0].ticker.replace(".JK", "")} ${fmtRpCompact(netBuy[0].netValue)}` : "—"}
           {" "}— data resmi BEI, <strong className="text-text-primary">gratis tanpa login</strong>.
+          {isFallbackFlow && (
+            <span className="block mt-1 text-text-tertiary">
+              Data asing sesi hari ini masih diproses (IDX rilis malam) — menampilkan sesi terakhir tersedia.
+            </span>
+          )}
         </p>
 
         {failed ? (

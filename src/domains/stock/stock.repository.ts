@@ -599,6 +599,16 @@ export const stockRepository = {
     });
   },
 
+  /** fix-2026-11-09: sesi terakhir yang PUNYA data ForeignFlow (utk fallback
+   *  /aliran-dana-asing saat sesi harga terbaru belum disync IDX malam hari). */
+  async findLatestForeignFlowDate(): Promise<Date | null> {
+    const row = await prisma.foreignFlow.findFirst({
+      orderBy: { date: "desc" },
+      select: { date: true },
+    });
+    return row?.date ?? null;
+  },
+
   /** Close per stockId pada tanggal sesi (map; stock tanpa bar sesi absen). */
   async findClosesByStockIdsAndDate(stockIds: number[], sessionDate: Date): Promise<Map<number, number>> {
     if (stockIds.length === 0) return new Map();
