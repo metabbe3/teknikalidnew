@@ -1,28 +1,28 @@
 "use client";
 
 /**
- * TickerFab v3 (owner 26 Okt sore: modal full-bawah + search in-page + merge gambar/story).
- * - Bottom bar mobile-only nempel viewport (inline margin/padding 0 — kalahkan rule margin eksternal).
- * - Bagikan → bottom sheet FULL sampai bawah (margin-bottom 0 inline), 3 mode:
- *   1. Gambar / Story — snapshot OG 1080×1920 (/api/og/stock-story): share image+teks via
- *      navigator.share files (pilih IG Story / WA di share sheet OS); fallback buka tab baru utk
- *      long-press simpan (owner: "gambar dan story IG sama saja" — digabung satu tombol).
- *   2. Link — halaman saham
- *   3. Teks — summary kondisi ticker saat itu (harga, %, sinyal, skor)
- * - Cari Saham → modal search IN-PAGE (reuse logika HeroSearch: /api/stocks, filter, keyboard nav)
- *   — frictionless, tidak pindah halaman.
+ * TickerFab v4 (owner 9 Nov: full-width bar → floating pill).
+ * - MOBILE: pill mengambang center-bottom, 3 segmen — Cari (ACCENT, prioritas data:
+ *   88% user mobile bounce ke list utk cari saham lain; FAB Cari lama cuma 5 klik/2.025
+ *   views), Bagikan & Tanya AI netral. Selalu tampil (request 8 Nov dipertahankan).
+ * - DESKTOP: pill "Cari saham lain…" (hidden md:flex) + shortcut "/" dan ⌘K/Ctrl+K
+ *   — dulu PC tak ada jalur cepat (scroll atas → breadcrumb → list → cari, 5 langkah).
+ * - Lift: saat di puncak halaman & guest, pill naik (bottom-16) agar tidak menimpa
+ *   BouncerHook (z-30, full-width, tampil saat scrollY<=300) — dulu bar z-40 full-width
+ *   menutupi bouncer total sejak 8 Nov (bug tak sengaja, kini terbetulkan).
+ * - Sheet share & modal search reuse v3 (bottom-sheet mobile; desktop center dialog).
  * Filosofi warna: token teknikal.id semua — zero warna baru.
  */
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Share2, Search, Image as ImageIcon, Link2, Type, X, Bot } from "lucide-react";
 import { StockLogo } from "@/components/stock/stock-logo";
 import type { StockRow } from "@/components/stock/stock-table";
 
-// Owner 8 Nov: bar SELALU tampil (dulu >300px — keluhan "hilang di puncak halaman") +
-// tombol ke-3 "Tanya AI" (soft-sell agent, deeplink src_fab_) sebagai aksen utama.
-const SHOW_AFTER_PX = 0;
+const SHOW_AFTER_PX = 0; // owner 8 Nov: selalu tampil (bukan hilang di puncak halaman)
+const BOUNCER_ZONE_PX = 300; // area BouncerHook tampil (guest, belum scroll jauh)
 const MIN_CHARS = 1;
 const MAX_RESULTS = 8;
 
@@ -36,12 +36,17 @@ interface Props {
 }
 
 export function TickerFab({ ticker, base, price, changePercent, signalLabel, signalScore }: Props) {
+  const { status } = useSession();
   const [shown, setShown] = useState(false);
+  const [atTop, setAtTop] = useState(true);
   const [sheet, setSheet] = useState(false);
   const [search, setSearch] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const storyUrl = `https://teknikal.id/api/og/stock-story?ticker=${encodeURIComponent(base)}`;
   const pageUrl = `https://teknikal.id/stocks/${base}`;
+
+  // pill mobile naik saat BouncerHook (guest, atas halaman) tampil — hindari tumpang tindih
+  const lifted = atTop && status !== "authenticated";
 
   const chg = changePercent !== null ? `${changePercent >= 0 ? "+" : ""}${changePercent.toFixed(2)}%` : "";
   const summaryText =
@@ -54,7 +59,10 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
     let raf = 0;
     const onScroll = () => {
       cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => setShown(window.scrollY > SHOW_AFTER_PX));
+      raf = requestAnimationFrame(() => {
+        setShown(window.scrollY > SHOW_AFTER_PX);
+        setAtTop(window.scrollY <= BOUNCER_ZONE_PX);
+      });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
@@ -62,6 +70,24 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
       window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(raf);
     };
+  }, []);
+
+  // Shortcut keyboard desktop: "/" dan ⌘K/Ctrl+K → buka cari saham (1 langkah, tanpa lewat list)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      const typing =
+        !!t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable);
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearch(true);
+      } else if (e.key === "/" && !typing) {
+        e.preventDefault();
+        setSearch(true);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, []);
 
   const flash = (msg: string) => {
@@ -126,44 +152,58 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
     { icon: Type, label: "Teks", desc: "Summary kondisi ticker", fn: shareText },
   ];
 
+  const pillPos = lifted ? "bottom-16" : "bottom-4";
+
   return (
     <>
+      {/* ── Pill mobile: Cari (accent) · Bagikan · Tanya AI — tap target 44px (h-11) ── */}
       <div
-        aria-hidden={!shown}
-        className={`md:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border bg-bg-card/95 backdrop-blur transition-transform duration-300 ${
-          shown ? "translate-y-0" : "translate-y-full"
+        aria-label="Aksi cepat saham"
+        className={`md:hidden fixed z-40 left-1/2 -translate-x-1/2 flex items-center gap-1 p-1 rounded-full bg-bg-card/95 backdrop-blur border border-border depth-shadow transition-all duration-300 ${pillPos} ${
+          shown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
         }`}
-        style={{ paddingBottom: "0px", marginBottom: "0px" }}
       >
-        <div className="grid grid-cols-3 gap-2 px-4 pt-3" style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
-          <a
-            href={`https://t.me/TeknikalidAgentBot?start=src_fab_${base}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-engagement="fab_ask_agent_click"
-            className="flex items-center justify-center gap-1.5 px-2 py-3 rounded-xl bg-accent text-white border border-transparent depth-shadow text-sm font-medium transition-all press-scale shadow-sm shadow-accent/20"
-          >
-            <Bot className="h-4 w-4" />
-            Tanya AI
-          </a>
-          <button
-            onClick={() => setSheet(true)}
-            data-engagement="fab_share_click"
-            className="flex items-center justify-center gap-2 px-2 py-3 rounded-xl bg-bg-card border border-border hover:border-accent/40 depth-shadow text-sm font-medium text-text-primary transition-all press-scale"
-          >
-            <Share2 className="h-4 w-4 text-accent" />
-            Bagikan
-          </button>
-          <button
-            onClick={() => setSearch(true)}
-            data-engagement="fab_search_click"
-            className="flex items-center justify-center gap-1.5 px-2 py-3 rounded-xl bg-bg-card border border-border hover:border-accent/40 depth-shadow text-sm font-medium text-text-primary transition-all press-scale"
-          >
-            <Search className="h-4 w-4 text-accent" />
-            Cari
-          </button>
-        </div>
+        <button
+          onClick={() => setSearch(true)}
+          data-engagement="fab_search_click"
+          className="flex items-center justify-center gap-1.5 h-11 px-4 rounded-full bg-accent text-white text-sm font-semibold transition-all press-scale shadow-sm shadow-accent/20"
+        >
+          <Search className="h-4 w-4" />
+          Cari
+        </button>
+        <button
+          onClick={() => setSheet(true)}
+          data-engagement="fab_share_click"
+          className="flex items-center justify-center gap-1.5 h-11 px-4 rounded-full text-sm font-medium text-text-primary hover:bg-bg-hover transition-all press-scale"
+        >
+          <Share2 className="h-4 w-4 text-accent" />
+          Bagikan
+        </button>
+        <a
+          href={`https://t.me/TeknikalidAgentBot?start=src_fab_${base}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-engagement="fab_ask_agent_click"
+          className="flex items-center justify-center gap-1.5 h-11 px-4 rounded-full text-sm font-medium text-text-primary hover:bg-bg-hover transition-all press-scale"
+        >
+          <Bot className="h-4 w-4 text-accent" />
+          Tanya AI
+        </a>
       </div>
+
+      {/* ── Pill desktop: Cari saham lain + shortcut "/" & ⌘K ── */}
+      <button
+        onClick={() => setSearch(true)}
+        data-engagement="fab_search_desktop_click"
+        aria-label="Cari saham lain"
+        className={`hidden md:flex fixed bottom-6 left-1/2 -translate-x-1/2 z-40 items-center gap-2.5 h-11 px-5 rounded-full bg-bg-card/95 backdrop-blur border border-border depth-shadow text-sm text-text-secondary hover:border-accent/40 hover:text-text-primary transition-all press-scale ${
+          shown ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <Search className="h-4 w-4 text-accent" />
+        <span>Cari saham lain…</span>
+        <kbd className="hidden lg:inline-flex items-center h-5 px-1.5 rounded border border-border bg-bg-primary text-[10px] font-mono text-text-tertiary">/</kbd>
+      </button>
 
       {toast && (
         <div className="fixed bottom-24 inset-x-0 z-50 flex justify-center px-4 pointer-events-none">
@@ -182,7 +222,7 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
           aria-label="Bagikan saham"
         >
           <div
-            className="w-full max-w-md bg-bg-card border border-border rounded-t-2xl depth-shadow px-5 pt-5"
+            className="w-full max-w-md bg-bg-card border border-border rounded-t-2xl md:rounded-2xl depth-shadow px-5 pt-5"
             style={{ marginBottom: "0px", paddingBottom: "max(1.5rem, env(safe-area-inset-bottom, 0.5rem))" }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -227,7 +267,8 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
 /** Modal cari saham — reuse logika HeroSearch (/api/stocks + filter + keyboard nav).
  * Owner 26 Okt malam: (1) sheet WAJIB nempel bawah SAAT keyboard kebuka — anchor ke
  * visualViewport (overlay menutupi area terlihat persis, keyboard tak bisa dorong naik);
- * (2) hasil "drop up" — input di BAWAH (nempel keyboard), list tumbuh ke ATAS. */
+ * (2) hasil "drop up" — input di BAWAH (nempel keyboard), list tumbuh ke ATAS.
+ * v4: desktop = center dialog (md:items-center + md:rounded-2xl). */
 function TickerSearchModal({ onClose, currentTicker }: { onClose: () => void; currentTicker: string }) {
   const router = useRouter();
   const [q, setQ] = useState("");
@@ -311,7 +352,7 @@ function TickerSearchModal({ onClose, currentTicker }: { onClose: () => void; cu
 
   return (
     <div
-      className="fixed z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm"
+      className="fixed z-50 flex items-end justify-center md:items-center bg-black/60 backdrop-blur-sm"
       style={{
         left: vv.ox,
         top: vv.oy,
@@ -325,7 +366,7 @@ function TickerSearchModal({ onClose, currentTicker }: { onClose: () => void; cu
       aria-label="Cari saham lain"
     >
       <div
-        className="w-full max-w-md bg-bg-card border border-border rounded-t-2xl depth-shadow px-5 pt-5 flex flex-col"
+        className="w-full max-w-md bg-bg-card border border-border rounded-t-2xl md:rounded-2xl depth-shadow px-5 pt-5 flex flex-col"
         style={{ marginBottom: "0px", paddingBottom: "max(1rem, env(safe-area-inset-bottom, 0.5rem))" }}
         onClick={(e) => e.stopPropagation()}
       >
