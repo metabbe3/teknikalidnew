@@ -2566,7 +2566,17 @@
         "llms_kenapa": 1,
         "tree_basis": "teknikalidnew main @ 6dfd562, live teknikal.id 7 Nov 22:3x WIB"
       },
-      "research_brief": "RESEARCHER 8 Nov 2026 (riset web eksternal): VERDICT: MODIFIKASI. Bukti industri konsisten: llms.txt TIDAK terbukti menaikkan AI-citation — SE Ranking (300k domain, XGBoost): nol korelasi, menghapus fitur malah menaikkan akurasi model; Ahrefs (137k domain, Mei 2026): 97% llms.txt tidak pernah di-fetch siapa pun; Mueller (Google): 'comparable to keywords meta tag', layanan AI tidak memakainya; OtterlyAI 90 hari/62.1k bot-visit: 'marginal at best'; Search Engine Land longitudinal 10 situs: 8/9 tanpa perubahan sitasi. Narasi 'supaya ChatGPT/Perplexity mengutip via llms.txt' tidak didukung bukti. Lever citation yang TERBUKTI (GEO, Aggarwal et al. KDD 2024, arXiv:2311.09735): sitasi sumber eksternal + statistik/angka + kutipan menaikkan visibilitas hingga ~40%; keyword stuffing justru -10%. MODIFIKASI: (1) eksekusi hanya jika tetap murah (extend 1 route.ts) — posisikan llms.txt v2 sebagai hedge low-cost + peta korpus utk agen agentic, BUKAN citation lever; (2) pindahkan janji dampak ke konten kenapa-* itu sendiri: 1 angka ground-truth + tanggal sesi + link sumber per item (sudah sejalan DONE-WHEN) — itu yang sesuai bukti GEO; (3) DONE-WHEN tidak boleh mengklaim kenaikan citation — ukur bucket ai-search referral 2 minggu dengan ekspektasi flat-to-small; (4) file wajib generated satu pintu dari DB (route.ts) — hindari edit manual utk mencegah risiko prompt-injection/stale file. ANTI-PATTERN: invest besar di format (multi-file, llms-full.txt raksasa, maintenance manual); menjual ROI belum terbukti ke owner. SUMBER: searchenginejournal.com/llms-txt-shows-no-clear-effect-on-ai-citations-based-on-300k-domains/561542/ ; ahrefs.com/blog/llmstxt-study/ ; arxiv.org/abs/2311.09735 ; klove.ai/blog/llms-txt-does-it-actually-work ; searchenginejournal.com/google-says-llms-txt-comparable-to-keywords-meta-tag/544804/ BUKTI: KUAT (bahwa llms.txt bukan citation lever) ; kekuatan dampak fitur ini = TIDAK KUAT — putuskan dr sisi biaya-murah + konten GEO."
+      "research_brief": "RESEARCHER 8 Nov 2026 (riset web eksternal): VERDICT: MODIFIKASI. Bukti industri konsisten: llms.txt TIDAK terbukti menaikkan AI-citation — SE Ranking (300k domain, XGBoost): nol korelasi, menghapus fitur malah menaikkan akurasi model; Ahrefs (137k domain, Mei 2026): 97% llms.txt tidak pernah di-fetch siapa pun; Mueller (Google): 'comparable to keywords meta tag', layanan AI tidak memakainya; OtterlyAI 90 hari/62.1k bot-visit: 'marginal at best'; Search Engine Land longitudinal 10 situs: 8/9 tanpa perubahan sitasi. Narasi 'supaya ChatGPT/Perplexity mengutip via llms.txt' tidak didukung bukti. Lever citation yang TERBUKTI (GEO, Aggarwal et al. KDD 2024, arXiv:2311.09735): sitasi sumber eksternal + statistik/angka + kutipan menaikkan visibilitas hingga ~40%; keyword stuffing justru -10%. MODIFIKASI: (1) eksekusi hanya jika tetap murah (extend 1 route.ts) — posisikan llms.txt v2 sebagai hedge low-cost + peta korpus utk agen agentic, BUKAN citation lever; (2) pindahkan janji dampak ke konten kenapa-* itu sendiri: 1 angka ground-truth + tanggal sesi + link sumber per item (sudah sejalan DONE-WHEN) — itu yang sesuai bukti GEO; (3) DONE-WHEN tidak boleh mengklaim kenaikan citation — ukur bucket ai-search referral 2 minggu dengan ekspektasi flat-to-small; (4) file wajib generated satu pintu dari DB (route.ts) — hindari edit manual utk mencegah risiko prompt-injection/stale file. ANTI-PATTERN: invest besar di format (multi-file, llms-full.txt raksasa, maintenance manual); menjual ROI belum terbukti ke owner. SUMBER: searchenginejournal.com/llms-txt-shows-no-clear-effect-on-ai-citations-based-on-300k-domains/561542/ ; ahrefs.com/blog/llmstxt-study/ ; arxiv.org/abs/2311.09735 ; klove.ai/blog/llms-txt-does-it-actually-work ; searchenginejournal.com/google-says-llms-txt-comparable-to-keywords-meta-tag/544804/ BUKTI: KUAT (bahwa llms.txt bukan citation lever) ; kekuatan dampak fitur ini = TIDAK KUAT — putuskan dr sisi biaya-murah + konten GEO.",
+      "fde_gate_20261109": "CEO 9 Nov: FDE-GATE MISSING prd_id, user_story, acceptance_criteria, qa_plan, target_files, scheduled_slot — DILARANG dispatch CTO sebelum PRD lengkap (mandat owner 13 Okt). Researcher verdict MODIFIKASI (llms.txt tak menaikkan citation by itself; eksekusi = korpus terstruktur). Butuh PRD Product Agent.",
+      "prd_id": "prd-2026-11-09-01",
+      "qa_plan": [
+        "AC1 curl /llms.txt 200: grep -c kenapa- >=30 URL + tanggal sesi + angka ground-truth per item; total URL >=195",
+        "AC2 size <=256KB (curl -s /llms.txt | wc -c); format llms.txt valid (block per-URL)",
+        "AC3 grep angka ground-truth sample 3 item == SQL replay DB (replay_sql_gate-style, toleransi 0 utk angka pasar)",
+        "AC4 bucket ai-search growth kpis regex diperluas (grep ai_search_paths teknikalid_growth.py memuat utmSource match) — sebelum/after 1 run",
+        "AC5 tsc --noEmit exit 0; route.ts tetap force-dynamic; 0 page lain berubah (git diff scoped 1 file)",
+        "AC6 D+14: bucket ai-search referral != undercount (angka kpis == SQL replay utmSource OR referrer); ekspektasi flat-to-small (researcher: llms.txt BUKAN citation lever — hedge murah)"
+      ]
     },
     {
       "id": "idea-2026-11-07-2",
@@ -2589,18 +2599,93 @@
         "published_articles": 189,
         "tree_basis": "teknikalidnew main @ 6dfd562, live teknikal.id 7 Nov 22:3x WIB"
       },
-      "research_brief": "RESEARCHER 8 Nov 2026 (riset web eksternal): VERDICT: BUILD. Protokol resmi (bing.com/indexnow/getstarted, api.indexnow.org): key UTF-8 8-128 char, file /{key}.txt di root dgn body PERSIS key + HTTP 200 langsung (tanpa redirect/HTML); POST JSON {host, key, urlList} ke endpoint bersama — satu submit dibagikan otomatis ke Bing/Yandex/Seznam/Naver. Google TIDAK mengonsumsi IndexNow (sitemap tetap jalur Google). BEST PRACTICE: (1) batch: SATU POST per event publish/update/delete (loop per-URL memicu 429); (2) dedup window beberapa jam — resubmit URL tak berubah membuat engine mengabaikan host; (3) key di env, file digenerate dari env, curl key-file masuk deploy smoke-test (penyebab rot #1 terdokumentasi: deploy menghapus key file → 403 diam-diam); (4) fire-and-forget OK demi latency publish path TAPI wajib log status 1 baris; retry 429/5xx dgn backoff, NO retry 400/403/422; gate env production (staging diam); (5) validasi URL publik 200 sebelum submit — API menerima URL salah tanpa protes (kasus terdokumentasi URL GitHub-PR terkirim, gagal diam); (6) msvalidate/Bing Webmaster = satu-satunya read-back via BWT IndexNow section; submission = prioritas crawl, BUKAN jaminan index. SINERGI: multi-sumber konsisten (Okt 2026): ChatGPT search bersandar ke index Bing + crawler sendiri → percepat index Bing = jalur masuk AI-referral yg dicari idea-2026-11-07-1. ANTI-PATTERN: 1-request-per-URL; resubmit otomatis tiap autosave/deploy template; key file hilang pasca-deploy; SPA catch-all menyajikan HTML di path key; submit URL staging. SUMBER: bing.com/indexnow/getstarted ; auditboost.pro/blog/indexnow-protocol-guide ; savagesolutions.io/blog/we-indexnow-pinging-github-prs-instead-blog-urls-heres-we ; hydrogenseo.com/blog/indexnow-wordpress ; crawlready.app/docs/indexing/bing-and-chatgpt BUKTI: KUAT utk protokol & praktik aman ; SEDANG utk besaran dampak trafik (belum ada controlled study) — logika jam-relevansi + share Bing/Yahoo 52% referral internal cukup utk cheap-win."
+      "research_brief": "RESEARCHER 8 Nov 2026 (riset web eksternal): VERDICT: BUILD. Protokol resmi (bing.com/indexnow/getstarted, api.indexnow.org): key UTF-8 8-128 char, file /{key}.txt di root dgn body PERSIS key + HTTP 200 langsung (tanpa redirect/HTML); POST JSON {host, key, urlList} ke endpoint bersama — satu submit dibagikan otomatis ke Bing/Yandex/Seznam/Naver. Google TIDAK mengonsumsi IndexNow (sitemap tetap jalur Google). BEST PRACTICE: (1) batch: SATU POST per event publish/update/delete (loop per-URL memicu 429); (2) dedup window beberapa jam — resubmit URL tak berubah membuat engine mengabaikan host; (3) key di env, file digenerate dari env, curl key-file masuk deploy smoke-test (penyebab rot #1 terdokumentasi: deploy menghapus key file → 403 diam-diam); (4) fire-and-forget OK demi latency publish path TAPI wajib log status 1 baris; retry 429/5xx dgn backoff, NO retry 400/403/422; gate env production (staging diam); (5) validasi URL publik 200 sebelum submit — API menerima URL salah tanpa protes (kasus terdokumentasi URL GitHub-PR terkirim, gagal diam); (6) msvalidate/Bing Webmaster = satu-satunya read-back via BWT IndexNow section; submission = prioritas crawl, BUKAN jaminan index. SINERGI: multi-sumber konsisten (Okt 2026): ChatGPT search bersandar ke index Bing + crawler sendiri → percepat index Bing = jalur masuk AI-referral yg dicari idea-2026-11-07-1. ANTI-PATTERN: 1-request-per-URL; resubmit otomatis tiap autosave/deploy template; key file hilang pasca-deploy; SPA catch-all menyajikan HTML di path key; submit URL staging. SUMBER: bing.com/indexnow/getstarted ; auditboost.pro/blog/indexnow-protocol-guide ; savagesolutions.io/blog/we-indexnow-pinging-github-prs-instead-blog-urls-heres-we ; hydrogenseo.com/blog/indexnow-wordpress ; crawlready.app/docs/indexing/bing-and-chatgpt BUKTI: KUAT utk protokol & praktik aman ; SEDANG utk besaran dampak trafik (belum ada controlled study) — logika jam-relevansi + share Bing/Yahoo 52% referral internal cukup utk cheap-win.",
+      "fde_gate_20261109": "CEO 9 Nov: FDE-GATE MISSING prd_id, user_story, acceptance_criteria, qa_plan, target_files, scheduled_slot — DILARANG dispatch CTO sebelum PRD lengkap. Researcher verdict BUILD (protokol resmi indexnow.org). Prioritas PRD tinggi: Bing=194 PV/30d vs Google 40 = cheapest win.",
+      "prd_id": "prd-2026-11-09-02",
+      "qa_plan": [
+        "AC1 key file: curl -s https://teknikal.id/<key>.txt == key body PERSIS + 200 (masuk smoke-test deploy)",
+        "AC2 ping fire-and-forget di publish path: artikel baru PUBLISHED → 1 baris log terstruktur indexnow status=<code>; endpoint down = publish tetap 100% sukses (bukti staging)",
+        "AC3 batch 1 POST per event publish (loop per-URL dilarang — 429); dedup window; NO retry 400/403/422, retry 429/5xx backoff",
+        "AC4 validasi URL publik 200 sebelum submit; staging diam (gate env)",
+        "AC5 msvalidate meta ter-gate env BING_SITE_VALIDATION (klaim akun = owner-only, jangan hardcode)",
+        "AC6 tsc+build EXIT-0; 0 perubahan publish-path behavior saat endpoint IndexNow error (assert catch-all)"
+      ]
     },
     {
       "id": "idea-2026-11-08-1",
-      "status": "candidate",
+      "status": "approved",
       "source": "cto-idle",
       "priority": "P2",
       "north_star": "STICKY+GROWTH (Council 8 Nov prioritas #2: returning>=8% + weekend)",
       "title": "Slot konten analisis weekend (Sabtu/Minggu ~18:00-20:00 WIB): weekend-collapse terjadi HANYA saat tak ada analisis segar; weekend dengan analisis = puncak trafik bulanan",
       "data": "PageView 28d non-bot: weekend bimodal — 24-25 Okt = 233/246 views (PEAK bulanan, saat ada analisis '506 Saham Naik BBCA -2,9% Brief Pasar IDX' Minggu 25 Okt) vs 31 Okt-1 Nov = 8/30 views (hanya Rekap Okt + Analisis Pagi terjadwal) vs 7-8 Nov = 127/45. Jumlah artikel TIDAK menjelaskan (2-3 artikel di semua weekend). Tracking hidup di hari kolaps (distribusi per-jam normal) → demand-side bukan outage. Homepage WE ~36/day >= WD ~31/day → baseline weekend ADA. Spike malam 20:00-23:59 = 96 views (41% hari sehat). Referrer WE-sehat (direct)=400 vs WE-kolaps=74 (5,4x; konsistan in-app browser IG strip referrer), search 30 vs 8. Hipotesis: analisis segar Sabtu/Minggu sore + push distribusi = reversible collapse; uji A/B 2 weekend (dengan vs tanpa) sebelum jadwal permanen.",
       "first_step": "CEO verdict: apakah slot konten weekend sejalan komposisi 70% marketing — kalau ya, PRD penjadwalan analis-sore style Sabtu+Minggu 18:00 & eksperimen 2 pekan",
-      "created": "2026-11-08T17:35:00+07:00"
+      "created": "2026-11-08T17:35:00+07:00",
+      "ceo_verdict_20261109": "APPROVE P2 — konten/penjadwalan BUKAN fitur produk (lolos freeze 6 Nov, jalur MARKETING-SUPPORT). Data: weekend+analisis segar=233/246 views peak bulanan vs tanpa=8/30. Eksperimen 2 pekan Sabtu+Minggu ~18:00 analis-sore style; KPI: weekend views non-collapse (>=100/hari) & returning weekend. Lane: Business/Mandor — eng hanya jika butuh cron schedule (ops ringan, bukan fitur)."
+    },
+    {
+      "id": "mandate-2026-11-07-01",
+      "date": "2026-11-07",
+      "type": "research",
+      "priority": "P2",
+      "status": "done",
+      "source": "CEO 08:15 7 Nov (pivot freeze 6 Nov: 70% marketing-support). Entry hilang saat race-repair backlog 7-8 Nov (ada di .bak-20261107-065800) — di-restore + diisi hasil Product Agent Senin 9 Nov 07:0x WIB.",
+      "title": "MANDAT Product Agent: riset AI-search referral — baseline AI-referral share 28d + verdict pilar AI_SEARCH. HASIL: share 0,87% (32/3.668 PV) TAPI ramp 11x pasca-AEO; instrumen undercount 8x (utmSource tidak dibaca bucket kpis).",
+      "north_star": "AI_SEARCH + GROWTH",
+      "kpi_pillar": "AI_SEARCH",
+      "done_when": "Insight entry berisi angka AI-referral share 28d + top-3 halaman dikutip + verdict (perlu pekerjaan lanjutan atau cukup monitoring)",
+      "data_evidence": {
+        "query_date": "2026-11-09 07:0x WIB (DB teknikalid read-only, isBot=false, window 28d)",
+        "ai_referral_28d": "32 PV / 24 IP unik = 0,87% dari 3.668 total PV",
+        "channel_breakdown": "utmSource=chatgpt.com 28 PV (87,5% — ChatGPT append utm_source, referrer NULL) + referrer chatgpt.com 3 PV (ke /community 16 Okt) + perplexity.ai 1 PV (ke / 3 Nov)",
+        "ramp_post_aeo": "robots AEO dibuka 3 Nov → 2-8 Nov = 24 PV/6 hari (~4/hari) vs 22 hari sebelumnya 8 PV (~0,36/hari) = 11x naik; bukan noise (landing page berkualitas)",
+        "top_landing_ai": "(1) / root 11 PV, (2) /aliran-dana-asing 5 PV, (3) /stocks/BBCA.JK+BMRI.JK+PGAS.JK 3 PV; juga /laporan-pasar/minggu-2026-11-02 x2, /indeks/lq45, /berita/analis-pagi, /swing",
+        "register_ctr": "0/24 sesi AI-referral sentuh /auth/* 28d — volume terlalu kecil untuk verdict konversi (organic register views 7/mgg dari semua sumber)",
+        "crawler_exposure": "Bytespider (isBot) 45 hits/14d on kenapa-*; GPTBot/PerplexityBot/ClaudeBot tidak muncul di PageView 14d (beacon-only tracking tidak menangkap fetch statis; app log Next tidak log per-request UA)",
+        "measurement_gap": "teknikalid_growth.py ai_search_paths (L81) match HANYA referrer regex — 28/32 PV utmSource=chatgpt.com referrer-null TIDAK terhitung → dashboard North Star menampilkan ~4 PV saat realita 32 PV (8x undercount). Pilar AI_SEARCH 'tanpa data' karena instrumen, bukan karena traffic."
+      },
+      "insight": "VERDICT PILAR AI_SEARCH: kanal HIDUP & TUMBUH (ramp 11x pasca-AEO 3 Nov; ChatGPT kini mengirim ~4 visitor/hari dgn landing page berkualitas: saham big-cap + halaman tematik). Pekerjaan lanjutan DIBUTUHKAN di 2 lapis: (1) MEASUREMENT — extend ai_search_paths bucket di teknikalid_growth.py agar match utmSource (host-script kecil, pilar tracking yang diizinkan freeze; tanpa ini pilar tetap buta 8x); (2) SUPPLY — idea-2026-11-07-1 (llms.txt v2, spec_ready, researcher verdict MODIFIKASI = hedge murah jangan over-claim) + idea-2026-11-07-2 (IndexNow, spec_ready, verdict BUILD — Bing 194 PV/30d = organik #1 & ChatGPT search bersandar index Bing) menunggu kereta pasca deploy-deadlock. BUKAN fitur baru — semua dalam jalur instrumen/distribusi.",
+      "product_recs": [
+        {
+          "rec": "Dispatch fix measurement gap ai_search_paths (extend match utmSource) — host-script teknikalid_growth.py, 0 deploy web",
+          "alasan": "Pilar AI_SEARCH satu-satunya tanpa data selama ini karena instrumen undercount 8x; tanpa fix, keputusan investasi kanal (llms.txt v2, IndexNow, konten GEO) tidak bisa dievaluasi. Murah (beberapa baris regex), tracking = kategori diizinkan pivot freeze."
+        },
+        {
+          "rec": "Prioritaskan idea-2026-11-07-2 IndexNow di kereta pertama pasca deploy-deadlock terbuka",
+          "alasan": "Riset 7 Nov: Bing+Yahoo 194 PV/30d = 5x Google-search; ChatGPT search (sumber 87% AI-referral kita) bersandar ke index Bing — percepat index = jalur masuk AI-referral. spec_ready + verdict researcher BUILD."
+        }
+      ],
+      "research_note": "Posisi kerja [MARKETING] (mandat acquisition/freeze). Query kanonik: utmSource ~* 'chatgpt|perplexity|gemini|copilot|claude|grok|deepseek' OR referrer ~* AI-domain, isBot=false. AI-sesi didefinisikan (ip, date) distinct dgn signal AI. Pre-AEO spike 6-7 Okt (4+8 PV) = event chatgpt.com lama; baseline pre-AEO sesungguhnya ~0,2/hari."
+    },
+    {
+      "id": "sec-2026-11-09-01",
+      "date": "2026-11-09",
+      "priority": "P3",
+      "status": "candidate",
+      "type": "security",
+      "source": "itsec-red",
+      "title": "Branch lokal backup/pre-sec-purge-1015 MASIH memuat ig/tiktok-session.json — entry lama didrop tapi branch fisik tak pernah dihapus",
+      "data": {
+        "bukti": "git ls-tree -r backup/pre-sec-purge-1015 → social-auto-poster/sessions/ig-session.json + tiktok-session.json masih ada di tree branch. Entry sec-2026-11-02-02 berstatus dropped_cleanup_6nov namun branch-nya tetap hidup. git ls-remote origin: 0 hit (belum bocor).",
+        "risiko": "Origin repo PUBLIC — satu `git push --all` / `git push --mirror` yang tidak sengaja mempublikasikan device cookies (csrftoken/datr/ig_did/mid/ttwid/msToken) ke internet.",
+        "exploitability": "rendah (butuh salah-push dari mesin lokal; tidak ada jalur remote)",
+        "rekomendasi": "1 baris: `git branch -D backup/pre-sec-purge-1015` (isi sudah di-backup via sec purge Okt; sessions sengaja dibuang dari main)."
+      }
+    },
+    {
+      "id": "sec-2026-11-09-02",
+      "date": "2026-11-09",
+      "priority": "P1",
+      "status": "candidate",
+      "type": "security",
+      "source": "itsec-blue",
+      "title": "ESKALASI sec-2026-11-05-04: offsite backup MATI hari ke-6 (rclone gdrive token empty) — satu-satunya copy DB = lokal host yang sama",
+      "data": {
+        "bukti": "rclone lsd gdrive: 09:06 WIB 9 Nov → CRITICAL 'empty token found - please run rclone config reconnect gdrive:'. Terakhir jalan 3 Nov (entry 11-05-04). pg_dump lokal 01:15 masih OK (/tmp/db-backup-err 0 byte = tanpa error) tapi tujuan lokal /tmp = ter-prune 24h, host yang sama dengan DB.",
+        "risiko": "Disk/VM failure tunggal = kehilangan permanen agent_user, agent_subscription (data customer bayar), watchlist, konten. Alert sre_brief sudah jalan (ops-2026-11-06-01 partial) tapi alert ≠ backup.",
+        "exploitability": "n/a (resilience, bukan celah aktif) — P1 karena data customer berbayar taruh satu host",
+        "rekomendasi": "OWNER ACTION 5 menit: `rclone config reconnect gdrive:` (butuh browser login Google), lalu verify `rclone lsd gdrive:` + marker mtime baru. Alternatif kalau gdrive bermasalah: remote kedua (B2/S3) — tapi reconnect dulu, termurah."
+      }
     }
   ],
   "items": []
