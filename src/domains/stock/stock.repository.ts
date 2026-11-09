@@ -982,11 +982,15 @@ export const stockRepository = {
   },
 
   findPrevIndicator(stockId: number, interval: string) {
-    return prisma.stockIndicator.findFirst({
-      where: { stockId, interval },
-      orderBy: { date: "desc" },
-      skip: 1,
-    });
+    // fix-2026-11-09: findFirst skip:1 → "LIMIT 1 OFFSET 1" plan buruk di prepared stmt
+    // (seq-scan 529k). Ganti: offset kedua via subquery date < MAX(date) — index-only, tanpa OFFSET.
+    // Cast ke tipe model: kolom identik (SELECT si.*), runtime shape sama dengan findFirst.
+    return prisma.$queryRaw<Prisma.StockIndicatorGetPayload<Record<string, never>>[]>`
+      SELECT si.* FROM "StockIndicator" si
+      WHERE si."stockId" = ${stockId} AND si."interval" = ${interval}
+        AND si."date" < (SELECT MAX(s2."date") FROM "StockIndicator" s2
+                         WHERE s2."stockId" = ${stockId} AND s2."interval" = ${interval})
+      ORDER BY si."date" DESC LIMIT 1`.then((r) => (r[0] ?? null));
   },
 
   findIndicatorsByDate(date: Date, where?: Prisma.StockIndicatorWhereInput) {
@@ -1024,11 +1028,20 @@ export const stockRepository = {
   },
 
   getLatestIndicatorDate(assetClass?: "EQUITY" | "CRYPTO") {
-    return prisma.stockIndicator.findFirst({
-      where: { interval: INTERVAL.DAY, ...(assetClass ? { stock: { assetClass } } : {}) },
-      orderBy: { date: "desc" },
-      select: { date: true },
-    });
+    // fix-2026-11-09: findFirst+relation-filter (JOIN Stock via Prisma) menghasilkan plan
+    // scan 372-721ms di pg_stat_statements. $queryRaw bentuk IN-subquery terbukti 0,27ms
+    // (index StockIndicator_interval_date_idx backward + memoize Stock_pkey).
+    if (assetClass) {
+      return prisma.$queryRaw<Array<{ date: Date }>>`
+        SELECT si."date" FROM "StockIndicator" si
+        WHERE si."interval" = ${INTERVAL.DAY}
+          AND si."stockId" IN (SELECT s."id" FROM "Stock" s WHERE s."assetClass"::text = ${assetClass})
+        ORDER BY si."date" DESC LIMIT 1`.then((r) => r[0] ?? null);
+    }
+    return prisma.$queryRaw<Array<{ date: Date }>>`
+      SELECT si."date" FROM "StockIndicator" si
+      WHERE si."interval" = ${INTERVAL.DAY}
+      ORDER BY si."date" DESC LIMIT 1`.then((r) => r[0] ?? null);
   },
 
   // MAX(smaCrossDate) over daily rows — SQL MAX semantics (NULLs ignored via not-null filter).
