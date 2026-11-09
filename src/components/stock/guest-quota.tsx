@@ -142,12 +142,22 @@ export function GuestTradingPlanGate({
   ticker,
   plan,
   mc,
+  ohlcv,
   isAuthed = false,
   forceOverLimit,
 }: {
   ticker: string;
   plan: TradingPlan;
   mc?: McResult | null;
+  ohlcv?: {
+    open: number | null;
+    high: number | null;
+    low: number | null;
+    close: number | null;
+    prevClose: number | null;
+    volume: number;
+    volumeRatio: number;
+  } | null;
   isAuthed?: boolean;
   forceOverLimit?: boolean;
 }) {
@@ -182,7 +192,7 @@ export function GuestTradingPlanGate({
   if (!mounted && forceOverLimit === undefined) {
     return (
       <div data-premium="trading-plan" suppressHydrationWarning>
-        <TradingPlanCard plan={plan} mc={mc} />
+        <TradingPlanCard plan={plan} mc={mc} ohlcv={ohlcv} />
       </div>
     );
   }
@@ -191,7 +201,7 @@ export function GuestTradingPlanGate({
   if (effectiveAuthed || !effectiveOverLimit) {
     return (
       <div data-premium="trading-plan">
-        <TradingPlanCard plan={plan} mc={mc} />
+        <TradingPlanCard plan={plan} mc={mc} ohlcv={ohlcv} />
         {!effectiveAuthed && (
           <GuestInlineUpsell ticker={cleanTicker} isOverLimit={false} />
         )}

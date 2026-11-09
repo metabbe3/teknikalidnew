@@ -1,6 +1,6 @@
 import type { TradingPlan } from "@/lib/trading-plan";
 import type { McResult } from "@/lib/monte-carlo";
-import { formatRp } from "@/lib/utils";
+import { formatRp, formatPrice } from "@/lib/utils";
 import { InfoTip } from "@/components/stock/info-tip";
 
 const confidenceStyles = {
@@ -15,7 +15,25 @@ const confidenceLabels = {
   low: "Rendah",
 };
 
-export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult | null }) {
+type Ohlcv = {
+  open: number | null;
+  high: number | null;
+  low: number | null;
+  close: number | null;
+  prevClose: number | null;
+  volume: number;
+  volumeRatio: number;
+};
+
+export function TradingPlanCard({
+  plan,
+  mc,
+  ohlcv,
+}: {
+  plan: TradingPlan;
+  mc?: McResult | null;
+  ohlcv?: Ohlcv | null;
+}) {
   const isBOW = plan.strategy === "BUY_ON_WEAKNESS";
   const isWaitAndSee = plan.strategy === "WAIT_AND_SEE";
   // Audit UI/UX #3b (30 Okt): setup layak = bukan wait&see, R:R ≥ 1, EV ≥ 0 — angka hijau besar
@@ -101,6 +119,35 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
 
         <div className={`space-y-2 ${isWaitAndSee ? "opacity-50" : ""}`}>
           {/* owner 10 Nov: Entry/TP/SL dipadatkan jadi grid 3 kolom — 1 lihat, angka besar berwarna */}
+          {ohlcv && (ohlcv.open ?? ohlcv.high ?? ohlcv.low) !== null && (
+            <div className="flex items-center justify-between gap-2 rounded-lg bg-bg-hover/60 px-2.5 py-1.5 text-[10px] leading-none text-text-tertiary" aria-label="Ringkasan OHLCV hari ini">
+              <span className="flex items-center gap-1">
+                <span aria-hidden>O</span>
+                <span className="font-mono font-semibold tabular-nums text-text-secondary">{formatPrice(ohlcv.open ?? 0)}</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <span aria-hidden>H</span>
+                <span className="font-mono font-semibold tabular-nums text-bullish">{formatPrice(ohlcv.high ?? 0)}</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <span aria-hidden>L</span>
+                <span className="font-mono font-semibold tabular-nums text-bearish">{formatPrice(ohlcv.low ?? 0)}</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <span aria-hidden>C</span>
+                <span className="font-mono font-semibold tabular-nums text-text-secondary">{formatPrice(ohlcv.close ?? 0)}</span>
+              </span>
+              {ohlcv.volume > 0 && (
+                <span className="flex items-center gap-1">
+                  <span aria-hidden>Vol</span>
+                  <span className="font-mono font-semibold tabular-nums text-text-secondary">
+                    {Intl.NumberFormat("id-ID", { notation: "compact" }).format(ohlcv.volume)}
+                    {ohlcv.volumeRatio >= 1.5 ? <span className="text-accent font-bold"> x{ohlcv.volumeRatio.toFixed(1).replace(".", ",")}</span> : null}
+                  </span>
+                </span>
+              )}
+            </div>
+          )}
           <div className="grid grid-cols-3 gap-1.5">
             <div className="rounded-lg bg-accent/10 border border-accent/40 px-2 py-2 flex flex-col items-center justify-center text-center min-h-[56px]">
               <span className="text-[10px] font-medium text-text-secondary leading-tight">Beli di</span>

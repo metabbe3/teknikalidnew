@@ -807,6 +807,15 @@ export default async function StockDetailPage({
                       plan={tradingPlan}
                       mc={mcProbability}
                       isAuthed={isAuthed}
+                      ohlcv={{
+                        open: latest ? decimalToNumber(latest.open) ?? close : null,
+                        high: latestHigh,
+                        low: latestLow,
+                        close,
+                        prevClose: prev ? decimalToNumber(prev.close) ?? close : null,
+                        volume: latestVolume,
+                        volumeRatio,
+                      }}
                     />
                   ) : (
                     <LoginGate
