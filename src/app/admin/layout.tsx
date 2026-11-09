@@ -75,6 +75,7 @@ const sidebarNav: NavGroup[] = [
     icon: Activity,
     items: [
       { label: "Overview", href: "/admin", icon: Activity },
+      { label: "Monitoring", href: "/admin/monitoring", icon: Activity },
       { label: "Error Hub", href: "/admin/errors", icon: AlertTriangle },
       { label: "Data Pipelines", href: "/admin/pipelines", icon: Database },
       { label: "Share Tracking", href: "/admin/shares", icon: Share2 },
@@ -116,6 +117,7 @@ const sidebarNav: NavGroup[] = [
 const PAGE_NAMES: Record<string, string> = {
   "/admin": "Dashboard",
   "/admin/errors": "Error Hub",
+  "/admin/monitoring": "Monitoring",
   "/admin/pipelines": "Data Pipelines",
   "/admin/shares": "Share Tracking",
   "/admin/retention": "Retention",

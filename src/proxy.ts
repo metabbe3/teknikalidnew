@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { ALL_TICKERS } from "@/lib/constants";
 import { isBlocked, block as blockIp } from "@/lib/ip-blocklist";
 import { recordApiRequest } from "@/lib/api-traffic-log";
+import { recordApiLatency } from "@/lib/api-latency-log";
 import { accessLimitedResponse, shouldEscalateCgnat } from "@/lib/access-limit";
 
 const cspScriptSrc = process.env.NODE_ENV === "production"
@@ -165,6 +166,8 @@ function buildCanonicalUrl(request: NextRequest): URL | null {
 }
 
 export async function proxy(request: NextRequest) {
+  // adm-2026-11-09: latency per endpoint — t0 di awal, durasi diukur saat response jadi.
+  const __t0 = Date.now();
   // ── Canonical redirect (www→apex, http→https) ──
   const canonicalUrl = buildCanonicalUrl(request);
   if (canonicalUrl) {
@@ -505,6 +508,11 @@ export async function proxy(request: NextRequest) {
     response.cookies.set("utm_medium", medium.slice(0, 32), { path: "/", maxAge: 86400, sameSite: "lax" });
     response.cookies.set("utm_campaign", campaign.slice(0, 64), { path: "/", maxAge: 86400, sameSite: "lax" });
   }
+
+  // adm-2026-11-09: latency per endpoint (non-blocking, never throws)
+  try {
+    recordApiLatency(request.nextUrl.pathname, response.status, Date.now() - __t0);
+  } catch { /* observability best-effort */ }
 
   return response;
 }
