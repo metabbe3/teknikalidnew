@@ -60,7 +60,8 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
     const onScroll = () => {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
-        setShown(window.scrollY > SHOW_AFTER_PX);
+        // >= (bukan >): scrollY 0 di puncak = shown — owner 9 Nov: pill SELALU visible dari awal
+        setShown(window.scrollY >= SHOW_AFTER_PX);
         setAtTop(window.scrollY <= BOUNCER_ZONE_PX);
       });
     };
@@ -159,7 +160,7 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
       {/* ── Pill mobile: Cari (accent) · Bagikan · Tanya AI — tap target 44px (h-11), nowrap ── */}
       <div
         aria-label="Aksi cepat saham"
-        className={`md:hidden fixed z-40 left-1/2 -translate-x-1/2 flex items-center gap-0.5 p-1 rounded-full bg-bg-card/95 backdrop-blur border border-border depth-shadow transition-all duration-300 ${pillPos} ${
+        className={`md:hidden fixed z-40 left-1/2 -translate-x-1/2 flex items-center gap-0.5 p-1 rounded-full bg-bg-card/95 backdrop-blur border border-border shadow-[0_4px_16px_rgba(0,0,0,0.25)] transition-all duration-300 ${pillPos} ${
           shown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
         }`}
       >
@@ -196,7 +197,7 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
         onClick={() => setSearch(true)}
         data-engagement="fab_search_desktop_click"
         aria-label="Cari saham lain"
-        className={`hidden md:flex fixed bottom-6 left-1/2 -translate-x-1/2 z-40 items-center gap-2.5 h-11 px-5 rounded-full bg-bg-card/95 backdrop-blur border border-border depth-shadow text-sm text-text-secondary hover:border-accent/40 hover:text-text-primary transition-all press-scale ${
+        className={`hidden md:flex fixed bottom-6 left-1/2 -translate-x-1/2 z-40 items-center gap-2.5 h-11 px-5 rounded-full bg-bg-card/95 backdrop-blur border border-border shadow-[0_4px_16px_rgba(0,0,0,0.25)] text-sm text-text-secondary hover:border-accent/40 hover:text-text-primary transition-all press-scale ${
           shown ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
