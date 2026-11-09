@@ -1768,3 +1768,10 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - In-flight: ops-11-05-01 P0 guardrail kenapa-* RESLOT 18:30 malam ini (spec ada, DONE WHEN 4 poin di entry); qa-11-09-02 favicon slot 18:30 juga; kereta T-1109-M berangkat malam.
 - Jebakan: (1) URL artikel = /berita/<slug> bukan /artikel/; (2) root /saham-<t> 404 by design, kanonik /berita/saham-<t> 308→/stocks/T.JK pasca-EOD; (3) postgres UPDATE kolom sama 2x = error — nested replace; (4) deploy.sh --dry-run BUKAN flag (dijalankan no-op up -d, hanya aman karena gate dirty membatalkan) — jangan pakai; (5) docker exec quoting: nama kolom \"\" + hilangkan subshell $() dalam string SQL.
 - Langkah pertama slot malam: baca queue → ops-11-05-01 (PLAN + failing-test-first guardrail) → build-only; kereta T-1109-M 22:15.
+
+## 2026-11-09 19:0x — CTO sore 16:45
+- State: sehat (site 200 0.28s, kontainer healthy, EOD 9 Nov IN); ANOMALI: app 59b9704b6c8e deploy 18:13 oleh sesi lain (commit c3bb09b) TANPA bus entry — worker masih 06:41, perlu reconciliation Kondektur/Sentinel; deploy-count hari ini kemungkinan sudah 2 (06:41 owner + 18:13) → JANGAN deploy lagi malam ini tanpa cek.
+- Barusan: ops-2026-11-05-01 DONE BUILD-ONLY (qa_pass, train T-1110-M): guardrail kenapa-* 3 root-fix, selftest 12/12, dry-run 4/4 replay passed, replay_sql_gate 4/4. Generator TETAP OFF — aktivasi = owner/CEO.
+- In-flight: kereta malam T-1109-M 22:15 (kondektur); prd-11-07-01/02 + qa-11-09-02 (favicon copy 1-file public/favicon.ico) di slot 18:30 BE malam — SUDAH LEWAT jam 18:30, kalau slot itu tidak jalan → reslot besok; ops-11-06-03 tetap blocked_for_owner.
+- Jebakan: (1) selftest movement hijau TAPI dry-run butuh ANTHROPIC token WORKER (host .env basi md5 00b68db0, worker 049aa065 — ambil via docker exec printenv, jangan print); (2) DB host staging = 127.0.0.1:5433 (ganti @db:5432); (3) dry-run PSAT semalam kini hijau setelah fix #3; (4) statejson --set hanya di flip, update pakai --python.
+- Langkah pertama slot berikutnya: baca handoff → cek anomali deploy 18:13 tercatat di bus → kereta malam manifest → ops-11-06-03 tetap nunggu owner.
