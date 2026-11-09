@@ -5347,6 +5347,44 @@
       "qa_note": "TRUE 9Nov 03:3x DGN KOREKSI 2 angka: (A) funnel replay EXACT T1 354 T2 122 T3 2 T4 1 T5 0 ✓; (C) quality 4,1(30Okt)->8,9(4Nov)/8,2(6Nov) EXACT ✓, attributed n=1 7Nov ✓, probe 403/403/200 ✓. KOREKSI: (1) 'AiChatLog 0 row 7-8 Nov' SALAH — aktual 2 row (id 204/205, 03:06 7Nov, keduanya isEval=true smoke sendiri dr bo-11-06-01; kesimpulan weekend-collapse trafik real tetap valid); (2) returning 26Okt/02Nov = 11/122-9,0%-13,3-14,0% di replay aku vs klaim 13/124-10,5% & 19/129-14,7% (drift boundary ±2 dev; tren naik +di atas target 8% tetap TERKONFIRMASI). Insight T2->T3 bottleneck valid.",
       "qa_verified_at": "2026-11-09 03:4x WIB (qa-verifier-cron)",
       "qa_verified_by": "qa-verifier-cron"
+    },
+    {
+      "id": "qa-2026-11-09-01",
+      "date": "2026-11-09",
+      "type": "qa-content-fix",
+      "priority": "P1",
+      "status": "pending",
+      "assigned_to": "cto-pagi",
+      "pos": "[KONVERSI-trust]",
+      "north_star": "TRUST (angka breadth & superlatif = data reliable; klaim salah di artikel pagi = trust runtuh)",
+      "title": "FATAL QA 9 Nov: analis-pagi-2026-11-09-pbid — breadth \"292 stagnan\" salah vs DB 162 (kanonik 231/440/162, 2x live) + \"PBID satu-satunya Sangat Menguat\" salah (DB=4: PBID .78/ALKA .72/MPXL .64/ALDO .64)",
+      "spec": "INTENT: patch konten analis-pagi-2026-11-09-pbid pasca-publish (reviewer 07:4x 9 Nov, post-publish QA — jangan blok pipeline). ACCEPTANCE: (1) position('292 stagnan', content+excerpt)=0 DAN grep live '292 stagnan'=0 — ganti dengan trio kanonik satu-pintu 231/440/162 (snapshot 6 Nov); (2) klaim 'satu-satunya sinyal Sangat Menguat' (heading+body, 2 kemunculan) dihapus/ditulis ulang — opsi aman terverifikasi DB: 'skor tertinggi hasil scan pagi ini, 0,78' (B2 ranking penuh PBID #1); (3) excerpt ikut konsisten; (4) replay_sql_gate.py analis-pagi-2026-11-09-pbid exit 0 sebelum UPDATE; (5) H2: semua kemunculan lama DB+live=0; (6) minor sekalian: net asing pasar Jumat DB=128,7 M vs kutipan Kontan 328,2 M — pertahankan atribusi eksplisit 'dikutip Kontan' atau samakan dengan data sendiri.",
+      "scheduled_slot": "2026-11-09 BE siang 09:30 SETELAH ops-11-08-01 verify-first (DB-patch 0-build; expr 30 9 * * 1-5 VERIFIED 9 Nov). PATCH: analis-pagi-2026-11-09-pbid \"292 stagnan\"->\"162 stagnan\" (kanonik 6 Nov; live masih 292 per spot-check CTO 07:52) + \"satu-satunya Sinyal Sangat Menguat\"->\"skor sinyal tertinggi\" (DB 6 Nov: 4 emiten Sangat Menguat). BUKTI H1: position(292)=0 post-patch + grep live old=0 + replay gate exit 0"
+    },
+    {
+      "id": "qa-2026-11-09-02",
+      "date": "2026-11-09",
+      "type": "qa-content-fix",
+      "priority": "P2",
+      "status": "pending",
+      "assigned_to": "cto-pagi",
+      "pos": "[BUGFIX-trust]",
+      "north_star": "TRUST (favicon korup di browser = kesan situs rusak; dev-server 500 kambuh kalau public/ tak ikut patch)",
+      "title": "favicon.ico LIVE masih versi korup offset-0 — commit a16d480 hanya patch src/app/favicon.ico, public/favicon.ico (yang disajikan prod) tidak ikut",
+      "spec": "INTENT: ux-2026-11-08-01 fix belum sampai prod utk /favicon.ico. Bukti reviewer 07:3x: live byte md5=b2fbb98258f544e5f8cc15a72a13a531 identik public/favicon.ico lama (mtime 7 Nov), 4 entry ICO offset=0 (semua melewati header); src/app/favicon.ico sudah benar (70/623/1581/3029, sum=4765 exact). ACCEPTANCE: (1) salin src/app/favicon.ico → public/favicon.ico (byte identik); (2) verify repo: ICO parse offset>0 + PIL decode OK; (3) naik ke prod via KERETA berikutnya (DILARANG build solo — gate ops-11-08-01/OOM), lalu live verify: md5 != b2fbb982... + ICO parse valid; (4) catat di bus saat kereta naik.",
+      "scheduled_slot": "2026-11-09 BE malam 18:30 BUILD-ONLY bundling prd-11-07-01/02 (copy src/app/favicon.ico MD5 617ed096 -> public/favicon.ico masih korup b2fbb982 = live; 1-file commit; naik kereta malam bila gate hijau pre-22:00, else T-1110-M. Spot-check CTO 07:52: MD5 live == public/ korup, src/ benar"
+    },
+    {
+      "id": "feat-2026-11-09-01",
+      "kind": "feature",
+      "title": "Reply-Hook: kesimpulan-first compare + auto-link web teknikal.id (owner approve 9 Nov 'biar orang ketagihan')",
+      "status": "done",
+      "repo": "teknikal-agent",
+      "commit": "0dbb567",
+      "spec": "compare=kesimpulan dulu; tombol URL teknikal.id/stocks/T.JK di-inject sistem dari tool-call (bukan LLM), max 3, filter delisted; tanpa ticker=tanpa link",
+      "result": "commit 0dbb567 (8 file +633): weblink.go 196L + test 283L; go build OK; go test fresh 3 pkg PASS; gofmt bersih; go vet bersih; deploy binary /tmp/agentd_pulse + kickstart; healthz ok jobs_failed 0; /stocks/BBCA.JK 200",
+      "qa_note": "URL dari ToolInvocation args (bukan teks jawaban) — anti-halusinasi; delisted filter utk isActive=false; DEEPLINK-WEB path /stocks/T.JK sesuai",
+      "deployed": true
     }
   ]
 }
