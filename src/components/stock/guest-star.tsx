@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useGuestWatchlist } from "@/hooks/use-guest-watchlist";
 import { getAnonIdSafe } from "@/lib/anon-id-safe";
 
-export function GuestStar({ ticker, compact = false }: { ticker: string; compact?: boolean }) {
+export function GuestStar({ ticker, compact = false, chipAlign = "center" }: { ticker: string; compact?: boolean; chipAlign?: "center" | "end" }) {
   const { tickers, toggle, mounted } = useGuestWatchlist();
   // PRD idea-2026-10-19-2 AC2: chip 'Tersimpan — N emiten' auto-hide ~2s.
   // State hanya di-set dari event handler (bukan effect) — bebas cascading render;
@@ -73,7 +73,9 @@ export function GuestStar({ ticker, compact = false }: { ticker: string; compact
       {flash?.ticker === ticker && active && (
         <span
           role="status"
-          className="absolute left-1/2 top-full z-10 mt-1 -translate-x-1/2 whitespace-nowrap rounded-full bg-bg-card border border-border px-2.5 py-1 text-[10px] font-medium text-text-secondary depth-shadow"
+          className={`absolute top-full z-10 mt-1 whitespace-nowrap rounded-full bg-bg-card border border-border px-2.5 py-1 text-[10px] font-medium text-text-secondary depth-shadow ${
+            chipAlign === "end" ? "right-0" : "left-1/2 -translate-x-1/2"
+          }`}
         >
           Tersimpan di perangkat ini ·{" "}
           <Link href="/stocks#pantauan" className="underline hover:text-accent">lihat pantauan</Link>

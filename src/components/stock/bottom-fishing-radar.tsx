@@ -1,9 +1,13 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
 import { formatRp, formatPercent } from "@/lib/utils";
+import { GuestStar } from "@/components/stock/guest-star";
+import { BookmarkIcon } from "@/components/screener/screener-icons";
+import { useWatchlist, useToggleWatchlist } from "@/hooks/use-watchlist";
 
 interface RadarStock {
   ticker: string;
@@ -32,6 +36,16 @@ export function BottomFishingRadar({
   const [expanded, setExpanded] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const noun = "saham";
+
+  // Watchlist inline (mirror pola screener-results): login = server watchlist
+  // (cache react-query tunggal ["watchlist"], tanpa request per-row), guest = bintang localStorage.
+  const { data: session } = useSession();
+  const { data: watchlistData } = useWatchlist();
+  const watchlistTickers = useMemo(
+    () => new Set((watchlistData ?? []).map((item) => item.ticker)),
+    [watchlistData],
+  );
+  const toggleWatchlist = useToggleWatchlist();
 
   const { data: stocks = [], isLoading, isError } = useQuery<RadarStock[]>({
     queryKey: ["radar", assetClass ?? "all"],
@@ -111,11 +125,12 @@ export function BottomFishingRadar({
               </div>
             ) : (
               visibleStocks.map((stock) => (
-                <Link
-                  key={stock.ticker}
-                  href={`${linkBase}/${stock.ticker}`}
-                  className="block rounded-lg border border-border/40 p-3 hover:bg-bg-hover hover:border-blue-200/50 hover:-translate-y-px transition-all duration-200 group"
-                >
+                <div key={stock.ticker} className="relative rounded-lg border border-border/40 hover:bg-bg-hover hover:border-blue-200/50 hover:-translate-y-px transition-all duration-200 group">
+                  <Link
+                    href={`${linkBase}/${stock.ticker}`}
+                    className="block p-3"
+                    aria-label={`Buka detail ${stock.ticker.replace(".JK", "")}`}
+                  >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-bold text-accent group-hover:underline">{stock.ticker.replace(".JK", "")}</span>
@@ -173,7 +188,29 @@ export function BottomFishingRadar({
                       </span>
                     )}
                   </div>
-                </Link>
+                  </Link>
+                  {/* Bintang pantau inline — sibling di luar <Link> (HTML valid, tanpa bubbling).
+                      Guest: localStorage; login: watchlist server. 3 klik+2 navigasi → 1 klik. */}
+                  <div className="absolute right-1.5 bottom-1.5 z-10">
+                    {session?.user ? (
+                      <button
+                        onClick={() => {
+                          const action = watchlistTickers.has(stock.ticker) ? "remove" : "add";
+                          toggleWatchlist.mutate({ ticker: stock.ticker, action });
+                        }}
+                        className={`relative p-2 rounded-md transition-colors cursor-pointer before:absolute before:-inset-1 before:content-[''] ${
+                          watchlistTickers.has(stock.ticker) ? "text-accent" : "text-text-tertiary hover:text-accent"
+                        }`}
+                        aria-label={watchlistTickers.has(stock.ticker) ? `Hapus ${stock.ticker} dari pantauan` : `Pantau ${stock.ticker}`}
+                        title={watchlistTickers.has(stock.ticker) ? "Hapus dari pantauan" : "Simpan ke pantauan"}
+                      >
+                        <BookmarkIcon filled={watchlistTickers.has(stock.ticker)} className="w-4 h-4" />
+                      </button>
+                    ) : (
+                      <GuestStar ticker={stock.ticker} compact chipAlign="end" />
+                    )}
+                  </div>
+                </div>
               ))
             )}
           </div>
