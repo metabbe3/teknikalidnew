@@ -50,3 +50,5 @@ export async function GET(request: NextRequest) {
     return handleApiError(error, "run screener");
   }
 }
+
+export const dynamic = "force-dynamic";

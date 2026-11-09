@@ -21,3 +21,5 @@ export async function GET(request: NextRequest) {
     return handleApiError(error, "fetch stocks");
   }
 }
+
+export const dynamic = "force-dynamic";

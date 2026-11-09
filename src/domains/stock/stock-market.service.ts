@@ -510,11 +510,20 @@ export const stockMarketService = {
     // the fetch window for 1D, then slice to the last trading day (WIB).
     const fetchDays = days === 1 ? 5 : days;
     const period1 = subDays(new Date(), fetchDays);
-    const raw = await fetchChart(ticker, {
-      period1,
-      period2: new Date(),
-      interval,
-    });
+    let raw;
+    try {
+      raw = await fetchChart(ticker, {
+        period1,
+        period2: new Date(),
+        interval,
+      });
+    } catch (err) {
+      // fix-2026-11-09: Yahoo "No data found, symbol may be delisted" = ticker tak dikenal
+      // (bot/halaman zombie) → 404 bersih (StockNotFoundError), bukan 500 + noise AppErrorLog.
+      const msg = err instanceof Error ? err.message : String(err);
+      if (/no data found|delisted/i.test(msg)) throw new StockNotFoundError(ticker);
+      throw err;
+    }
 
     const mapped = raw.map((row) => ({
       date: (() => {
