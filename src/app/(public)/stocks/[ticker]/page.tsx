@@ -903,6 +903,17 @@ export default async function StockDetailPage({
                   );
                 })()}
 
+                {/* simplify-2026-11-09 (audit CDP mobile: blok peers→OHLC 840px di kolom kanan
+                    hero = 45% viewport mobile; data: fungsi bandingkan 24 PV/30d).
+                    LIPAT native <details> (SSR utuh utk SEO + chip nav tetap anchor),
+                    TERBUKA default di desktop lg (kolom kanan memang utk ini). */}
+                <details className="group lg:open" open={false}>
+                  <summary className="lg:hidden cursor-pointer select-none list-none flex items-center gap-1.5 text-xs font-semibold text-accent min-h-11 -ml-1">
+                    <span className="transition-transform group-open:rotate-90" aria-hidden>▸</span>
+                    Saham serupa, indeks &amp; statistik lengkap
+                  </summary>
+                  <div className="mt-2 lg:mt-0">
+
                 {/* Fase T2: Saham sejenis bersinyal lebih kuat (<35% scroll) */}
                 <StrongerPeersStrip
                   currentTicker={ticker}
@@ -1034,7 +1045,56 @@ export default async function StockDetailPage({
                     )}
                   </div>
                 )}
+                  </div>
+                </details>
               </div>
+
+              {/* simplify-2026-11-09 desktop dead-space fix: audit CDP menemukan 294px kosong
+                  di kolom kiri hero desktop (kolom kanan 708px vs kiri 582px, imbalance >120px
+                  = ambang skill). Solusi TANPA duplikat SSR: DailyAnalysisSection tetap SATU
+                  di DOM — dipindah visual ke kolom kiri hero di desktop via grid-area.
+                  Mobile: tetap di posisi lama (setelah chart). */}
+              {fullAccess && close !== null && (
+                <div className="hidden lg:block">
+                  <DailyAnalysisSection
+                    ticker={ticker}
+                    stockName={stock.name}
+                    sector={stock.sector}
+                    close={close}
+                    change={change}
+                    changePercent={changePercent}
+                    high={latestHigh}
+                    low={latestLow}
+                    volume={latestVolume}
+                    week52High={detail.week52High}
+                    week52Low={detail.week52Low}
+                    rsi14={indicators?.rsi14 ?? null}
+                    macdHist={indicators?.macdHist ?? null}
+                    sma20={indicators?.sma20 ?? null}
+                    sma50={indicators?.sma50 ?? null}
+                    sma200={indicators?.sma200 ?? null}
+                    adx={indicators?.adx ?? null}
+                    stochK={indicators?.stochK ?? null}
+                    stochD={indicators?.stochD ?? null}
+                    supertrend={indicators?.supertrend ?? null}
+                    atr={indicators?.atr ?? null}
+                    obvTrend={indicators?.obvTrend ?? null}
+                    signalLabel={indicators?.signalLabel ?? null}
+                    signalScore={indicators?.signalScore ?? null}
+                    emaCrossSignal={indicators?.emaCrossSignal ?? null}
+                    smaCrossSignal={indicators?.smaCrossSignal ?? null}
+                    bbUpper={indicators?.bbUpper ?? null}
+                    bbLower={indicators?.bbLower ?? null}
+                    pe={fundamentals?.pe ?? null}
+                    pb={fundamentals?.pb ?? null}
+                    eps={fundamentals?.eps ?? null}
+                    dividendYield={fundamentals?.dividendYield ?? null}
+                    marketCap={fundamentals?.marketCap ?? null}
+                    pivotR1={pivots?.r1 ?? null}
+                    pivotS1={pivots?.s1 ?? null}
+                  />
+                </div>
+              )}
             </div>
             </GuestQuotaProvider>
 
@@ -1274,38 +1334,39 @@ export default async function StockDetailPage({
           </section>
         )}
 
-        {/* Tanya analisa via Agent (funnel agent-first) — guest-visible, no-login */}
-        <section className="bg-bg-card rounded-xl border border-border p-5 space-y-2" aria-label={`Tanya analisa apa pun soal ${stripJk(ticker)}`}>
-          <h2 className="font-serif text-base font-semibold text-text-primary">Tanya analisa apa pun soal {stripJk(ticker)}</h2>
-          <p className="text-sm text-text-secondary">Skor sinyal, level support/resistance, dan jawaban instan lainnya — 3x gratis.</p>
-          <a
-            href={tgDeepLink([ticker])}
-            data-engagement="tg_tanya_agent_card"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90"
-          >
-            💬 Tanya AI Gratis
-          </a>
-        </section>
-
-        {/* Pantau via Telegram (retention-2026-10-28) — guest-visible, no-login, bahasa awam, tap target 44px */}
-        <section className="bg-bg-card rounded-xl border border-border p-5 space-y-2" aria-label="Pantau via Telegram">
-          <h2 className="font-serif text-base font-semibold text-text-primary">Pantau {ticker.replace(/\.JK$/, "")} tiap hari</h2>
-          <p className="text-sm text-text-secondary">Dapatkan ringkasan harga &amp; sinyal langsung di Telegram setelah pasar tutup — tanpa perlu login.</p>
-          <a
-            href={`https://t.me/TeknikalidAgentBot?start=${encodeURIComponent(ticker.replace(/\.JK$/, "") + "_JK")}`}
-            data-engagement="tg_pantau_kartu"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90"
-          >
-            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
-              <path d="M10.268 21a2 2 0 0 0 3.464 0" />
-              <path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />
-            </svg>
-            Pantau via Telegram
-          </a>
+        {/* simplify-2026-11-09 (audit CDP: 2 kartu full-width 146px numpuk = 292px):
+            GABUNG jadi 1 kartu grid 2 kolom — konten & event tracker tetap utuh. */}
+        <section className="bg-bg-card rounded-xl border border-border p-5 grid grid-cols-1 sm:grid-cols-2 gap-5" aria-label={`Tanya AI & pantau ${stripJk(ticker)}`}>
+          <div className="space-y-2">
+            <h2 className="font-serif text-base font-semibold text-text-primary">Tanya analisa apa pun soal {stripJk(ticker)}</h2>
+            <p className="text-sm text-text-secondary">Skor sinyal, level support/resistance, dan jawaban instan lainnya — 3x gratis.</p>
+            <a
+              href={tgDeepLink([ticker])}
+              data-engagement="tg_tanya_agent_card"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90"
+            >
+              💬 Tanya AI Gratis
+            </a>
+          </div>
+          <div className="space-y-2">
+            <h2 className="font-serif text-base font-semibold text-text-primary">Pantau {ticker.replace(/\.JK$/, "")} tiap hari</h2>
+            <p className="text-sm text-text-secondary">Ringkasan harga &amp; sinyal langsung di Telegram setelah pasar tutup — tanpa login.</p>
+            <a
+              href={`https://t.me/TeknikalidAgentBot?start=${encodeURIComponent(ticker.replace(/\.JK$/, "") + "_JK")}`}
+              data-engagement="tg_pantau_kartu"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90"
+            >
+              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
+                <path d="M10.268 21a2 2 0 0 0 3.464 0" />
+                <path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />
+              </svg>
+              Pantau via Telegram
+            </a>
+          </div>
         </section>
 
         {/* Chart — free for everyone (hybrid freemium). Anon fetches via API, range-clamped to ~90d; the OHLC series is still never SSR-embedded. */}
@@ -1378,6 +1439,7 @@ export default async function StockDetailPage({
           </Link>
         </p>
         {fullAccess && close !== null ? (
+          <div className="lg:hidden">
             <DailyAnalysisSection
               ticker={ticker}
               stockName={stock.name}
@@ -1415,9 +1477,12 @@ export default async function StockDetailPage({
               pivotR1={pivots?.r1 ?? null}
               pivotS1={pivots?.s1 ?? null}
             />
+          </div>
         ) : null}
 
-        {/* Indicators + Sidebar */}
+        {/* simplify-2026-11-09 (audit CDP: 11 blok indikator 1.420px mobile / 1.330px desktop —
+            paling panjang di halaman, hampir tak dibaca baris-per-baris). LIPAT native <details>
+            default TERTUTUP; 4 kartu utama (RSI/MACD/SMA/BB) tetap tampil di IndicatorPanel atas. */}
         <div id="indikator" className="flex items-center justify-between mb-2 scroll-mt-24 pt-2">
           <h2 className="font-serif text-lg font-semibold text-text-primary">Indikator Teknikal</h2>
           <Link
@@ -1427,6 +1492,14 @@ export default async function StockDetailPage({
             Riwayat indikator historis →
           </Link>
         </div>
+        <details className="group">
+          <summary className="cursor-pointer select-none list-none flex items-center justify-between gap-2 rounded-lg border border-border bg-bg-card px-4 min-h-11 text-sm font-semibold text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors">
+            <span>Rincian 11 indikator — sinyal &amp; angka lengkap</span>
+            <span className="text-text-tertiary text-xs whitespace-nowrap" aria-hidden>
+              lihat <span className="inline-block transition-transform group-open:rotate-180">▾</span>
+            </span>
+          </summary>
+          <div className="pt-4">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           <div className="lg:col-span-3 space-y-4">
             {indicators ? (
@@ -1522,6 +1595,8 @@ export default async function StockDetailPage({
             )}
           </div>
         </div>
+        </div>
+        </details>
 
         {/* IDX Company Data Tabs — auth-gated */}
         {fullAccess ? (
