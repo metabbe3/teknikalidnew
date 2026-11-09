@@ -192,19 +192,35 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
         </a>
       </div>
 
-      {/* ── Pill desktop: Cari saham lain + shortcut "/" & ⌘K ── */}
-      <button
-        onClick={() => setSearch(true)}
-        data-engagement="fab_search_desktop_click"
-        aria-label="Cari saham lain"
-        className={`hidden md:flex fixed bottom-6 left-1/2 -translate-x-1/2 z-40 items-center gap-2.5 h-11 px-5 rounded-full bg-bg-card/95 backdrop-blur border border-border shadow-[0_4px_16px_rgba(0,0,0,0.25)] text-sm text-text-secondary hover:border-accent/40 hover:text-text-primary transition-all press-scale ${
+      {/* ── Pill desktop: Cari saham lain ("/" & ⌘K) + Tanya AI soft-sell (owner 9 Nov) ── */}
+      <div
+        aria-label="Aksi cepat saham"
+        className={`hidden md:flex fixed bottom-6 left-1/2 -translate-x-1/2 z-40 items-center gap-1 p-1 rounded-full bg-bg-card/95 backdrop-blur border border-border shadow-[0_4px_16px_rgba(0,0,0,0.25)] transition-all duration-300 ${
           shown ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
-        <Search className="h-4 w-4 text-accent" />
-        <span>Cari saham lain…</span>
-        <kbd className="hidden lg:inline-flex items-center h-5 px-1.5 rounded border border-border bg-bg-primary text-[10px] font-mono text-text-tertiary">/</kbd>
-      </button>
+        <button
+          onClick={() => setSearch(true)}
+          data-engagement="fab_search_desktop_click"
+          aria-label="Cari saham lain"
+          className="flex items-center gap-2.5 h-10 px-4 rounded-full text-sm text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-all press-scale"
+        >
+          <Search className="h-4 w-4 text-accent" />
+          <span>Cari saham lain…</span>
+          <kbd className="hidden lg:inline-flex items-center h-5 px-1.5 rounded border border-border bg-bg-primary text-[10px] font-mono text-text-tertiary">/</kbd>
+        </button>
+        <span aria-hidden="true" className="h-5 w-px bg-border" />
+        <a
+          href={`https://t.me/TeknikalidAgentBot?start=src_fab_desktop_${base}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-engagement="fab_ask_agent_desktop_click"
+          className="flex items-center gap-1.5 h-10 px-4 rounded-full text-sm font-medium text-text-primary hover:bg-bg-hover transition-all press-scale"
+        >
+          <Bot className="h-4 w-4 text-accent" />
+          Tanya AI
+        </a>
+      </div>
 
       {toast && (
         <div className="fixed bottom-24 inset-x-0 z-50 flex justify-center px-4 pointer-events-none">
