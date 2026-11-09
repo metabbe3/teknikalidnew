@@ -1270,7 +1270,7 @@ export default async function StockDetailPage({
 
         {/* Aliran Dana Asing 5 sesi (usp-2026-10-24-04) — guest-visible, graceful hidden */}
         {foreignLatest && (
-          <section id="asing" className="bg-bg-card rounded-xl border border-border p-5 space-y-3 scroll-mt-24" aria-label="Aliran dana asing">
+          <section id="asing" className="bg-bg-card rounded-xl border border-border p-4 space-y-2 scroll-mt-24" aria-label="Aliran dana asing">
             <div className="flex items-baseline justify-between">
               <h2 className="font-serif text-base font-semibold text-text-primary">Aliran Dana Asing</h2>
               <span className="text-xs text-text-tertiary">5 sesi terakhir · net (beli − jual) asing</span>
@@ -1285,7 +1285,7 @@ export default async function StockDetailPage({
               const total = valid.reduce((a, b) => a + b.netValue, 0);
               const ordered = foreignWithPx.slice().reverse();
               return (
-                <div className="space-y-1.5" role="img" aria-label={`Net aliran dana asing ${valid.length} sesi terakhir`}>
+                <div className="space-y-1" role="img" aria-label={`Net aliran dana asing ${valid.length} sesi terakhir`}>
                   {ordered.map((f, i) => {
                     const v = f.netValue;
                     const isLatest = i === ordered.length - 1;
@@ -1294,7 +1294,7 @@ export default async function StockDetailPage({
                         <span className={`w-12 shrink-0 text-[10px] ${isLatest ? "text-text-primary font-semibold" : "text-text-tertiary"}`}>
                           {f.date.toLocaleDateString("id-ID", { weekday: "short", day: "numeric" })}
                         </span>
-                        <div className="flex-1 h-2.5 relative bg-bg-hover/40 rounded-full overflow-hidden">
+                        <div className="flex-1 h-2 relative bg-bg-hover/40 rounded-full overflow-hidden">
                           <div className="absolute inset-y-0 left-1/2 w-px bg-border" aria-hidden />
                           {v !== null && v !== 0 && (
                             <div
@@ -1321,15 +1321,13 @@ export default async function StockDetailPage({
                 </div>
               );
             })()}
-            <p className="text-sm text-text-secondary">
-              Sesi terakhir ({foreignLatest.date.toLocaleDateString("id-ID", { day: "numeric", month: "short" })}):{' '}
+            <p className="text-[11px] text-text-tertiary leading-snug">
+              Sesi {foreignLatest.date.toLocaleDateString("id-ID", { day: "numeric", month: "short" })}:{' '}
               <span className={foreignLatest.netValue! >= 0 ? "font-semibold text-bullish" : "font-semibold text-bearish"}>
                 {foreignLatest.netValue! >= 0 ? "+" : "−"}Rp{(Math.abs(foreignLatest.netValue!) / 1_000_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })} M
               </span>{' '}
-              {foreignLatest.netValue! >= 0 ? "akumulasi asing" : "distribusi asing"}.
-            </p>
-            <p className="text-[10px] text-text-tertiary leading-snug">
-              Jejak dana institusi asing = konteks informasi, bukan rekomendasi beli/jual. Lihat agregat pasar di <a className="text-accent hover:underline" href="/pasar">Koran Saham Live</a>.
+              {foreignLatest.netValue! >= 0 ? "akumulasi asing" : "distribusi asing"} · konteks informasi, bukan rekomendasi ·{' '}
+              <a className="text-accent hover:underline" href="/pasar">agregat pasar</a>
             </p>
           </section>
         )}
