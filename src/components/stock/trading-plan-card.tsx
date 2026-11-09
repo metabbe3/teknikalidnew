@@ -94,17 +94,28 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
         )}
 
         <div className={`space-y-2 ${isWaitAndSee ? "opacity-50" : ""}`}>
-          <Row
-            label="Beli di (Entry)"
-            value={formatRp(plan.entry)}
-            detail={plan.entryZone}
-            valueClass="text-accent"
-          />
-          <Row label="Target 1 (TP1)" value={formatRp(plan.tp1)} detail={`(${plan.tp1Source})`} valueClass="text-bullish" />
-          {plan.tp2 && (
-            <Row label="Target 2 (TP2)" value={formatRp(plan.tp2)} detail={`(${plan.tp2Source})`} valueClass="text-bullish" />
-          )}
-          <Row label="Batas rugi (Stop Loss)" value={formatRp(plan.sl)} detail={`(${plan.slSource})`} valueClass="text-bearish" />
+          {/* owner 10 Nov: Entry/TP/SL dipadatkan jadi grid 3 kolom — 1 lihat, angka besar berwarna */}
+          <div className="grid grid-cols-3 gap-1.5">
+            <div className="rounded-lg bg-accent/10 border border-accent/40 px-2 py-2 flex flex-col items-center justify-center text-center min-h-[56px]">
+              <span className="text-[10px] font-medium text-text-secondary leading-tight">Beli di</span>
+              <span className="text-[13px] sm:text-sm font-mono tabular-nums font-bold text-accent leading-tight">{formatRp(plan.entry)}</span>
+              {plan.entryZone && <span className="text-[9px] text-text-tertiary leading-tight">{plan.entryZone}</span>}
+            </div>
+            <div className="rounded-lg bg-bullish/15 border border-bullish/40 px-2 py-2 flex flex-col items-center justify-center text-center min-h-[56px]">
+              <span className="text-[10px] font-medium text-text-secondary leading-tight">Target</span>
+              <span className="text-[13px] sm:text-sm font-mono tabular-nums font-bold text-bullish leading-tight">{formatRp(plan.tp1)}</span>
+              {plan.tp2 ? (
+                <span className="text-[9px] text-text-tertiary leading-tight">TP2 {formatRp(plan.tp2)}</span>
+              ) : (
+                <span className="text-[9px] text-text-tertiary leading-tight">{plan.tp1Source}</span>
+              )}
+            </div>
+            <div className="rounded-lg bg-bearish/15 border border-bearish/40 px-2 py-2 flex flex-col items-center justify-center text-center min-h-[56px]">
+              <span className="text-[10px] font-medium text-text-secondary leading-tight">Stop Loss</span>
+              <span className="text-[13px] sm:text-sm font-mono tabular-nums font-bold text-bearish leading-tight">{formatRp(plan.sl)}</span>
+              <span className="text-[9px] text-text-tertiary leading-tight">{plan.slSource}</span>
+            </div>
+          </div>
         </div>
 
         {mc && (
@@ -202,14 +213,3 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
   );
 }
 
-function Row({ label, value, detail, valueClass }: { label: string; value: string; detail: string; valueClass: string }) {
-  return (
-    <div className="flex items-center justify-between">
-      <span className="text-xs text-text-secondary">{label}</span>
-      <div className="flex items-center gap-2">
-        <span className={`text-sm font-mono tabular-nums font-semibold ${valueClass}`}>{value}</span>
-        <span className="text-[10px] text-text-tertiary">{detail}</span>
-      </div>
-    </div>
-  );
-}
