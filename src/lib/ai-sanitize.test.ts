@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert";
-import { sanitizeAiText, hasCjk } from "./ai-sanitize";
+import { sanitizeAiText, hasCjk, ensureAiDisclaimer } from "./ai-sanitize";
 
 test("strip CJK dari teks Indonesia", () => {
   const r = sanitizeAiText("Market lagi喜庆 banget nih — IHSG naik.");
@@ -34,4 +34,29 @@ test("string kosong aman", () => {
   const r = sanitizeAiText("");
   assert.equal(r.removed, 0);
   assert.equal(r.text, "");
+});
+
+// ─── ensureAiDisclaimer (loop 9 Nov): guard compliance deterministik ───
+test("disclaimer hilang → disisipkan sebelum [FOLLOWUPS]", () => {
+  const t = "Skor teknikal CDIA positif, sisanya melemah.\n\n[FOLLOWUPS] Skor dihitung gimana? | AMRT kenapa turun?";
+  const r = ensureAiDisclaimer(t);
+  assert.equal(r.includes("bukan rekomendasi"), true);
+  assert.equal(r.indexOf("bukan rekomendasi") < r.indexOf("[FOLLOWUPS]"), true);
+  assert.equal(r.includes("[FOLLOWUPS] Skor dihitung gimana?"), true);
+});
+
+test("disclaimer sudah ada → tidak diduplikasi", () => {
+  const t = "Asing net buy BBCA Rp524 miliar (close 9 Nov). Data teknikal ya, bukan rekomendasi beli.\n\n[FOLLOWUPS] Kenapa asing pilih BBCA? | ASII kenapa diborong? | BMRI kenapa dilepas?";
+  const r = ensureAiDisclaimer(t);
+  assert.equal((r.match(/bukan rekomendasi/g) ?? []).length, 1);
+  assert.equal(r, t);
+});
+
+test("tanpa [FOLLOWUPS] → disclaimer di akhir teks", () => {
+  const r = ensureAiDisclaimer("IHSG close 9 Nov naik 0,46% ke 5.073,77.");
+  assert.equal(r.endsWith("bukan rekomendasi beli/jual."), true);
+});
+
+test("string kosong → tetap kosong (guard tidak menulis tanpa jawaban)", () => {
+  assert.equal(ensureAiDisclaimer(""), "");
 });

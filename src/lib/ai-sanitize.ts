@@ -43,3 +43,30 @@ export function sanitizeAiText(text: string): SanitizeResult {
 export function hasCjk(text: string): boolean {
   return CJK_RE.test(text);
 }
+
+/**
+ * Guard disclaimer compliance — lapis-2 deterministik (doktrin anti-mislead).
+ *
+ * Latar (loop 9 Nov): aturan prompt "akhiri disclaimer bukan rekomendasi"
+ * bisa DILEWATI model — kasus nyata: jawaban preset syariah berakhir di
+ * [FOLLOWUPS] tanpa satu kalimat disclaimer pun, padahal 9/10 jawaban lain
+ * patuh. Compliance tidak boleh bergantung kepatuhan model.
+ */
+export const AI_DISCLAIMER = "Data teknikal ya, bukan rekomendasi beli/jual.";
+
+/** Varian frasa non-rekomendasi yang sudah dihitung memenuhi compliance. */
+const DISCLAIMER_RE = /bukan\s+(?:rekomendasi|saran|ajakan|anjuran)|bukanlah\s+(?:rekomendasi|saran|ajakan)/i;
+
+/**
+ * Pastikan jawaban AI memuat kalimat non-rekomendasi. Sudah ada → teks utuh.
+ * Belum ada → sisipkan SEBELUM trailer [FOLLOWUPS] (bila ada) agar disclaimer
+ * tampil di badan jawaban, bukan setelah chip follow-up.
+ */
+export function ensureAiDisclaimer(text: string): string {
+  if (!text || DISCLAIMER_RE.test(text)) return text;
+  const fIdx = text.lastIndexOf("[FOLLOWUPS]");
+  if (fIdx === -1) return `${text}\n\n${AI_DISCLAIMER}`;
+  const head = text.slice(0, fIdx).trimEnd();
+  const tail = text.slice(fIdx);
+  return `${head}\n\n${AI_DISCLAIMER}\n\n${tail}`;
+}

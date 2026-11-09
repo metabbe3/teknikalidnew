@@ -1,5 +1,5 @@
 import { isPlausibleTicker, extractTickersRanked } from "@/lib/ai-ticker-guard";
-import { sanitizeAiText } from "@/lib/ai-sanitize";
+import { sanitizeAiText, ensureAiDisclaimer } from "@/lib/ai-sanitize";
 import { buildStockAiContext } from "../stock/context";
 import { aiRateCheck } from "@/lib/ai-rate-limit";
 import { auth } from "@/lib/auth";
@@ -363,9 +363,12 @@ export async function POST(req: NextRequest) {
       });
     });
 
+    // Loop 9 Nov: guard disclaimer deterministik (satu pintu, semua provider) —
+    // compliance bukan-rekomendasi tidak boleh bergantung kepatuhan model.
+    const finalText = ensureAiDisclaimer(data.text ?? "");
     const payload = {
       ok: true,
-      text: data.text ?? "",
+      text: finalText,
       preset: chosen.preset,
       presetLabel: chosen.label,
       matched: stocks.length,
@@ -373,7 +376,7 @@ export async function POST(req: NextRequest) {
       ms: data.ms ?? null,
       provider: (data as { provider?: string }).provider ?? "mlx",
     };
-    cacheSet(cacheKey, { text: payload.text, presetLabel: payload.presetLabel, matched: payload.matched, stocks, at: Date.now() });
+    cacheSet(cacheKey, { text: finalText, presetLabel: payload.presetLabel, matched: payload.matched, stocks, at: Date.now() });
 
     // flywheel (owner 30 Okt): log QA — fire-and-forget, jangan blok/gagalkan response
     prisma.aiChatLog

@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { buildPasarContext } from "@/lib/ai-pasar-context";
 import { prisma } from "@/lib/prisma";
 import { isPlausibleTicker, extractTickersRanked, rescueTypoTicker } from "@/lib/ai-ticker-guard";
-import { sanitizeAiText } from "@/lib/ai-sanitize";
+import { sanitizeAiText, ensureAiDisclaimer } from "@/lib/ai-sanitize";
 import { NextRequest, NextResponse } from "next/server";
 import { buildStockAiContext } from "./context";
 import { stockRepository } from "@/domains/stock/stock.repository";
@@ -376,6 +376,9 @@ export async function POST(req: NextRequest) {
     if (!data.ok || !data.text) {
       return NextResponse.json({ error: "AI tidak menghasilkan jawaban" }, { status: 502 });
     }
+    // Loop 9 Nov: guard disclaimer deterministik — compliance bukan-rekomendasi
+    // tidak boleh bergantung kepatuhan model (kasus nyata: 1/10 jawaban tanpa disclaimer).
+    const finalText = ensureAiDisclaimer(data.text);
 
     // flywheel (owner 30 Okt): log QA fire-and-forget
     prisma.aiChatLog
@@ -385,7 +388,7 @@ export async function POST(req: NextRequest) {
           mode,
           ticker: String(clientContext.ticker ?? "").replace(/\.JK$/i, ""),
           question: question.slice(0, 500),
-          answer: data.text.slice(0, 8000),
+          answer: finalText.slice(0, 8000),
           provider: data.provider ?? "glm-flash",
           latencyMs: data.ms || (Date.now() - __t0),
           anonId: cleanAnonId,
@@ -394,7 +397,7 @@ export async function POST(req: NextRequest) {
         },
       })
       .catch(() => {});
-    return NextResponse.json({ ok: true, text: data.text, ms: data.ms, provider: data.provider ?? "mlx" });
+    return NextResponse.json({ ok: true, text: finalText, ms: data.ms, provider: data.provider ?? "mlx" });
   } catch (e) {
     if (e instanceof QueueFullError) {
       return NextResponse.json(
