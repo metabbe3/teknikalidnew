@@ -1,14 +1,14 @@
 import Link from "next/link";
+import { PricingBox } from "@/components/telegram/pricing-box";
 
 /**
  * AgentKopiBanner (owner 6 Nov: "cross selling ... AI AGENT SAHARGA NGOPI",
- * upgrade 6 Nov sesuai rekomendasi Argon: kartu produk ringkas + harga coret).
+ * upgrade 10 Nov: unifikasi PricingBox + fallback CTA tetap).
  * Banner utk halaman high-traffic (home anon, /pasar, /swing, 14 halaman /saham-*).
- * Server component, zero JS, design token existing. Copy anti-slop.
  */
 export function AgentKopiBanner({ source = "web" }: { source?: string }) {
   return (
-    <aside className="rounded-xl border border-border bg-bg-card p-4 sm:p-5" data-source={source}>
+    <aside className="space-y-4 rounded-xl border border-border bg-bg-card p-4 sm:p-5" data-source={source}>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         <div className="min-w-0 flex-1 space-y-1.5">
           <p className="font-mono text-xs text-text-tertiary">BOT TELEGRAM · @TEKNIKALIDAGENTBOT</p>
@@ -36,7 +36,8 @@ export function AgentKopiBanner({ source = "web" }: { source?: string }) {
           </Link>
         </div>
       </div>
-      <p className="mt-2.5 text-xs text-text-tertiary">
+      <PricingBox />
+      <p className="text-xs text-text-tertiary">
         Semua data dan angka di web ini tetap gratis, yang berbayar hanya asisten di Telegram.
       </p>
     </aside>

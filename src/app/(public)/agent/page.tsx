@@ -3,10 +3,10 @@ import {
   AgentMembershipProvider,
   AgentHeroCta,
   AgentConnectionCard,
-  AgentPricingCards,
   AgentComplainBox,
   AgentClosingCta,
 } from "@/components/telegram/subscribe-cta";
+import { PricingBox } from "@/components/telegram/pricing-box";
 
 export const metadata: Metadata = {
   title: "Agent Teknikal.id — Temanmu berinvestasi",
@@ -62,39 +62,53 @@ harga menyentuh Rp4.620.`}
 export default function AgentPage() {
   return (
     <AgentMembershipProvider>
-      <div className="mx-auto max-w-4xl px-4 py-10 space-y-12">
-        {/* ============ SECTION 1: HERO + MOCKUP CHAT ============ */}
-        <section className="grid gap-8 lg:grid-cols-2 lg:items-center">
-          <div className="space-y-4">
-            <p className="inline-block rounded-md border border-border bg-bg-card px-2.5 py-1 font-mono text-xs text-text-secondary">
-              BOT TELEGRAM · @TeknikalidAgentBot
-            </p>
-            <h1 className="text-2xl font-bold text-text-primary sm:text-3xl">
-              Asisten Saham di Telegram untuk Cek Level Harga dan Pasang Alert
-            </h1>
-            <p className="text-base font-semibold text-accent">
-              Temanmu berinvestasi.
-            </p>
-            <p className="text-sm leading-relaxed text-text-secondary">
-              Chart profesional, sinyal objektif, bebas pompom — dan analisismu tidak pernah hilang.
-            </p>
-            <p className="text-sm leading-relaxed text-text-secondary">
-              Tidak perlu buka banyak tab saat jam bursa. Ketik kode saham untuk lihat
-              ringkasan support, resistance, dan volume, atau pasang pengingat otomatis
-              saat harga menyentuh target Anda.
-            </p>
-            <AgentHeroCta />
-            <p className="text-xs font-medium text-text-secondary">
-              Gratis 3 tanya/hari · Night Trader Rp29rb/bln · Pro Rp79rb/bln
-            </p>
-            <p className="text-xs text-text-tertiary">
-              Gratis 3 perintah pertama setelah akun terhubung. Tanpa kartu kredit.
-            </p>
-          </div>
-          <ChatMockup />
+      <div className="mx-auto max-w-4xl px-4 py-8 space-y-10">
+        {/* ============ SECTION 1: HERO ============ */}
+        <section className="space-y-3">
+          <p className="inline-block rounded-md border border-border bg-bg-card px-2.5 py-1 font-mono text-xs text-text-secondary">
+            BOT TELEGRAM · @TeknikalidAgentBot
+          </p>
+          <h1 className="text-2xl font-bold text-text-primary sm:text-3xl">
+            Asisten Saham di Telegram untuk Cek Level Harga dan Pasang Alert
+          </h1>
+          <p className="text-base font-semibold text-accent">
+            Temanmu berinvestasi.
+          </p>
+          <p className="text-sm leading-relaxed text-text-secondary">
+            Chart profesional, sinyal objektif, bebas pompom — dan analisismu tidak pernah hilang.
+            Ketik kode saham untuk lihat ringkasan support, resistance, dan volume, atau pasang
+            pengingat otomatis saat harga menyentuh target Anda.
+          </p>
+          <AgentHeroCta />
+          <p className="text-xs font-medium text-text-secondary">
+            Gratis 3 tanya/hari · Night Trader Rp29rb/bln · Pro Rp79rb/bln
+          </p>
+          <p className="text-xs text-text-tertiary">
+            Gratis 3 perintah pertama setelah akun terhubung. Tanpa kartu kredit.
+          </p>
         </section>
 
-        {/* ============ SECTION 2: KENAPA BOT KALAU WEB GRATIS ============ */}
+        {/* ============ SECTION 2: PAKET & HARGA (y < 800, di atas Kenapa Pakai Bot) ============ */}
+        <section id="paket" className="space-y-4 scroll-mt-24">
+          <div>
+            <h2 className="font-serif text-xl font-semibold text-text-primary">
+              Pilih Paket Sesuai Kebutuhan Trading Anda
+            </h2>
+            <p className="mt-1 text-sm text-text-secondary">
+              Harga khusus bulan pertama untuk pengguna awal. Semua notifikasi dikirim 100% melalui Telegram.
+            </p>
+          </div>
+
+          <PricingBox />
+
+          <div className="rounded-lg border border-border bg-bg-card p-4 text-xs leading-relaxed text-text-secondary">
+            <span className="font-medium text-text-primary">Janji Kami:</span> Tidak ada
+            pemotongan saldo otomatis tanpa sepengetahuan Anda. Seluruh data di website
+            teknikal.id tetap gratis selamanya walaupun Anda sedang tidak berlangganan bot.
+          </div>
+        </section>
+
+        {/* ============ SECTION 3: KENAPA BOT KALAU WEB GRATIS + CONTOH CHAT ============ */}
         <section className="space-y-5">
           <div>
             <h2 className="font-serif text-xl font-semibold text-text-primary">
@@ -132,9 +146,10 @@ export default function AgentPage() {
               <p className="font-mono text-xs text-text-tertiary">Contoh ketik: &quot;lihat watchlist&quot;</p>
             </div>
           </div>
+          <ChatMockup />
         </section>
 
-        {/* ============ SECTION 3: CARA MULAI 3 LANGKAH ============ */}
+        {/* ============ SECTION 4: CARA MULAI 3 LANGKAH ============ */}
         <section className="space-y-5">
           <h2 className="font-serif text-xl font-semibold text-text-primary">Cara Mulai dalam 30 Detik</h2>
           <div className="grid gap-4 sm:grid-cols-3">
@@ -163,38 +178,6 @@ export default function AgentPage() {
 
           {/* Kartu koneksi (state-aware) */}
           <AgentConnectionCard />
-        </section>
-
-        {/* ============ SECTION 4: PAKET & HARGA ============ */}
-        <section id="paket" className="space-y-5 scroll-mt-24">
-          <div>
-            <h2 className="font-serif text-xl font-semibold text-text-primary">
-              Pilih Paket Sesuai Kebutuhan Trading Anda
-            </h2>
-            <p className="mt-1 text-sm text-text-secondary">
-              Harga khusus bulan pertama untuk pengguna awal. Semua notifikasi dikirim 100% melalui Telegram.
-            </p>
-          </div>
-
-          {/* Bar coba gratis — jangkar Rp0 */}
-          <div className="flex flex-col gap-2 rounded-xl border border-border bg-bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="font-semibold text-text-primary">Paket Coba Gratis · Rp0</p>
-            <p className="text-sm text-text-secondary sm:max-w-md">
-              Dapat 3 perintah pertama gratis untuk mencoba respons bot sebelum berlangganan.
-            </p>
-            <a href="#paket" className="text-sm font-medium text-accent hover:underline">
-              Hubungkan Telegram di Atas
-            </a>
-          </div>
-
-          <AgentPricingCards />
-
-          {/* Jaminan */}
-          <div className="rounded-lg border border-border bg-bg-card p-4 text-xs leading-relaxed text-text-secondary">
-            <span className="font-medium text-text-primary">Janji Kami:</span> Tidak ada
-            pemotongan saldo otomatis tanpa sepengetahuan Anda. Seluruh data di website
-            teknikal.id tetap gratis selamanya walaupun Anda sedang tidak berlangganan bot.
-          </div>
         </section>
 
         {/* ============ SECTION 5: FAQ ============ */}

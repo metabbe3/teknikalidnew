@@ -139,11 +139,14 @@ export type AgentMembership = {
   turnsUsed: number;
   maxTurns: number;
   promoUsed: boolean;
+  trialUsed?: boolean;
+  trialCreatedAt?: string | null;
+  trialDaysLeft?: number;
 };
 
 const AGENT_BOT_URL = "https://t.me/TeknikalidAgentBot";
 
-type AgentMembershipCtx = {
+export type AgentMembershipCtx = {
   mem: AgentMembership | null;
   loading: boolean;
   bindUrl: string | null;
@@ -151,18 +154,37 @@ type AgentMembershipCtx = {
   paying: boolean;
   msg: string | null;
   connected: boolean;
+  hasProvider: boolean;
   startBind: () => Promise<void>;
   checkout: (tier: "basic" | "pro") => Promise<void>;
 };
 
 const AgentCtx = createContext<AgentMembershipCtx | null>(null);
 
-function useAgentCtx(): AgentMembershipCtx {
+const FALLBACK_AGENT_CTX: AgentMembershipCtx = {
+  mem: null,
+  loading: false,
+  bindUrl: null,
+  payingTier: null,
+  paying: false,
+  msg: null,
+  connected: false,
+  hasProvider: false,
+  startBind: async () => {
+    if (typeof window !== "undefined") {
+      window.location.href = "/agent";
+    }
+  },
+  checkout: async () => {
+    if (typeof window !== "undefined") {
+      window.location.href = "/agent#paket";
+    }
+  },
+};
+
+export function useAgentCtx(): AgentMembershipCtx {
   const ctx = useContext(AgentCtx);
-  if (!ctx) {
-    throw new Error("useAgentCtx must be used within AgentMembershipProvider");
-  }
-  return ctx;
+  return ctx ?? FALLBACK_AGENT_CTX;
 }
 
 export function AgentMembershipProvider({ children }: { children: React.ReactNode }) {
@@ -240,6 +262,7 @@ export function AgentMembershipProvider({ children }: { children: React.ReactNod
         paying,
         msg,
         connected,
+        hasProvider: true,
         startBind,
         checkout,
       }}
@@ -329,122 +352,7 @@ export function AgentConnectionCard() {
   );
 }
 
-export function AgentPricingCards() {
-  const { mem, paying, payingTier, msg, checkout } = useAgentCtx();
-  const tierName = (t: string | null | undefined) =>
-    t === "basic" ? "Night Trader" : t === "pro" ? "Pro" : t ? t.toUpperCase() : "-";
-
-  return (
-    <>
-      {mem?.status === "paid" ? (
-        <Card>
-          <CardContent className="space-y-1 pt-6 text-sm">
-            <p className="font-semibold">Paket aktif: {tierName(mem.tier)}</p>
-            {mem.periodEnd && (
-              <p className="text-text-secondary">
-                Aktif s/d {new Date(mem.periodEnd).toLocaleDateString("id-ID")}
-              </p>
-            )}
-            <p className="text-text-secondary">
-              Kuota bulan ini: {mem.turnsUsed}/{mem.maxTurns} turn
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2">
-          {/* Night Trader — highlight */}
-          <div className="relative space-y-3 rounded-xl border-2 border-accent bg-bg-card p-5">
-            <span className="absolute -top-2.5 left-4 rounded-full bg-accent px-2.5 py-0.5 text-[11px] font-semibold text-white">
-              PILIHAN UTAMA
-            </span>
-            <p className="font-semibold text-text-primary">Night Trader</p>
-            <p className="text-sm text-text-secondary">
-              Untuk trader swing dan pekerja kantoran yang menyusun rencana trading tiap malam.
-            </p>
-            {mem?.promoUsed ? (
-              <p className="text-2xl font-bold text-text-primary">
-                Rp29.000
-                <span className="text-xs font-normal text-text-tertiary"> /bulan</span>
-              </p>
-            ) : (
-              <p className="text-2xl font-bold text-text-primary">
-                <span className="mr-1.5 text-base font-medium text-text-tertiary line-through">Rp29.000</span>
-                Rp14.900
-                <span className="text-xs font-normal text-text-tertiary"> /bulan pertama</span>
-              </p>
-            )}
-            <p className="text-xs text-text-secondary">
-              Bulan berikutnya Rp29.000/bulan. Kurang dari Rp1.000/hari — lebih murah dari parkir motor.
-            </p>
-            <ul className="space-y-1.5 text-sm text-text-secondary">
-              <li>150 kuota tanya bot per bulan (rata-rata 7x tanya saham tiap hari bursa)</li>
-              <li>Simpan hingga 10 saham di watchlist pantauan</li>
-              <li>10 alert harga aktif otomatis via Telegram</li>
-              <li>Ringkasan support, resistance, tren, dan volume harian</li>
-            </ul>
-            <Button
-              onClick={() => checkout("basic")}
-              disabled={paying || !mem?.chatBound}
-              className="w-full"
-            >
-              {payingTier === "basic"
-                ? "Memproses Night Trader…"
-                : mem?.promoUsed
-                  ? "Langganan Night Trader"
-                  : "Ambil Bulan Pertama Rp14.900"}
-            </Button>
-          </div>
-
-          {/* Pro */}
-          <div className="space-y-3 rounded-xl border border-border bg-bg-card p-5">
-            <p className="font-semibold text-text-primary">Pro</p>
-            <p className="text-sm text-text-secondary">
-              Untuk trader aktif yang memantau banyak saham dan pergerakan sektor setiap hari.
-            </p>
-            {mem?.promoUsed ? (
-              <p className="text-2xl font-bold text-text-primary">
-                Rp79.000
-                <span className="text-xs font-normal text-text-tertiary"> /bulan</span>
-              </p>
-            ) : (
-              <p className="text-2xl font-bold text-text-primary">
-                <span className="mr-1.5 text-base font-medium text-text-tertiary line-through">Rp79.000</span>
-                Rp29.000
-                <span className="text-xs font-normal text-text-tertiary"> /bulan pertama</span>
-              </p>
-            )}
-            <p className="text-xs text-text-secondary">Bulan berikutnya Rp79.000/bulan.</p>
-            <ul className="space-y-1.5 text-sm text-text-secondary">
-              <li>400 kuota tanya bot per bulan (leluasa sekitar 20x tiap hari bursa)</li>
-              <li>Simpan hingga 25 saham di watchlist pantauan</li>
-              <li>25 alert harga aktif otomatis via Telegram</li>
-              <li>Cocok untuk cek banyak saham sekaligus saat jam pasar buka</li>
-            </ul>
-            <Button
-              onClick={() => checkout("pro")}
-              disabled={paying || !mem?.chatBound}
-              variant="outline"
-              className="w-full"
-            >
-              {payingTier === "pro"
-                ? "Memproses Pro…"
-                : mem?.promoUsed
-                  ? "Langganan Pro"
-                  : "Ambil Pro Bulan Pertama Rp29.000"}
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {!mem?.chatBound && mem?.status !== "paid" && (
-        <p className="text-xs text-amber-600 dark:text-amber-400">
-          Hubungkan Telegram dulu (Langkah 2) untuk membayar.
-        </p>
-      )}
-      {msg && <p className="text-sm text-rose-600">{msg}</p>}
-    </>
-  );
-}
+export { PricingBox as AgentPricingCards } from "@/components/telegram/pricing-box";
 
 export function AgentComplainBox() {
   const { mem } = useAgentCtx();
@@ -455,17 +363,13 @@ export function AgentComplainBox() {
   const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => {
-    if (!emailTouched && defaultEmail) {
-      setEmail(defaultEmail);
-    }
-  }, [defaultEmail, emailTouched]);
+  const displayEmail = emailTouched ? email : email || defaultEmail;
 
   const submit = async () => {
     if (text.trim().length < 5) return;
     setBusy(true);
     try {
-      const trimmedEmail = email.trim();
+      const trimmedEmail = displayEmail.trim();
       const r = await fetch("/api/agent/complain", {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -501,7 +405,7 @@ export function AgentComplainBox() {
       </p>
       <input
         type="email"
-        value={email}
+        value={displayEmail}
         onChange={(e) => {
           setEmailTouched(true);
           setEmail(e.target.value);

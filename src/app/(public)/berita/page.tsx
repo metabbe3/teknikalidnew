@@ -8,6 +8,7 @@ import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { weeklyReportService } from "@/domains/stock/weekly-report.service";
 import { articleRepository } from "@/domains/article/article.repository";
 import { DailyBriefHero } from "@/components/berita/daily-brief-hero";
+import { GuestSellModal } from "@/components/telegram/guest-sell-modal";
 import { formatDecimalId } from "@/lib/format-number";
 import { stripJk } from "@/lib/utils";
 import { extractArticleTickers } from "@/lib/rehype-stock-linker";
@@ -398,6 +399,7 @@ export default async function BeritaPage({
             </div>
           </div>
         </div>
+        <GuestSellModal />
       </div>
     </>
   );
