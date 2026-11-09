@@ -780,22 +780,21 @@ export default async function StockDetailPage({
               {close === null && <RepeatVisitHint ticker={ticker} />}
             </div>
 
-            {/* Quick Verdict Box (data-verdict="quick" · Tren Naik / Tren Turun / Sideways) — langsung di bawah harga, di atas Trading Plan */}
-            <QuickVerdictBox
-              close={close}
-              sma20={indicators?.sma20 ?? null}
-              sma50={indicators?.sma50 ?? null}
-              sma200={indicators?.sma200 ?? null}
-              rsi14={indicators?.rsi14 ?? null}
-              macdHist={indicators?.macdHist ?? null}
-            />
-
             {/* Guest Quota Provider (W1a, Freemium 3 Saham) */}
             <GuestQuotaProvider ticker={stripJk(ticker)} isAuthed={isAuthed}>
             <div className={`mt-4 ${tradingPlan ? "grid grid-cols-1 lg:grid-cols-2 gap-4 items-start" : "space-y-4"}`}>
               {/* Kolom KANAN di Desktop, Bagian PERTAMA di Mobile: Trading Plan */}
               {tradingPlan && (
                 <div className="space-y-2.5 order-1 lg:order-2">
+                  {/* Quick Verdict Box — tren 1 baris, di atas Trading Plan (mobile-first) */}
+                  <QuickVerdictBox
+                    close={close}
+                    sma20={indicators?.sma20 ?? null}
+                    sma50={indicators?.sma50 ?? null}
+                    sma200={indicators?.sma200 ?? null}
+                    rsi14={indicators?.rsi14 ?? null}
+                    macdHist={indicators?.macdHist ?? null}
+                  />
                   <span id="plan" className="block scroll-mt-24" />
                   {fullAccess ? (
                     <GuestTradingPlanGate
