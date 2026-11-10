@@ -255,7 +255,16 @@ export function UhuProvider({ children }: { children: ReactNode }) {
         // HISTORY RESTORE: panel dibuka kosong → tarik 10 pesan terakhir dari server
         // (jawaban yang selesai saat user pindah tab tetap kembali).
         setMessages((prev) => {
-          if (prev.length > 1) return prev; // sudah ada obrolan lokal
+          // Restore saat: panel kosong ATAU bubble assistant terakhir masih kosong
+          // (streaming terputus karena close/refresh di tengah — kasus owner 10 Nov).
+          const lastEmpty =
+            prev.length > 0 &&
+            prev[prev.length - 1].role === "assistant" &&
+            !prev[prev.length - 1].text.trim();
+          const firstEmptyAssistantIdx = prev.findIndex(
+            (m) => m.role === "assistant" && !m.text.trim()
+          );
+          if (prev.length > 1 && !lastEmpty && firstEmptyAssistantIdx === -1) return prev; // obrolan lokal sehat
           void fetch("/api/uhu/history")
             .then(async (res) => {
               if (!res.ok) return null;
@@ -266,7 +275,12 @@ export function UhuProvider({ children }: { children: ReactNode }) {
               if (!data?.ok || !Array.isArray(data.messages) || data.messages.length === 0) return null;
               // Race guard: jangan timpa bila user sudah mulai mengirim.
               setMessages((cur) => {
-                if (cur.length > 1 || streamingRef.current) return cur;
+                const curEmpty =
+                  cur.length > 0 &&
+                  cur[cur.length - 1].role === "assistant" &&
+                  !cur[cur.length - 1].text.trim();
+                const curHealthy = cur.length > 1 && !curEmpty;
+                if ((curHealthy || streamingRef.current) && cur.length > 1) return cur;
                 const stripBtn = (t: string) =>
                   t
                     .split("\n")
