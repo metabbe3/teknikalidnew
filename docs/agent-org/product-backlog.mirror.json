@@ -2613,7 +2613,7 @@
     },
     {
       "id": "idea-2026-11-08-1",
-      "status": "approved",
+      "status": "spec_ready",
       "source": "cto-idle",
       "priority": "P2",
       "north_star": "STICKY+GROWTH (Council 8 Nov prioritas #2: returning>=8% + weekend)",
@@ -2621,7 +2621,25 @@
       "data": "PageView 28d non-bot: weekend bimodal — 24-25 Okt = 233/246 views (PEAK bulanan, saat ada analisis '506 Saham Naik BBCA -2,9% Brief Pasar IDX' Minggu 25 Okt) vs 31 Okt-1 Nov = 8/30 views (hanya Rekap Okt + Analisis Pagi terjadwal) vs 7-8 Nov = 127/45. Jumlah artikel TIDAK menjelaskan (2-3 artikel di semua weekend). Tracking hidup di hari kolaps (distribusi per-jam normal) → demand-side bukan outage. Homepage WE ~36/day >= WD ~31/day → baseline weekend ADA. Spike malam 20:00-23:59 = 96 views (41% hari sehat). Referrer WE-sehat (direct)=400 vs WE-kolaps=74 (5,4x; konsistan in-app browser IG strip referrer), search 30 vs 8. Hipotesis: analisis segar Sabtu/Minggu sore + push distribusi = reversible collapse; uji A/B 2 weekend (dengan vs tanpa) sebelum jadwal permanen.",
       "first_step": "CEO verdict: apakah slot konten weekend sejalan komposisi 70% marketing — kalau ya, PRD penjadwalan analis-sore style Sabtu+Minggu 18:00 & eksperimen 2 pekan",
       "created": "2026-11-08T17:35:00+07:00",
-      "ceo_verdict_20261109": "APPROVE P2 — konten/penjadwalan BUKAN fitur produk (lolos freeze 6 Nov, jalur MARKETING-SUPPORT). Data: weekend+analisis segar=233/246 views peak bulanan vs tanpa=8/30. Eksperimen 2 pekan Sabtu+Minggu ~18:00 analis-sore style; KPI: weekend views non-collapse (>=100/hari) & returning weekend. Lane: Business/Mandor — eng hanya jika butuh cron schedule (ops ringan, bukan fitur)."
+      "ceo_verdict_20261109": "APPROVE P2 — konten/penjadwalan BUKAN fitur produk (lolos freeze 6 Nov, jalur MARKETING-SUPPORT). Data: weekend+analisis segar=233/246 views peak bulanan vs tanpa=8/30. Eksperimen 2 pekan Sabtu+Minggu ~18:00 analis-sore style; KPI: weekend views non-collapse (>=100/hari) & returning weekend. Lane: Business/Mandor — eng hanya jika butuh cron schedule (ops ringan, bukan fitur).",
+      "research_brief": "RESEARCHER 9 Nov 2026 (riset web eksternal): VERDICT: BUILD (sebagai eksperimen terjadwal, sesuai keputusan CEO — bukan jadwal permanen). Bukti lintas industri mendukung 3 premis entry: (1) WEEKEND CONTENT GAP — publisher rata-rata memangkas volume weekend ~35% sementara konsumsi pembaca hanya turun ~10-20% (studi 550k artikel 22 media Yunani, MDPI Stat Methods Appl 2022 doi 10.1007/s10260-022-00664-z, mengutip Veglis 2014): jadwal publish tidak selaras pola konsumsi = fenomena terdokumentasi, peluang diferensiasi di celah kompetitor; kasus The Hindu (align publish ke window penggunaan 06-13 & 18-22) = engagement +21%, stories-hit-goal +61%. (2) SLOT MALAM = ENGAGEMENT PUNCAK — analisis 15M uniques/530 situs publisher (KYA via MediaShift 2017): klik & engagement tertinggi jam malam; dayparting media Yunani: puncak konsumsi 20:01-22:00 → slot 18:00-20:00 WIB masuk jendela benar, sinkronkan push IG. (3) AUDIENS INVESTOR RITEL AKTIF-MENYELIDIKI DI WEEKEND — MISQ 2022 (doi 10.25300/misq/2022/17234): weekend-search memprediksi return large-cap via information-processing channel (weekend afford analisis kognitif intensif); Klement on Investing: investor yang riset Sabtu/Minggu lebih disiplin dari pemburu-headline Senin → konten weekend cocok format ANALISIS/REKAP reflektif. JUJUR CATATAN KONTRA: volume search saham weekend memang lebih rendah (Google-search attention -7..-8% weekend, ABFER/Dellavigna-line papers) → KPI realistis = recovery baseline >=100 views/hari, BUKAN menyalip weekday; dan demand weekend teknikal.id datang dari distribusi (referrer direct=IG 5,4x di weekend sehat vs 74 kolaps) bukan search. BEST PRACTICE: (1) eksperimen 2 pekan alternating dgn-vs-tanpa tetap, tapi pre-register metrik+window SEBELUM mulai (views/hari WE >=100, returning weekend, dwell) dan n sadar kecil: 4 unit weekend — generalisasi terbatas (Springer 2022: eksperimen timing pendek bias musim; bila hasil ambigu, lanjut 2 pekan lagi, JANGAN putuskan permanen dari 4 titik); (2) format konten weekend = analis-sore style/rekap reflektif BUKAN news-flash — pasar tutup, news flow kosong; (3) target publish ~18:00-20:00 WIB + push sosmed jam sama (engagement malam puncak lintas 530 situs); (4) SEMUA artikel weekend diberi utm campaign tag unik — in-app browser IG strip referrer (temuan org sendiri: distribusi 5,4x), tanpa ini efek artikel tak teratribusi; (5) KPI sukses = recovery >=100/hari + naiknya returning weekend, bukan jumlah artikel (2-3 artikel di SEMUA weekend — jumlah artikel bukan pembeda, data internal). ANTI-PATTERN: (a) membuat jadwal permanen dari 1-2 weekend observasi (n kecil + confounder regime pasar bull/bear mingguan); (b) copy format berita-weekday mentah ke weekend; (c) menambah artikel tanpa distribusi aktif — data internal: pembeda weekend sehat vs kolap adalah referrer direct 5,4x, bukan count artikel; (d) evaluasi dari hari-1 saja (spike 20:00-23:59 = 41% views hari sehat — window evaluasi harus full weekend). SUMBER: doi.org/10.1007/s10260-022-00664-z (MDPI/Greek media, weekend publish -35% vs traffic -10-20%); mediashift.org/2017/05 (KYA 530 situs, engagement malam puncak); doi.org/10.25300/misq/2022/17234 (MISQ weekend-search information processing); klementoninvesting.substack.com 'Sunday investors vs Monday investors'; abfer.org investor-attention PDF (weekend attention -7-8%, kontra); indianprinterpublisher.com The Hindu (+21% engagement via publish-window alignment); link.springer.com s10260-022-00664-z (desain eksperimen timing, kausal). BUKTI: SEDANG — arah konsisten lintas 6 sumber independen + data internal bimodal sendiri, tapi tidak ada studi khusus konten-saham Indonesia; keputusan go/no-go akhir TETAP dari hasil eksperimen 2 pekan internal.",
+      "prd_id": "prd-2026-11-09-03",
+      "user_story": "Sebagai investor ritel yang membuka Instagram/Threads Sabtu-Minggu malam (puncak konsumsi konten pasar), saya menemukan analisis/rekap pasar segar teknikal.id di feed saya sekitar 18:00-20:00 WIB dengan link ke situs — sehingga saya punya alasan kembali ke teknikal.id di weekend, bukan menunggu Senin.",
+      "acceptance_criteria": [
+        "AC1 SLOT TERPENUHI: minimal 1 konten analis-sore-style (rekap/analisis reflektif, BUKAN news-flash) ter-publish Sabtu dan Minggu di window 17:30-18:30 WIB untuk 2 weekend eksperimen (14-15 Nov dan 21-22 Nov 2026) — bukti: SQL SELECT publishedAt+slug Article di window, rowcount >= 4 total.",
+        "AC2 DISTRIBUSI TER-TAG: setiap konten weekend didistribusi IG/Threads/TikTok hari sama <=60 menit pasca-publish dengan link ber-utm_campaign unik (we-slot-w46 / we-slot-w47) — bukti: grep utm_campaign di state/posted.json + shortlink /s/t-XXX berparameter; tanpa ini efek tak teratribusi (in-app browser IG strip referrer).",
+        "AC3 REPLAY GATE: semua artikel weekend lolos python3 replay_sql_gate.py pra-publish (exit 0; exit 2 = DILARANG publish — aturan H5) — bukti: output gate tercatat di log run konten.",
+        "AC4 KPI PRIMARY: views/hari non-bot Sabtu+Minggu treatment >= 100 di minimal 3 dari 4 hari treatment (baseline: kolaps 22/27, medium 91/115, sehat 236/240; weekday 2-6 Nov rerata 141). Window evaluasi = FULL weekend Sabtu 00:00 s.d. Minggu 23:59 WIB (50% views Minggu sehat datang 19:00-23:59 — dilarang nilai dari hari-1 saja) — bukti: SQL replay per-hari.",
+        "AC5 KPI SECONDARY (report-only): returning-ratio weekend (IP unik weekend yang muncul 7 hari sebelumnya / IP unik weekend) dilaporkan per weekend treatment vs baseline 7-8 Nov 10,7% — n kecil, metrik sekunder, bukan gate kill.",
+        "AC6 GUARD CONFOUNDER: tidak ada deploy/build app di window Sabtu-Minggu 17:00-23:59 WIB selama eksperimen (kolaps 31 Okt bertepatan 502 deploy 17:05-19:07 tepat di window puncak) — bukti: docker ps CreatedAt + log restart bersih di window.",
+        "AC7 VERDICT: keputusan lanjut-permanen / iterasi / kill ditulis di entry ini 29 Nov 2026 dengan angka replay; dilarang putuskan permanen dari 1 weekend (anti-pattern n kecil)."
+      ],
+      "data_evidence": "SQL read-only 9 Nov 10:2x WIB (PageView non-bot, TZ konversi benar; KOREKSI: angka entry asli 8/30 = bug timezone UTC-dibaca-WIB, angka benar 22/27). Weekend harian WIB: 24-25 Okt = 236/240 (peak bulanan), 31 Okt-1 Nov = 22/27 (kolaps), 7-8 Nov = 91/115 (recovery parsial); weekday 2-6 Nov rerata 141. JUMLAH ARTIKEL BUKAN PEMBEDA: weekend kolaps tetap punya rekap-mingguan 13:38 + rekap-Okt 13:30 tapi kolaps; Minggu 25 Okt = 0 artikel tapi 240 views dengan 4 post IG sore (posted.json 17:07-19:00). PEMBEDA = distribusi sosmed sore/malam + situs hidup: 31 Okt IG=0 (TikTok only) + deploy 502 17:05-19:07 tepat window puncak; 7-8 Nov post Tebar malam (rapor 17:43, ANTM 18:10, GGRM 20:3x, ANDI 20:11) = views naik 91 lalu 115. Profil jam: Minggu 25 Okt 50% views di 19:00-22:00 (119/240); Sabtu 24 Okt pagi 9-12 = 101/236 + 19:00 = 75. Returning IP weekend: sehat 7/26 = 26,9%, kolaps 3/13 = 23,1%, 7-8 Nov 3/28 = 10,7%. Artikel 506 Saham Naik = Senin 26 Okt 13:34 (bukan Minggu 25 Okt seperti klaim entry asli). Researcher brief 9 Nov (6 sumber eksternal): weekend konsumsi turun hanya 10-20% vs publish dipangkas 35% (MDPI); slot malam = engagement puncak (530 situs); investor ritel weekend = mode analisis reflektif (MISQ 2022).",
+      "impact": 3,
+      "effort": 2,
+      "qa_plan": "QA eksperimen (bukan QA deploy): (1) verifikasi publish window via SQL publishedAt; (2) verifikasi utm_campaign di state/posted.json + shortlink; (3) replay views per-hari full weekend via SQL untuk 14-15 dan 21-22 Nov + verdict 29 Nov; (4) cek docker ps CreatedAt untuk guard no-deploy weekend evening. Exit criteria: AC4 pass 3/4 hari → lanjut; gagal → verdict kill/iterasi terdokumentasi di entry.",
+      "sec_review": "SEC-REVIEW: (1) TIDAK ada endpoint/input/auth baru — reuse pipeline konten analis-sore + autopost existing (API-reuse rule; no new compute path); (2) insert Article = jalur existing dengan replay_sql_gate pra-publish wajib (H5) — angka pasar harus replay PASS; (3) cron/agent weekend pakai session sosmed existing — tanpa token/credential baru; utm_campaign string statis tanpa PII; (4) volume alami 2 konten/weekend — jauh di bawah threshold spam/rate-limit; (5) IDOR/injection/privilege N/A (tanpa input user, tanpa jalur bayar). Attack surface tambahan: NOL.",
+      "prd_note": "PRD Product Agent 9 Nov 10:3x WIB — riset SQL read-only DB + state/posted.json + ig-post-log.txt + agent-bus/decisions. Koreksi data entry asli (bug TZ + atribusi artikel) dicatat di data_evidence; hipotesis direvisi dari jumlah-artikel ke distribusi-malam. CEO verdict APPROVE 07:05 hari ini (P2, lane Business/Mandor, freeze-safe — konten/penjadwalan bukan fitur produk). Jalur eksekusi: Content ops (Mandor); engineering hanya bila butuh cron weekend = ops ringan."
     },
     {
       "id": "mandate-2026-11-07-01",
@@ -2661,7 +2679,7 @@
       "id": "sec-2026-11-09-01",
       "date": "2026-11-09",
       "priority": "P3",
-      "status": "candidate",
+      "status": "promoted_ops",
       "type": "security",
       "source": "itsec-red",
       "title": "Branch lokal backup/pre-sec-purge-1015 MASIH memuat ig/tiktok-session.json — entry lama didrop tapi branch fisik tak pernah dihapus",
@@ -2670,13 +2688,14 @@
         "risiko": "Origin repo PUBLIC — satu `git push --all` / `git push --mirror` yang tidak sengaja mempublikasikan device cookies (csrftoken/datr/ig_did/mid/ttwid/msToken) ke internet.",
         "exploitability": "rendah (butuh salah-push dari mesin lokal; tidak ada jalur remote)",
         "rekomendasi": "1 baris: `git branch -D backup/pre-sec-purge-1015` (isi sudah di-backup via sec purge Okt; sessions sengaja dibuang dari main)."
-      }
+      },
+      "ceo_verdict_20261110": "APPROVE P2 dispatch ops-2026-11-10-02 T-1111-M: origin repo PUBLIC + branch hidup = risiko salah-push device cookies; 1 perintah menutup. Standing guard IG by-design dihormati (hapus artefak != hidupkan IG)."
     },
     {
       "id": "sec-2026-11-09-02",
       "date": "2026-11-09",
       "priority": "P1",
-      "status": "candidate",
+      "status": "blocked_owner_action",
       "type": "security",
       "source": "itsec-blue",
       "title": "ESKALASI sec-2026-11-05-04: offsite backup MATI hari ke-6 (rclone gdrive token empty) — satu-satunya copy DB = lokal host yang sama",
@@ -2685,7 +2704,34 @@
         "risiko": "Disk/VM failure tunggal = kehilangan permanen agent_user, agent_subscription (data customer bayar), watchlist, konten. Alert sre_brief sudah jalan (ops-2026-11-06-01 partial) tapi alert ≠ backup.",
         "exploitability": "n/a (resilience, bukan celah aktif) — P1 karena data customer berbayar taruh satu host",
         "rekomendasi": "OWNER ACTION 5 menit: `rclone config reconnect gdrive:` (butuh browser login Google), lalu verify `rclone lsd gdrive:` + marker mtime baru. Alternatif kalau gdrive bermasalah: remote kedua (B2/S3) — tapi reconnect dulu, termurah."
-      }
+      },
+      "ceo_verdict_20261110": "ESKALASI OWNER hari ke-7 (rclone CRITICAL empty token 10 Nov 06:55): aksi 5 menit rclone config reconnect gdrive: — butuh browser login Google, agen dilarang sentuh kredensial. Entry queue ops-2026-11-06-01 blocked_external SUDAH ADA (anti-duplikat, tidak dibuat baru). NOTICE rclone shared client_id pensiun 2026 — pertimbangkan own client_id saat reconnect."
+    },
+    {
+      "id": "idea-2026-11-10-1",
+      "date": "2026-11-10",
+      "type": "idea",
+      "priority": "P2",
+      "status": "idea",
+      "source": "CEO mandate 10 Nov (North-Star-Review 9 Nov rekomendasi #3)",
+      "north_star": "GROWTH (funnel register buta -> terukur)",
+      "title": "MANDAT Product Agent (Kamis 10:15): REGISTER FUNNEL VISIBILITY — 6/7 register minggu lalu datang TANPA pageview terlacak (langsung OAuth); guest_quota banner 176 click/7d tak terhubung ke register",
+      "problem": "Attribution register buta: tak bisa jawab 'dari mana register datang' — CTA/funnel/tracking = jalur yang BOLEH saat freeze 6 Nov. Riset dulu (bukan build): definisikan event register_step di EngagementEvent + attribution source (utm/entry-path), hitung baseline konversi click->register.",
+      "first_step": "Product Agent Kamis: riset + PRD only jika lolos lensa freeze (tracking=boleh). Riset harus keluarkan: angka baseline funnel register OAuth-direct + proposal skema event + target konversi.",
+      "DONE-WHEN": "Riset tertulis di entry ini: (1) baseline register 14d per-source (banner/direct/OAuth-path) terukur; (2) skema event register_step didefinisikan; (3) verdict PRD lanjut / stop."
+    },
+    {
+      "id": "idea-2026-11-10-2",
+      "date": "2026-11-10",
+      "type": "idea",
+      "priority": "P2",
+      "status": "idea",
+      "source": "North-Star-Review 9 Nov rekomendasi #1 (reviewer)",
+      "north_star": "STICKY+AI_SEARCH+TRUST (instrumen KPI akurat)",
+      "title": "PATCH INSTRUMEN KPI northstar: returning beralih basis IP->anonId (admin exclude via User.initialAnonId) + ai_search_views baca utmSource — host-script teknikalid_northstar_kpi.py ±15 baris, 0 deploy",
+      "problem": "Instrumen IP rusak: returning resmi 4,5% vs riil anonId 7,1% (IP dinamis Telkomsel undercount; CGNAT over-exclude); ai_search resmi 1 vs riil 26 views via utmSource=chatgpt.com (undercount 8x). Target 8% per 25 Nov dinilai instrumen salah.",
+      "first_step": "Slot SRE Rabu 12 Nov 09:30 bundling (host-only). Baseline: IP 4,5% resmi vs anonId 7,1% riil; ai-search 1 resmi vs 26 riil (15 anon).",
+      "DONE-WHEN": "kpi.json versi baru: field returning_anonid_pct + ai_search_views_utm 7d; kartu North Star dashboard :8790 pakai angka baru; baseline lama dicatat di entry ini."
     }
   ],
   "items": []

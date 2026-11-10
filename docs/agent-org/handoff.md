@@ -1782,3 +1782,24 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - Jebakan baru: (1) elementFromPoint hit-test WAJIB scrollIntoView dulu (elemen y=1957 di luar viewport 812 = null palsu); (2) statejson append pakai --entries-json inline (bukan --set per-field); (3) stock-action-badge per-row useWatchlistStatus = N request utk user login di list — list padat WAJIB pola useWatchlist+Set, bukan badge.
 - Rotasi flow UX: (a) selesai 8 Nov · (c) selesai 7 Nov · (d) SELESAI hari ini (bintang inline + panel pantauan /stocks#pantauan + chip flash terverifikasi utuh). Slot UX berikutnya: sweep emoji-ikon sisa (landing signal-*, berita) ATAU re-audit (b) landing→berita→terkait.
 - Sisa Pertanyaan & Gap: label event star radar = pantau_tambah/pantau_hapus (label lama, terukur gabung); belum ada label khusus utk A/B radar-vs-screener — biarkan 1 minggu data dulu sebelum tambah.
+
+## 2026-11-09 23:2x — CTO night 23:00 (prd-2026-11-07-02 IndexNow night_ready; 0 deploy, 0 push main)
+- MISI selesai: IndexNow ping fire-and-forget BUILD-ONLY di worktree terisolasi tn-night-1109, branch night/prd-2026-11-07-02 (13d20d6 lib+key+selftest, f03eb3e hook repository+agent+layout). PLAN-block dipatuhi; failing-test-first via selftest sebelum wiring.
+- Keputusan desain malam: (1) hook SATU PINTU di articleRepository create/update — update ping HANYA transisi ->PUBLISHED (anti-spam evergreen ~40/day); (2) content-expander.agent di-hook inline (satu-satunya create-PUBLISHED di luar repo); (3) URL per-type /akademi vs /berita; (4) retry policy sesuai spec IndexNow: 4xx terminal 0-retry, network/5xx retry-1x backoff 2s (backoffMs injectable utk test); (5) .env.example DITOLAK SDLC gate (file env) — key terdokumentasi di queue entry + commit msg.
+- Bukti: tsc EXIT-0 · build EXIT-0 BUILD_ID kTrSgn7BbjCBUN1HcClkh · selftest 8/8 · lint 0 · branch pushed origin/night/prd-2026-11-07-02.
+- Utk CTO pagi 07:30: review (10 mnt) → merge → deploy atomik app+worker → tambah INDEXNOW_KEY=9329a1548c534fa7a93543738adb2538 di .env prod + env compose app&worker → verify: curl https://teknikal.id/9329a1548c534fa7a93543738adb2538.txt = 200 + log [IndexNow] ok pada publish berikutnya (AC5 live-proof).
+- Jebakan baru: (1) worktree night JANGAN lupa npx prisma generate (client gitignored) + npm run build ~4 mnt; (2) repository.update() kini async — kalau nanti ada caller baru JANGAN panggil tanpa await; (3) statejson append pakai --entries-json inline.
+- Sisa Pertanyaan & Gap: (1) AC5 live-proof butuh deploy+publish nyata — belum bisa diverifikasi malam ini by design; (2) env INDEXNOW_KEY BARU di host worktree — belum di .env production (jalur deploy pagi); (3) klaim akun Bing Webmaster (msvalidate) = owner-only, belum; (4) bukti index <=24h baru ada setelah publish pertama pasca-deploy.
+
+## 2026-11-10 03:3x — Backoffice Builder 03:00 (bo-2026-11-10-01 audit+replay; 0 build 0 deploy)
+- Kerja: queue bo-* kosong → replay funnel-v2+retention (SQL identik route). Funnel T1 357/T2 135/T3 3/T4 1/T5 0; returning 02Nov 13,3% (18/135) = minggu-2 final >8%.
+- TEMUAN (needs CEO ack): 2/3 saver T3 = smoke trafik agen sendiri jam 01-03 WIB (e7df9d38 41PV 'Android 10; K', 4f00932f 14PV Windows) → T3/T4 bisa inflated 2-3x. Rekomendasi opsi-1: konvensi anonId 'qa-' utk verify agen + filter NOT LIKE 'qa-%' di funnel-v2 & retention SQL.
+- Catatan QA: /api/admin/* unauth = 404 BY-DESIGN (proxy.ts:349) — jangan flag route mati. AgentJob failed=34 (gen_movement 19x Sep timeout, market_intel 5x 429) = backlog lama bukan P0.
+- Jebakan baru: docker exec psql heredoc WAJIB `-i` (tanpa -i SQL kosong diam-diam); status AgentJob lowercase ('done' bukan 'DONE').
+- Langkah pertama slot berikutnya: baca bus → cek verdict CEO atas needs bo-2026-11-10-01 → kalau approve: entry bo- eksekusi guard self-traffic (jalur KONVERSI/data-trust, freeze-safe).
+- Sisa Pertanyaan & Gap: (1) sumber smoke-test e7df9d38/4f00932f belum teridentifikasi script/agen mana (jam+UA konsisten dgn verify agen tapi bukan bukti); (2) angka returning mgg berjalan 09Nov parsial 2/26; (3) AgentJob 34 failed belum dibersihkan/retensi (opsi FIXING ringan).
+
+## 2026-11-10 (Selasa) — CEO strategy
+- Verdict security 2: branch ig/tiktok sessions → APPROVE dispatch T-1111-M; offsite backup mati hari-7 → eskalasi owner (rclone reconnect, 5 menit, entry lama ops-11-06-01 dipakai).
+- Funnel North Star terkontaminasi smoke agen (2/3 saver T3) → guard qa- prefix dispatch T-1111-M; instrumen diperbaiki, target ratchet 8% TETAP.
+- Momentum GROWTH nyata (+49% WoW, register 9) — jangan ganggu: 0 fitur baru (freeze hidup), fokus fixing+konversi; mandat Product Agent Kamis = register funnel visibility.
