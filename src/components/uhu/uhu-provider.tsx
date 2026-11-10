@@ -209,6 +209,8 @@ export function UhuProvider({ children }: { children: ReactNode }) {
   const [unreadWhileClosed, setUnreadWhileClosed] = useState(false);
 
   const abortRef = useRef<AbortController | null>(null);
+  const prevOpenRef = useRef(false);
+  const streamingRef = useRef(false);
 
   const effectiveGate: GateState =
     sessionStatus === "unauthenticated"
@@ -244,6 +246,33 @@ export function UhuProvider({ children }: { children: ReactNode }) {
       setOpenState(nextOpen);
       if (nextOpen) {
         setUnreadWhileClosed(false);
+        // HISTORY RESTORE: panel dibuka kosong → tarik 10 pesan terakhir dari server
+        // (jawaban yang selesai saat user pindah tab tetap kembali).
+        setMessages((prev) => {
+          if (prev.length > 1) return prev; // sudah ada obrolan lokal
+          void fetch("/api/uhu/history")
+            .then(async (res) => {
+              if (!res.ok) return null;
+              const data = (await res.json()) as {
+                ok?: boolean;
+                messages?: Array<{ role: string; text: string }>;
+              };
+              if (!data?.ok || !Array.isArray(data.messages) || data.messages.length === 0) return null;
+              // Race guard: jangan timpa bila user sudah mulai mengirim.
+              setMessages((cur) => {
+                if (cur.length > 1 || streamingRef.current) return cur;
+                const restored = data.messages!.slice(-10).map((m, i) => ({
+                  id: `h-${Date.now()}-${i}`,
+                  role: m.role === "user" ? ("user" as const) : ("assistant" as const),
+                  text: m.text ?? "",
+                }));
+                return restored;
+              });
+              return null;
+            })
+            .catch(() => undefined);
+          return prev;
+        });
       }
     },
     [pathname]
@@ -297,6 +326,68 @@ export function UhuProvider({ children }: { children: ReactNode }) {
     };
   }, [open]);
 
+  // Restore riwayat dari server (/api/uhu/history) saat open false->true dan messages.length <= 1
+  useEffect(() => {
+    const wasOpen = prevOpenRef.current;
+    prevOpenRef.current = open;
+    if (!open || wasOpen) return;
+    if (messages.length > 1 || streaming || streamingRef.current) return;
+
+    const controller = new AbortController();
+    fetch("/api/uhu/history", {
+      method: "GET",
+      cache: "no-store",
+      signal: controller.signal,
+    })
+      .then(async (res) => {
+        if (!res.ok) return null;
+        return (await res.json()) as {
+          ok?: boolean;
+          messages?: Array<{ role?: string; text?: string; ts?: number | string }>;
+        };
+      })
+      .then((data) => {
+        if (!data?.ok || !Array.isArray(data.messages) || data.messages.length === 0) {
+          return;
+        }
+        if (streamingRef.current) return;
+
+        const restored: UhuMessage[] = data.messages
+          .filter(
+            (m): m is { role: "user" | "assistant"; text: string; ts?: number | string } =>
+              Boolean(
+                m &&
+                  (m.role === "user" || m.role === "assistant") &&
+                  typeof m.text === "string" &&
+                  m.text.trim().length > 0
+              )
+          )
+          .slice(-10)
+          .map((m, i) => ({
+            id: `h-${m.ts ?? 0}-${i}`,
+            role: m.role,
+            text: m.text,
+            streaming: false,
+          }));
+
+        if (restored.length === 0) return;
+
+        setMessages((prev) => {
+          if (streamingRef.current || prev.some((m) => m.streaming)) {
+            return prev;
+          }
+          return restored;
+        });
+      })
+      .catch(() => {
+        // Error/abort silent
+      });
+
+    return () => {
+      controller.abort();
+    };
+  }, [open, messages.length, streaming]);
+
   // Hanya abort saat provider unmount (TIDAK saat panel ditutup agar async completion tetap jalan)
   useEffect(() => {
     return () => {
@@ -332,6 +423,7 @@ export function UhuProvider({ children }: { children: ReactNode }) {
         userMsg,
         { id: assistantId, role: "assistant", text: "", streaming: true },
       ]);
+      streamingRef.current = true;
       setStreaming(true);
 
       const controller = new AbortController();
@@ -500,6 +592,7 @@ export function UhuProvider({ children }: { children: ReactNode }) {
         removeEmptyAssistant();
         setErrorBanner("Sambungan ke Uhu terganggu. Coba lagi sebentar ya.");
       } finally {
+        streamingRef.current = false;
         setStreaming(false);
         if (!aborted && !openRef.current) {
           setUnreadWhileClosed(true);
