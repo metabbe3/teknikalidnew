@@ -15,21 +15,40 @@ export function UhuFab() {
   const [showBubble, setShowBubble] = useState(false);
   const messageCountRef = useRef(0);
 
-  // Delay 2.5s setelah load agar tidak mengganggu first paint / LCP
+  // Delay 2.5s setelah load agar tidak mengganggu first paint / LCP.
+  // Yield ke GuestSellModal (1x/sesi): kalau modal sedang/mungkin muncul,
+  // bubble Uhu menunggu sampai sellmodal_seen tersedia (poll ringan, max 20s).
   useEffect(() => {
+    let bubbleTimer: ReturnType<typeof setTimeout> | null = null;
+    const tryShowBubble = (attempt: number) => {
+      let modalBusy = false;
+      try {
+        modalBusy = !sessionStorage.getItem("sellmodal_seen");
+      } catch {
+        modalBusy = false;
+      }
+      if (modalBusy && attempt < 20) {
+        setTimeout(() => tryShowBubble(attempt + 1), 1000);
+        return;
+      }
+      let dismissed = true;
+      try {
+        dismissed = !!sessionStorage.getItem(DISMISSED_KEY);
+      } catch {
+        dismissed = false;
+      }
+      if (!dismissed) setShowBubble(true);
+    };
     const timer = setTimeout(() => {
       setVisible(true);
-      try {
-        const dismissed = sessionStorage.getItem(DISMISSED_KEY);
-        if (!dismissed) {
-          setShowBubble(true);
-        }
-      } catch {
-        setShowBubble(true);
-      }
+      bubbleTimer = null;
+      tryShowBubble(0);
     }, APPEAR_DELAY_MS);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      if (bubbleTimer) clearTimeout(bubbleTimer);
+    };
   }, []);
 
   const markBubbleDismissed = useCallback(() => {
