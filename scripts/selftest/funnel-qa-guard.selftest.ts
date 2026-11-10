@@ -77,6 +77,17 @@ test("[A5] konvensi charter: smoke-test agen wajib anonId prefix qa- (§7)", () 
   );
 });
 
+test("[A6] gerbang input: validation menerima anonId prefix qa- (pageview/engagement/share) — tanpa ini beacon smoke 400 & konvensi mati", () => {
+  const v = read("src/lib/validation.ts");
+  const hexOnly = /anonId:.*regex\(\/\^\[a-f0-9-\]/;
+  const m = v.match(/anonId:[^\n]*regex\([^)]*\)/g) ?? [];
+  const offenders = m.filter((line) => hexOnly.test(line) && !line.includes("qa-"));
+  assert.ok(
+    offenders.length === 0,
+    `regex anonId hex-murni tanpa prefix qa-: ${offenders.length} gerbang — beacon qa-* akan 400/di-strip:\n${offenders.join("\n")}`,
+  );
+});
+
 test("[B1] SATU PINTU: guard SQL fragment didefinisikan sekali dan dipakai 3 tempat (anti drift)", () => {
   const retention = read("src/lib/retention.service.ts");
   assert.ok(
