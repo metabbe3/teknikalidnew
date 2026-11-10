@@ -115,6 +115,7 @@ export async function getRetentionOverview(
         SELECT COALESCE(pv."userId", pv."anonId", pv.ip) AS dev, count(DISTINCT (pv."createdAt" + interval '7 hours')::date) AS days
         FROM "PageView" pv
         WHERE pv."isBot" = false AND (pv."userId" IS NOT NULL OR pv."anonId" IS NOT NULL OR pv.ip IS NOT NULL)
+          AND COALESCE(pv."userId", pv."anonId", pv.ip) NOT LIKE 'qa-%' -- ops-2026-11-10-03: guard smoke-test agen
           AND pv."createdAt" >= wk AND pv."createdAt" < wk + interval '1 week'
         GROUP BY dev) s
       GROUP BY wk ORDER BY wk`,
@@ -132,6 +133,8 @@ export async function getRetentionOverview(
       LEFT JOIN "User" u
         ON (u."createdAt" + interval '7 hours') >= w.week_start
        AND (u."createdAt" + interval '7 hours') <  w.week_start + interval '1 week'
+       -- ops-2026-11-10-03: guard smoke-test agen — akun register dari sesi qa- tidak dihitung cohort
+       AND COALESCE(u."initialAnonId", '') NOT LIKE 'qa-%'
       LEFT JOIN LATERAL (
         SELECT DISTINCT pv."userId" AS uid FROM "PageView" pv
         WHERE pv."userId" = u.id
