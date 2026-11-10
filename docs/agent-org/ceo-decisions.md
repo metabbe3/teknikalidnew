@@ -1772,3 +1772,16 @@ Konteks: 502 pagi 2 window (TERKOREKSI via watchdog.log): W1 07:30-07:50 daemon 
 - prd-2026-11-07-02 (IndexNow) MERGED main 689f846 setelah review diff (6 file, 0 DDL, fire-and-forget aman jalur publish) + verify ulang penuh (tsc 0, selftest 8/8, build hijau NNU0B7aJ6docXs6sRvxHC). Deploy naik kereta T-1110-M malam ini (window 15 Okt). PRASYARAT OWNER: tambah INDEXNOW_KEY=9329a1548c534fa7a93543738adb2538 ke .env prod (file env = owner-only). Rollback anchor: app 99bb19b8b2c7 + git revert 689f846.
 - P2P push 5 commit main lokal (4 org-state/UX 9 Nov + merge hari ini) — kepatuhan hard-gate 21:45-07:00 dipulihkan.
 - Anomali (info, bukan blocker): kereta T-1109-M kemarin no-show (manifest in_train masih utuh); app image 99bb19b8 06:46 hari ini sesi lain, worker e673e2de masih 9 Nov 06:41 (drift app≠worker CreatedAt).
+
+### 2026-11-10 07:5x — [REVIEWER] QA konten pagi 10 Nov
+- 46 artikel 24 jam dicek (41 halaman ticker + 5 artikel konten). SQL replay komprehensif: IHSG/breadth naik-turun/nilai transaksi/foreign flow/33 klaim indikator/screener counts (11 GC, 14vs41 EMA, 139 oversold; 14 GC, 18vs54, 177) = EXACT vs DB. 40/40 judul ticker exact.
+- 1 FATAL BARU → qa-2026-11-10-02 (P1, pending): BNBR "harga 26% di bawah MA20" vs DB 9 Nov 18,5% (26% = angka sesi 4 Nov). + konfirmasi independen qa-2026-11-10-01 (PGAS "satu-satunya": SQL = PGAS+GTBO). Dua-duanya slot BE 09:30, DB-patch 0-build.
+- Minor (catat, bukan task): flat-count replay 161-162 vs snapshot "163" (Δ1-2, basis snapshot bursa vs prev-close); artikel pakai campur link /stocks/BBRI dan /stocks/BBRI.JK (dua-duanya 200 — format kanonik ganda).
+- Deploy verify pagi: app image 188ea7b751dc 06:46 WIB ✓ (OHLCV strip bb24fa5 live di AADI: Rp10.200/Rp10.425 ×5 hit); agentd ecb02b1 live: healthz tg_listener_ok=true, poll age 5s; /agent 200 PricingBox Night Trader + Trial 7 hari live. Queue: 0 in_progress, semua deployed qa_verified=true — tidak ada admin debt.
+
+## CTO note 2026-11-10 (CTO 07:45)
+- ISU: deploy 07:46 pagi ini (sesi AGY/owner) naikkan PROD dari branch feature b0cca72 LANGSUNG — bukan main: 3 rider kereta T-1110-M (IndexNow, radar-star, guardrail P0 kenapa-*) belum pernah serve + worker image basi 9 Nov (parity rusak) + di luar window (07:46) + cap 2 deploy/hari terlampaui (06:46+07:46).
+- SUDAH DILAKUKAN CTO (lever tersedia): merge b0cca72→main 9a64179 (merge-tree clean, tsc 0, bus entry) — main kini superset prod, flip-flop revert tercegah; entry ops-11-10-05 (P1) = kereta malam build dari main + rebuild atomik app+worker.
+- Opsi A: kereta T-1110-M jalan malam sebagai deploy #3 dgn justifikasi hotfix-parity (worker basi = risk data). Opsi B: deploy pertama besok pagi window (biar cap bersih), prod ganti ke main superset — risiko: worker basi bertahan 24 jam.
+- Rekomendasi CTO: OPSI A — parity worker lebih penting dari cap prosedural; kondektur wajib tulis justifikasi + per-fitur verify.
+- Keputusan yang perlu Anda: (1) set env INDEXNOW_KEY=9329a1548c534fa7a93543738adb2538 di .env prod (owner-only) sebelum kereta malam; (2) ack aturan: sesi AGY/owner deploy prod = WAJIB dari main post-merge (bukan branch), tulis bus.

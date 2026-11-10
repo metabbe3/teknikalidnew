@@ -1,3 +1,9 @@
+## [2026-11-10 07:5x] cto-pagi-0745 — reconciliation deploy out-of-window 07:46: merge b0cca72→main 9a64179 (BUILD-ONLY, 0 deploy)
+- task-id: ops-2026-11-10-05 (dispatch) + reconciliation | type: ops/CTO-verdict | PRD: N/A
+- KONTEKS: prod 07:46 deploy dari branch feature b0cca72 (sesi AGY, image uxconv-wt-app 07:45:55, BUILD_ID w5YPta) — di luar window, deploy-count penuh, worker basi 9 Nov 06:41, 3 rider main belum serve.
+- AKSI CTO: merge --no-ff b0cca72→main 9a64179 (merge-tree clean; tsc EXIT-0; bus 07:54) — main = superset prod (OHLCV live + IndexNow + radar-star + guardrail P0 + agent-sell + uiverse). Entry ops-11-10-05 P1 utk kereta malam T-1110-M: build dari main, atomik app+worker, 5 verify per-fitur.
+- Bukti fisik: git 9a64179 + ancestor-check (b0cca72/689f846/974f3df/ef490a5 IN main) · tsc EXIT-0 · curl home 200 0.40s / stocks 200 0.23s · chunk data-live-oh serving · container app-1 healthy up 3 min (07:46) · spot-check QA fatal: "satu-satunya di bursa" + "26% di bawah" MASIH live → verdict VALID P1, slot 09:30.
+- Queue v429→v435 (ops-11-10-05 append, ux-11-10-01 FE 19:15, reslot qa-11-09-02 + qa-11-10-01/02). Post-mortem ringkas lihat handoff 07:5x.
 
 ## [2026-11-09 19:0x] cto-sore-1645 — ops-2026-11-05-01: guardrail kenapa-* HIJAU end-to-end (BUILD-ONLY, 0 deploy)
 - task-id: ops-2026-11-05-01 | type: ops (P0 TRUST) | PRD: N/A (owner verbatim 4 Nov, ops pipeline)

@@ -5417,7 +5417,7 @@
       "north_star": "TRUST (favicon korup di browser = kesan situs rusak; dev-server 500 kambuh kalau public/ tak ikut patch)",
       "title": "favicon.ico LIVE masih versi korup offset-0 — commit a16d480 hanya patch src/app/favicon.ico, public/favicon.ico (yang disajikan prod) tidak ikut",
       "spec": "INTENT: ux-2026-11-08-01 fix belum sampai prod utk /favicon.ico. Bukti reviewer 07:3x: live byte md5=b2fbb98258f544e5f8cc15a72a13a531 identik public/favicon.ico lama (mtime 7 Nov), 4 entry ICO offset=0 (semua melewati header); src/app/favicon.ico sudah benar (70/623/1581/3029, sum=4765 exact). ACCEPTANCE: (1) salin src/app/favicon.ico → public/favicon.ico (byte identik); (2) verify repo: ICO parse offset>0 + PIL decode OK; (3) naik ke prod via KERETA berikutnya (DILARANG build solo — gate ops-11-08-01/OOM), lalu live verify: md5 != b2fbb982... + ICO parse valid; (4) catat di bus saat kereta naik.",
-      "scheduled_slot": "2026-11-09 BE malam 18:30 BUILD-ONLY bundling prd-11-07-01/02 (copy src/app/favicon.ico MD5 617ed096 -> public/favicon.ico masih korup b2fbb982 = live; 1-file commit; naik kereta malam bila gate hijau pre-22:00, else T-1110-M. Spot-check CTO 07:52: MD5 live == public/ korup, src/ benar"
+      "scheduled_slot": "2026-11-10 22:15 kereta T-1110-M (1-file copy public/favicon.ico pre-build; verify md5 live != b2fbb982)"
     },
     {
       "id": "feat-2026-11-09-01",
@@ -5451,9 +5451,11 @@
       "north_star": "TRUST — klaim superlatif di artikel live WAJIB lolos replay SQL kanonik",
       "title": "FATAL QA 10 Nov (temuan Sentinel 9 Nov 22:0x): analis-sore-2026-11-09-pgas klaim 'PGAS satu-satunya EMA bullish di bursa hari ini' SALAH — replay kanonik: GTBO.JK + PGAS.JK (2 emiten, active non-gorengan volume>0, emaCrossSignal=bullish emaCrossDate=2026-11-09)",
       "spec": "Superlatif ke-5 PASCA root-fix ops-11-05-03 — root-fix menyelamatkan angka breadth (231/440/162 EXACT di brief Senin) tapi klaim satu-satunya MASIH ditulis manual oleh generator sore. ACCEPTANCE: (1) patch artikel: 'satu-satunya di bursa hari ini' -> 'satu dari dua sinyal EMA bullish baru hari ini (PGAS + GTBO)' ATAU redaksi equivalen tanpa superlatif eksklusif; (2) replay_sql_gate.py exit 0 pra-patch; (3) H2: position('satu-satunya di bursa')=0 DB + grep live=0; (4) AKAR: generator analis-sore (jalur host) wajib ambil daftar emiten dari query kanonik getSignalCounts-equivalent (bukan dari narasi LLM) — patch host-script sore sebagaimana brief pagi sudah disiplin lewat signals_kanonik; (5) guardrail superlatif di jalur sore: sebelum tulis klaim eksklusif, ranking SQL ORDER BY wajib.",
-      "scheduled_slot": "2026-11-10 BE siang 09:30 (DB-patch 0-build; jalur host-script)",
+      "scheduled_slot": "2026-11-10 09:30 BE siang (P1 FATAL konten SALAH live — 0-build DB-patch; JANGAN nunggu kereta; selesai → langsung queue result)",
       "created_by": "sentinel-2200 9 Nov 22:2x",
-      "result": ""
+      "result": "",
+      "qa_reviewer_confirmed": true,
+      "qa_reviewer_note": "Reviewer 10 Nov 07:4x konfirmasi independen via SQL: emaCrossDate=2026-11-09 bullish aktif non-gorengan = PGAS.JK + GTBO.JK (2 emiten). Tambah fatal kedua satu artikel BNBR -> qa-2026-11-10-02."
     },
     {
       "id": "fix-2026-11-10-01",
@@ -5524,6 +5526,42 @@
       "title": "[BUGFIX][TRUST] Backlog sec-2026-10-29-01 (owner-approved 29 Okt, 12 hari belum dispatch — utang CEO): ErrorLog utk 401/403 anonim /auth/signin (monitoring gap)",
       "spec": "ENTRY BACKLOG sec-2026-10-29-01 status=approved sejak 29 Okt — owner sudah approve tapi tak pernah dispatch (anti-stagnation: approved tanpa queue = badge dashboard '-> dispatch CTO'). ISI: tabel ErrorLog tidak ada, AuditLog hanya event authed -> password-spray/credential-stuffing /auth/signin tak terdeteksi dari dalam. TASK: (1) tabel ErrorLog (statusCode, path, ipHash, ts) + capture 401/403 anonim di middleware/proxy jalur auth; (2) agregat sre_brief.py: cluster 401/403 per IP-jam dgn threshold alert (mis. >10/5mnt); (3) DB migration via kereta normal. DONE WHEN: (a) SELECT count ErrorLog 24h > 0 setelah deploy + curl /auth/signin POST password-sampah 3x tercatat 401 rows; (b) sre_brief menampilkan blok auth-anonim; (c) dashboard admin 1 query read-only. VERIFIKASI HATI-HATI: jangan kunci jalur login normal (smoke login sukses tetap jalan).",
       "created_by": "CEO-0815 10 Nov (sumber: sec-2026-10-29-01 approved)"
+    },
+    {
+      "id": "qa-2026-11-10-02",
+      "date": "2026-11-10",
+      "type": "qa-content-fix",
+      "priority": "P1",
+      "status": "pending",
+      "pos": "[BUGFIX][TRUST]",
+      "north_star": "TRUST — angka publik == DB (replay SQL kanonik); satu angka salah = trust runtuh",
+      "title": "FATAL QA 10 Nov: analisa-saham-bnbr-oversold-rsi-26 klaim \"harga 26% di bawah MA20\" SALAH vs DB — replay: SMA20 9 Nov = 49,1, harga 40 = 18,5% di bawah (26% adalah angka sesi 4 Nov; klaim MA50 43% BENAR = 43,3%)",
+      "spec": "Kontradiksi internal: artikel menulis SMA20 di 49,1 (BENAR) tapi persentase 26% tidak konsisten dengan 49,1 sendiri. ACCEPTANCE: (1) patch content: \"dengan harga 26% di bawah MA20\" -> \"dengan harga 18,5% di bawah MA20\" (atau pembulatan konsisten ~19%); (2) SQL replay: StockIndicator 9 Nov sma20=49,10, close 40 -> 18,5%; (3) H2: position(\"26% di bawah\")=0 di DB content+excerpt, grep live=0; (4) cek artikel lain 24 jam tidak ada pola persentase-jarak-MA dari sesi lama (sudah disweep reviewer 10 Nov, hanya BNBR).",
+      "scheduled_slot": "2026-11-10 09:30 BE siang (P1 FATAL konten SALAH live — 0-build DB-patch; bundling qa-11-10-01)",
+      "created_by": "content-reviewer-0710 10 Nov",
+      "result": ""
+    },
+    {
+      "id": "ops-2026-11-10-05",
+      "spec": "[OPS][DEPLOY] KERETA T-1110-M malam 22:15 — RECONCILIATION PASCA OUT-OF-WINDOW DEPLOY 07:46: prod kini jalan dari branch feature b0cca72 (BUILD_ID w5YPta, image uxconv-wt-app 07:45:55) TAPI worker masih 9 Nov 06:41 (basi, parity rusak) dan 3 rider main belum pernah serve (IndexNow 689f846, radar-star 974f3df, guardrail kenapa-* ef490a5). CTO sudah merge b0cca72->main 9a64179 (tsc 0, merge-tree clean). BUILD WAJIB dari main 9a64179 ATAU SETELAHNYA (bukan ac63a57!) + REBUILD ATOMIK app+worker SATU perintah + verify CreatedAt parity. Manifest rider: ux-11-08-01 favicon + ux-11-09-01 radar-star + ops-11-05-01 guardrail + prd-11-07-02 IndexNow + qa-11-09-02 favicon-public. Verify per-fitur pasca-deploy: (1) favicon md5 live != b2fbb982 (korup); (2) star radar DOM /stocks#radar guest; (3) curl /9329a1548c534fa7a93543738adb2538.txt = 200 HANYA jika owner sudah set env (tanpa env fitur diam by design — JANGAN flag bug); (4) data-live-oh masih serving pasca build baru (regression check merge); (5) log [IndexNow] di publish pertama. Deploy-count 10 Nov SUDAH PENUH (06:46 owner + 07:46 AGY) → kereta T-1110-M = deploy #3 — EKSKUSI HANYA dengan justifikasi hotfix-parity (worker basi = risk) ATAU tunggu 00:xx window; sebutkan eksplisit di bus.",
+      "priority": "P1",
+      "status": "pending",
+      "scheduled_slot": "2026-11-10 22:15 Kondektur kereta malam",
+      "train": "T-1110-M",
+      "north_star": "TRUST+STICKY (parity image = data reliable; IndexNow = GROWTH)",
+      "done_when": "(1) docker ps CreatedAt app==worker baru; (2) 5 verify per-fitur di atas dengan bukti curl/MD5/DOM tertulis di result; (3) bus entry deploy; (4) deploy-count justification tertulis",
+      "result": ""
+    },
+    {
+      "id": "ux-2026-11-10-01",
+      "spec": "[KONVERSI][BUGFIX] Task FE Builder 19:15 hari ini (slot Sen-Jum valid): VERIFIKASI PASKA-MERGE 9a64179 — bukti fisik live dari fitur AGY yang belum pernah diverifikasi org-verify (semua verify = self AGY/Hermes): (1) OHLCV live strip: buka /stocks/BBCA.JK saat market open 09:00-15:49 (polling /api/live-quotes tiap 60s, hydrate dayHigh/dayLow/open/volume, marketState guard) — screenshot/DOM bukti data-live-oh ter-update >1 sampel (bukan render SSR statis); (2) label sesi jujur: tanggal sesi = tanggal trading terakhir yang benar, bukan tanggal artikel; (3) PricingBox 3 kolom + /agent pricing + GuestSellModal home+berita + Free Trial Pro 7 hari (380a816): DOM semua titik mount + klik modal guest = register CTA jalan; (4) mobile 375px tidak overflow chip. Jika temuan: entry QA baru + P1 bila fatal. Freeze-safe: verifikasi fitur existing, bukan fitur baru.",
+      "priority": "P2",
+      "status": "pending",
+      "scheduled_slot": "2026-11-10 19:15 FE Builder",
+      "train": "",
+      "north_star": "TRUST (verify fitur sebelum kredensial org)",
+      "done_when": "(1) DOM/screenshot tiap titik mount PricingBox/Modal; (2) bukti polling live-quotes >1 sampel saat open ATAU catatan eksplisit bila run di luar jam market; (3) tsc/build hijau jika ada perbaikan",
+      "result": ""
     }
   ]
 }
