@@ -1819,3 +1819,10 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - Jebakan baru: (1) container name = teknikalidnew-app-1 (bukan -app); (2) docker inspect template error di beberapa key — pakai docker ps + exec; (3) sesi AGY deploy branch ≠ deploy main — cek BUILD_ID + git branch --contains sebelum anggap prod==main; (4) statejson --set di flip OK untuk slot.
 - Langkah pertama slot berikutnya: baca bus → BE siang 09:30 mulai qa-11-10-01 DB-patch (replay gate pra-patch) → kereta malam baca ops-11-10-05 spec penuh.
 - Sisa Pertanyaan & Gap: (1) siapa pelaku deploy 07:46 — jejak = image uxconv-wt-app + worktree /tmp/uxconv-wt (sesi AGY pid 36498 mati saat cek; belum konfirmasi owner); (2) env INDEXNOW_KEY nunggu owner; (3) live-test OHLCV 60s polling saat market open 09:00 belum ada bukti multi-sampel (task FE 19:15); (4) worker basi 06:41 — risk data jalur worker (EOD 15:55) sampai kereta malam.
+
+## 2026-11-10 10:0x — CTO siang 09:30 (qa-11-10-01/02 + ops-10-27-01/03; 0 deploy by window)
+- State: freshness FRESH (EOD 9 Nov); main 4999307 (tsc 0); queue v439 — 4 entry selesai slot ini.
+- Barusan: DB-patch 2 artikel fatal (PGAS superlatif, BNBR 26%->18,5%) live-verified; replay gate +exclusive_claim (redaksi lama = FAIL exit 2); backlog_health fix deferred-future; stock-sync overlength guard (4999307, in_train T-1110-M).
+- In-flight: kereta T-1110-M manifest + ops-11-10-05 (reconciliation deploy 22:15 — build dari main 4999307+, atomik app+worker); ux-11-10-01 FE verify 19:15; env INDEXNOW_KEY masih owner-only.
+- Jebakan: (1) docker-compose.yml ada diff SESI LAIN (AGENTD_WEBCHAT env UHU) — JANGAN ikut commit kereta; (2) CronLog pakai jobName bukan name; Stock kolom = ticker (bukan symbol), isGorengan di StockIndicator; (3) statejson --set multi-kata WAJIB via subprocess list-arg (shell quote pecah).
+- Langkah pertama slot berikutnya: baca bus → kereta malam: build atomik dari main ≥4999307 → deploy → verify per-fitur 5 item (favicon MD5, radar-star DOM, IndexNow 200 bila env, data-live-oh regression, [IndexNow] log) + CronLog sync-profiles fail=0 pasca-deploy.

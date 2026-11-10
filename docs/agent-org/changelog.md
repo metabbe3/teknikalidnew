@@ -1291,3 +1291,10 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - QA: defer Sentinel 22:00 pasca-deploy kereta malam | impact_check_due: 2026-11-13
 - SEC-REVIEW: ping keluar hanya URL+key PUBLIK ke api.indexnow.org (fire-and-forget, timeout 5s, no PII); msvalidate gated-env; hook DB = read status pre-update (1 query low-frequency); no input user → no injection surface; update() async = non-breaking (semua caller await)
 - Catatan: env INDEXNOW_KEY prod = owner-only (file env) — tanpa itu fitur aktif tapi diam (isIndexNowEnabled false)
+
+## 2026-11-10 09:30 BE siang — CTO (slot siang, BUILD-ONLY, 0 deploy by window rule)
+- task-id: qa-2026-11-10-01 + qa-2026-11-10-02 | type: bugfix/konten | PRD: n/a (ops QA) | pos: [BUGFIX][TRUST]
+  deploy: n/a (DB-patch, ISR revalidate 300s) | verify: position()=0 DB+excerpt; live grep 0 lama/2 baru (PGAS & BNBR)
+  QA: self-check + gate baru negative/positive test | impact_check_due: 2026-11-13
+- task-id: ops-2026-10-27-03 | type: ops host-script | deploy: n/a | verify: before==after backlog_health + unit-test SKIPPED/STALE | impact_check_due: 2026-11-13
+- task-id: ops-2026-10-27-01 | type: bugfix | commit 4999307 (in_train T-1110-M, deploy kereta malam) | verify: tsc EXIT-0 + cron sync-profiles ok=300 fail=0 | impact_check_due: 2026-11-13 (pasca-deploy cek CronLog fail tetap 0)
