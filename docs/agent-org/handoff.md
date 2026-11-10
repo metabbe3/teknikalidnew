@@ -1803,3 +1803,10 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - Verdict security 2: branch ig/tiktok sessions → APPROVE dispatch T-1111-M; offsite backup mati hari-7 → eskalasi owner (rclone reconnect, 5 menit, entry lama ops-11-06-01 dipakai).
 - Funnel North Star terkontaminasi smoke agen (2/3 saver T3) → guard qa- prefix dispatch T-1111-M; instrumen diperbaiki, target ratchet 8% TETAP.
 - Momentum GROWTH nyata (+49% WoW, register 9) — jangan ganggu: 0 fitur baru (freeze hidup), fokus fixing+konversi; mandat Product Agent Kamis = register funnel visibility.
+
+## 2026-11-10 07:4x — CTO pagi 07:30
+- State: sehat (freshness FRESH EOD 9 Nov, home 200 0.23s, night-audit bersih 0 bypass); main 0092144 sync origin (P2P utang 5 commit dilunasi).
+- Barusan: prd-2026-11-07-02 IndexNow MERGED 689f846 + verify ulang penuh (tsc 0 · selftest 8/8 · build NNU0B7aJ6docXs6sRvxHC · 0 DDL) → in_train T-1110-M (queue v428).
+- In-flight: kereta T-1110-M manifest = ux-11-08-01 favicon + ux-11-09-01 radar-star + ops-11-05-01 guardrail + prd-11-07-02 IndexNow (T-1109-M no-show kemarin — kondektur malam JANGAN lewat lagi); rclone+qa-guard T-1111-M; ops-11-06-03 tetap owner-only.
+- Jebakan: (1) PRASYARAT DEPLOY IndexNow = env INDEXNOW_KEY=9329a1548c534fa7a93543738adb2538 di .env prod + compose app&worker — OWNER-ONLY, tanpa itu fitur diam by design; (2) worker image masih 9 Nov 06:41 ≠ app 06:46 — kereta malam WAJIB build atomik app+worker satu perintah + cek CreatedAt parity; (3) merge night selalu commit org-state kotor dulu (pola 029db61); (4) backlog .bak 2 file untracked = normal statejson.
+- Langkah pertama slot berikutnya: baca bus → cek owner approve env INDEXNOW_KEY → kereta malam verify per-fitur (favicon MD5 live, star radar DOM, /9329...txt = 200 pasca-deploy, log [IndexNow] di publish pertama).
