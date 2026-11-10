@@ -16,7 +16,8 @@ const QUOTE_TTL_MS = 5 * 60 * 1000;
 const HISTORICAL_TTL_MS = 60 * 60 * 1000;
 const HISTORICAL_DB_TTL_MS = 24 * 60 * 60 * 1000;
 
-const QuoteSchema = z
+// ops-2026-10-29-04: di-export utk selftest quote-null (guard regresi null ^JKSE).
+export const QuoteSchema = z
   .object({
     symbol: z.string(),
     regularMarketPrice: z.number().nullable().optional(),
@@ -30,8 +31,8 @@ const QuoteSchema = z
     regularMarketPreviousClose: z.number().nullable().optional(),
     currency: z.string().optional(),
     marketState: z.string(),
-    shortName: z.string().optional(),
-    longName: z.string().optional(),
+    shortName: z.string().nullable().optional(), // ops-2026-10-29-04: scanner kirim null utk indeks — optional() saja menolak null (throw sebelum fallback v8)
+    longName: z.string().nullable().optional(),
     fiftyTwoWeekHigh: z.number().nullable().optional(),
     fiftyTwoWeekLow: z.number().nullable().optional(),
     marketCap: z.number().nullable().optional(),
