@@ -247,7 +247,15 @@ export const schemas = {
     // the beacon is fire-and-forget and must never 400 on a blank referrer.
     referrer: z.union([z.string().url(), z.literal("")]).optional(),
     // ret-qw1: UUID perangkat localStorage "eng_anon" — bukan kredensial, hanya ukuran retensi
-    anonId: z.string().min(8).max(36).regex(/^[a-f0-9-]+$/i).optional(),
+    // ops-2026-11-10-03: selain hex-UUID juga terima prefix qa- — konvensi smoke-test
+    // agen (ACK CEO); funnel/retention mengecualikan actor qa-%, jadi beacon HARUS
+    // bisa masuk DB dulu (strip diam-diam = metrik malah terkontaminasi).
+    anonId: z
+      .string()
+      .min(8)
+      .max(36)
+      .regex(/^(qa-[a-z0-9-]+|[a-fA-F0-9-]+)$/)
+      .optional(), // qa- HARUS lowercase — guard SQL NOT LIKE 'qa-%' case-sensitive
     // Growth-audit 29 Okt (Argon P0): UTM eksplisit dari hook use-page-view (path
     // sudah query-free G6) — tanpa field ini Zod strip diam-diam → utmSource NULL
     // semua trafik sosmed di DB. Nilai kosong tidak dikirim hook (conditional spread).
@@ -261,7 +269,7 @@ export const schemas = {
     target: z.string().min(1).max(16), // whatsapp | x | telegram | copy | story
     context: z.string().min(1).max(16), // asset | saham | berita | akademi | community | other
     path: z.string().min(1).max(255),
-    anonId: z.string().min(8).max(36).regex(/^[a-f0-9-]+$/i).optional(), // tracking-audit G7
+    anonId: z.string().min(8).max(36).regex(/^(qa-[a-z0-9-]+|[a-fA-F0-9-]+)$/).optional(), // tracking-audit G7 + qa- smoke ops-2026-11-10-03 (lowercase — guard SQL case-sensitive) + qa- ops-2026-11-10-03
   }),
 
   // public/engagement - POST body (dwell/scroll/cta telemetry beacon)
@@ -276,7 +284,7 @@ export const schemas = {
       path: z.string().min(1).max(255),
       ts: z.number().int().min(0).nullish(),
     })).min(1).max(10),
-    anonId: z.string().regex(/^[a-f0-9-]{8,36}$/), // wajib — kolom NOT NULL; components pakai getAnonIdSafe()
+    anonId: z.string().regex(/^(qa-[a-z0-9-]+|[a-fA-F0-9-]+)$/).min(8).max(36), // wajib — kolom NOT NULL; components pakai getAnonIdSafe(); qa- = smoke-test agen ops-2026-11-10-03
   }),
 
   // admin/eod-logs - GET query

@@ -28,6 +28,9 @@ export async function GET() {
       FROM "PageView" pv
       LEFT JOIN "User" u ON u.id = pv."userId"
       WHERE pv."isBot" = false AND pv."createdAt" >= NOW() - interval '21 days'
+        -- ops-2026-11-10-03: guard self-traffic — smoke-test agen wajib anonId prefix 'qa-'
+        -- (ACK CEO opsi-1 bo-2026-11-10-01; filter di level ACTOR, NULL-safe via COALESCE)
+        AND COALESCE(u."initialAnonId", pv."anonId", pv."userId", pv.ip) NOT LIKE 'qa-%'
     ),
     ev AS (
       SELECT
@@ -37,6 +40,8 @@ export async function GET() {
       FROM "EngagementEvent" e
       LEFT JOIN "User" u ON u."initialAnonId" = e."anonId"
       WHERE e."createdAt" >= NOW() - interval '21 days'
+        -- ops-2026-11-10-03: idem — event smoke tak boleh jadi 'saver' palsu (T3)
+        AND COALESCE(u."initialAnonId", e."anonId") NOT LIKE 'qa-%'
     ),
     base AS (
       SELECT actor, MIN(d) AS h0,
