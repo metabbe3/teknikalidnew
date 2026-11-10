@@ -196,12 +196,12 @@ export const stockSyncService = {
         ...(profile.Alamat && { address: fit(profile.Alamat.replace(/\r\n/g, ", "), 500) }),
         ...(profile.Telepon && { phone: fit(profile.Telepon, 50) }),
         ...(profile.Email && { email: fit(profile.Email, 100) }),
-        ...(profile.Website && { website: fit(profile.Website, 500) }),
+        ...(profile.Website && { website: fit(profile.Website, 255) }), // ops-2026-10-27-01: kolom VarChar(255), bukan 500
         ...(profile.SubSektor && { subSector: fit(profile.SubSektor, 100) }),
         ...(profile.PapanPencatatan && { listingBoard: fit(profile.PapanPencatatan, 50) }),
         ...(profile.TanggalPencatatan && { listingDate: parseIdxDate(profile.TanggalPencatatan) }),
         ...(profile.Logo && { logo: fit(`https://www.idx.co.id${profile.Logo}`, 500) }),
-        ...(profile.KegiatanUsahaUtama && { businessActivity: profile.KegiatanUsahaUtama }),
+        ...(profile.KegiatanUsahaUtama && { businessActivity: fit(profile.KegiatanUsahaUtama, 500) }), // ops-2026-10-27-01: guard panjang (kolom 500)
       },
     });
 

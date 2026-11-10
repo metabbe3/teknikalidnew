@@ -893,3 +893,9 @@ penulisan masih 404 (deploy di kereta T-1021-N / CTO pagi).
 - **Rollback anchor**: app 15b65f69c814 + worker e673e2de108c (paritas CreatedAt 06:41:46/50, sehat).
 - **ops-2026-11-08-03 DONE**: kanonik hivePOS backlog = repo docs/agent-org (file yatim 82 entri dipindah, symlink + commit 0ef7807).
 - Night-audit bersih: night/retro-auth-1108 == main (6e2c65c) → push origin (006789f..6e2c65c), merge tidak diperlukan.
+
+## 2026-11-10 09:4x WIB — CTO siang 09:30: DB-patch qa-2026-11-10-01 + qa-2026-11-10-02 (P1 konten fatal, 0-build)
+- Backup valid 2026-11-10T01:16 (<24h) ✓ · replay gate PASS 2/2 pra-patch.
+- UPDATE Article grw2611091140ssf2coh5 (analis-sore-2026-11-09-pgas): 'satu-satunya di bursa hari ini' → 'satu dari dua sinyal EMA bullish baru hari ini (PGAS dan GTBO)' di content+excerpt. Rowcount=1. Replay kanonik: emaCross bullish 9 Nov aktif non-gorengan vol>0 = GTBO.JK+PGAS.JK (2).
+- UPDATE Article grw26111006408smsu18y (analisa-saham-bnbr-oversold-rsi-26): '26% di bawah MA20' → '18,5% di bawah MA20'. Rowcount=1. Replay: sma20=49,10 close=40 → -18,5% (26% = angka sesi 4 Nov).
+- H2 verify: position('satu-satunya di bursa')=0 content+excerpt; position('26% di bawah')=0; sweep 36jam artikel lain = 0 kena.
