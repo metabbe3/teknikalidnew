@@ -5,6 +5,7 @@ import Link from "next/link";
 import { openNotifBell, useNotifUnread } from "@/components/layout/notif-bell";
 import { UhuMascot } from "./uhu-mascot";
 import { useUhu, type UhuMessage } from "./uhu-provider";
+import { AiMarkdown } from "@/components/ai/ai-markdown";
 
 export type { UhuMessage };
 
@@ -118,6 +119,7 @@ export function UhuChatPanel() {
     errorBanner,
     setErrorBanner,
     chips,
+    agentChips,
     send,
   } = useUhu();
 
@@ -183,7 +185,11 @@ export function UhuChatPanel() {
 
   if (!open) return null;
 
-  const showChips = messages.length <= 1 && !streaming && chips.length > 0;
+  // Chips statis: hanya saat obrolan belum mulai. Chips dinamis (agentChips,
+  // dari suggestions SSE): tampil setelah jawaban selesai — seperti ChatGPT.
+  const showChips =
+    !streaming &&
+    ((agentChips.length > 0 && !streaming) || (messages.length <= 1 && chips.length > 0));
 
   return (
     <div
@@ -213,7 +219,7 @@ export function UhuChatPanel() {
                 }`}
               >
                 <span aria-hidden="true">●</span>
-                {isLive ? "Live" : "Siaga"}
+                {isLive ? "Live" : "Offline"}
               </span>
               {notifUnread > 0 && (
                 <button
@@ -334,7 +340,9 @@ export function UhuChatPanel() {
                   {msg.role === "user" ? (
                     <span className="whitespace-pre-wrap break-words">{msg.text}</span>
                   ) : msg.text ? (
-                    <div className="break-words">{renderLiteMarkdown(msg.text)}</div>
+                    <div className="break-words">
+                      <AiMarkdown text={msg.text} compact />
+                    </div>
                   ) : (
                     <span className="inline-flex items-center gap-1.5 text-xs text-text-tertiary">
                       <span>Uhu sedang menganalisa...</span>

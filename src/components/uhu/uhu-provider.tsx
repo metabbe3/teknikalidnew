@@ -48,6 +48,7 @@ export interface UhuContextValue {
   pageContext: string | undefined;
   setPageContext: (ctx: string | undefined) => void;
   chips: UhuSuggestionChip[];
+  agentChips: UhuSuggestionChip[];
   send: (textOverride?: string, pageContextOverride?: string) => Promise<void>;
 }
 
@@ -156,6 +157,7 @@ const NOOP_CONTEXT: UhuContextValue = {
   pageContext: undefined,
   setPageContext: () => {},
   chips: [{ label: "💡 Tanya apa aja soal saham", prompt: "Tanya apa aja soal saham" }],
+  agentChips: [],
   send: async () => {},
 };
 
@@ -237,6 +239,10 @@ export function UhuProvider({ children }: { children: ReactNode }) {
     [pathname, customPageContext]
   );
 
+  // Chips dinamis dari agent (SSE "suggestions" — follow-up agent; owner 10 Nov:
+  // di web tombol follow-up = suggestion chips klik, bukan button Telegram).
+  const [agentChips, setAgentChips] = useState<UhuSuggestionChip[]>([]);
+
   const setOpen = useCallback(
     (nextOpen: boolean, pageContextOverride?: string) => {
       openRef.current = nextOpen;
@@ -261,10 +267,16 @@ export function UhuProvider({ children }: { children: ReactNode }) {
               // Race guard: jangan timpa bila user sudah mulai mengirim.
               setMessages((cur) => {
                 if (cur.length > 1 || streamingRef.current) return cur;
+                const stripBtn = (t: string) =>
+                  t
+                    .split("\n")
+                    .filter((ln) => !/^\s*\[\[BTN:/i.test(ln))
+                    .join("\n")
+                    .trim();
                 const restored = data.messages!.slice(-10).map((m, i) => ({
                   id: `h-${Date.now()}-${i}`,
                   role: m.role === "user" ? ("user" as const) : ("assistant" as const),
-                  text: m.text ?? "",
+                  text: m.role === "user" ? m.text ?? "" : stripBtn(m.text ?? ""),
                 }));
                 return restored;
               });
@@ -409,6 +421,7 @@ export function UhuProvider({ children }: { children: ReactNode }) {
       const activeContext = pageContextOverride ?? pageContext;
 
       setErrorBanner(null);
+      setAgentChips([]); // chips follow-up lama bersih saat pertanyaan baru dikirim
       const userMsg: UhuMessage = {
         id: `u-${Date.now()}`,
         role: "user",
@@ -555,6 +568,14 @@ export function UhuProvider({ children }: { children: ReactNode }) {
             }
           }
 
+          if (eventName === "suggestions" && Array.isArray(parsed)) {
+            const sugg = (parsed as Array<{ label?: string; query?: string }>)
+              .filter((s) => s && typeof s.label === "string" && typeof s.query === "string")
+              .slice(0, 3)
+              .map((s) => ({ label: s.label as string, prompt: s.query as string }));
+            if (sugg.length > 0) setAgentChips(sugg);
+          }
+
           if (eventName === "done") {
             setMessages((prev) =>
               prev.map((m) => (m.id === assistantId ? { ...m, streaming: false } : m))
@@ -621,7 +642,8 @@ export function UhuProvider({ children }: { children: ReactNode }) {
       unreadWhileClosed,
       pageContext,
       setPageContext: setCustomPageContext,
-      chips,
+      chips: agentChips.length > 0 ? agentChips : chips,
+      agentChips,
       send,
     }),
     [
@@ -641,6 +663,7 @@ export function UhuProvider({ children }: { children: ReactNode }) {
       pageContext,
       setCustomPageContext,
       chips,
+      agentChips,
       send,
     ]
   );
