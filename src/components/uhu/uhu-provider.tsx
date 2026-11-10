@@ -290,17 +290,36 @@ export function UhuProvider({ children }: { children: ReactNode }) {
                   !cur[cur.length - 1].text.trim();
                 const curHealthy = cur.length > 1 && !curEmpty;
                 if ((curHealthy || streamingRef.current) && cur.length > 1) return cur;
+                // Bersihkan artefak jalur Telegram: tombol [[BTN]] + baris VERDIK
+                // (history server menyimpan reply mentah yang dipakai ulang LLM).
                 const stripBtn = (t: string) =>
                   t
                     .split("\n")
-                    .filter((ln) => !/^\s*\[\[BTN:/i.test(ln))
+                    .filter(
+                      (ln) =>
+                        !/^\s*\[\[BTN:/i.test(ln) && !/^\s*VERDIK\b/i.test(ln)
+                    )
                     .join("\n")
+                    .replace(/\n{3,}/g, "\n\n")
                     .trim();
+                // BTN dari jawaban terakhir → chips suggestion (klik = kirim query)
+                const rawLastAssistant = [...(data.messages ?? [])]
+                  .reverse()
+                  .find((m) => m.role === "assistant" && /\[\[BTN:/i.test(m.text ?? ""));
+                const btnChips: UhuSuggestionChip[] = [];
+                if (rawLastAssistant) {
+                  const re = /\[\[BTN:\s*([^:\]]+?)\s*::\s*([^\]]+?)\s*\]\]/g;
+                  let mm: RegExpExecArray | null;
+                  while ((mm = re.exec(rawLastAssistant.text ?? "")) !== null && btnChips.length < 3) {
+                    btnChips.push({ label: mm[1], prompt: mm[2] });
+                  }
+                }
                 const restored = data.messages!.slice(-10).map((m, i) => ({
                   id: `h-${Date.now()}-${i}`,
                   role: m.role === "user" ? ("user" as const) : ("assistant" as const),
                   text: m.role === "user" ? m.text ?? "" : stripBtn(m.text ?? ""),
                 }));
+                if (btnChips.length > 0) setAgentChips(btnChips);
                 return restored;
               });
               return null;
