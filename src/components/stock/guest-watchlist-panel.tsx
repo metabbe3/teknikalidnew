@@ -89,7 +89,7 @@ export function GuestWatchlistPanel() {
                   {stripJk(ticker)}
                 </Link>
                 {loading || !quote ? (
-                  <span className="block h-3 w-16 animate-pulse rounded bg-bg-hover" aria-hidden="true" />
+                  <span className="block h-3 w-16 rounded skeleton-shimmer" aria-hidden="true" />
                 ) : (
                   <span className="block truncate text-[11px] font-mono tabular-nums text-text-secondary">
                     {quote.price != null ? formatPrice(quote.price) : "---"}

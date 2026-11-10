@@ -85,3 +85,120 @@ export function SignalVerdict({ ticker, signalLabel, signalScore, outlook, rsi14
     </section>
   );
 }
+
+export interface QuickVerdictProps {
+  close: number | null;
+  sma20: number | null;
+  sma50: number | null;
+  sma200: number | null;
+  rsi14: number | null;
+  macdHist: number | null;
+}
+
+export function deriveQuickVerdict({
+  close,
+  sma20,
+  sma50,
+  sma200,
+  rsi14,
+  macdHist,
+}: QuickVerdictProps): {
+  icon: "▲" | "▼" | "→";
+  label: "Tren Naik" | "Tren Turun" | "Sideways";
+  badgeCls: string;
+  reason: string;
+} {
+  if (close === null || (sma20 === null && sma50 === null && sma200 === null && rsi14 === null)) {
+    return {
+      icon: "→",
+      label: "Sideways",
+      badgeCls: "badge-neutral",
+      reason: "Indikator harian sedang diperbarui — tren belum terkonfirmasi.",
+    };
+  }
+
+  const refMa = sma50 ?? sma20 ?? sma200;
+  const refMaName = sma50 !== null ? "SMA50" : sma20 !== null ? "SMA20" : "SMA200";
+
+  const aboveRef = refMa !== null && close > refMa;
+  const belowRef = refMa !== null && close < refMa;
+
+  const bullMomentum =
+    (rsi14 === null || rsi14 >= 48) &&
+    (macdHist === null || macdHist >= 0 || (sma20 !== null && close > sma20));
+  const bearMomentum =
+    (rsi14 === null || rsi14 <= 52) &&
+    (macdHist === null || macdHist <= 0 || (sma20 !== null && close < sma20));
+
+  let icon: "▲" | "▼" | "→" = "→";
+  let label: "Tren Naik" | "Tren Turun" | "Sideways" = "Sideways";
+  let badgeCls = "badge-neutral";
+  let conclusion = "tren mendatar, tunggu konfirmasi arah";
+
+  if (aboveRef && bullMomentum) {
+    icon = "▲";
+    label = "Tren Naik";
+    badgeCls = "badge-strong";
+    conclusion =
+      rsi14 !== null && rsi14 >= 70
+        ? "tren naik, waspadai area jenuh beli"
+        : "tren naik, momentum cukup";
+  } else if (belowRef && bearMomentum) {
+    icon = "▼";
+    label = "Tren Turun";
+    badgeCls = "badge-risk";
+    conclusion =
+      rsi14 !== null && rsi14 <= 30
+        ? "tren turun, mendekati area jenuh jual"
+        : "tren turun, tekanan jual masih aktif";
+  }
+
+  const maPart =
+    refMa !== null
+      ? close > refMa
+        ? `Harga di atas ${refMaName}`
+        : close < refMa
+          ? `Harga di bawah ${refMaName}`
+          : `Harga sejajar ${refMaName}`
+      : null;
+  const rsiPart = rsi14 !== null ? `RSI ${Math.round(rsi14)}` : null;
+  const prefix = [maPart, rsiPart].filter(Boolean).join(", ");
+
+  return {
+    icon,
+    label,
+    badgeCls,
+    reason: prefix ? `${prefix} — ${conclusion}` : conclusion,
+  };
+}
+
+/**
+ * QuickVerdictBox — kotak verdict 1-baris langsung di bawah harga (di atas Trading Plan).
+ * Menyederhanakan indikator existing (SMA20/50/200, RSI, MACD) ke bahasa manusia.
+ */
+export function QuickVerdictBox(props: QuickVerdictProps) {
+  const verdict = deriveQuickVerdict(props);
+
+  return (
+    <div
+      data-verdict="quick"
+      aria-label="Ringkasan cepat arah tren"
+      className="mt-3 rounded-xl border border-border bg-bg-card px-3.5 py-2.5 min-h-[44px] flex flex-col justify-center gap-1"
+    >
+      <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
+        <span className="text-[11px] font-semibold text-text-tertiary">Tren:</span>
+        <span
+          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold shrink-0 ${verdict.badgeCls}`}
+        >
+          <span aria-hidden="true">{verdict.icon}</span>
+          <span>{verdict.label}</span>
+        </span>
+        <span className="text-text-secondary leading-snug">{verdict.reason}</span>
+      </div>
+      <p className="text-[10px] text-text-tertiary leading-snug">
+        Bukan rekomendasi beli/jual.
+      </p>
+    </div>
+  );
+}
+

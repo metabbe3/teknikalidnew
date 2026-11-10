@@ -1,6 +1,8 @@
 import type { TradingPlan } from "@/lib/trading-plan";
 import type { McResult } from "@/lib/monte-carlo";
 import { formatRp } from "@/lib/utils";
+import { InfoTip } from "@/components/stock/info-tip";
+import { OhlcvLive, type OhlcvData } from "@/components/stock/ohlcv-live";
 
 const confidenceStyles = {
   high: "bg-bullish-bg text-bullish",
@@ -14,7 +16,19 @@ const confidenceLabels = {
   low: "Rendah",
 };
 
-export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult | null }) {
+export function TradingPlanCard({
+  plan,
+  mc,
+  ohlcv,
+  ticker,
+  sessionDate,
+}: {
+  plan: TradingPlan;
+  mc?: McResult | null;
+  ohlcv?: OhlcvData | null;
+  ticker?: string;
+  sessionDate?: string;
+}) {
   const isBOW = plan.strategy === "BUY_ON_WEAKNESS";
   const isWaitAndSee = plan.strategy === "WAIT_AND_SEE";
   // Audit UI/UX #3b (30 Okt): setup layak = bukan wait&see, R:R ≥ 1, EV ≥ 0 — angka hijau besar
@@ -78,8 +92,13 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
                 </>
               )}
             </svg>
+            {/* owner 10 Nov: paragraf panjang → 1 kalimat kunci + ⓘ tooltip (teks penuh tetap SSR utk SEO) */}
             <p className={`text-[11px] leading-snug ${isWaitAndSee ? "text-bearish font-medium" : isBOW ? "text-amber-800 font-medium" : "text-text-secondary"}`}>
-              {plan.suggestion}
+              <span className="sr-only">{plan.suggestion}</span>
+              <span aria-hidden="true">
+                {isWaitAndSee ? "Setup belum layak — tunggu konfirmasi." : isBOW ? "Antri beli di area support — sabar." : "Ikuti rencana di bawah dengan disiplin."}{" "}
+                <InfoTip label="Catatan rencana" text={plan.suggestion} />
+              </span>
             </p>
           </div>
         )}
@@ -94,17 +113,30 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
         )}
 
         <div className={`space-y-2 ${isWaitAndSee ? "opacity-50" : ""}`}>
-          <Row
-            label="Beli di (Entry)"
-            value={formatRp(plan.entry)}
-            detail={plan.entryZone}
-            valueClass="text-accent"
-          />
-          <Row label="Target 1 (TP1)" value={formatRp(plan.tp1)} detail={`(${plan.tp1Source})`} valueClass="text-bullish" />
-          {plan.tp2 && (
-            <Row label="Target 2 (TP2)" value={formatRp(plan.tp2)} detail={`(${plan.tp2Source})`} valueClass="text-bullish" />
-          )}
-          <Row label="Batas rugi (Stop Loss)" value={formatRp(plan.sl)} detail={`(${plan.slSource})`} valueClass="text-bearish" />
+          {/* owner 10 Nov: Entry/TP/SL dipadatkan jadi grid 3 kolom — 1 lihat, angka besar berwarna */}
+          {/* Ringkasan OHLCV sesi terbaru (SSR + live hydration via OhlcvLive) */}
+          <OhlcvLive ohlcv={ohlcv} ticker={ticker} sessionDate={sessionDate} />
+          <div className="grid grid-cols-3 gap-1.5">
+            <div className="rounded-lg bg-accent/10 border border-accent/40 px-2 py-2 flex flex-col items-center justify-center text-center min-h-[56px]">
+              <span className="text-[10px] font-medium text-text-secondary leading-tight">Beli di</span>
+              <span className="text-[13px] sm:text-sm font-mono tabular-nums font-bold text-accent leading-tight">{formatRp(plan.entry)}</span>
+              {plan.entryZone && <span className="text-[9px] text-text-tertiary leading-tight">{plan.entryZone}</span>}
+            </div>
+            <div className="rounded-lg bg-bullish/15 border border-bullish/40 px-2 py-2 flex flex-col items-center justify-center text-center min-h-[56px]">
+              <span className="text-[10px] font-medium text-text-secondary leading-tight">Target</span>
+              <span className="text-[13px] sm:text-sm font-mono tabular-nums font-bold text-bullish leading-tight">{formatRp(plan.tp1)}</span>
+              {plan.tp2 ? (
+                <span className="text-[9px] text-text-tertiary leading-tight">TP2 {formatRp(plan.tp2)}</span>
+              ) : (
+                <span className="text-[9px] text-text-tertiary leading-tight">{plan.tp1Source}</span>
+              )}
+            </div>
+            <div className="rounded-lg bg-bearish/15 border border-bearish/40 px-2 py-2 flex flex-col items-center justify-center text-center min-h-[56px]">
+              <span className="text-[10px] font-medium text-text-secondary leading-tight">Stop Loss</span>
+              <span className="text-[13px] sm:text-sm font-mono tabular-nums font-bold text-bearish leading-tight">{formatRp(plan.sl)}</span>
+              <span className="text-[9px] text-text-tertiary leading-tight">{plan.slSource}</span>
+            </div>
+          </div>
         </div>
 
         {mc && (
@@ -202,14 +234,3 @@ export function TradingPlanCard({ plan, mc }: { plan: TradingPlan; mc?: McResult
   );
 }
 
-function Row({ label, value, detail, valueClass }: { label: string; value: string; detail: string; valueClass: string }) {
-  return (
-    <div className="flex items-center justify-between">
-      <span className="text-xs text-text-secondary">{label}</span>
-      <div className="flex items-center gap-2">
-        <span className={`text-sm font-mono tabular-nums font-semibold ${valueClass}`}>{value}</span>
-        <span className="text-[10px] text-text-tertiary">{detail}</span>
-      </div>
-    </div>
-  );
-}

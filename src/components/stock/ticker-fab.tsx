@@ -185,6 +185,7 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
           target="_blank"
           rel="noopener noreferrer"
           data-engagement="fab_ask_agent_click"
+          title="Gratis 3x/hari (gratis 3x/hari) · sejak Rp29rb/bln untuk alert & sinyal"
           className="flex items-center justify-center gap-1 h-11 px-3.5 rounded-full text-[13px] font-medium text-text-primary whitespace-nowrap hover:bg-bg-hover transition-all press-scale"
         >
           <Bot className="h-4 w-4 text-accent" />
@@ -215,6 +216,7 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
           target="_blank"
           rel="noopener noreferrer"
           data-engagement="fab_ask_agent_desktop_click"
+          title="Gratis 3x/hari (gratis 3x/hari) · sejak Rp29rb/bln untuk alert & sinyal"
           className="flex items-center gap-1.5 h-10 px-4 rounded-full text-sm font-medium text-text-primary hover:bg-bg-hover transition-all press-scale"
         >
           <Bot className="h-4 w-4 text-accent" />
@@ -268,7 +270,10 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
                 </button>
               ))}
             </div>
-            <p className="mt-3 text-[10px] text-text-tertiary">
+            <p className="mt-3 text-[10px] text-text-secondary">
+              Tanya AI di Telegram: gratis 3x/hari · sejak Rp29rb/bln untuk alert &amp; sinyal
+            </p>
+            <p className="mt-1 text-[10px] text-text-tertiary">
               Snapshot teknikal.id — data tertunda ~5 mnt, bukan rekomendasi.
             </p>
           </div>

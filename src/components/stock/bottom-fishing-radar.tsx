@@ -100,14 +100,14 @@ export function BottomFishingRadar({
             {isLoading ? (
               <div className="py-6 space-y-3">
                 {[1, 2, 3, 4, 5].map((i) => (
-                  <div key={i} className="animate-pulse rounded-lg border border-border/40 p-3 space-y-2">
+                  <div key={i} className="rounded-lg border border-border/40 p-3 space-y-2">
                     <div className="flex items-center justify-between">
-                      <div className="h-4 w-24 bg-bg-hover rounded" />
-                      <div className="h-4 w-16 bg-bg-hover rounded" />
+                      <div className="h-4 w-24 rounded skeleton-shimmer" />
+                      <div className="h-4 w-16 rounded skeleton-shimmer" />
                     </div>
                     <div className="flex items-center justify-between">
-                      <div className="h-3 w-40 bg-bg-hover rounded" />
-                      <div className="h-3 w-20 bg-bg-hover rounded" />
+                      <div className="h-3 w-40 rounded skeleton-shimmer" />
+                      <div className="h-3 w-20 rounded skeleton-shimmer" />
                     </div>
                   </div>
                 ))}

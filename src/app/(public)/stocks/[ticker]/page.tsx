@@ -7,7 +7,7 @@ import Link from "next/link";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { StockNotFoundError } from "@/domains/stock/stock.errors";
 import { bigIntToNumber, decimalToNumber } from "@/lib/serialize";
-import {formatPrice, formatPercent, formatVolume, stripJk, changeColor, rsiColor, signalToHealthScore, healthScoreMeta} from "@/lib/utils";
+import {formatPrice, formatPercent, formatVolume, formatTanggalIndo, stripJk, changeColor, rsiColor, signalToHealthScore, healthScoreMeta} from "@/lib/utils";
 import { normalizeTickerTitle } from "@/lib/normalize-ticker-title";
 import { ChartSection } from "@/components/chart/chart-section";
 import { IndicatorPanel } from "@/components/stock/indicator-panel";
@@ -24,6 +24,7 @@ const TickerFab = dynamicImport(
 import { KeyStatistics } from "@/components/stock/key-statistics";
 import { FundamentalData } from "@/components/stock/fundamental-data";
 import { TradingPlanCard } from "@/components/stock/trading-plan-card";
+import { QuickVerdictBox } from "@/components/stock/signal-verdict";
 import { monteCarloTpFirst } from "@/lib/monte-carlo";
 import { cachedEod, eodKey } from "@/domains/stock/eod-cache";
 import { HypeWarningBadge } from "@/components/stock/hype-warning-badge";
@@ -46,7 +47,6 @@ import {
 } from "@/components/stock/guest-quota";
 import { StockLogo } from "@/components/stock/stock-logo";
 import { StockPortfolioCta } from "@/components/stock/stock-portfolio-cta";
-import { InfoTip } from "@/components/stock/info-tip";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { IndicatorTooltip } from "@/components/ui/indicator-tooltip";
 import { technicalAnalysisService, computeSignalScore } from "@/domains/stock/technical-analysis.service";
@@ -724,8 +724,14 @@ export default async function StockDetailPage({
                     return (
                       <>
                         {" "}
-                        <span className="inline-flex items-center -m-2.5 p-2.5">
-                          <InfoTip label="Profil bisnis" text={desc} />
+                        <span
+                          tabIndex={0}
+                          role="note"
+                          className="inline-flex items-center justify-center w-4 h-4 rounded-full border border-border text-[10px] font-serif font-bold text-text-tertiary hover:text-text-primary hover:border-text-secondary cursor-help transition-colors select-none align-middle"
+                          title={desc}
+                          aria-label={`Profil bisnis ${stock.name}: ${desc}`}
+                        >
+                          ⓘ
                         </span>
                         {/* SEO: businessActivity tetap dirender di SSR HTML di dalam H2 tanpa makan tempat visual */}
                         <span className="sr-only"> · {desc}</span>
@@ -786,12 +792,31 @@ export default async function StockDetailPage({
               {tradingPlan && (
                 <div className="space-y-2.5 order-1 lg:order-2">
                   <span id="plan" className="block scroll-mt-24" />
+                  {/* Quick Verdict Box — tren 1 baris di atas Rencana Trading (owner 10 Nov) */}
+                  <QuickVerdictBox
+                    close={close}
+                    sma20={indicators?.sma20 ?? null}
+                    sma50={indicators?.sma50 ?? null}
+                    sma200={indicators?.sma200 ?? null}
+                    rsi14={indicators?.rsi14 ?? null}
+                    macdHist={indicators?.macdHist ?? null}
+                  />
                   {fullAccess ? (
-                    <GuestTradingPlanGate
+                  <GuestTradingPlanGate
                       ticker={stripJk(ticker)}
                       plan={tradingPlan}
                       mc={mcProbability}
                       isAuthed={isAuthed}
+                      sessionDate={formatTanggalIndo(latest?.date)}
+                      ohlcv={{
+                        open: latest ? decimalToNumber(latest.open) ?? close : null,
+                        high: latestHigh,
+                        low: latestLow,
+                        close,
+                        prevClose: prev ? decimalToNumber(prev.close) ?? close : null,
+                        volume: latestVolume,
+                        volumeRatio,
+                      }}
                     />
                   ) : (
                     <LoginGate
@@ -806,7 +831,7 @@ export default async function StockDetailPage({
                       data-engagement="agent_deeplink_compact"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex min-h-[44px] items-center justify-between rounded-lg border border-border/80 bg-bg-card/70 px-3 py-2 text-xs font-medium text-text-secondary hover:text-accent hover:border-accent/40 transition-colors"
+                      className="flex items-center justify-between rounded-lg border border-border/80 bg-bg-card/70 px-3 py-2 text-xs font-medium text-text-secondary hover:text-accent hover:border-accent/40 transition-colors"
                     >
                       <span className="flex items-center gap-1.5 truncate">
                         <span>🤖 Tanya AI soal {stripJk(ticker)} · gratis 3x →</span>
@@ -863,7 +888,13 @@ export default async function StockDetailPage({
                               <span>Sinyal:</span>
                               <span style={{ color: isBull ? "var(--color-bullish)" : isBear ? "var(--color-bearish)" : undefined }} className={!isBull && !isBear ? `${signalBadge(raw).cls} bg-transparent border-0 p-0` : undefined}>{outlook}</span>
                             </p>
-                            <InfoTip label="Sinyal" text="Gabungan 9 indikator teknikal — RSI, MACD, tren, momentum, volume" />
+                            <span
+                              className="inline-flex items-center justify-center w-4 h-4 rounded-full border border-border text-[10px] font-serif font-bold text-text-tertiary hover:text-text-primary hover:border-text-secondary cursor-help transition-colors"
+                              title="Gabungan 9 indikator teknikal — RSI, MACD, tren, momentum, volume"
+                              aria-label="Gabungan 9 indikator teknikal — RSI, MACD, tren, momentum, volume"
+                            >
+                              ⓘ
+                            </span>
                           </div>
                           <div className="mt-1.5 h-2 rounded-full bg-bg-hover overflow-hidden relative" role="meter" aria-valuenow={raw} aria-valuemin={-1} aria-valuemax={1} aria-label={`Skor sinyal teknikal ${raw.toFixed(2).replace(".", ",")} pada skala minus satu sampai plus satu. Gabungan 9 indikator teknikal — RSI, MACD, tren, momentum, volume`}>
                             <div className="h-full rounded-full transition-all duration-700" style={{ width: `${score}%`, backgroundColor: meta.color }} />
@@ -891,7 +922,7 @@ export default async function StockDetailPage({
                             <div className="mt-2">
                               <a
                                 href="#pantau"
-                                className="inline-flex items-center justify-center gap-1.5 min-h-[44px] px-3 rounded-lg border border-border bg-bg hover:bg-bg-hover text-xs font-medium text-text-secondary transition-colors"
+                                className="inline-flex items-center justify-center gap-1.5 min-h-9 px-3 rounded-lg border border-border bg-bg hover:bg-bg-hover text-xs font-medium text-text-secondary transition-colors"
                               >
                                 <Star className="h-3.5 w-3.5" aria-hidden="true" /> Simpan ke pantauan
                               </a>
@@ -902,17 +933,6 @@ export default async function StockDetailPage({
                     </div>
                   );
                 })()}
-
-                {/* simplify-2026-11-09 (audit CDP mobile: blok peers→OHLC 840px di kolom kanan
-                    hero = 45% viewport mobile; data: fungsi bandingkan 24 PV/30d).
-                    LIPAT native <details> (SSR utuh utk SEO + chip nav tetap anchor),
-                    TERBUKA default di desktop lg (kolom kanan memang utk ini). */}
-                <details className="group lg:open" open={false}>
-                  <summary className="lg:hidden cursor-pointer select-none list-none flex items-center gap-1.5 text-xs font-semibold text-accent min-h-11 -ml-1">
-                    <span className="transition-transform group-open:rotate-90" aria-hidden>▸</span>
-                    Saham serupa, indeks &amp; statistik lengkap
-                  </summary>
-                  <div className="mt-2 lg:mt-0">
 
                 {/* Fase T2: Saham sejenis bersinyal lebih kuat (<35% scroll) */}
                 <StrongerPeersStrip
@@ -1045,56 +1065,7 @@ export default async function StockDetailPage({
                     )}
                   </div>
                 )}
-                  </div>
-                </details>
               </div>
-
-              {/* simplify-2026-11-09 desktop dead-space fix: audit CDP menemukan 294px kosong
-                  di kolom kiri hero desktop (kolom kanan 708px vs kiri 582px, imbalance >120px
-                  = ambang skill). Solusi TANPA duplikat SSR: DailyAnalysisSection tetap SATU
-                  di DOM — dipindah visual ke kolom kiri hero di desktop via grid-area.
-                  Mobile: tetap di posisi lama (setelah chart). */}
-              {fullAccess && close !== null && (
-                <div className="hidden lg:block">
-                  <DailyAnalysisSection
-                    ticker={ticker}
-                    stockName={stock.name}
-                    sector={stock.sector}
-                    close={close}
-                    change={change}
-                    changePercent={changePercent}
-                    high={latestHigh}
-                    low={latestLow}
-                    volume={latestVolume}
-                    week52High={detail.week52High}
-                    week52Low={detail.week52Low}
-                    rsi14={indicators?.rsi14 ?? null}
-                    macdHist={indicators?.macdHist ?? null}
-                    sma20={indicators?.sma20 ?? null}
-                    sma50={indicators?.sma50 ?? null}
-                    sma200={indicators?.sma200 ?? null}
-                    adx={indicators?.adx ?? null}
-                    stochK={indicators?.stochK ?? null}
-                    stochD={indicators?.stochD ?? null}
-                    supertrend={indicators?.supertrend ?? null}
-                    atr={indicators?.atr ?? null}
-                    obvTrend={indicators?.obvTrend ?? null}
-                    signalLabel={indicators?.signalLabel ?? null}
-                    signalScore={indicators?.signalScore ?? null}
-                    emaCrossSignal={indicators?.emaCrossSignal ?? null}
-                    smaCrossSignal={indicators?.smaCrossSignal ?? null}
-                    bbUpper={indicators?.bbUpper ?? null}
-                    bbLower={indicators?.bbLower ?? null}
-                    pe={fundamentals?.pe ?? null}
-                    pb={fundamentals?.pb ?? null}
-                    eps={fundamentals?.eps ?? null}
-                    dividendYield={fundamentals?.dividendYield ?? null}
-                    marketCap={fundamentals?.marketCap ?? null}
-                    pivotR1={pivots?.r1 ?? null}
-                    pivotS1={pivots?.s1 ?? null}
-                  />
-                </div>
-              )}
             </div>
             </GuestQuotaProvider>
 
@@ -1270,7 +1241,7 @@ export default async function StockDetailPage({
 
         {/* Aliran Dana Asing 5 sesi (usp-2026-10-24-04) — guest-visible, graceful hidden */}
         {foreignLatest && (
-          <section id="asing" className="bg-bg-card rounded-xl border border-border p-4 space-y-2 scroll-mt-24" aria-label="Aliran dana asing">
+          <section id="asing" className="bg-bg-card rounded-xl border border-border p-5 space-y-3 scroll-mt-24" aria-label="Aliran dana asing">
             <div className="flex items-baseline justify-between">
               <h2 className="font-serif text-base font-semibold text-text-primary">Aliran Dana Asing</h2>
               <span className="text-xs text-text-tertiary">5 sesi terakhir · net (beli − jual) asing</span>
@@ -1285,7 +1256,7 @@ export default async function StockDetailPage({
               const total = valid.reduce((a, b) => a + b.netValue, 0);
               const ordered = foreignWithPx.slice().reverse();
               return (
-                <div className="space-y-1" role="img" aria-label={`Net aliran dana asing ${valid.length} sesi terakhir`}>
+                <div className="space-y-1.5" role="img" aria-label={`Net aliran dana asing ${valid.length} sesi terakhir`}>
                   {ordered.map((f, i) => {
                     const v = f.netValue;
                     const isLatest = i === ordered.length - 1;
@@ -1294,7 +1265,7 @@ export default async function StockDetailPage({
                         <span className={`w-12 shrink-0 text-[10px] ${isLatest ? "text-text-primary font-semibold" : "text-text-tertiary"}`}>
                           {f.date.toLocaleDateString("id-ID", { weekday: "short", day: "numeric" })}
                         </span>
-                        <div className="flex-1 h-2 relative bg-bg-hover/40 rounded-full overflow-hidden">
+                        <div className="flex-1 h-2.5 relative bg-bg-hover/40 rounded-full overflow-hidden">
                           <div className="absolute inset-y-0 left-1/2 w-px bg-border" aria-hidden />
                           {v !== null && v !== 0 && (
                             <div
@@ -1321,50 +1292,47 @@ export default async function StockDetailPage({
                 </div>
               );
             })()}
-            <p className="text-[11px] text-text-tertiary leading-snug">
-              Sesi {foreignLatest.date.toLocaleDateString("id-ID", { day: "numeric", month: "short" })}:{' '}
+            <p className="text-sm text-text-secondary">
+              Sesi terakhir ({foreignLatest.date.toLocaleDateString("id-ID", { day: "numeric", month: "short" })}):{' '}
               <span className={foreignLatest.netValue! >= 0 ? "font-semibold text-bullish" : "font-semibold text-bearish"}>
                 {foreignLatest.netValue! >= 0 ? "+" : "−"}Rp{(Math.abs(foreignLatest.netValue!) / 1_000_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })} M
               </span>{' '}
-              {foreignLatest.netValue! >= 0 ? "akumulasi asing" : "distribusi asing"} · konteks informasi, bukan rekomendasi ·{' '}
-              <a className="text-accent hover:underline" href="/pasar">agregat pasar</a>
+              {foreignLatest.netValue! >= 0 ? "akumulasi asing" : "distribusi asing"}.
+            </p>
+            <p className="text-[10px] text-text-tertiary leading-snug">
+              Jejak dana institusi asing = konteks informasi, bukan rekomendasi beli/jual. Lihat agregat pasar di <a className="text-accent hover:underline" href="/pasar">Koran Saham Live</a>.
             </p>
           </section>
         )}
 
-        {/* simplify-2026-11-09 (audit CDP: 2 kartu full-width 146px numpuk = 292px):
-            GABUNG jadi 1 kartu grid 2 kolom — konten & event tracker tetap utuh. */}
-        <section className="bg-bg-card rounded-xl border border-border p-5 grid grid-cols-1 sm:grid-cols-2 gap-5" aria-label={`Tanya AI & pantau ${stripJk(ticker)}`}>
-          <div className="space-y-2">
-            <h2 className="font-serif text-base font-semibold text-text-primary">Tanya analisa apa pun soal {stripJk(ticker)}</h2>
-            <p className="text-sm text-text-secondary">Skor sinyal, level support/resistance, dan jawaban instan lainnya — 3x gratis.</p>
-            <a
-              href={tgDeepLink([ticker])}
-              data-engagement="tg_tanya_agent_card"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90"
-            >
-              💬 Tanya AI Gratis
-            </a>
-          </div>
-          <div className="space-y-2">
-            <h2 className="font-serif text-base font-semibold text-text-primary">Pantau {ticker.replace(/\.JK$/, "")} tiap hari</h2>
-            <p className="text-sm text-text-secondary">Ringkasan harga &amp; sinyal langsung di Telegram setelah pasar tutup — tanpa login.</p>
-            <a
-              href={`https://t.me/TeknikalidAgentBot?start=${encodeURIComponent(ticker.replace(/\.JK$/, "") + "_JK")}`}
-              data-engagement="tg_pantau_kartu"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90"
-            >
-              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
-                <path d="M10.268 21a2 2 0 0 0 3.464 0" />
-                <path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />
-              </svg>
-              Pantau via Telegram
-            </a>
-          </div>
+        {/* Tanya analisa via Agent (funnel agent-first) — guest-visible, no-login */}
+        <section className="bg-bg-card rounded-xl border border-border p-5 space-y-2" aria-label={`Tanya analisa apa pun soal ${stripJk(ticker)}`}>
+          <h2 className="font-serif text-base font-semibold text-text-primary">Tanya analisa apa pun soal {stripJk(ticker)}</h2>
+          <p className="text-sm text-text-secondary">Skor sinyal, level support/resistance, dan jawaban instan lainnya — 3x gratis.</p>
+          <a
+            href={tgDeepLink([ticker])}
+            data-engagement="tg_tanya_agent_card"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90"
+          >
+            💬 Tanya AI Gratis
+          </a>
+        </section>
+
+        {/* Pantau via Telegram (retention-2026-10-28) — guest-visible, no-login, bahasa awam, tap target 44px */}
+        <section className="bg-bg-card rounded-xl border border-border p-5 space-y-2" aria-label="Pantau via Telegram">
+          <h2 className="font-serif text-base font-semibold text-text-primary">Pantau {ticker.replace(/\.JK$/, "")} tiap hari</h2>
+          <p className="text-sm text-text-secondary">Dapatkan ringkasan harga &amp; sinyal langsung di Telegram setelah pasar tutup — tanpa perlu login.</p>
+          <a
+            href={`https://t.me/TeknikalidAgentBot?start=${encodeURIComponent(ticker.replace(/\.JK$/, "") + "_JK")}`}
+            data-engagement="tg_pantau_kartu"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90"
+          >
+            🔔 Pantau via Telegram
+          </a>
         </section>
 
         {/* Chart — free for everyone (hybrid freemium). Anon fetches via API, range-clamped to ~90d; the OHLC series is still never SSR-embedded. */}
@@ -1437,7 +1405,6 @@ export default async function StockDetailPage({
           </Link>
         </p>
         {fullAccess && close !== null ? (
-          <div className="lg:hidden">
             <DailyAnalysisSection
               ticker={ticker}
               stockName={stock.name}
@@ -1475,12 +1442,9 @@ export default async function StockDetailPage({
               pivotR1={pivots?.r1 ?? null}
               pivotS1={pivots?.s1 ?? null}
             />
-          </div>
         ) : null}
 
-        {/* simplify-2026-11-09 (audit CDP: 11 blok indikator 1.420px mobile / 1.330px desktop —
-            paling panjang di halaman, hampir tak dibaca baris-per-baris). LIPAT native <details>
-            default TERTUTUP; 4 kartu utama (RSI/MACD/SMA/BB) tetap tampil di IndicatorPanel atas. */}
+        {/* Indicators + Sidebar */}
         <div id="indikator" className="flex items-center justify-between mb-2 scroll-mt-24 pt-2">
           <h2 className="font-serif text-lg font-semibold text-text-primary">Indikator Teknikal</h2>
           <Link
@@ -1490,14 +1454,6 @@ export default async function StockDetailPage({
             Riwayat indikator historis →
           </Link>
         </div>
-        <details className="group">
-          <summary className="cursor-pointer select-none list-none flex items-center justify-between gap-2 rounded-lg border border-border bg-bg-card px-4 min-h-11 text-sm font-semibold text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors">
-            <span>Rincian 11 indikator — sinyal &amp; angka lengkap</span>
-            <span className="text-text-tertiary text-xs whitespace-nowrap" aria-hidden>
-              lihat <span className="inline-block transition-transform group-open:rotate-180">▾</span>
-            </span>
-          </summary>
-          <div className="pt-4">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           <div className="lg:col-span-3 space-y-4">
             {indicators ? (
@@ -1593,8 +1549,6 @@ export default async function StockDetailPage({
             )}
           </div>
         </div>
-        </div>
-        </details>
 
         {/* IDX Company Data Tabs — auth-gated */}
         {fullAccess ? (

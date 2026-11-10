@@ -142,12 +142,24 @@ export function GuestTradingPlanGate({
   ticker,
   plan,
   mc,
+  ohlcv,
+  sessionDate,
   isAuthed = false,
   forceOverLimit,
 }: {
   ticker: string;
   plan: TradingPlan;
   mc?: McResult | null;
+  ohlcv?: {
+    open: number | null;
+    high: number | null;
+    low: number | null;
+    close: number | null;
+    prevClose: number | null;
+    volume: number;
+    volumeRatio: number;
+  } | null;
+  sessionDate?: string;
   isAuthed?: boolean;
   forceOverLimit?: boolean;
 }) {
@@ -182,7 +194,7 @@ export function GuestTradingPlanGate({
   if (!mounted && forceOverLimit === undefined) {
     return (
       <div data-premium="trading-plan" suppressHydrationWarning>
-        <TradingPlanCard plan={plan} mc={mc} />
+        <TradingPlanCard plan={plan} mc={mc} ohlcv={ohlcv} ticker={cleanTicker} sessionDate={sessionDate} />
       </div>
     );
   }
@@ -191,7 +203,7 @@ export function GuestTradingPlanGate({
   if (effectiveAuthed || !effectiveOverLimit) {
     return (
       <div data-premium="trading-plan">
-        <TradingPlanCard plan={plan} mc={mc} />
+        <TradingPlanCard plan={plan} mc={mc} ohlcv={ohlcv} ticker={cleanTicker} sessionDate={sessionDate} />
         {!effectiveAuthed && (
           <GuestInlineUpsell ticker={cleanTicker} isOverLimit={false} />
         )}
@@ -321,7 +333,7 @@ export function GuestSignalBreakdownGate({
         <span className="flex items-center gap-1.5 truncate">
           <span aria-hidden="true">🤖</span>
           <span>
-            Tetap mau analisa {cleanTicker || "saham ini"}? Tanya AI gratis 3x →
+            Tetap mau analisa {cleanTicker || "saham ini"}? Tanya AI gratis 3x/hari →
           </span>
         </span>
       </a>

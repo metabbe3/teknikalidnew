@@ -25,6 +25,7 @@ import { SnapshotCard, type SnapshotCardData } from "@/components/berita/snapsho
 import { DailyBriefHero } from "@/components/berita/daily-brief-hero";
 import { DailyBriefStrip } from "@/components/home/daily-brief-strip";
 import { AgentKopiBanner } from "@/components/telegram/agent-kopi-banner";
+import { GuestSellModal } from "@/components/telegram/guest-sell-modal";
 import { MarketBreathStrip } from "@/components/ui/market-breath-strip";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Zap } from "lucide-react";
@@ -505,6 +506,7 @@ export default async function HomePage() {
         {/* CTA Banner */}
         <CtaSection />
       </div>
+      <GuestSellModal />
     </div>
   );
 }
