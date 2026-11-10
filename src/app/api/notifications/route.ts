@@ -19,7 +19,7 @@ const NO_STORE_HEADERS = {
   "Cache-Control": "no-store, no-cache, must-revalidate",
 };
 
-export type WebNotificationKind = "blast" | "pulse" | "alert";
+export type WebNotificationKind = "blast" | "pulse" | "alert" | "uhu";
 
 export interface WebNotificationItem {
   id: number | string;
@@ -46,7 +46,7 @@ interface RawNotifRow {
 }
 
 function normalizeKind(raw: string | null | undefined): WebNotificationKind {
-  if (raw === "blast" || raw === "pulse" || raw === "alert") {
+  if (raw === "blast" || raw === "pulse" || raw === "alert" || raw === "uhu") {
     return raw;
   }
   return "alert";

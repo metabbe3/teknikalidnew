@@ -243,6 +243,15 @@ export function UhuProvider({ children }: { children: ReactNode }) {
   // di web tombol follow-up = suggestion chips klik, bukan button Telegram).
   const [agentChips, setAgentChips] = useState<UhuSuggestionChip[]>([]);
 
+  // Global opener: notif bell / link lain bisa buka panel Uhu via window event
+  // (owner 10 Nov: klik notif "Uhu menjawab" harus membuka panel Uhu + restore history).
+  const setOpenRef = useRef<(nextOpen: boolean, pageContextOverride?: string) => void>(() => {});
+  useEffect(() => {
+    const handler = () => setOpenRef.current(true);
+    window.addEventListener("uhu:open", handler);
+    return () => window.removeEventListener("uhu:open", handler);
+  }, []);
+
   const setOpen = useCallback(
     (nextOpen: boolean, pageContextOverride?: string) => {
       openRef.current = nextOpen;
@@ -303,6 +312,10 @@ export function UhuProvider({ children }: { children: ReactNode }) {
     },
     [pathname]
   );
+
+  useEffect(() => {
+    setOpenRef.current = setOpen;
+  }, [setOpen]);
 
   const openUhu = useCallback(
     (pageContextOverride?: string) => {

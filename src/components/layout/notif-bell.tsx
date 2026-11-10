@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Bell } from "lucide-react";
 
-export type NotifKind = "blast" | "pulse" | "alert";
+export type NotifKind = "blast" | "pulse" | "alert" | "uhu";
 
 export interface NotifItem {
   id: number | string;
@@ -105,6 +105,17 @@ function renderKindSymbol(kind: NotifKind) {
           title="Pulse"
         >
           📊
+        </span>
+      );
+    case "uhu":
+      return (
+        <span
+          aria-hidden="true"
+          data-kind="uhu"
+          className="inline-flex h-4 w-4 shrink-0 items-center justify-center text-[11px] leading-none"
+          title="Uhu menjawab"
+        >
+          🦉
         </span>
       );
     case "alert":
@@ -311,6 +322,13 @@ export function NotifBell() {
       }
 
       setOpen(false);
+
+      // Notif jawaban Uhu → buka panel Uhu (bukan navigate): jawaban langsung
+      // ter-restore dari history server (owner 10 Nov "notif ada tapi gak muncul di Uhu").
+      if ((item.kind as string) === "uhu") {
+        window.dispatchEvent(new CustomEvent("uhu:open"));
+        return;
+      }
 
       const targetUrl = item.url?.trim();
       if (targetUrl) {
