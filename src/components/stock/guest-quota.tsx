@@ -143,6 +143,7 @@ export function GuestTradingPlanGate({
   plan,
   mc,
   ohlcv,
+  sessionDate,
   isAuthed = false,
   forceOverLimit,
 }: {
@@ -158,6 +159,7 @@ export function GuestTradingPlanGate({
     volume: number;
     volumeRatio: number;
   } | null;
+  sessionDate?: string;
   isAuthed?: boolean;
   forceOverLimit?: boolean;
 }) {
@@ -192,7 +194,7 @@ export function GuestTradingPlanGate({
   if (!mounted && forceOverLimit === undefined) {
     return (
       <div data-premium="trading-plan" suppressHydrationWarning>
-        <TradingPlanCard plan={plan} mc={mc} ohlcv={ohlcv} />
+        <TradingPlanCard plan={plan} mc={mc} ohlcv={ohlcv} ticker={cleanTicker} sessionDate={sessionDate} />
       </div>
     );
   }
@@ -201,7 +203,7 @@ export function GuestTradingPlanGate({
   if (effectiveAuthed || !effectiveOverLimit) {
     return (
       <div data-premium="trading-plan">
-        <TradingPlanCard plan={plan} mc={mc} ohlcv={ohlcv} />
+        <TradingPlanCard plan={plan} mc={mc} ohlcv={ohlcv} ticker={cleanTicker} sessionDate={sessionDate} />
         {!effectiveAuthed && (
           <GuestInlineUpsell ticker={cleanTicker} isOverLimit={false} />
         )}

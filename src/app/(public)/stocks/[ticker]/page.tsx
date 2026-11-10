@@ -7,7 +7,7 @@ import Link from "next/link";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { StockNotFoundError } from "@/domains/stock/stock.errors";
 import { bigIntToNumber, decimalToNumber } from "@/lib/serialize";
-import {formatPrice, formatPercent, formatVolume, stripJk, changeColor, rsiColor, signalToHealthScore, healthScoreMeta} from "@/lib/utils";
+import {formatPrice, formatPercent, formatVolume, formatTanggalIndo, stripJk, changeColor, rsiColor, signalToHealthScore, healthScoreMeta} from "@/lib/utils";
 import { normalizeTickerTitle } from "@/lib/normalize-ticker-title";
 import { ChartSection } from "@/components/chart/chart-section";
 import { IndicatorPanel } from "@/components/stock/indicator-panel";
@@ -807,6 +807,7 @@ export default async function StockDetailPage({
                       plan={tradingPlan}
                       mc={mcProbability}
                       isAuthed={isAuthed}
+                      sessionDate={formatTanggalIndo(latest?.date)}
                       ohlcv={{
                         open: latest ? decimalToNumber(latest.open) ?? close : null,
                         high: latestHigh,

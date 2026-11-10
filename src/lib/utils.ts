@@ -200,3 +200,15 @@ export function dateLabel(iso: string | null): string {
     timeZone: "UTC",
   });
 }
+
+// Tanggal sesi singkat → "9 Nov" (UTC-safe, Intl.DateTimeFormat id-ID day+shortMonth).
+export function formatTanggalIndo(date?: Date | string | null): string | undefined {
+  if (!date) return undefined;
+  const d = typeof date === "string" ? new Date(date) : date;
+  if (Number.isNaN(d.getTime())) return undefined;
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "numeric",
+    month: "short",
+    timeZone: "UTC",
+  }).format(d);
+}

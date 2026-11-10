@@ -23,10 +23,23 @@ interface QuoteRow {
   change: number | null;
   changePercent: number | null;
   volume: number | null;
+  high: number | null;
+  low: number | null;
+  open: number | null;
+  dayHigh?: number | null;
+  dayLow?: number | null;
+  prevClose?: number | null;
+  marketState?: string | null;
 }
 
 const fmtID = (n: number, opts?: Intl.NumberFormatOptions) =>
   new Intl.NumberFormat("id-ID", opts).format(n);
+
+const fmtCompactVol = (n: number): string =>
+  new Intl.NumberFormat("id-ID", {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(n);
 
 function formatPrice(n: number, isIndex = false): string {
   if (isIndex) return fmtID(n, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -95,10 +108,24 @@ export default function LivePrice({ intervalMs = 60_000 }: { intervalMs?: number
       if (!document.hidden && day !== 0 && day !== 6) {
         const priceEls = Array.from(document.querySelectorAll<HTMLElement>("[data-live-price]"));
         const pctEls = Array.from(document.querySelectorAll<HTMLElement>("[data-live-percent]"));
+        const ohEls = Array.from(document.querySelectorAll<HTMLElement>("[data-live-oh]"));
+        const highEls = Array.from(document.querySelectorAll<HTMLElement>("[data-live-high]"));
+        const lowEls = Array.from(document.querySelectorAll<HTMLElement>("[data-live-low]"));
+        const closeEls = Array.from(document.querySelectorAll<HTMLElement>("[data-live-close]"));
+        const volEls = Array.from(document.querySelectorAll<HTMLElement>("[data-live-vol]"));
         const tickers = [
           ...new Set(
-            [...priceEls, ...pctEls]
-              .map((el) => el.getAttribute("data-live-price") ?? el.getAttribute("data-live-percent"))
+            [...priceEls, ...pctEls, ...ohEls, ...highEls, ...lowEls, ...closeEls, ...volEls]
+              .map(
+                (el) =>
+                  el.getAttribute("data-live-price") ??
+                  el.getAttribute("data-live-percent") ??
+                  el.getAttribute("data-live-oh") ??
+                  el.getAttribute("data-live-high") ??
+                  el.getAttribute("data-live-low") ??
+                  el.getAttribute("data-live-close") ??
+                  el.getAttribute("data-live-vol")
+              )
               .filter((t): t is string => Boolean(t))
           ),
         ];
@@ -117,7 +144,19 @@ export default function LivePrice({ intervalMs = 60_000 }: { intervalMs?: number
               updateFreshEls();
               return;
             }
-            const byTicker = new Map(data.quotes.map((q) => [q.ticker, q]));
+            const byTicker = new Map(
+              data.quotes.map((raw) => {
+                const q: QuoteRow = {
+                  ...raw,
+                  high: raw.high ?? raw.dayHigh ?? null,
+                  low: raw.low ?? raw.dayLow ?? null,
+                  open: raw.open ?? null,
+                  volume: raw.volume ?? null,
+                  marketState: raw.marketState ?? null,
+                };
+                return [q.ticker, q];
+              })
+            );
 
             for (const el of priceEls) {
               const t = el.getAttribute("data-live-price");
@@ -137,6 +176,53 @@ export default function LivePrice({ intervalMs = 60_000 }: { intervalMs?: number
                 if (el.textContent !== next) el.textContent = next;
                 el.classList.toggle("text-bullish", q.changePercent > 0);
                 el.classList.toggle("text-bearish", q.changePercent < 0);
+              }
+            }
+
+            // Patch OHLCV strip hanya saat jam bursa WIB & marketState !== "CLOSED"
+            // (di luar itu biarkan nilai SSR EOD tetap tampil).
+            if (isMarketHoursWib()) {
+              const isQuoteLive = (q: QuoteRow | undefined): q is QuoteRow =>
+                Boolean(q && q.marketState !== "CLOSED" && q.marketState !== "CLOSED_WIB");
+
+              for (const el of ohEls) {
+                const t = el.getAttribute("data-live-oh");
+                const q = t ? byTicker.get(t) : undefined;
+                if (!isQuoteLive(q) || q.open == null || q.open <= 0) continue;
+                const isIndex = Boolean(t && t.startsWith("^"));
+                const next = formatPrice(q.open, isIndex);
+                if (el.textContent !== next) el.textContent = next;
+              }
+              for (const el of highEls) {
+                const t = el.getAttribute("data-live-high");
+                const q = t ? byTicker.get(t) : undefined;
+                if (!isQuoteLive(q) || q.high == null || q.high <= 0) continue;
+                const isIndex = Boolean(t && t.startsWith("^"));
+                const next = formatPrice(q.high, isIndex);
+                if (el.textContent !== next) el.textContent = next;
+              }
+              for (const el of lowEls) {
+                const t = el.getAttribute("data-live-low");
+                const q = t ? byTicker.get(t) : undefined;
+                if (!isQuoteLive(q) || q.low == null || q.low <= 0) continue;
+                const isIndex = Boolean(t && t.startsWith("^"));
+                const next = formatPrice(q.low, isIndex);
+                if (el.textContent !== next) el.textContent = next;
+              }
+              for (const el of closeEls) {
+                const t = el.getAttribute("data-live-close");
+                const q = t ? byTicker.get(t) : undefined;
+                if (!isQuoteLive(q) || q.price == null || q.price <= 0) continue;
+                const isIndex = Boolean(t && t.startsWith("^"));
+                const next = formatPrice(q.price, isIndex);
+                if (el.textContent !== next) el.textContent = next;
+              }
+              for (const el of volEls) {
+                const t = el.getAttribute("data-live-vol");
+                const q = t ? byTicker.get(t) : undefined;
+                if (!isQuoteLive(q) || q.volume == null || q.volume <= 0) continue;
+                const next = fmtCompactVol(q.volume);
+                if (el.textContent !== next) el.textContent = next;
               }
             }
             lastLiveTs = Date.now();
