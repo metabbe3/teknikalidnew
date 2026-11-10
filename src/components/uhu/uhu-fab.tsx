@@ -1,19 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 import { UhuMascot } from "./uhu-mascot";
 import { UhuChatPanel } from "./uhu-chat-panel";
+import { useUhu } from "./uhu-provider";
 
 const DISMISSED_KEY = "uhu_dismissed";
 const APPEAR_DELAY_MS = 2500;
 
 export function UhuFab() {
-  const pathname = usePathname();
+  const { open, setOpen, messages, unreadWhileClosed } = useUhu();
   const [visible, setVisible] = useState(false);
-  const [open, setOpen] = useState(false);
   const [showBubble, setShowBubble] = useState(false);
-  const messageCountRef = useRef(0);
 
   // Delay 2.5s setelah load agar tidak mengganggu first paint / LCP.
   // Yield ke GuestSellModal (1x/sesi): kalau modal sedang/mungkin muncul,
@@ -63,12 +61,12 @@ export function UhuFab() {
   const handleClosePanel = useCallback(() => {
     setOpen(false);
     // Kalau user close tanpa chat -> jangan auto-popup bubble lagi sesi ini
-    if (messageCountRef.current === 0) {
+    if (messages.length === 0) {
       markBubbleDismissed();
     } else {
       setShowBubble(false);
     }
-  }, [markBubbleDismissed]);
+  }, [setOpen, messages.length, markBubbleDismissed]);
 
   const handleToggle = useCallback(() => {
     if (open) {
@@ -77,22 +75,13 @@ export function UhuFab() {
       setShowBubble(false);
       setOpen(true);
     }
-  }, [open, handleClosePanel]);
+  }, [open, handleClosePanel, setOpen]);
 
-  const handleMessageCountChange = useCallback((count: number) => {
-    messageCountRef.current = count;
-  }, []);
-
-  if (!visible) return null;
+  if (!visible && !open && !unreadWhileClosed) return null;
 
   return (
     <>
-      <UhuChatPanel
-        open={open}
-        onClose={handleClosePanel}
-        pageContext={pathname ?? undefined}
-        onMessageCountChange={handleMessageCountChange}
-      />
+      <UhuChatPanel />
 
       {/* Bubble teks kontekstual sekali-per-sesi (decorative, di atas button) */}
       {showBubble && !open && (
@@ -130,6 +119,12 @@ export function UhuFab() {
         aria-expanded={open}
         className="fixed right-4 bottom-20 md:bottom-6 z-40 flex h-[52px] w-[52px] items-center justify-center rounded-full border border-border bg-bg-card text-text-primary shadow transition-transform hover:scale-105 active:scale-95"
       >
+        {unreadWhileClosed && !open && (
+          <span
+            aria-label="Uhu menjawab"
+            className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500 ring-2 ring-bg-card"
+          />
+        )}
         {open ? (
           <svg
             width="20"

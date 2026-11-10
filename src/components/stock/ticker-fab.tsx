@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Share2, Search, Image as ImageIcon, Link2, Type, X, Bot } from "lucide-react";
 import { StockLogo } from "@/components/stock/stock-logo";
+import { useUhu } from "@/components/uhu/uhu-provider";
 import type { StockRow } from "@/components/stock/stock-table";
 
 const SHOW_AFTER_PX = 0; // owner 8 Nov: selalu tampil (bukan hilang di puncak halaman)
@@ -37,6 +38,7 @@ interface Props {
 
 export function TickerFab({ ticker, base, price, changePercent, signalLabel, signalScore }: Props) {
   const { status } = useSession();
+  const { openUhu } = useUhu();
   const [shown, setShown] = useState(false);
   const [atTop, setAtTop] = useState(true);
   const [sheet, setSheet] = useState(false);
@@ -180,17 +182,16 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
           <Share2 className="h-4 w-4 text-accent" />
           Bagikan
         </button>
-        <a
-          href={`https://t.me/TeknikalidAgentBot?start=src_fab_${base}`}
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          type="button"
+          onClick={() => openUhu(ticker)}
           data-engagement="fab_ask_agent_click"
-          title="Gratis 3x/hari (gratis 3x/hari) · sejak Rp29rb/bln untuk alert & sinyal"
+          title="Tanya Uhu soal saham ini"
           className="flex items-center justify-center gap-1 h-11 px-3.5 rounded-full text-[13px] font-medium text-text-primary whitespace-nowrap hover:bg-bg-hover transition-all press-scale"
         >
           <Bot className="h-4 w-4 text-accent" />
           Tanya AI
-        </a>
+        </button>
       </div>
 
       {/* ── Pill desktop: Cari saham lain ("/" & ⌘K) + Tanya AI soft-sell (owner 9 Nov) ── */}
@@ -211,17 +212,16 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
           <kbd className="hidden lg:inline-flex items-center h-5 px-1.5 rounded border border-border bg-bg-primary text-[10px] font-mono text-text-tertiary">/</kbd>
         </button>
         <span aria-hidden="true" className="h-5 w-px bg-border" />
-        <a
-          href={`https://t.me/TeknikalidAgentBot?start=src_fab_desktop_${base}`}
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          type="button"
+          onClick={() => openUhu(ticker)}
           data-engagement="fab_ask_agent_desktop_click"
-          title="Gratis 3x/hari (gratis 3x/hari) · sejak Rp29rb/bln untuk alert & sinyal"
+          title="Tanya Uhu soal saham ini"
           className="flex items-center gap-1.5 h-10 px-4 rounded-full text-sm font-medium text-text-primary hover:bg-bg-hover transition-all press-scale"
         >
           <Bot className="h-4 w-4 text-accent" />
           Tanya AI
-        </a>
+        </button>
       </div>
 
       {toast && (

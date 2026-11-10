@@ -6,6 +6,7 @@ import { X } from "lucide-react";
 import { stripJk } from "@/lib/utils";
 import { tgDeepLink } from "@/lib/tg-deeplink";
 import { signalBadge } from "@/lib/seo/signal-badge";
+import { useUhu } from "@/components/uhu/uhu-provider";
 
 const DISMISSED_KEY = "bouncer_hook_dismissed";
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
@@ -48,6 +49,7 @@ export function BouncerHook({
   isAuthed = false,
 }: BouncerHookProps) {
   const { status } = useSession();
+  const { openUhu } = useUhu();
   const [mounted, setMounted] = useState(false);
   const [dismissed, setDismissed] = useState(true);
   const [scrolled, setScrolled] = useState(false);
@@ -128,15 +130,14 @@ export function BouncerHook({
 
         {/* Right: Tombol Tanya AI + Dismiss */}
         <div className="flex items-center gap-1.5 shrink-0">
-          <a
-            href={botLink}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            onClick={() => openUhu(ticker)}
             data-engagement="bouncer_hook_tanya_ai"
             className="inline-flex min-h-[34px] items-center justify-center gap-1 rounded-lg bg-accent px-2.5 text-xs font-semibold text-white hover:opacity-90 shadow-sm transition-opacity"
           >
             💬 Tanya AI
-          </a>
+          </button>
           <button
             type="button"
             onClick={handleDismiss}

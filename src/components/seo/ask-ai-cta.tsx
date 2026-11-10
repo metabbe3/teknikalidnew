@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
+import { UhuAskCtaLink } from "@/components/uhu/uhu-provider";
 
 /**
  * Blok CTA "Tanya AI" untuk landing SEO — server component (no JS needed).
@@ -18,15 +19,13 @@ export function AskAiCta({ question }: { question: string }) {
             dari data pasar terbaru, bukan karangan.
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
-            <a
-              href="https://t.me/TeknikalidAgentBot?start=web_seo_tanya"
-              target="_blank"
-              rel="noopener noreferrer"
+            <UhuAskCtaLink
+              guestHref="/agent"
               data-engagement="funnel_askAiCtaBot"
               className="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent/90"
             >
               💬 Tanya langsung di Telegram AI — gratis 3x
-            </a>
+            </UhuAskCtaLink>
             <Link
               href={href}
               className="rounded-lg border border-accent/40 bg-accent/10 px-4 py-2 text-sm font-semibold text-accent hover:bg-accent/20"

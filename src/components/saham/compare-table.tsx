@@ -13,6 +13,7 @@ import Link from "next/link";
 import { Scale, Sparkles } from "lucide-react";
 import { changeColor, formatMarketCap, formatPercent, formatPrice } from "@/lib/utils";
 import { signalLabelId } from "@/lib/signal-label-id";
+import { UhuAskCtaLink } from "@/components/uhu/uhu-provider";
 import type { CompareData } from "@/domains/stock/compare.service";
 
 function fmtPct(v: number | null): string {
@@ -110,14 +111,15 @@ export function CompareTable({ data, slugA, slugB }: { data: CompareData; slugA:
         </p>
       </div>
 
-      {/* CTA funnel chat (PRD AC5b): pra-isi pertanyaan compare via param ?tanya= */}
+      {/* CTA funnel chat (PRD AC5b): logged-in buka Uhu, guest ke /agent */}
       <div className="mt-4 flex flex-col sm:flex-row gap-2">
-        <Link
-          href={`/stocks/${a.ticker}?tanya=${encodeURIComponent(`${cleanA} vs ${cleanB}, mana yang lebih cocok buat saya?`)}#ai`}
+        <UhuAskCtaLink
+          guestHref="/agent"
+          pageContextOverride={a.ticker}
           className="flex items-center justify-center gap-1.5 min-h-11 flex-1 rounded-lg border border-accent/40 text-accent text-sm font-medium hover:bg-accent/10 transition-colors"
         >
           <Sparkles className="h-4 w-4" aria-hidden /> Tanya AI: {cleanA} atau {cleanB}?
-        </Link>
+        </UhuAskCtaLink>
         <Link
           href={`/saham/${slugB}-vs-${slugA}`}
           className="flex items-center justify-center gap-1.5 min-h-11 flex-1 rounded-lg border border-border bg-bg hover:bg-bg-hover text-text-secondary text-sm font-medium transition-colors"

@@ -7,6 +7,7 @@ import { StockLogo } from "@/components/stock/stock-logo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHero } from "@/components/layout/page-hero";
 import { AgentKopiBanner } from "@/components/telegram/agent-kopi-banner";
+import { UhuAskCtaLink } from "@/components/uhu/uhu-provider";
 import dynamicImport from "next/dynamic";
 
 import { pasarLiveService, isLiveWindow, isMarketHours, wibNow, wibHHMM, type PasarTopSignal, type PasarForeignItem, isWibWeekday } from "@/domains/stock/pasar-live.service";
@@ -78,14 +79,13 @@ export default async function PasarPage() {
             </span>
             <WibClock />
             <span className="text-text-tertiary text-sm">·</span>
-            <a
-              href="https://t.me/TeknikalidAgentBot?start=kopi_pasar"
-              target="_blank"
-              rel="noopener noreferrer"
+            <UhuAskCtaLink
+              guestHref="/agent"
+              pageContextOverride="/pasar"
               className="text-sm font-medium text-accent hover:underline"
             >
               Tanya kondisi pasar di AI — gratis 3x
-            </a>
+            </UhuAskCtaLink>
             {oversoldCountWeekend >= 150 && (
               <Link
                 href="/saham-oversold"
@@ -140,14 +140,13 @@ export default async function PasarPage() {
           </span>
           <WibClock />
           <span className="text-text-tertiary text-sm">·</span>
-          <a
-            href="https://t.me/TeknikalidAgentBot?start=kopi_pasar"
-            target="_blank"
-            rel="noopener noreferrer"
+          <UhuAskCtaLink
+            guestHref="/agent"
+            pageContextOverride="/pasar"
             className="text-sm font-medium text-accent hover:underline"
           >
             Bingung sama pasar? Tanya AI di Telegram — gratis 3x
-          </a>
+          </UhuAskCtaLink>
           {oversoldCount >= 150 && (
             <Link
               href="/saham-oversold"

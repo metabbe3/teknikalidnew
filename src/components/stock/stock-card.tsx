@@ -8,7 +8,7 @@ import { StockLogo } from "@/components/stock/stock-logo";
 import { formatPercentPlain, formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { HealthScoreBadge } from "@/components/stock/health-score-badge";
 import { Sparkline } from "@/components/stock/sparkline";
-import { StockAiModal } from "@/components/stock/stock-ai-modal";
+import { useUhu } from "@/components/uhu/uhu-provider";
 import type { StockRow } from "@/components/stock/stock-table";
 import { Sparkles } from "lucide-react";
 
@@ -41,8 +41,7 @@ const SIGNAL_STYLES: Record<string, string> = {
 export function StockCard({ ticker, name, sector, close, change, changePercent, signalLabel, signalScore, isGorengan }: StockCardProps) {
   // Anti-mislead (owner 27 Okt): gorengan + badge skor bisa kontradiktif di kartu ber-%harian
   const showScore = !isGorengan;
-  const router = useRouter();
-  const [aiOpen, setAiOpen] = useState(false);
+  const { openUhu } = useUhu();
   const isPositive = changePercent !== null && changePercent >= 0;
   const colorAccent = changePercent === null ? "" : isPositive ? "card-bullish" : "card-bearish";
   const bgTint = changePercent === null ? "bg-bg-card" : isPositive ? "bg-bullish/[0.02]" : "bg-bearish/[0.02]";
@@ -99,7 +98,8 @@ export function StockCard({ ticker, name, sector, close, change, changePercent, 
       </div>
     </Link>
     <button
-      onClick={() => setAiOpen(true)}
+      type="button"
+      onClick={() => openUhu(ticker)}
       className="absolute bottom-3 right-4 flex items-center justify-center w-6 h-6 rounded-full bg-accent/10 text-accent hover:bg-accent/20 transition-colors text-[11px]"
       aria-label={`Analisa AI ${name}`}
       title="Analisa AI"
@@ -107,9 +107,6 @@ export function StockCard({ ticker, name, sector, close, change, changePercent, 
       <Sparkles className="h-4 w-4" aria-hidden />
     </button>
     </div>
-    {aiOpen && (
-      <StockAiModal ticker={ticker} name={name} onClose={() => setAiOpen(false)} />
-    )}
     </>
   );
 }

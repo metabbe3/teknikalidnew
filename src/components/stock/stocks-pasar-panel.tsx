@@ -5,6 +5,7 @@ import Link from "next/link";
 import { StockLogo } from "@/components/stock/stock-logo";
 import { formatPrice, formatPercentPlain, stripJk, normalizeTicker } from "@/lib/utils";
 import { ArrowUpRight, Minus, TrendingDown, TrendingUp, Zap } from "lucide-react";
+import { UhuAskCtaLink } from "@/components/uhu/uhu-provider";
 
 export interface MarketOverviewMover {
   ticker: string;
@@ -211,15 +212,14 @@ export function StocksPasarPanel({ linkBase = "/stocks" }: { linkBase?: string }
 
       {/* Footer CTA Bot + Link ke /pasar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-accent/25 bg-accent/5 p-3.5 sm:p-4">
-        <a
-          href="https://t.me/TeknikalidAgentBot?start=kopi_pasar"
-          target="_blank"
-          rel="noopener noreferrer"
+        <UhuAskCtaLink
+          guestHref="/agent"
+          pageContextOverride="/pasar"
           data-engagement="funnel_pasarPanelBotCta"
           className="inline-flex min-h-10 items-center gap-1.5 rounded-lg bg-accent px-3.5 py-2 text-xs font-bold text-white hover:bg-accent/90 transition-colors"
         >
           ☕ Tanya arah IHSG &amp; aliran asing hari ini di Bot — gratis 3x
-        </a>
+        </UhuAskCtaLink>
         <Link
           href="/pasar"
           data-engagement="nav_hubTabPasar_click"

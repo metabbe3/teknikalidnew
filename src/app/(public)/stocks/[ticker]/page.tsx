@@ -75,7 +75,7 @@ import { auth } from "@/lib/auth";
 import { BouncerHook } from "@/components/stock/bouncer-hook";
 import { StrongerPeersStrip } from "@/components/stock/stronger-peers-strip";
 import { StockAiPromptChips } from "@/components/stock/stock-ai-prompt-chips";
-import { tgDeepLink } from "@/lib/tg-deeplink";
+import { UhuStockTrigger } from "@/components/uhu/uhu-provider";
 import { AlertTriangle, Banknote, Newspaper, Star } from "lucide-react";
 
 // ponytail: page is per-request SSR (auth-gated data varies by session — can't be SSG).
@@ -826,17 +826,15 @@ export default async function StockDetailPage({
                   )}
                   {/* Target B: Card Tanya AI disederhanakan jadi 1 baris kecil di bawah trading plan */}
                   <div>
-                    <a
-                      href={`https://t.me/TeknikalidAgentBot?start=src_ask_${stripJk(ticker)}`}
+                    <UhuStockTrigger
+                      ticker={ticker}
                       data-engagement="agent_deeplink_compact"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-between rounded-lg border border-border/80 bg-bg-card/70 px-3 py-2 text-xs font-medium text-text-secondary hover:text-accent hover:border-accent/40 transition-colors"
+                      className="w-full flex items-center justify-between rounded-lg border border-border/80 bg-bg-card/70 px-3 py-2 text-xs font-medium text-text-secondary hover:text-accent hover:border-accent/40 transition-colors"
                     >
                       <span className="flex items-center gap-1.5 truncate">
                         <span>🤖 Tanya AI soal {stripJk(ticker)} · gratis 3x →</span>
                       </span>
-                    </a>
+                    </UhuStockTrigger>
                     {/* Panduan cepat: 3 tombol prompt chips di dalam collapse <details> default tertutup */}
                     <details className="group mt-1.5 text-xs text-text-tertiary">
                       <summary className="cursor-pointer text-[11px] font-medium text-text-tertiary hover:text-text-secondary list-none flex items-center gap-1 px-1 py-0.5 [&::-webkit-details-marker]:hidden">
@@ -1309,15 +1307,13 @@ export default async function StockDetailPage({
         <section className="bg-bg-card rounded-xl border border-border p-5 space-y-2" aria-label={`Tanya analisa apa pun soal ${stripJk(ticker)}`}>
           <h2 className="font-serif text-base font-semibold text-text-primary">Tanya analisa apa pun soal {stripJk(ticker)}</h2>
           <p className="text-sm text-text-secondary">Skor sinyal, level support/resistance, dan jawaban instan lainnya — 3x gratis.</p>
-          <a
-            href={tgDeepLink([ticker])}
+          <UhuStockTrigger
+            ticker={ticker}
             data-engagement="tg_tanya_agent_card"
-            target="_blank"
-            rel="noopener noreferrer"
             className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90"
           >
             💬 Tanya AI Gratis
-          </a>
+          </UhuStockTrigger>
         </section>
 
         {/* Pantau via Telegram (retention-2026-10-28) — guest-visible, no-login, bahasa awam, tap target 44px */}

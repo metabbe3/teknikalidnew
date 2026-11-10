@@ -1,120 +1,129 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, type ReactNode } from "react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { openNotifBell, useNotifUnread } from "@/components/layout/notif-bell";
 import { UhuMascot } from "./uhu-mascot";
+import { useUhu, type UhuMessage } from "./uhu-provider";
 
-export interface UhuMessage {
-  id: string;
-  role: "user" | "assistant";
-  text: string;
-  streaming?: boolean;
+export type { UhuMessage };
+
+/**
+ * Linkify token di dalam segmen teks:
+ * a) [label](url) -> <a href> (target="_blank" rel="noopener noreferrer" untuk http(s) eksternal)
+ * b) Bare ticker /\b([A-Z]{4})(\.JK)?\b/ -> <a href="/stocks/{TICKER}.JK">
+ */
+function renderLinksAndTickers(segment: string, keyPrefix: string): ReactNode[] {
+  const nodes: ReactNode[] = [];
+  const tokenRe = /\[([^\]]+)\]\(([^)\s]+)\)|\b([A-Z]{4})(\.JK)?\b/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  let tokenIdx = 0;
+
+  while ((match = tokenRe.exec(segment)) !== null) {
+    if (match.index > lastIndex) {
+      nodes.push(segment.slice(lastIndex, match.index));
+    }
+
+    const mdLabel = match[1];
+    const mdUrl = match[2];
+    const bareTicker = match[3];
+
+    if (mdLabel !== undefined && mdUrl !== undefined) {
+      const isExternal = /^https?:\/\//i.test(mdUrl);
+      const isInternal = mdUrl.startsWith("/");
+      if (isExternal) {
+        nodes.push(
+          <a
+            key={`${keyPrefix}-l-${tokenIdx}`}
+            href={mdUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-accent underline underline-offset-2 hover:opacity-80"
+          >
+            {mdLabel}
+          </a>
+        );
+      } else if (isInternal) {
+        nodes.push(
+          <a
+            key={`${keyPrefix}-l-${tokenIdx}`}
+            href={mdUrl}
+            className="font-medium text-accent underline underline-offset-2 hover:opacity-80"
+          >
+            {mdLabel}
+          </a>
+        );
+      } else {
+        nodes.push(match[0]);
+      }
+    } else if (bareTicker !== undefined) {
+      const href = `/stocks/${bareTicker}.JK`;
+      nodes.push(
+        <a
+          key={`${keyPrefix}-t-${tokenIdx}`}
+          href={href}
+          className="font-medium text-accent underline underline-offset-2 hover:opacity-80"
+        >
+          {match[0]}
+        </a>
+      );
+    }
+
+    lastIndex = match.index + match[0].length;
+    tokenIdx += 1;
+  }
+
+  if (lastIndex < segment.length) {
+    nodes.push(segment.slice(lastIndex));
+  }
+
+  return nodes;
 }
 
-interface UhuChatPanelProps {
-  open: boolean;
-  onClose: () => void;
-  pageContext?: string;
-  onMessageCountChange?: (count: number) => void;
-}
-
-type GateState = "NONE" | "AUTH" | "NO_BINDING";
-
-const STORAGE_KEY = "uhu_chat_history";
-const MAX_STORED_MESSAGES = 20;
-
-/** Parser markdown-lite (< 40 baris): hanya **bold** dan line-break (\n), tanpa dependensi. */
-function renderLiteMarkdown(text: string) {
+/** Parser markdown-lite tanpa dependensi: **bold**, [label](url), bare ticker 4 huruf, dan \n. */
+export function renderLiteMarkdown(text: string): ReactNode {
   const lines = text.split("\n");
   return lines.map((line, lineIdx) => {
     const parts = line.split(/(\*\*[^*]+\*\*)/g);
     return (
       <span key={lineIdx}>
-        {parts.map((part, partIdx) =>
-          part.startsWith("**") && part.endsWith("**") && part.length > 4 ? (
-            <strong key={partIdx} className="font-semibold text-text-primary">
-              {part.slice(2, -2)}
-            </strong>
-          ) : (
-            <span key={partIdx}>{part}</span>
-          )
-        )}
+        {parts.map((part, partIdx) => {
+          const keyPrefix = `${lineIdx}-${partIdx}`;
+          if (part.startsWith("**") && part.endsWith("**") && part.length > 4) {
+            return (
+              <strong key={partIdx} className="font-semibold text-text-primary">
+                {renderLinksAndTickers(part.slice(2, -2), keyPrefix)}
+              </strong>
+            );
+          }
+          return <span key={partIdx}>{renderLinksAndTickers(part, keyPrefix)}</span>;
+        })}
         {lineIdx < lines.length - 1 && <br />}
       </span>
     );
   });
 }
 
-export function UhuChatPanel({
-  open,
-  onClose,
-  pageContext,
-  onMessageCountChange,
-}: UhuChatPanelProps) {
-  const { status: sessionStatus } = useSession();
-  const [messages, setMessages] = useState<UhuMessage[]>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      const raw = sessionStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as UhuMessage[];
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.slice(-MAX_STORED_MESSAGES);
-        }
-      }
-    } catch {
-      // ignore storage errors
-    }
-    return [];
-  });
-  const [input, setInput] = useState("");
-  const [streaming, setStreaming] = useState(false);
-  const [isLive, setIsLive] = useState<boolean>(false);
-  const [gate, setGate] = useState<GateState>("NONE");
-  const [errorBanner, setErrorBanner] = useState<string | null>(null);
+export function UhuChatPanel() {
+  const {
+    open,
+    closeUhu,
+    messages,
+    input,
+    setInput,
+    streaming,
+    isLive,
+    effectiveGate,
+    errorBanner,
+    setErrorBanner,
+    chips,
+    send,
+  } = useUhu();
 
-  const effectiveGate: GateState =
-    sessionStatus === "unauthenticated" ? "AUTH" : gate;
-
+  const notifUnread = useNotifUnread();
   const listRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const abortRef = useRef<AbortController | null>(null);
-
-  // Simpan riwayat ke sessionStorage (maks 20 pesan) + lapor jumlah pesan ke parent
-  useEffect(() => {
-    onMessageCountChange?.(messages.length);
-    const completed = messages.filter((m) => !m.streaming && m.text.trim().length > 0);
-    if (completed.length === 0) return;
-    try {
-      sessionStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(completed.slice(-MAX_STORED_MESSAGES))
-      );
-    } catch {
-      // ignore storage quota errors
-    }
-  }, [messages, onMessageCountChange]);
-
-  // Cek status Live (/api/uhu GET -> /api/chat/status) saat panel dibuka
-  useEffect(() => {
-    if (!open) return;
-    let cancelled = false;
-    fetch("/api/uhu", { method: "GET", cache: "no-store" })
-      .then(async (res) => {
-        if (!res.ok) return { ok: false };
-        return (await res.json()) as { ok?: boolean };
-      })
-      .then((data) => {
-        if (!cancelled) setIsLive(Boolean(data?.ok));
-      })
-      .catch(() => {
-        if (!cancelled) setIsLive(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [open]);
 
   // Focus textarea saat panel dibuka + tombol Esc untuk tutup
   useEffect(() => {
@@ -126,7 +135,7 @@ export function UhuChatPanel({
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
-        onClose();
+        closeUhu();
       }
     };
     window.addEventListener("keydown", onKeyDown);
@@ -134,7 +143,7 @@ export function UhuChatPanel({
       clearTimeout(focusTimer);
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [open, onClose]);
+  }, [open, closeUhu]);
 
   // Auto-scroll ke bawah saat pesan bertambah / streaming
   useEffect(() => {
@@ -145,13 +154,6 @@ export function UhuChatPanel({
     }
   }, [messages, streaming, errorBanner, effectiveGate, open]);
 
-  // Cleanup stream saat unmount
-  useEffect(() => {
-    return () => {
-      abortRef.current?.abort();
-    };
-  }, []);
-
   // Auto-resize textarea (1 baris s/d maks 4 baris ~96px)
   const adjustTextareaHeight = useCallback(() => {
     const el = textareaRef.current;
@@ -161,201 +163,27 @@ export function UhuChatPanel({
     el.style.height = `${Math.min(el.scrollHeight, maxHeight)}px`;
   }, []);
 
-  const sendMessage = useCallback(async () => {
-    const trimmed = input.trim();
-    if (!trimmed || streaming) return;
-
-    if (sessionStatus === "unauthenticated") {
-      setGate("AUTH");
-      return;
-    }
-
-    setErrorBanner(null);
-    const userMsg: UhuMessage = {
-      id: `u-${Date.now()}`,
-      role: "user",
-      text: trimmed,
-    };
-    const assistantId = `a-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-
-    setInput("");
+  const handleSend = useCallback(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
     }
+    void send();
+  }, [send]);
 
-    setMessages((prev) => [
-      ...prev.slice(-(MAX_STORED_MESSAGES - 2)),
-      userMsg,
-      { id: assistantId, role: "assistant", text: "", streaming: true },
-    ]);
-    setStreaming(true);
-
-    const controller = new AbortController();
-    abortRef.current = controller;
-
-    const removeEmptyAssistant = () => {
-      setMessages((prev) =>
-        prev.filter((m) => !(m.id === assistantId && m.text.trim().length === 0))
-      );
-    };
-
-    try {
-      const res = await fetch("/api/uhu", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: trimmed,
-          ...(pageContext ? { pageContext } : {}),
-        }),
-        signal: controller.signal,
-      });
-
-      if (!res.ok) {
-        removeEmptyAssistant();
-        let errPayload: { error?: string; message?: string } = {};
-        try {
-          errPayload = (await res.json()) as { error?: string; message?: string };
-        } catch {
-          // ignore non-json
-        }
-
-        if (res.status === 401 || errPayload.error === "AUTH") {
-          setGate("AUTH");
-          return;
-        }
-        if (res.status === 409 || errPayload.error === "NO_BINDING") {
-          setGate("NO_BINDING");
-          return;
-        }
-        if (res.status === 429) {
-          setErrorBanner(
-            errPayload.message ||
-              "Kuota tanya Uhu kamu sudah penuh untuk periode ini. Cek status paket di halaman Agent ya."
-          );
-          return;
-        }
-        if (
-          res.status === 503 ||
-          errPayload.error === "AGENT_OFFLINE" ||
-          errPayload.error === "UHU_DISABLED"
-        ) {
-          setIsLive(false);
-          setErrorBanner(
-            "Uhu sedang istirahat sebentar (layanan AI belum aktif). Coba beberapa saat lagi ya."
-          );
-          return;
-        }
-
-        setErrorBanner(
-          errPayload.message || "Maaf, koneksi ke Uhu sempat terputus. Coba kirim ulang ya."
-        );
-        return;
+  const handleChipClick = useCallback(
+    (prompt: string) => {
+      setInput(prompt);
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
       }
-
-      if (!res.body) {
-        removeEmptyAssistant();
-        setErrorBanner("Respons kosong dari server. Coba lagi sebentar ya.");
-        return;
-      }
-
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-
-      const processBlock = (rawBlock: string) => {
-        const lines = rawBlock.split(/\r?\n/);
-        let eventName = "message";
-        const dataLines: string[] = [];
-
-        for (const line of lines) {
-          if (line.startsWith("event:")) {
-            eventName = line.slice(6).trim();
-          } else if (line.startsWith("data:")) {
-            dataLines.push(line.slice(5).trimStart());
-          }
-        }
-
-        if (dataLines.length === 0) return;
-        const dataStr = dataLines.join("\n");
-
-        let parsed: {
-          t?: string;
-          turnsUsed?: number;
-          ok?: boolean;
-          message?: string;
-          error?: string;
-        } | null = null;
-
-        try {
-          parsed = JSON.parse(dataStr);
-        } catch {
-          // Fallback bila data berupa plain text token
-          if (eventName === "token") {
-            parsed = { t: dataStr };
-          }
-        }
-
-        if (!parsed) return;
-
-        if (eventName === "error" || parsed.error) {
-          const rawMsg = parsed.message || parsed.error || "";
-          const friendly = /quota|limit|habis|429/i.test(rawMsg)
-            ? "Kuota chat Uhu kamu sudah habis. Yuk cek atau upgrade paket di /agent."
-            : rawMsg || "Maaf, Uhu mengalami kendala saat memproses pertanyaanmu.";
-          setErrorBanner(friendly);
-          return;
-        }
-
-        if (eventName === "token" || typeof parsed.t === "string") {
-          const chunkText = parsed.t ?? "";
-          if (chunkText) {
-            setMessages((prev) =>
-              prev.map((m) =>
-                m.id === assistantId ? { ...m, text: m.text + chunkText } : m
-              )
-            );
-          }
-        }
-
-        if (eventName === "done") {
-          setMessages((prev) =>
-            prev.map((m) => (m.id === assistantId ? { ...m, streaming: false } : m))
-          );
-        }
-      };
-
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-
-        const blocks = buffer.split(/\r?\n\r?\n/);
-        buffer = blocks.pop() ?? "";
-        for (const block of blocks) {
-          if (block.trim()) processBlock(block);
-        }
-      }
-
-      if (buffer.trim()) {
-        processBlock(buffer);
-      }
-
-      // Pastikan status streaming selesai & bersihkan bubble kosong bila ada error
-      setMessages((prev) =>
-        prev
-          .map((m) => (m.id === assistantId ? { ...m, streaming: false } : m))
-          .filter((m) => !(m.id === assistantId && m.text.trim().length === 0))
-      );
-    } catch (err: unknown) {
-      if (err instanceof Error && err.name === "AbortError") return;
-      removeEmptyAssistant();
-      setErrorBanner("Sambungan ke Uhu terganggu. Coba lagi sebentar ya.");
-    } finally {
-      setStreaming(false);
-    }
-  }, [input, streaming, sessionStatus, pageContext]);
+      void send(prompt);
+    },
+    [setInput, send]
+  );
 
   if (!open) return null;
+
+  const showChips = messages.length <= 1 && !streaming && chips.length > 0;
 
   return (
     <div
@@ -387,13 +215,30 @@ export function UhuChatPanel({
                 <span aria-hidden="true">●</span>
                 {isLive ? "Live" : "Siaga"}
               </span>
+              {notifUnread > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    closeUhu();
+                    openNotifBell();
+                  }}
+                  title={`${notifUnread} notifikasi belum dibaca (buka lonceng header)`}
+                  aria-label={`${notifUnread} notifikasi belum dibaca, buka lonceng notifikasi`}
+                  className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full hover:bg-bg-hover transition-colors"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="h-2 w-2 rounded-full bg-bearish"
+                  />
+                </button>
+              )}
             </div>
           </div>
         </div>
 
         <button
           type="button"
-          onClick={onClose}
+          onClick={closeUhu}
           aria-label="Tutup panel Uhu"
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-colors"
         >
@@ -431,14 +276,14 @@ export function UhuChatPanel({
             <div className="flex flex-wrap items-center gap-2 pt-1">
               <Link
                 href="/agent"
-                onClick={onClose}
+                onClick={closeUhu}
                 className="inline-flex items-center justify-center rounded-lg bg-accent px-3.5 py-2 text-xs font-semibold text-white hover:opacity-95 transition-opacity"
               >
                 Buka Halaman Agent
               </Link>
               <Link
                 href="/auth/signin"
-                onClick={onClose}
+                onClick={closeUhu}
                 className="inline-flex items-center justify-center rounded-lg border border-border bg-bg-card px-3.5 py-2 text-xs font-medium text-text-primary hover:bg-bg-hover transition-colors"
               >
                 Masuk Akun
@@ -457,7 +302,7 @@ export function UhuChatPanel({
             <div className="pt-1">
               <Link
                 href="/agent"
-                onClick={onClose}
+                onClick={closeUhu}
                 className="inline-flex items-center justify-center rounded-lg bg-accent px-3.5 py-2 text-xs font-semibold text-white hover:opacity-95 transition-opacity"
               >
                 Hubungkan Telegram di /agent
@@ -510,7 +355,7 @@ export function UhuChatPanel({
               <p className="leading-relaxed">{errorBanner}</p>
               <Link
                 href="/agent"
-                onClick={onClose}
+                onClick={closeUhu}
                 className="inline-block font-semibold text-accent underline underline-offset-2"
               >
                 Cek status di /agent
@@ -528,8 +373,28 @@ export function UhuChatPanel({
         )}
       </div>
 
+      {/* Suggestion chips (quick actions kontekstual) */}
+      {showChips && (
+        <div
+          aria-label="Saran pertanyaan cepat"
+          className="flex items-center gap-1.5 overflow-x-auto border-t border-border bg-bg-card px-3 pt-2.5 pb-1"
+        >
+          {chips.slice(0, 3).map((chip) => (
+            <button
+              key={chip.label}
+              type="button"
+              disabled={effectiveGate === "AUTH"}
+              onClick={() => handleChipClick(chip.prompt)}
+              className="shrink-0 whitespace-nowrap rounded-full border border-border bg-bg-primary px-2.5 py-1 text-xs font-medium text-text-secondary hover:border-accent/40 hover:bg-bg-hover hover:text-text-primary transition-colors disabled:opacity-50"
+            >
+              {chip.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Input bar */}
-      <div className="border-t border-border bg-bg-card p-3">
+      <div className={`${showChips ? "pt-1.5" : "border-t border-border"} bg-bg-card p-3`}>
         <div className="flex items-end gap-2">
           <textarea
             ref={textareaRef}
@@ -543,7 +408,7 @@ export function UhuChatPanel({
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
-                void sendMessage();
+                handleSend();
               }
             }}
             placeholder="Tanya Uhu apa aja..."
@@ -552,7 +417,7 @@ export function UhuChatPanel({
           />
           <button
             type="button"
-            onClick={() => void sendMessage()}
+            onClick={handleSend}
             disabled={streaming || !input.trim() || effectiveGate === "AUTH"}
             aria-label="Kirim pesan"
             className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-xl bg-accent text-white transition-opacity hover:opacity-95 disabled:opacity-40"

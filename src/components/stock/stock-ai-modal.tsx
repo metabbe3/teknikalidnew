@@ -8,6 +8,7 @@ import { AiMarkdown } from "@/components/ai/ai-markdown";
 import { AiThinking } from "@/components/ui/ai-thinking";
 import { Sparkles } from "lucide-react";
 import { getAnonIdSafe } from "@/lib/anon-id-safe";
+import { useUhu } from "@/components/uhu/uhu-provider";
 
 /**
  * Modal AI untuk stock-card di halaman /stocks — analisa + tanya saham
@@ -86,27 +87,25 @@ function StructuredSummary({ summary, ticker, name }: { summary: string; ticker:
   );
 }
 
-export function StockAiModalButton({ ticker, name, changePercent, isGorengan }: { ticker: string; name: string; changePercent?: number | null; isGorengan?: boolean | null }) {
-  const [open, setOpen] = useState(false);
-  // prd-2026-11-05-01 AC5b: CTA "Tanya AI" dari halaman compare membawa ?tanya=<pertanyaan>
-  // — pra-isi pertanyaan compare, auto-open modal+ask, lalu bersihkan param URL (canonical rapi).
+export function StockAiModalButton({ ticker, name }: { ticker: string; name: string; changePercent?: number | null; isGorengan?: boolean | null }) {
+  const { openUhu, setInput } = useUhu();
   const searchParams = useSearchParams();
   const tanyaParam = searchParams.get("tanya");
-  // ?tanya= → auto-open sekali (state lazy di atas supaya tidak flicker loop).
   useEffect(() => {
-    if (tanyaParam) setOpen(true);
+    if (tanyaParam) {
+      setInput(tanyaParam);
+      openUhu(ticker);
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (
-    <>
-      <button
-        onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium border border-accent/30 text-accent hover:bg-accent/10 transition-all press-scale"
-        aria-label={`Analisa AI ${name}`}
-      >
-        <Sparkles aria-hidden="true" className="inline h-4 w-4" /> Analisa AI
-      </button>
-      {open && <StockAiModal ticker={ticker} name={name} changePercent={changePercent} isGorengan={isGorengan} initialQuestion={tanyaParam} onClose={() => setOpen(false)} />}
-    </>
+    <button
+      type="button"
+      onClick={() => openUhu(ticker)}
+      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 min-h-11 sm:min-h-0 text-xs font-medium border border-accent/30 text-accent hover:bg-accent/10 transition-all press-scale"
+      aria-label={`Analisa AI ${name}`}
+    >
+      <Sparkles aria-hidden="true" className="inline h-4 w-4" /> Analisa AI
+    </button>
   );
 }
 
