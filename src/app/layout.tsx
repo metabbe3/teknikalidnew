@@ -75,6 +75,11 @@ export const metadata: Metadata = {
   },
   verification: {
     google: process.env.GOOGLE_SITE_VERIFICATION,
+    // IndexNow/Bing (PRD idea-2026-11-07-2): klaim akun Bing Webmaster =
+    // langkah owner. Default kosong = 0 render meta.
+    other: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
+      ? { "msvalidate.01": process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION }
+      : undefined,
   },
   alternates: {
     // seo-adv3 (purist audit 3 Nov): TANPA canonical default di layout — semua

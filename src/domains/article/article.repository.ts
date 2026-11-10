@@ -1,6 +1,16 @@
 import { prisma } from "@/lib/prisma";
 import { ArticleStatus, ArticleType, Prisma } from "@/generated/prisma/client";
 import { passesTitleGuard } from "./title-guard";
+import { pingIndexNow } from "@/lib/indexnow";
+
+/**
+ * URL publik sebuah artikel per articleType (konvensi routing existing):
+ * EDUCATIONAL -> /akademi/<slug>; lainnya (NEWS/STOCK_ANALYSIS/DAILY_SNAPSHOT)
+ * -> /berita/<slug>. Dipakai IndexNow ping pasca-publish (PRD idea-2026-11-07-2).
+ */
+function publicUrlFor(articleType: ArticleType | undefined, slug: string): string {
+  return articleType === ArticleType.EDUCATIONAL ? `/akademi/${slug}` : `/berita/${slug}`;
+}
 
 export const articleRepository = {
   /**
@@ -177,10 +187,17 @@ export const articleRepository = {
     generationMeta?: Prisma.InputJsonValue;
     isListed?: boolean;
   }) {
-    return prisma.article.create({ data });
+    const article = await prisma.article.create({ data });
+    // IndexNow (PRD idea-2026-11-07-2): submit URL baru ke Bing/Yahoo segera
+    // setelah publish. Fire-and-forget: kegagalan ping tidak pernah menggagalkan
+    // publish (helper resolve-selalu, void di sini = tidak di-await).
+    if (data.status === ArticleStatus.PUBLISHED) {
+      void pingIndexNow([publicUrlFor(data.articleType, data.slug)]);
+    }
+    return article;
   },
 
-  update(id: string, data: Prisma.ArticleUpdateInput) {
+  async update(id: string, data: Prisma.ArticleUpdateInput) {
     // Defense-in-depth: reject title updates that fail the title guard.
     // Prevents any future code path (agents, admin tools, etc.) from accidentally
     // overwriting a good title with AI-leaked preamble. Callers who legitimately
@@ -190,7 +207,21 @@ export const articleRepository = {
         `ArticleRepository.update: rejected invalid title "${data.title.slice(0, 80)}..." (failed passesTitleGuard)`,
       );
     }
-    return prisma.article.update({ where: { id }, data });
+    // IndexNow (PRD idea-2026-11-07-2): baca status lama SEBELUM update agar
+    // ping hanya terjadi pada transisi -> PUBLISHED (artikel baru dari DRAFT),
+    // bukan re-publish evergreen harian (~40 URL/day, sudah terindeks).
+    // 1 query kecil di jalur publish low-frequency — bukan request hot-path.
+    const willPublish = data.status === ArticleStatus.PUBLISHED;
+    let prevStatus: ArticleStatus | null = null;
+    if (willPublish) {
+      const prev = await prisma.article.findUnique({ where: { id }, select: { status: true } });
+      prevStatus = prev?.status ?? null;
+    }
+    const updated = await prisma.article.update({ where: { id }, data });
+    if (willPublish && prevStatus !== ArticleStatus.PUBLISHED) {
+      void pingIndexNow([publicUrlFor(updated.articleType, updated.slug)]);
+    }
+    return updated;
   },
 
   delete(id: string) {
