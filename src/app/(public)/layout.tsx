@@ -4,6 +4,7 @@ import { Footer } from "@/components/layout/footer";
 import { PageViewTracker } from "@/components/admin/page-view-tracker";
 import { RegistrationBottomSheet } from "@/components/ui/registration-bottom-sheet";
 import { OnboardingWizard } from "@/components/ui/onboarding-wizard";
+import { UhuFab } from "@/components/uhu/uhu-fab";
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -15,6 +16,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       <Footer />
       <RegistrationBottomSheet />
       <OnboardingWizard />
+      <UhuFab />
     </div>
   );
 }
