@@ -1309,3 +1309,11 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
   SEC-REVIEW: zod parse lenient null — bukan input user (upstream Yahoo/TradingView); no injection/IDOR surface; guard tipe tetap hidup (test N2 number ditolak)
   Catatan: claude pipeline GATEGUARD fallback manual 2× autocompact-thrash (log /tmp/claude_ops102904.log); done_when live: 0× "live IHSG quote failed"/24h + IHSG /pasar == DB
 - Anomali diinvestigasi (TRUST, no action): app container start 19:57 WIB (image 10:09 = sesi UHU) TANPA entri bus — dilaporkan utk kesadaran kondektur 22:15; EOD 2026-11-10 ✓ masuk; home/stocks 200.
+
+## 2026-11-10 23:5x CTO night PREP-ONLY (ops-2026-11-10-03 — 0 deploy by design)
+- task-id: ops-2026-11-10-03 | type: bugfix/TRUST | PRD: n/a (ACK CEO opsi-1 bo-2026-11-10-01) | pos: STICKY (integritas funnel North Star)
+  deploy hash: n/a NIGHT-READY | branch night/ops-2026-11-10-03 @ 7a2ba5e (base 3816baa = prod)
+  verify: tsc EXIT-0 · selftest funnel-qa-guard 7/7 GREEN (RED 01a9cf3 6/6 + RED A6 45286da) · lint 0 error · regresi web-retention-w1 / market-one-door / term-tip / retention / retention-loop EXIT-0 · replay SQL read-only (fidelity file-route): funnel 21d OLD==NEW 364|146|5|4|0 + aktor qa- sintetis EXCLUDED semua tahap + ctrl +1; retention sparkline 8 minggu + cohort identik + user qa- excluded + ctrl +1 · zod live-parity 7/7 (qa- diterima, QA- ditolak, UUID utuh)
+  CATATAN IMPLEMENTABILITAS (temuan malam): 3 gerbang zod anonId hex-murni (pageview/engagement/share) akan 400/strip beacon qa-* → regex dibuka prefix qa- (lowercase-only — guard SQL case-sensitive). Konvensi charter §7 + prompt QA Sentinel live.
+  RATCHET: filter = perbaikan instrumen (bukan ubah target) — target returning ≥8% per 25 Nov TETAP.
+  QA: Sentinel 22:00 11 Nov pasca-deploy (kereta T-1111-M); impact_check_due: 2026-11-14
