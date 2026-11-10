@@ -322,9 +322,7 @@ export const marketSnapshotService = {
           WHERE "stockId" = sp."stockId" AND date < sp.date
           ORDER BY date DESC LIMIT 1
         ) p ON true
-        WHERE sp.date = (SELECT MAX(date) FROM "StockPrice" sp2
-                         JOIN "Stock" s2 ON s2.id = sp2."stockId"
-                         WHERE s2."assetClass" = 'EQUITY' AND s2."isActive" = true AND sp2.volume > 0)
+        WHERE sp.date = (SELECT MAX(date) FROM "StockPrice" sp2 WHERE sp2.volume > 0)
           AND s."assetClass" = 'EQUITY' AND s."isActive" = true AND sp.volume > 0
         ORDER BY sp.volume DESC
         LIMIT ${limit}
