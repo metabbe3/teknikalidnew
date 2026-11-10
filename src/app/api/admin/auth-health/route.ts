@@ -9,13 +9,14 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     await requireAdmin();
-  const now = new Date();
-  // WIB calendar day (00:00 WIB) — was server-local midnight, i.e. 07:00 WIB on the UTC container.
   const todayStart = wibDayStart();
   const fourteenDaysAgo = new Date(todayStart.getTime() - 14 * 24 * 60 * 60 * 1000);
 
   const [
-    activeSessions,
+    // Active users from PageView — JWT auth strategy (src/lib/auth.ts) never writes the
+    // Session table, so prisma.session.count was a permanent fake 0 (audit 10 Nov).
+    activeUsers24h,
+    activeAnon24h,
     totalAccounts,
     signups7d,
     bannedUsers,
@@ -24,7 +25,16 @@ export async function GET() {
     recentBans,
     cacheStats,
   ] = await Promise.all([
-    prisma.session.count({ where: { expires: { gt: now } } }),
+    prisma.$queryRaw<{ n: number }[]>`
+      SELECT count(DISTINCT "userId")::int AS n FROM "PageView"
+      WHERE "createdAt" >= now() - interval '24 hours'
+        AND "userId" IS NOT NULL AND "isBot" = false
+    `,
+    prisma.$queryRaw<{ n: number }[]>`
+      SELECT count(DISTINCT "anonId")::int AS n FROM "PageView"
+      WHERE "createdAt" >= now() - interval '24 hours'
+        AND "anonId" IS NOT NULL AND "isBot" = false
+    `,
     prisma.account.count(),
     // Was "sessionsToday" (actually total sessions — JWT strategy keeps the Session
     // table near-empty, so the number was meaningless). Real signal: weekly signups.
@@ -81,7 +91,8 @@ export async function GET() {
 
   return NextResponse.json({
     overview: {
-      activeSessions,
+      activeUsers24h: activeUsers24h[0]?.n ?? 0,
+      activeAnon24h: activeAnon24h[0]?.n ?? 0,
       totalAccounts,
       signups14d: signups7d,
       bannedUsers,

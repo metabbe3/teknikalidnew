@@ -10,7 +10,8 @@ import { timeAgo } from "@/lib/time";
 
 interface AuthHealthData {
   overview: {
-    activeSessions: number;
+    activeUsers24h: number;
+    activeAnon24h: number;
     totalAccounts: number;
     signups14d: number;
     bannedUsers: number;
@@ -41,15 +42,15 @@ export function AuthTab() {
   });
 
   const kpis = [
-    { title: "Active Sessions", icon: Key, value: formatVolume(data?.overview.activeSessions ?? 0), gradient: "blue" as const },
-    { title: "Total Accounts", icon: Users, value: formatVolume(data?.overview.totalAccounts ?? 0), gradient: "emerald" as const },
-    { title: "Signups (14d)", icon: Shield, value: formatVolume(data?.overview.signups14d ?? 0), gradient: "amber" as const },
-    { title: "Banned Users", icon: UserX, value: formatVolume(data?.overview.bannedUsers ?? 0), gradient: "rose" as const },
+    { title: "Pengguna Aktif (24 jam)", icon: Key, value: formatVolume(data?.overview.activeUsers24h ?? 0), subtitle: `+${formatVolume(data?.overview.activeAnon24h ?? 0)} tanpa login`, gradient: "blue" as const },
+    { title: "Total Akun", icon: Users, value: formatVolume(data?.overview.totalAccounts ?? 0), gradient: "emerald" as const },
+    { title: "Pendaftar Baru (14 hari)", icon: Shield, value: formatVolume(data?.overview.signups14d ?? 0), gradient: "amber" as const },
+    { title: "Akun Diblokir", icon: UserX, value: formatVolume(data?.overview.bannedUsers ?? 0), gradient: "rose" as const },
   ];
 
   const bansColumns = [
     {
-      header: "User",
+      header: "Pengguna",
       cell: (r: AuthHealthData["recentBans"][0]) => (
         <span className="text-sm font-bold text-gray-800">@{r.username ?? "unknown"}</span>
       ),
@@ -61,7 +62,7 @@ export function AuthTab() {
       ),
     },
     {
-      header: "Banned",
+      header: "Diblokir",
       cell: (r: AuthHealthData["recentBans"][0]) => (
         <span className="text-xs text-gray-400 font-mono">{timeAgo(r.bannedAt)}</span>
       ),
@@ -70,19 +71,19 @@ export function AuthTab() {
 
   const cacheColumns = [
     {
-      header: "Key Prefix",
+      header: "Sumber Cache",
       cell: (r: AuthHealthData["cacheUsage"][0]) => (
         <span className="font-mono text-xs text-gray-700">{r.keyPrefix}</span>
       ),
     },
     {
-      header: "Calls",
+      header: "Jumlah Panggilan",
       cell: (r: AuthHealthData["cacheUsage"][0]) => (
         <span className="text-sm font-semibold text-blue-600 tabular-nums">{r.count}</span>
       ),
     },
     {
-      header: "Last Fetched",
+      header: "Terakhir Diambil",
       cell: (r: AuthHealthData["cacheUsage"][0]) => (
         <span className="text-xs text-gray-400">{timeAgo(r.lastFetched)}</span>
       ),
@@ -101,13 +102,13 @@ export function AuthTab() {
         {/* Provider distribution */}
         <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
           <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
-            <CardTitle className="text-sm font-bold text-gray-800">Auth Provider Distribution</CardTitle>
+            <CardTitle className="text-sm font-bold text-gray-800">Cara Masuk Akun (Provider)</CardTitle>
           </CardHeader>
           <CardContent className="pt-4">
             {isLoading ? (
               <div className="h-32 bg-gray-50 rounded-lg animate-pulse" />
             ) : (data?.providers.length ?? 0) === 0 ? (
-              <p className="text-sm text-gray-400 text-center py-8">No accounts yet</p>
+              <p className="text-sm text-gray-400 text-center py-8">Belum ada akun</p>
             ) : (
               <div className="space-y-3">
                 {(data?.providers ?? []).map((p) => {
@@ -137,7 +138,7 @@ export function AuthTab() {
           <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
             <CardTitle className="flex items-center gap-2 text-sm font-bold text-gray-800">
               <UserX className="h-4 w-4 text-rose-500" />
-              Recent Bans
+              Pemblokiran Terbaru
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
@@ -145,7 +146,7 @@ export function AuthTab() {
               columns={bansColumns}
               data={data?.recentBans}
               loading={isLoading}
-              emptyMessage="No banned users"
+              emptyMessage="Tidak ada akun diblokir"
               keyFn={(r) => r.id}
             />
           </CardContent>
@@ -155,14 +156,14 @@ export function AuthTab() {
       {/* API cache usage */}
       <Card className="border-gray-200/80 shadow-md shadow-gray-200/30">
         <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white rounded-t-lg">
-          <CardTitle className="text-sm font-bold text-gray-800">API Cache Usage</CardTitle>
+          <CardTitle className="text-sm font-bold text-gray-800">Pemakaian Cache API</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <AdminDataTable
             columns={cacheColumns}
             data={data?.cacheUsage}
             loading={isLoading}
-            emptyMessage="No cached API calls"
+            emptyMessage="Belum ada cache API"
             keyFn={(r) => r.keyPrefix}
           />
         </CardContent>
