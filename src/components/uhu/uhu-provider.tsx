@@ -161,6 +161,27 @@ const NOOP_CONTEXT: UhuContextValue = {
   send: async () => {},
 };
 
+/**
+ * mergeChips: follow-up agent (prioritas, maks 3) + chips kontekstual halaman mengisi
+ * sisa slot — jadi di page saham lain chips "Analisa saham ini" tetap muncul walau
+ * sebelumnya ada follow-up dari chat di page lain (FIX owner 10 Nov).
+ */
+export function mergeChips(
+  agent: UhuSuggestionChip[],
+  contextual: UhuSuggestionChip[]
+): UhuSuggestionChip[] {
+  const seen = new Set<string>();
+  const out: UhuSuggestionChip[] = [];
+  for (const c of [...agent, ...contextual]) {
+    const key = c.prompt.trim();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(c);
+    if (out.length >= 3) break;
+  }
+  return out;
+}
+
 export function useUhu(): UhuContextValue {
   const ctx = useContext(UhuContext);
   return ctx ?? NOOP_CONTEXT;
@@ -242,6 +263,21 @@ export function UhuProvider({ children }: { children: ReactNode }) {
   // Chips dinamis dari agent (SSE "suggestions" — follow-up agent; owner 10 Nov:
   // di web tombol follow-up = suggestion chips klik, bukan button Telegram).
   const [agentChips, setAgentChips] = useState<UhuSuggestionChip[]>([]);
+
+  // FIX 10 Nov (owner: "chips gak muncul di pages lain"): follow-up chips milik KONTEKS
+  // halaman tempat ia lahir — pindah page → chips lama reset supaya chips kontekstual
+  // page baru bisa tampil (tidak ketimpa chips soal saham lama).
+  const agentChipsPathRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (agentChipsPathRef.current === null) {
+      agentChipsPathRef.current = pathname;
+      return;
+    }
+    if (agentChipsPathRef.current !== pathname) {
+      agentChipsPathRef.current = pathname;
+      setAgentChips([]);
+    }
+  }, [pathname]);
 
   // Global opener: notif bell / link lain bisa buka panel Uhu via window event
   // (owner 10 Nov: klik notif "Uhu menjawab" harus membuka panel Uhu + restore history).
@@ -688,7 +724,7 @@ export function UhuProvider({ children }: { children: ReactNode }) {
       unreadWhileClosed,
       pageContext,
       setPageContext: setCustomPageContext,
-      chips: agentChips.length > 0 ? agentChips : chips,
+      chips: mergeChips(agentChips, chips),
       agentChips,
       send,
     }),

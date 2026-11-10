@@ -119,7 +119,6 @@ export function UhuChatPanel() {
     errorBanner,
     setErrorBanner,
     chips,
-    agentChips,
     send,
   } = useUhu();
 
@@ -185,11 +184,10 @@ export function UhuChatPanel() {
 
   if (!open) return null;
 
-  // Chips statis: hanya saat obrolan belum mulai. Chips dinamis (agentChips,
-  // dari suggestions SSE): tampil setelah jawaban selesai — seperti ChatGPT.
-  const showChips =
-    !streaming &&
-    ((agentChips.length > 0 && !streaming) || (messages.length <= 1 && chips.length > 0));
+  // FIX 10 Nov (owner: chips gak muncul setelah pindah page): chips tampil selama
+  // tidak streaming — follow-up agent (jika ada) + chips kontekstual halaman aktif
+  // selalu tersedia sebagai quick-start, tidak hanya saat obrolan kosong.
+  const showChips = !streaming && chips.length > 0;
 
   return (
     <div
