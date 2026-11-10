@@ -5131,7 +5131,7 @@
       "type": "prd",
       "priority": "P2",
       "prd_id": "idea-2026-11-07-2",
-      "status": "night_ready",
+      "status": "in_train",
       "title": "P2 GROWTH (PRD idea-2026-11-07-2): IndexNow ping fire-and-forget saat publish + key publik — Bing+Yahoo = 194 PV/30d (5x Google-search 40) tapi URL baru nunggu crawl natural; instant-index potong window relevansi jam-jam pertama konten harian",
       "north_star": "GROWTH traffic organik (ekosistem Bing = 194/234 = 83% referral search non-login 30d; konten harian kenapa-*/brief punya half-life jam-an)",
       "user_story": "Sebagai pembaca pencari berita saham di Bing/Yahoo, saya ingin halaman kenapa-*/brief teknikal.id muncul di hasil pencarian dalam menit-jam setelah publish (buka hari setelahnya), supaya informasi pasar yang saya cari masih relevan saat saya klik.",
@@ -5161,7 +5161,7 @@
       "risk": "low",
       "estimate_tool_calls": 16,
       "created_by": "Product Agent buffer-keeper 2026-11-07 22:4x WIB (run gate: buffer teknikal 2 < 3)",
-      "scheduled_slot": "2026-11-09 18:30 BE malam BUILD (PRD prd-2026-11-09-02 terisi; IndexNow prioritas CEO — Bing 194 PV/30d)",
+      "scheduled_slot": "2026-11-10 07:30 slot pagi: MERGE DONE by CTO pagi",
       "branch": "night/prd-2026-11-07-02",
       "verify": {
         "tsc": "EXIT-0",
@@ -5191,7 +5191,8 @@
         "done_when_sisa": "AC5 live-proof (log ping ok + key 200 + index Bing <=24h) BARU bisa diverifikasi pasca-deploy + 1 publish nyata — checklist utk CTO pagi beserta deploy",
         "estimasi_review_menit": 10
       },
-      "result": "NIGHT READY 9 Nov 23:2x: implementasi PENUH di branch night/prd-2026-11-07-02 (13d20d6+f03eb3e, base origin/main 3b07e33). tsc+build EXIT-0, selftest 8/8, lint 0. Sisa: deploy pagi (tambah INDEXNOW_KEY di env prod) + live-proof AC5."
+      "result": "merged main 689f846 (night/prd-2026-11-07-02 IndexNow); CTO verify: tsc EXIT-0, selftest 8/8, build EXIT-0 BUILD_ID NNU0B7aJ6docXs6sRvxHC, schema-shield 0 DDL. DEPLOY kereta T-1110-M malam ini. PRASYARAT: env INDEXNOW_KEY=9329a1548c534fa7a93543738adb2538 di .env prod — file env = owner-only, butuh approve owner",
+      "train": "T-1110-M"
     },
     {
       "id": "ux-2026-11-07-01",

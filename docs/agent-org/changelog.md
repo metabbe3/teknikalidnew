@@ -1277,3 +1277,11 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - **qa-11-09-01** (P1 qa-content-fix, [KONVERSI]/TRUST): patch analis-pagi-2026-11-09-pbid — "292 stagnan"→"162 stagnan" + heading "Satu-satunya Sinyal Sangat Menguat"→"Skor Sinyal Tertinggi Hasil Scan Pagi Ini". Bukti H1: UPDATE 1; DB position(292)=0 & satu-satunya=0; live /berita/<slug> before 292×2/satu×2 → after 292=0 satu=0 162×2 head×2 (200). Replay gate exit 0 pra-patch; backup 01:15 valid. impact_check_due=2026-11-12.
 - **qa-11-08-04** (P2 qa, TRUST): akra-404 = FALSE-POSITIVE — /saham-akra root tak pernah ada (PageView=0, 0 link, 0 sitemap); /berita/saham-akra 308→/stocks/AKRA.JK 200 by design pasca-EOD. 0 kode. Regression-none saudara (unvr/towr/untr).
 - **Rollback anchors**: app 15b65f69c814 + worker e673e2de108c (06:41) · konten: git revert 4ac9ffc (gate fix); artikel patch DB = konten kanonik (revert = restore "292" SALAH — jangan).
+
+## 2026-11-10 — prd-2026-11-07-02 (MERGE-ONLY, deploy kereta T-1110-M)
+- task-id: prd-2026-11-07-02 | type: feature (GROWTH/AEO) | PRD: prd-2026-11-09-02 / idea-2026-11-07-2
+- deploy hash: - (BUILD-ONLY slot pagi; merge 689f846, BUILD_ID NNU0B7aJ6docXs6sRvxHC)
+- verify bukti: tsc EXIT-0 · selftest indexnow 8/8 · build EXIT-0 · schema-shield 0 DDL · caller audit 16 call-site update() semua await/return-kompatibel
+- QA: defer Sentinel 22:00 pasca-deploy kereta malam | impact_check_due: 2026-11-13
+- SEC-REVIEW: ping keluar hanya URL+key PUBLIK ke api.indexnow.org (fire-and-forget, timeout 5s, no PII); msvalidate gated-env; hook DB = read status pre-update (1 query low-frequency); no input user → no injection surface; update() async = non-breaking (semua caller await)
+- Catatan: env INDEXNOW_KEY prod = owner-only (file env) — tanpa itu fitur aktif tapi diam (isIndexNowEnabled false)
