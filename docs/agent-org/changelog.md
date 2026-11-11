@@ -1347,3 +1347,16 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
   verify (bukti fisik): pre-flight ls-remote origin 0 hit session · ls-tree backup/pre-sec-purge-1015 = 2 file sessions (IG+TikTok cookies) · `git branch -D backup/pre-sec-purge-1015` (was 14bcb3d) · `git for-each-ref refs/heads/backup | wc -l` = 0 · ls-remote origin pasca = 0 hit session (tidak pernah bocor)
   rollback: objects masih di object-DB via reflog sampai GC — by-design dibuang (purge Okt)
   QA: n/a (bukan kode); impact_check_due: n/a
+
+## 2026-11-11 19:1x CTO sore 16:45 (qa-2026-11-11-01 — 5 klaim salah di 4 artikel dipatch; 0 deploy)
+- task-id: qa-2026-11-11-01 | type: qa-content-fix | PRD: n/a (ops path, spec Reviewer 11 Nov) | pos: [BUGFIX] TRUST
+  deploy hash: n/a (DB content patch; backup valid 2026-11-11T01:16 <24h ✓)
+  verify: replay_sql_gate exit 0 × 5 slug · position(frasa-lama)=0 content+excerpt ALL (11 frasa) · tag-tolerant live HTML grep: OLD {} semua halaman, NEW present semua · curl 200 × 5 · WIIM-residual-deathcross=0 · satu-satunya-total=0
+  patch (11 UPDATE, rowcount 1 masing-masing):
+  (A) reli-logam: daftar EMA bullish baru → "DRMA, KLBF, LSIP, MYOH, POLA, WIIM — 6 emiten" [KOREKSI SPEC REVIEWER: DB emaCrossDate=11-10 bullish non-gorengan = 6 emiten itu; PKPK cross-nya BEARISH (emas salah masuk daftar reviewer), WIIM bullish (salah di-drop); snapshot ganda 11-10/11-11 = 2 row per ticker, angka skor as-of 11-10]
+  (B) reli-logam: death cross → "PICO dan GDYR" (DB smaCross 11-10: ASMI golden, GDYR+PICO death; WIIM TIDAK death-cross — justru EMA bullish)
+  (C) pagi-lsip content+excerpt, sore-lsip content+heading+excerpt (5 lokasi): "satu-satunya" → "tertinggi ke-3 / peringkat ketiga" + konteks POLA 0,39 & PKPK 0,29 (DB as-of 11-10: POLA 0,39 · PKPK 0,29 · LSIP 0,16 — exact match angka reviewer)
+  (D) breadth-positif: "terbesar di jajaran likuid" → "terbesar di jajaran ritel big-cap (ACES +1,18%; MAPI dan RAJA turun)" [verified SQL: MAPA +6,25 top di ritel; reviewer benar rank #8 vol≥1jt semua saham (HRME +30)] — iterasi-2: kualifikasi pertama "MAPA-BRFM-JASTEL" diganti karena BRFM/JASTEL TIDAK ADA data sesi 9 Nov (klaim tanpa data = larangan)
+  (E) bnbr-rsi-26: "flat di Rp40-41" → "bergerak di kisaran Rp38-41" (DB: low 38 tgl 6 Nov); "Rp39 belum ditembus ulang dalam 3 sesi" → "Low 38 dari 6 November pun belum ditembus ulang dalam 3 sesi (low terdekat 39, 10 November)"
+  QA: QA Sentinel 22:11 verify sampling; impact_check_due: 2026-11-14
+  Rollback: n/a (DB patch; restore per-row dari backup pgdump 01:16 bila diperlukan — string lama tercatat di docs/agent-org/decisions.md)

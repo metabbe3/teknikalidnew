@@ -900,3 +900,10 @@ penulisan masih 404 (deploy di kereta T-1021-N / CTO pagi).
 - UPDATE Article grw26111006408smsu18y (analisa-saham-bnbr-oversold-rsi-26): '26% di bawah MA20' → '18,5% di bawah MA20'. Rowcount=1. Replay: sma20=49,10 close=40 → -18,5% (26% = angka sesi 4 Nov).
 - H2 verify: position('satu-satunya di bursa')=0 content+excerpt; position('26% di bawah')=0; sweep 36jam artikel lain = 0 kena.
 - 2026-11-11 07:4x | CTO pagi | MERGE night→main: 32fab9b (10 commit stack admin-branch: adm-11-10-01 + ops-10-29-04 + 3×perf-db, tree==prod 3816baa) + 594d176 (org-state CEO b9eaad0); migration 33dfce0 = no-op catchup (index manual CONCURRENTLY 22:36, DB verified live); 0 deploy (prod tetap 22:34 image); adm-2026-11-10-01 → in_train T-1111-M. Jebakan: merge --abort gagal karena cto-queue.json diubah slot lain saat staging → merge split 2 (32fab9b+594d176)
+
+## 2026-11-11 19:1x WIB — CTO sore 16:45: DB-patch qa-2026-11-11-01 (P1 konten TRUST, 0-build)
+- Backup valid 2026-11-11T01:16 ✓ · replay gate exit 0 × 5 pra/pasca patch.
+- POLICY SQL: 11 UPDATE rowcount=1 ( sempit WHERE slug+LIKE; iterasi-2 D fix = 3 UPDATE excerpt/segment tambahan, total efektif 12 UPDATE rowcount=1). Log lengkap + frasa lama/baru tersimpan di scratch qa111_patch.sql + laporan ini.
+- KOREKSI SPEC REVIEWER (DB = ground truth): (1) PKPK emaCrossSignal=bearish → TIDAK masuk daftar EMA bullish (reviewer salah memasukkan); WIIM bullish non-gorengan → masuk. (2) Daftar benar snapshot 11-10: DRMA, KLBF, LSIP, MYOH, POLA, WIIM. (3) Skor as-of 11-10 = POLA 0,39 · PKPK 0,29 · LSIP 0,16 (exact reviewer). (4) BRFM/JASTEL tanpa data 9 Nov → kualifikasi D pakai ACES/MAPI/RAJA yang terverifikasi.
+- Lesson teknis: UPDATE ber-em-dash dari file SQL via docker exec -i < file GAGAL match 3 frasa padahal byte identik di inspeksi — heredoc segar di terminal menulis ulang string = langsung UPDATE 1. Selalu jalankan position()-check pasca-patch dan re-run manual frasa yang UPDATE 0; jangan percaya "byte sama" sebelum psql konfirmasi.
+- H2 sweep:WIIM+death-cross residual=0; 'satu-satunya' 2 artikel=0 (content+excerpt); live HTML tag-tolerant OLD=0 NEW=present × 5 halaman.
