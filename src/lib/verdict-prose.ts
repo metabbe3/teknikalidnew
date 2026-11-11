@@ -181,6 +181,7 @@ export function explainMove(opts: {
   prev: IndicatorSnapshot | null;
   changePercent: number | null;
   volumeMultiple?: number | null;
+  close?: number | null;
 }): MoveExplainer | null {
   const { latest, prev, changePercent } = opts;
   if (!latest) return null;
@@ -232,16 +233,163 @@ export function explainMove(opts: {
 
   const bullets = drivers.slice(0, 3).map((d) => (d.detail ? `${d.label} — ${d.detail}` : d.label));
 
-  const parts: string[] = [headline];
+  // Paragraph 1: Headline, volume spike (if any), and secondary drivers
+  const p1Parts: string[] = [headline];
   if (opts.volumeMultiple && opts.volumeMultiple >= 1.5) {
-    parts.push(
+    p1Parts.push(
       `Volume melonjak sekitar ${opts.volumeMultiple.toFixed(1)}× rata-rata 20 hari, menandakan minat pasar yang kuat.`,
     );
   }
   const rest = drivers.slice(1, 3);
   if (rest.length > 0) {
-    parts.push(`Indikator pendukung: ${rest.map((d) => d.label.toLowerCase()).join(", ")}.`);
+    p1Parts.push(`Indikator pendukung: ${rest.map((d) => d.label.toLowerCase()).join(", ")}.`);
   }
+  const p1 = p1Parts.join(" ");
+
+  // Paragraph 2: Konteks Tren (posisi harga vs SMA20/50 secara kualitatif, TANPA angka desimal)
+  const p2Parts: string[] = [];
+  const close = opts.close ?? null;
+  const sma20 = latest.sma20;
+  const sma50 = latest.sma50;
+
+  if (close !== null && sma20 !== null && sma50 !== null) {
+    if (close > sma20 && close > sma50) {
+      p2Parts.push(
+        `Dalam konteks tren, harga saat ini bertahan di atas garis rata-rata pergerakan 20 hari (SMA20) maupun 50 hari (SMA50), mengindikasikan struktur pergerakan jangka pendek hingga menengah yang masih terjaga solid.`,
+      );
+    } else if (close < sma20 && close < sma50) {
+      p2Parts.push(
+        `Meninjau struktur tren, posisi harga berada di bawah garis SMA20 dan SMA50, mencerminkan tren jangka pendek hingga menengah yang masih berada dalam tekanan jual.`,
+      );
+    } else if (close > sma20 && close <= sma50) {
+      p2Parts.push(
+        `Dari kacamata tren, harga berhasil bertahan di atas garis SMA20 kendati masih tertahan di bawah SMA50, menandakan upaya pemulihan jangka pendek yang masih menguji resistensi tren menengahnya.`,
+      );
+    } else {
+      p2Parts.push(
+        `Secara struktur tren, harga tertekan di bawah SMA20 namun masih bertengger di atas garis SMA50, mengisyaratkan koreksi wajar di dalam kerangka tren menengah yang belum sepenuhnya patah.`,
+      );
+    }
+  } else if (close !== null && sma50 !== null) {
+    if (close > sma50) {
+      p2Parts.push(
+        `Dari perspektif tren, harga diperdagangkan di atas garis rata-rata 50 hari (SMA50), menjaga bias positif untuk horizon jangka menengah.`,
+      );
+    } else {
+      p2Parts.push(
+        `Dari perspektif tren, harga berada di bawah garis penopang 50 hari (SMA50), mengindikasikan dominasi tren penurunan pada horizon jangka menengah.`,
+      );
+    }
+  } else if (sma20 !== null && sma50 !== null) {
+    if (sma20 > sma50) {
+      p2Parts.push(
+        `Ditinjau dari orientasi rata-rata pergerakan, garis SMA20 berada di atas garis SMA50, mencerminkan struktur pergerakan yang secara umum condong konstruktif.`,
+      );
+    } else if (sma20 < sma50) {
+      p2Parts.push(
+        `Ditinjau dari orientasi rata-rata pergerakan, posisi garis SMA20 berada di bawah SMA50, mengindikasikan momentum tren yang masih berada dalam fase defensif.`,
+      );
+    } else {
+      p2Parts.push(
+        `Ditinjau dari rata-rata pergerakan, garis SMA20 dan SMA50 saling berdekatan, menandakan fase konsolidasi tren yang relatif mendatar.`,
+      );
+    }
+  } else {
+    p2Parts.push(
+      `Dari struktur pergerakan teknikal, pola harga masih berada dalam tahap pembentukan konsolidasi arah baru.`,
+    );
+  }
+
+  if (latest.smaCrossSignal === "golden_cross") {
+    p2Parts.push(
+      `Kondisi ini diperkuat oleh terbentuknya sinyal golden cross pada indikator moving average utama, membuka peluang transisi menuju fase bullish lanjutan.`,
+    );
+  } else if (latest.smaCrossSignal === "death_cross") {
+    p2Parts.push(
+      `Di sisi lain, kehadiran sinyal death cross menjadi pengingat kehati-hatian atas risiko pelemahan lanjutan dalam jangka menengah.`,
+    );
+  } else if (latest.sma200 !== null && sma50 !== null) {
+    if (sma50 > latest.sma200) {
+      p2Parts.push(
+        `Konfigurasi moving average jangka menengah tetap berada di atas acuan jangka panjang (SMA200), mempertahankan stabilitas tren makro.`,
+      );
+    } else {
+      p2Parts.push(
+        `Pergerakan harga jangka menengah masih tertahan di bawah acuan jangka panjang (SMA200), sehingga pembalikan arah membutuhkan konfirmasi penguatan yang lebih berkesinambungan.`,
+      );
+    }
+  }
+  const p2 = p2Parts.join(" ");
+
+  // Paragraph 3: Apa yang perlu dipantau (RSI ekstrem, MACD histogram, volume confirmation)
+  const p3Parts: string[] = [];
+  const rsi = latest.rsi14;
+  if (rsi !== null) {
+    if (rsi >= 70) {
+      p3Parts.push(
+        `Untuk perdagangan berikutnya, pelaku pasar perlu mewaspadai pembacaan indikator RSI yang sudah memasuki zona jenuh beli (overbought), di mana potensi aksi ambil untung (profit taking) jangka pendek kian terbuka.`,
+      );
+    } else if (rsi <= 30) {
+      p3Parts.push(
+        `Untuk perdagangan berikutnya, perhatikan bahwa indikator RSI saat ini berada di area jenuh jual (oversold), membuka peluang terjadinya pantulan teknikal (rebound) jika tekanan jual mulai mereda.`,
+      );
+    } else if (rsi >= 60 && rsi < 70) {
+      p3Parts.push(
+        `Untuk sesi berikutnya, perhatikan indikator RSI yang mulai mendekati ambang jenuh beli, menandakan momentum kenaikan yang kuat namun ruang apresiasi jangka pendek mulai menipis.`,
+      );
+    } else if (rsi <= 40 && rsi > 30) {
+      p3Parts.push(
+        `Untuk sesi berikutnya, pantau indikator RSI yang kian mendekati ambang jenuh jual, mengindikasikan tekanan pelemahan yang berpotensi memasuki fase jenuh.`,
+      );
+    } else {
+      p3Parts.push(
+        `Untuk sesi selanjutnya, indikator RSI masih bergerak di kisaran netral tanpa kejenuhan ekstrem, memberikan ruang fleksibel bagi kelanjutan pergerakan harga.`,
+      );
+    }
+  } else {
+    p3Parts.push(
+      `Untuk langkah antisipasi berikutnya, pelaku pasar disarankan mencermati dinamika momentum harga dan respon pasar di sekitar level support-resistance kunci.`,
+    );
+  }
+
+  const macd = latest.macdHist;
+  const prevMacd = prev?.macdHist ?? null;
+  if (macd !== null) {
+    if (macd > 0 && prevMacd !== null && macd > prevMacd) {
+      p3Parts.push(
+        `Histogram MACD memperlihatkan pelebaran momentum positif, mengonfirmasi dorongan beli yang kian solid.`,
+      );
+    } else if (macd > 0) {
+      p3Parts.push(
+        `Histogram MACD bertahan di zona positif, menjaga bias penguatan momentum harga.`,
+      );
+    } else if (macd < 0 && prevMacd !== null && macd < prevMacd) {
+      p3Parts.push(
+        `Histogram MACD menunjukkan pelebaran tekanan negatif, menegaskan dominasi momentum jual yang perlu diwaspadai.`,
+      );
+    } else if (macd < 0) {
+      p3Parts.push(
+        `Histogram MACD berada di wilayah negatif, mengisyaratkan kehati-hatian terhadap risiko pelemahan lanjutan.`,
+      );
+    } else {
+      p3Parts.push(
+        `Histogram MACD berada di dekat garis netral, mencerminkan momentum arah pergerakan yang masih berimbang.`,
+      );
+    }
+  }
+
+  if (opts.volumeMultiple && opts.volumeMultiple >= 1.5) {
+    p3Parts.push(
+      `Selain itu, perhatikan apakah likuiditas transaksi dapat bertahan di atas rata-rata hariannya untuk memvalidasi kelanjutan arah tren.`,
+    );
+  } else {
+    p3Parts.push(
+      `Selain itu, pantau konfirmasi volume transaksi pada sesi berikutnya guna memastikan pergerakan harga didukung partisipasi pasar yang memadai.`,
+    );
+  }
+  const p3 = p3Parts.join(" ");
+
+  const prose = [p1, p2, p3].join("\n\n");
 
   return {
     direction,
@@ -251,7 +399,7 @@ export function explainMove(opts: {
     drivers,
     headline,
     bullets,
-    prose: parts.join(" "),
+    prose,
   };
 }
 

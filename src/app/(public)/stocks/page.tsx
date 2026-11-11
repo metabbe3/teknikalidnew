@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
 import { marketSnapshotService } from "@/domains/stock/market-snapshot.service";
 import { SahamView } from "@/components/stock/saham-view";
+import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale/id";
 import type { MarketStatusResult } from "@/lib/market-hours";
@@ -119,10 +120,17 @@ export default async function StocksPage() {
   const session = await auth().catch(() => null);
   // perf-2026-10-18-01: daftar saham (962 baris) tidak lagi di-serialize ke HTML/RSC flight
   // (~977KB → shell) — SahamView fetch /api/stocks client-side (cache 5 mnt, endpoint lama).
-  const [latestPrice, marketInfo] = await Promise.all([
+  // seo-p0: render SSR statis TOP 30 teraktif by dollar-volume (hanya ~3KB) untuk crawlability "Rp"
+  const [latestPrice, marketInfo, stockList] = await Promise.all([
     stockMarketService.getLatestPriceDate(),
     stockMarketService.getMarketStatusForPage(),
+    stockMarketService.getStockList().catch(() => []),
   ]);
+
+  const top30Stocks = [...stockList]
+    .filter((s) => !s.ticker.startsWith("^") && s.close !== null && s.close > 0)
+    .sort((a, b) => ((b.volume ?? 0) * (b.close ?? 0)) - ((a.volume ?? 0) * (a.close ?? 0)))
+    .slice(0, 30);
 
   // ref-2026-10-17-01: breadth + top movers dari SATU pintu (market-snapshot),
   // identik dengan home/pasar/berita. Tidak lagi dihitung lokal dari getStockList.
@@ -289,6 +297,72 @@ export default async function StocksPage() {
               </Link>
             </div>
           </div>
+
+          {/* SSR Section: Top 30 Saham Teraktif (noscript & search bot friendly) */}
+          {top30Stocks.length > 0 && (
+            <details open className="group mb-8 rounded-xl border border-border bg-bg-card p-4 sm:p-5">
+              <summary className="cursor-pointer list-none flex items-center justify-between [&::-webkit-details-marker]:hidden">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h2 className="text-base sm:text-lg font-bold text-text-primary">
+                    Harga Saham Hari Ini — 30 Teraktif
+                  </h2>
+                  <span className="rounded-full bg-accent/10 px-2.5 py-0.5 text-[11px] font-semibold text-accent">
+                    Sesi Terakhir
+                  </span>
+                </div>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-text-tertiary transition-transform duration-300 group-open:rotate-180 shrink-0"
+                  aria-hidden="true"
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </summary>
+              <p className="mt-2 text-xs sm:text-sm text-text-secondary leading-relaxed">
+                Daftar 30 saham teraktif di Bursa Efek Indonesia (BEI) berdasarkan nilai transaksi dan likuiditas sesi terakhir. Diperbarui otomatis untuk memantau pergerakan harga saham likuid paling populer.
+              </p>
+
+              <div className="mt-4 overflow-x-auto">
+                <table className="w-full text-left text-sm border-collapse">
+                  <thead>
+                    <tr className="border-b border-border bg-bg-secondary/40 text-xs font-semibold text-text-tertiary uppercase tracking-wider">
+                      <th scope="col" className="py-2.5 px-3">Ticker</th>
+                      <th scope="col" className="py-2.5 px-3">Nama Emiten</th>
+                      <th scope="col" className="py-2.5 px-3 text-right">Harga (Rp)</th>
+                      <th scope="col" className="py-2.5 px-3 text-right">Perubahan (%)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {top30Stocks.map((stock) => (
+                      <tr key={stock.ticker} className="hover:bg-bg-hover/50 transition-colors">
+                        <td className="py-2.5 px-3 font-semibold text-accent">
+                          <Link href={`/stocks/${stock.ticker}`} className="hover:underline">
+                            {stripJk(stock.ticker)}
+                          </Link>
+                        </td>
+                        <td className="py-2.5 px-3 text-xs sm:text-sm text-text-secondary max-w-[200px] truncate">
+                          {stock.name}
+                        </td>
+                        <td className="py-2.5 px-3 text-right font-mono font-medium tabular-nums text-text-primary">
+                          {stock.close !== null ? formatPrice(stock.close) : "Rp—"}
+                        </td>
+                        <td className={`py-2.5 px-3 text-right font-mono font-medium tabular-nums ${stock.changePercent !== null ? changeColor(stock.changePercent) : "text-text-tertiary"}`}>
+                          {stock.changePercent !== null ? formatPercent(stock.changePercent) : "—"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </details>
+          )}
 
           <Suspense fallback={<div className="p-8 text-center text-text-secondary">Memuat…</div>}>
             <SahamView assetClass="EQUITY" linkBase="/stocks" />

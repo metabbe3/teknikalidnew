@@ -34,6 +34,7 @@ export async function loadMovementData(tickerRaw: string) {
     latest: base.indicator,
     prev: base.prevIndicator,
     changePercent,
+    close: base.close,
   });
 
   let related: Array<{ ticker: string; name: string; changePercent: number | null }> = [];
@@ -352,7 +353,7 @@ export async function RenderMovementPage({
               <Activity className="h-5 w-5 text-primary" />
               <h2 className="text-xl font-bold">Analisis Teknikal {tickerClean}</h2>
             </div>
-            <p className="text-base text-foreground/90 leading-relaxed mb-4">{explainer.prose}</p>
+            <p className="text-base text-foreground/90 leading-relaxed mb-4 whitespace-pre-line">{explainer.prose}</p>
             {explainer.bullets.length > 0 && (
               <ul className="space-y-2">
                 {explainer.bullets.map((b, i) => (

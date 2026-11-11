@@ -10,7 +10,7 @@ import {
   rankDrivers,
   toSnapshot,
   type IndicatorSnapshot,
-} from "../src/lib/verdict-prose";
+} from "../../src/lib/verdict-prose";
 
 let failures = 0;
 function assert(cond: boolean, msg: string) {
@@ -97,6 +97,40 @@ const e2 = explainMove({
   changePercent: 0.2,
 });
 assert(e2!.direction === "datar" && !e2!.hasSignal, "sub-0.5% + no signal → datar, hasSignal false");
+
+// Rich snapshot with trend context + monitoring paragraphs
+const eRich = explainMove({
+  ticker: "BMRI.JK",
+  latest: bare({
+    signalLabel: "Bullish",
+    rsi14: 72,
+    macdHist: 2.5,
+    sma20: 6800,
+    sma50: 6500,
+    sma200: 6000,
+    smaCrossSignal: "golden_cross",
+  }),
+  prev: bare({
+    signalLabel: "Bullish",
+    macdHist: 1.2,
+    rsi14: 65,
+  }),
+  changePercent: 2.8,
+  volumeMultiple: 1.8,
+  close: 7000,
+});
+assert(eRich !== null, "eRich returns non-null");
+const paragraphs = eRich!.prose.split("\n\n");
+assert(paragraphs.length === 3, "explainer prose contains 3 paragraphs");
+assert(/SMA20/.test(paragraphs[1]) && /SMA50/.test(paragraphs[1]), "paragraph 2 covers SMA20 and SMA50 trend context");
+assert(/jenuh beli|overbought/.test(paragraphs[2]), "paragraph 3 warns of overbought RSI condition");
+assert(/MACD/.test(paragraphs[2]), "paragraph 3 covers MACD histogram dynamic");
+const sentenceCount = eRich!.prose.split(/[.!?](?:\s+|$)/).filter(s => s.trim().length > 0).length;
+assert(sentenceCount >= 6 && sentenceCount <= 8, `prose expanded to 6-8 sentences (actual: ${sentenceCount})`);
+const richNoDecimals = !/RSI (?:adalah|=|\d)|SMA(?:20|50|200)\s*(?:adalah|=|\d{3,})/.test(eRich!.prose);
+assert(richNoDecimals, "no raw indicator decimals leaked in rich prose");
+console.log("    rich prose sentences:", sentenceCount);
+console.log("    rich prose:\n" + eRich!.prose);
 
 console.log("\n[3] summarizeVerdict — distinct per snapshot, aligned to outlook");
 
