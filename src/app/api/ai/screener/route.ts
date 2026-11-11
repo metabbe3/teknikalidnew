@@ -1,5 +1,5 @@
 import { isPlausibleTicker, extractTickersRanked } from "@/lib/ai-ticker-guard";
-import { sanitizeAiText, ensureAiDisclaimer } from "@/lib/ai-sanitize";
+import { sanitizeAiText, ensureAiDisclaimer, linkifyBoldTickers } from "@/lib/ai-sanitize";
 import { buildStockAiContext } from "../stock/context";
 import { aiRateCheck } from "@/lib/ai-rate-limit";
 import { auth } from "@/lib/auth";
@@ -365,7 +365,8 @@ export async function POST(req: NextRequest) {
 
     // Loop 9 Nov: guard disclaimer deterministik (satu pintu, semua provider) —
     // compliance bukan-rekomendasi tidak boleh bergantung kepatuhan model.
-    const finalText = ensureAiDisclaimer(data.text ?? "");
+    // Loop 11 Nov: linkify bold-ticker dari allowlist data server (konsistensi format).
+    const finalText = linkifyBoldTickers(ensureAiDisclaimer(data.text ?? ""), stocks);
     const payload = {
       ok: true,
       text: finalText,

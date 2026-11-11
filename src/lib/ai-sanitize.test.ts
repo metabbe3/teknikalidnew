@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert";
-import { sanitizeAiText, hasCjk, ensureAiDisclaimer } from "./ai-sanitize";
+import { sanitizeAiText, hasCjk, ensureAiDisclaimer, linkifyBoldTickers } from "./ai-sanitize";
 
 test("strip CJK dari teks Indonesia", () => {
   const r = sanitizeAiText("Market lagi喜庆 banget nih — IHSG naik.");
@@ -59,4 +59,46 @@ test("tanpa [FOLLOWUPS] → disclaimer di akhir teks", () => {
 
 test("string kosong → tetap kosong (guard tidak menulis tanpa jawaban)", () => {
   assert.equal(ensureAiDisclaimer(""), "");
+});
+
+// ─── linkifyBoldTickers (loop 11 Nov): konsistensi format ticker ───
+test("bold ticker di allowlist data server → link", () => {
+  const stocks = [
+    { ticker: "AMRT", close: 960 },
+    { ticker: "CBUT.JK", signalScore: 0.53 },
+  ];
+  const t = "Yang menonjol: **AMRT** naik 3,23% dan **CBUT** skor tertinggi.";
+  const r = linkifyBoldTickers(t, stocks);
+  assert.equal(r.includes("[AMRT](/stocks/AMRT.JK)"), true);
+  assert.equal(r.includes("[CBUT](/stocks/CBUT.JK)"), true);
+  assert.equal(r.includes("**AMRT**"), false);
+});
+
+test("bold kata non-ticker (BELI/IHSG) TIDAK disentuh walau tidak di allowlist", () => {
+  const t = "Jangan **BELI** sekarang, **IHSG** masih merah, lihat **RSI** dulu.";
+  const r = linkifyBoldTickers(t, [{ ticker: "BBCA" }]);
+  assert.equal(r, t);
+});
+
+test("bold ticker yang TIDAK ada di data server → dibiarkan bold (anti mengarang)", () => {
+  const t = "**AMRT** ada di data, **ZZZZ** tidak.";
+  const r = linkifyBoldTickers(t, [{ ticker: "AMRT" }]);
+  assert.equal(r.includes("[AMRT](/stocks/AMRT.JK)"), true);
+  assert.equal(r.includes("**ZZZZ**"), true);
+});
+
+test("link yang sudah ada tidak diproses ulang / tidak dobel", () => {
+  const t = "Awal: **BBCA** dan sudah link [BBRI](/stocks/BBRI.JK).";
+  const r = linkifyBoldTickers(t, { ticker: "BBCA.JK", DATA_PERBANDINGAN: { ticker: "BBRI.JK" } });
+  assert.equal(r.includes("[BBCA](/stocks/BBCA.JK)"), true);
+  assert.equal((r.match(/\[BBRI\]\(\/stocks\/BBRI\.JK\)/g) ?? []).length, 1);
+});
+
+test("string kosong → tetap kosong", () => {
+  assert.equal(linkifyBoldTickers("", [{ ticker: "BBCA" }]), "");
+});
+
+test("allowlist kosong → teks utuh tanpa perubahan", () => {
+  const t = "ini **teks** biasa tanpa ticker.";
+  assert.equal(linkifyBoldTickers(t, { foo: "bar" }), t);
 });

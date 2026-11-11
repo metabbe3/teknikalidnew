@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { buildPasarContext } from "@/lib/ai-pasar-context";
 import { prisma } from "@/lib/prisma";
 import { isPlausibleTicker, extractTickersRanked, rescueTypoTicker } from "@/lib/ai-ticker-guard";
-import { sanitizeAiText, ensureAiDisclaimer } from "@/lib/ai-sanitize";
+import { sanitizeAiText, ensureAiDisclaimer, linkifyBoldTickers } from "@/lib/ai-sanitize";
 import { NextRequest, NextResponse } from "next/server";
 import { buildStockAiContext } from "./context";
 import { stockRepository } from "@/domains/stock/stock.repository";
@@ -379,7 +379,8 @@ export async function POST(req: NextRequest) {
     }
     // Loop 9 Nov: guard disclaimer deterministik — compliance bukan-rekomendasi
     // tidak boleh bergantung kepatuhan model (kasus nyata: 1/10 jawaban tanpa disclaimer).
-    const finalText = ensureAiDisclaimer(data.text);
+    // Loop 11 Nov: linkify bold-ticker dari allowlist context (utama + compare).
+    const finalText = linkifyBoldTickers(ensureAiDisclaimer(data.text), context);
 
     // flywheel (owner 30 Okt): log QA fire-and-forget
     prisma.aiChatLog

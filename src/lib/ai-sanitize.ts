@@ -70,3 +70,51 @@ export function ensureAiDisclaimer(text: string): string {
   const tail = text.slice(fIdx);
   return `${head}\n\n${AI_DISCLAIMER}\n\n${tail}`;
 }
+
+/**
+ * Guard konsistensi format ticker — lapis-3 deterministik (loop 11 Nov).
+ *
+ * Latar (eval 11 Nov, g05 skor 7,33 = terendah): prompt screener WAJIB meminta
+ * semua ticker sebagai Markdown link [TICKER](/stocks/TICKER.JK), tapi model
+ * kadang hanya **bold** sebagian ticker (AMRT/CBUT/DNET bold tanpa link,
+ * berdampingan dengan AKPI/BBRI berlink) — campuran format dinilai turun juri.
+ * Kepatuhan format tidak boleh bergantung kepatuhan model.
+ *
+ * Aturan aman: hanya ticker yang ADA di data server (allowlist, diekstrak
+ * rekursif dari context/stocks) yang di-linkify — kata lain ber-bold seperti
+ * **BELI**, **IHSG**, **RSI** tidak pernah disentuh; link yang sudah ada
+ * dibiarkan utuh.
+ */
+
+/** Kumpulkan ticker (4 huruf kapital, .JK optional) dari nilai string nested apa pun. */
+function collectTickers(o: unknown, out: Set<string>): void {
+  if (!o) return;
+  if (Array.isArray(o)) {
+    for (const v of o) collectTickers(v, out);
+    return;
+  }
+  if (typeof o === "object") {
+    for (const v of Object.values(o as Record<string, unknown>)) collectTickers(v, out);
+    return;
+  }
+  if (typeof o === "string") {
+    const s = o.replace(/\.JK$/i, "").trim();
+    if (/^[A-Z]{4}$/.test(s)) out.add(s);
+  }
+}
+
+const BOLD_TICKER_RE = /\*\*([A-Z]{4})\*\*/g;
+
+/**
+ * Ubah **TICKER** (hanya yang ada di allowlist data server) menjadi
+ * [TICKER](/stocks/TICKER.JK). Text kosong → tetap kosong.
+ */
+export function linkifyBoldTickers(text: string, source: unknown): string {
+  if (!text) return text;
+  const allow = new Set<string>();
+  collectTickers(source, allow);
+  if (allow.size === 0) return text;
+  return text.replace(BOLD_TICKER_RE, (whole, t: string) =>
+    allow.has(t) ? `[${t}](/stocks/${t}.JK)` : whole,
+  );
+}
