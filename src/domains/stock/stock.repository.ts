@@ -676,7 +676,7 @@ export const stockRepository = {
       ) p ON true
       WHERE lb.id IN (
         SELECT DISTINCT ON ("stockId") id FROM "StockPrice"
-        WHERE "stockId" IN (${Prisma.join(stockIds)})
+        WHERE "stockId" = ANY(${stockIds}::int[])
         ORDER BY "stockId", date DESC
       )
     `.then((rows) => {
@@ -851,7 +851,7 @@ export const stockRepository = {
     >`
       SELECT "stockId", MAX(high)::numeric AS "high52", MIN(low)::numeric AS "low52"
       FROM "StockPrice"
-      WHERE "stockId" IN (${Prisma.join(stockIds)}) AND date >= ${cutoff}
+      WHERE "stockId" = ANY(${stockIds}::int[]) AND date >= ${cutoff}
       GROUP BY "stockId"
     `.then((rows) => {
       const map = new Map<number, { high52: number | null; low52: number | null }>();
@@ -868,7 +868,7 @@ export const stockRepository = {
     >`
       SELECT DISTINCT ON ("stockId") "stockId", close::numeric
       FROM "StockPrice"
-      WHERE "stockId" IN (${Prisma.join(stockIds)}) AND date >= ${yearStart}
+      WHERE "stockId" = ANY(${stockIds}::int[]) AND date >= ${yearStart}
       ORDER BY "stockId", date ASC
     `.then((rows) => new Map(rows.map((r) => [r.stockId, Number(r.close)])));
   },
@@ -1336,7 +1336,7 @@ export const stockRepository = {
       SELECT "stockId", AVG(volume)::bigint AS avg_volume
       FROM "StockPrice"
       WHERE date >= NOW() - INTERVAL '20 days'
-        AND "stockId" IN (${Prisma.join(stockIds)})
+        AND "stockId" = ANY(${stockIds}::int[])
       GROUP BY "stockId"
     `.then((rows) => {
       const map = new Map<number, number>();
@@ -1512,7 +1512,7 @@ export const stockRepository = {
           WHERE sp2."stockId" = sf."stockId" AND sp2.date = sf.date
           LIMIT 1
         ) sp ON true
-        WHERE sf."stockId" IN (${Prisma.join(stockIds)})
+        WHERE sf."stockId" = ANY(${stockIds}::int[])
       ) t
       WHERE rn <= 45 AND close > 0 AND "marketCap" > 0`;
     const byStock = new Map<number, number[]>();

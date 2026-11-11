@@ -111,6 +111,7 @@ model StockIndicator {
   @@index([interval, date])
   @@index([date, stockId], map: "StockIndicator_oversold_screen_idx", where: raw("(((\"interval\")::text = '1d'::text) AND ((rsi14 <= (30)::numeric) OR ((\"stochK\" <= (20)::numeric) AND (\"stochD\" <= (20)::numeric))))"))
   @@index([smaCrossSignal, smaCrossDate(sort: Desc)], map: "StockIndicator_sma_cross_screen_idx", where: raw("(((\"interval\")::text = '1d'::text) AND (\"smaCrossSignal\" IS NOT NULL))"))
+  @@index([interval, smaCrossDate(sort: Desc)], map: "StockIndicator_sma_cross_latest_idx", where: raw("((\"smaCrossDate\") IS NOT NULL)"))
 }
 
 model StockFundamental {

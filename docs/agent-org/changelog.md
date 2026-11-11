@@ -1298,3 +1298,14 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
   QA: self-check + gate baru negative/positive test | impact_check_due: 2026-11-13
 - task-id: ops-2026-10-27-03 | type: ops host-script | deploy: n/a | verify: before==after backlog_health + unit-test SKIPPED/STALE | impact_check_due: 2026-11-13
 - task-id: ops-2026-10-27-01 | type: bugfix | commit 4999307 (in_train T-1110-M, deploy kereta malam) | verify: tsc EXIT-0 + cron sync-profiles ok=300 fail=0 | impact_check_due: 2026-11-13 (pasca-deploy cek CronLog fail tetap 0)
+
+## 2026-11-10 16:45→20:4x CTO sore (BUILD-ONLY ×2, 0 deploy — kereta T-1110-M 22:15 milik kondektur)
+- task-id: qa-2026-11-09-02 | type: bugfix/asset | PRD: n/a (QA fix) | pos: [KONVERSI]/TRUST
+  deploy hash: n/a BUILD-ONLY | commit 514e14f (public/favicon.ico byte-identik src/app; ICO parse 4 entries offsets [70,623,1581,3029] valid; md5 617ed096)
+  verify: md5 repo match; live PASCA-DEPLOY target = 617ed096 (kini masih b2fbb982 korup) | QA: kereta verify per-fitur | impact_check_due: 2026-11-13
+- task-id: ops-2026-10-29-04 | type: bugfix | PRD: n/a (ops) | pos: [BUGFIX][TRUST]
+  deploy hash: n/a BUILD-ONLY | commits c33ca90 (test RED exit-1) + dfe3862 (QuoteSchema shortName/longName nullable + export, 4+/3-)
+  verify: tsc EXIT-0 · quote-null selftest 3/3 GREEN · regresi pasar-live-doctrine 9/0 + market-one-door exit-0 | QA: Sentinel 22:00 pasca-deploy | impact_check_due: 2026-11-13
+  SEC-REVIEW: zod parse lenient null — bukan input user (upstream Yahoo/TradingView); no injection/IDOR surface; guard tipe tetap hidup (test N2 number ditolak)
+  Catatan: claude pipeline GATEGUARD fallback manual 2× autocompact-thrash (log /tmp/claude_ops102904.log); done_when live: 0× "live IHSG quote failed"/24h + IHSG /pasar == DB
+- Anomali diinvestigasi (TRUST, no action): app container start 19:57 WIB (image 10:09 = sesi UHU) TANPA entri bus — dilaporkan utk kesadaran kondektur 22:15; EOD 2026-11-10 ✓ masuk; home/stocks 200.
