@@ -2548,14 +2548,14 @@
       "date": "2026-11-07",
       "type": "idea",
       "priority": "P2",
-      "status": "spec_ready",
+      "status": "dispatched",
       "source": "Product Agent buffer-keeper — mandat CEO 7 Nov: AI-search referral utk Product Agent",
       "title": "P2 GROWTH/AEO: llms.txt v2 — seksi kenapa-naik/turun (korpus 133 URL di sitemap, hanya 1 di llms.txt) supaya ChatGPT/Perplexity mengutip teknikal.id saat user tanya 'kenapa saham X naik hari ini'",
       "problem": "AI-referral 30d HANYA 4 PV (chatgpt 3 -> /community, perplexity 1 -> /) meski robots AEO dibuka 3 Nov. llms.txt live 165 URL tanpa korpus kenapa-* (aset Q&A harian paling banyak dikutip mesin). korpus mesin-terbaca = prerequisite citation, belum ada.",
       "north_star": "GROWTH traffic (AI-search referral) — mandat CEO 7 Nov",
       "DONE-WHEN": "llms.txt v2 live: seksi kenapa-* >=30 URL terbaru + tanggal sesi + 1 angka ground-trift per item (SATU PINTU); URL total >=195; <=256KB; bucket ai-search growth kpis regex diperluas; review 2 minggu",
       "research_note": "Riset 7 Nov 22:3x WIB (DB read-only teknikalidnew-db-1 + live curl + repo main @ 6dfd562): (1) PageView 30d isBot=false: Bing 141 = referrer #1 (> Google-search 40), Yahoo/Bing-fed 53, AI-referral 4 (chatgpt 3, perplexity 1), total 3.732. (2) /llms.txt 200: 1.075 baris, 165 URL, 4 seksi (FAQ Question ANSWERED helpfulVotes desc / Artikel 50 terbaru / IDX40 / Halaman Penting), kenapa-* = 1 URL. (3) sitemap 957 URL: 133 kenapa-*, 87 berita/, 16 akademi/tanya, 12 analisa-saham. (4) robots.txt AEO 3 Nov sudah allow PerplexityBot/OAI-SearchBot/GPTBot/ClaudeBot/Applebot-Extended/Amazonbot. (5) generator = src/app/llms.txt/route.ts force-dynamic. (6) Article PUBLISHED 189 by type NEWS 76/EDU 46/DAILY 40/ANALYSIS 27.",
-      "insight": "RisetAnswer-engine butuh korpus terstruktur per-pertanyaan; korpus kenapa-* teknikal.id = 133 unit konten harian bertanggal yang TIDAK diekspos ke llms.txt. Fiksinya murah (extend 1 route) dan terukur (bucket ai-search sudah ada di growth kpis).",
+      "insight": "CEO dispatch 11 Nov → prd-2026-11-07-01 kereta T-1112-W (Kamis 12 Nov 09:30). Pilar GROWTH/AI-search.",
       "data": {
         "ai_referral_30d": 4,
         "bing_30d": 141,
@@ -2583,14 +2583,14 @@
       "date": "2026-11-07",
       "type": "idea",
       "priority": "P2",
-      "status": "spec_ready",
+      "status": "dispatched",
       "source": "Product Agent buffer-keeper — riset referrer 30d (temuan: ekosistem Bing = organik #1, tak terkelola)",
       "title": "P2 GROWTH: IndexNow ping saat publish + verifikasi Bing Webmaster — Bing+Yahoo 194 PV/30d (5x Google-search 40) tapi 0 instant-index: 0 kode IndexNow, 0 key file, 0 msvalidate",
       "problem": "Halaman kenapa-*/analisa harian kehilangan window relevansi jam-jam pertama di mesin pencari #1 situs ini (Bing). Tanpa IndexNow, URL baru menunggu crawl natural; tanpa msvalidate, tidak ada data search-console Bing utk decision.",
       "north_star": "GROWTH traffic organik non-Google (Bing ecosystem = 52% dari referral search 30d)",
       "DONE-WHEN": "key IndexNow live 200; ping fire-and-forget di publish path (artikel tetap 100% sukses saat endpoint down — bukti staging); log ping 1 baris terstruktur; patch meta msvalidate ter-gate env (klaim akun = owner); tsc+build EXIT-0",
       "research_note": "Riset 7 Nov 22:3x WIB (repo main @ 6dfd562 + live): (1) grep -ri indexnow src/ scripts/ = 0 file; public/ tanpa *.key; layout.tsx + src/lib tanpa msvalidate/google-site-verification. (2) PageView 30d isBot=false: Bing 141 + Yahoo 53 = 194 vs Google-search 40 — mesin Bing menyuplai ~83% referral search non-Google-login. (3) Top path Bing: /stocks 50, / 9, /stocks/RUNS.JK 6, indeks 6; top Yahoo: /stocks 11, /indeks 9. (4) Volume publish = objek ping: Article PUBLISHED 189 (NEWS 76, EDUCATIONAL 46, DAILY_SNAPSHOT 40, STOCK_ANALYSIS 27) + kenapa-* 133 di sitemap. (5) IndexNow = protokol gratis 1 key utk Bing/Yandex/Seznam/Naver/Yeti (api.indexnow.org).",
-      "insight": "Bing sudah #1 tanpa satu baris optimasi — IndexNow adalah cheapest win search: 1 key + hook post-publish. Risiko satu-satunya = publish path hot-path, diatasi fire-and-forget + retry + catch.",
+      "insight": "Naik kereta T-1110-M 10 Nov (keyfile 200 + kode di bundle server — bukti bus). Catatan: INDEXNOW_KEY belum di .env (owner-only env) → ping diam by design; aktivasi nunggu owner.",
       "data": {
         "bing_30d": 141,
         "yahoo_30d": 53,
@@ -2639,7 +2639,8 @@
       "effort": 2,
       "qa_plan": "QA eksperimen (bukan QA deploy): (1) verifikasi publish window via SQL publishedAt; (2) verifikasi utm_campaign di state/posted.json + shortlink; (3) replay views per-hari full weekend via SQL untuk 14-15 dan 21-22 Nov + verdict 29 Nov; (4) cek docker ps CreatedAt untuk guard no-deploy weekend evening. Exit criteria: AC4 pass 3/4 hari → lanjut; gagal → verdict kill/iterasi terdokumentasi di entry.",
       "sec_review": "SEC-REVIEW: (1) TIDAK ada endpoint/input/auth baru — reuse pipeline konten analis-sore + autopost existing (API-reuse rule; no new compute path); (2) insert Article = jalur existing dengan replay_sql_gate pra-publish wajib (H5) — angka pasar harus replay PASS; (3) cron/agent weekend pakai session sosmed existing — tanpa token/credential baru; utm_campaign string statis tanpa PII; (4) volume alami 2 konten/weekend — jauh di bawah threshold spam/rate-limit; (5) IDOR/injection/privilege N/A (tanpa input user, tanpa jalur bayar). Attack surface tambahan: NOL.",
-      "prd_note": "PRD Product Agent 9 Nov 10:3x WIB — riset SQL read-only DB + state/posted.json + ig-post-log.txt + agent-bus/decisions. Koreksi data entry asli (bug TZ + atribusi artikel) dicatat di data_evidence; hipotesis direvisi dari jumlah-artikel ke distribusi-malam. CEO verdict APPROVE 07:05 hari ini (P2, lane Business/Mandor, freeze-safe — konten/penjadwalan bukan fitur produk). Jalur eksekusi: Content ops (Mandor); engineering hanya bila butuh cron weekend = ops ringan."
+      "prd_note": "PRD Product Agent 9 Nov 10:3x WIB — riset SQL read-only DB + state/posted.json + ig-post-log.txt + agent-bus/decisions. Koreksi data entry asli (bug TZ + atribusi artikel) dicatat di data_evidence; hipotesis direvisi dari jumlah-artikel ke distribusi-malam. CEO verdict APPROVE 07:05 hari ini (P2, lane Business/Mandor, freeze-safe — konten/penjadwalan bukan fitur produk). Jalur eksekusi: Content ops (Mandor); engineering hanya bila butuh cron weekend = ops ringan.",
+      "insight": "CEO 11 Nov: konten lane Business (bukan kereta engineering) — eksekusi pertama Sabtu 14 Nov 18:00-20:00 slot weekend."
     },
     {
       "id": "mandate-2026-11-07-01",
@@ -2718,7 +2719,8 @@
       "title": "MANDAT Product Agent (Kamis 10:15): REGISTER FUNNEL VISIBILITY — 6/7 register minggu lalu datang TANPA pageview terlacak (langsung OAuth); guest_quota banner 176 click/7d tak terhubung ke register",
       "problem": "Attribution register buta: tak bisa jawab 'dari mana register datang' — CTA/funnel/tracking = jalur yang BOLEH saat freeze 6 Nov. Riset dulu (bukan build): definisikan event register_step di EngagementEvent + attribution source (utm/entry-path), hitung baseline konversi click->register.",
       "first_step": "Product Agent Kamis: riset + PRD only jika lolos lensa freeze (tracking=boleh). Riset harus keluarkan: angka baseline funnel register OAuth-direct + proposal skema event + target konversi.",
-      "DONE-WHEN": "Riset tertulis di entry ini: (1) baseline register 14d per-source (banner/direct/OAuth-path) terukur; (2) skema event register_step didefinisikan; (3) verdict PRD lanjut / stop."
+      "DONE-WHEN": "Riset tertulis di entry ini: (1) baseline register 14d per-source (banner/direct/OAuth-path) terukur; (2) skema event register_step didefinisikan; (3) verdict PRD lanjut / stop.",
+      "research_brief": "RESEARCHER 10 Nov 2026 (riset web eksternal): VERDICT: BUILD (riset-attribusi dulu sesuai DONE-WHEN, bukan langsung build event). Problem '6/7 register tanpa pageview terlacak' = pola attribution-loss PASCA-OAUTH yang terdokumentasi luas: redirect OAuth membuang referrer & query param sehingga sesi jatuh ke direct/none; fix kanonik = tulis cookie first-touch (landing path + utm + referrer) di page-load PERTAMA sebelum auth redirect, dibaca server-side saat account creation dan dipersist ke user record — cookie survives OAuth round-trips (~30 baris middleware; dev.to/johnbuilds how-to-persist-landing-page-attribution-across-oauth-redirects; pola sama indiehackers/coderlegion Mei 2026). GA4-level: kebanyakan tool analytic menandai sesi OAuth sebagai direct — direct traffic itu 'statement about missing evidence', bukan channel (talivia.com direct-traffic-attribution-saas). BEST PRACTICE: (1) capture first-touch di middleware SEBELUM redirect apa pun (landing path, referrer, utm_*) -> cookie first_touch maxAge panjang (30-90d), BUKAN cuma sesi; (2) tulis field attribution ke User saat signup server-side (bukan client-side post-hoc); (3) event funnel Granular: register_banner_click -> register_start -> register_success dgn source di tiap event — denominator conversion dihitung per people-exposed-to-CTA, bukan total visitors (Oribi 1.6M visitors/56 SaaS: signup rate rata2 4.7% visitors, 66% convert di visit pertama; visitor->trial organik ~3.1-8.5%: oribi.io/benchmark-reports/saas20, firstpagesage.com); (4) OAuth harus tetap kirim first-touch: cookie survives redirect — JANGAN andalkan state/URL param yang hilang; (5) benchmark target: pakai band per-denominator (form completion ~36-50%; visitor->signup freemium median ~5%, p25 2.5% p75 9% convradar/openview) — jangan bandingkan click->register dgn visitor->signup. ANTI-PATTERN: (a) atribusi dari last-pageview saja = buta utk OAuth-direct (persis bug sekarang); (b) survey 'dari mana kamu tahu kami' sebagai pengganti instrumentation; (c) mengejar per-user identity utk guest (privacy/consent overhead) — anon cookie cukup; (d) backfill dugaan utk 6 register lama yang sudah tanpa jejak — mulai dari sekarang, data lama biarkan none. BUKTI: KUAT utk mekanisme attribution-loss + fix cookie (pola standar industri, multi-sumber independen); angka target konversi spesifik teknikal.id tetap dari baseline internal 14d sesuai DONE-WHEN — benchmark eksternal hanya kalibrasi kasar."
     },
     {
       "id": "idea-2026-11-10-2",
@@ -2731,7 +2733,38 @@
       "title": "PATCH INSTRUMEN KPI northstar: returning beralih basis IP->anonId (admin exclude via User.initialAnonId) + ai_search_views baca utmSource — host-script teknikalid_northstar_kpi.py ±15 baris, 0 deploy",
       "problem": "Instrumen IP rusak: returning resmi 4,5% vs riil anonId 7,1% (IP dinamis Telkomsel undercount; CGNAT over-exclude); ai_search resmi 1 vs riil 26 views via utmSource=chatgpt.com (undercount 8x). Target 8% per 25 Nov dinilai instrumen salah.",
       "first_step": "Slot SRE Rabu 12 Nov 09:30 bundling (host-only). Baseline: IP 4,5% resmi vs anonId 7,1% riil; ai-search 1 resmi vs 26 riil (15 anon).",
-      "DONE-WHEN": "kpi.json versi baru: field returning_anonid_pct + ai_search_views_utm 7d; kartu North Star dashboard :8790 pakai angka baru; baseline lama dicatat di entry ini."
+      "DONE-WHEN": "kpi.json versi baru: field returning_anonid_pct + ai_search_views_utm 7d; kartu North Star dashboard :8790 pakai angka baru; baseline lama dicatat di entry ini.",
+      "research_brief": "RESEARCHER 10 Nov 2026 (riset web eksternal): VERDICT: BUILD (patch instrumen ±15 baris, host-only — arah IP->anonId TEPAT sesuai best practice). Bukti bahwa IP bukan proxy visitor yang valid itu kuat dan multi-dekade: (1) CGNAT — carrier mobile (Telkomsel/XL dkk) menaruh ratusan-ribuan subscriber di belakang satu IP publik: 'unique-visitor counts based on address are compressed on mobile AND inflated on rotating networks, both errors invisible in dashboard' (guarda.net CGNAT explained; blog.cloudflare.com/multi-user-ip-address-detection — Cloudflare pakai distinct user-agents+source ports utk deteksi CGNAT justru KARENA IP tak valid; APNIC blog shared-address). (2) DHCP/rotasi mobile WiFi<->5G = satu orang terhitung 2 visitor (onlinebrandambassadors.com). (3) Akademik: unique-IP DAN unique-cookie sama-sama bias utk unique visitors (ResearchGate 221023597, overestimation study) — anonId first-party bukan lebih buruk, malah lebih stabil dari IP; standar industri (GA4/Plausible) = cookie/client-ID, bukan IP. (4) Pembacaan metric: GA4 returning basis device/browser 'strong behavioral signal, not exact head count' — ganti basis = ubah makna angka, wajib re-baseline (siegemedia.com/research/new-vs-returning-visitors, 18.4B sessions/410 situs). BEST PRACTICE: (1) lanjutkan re-baseline sesuai entry: catat IP-baseline lama BERSAMA angka baru (di kpi.json note / entry) — jangan overwrite diam-diam; (2) exclude admin via User.initialAnonId = tepat (self-traffic guard, konsisten ops-11-10-03); (3) ai_search_views via utmSource = benar: ChatGPT strips referrer utk link eksternal dan menandai utm_source=chatgpt.com, Perplexity kirim referrer/utm_source=perplexity.ai — GA4 regex per-domain (chatgpt.com|perplexity.ai|gemini|copilot...) = pola standar (semrush.com/blog/ai-referral-traffic; strynal.com; generativevisibility.com); (4) pertahankan IP-basis sbg kolom sekunder 1-2 pekan utk smooth transition, lalu retire; (5) dokumentasikan definisi metric baru di north-star.md (apa itu anonId, berapa lama window) — risk utama metric-switch adalah kehilangan comparability, bukan implementasi. ANTI-PATTERN: (a) bandingkan returning IP-4.5% dgn anonId-7.1% sbg 'naik/turun' — beda instrumen, bukan pergerakan; (b) matikan kolom lama sebelum 1 pekan paralel; (c) fingerprinting tambahan (canvas/UA hash) demi presisi — overhead consent + rapuh (UA reduction). BUKTI: KUAT utk premis IP rusak sbg instrumen visitor; angka absolut (4.5/7.1%) tetap klaim internal org — eksternal hanya mendukung arah fix."
+    },
+    {
+      "id": "adm-2026-11-10-01",
+      "title": "Audit+fix /admin/auth-health: KPI 'Active Sessions' fake-0 → 'Pengguna Aktif 24 jam' (PageView) + label ID awam",
+      "status": "done_build_only",
+      "priority": "P1",
+      "source": "fallback audit slot admin-ux-builder 10 Nov (antrean adm- kosong: adm-01 dropped_freeze_6nov, adm-02 deployed) — kelas temuan #6 checklist skill teknikal-ui-workflow",
+      "problem": "KPI 'Active Sessions' membaca prisma.session.count() padahal strategi auth = JWT (auth.ts:43) yang TIDAK pernah menulis tabel Session → SQL replay 10 Nov: 0 baris → KPI menampilkan 0 bohong selamanya (fake metric permanen). Sumber nyata tersedia: PageView DISTINCT userId 24h = 5, anonId = 27. Label tab campur EN (Active Sessions/Total Accounts/Recent Bans/API Cache Usage/Key Prefix/Calls/Last Fetched).",
+      "done_when": [
+        "KPI pengguna aktif dibaca dari PageView (DISTINCT userId 24h, isBot=false) + subtitle anon — bukan tabel Session yang tak pernah tertulis",
+        "Angka KPI == SQL manual replay (spot-check)",
+        "Semua label auth-tab bahasa awam ID (KPI, judul card, header kolom, empty state)",
+        "Verify CDP staging 1440+390: data asli render bukan 0 kosong",
+        "Build EXIT-0, branch night + commit"
+      ],
+      "impact": "Owner cek admin tiap hari; KPI 0 permanen = kepercayaan data jatuh (doktrin 'data uang tidak update' — angka bohong lebih buruk dari angka kosong)",
+      "constraints": "API REUSE (extend /api/admin/auth-health existing, bukan endpoint baru); freeze-safe: akurasi data + perbaikan label, bukan fitur baru; BUILD-ONLY (deploy-count 10 Nov penuh — kereta T-1110-M yang angkat)",
+      "created": "2026-11-10",
+      "train": "T-1110-M",
+      "verify": "tsc EXIT-0; build EXIT-0 BUILD_ID wm-xc3vdXeRyJaSU2rBho; staging node standalone :3210 CDP 1440+390: KPI 'Pengguna Aktif (24 jam)'=5 '+28 tanpa login' == SQL replay 5/28, Total Akun 40, Pendaftar 10, Diblokir 0; API /api/admin/auth-health JSON activeUsers24h=5; screenshot docs/agent-org/verify/adm-11-10-01-{desktop-1440,mobile-390}.png; branch night/admin-2026-11-10-1 commit 6792183+ce1d1e3 pushed",
+      "scheduled_slot": "merge ke main + kereta T-1110-M/T-1111-M build atomik (deploy-count 10 Nov penuh; BUILD-ONLY by design)"
+    },
+    {
+      "id": "idea-2026-11-11-1",
+      "date": "2026-11-11",
+      "status": "idea",
+      "priority": "P2",
+      "source": "CEO mandate 11 Nov (Product Agent Kamis 10:15)",
+      "pillar": "STICKY",
+      "title": "MANDAT PRODUCT AGENT: T5 HABIT LOOP + RATCHET RETURNING — funnel T1 367→T2 150→T3 7→T4 4→T5 0 (T5=0 dua minggu beruntun) padahal returning mingguan 02Nov 14,7% final (2x target 8%, mgg-3 >8%): (a) diagnose kenapa user berhenti di T3/T4 (kandidat: TelegramWatch join anonPrefix terlalu ketat — audit bo 11 Nov); (b) usulkan definisi ratchet target returning berikutnya per docs/agent-org/north-star.md. Research dulu (gate FDE); PRD hanya jika verdict BUILD."
     }
   ],
   "items": []
