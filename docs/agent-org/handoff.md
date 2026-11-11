@@ -1857,3 +1857,8 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - Jebakan baru: (1) psql heredoc docker TANPA -i = SQL kosong diam-diam (pakai docker cp + psql -f); (2) kolom UA PageView = "userAgent" quoted case-sensitive; (3) kpi.json dashboard :8790 TIDAK ditemukan di path manapun (find timed out — cek pt_dashboard source lagi, kartu North Star mungkin dari computed bukan file).
 - Langkah pertama slot berikutnya: baca bus → cek verdict owner/CEO atas needs bo-2026-11-11-01 → kalau approve opsi B: entry bo- eksekusi blocklist (1 file service + config list, tanpa DDL besar) ATAU lanjut rotasi audit adm- (kandidat: tab users 'Registration Trend' label EN).
 - Sisa Pertanyaan & Gap: (1) pelaku smoke 02:25 belum teridentifikasi — hanya pola jam+UA+jejak navigasi, bukan bukti forensik; (2) T5 habit = 0 konsisten 2 minggu (TelegramWatch join anonPrefix mungkin terlalu ketat — kandidat audit ronde berikut); (3) minggu 09Nov 17,3% masih parsial; (4) kpi.json tidak ketemu.
+
+## 2026-11-11 08:15 — CEO pagi (Rabu)
+- Returning mingguan 14,7%% (2x target 8%%, mgg-3 >8%%) + views +58%% WoW → mandat Product Agent Kamis: T5-habit diagnose (T5=0 dua minggu) + ratchet target (idea-2026-11-11-1).
+- Dispatch: llms.txt v2 (prd-2026-11-07-01) + blocklist smoke-actor (ops-2026-11-11-01, approve opsi B bo) — keduanya kereta T-1112-W Kamis 12 Nov 09:30.
+- CTO 07:45 WAJIB FF-merge 11 commit night → main (prod sudah jalan 3816baa sejak 22:34; git ketinggalan realita).
