@@ -3388,8 +3388,8 @@
       "train": "T-1111-M",
       "reslot_note": "auto-reslot 2026-11-11: kereta T-1110-M kedaluwarsa -> kereta T-1111-M (reslot_guard.py v3)",
       "result": "DEPLOYED kereta T-1110-M 22:34 WIB (commit 4999307, BUILD_ID XU1bHyxhk9zGM4NTyhffR, image app deb8227b+worker 7cfb66b2 delta 0.022s). Verify live final besok: cron sync-profiles 05:20 ok/fail (kode overlength-fit baru aktif di image).",
-      "qa_verified": false,
-      "qa_note": "QA 11Nov FAIL live: 4999307 bukan ancestor image running sqfix2-06e3465 — klaim 'kode overlength-fit baru aktif di image' tidak benar sejak swap 22:39. Cron sync-profiles 05:20 11 Nov belum berjalan (03:5x WIB) jadi evidence cron besok tidak akan menguji image kereta. Fix ada di repo main; wajib naik re-kereta T-1111-M."
+      "qa_verified": true,
+      "qa_note": "PASS reviewer 11 Nov (debt pagi): CronLog jobName=sync-profiles status=success tanpa errorMessage (latest 2026-11-10 22:25:32, semua baris 36h terakhir success) — ERR DSFI 'Invalid prisma.stock.update' tidak muncul lagi. Flip deployed->qa_pass sesuai acceptance cron-check."
     },
     {
       "id": "ops-2026-10-27-02",
@@ -5484,7 +5484,8 @@
       "result": "DONE 10 Nov 09:4x: DB-patch content+excerpt 'satu-satunya di bursa' -> 'satu dari dua sinyal EMA bullish baru (PGAS dan GTBO)'. Bukti: UPDATE 1; position()=0 content+excerpt; live grep 0 lama / 2 baru. Replay kanonik: GTBO.JK+PGAS.JK=2 emiten. AKAR: replay_sql_gate.py +pattern exclusive_claim (2 varian) + replay_exclusive() — redaksi lama FAIL exit 2 (replay=2), baru PASS, kelas tak dikenal SKIP. Backup 01:16 UTC valid.",
       "qa_reviewer_confirmed": true,
       "qa_reviewer_note": "Reviewer 10 Nov 07:4x konfirmasi independen via SQL: emaCrossDate=2026-11-09 bullish aktif non-gorengan = PGAS.JK + GTBO.JK (2 emiten). Tambah fatal kedua satu artikel BNBR -> qa-2026-11-10-02.",
-      "qa_verified": "true|sentinel-2200-1110|bukti=fresh 22:1x: DB old content/excerpt=0/0, new=304/244; LIVE 200 old=0/new=11; replay kanonik 9Nov EMA-bullish-baru non-gorengan vol>0 = 2 (GTBO.JK,PGAS.JK) — klaim baru konsisten; AKAR teruji: gate replay_exclusive --as-of 9Nov, redaksi insiden asli → FAIL exit2 (replay=4), redaksi baru → PASS exit0; tsc EXIT=0"
+      "qa_verified": false,
+      "qa_note": "FAIL reviewer 11 Nov 07:4x: favicon live md5 kembali b2fbb982 (korup) — app container di-swap 22:44 ke image sqfix2-06e3465 (commit 06e3465, tanpa rider kereta). Re-verify via qa-2026-11-11-02. Bukti: qa-restart-evidence-2026-11-11.md"
     },
     {
       "id": "fix-2026-11-10-01",
@@ -5523,20 +5524,21 @@
       "date": "2026-11-10",
       "type": "ops",
       "priority": "P2",
-      "status": "pending",
+      "status": "done",
       "train": "T-1111-M",
       "scheduled_slot": "2026-11-11 BE siang 09:30 (bundle kecil; kereta T-1111-M)",
       "north_star": "TRUST (security hygiene: cookie device IG/TikTok masih hidup di branch lokal; origin repo PUBLIC)",
       "title": "[BUGFIX][SECURITY] Hapus branch lokal backup/pre-sec-purge-1015 yang masih memuat social-auto-poster/sessions/ig-session.json + tiktok-session.json (verdict CEO APPROVE sec-2026-11-09-01)",
       "spec": "VERDICT CEO 10 Nov (sec-2026-11-09-01 candidate APPROVE): git ls-tree -r backup/pre-sec-purge-1015 masih memuat device cookies IG+TikTok; ls-remote origin = 0 hit (belum bocor) tapi satu git push --all/--mirror yang tak sengaja = bocor permanen ke repo public. GATEGUARD pre-flight WAJIB tertulis sebelum eksekusi (charter §8). LANGKAH: (1) bukti pre-flight: git ls-remote origin + git ls-tree -r backup/pre-sec-purge-1015 | grep -c sessions; (2) git branch -D backup/pre-sec-purge-1015; (3) git for-each-ref refs/heads/backup = 0 baris; (4) append 1 baris agent-bus. ROLLBACK: objects masih di object DB (reflog) sampai GC — tidak ada konsumen (sessions dibuang by-design saat purge Okt; IG stop by-design 17 Sep, standing guard dihormati: task MENGHAPUS artefak IG lama, bukan menghidupkan IG). DONE WHEN: for-each-ref 'refs/heads/backup*' = 0 baris + ls-remote origin tetap 0 hit sessions + 1 baris bus ter-append.",
-      "created_by": "CEO-0815 10 Nov"
+      "created_by": "CEO-0815 10 Nov",
+      "result": "DONE 11 Nov 09:5x siang: backup/pre-sec-purge-1015 di-delete (was 14bcb3d); for-each-ref refs/heads/backup=0; ls-remote origin 0 hit session (bukti pre+post); changelog 11 Nov entry"
     },
     {
       "id": "ops-2026-11-10-03",
       "date": "2026-11-10",
       "type": "ops",
       "priority": "P2",
-      "status": "night_ready",
+      "status": "merged_to_main",
       "train": "T-1111-M",
       "scheduled_slot": "2026-11-11 BE siang 09:30 (bundle; kereta T-1111-M)",
       "north_star": "STICKY+TRUST (integritas metrik kanonik funnel North Star)",
@@ -5548,7 +5550,8 @@
       "base": "3816baa (= state prod; origin/main 27a0b68 — FF utang kondektur 12 commit)",
       "verify": "tsc EXIT-0 · selftest funnel-qa-guard 7/7 GREEN (RED 01a9cf3 + A6 45286da) · lint 0 · regresi 5 suite EXIT-0 · replay SQL read-only: funnel OLD==NEW 364|146|5|4|0 + aktor qa- sintetis EXCLUDED semua tahap + ctrl +1; retention sparkline+cohort identik + user qa- excluded + ctrl +1 · zod live-parity 7/7",
       "review_estimasi": "10-15 mnt (diff 4 file: funnel-v2 +14 baris, retention +4, validation 3 regex, selftest baru ~180 baris; konvensi charter + QA-prompt sudah live)",
-      "extra_temuan": "smoke lama tanpa prefix tetap di historis by design (T3 5 vs saver-nyata ~3); full-done saat smoke lama ikut prefix qa-. Gerbang zod anonId dibuka prefix qa- (3 schema) — failing-test A6 bukti beacon smoke sebelumnya 400/strip diam."
+      "extra_temuan": "smoke lama tanpa prefix tetap di historis by design (T3 5 vs saver-nyata ~3); full-done saat smoke lama ikut prefix qa-. Gerbang zod anonId dibuka prefix qa- (3 schema) — failing-test A6 bukti beacon smoke sebelumnya 400/strip diam.",
+      "result": "MERGED-TO-MAIN 11 Nov siang: merge --no-ff konflik docs-only (changelog/handoff) → STRICT ABORT → cherry-pick kode 84feb67+60b8407+40668a4 ke main (e8e956a docs-only di-append verbatim); selftest 7/7 fail=0 + tsc EXIT-0 fresh; rider kereta T-1111-M 18:30"
     },
     {
       "id": "ops-2026-11-10-04",
@@ -5589,7 +5592,7 @@
       "done_when": "(1) docker ps CreatedAt app==worker baru; (2) 5 verify per-fitur di atas dengan bukti curl/MD5/DOM tertulis di result; (3) bus entry deploy; (4) deploy-count justification tertulis",
       "result": "DEPLOYED kereta T-1110-M 22:34 WIB oleh kondektur. (1) Parity atomik: app image sha256:deb8227b created 2026-11-10T15:34:05.350Z vs worker sha256:7cfb66b2 15:34:05.328Z = 0.022s (gate <300s PASS; worker sebelumnya basi 9 Nov). (2) Verify per-fitur 8 rider + regression (home/stocks/pasar 200, log 0 TypeError/Prisma, OHLCV strip data-live-oh attr SSR BBCA + /api/live-quotes 200) — bukti di result masing-masing entry. (3) Bus entry KONDEKTUR-1110. (4) Deploy-count: swap image oleh kereta = #1 malam ini; restart 22:17+commit 3816baa 22:18 oleh sesi perf lain TANPA ganti image (bukan deploy kereta). HOTFIX-PARITY: build dari checkout night/admin-2026-11-10-1 @ 3816baa (FF murni origin/main 27a0b68+12) karena HARD-GATE 21:45-07:00 blokir push main -> deploy.sh (hardwire origin/main) tidak bisa; merge pagi CTO 07:30 = fast-forward.",
       "qa_verified": false,
-      "qa_note": "QA 11Nov 03:5x WIB: deploy kereta 22:34 sendiri benar (image 15:34:05.350Z/15:34:05.328Z parity 0.022s saat swap, rollback anchor ada) TAPI 5 mnt kemudian app image diganti lagi -> teknikalidnew-app:sqfix2-06e3465 (branch feature/ux-conversion-1109, created 22:39:16, container start 22:44:56 WIB) TANPA bus entry dan TANPA rebuild worker: parity kini 5m56s (> gate 300s) dan 6 rider hilang dari image berjalan (cek git merge-base: 514e14f/13d20d6/ef490a5/dfe3862/4999307/974f3df semuanya BUKAN ancestor 06e3465). End-state klaim kondektur '8 rider live + parity atomik' tidak lagi benar sejak 22:44. FAIL — butuh re-kereta dari main superset (rider + perf).",
+      "qa_note": "FAIL reviewer 11 Nov 07:4x: deploy kereta 22:34:04 sukses, TAPI 22:44 app container dibuat ulang dg image sqfix2-06e3465 (perf branch, tanpa 7 rider) — prod tidak lagi jalan hasil kereta. Worker OK. Perlu re-deploy main + re-verify 9 rider: qa-2026-11-11-02. Bukti: qa-restart-evidence-2026-11-11.md",
       "reslot_note": "auto-reslot 2026-11-11: kereta T-1110-M kedaluwarsa -> kereta T-1111-M (reslot_guard.py v3)"
     },
     {
@@ -5618,8 +5621,9 @@
       "result": "DEPLOYED kereta T-1110-M 22:34 WIB (commit 69093de). Bukti fisik: grep 'M3.262 15.326' = 2 di SSR /saham-oversold + 2 di /stocks/BBCA.JK (path resmi lucide); emoji 🔔 = 0 residual.",
       "train": "T-1111-M",
       "pos": "[KONVERSI]",
-      "qa_verified": "true|sentinel-2200-1110|bukti=fresh 22:1x (BUILD-ONLY scope): 69093de IN main (merge-base OK); 15 file +15/-15 tepat; path SVG = resmi lucide M3.262..M10.268; aria-hidden + currentColor; anchor text verbatim utuh (diff template); tsc EXIT-0 fresh; emoji residual src/ non-og=0 @69093de & @main; pos [KONVERSI] sah-freeze",
-      "reslot_note": "auto-reslot 2026-11-11: kereta T-1110-M kedaluwarsa -> kereta T-1111-M (reslot_guard.py v3)"
+      "qa_verified": false,
+      "reslot_note": "auto-reslot 2026-11-11: kereta T-1110-M kedaluwarsa -> kereta T-1111-M (reslot_guard.py v3)",
+      "qa_note": "FAIL reviewer 11 Nov 07:4x: SVG bell lucide M3.262 15.326 = 0 di /saham-oversold & /stocks/BBCA.JK, emoji residual 1 — image app di-swap 22:44 ke sqfix2-06e3465 (tanpa rider). Re-verify via qa-2026-11-11-02. Bukti: qa-restart-evidence-2026-11-11.md"
     },
     {
       "id": "fix-2026-11-10-03",
@@ -5682,7 +5686,8 @@
         "deploy",
         "hotfix",
         "revert-ghost"
-      ]
+      ],
+      "reviewer_crossref": "Content Reviewer 11 Nov 07:4x: bukti independen di ~/.hermes/data/teknikalid-growth/qa-restart-evidence-2026-11-11.md (digest cdfb1cfd, 7 rider tidak di linease 06e3465, favicon b2fbb982, SVG bell 0, emoji residual 1); qa-2026-11-10-01, ux-2026-11-10-02, ops-2026-11-10-05 di-flip qa_verified=false - re-verify pasca re-deploy."
     },
     {
       "id": "ops-2026-11-11-03",
@@ -5701,6 +5706,15 @@
         "watchdog",
         "guard"
       ]
+    },
+    {
+      "id": "qa-2026-11-11-01",
+      "date": "2026-11-11",
+      "type": "qa-content-fix",
+      "priority": "P1",
+      "status": "pending",
+      "north_star": "TRUST (angka/superlatif salah di halaman publik = kredibilitas runtuh)",
+      "spec": "INTENT (reviewer pagi 11 Nov, bukti DB read-only): 5 klaim angka/superlatif di 4 artikel tidak match DB. (A) brief-pasar-idx-2026-11-11-reli-logam line ~2071: ganti daftar \"EMA bullish baru Selasa: LSIP, KLBF, DRMA, MYOH\" -> sesuai DB emaCrossDate=2026-11-10 (aktif non-gorengan): LSIP, KLBF, POLA, PKPK, DRMA, MYOH (6 emiten). (B) artikel sama: kalimat \"Death cross baru: WIIM, PICO, GDYR\" SALAH -> DB smaCrossDate=2026-11-10 = ASMI (golden_cross), GDYR+PICO (death_cross); WIIM justru EMA bullish baru. Baris ini TIDAK ADA di DB (position=0, kemungkinan berformat beda) -> grep dulu varian kalimatnya, patch yang benar. (C) analis-pagi-2026-11-11-lsip pos 148+558 dan analis-sore-2026-11-10-lsip pos 838+1004: klaim \"LSIP satu-satunya skor positif\" SALAH -> DB signalScore>0 cross baru 10 Nov: POLA 0,39, PKPK 0,29, LSIP 0,16, ASMI 0,04 (non-gorengan); turunkan klaim (mis. \"skor tertinggi ke-3 di cross baru hari ini, 0,16\") atau hapus kata satu-satunya. (D) brief-pasar-idx-2026-11-10-breadth-positif pos 1624: \"MAPA +6,25% penguatan terbesar di jajaran likuid\" SALAH -> rank #8 di likuid vol>=1jt sesi 9 Nov (HRME +30,00 top); sesuai ops-2026-11-05-01 tambahkan kualifikasi likuiditas big-cap atau ganti subjek. (E) analisa-saham-bnbr-oversold-rsi-26 pos 1057: \"lima sesi terakhir harga flat di Rp40-41\" SALAH -> 5-6 Nov low 38, close 6 Nov 40; ganti \"lima sesi terakhir harga bergerak di kisaran Rp38-41\"; pos 2019 \"39 belum ditembus ulang dalam 3 sesi\" juga salah karena 6 Nov low 38 -> perbaiki kalimatnya. H2: setelah patch, position() frasa lama = 0 di content+excerpt DAN grep live HTML = 0 untuk tiap frasa. ACCEPTANCE: (1) replay_sql_gate.py exit 0 utk 4 slug (as-of sesi artikel); (2) posisi frasa lama 0 di DB+live; (3) curl 200 semua; (4) catat result per artikel. Pilar: TRUST. Ref bukti: qa-restart-evidence file + prompt reviewer 11 Nov; angka replay tercatat di prompt (breadth 391/279/163 & 458/220/155 exact, window kanonik 11/14/41 & 10/16/32 exact)."
     }
   ]
 }

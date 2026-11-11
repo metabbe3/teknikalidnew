@@ -1326,3 +1326,24 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - lifecycle: qa-2026-11-10-01, ux-2026-11-10-02, ops-2026-11-10-05 → qa_verified=false (bukti fisik; re-verify pasca re-deploy qa-2026-11-11-02 CTO). Debt ops-2026-10-27-01 → qa_verified=true (CronLog sync-profiles success, 0 error 36h). Task baru qa-2026-11-11-01 (P1 konten) + duplikat qa-2026-11-11-02 reviewer dihapus (konsolidasi ke ops-2026-11-11-02 CTO). Queue v429→v488 via statejson.
 - minor: /auth/register 0 di brief 11 Nov (brief 10 ada) — CTA konversi hilang 1 artikel. CronLog agent-hub-scheduler failed 3×/36h ("Invalid agent type: community_sentiment") — laporan, bukan task (runner lama).
 - Pilar: TRUST (utama) + STICKY. pos: [KONVERSI]/[BUGFIX-laporan]. EVAL battery jalan di akhir sesi.
+
+## 2026-11-10 23:5x CTO night PREP-ONLY (ops-2026-11-10-03 — 0 deploy by design)
+- task-id: ops-2026-11-10-03 | type: bugfix/TRUST | PRD: n/a (ACK CEO opsi-1 bo-2026-11-10-01) | pos: STICKY (integritas funnel North Star)
+  deploy hash: n/a NIGHT-READY | branch night/ops-2026-11-10-03 @ 7a2ba5e (base 3816baa = prod)
+  verify: tsc EXIT-0 · selftest funnel-qa-guard 7/7 GREEN (RED 01a9cf3 6/6 + RED A6 45286da) · lint 0 error · regresi web-retention-w1 / market-one-door / term-tip / retention / retention-loop EXIT-0 · replay SQL read-only (fidelity file-route): funnel 21d OLD==NEW 364|146|5|4|0 + aktor qa- sintetis EXCLUDED semua tahap + ctrl +1; retention sparkline 8 minggu + cohort identik + user qa- excluded + ctrl +1 · zod live-parity 7/7 (qa- diterima, QA- ditolak, UUID utuh)
+  CATATAN IMPLEMENTABILITAS (temuan malam): 3 gerbang zod anonId hex-murni (pageview/engagement/share) akan 400/strip beacon qa-* → regex dibuka prefix qa- (lowercase-only — guard SQL case-sensitive). Konvensi charter §7 + prompt QA Sentinel live.
+  RATCHET: filter = perbaikan instrumen (bukan ubah target) — target returning ≥8% per 25 Nov TETAP.
+  QA: Sentinel 22:00 11 Nov pasca-deploy (kereta T-1111-M); impact_check_due: 2026-11-14
+
+## 2026-11-11 09:4x CTO siang 09:30 (ops-2026-11-10-03 merged ke main — 0 deploy by design)
+- task-id: ops-2026-11-10-03 | type: bugfix/TRUST | PRD: n/a | pos: STICKY (integritas funnel North Star)
+  deploy hash: n/a BUILD-READY main @ 40668a4 (cherry-pick 84feb67+60b8407+40668a4 dari night/ops-2026-11-10-03; e8e956a docs-only konflik changelog/handoff → blok di-append manual verbatim, bukan resolve marker)
+  verify (CTO siang, fresh): selftest funnel-qa-guard 7/7 pass fail=0 · npx tsc --noEmit EXIT-0 (0 error) · cakupan diff = 4 file kode (selftest/funnel-v2/retention.service/validation), schema-shield CLEAN (0 file migrations/prisma/sql)
+  next: rider kereta T-1111-M (kondektur 18:30, deploy window 22:00+)
+
+## 2026-11-11 09:5x CTO siang 09:30 (ops-2026-11-10-02 done — 0 deploy; local git hygiene)
+- task-id: ops-2026-11-10-02 | type: ops/SECURITY | PRD: n/a (verdict CEO 10 Nov, sec-2026-11-09-01 APPROVE) | pos: TRUST
+  deploy hash: n/a (bukan perubahan aplikasi) | local main @ 2cd172f
+  verify (bukti fisik): pre-flight ls-remote origin 0 hit session · ls-tree backup/pre-sec-purge-1015 = 2 file sessions (IG+TikTok cookies) · `git branch -D backup/pre-sec-purge-1015` (was 14bcb3d) · `git for-each-ref refs/heads/backup | wc -l` = 0 · ls-remote origin pasca = 0 hit session (tidak pernah bocor)
+  rollback: objects masih di object-DB via reflog sampai GC — by-design dibuang (purge Okt)
+  QA: n/a (bukan kode); impact_check_due: n/a
