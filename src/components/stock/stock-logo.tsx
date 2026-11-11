@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import logoExt from "@/lib/logo-ext.json";
 
 interface StockLogoProps {
   name: string;
@@ -24,9 +25,15 @@ interface StockLogoProps {
 export function StockLogo({ name, ticker, size = 32 }: StockLogoProps) {
   const base = ticker.replace(/\.JK$/i, "");
   const letter = (base.charAt(0) || name.charAt(0) || "?").toUpperCase();
+  // Manifest build-time (962 emiten, regenerated saat mirror logo diperbarui):
+  // ekstensi terbaik diketahui di muka → 0 request 404 untuk 225 ticker yang
+  // tidak punya .jpg (dulu tiap render buang 1-2× 404 sebelum fallback ketemu).
+  // Ticker baru (belum di manifest) → tetap mulai dari .jpg, onError chain jalan.
+  const knownExt = (logoExt as Record<string, string>)[base];
+  const initialSrc = knownExt ? `/logos/${base}.${knownExt}` : `/logos/${base}.jpg`;
   return (
     <Image
-      src={`/logos/${base}.jpg`}
+      src={initialSrc}
       alt={`${name} logo`}
       width={size}
       height={size}
