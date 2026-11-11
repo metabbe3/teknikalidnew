@@ -30,6 +30,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { Prisma } from "../../src/generated/prisma/client";
 import {
   BLOCKED_ACTORS,
   guardActorSql,
@@ -100,24 +101,28 @@ test("[A6] log visibility: pageview actor blocklist → console.warn (visibility
   );
 });
 
-test("[B1] semantik guardActorSql: fragment aman utk list non-kosong, '' saat kosong", () => {
-  const frag = guardActorSql();
-  assert.ok(
-    typeof frag === "string",
-    "guardActorSql harus return string fragment",
+test("[B1] semantik guardActorSql: nilai di-bind sbg parameter (bukan literal), tanpa quote tunggal", () => {
+  const frag = guardActorSql(Prisma.raw("actor_expr")) as unknown as {
+    strings: string[];
+    values: unknown[];
+  };
+  // Kontrak return = Prisma.Sql (objek template), bukan string — di-embed via
+  // ${guard} pada tagged template prisma.$queryRaw. Koreksi kontrak 11 Nov:
+  // asersi lama salah tipe (string) — ini perbaikan authoring, asersi nilai
+  // DIKENCANGKAN (bound values = UUID persis, strings tanpa literal quote).
+  assert.ok(Array.isArray(frag.strings) && frag.strings.length > 0, "harus objek Prisma.Sql valid");
+  assert.deepEqual(
+    frag.values,
+    [...BLOCKED_ACTORS],
+    "nilai UUID harus ter-bind sbg parameter (bound), bukan diinterpolate",
   );
-  assert.ok(
-    frag.length > 0,
-    "list non-kosong → fragment tidak boleh string kosong",
-  );
-  assert.ok(
-    !frag.includes("'"),
-    "fragment TIDAK boleh memuat literal quote tunggal (harus via join aman)",
-  );
-  assert.ok(
-    !/SELECT|DROP|;/i.test(frag),
-    "fragment harus berupa kondisi, bukan SQL lengkap",
-  );
+  const flat = frag.strings.join(",");
+  assert.ok(!flat.includes("'"), "strings TIDAK boleh memuat literal quote tunggal (anti injection)");
+  assert.ok(!/SELECT|DROP|;/i.test(flat), "fragment harus berupa kondisi, bukan SQL lengkap");
+  // list kosong → Prisma.empty (0 fragment): dicek statis — konstanta frozen,
+  // cabang ini hanya jalan saat blocklist dikosongkan.
+  const lib = read("src/lib/actor-blocklist.ts");
+  assert.ok(lib.includes("Prisma.empty"), "list kosong harus return Prisma.empty (query tak rusak)");
 });
 
 // Failing-test-first ops-2026-11-11-01: modul belum ada → run ini GAGAL dulu,
