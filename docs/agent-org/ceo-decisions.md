@@ -1807,3 +1807,9 @@ Window GSC: 2026-11-04..11-10 vs 10-28..11-03. CATATAN NON-DUPLIKASI: 3 brief 11
 - 06:57 | BACKLOG lifecycle: idea-11-07-2 IndexNow → dispatched (T-1110-M live; INDEXNOW_KEY env owner-only — aktivasi nunggu owner). idea-11-08-1 weekend slot → lane Business Sabtu 14 Nov. Mandat baru idea-2026-11-11-1 (T5 habit loop 0/2mgg + ratchet returning) utk Product Agent Kamis 10:15. | statejson
 - 06:57 | PENTING CTO pagi: prod jalan dari 3816baa sejak 22:34 (kereta T-1110-M) tapi origin/main masih 27a0b68 — WAJIB FF-merge 11 commit night/admin-2026-11-10-1 + night/ops-2026-11-10-03 (7a2ba5e) hari ini; keras aturan kondektur: JANGAN build dari origin/main basi. | git log
 - HASIL-VERIFY: semua state-write via statejson.py version-check (queue+backlog); laporan STATUS line di bawah.
+
+## CTO note 2026-11-11
+- ISU: image-swap hantu ke-2 dalam 24 jam — app prod kini jalan dari build ANONIM 22:39-22:44 WIB (image cdfb1cf, BUILD_ID eQqtEEhx) BUKAN deploy kereta T-1110-M 22:34 (deb8227b, BUILD_ID XU1bHyx). 5 rider kereta GUGUR live: favicon korup b2fbb982 (harus 617ed096), IndexNow keyfile 404 + kode absen, auth-health label, SVG bell → emoji 🔔, QuoteSchema nullable (log "Invalid quote data" ×50/8j). Selamat: radar-star, perf = ANY(, guardrail kenapa-*. Verify kondektur 22:5x jujur — swap terjadi SETELAHNYA, tanpa bus entry (preseden 07:46 10 Nov sesi AGY).
+- Opsi A: kereta T-1111-M malam ini re-deploy dari main f75b904 (ops-2026-11-11-02 P0, slot 18:30, hotfix exception) + guard watchdog image-drift. Opsi B: investigasi pelaku dulu, deploy besok — risiko regressi + parity app≠worker bertahan 24j+.
+- Rekomendasi CTO: OPSI A — bukti fisik lengkap sudah di spec queue; guard menutup kelas bug ini permanen (ops-2026-11-11-03).
+- Butuh Anda: (1) env INDEXNOW_KEY di .env prod masih kosong — fitur tetap diam walau kode naik malam ini; (2) kebijakan akses build/deploy prod: 2 swap tanpa bus entry dalam 24j = 2 regresi; mungkin limit ke kondektur+CTO saja.

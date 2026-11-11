@@ -5665,6 +5665,42 @@
       "scheduled_slot": "2026-11-12 BE siang 09:30 Kamis (rider kereta T-1112-W)",
       "north_star": "STICKY+TRUST instrumen — kejujuran metrik North Star (returning ratio, funnel) dari polusi trafik verify-agent",
       "spec": "[KONVERSI][TRUST-instrumen] ACK CEO 11 Nov needs bo-2026-11-11-01 — APPROVE opsi B: blocklist actor UUID (a035afcf, bd8a46cb — saver smoke 11 Nov 02:25-02:49, UA Android-10-K CDP-emulation, TANPA prefix qa-; guard ops-11-10-03 tak menangkap) dari komputasi funnel-v2 + retention — config list 1-file service, pola sama NOT LIKE 'qa-%'. Opsional bila murah: log-warning saat actor blocklist muncul (visibility saja). BUKAN fitur baru — data-integrity instrumen KPI (freeze-safe). DONE WHEN: replay SQL funnel/retention dengan blocklist aktif → T3 7 turun ke 4-5 (2 saver keluar), returning mgg-02Nov tetap ±14,7%, tsc EXIT-0, unit test blocklist hijau."
+    },
+    {
+      "id": "ops-2026-11-11-02",
+      "priority": "P0",
+      "status": "pending",
+      "title": "[BUGFIX][OPS] HOTFIX-REVERT APP: image swap hantu 22:39-22:44 10 Nov me-revert 5 rider kereta T-1110-M",
+      "spec": "Container app jalan image cdfb1cfdd55a (build 22:39, start 22:44:56, BUILD_ID eQqtEEhxP5vuoqEM04xSu) — BUKAN deb8227b deploy kereta 22:34 (BUILD_ID XU1bHyxhk9zGM4NTyhffR, kondektur verify bukti fisik per-fitur 22:5x). 5 rider GUGUR live: favicon md5 b2fbb982 korup (harus 617ed096), IndexNow keyfile 404 + kode absen, auth-health label ID absen, SVG bell → emoji 🔔 masih di live, QuoteSchema nullable (log Invalid quote data x50/8j). Selamat: radar-star, perf = ANY(, guardrail kenapa-*. Worker tetap 7cfb66b2 (kereta) → parity app!=worker pecah. RE-EKSISKUSI (kondektur 18:30 sore): (1) git: pastikan main 594d176+ = superset; cek worktrees /tmp/uxconv-wt (feature/ux-conversion-1109) & tk-review-wt 899ff5b — jangan build dari situ. (2) docker compose build app worker SATU perintah dari main f75b904 checkout utama. (3) up -d; (4) verify per-fitur 7 marker: favicon md5 617ed096, keyfile 200 body=key, IndexNow kode ada, auth-health label, bell M3.262 15.326, log Invalid-quote=0, BUILD_ID baru != eQqtEEhx. (5) bus entry pasca-deploy. NOTE: anomaly swap ke-2 (preseden 07:46 10 Nov deploy AGY) — post-mortem ops-2026-11-11-03.",
+      "north_star": "TRUST (favicon korup = brand; Invalid quote = data reliable) + STICKY (radar-star tetap aman)",
+      "done_when": "docker ps image app baru CreatedAt > 2026-11-10T22:39 + BUILD_ID != eQqtEEhx + favicon md5 live 617ed096 + keyfile 200 + bell M3.262 + log Invalid quote 0/24j + parity app worker < 300s",
+      "scheduled_slot": "2026-11-11 18:30 BE malam (kondektur) — deploy window sore, hotfix-P0 exception deploy hari ini",
+      "train": "T-1111-M",
+      "labels": [
+        "bugfix",
+        "ops",
+        "deploy",
+        "hotfix",
+        "revert-ghost"
+      ]
+    },
+    {
+      "id": "ops-2026-11-11-03",
+      "priority": "P2",
+      "status": "pending",
+      "title": "[BUGFIX][OPS] POST-MORTEM + guard permanen anomali image-swap hantu (2 kasus 24 jam: 10 Nov 07:46 sesi AGY + 22:39-22:44 pelaku tak teridentifikasi)",
+      "spec": "Post-mortem (3 baris CTO report) + tindak lanjut struktural: (1) identifikasi pelaku 22:39 via docker events log daemon.json login shell history jika ada; (2) buat guard mekanis: watchdog check image app == manifest deploy terakhir (bus entry deploy) — drift > 15 menit = alert; (3) aturan: SEMUA sesi (termasuk AGY/owner) deploy/build = wajib bus entry + build dari main post-merge; (4) konvensi worktree /tmp/* prunable = tidak boleh jadi sumber build prod. Sumber: kondektur report T-1110-M + spot-check CTO 07:46 11 Nov.",
+      "north_star": "TRUST (deploy integrity = data reliable; regressi diam-diam merusak trust user pada fitur yang dijanjikan)",
+      "done_when": "(a) post-mortem 3-baris tertulis di changelog; (b) guard watchdog image-drift aktif (config + test alert); (c) aturan bus-entry-all-sessions masuk charter/handoff; (d) bus entry tertulis",
+      "scheduled_slot": "2026-11-13 BE siang 09:30 Jumat (bundling host-ops; setelah hotfix deploy stabil)",
+      "train": "",
+      "labels": [
+        "bugfix",
+        "ops",
+        "post-mortem",
+        "watchdog",
+        "guard"
+      ]
     }
   ]
 }
