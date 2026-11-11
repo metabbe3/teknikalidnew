@@ -2739,7 +2739,7 @@
     {
       "id": "adm-2026-11-10-01",
       "title": "Audit+fix /admin/auth-health: KPI 'Active Sessions' fake-0 → 'Pengguna Aktif 24 jam' (PageView) + label ID awam",
-      "status": "done_build_only",
+      "status": "in_train",
       "priority": "P1",
       "source": "fallback audit slot admin-ux-builder 10 Nov (antrean adm- kosong: adm-01 dropped_freeze_6nov, adm-02 deployed) — kelas temuan #6 checklist skill teknikal-ui-workflow",
       "problem": "KPI 'Active Sessions' membaca prisma.session.count() padahal strategi auth = JWT (auth.ts:43) yang TIDAK pernah menulis tabel Session → SQL replay 10 Nov: 0 baris → KPI menampilkan 0 bohong selamanya (fake metric permanen). Sumber nyata tersedia: PageView DISTINCT userId 24h = 5, anonId = 27. Label tab campur EN (Active Sessions/Total Accounts/Recent Bans/API Cache Usage/Key Prefix/Calls/Last Fetched).",
@@ -2753,9 +2753,10 @@
       "impact": "Owner cek admin tiap hari; KPI 0 permanen = kepercayaan data jatuh (doktrin 'data uang tidak update' — angka bohong lebih buruk dari angka kosong)",
       "constraints": "API REUSE (extend /api/admin/auth-health existing, bukan endpoint baru); freeze-safe: akurasi data + perbaikan label, bukan fitur baru; BUILD-ONLY (deploy-count 10 Nov penuh — kereta T-1110-M yang angkat)",
       "created": "2026-11-10",
-      "train": "T-1110-M",
+      "train": "T-1111-M",
       "verify": "tsc EXIT-0; build EXIT-0 BUILD_ID wm-xc3vdXeRyJaSU2rBho; staging node standalone :3210 CDP 1440+390: KPI 'Pengguna Aktif (24 jam)'=5 '+28 tanpa login' == SQL replay 5/28, Total Akun 40, Pendaftar 10, Diblokir 0; API /api/admin/auth-health JSON activeUsers24h=5; screenshot docs/agent-org/verify/adm-11-10-01-{desktop-1440,mobile-390}.png; branch night/admin-2026-11-10-1 commit 6792183+ce1d1e3 pushed",
-      "scheduled_slot": "merge ke main + kereta T-1110-M/T-1111-M build atomik (deploy-count 10 Nov penuh; BUILD-ONLY by design)"
+      "scheduled_slot": "merge ke main + kereta T-1110-M/T-1111-M build atomik (deploy-count 10 Nov penuh; BUILD-ONLY by design)",
+      "merged_main": "594d176"
     },
     {
       "id": "idea-2026-11-11-1",
