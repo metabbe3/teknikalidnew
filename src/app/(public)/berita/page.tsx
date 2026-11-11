@@ -210,7 +210,7 @@ export default async function BeritaPage({
                       href={`/stocks/${m.ticker}`}
                       data-engagement="chip_beritaHeroMover"
                       data-nav-label="nav_newsTickerChip_click"
-                      className="inline-flex min-h-8 items-center gap-1 rounded-md border border-border bg-bg/80 px-2 py-0.5 font-mono text-xs font-semibold hover:border-accent/40 hover:bg-bg-hover transition-colors"
+                      className="inline-flex min-h-11 items-center gap-1 rounded-md border border-border bg-bg/80 px-2 py-0.5 font-mono text-xs font-semibold hover:border-accent/40 hover:bg-bg-hover transition-colors"
                     >
                       <span className="text-text-primary">{stripJk(m.ticker)}</span>
                       <span className={isPos ? "text-bullish" : "text-bearish"}>
@@ -225,7 +225,7 @@ export default async function BeritaPage({
                   href="/stocks"
                   data-engagement="chip_beritaHeroMover"
                   data-nav-label="nav_newsTickerChip_click"
-                  className="inline-flex min-h-8 items-center rounded-md border border-accent/25 bg-accent/10 px-2.5 py-0.5 text-xs font-semibold text-accent hover:bg-accent/20 transition-colors"
+                  className="inline-flex min-h-11 items-center rounded-md border border-accent/25 bg-accent/10 px-2.5 py-0.5 text-xs font-semibold text-accent hover:bg-accent/20 transition-colors"
                 >
                   Lihat Radar Saham IDX →
                 </Link>
@@ -236,7 +236,7 @@ export default async function BeritaPage({
               target="_blank"
               rel="noopener noreferrer"
               data-engagement="funnel_beritaHeroBotCta"
-              className="inline-flex min-h-9 items-center justify-center rounded-lg border border-accent/30 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent hover:bg-accent/20 transition-colors shrink-0"
+              className="inline-flex min-h-11 items-center justify-center rounded-lg border border-accent/30 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent hover:bg-accent/20 transition-colors shrink-0"
             >
               📲 Kirim Brief Pagi Otomatis ke Telegram
             </a>
@@ -274,9 +274,9 @@ export default async function BeritaPage({
                   return (
                     <article
                       key={a.slug}
-                      className="flex items-start gap-4 p-4 first:rounded-t-xl last:rounded-b-xl hover:bg-bg-hover/50 transition-colors"
+                      className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4 p-4 first:rounded-t-xl last:rounded-b-xl hover:bg-bg-hover/50 transition-colors"
                     >
-                      <time className="shrink-0 pt-0.5 text-xs font-mono text-text-tertiary tabular-nums w-20">
+                      <time className="shrink-0 text-xs font-mono text-text-tertiary tabular-nums sm:pt-0.5 sm:w-20">
                         {fmtDateId(a.publishedAt).replace(/ 20\d\d$/, "")}
                       </time>
                       <div className="min-w-0 flex-1">
@@ -299,7 +299,7 @@ export default async function BeritaPage({
                                 href={`/stocks/${t}`}
                                 data-engagement="chip_beritaArchiveTicker"
                                 data-nav-label="nav_newsTickerChip_click"
-                                className="inline-flex items-center rounded-md border border-accent/25 bg-accent/10 px-1.5 py-0.5 font-mono text-[11px] font-semibold text-accent hover:bg-accent/20 transition-colors"
+                                className="inline-flex items-center min-h-11 rounded-md border border-accent/25 bg-accent/10 px-1.5 py-0.5 font-mono text-[11px] font-semibold text-accent hover:bg-accent/20 transition-colors"
                               >
                                 {stripJk(t)}
                               </Link>

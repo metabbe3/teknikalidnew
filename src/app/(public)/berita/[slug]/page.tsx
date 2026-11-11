@@ -398,7 +398,7 @@ export default async function BeritaArticlePage({
                           href={`/stocks/${s.ticker}`}
                           data-engagement="chip_beritaHeaderTicker"
                           data-nav-label="nav_newsTickerChip_click"
-                          className="inline-flex min-h-8 items-center gap-1.5 rounded-md border border-border bg-bg/80 px-2 py-0.5 font-mono text-xs font-semibold hover:border-accent/40 hover:bg-bg-hover transition-colors"
+                          className="inline-flex min-h-11 items-center gap-1.5 rounded-md border border-border bg-bg/80 px-2 py-0.5 font-mono text-xs font-semibold hover:border-accent/40 hover:bg-bg-hover transition-colors"
                         >
                           <span className="text-text-primary">{clean}</span>
                           {s.changePercent !== null && (
@@ -422,7 +422,7 @@ export default async function BeritaArticlePage({
                         href={`/stocks/${t}`}
                         data-engagement="chip_beritaHeaderTicker"
                         data-nav-label="nav_newsTickerChip_click"
-                        className="inline-flex min-h-8 items-center rounded-md border border-accent/25 bg-accent/10 px-2 py-0.5 font-mono text-xs font-semibold text-accent hover:bg-accent/20 transition-colors"
+                        className="inline-flex min-h-11 items-center rounded-md border border-accent/25 bg-accent/10 px-2 py-0.5 font-mono text-xs font-semibold text-accent hover:bg-accent/20 transition-colors"
                       >
                         {stripJk(t)}
                       </Link>
@@ -432,7 +432,7 @@ export default async function BeritaArticlePage({
                       href="/stocks"
                       data-engagement="chip_beritaHeaderTicker"
                       data-nav-label="nav_newsTickerChip_click"
-                      className="inline-flex min-h-8 items-center rounded-md border border-accent/25 bg-accent/10 px-2.5 py-0.5 text-xs font-semibold text-accent hover:bg-accent/20 transition-colors"
+                      className="inline-flex min-h-11 items-center rounded-md border border-accent/25 bg-accent/10 px-2.5 py-0.5 text-xs font-semibold text-accent hover:bg-accent/20 transition-colors"
                     >
                       Lihat Radar Saham →
                     </Link>
@@ -443,7 +443,7 @@ export default async function BeritaArticlePage({
                   target="_blank"
                   rel="noopener noreferrer"
                   data-engagement="funnel_beritaTopBotCta"
-                  className="inline-flex min-h-9 items-center justify-center rounded-lg border border-accent/30 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent hover:bg-accent/20 transition-colors shrink-0"
+                  className="inline-flex min-h-11 items-center justify-center rounded-lg border border-accent/30 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent hover:bg-accent/20 transition-colors shrink-0"
                 >
                   💬 Tanya dampak berita ini ke AI — gratis 3x
                 </a>

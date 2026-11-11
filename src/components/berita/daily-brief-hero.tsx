@@ -101,7 +101,7 @@ export function DailyBriefHero({
                 href={`/stocks/${t}`}
                 data-engagement="chip_beritaArchiveTicker"
                 data-nav-label="nav_newsTickerChip_click"
-                className="inline-flex items-center rounded-md border border-accent/25 bg-accent/10 px-2 py-0.5 font-mono text-xs font-semibold text-accent hover:bg-accent/20 transition-colors"
+                className="inline-flex items-center min-h-11 rounded-md border border-accent/25 bg-accent/10 px-2 py-0.5 font-mono text-xs font-semibold text-accent hover:bg-accent/20 transition-colors"
               >
                 {stripJk(t)}
               </Link>
