@@ -310,7 +310,7 @@ export default async function BeritaArticlePage({
                   {article.tickerTag ? (
                     <Link
                       href={`/stocks/${article.tickerTag}`}
-                      className="relative text-xs font-mono font-semibold text-accent bg-accent/10 px-2 py-0.5 rounded hover:bg-accent/20 transition-colors before:absolute before:-inset-x-1 before:-inset-y-2.5 before:content-['']"
+                      className="relative text-xs font-mono font-semibold text-accent bg-accent/10 px-2 py-0.5 rounded hover:bg-accent/20 transition-colors before:absolute before:-inset-x-1 before:-inset-y-3 before:content-['']"
                     >
                       {article.tickerTag.replace(".JK", "")}
                     </Link>
@@ -319,7 +319,7 @@ export default async function BeritaArticlePage({
                       <Link
                         key={t}
                         href={`/stocks/${t}`}
-                        className="relative text-xs font-mono font-semibold text-accent bg-accent/10 px-2 py-0.5 rounded hover:bg-accent/20 transition-colors before:absolute before:-inset-x-1 before:-inset-y-2.5 before:content-['']"
+                        className="relative text-xs font-mono font-semibold text-accent bg-accent/10 px-2 py-0.5 rounded hover:bg-accent/20 transition-colors before:absolute before:-inset-x-1 before:-inset-y-3 before:content-['']"
                       >
                         {t.replace(".JK", "")}
                       </Link>
