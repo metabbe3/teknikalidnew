@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { useNotifications, useMarkNotificationsRead, notificationText } from "@/hooks/use-notifications";
+import { useNotifications, useMarkNotificationsRead, notificationText, type NotificationData } from "@/hooks/use-notifications";
 
 export function NotificationBell() {
   const { data: session } = useSession();
@@ -43,7 +43,27 @@ export function NotificationBell() {
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-full mt-1.5 w-80 max-h-96 overflow-y-auto bg-bg-card depth-shadow-strong rounded-xl border border-border py-1 z-50">
+          {/* Mobile: bottom-sheet slide-up (native iOS pattern) — dropdown desktop */}
+          <div className="sm:hidden fixed inset-x-0 bottom-0 z-50">
+            <div className="fixed inset-x-0 bottom-0 h-[52vh]" onClick={() => setOpen(false)} aria-hidden="true" />
+            <div className="relative inset-x-0 bottom-0 max-h-[60vh] overflow-y-auto bg-bg-card depth-shadow-strong rounded-t-2xl border-t border-border py-1 animate-[sheetUp_.18s_ease-out] overscroll-contain">
+              <div className="mx-auto my-1.5 h-1 w-10 rounded-full bg-border" aria-hidden="true" />
+              <div className="px-3 py-2 border-b border-border flex items-center justify-between">
+                <span className="text-sm font-semibold">Notifikasi</span>
+                {unreadCount > 0 && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); markRead.mutate({ markAll: true }); }}
+                    className="text-[10px] text-accent hover:underline"
+                  >
+                    Tandai semua dibaca
+                  </button>
+                )}
+              </div>
+              <NotificationItems data={data} onNavigate={() => setOpen(false)} />
+            </div>
+          </div>
+          {/* Desktop: dropdown anchor ke bell */}
+          <div className="hidden sm:block absolute right-0 top-full mt-1.5 w-80 max-h-96 overflow-y-auto bg-bg-card depth-shadow-strong rounded-xl border border-border py-1 z-50">
             <div className="px-3 py-2 border-b border-border flex items-center justify-between">
               <span className="text-sm font-semibold">Notifikasi</span>
               {unreadCount > 0 && (
@@ -55,63 +75,62 @@ export function NotificationBell() {
                 </button>
               )}
             </div>
-            {data?.data.length === 0 ? (
-              <div className="py-8 text-center text-sm text-text-secondary">
-                Belum ada notifikasi
-              </div>
-            ) : (
-              data?.data.map((n) => {
-                if (n.type === "SITE_ANNOUNCEMENT") {
-                  const meta = (n.meta ?? {}) as { title?: string; body?: string; severity?: string };
-                  const sev = meta.severity === "critical" ? "border-bearish/40 bg-bearish/[0.04]" : meta.severity === "warning" ? "border-amber-500/40 bg-amber-500/[0.04]" : "border-accent/30 bg-accent/[0.04]";
-                  return (
-                    <div
-                      key={n.id}
-                      className={`mx-2 my-1.5 rounded-lg border px-3 py-2.5 ${sev} ${n.read ? "opacity-70" : ""}`}
-                    >
-                      <div className="flex items-center gap-1.5 mb-1">
-                        <span className="text-xs" aria-hidden="true">{meta.severity === "critical" ? "🚨" : meta.severity === "warning" ? "⚠️" : "📣"}</span>
-                        <p className="text-sm font-semibold text-text-primary">{meta.title ?? "Info TeknikalID"}</p>
-                      </div>
-                      <p className="text-sm leading-snug text-text-secondary">{meta.body}</p>
-                      <p className="text-[10px] text-text-tertiary mt-1.5">
-                        {new Date(n.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
-                      </p>
-                    </div>
-                  );
-                }
-                const actor = n.actor ?? { image: null, name: "Pengguna", username: "user" };
-                return (
-                <Link
-                  key={n.id}
-                  href={n.type === "THESIS_BREACH" && n.ticker ? `/stocks/${n.ticker}` : n.type === "SCREENER_MATCH" ? "/screener" : n.post ? `/community/post/${n.post.id}` : `/profile/${actor.username}`}
-                  onClick={() => setOpen(false)}
-                  className={`block px-3 py-2.5 text-sm transition-colors ${
-                    n.read ? "text-text-secondary" : "text-text-primary bg-accent/[0.03]"
-                  } hover:bg-bg-hover`}
-                >
-                  <div className="flex items-start gap-2.5">
-                    {actor.image ? (
-                      <img src={actor.image} alt="" className="w-7 h-7 rounded-full object-cover shrink-0 mt-0.5" loading="lazy" />
-                    ) : (
-                      <div className="w-7 h-7 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xs font-semibold shrink-0 mt-0.5">
-                        {(actor.name || actor.username).charAt(0).toUpperCase()}
-                      </div>
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <p className="leading-snug">{notificationText(n)}</p>
-                      <p className="text-[10px] text-text-tertiary mt-0.5">
-                        {new Date(n.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
-                      </p>
-                    </div>
-                  </div>
-                </Link>
-                );
-              })
-            )}
+            <NotificationItems data={data} onNavigate={() => setOpen(false)} />
           </div>
         </>
       )}
     </div>
   );
+}
+
+function NotificationItems({ data, onNavigate }: {
+  data: { data: NotificationData[]; unreadCount: number } | undefined;
+  onNavigate: () => void;
+}) {
+  if (!data || data.data.length === 0) {
+    return <div className="py-8 text-center text-sm text-text-secondary">Belum ada notifikasi</div>;
+  }
+  return <>{data.data.map((n) => {
+    if (n.type === "SITE_ANNOUNCEMENT") {
+      const meta = (n.meta ?? {}) as { title?: string; body?: string; severity?: string };
+      const sev = meta.severity === "critical" ? "border-bearish/40 bg-bearish/[0.04]" : meta.severity === "warning" ? "border-amber-500/40 bg-amber-500/[0.04]" : "border-accent/30 bg-accent/[0.04]";
+      return (
+        <div key={n.id} className={`mx-2 my-1.5 rounded-lg border px-3 py-2.5 ${sev} ${n.read ? "opacity-70" : ""}`}>
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className="text-xs" aria-hidden="true">{meta.severity === "critical" ? "🚨" : meta.severity === "warning" ? "⚠️" : "📣"}</span>
+            <p className="text-sm font-semibold text-text-primary">{meta.title ?? "Info TeknikalID"}</p>
+          </div>
+          <p className="text-sm leading-snug text-text-secondary">{meta.body}</p>
+          <p className="text-[10px] text-text-tertiary mt-1.5">
+            {new Date(n.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+          </p>
+        </div>
+      );
+    }
+    const actor = n.actor ?? { image: null, name: "Pengguna", username: "user" };
+    return (
+      <Link
+        key={n.id}
+        href={n.type === "THESIS_BREACH" && n.ticker ? `/stocks/${n.ticker}` : n.type === "SCREENER_MATCH" ? "/screener" : n.post ? `/community/post/${n.post.id}` : `/profile/${actor.username}`}
+        onClick={onNavigate}
+        className={`block px-3 py-2.5 text-sm transition-colors ${n.read ? "text-text-secondary" : "text-text-primary bg-accent/[0.03]"} hover:bg-bg-hover`}
+      >
+        <div className="flex items-start gap-2.5">
+          {actor.image ? (
+            <img src={actor.image} alt="" className="w-7 h-7 rounded-full object-cover shrink-0 mt-0.5" loading="lazy" />
+          ) : (
+            <div className="w-7 h-7 rounded-full bg-accent/10 text-accent flex items-center justify-center text-xs font-semibold shrink-0 mt-0.5">
+              {(actor.name || actor.username).charAt(0).toUpperCase()}
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <p className="leading-snug">{notificationText(n)}</p>
+            <p className="text-[10px] text-text-tertiary mt-0.5">
+              {new Date(n.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+            </p>
+          </div>
+        </div>
+      </Link>
+    );
+  })}</>;
 }

@@ -17,7 +17,7 @@ interface NotificationActor {
   image: string | null;
 }
 
-interface NotificationData {
+export interface NotificationData {
   id: string;
   type: "LIKE" | "COMMENT" | "MENTION" | "FOLLOW" | "STOCK_POST" | "REACTION" | "STOCK_ALERT" | "AGENT_ALERT" | "RE_ENGAGE" | "SCREENER_MATCH" | "THESIS_BREACH" | "SITE_ANNOUNCEMENT";
   read: boolean;

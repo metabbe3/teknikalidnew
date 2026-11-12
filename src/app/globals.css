@@ -1460,3 +1460,12 @@ button:focus-visible,
   border: 1px solid rgba(220, 38, 38, 0.25);
 }
 
+
+/* Notif bottom-sheet mobile (12 Nov) */
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-\[sheetUp_\.18s_ease-out\] { animation: none; }
+}
