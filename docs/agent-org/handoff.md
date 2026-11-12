@@ -1949,3 +1949,10 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - FORENSIK ghost-deploy 06:36: window-match "Growth Daily Check" 06:30:58-06:39:20; commit 05:38/06:18/06:34 + push+deploy di luar semua job cron → pola manual/owner; konten legit, marker sehat (/radar 200 0.16s, favicon 617ed096, bell M3.262=1, invalid-quote 0) → TIDAK di-revert. Watchdog image-drift = ops-2026-11-11-03 Jumat.
 - Kereta T-1112-W malam ini (kondektur 22:15): ops-11-11-01 blocklist + ux-11-11-01 logo/chip (SEMUA sudah di main HEAD 9509a04) + prd-11-07-01 llms.txt (BE siang 09:30 hari ini) + adm-11-10-01 auth-health (sudah merged 11 Nov) + ops-11-10-04 ErrorLog. WAJIB build atomik app+worker (parity drift: app 06:35 vs worker 11-Nov 22:25).
 - Sisa Pertanyaan & Gap: (1) pelaku deploy 06:36 belum teridentifikasi pasti — window-match kuat tapi bukan bukti; konfirmasi owner. (2) prd-2026-11-11-01 register-attribution tetap menunggu ACK owner (area auth). (3) kpi.json dashboard :8790 belum ketemu (utang bo-2 slot). (4) .context_map.txt + docker-compose.yml modified = territory sesi lain, tidak disentuh.
+
+## 2026-11-12 10:2x — CTO siang 09:30
+- State: freshness FRESH; main 35bbaa3 (llms v2 + radar title, pushed); prod app 961b73bf (deploy owner 09:55 saat market — ESCALATE, app-only), worker c5d3c1c9; queue v515.
+- Selesai: qa-12-01 done (12 UPDATE konten, gate 4/4, live verified); prd-11-07-01 + qa-12-02 in_train T-1112-W (commit 35bbaa3, bukti probe di changelog); growth.py ai-bucket +claude|poe.
+- In-flight: kereta T-1112-W malam (blocklist + logo/chip + llms v2 + radar title + auth-health + SEO) — WAJIB build atomik app+worker (parity drift 961b73bf vs c5d3c1c9).
+- Jebakan: (1) swap tanggal reviewer kadang ciptakan error baru — selalu replay konteks harga (kasus BREN); (2) grep -cF frasa ber-chip ticker tersplit HTML — verifikasi via RSC payload/substring; (3) DB STOCK ticker = 'XXX.JK' (dengan .JK).
+- Langkah pertama slot berikutnya: baca bus → cek marker title /radar + /llms.txt pasca kereta (TeknikalID 1x; seksi Kenapa 30 item) → ops-12-01/02 Jumat T-1113-M.

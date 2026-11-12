@@ -907,3 +907,6 @@ penulisan masih 404 (deploy di kereta T-1021-N / CTO pagi).
 - KOREKSI SPEC REVIEWER (DB = ground truth): (1) PKPK emaCrossSignal=bearish → TIDAK masuk daftar EMA bullish (reviewer salah memasukkan); WIIM bullish non-gorengan → masuk. (2) Daftar benar snapshot 11-10: DRMA, KLBF, LSIP, MYOH, POLA, WIIM. (3) Skor as-of 11-10 = POLA 0,39 · PKPK 0,29 · LSIP 0,16 (exact reviewer). (4) BRFM/JASTEL tanpa data 9 Nov → kualifikasi D pakai ACES/MAPI/RAJA yang terverifikasi.
 - Lesson teknis: UPDATE ber-em-dash dari file SQL via docker exec -i < file GAGAL match 3 frasa padahal byte identik di inspeksi — heredoc segar di terminal menulis ulang string = langsung UPDATE 1. Selalu jalankan position()-check pasca-patch dan re-run manual frasa yang UPDATE 0; jangan percaya "byte sama" sebelum psql konfirmasi.
 - H2 sweep:WIIM+death-cross residual=0; 'satu-satunya' 2 artikel=0 (content+excerpt); live HTML tag-tolerant OLD=0 NEW=present × 5 halaman.
+
+### 2026-11-12 10:1x WIB — CTO siang: qa-2026-11-12-01 content-patch (12 UPDATE, rowcount=1 each)
+Backup 2026-11-12T01:16 valid (<24j). Frasa old→new + posisi tercatat di field result entry (queue v515). DILARANG angka lain tersentuh — replay breadth/IHSG/GC/EMA/movers PASS post-patch (gate 4/4).

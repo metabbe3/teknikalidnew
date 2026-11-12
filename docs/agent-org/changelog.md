@@ -1369,3 +1369,9 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - QA: verdict patch oleh CTO slot 07:30 besok; impact_check_due: 2026-11-14
 - Baseline: app f4558f79 (06:35), worker c5d3c1c9 (11 Nov 22:26), main ddfb71a, queue v512, site 200
 - 2026-11-12 07:5x | CTO-0745 | Merge night/ux-2026-11-11-01 → main 69bd18b (logo manifest 962 emiten + chip artikel 44px; rider kereta T-1112-W; tsc EXIT-0, pushed ddfb71a..69bd18b). Queue v512→v514. Forensik duplikasi ritual CTO (job 07:30 vs 07:45) + ghost deploy 06:36 window-match Growth Daily Check 06:30:58-06:39:20 (executions.db) → CTO note 12 Nov.
+
+## 2026-11-12 10:2x WIB — CTO siang 09:30 (queue v515)
+- **qa-2026-11-12-01 [BUGFIX-TRUST] done**: 12 UPDATE DB (4 artikel: brief12-reli, sore11-akpi, pagi12-akpi, bren-sma200). Angka = replay SQL tabel di result entry. Gate 4/4 PASS (1 reword superlatif). Live 4x200 old=0/new=present. QA: qa_verified=false — verdict Sentinel 22:00.
+- **prd-2026-11-07-01 [GROWTH/AI-SEARCH] in_train T-1112-W**: llms.txt v2 commit 35bbaa3. Bukti: 195 URL/30 kenapa/0 dup/94KB; WMUU+29,63 & BRPT-6,71 == SQL; TMPO +24,79 (doktrin per-stock prev). Spec-fix: korpus = getStockList dinamis (Article kenapa cuma 2). growth.py ai-search +claude|poe; baseline 7d=0. impact_check_due: 2026-11-26 (review AI-referral 21 Nov ±).
+- **qa-2026-11-12-02 [BUGFIX-SEO] in_train T-1112-W**: /radar title single-brand commit 35bbaa3 (root-cause: layout template %s | TeknikalID + title ber-brand). Deploy hash: n/a (menunggu kereta T-1112-W; rollback = git revert 35bbaa3).
+- **[ESCALATE] deploy app-only 09:55 WIB SAAT MARKET** (image 961b73bf = commit owner 83e136e 09:54; worker tetap c5d3c1c9 → parity drift ~11,5j; tanpa bus entry; pola manual-owner ke-3 setelah 06:36). Marker sehat (favicon 617ed096, home 200 0,22s) → tidak di-revert. Kereta T-1112-W WAJIB build atomik.
