@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@/generated/prisma/client";
+import { guardActorSql } from "@/lib/actor-blocklist";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +33,8 @@ export async function GET() {
         -- ops-2026-11-10-03: guard self-traffic — smoke-test agen wajib anonId prefix 'qa-'
         -- (ACK CEO opsi-1 bo-2026-11-10-01; filter di level ACTOR, NULL-safe via COALESCE)
         AND COALESCE(u."initialAnonId", pv."anonId", pv."userId", pv.ip) NOT LIKE 'qa-%'
+        -- ops-2026-11-11-01: blocklist actor UUID saver-smoke (ACK CEO opsi-B; bound params)
+        ${guardActorSql(Prisma.sql`COALESCE(u."initialAnonId", pv."anonId", pv."userId", pv.ip)`)}
     ),
     ev AS (
       SELECT
@@ -42,6 +46,8 @@ export async function GET() {
       WHERE e."createdAt" >= NOW() - interval '21 days'
         -- ops-2026-11-10-03: idem — event smoke tak boleh jadi 'saver' palsu (T3)
         AND COALESCE(u."initialAnonId", e."anonId") NOT LIKE 'qa-%'
+        -- ops-2026-11-11-01: idem blocklist actor — event saver-smoke dikecualikan
+        ${guardActorSql(Prisma.sql`COALESCE(u."initialAnonId", e."anonId")`)}
     ),
     base AS (
       SELECT actor, MIN(d) AS h0,

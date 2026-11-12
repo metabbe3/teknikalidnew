@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getClientIp, lookupAsn, isDatacenter } from "@/lib/ip-asn";
 import { detectBot } from "@/lib/bot-detect";
 import { isBlocked } from "@/lib/ip-blocklist";
+import { isBlockedActor } from "@/lib/actor-blocklist";
 import { moderationService } from "@/domains/moderation/moderation.service";
 import { parseBody, schemas, extractPageviewAttribution, parseUtmParam } from "@/lib/validation";
 
@@ -115,6 +116,17 @@ export async function POST(request: NextRequest) {
       typeof data.anonId === "string" && data.anonId.length >= 8 && data.anonId.length <= 36
         ? data.anonId
         : null;
+
+    // ops-2026-11-11-01: visibility-only — actor blocklist TETAP diingest (bukan
+    // diblokir), tapi dikecualikan dari funnel/retention; warn ini = sinyal
+    // verify agen lupa prefix qa- (charter §7) agar pola bisa dilacak.
+    if (isBlockedActor(anonId)) {
+      console.warn(
+        "[track] pageview dari actor blocklist (verify tanpa qa-?):",
+        anonId,
+        path,
+      );
+    }
 
     // Extract IP from headers (prefer Cloudflare's true client IP)
     const ip = getClientIp(request.headers);

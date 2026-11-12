@@ -9,6 +9,8 @@
  */
 import { prisma } from "@/lib/prisma";
 import { TtlCache } from "@/lib/cache";
+import { Prisma } from "@/generated/prisma/client";
+import { guardActorSql } from "@/lib/actor-blocklist";
 
 // Kanon north-star.md (14 Okt): target North Star >=8% per 25 Nov 2026 (baseline 3,8%).
 // Ratchet Council Minggu: baseline naik -> guard naik, tidak turun.
@@ -116,6 +118,7 @@ export async function getRetentionOverview(
         FROM "PageView" pv
         WHERE pv."isBot" = false AND (pv."userId" IS NOT NULL OR pv."anonId" IS NOT NULL OR pv.ip IS NOT NULL)
           AND COALESCE(pv."userId", pv."anonId", pv.ip) NOT LIKE 'qa-%' -- ops-2026-11-10-03: guard smoke-test agen
+          ${guardActorSql(Prisma.sql`COALESCE(pv."userId", pv."anonId", pv.ip)`)} -- ops-2026-11-11-01: blocklist actor saver-smoke
           AND pv."createdAt" >= wk AND pv."createdAt" < wk + interval '1 week'
         GROUP BY dev) s
       GROUP BY wk ORDER BY wk`,
@@ -135,6 +138,7 @@ export async function getRetentionOverview(
        AND (u."createdAt" + interval '7 hours') <  w.week_start + interval '1 week'
        -- ops-2026-11-10-03: guard smoke-test agen — akun register dari sesi qa- tidak dihitung cohort
        AND COALESCE(u."initialAnonId", '') NOT LIKE 'qa-%'
+       ${guardActorSql(Prisma.sql`COALESCE(u."initialAnonId", '')`)} -- ops-2026-11-11-01: idem blocklist
       LEFT JOIN LATERAL (
         SELECT DISTINCT pv."userId" AS uid FROM "PageView" pv
         WHERE pv."userId" = u.id
