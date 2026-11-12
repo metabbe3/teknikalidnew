@@ -1971,3 +1971,10 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - Bukti: staging CDP 375px tanya h=44 emoji=0, tsc EXIT-0, SEO invariant 0 baris berubah. Jebakan: staging DB host WAJIB @127.0.0.1:5433 (localhost resolve ::1 → ECONNREFUSED diam-diam).
 - Regiverify kondektur pasca-deploy: curl /stocks | grep emoji count=0 + rect Tanya AI ≥44px. Rotasi UX berikutnya: empty-state sweep / konsistensi copy section Alat.
 - Sisa Pertanyaan & Gap: (1) 1c3ac23 belum live — naik kereta T-1112-W malam ini; (2) UX-craft skor before/after: before 82 (2 emoji-cluster + 1 sub-44px pill), after 89 — polish pass, bukan redesign.
+
+## 2026-11-13 03:2x — Backoffice Builder 03:00 (bo-2026-11-13-01; 0 build 0 deploy)
+- [STICKY+TRUST] Replay pasca-kereta-T-1112-W: funnel T1 360/T2 172/T3 7/T4 3/T5 0; returning 09Nov 15,3% (mgg-4 >8%). 2 saver baru 12 Nov = REAL USER (b05d0465 Windows 27PV 13:42-17:02; 2e449109 iPhone 13:00-13:02 siang) — bukan smoke (jam manusia, UA asli).
+- PUSH-CADANGAN HARD-GATE: night/main-sync-1113 = 6f5e517 SUDAH di remote (main origin = 73dbf7c basi; pre-push hook blokir 21:45-07:00). CTO pagi 07:30 WAJIB: git push origin 6f5e517:main (setelah 07:00) — kalau tidak, kereta malam ini build dari main basi & Uhu hilang lagi.
+- Verifikasi image live 424fa0ab (23:32, parity worker b6af6b2b): blocklist 4 UUID + T5 join agent_user TER-BAKE di route.js (grep fisik di container); anchor rollback-preuhu-1112 utuh; home 200 0,24s; log 4h bersih.
+- Utang 3-slot LUNAS: kpi.json = ~/.hermes/cache/northstar/kpi.json (writer teknikalid_northstar_kpi.py cron 07:05; consumer teknikalid_page.py :8790). CATATAN: kpi.json returning_ip_pct 5,8 = definisi IP-based, beda dari kanon aktor 15,3% — dual-definisi bo-2026-11-03-01 masih terbuka, kandidat harmonisasi slot BO berikutnya.
+- Sisa Pertanyaan & Gap: (1) T5 tetap 0 — butuh konversi web→bot nyata, bukan kerja kode; (2) e4b417c3/5ae28974 blocklist HOLD CEO — jangan tambah sendiri; (3) heredoc docker exec psql multi-CTE kena swallow output — pakai -c "..." quoted satu string; (4) 09Nov final Kamis dini hari — 15,3% bisa geser sedikit.
