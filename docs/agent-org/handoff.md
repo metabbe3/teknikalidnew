@@ -1942,3 +1942,10 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - blast: main tree FE; kereta T-1112-W malam ini bergantung merge ini (kondektur build dari checkout main)
 - rollback: git revert -m 1 <merge-sha>; anchor pra-merge = ddfb71a (origin/main synced)
 - plan: merge --no-ff → tsc --noEmit → push HANYA jika tsc 0; gagal = merge --abort + laporkan
+
+## 2026-11-12 07:45-08:0x — CTO Tech Lead (shift resmi 07:45)
+- MERGE night/ux-2026-11-11-01 → main 69bd18b (rider T-1112-W: logo manifest 962 emiten + chip 44px; tsc EXIT-0; push OK; queue v514+cto_merge_note). Untrack 130 .bak statejson dari git (9509a04). Reslot ux-2026-11-10-01 → Jumat 09:30 (verif AGY market-open, Kamis dipakai BE siang utk kereta).
+- FORENSIK dual-CTO: ritual pagi dikerjakan job 07:30 "BE Builder pagi" (prompt self-identify "CTO AGENT"; executions.db 07:30:58-07:36:42 = bus mtime 07:36:19, commit 78f5349 07:35:20) → job CTO resmi 07:45 mengulang ritual = spend ganda. Opsi A (strip CTO dari job 07:30) di CTO note, butuh ACK owner (self-referential ban).
+- FORENSIK ghost-deploy 06:36: window-match "Growth Daily Check" 06:30:58-06:39:20; commit 05:38/06:18/06:34 + push+deploy di luar semua job cron → pola manual/owner; konten legit, marker sehat (/radar 200 0.16s, favicon 617ed096, bell M3.262=1, invalid-quote 0) → TIDAK di-revert. Watchdog image-drift = ops-2026-11-11-03 Jumat.
+- Kereta T-1112-W malam ini (kondektur 22:15): ops-11-11-01 blocklist + ux-11-11-01 logo/chip (SEMUA sudah di main HEAD 9509a04) + prd-11-07-01 llms.txt (BE siang 09:30 hari ini) + adm-11-10-01 auth-health (sudah merged 11 Nov) + ops-11-10-04 ErrorLog. WAJIB build atomik app+worker (parity drift: app 06:35 vs worker 11-Nov 22:25).
+- Sisa Pertanyaan & Gap: (1) pelaku deploy 06:36 belum teridentifikasi pasti — window-match kuat tapi bukan bukti; konfirmasi owner. (2) prd-2026-11-11-01 register-attribution tetap menunggu ACK owner (area auth). (3) kpi.json dashboard :8790 belum ketemu (utang bo-2 slot). (4) .context_map.txt + docker-compose.yml modified = territory sesi lain, tidak disentuh.
