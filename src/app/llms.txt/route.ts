@@ -1,5 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { IDX40, SITE_URL } from "@/lib/constants";
+import { stockMarketService } from "@/domains/stock/stock-market.service";
+import { marketSnapshotService } from "@/domains/stock/market-snapshot.service";
+import KURASI_KEEP from "@/lib/seo/kurasi-keep";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +30,42 @@ export async function GET() {
       take: 50,
     }),
   ]);
+
+  // prd-2026-11-07-01 (llms.txt v2): seksi "Kenapa Saham Naik/Turun Hari Ini".
+  // Data = jalur SATU PINTU yang sama dengan sitemap.ts kenapa-* pages:
+  // stockMarketService.getStockList() (cache 5 menit) — DILARANG query
+  // pergerakan baru independen (breadth-rule qa-30-01). Set item: tanggal
+  // sesi EOD (WIB) + 1 angka ground-truth changePercent close-vs-prev.
+  const kenapa = await (async () => {
+    try {
+      const [list, snapshot] = await Promise.all([
+        stockMarketService.getStockList(),
+        marketSnapshotService.getSnapshot(),
+      ]);
+      const sessionDate = snapshot.sessionDate; // ISO yyyy-mm-dd EOD terakhir
+      const items = list
+        .map((s) => ({
+          // Sama seperti sitemap: hanya survivor ADV-2 (KURASI_KEEP).
+          ticker: s.ticker.replace(/\.JK$/, "").toUpperCase(),
+          name: s.name,
+          changePercent: s.changePercent,
+        }))
+        .filter(
+          (s) =>
+            KURASI_KEEP.has(s.ticker) &&
+            s.changePercent !== null &&
+            s.changePercent !== 0,
+        )
+        // 30 gerak terbesar (|pct|) supaya korpus selalu berisi hari yang
+        // benar-benar bergerak — bukan alfabetis diam.
+        .sort((a, b) => Math.abs(b.changePercent!) - Math.abs(a.changePercent!))
+        .slice(0, 30);
+      return { sessionDate, items };
+    } catch {
+      // Fail-soft: seksi dilewati, llms.txt tetap tersaji tanpa seksi baru.
+      return { sessionDate: null as string | null, items: [] as { ticker: string; name: string; changePercent: number | null }[] };
+    }
+  })();
 
   const lines: string[] = [];
 
@@ -64,6 +103,35 @@ export async function GET() {
     lines.push(`URL: ${SITE_URL}/berita/${a.slug}`);
     lines.push(`Tipe: ${a.articleType}`);
     lines.push("");
+  }
+
+  // Kenapa-naik/turun pages (prd-2026-11-07-01): korpus mesin-terbaca utk
+  // answer-engine — tanggal sesi + 1 angka ground-truth per item (GEO:
+  // sitasi angka > keyword stuffing). 30 mover terbesar per sesi EOD.
+  if (kenapa.items.length > 0) {
+    lines.push("## Kenapa Saham Naik/Turun Hari Ini");
+    lines.push("");
+    if (kenapa.sessionDate) {
+      lines.push(
+        `Sesi: ${kenapa.sessionDate} (EOD Bursa Efek Indonesia, WIB)`,
+      );
+      lines.push("");
+    }
+    for (const k of kenapa.items) {
+      const dir = (k.changePercent ?? 0) > 0 ? "Naik" : "Turun";
+      const cleanTicker = k.ticker.toLowerCase();
+      lines.push(
+        `### Kenapa Saham ${k.ticker} ${dir} — ${k.name}`,
+      );
+      lines.push(
+        `${k.ticker} bergerak ${(k.changePercent ?? 0) > 0 ? "+" : ""}${(k.changePercent ?? 0).toFixed(2)}% pada sesi ${kenapa.sessionDate ?? "terbaru"} (close vs penutupan sebelumnya, data teknikal.id).`,
+      );
+      lines.push(
+        `URL: ${SITE_URL}/saham/${cleanTicker}/kenapa-${dir === "Naik" ? "naik" : "turun"}-hari-ini`,
+      );
+      lines.push("Kategori: Kenapa Saham Naik/Turun");
+      lines.push("");
+    }
   }
 
   // Stock list

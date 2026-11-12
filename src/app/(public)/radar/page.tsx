@@ -10,7 +10,9 @@ import { TelegramSubscribeCta } from "@/components/telegram/subscribe-cta";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "IDX Radar — Sinyal & Skor Saham Hari Ini | TeknikalID",
+  // qa-2026-11-12-02: tanpa "| TeknikalID" — layout template "%s | TeknikalID"
+  // sudah menambahkan brand; menulisnya di sini = double-brand di title live.
+  title: "IDX Radar — Sinyal & Skor Saham Hari Ini",
   description:
     "Pantau radar saham IDX hari ini: filter value, EMA cross, dan akumulasi asing otomatis untuk emiten BEI. Skor sinyal kuantitatif & update tiap sesi bursa.",
   alternates: { canonical: `${SITE_URL}/radar` },
