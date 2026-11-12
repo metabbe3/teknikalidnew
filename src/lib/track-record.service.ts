@@ -48,6 +48,18 @@ export interface TrackRecordData {
  * Event sinyal 110 hari terakhir; harga 140 hari (LEAD N butuh baris ke depan).
  * Superlatif lahir dari rankBestWindow(stats) — dilarang klaim manual di narasi.
  */
+// 12 Nov: cache in-process 1 jam — data harian (komentar halaman sendiri), tapi halaman
+// force-dynamic sehingga tiap view menjalankan window 516k rows (320ms × tiap visit).
+let trCache: { at: number; data: TrackRecordData } | null = null;
+const TR_TTL_MS = 60 * 60 * 1000;
+
+export async function getTrackRecordDataCached(): Promise<TrackRecordData> {
+  if (trCache && Date.now() - trCache.at < TR_TTL_MS) return trCache.data;
+  const data = await getTrackRecordData();
+  trCache = { at: Date.now(), data };
+  return data;
+}
+
 export async function getTrackRecordData(): Promise<TrackRecordData> {
   const raw = await prisma.$queryRaw<RawSignalRow[]>`
     WITH px AS (

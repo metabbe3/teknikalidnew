@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/layout/page-hero";
 import { MonthlyTable, SIGNAL_LABEL, SummaryTable, fmtPct, fmtRate } from "@/components/track-record/tables";
-import { getTrackRecordData, type TrackRecordData } from "@/lib/track-record.service";
+import { getTrackRecordDataCached, type TrackRecordData } from "@/lib/track-record.service";
 import { dateLabel } from "@/lib/utils";
 
 // 516k rows di-aggregate (±0,2s terukur) — data harian, bukan intraday.
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 export default async function TrackRecordPage() {
   let data: TrackRecordData | null = null;
   try {
-    data = await getTrackRecordData();
+    data = await getTrackRecordDataCached();
   } catch {
     data = null; // fail-safe: JANGAN throw — tampil pesan data diperbarui
   }

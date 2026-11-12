@@ -182,8 +182,7 @@ async function getSwingMarketData(): Promise<SwingMarketResponse> {
         AND s."assetClass" = 'EQUITY'
         AND s.ticker NOT LIKE '^%'
         AND si.date >= NOW() - INTERVAL '24 months'
-      ORDER BY si."stockId", si.date ASC
-    `;
+    `;  /* no ORDER BY: computeSwingStats mengurutkan sendiri per emiten — hemat external merge sort 4,6MB */
 
     stats34 = computeSwingStats(backtestRowsRaw, 0.34);
     stats20 = computeSwingStats(backtestRowsRaw, 0.20);
