@@ -42,6 +42,7 @@ function cleanAnswerText(raw: string): string {
 }
 
 import { AiMarkdown } from "@/components/ai/ai-markdown";
+import { useUhu } from "@/components/uhu/uhu-provider";
 
 function AiAnswer({ text, tickers }: { text: string; tickers: string[] }) {
   const cleaned = cleanAnswerText(text);
@@ -50,6 +51,7 @@ function AiAnswer({ text, tickers }: { text: string; tickers: string[] }) {
 }
 
 export function ScreenerAiButton() {
+  const { openUhu, setInput } = useUhu();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [question, setQuestion] = useState("");
@@ -62,14 +64,14 @@ export function ScreenerAiButton() {
 
   useEffect(() => setMounted(true), []);
 
-  // Deep link dari landing SEO: /stocks?view=screener&ask=<q> — buka modal + auto-isi pertanyaan
+  // Deep link dari landing SEO: /stocks?view=screener&ask=<q> — buka Uhu + auto-isi pertanyaan
   useEffect(() => {
     if (!mounted) return;
     const params = new URLSearchParams(window.location.search);
     const q = params.get("ask");
-    if (q && !open) {
-      setQuestion(q);
-      setOpen(true);
+    if (q) {
+      setInput(q);
+      openUhu("/stocks");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mounted]);
@@ -78,8 +80,6 @@ export function ScreenerAiButton() {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
     window.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
-    // ux-2026-10-24-01: autofocus input saat modal terbuka — user langsung
-    // bisa ngetik tanpa klik input dulu (potong 1 klik, preseden ux-16-01).
     const t = setTimeout(() => inputRef.current?.focus(), 60);
     return () => {
       window.removeEventListener("keydown", onKey);
@@ -117,7 +117,8 @@ export function ScreenerAiButton() {
   if (!mounted || !open) {
     return (
       <button
-        onClick={() => setOpen(true)}
+        type="button"
+        onClick={() => openUhu("/stocks")}
         aria-label="Tanya AI"
         className="inline-flex min-h-11 sm:min-h-0 items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-3.5 py-2 text-xs font-semibold text-accent hover:bg-accent/20 transition-colors press-scale"
       >

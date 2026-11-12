@@ -9,6 +9,7 @@ import { formatPrice, formatPercent, stripJk, changeColor, rsiColor } from "@/li
 import { formatDecimalId } from "@/lib/format-number";
 import { signalBadge } from "@/lib/seo/signal-badge";
 import { SahamStrategyLinks } from "@/components/seo/saham-strategy-links";
+import { UhuAskCtaLink } from "@/components/uhu/uhu-provider";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 3600;
@@ -205,15 +206,13 @@ export default async function IndexDetailPage({
             <p className="text-xs sm:text-sm text-text-secondary">
               Bingung memilih saham konstituen <strong className="text-text-primary">{idx.name}</strong> dengan momentum terbaik hari ini?
             </p>
-            <a
-              href={`https://t.me/TeknikalidAgentBot?start=${encodeURIComponent("web_indeks_" + idx.slug.replace(/-/g, ""))}`}
-              target="_blank"
-              rel="noopener noreferrer"
+            <UhuAskCtaLink
+              guestHref="/agent"
               data-engagement="funnel_indeksBotCta"
               className="inline-flex items-center justify-center rounded-lg bg-accent px-3.5 py-2 text-xs font-semibold text-white hover:bg-accent/90 transition-colors shrink-0"
             >
               {`💬 Tanya AI: Saham ${idx.name} mana paling potensial hari ini? — Gratis 3x`}
-            </a>
+            </UhuAskCtaLink>
           </div>
 
           {/* Desktop table */}

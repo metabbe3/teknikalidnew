@@ -1,0 +1,816 @@
+"use client";
+
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type AnchorHTMLAttributes,
+  type ButtonHTMLAttributes,
+  type ReactNode,
+} from "react";
+import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
+
+export interface UhuMessage {
+  id: string;
+  role: "user" | "assistant";
+  text: string;
+  streaming?: boolean;
+}
+
+export type GateState = "NONE" | "AUTH" | "NO_BINDING";
+
+export interface UhuSuggestionChip {
+  label: string;
+  prompt: string;
+}
+
+export interface UhuContextValue {
+  open: boolean;
+  setOpen: (open: boolean, pageContextOverride?: string) => void;
+  openUhu: (pageContextOverride?: string) => void;
+  closeUhu: () => void;
+  messages: UhuMessage[];
+  input: string;
+  setInput: (value: string) => void;
+  streaming: boolean;
+  isLive: boolean;
+  gate: GateState;
+  effectiveGate: GateState;
+  isGuest: boolean;
+  errorBanner: string | null;
+  setErrorBanner: (value: string | null) => void;
+  unreadWhileClosed: boolean;
+  pageContext: string | undefined;
+  setPageContext: (ctx: string | undefined) => void;
+  chips: UhuSuggestionChip[];
+  agentChips: UhuSuggestionChip[];
+  send: (textOverride?: string, pageContextOverride?: string) => Promise<void>;
+}
+
+const STORAGE_KEY = "uhu_chat_history";
+const MAX_STORED_MESSAGES = 20;
+
+function formatTickerJk(raw: string): string {
+  const cleaned = raw.trim().toUpperCase();
+  if (!cleaned) return "";
+  return cleaned.endsWith(".JK") ? cleaned : `${cleaned}.JK`;
+}
+
+function extractStockTickerFromPath(pathname: string | null, customCtx?: string): string | null {
+  if (pathname) {
+    const match = pathname.match(/^\/stocks\/([^/?#]+)/);
+    if (match && match[1]) {
+      try {
+        return formatTickerJk(decodeURIComponent(match[1]));
+      } catch {
+        return formatTickerJk(match[1]);
+      }
+    }
+  }
+  if (customCtx) {
+    const subMatch = customCtx.match(/^\/stocks\/([^/?#]+)/);
+    if (subMatch && subMatch[1]) {
+      return formatTickerJk(subMatch[1]);
+    }
+    if (/^[A-Za-z]{4}(\.JK)?$/i.test(customCtx.trim())) {
+      return formatTickerJk(customCtx);
+    }
+  }
+  return null;
+}
+
+export function buildSuggestionChips(
+  pathname: string | null,
+  customPageContext?: string
+): UhuSuggestionChip[] {
+  const ticker = extractStockTickerFromPath(pathname, customPageContext);
+  if (ticker) {
+    return [
+      {
+        label: "📊 Analisa saham ini",
+        prompt: `Analisa teknikal ${ticker} dong, singkat`,
+      },
+      {
+        label: "⚖️ Bandingkan vs saham lain",
+        prompt: `Bandingkan ${ticker} dengan rival terdekatnya`,
+      },
+      {
+        label: "📰 Ada berita soal ini?",
+        prompt: `Ada berita terbaru soal ${ticker}?`,
+      },
+    ];
+  }
+
+  if (pathname === "/pasar" || pathname === "/") {
+    return [
+      {
+        label: "🕐 Sesi pasar sekarang gimana?",
+        prompt: "Sesi pasar sekarang gimana?",
+      },
+      {
+        label: "🔥 Top sinyal hari ini",
+        prompt: "Top sinyal hari ini",
+      },
+    ];
+  }
+
+  if (pathname && pathname.startsWith("/berita")) {
+    return [
+      {
+        label: "📌 Ringkas berita penting hari ini",
+        prompt: "Ringkas berita penting hari ini",
+      },
+    ];
+  }
+
+  return [
+    {
+      label: "💡 Tanya apa aja soal saham",
+      prompt: "Tanya apa aja soal saham",
+    },
+  ];
+}
+
+const UhuContext = createContext<UhuContextValue | null>(null);
+
+const NOOP_CONTEXT: UhuContextValue = {
+  open: false,
+  setOpen: () => {},
+  openUhu: () => {},
+  closeUhu: () => {},
+  messages: [],
+  input: "",
+  setInput: () => {},
+  streaming: false,
+  isLive: false,
+  gate: "NONE",
+  effectiveGate: "AUTH",
+  isGuest: true,
+  errorBanner: null,
+  setErrorBanner: () => {},
+  unreadWhileClosed: false,
+  pageContext: undefined,
+  setPageContext: () => {},
+  chips: [{ label: "💡 Tanya apa aja soal saham", prompt: "Tanya apa aja soal saham" }],
+  agentChips: [],
+  send: async () => {},
+};
+
+/**
+ * mergeChips: follow-up agent (prioritas, maks 3) + chips kontekstual halaman mengisi
+ * sisa slot — jadi di page saham lain chips "Analisa saham ini" tetap muncul walau
+ * sebelumnya ada follow-up dari chat di page lain (FIX owner 10 Nov).
+ */
+export function mergeChips(
+  agent: UhuSuggestionChip[],
+  contextual: UhuSuggestionChip[]
+): UhuSuggestionChip[] {
+  const seen = new Set<string>();
+  const out: UhuSuggestionChip[] = [];
+  for (const c of [...agent, ...contextual]) {
+    const key = c.prompt.trim();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(c);
+    if (out.length >= 3) break;
+  }
+  return out;
+}
+
+export function useUhu(): UhuContextValue {
+  const ctx = useContext(UhuContext);
+  return ctx ?? NOOP_CONTEXT;
+}
+
+export function UhuProvider({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const { status: sessionStatus } = useSession();
+
+  const [open, setOpenState] = useState(false);
+  const openRef = useRef(false);
+
+  const [customCtxState, setCustomCtxState] = useState<{
+    forPath: string | null;
+    value: string | undefined;
+  }>({ forPath: null, value: undefined });
+
+  const customPageContext =
+    customCtxState.forPath === pathname ? customCtxState.value : undefined;
+
+  const setCustomPageContext = useCallback(
+    (value: string | undefined) => {
+      setCustomCtxState({ forPath: pathname, value });
+    },
+    [pathname]
+  );
+
+  const [messages, setMessages] = useState<UhuMessage[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const raw = sessionStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as UhuMessage[];
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.slice(-MAX_STORED_MESSAGES);
+        }
+      }
+    } catch {
+      // ignore storage errors
+    }
+    return [];
+  });
+  const [input, setInput] = useState("");
+  const [streaming, setStreaming] = useState(false);
+  const [isLive, setIsLive] = useState(false);
+  const [gate, setGate] = useState<GateState>("NONE");
+  const [errorBanner, setErrorBanner] = useState<string | null>(null);
+  const [unreadWhileClosed, setUnreadWhileClosed] = useState(false);
+
+  const abortRef = useRef<AbortController | null>(null);
+  const prevOpenRef = useRef(false);
+  const streamingRef = useRef(false);
+
+  const effectiveGate: GateState =
+    sessionStatus === "unauthenticated"
+      ? "AUTH"
+      : sessionStatus === "authenticated" && gate === "AUTH"
+        ? "NONE"
+        : gate;
+
+  const isGuest: boolean =
+    sessionStatus !== "authenticated" || effectiveGate === "AUTH";
+
+  // Normalisasi pageContext agar agentd aware halaman aktif:
+  // "/stocks/BBCA.JK" → "BBCA.JK" (ticker → grounding auto), pathname lain apa adanya.
+  const rawPageContext = customPageContext ?? pathname ?? undefined;
+  const pageContext = (() => {
+    if (!rawPageContext) return undefined;
+    const m = rawPageContext.match(/^\/(?:stocks|saham)\/([A-Za-z]{4}(?:\.JK)?)$/);
+    if (m) return m[1].toUpperCase().includes(".JK") ? m[1].toUpperCase() : `${m[1].toUpperCase()}.JK`;
+    return rawPageContext;
+  })();
+
+  const chips = useMemo(
+    () => buildSuggestionChips(pathname, customPageContext),
+    [pathname, customPageContext]
+  );
+
+  // Chips dinamis dari agent (SSE "suggestions" — follow-up agent; owner 10 Nov:
+  // di web tombol follow-up = suggestion chips klik, bukan button Telegram).
+  const [agentChips, setAgentChips] = useState<UhuSuggestionChip[]>([]);
+
+  // FIX 10 Nov (owner: "chips gak muncul di pages lain"): follow-up chips milik KONTEKS
+  // halaman tempat ia lahir — pindah page → chips lama reset supaya chips kontekstual
+  // page baru bisa tampil (tidak ketimpa chips soal saham lama).
+  const agentChipsPathRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (agentChipsPathRef.current === null) {
+      agentChipsPathRef.current = pathname;
+      return;
+    }
+    if (agentChipsPathRef.current !== pathname) {
+      agentChipsPathRef.current = pathname;
+      setAgentChips([]);
+    }
+  }, [pathname]);
+
+  // Global opener: notif bell / link lain bisa buka panel Uhu via window event
+  // (owner 10 Nov: klik notif "Uhu menjawab" harus membuka panel Uhu + restore history).
+  const setOpenRef = useRef<(nextOpen: boolean, pageContextOverride?: string) => void>(() => {});
+  useEffect(() => {
+    const handler = () => setOpenRef.current(true);
+    window.addEventListener("uhu:open", handler);
+    return () => window.removeEventListener("uhu:open", handler);
+  }, []);
+
+  const setOpen = useCallback(
+    (nextOpen: boolean, pageContextOverride?: string) => {
+      openRef.current = nextOpen;
+      if (pageContextOverride !== undefined) {
+        setCustomCtxState({ forPath: pathname, value: pageContextOverride });
+      }
+      setOpenState(nextOpen);
+      if (nextOpen) {
+        setUnreadWhileClosed(false);
+        // HISTORY RESTORE: panel dibuka kosong → tarik 10 pesan terakhir dari server
+        // (jawaban yang selesai saat user pindah tab tetap kembali).
+        setMessages((prev) => {
+          // Restore saat: panel kosong ATAU bubble assistant terakhir masih kosong
+          // (streaming terputus karena close/refresh di tengah — kasus owner 10 Nov).
+          const lastEmpty =
+            prev.length > 0 &&
+            prev[prev.length - 1].role === "assistant" &&
+            !prev[prev.length - 1].text.trim();
+          const firstEmptyAssistantIdx = prev.findIndex(
+            (m) => m.role === "assistant" && !m.text.trim()
+          );
+          if (prev.length > 1 && !lastEmpty && firstEmptyAssistantIdx === -1) return prev; // obrolan lokal sehat
+          void fetch("/api/uhu/history")
+            .then(async (res) => {
+              if (!res.ok) return null;
+              const data = (await res.json()) as {
+                ok?: boolean;
+                messages?: Array<{ role: string; text: string }>;
+              };
+              if (!data?.ok || !Array.isArray(data.messages) || data.messages.length === 0) return null;
+              // Race guard: jangan timpa bila user sudah mulai mengirim.
+              setMessages((cur) => {
+                const curEmpty =
+                  cur.length > 0 &&
+                  cur[cur.length - 1].role === "assistant" &&
+                  !cur[cur.length - 1].text.trim();
+                const curHealthy = cur.length > 1 && !curEmpty;
+                if ((curHealthy || streamingRef.current) && cur.length > 1) return cur;
+                // Bersihkan artefak jalur Telegram: tombol [[BTN]] + baris VERDIK
+                // (history server menyimpan reply mentah yang dipakai ulang LLM).
+                const stripBtn = (t: string) =>
+                  t
+                    .split("\n")
+                    .filter(
+                      (ln) =>
+                        !/^\s*\[\[BTN:/i.test(ln) && !/^\s*VERDIK\b/i.test(ln)
+                    )
+                    .join("\n")
+                    .replace(/\n{3,}/g, "\n\n")
+                    .trim();
+                // BTN dari jawaban terakhir → chips suggestion (klik = kirim query)
+                const rawLastAssistant = [...(data.messages ?? [])]
+                  .reverse()
+                  .find((m) => m.role === "assistant" && /\[\[BTN:/i.test(m.text ?? ""));
+                const btnChips: UhuSuggestionChip[] = [];
+                if (rawLastAssistant) {
+                  const re = /\[\[BTN:\s*([^:\]]+?)\s*::\s*([^\]]+?)\s*\]\]/g;
+                  let mm: RegExpExecArray | null;
+                  while ((mm = re.exec(rawLastAssistant.text ?? "")) !== null && btnChips.length < 3) {
+                    btnChips.push({ label: mm[1], prompt: mm[2] });
+                  }
+                }
+                const restored = data.messages!.slice(-10).map((m, i) => ({
+                  id: `h-${Date.now()}-${i}`,
+                  role: m.role === "user" ? ("user" as const) : ("assistant" as const),
+                  text: m.role === "user" ? m.text ?? "" : stripBtn(m.text ?? ""),
+                }));
+                if (btnChips.length > 0) setAgentChips(btnChips);
+                return restored;
+              });
+              return null;
+            })
+            .catch(() => undefined);
+          return prev;
+        });
+      }
+    },
+    [pathname]
+  );
+
+  useEffect(() => {
+    setOpenRef.current = setOpen;
+  }, [setOpen]);
+
+  const openUhu = useCallback(
+    (pageContextOverride?: string) => {
+      setOpen(true, pageContextOverride);
+    },
+    [setOpen]
+  );
+
+  const closeUhu = useCallback(() => {
+    setOpen(false);
+  }, [setOpen]);
+
+  // Simpan riwayat ke sessionStorage (maks 20 pesan)
+  useEffect(() => {
+    const completed = messages.filter((m) => !m.streaming && m.text.trim().length > 0);
+    if (completed.length === 0) return;
+    try {
+      sessionStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(completed.slice(-MAX_STORED_MESSAGES))
+      );
+    } catch {
+      // ignore storage quota errors
+    }
+  }, [messages]);
+
+  // Cek status Live (/api/uhu GET -> /api/chat/status) saat mount dan saat panel dibuka
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/uhu", { method: "GET", cache: "no-store" })
+      .then(async (res) => {
+        if (res.status === 401) {
+          if (!cancelled) setGate("AUTH");
+          return { ok: false };
+        }
+        if (!res.ok) return { ok: false };
+        return (await res.json()) as { ok?: boolean };
+      })
+      .then((data) => {
+        if (!cancelled) setIsLive(Boolean(data?.ok));
+      })
+      .catch(() => {
+        if (!cancelled) setIsLive(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [open]);
+
+  // Restore riwayat dari server (/api/uhu/history) saat open false->true dan messages.length <= 1
+  useEffect(() => {
+    const wasOpen = prevOpenRef.current;
+    prevOpenRef.current = open;
+    if (!open || wasOpen) return;
+    if (messages.length > 1 || streaming || streamingRef.current) return;
+
+    const controller = new AbortController();
+    fetch("/api/uhu/history", {
+      method: "GET",
+      cache: "no-store",
+      signal: controller.signal,
+    })
+      .then(async (res) => {
+        if (!res.ok) return null;
+        return (await res.json()) as {
+          ok?: boolean;
+          messages?: Array<{ role?: string; text?: string; ts?: number | string }>;
+        };
+      })
+      .then((data) => {
+        if (!data?.ok || !Array.isArray(data.messages) || data.messages.length === 0) {
+          return;
+        }
+        if (streamingRef.current) return;
+
+        const restored: UhuMessage[] = data.messages
+          .filter(
+            (m): m is { role: "user" | "assistant"; text: string; ts?: number | string } =>
+              Boolean(
+                m &&
+                  (m.role === "user" || m.role === "assistant") &&
+                  typeof m.text === "string" &&
+                  m.text.trim().length > 0
+              )
+          )
+          .slice(-10)
+          .map((m, i) => ({
+            id: `h-${m.ts ?? 0}-${i}`,
+            role: m.role,
+            text: m.text,
+            streaming: false,
+          }));
+
+        if (restored.length === 0) return;
+
+        setMessages((prev) => {
+          if (streamingRef.current || prev.some((m) => m.streaming)) {
+            return prev;
+          }
+          return restored;
+        });
+      })
+      .catch(() => {
+        // Error/abort silent
+      });
+
+    return () => {
+      controller.abort();
+    };
+  }, [open, messages.length, streaming]);
+
+  // Hanya abort saat provider unmount (TIDAK saat panel ditutup agar async completion tetap jalan)
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+    };
+  }, []);
+
+  const send = useCallback(
+    async (textOverride?: string, pageContextOverride?: string) => {
+      const rawText = typeof textOverride === "string" ? textOverride : input;
+      const trimmed = rawText.trim();
+      if (!trimmed || streaming) return;
+
+      if (sessionStatus === "unauthenticated") {
+        setGate("AUTH");
+        return;
+      }
+
+      const activeContext = pageContextOverride ?? pageContext;
+
+      setErrorBanner(null);
+      setAgentChips([]); // chips follow-up lama bersih saat pertanyaan baru dikirim
+      const userMsg: UhuMessage = {
+        id: `u-${Date.now()}`,
+        role: "user",
+        text: trimmed,
+      };
+      const assistantId = `a-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+
+      setInput("");
+
+      setMessages((prev) => [
+        ...prev.slice(-(MAX_STORED_MESSAGES - 2)),
+        userMsg,
+        { id: assistantId, role: "assistant", text: "", streaming: true },
+      ]);
+      streamingRef.current = true;
+      setStreaming(true);
+
+      const controller = new AbortController();
+      abortRef.current = controller;
+
+      const removeEmptyAssistant = () => {
+        setMessages((prev) =>
+          prev.filter((m) => !(m.id === assistantId && m.text.trim().length === 0))
+        );
+      };
+
+      let aborted = false;
+
+      try {
+        const res = await fetch("/api/uhu", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: trimmed,
+            ...(activeContext ? { pageContext: activeContext } : {}),
+          }),
+          signal: controller.signal,
+        });
+
+        if (!res.ok) {
+          removeEmptyAssistant();
+          let errPayload: { error?: string; message?: string } = {};
+          try {
+            errPayload = (await res.json()) as { error?: string; message?: string };
+          } catch {
+            // ignore non-json
+          }
+
+          if (res.status === 401 || errPayload.error === "AUTH") {
+            setGate("AUTH");
+            return;
+          }
+          if (res.status === 409 || errPayload.error === "NO_BINDING") {
+            setGate("NO_BINDING");
+            return;
+          }
+          if (res.status === 429) {
+            setErrorBanner(
+              errPayload.message ||
+                "Kuota tanya Uhu kamu sudah penuh untuk periode ini. Cek status paket di halaman Agent ya."
+            );
+            return;
+          }
+          if (
+            res.status === 503 ||
+            errPayload.error === "AGENT_OFFLINE" ||
+            errPayload.error === "UHU_DISABLED"
+          ) {
+            setIsLive(false);
+            setErrorBanner(
+              "Uhu sedang istirahat sebentar (layanan AI belum aktif). Coba beberapa saat lagi ya."
+            );
+            return;
+          }
+
+          setErrorBanner(
+            errPayload.message || "Maaf, koneksi ke Uhu sempat terputus. Coba kirim ulang ya."
+          );
+          return;
+        }
+
+        if (!res.body) {
+          removeEmptyAssistant();
+          setErrorBanner("Respons kosong dari server. Coba lagi sebentar ya.");
+          return;
+        }
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+
+        const processBlock = (rawBlock: string) => {
+          const lines = rawBlock.split(/\r?\n/);
+          let eventName = "message";
+          const dataLines: string[] = [];
+
+          for (const line of lines) {
+            if (line.startsWith("event:")) {
+              eventName = line.slice(6).trim();
+            } else if (line.startsWith("data:")) {
+              dataLines.push(line.slice(5).trimStart());
+            }
+          }
+
+          if (dataLines.length === 0) return;
+          const dataStr = dataLines.join("\n");
+
+          let parsed: {
+            t?: string;
+            turnsUsed?: number;
+            ok?: boolean;
+            message?: string;
+            error?: string;
+          } | null = null;
+
+          try {
+            parsed = JSON.parse(dataStr);
+          } catch {
+            // Fallback bila data berupa plain text token
+            if (eventName === "token") {
+              parsed = { t: dataStr };
+            }
+          }
+
+          if (!parsed) return;
+
+          if (eventName === "error" || parsed.error) {
+            const rawMsg = parsed.message || parsed.error || "";
+            const friendly = /quota|limit|habis|429/i.test(rawMsg)
+              ? "Kuota chat Uhu kamu sudah habis. Yuk cek atau upgrade paket di /agent."
+              : rawMsg || "Maaf, Uhu mengalami kendala saat memproses pertanyaanmu.";
+            setErrorBanner(friendly);
+            return;
+          }
+
+          if (eventName === "token" || typeof parsed.t === "string") {
+            const chunkText = parsed.t ?? "";
+            if (chunkText) {
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === assistantId ? { ...m, text: m.text + chunkText } : m
+                )
+              );
+            }
+          }
+
+          if (eventName === "suggestions" && Array.isArray(parsed)) {
+            const sugg = (parsed as Array<{ label?: string; query?: string }>)
+              .filter((s) => s && typeof s.label === "string" && typeof s.query === "string")
+              .slice(0, 3)
+              .map((s) => ({ label: s.label as string, prompt: s.query as string }));
+            if (sugg.length > 0) setAgentChips(sugg);
+          }
+
+          if (eventName === "done") {
+            setMessages((prev) =>
+              prev.map((m) => (m.id === assistantId ? { ...m, streaming: false } : m))
+            );
+          }
+        };
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+
+          const blocks = buffer.split(/\r?\n\r?\n/);
+          buffer = blocks.pop() ?? "";
+          for (const block of blocks) {
+            if (block.trim()) processBlock(block);
+          }
+        }
+
+        if (buffer.trim()) {
+          processBlock(buffer);
+        }
+
+        // Pastikan status streaming selesai & bersihkan bubble kosong bila ada error
+        setMessages((prev) =>
+          prev
+            .map((m) => (m.id === assistantId ? { ...m, streaming: false } : m))
+            .filter((m) => !(m.id === assistantId && m.text.trim().length === 0))
+        );
+      } catch (err: unknown) {
+        if (err instanceof Error && err.name === "AbortError") {
+          aborted = true;
+          return;
+        }
+        removeEmptyAssistant();
+        setErrorBanner("Sambungan ke Uhu terganggu. Coba lagi sebentar ya.");
+      } finally {
+        streamingRef.current = false;
+        setStreaming(false);
+        if (!aborted && !openRef.current) {
+          setUnreadWhileClosed(true);
+        }
+      }
+    },
+    [input, streaming, sessionStatus, pageContext]
+  );
+
+  const value = useMemo<UhuContextValue>(
+    () => ({
+      open,
+      setOpen,
+      openUhu,
+      closeUhu,
+      messages,
+      input,
+      setInput,
+      streaming,
+      isLive,
+      gate,
+      effectiveGate,
+      isGuest,
+      errorBanner,
+      setErrorBanner,
+      unreadWhileClosed,
+      pageContext,
+      setPageContext: setCustomPageContext,
+      chips: mergeChips(agentChips, chips),
+      agentChips,
+      send,
+    }),
+    [
+      open,
+      setOpen,
+      openUhu,
+      closeUhu,
+      messages,
+      input,
+      streaming,
+      isLive,
+      gate,
+      effectiveGate,
+      isGuest,
+      errorBanner,
+      unreadWhileClosed,
+      pageContext,
+      setCustomPageContext,
+      chips,
+      agentChips,
+      send,
+    ]
+  );
+
+  return <UhuContext.Provider value={value}>{children}</UhuContext.Provider>;
+}
+
+/**
+ * Tombol pembuka Uhu di halaman saham (Stock page / TickerFab / StockCard).
+ * Selalu membuka panel Uhu dengan pageContext=ticker.
+ */
+export function UhuStockTrigger({
+  ticker,
+  children,
+  onClick,
+  ...rest
+}: ButtonHTMLAttributes<HTMLButtonElement> & {
+  ticker?: string;
+  children: ReactNode;
+}) {
+  const { openUhu, pageContext } = useUhu();
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        onClick?.(e);
+        openUhu(ticker ?? pageContext);
+      }}
+      {...rest}
+    >
+      {children}
+    </button>
+  );
+}
+
+/**
+ * CTA "Tanya AI" untuk halaman non-saham (mis. /pasar, /, /indeks, /berita):
+ * - Logged-in: klik membuka panel Uhu.
+ * - Guest: tetap link ke /agent (funnel register/monetisasi).
+ */
+export function UhuAskCtaLink({
+  guestHref = "/agent",
+  pageContextOverride,
+  children,
+  onClick,
+  ...rest
+}: AnchorHTMLAttributes<HTMLAnchorElement> & {
+  guestHref?: string;
+  pageContextOverride?: string;
+  children: ReactNode;
+}) {
+  const { isGuest, openUhu } = useUhu();
+  return (
+    <a
+      href={guestHref}
+      onClick={(e) => {
+        onClick?.(e);
+        if (!isGuest) {
+          e.preventDefault();
+          openUhu(pageContextOverride);
+        }
+      }}
+      {...rest}
+    >
+      {children}
+    </a>
+  );
+}

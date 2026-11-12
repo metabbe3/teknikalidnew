@@ -1,5 +1,6 @@
 import { formatPercentPlain } from "@/lib/utils";
 import dynamicImport from "next/dynamic";
+import { UhuAskCtaLink } from "@/components/uhu/uhu-provider";
 
 const HeroSearch = dynamicImport(
   () => import("@/components/home/hero-search").then((m) => ({ default: m.HeroSearch })),
@@ -72,12 +73,13 @@ export function PersonalizedGreeting({
         {/* Owner 24 Okt: cari saham langsung dari beranda — hemat 1 step */}
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex-1 min-w-[240px]"><HeroSearch /></div>
-          <a
-            href="/agent?from=greeting"
+          <UhuAskCtaLink
+            guestHref="/agent?from=greeting"
+            pageContextOverride="/"
             className="inline-flex min-h-[34px] items-center gap-1.5 rounded-full bg-accent-bright px-4 text-xs font-semibold text-white transition-colors hover:brightness-110"
           >
             💬 Tanya AI — gratis 3x
-          </a>
+          </UhuAskCtaLink>
         </div>
 
       </div>

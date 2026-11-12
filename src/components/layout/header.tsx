@@ -5,7 +5,7 @@ import { formatPercentPlain } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { NotificationBell } from "@/components/community/notification-bell";
+import { NotifBell } from "@/components/layout/notif-bell";
 import { UserMenu } from "@/components/layout/user-menu";
 import { useIhsg } from "@/hooks/use-ihsg";
 
@@ -184,7 +184,7 @@ export function Header() {
 
         {/* Right side */}
         <div className="flex items-center gap-2">
-          <NotificationBell />
+          {session?.user && <NotifBell />}
 
           <div className="hidden sm:block">
             <UserMenu user={session?.user} />
