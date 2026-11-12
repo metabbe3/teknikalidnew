@@ -5857,14 +5857,30 @@
       "date": "2026-11-12",
       "type": "ops",
       "priority": "P1",
-      "status": "pending",
+      "status": "night_ready",
       "train": "T-1113-M",
       "scheduled_slot": "2026-11-13 BE siang 09:30 Jumat (merge+review; naik kereta T-1113-M jumat malam)",
       "north_star": "STICKY+TRUST instrumen — T5 habit funnel 100% blind (join mati) + blocklist kontaminasi; KPI harus jujur sebelum keputusan ratchet",
       "title": "[KONVERSI][BUGFIX-instrumen] Fix join T5 funnel-v2 -> agent.agent_user.anon_id (usulan bo-2026-11-12-01 needs_owner->CEO APPROVE) + append 2 UUID known-smoke ke blocklist",
       "spec": "RIDER-1 (P1): ganti join tahap-T5 funnel-v2 dari TelegramWatch.anonPrefix (NULL 9/9 sejak 28 Okt, poll.mjs tak pernah jalan, pivot 6 Nov pindah ke TeknikalidAgentBot) menjadi LEFT(REPLACE(actor,'-',''),12) = agent.agent_user.anon_id — privilege SELECT terverifikasi bo 12 Nov 03:2x; 1-file service; replay baseline 0 match jujur. RIDER-2 (P3, config-only): append e7df9d38 + 4f00932f (known-smoke 10 Nov, QA Sentinel 11 Nov konfirmasi) ke blocklist service config ops-2026-11-11-01 — pola 1-file sama. HOLD (JANGAN blocklist): e4b417c3 (123PV/4d, bisa user nyata) + 5ae28974 — review audit bo berikutnya. BUKAN fitur baru: perbaikan instrumen KPI (freeze-safe). DONE WHEN: (a) replay SQL T5 join baru == angka manual bo-2026-11-12-01 (overlap web x agent_user = 0 saat baseline, jujur 0 bukan error); (b) smoke join positif: 1 anonId qa- prefix test tercatat match; (c) blocklist aktif -> replay T3 turun tepat 2 (9->7 basis 12 Nov); (d) tsc EXIT-0 + unit test hijau; (e) returning mgg-final identik dgn/tanpa rider-2 (invariant).",
       "done_when": "replay T5 join baru == manual bo-2026-11-12-01 + smoke qa- match + blocklist T3 9->7 + tsc EXIT-0 + returning invariant",
-      "created_by": "CEO-0815 12 Nov (sumber: bo-2026-11-12-01 diagnosis + ACK opsi fix; QA Sentinel 11 Nov konfirmasi known-smoke)"
+      "created_by": "CEO-0815 12 Nov (sumber: bo-2026-11-12-01 diagnosis + ACK opsi fix; QA Sentinel 11 Nov konfirmasi known-smoke)",
+      "branch": "night/ops-2026-11-12-01",
+      "commits": "e1e3443 (test failing-first) + 3539933 (fix)",
+      "night_result": {
+        "verify": {
+          "tsc": "npx tsc --noEmit EXIT-0 (2x: pre-commit + pasca-push)",
+          "selftest_new": "scripts/selftest/funnel-t5-join.selftest.ts 5/5 PASS (failing-first: 7 fail -> 0)",
+          "selftest_regress": "actor-blocklist.selftest.ts 7/7 PASS",
+          "lint": "sdlc_lint.py 0 error (0 token)",
+          "replay_sql": "funnel baru T1 358/T2 169/T3 7/T4 3/T5 0 — T3 9->7 tepat sesuai AC; T5=0 jujur (overlap web-visitor-21d x agent_user = 0, verifikasi 12 Nov 23:0x)",
+          "smoke_join_positif": "10/10 anon_id agent_user match predicate LEFT(REPLACE,12) via actor sintetis kanonik",
+          "invariant_returning": "DEVIASI KECIL: mgg-final 02Nov 13,3% -> 13,4% (+0,1pp) — kedua UUID known-smoke punya 41 PV dlm jendela mgg-final (aktif 6-12 Nov, bukan cuma 10 Nov); arah lebih jujur, BUKAN invariant persis AC (e). Dicatat terbuka utk review CTO."
+        },
+        "diff": "2 file: funnel-v2 route (join T5 baru + doc) + actor-blocklist (append 2 UUID + komentar HOLD); 1 file baru selftest",
+        "estimasi_review": "10-15 mnt (diff kecil, selftest failing-first jadi bukti)",
+        "catatan_merge": "RIDER-1 join T5 + RIDER-2 blocklist SATU branch sesuai spec. HOLD e4b417c3+5ae28974 dihormati (selftest C4 mengunci)."
+      }
     },
     {
       "id": "ops-2026-11-12-02",
