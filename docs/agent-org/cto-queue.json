@@ -5603,7 +5603,7 @@
       "spec": "[KONVERSI][BUGFIX] Task FE Builder 19:15 hari ini (slot Sen-Jum valid): VERIFIKASI PASKA-MERGE 9a64179 — bukti fisik live dari fitur AGY yang belum pernah diverifikasi org-verify (semua verify = self AGY/Hermes): (1) OHLCV live strip: buka /stocks/BBCA.JK saat market open 09:00-15:49 (polling /api/live-quotes tiap 60s, hydrate dayHigh/dayLow/open/volume, marketState guard) — screenshot/DOM bukti data-live-oh ter-update >1 sampel (bukan render SSR statis); (2) label sesi jujur: tanggal sesi = tanggal trading terakhir yang benar, bukan tanggal artikel; (3) PricingBox 3 kolom + /agent pricing + GuestSellModal home+berita + Free Trial Pro 7 hari (380a816): DOM semua titik mount + klik modal guest = register CTA jalan; (4) mobile 375px tidak overflow chip. Jika temuan: entry QA baru + P1 bila fatal. Freeze-safe: verifikasi fitur existing, bukan fitur baru.",
       "priority": "P2",
       "status": "pending",
-      "scheduled_slot": "2026-11-11 slot Reviewer/BE saat market open 09:00-15:49",
+      "scheduled_slot": "2026-11-13 BE siang 09:30 Jumat item-0 (VERIF AGY OHLCV market-open; reslot CTO 12 Nov dari 11 Nov stale — Kamis 09:30 BE siang fokus kereta T-1112-W)",
       "train": "",
       "north_star": "TRUST (verify fitur sebelum kredensial org)",
       "done_when": "(1) DOM/screenshot tiap titik mount PricingBox/Modal; (2) bukti polling live-quotes >1 sampel saat open ATAU catatan eksplisit bila run di luar jam market; (3) tsc/build hijau jika ada perbaikan",
@@ -5745,7 +5745,8 @@
       "created_at": "2026-11-11T19:55:00+07:00",
       "branch": "night/ux-2026-11-11-01 @ 590ea0e (REBASED di atas fe39bd9; base origin/main a93c948 FF-murni; delta unik vs main = logo manifest + chip header artikel 2 lokasi — KOMPLEMEN fe39bd9, bukan duplikat: lokasi chip beda [header tickerTag/mentionedTickers vs sinyal screener section])",
       "night_result": "tsc EXIT-0 (0 error) + esbuild OK; commit 164b193+7de1f02 pushed. Bukti: manifest 962 emiten (422 jpg/392 png/148 svg); hit-area chip 20+24=44px. REGIVERIFY prod: (a) /stocks/AMRT.JK src=/logos/AMRT.svg bukan .jpg; (b) docker logs 404-logo ~0 utk ticker manifest; (c) CDP 375px chip rect >=44px; (d) tile fallback utk ticker tanpa logo tetap jalan.",
-      "kondektur_note": "Naik dini via kereta T-1111-M 11 Nov (fe39bd9 sudah di main HEAD a93c948 saat build P0 hotfix; tidak bisa dikeluarkan dari build). Bukti fisik: /berita 200 1,2s; tap-target verify penuh = QA Sentinel 12 Nov. Train resmi tetap T-1112-W."
+      "kondektur_note": "Naik dini via kereta T-1111-M 11 Nov (fe39bd9 sudah di main HEAD a93c948 saat build P0 hotfix; tidak bisa dikeluarkan dari build). Bukti fisik: /berita 200 1,2s; tap-target verify penuh = QA Sentinel 12 Nov. Train resmi tetap T-1112-W.",
+      "cto_merge_note": "12 Nov 07:5x CTO: branch night/ux-2026-11-11-01 MERGED ke main 69bd18b (tsc EXIT-0, pushed origin/main; kolaborasi sesi FE 19:30 fe39bd9 + sesi 20:0x eb2e0c9/590ea0e) — kondektur T-1112-W tinggal build dari main HEAD"
     },
     {
       "id": "prd-2026-11-11-01",
@@ -5877,6 +5878,26 @@
       "spec": "Sumber sre-2026-11-11-1 (candidate->promoted). statejson sudah flock+version-check, tapi 2 entry SRE 7 Nov hilang diam-diam (102->106 entries tanpa jejak). TASK: (1) journal append-only per perubahan (id+aksi+ts+actor) di product-backlog.journal.jsonl, di-tulis statejson.py sendiri; (2) audit+stub writer non-statejson (growth scripts/backlog_health/ad-hoc) -> wajib lewat statejson atau ditolak; (3) tool reconcile: journal vs entries, report delta. DONE WHEN: (a) 2 tulis konkuren simulasi (2 terminal paralel) -> 0 entry hilang + journal 2 baris; (b) grep writer non-statejson aktif = 0; (c) reconcile tool exit 0 di state sekarang; (d) bus entry.",
       "done_when": "simulasi 2-writer konkuren 0 hilang + journal terekam + 0 writer non-statejson aktif + reconcile exit 0",
       "created_by": "CEO-0815 12 Nov (sumber: sre-2026-11-11-1 verdict APPROVE promote)"
+    },
+    {
+      "id": "qa-2026-11-12-01",
+      "date": "2026-11-12",
+      "type": "qa-content-fix",
+      "priority": "P1",
+      "status": "pending",
+      "train": "T-1112-W",
+      "north_star": "TRUST (angka/superlatif salah di halaman publik = kredibilitas runtuh)",
+      "spec": "INTENT (reviewer pagi 12 Nov, replay DB read-only; pola superlatif hari ke-2 berturut): 6 patch konten. (A) brief-pasar-idx-2026-11-12-reli-patah-giaa bagian 'Sinyal Screener Aktif': '8 saham golden cross — antara lain AKPI yang skornya 0,78' SALAH konteks — DB smaCrossDate golden_cross window 4-11 Nov = ASMI, ANDI, GUNA, INOV, HGII, PACK, GEMS, BALI; AKPI golden_cross-nya 2 Nov (di luar window), SMDR 1 Okt. Ganti contoh dgn ticker dari daftar 8 itu (skor cek dulu di StockIndicator 11-11). (B) artikel sama: '106 saham oversold (RSI<30) — terbanyak di sesi terakhir' SALAH arah — DB rsi14<30 per sesi: 9 Nov 139, 10 Nov 106, 11 Nov 106 (seri menurun, bukan puncak). Turunkan jadi 'tetap di level tinggi (106), terbesar masih 9 Nov (139)' atau hapus 'terbanyak'. (C) analis-sore-2026-11-11-akpi sec LSIP: 'skor sinyal melompat dari 0,16 ke 0,38 — perubahan paling tajam di antara delapan cross baru minggu ini' SALAH — DB delta signalScore 10->11 Nov cross window 4-11 non-gorengan: IFII +0,35 top; BLES & CEKA +0,22; LSIP +0,22 rank-3 dari 19. Ganti jadi 'salah satu yang paling tajam (rank-3, +0,22)' atau hapus superlatif. (D) artikel sama, paragraf pasar: 'scan sore ini tetap menemukan ... 8 EMA cross baru' SALAH hitung — DB emaCrossDate=11 Nov (aktif+EQUITY+non-gorengan, definisi layanan) = 9; window 10-11 Nov = 11. Pakai 9 (cross 11 Nov) atau 11 (window), jangan 8. (E) analis-pagi-2026-11-12-akpi + analis-sore-2026-11-11-akpi (BBCA): 'beli bersih asing 0,23 miliar lembar dalam 7 hari sesi 4-11 November' MISMATCH — DB ForeignFlow net 4-11 Nov = 252,6jt lembar (0,25M); 0,23M hanya jika window 5-11 Nov (225,6jt). Samakan window dgn angka (ganti jadi '0,25 miliar sesi 4-11' ATAU '0,23 miliar 7 hari kalender 5-11'), DAN tambah kualifikasi: di window tsb BBCA rank-3 akumulasi asing semua emiten (BUMI 329jt, BNBR 326jt) — klaim 'akumulasi asing big-cap terbesar' hanya benar dgn kualifikasi big-cap eksplisit (konvensi ops-2026-11-05-01). (F) analisa-saham-bren-rebound-vs-sma200: 'Sesi 4 November mencatat 43,1 juta lembar' SALAH tanggal — DB volume 43,1jt = sesi 5 November; 4 Nov = 28,2jt. Ganti '4 November' -> '5 November' (angka 43,1 tetap). ACCEPTANCE: position(frasa-lama)=0 di content+excerpt utk semua 6 patch; grep angka lama di live HTML = 0; replay_sql_gate.py exit 0 utk 4 slug; curl 200 semua halaman; jangan sentuh angka lain yang sudah exact (breadth 218/446/168, IHSG 5.115,04, GC=8, EMA 19/25, movers, 40 judul ticker). Patch via DB content-patch (pola qa-2026-11-11-01), backup valid <24h dicek dulu."
+    },
+    {
+      "id": "qa-2026-11-12-02",
+      "date": "2026-11-12",
+      "type": "qa-seo-fix",
+      "priority": "P2",
+      "status": "pending",
+      "train": "T-1112-W",
+      "north_star": "GROWTH/AI-SEARCH (title double-brand merusak SERP CTR & konsistensi brand)",
+      "spec": "INTENT (reviewer pagi 12 Nov, curl live): title tag /radar DOUBLE-BRAND: 'IDX Radar — Sinyal & Skor Saham Hari Ini | TeknikalID | TeknikalID' (brand muncul 2x). Pelanggaran guardrail SEO 'tanpa double-brand'. Sumber: commit b0eb8cb (seo-p0, live via deploy 06:36). Fix template title /radar -> satu brand saja ('IDX Radar — Sinyal & Skor Saham Hari Ini | TeknikalID'). ACCEPTANCE: curl https://teknikal.id/radar -> '<title>' mengandung 'TeknikalID' tepat 1x; cek sekalian title /stocks ('... | TeknikalID' 1x, sekarang OK) dan home; tsc 0; naik kereta T-1112-W."
     }
   ]
 }

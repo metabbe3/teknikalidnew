@@ -1844,3 +1844,16 @@ Window GSC: 2026-11-04..11-10 vs 10-28..11-03. CATATAN NON-DUPLIKASI: 3 brief 11
 - Deploy app-only 06:36 WIB: image teknikalidnew-app f4558f79 (created 06:35:44), container start 06:36:25; worker TIDAK dibangun (tetap c5d3c1c9 22:25 11 Nov — parity gate dilanggar); TANPA bus entry; deploy.log terakhir 9 Nov (bukan via deploy.sh).
 - Dampak positif (tidak di-revert): /radar 200 (dulu 404), favicon hotfix 617ed096 utuh, invalid-quote 0/90m, home 200.
 - Risiko: unattended deploy tanpa kondektur/bus = pola image-swap 10-11 Nov (ops-2026-11-11-03). Pelaku belum teridentifikasi (kandidat: AGY unattended / sesi SEO owner). Minta owner konfirmasi; ops-2026-11-11-03 Jumat membangun watchdog image-drift.
+
+## [REVIEWER] QA pagi 12 Nov — queue v512
+- [TRUST] qa-2026-11-12-01 P1: 6 klaim salah 4 artikel (GC-list AKPI di luar window · "oversold terbanyak" padahal seri menurun 139→106 · LSIP "paling tajam" padahal rank-3 · "8 EMA cross baru" vs DB 9 · BBCA 0,23M window 4-11 vs DB 0,25M+rank-3 · BREN vol 43,1jt tanggal 4 vs 5 Nov). Pola superlatif salah hari ke-2 berturut — butuh checklist superlatif di prompt generator artikel, bukan cuma patch.
+- [SEO] qa-2026-11-12-02 P2: title /radar double-brand "| TeknikalID | TeknikalID" (b0eb8cb).
+- Deploy-verify: prod f4558f79 = SEO b0eb8cb hard-gate-bypass 06:36 (CTO ESCALATE ddfb71a) — markers SEO live OK (favicon/bell//radar//stocks SSR/llms.txt/auth-health/log bersih), worker parity drift dicatat CTO (kereta malam build atomik). Tidak ada flip lifecycle baru (semua deployed sudah qa_verified true by Sentinel).
+- Minor: typo "confirmasi" (content pos 2983) brief12 — ikut patch qa-11-12-01.
+
+## CTO note 2026-11-12 (CTO 07:45)
+- TEMUAN: ritual CTO pagi DOBEL — job "Backend Builder (pagi)" 07:30 prompt-nya self-identify "CTO AGENT teknikal.id SLOT PAGI" dan mengerjakan merge+ESCALATE ritual (bukti: commit 78f5349 07:35:20, bus mtime 07:36:19, executions.db run 07:30:58-07:36:42), lalu CTO resmi 07:45 mengulang ritual sama = LLM spend ganda + 2 writer state dlm 15 menit.
+- Ghost deploy 06:36 (app-only f4558f79, parity gate dilanggar, tanpa bus): window match job "Growth Daily Check" 06:30:58-06:39:20; commit e3777b7 05:38 / da48ca8 06:18 / b0eb8cb 06:34 di LUAR job cron manapun → kemungkinan besar sesi manual owner (konten SEO-P0 legit, tidak di-revert).
+- Opsi A: owner approve strip label/ritual-CTO dari prompt job 07:30 → builder murni; ritual CTO satu pintu di 07:45. (Saya dilarang edit prompt agent lain — self-referential ban — jadi butuh ACK owner.)
+- Opsi B: status quo 2 slot, pembagian informal (07:30 build / 07:45 ritual) — murah tapi rawan double-write + laporan dobel.
+- Rekomendasi: OPSI A. Guard image-drift watchdog tetap dijadwalkan (ops-2026-11-11-03, Jumat) — menutup kelas insiden 10/11 Nov + window-match hari ini. Pilar: TRUST (state satu-pintu).

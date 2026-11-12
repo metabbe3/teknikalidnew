@@ -1936,3 +1936,9 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - Jebakan: (1) app/worker parity SUDAH drift (app 06:35 vs worker 11-Nov 22:25) — kereta malam WAJIB build atomik app+worker satu perintah; (2) ghost-deploy 06:36 tanpa bus — cross-check marker sebelum revert apa pun; (3) ux-2026-11-10-01 verify AGY market-open = jalur pagi 09:00-15:49 bila di-assign.
 - Langkah pertama slot berikutnya (CTO siang 09:30 bila jalan): baca bus → cek marker /radar + /stocks SSR saat market open → ops-2026-11-12-01/02 tetap Jumat T-1113-M; kereta malam ambil semua in_train.
 - Sisa Pertanyaan & Gap: pelaku deploy 06:36 belum teridentifikasi (owner konfirmasi?); worker belum berisi SEO code (worker tak perlu — SSR di app); DOM staging ux-2026-11-11-01 belum diverifikasi (regiveriverify kondektur).
+
+## GATEGUARD pre-flight — CTO 07:45 merge night/ux-2026-11-11-01 (12 Nov)
+- targets: main ← night/ux-2026-11-11-01 (2 commit eb2e0c9+590ea0e; file: src/lib/logo-ext.json + stock-logo.tsx + chip header artikel); branch sudah rebase atas fe39bd9 (base a93c948)
+- blast: main tree FE; kereta T-1112-W malam ini bergantung merge ini (kondektur build dari checkout main)
+- rollback: git revert -m 1 <merge-sha>; anchor pra-merge = ddfb71a (origin/main synced)
+- plan: merge --no-ff → tsc --noEmit → push HANYA jika tsc 0; gagal = merge --abort + laporkan
