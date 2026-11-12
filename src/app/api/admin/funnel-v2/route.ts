@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
  * GET /api/admin/funnel-v2 — funnel 5-tahap berbasis actor_id (tracking-audit G12).
  * actor_id = COALESCE(User.initialAnonId, PageView.anonId) — manusia, bukan baris view.
  * T1 Datang → T2 Paham (dwell≥15 ATAU eksplor) → T3 Simpan (pantau_tambah/tg) →
- * T4 Balik ≤7 hari → T5 Habit (Telegram aktif via anonPrefix ATAU daftar).
+ * T4 Balik ≤7 hari → T5 Habit (user bot aktif: agent.agent_user.anon_id = LEFT(REPLACE(actor,'-',''),12)).
  */
 export async function GET() {
   const session = await auth();
@@ -69,9 +69,15 @@ export async function GET() {
       (SELECT COUNT(*) FROM base b JOIN days ds ON ds.actor = b.actor
          WHERE b.saved AND ds.nd >= 2
          AND EXISTS (SELECT 1 FROM pv p WHERE p.actor = b.actor AND p.d > b.h0 AND p.d <= b.h0 + 7)) AS t4,
+      -- ops-2026-11-12-01: join lama TelegramWatch.anonPrefix MATI PERMANEN
+      -- (NULL 9/9 rows sejak 28 Okt; poll.mjs penulisnya tak pernah jalan; pivot
+      -- 6 Nov arahkan deeplink ke TeknikalidAgentBot -> agent.agent_user.anon_id).
+      -- Join baru = anon hint 12-hex dari UUID web actor; replay 12 Nov = 0 match
+      -- jujur (belum ada web visitor yang start bot) — T5 tampil benar saat
+      -- konversi bot dimulai. DISTINCT guard duplikat anon_id (defensif).
       (SELECT COUNT(DISTINCT b.actor) FROM base b
-         JOIN "TelegramWatch" tw ON tw."anonPrefix" IS NOT NULL
-              AND LEFT(REPLACE(b.actor, '-', ''), 12) = tw."anonPrefix" AND tw.active = true
+         JOIN agent.agent_user au ON au.anon_id IS NOT NULL
+              AND LEFT(REPLACE(b.actor, '-', ''), 12) = au.anon_id
          WHERE b.saved) AS t5
   `;
 
