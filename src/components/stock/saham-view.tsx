@@ -167,7 +167,7 @@ export function SahamView({
                 engagement="nav_stocksTabSwing"
                 navLabel="nav_hubTabSwing_click"
               >
-                <span>🎯 Setup Swing</span>
+                <span>Setup Swing</span>
                 <span
                   className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-tight ${
                     mode === "swing"
@@ -184,7 +184,7 @@ export function SahamView({
                 engagement="nav_stocksTabPasar"
                 navLabel="nav_hubTabPasar_click"
               >
-                <span>⚡ Koran Pasar</span>
+                <span>Koran Pasar</span>
                 <span
                   className={`h-2 w-2 rounded-full ${
                     mode === "pasar" ? "bg-white" : "bg-emerald-500"

@@ -119,7 +119,7 @@ export function ScreenerAiButton() {
       <button
         onClick={() => setOpen(true)}
         aria-label="Tanya AI"
-        className="inline-flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-3.5 py-2 text-xs font-semibold text-accent hover:bg-accent/20 transition-colors press-scale"
+        className="inline-flex min-h-11 sm:min-h-0 items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-3.5 py-2 text-xs font-semibold text-accent hover:bg-accent/20 transition-colors press-scale"
       >
         <Sparkles className="h-3.5 w-3.5" aria-hidden /> Tanya AI
       </button>
