@@ -2876,6 +2876,52 @@
       "data": "SQL 12 Nov: aktor referrer threads 21d: anon=59, multi_day=2 (3,4%), top multi-day 81b1a95b (3d/4PV), bd8a46cb (2d/5PV). Segmen PV Threads: stocks 48, home 23, berita 0, akademi 0, paper-trading 0. DEDUPE: komplementer ux-2026-11-11-02 (spec_ready) yang menjembatani /berita->sinyal/saham — ini arah sebaliknya /stocks->/berita, permukaan beda, tidak overlap target_files.",
       "first_step": "CEO verdict freeze: ini blok konten-link (bukan fitur baru interaktif?) — kalau dianggap konversi/retensi surface, riset dulu: pola exit halaman /stocks visitor sosmed + kandidat modul 'Analisa terkait {ticker}' 3-link di bawah grafik. Baseline: 0% Threads-aktor menyentuh /berita dari /stocks.",
       "DONE-WHEN": "Riset tertulis: baseline 0/59 terkonfirmasi, mock posisi modul + metrik (share Threads-aktor dengan >=1 PV /berita dalam sesi sama 14d setelah live) didefinisikan, verdict PRD lanjut/stop."
+    },
+    {
+      "id": "sec-2026-11-12-01",
+      "date": "2026-11-12",
+      "priority": "P1",
+      "status": "candidate",
+      "type": "security",
+      "source": "itsec-blue",
+      "title": "[BLUE][ESKALASI-3] Offsite backup MATI hari ke-10 — rclone gdrive 'empty token found' sejak 3 Nov (penerusan sec-2026-11-05-04 → sec-2026-11-09-02)",
+      "data": {
+        "bukti": "rclone lsd gdrive: 21:33 WIB 12 Nov → CRITICAL 'empty token found - please run rclone config reconnect gdrive:'. Cron 'Offsite Backup Sync' exit-1 tiap malam. Dump LOKAL sehat: backups/teknikalid/db-20261112.sql.gz 60MB harian 01:16.",
+        "risiko": "Data customer berbayar (agent_subscription, User) = single point of failure host Mac Mini. Kebakaran/kehilangan disk = total loss DB prod.",
+        "catatan_baru": "rclone NOTICE: shared Google Drive client_id rclone akan retired selama 2026 — reconnect sekalipun kelak minta client_id sendiri (rclone.org/drive/#making-your-own-client-id). Sekalian saat reconnect.",
+        "exploitability": "rendah (resilience/data-loss, bukan celah eksplotasi remote)",
+        "rekomendasi": "Owner 5 menit: rclone config reconnect gdrive: lalu verify rclone lsd gdrive:backups-macmini/teknikalid-db. Pertimbangkan own client_id sekaligus."
+      }
+    },
+    {
+      "id": "sec-2026-11-12-02",
+      "date": "2026-11-12",
+      "priority": "P3",
+      "status": "candidate",
+      "type": "security",
+      "source": "itsec-red",
+      "title": "[RED] npm prod audit: follow-redirects 1.16.0-1.16.1 HIGH (transitive) + 8 moderate build-chain (@sentry/plugins, ts-morph, shadcn, glob/minimatch)",
+      "data": {
+        "bukti": "npm audit --omit=dev 12 Nov: 11 vulns (2 low, 8 moderate, 1 high). fixAvailable: true non-breaking.",
+        "risiko": "follow-redirects hanya relevan kalau app fetch redirect attacker-controlled; app fetch API data pasar publik — praktis rendah. Moderate semuanya build/dev tooling.",
+        "exploitability": "rendah",
+        "rekomendasi": "npm audit fix (tanpa --force) di jendela deploy rutin + tsc/selftest standar. Bukan darurat."
+      }
+    },
+    {
+      "id": "sec-2026-11-12-03",
+      "date": "2026-11-12",
+      "priority": "P3",
+      "status": "candidate",
+      "type": "security",
+      "source": "itsec-blue",
+      "title": "[BLUE] hivepos.id DNS masih live + header MINIMAL (tanpa HSTS/XFO/CSP) — domain parkir pasca-FREEZE 1 Nov, cert valid s.d. 15 Jan 2027",
+      "data": {
+        "bukti": "curl hivepos.id 12 Nov: header keamanan nyaris kosong. Docker hivePOS = 0 container (freeze utuh). Cert SSL valid to 15 Jan 2027.",
+        "risiko": "Domain aktif tanpa app = permukaan parkir (phishing-kit di subdomain bila DNS drift, cert auto-renew kelak tanpa keputusan).",
+        "exploitability": "rendah (butuh kompromis DNS/Cloudflare dulu)",
+        "rekomendasi": "Owner: Cloudflare redirect 301 hivepos.id→teknikal.id (1 rule) ATAU biarkan cert expire Jan 2027. Keputusan kepemilikan domain."
+      }
     }
   ],
   "items": []

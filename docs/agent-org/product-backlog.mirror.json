@@ -2776,13 +2776,61 @@
       "id": "ux-2026-11-11-02",
       "title": "[DISPATCH→CTO] Blok retensi artikel (Saham Terkait/Sinyal Terkait/Artikel Terkait) di 73% scroll — tak pernah dilihat user",
       "priority": "P1",
-      "status": "dispatched",
+      "status": "spec_ready",
       "source": "ux-audit",
       "pillar": "STICKY+GROWTH",
       "evidence": "CDP 375px 11 Nov: Sinyal Terkait top 5305px/7246 (73%), Artikel Terkait 79%; EngagementEvent 7d: median scroll_max artikel = 23%, 0/11 event mencapai >=73%, 0/11 >=50%; dwell median 15s; cta_click dari /berita/* 14d = 1 klik. Loop baca-berlanjut praktis mati.",
       "proposal": "Opsi A (kecil): RelatedSignals naik ke atas (setelah paragraf 2-3 / setelah heading H2 pertama) — server component, bisa disisipkan mid-article; opsi B: chip ticker kontekstual sticky di bawah viewport saat scroll >50%. Perlu keputusan produk (SEO vs retensi) — dispatch CTO, bukan build UX mandiri.",
       "created_at": "2026-11-11T19:58:00+07:00",
-      "mandate": "Product Agent Kamis 12 Nov 10:15 — tulis PRD penuh (gate FDE): opsi A related-block mid-article vs opsi B sticky chip; SEO-vs-retensi tradeoff wajib dianalisa; AC terukur (scroll-reach median 23% -> target >=40% 2 minggu pasca-live); lifecycle researching->spec_ready"
+      "mandate": "Product Agent Kamis 12 Nov 10:15 — tulis PRD penuh (gate FDE): opsi A related-block mid-article vs opsi B sticky chip; SEO-vs-retensi tradeoff wajib dianalisa; AC terukur (scroll-reach median 23% -> target >=40% 2 minggu pasca-live); lifecycle researching->spec_ready",
+      "prd_id": "prd-2026-11-12-01",
+      "prd_written_at": "2026-11-12T10:26+07:00",
+      "prd": {
+        "prd_for_entry": "ux-2026-11-11-02",
+        "verdict_opsi": "OPSI A (mid-article) untuk RelatedSignals; modul bawah dipertahankan; NO sticky chip. Opsi B ditolak: trigger scroll>50% hanya dicapai 1/19 event scroll (5,3%) — modul sticky hampir tak pernah muncul; client-JS baru juga melanggar semangat freeze.",
+        "user_story": "Sebagai pembaca artikel berita mobile (93% trafik, median scroll 21%, dwell 15 detik), saya ingin melihat kartu 'Sinyal Terkait' di area yang benar-benar saya lihat (paragraf awal, bukan 73% halaman), supaya saya bisa lanjut ke halaman sinyal teknikal.id tanpa harus scroll ke dasar halaman yang tidak pernah saya capai.",
+        "north_star": "STICKY (time spent / loop baca-berlanjut) + GROWTH (internal-link equity ke moat signal pages /saham-*) — pilar sesuai NORTHSTAR acuan org",
+        "acceptance_criteria": [
+          "AC1 LIVE-RENDER: artikel PUBLISHED dengan tickerTag ATAU mentionedTickers (79/203 = 39% artikel) merender RelatedSignals persis SETELAH heading H2 kedua yang TIDAK duplikat judul — area yang dicapai 84% pembaca (16/19 event scroll <50%); 0 ticker → modul tidak dirender (no empty state). Bukti: grep HTML anon ≥1 artikel live.",
+          "AC2 POSISI-TEST: unit/fixture test posisi: artikel fixture 2-H2 & 5-H2 → RelatedSignals muncul tepat setelah H2 kedua; artikel 0/1 heading → fallback setelah paragraf ke-4 (bukan dasar halaman).",
+          "AC3 NO-REGRESI-SEO: RelatedSignals tetap render SSR dofollow di HTML (bukan JS-only); modul posisi bawah TIDAK dihapus (anchor kembar href sama = SEO neutral, crawl aman).",
+          "AC4 GATE-METRIC (2 minggu pasca-live, EngagementEvent scroll_max + PageView nobot): (a) views /saham-* dari referrer /berita/* naik dari baseline 1 view/14d menjadi ≥5 views/14d, ATAU (b) median scroll_max /berita/* tidak turun (≥21%) DAN share event ≥50% scroll naik dari 15,8% (3/19) menjadi ≥30%. Gagal → iterasi posisi/copy, bukan tambah modul baru. Evaluasi Product Agent via SQL replay; verdict oleh Sentinel/QA per H3 (builder tidak self-verify).",
+          "AC5 TRACKING: klik RelatedSignals tercatat sebagai EngagementEvent cta_click label=chip_beritaRelatedSignals (pola data-engagement existing) — verifikasi 1 event QA setelah live.",
+          "AC6 BUILD: tsc --noEmit EXIT-0; 0 migrasi DB; 0 endpoint baru; 0 client-component baru (RelatedSignals sudah async server component)."
+        ],
+        "data_evidence": {
+          "baseline_2026_11_12": "EngagementEvent /berita/* 14d: scroll_max n=19, median 21, p75 32,5 (skala 0-100 persen) — 0/19 mencapai 73% (posisi modul RelatedSignals saat ini); 3/19 (15,8%) ≥50%. dwell_tick n=36, median 15s. cta_click dari /berita/* 14d = 1. Loop baca-berlanjut mati.",
+          "coverage_modul": "RelatedSignals hanya render utk artikel ber-ticker: 79/203 PUBLISHED (39%). Artikel non-ticker → null render (no empty state by design, related-signals.tsx resolveRelatedSignals return null bila ticker null).",
+          "opsi_B_ditolak_data": "sticky scroll>50% trigger: hanya 1/19 event (5,3%) melewati 50% — sticky chip hampir tak pernah muncul; menambah client-JS baru di freeze = pelanggaran semangat improvement-only.",
+          "t3_sudah_live": "strip 'Saham Terkait Hari Ini' atas-body + chip inline ticker (commit 260e39e, live 7 Nov, verified HTML live 12 Nov: 'Saham Terkait Hari Ini' present) sudah mengambil slot atas. Klik sejak 7 Nov: header chip 1, inline chip 2, funnel_beritaHeroBotCta 1, arsip chip 10 — slot atas TIDAK kosong; PRD ini tidak menumpuk modul ketiga di atas.",
+          "loop_artikel_sinyal": "PageView /berita/* 14d nobot: referrer ke /saham-* hanya 1/39 (2,6%); top referrer artikel: none/direct 19, arsip /berita 9, home 3 — konfirmasi loop artikel→sinyal mati.",
+          "mandat": "field mandate ux-2026-11-11-02 (dispatched->mandat PA Kamis 10:15) + bus CEO-0815 12 Nov 06:56.",
+          "query_date": "2026-11-12 10:0x-10:2x WIB, DB teknikalidnew-db-1 read-only."
+        },
+        "impact": 3,
+        "impact_note": "STICKY + GROWTH: membuka jalur artikel→signal-pages (moat SEO) di titik baca nyata; T3 atas sudah mengambil intent 'saham', RelatedSignals mid = intent 'sinyal/strategi'. Effort kecil: reuse komponen existing.",
+        "effort": 2,
+        "target_files": [
+          "src/app/(public)/berita/[slug]/page.tsx (mount RelatedSignals mid-article, posisi setelah H2 kedua)",
+          "src/components/berita/related-signals.tsx (prop/posisi opsi, tanpa logic sinyal baru)",
+          "src/components/article/article-renderer.tsx (estimasi: split render utk slot mid-article — verifikasi saat build; ArticleContent render markdown single-block via react-markdown)"
+        ],
+        "db_migrations": false,
+        "dependencies": [
+          "tanpa paket baru (reuse RelatedSignals server component + pola data-engagement existing)"
+        ],
+        "risk": "low",
+        "risk_note": "low: reuse komponen existing, 0 migrasi, 0 endpoint; risiko utama = posisi mid-article menabrak flow baca → mitigasi AC2 fixture + AC4 gate metric (median scroll tidak boleh turun).",
+        "sec_review": "SEC-REVIEW: (1) Injection: n/a — RelatedSignals murni konstanta SIGNALS statis + ticker param dari DB (bukan input user); tanpa query param baru, tanpa string concat. (2) IDOR/privilege: n/a — read-only SSR publik, tanpa data user. (3) Logic: slot mid-article harus dirender SEBELUM/singling markdown pipeline (bukan di-dalam sanitized tree) supaya sanitasi rehype tidak terpecah — risiko XSS nol; edge artikel 0/1 heading → fallback paragraf-4 (AC2). (4) Rate-limit/DoS: resolveRelatedSignals query Prisma existing (indikator+price per ticker), dijalankan sekali per render SSR dgn revalidate halaman existing; tidak ada query N+1 baru. (5) Duplicate anchor (AC3): 2 anchor identik href sama di 1 halaman = SEO neutral (bukan keyword stuffing). Risiko total: rendah.",
+        "non_goals": [
+          "Sticky chip opsi B (ditolak data: trigger dicapai 5,3% event)",
+          "Ubah strip T3 atas / chip inline (260e39e live 7 Nov — jangan campur atribusi)",
+          "Modul Artikel Terkait (tetap di dasar; loop artikel→artikel bukan target gate kali ini)",
+          "Ubah RelatedSignals logic sinyal/kontekstual (reuse apa adanya)"
+        ],
+        "build_note_for_cto": "JANGAN numpuk deploy dengan perubahan nav /berita lain (atribusi bersih, pelajaran idea-2026-09-23-1). Ukur AC4 via SQL replay EngagementEvent + PageView. Mount RelatedSignals sebagai slot server-component setelah H2 kedua — di luar markdown sanitize pipeline. NB: ux-2026-11-11-01 (chip 44px + logo manifest) in_train T-1112-W belum live di prod (image 09:55 pra-merge) — kereta malam ini deploy; timing dispatch menyusul penempatan kereta CTO.",
+        "gate": "spec_ready 2026-11-12 10:26 WIB oleh Product Agent (mandat CEO 11 Nov). Dispatch engineering HANYA oleh CEO ritual pagi via prd_id=prd-2026-11-12-01 — PA tidak menulis cto-queue."
+      }
     },
     {
       "id": "sre-2026-11-11-1",
@@ -2800,6 +2848,34 @@
       "merged": "2026-11-11 fork-recovery CEO-malam: file hermes ternyata regular-file drift, entry dipulihkan ke kanonik repo",
       "promoted_to": "ops-2026-11-12-02",
       "ceo_verdict_20261112": "APPROVE P3 promote — lost-update ke-2 dlm 4 hari; journal append-only murah + audit trail; pilar TRUST tooling"
+    },
+    {
+      "id": "idea-2026-11-12-1",
+      "date": "2026-11-12",
+      "type": "idea",
+      "priority": "P1",
+      "status": "candidate",
+      "source": "cto-idle (slot sore 16:45, SQL replay langsung)",
+      "north_star": "GROWTH (funnel kuota 6% -> target) + STICKY",
+      "title": "[KONVERSI] Quota-wall value-first: 215 anon kena guest_quota 21d, hanya 13 (6,0%) lanjut auth-nav, 4 tg_pantau — wall jadi dead-end, bukan onramp",
+      "problem": "Dinding kuota guest saat ini mematikan funnel: 91 cta_click aktor referrer-Threads = 55 guest_quota (60%), tapi konversi ke auth-nav cuma 6%. Pengunjung sosmed (mayoritas jalur acquisition sekarang) menabrak wall tepat saat engagement puncak dan tidak diberi alasan konkret untuk daftar.",
+      "data": "SQL 12 Nov: anon kena cta_click guest_quota 21d=215; auth_nav_after=13 (6,0%); tg_pantau_klik=4; register 21d=18. Aktor Threads 21d: anon=59, multi-day=2 (3,4%), PV segmen: stocks 48/71, berita 0. DEDUPE: bukan idea-2026-11-10-1/prd-2026-11-11-01 (itu tracking register attribution, menunggu ACK owner area auth) — ini copy/CTA experience di wall, tanpa sentuh auth.",
+      "first_step": "CEO verdict: freeze-safe (CTA/funnel = jalur konversi dibolehkan). Kalau lanjut: riset copy alternatif wall (value-first 'sisa 1 dari 3 — daftar gratis utk lanjut lihat skor X' vs status-quo) + proposal CTA ganda (daftar gratis / pantau via bot WA-TG) dengan baseline 6% -> target >=12% auth-nav pasca-wall.",
+      "DONE-WHEN": "Riset tertulis: baseline 6,0% terkonfirmasi, 2 varian copy + metrik keberhasilan (auth_nav_after/anon kena wall) didefinisikan, verdict PRD lanjut/stop."
+    },
+    {
+      "id": "idea-2026-11-12-2",
+      "date": "2026-11-12",
+      "type": "idea",
+      "priority": "P2",
+      "status": "candidate",
+      "source": "cto-idle (slot sore 16:45, SQL replay langsung)",
+      "north_star": "STICKY (multi-day 3,4% -> naik) + CONTENT",
+      "title": "[KONVERSI/STICKY] Bridge /stocks->/berita utk visitor sosmed: 59 anon Threads 21d, 48/71 PV ke /stocks, NOL menyentuh /berita — hanya 2 (3,4%) kembali di hari lain",
+      "problem": "Visitor dari sosmed mendarat di halaman saham (jalur konten IG/Threads) dan tidak pernah menemukan konten artikel — satu-satunya permukaan yang membiasakan kunjungan harian. Non-Threads visitor punya bauran berita 87 PV/auth 72; Threads visitor 0. Tanpa bridge, visitor sosmed = one-page bounce tanpa alasan kembali.",
+      "data": "SQL 12 Nov: aktor referrer threads 21d: anon=59, multi_day=2 (3,4%), top multi-day 81b1a95b (3d/4PV), bd8a46cb (2d/5PV). Segmen PV Threads: stocks 48, home 23, berita 0, akademi 0, paper-trading 0. DEDUPE: komplementer ux-2026-11-11-02 (spec_ready) yang menjembatani /berita->sinyal/saham — ini arah sebaliknya /stocks->/berita, permukaan beda, tidak overlap target_files.",
+      "first_step": "CEO verdict freeze: ini blok konten-link (bukan fitur baru interaktif?) — kalau dianggap konversi/retensi surface, riset dulu: pola exit halaman /stocks visitor sosmed + kandidat modul 'Analisa terkait {ticker}' 3-link di bawah grafik. Baseline: 0% Threads-aktor menyentuh /berita dari /stocks.",
+      "DONE-WHEN": "Riset tertulis: baseline 0/59 terkonfirmasi, mock posisi modul + metrik (share Threads-aktor dengan >=1 PV /berita dalam sesi sama 14d setelah live) didefinisikan, verdict PRD lanjut/stop."
     }
   ],
   "items": []
