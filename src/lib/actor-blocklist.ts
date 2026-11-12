@@ -27,6 +27,12 @@ import { Prisma } from "@/generated/prisma/client";
 export const BLOCKED_ACTORS: readonly string[] = Object.freeze([
   "a035afcf-c4f4-4646-9e78-187798a4fdbe",
   "bd8a46cb-7d96-4fc6-a6c5-f7a4855aa968",
+  // ops-2026-11-12-01 rider-2 (CEO APPROVE 12 Nov; QA Sentinel 11 Nov konfirmasi
+  // known-smoke 10 Nov): e7df9d38 41PV+95ev, 4f00932f 22PV+78ev — replay T3 9→7.
+  // HOLD (JANGAN tambah tanpa CEO): 2 kandidat pending review bo (lihat bo-2026-11-12-01
+   // needs_owner #2) — jangan tulis UUID-nya di file ini agar tak terbaca sbg entri aktif.
+  "e7df9d38-f569-4b85-afbb-f30df636651d",
+  "4f00932f-1e74-4fcc-a089-614e91da656e",
 ]);
 
 const UUID_RE =
