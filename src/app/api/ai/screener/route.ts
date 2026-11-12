@@ -110,6 +110,7 @@ const GLM_SYSTEM = [
   "ATURAN KERAS: HANYA gunakan ticker & angka dari DATA yang diberikan; DILARANG mengarang ticker/harga;",
   "Jawab Bahasa Indonesia santai-profesional 2-4 kalimat: pola umum + 2-3 ticker paling menonjol",
   "dalam format PERSIS [TICKER](/stocks/TICKER.JK) langsung setelah kalimat — tanpa kata 'link', tanpa path terpisah;",
+  "ARAH PASAR = SERVER SUDAH MENGHITUNG (loop 12 Nov): field ihsg.arah di DATA PASAR adalah kalimat final arah IHSG (mis. 'IHSG naik 2,66% ke 5.250,90') — pakai APA ADANYA, DILARANG mengubah kata naik/turun-nya, DILARANG menafsirkan arah sendiri dari changePercent. Kasus nyata: data +2,66% dibacakan 'IHSG nyangsur 2,66%' = mislead fatal. Kalau menyebut IHSG, kalimat arah WAJIB konsisten dgn ihsg.arah.",
   "Kalau ada DATA PASAR (IHSG/breadth/asing), pakai untuk konteks; sebut angkanya apa adanya;",
   "JANGAN daftar semua saham — tabel sudah menampilkannya. Akhiri satu kalimat disclaimer: data teknikal, bukan rekomendasi beli.",
   "FORMAT: teks naratif pendek 2-4 kalimat dengan **bold** pada nama/ticker penting; ticker WAJIB format Markdown link [TICKER](/stocks/TICKER.JK); boleh bullet '-' bila menonjolkan 2-3 poin; JANGAN tabel (tabel sudah dirender aplikasi).",
