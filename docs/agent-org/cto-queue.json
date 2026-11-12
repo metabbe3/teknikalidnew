@@ -5901,6 +5901,20 @@
       "north_star": "GROWTH/AI-SEARCH (title double-brand merusak SERP CTR & konsistensi brand)",
       "spec": "INTENT (reviewer pagi 12 Nov, curl live): title tag /radar DOUBLE-BRAND: 'IDX Radar — Sinyal & Skor Saham Hari Ini | TeknikalID | TeknikalID' (brand muncul 2x). Pelanggaran guardrail SEO 'tanpa double-brand'. Sumber: commit b0eb8cb (seo-p0, live via deploy 06:36). Fix template title /radar -> satu brand saja ('IDX Radar — Sinyal & Skor Saham Hari Ini | TeknikalID'). ACCEPTANCE: curl https://teknikal.id/radar -> '<title>' mengandung 'TeknikalID' tepat 1x; cek sekalian title /stocks ('... | TeknikalID' 1x, sekarang OK) dan home; tsc 0; naik kereta T-1112-W.",
       "result": "CTO siang 12 Nov: fix commit 35bbaa3 — title metadata /radar dipangkas \"| TeknikalID\" (layout template \"%s | TeknikalID\" menambah brand ke-2; pola sehat /stocks). Live MASIH double-brand karena image berjalan 961b73bf (pra-fix) — verify title single-brand pasca kereta T-1112-W: curl /radar <title> \"TeknikalID\" tepat 1x."
+    },
+    {
+      "id": "ux-2026-11-12-01",
+      "type": "ux",
+      "status": "in_train",
+      "priority": "P3",
+      "assigned_to": "fe-ux",
+      "train": "T-1112-W",
+      "title": "[KONVERSI] UX flow-a /stocks: tap target Tanya AI 44px + buang emoji tab/chips (ui-craft)",
+      "kpi": "GROWTH+TRUST",
+      "created": "2026-11-12T19:45:00+07:00",
+      "done_when": "Staging :3100 CDP 375px: tombol Tanya AI h>=44px; 0 emoji di tab Setup Swing/Koran Pasar + chips Alat Analisa; tsc EXIT-0; SEO invariant (Radar Saham IDX / Harga Saham IDX) utuh",
+      "result": "COMMIT 1c3ac23 (3 file, +5/-5) push origin/main. Bukti staging CDP 375px: tanya h=44 (baseline prod 34), chips Setup Swing/Radar Pasar h=44 emoji:false, body emoji=0; tsc EXIT-0; esbuild 3/3 OK; git diff SEO-keyword 0 baris. File: screener-ai-modal.tsx (min-h-11 sm:min-h-0), saharm-view.tsx 2 span, stocks/page.tsx 2 span. BEDEV: staging DB host wajib @127.0.0.1:5433 (localhost -> IPv6 ::1 ECONNREFUSED). Regiverify kondektur pasca-deploy: curl /stocks grep emoji=0 + rect Tanya AI >=44px.",
+      "conductor_note": "Naik sebagai penumpang tambahan T-1112-W (bukan manifest utama); main HEAD kini 1c3ac23."
     }
   ]
 }
