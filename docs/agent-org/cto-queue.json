@@ -5968,6 +5968,18 @@
       "result": "REPLAY 03:1x: T1 360/T2 172 (47,8%)/T3 7 (1,9% dari T2)/T4 3/T5 0. T5=0 jujur (overlap web×agent_user tetap 0 — 10 user bot, 0 dari web; join baru LEFT(REPLACE(actor,-,),12)=anon_id ter-bake di image, akan hidup saat konversi bot dimulai). Saver 11 aktor = 4 blocklisted + 79996559 (10 hari! power-user) + ad29dd07 (Threads) + e4b417c3 (HOLD CEO) + 5ae28974 (HOLD CEO) + 082858ea (Threads) + 2 REAL BARU 12 Nov. Returning: 8,6 → 3,4 → 10,5 → 14,8 → 15,3% (02Nov 13,3→14,8 karena window 21d rolling). Utang 3-slot kpi.json ketemu.",
       "qa_verified": true,
       "qa_note": "QA 13Nov 03:4x PASS. Replay SQL identik: 360/172/7/3/0 EXACT; T5 sanity: 10 agent_user, overlap web = 0 -> T5=0 jujur. Saver 11 aktor = 4 blocklisted + 7 bersih; 2 saver baru 12 Nov siang = real user (b05d0465 27PV 13:42-17:02; 2e449109 13:00). Push-cadangan verified: origin/night/main-sync-1113 = eb5fdf2 (>= 6f5e517), origin/main masih 73dbf7c stale -> fast-forward pagi WAJIB tetap. CATATAN: angka returning klaim (02Nov 14,8 / 09Nov 15,3) TIDAK match replika route kanonik sparkline saya (blocklist: 13,4/12,4; tanpa: 13,3/12,0) — kemungkinan definisi cohort beda; kesimpulan mgg-4 >8% tetap valid. 1 PV qa- kunjungan QA ini terkecuali guard."
+    },
+    {
+      "id": "qa-2026-11-13-01",
+      "date": "2026-11-13",
+      "type": "qa-content-fix",
+      "priority": "P1",
+      "status": "pending",
+      "pos": "[BUGFIX] TRUST (North Star: TRUST/GROWTH)",
+      "spec": "Intent: perbaiki residual & klaim window salah dari QA konten 13 Nov (read-only reviewer, fix oleh CTO slot 07:30). Acceptance: (1) analisa-saham-bren-rebound-vs-sma200: frasa 'puncak 4 November' (content pos 1565) -> 'puncak 5 November' — DB: vol rebound max 43.099.700 = 5 Nov (4 Nov 28,2jt); grep posisi frasa lama=0 SETELAH patch, di content DAN live HTML (H2); (2) analis-sore-2026-11-12-mpmx: 'akumulasi bersih 0,21 miliar lembar dalam 7 hari perdagangan terakhir' -> akumulasi bersih 7 sesi (6-12 Nov) = 0,18 miliar lembar — 0,21 adalah window 3 sesi (10-12 Nov), label window salah; (3) analis-pagi-2026-11-13-mpmx: 'akumulasi asing 7 hari sebesar 0,18 miliar lembar' -> 0,13 miliar lembar untuk 7 sesi (4-12 Nov) ATAU relabel window ke 5 sesi (6-12 Nov)=0,18; (4) analis-pagi-2026-11-13-mpmx + analis-sore-2026-11-12-mpmx: 'naik 78,5% di atas rata-rata' -> relabel ke vs volume H-1 (2,34jt -> 4,17jt = +78,5%) atau rata-rata 20 sesi (+21%); bukti Replay: MPMXV; (5) brief-pasar-idx-2026-11-13-reli-bank-batubara movers: tabel + kalimat BUVA saat ini melewatkan TARA +16,13% (rank-3) & PSKT +13,73% (rank-5) non-gorengan — tambah/kualifikasi daftar jadi top yang benar, ATAU jika ada kriteria penyaringan eksplisit (mis. nilai transaksi min) tulis kriterianya di artikel; bukti Replay: GAIN12 rank AGAR/TEBE/TARA/ASLI/PSKT/BKSL/COIN/BUVA. Semua patch via replay_sql_gate.py exit 0 + grep OLD=0 + curl 200.",
+      "north_star": "TRUST: angka salah = trust runtuh; GROWTH: konten benar = AI-search & returning users",
+      "result": "QA reviewer 13 Nov 07:xx: replay gate 5/5 slug PASS; 40 judul ticker exact; breadth/window/oversold/IHSG/bank jumbo/movers-majority exact; temuan = 5 item di atas",
+      "scheduled_slot": "2026-11-13 BE siang 09:30 Jumat — PALING PERTAMA sebelum ux-11-10-01(verif-AGY): P1 konten SALAH live, 0-build DB-patch + ISR (preseden qa-11-10-01, JANGAN nunggu kereta); urutan slot: qa-13-01 -> ux-11-10-01 -> ops-11-12-02/fix-10-26-08/ops-11-11-03"
     }
   ]
 }
