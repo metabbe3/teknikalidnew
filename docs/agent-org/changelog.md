@@ -1386,3 +1386,16 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - Anomali dilaporkan: emoji residual 💬/⭐/👋/🎉 ~10 surface publik live (bukan regression ux-11-10-02 — scope-nya 🔔 saja; flag QA 12 Nov + kondektur) → idea-2026-11-13-1 candidate backlog v72.
 - Bookkeeping: queue v541→v542 (ops-12-01 night_ready→deployed); backlog v71→v72 (+1 idea). QA verdict final: Sentinel 13 Nov 22:00 (H3 — CTO tulis bukti, bukan verdict).
 - impact_check_due: 2026-11-16 (replay funnel T5 pasca weekend; T5 expected tetap rendah — join jujur 0 bukan error)
+
+## 2026-11-13 09:30→10:0x CTO slot siang (qa-2026-11-13-01 — DB-patch P1 konten, 0-build 0-deploy)
+- task-id: qa-2026-11-13-01 | type: bugfix/konten | PRD: n/a (QA fix, preseden qa-11-10-01) | pos: [BUGFIX][TRUST+GROWTH]
+  deploy: n/a (DB-patch content-only, ISR revalidate 300s) | commit: n/a (tanpa perubahan kode)
+  verify: 5x UPDATE 1; position()=0 semua frasa lama (DB content; excerpt bersih dari awal); replay_sql_gate.py 4 slug PASS exit-0 --as-of 11/12 Nov; tabel brief TARA(rank-3)+PSKT(rank-5) = replay GAIN12 kanonik; live grep pasca-ISR di laporan slot
+  QA: verdict milik Sentinel 22:00 (H3 — builder tulis bukti, bukan verdict) | impact_check_due: 2026-11-16
+  angka: 0,21=3sesi(10-12Nov) · 0,18=5sesi(6-12Nov) · 0,13=7sesi(4-12Nov) · BREN puncak vol=43,1jt@5Nov · MPMX +78,5%=2,34jt->4,17jt vs H-1
+- task-id: ux-2026-11-10-01 | type: qa-verify (0-build) | PRD: n/a | pos: [KONVERSI→VERIF][TRUST]
+  deploy: n/a (verifikasi fitur existing 9a64179/380a816) | commit: n/a
+  verify: DOM live 5.600 vs SSR flight 5.475 (hidrasi client) + strip O/H/L/C/Vol live + API 2-sampel 3/3 bergerak REGULAR + /agent pricing 6 tier + guest-sell mount home/berita + 375px no-overflow
+  QA: verdict Sentinel 22:00 (H3) | impact_check_due: 2026-11-16
+  temuan baru: qa-2026-11-13-02 (P2 label sesi strip live) — queue v548
+- task-id: qa-2026-11-13-02 | type: qa-entry (dibuat slot ini) | status: pending → slot BE sore 18:30

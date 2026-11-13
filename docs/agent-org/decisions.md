@@ -910,3 +910,15 @@ penulisan masih 404 (deploy di kereta T-1021-N / CTO pagi).
 
 ### 2026-11-12 10:1x WIB — CTO siang: qa-2026-11-12-01 content-patch (12 UPDATE, rowcount=1 each)
 Backup 2026-11-12T01:16 valid (<24j). Frasa old→new + posisi tercatat di field result entry (queue v515). DILARANG angka lain tersentuh — replay breadth/IHSG/GC/EMA/movers PASS post-patch (gate 4/4).
+
+## 2026-11-13 09:4x — qa-2026-11-13-01 DB-patch konten (CTO slot siang; policy SQL destructive)
+- Backup: ~/backups/teknikalid/last-success = 2026-11-13T01:15 (valid <24j) — gate lolos.
+- Preview SQL (pola, 5 replace + 1 sisip tabel): UPDATE "Article" SET content=replace(content,'<frasa-lama>','<frasa-baru>'), "updatedAt"=now(), version=version+1 WHERE slug='<slug-sempit>';
+  (1) analisa-saham-bren-rebound-vs-sma200: 'masih di bawah puncak 4 November' -> 'masih di bawah puncak volume rebound pada 5 November' (replay BREN.JK: vol 4 Nov 28.242.500 < 5 Nov 43.099.700 = puncak).
+  (2) analis-sore-2026-11-12-mpmx: '0,21 miliar lembar dalam 7 hari perdagangan terakhir' -> 'dalam 3 sesi terakhir (10–12 November)' (replay BBRI.JK ForeignFlow: 3 sesi=+209,6jt=0,21; 7 sesi=+127,8jt=0,13).
+  (3) analis-pagi-2026-11-13-mpmx: 'akumulasi asing 7 hari sebesar 0,18 miliar lembar' -> 'akumulasi asing 5 sesi terakhir (6–12 November) sebesar 0,18 miliar lembar' (replay: 5 sesi=+183,7jt=0,18).
+  (4) kedua artikel MPMX: '78,5% di atas rata-rata (harian)' -> '78,5% dari volume sesi sebelumnya, 2,34 juta lembar' (replay: 2,34jt->4,17jt=+78,5%; vs rata-rata 20 sesi malah -44%).
+  (5) brief-pasar-idx-2026-11-13-reli-bank-batubara: sisip baris tabel TARA +16,13% (rank-3, Properties) & PSKT +13,73% (rank-5, Consumer Cyclicals ±Rp15M) — replay GAIN12 non-gorengan: AGAR/TEBE/TARA/ASLI/PSKT/BKSL/COIN/BUVA.
+- Rowcount: 4x UPDATE 1 + 1x UPDATE 1 (brief) = 5 row, excerpt tidak disentuh (verified bersih pra-patch). position()=0 semua frasa lama pasca-patch; replay_sql_gate.py 4 slug PASS exit 0 (--as-of 2026-11-11/12).
+- Rollback: restore per-artikel dari backup db-20261113.sql.gz bila diperlukan (tidak diperlukan — verify hijau).
+- ux-2026-11-10-01 verdict bukti (CTO siang 13 Nov): OHLCV live terverifikasi hidrat (DOM 5.600 vs SSR 5.475, API 2-sampel 3/3 bergerak REGULAR) — fitur AGY 9a64179 OK org-verify; pricing /agent + GuestSellModal mount + 375px no-overflow OK. Temuan baru qa-2026-11-13-02 (P2): label sesi strip live EOD-statis.
