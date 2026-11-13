@@ -76,6 +76,7 @@ scripts/selftest/desktop-grid-balance.selftest.ts
 scripts/selftest/edu-canonical.selftest.ts
 scripts/selftest/foreign-flow-parity.selftest.ts
 scripts/selftest/funnel-qa-guard.selftest.ts
+scripts/selftest/funnel-t5-join.selftest.ts
 scripts/selftest/glossary-depth.selftest.ts
 scripts/selftest/hero-subtitle-info.selftest.ts
 scripts/selftest/infotip-click.selftest.tsx
@@ -244,6 +245,7 @@ tests/compare-slug.test.ts
 tests/format-number.test.ts
 tests/funnel-gate-tracking.test.ts
 tests/kenapa-meta.test.ts
+tests/ohlcv-session-label.test.ts
 tests/register-funnel.test.ts
 tests/shortname-sanitizer.test.ts
 tests/swing-backtest.test.ts
@@ -278,9 +280,9 @@ src/app/(public)/disclaimer/page.tsx:10:export const revalidate = 86400;
 src/app/(public)/disclaimer/page.tsx:4:export const metadata → Metadata = {
 src/app/(public)/harga-saham-hari-ini/page.tsx:15:export const revalidate = 30; // 12 Okt → failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal
 src/app/(public)/harga-saham-hari-ini/page.tsx:19:export async function generateMetadata() → Promise<Metadata> {
-src/app/(public)/indeks/[slug]/page.tsx:13:export const dynamic = "force-dynamic";
-src/app/(public)/indeks/[slug]/page.tsx:14:export const revalidate = 3600;
-src/app/(public)/indeks/[slug]/page.tsx:16:export async function generateMetadata({
+src/app/(public)/indeks/[slug]/page.tsx:14:export const dynamic = "force-dynamic";
+src/app/(public)/indeks/[slug]/page.tsx:15:export const revalidate = 3600;
+src/app/(public)/indeks/[slug]/page.tsx:17:export async function generateMetadata({
 src/app/(public)/indeks/page.tsx:7:export const revalidate = 3600;
 src/app/(public)/indeks/page.tsx:9:export const metadata → Metadata = {
 src/app/(public)/kalender-dividen/page.tsx:10:export const dynamic = "force-dynamic";
@@ -297,8 +299,8 @@ src/app/(public)/metodologi/page.tsx:15:export const metadata → Metadata = {
 src/app/(public)/page.tsx:38:export const metadata → Metadata = {
 src/app/(public)/page.tsx:46:export const dynamic = "force-dynamic";
 src/app/(public)/paper-trading/layout.tsx:3:export const metadata → Metadata = {
-src/app/(public)/pasar/page.tsx:34:export const dynamic = "force-dynamic";
-src/app/(public)/pasar/page.tsx:36:export const metadata → Metadata = {
+src/app/(public)/pasar/page.tsx:35:export const dynamic = "force-dynamic";
+src/app/(public)/pasar/page.tsx:37:export const metadata → Metadata = {
 src/app/(public)/pasar/radar-section.tsx:31:export function RadarSection() {
 src/app/(public)/pasar/wib-clock.tsx:12:export function WibClock() {
 src/app/(public)/payment/error/route.ts:3:export async function GET(request → NextRequest) {
@@ -568,8 +570,11 @@ src/app/api/market/swing/route.ts:13:export interface SwingCandidateItem {
 src/app/api/market/swing/route.ts:214:export async function GET() {
 src/app/api/market/swing/route.ts:31:export interface SwingMarketResponse {
 src/app/api/me/morning-delta/route.ts:10:export async function GET(req → NextRequest) {
-src/app/api/notifications/route.ts:16:export async function PUT(request → Request) {
-src/app/api/notifications/route.ts:6:export async function GET() {
+src/app/api/notifications/route.ts:16:export const dynamic = "force-dynamic";
+src/app/api/notifications/route.ts:172:export async function POST(request → NextRequest) {
+src/app/api/notifications/route.ts:22:export type WebNotificationKind = "blast" | "pulse" | "alert" | "uhu";
+src/app/api/notifications/route.ts:24:export interface WebNotificationItem {
+src/app/api/notifications/route.ts:78:export async function GET() {
 src/app/api/og/route.tsx:45:export async function GET(request → NextRequest) {
 src/app/api/og/route.tsx:4:export const runtime = "nodejs";
 src/app/api/og/stock-story/route.tsx:8:export const runtime = "nodejs";
@@ -648,6 +653,3 @@ src/app/api/stocks/[ticker]/sentiment/route.ts:7:export async function GET(
 src/app/api/stocks/[ticker]/trading-plan/route.ts:8:export async function GET(
 src/app/api/stocks/batch/route.ts:11:export async function GET(request → NextRequest) {
 src/app/api/stocks/batch/route.ts:9:export const dynamic = "force-dynamic";
-src/app/api/stocks/compare/route.ts:15:export async function GET(request → Request) {
-src/app/api/stocks/compare/route.ts:55:export const dynamic = "force-dynamic";
-src/app/api/stocks/compare/route.ts:8:export const revalidate = 300;

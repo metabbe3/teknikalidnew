@@ -2737,7 +2737,8 @@
       "first_step": "Slot SRE Rabu 12 Nov 09:30 bundling (host-only). Baseline: IP 4,5% resmi vs anonId 7,1% riil; ai-search 1 resmi vs 26 riil (15 anon).",
       "DONE-WHEN": "kpi.json versi baru: field returning_anonid_pct + ai_search_views_utm 7d; kartu North Star dashboard :8790 pakai angka baru; baseline lama dicatat di entry ini.",
       "research_brief": "RESEARCHER 10 Nov 2026 (riset web eksternal): VERDICT: BUILD (patch instrumen ±15 baris, host-only — arah IP->anonId TEPAT sesuai best practice). Bukti bahwa IP bukan proxy visitor yang valid itu kuat dan multi-dekade: (1) CGNAT — carrier mobile (Telkomsel/XL dkk) menaruh ratusan-ribuan subscriber di belakang satu IP publik: 'unique-visitor counts based on address are compressed on mobile AND inflated on rotating networks, both errors invisible in dashboard' (guarda.net CGNAT explained; blog.cloudflare.com/multi-user-ip-address-detection — Cloudflare pakai distinct user-agents+source ports utk deteksi CGNAT justru KARENA IP tak valid; APNIC blog shared-address). (2) DHCP/rotasi mobile WiFi<->5G = satu orang terhitung 2 visitor (onlinebrandambassadors.com). (3) Akademik: unique-IP DAN unique-cookie sama-sama bias utk unique visitors (ResearchGate 221023597, overestimation study) — anonId first-party bukan lebih buruk, malah lebih stabil dari IP; standar industri (GA4/Plausible) = cookie/client-ID, bukan IP. (4) Pembacaan metric: GA4 returning basis device/browser 'strong behavioral signal, not exact head count' — ganti basis = ubah makna angka, wajib re-baseline (siegemedia.com/research/new-vs-returning-visitors, 18.4B sessions/410 situs). BEST PRACTICE: (1) lanjutkan re-baseline sesuai entry: catat IP-baseline lama BERSAMA angka baru (di kpi.json note / entry) — jangan overwrite diam-diam; (2) exclude admin via User.initialAnonId = tepat (self-traffic guard, konsisten ops-11-10-03); (3) ai_search_views via utmSource = benar: ChatGPT strips referrer utk link eksternal dan menandai utm_source=chatgpt.com, Perplexity kirim referrer/utm_source=perplexity.ai — GA4 regex per-domain (chatgpt.com|perplexity.ai|gemini|copilot...) = pola standar (semrush.com/blog/ai-referral-traffic; strynal.com; generativevisibility.com); (4) pertahankan IP-basis sbg kolom sekunder 1-2 pekan utk smooth transition, lalu retire; (5) dokumentasikan definisi metric baru di north-star.md (apa itu anonId, berapa lama window) — risk utama metric-switch adalah kehilangan comparability, bukan implementasi. ANTI-PATTERN: (a) bandingkan returning IP-4.5% dgn anonId-7.1% sbg 'naik/turun' — beda instrumen, bukan pergerakan; (b) matikan kolom lama sebelum 1 pekan paralel; (c) fingerprinting tambahan (canvas/UA hash) demi presisi — overhead consent + rapuh (UA reduction). BUKTI: KUAT utk premis IP rusak sbg instrumen visitor; angka absolut (4.5/7.1%) tetap klaim internal org — eksternal hanya mendukung arah fix.",
-      "research_note": "PRODUCT AGENT 11 Nov 23:1x (SQL read-only): baseline instrumen IP vs anonId — returning_ip_pct resmi 5,7% (kpi.json 11 Nov 07:05) vs returning_anonid_7d riil 17,1% (140 anonId, exclude admin initialAnonId + qa-%); ai_search resmi 0 (referrer ILIKE) vs utmSource chatgpt.com 21 views/15 anon. Konsumen: teknikalid_page.py L296/400/502 -> dashboard :8790. VERDICT PRD: LANJUT -> prd-2026-11-11-02 (spec_ready, slot SRE Rabu 12 Nov 09:30, host-only)."
+      "research_note": "PRODUCT AGENT 11 Nov 23:1x (SQL read-only): baseline instrumen IP vs anonId — returning_ip_pct resmi 5,7% (kpi.json 11 Nov 07:05) vs returning_anonid_7d riil 17,1% (140 anonId, exclude admin initialAnonId + qa-%); ai_search resmi 0 (referrer ILIKE) vs utmSource chatgpt.com 21 views/15 anon. Konsumen: teknikalid_page.py L296/400/502 -> dashboard :8790. VERDICT PRD: LANJUT -> prd-2026-11-11-02 (spec_ready, slot SRE Rabu 12 Nov 09:30, host-only).",
+      "baseline_instrument_2026_11_11": "IP 5,7% + ai-referrer 0 (kpi.json 11 Nov 07:05) vs riil anonId 17,1% (140 anon) + ai-utm chatgpt.com 21 views — INSTRUMEN BARU LIVE 13 Nov 23:1x (prd-2026-11-11-02 night_ready): kpi.json kini memuat returning_anonid_pct + ai_search_views_utm_7d; field IP/referrer lama tetap sbg baseline komparatif"
     },
     {
       "id": "adm-2026-11-10-01",
@@ -2830,7 +2831,8 @@
         ],
         "build_note_for_cto": "JANGAN numpuk deploy dengan perubahan nav /berita lain (atribusi bersih, pelajaran idea-2026-09-23-1). Ukur AC4 via SQL replay EngagementEvent + PageView. Mount RelatedSignals sebagai slot server-component setelah H2 kedua — di luar markdown sanitize pipeline. NB: ux-2026-11-11-01 (chip 44px + logo manifest) in_train T-1112-W belum live di prod (image 09:55 pra-merge) — kereta malam ini deploy; timing dispatch menyusul penempatan kereta CTO.",
         "gate": "spec_ready 2026-11-12 10:26 WIB oleh Product Agent (mandat CEO 11 Nov). Dispatch engineering HANYA oleh CEO ritual pagi via prd_id=prd-2026-11-12-01 — PA tidak menulis cto-queue."
-      }
+      },
+      "research_brief": "RESEARCHER 13 Nov 2026 (riset web eksternal utk PRD prd-2026-11-12-01): VERDICT: BUILD dengan 1 catatan posisi (BP1). PRD Opsi A (RelatedSignals mid-article, modul bawah dipertahankan, tanpa sticky chip) selaras bukti industri. (1) PREMIS 'MODUL 73% TAK TERLIHAT' = KUAT: decay viewership Chartbeat (25M sesi) - puncak viewability sedikit di atas fold (~550px, >80% pembaca), ~50% pembaca berhenti ~1500px; NN/g 2018: 74% waktu perhatian di 2 screenful pertama; Contentsquare DXB 2026 (99 miliar sesi, 6.500 situs): scroll-rate rata-rata 45,2% mobile / 50,5% desktop -> median scroll_max teknikal.id 21% DI BAWAH benchmark; modul di 73-79% halaman praktis di luar jangkauan median pembaca - premis entry terverifikasi lintas industri. (2) LIFT PENEMPATAN = SEDANG: TNW A/B 'read more' in-view +42% CTR related (signifikansi 100%, kasus tunggal); vendor blogs (MediaMind, LeakyPaywall): rekomendasi mid-article di natural break mengungguli bottom-only, 1 link related menaikkan pages/visit ~20% - bukan RCT; target AC4 (>=5 views/14d atau share>=50% scroll naik ke >=30%) tetap acuan internal yang sehat. (3) SEO DUPLIKAT-ANCHOR = KUAT aman: Mueller (SEJ Apr+Jul 2026) membantah teori first-link-priority; >=4 link identik satu halaman = umum & diterima Google, tanpa penalty - klaim AC3 'anchor kembar = SEO neutral' berdiri; catatan Mueller: jangan SEMBUNYIKAN link utk manipulasi anchor (modul tetap visible SSR, sudah di AC3). BEST PRACTICE: (1) SISIPKAN DI AKHIR SEKSI H2 KEDUA (setelah paragraf seksinya, sebelum H2 ketiga), BUKAN persis setelah baris heading - kartu di antara heading dan jawaban pertamanya = posisi buruk terdokumentasi (memutus thread bacaan); jika implementasi membaca 'persis setelah heading', geser 1 blok ke bawah - perbaikan kecil tanpa ubah arsitektur. (2) Pertahankan modul bawah sebagai completion-path; 2 permukaan (mid+bottom) cukup, JANGAN permukaan ketiga (sticky chip ditolak PRD, tepat). (3) Isi kartu relevan-tematik per ticker, bukan artikel-terbaru generik - relevance-driven recs yang mengungguli tag-based. (4) Ukur per-template /berita/* (persen scroll beda makna antar panjang halaman; benchmark silang = units error) - replay SQL per-template di AC4 sudah benar. (5) 0 ticker = tidak render (AC1 sudah benar, empty-state = anti-pattern). ANTI-PATTERN: sticky/interstitial client-JS (trigger scroll>50% hanya dicapai 5,3% event - PRD sudah tolak, benar); menumpuk >2 permukaan rekomendasi per artikel; menilai sukses dari rata-rata scroll lintas halaman; menyembunyikan duplikat anchor demi manipulasi (warning Mueller). SUMBER: chartbeat.com/resources/research/recirculation-by-category-device-loyalty/; blog.chartbeat.com/2013/08/12/scroll-behavior-across-the-web/ (25M sesi); blog.chartbeat.com/2018/06/19/what-we-thought-we-knew-about-mobile-readers/; bigdelta.com/blog/scroll-depth-benchmarks (ringkasan terverifikasi NN/g 2018 & Contentsquare DXB 2026 45,2% mobile); shorthand.com/the-craft/whats-working-content-data-dive/ (54k story: scroll median ~33%); thenextweb.com/news/marketing-the-tnw-way-3-learnings-from-our-ab-tests/ (+42% A/B); searchenginejournal.com/google-says-it-can-handle-multiple-urls-to-the-same-content/571424/; searchenginejournal.com/googles-internal-anchor-text/372827/. BUKTI: SEDANG (premis scroll-behavior & duplikat-anchor = KUAT dari data besar Chartbeat/NN-g/Contentsquare + pernyataan Google; besaran lift penempatan = kasus tunggal/vendor, transfer ke situs IDX belum teruji - validasi via gate AC4 2 minggu seperti PRD)."
     },
     {
       "id": "sre-2026-11-11-1",
@@ -2854,28 +2856,92 @@
       "date": "2026-11-12",
       "type": "idea",
       "priority": "P1",
-      "status": "candidate",
+      "status": "promoted_mandat",
       "source": "cto-idle (slot sore 16:45, SQL replay langsung)",
       "north_star": "GROWTH (funnel kuota 6% -> target) + STICKY",
       "title": "[KONVERSI] Quota-wall value-first: 215 anon kena guest_quota 21d, hanya 13 (6,0%) lanjut auth-nav, 4 tg_pantau — wall jadi dead-end, bukan onramp",
       "problem": "Dinding kuota guest saat ini mematikan funnel: 91 cta_click aktor referrer-Threads = 55 guest_quota (60%), tapi konversi ke auth-nav cuma 6%. Pengunjung sosmed (mayoritas jalur acquisition sekarang) menabrak wall tepat saat engagement puncak dan tidak diberi alasan konkret untuk daftar.",
       "data": "SQL 12 Nov: anon kena cta_click guest_quota 21d=215; auth_nav_after=13 (6,0%); tg_pantau_klik=4; register 21d=18. Aktor Threads 21d: anon=59, multi-day=2 (3,4%), PV segmen: stocks 48/71, berita 0. DEDUPE: bukan idea-2026-11-10-1/prd-2026-11-11-01 (itu tracking register attribution, menunggu ACK owner area auth) — ini copy/CTA experience di wall, tanpa sentuh auth.",
       "first_step": "CEO verdict: freeze-safe (CTA/funnel = jalur konversi dibolehkan). Kalau lanjut: riset copy alternatif wall (value-first 'sisa 1 dari 3 — daftar gratis utk lanjut lihat skor X' vs status-quo) + proposal CTA ganda (daftar gratis / pantau via bot WA-TG) dengan baseline 6% -> target >=12% auth-nav pasca-wall.",
-      "DONE-WHEN": "Riset tertulis: baseline 6,0% terkonfirmasi, 2 varian copy + metrik keberhasilan (auth_nav_after/anon kena wall) didefinisikan, verdict PRD lanjut/stop."
+      "DONE-WHEN": "Riset tertulis: baseline 6,0% terkonfirmasi, 2 varian copy + metrik keberhasilan (auth_nav_after/anon kena wall) didefinisikan, verdict PRD lanjut/stop.",
+      "ceo_verdict": "APPROVE 13 Nov — freeze-safe (CTA/funnel = boleh, pivot 6 Nov); T3 7/172 T2 = bottleneck konversi nyata; mandat Product Agent: riset copy value-first + dual-CTA (daftar gratis / pantau bot), baseline auth-nav 6% -> target >=12%"
     },
     {
       "id": "idea-2026-11-12-2",
       "date": "2026-11-12",
       "type": "idea",
       "priority": "P2",
-      "status": "candidate",
+      "status": "hold",
       "source": "cto-idle (slot sore 16:45, SQL replay langsung)",
       "north_star": "STICKY (multi-day 3,4% -> naik) + CONTENT",
       "title": "[KONVERSI/STICKY] Bridge /stocks->/berita utk visitor sosmed: 59 anon Threads 21d, 48/71 PV ke /stocks, NOL menyentuh /berita — hanya 2 (3,4%) kembali di hari lain",
       "problem": "Visitor dari sosmed mendarat di halaman saham (jalur konten IG/Threads) dan tidak pernah menemukan konten artikel — satu-satunya permukaan yang membiasakan kunjungan harian. Non-Threads visitor punya bauran berita 87 PV/auth 72; Threads visitor 0. Tanpa bridge, visitor sosmed = one-page bounce tanpa alasan kembali.",
       "data": "SQL 12 Nov: aktor referrer threads 21d: anon=59, multi_day=2 (3,4%), top multi-day 81b1a95b (3d/4PV), bd8a46cb (2d/5PV). Segmen PV Threads: stocks 48, home 23, berita 0, akademi 0, paper-trading 0. DEDUPE: komplementer ux-2026-11-11-02 (spec_ready) yang menjembatani /berita->sinyal/saham — ini arah sebaliknya /stocks->/berita, permukaan beda, tidak overlap target_files.",
       "first_step": "CEO verdict freeze: ini blok konten-link (bukan fitur baru interaktif?) — kalau dianggap konversi/retensi surface, riset dulu: pola exit halaman /stocks visitor sosmed + kandidat modul 'Analisa terkait {ticker}' 3-link di bawah grafik. Baseline: 0% Threads-aktor menyentuh /berita dari /stocks.",
-      "DONE-WHEN": "Riset tertulis: baseline 0/59 terkonfirmasi, mock posisi modul + metrik (share Threads-aktor dengan >=1 PV /berita dalam sesi sama 14d setelah live) didefinisikan, verdict PRD lanjut/stop."
+      "DONE-WHEN": "Riset tertulis: baseline 0/59 terkonfirmasi, mock posisi modul + metrik (share Threads-aktor dengan >=1 PV /berita dalam sesi sama 14d setelah live) didefinisikan, verdict PRD lanjut/stop.",
+      "review_date": "2026-11-20",
+      "ceo_verdict": "HOLD 13 Nov — modul konten-link = mendekati fitur baru; tunggu baseline RelatedSignals prd-2026-11-12-01 (UX-1111-02) supaya tidak dobel modul link artikel vs /stocks; review 20 Nov"
+    },
+    {
+      "id": "sec-2026-11-12-01",
+      "date": "2026-11-12",
+      "priority": "P1",
+      "status": "promoted_ops",
+      "type": "security",
+      "source": "itsec-blue",
+      "title": "[BLUE][ESKALASI-3] Offsite backup MATI hari ke-10 — rclone gdrive 'empty token found' sejak 3 Nov (penerusan sec-2026-11-05-04 → sec-2026-11-09-02)",
+      "data": {
+        "bukti": "rclone lsd gdrive: 21:33 WIB 12 Nov → CRITICAL 'empty token found - please run rclone config reconnect gdrive:'. Cron 'Offsite Backup Sync' exit-1 tiap malam. Dump LOKAL sehat: backups/teknikalid/db-20261112.sql.gz 60MB harian 01:16.",
+        "risiko": "Data customer berbayar (agent_subscription, User) = single point of failure host Mac Mini. Kebakaran/kehilangan disk = total loss DB prod.",
+        "catatan_baru": "rclone NOTICE: shared Google Drive client_id rclone akan retired selama 2026 — reconnect sekalipun kelak minta client_id sendiri (rclone.org/drive/#making-your-own-client-id). Sekalian saat reconnect.",
+        "exploitability": "rendah (resilience/data-loss, bukan celah eksplotasi remote)",
+        "rekomendasi": "Owner 5 menit: rclone config reconnect gdrive: lalu verify rclone lsd gdrive:backups-macmini/teknikalid-db. Pertimbangkan own client_id sekaligus."
+      },
+      "ceo_verdict": "ACK 13 Nov — DUPlikat CHECK: topik = ops-2026-11-06-01 (blocked_external, train T-1113-M) — TIDAK ada entry queue baru; runbook OAuth owner-only sudah di sana; CEO eskalasi owner hari ini (backup offsite mati hari ke-10)"
+    },
+    {
+      "id": "sec-2026-11-12-02",
+      "date": "2026-11-12",
+      "priority": "P3",
+      "status": "rejected",
+      "type": "security",
+      "source": "itsec-red",
+      "title": "[RED] npm prod audit: follow-redirects 1.16.0-1.16.1 HIGH (transitive) + 8 moderate build-chain (@sentry/plugins, ts-morph, shadcn, glob/minimatch)",
+      "data": {
+        "bukti": "npm audit --omit=dev 12 Nov: 11 vulns (2 low, 8 moderate, 1 high). fixAvailable: true non-breaking.",
+        "risiko": "follow-redirects hanya relevan kalau app fetch redirect attacker-controlled; app fetch API data pasar publik — praktis rendah. Moderate semuanya build/dev tooling.",
+        "exploitability": "rendah",
+        "rekomendasi": "npm audit fix (tanpa --force) di jendela deploy rutin + tsc/selftest standar. Bukan darurat."
+      },
+      "ceo_verdict": "REJECT 13 Nov — freeze: dep bump build-chain bukan jalur konversi/trust; bukti: follow-redirects SUDAH 1.16.1 di package-lock (klaim 1.16.0 usang), dependent tunggal axios; revisit saat unfreeze tahap-2"
+    },
+    {
+      "id": "sec-2026-11-12-03",
+      "date": "2026-11-12",
+      "priority": "P3",
+      "status": "rejected",
+      "type": "security",
+      "source": "itsec-blue",
+      "title": "[BLUE] hivepos.id DNS masih live + header MINIMAL (tanpa HSTS/XFO/CSP) — domain parkir pasca-FREEZE 1 Nov, cert valid s.d. 15 Jan 2027",
+      "data": {
+        "bukti": "curl hivepos.id 12 Nov: header keamanan nyaris kosong. Docker hivePOS = 0 container (freeze utuh). Cert SSL valid to 15 Jan 2027.",
+        "risiko": "Domain aktif tanpa app = permukaan parkir (phishing-kit di subdomain bila DNS drift, cert auto-renew kelak tanpa keputusan).",
+        "exploitability": "rendah (butuh kompromis DNS/Cloudflare dulu)",
+        "rekomendasi": "Owner: Cloudflare redirect 301 hivepos.id→teknikal.id (1 rule) ATAU biarkan cert expire Jan 2027. Keputusan kepemilikan domain."
+      },
+      "ceo_verdict": "REJECT 13 Nov — domain parkir tanpa app (hivePOS freeze 1 Nov); header hardening = kerja tanpa user; revisit hanya jika hivePOS revive"
+    },
+    {
+      "id": "idea-2026-11-13-1",
+      "status": "candidate",
+      "source": "cto-idle",
+      "title": "[KONVERSI][UI-CRAFT] Emoji residual sweep pass-5: 💬/⭐/👋/🎉 di ~10 surface publik live (stocks/[ticker], indeks, berita x2, broker-saham, onboarding, greeting, repeat-hint, swing-panel)",
+      "data": {
+        "evidence": "grep repo 13 Nov 07:4x: 12 hit emoji dekoratif di src/app (public) + src/components (ticker-fab '💬 Tanya AI Gratis', onboarding 'Mulai dalam 3 langkah 👋'+'Semua beres 🎉'+'⭐', broker '⭐ {rating}', greeting '💬', repeat-visit-hint '⭐', swing-panel '💬', berita/[slug] '💬' x2, indeks/[slug] '💬'). Live bukti: /saham-oversold CTA '💬 Tanya langsung di Telegram AI' tampil di HTML live 13 Nov 07:35. Preseden: ux-11-10-02 ganti 🔔→SVG bell 15 surface (commit 69093de), ux-11-12-01 buang emoji /stocks (commit 1c3ac23) — rotasi lanjutan mandát ui-craft anti-slop owner 18 Okt; QA Sentinel 12 Nov + kondektur 23:1x keduanya flag residual ini ('👋 Mulai dalam 3 langkah', 🔍📊⭐ placeholder).",
+        "scope": "ganti emoji dekoratif dengan ikon Lucide SVG (sudah pola: lucide-react currentColor aria-hidden); ⭐ rating broker → bintang SVG rating (semantic ok); CATAT: '💬 Tanya' konsisten lintas 6 surface → sekalian ganti seragam 1 komponen ikon",
+        "north_star": "STICKY+GROWTH (ui-craft polish konversi CTA); bukan fitur baru (freeze-safe: improvement tampilan existing)",
+        "estimate": "1 slot UX build-only, rider kereta malam"
+      }
     }
   ],
   "items": []
