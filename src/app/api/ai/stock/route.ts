@@ -250,9 +250,12 @@ export async function POST(req: NextRequest) {
 
   // G4 (riset Argon): ekstrak harga beli user ("nyangkut di 5.400" / "beli 5200") → floating P/L dihitung server
   // G1c (juri 30 Okt): jalankan utk SEMUA mode — summarize dgn pertanyaan posisi juga butuh ini
+  // Loop 13 Nov: ticker boleh disisip antara kata kunci & harga ("nyangkut BBRI di 3.900",
+  // "average down BBCA di 3.400") — regex lama hanya keyword→angka sehingga posisiUser tak ter-set
+  // (RT-09 varian) → bepGapPct/avgDown1to1 tak pernah dihitung → model improvise tanpa BEP.
   if (question && typeof context.close === "number" && context.close > 0) {
     const m =
-      question.match(/(?:nyangkut|beli|avg|average|harga beli)\s*(?:di|:|at)?\s*(?:rp\.?\s*)?([0-9][0-9.,]{2,9})/i) ??
+      question.match(/(?:nyangkut|beli|avg|average|harga beli)\s*(?:di|:|at)?\s*(?:[A-Za-z]{4}(?:\.JK)?\s*)?(?:di\s+|:|at\s+)?\s*(?:rp\.?\s*)?([0-9][0-9.,]{2,9})/i) ??
       question.match(/([0-9][0-9.,]{2,9})\s*(?:nyangkut|gitu|an|perlembar)/i);
     if (m) {
       const buyPrice = Number(m[1].replace(/[.,](?=\d{3}\b)/g, "").replace(",", "."));
