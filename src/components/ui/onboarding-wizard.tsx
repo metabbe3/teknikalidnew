@@ -14,6 +14,8 @@
  */
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { BarChart3, Search, Star } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 const WIZARD_KEY = "teknikal:wizard_done";
 
@@ -107,10 +109,10 @@ export function OnboardingWizard() {
 
   if (status === "authenticated" || status === "loading" || dismissed) return null;
 
-  const steps: { key: keyof Done; label: string; icon: string }[] = [
-    { key: "search", label: "Cari saham apa pun di kolom pencarian", icon: "🔍" },
-    { key: "score", label: "Lihat Skor Sinyal — 12 indikator dalam satu angka", icon: "📊" },
-    { key: "star", label: "Tandai saham favorit untuk disimpan", icon: "⭐" },
+  const steps: { key: keyof Done; label: string; icon: LucideIcon }[] = [
+    { key: "search", label: "Cari saham apa pun di kolom pencarian", icon: Search },
+    { key: "score", label: "Lihat Skor Sinyal — 12 indikator dalam satu angka", icon: BarChart3 },
+    { key: "star", label: "Tandai saham favorit untuk disimpan", icon: Star },
   ];
   const completed = steps.filter((s) => done[s.key]).length;
 
@@ -125,7 +127,7 @@ export function OnboardingWizard() {
       <div className="flex items-start justify-between gap-2">
         <div>
           <p className="text-sm font-semibold text-text-primary">
-            {completed === 3 ? "Semua beres 🎉" : "Mulai dalam 3 langkah 👋"}
+            {completed === 3 ? "Semua beres" : "Mulai dalam 3 langkah"}
           </p>
           <p className="text-xs text-text-secondary mt-0.5">Sekitar 30 detik</p>
         </div>
@@ -158,7 +160,7 @@ export function OnboardingWizard() {
               >
                 {done[s.key] ? "✓" : ""}
               </span>
-              <span aria-hidden>{s.icon}</span>
+              <s.icon aria-hidden className="h-4 w-4 shrink-0 text-text-tertiary" />
               <span>{s.label}</span>
             </button>
           </li>
