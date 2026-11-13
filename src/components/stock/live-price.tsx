@@ -16,6 +16,7 @@
 //   - pauses when the tab is hidden (visibilitychange)
 
 import { useEffect, useRef } from "react";
+import { resolveSessionLabel, wibTodayLabel } from "./ohlcv-session-label";
 
 interface QuoteRow {
   ticker: string;
@@ -113,6 +114,7 @@ export default function LivePrice({ intervalMs = 60_000 }: { intervalMs?: number
         const lowEls = Array.from(document.querySelectorAll<HTMLElement>("[data-live-low]"));
         const closeEls = Array.from(document.querySelectorAll<HTMLElement>("[data-live-close]"));
         const volEls = Array.from(document.querySelectorAll<HTMLElement>("[data-live-vol]"));
+        const sessionEls = Array.from(document.querySelectorAll<HTMLElement>("[data-live-session]"));
         const tickers = [
           ...new Set(
             [...priceEls, ...pctEls, ...ohEls, ...highEls, ...lowEls, ...closeEls, ...volEls]
@@ -223,6 +225,23 @@ export default function LivePrice({ intervalMs = 60_000 }: { intervalMs?: number
                 if (!isQuoteLive(q) || q.volume == null || q.volume <= 0) continue;
                 const next = fmtCompactVol(q.volume);
                 if (el.textContent !== next) el.textContent = next;
+              }
+              // qa-13-02: label sesi ikut hidup — saat REGULAR label = sesi hari ini,
+              // bukan tanggal EOD SSR; saat tutup/CLOSED restore label EOD.
+              // (Patch DOM di luar React aman — label dirender awal oleh SSR/OhlcvLive,
+              // dan React tidak me-remount komponen ini; pola sama dengan data-live-vol.)
+              for (const el of sessionEls) {
+                const t = el.getAttribute("data-live-session");
+                const q = t ? byTicker.get(t) : undefined;
+                const next = resolveSessionLabel({
+                  eodLabel: el.getAttribute("data-session-eod") ?? undefined,
+                  isMarketHours: isMarketHoursWib(),
+                  quoteLive: isQuoteLive(q),
+                  todayLabel: wibTodayLabel(),
+                });
+                if (next && el.textContent !== `sesi ${next}`) {
+                  el.textContent = `sesi ${next}`;
+                }
               }
             }
             lastLiveTs = Date.now();

@@ -107,7 +107,11 @@ export function OhlcvLive({
         </span>
       )}
       {resolvedSessionDate && (
-        <span className="text-[10px] text-text-tertiary">
+        <span
+          className="text-[10px] text-text-tertiary"
+          data-live-session={liveTicker ?? ""}
+          data-session-eod={resolvedSessionDate}
+        >
           sesi {resolvedSessionDate}
         </span>
       )}
