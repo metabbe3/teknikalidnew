@@ -133,6 +133,8 @@ flowchart LR
 | P1 | Glosarium satuan + desimal + blacklist kata aneh (post-check) | S | Bahasa |
 | P1 | Metrik turunan wajib per intent (payout, BEP, proporsi flow) | M | Analisa |
 | P1 | `marketContext` (IHSG + sektor + peers) di prompt stock page, reuse `market-snapshot.service` | M | Nyambung |
+
+**Update 13 Nov (loop malam)**: metrik turunan BEP *nyangkut* ternyata bocor utk pola "nyangkut TICKER di HARGA" — regex posisiUser G4 di stock route hanya keyword→angka, ticker di tengah membuat capture gagal (RT-09 varian) → `bepGapPct`/`avgDown1to1` tak dihitung server (battery 13 Nov kasus #9: BEP tidak muncul di jawaban). FIXED commit ebf810e: regex kini tolerir ticker/`.JK` antara kata kunci & harga; unit 10/10 (6 positif incl. 2 pola baru, 4 null-safety incl. "beli saham bank di 3.900").
 | P2 | Format screener = tabel; disclaimer ke footer; chip harus bisa dijawab data | S | Format |
 | P2 | Pertanyaan balik (lot/horizon) + kalkulator nyangkut | M | Personal |
 | P3 | Alert dari chat + kartu ringkasan shareable | L | Retensi/growth |
