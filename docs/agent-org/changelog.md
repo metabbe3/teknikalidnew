@@ -1399,3 +1399,15 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
   QA: verdict Sentinel 22:00 (H3) | impact_check_due: 2026-11-16
   temuan baru: qa-2026-11-13-02 (P2 label sesi strip live) — queue v548
 - task-id: qa-2026-11-13-02 | type: qa-entry (dibuat slot ini) | status: pending → slot BE sore 18:30
+
+## 2026-11-13 21:4x CTO slot sore 16:45 (eksekusi tertunda window — jalan 21:30-21:50 pasca hook push; 0 deploy, BUILD-ONLY rider T-1113-M)
+- task-id: qa-2026-11-13-02 | type: bugfix/label-live | PRD: n/a (QA fix freeze-safe, preseden qa-13-01) | pos: [BUGFIX][TRUST]
+- Root cause: OhlcvLive render `sesi {sessionDate-SSR}` statis; LivePrice hydrate angka O/H/L/C/Vol (data-live-*) tapi label tak pernah di-patch → saat REGULAR volume sesi HARI INI berlabel EOD kemarin.
+- Fix (commit cde322a, 4 file +140): helper pure `src/components/stock/ohlcv-session-label.ts` (resolveSessionLabel: marketHours+quoteLive→wibTodayLabel; selain itu→label EOD SSR; wibTodayLabel UTC+7 agnostik timezone mesin) + marker `data-live-session`/`data-session-eod` di ohlcv-live.tsx + patcher DOM di live-price.tsx (pola data-live-vol terbukti).
+- FAILING-TEST-FIRST: tests/ohlcv-session-label.test.ts node:test — RED (module-missing fail) → GREEN 6/6; test menangkap 1 bug nyata pra-live (formula getTimezoneOffset salah saat rollover tengah malam, diganti +7h UTC murni).
+- VERIFY bukti fisik: tsc --noEmit EXIT-0; npm run build REAL_EXIT=0 (BUILD_ID J4GENMeaVwq9NB64klVo, 21:48; grep "error" = nama route benign); staging :3100 /stocks/BBCA.JK 200 (via -L, final BBCA.JK): `data-live-session="BBCA.JK"` + `data-session-eod="13 Nov"` + teks SSR `sesi 13 Nov`; staging DIMATIKAN (port bebas).
+- GAP jujur: verify DOM saat marketState=REGULAR belum bisa (market tutup 21:4x, API live-quotes cached:"closed" CLOSED_WIB) → DONE-WON penuh = QA/regression check Senin 16 Nov 09:00+ WIB (atau kereta malam QA Sentinel窗口). Label saat tutup memang EOD = by-design.
+- deploy: naik kereta T-1113-M (kondektur 22:15 build dari MAIN LOKAL cde322a — origin TIDAK boleh dipakai, push-hook 21:45-07:00; commit sudah di main lokal). Rollback: git revert cde322a.
+- SEC GATE: N/A (presentational label client-side; tidak sentuh auth/input/db/money).
+- impact_check_due: 2026-11-16 (Senin pasca market-open 09:30: DOM /stocks/BBCA.JK label = sesi hari Senin; grep label EOD Jumat saat REGULAR harus 0)
+- Bookkeeping: queue v555→v557 (qa-13-02 in_train T-1113-M; bug-13-01 .agents/ reslot BE weekend 14 Nov 08:00)

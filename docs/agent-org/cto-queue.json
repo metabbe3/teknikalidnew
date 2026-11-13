@@ -5986,7 +5986,7 @@
       "date": "2026-11-13",
       "type": "qa-content-fix",
       "priority": "P2",
-      "status": "pending",
+      "status": "in_train",
       "pos": "[BUGFIX] TRUST (North Star: TRUST)",
       "north_star": "TRUST — label sesi data live harus jujur (fase L2 feed live)",
       "title": "CTO siang 13 Nov (verif ux-11-10-01): strip OHLCV live di /stocks/[ticker] melabel volume sesi HARI INI (73,3 jt BBCA 13 Nov ~10:0x) sebagai sesi 12 Nov — flight-data SSR = EOD kemarin, hydrate client berhasil tapi label sesi ikut string SSR statis",
@@ -5994,8 +5994,34 @@
       "scheduled_slot": "2026-11-13 BE sore 18:30 (build-only, naik kereta malam T-1113-M bila manifest ada ruang; reslot bila bentrok ops-11-12-02)",
       "done_when": "DOM live /stocks/BBCA.JK saat market REGULAR: label strip = sesi hari ini; grep label-lama EOD saat REGULAR = 0; tsc EXIT-0",
       "created_by": "cto-siang-0930 13 Nov",
-      "result": "",
-      "note": "Ditemukan saat verif ux-11-10-01 item-1: bukti hidrasi jalan (DOM 5.600 vs SSR flight 5.475) tapi volume sesi-13-Nov berlabel 12 Nov. BUKAN fatal (angka benar, label salah) = P2 bukan P1."
+      "result": "BUILD-ONLY DONE cde322a (slot sore CTO 16:45/terlaksana 21:4x): label sesi strip OHLCV kini ikut marketState — helper pure ohlcv-session-label.ts (resolveSessionLabel: REGULAR+live→sesi HARI INI; tutup/CLOSED→label EOD SSR) + marker data-live-session/data-session-eod di ohlcv-live.tsx + patcher DOM live-price.tsx. BUKTI: test node:test 6/6 GREEN (red-first: module-missing fail sebelum impl; 1 bug nyata tertangkap: timezone rollover), tsc EXIT-0, build EXIT-0 BUILD_ID J4GENMea 21:48, staging :3100 /stocks/BBCA.JK 200: data-live-session=BBCA.JK + data-session-eod='13 Nov' + SSR 'sesi 13 Nov'. VERIFY REGULAR live = QA besok 09:00+ (market tutup saat build; DONE-WHEN penuh DOM live belum bisa). Naik kereta T-1113-M",
+      "note": "Ditemukan saat verif ux-11-10-01 item-1: bukti hidrasi jalan (DOM 5.600 vs SSR flight 5.475) tapi volume sesi-13-Nov berlabel 12 Nov. BUKAN fatal (angka benar, label salah) = P2 bukan P1.",
+      "train": "T-1113-M"
+    },
+    {
+      "id": "ux-2026-11-13-01",
+      "date": "2026-11-13",
+      "type": "ux-polish",
+      "priority": "P2",
+      "status": "in_train",
+      "pos": "[KONVERSI] polish anti-slop (freeze-safe: improvement existing)",
+      "north_star": "TRUST + STICKY — onboarding wizard first-touch visitor baru; ikon netral + tap-target 44px+ = konsistensi visual",
+      "title": "Onboarding wizard emoji ke lucide (5 emoji di /stocks & semua page publik) + close-btn hit-area 48px — lanjutan ux-11-12-01, scope-1 idea-2026-11-13-1",
+      "spec": "Buang 5 emoji wizard (👋🎉🔍📊⭐) ganti lucide Search/BarChart3/Star per mandate ui-craft 18 Okt; close-btn tap-target 44px+. DONE WHEN: staging fresh-visitor wizard 0 emoji + 3 svg.lucide + close 48x48 + tsc EXIT-0.",
+      "train": "T-1113-M",
+      "result": "SHIPPED commits 4283801+82356fa+c6c0569 main lokal (belum push, hook 21:45-07:00). Bukti: tsc EXIT-0; build EXIT-0; staging CDP /stocks fresh-visitor: emojis=0, lucide_svgs=3, close_wh=48x48, mobile375 no-overflow (x59 right359 w300), dismiss gone=true + wizard_done persist=1. git log -1 file = c6c0569."
+    },
+    {
+      "id": "bug-2026-11-13-01",
+      "date": "2026-11-13",
+      "type": "bug-report",
+      "priority": "P2",
+      "status": "pending",
+      "pos": "[BUGFIX] OPS/TRUST",
+      "north_star": "TRUST — workspace repo stabil utk semua agent build",
+      "title": "Direktori .agents/ (skills vendored, untracked) dihapus aktor tidak dikenal MID-BUILD 21:2x 13 Nov — build#1 UX crash (watchpack TypeError reading length)",
+      "spec": "REPRO: (1) npm run build jalan saat .agents/skills/* (30 symlink) masih ada; (2) aktor lain rm -rf .agents selama fase scan; (3) watchpack AT UPDATE crash: uncaughtException TypeError Cannot read properties of undefined (reading length), BUILD_EXIT:1 tanpa baris error TS. SEVERITY: P2 (transient — retry bersih EXIT-0; tapi bisa kena build agent lain kapan saja). LOG: /tmp/ux-build-1113.log. Catatan: .agents untracked di git (git ls-files kosong), deletor tidak dikenal — kandidat post-mortem ops-11-11-03 (pola image-swap hantu). DONE WHEN: penyebab deletor teridentifikasi/di-guard (mis. watchdog fs event di .agents) ATAU owner confirm intentional.",
+      "scheduled_slot": "2026-11-14 BE weekend pagi 08:00 (self-dispatch CTO sore 13 Nov: .agents/ hilang, untracked skills vendored — owner yang tahu pemiliknya)"
     }
   ]
 }
