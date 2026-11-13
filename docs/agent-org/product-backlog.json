@@ -2854,34 +2854,37 @@
       "date": "2026-11-12",
       "type": "idea",
       "priority": "P1",
-      "status": "candidate",
+      "status": "promoted_mandat",
       "source": "cto-idle (slot sore 16:45, SQL replay langsung)",
       "north_star": "GROWTH (funnel kuota 6% -> target) + STICKY",
       "title": "[KONVERSI] Quota-wall value-first: 215 anon kena guest_quota 21d, hanya 13 (6,0%) lanjut auth-nav, 4 tg_pantau — wall jadi dead-end, bukan onramp",
       "problem": "Dinding kuota guest saat ini mematikan funnel: 91 cta_click aktor referrer-Threads = 55 guest_quota (60%), tapi konversi ke auth-nav cuma 6%. Pengunjung sosmed (mayoritas jalur acquisition sekarang) menabrak wall tepat saat engagement puncak dan tidak diberi alasan konkret untuk daftar.",
       "data": "SQL 12 Nov: anon kena cta_click guest_quota 21d=215; auth_nav_after=13 (6,0%); tg_pantau_klik=4; register 21d=18. Aktor Threads 21d: anon=59, multi-day=2 (3,4%), PV segmen: stocks 48/71, berita 0. DEDUPE: bukan idea-2026-11-10-1/prd-2026-11-11-01 (itu tracking register attribution, menunggu ACK owner area auth) — ini copy/CTA experience di wall, tanpa sentuh auth.",
       "first_step": "CEO verdict: freeze-safe (CTA/funnel = jalur konversi dibolehkan). Kalau lanjut: riset copy alternatif wall (value-first 'sisa 1 dari 3 — daftar gratis utk lanjut lihat skor X' vs status-quo) + proposal CTA ganda (daftar gratis / pantau via bot WA-TG) dengan baseline 6% -> target >=12% auth-nav pasca-wall.",
-      "DONE-WHEN": "Riset tertulis: baseline 6,0% terkonfirmasi, 2 varian copy + metrik keberhasilan (auth_nav_after/anon kena wall) didefinisikan, verdict PRD lanjut/stop."
+      "DONE-WHEN": "Riset tertulis: baseline 6,0% terkonfirmasi, 2 varian copy + metrik keberhasilan (auth_nav_after/anon kena wall) didefinisikan, verdict PRD lanjut/stop.",
+      "ceo_verdict": "APPROVE 13 Nov — freeze-safe (CTA/funnel = boleh, pivot 6 Nov); T3 7/172 T2 = bottleneck konversi nyata; mandat Product Agent: riset copy value-first + dual-CTA (daftar gratis / pantau bot), baseline auth-nav 6% -> target >=12%"
     },
     {
       "id": "idea-2026-11-12-2",
       "date": "2026-11-12",
       "type": "idea",
       "priority": "P2",
-      "status": "candidate",
+      "status": "hold",
       "source": "cto-idle (slot sore 16:45, SQL replay langsung)",
       "north_star": "STICKY (multi-day 3,4% -> naik) + CONTENT",
       "title": "[KONVERSI/STICKY] Bridge /stocks->/berita utk visitor sosmed: 59 anon Threads 21d, 48/71 PV ke /stocks, NOL menyentuh /berita — hanya 2 (3,4%) kembali di hari lain",
       "problem": "Visitor dari sosmed mendarat di halaman saham (jalur konten IG/Threads) dan tidak pernah menemukan konten artikel — satu-satunya permukaan yang membiasakan kunjungan harian. Non-Threads visitor punya bauran berita 87 PV/auth 72; Threads visitor 0. Tanpa bridge, visitor sosmed = one-page bounce tanpa alasan kembali.",
       "data": "SQL 12 Nov: aktor referrer threads 21d: anon=59, multi_day=2 (3,4%), top multi-day 81b1a95b (3d/4PV), bd8a46cb (2d/5PV). Segmen PV Threads: stocks 48, home 23, berita 0, akademi 0, paper-trading 0. DEDUPE: komplementer ux-2026-11-11-02 (spec_ready) yang menjembatani /berita->sinyal/saham — ini arah sebaliknya /stocks->/berita, permukaan beda, tidak overlap target_files.",
       "first_step": "CEO verdict freeze: ini blok konten-link (bukan fitur baru interaktif?) — kalau dianggap konversi/retensi surface, riset dulu: pola exit halaman /stocks visitor sosmed + kandidat modul 'Analisa terkait {ticker}' 3-link di bawah grafik. Baseline: 0% Threads-aktor menyentuh /berita dari /stocks.",
-      "DONE-WHEN": "Riset tertulis: baseline 0/59 terkonfirmasi, mock posisi modul + metrik (share Threads-aktor dengan >=1 PV /berita dalam sesi sama 14d setelah live) didefinisikan, verdict PRD lanjut/stop."
+      "DONE-WHEN": "Riset tertulis: baseline 0/59 terkonfirmasi, mock posisi modul + metrik (share Threads-aktor dengan >=1 PV /berita dalam sesi sama 14d setelah live) didefinisikan, verdict PRD lanjut/stop.",
+      "review_date": "2026-11-20",
+      "ceo_verdict": "HOLD 13 Nov — modul konten-link = mendekati fitur baru; tunggu baseline RelatedSignals prd-2026-11-12-01 (UX-1111-02) supaya tidak dobel modul link artikel vs /stocks; review 20 Nov"
     },
     {
       "id": "sec-2026-11-12-01",
       "date": "2026-11-12",
       "priority": "P1",
-      "status": "candidate",
+      "status": "promoted_ops",
       "type": "security",
       "source": "itsec-blue",
       "title": "[BLUE][ESKALASI-3] Offsite backup MATI hari ke-10 — rclone gdrive 'empty token found' sejak 3 Nov (penerusan sec-2026-11-05-04 → sec-2026-11-09-02)",
@@ -2891,13 +2894,14 @@
         "catatan_baru": "rclone NOTICE: shared Google Drive client_id rclone akan retired selama 2026 — reconnect sekalipun kelak minta client_id sendiri (rclone.org/drive/#making-your-own-client-id). Sekalian saat reconnect.",
         "exploitability": "rendah (resilience/data-loss, bukan celah eksplotasi remote)",
         "rekomendasi": "Owner 5 menit: rclone config reconnect gdrive: lalu verify rclone lsd gdrive:backups-macmini/teknikalid-db. Pertimbangkan own client_id sekaligus."
-      }
+      },
+      "ceo_verdict": "ACK 13 Nov — DUPlikat CHECK: topik = ops-2026-11-06-01 (blocked_external, train T-1113-M) — TIDAK ada entry queue baru; runbook OAuth owner-only sudah di sana; CEO eskalasi owner hari ini (backup offsite mati hari ke-10)"
     },
     {
       "id": "sec-2026-11-12-02",
       "date": "2026-11-12",
       "priority": "P3",
-      "status": "candidate",
+      "status": "rejected",
       "type": "security",
       "source": "itsec-red",
       "title": "[RED] npm prod audit: follow-redirects 1.16.0-1.16.1 HIGH (transitive) + 8 moderate build-chain (@sentry/plugins, ts-morph, shadcn, glob/minimatch)",
@@ -2906,13 +2910,14 @@
         "risiko": "follow-redirects hanya relevan kalau app fetch redirect attacker-controlled; app fetch API data pasar publik — praktis rendah. Moderate semuanya build/dev tooling.",
         "exploitability": "rendah",
         "rekomendasi": "npm audit fix (tanpa --force) di jendela deploy rutin + tsc/selftest standar. Bukan darurat."
-      }
+      },
+      "ceo_verdict": "REJECT 13 Nov — freeze: dep bump build-chain bukan jalur konversi/trust; bukti: follow-redirects SUDAH 1.16.1 di package-lock (klaim 1.16.0 usang), dependent tunggal axios; revisit saat unfreeze tahap-2"
     },
     {
       "id": "sec-2026-11-12-03",
       "date": "2026-11-12",
       "priority": "P3",
-      "status": "candidate",
+      "status": "rejected",
       "type": "security",
       "source": "itsec-blue",
       "title": "[BLUE] hivepos.id DNS masih live + header MINIMAL (tanpa HSTS/XFO/CSP) — domain parkir pasca-FREEZE 1 Nov, cert valid s.d. 15 Jan 2027",
@@ -2921,6 +2926,19 @@
         "risiko": "Domain aktif tanpa app = permukaan parkir (phishing-kit di subdomain bila DNS drift, cert auto-renew kelak tanpa keputusan).",
         "exploitability": "rendah (butuh kompromis DNS/Cloudflare dulu)",
         "rekomendasi": "Owner: Cloudflare redirect 301 hivepos.id→teknikal.id (1 rule) ATAU biarkan cert expire Jan 2027. Keputusan kepemilikan domain."
+      },
+      "ceo_verdict": "REJECT 13 Nov — domain parkir tanpa app (hivePOS freeze 1 Nov); header hardening = kerja tanpa user; revisit hanya jika hivePOS revive"
+    },
+    {
+      "id": "idea-2026-11-13-1",
+      "status": "candidate",
+      "source": "cto-idle",
+      "title": "[KONVERSI][UI-CRAFT] Emoji residual sweep pass-5: 💬/⭐/👋/🎉 di ~10 surface publik live (stocks/[ticker], indeks, berita x2, broker-saham, onboarding, greeting, repeat-hint, swing-panel)",
+      "data": {
+        "evidence": "grep repo 13 Nov 07:4x: 12 hit emoji dekoratif di src/app (public) + src/components (ticker-fab '💬 Tanya AI Gratis', onboarding 'Mulai dalam 3 langkah 👋'+'Semua beres 🎉'+'⭐', broker '⭐ {rating}', greeting '💬', repeat-visit-hint '⭐', swing-panel '💬', berita/[slug] '💬' x2, indeks/[slug] '💬'). Live bukti: /saham-oversold CTA '💬 Tanya langsung di Telegram AI' tampil di HTML live 13 Nov 07:35. Preseden: ux-11-10-02 ganti 🔔→SVG bell 15 surface (commit 69093de), ux-11-12-01 buang emoji /stocks (commit 1c3ac23) — rotasi lanjutan mandát ui-craft anti-slop owner 18 Okt; QA Sentinel 12 Nov + kondektur 23:1x keduanya flag residual ini ('👋 Mulai dalam 3 langkah', 🔍📊⭐ placeholder).",
+        "scope": "ganti emoji dekoratif dengan ikon Lucide SVG (sudah pola: lucide-react currentColor aria-hidden); ⭐ rating broker → bintang SVG rating (semantic ok); CATAT: '💬 Tanya' konsisten lintas 6 surface → sekalian ganti seragam 1 komponen ikon",
+        "north_star": "STICKY+GROWTH (ui-craft polish konversi CTA); bukan fitur baru (freeze-safe: improvement tampilan existing)",
+        "estimate": "1 slot UX build-only, rider kereta malam"
       }
     }
   ],
