@@ -223,9 +223,10 @@ export function Header() {
       {/* Mobile dropdown */}
       <nav
         className={`sm:hidden border-t border-border bg-bg-surface overflow-y-auto transition-all duration-200 ease-out ${
-          menuOpen ? "max-h-[calc(100dvh-3.5rem)] opacity-100" : "max-h-0 opacity-0 border-t-0"
+          menuOpen ? "max-h-[calc(100dvh-3.5rem)] opacity-100 visible" : "max-h-0 opacity-0 border-t-0 invisible pointer-events-none"
         }`}
         aria-label="Main navigation"
+        aria-hidden={!menuOpen}
       >
         <div className="px-3 pb-3 pt-1 space-y-0.5">
           {navLinks.map((link) => {

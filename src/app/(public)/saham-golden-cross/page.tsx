@@ -123,16 +123,16 @@ export default async function SahamGoldenCrossPage() {
           diandalkan. Statistik menunjukkan saham setelah golden cross cenderung naik dalam 2-4 minggu berikutnya.
         </div>
 
-        <div className="mt-6 overflow-x-auto">
+        <div className="mt-6 overflow-x-auto" tabIndex={0} role="region" aria-label="Tabel Saham Golden Cross">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b text-left">
-                <th className="py-2 pr-4 font-semibold">Ticker</th>
-                <th className="py-2 pr-4 font-semibold">Nama</th>
-                <th className="py-2 pr-4 font-semibold">Harga</th>
-                <th className="py-2 pr-4 font-semibold">Perubahan</th>
-                <th className="py-2 pr-4 font-semibold">Skor Sinyal</th>
-                <th className="py-2 pr-4 font-semibold">Pantau</th>
+                <th scope="col" className="py-2 pr-4 font-semibold">Ticker</th>
+                <th scope="col" className="py-2 pr-4 font-semibold">Nama</th>
+                <th scope="col" className="py-2 pr-4 font-semibold">Harga</th>
+                <th scope="col" className="py-2 pr-4 font-semibold">Perubahan</th>
+                <th scope="col" className="py-2 pr-4 font-semibold">Skor Sinyal</th>
+                <th scope="col" className="py-2 pr-4 font-semibold">Pantau</th>
               </tr>
             </thead>
             <tbody>

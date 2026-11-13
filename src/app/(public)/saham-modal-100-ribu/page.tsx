@@ -113,19 +113,19 @@ export default async function SahamModal100RibuPage() {
         {failed ? (
           <p className="mt-6 text-sm text-text-tertiary">Data sedang tidak tersedia. Coba beberapa saat lagi.</p>
         ) : (
-          <div className="mt-6 overflow-x-auto rounded-lg border border-border">
+          <div className="mt-6 overflow-x-auto rounded-lg border border-border" tabIndex={0} role="region" aria-label="Tabel Saham Modal di Bawah Rp100 Ribu">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-bg-hover text-text-tertiary text-xs">
-                  <th className="text-left px-3 py-2">Kode</th>
-                  <th className="text-left px-3 py-2">Nama Emiten</th>
-                  <th className="text-left px-3 py-2">Papan</th>
-                  <th className="text-right px-3 py-2">Harga/Lbr</th>
-                  <th className="text-right px-3 py-2">Modal 1 Lot</th>
-                  <th className="text-right px-3 py-2">Perubahan</th>
-                  <th className="text-right px-3 py-2">Skor Sinyal</th>
-                  <th className="text-right px-3 py-2">RSI-14</th>
-                  <th className="text-center px-3 py-2">Pantau</th>
+                  <th scope="col" className="text-left px-3 py-2">Kode</th>
+                  <th scope="col" className="text-left px-3 py-2">Nama Emiten</th>
+                  <th scope="col" className="text-left px-3 py-2">Papan</th>
+                  <th scope="col" className="text-right px-3 py-2">Harga/Lbr</th>
+                  <th scope="col" className="text-right px-3 py-2">Modal 1 Lot</th>
+                  <th scope="col" className="text-right px-3 py-2">Perubahan</th>
+                  <th scope="col" className="text-right px-3 py-2">Skor Sinyal</th>
+                  <th scope="col" className="text-right px-3 py-2">RSI-14</th>
+                  <th scope="col" className="text-center px-3 py-2">Pantau</th>
                 </tr>
               </thead>
               <tbody>
@@ -161,14 +161,14 @@ export default async function SahamModal100RibuPage() {
           <>
             <h2 className="mt-8 text-base font-bold text-text-primary">Alternatif: Saham Unggulan Modal &lt; Rp500 Ribu/Lot</h2>
             <p className="text-xs text-text-tertiary mb-3">Emiten lebih mapan (harga Rp1.000-5.000/lembar) untuk yang sanggup menabung sedikit lebih besar.</p>
-            <div className="overflow-x-auto rounded-lg border border-border">
+            <div className="overflow-x-auto rounded-lg border border-border" tabIndex={0} role="region" aria-label="Tabel Saham Unggulan Modal Kurang dari Rp500 Ribu">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-bg-hover text-text-tertiary text-xs">
-                    <th className="text-left px-3 py-2">Kode</th>
-                    <th className="text-left px-3 py-2">Nama Emiten</th>
-                    <th className="text-right px-3 py-2">Harga/Lbr</th>
-                    <th className="text-right px-3 py-2">Modal 1 Lot</th>
+                    <th scope="col" className="text-left px-3 py-2">Kode</th>
+                    <th scope="col" className="text-left px-3 py-2">Nama Emiten</th>
+                    <th scope="col" className="text-right px-3 py-2">Harga/Lbr</th>
+                    <th scope="col" className="text-right px-3 py-2">Modal 1 Lot</th>
                   </tr>
                 </thead>
                 <tbody>

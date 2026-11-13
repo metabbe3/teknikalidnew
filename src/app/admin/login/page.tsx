@@ -99,23 +99,35 @@ function AdminLoginForm() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-3">
-              <Input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoFocus
-                className="h-11 border-gray-200 focus:border-blue-400 focus:ring-blue-400/20"
-              />
-              <Input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="h-11 border-gray-200 focus:border-blue-400 focus:ring-blue-400/20"
-              />
+              <div>
+                <label htmlFor="admin-email" className="sr-only">Email</label>
+                <Input
+                  id="admin-email"
+                  type="email"
+                  autoComplete="email"
+                  aria-label="Email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  autoFocus
+                  className="h-11 border-gray-200 focus:border-blue-400 focus:ring-blue-400/20"
+                />
+              </div>
+              <div>
+                <label htmlFor="admin-password" className="sr-only">Password</label>
+                <Input
+                  id="admin-password"
+                  type="password"
+                  autoComplete="current-password"
+                  aria-label="Password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="h-11 border-gray-200 focus:border-blue-400 focus:ring-blue-400/20"
+                />
+              </div>
               <label className="flex items-center gap-2 cursor-pointer select-none">
                 <input
                   type="checkbox"

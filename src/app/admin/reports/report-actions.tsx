@@ -38,7 +38,10 @@ export function ReportActions({ reportId, targetType, targetId }: ReportActionsP
         data-target-type={targetType}
         data-target-id={targetId}
         disabled={action.isPending}
-        onClick={() => action.mutate("delete")}
+        onClick={() => {
+          if (!window.confirm("Hapus konten ini? Tindakan tidak bisa dibatalkan.")) return;
+          action.mutate("delete");
+        }}
         className="text-xs font-medium text-bearish hover:text-bearish/80 bg-bearish/5 px-3 py-1.5 rounded-full transition-colors press-scale disabled:opacity-50"
       >
         Hapus Konten
@@ -56,7 +59,10 @@ export function ReportActions({ reportId, targetType, targetId }: ReportActionsP
         data-target-type={targetType}
         data-target-id={targetId}
         disabled={action.isPending}
-        onClick={() => action.mutate("ban")}
+        onClick={() => {
+          if (!window.confirm("Ban user ini? Tindakan tidak bisa dibatalkan.")) return;
+          action.mutate("ban");
+        }}
         className="text-xs font-medium text-white bg-text-primary hover:opacity-90 px-3 py-1.5 rounded-full transition-opacity press-scale disabled:opacity-50"
       >
         Ban User

@@ -63,7 +63,9 @@ export default function ReviewQueuePage() {
     mutationFn: async (vars: { id: string; action: "approve" | "reject" }) => {
       let note: string | undefined;
       if (vars.action === "reject") {
-        note = window.prompt("Alasan penolakan (opsional, tercatat di riwayat):") ?? "";
+        const promptNote = window.prompt("Alasan penolakan (opsional, tercatat di riwayat):");
+        if (promptNote === null) return;
+        note = promptNote;
       }
       const r = await fetch("/api/admin/articles/review", {
         method: "POST",

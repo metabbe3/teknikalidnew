@@ -108,16 +108,16 @@ export default async function SahamEmaCrossPage() {
           pergerakan sebelum tren besar terbentuk.
         </div>
 
-        <div className="mt-6 overflow-x-auto">
+        <div className="mt-6 overflow-x-auto" tabIndex={0} role="region" aria-label="Tabel Saham EMA Cross">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-left">
-                <th className="py-2 pr-4 font-semibold text-text-primary">Ticker</th>
-                <th className="py-2 pr-4 font-semibold text-text-primary">Nama</th>
-                <th className="py-2 pr-4 font-semibold text-text-primary">Harga</th>
-                <th className="py-2 pr-4 font-semibold text-text-primary">Perubahan</th>
-                <th className="py-2 pr-4 font-semibold text-text-primary">Skor Sinyal</th>
-                <th className="py-2 pr-4 font-semibold text-text-primary">Pantau</th>
+                <th scope="col" className="py-2 pr-4 font-semibold text-text-primary">Ticker</th>
+                <th scope="col" className="py-2 pr-4 font-semibold text-text-primary">Nama</th>
+                <th scope="col" className="py-2 pr-4 font-semibold text-text-primary">Harga</th>
+                <th scope="col" className="py-2 pr-4 font-semibold text-text-primary">Perubahan</th>
+                <th scope="col" className="py-2 pr-4 font-semibold text-text-primary">Skor Sinyal</th>
+                <th scope="col" className="py-2 pr-4 font-semibold text-text-primary">Pantau</th>
               </tr>
             </thead>
             <tbody>

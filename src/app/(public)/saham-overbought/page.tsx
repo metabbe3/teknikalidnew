@@ -106,16 +106,16 @@ export default async function SahamOverboughtPage() {
           <strong className="text-text-primary"> Perhatian:</strong> Saham overbought bukan sinyal jual pasti. Dalam tren kuat, RSI bisa bertahan
           diatas 70. Gunakan bersama indikator lain.
         </div>
-        <div className="mt-6 overflow-x-auto">
+        <div className="mt-6 overflow-x-auto" tabIndex={0} role="region" aria-label="Tabel Saham Overbought">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b text-left">
-                <th className="py-2 pr-4 font-semibold">Ticker</th>
-                <th className="py-2 pr-4 font-semibold">Nama</th>
-                <th className="py-2 pr-4 font-semibold">Harga</th>
-                <th className="py-2 pr-4 font-semibold">Perubahan</th>
-                <th className="py-2 pr-4 font-semibold">Skor Sinyal</th>
-                <th className="py-2 pr-4 font-semibold">Pantau</th>
+                <th scope="col" className="py-2 pr-4 font-semibold">Ticker</th>
+                <th scope="col" className="py-2 pr-4 font-semibold">Nama</th>
+                <th scope="col" className="py-2 pr-4 font-semibold">Harga</th>
+                <th scope="col" className="py-2 pr-4 font-semibold">Perubahan</th>
+                <th scope="col" className="py-2 pr-4 font-semibold">Skor Sinyal</th>
+                <th scope="col" className="py-2 pr-4 font-semibold">Pantau</th>
               </tr>
             </thead>
             <tbody>

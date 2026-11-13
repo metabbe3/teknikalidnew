@@ -194,7 +194,7 @@ export function StockTable({ stocks, sectors, linkBase = "/stocks" }: StockTable
       <div className="hidden md:block">
         <div className="overflow-x-auto rounded-xl depth-shadow relative border border-border/60">
           <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-bg-primary to-transparent md:hidden z-10" />
-          <div ref={scrollRef} className="max-h-[70vh] overflow-y-auto overflow-x-hidden">
+          <div ref={scrollRef} className="max-h-[70vh] overflow-y-auto overflow-x-auto">
             {/* Header */}
             <div className={`glass-header sticky top-0 z-20 grid ${gridCols} min-w-[946px] border-b border-border/80`}>
               <SortHeader label="Ticker" colKey="ticker" />
@@ -219,7 +219,10 @@ export function StockTable({ stocks, sectors, linkBase = "/stocks" }: StockTable
                   <div
                     key={stock.ticker}
                     data-index={virtualRow.index}
-                    className={`absolute top-0 left-0 w-full grid ${gridCols} items-center border-b border-border/50 cursor-pointer transition-all duration-100 ${
+                    role="row"
+                    tabIndex={0}
+                    aria-label={`Detail saham ${stripJk(stock.ticker)}`}
+                    className={`absolute top-0 left-0 w-full grid ${gridCols} items-center border-b border-border/50 cursor-pointer transition-all duration-100 outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset ${
                       virtualRow.index % 2 === 0 ? "bg-bg-card/30" : ""
                     } hover:bg-accent/[0.04]`}
                     style={{
@@ -227,6 +230,12 @@ export function StockTable({ stocks, sectors, linkBase = "/stocks" }: StockTable
                       transform: `translateY(${virtualRow.start}px)`,
                     }}
                     onClick={() => router.push(`${linkBase}/${stock.ticker}`)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        router.push(`${linkBase}/${stock.ticker}`);
+                      }
+                    }}
                   >
                     <div className="px-4 py-3 flex items-center gap-2">
                       <StockLogo name={stock.name} ticker={stock.ticker} size={24} />

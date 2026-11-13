@@ -326,7 +326,7 @@ export default async function BeritaArticlePage({
 
                 {article.coverImageUrl && (
                   <div className="rounded-xl overflow-hidden mb-6 aspect-[2/1] max-h-[400px]">
-                    <img src={article.coverImageUrl} alt={article.title} width={1200} height={600} className="w-full h-full object-cover" loading="lazy" />
+                    <img src={article.coverImageUrl} alt={article.title} width={1200} height={600} className="w-full h-full object-cover" loading="eager" fetchPriority="high" />
                   </div>
                 )}
 

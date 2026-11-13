@@ -172,20 +172,20 @@ export default async function KalenderDividenPage() {
         ) : (
           <>
             <h2 className="mt-8 text-lg font-bold text-text-primary">Jadwal Cum Date Mendatang ({upcoming.length})</h2>
-            <div className="mt-3 overflow-x-auto rounded-lg border border-border">
+            <div className="mt-3 overflow-x-auto rounded-lg border border-border" tabIndex={0} role="region" aria-label="Jadwal Cum Date Mendatang">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-bg-hover text-text-tertiary text-xs">
-                    <th className="text-left px-3 py-2">Cum Date</th>
-                    <th className="text-left px-3 py-2">Emiten</th>
-                    <th className="text-right px-3 py-2">Dividen/Lbr</th>
-                    <th className="hidden sm:table-cell text-right px-3 py-2">Harga</th>
-                    <th className="hidden sm:table-cell text-right px-3 py-2">Modal 1 Lot</th>
-                    <th className="text-right px-3 py-2">Est. Yield</th>
-                    <th className="hidden sm:table-cell text-right px-3 py-2">Skor Sinyal</th>
-                    <th className="hidden sm:table-cell text-left px-3 py-2">Ex Date</th>
-                    <th className="hidden sm:table-cell text-left px-3 py-2">Bayar</th>
-                    <th className="text-center px-3 py-2">Pantau</th>
+                    <th scope="col" className="text-left px-3 py-2">Cum Date</th>
+                    <th scope="col" className="text-left px-3 py-2">Emiten</th>
+                    <th scope="col" className="text-right px-3 py-2">Dividen/Lbr</th>
+                    <th scope="col" className="hidden sm:table-cell text-right px-3 py-2">Harga</th>
+                    <th scope="col" className="hidden sm:table-cell text-right px-3 py-2">Modal 1 Lot</th>
+                    <th scope="col" className="text-right px-3 py-2">Est. Yield</th>
+                    <th scope="col" className="hidden sm:table-cell text-right px-3 py-2">Skor Sinyal</th>
+                    <th scope="col" className="hidden sm:table-cell text-left px-3 py-2">Ex Date</th>
+                    <th scope="col" className="hidden sm:table-cell text-left px-3 py-2">Bayar</th>
+                    <th scope="col" className="text-center px-3 py-2">Pantau</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -232,14 +232,14 @@ export default async function KalenderDividenPage() {
                   </div>
                   <span className="text-xs text-text-tertiary transition-transform group-open:rotate-180">▼</span>
                 </summary>
-                <div className="mt-3 overflow-x-auto rounded-lg border border-border">
+                <div className="mt-3 overflow-x-auto rounded-lg border border-border" tabIndex={0} role="region" aria-label="Riwayat Cum Date Terlewat">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="bg-bg-hover text-text-tertiary text-xs">
-                        <th className="text-left px-3 py-2">Cum Date</th>
-                        <th className="text-left px-3 py-2">Emiten</th>
-                        <th className="text-right px-3 py-2">Dividen/Lbr</th>
-                        <th className="text-left px-3 py-2">Ex Date</th>
+                        <th scope="col" className="text-left px-3 py-2">Cum Date</th>
+                        <th scope="col" className="text-left px-3 py-2">Emiten</th>
+                        <th scope="col" className="text-right px-3 py-2">Dividen/Lbr</th>
+                        <th scope="col" className="text-left px-3 py-2">Ex Date</th>
                       </tr>
                     </thead>
                     <tbody>

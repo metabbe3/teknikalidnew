@@ -3,6 +3,7 @@ import { PageHero } from "@/components/layout/page-hero";
 import { MonthlyTable, SIGNAL_LABEL, SummaryTable, fmtPct, fmtRate } from "@/components/track-record/tables";
 import { getTrackRecordDataCached, type TrackRecordData } from "@/lib/track-record.service";
 import { dateLabel } from "@/lib/utils";
+import { SITE_URL } from "@/lib/constants";
 
 // 516k rows di-aggregate (±0,2s terukur) — data harian, bukan intraday.
 // Trust: prerender build-time tanpa DB membekukan empty state (RCA 18 Okt, 13 halaman
@@ -10,13 +11,35 @@ import { dateLabel } from "@/lib/utils";
 export const dynamic = "force-dynamic";
 
 // Trust asset, bukan target SEO: angka berubah tiap hari, tanpa keyword stabil (pola /pasar).
-export const metadata: Metadata = {
-  title: "Track Record Sinyal — Akurasi Diukur dari Database",
-  description:
-    "Skor akurasi sinyal golden cross & death cross TeknikalID, dihitung otomatis dari database harga sendiri. Tanpa survivorship bias.",
-  alternates: { canonical: "/track-record" },
-  robots: { index: false, follow: true },
-};
+export function generateMetadata(): Metadata {
+  const title = "Track Record — TeknikalID";
+  const description =
+    "Skor akurasi sinyal golden cross & death cross TeknikalID, dihitung otomatis dari database harga sendiri. Tanpa survivorship bias.";
+  return {
+    title,
+    description,
+    alternates: { canonical: "/track-record" },
+    robots: { index: false, follow: true },
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/track-record`,
+      type: "website",
+      images: [
+        {
+          url: `${SITE_URL}/api/og?title=Track+Record&type=berita`,
+          width: 1200,
+          height: 630,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
+}
 
 export default async function TrackRecordPage() {
   let data: TrackRecordData | null = null;

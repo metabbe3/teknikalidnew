@@ -176,14 +176,14 @@ export default async function SahamDividenPage() {
             <p className="mt-1 text-sm text-text-secondary">
               Saham yang masuk ex date di 30 hari ke depan — beli paling lambat sehari sebelum ex date untuk berhak dividen.
             </p>
-            <div className="mt-3 overflow-x-auto rounded-lg border">
+            <div className="mt-3 overflow-x-auto rounded-lg border" tabIndex={0} role="region" aria-label="Jadwal Ex Date Mendatang">
               <table className="w-full min-w-[640px] text-sm">
                 <thead>
                   <tr className="border-b bg-bg-hover/50 text-left text-xs text-text-secondary">
-                    <th className="px-3 py-2 font-medium">Saham</th>
-                    <th className="px-3 py-2 font-medium">Ex Date</th>
-                    <th className="px-3 py-2 font-medium">Dividen/Lbr</th>
-                    <th className="px-3 py-2 font-medium">Tanggal Bayar</th>
+                    <th scope="col" className="px-3 py-2 font-medium">Saham</th>
+                    <th scope="col" className="px-3 py-2 font-medium">Ex Date</th>
+                    <th scope="col" className="px-3 py-2 font-medium">Dividen/Lbr</th>
+                    <th scope="col" className="px-3 py-2 font-medium">Tanggal Bayar</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -225,16 +225,16 @@ export default async function SahamDividenPage() {
           </p>
         )}
 
-        <div className="mt-6 overflow-x-auto">
+        <div className="mt-6 overflow-x-auto" tabIndex={0} role="region" aria-label="Tabel Saham Dividen Tinggi">
           <table className="w-full min-w-[640px] text-sm">
             <thead>
               <tr className="border-b text-left text-text-secondary">
-                <th className="py-2 pr-4 font-medium">Saham</th>
-                <th className="py-2 pr-4 font-medium">Yield</th>
-                <th className="py-2 pr-4 font-medium">Harga</th>
-                <th className="py-2 pr-4 font-medium">PE</th>
-                <th className="py-2 pr-4 font-medium">Sektor</th>
-                <th className="py-2 pr-4 font-medium">Pantau</th>
+                <th scope="col" className="py-2 pr-4 font-medium">Saham</th>
+                <th scope="col" className="py-2 pr-4 font-medium">Yield</th>
+                <th scope="col" className="py-2 pr-4 font-medium">Harga</th>
+                <th scope="col" className="py-2 pr-4 font-medium">PE</th>
+                <th scope="col" className="py-2 pr-4 font-medium">Sektor</th>
+                <th scope="col" className="py-2 pr-4 font-medium">Pantau</th>
               </tr>
             </thead>
             <tbody>

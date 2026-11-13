@@ -103,16 +103,16 @@ export default async function SahamValueGrowthPage() {
 
         <AskAiCta question="Saham yang lagi murah tapi mulai naik?" />
 
-        <div className="mt-6 overflow-x-auto">
+        <div className="mt-6 overflow-x-auto" tabIndex={0} role="region" aria-label="Tabel Saham Value Growth">
           <table className="w-full min-w-[640px] text-sm">
             <thead>
               <tr className="border-b text-left text-text-secondary">
-                <th className="py-2 pr-4 font-medium">Saham</th>
-                <th className="py-2 pr-4 font-medium">PE</th>
-                <th className="py-2 pr-4 font-medium">EPS</th>
-                <th className="py-2 pr-4 font-medium">Harga</th>
-                <th className="py-2 font-medium">Sektor</th>
-                <th className="py-2 pr-4 font-medium">Pantau</th>
+                <th scope="col" className="py-2 pr-4 font-medium">Saham</th>
+                <th scope="col" className="py-2 pr-4 font-medium">PE</th>
+                <th scope="col" className="py-2 pr-4 font-medium">EPS</th>
+                <th scope="col" className="py-2 pr-4 font-medium">Harga</th>
+                <th scope="col" className="py-2 font-medium">Sektor</th>
+                <th scope="col" className="py-2 pr-4 font-medium">Pantau</th>
               </tr>
             </thead>
             <tbody>

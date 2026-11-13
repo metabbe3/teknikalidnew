@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
@@ -58,14 +58,22 @@ export default function ErrorHubPage() {
   const [source, setSource] = useState<string>("all");
   const [period, setPeriod] = useState<string>("24h");
   const [search, setSearch] = useState<string>("");
+  const [debouncedSearch, setDebouncedSearch] = useState<string>("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [search]);
 
   const { data, isLoading } = useQuery<ErrorData>({
-    queryKey: ["admin-errors", source, period, search],
+    queryKey: ["admin-errors", source, period, debouncedSearch],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (source !== "all") params.set("source", source);
       params.set("period", period);
-      if (search.trim()) params.set("search", search.trim());
+      if (debouncedSearch.trim()) params.set("search", debouncedSearch.trim());
 
       const r = await fetch(`/api/admin/errors?${params.toString()}`);
       if (!r.ok) return undefined;

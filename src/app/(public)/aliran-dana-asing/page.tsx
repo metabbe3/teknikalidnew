@@ -129,14 +129,14 @@ export default async function AliranDanaAsingPage() {
             <div>
               <h2 className="text-base font-bold text-bullish">Top Net Foreign Buy ({netBuy.length})</h2>
               <p className="text-xs text-text-tertiary mb-3">Diborong asing — cek konfirmasi tren di halaman sahamnya.</p>
-              <div className="overflow-x-auto rounded-lg border border-border">
+              <div className="overflow-x-auto rounded-lg border border-border" tabIndex={0} role="region" aria-label="Top Net Foreign Buy">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="bg-bg-hover text-text-tertiary text-xs">
-                      <th className="text-left px-3 py-2">#</th>
-                      <th className="text-left px-3 py-2">Emiten</th>
-                      <th className="text-right px-3 py-2">Net Beli Asing</th>
-                      <th className="text-center px-3 py-2">Pantau</th>
+                      <th scope="col" className="text-left px-3 py-2">#</th>
+                      <th scope="col" className="text-left px-3 py-2">Emiten</th>
+                      <th scope="col" className="text-right px-3 py-2">Net Beli Asing</th>
+                      <th scope="col" className="text-center px-3 py-2">Pantau</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -160,14 +160,14 @@ export default async function AliranDanaAsingPage() {
             <div>
               <h2 className="text-base font-bold text-bearish">Top Net Foreign Sell ({netSell.length})</h2>
               <p className="text-xs text-text-tertiary mb-3">Tekanan distribusi asing — waspadai bila tren harga ikut melemah.</p>
-              <div className="overflow-x-auto rounded-lg border border-border">
+              <div className="overflow-x-auto rounded-lg border border-border" tabIndex={0} role="region" aria-label="Top Net Foreign Sell">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="bg-bg-hover text-text-tertiary text-xs">
-                      <th className="text-left px-3 py-2">#</th>
-                      <th className="text-left px-3 py-2">Emiten</th>
-                      <th className="text-right px-3 py-2">Net Jual Asing</th>
-                      <th className="text-center px-3 py-2">Pantau</th>
+                      <th scope="col" className="text-left px-3 py-2">#</th>
+                      <th scope="col" className="text-left px-3 py-2">Emiten</th>
+                      <th scope="col" className="text-right px-3 py-2">Net Jual Asing</th>
+                      <th scope="col" className="text-center px-3 py-2">Pantau</th>
                     </tr>
                   </thead>
                   <tbody>

@@ -166,13 +166,13 @@ export default async function LaporanMingguPage({
         <section>
           <h2 className="text-lg font-bold text-text-primary mb-1">Performa Sektor</h2>
           <p className="text-sm text-text-secondary mb-3">{report.prose.sectors}</p>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto" tabIndex={0} role="region" aria-label="Performa Sektor">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border text-left">
-                  <th className="py-2 pr-4 font-semibold text-text-primary whitespace-nowrap">Sektor</th>
-                  <th className="py-2 pr-4 font-semibold text-text-primary whitespace-nowrap">Rata-rata Mingguan</th>
-                  <th className="py-2 pr-4 font-semibold text-text-primary whitespace-nowrap">Saham</th>
+                  <th scope="col" className="py-2 pr-4 font-semibold text-text-primary whitespace-nowrap">Sektor</th>
+                  <th scope="col" className="py-2 pr-4 font-semibold text-text-primary whitespace-nowrap">Rata-rata Mingguan</th>
+                  <th scope="col" className="py-2 pr-4 font-semibold text-text-primary whitespace-nowrap">Saham</th>
                 </tr>
               </thead>
               <tbody>
