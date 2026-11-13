@@ -133,7 +133,7 @@ export function OnboardingWizard() {
         </div>
         <button
           onClick={finish}
-          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-text-tertiary hover:bg-bg-hover hover:text-text-primary transition-colors"
+          className="-m-2.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full p-2.5 text-text-tertiary hover:bg-bg-hover hover:text-text-primary transition-colors"
           aria-label="Tutup panduan"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
