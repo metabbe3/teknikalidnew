@@ -5,7 +5,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { SITE_URL, IDX40_TICKERS } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
-import { ArticleContent, extractHeadings, estimateReadingTime } from "@/components/article/article-renderer";
+import { ArticleContent, extractHeadings, estimateReadingTime, splitMidArticle } from "@/components/article/article-renderer";
 import { extractArticleTickers } from "@/lib/rehype-stock-linker";
 import { formatDecimalId } from "@/lib/format-number";
 import { ArrowLeft, Clock, ChevronRight } from "lucide-react";
@@ -103,6 +103,10 @@ export default async function BeritaArticlePage({
   const relatedSignalTicker = article.tickerTag ?? mentionedTickers[0] ?? null;
   const primaryTicker = article.tickerTag ?? mentionedTickers[0] ?? null;
   const primaryClean = primaryTicker ? stripJk(primaryTicker) : null;
+  // ux-2026-11-11-02 (PRD prd-2026-11-12-01 OPSI A): slot retensi mid-article —
+  // setelah H2 ke-2 (fallback paragraf-4). Kedua bagian dirender lewat
+  // ArticleContent (pipeline remark/rehype identik — sanitasi & TOC tak berubah).
+  const midSplit = splitMidArticle(article.content, article.title);
 
   // DAILY_SNAPSHOT → hydrate live stock data by ticker for the briefing dashboard
   const isSnapshot = article.articleType === ArticleType.DAILY_SNAPSHOT && !!article.tickerTag;
@@ -444,8 +448,18 @@ export default async function BeritaArticlePage({
               {/* Snapshot briefing dashboard (DAILY_SNAPSHOT only) */}
               {briefingData && <SnapshotBriefing data={briefingData} />}
 
-              {/* Analysis body */}
-              <ArticleContent content={article.content} title={article.title} />
+              {/* Analysis body — ux-2026-11-11-02: RelatedSignals mid-article
+                  (setelah H2 ke-2; fallback paragraf-4). Modul bawah TETAP ada
+                  (AC3 no-regresi-SEO). 0 ticker → RelatedSignals null (no empty state). */}
+              {midSplit.insertAt !== null ? (
+                <>
+                  <ArticleContent content={midSplit.before} title={article.title} />
+                  <RelatedSignals ticker={relatedSignalTicker} variant="mid" />
+                  <ArticleContent content={midSplit.after} title={article.title} />
+                </>
+              ) : (
+                <ArticleContent content={article.content} title={article.title} />
+              )}
 
               {/* CTA Bot di Akhir Artikel (T3) */}
               <div className="mt-6 rounded-xl border border-accent/30 bg-gradient-to-br from-accent/10 via-accent/5 to-transparent p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">

@@ -75,12 +75,19 @@ async function resolveRelatedSignals(ticker: string | null): Promise<string[] | 
   }
 }
 
-export async function RelatedSignals({ ticker }: { ticker: string | null }) {
+export async function RelatedSignals({
+  ticker,
+  variant = "bottom",
+}: {
+  ticker: string | null;
+  /** ux-2026-11-11-02: "mid" = blok retensi di tengah artikel (setelah H2 ke-2, area 84% pembaca); "bottom" = posisi asli bawah halaman (tetap dipertahankan, AC3). */
+  variant?: "mid" | "bottom";
+}) {
   const selected = await resolveRelatedSignals(ticker);
   if (!selected || selected.length === 0) return null;
 
   return (
-    <div className="mt-6 space-y-2">
+    <div className={variant === "mid" ? "my-8 space-y-2" : "mt-6 space-y-2"}>
       <p className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">Sinyal Terkait</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {selected.slice(0, 2).map((k) => {
@@ -89,6 +96,7 @@ export async function RelatedSignals({ ticker }: { ticker: string | null }) {
             <Link
               key={k}
               href={s.href}
+              data-engagement="chip_beritaRelatedSignals"
               className="group block bg-bg-card rounded-xl depth-shadow p-3.5 hover:depth-shadow-hover transition-all border border-border/60"
             >
               <p className="text-xs font-semibold text-text-primary group-hover:text-accent transition-colors truncate">
