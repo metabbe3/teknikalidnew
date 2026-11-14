@@ -317,7 +317,7 @@ export function PersonalizedBeranda({ agentUpsell = false }: { agentUpsell?: boo
         <Card className="md:col-span-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-text-primary">Quick Tools</h3>
+              <h3 className="text-sm font-semibold text-text-primary">Alat Cepat</h3>
             </div>
           </div>
           <div className="flex items-center gap-2 mt-3 flex-wrap">

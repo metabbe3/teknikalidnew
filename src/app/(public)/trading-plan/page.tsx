@@ -114,7 +114,7 @@ export default async function TradingPlanPage({
   return (
     <>
       <PageHero
-        eyebrow="Tools"
+        eyebrow="Alat Analisa"
         title="Kalkulator Trading Plan"
         description="Rencana trading otomatis — entry, target, dan cut loss dari Pivot Points & ATR. Sampai 6 saham, langsung kelihatan mana yang layak."
       />

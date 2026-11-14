@@ -8,13 +8,14 @@ const navLinks = [
   { href: "/akademi", label: "Akademi" },
   { href: "/compare", label: "Bandingkan Saham" },
   { href: "/paper-trading", label: "Latihan Trading" },
-  { href: "/track-record", label: "Track Record" },
+  { href: "/track-record", label: "Riwayat Akurasi Sinyal" },
 ];
 
 const marketToolLinks = [
   { href: "/kalender-dividen", label: "Kalender Dividen" },
   { href: "/aliran-dana-asing", label: "Aliran Dana Asing" },
   { href: "/indeks/lq45", label: "Indeks LQ45 & JII" },
+  { href: "/market-structure", label: "Arah Tren Pasar" },
   { href: "/bottom-fishing", label: "Radar Saham Diskon" },
   { href: "/swing", label: "Setup Swing Hari Ini" },
   { href: "/laporan-pasar", label: "Laporan Pasar Mingguan" },
@@ -100,7 +101,7 @@ export function Footer() {
 
           {/* Data & Pasar Tools (P0 SEO Internal Linking) */}
           <div className="space-y-2.5">
-            <p className="text-xs font-semibold text-text-primary uppercase tracking-wider">Data Pasar &amp; Tools</p>
+            <p className="text-xs font-semibold text-text-primary uppercase tracking-wider">Data Pasar &amp; Alat</p>
             <div className="flex flex-col gap-1.5">
               {marketToolLinks.map((link) => (
                 <Link key={link.href} href={link.href} className="text-xs text-text-secondary hover:text-text-primary transition-colors">

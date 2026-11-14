@@ -98,7 +98,7 @@ export default async function MarketStructurePage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
       <PageHero
-        eyebrow="Tools"
+        eyebrow="Alat Analisa"
         title="Market Structure"
         description="Struktur tren 40 saham IDX terlikuid — Uptrend (HH/HL), Downtrend (LH/LL), atau Konsolidasi, dari analisis swing point 150 hari."
       />

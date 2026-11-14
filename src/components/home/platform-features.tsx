@@ -16,9 +16,9 @@ const features = [
     statLabel: "kalkulasi",
   },
   {
-    title: "Bottom Fishing Radar",
+    title: "Radar Saham Diskon",
     description: "Deteksi saham oversold dengan potensi reversal. RSI, Stochastic, dan volume spike otomatis.",
-    href: "/stocks?view=screener",
+    href: "/bottom-fishing",
     stat: "Live",
     statLabel: "monitoring",
   },

@@ -69,7 +69,7 @@ export default async function BottomFishingPage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
       <PageHero
-        eyebrow="Tools"
+        eyebrow="Alat Analisa"
         title="Bottom Fishing Radar"
         description="Saham IDX oversold (RSI < 30) yang masih transaksi di sesi terakhir — kandidat rebound dengan data nyata, bukan saham beku."
       />
