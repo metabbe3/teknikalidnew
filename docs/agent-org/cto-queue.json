@@ -3250,7 +3250,7 @@
       "priority": "P2",
       "status": "pending",
       "assigned_to": "cto",
-      "scheduled_slot": "2026-11-13 BE sore 18:30 (reslot CTO siang 13 Nov: qa-13-01+ux-11-10-01 selesai, budget reserve utk close-slot; naik kereta malam bila ada ruang)",
+      "scheduled_slot": "2026-11-16 BE Senin pagi 07:30 (reslot CTO pagi 14 Nov: slot 13 Nov sore terlewat — slot sore weekend diprioritaskan kereta T-1114-M + artikel weekend CEO)",
       "north_star": "CONSISTENCY — audit cron-monitoring 26 Okt",
       "source": "plain audit 26 Okt sore (domain cron-monitoring/)",
       "spec": "Domain cron-monitoring (audit 26 Okt): (1) tanpa cron-monitoring.errors.ts + TimeoutError extends Error bukan DomainError (with-timeout.ts:13); (2) status tipe longgar: repo string vs service union (cron-monitoring.repository.ts:10 vs service:6); (3) errorMessage error.message bisa bocor detail internal ke dashboard admin (with-cron-logging.ts:32) — pastikan dashboard admin-only. Domain sehat, nol P0/P1.",
@@ -5568,14 +5568,17 @@
       "date": "2026-11-10",
       "type": "ops",
       "priority": "P3",
-      "status": "pending",
+      "status": "blocked_owner",
       "train": "T-1114-W",
       "scheduled_slot": "2026-11-14 BE weekend pagi 08:00 (reslot CTO siang 12 Nov: butuh tabel ErrorLog + DDL migration = schema-shield owner gate kalau via merge; budget-reserve #19 sisa call slot siang <10. Rider kereta weekend setelah SRE build.",
       "north_star": "TRUST (deteksi password-spray/credential-stuffing anonim)",
       "title": "[BUGFIX][TRUST] Backlog sec-2026-10-29-01 (owner-approved 29 Okt, 12 hari belum dispatch — utang CEO): ErrorLog utk 401/403 anonim /auth/signin (monitoring gap)",
       "spec": "ENTRY BACKLOG sec-2026-10-29-01 status=approved sejak 29 Okt — owner sudah approve tapi tak pernah dispatch (anti-stagnation: approved tanpa queue = badge dashboard '-> dispatch CTO'). ISI: tabel ErrorLog tidak ada, AuditLog hanya event authed -> password-spray/credential-stuffing /auth/signin tak terdeteksi dari dalam. TASK: (1) tabel ErrorLog (statusCode, path, ipHash, ts) + capture 401/403 anonim di middleware/proxy jalur auth; (2) agregat sre_brief.py: cluster 401/403 per IP-jam dgn threshold alert (mis. >10/5mnt); (3) DB migration via kereta normal. DONE WHEN: (a) SELECT count ErrorLog 24h > 0 setelah deploy + curl /auth/signin POST password-sampah 3x tercatat 401 rows; (b) sre_brief menampilkan blok auth-anonim; (c) dashboard admin 1 query read-only. VERIFIKASI HATI-HATI: jangan kunci jalur login normal (smoke login sukses tetap jalan).",
       "created_by": "CEO-0815 10 Nov (sumber: sec-2026-10-29-01 approved)",
-      "reslot_note": "auto-reslot 2026-11-14: kereta T-1113-W kedaluwarsa -> kereta T-1114-W (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-14: kereta T-1113-W kedaluwarsa -> kereta T-1114-W (reslot_guard.py v3)",
+      "owner_brief": "BLOCKED_FOR_OWNER (CTO pagi 14 Nov — SCHEMA-SHIELD: ErrorLog = tabel baru = DDL. Hard-rule CTO: DILARANG migrasi schema; MERGE PROTOCOL: perubahan prisma/migrations/.sql = owner_gate_ddl permanen). OWNER PACKAGE — investigasi read-only SELESAI: (1) FILE yang akan diubah: prisma/schema.prisma (+model ErrorLog ~15 baris) + prisma/migrations/<ts>_errorlog/migration.sql (CREATE TABLE ErrorLog) + capture 401/403 anonim di middleware/proxy jalur /auth/* (kandidat: src/middleware.ts / next.config.ts — final saat build) + agregat sre_brief (blok auth-anonim, host script) + 1 route admin read-only /api/admin/error-log (cluster ipHash-jam). (2) RISIKO: DDL jam salah = table-lock saat traffic (gate owner permanen utk prod DB); tabel tumbuh tanpa cap → wajib retensi 30 hari (pola housekeeping worker harian) + index (ts, ipHash); ipHash = SHA-256(ip + PEPPER env) — JANGAN simpan IP raw (privacy); scope hanya 401/403 anonim /auth/* bukan semua 404 (noise). (3) ROLLBACK: tabel baru tak punya dependen → rollback = migrasi balik (hapus tabel ErrorLog via migration down) + revert commit middleware + rebuild; aman satu perintah. (4) ESTIMASI: 2-3 jam build setelah approval, naik kereta malam biasa. NEEDS: owner approval DDL satu-kali CREATE TABLE ErrorLog (kolom: id, ts, statusCode, path, ipHash, userAgent-trunc) via agent utama → setelah approve status pending + approved_by_owner. SEC-REVIEW: (a) ipHash peppered = anti rainbow/enumerasi; (b) route admin error-log admin-only (IDOR: anonim/user biasa ditolak); (c) input hanya statusCode/path server-side, tanpa input bebas = no injection surface; (d) retensi 30 hari + sampling burst >100 evt/5mnt/ip = anti log-flood DoS; (e) pesan error generik utk anonim, tak bocor detail internal. Pilar: TRUST.",
+      "needs": "Owner approval DDL satu-kali: CREATE TABLE ErrorLog + capture 401/403 anonim /auth/* + route admin read-only + blok sre_brief",
+      "blocked_checked_at": "2026-11-14 07:55 WIB"
     },
     {
       "id": "qa-2026-11-10-02",
@@ -5723,7 +5726,7 @@
       "spec": "Post-mortem (3 baris CTO report) + tindak lanjut struktural: (1) identifikasi pelaku 22:39 via docker events log daemon.json login shell history jika ada; (2) buat guard mekanis: watchdog check image app == manifest deploy terakhir (bus entry deploy) — drift > 15 menit = alert; (3) aturan: SEMUA sesi (termasuk AGY/owner) deploy/build = wajib bus entry + build dari main post-merge; (4) konvensi worktree /tmp/* prunable = tidak boleh jadi sumber build prod. Sumber: kondektur report T-1110-M + spot-check CTO 07:46 11 Nov.",
       "north_star": "TRUST (deploy integrity = data reliable; regressi diam-diam merusak trust user pada fitur yang dijanjikan)",
       "done_when": "(a) post-mortem 3-baris tertulis di changelog; (b) guard watchdog image-drift aktif (config + test alert); (c) aturan bus-entry-all-sessions masuk charter/handoff; (d) bus entry tertulis",
-      "scheduled_slot": "2026-11-13 BE sore 18:30 (reslot CTO siang 13 Nov: qa-13-01+ux-11-10-01 selesai, budget reserve utk close-slot; naik kereta malam bila ada ruang)",
+      "scheduled_slot": "2026-11-16 BE Senin pagi 07:30 (reslot CTO pagi 14 Nov: docker events 10 Nov EXPIRED retention — step identifikasi pelaku 22:39 tak mungkin, fokus step-2 guard watchdog image-drift)",
       "train": "",
       "labels": [
         "bugfix",
@@ -5910,7 +5913,7 @@
       "priority": "P3",
       "status": "pending",
       "train": "T-1114-M",
-      "scheduled_slot": "2026-11-13 BE sore 18:30 (reslot CTO siang 13 Nov: qa-13-01+ux-11-10-01 selesai, budget reserve utk close-slot; naik kereta malam bila ada ruang)",
+      "scheduled_slot": "2026-11-16 BE Senin sore 18:30 (reslot CTO pagi 14 Nov)",
       "north_star": "TRUST tooling — backlog = memori keputusan org; lost-update ke-2 dlm 4 hari (preseden verdict CEO 7 Nov hilang)",
       "title": "[OPS][TOOLING] Anti lost-update backlog: journal append-only product-backlog.journal.jsonl + audit writer non-statejson",
       "spec": "Sumber sre-2026-11-11-1 (candidate->promoted). statejson sudah flock+version-check, tapi 2 entry SRE 7 Nov hilang diam-diam (102->106 entries tanpa jejak). TASK: (1) journal append-only per perubahan (id+aksi+ts+actor) di product-backlog.journal.jsonl, di-tulis statejson.py sendiri; (2) audit+stub writer non-statejson (growth scripts/backlog_health/ad-hoc) -> wajib lewat statejson atau ditolak; (3) tool reconcile: journal vs entries, report delta. DONE WHEN: (a) 2 tulis konkuren simulasi (2 terminal paralel) -> 0 entry hilang + journal 2 baris; (b) grep writer non-statejson aktif = 0; (c) reconcile tool exit 0 di state sekarang; (d) bus entry.",
@@ -5995,7 +5998,7 @@
       "date": "2026-11-13",
       "type": "qa-content-fix",
       "priority": "P2",
-      "status": "deployed",
+      "status": "qa_pass",
       "pos": "[BUGFIX] TRUST (North Star: TRUST)",
       "north_star": "TRUST — label sesi data live harus jujur (fase L2 feed live)",
       "title": "CTO siang 13 Nov (verif ux-11-10-01): strip OHLCV live di /stocks/[ticker] melabel volume sesi HARI INI (73,3 jt BBCA 13 Nov ~10:0x) sebagai sesi 12 Nov — flight-data SSR = EOD kemarin, hydrate client berhasil tapi label sesi ikut string SSR statis",
@@ -6008,7 +6011,7 @@
       "train": "T-1114-M",
       "deployed_at": "2026-11-13T22:21:45+07:00",
       "qa_verified": true,
-      "qa_note": "PASS (build+deploy fisik; label REGULAR live = defer Senin 16 Nov 09:00+ — market tutup malam-minggu). BUKTI QA 14 Nov 03:3x: SSR https://teknikal.id/stocks/BBCA.JK 200 memuat data-live-session=\"BBCA.JK\" (1x) + data-session-eod=\"13 Nov\" (1x) + teks 'sesi 13 Nov' (1x); patcher+data-session-eod ter-bake di chunk live stocks/[ticker]/page-74d5f987206689c4.js (grep 1/1); helper src/components/stock/ohlcv-session-label.ts + tests 6/6 GREEN via tsx (node:test runner polos gagal load TS — bukan bug kode); commit cde322a ada di main; image live app=7ea918125b3a healthy. Freeze-safe BUGFIX label jujur, bukan fitur baru.",
+      "qa_note": "PASS independen reviewer 14 Nov 07:4x: staging-gap Rabu ditutup? belum (market closed) TAPI marker live terbukti — /stocks/BBCA.JK SSR data-live-session=1 + data-session-eod=13 Nov + teks sesi 13 Nov; label EOD saat tutup = by-design; bukti DOM REGULAR tetap due Senin 16 Nov 09:00+ (impact_check_due).",
       "qa_verified_at": "2026-11-14T03:35:23+07:00",
       "qa_verified_by": "qa-verifier-cron",
       "reslot_note": "auto-reslot 2026-11-14: kereta T-1113-M kedaluwarsa -> kereta T-1114-M (reslot_guard.py v3)"
@@ -6018,7 +6021,7 @@
       "date": "2026-11-13",
       "type": "ux-polish",
       "priority": "P2",
-      "status": "deployed",
+      "status": "qa_pass",
       "pos": "[KONVERSI] polish anti-slop (freeze-safe: improvement existing)",
       "north_star": "TRUST + STICKY — onboarding wizard first-touch visitor baru; ikon netral + tap-target 44px+ = konsistensi visual",
       "title": "Onboarding wizard emoji ke lucide (5 emoji di /stocks & semua page publik) + close-btn hit-area 48px — lanjutan ux-11-12-01, scope-1 idea-2026-11-13-1",
@@ -6027,7 +6030,7 @@
       "result": "SHIPPED commits 4283801+82356fa+c6c0569 main lokal (belum push, hook 21:45-07:00). Bukti: tsc EXIT-0; build EXIT-0; staging CDP /stocks fresh-visitor: emojis=0, lucide_svgs=3, close_wh=48x48, mobile375 no-overflow (x59 right359 w300), dismiss gone=true + wizard_done persist=1. git log -1 file = c6c0569. || KONDEKTUR-1113 deployed 22:21 WIB (image app 7ea918125b3a, build atomik app+worker dari main lokal cde322a, parity 0,01s): BUKTI FISIK fresh — chunk layout-0eddd5581f209a83.js: emoji wizard (👋🎉⭐🔍📊) count=0, label lucide \"Cari saham apa pun di kolom pencarian\"+\"Tandai saham favorit untuk disimpan\" present, class close-btn h-12 w-12 (48px) present di chunk; SSR home emoji=0; log app 6 mnt TypeError/Prisma=0.",
       "deployed_at": "2026-11-13T22:21:45+07:00",
       "qa_verified": true,
-      "qa_note": "PASS (deployed fisik). BUKTI QA 14 Nov 03:3x: chunk live app/(public)/layout-a1fd7492b95e262f.js — emoji wizard 👋🎉🔍📊⭐ count=0; label lucide 'Cari saham apa pun di kolom pencarian' + 'Tandai saham favorit untuk disimpan' present; close-btn class 'h-12 w-12 shrink-0 items-center justify-center rounded-full' present (48px). Commit 4283801+82356fa+c6c0569 ada di main lokal. Catatan: hash chunk live (a1fd7492…) ≠ klaim kondektur (0eddd558…) — bukti lama pra-final-build; konten klaim tetap terverifikasi di chunk final. Staging :3100 mati 03:35 (tidak bisa re-verify DOM interaktif — bukti CDP builder cukup utk klaim statis ini). Freeze-safe KONVERSI polish existing.",
+      "qa_note": "PASS independen reviewer 14 Nov 07:5x: chunk live app/(public)/layout-c2156edf2f75bf70.js (fresh image 06:53) emoji=0, wizard-lucide present, close 48px present; SSR home emoji=0; label lucide live.",
       "qa_verified_at": "2026-11-14T03:35:23+07:00",
       "qa_verified_by": "qa-verifier-cron",
       "reslot_note": "auto-reslot 2026-11-14: kereta T-1113-M kedaluwarsa -> kereta T-1114-M (reslot_guard.py v3)"
@@ -6037,12 +6040,13 @@
       "date": "2026-11-13",
       "type": "bug-report",
       "priority": "P2",
-      "status": "pending",
+      "status": "done",
       "pos": "[BUGFIX] OPS/TRUST",
       "north_star": "TRUST — workspace repo stabil utk semua agent build",
       "title": "Direktori .agents/ (skills vendored, untracked) dihapus aktor tidak dikenal MID-BUILD 21:2x 13 Nov — build#1 UX crash (watchpack TypeError reading length)",
       "spec": "REPRO: (1) npm run build jalan saat .agents/skills/* (30 symlink) masih ada; (2) aktor lain rm -rf .agents selama fase scan; (3) watchpack AT UPDATE crash: uncaughtException TypeError Cannot read properties of undefined (reading length), BUILD_EXIT:1 tanpa baris error TS. SEVERITY: P2 (transient — retry bersih EXIT-0; tapi bisa kena build agent lain kapan saja). LOG: /tmp/ux-build-1113.log. Catatan: .agents untracked di git (git ls-files kosong), deletor tidak dikenal — kandidat post-mortem ops-11-11-03 (pola image-swap hantu). DONE WHEN: penyebab deletor teridentifikasi/di-guard (mis. watchdog fs event di .agents) ATAU owner confirm intentional.",
-      "scheduled_slot": "2026-11-14 BE weekend pagi 08:00 (self-dispatch CTO sore 13 Nov: .agents/ hilang, untracked skills vendored — owner yang tahu pemiliknya)"
+      "scheduled_slot": "2026-11-14 BE weekend pagi 08:00 (self-dispatch CTO sore 13 Nov: .agents/ hilang, untracked skills vendored — owner yang tahu pemiliknya)",
+      "result": "DONE (CTO pagi 14 Nov, host-only forensik + mitigasi; 0 build 0 deploy): ROOT-CAUSE WINDOW TERKUNCI 21:14:28-21:15:14 WIB 13 Nov — build#1 UX start 21:14:28 (transcript 353303), watchpack crash pegang symlinks Set(30) .agents/skills, ls 21:15:14 sudah hilang (transcript 353315). DELETOR TIDAK TERIDENTIFIKASI dari log mesin — dieksklusi satu-satu: (a) UX builder sendiri = transcript bersih tanpa rm (ia yang menemukan); (b) sesi Hermes 21:10:16 = sesi UX itu sendiri (cron FE 19:15 jalur panjang), News Scout read-only; (c) Kiri buildx VM tidur s.d. 21:49 WIB (daemon.log: VM booted 14:49:34Z=21:49 WIB); (d) Trash kosong (bukan Finder); (e) tak ada script/cron cleaner; (f) shell history kosong. Konteks: .archify-org (untracked lain, tampak 17 Okt) ikut hilang = pola SWEEP untracked-dir, bukan targeted. PRESUMSI: aksi manual interaktif tak ter-log (owner/sesi lain) — bukti tak cukup naming. MITIGASI PERMANEN: (1) backup konten .agents → ~/backups/teknikalid/agents-skills-216e090-1114.tar.gz (97 file, sumber git 216e090 branch night/prd-2026-10-17-01; verifikasi tar -tzf = 97 entry); (2) build kereta malam dari /tmp worktree prunable (preseden KONDEKTUR-1113-M) — repo utama tak jalan bareng build prod; (3) follow-up guard-2026-11-14-01 (watchOptions.ignored + keputusan restore). [ESCALATE] owner: penghapusan .agents 21:14 13 Nov intentional? kalau TIDAK → restore 1 perintah dari backup."
     },
     {
       "id": "bo-2026-11-14-01",
@@ -6068,6 +6072,33 @@
       "scheduled_slot": "BE weekend sore 17:00 build-only → naik kereta T-1114-M (kondektur 22:15); QA Sentinel sweep 22:00",
       "north_star": "STICKY (loop baca-berlanjut) + GROWTH (internal-link equity ke moat signal pages /saham-*)",
       "spec": "INTENT (CEO, PRD lengkap prd-2026-11-12-01 di product-backlog.json entry ux-2026-11-11-02 — FDE 7/7): blok retensi RelatedSignals dipindah mid-article — persis SETELAH heading H2 kedua (area dicapai 84% pembaca; median scroll artikel hanya 23%, posisi sekarang 73% scroll tak pernah terlihat, cta_click /berita 14d = 1 klik). OPSI A saja per verdict PRD; opsi sticky chip DITOLAK. 0 migrasi DB, 0 endpoint baru, 0 client-component baru (server component existing). Freeze-compliant: polish UX north-star. ACCEPTANCE (AC1-AC6 di PRD): AC1 live-render ≥1 artikel PUBLISHED dgn tickerTag (39% artikel) grep HTML anon; AC2 unit-test posisi fixture 2-H2/5-H2 + fallback 0/1-H2 setelah paragraf-4; AC3 SSR dofollow tetap + modul bawah TIDAK dihapus; AC5 event cta_click chip_beritaRelatedSignals; AC6 tsc EXIT-0. DONE WHEN: AC1+AC6 terverifikasi di kereta T-1114-M (grep RelatedSignals di HTML live setelah H2 ke-2 + tsc EXIT-0); AC4 gate-metric 2 minggu (baseline /saham-* dari referrer /berita = 1 view/14d → ≥5, ATAU scroll-median ≥21% tak turun) dievaluasi CEO 28 Nov."
+    },
+    {
+      "id": "qa-2026-11-14-01",
+      "date": "2026-11-14",
+      "type": "qa-content-fix",
+      "priority": "P1",
+      "status": "pending",
+      "pos": "[BUGFIX][TRUST+GROWTH] post-publish QA fix — konten salah angka = trust runtuh",
+      "north_star": "TRUST — angka publik harus match snapshot satu pintu; GROWTH — rekap/listicle = halaman akuisisi weekend",
+      "title": "Reviewer pagi 14 Nov: 4 klaim angka salah vs DB + 2 klaim EMA-bearish salah window di rekap-pasar-mingguan-2026-11-14 & listicle-blue-chip-2026-11-14 & brief 13 Nov (bearish saja)",
+      "spec": "INTENT: patch DB content-only (preseden qa-2026-11-13-01, 0-build 0-deploy, ISR revalidate). FAKTA DB (close-basis EQUITY, ekskl ^JKSE utk breadth harian): (A) rekap 2 lokasi 'rebound Jumat 6 November yang hanya ditopang 564 saham naik vs 440 turun' — DB 6 Nov = 232 naik/439 turun (564 = breadth 13 Nov ekskl index 565-1; transplantasi hari); (B) rekap kronologi 'Selasa 10 Nov ... melebar ke 564 saham naik' — DB 10 Nov = 459 (564 tidak ada di hari manapun Okt-Nov, sum-klaim 1004 > universe 964 mustahil); (C) listicle baris-1 '564 saham naik vs 144 turun' — DB weekly 642/144/45, kontradiksi dengan rekap 642 di artikel kembaran hari sama; (D) rekap 'MBMA ... skor sinyal Menguat' (section watchlist) — DB 13 Nov signalLabel=Netral (-0,12; 12 Nov juga Netral); (E) P2 brief 13 Nov 'vs 18 EMA bearish cross' (window 5-12 Nov) — replay NG = 13, all-universe = 16, raw-cross sesi = 1 (tidak ada yang = 18); rekap 'EMA bearish: 13 saham' (window 6-13 Nov) — replay NG = 9 (13 = jendela salah; bullish 26 & 42 sudah EXACT, jangan disentuh). ACCEPTANCE: (1) UPDATE content: 564->232 & 440->439 di kedua lokasi rekap (klaim A), 564->459 (klaim B), listicle 564->642 (klaim C), hapus/ganti frasa 'skor sinyal Menguat' pada kalimat MBMA (klaim D), EMA bearish 18->16 (klaim E) ATAU hapus angka bearish (turunkan klaim), rekap 13->9 serupa; (2) H2: position('564' IN content)=0 di kedua artikel + position angka-lama lain=0 + grep angka lama di live HTML=0 pasca ISR 300s; (3) replay_sql_gate.py <slug> --as-of 2026-11-13 exit 0 utk rekap+listicle+brief; (4) jangan sentuh angka valid: 560 brief (ekskl index BENAR), 642/144/45, semua pct/harga/level yang sudah replay exact; (5) bukti H1 excerpt DB pasca-patch + live grep di result. DONE WHEN: 5 acceptance di atas terpenuhi + result berisi bukti.",
+      "scheduled_slot": "BE weekend Sabtu 14 Nov sore (slot 17:00 kereta konten weekend / DB-patch slot; preseden qa-2026-11-13-01)",
+      "done_when": "position('564')=0 di content+excerpt rekap & listicle (DB dan live), MBMA tanpa klaim Menguat, EMA-bearish angka = replay NG (16/9) atau dihapus, replay gate exit 0 x3 slug, bukti di result",
+      "created_by": "reviewer-pagi 14 Nov 07:3x"
+    },
+    {
+      "id": "guard-2026-11-14-01",
+      "date": "2026-11-14",
+      "type": "ops",
+      "priority": "P2",
+      "status": "pending",
+      "pos": "[BUGFIX] OPS/TRUST",
+      "north_star": "TRUST — workspace repo stabil utk semua agent build",
+      "title": "GUARD follow-up bug-13-01: isolasi build dari sweep untracked (watchOptions.ignored .agents di next.config) + keputusan owner restore .agents",
+      "spec": "Konteks bug-13-01 DONE (forensik CTO pagi 14 Nov): deletor .agents/ tak teridentifikasi dari log mesin, pola sweep untracked (.archify-org ikut hilang), window 21:14:28-21:15:14 WIB. Konten aman di ~/backups/teknikalid/agents-skills-216e090-1114.tar.gz (97 file, git 216e090). TASK guard mekanis: (1) build kereta malam dari /tmp worktree prunable (preseden KONDEKTUR-1113-M) — jadikan KONVENSI TETAP, catat di handoff charter; (2) KALAU owner memutuskan .agents tetap di repo utama: tambah watchOptions.ignored next.config.ts supaya watchpack tak scan .agents (race-proof, 1 baris) + restore dari backup; (3) KALAU owner tidak butuh: biarkan hilang, tutup entry. DONE WHEN: (a) keputusan owner tertulis di entry ini (restore ya/tidak); (b) kalau restore: build staging hijau dengan .agents ada di working tree (bukti watchpack tak crash); (c) bus entry.",
+      "created_by": "CTO-pagi 14 Nov (follow-up forensik bug-13-01)",
+      "scheduled_slot": "2026-11-16 BE pagi 07:30 Senin (menunggu [ESCALATE] owner konfirmasi intentional/restore)"
     }
   ]
 }
