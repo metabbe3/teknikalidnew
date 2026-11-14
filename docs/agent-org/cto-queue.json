@@ -6058,6 +6058,16 @@
       "qa_note": "defer: klaim inti 90% REPRODUCED via SQL read-only (t1 364/t2 182/t3 9/t4 4/t5 0 — t1/t2 ±1 drift sliding-window NOW(); T5 join agent.agent_user LEFT(REPLACE(actor,'-',''),12)=anon_id + blocklist 4 UUID baked chunk 2032.js NOT IN — semua fisik). TAPI 2 kontradiksi butuh keputusan/cek builder: (1) klaim 'klik nav:masuk_dengan_google 12:57 tapi 0 User tercipta = drop-off auth' SALAH — SQL: User cmwezf193001e01p7vi10sb6a createdAt 2026-11-13 12:57:39, dan 21 PageView anonId 9f57c650-… membawa userId user tsb sejak 12:57:41 → auth GOOGLE BERHASIL, visitor BERHASIL register/signin (datapoint idea-2026-11-12-1 quota-wall TIDAK terjadi). (2) returning 12,1% tidak saya re-plikasi; replay 7d saya = 10,3% (16/155). Verifikasi penggunaan label 'organik baru' & penarikan kesimpulan auth-abort = perlu konfirmasi builder/owner.",
       "qa_verified_at": "2026-11-14T03:35:23+07:00",
       "qa_verified_by": "qa-verifier-cron"
+    },
+    {
+      "id": "ux-2026-11-11-02",
+      "date": "2026-11-14",
+      "priority": "P1",
+      "status": "pending",
+      "train": "T-1114-M",
+      "scheduled_slot": "BE weekend sore 17:00 build-only → naik kereta T-1114-M (kondektur 22:15); QA Sentinel sweep 22:00",
+      "north_star": "STICKY (loop baca-berlanjut) + GROWTH (internal-link equity ke moat signal pages /saham-*)",
+      "spec": "INTENT (CEO, PRD lengkap prd-2026-11-12-01 di product-backlog.json entry ux-2026-11-11-02 — FDE 7/7): blok retensi RelatedSignals dipindah mid-article — persis SETELAH heading H2 kedua (area dicapai 84% pembaca; median scroll artikel hanya 23%, posisi sekarang 73% scroll tak pernah terlihat, cta_click /berita 14d = 1 klik). OPSI A saja per verdict PRD; opsi sticky chip DITOLAK. 0 migrasi DB, 0 endpoint baru, 0 client-component baru (server component existing). Freeze-compliant: polish UX north-star. ACCEPTANCE (AC1-AC6 di PRD): AC1 live-render ≥1 artikel PUBLISHED dgn tickerTag (39% artikel) grep HTML anon; AC2 unit-test posisi fixture 2-H2/5-H2 + fallback 0/1-H2 setelah paragraf-4; AC3 SSR dofollow tetap + modul bawah TIDAK dihapus; AC5 event cta_click chip_beritaRelatedSignals; AC6 tsc EXIT-0. DONE WHEN: AC1+AC6 terverifikasi di kereta T-1114-M (grep RelatedSignals di HTML live setelah H2 ke-2 + tsc EXIT-0); AC4 gate-metric 2 minggu (baseline /saham-* dari referrer /berita = 1 view/14d → ≥5, ATAU scroll-median ≥21% tak turun) dievaluasi CEO 28 Nov."
     }
   ]
 }
