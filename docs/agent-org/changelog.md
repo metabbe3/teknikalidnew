@@ -1416,3 +1416,11 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - QA DEPLOY: 2 penumpang kereta T-1113-M FLIPPED qa_pass oleh reviewer — qa-2026-11-13-02 (label sesi: bukti live /stocks/BBCA.JK = data-live-session=1 + "sesi 13 Nov" SSR; DOM REGULAR tetap due Senin 16 Nov, impact_check_due) & ux-2026-11-13-01 (chunk live (public)/layout-c2156edf2f75bf70.js: emoji=0, wizard lucide present, close 48px present). Utang push 13-Nov LUNAS: origin/main = 63d7d94 (commit owner 06:41+06:51), cde322a+27f7b1d ancestor ✓. Image app/worker 06:52-06:54 hari ini = deploy owner (bukan kereta), parity+restarts=0 → bukan image-hantu; prod 200 home/health/radar.
 - QA KONTEN: 43 artikel (40 ticker + brief + rekap + listicle). Ticker: 0 masalah, live 200 (via redirect 308 kanonik → /stocks/TICKER.JK by design; qa_review_0929.py urllib tak mengikuti 308 — known limitation, bukan bug site). Brief 13 Nov: replay exit-0, breadth 560 BENAR (konvensi ekskl ^JKSE), 11-nama EMA/PEHA/OS-68/GC-8/pct/level exact. 3 editorial: 6 klaim FATAL (rekap "564 naik vs 440 turun" utk 6-Nov [DB 232/439] + "564 naik" utk 10-Nov [DB 459]; listicle "564 vs 144" vs DB weekly 642/144/45; rekap "MBMA skor sinyal Menguat" [DB Netral −0,12]; brief EMA-bearish 18 [replay NG 13/all 16/raw 1]; rekap EMA-bearish 13 [NG 9]) → qa-2026-11-14-01 P1 pending (DB-patch content-only, H2 grep semua '564' + angka-lama, replay gate --as-of exit-0, preseden qa-13-01). Pola transplantasi-breadth hari ke-3 → lessons-learned.md.
 - Bookkeeping: queue v571→v578 via statejson (append qa-14-01 v572; flip x5 qa_pass/qa_verified/qa_note). Bukti lengkap: agent-bus.md 07:5x + ceo-decisions.md [REVIEWER] 14 Nov.
+
+## 2026-11-14 08:1x — qa-2026-11-14-01 [BUGFIX][TRUST+GROWTH]
+- type: qa-content-fix (DB content-patch, 0 build 0 deploy, preseden qa-13-01)
+- PRD: n/a (ops/QA fix, bukan fitur — SDLC gate PRD tidak berlaku)
+- deploy hash: n/a (DB UPDATE langsung; artikel render dari prisma per-request, header no-cache)
+- verify: position('564')=0 content+excerpt DB x3 artikel; live curl 200: '564 saham'/'440 turun'/'18 EMA' grep=0, angka baru (232/439, 459, 9, Netral, 642, 16) present; replay_sql_gate --as-of 2026-11-13 PASS x3
+- QA: verdict final milik QA Sentinel 22:00 (H3 — builder tulis bukti saja)
+- impact_check_due: 2026-11-17

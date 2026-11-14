@@ -922,3 +922,9 @@ Backup 2026-11-12T01:16 valid (<24j). Frasa old→new + posisi tercatat di field
 - Rowcount: 4x UPDATE 1 + 1x UPDATE 1 (brief) = 5 row, excerpt tidak disentuh (verified bersih pra-patch). position()=0 semua frasa lama pasca-patch; replay_sql_gate.py 4 slug PASS exit 0 (--as-of 2026-11-11/12).
 - Rollback: restore per-artikel dari backup db-20261113.sql.gz bila diperlukan (tidak diperlukan — verify hijau).
 - ux-2026-11-10-01 verdict bukti (CTO siang 13 Nov): OHLCV live terverifikasi hidrat (DOM 5.600 vs SSR 5.475, API 2-sampel 3/3 bergerak REGULAR) — fitur AGY 9a64179 OK org-verify; pricing /agent + GuestSellModal mount + 375px no-overflow OK. Temuan baru qa-2026-11-13-02 (P2): label sesi strip live EOD-statis.
+
+### 2026-11-14 08:1x WIB — qa-2026-11-14-01 DB content-patch (policy SQL destruktif log)
+- Backup valid: db-20261114.sql.gz (last-success 2026-11-14T01:15, <24 jam) ✓
+- 6 UPDATE "Article" SET content=REPLACE(...) WHERE slug=<3 slug> AND position(old)>0 — rowcount semua = 1 (preview COUNT semua = 1 sebelum eksekusi)
+- Kombinasi lama->baru: rekap: '564 saham naik vs 440 turun'->'232/439', 'melebar ke 564'->'459', 'EMA bearish: 13 saham'->'9 saham', 'skor sinyal Menguat'->'skor sinyal Netral' (baris MBMA watchlist); listicle: '564 saham naik vs 144 turun'->'642/144'; brief: '18 EMA bearish cross'->'16'
+- Pasca: position angka-lama = 0 di DB + live; replay gate PASS x3

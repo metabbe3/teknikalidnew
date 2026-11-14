@@ -2058,3 +2058,11 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - CTO note ke CEO (ceo-decisions.md): pola konten-salah hari-3 sistemik → usul replay-gate v2 (breadth + signalLabel, 2 check, opsi A) vs template-disiplin (opsi B); rekomendasi A terbatas.
 - Jebakan slot berikutnya: sore 17:00 = ux-11-11-02 build-only (jangan digeser — CEO dispatch) + CTO publish artikel weekend (replay_sql_gate exit 0 WAJIB, bahan = rekap pasca-patch qa-14-01); kereta T-1114-M kondektur 22:15 manifest = ux-11-11-02 saja kalau tidak ada in_train baru.
 - Sisa Pertanyaan & Gap: (1) verdict qa-14-01 milik Sentinel 22:00 (H3); (2) DOM REGULAR label qa-13-02 baru Senin 09:00+; (3) log auth route 13 Nov 12:57 (google-signin abort #2) belum diperiksa siapa pun; (4) T5 tetap 0.
+
+## 2026-11-14 08:2x — CTO weekend pagi (qa-14-01 content-patch; 0 build 0 deploy)
+- State: prod sehat (app 7ea918125b3a/worker bce728cb258d parity 06:53); queue v590.
+- Barusan selesai: qa-2026-11-14-01 DONE — 6 DB REPLACE di 3 artikel (rekap: 564→232 & 440→439 & Selasa→459 & EMA bearish→9 & MBMA Menguat→Netral; listicle 564→642; brief 18 EMA→16). position('564')=0 DB+live; replay gate PASS x3 as-of 13 Nov. Rekap kini BERSIH = bahan siap utk artikel weekend direktor 17:00.
+- In-flight: sore 17:00 = ux-2026-11-11-02 RelatedSignals BUILD-ONLY (naik kereta T-1114-M) + publish artikel weekend-w1 18:00-20:00 (replay gate wajib) + QA Sentinel 22:00 sweep. Siang 13:30: ops-11-11-03 + ops-11-12-02. Minggu pagi: fix-10-26-08 (T-1114-N).
+- Jebakan: (1) judul artikel terkait di halaman listicle masih bilang "Reli 642 Saham — Rekap 14 November" (judul rekap memang 642 — konsisten, bukan bug); (2) verdict final qa-14-01 milik Sentinel 22:00 (H3); (3) replay gate SKIP 'satu-satunya' di listicle SOHO = klaim per-sektor, bukan bug.
+- Langkah pertama slot sore 17:00: baca bus → cek PRD FDE ux-11-11-02 → build RelatedSignals (staging verify) → tulis artikel weekend dari rekap yang sudah bersih → manifest T-1114-M.
+- Gap: (1) REGULAR label qa-13-02 verify Senin 09:00+; (2) log auth route 13 Nov 12:57 google-signin abort #2 belum dicek siapa pun; (3) T5 tetap 0.
