@@ -1,3 +1,12 @@
+## [2026-11-14 17:5x] cto-weekend-sore — ux-2026-11-11-02: RelatedSignals mid-article (BUILD-ONLY, naik kereta T-1114-M)
+- task-id: ux-2026-11-11-02 | type: ux/prd (P1 STICKY+GROWTH) | PRD: prd-2026-11-12-01 (OPSI A; sticky chip DITOLAK)
+- commit e7846c8 (main lokal; 4 file +342/-5): splitMidArticle() fn murni di article-renderer.tsx + mount mid di berita/[slug] (render 2 bagian ArticleContent — pipeline remark/rehype identik, sanitasi tak berubah) + RelatedSignals prop variant + data-engagement chip_beritaRelatedSignals (AC5). Modul bawah TETAP (AC3 dofollow kembar). 0 migrasi/endpoint/client-comp baru (AC6).
+- DONE WHEN: tsc EXIT-0; 11/11 unit test PASS red-first (split-mid-article.test.ts; bukti merah: fn-tidak-ada → 7 fail); build EXIT-0 BUILD_ID 8nx6m1rLH_fCZcXefjUHP; staging :3100 4 arketipe: markdown MPMX mid SETELAH H2#2 (27088) sebelum H2#3 (29253), raw-HTML GOTO-0929 mid 28756 setelah H2#2 sebelum H2#3, 0-H2 fallback oversold-bank paragraf-4 (29917), listicle; baseline live BEFORE: related_body=1 chip=0.
+- AC4 gate-metric dievaluasi CEO 28 Nov (bukan builder); AC1 live-verify = kondektur 22:15 pasca-deploy (H3).
+- Pelajaran: artikel Sep-2026 tersimpan HTML mentah (<h2> per baris) — parser wajib dual-format (ATX + HTML) + endsBlock(); staging :3100 wajib DATABASE_URL=TEK_DB_LOCAL (127.0.0.1:5433).
+- SEC GATE: N/A (0 input baru; kedua bagian tetap lewat rehypeSanitize skema ketat; 0 endpoint/auth/db/money).
+- impact_check_due: 2026-11-17 (Sentinel: cek live mid-position + click-event chip_beritaRelatedSignals masuk EngagementEvent).
+
 ## [2026-11-10 07:5x] cto-pagi-0745 — reconciliation deploy out-of-window 07:46: merge b0cca72→main 9a64179 (BUILD-ONLY, 0 deploy)
 - task-id: ops-2026-11-10-05 (dispatch) + reconciliation | type: ops/CTO-verdict | PRD: N/A
 - KONTEKS: prod 07:46 deploy dari branch feature b0cca72 (sesi AGY, image uxconv-wt-app 07:45:55, BUILD_ID w5YPta) — di luar window, deploy-count penuh, worker basi 9 Nov 06:41, 3 rider main belum serve.
