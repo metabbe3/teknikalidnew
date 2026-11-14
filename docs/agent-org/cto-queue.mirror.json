@@ -5721,7 +5721,7 @@
     {
       "id": "ops-2026-11-11-03",
       "priority": "P2",
-      "status": "pending",
+      "status": "done",
       "title": "[BUGFIX][OPS] POST-MORTEM + guard permanen anomali image-swap hantu (2 kasus 24 jam: 10 Nov 07:46 sesi AGY + 22:39-22:44 pelaku tak teridentifikasi)",
       "spec": "Post-mortem (3 baris CTO report) + tindak lanjut struktural: (1) identifikasi pelaku 22:39 via docker events log daemon.json login shell history jika ada; (2) buat guard mekanis: watchdog check image app == manifest deploy terakhir (bus entry deploy) — drift > 15 menit = alert; (3) aturan: SEMUA sesi (termasuk AGY/owner) deploy/build = wajib bus entry + build dari main post-merge; (4) konvensi worktree /tmp/* prunable = tidak boleh jadi sumber build prod. Sumber: kondektur report T-1110-M + spot-check CTO 07:46 11 Nov.",
       "north_star": "TRUST (deploy integrity = data reliable; regressi diam-diam merusak trust user pada fitur yang dijanjikan)",
@@ -5734,7 +5734,8 @@
         "post-mortem",
         "watchdog",
         "guard"
-      ]
+      ],
+      "result": "DONE 14 Nov siang: watchdog step 2b image-drift guard aktif (selftest 5/5; T5 live langsung tangkap deploy owner 06:53 tanpa bus entry → retro-bus-entry ditulis → watchdog exit-0 silent); post-mortem 3 baris di changelog; aturan bus-entry-all-sessions masuk charter/handoff (lihat handoff 13:5x + lessons)"
     },
     {
       "id": "qa-2026-11-11-01",
@@ -5911,7 +5912,7 @@
       "date": "2026-11-12",
       "type": "ops",
       "priority": "P3",
-      "status": "pending",
+      "status": "done",
       "train": "T-1114-M",
       "scheduled_slot": "2026-11-14 BE weekend siang 13:30 (CTO reslot 07:52: slot 13-Nov sore lewat; host-script journal, zero deploy risk)",
       "north_star": "TRUST tooling — backlog = memori keputusan org; lost-update ke-2 dlm 4 hari (preseden verdict CEO 7 Nov hilang)",
@@ -5919,7 +5920,8 @@
       "spec": "Sumber sre-2026-11-11-1 (candidate->promoted). statejson sudah flock+version-check, tapi 2 entry SRE 7 Nov hilang diam-diam (102->106 entries tanpa jejak). TASK: (1) journal append-only per perubahan (id+aksi+ts+actor) di product-backlog.journal.jsonl, di-tulis statejson.py sendiri; (2) audit+stub writer non-statejson (growth scripts/backlog_health/ad-hoc) -> wajib lewat statejson atau ditolak; (3) tool reconcile: journal vs entries, report delta. DONE WHEN: (a) 2 tulis konkuren simulasi (2 terminal paralel) -> 0 entry hilang + journal 2 baris; (b) grep writer non-statejson aktif = 0; (c) reconcile tool exit 0 di state sekarang; (d) bus entry.",
       "done_when": "simulasi 2-writer konkuren 0 hilang + journal terekam + 0 writer non-statejson aktif + reconcile exit 0",
       "created_by": "CEO-0815 12 Nov (sumber: sre-2026-11-11-1 verdict APPROVE promote)",
-      "reslot_note": "auto-reslot 2026-11-14: kereta T-1113-M kedaluwarsa -> kereta T-1114-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-14: kereta T-1113-M kedaluwarsa -> kereta T-1114-M (reslot_guard.py v3)",
+      "result": "DONE 14 Nov siang: journal append-only aktif di statejson (selftest 18/18: 2-writer paralel 0 hilang, journal 20 baris, version==20); sdlc_board._sdlc_action didelegasikan ke statejson patch (semantik parity T2); reconcile tool exit-0 sehat + drift-detect exit-1 teruji; 0 writer non-statejson aktif (grep final kosong)"
     },
     {
       "id": "qa-2026-11-12-01",
@@ -6100,6 +6102,28 @@
       "spec": "Konteks bug-13-01 DONE (forensik CTO pagi 14 Nov): deletor .agents/ tak teridentifikasi dari log mesin, pola sweep untracked (.archify-org ikut hilang), window 21:14:28-21:15:14 WIB. Konten aman di ~/backups/teknikalid/agents-skills-216e090-1114.tar.gz (97 file, git 216e090). TASK guard mekanis: (1) build kereta malam dari /tmp worktree prunable (preseden KONDEKTUR-1113-M) — jadikan KONVENSI TETAP, catat di handoff charter; (2) KALAU owner memutuskan .agents tetap di repo utama: tambah watchOptions.ignored next.config.ts supaya watchpack tak scan .agents (race-proof, 1 baris) + restore dari backup; (3) KALAU owner tidak butuh: biarkan hilang, tutup entry. DONE WHEN: (a) keputusan owner tertulis di entry ini (restore ya/tidak); (b) kalau restore: build staging hijau dengan .agents ada di working tree (bukti watchpack tak crash); (c) bus entry.",
       "created_by": "CTO-pagi 14 Nov (follow-up forensik bug-13-01)",
       "scheduled_slot": "2026-11-16 BE pagi 07:30 Senin (menunggu [ESCALATE] owner konfirmasi intentional/restore)"
+    },
+    {
+      "id": "bug-2026-11-14-02",
+      "status": "pending",
+      "priority": "P2",
+      "title": "BUG header nav overflow-x 640-767px (pre-existing): NAV 470px+logo+UserMenu > container",
+      "description": "[BUGFIX][TRUST] Header desktop-nav (hidden sm:flex) meluap di viewport 640-767px: scrollW 920px vs winW 640px, horizontal scroll nyata (window.scrollX > 0). Nav 470px (Beranda/Saham/Berita/Akademi/Agent + dropdown Alat Analisa 87px) + logo + UserMenu 75px tidak muat. PRE-EXISTING sebelum rename ux-2026-11-14-02 (label lama Tools: scrollW 907px). Repro: (1) staging localhost:3100 + Chrome CDP setDeviceMetricsOverride width=640 mobile=false; (2) window.scrollTo(999,0); (3) scrollX>0 dan navRight=845px>640. P2 (tablet-landscape kecil; mobile 375 SEHAT scrollW=375). Saran: label Alat pada sm-md, atau nav start dari md:.",
+      "reported_by": "ux-fe-1030",
+      "area": "frontend",
+      "created": "2026-11-14T10:30+07:00"
+    },
+    {
+      "id": "ux-2026-11-14-02",
+      "status": "in_train",
+      "priority": "P2",
+      "title": "Konsistensi label Alat Analisa (anti-EN-jargon) + de-orphan market-structure + kartu Radar Saham Diskon",
+      "description": "[KONVERSI][STICKY-trust] 7 surface: header dropdown Tools->Alat Analisa (samakan mobile), footer Track Record->Riwayat Akurasi Sinyal, footer heading Data Pasar & Alat, footer +link /market-structure (de-orphan SEO internal-link), PlatformFeatures kartu Bottom Fishing Radar->Radar Saham Diskon + href /bottom-fishing (dulu duplikat screener), eyebrow Tools->Alat Analisa x3 landing, beranda Quick Tools->Alat Cepat. Pilar KPI: TRUST (konsistensi) + STICKY.",
+      "result": "commit 74ee8f2 main lokal. Bukti fisik: tsc EXIT-0; build EXIT-0 (log /tmp/ux-1114-build.log); staging :3100 DOM — Alat Analisa=1, Riwayat Akurasi Sinyal=2, Data Pasar & Alat=1, Radar Saham Diskon=2, href=/market-structure=1, SEMUA string lama (Data Pasar & Tools/Track Record/Bottom Fishing Radar/>Tools<)=0; mobile 375 scrollW=375 sehat; nav desktop 1280 aman (navRight 990). SEO invariant: 0 baris title/meta/h1 tersentuh (git diff grep kosong).",
+      "train": "T-1114-M",
+      "reported_by": "ux-fe-1030",
+      "area": "frontend",
+      "created": "2026-11-14T10:30+07:00"
     }
   ]
 }
