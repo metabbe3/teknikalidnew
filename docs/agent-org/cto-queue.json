@@ -4995,7 +4995,7 @@
       "done_when": "DONE WHEN: (a) 11 URL live 200 + 404 slug sampah; (b) sitemap memuat 11; (c) DOM angka == SQL replay 3 sektor; (d) badge sektor live di ticker page + event tercatat; (e) tsc+build EXIT-0. Redirect lama dihapus terverifikasi (curl /sektor/perbankan = 200 halaman, bukan 301).",
       "scheduled_slot": "2026-11-10+ BE malam (setelah T1-T6 mulai jalan agar badge tidak tabrak T2)",
       "created_by": "Product Agent buffer-keeper 2026-11-06 22:4x WIB (run gate: buffer teknikal 1 < 3)",
-      "branch": "night/prd-2026-11-06-02",
+      "branch": "night/prd-2026-11-06-02-1114",
       "night_result": {
         "verify": {
           "tsc": "clean exit 0",
@@ -5008,7 +5008,22 @@
         "commits": "e267219 (test failing-first) + 1746e64 (implementasi) + 1472bf1 (handoff notes) — PUSHED origin/night/prd-2026-11-06-02",
         "bug_self_found": "2: (1) en Infrastruktur vs Infrastructures mismatch — selftest A4c2 inverse-check menangkap sebelum deploy; (2) breadth sektor dihitung dari getStockList campur-tanggal (DOM 39/42/24 vs SQL 38/39/22) — fix: advancers/decliners/unchanged ditambahkan ke EngineSectorRow + snapshot (SATU PINTU, backward-compatible), halaman baca dari snapshot",
         "estimasi_review": "20-25 mnt; 7 file (1 baru 301 baris); koordinasi T2 aman — StrongerPeersStrip utuh"
-      }
+      },
+      "night_verified": {
+        "rebased_on": "e49a9cc (main 14 Nov, pasca-T2 StrongerPeersStrip — prasyarat PRD terpenuhi)",
+        "date": "2026-11-14 23:4x WIB (CTO NIGHT rebase)",
+        "tsc": "EXIT-0",
+        "selftest": "sector-landing 20/20 PASS (B1 live skip — unstable_cache butuh runtime; cover via build+staging)",
+        "build": "EXIT-0 (route /sektor/[slug] dynamic ƒ ter-generate)",
+        "lint": "0 error (sdlc_lint 9 file)",
+        "merge_conflicts_resolved": "sitemap.ts (SECTOR_META + radar line digabung), handoff.md (entri night disisipkan kronologis), queue.version (609)",
+        "catatan_merge": "JANGAN double-count T-1114-M (ux-11-11-02+ux-14-02 deployed_at 22:22 sudah dibukukan); merge branch ini naik kereta BARU besok",
+        "staging_probe": ":3100 next start (TEK_DB_LOCAL) — /sektor/perbankan|energi|konsumer=200, slug sampah=404, /sektor=308→/stocks, sitemap.xml 11 URL sektor, heatmap home 11 link /sektor/*",
+        "dom_vs_sql": "3/3 EXACT sesi 14-Nov: Financials 56/22/22·100 (DOM 56 naik/22 turun), Energy 60/9/9·78 (DOM 60/9), Transportation&Logistics 24/6/5·35 (DOM 24/6)",
+        "badge_ticker": "BBCA.JK live: badge <a data-engagement=nav_stockToSector href=/sektor/perbankan> pasca-H1 (jauh dari StrongerPeersStrip T2) + breadcrumb 6 referensi /sektor/perbankan",
+        "rebase_note": "157 commit behind → rebased di atas e49a9cc (main 14 Nov, pasca-T2). Konflik di-resolve: sitemap.ts (gabung radar+SECTOR_META), handoff.md (entri night kronologis), queue.version=609. Commit stale 1472bf1 (note CTO pagi 9 Nov) di-skip. Branch remote lama night/prd-2026-11-06-02 (tip pra-rebase 4f8f24b) dibiarkan; force-push diblokir cron — tip rebase di-push sebagai branch baru night/prd-2026-11-06-02-1114."
+      },
+      "review_estimate": "20-25 mnt (CTO pagi 07:30: review halaman sektor + badge di 2-3 ticker → merge → naik kereta BARU, bukan T-1114-M yang sudah dibukukan)"
     },
     {
       "id": "ops-2026-11-07-01",
