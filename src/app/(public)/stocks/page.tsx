@@ -17,6 +17,7 @@ import { SahamStrategyLinks } from "@/components/seo/saham-strategy-links";
 import { LoginGate } from "@/components/auth/login-gate";
 import { auth } from "@/lib/auth";
 import { GuestWatchlistPanel } from "@/components/stock/guest-watchlist-panel";
+import { GuestStar } from "@/components/stock/guest-star";
 import { WeeklySignalWidget } from "@/components/signal/weekly-signal-widget";
 import { ChannelCta } from "@/components/stock/channel-cta";
 
@@ -337,6 +338,7 @@ export default async function StocksPage() {
                       <th scope="col" className="py-2.5 px-3">Nama Emiten</th>
                       <th scope="col" className="py-2.5 px-3 text-right">Harga (Rp)</th>
                       <th scope="col" className="py-2.5 px-3 text-right">Perubahan (%)</th>
+                      <th scope="col" className="py-2.5 px-3 text-center w-12" aria-label="Pantau">Pantau</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
@@ -355,6 +357,9 @@ export default async function StocksPage() {
                         </td>
                         <td className={`py-2.5 px-3 text-right font-mono font-medium tabular-nums ${stock.changePercent !== null ? changeColor(stock.changePercent) : "text-text-tertiary"}`}>
                           {stock.changePercent !== null ? formatPercent(stock.changePercent) : "—"}
+                        </td>
+                        <td className="py-2.5 px-3 text-center">
+                          <GuestStar ticker={stock.ticker} compact chipAlign="end" />
                         </td>
                       </tr>
                     ))}

@@ -83,6 +83,27 @@ export function toggleGuestWatchlistTicker(
   return writeGuestWatchlist(next, storage) ? { list: next, added } : null;
 }
 
+/** prd-2026-11-15-01 AC2: tambah BANYAK ticker sekaligus (preset kurasi 1-klik).
+ *  Merge dedupe + drop ticker tak valid; return addedCount = yang benar-benar
+ *  BARU masuk (bukan jumlah input) supaya event preset tak menghitung ganda. */
+export function addManyGuestWatchlistTickers(
+  tickers: string[],
+  storage: GuestStorage | null = defaultStorage(),
+): { list: string[]; addedCount: number } | null {
+  const list = readGuestWatchlist(storage);
+  const seen = new Set(list);
+  const next = [...list];
+  let addedCount = 0;
+  for (const t of tickers) {
+    if (!TICKER_RE.test(t) || seen.has(t)) continue;
+    seen.add(t);
+    next.push(t);
+    addedCount++;
+  }
+  if (addedCount === 0) return { list, addedCount: 0 };
+  return writeGuestWatchlist(next, storage) ? { list: next, addedCount } : null;
+}
+
 // ── Saved screener presets (guest, "Simpananku") ──
 
 export interface SavedScreen {

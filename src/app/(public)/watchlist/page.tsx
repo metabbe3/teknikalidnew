@@ -6,6 +6,7 @@ import { computeChange } from "@/lib/serialize";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { GuestWatchlistView } from "@/components/watchlist/guest-watchlist-view";
 import { RemoveWatchlistButton } from "@/components/watchlist/remove-watchlist-button";
+import { getWatchlistPresets } from "@/lib/watchlist-presets";
 
 export const metadata: Metadata = {
   // seo-adv3: canonical self (dulu warisi "/" dari layout)
@@ -21,7 +22,10 @@ export default async function WatchlistPage() {
   const session = await auth();
 
   // Guest: watchlist perangkat (localStorage), tanpa redirect — Retention Loop v1.
+  // prd-2026-11-15-01 AC2: empty-state = kurasi preset 1-klik (anti-pattern
+  // "Cari saham" search-driven; riset 11 Nov: kurasi tematik > empty search).
   if (!session?.user?.id) {
+    const presets = await getWatchlistPresets().catch(() => []);
     return (
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-6 fade-in">
         <div className="space-y-1">
@@ -30,7 +34,7 @@ export default async function WatchlistPage() {
             Pantau pergerakan saham pilihan kamu
           </p>
         </div>
-        <GuestWatchlistView />
+        <GuestWatchlistView presets={presets} />
       </div>
     );
   }

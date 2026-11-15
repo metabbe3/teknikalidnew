@@ -3,13 +3,16 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@/generated/prisma/client";
 import { guardActorSql } from "@/lib/actor-blocklist";
+import { T3_SAVE_LABELS } from "@/lib/funnel-labels";
 
 export const dynamic = "force-dynamic";
 
 /**
  * GET /api/admin/funnel-v2 — funnel 5-tahap berbasis actor_id (tracking-audit G12).
  * actor_id = COALESCE(User.initialAnonId, PageView.anonId) — manusia, bukan baris view.
- * T1 Datang → T2 Paham (dwell≥15 ATAU eksplor) → T3 Simpan (pantau_tambah/tg) →
+ * T1 Datang → T2 Paham (dwell≥15 ATAU eksplor) → T3 Simpan (pantau_tambah|tg_pantau_klik —
+ * satu pintu T3_SAVE_LABELS prd-2026-11-15-01; pantau_hapus KELUAR dari saved: klik ke-2
+ * bintang = unsaved, menghitungnya sebagai "simpan" menggelembungkan T3) →
  * T4 Balik ≤7 hari → T5 Habit (user bot aktif: agent.agent_user.anon_id = LEFT(REPLACE(actor,'-',''),12)).
  */
 export async function GET() {
@@ -52,7 +55,7 @@ export async function GET() {
     base AS (
       SELECT actor, MIN(d) AS h0,
         EXISTS (SELECT 1 FROM ev e WHERE e.actor = pv.actor AND (e.type = 'dwell_tick' OR e.type = 'cta_click' OR e.type = 'nav_click')) AS engaged,
-        EXISTS (SELECT 1 FROM ev e WHERE e.actor = pv.actor AND e.label IN ('pantau_tambah','tg_pantau_klik','pantau_hapus')) AS saved
+        EXISTS (SELECT 1 FROM ev e WHERE e.actor = pv.actor AND e.label IN (${Prisma.join(T3_SAVE_LABELS.map((l) => Prisma.sql`${l}`))})) AS saved
       FROM pv
       WHERE actor IS NOT NULL
       GROUP BY actor

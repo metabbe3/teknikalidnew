@@ -11,6 +11,7 @@ import { useSession } from "next-auth/react";
 import {
   readGuestWatchlist,
   toggleGuestWatchlistTicker,
+  addManyGuestWatchlistTickers,
   GUEST_WATCHLIST_EVENT,
   REGISTER_PROMPT_EVENT,
 } from "@/lib/guest-storage";
@@ -53,5 +54,26 @@ export function useGuestWatchlist() {
     [enabled],
   );
 
-  return { tickers, toggle, mounted: mounted && enabled, enabled };
+  /** prd-2026-11-15-01 AC2: isi watchlist dari preset kurasi 1-klik (batch).
+   *  Dispatch event yang sama dengan toggle agar GuestWatchlistPanel (di /stocks)
+   *  dan GuestWatchlistView (/watchlist) sinkron tanpa reload. */
+  const addMany = useCallback(
+    (batch: string[]): { addedCount: number } | null => {
+      if (!enabled) return null;
+      const result = addManyGuestWatchlistTickers(batch);
+      if (result && result.addedCount > 0) {
+        setTickers(result.list);
+        window.dispatchEvent(new CustomEvent(GUEST_WATCHLIST_EVENT, { detail: result.list }));
+        // moment-of-intent: preset langsung menghasilkan >=3 simpanan → sheet
+        // register boleh muncul (konsisten logika toggle, prd-2026-10-26-01)
+        if (result.list.length >= 3) {
+          window.dispatchEvent(new CustomEvent(REGISTER_PROMPT_EVENT, { detail: { source: "preset_save" } }));
+        }
+      }
+      return result ? { addedCount: result.addedCount } : null;
+    },
+    [enabled],
+  );
+
+  return { tickers, toggle, addMany, mounted: mounted && enabled, enabled };
 }

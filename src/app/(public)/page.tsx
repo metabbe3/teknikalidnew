@@ -376,7 +376,7 @@ export default async function HomePage() {
           {heroCards.length > 0 && (
             <div className="hidden lg:grid grid-cols-2 gap-3 sm:gap-4 content-start">
               {heroCards.map((c) => (
-                <SnapshotCard key={c.ticker} {...c} />
+                <SnapshotCard key={c.ticker} {...c} star />
               ))}
             </div>
           )}
@@ -406,7 +406,7 @@ export default async function HomePage() {
             {heroCards.length > 0 && (
               <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 lg:hidden">
                 {heroCards.map((c) => (
-                  <SnapshotCard key={c.ticker} {...c} />
+                  <SnapshotCard key={c.ticker} {...c} star />
                 ))}
               </div>
             )}
