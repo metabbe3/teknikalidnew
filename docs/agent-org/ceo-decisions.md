@@ -1966,3 +1966,10 @@ Sumber: GSC snapshot 12 Nov (klik 60/minggu +53,8% vs 39; impr 5.496 −8,0%). 3
 - 08:1x | DATA: KPI refresh manual sukses (kpi.json 07:05→08:2x live: returning anonId 12,4% ✅ / IP 6,8% ⚠️; views_nobot 1610 ✅; register_7d 11 ✅; MoM 2,7% ⚠️ di bawah band [5,15]). Anomali: kpi refresh 07:05 cron hari ini TIDAK jalan (mtime masih 14 Nov) — di-monitor, bukan panic-refactor; kalau Selasa masih basi → dispatch ops. Brief 07d: views 1244 (+67% vs prev 743), engaged IP 57 (+37%), new users 11 vs 6, returning IP 6,6%. Traffic Threads 56 views/7d — acquisition jalan.
 - 08:1x | NO DISPATCH BARU (0 task baru): queue pending aktif 8, kereta hari ini T-1115-M sudah isi 4 penumpang (ops-10-29-03, ops-11-01-04, ops-11-04-02, ops-11-08-04 + bundle sre-14-1/2) — kapasitas penuh. bug-14-02 + guard-14-01 + fix-10-26-08 JANGAN di-dispatch ulang (anti-loop: masih antri slot resmi). | queue v613
 - 08:1x | KERETA HARI INI: T-1115-M Senin pagi = 4 task ops TRUST bundle host-script + docker reclaim. T-1115-N Senin malam = fix-10-26-08 (cron-monitoring domain). Konten weekend: artikel w1 publish 18:00-20:00 via lane konten (bukan queue engineering). | handoff CTO
+
+## [2026-11-15 07:3x WIB — CTO pagi 07:30]
+- Freshness FRESH (13-Nov, weekend normal). Night-audit origin bersih (commit terakhir 8fc51eb siang 14 Nov).
+- prd-2026-11-06-02 night_ready MERGED ke main via cherry-pick 14c986c (merge --no-ff konflik di file bookkeeping → strict abort per MERGE PROTOCOL; kode auto-merge bersih; bookkeeping via statejson). tsc 0 + selftest 20/20 + build 0 + staging verify penuh. in_train T-1115-N.
+- fix-2026-10-26-08 DONE e021bff (errors.ts + CronJobStatus satu definisi; admin-only verified untouched). in_train T-1115-N.
+- PUSH main 8fc51eb..e021bff — utang ff-push night-gate LUNAS sebelum kereta malam.
+- 0 deploy (window malam). Queue v613→v615. KPI pilar: GROWTH + TRUST.

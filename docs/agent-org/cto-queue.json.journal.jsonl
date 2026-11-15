@@ -19,3 +19,5 @@
 {"ts": "2026-11-15T03:04:18", "actor": "BO-0300", "file": "cto-queue.json", "op": "patch", "v0": 610, "v1": 611, "ids": ["bo-2026-11-15-01"]}
 {"ts": "2026-11-15T06:50:25", "actor": "unknown", "file": "cto-queue.json", "op": "write", "v0": 611, "v1": 612, "ids": []}
 {"ts": "2026-11-15T06:54:00", "actor": "CEO-1115", "file": "cto-queue.json", "op": "update", "v0": 612, "v1": 613, "ids": []}
+{"ts": "2026-11-15T07:39:41", "actor": "unknown", "file": "cto-queue.json", "op": "flip", "v0": 613, "v1": 614, "ids": ["prd-2026-11-06-02"]}
+{"ts": "2026-11-15T07:39:41", "actor": "unknown", "file": "cto-queue.json", "op": "flip", "v0": 614, "v1": 615, "ids": ["fix-2026-10-26-08"]}

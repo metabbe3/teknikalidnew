@@ -3249,15 +3249,16 @@
       "date": "2026-10-26",
       "type": "chore",
       "priority": "P2",
-      "status": "pending",
+      "status": "in_train",
       "assigned_to": "cto",
-      "scheduled_slot": "2026-11-15 BE weekend pagi 08:00 build-only (CTO reslot 07:52: slot 13-Nov sore lewat + sore hari ini penuh ux-11-11-02; train T-1114-N Minggu malam)",
+      "scheduled_slot": "2026-11-15 CTO pagi DONE build-only (commit e021bff) — naik kereta T-1115-N malam 15 Nov",
       "north_star": "CONSISTENCY — audit cron-monitoring 26 Okt",
       "source": "plain audit 26 Okt sore (domain cron-monitoring/)",
       "spec": "Domain cron-monitoring (audit 26 Okt): (1) tanpa cron-monitoring.errors.ts + TimeoutError extends Error bukan DomainError (with-timeout.ts:13); (2) status tipe longgar: repo string vs service union (cron-monitoring.repository.ts:10 vs service:6); (3) errorMessage error.message bisa bocor detail internal ke dashboard admin (with-cron-logging.ts:32) — pastikan dashboard admin-only. Domain sehat, nol P0/P1.",
       "acceptance": "errors.ts ada + DomainError dipakai; tipe status sinkron repo↔service; dashboard cron-monitoring terverifikasi admin-only.",
       "train": "T-1115-N",
-      "reslot_note": "auto-reslot 2026-11-15: kereta T-1114-N kedaluwarsa -> kereta T-1115-N (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-15: kereta T-1114-N kedaluwarsa -> kereta T-1115-N (reslot_guard.py v3)",
+      "result": "DONE e021bff: errors.ts BARU (CronTimeoutError extends DomainError 504 + type CronJobStatus); repository createLog status: CronJobStatus (bukan string); service import type dari errors.ts (satu definisi); with-timeout pakai CronTimeoutError. tsc EXIT-0; grep: no stray TimeoutError; dashboard /admin/pipelines admin-only via proxy.ts:342-355 UNTOUCHED. Bukti: git log -1 e021bff -- src/domains/cron-monitoring/"
     },
     {
       "id": "fix-2026-10-26-09",
@@ -4960,7 +4961,7 @@
       "type": "prd",
       "priority": "P2",
       "prd_id": "idea-2026-11-06-3",
-      "status": "spec_ready",
+      "status": "in_train",
       "title": "P2 GROWTH/SEO (PRD idea-2026-11-06-3): Landing sektor /sektor/[slug] 11 halaman SSR — whitespace penuh (kini 301 ditelan /stocks), aset siap (SECTORS copy + SECTOR_SLUG_MAP + komponen heatmap), data pergerakan WAJIB via market-snapshot SATU PINTU, 357 ticker-page jadi mesin internal-link",
       "north_star": "GROWTH (traffic organik query 'saham <sektor>' + sesi multi-halaman sektor->ticker) — pilar funnel web->agent (Fact #240-241)",
       "user_story": "Sebagai pencari yang mengetik 'saham perbankan hari ini' di Google, saya ingin satu halaman sektor ber-SSR (heatmap pergerakan, top sinyal skor sektor, daftar saham + link analisa per saham), supaya saya melihat gambaran sektor sekali lihat lalu menyelam ke halaman saham yang relevan.",
@@ -4993,8 +4994,10 @@
       "spec": "(1) Halaman baru [slug] generateStaticParams dari SECTORS; (2) data = market-snapshot.service per-ticker batch sektor (pola getStockBatchWithIndicators ala T2); (3) hapus redirect /sektor/:slug di next.config SETELAH halaman live staging; (4) badge sektor di ticker page koordinasi T2 markup; (5) sitemap +11 URL. 0 migrasi DB.",
       "qa_plan": "Pembangun != pemeriksa. Staging: DOM 3 sektor vs replay SQL kanonik (superlatif dari query asli); sitemap berisi 11 URL; Lighthouse SEO >=95; klik badge tercatat (EngagementEvent label nav_stockToSector). D+28: sesi organik /sektor* >=60/30hr target pola T6.",
       "done_when": "DONE WHEN: (a) 11 URL live 200 + 404 slug sampah; (b) sitemap memuat 11; (c) DOM angka == SQL replay 3 sektor; (d) badge sektor live di ticker page + event tercatat; (e) tsc+build EXIT-0. Redirect lama dihapus terverifikasi (curl /sektor/perbankan = 200 halaman, bukan 301).",
-      "scheduled_slot": "2026-11-10+ BE malam (setelah T1-T6 mulai jalan agar badge tidak tabrak T2)",
-      "created_by": "Product Agent buffer-keeper 2026-11-06 22:4x WIB (run gate: buffer teknikal 1 < 3)"
+      "scheduled_slot": "merged main 14c986c (CTO pagi 15 Nov via cherry-pick night-1114; bookkeeping conflict file di-abort per merge-protocol) — naik kereta T-1115-N malam 15 Nov",
+      "created_by": "Product Agent buffer-keeper 2026-11-06 22:4x WIB (run gate: buffer teknikal 1 < 3)",
+      "train": "T-1115-N",
+      "result": "MERGED 14c986c: tsc EXIT-0; selftest sector-landing 20/20 PASS; build EXIT-0 BUILD_ID XzFu_nXGaYizGzTh-VEc1; staging :3100 perbankan/energi/transportasi 200 + sampah 404 + /sektor 308; badge BBCA nav_stockToSector=2 link /sektor/perbankan=6; sitemap 11 URL sektor. Bukti fisik: git log --oneline -1 14c986c"
     },
     {
       "id": "ops-2026-11-07-01",
