@@ -1,10 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@/generated/prisma/client";
+import type { CronJobStatus } from "./errors";
 
 export const cronMonitoringRepository = {
   async createLog(data: {
     jobName: string;
-    status: string;
+    status: CronJobStatus;
     startedAt: Date;
     durationMs: number;
     result?: Record<string, unknown>;

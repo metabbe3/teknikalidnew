@@ -1,10 +1,11 @@
 import { cronMonitoringRepository } from "./cron-monitoring.repository";
 import { CRON_JOB_REGISTRY } from "./cron-registry";
+import type { CronJobStatus } from "./errors";
 
 export const cronMonitoringService = {
   async logExecution(params: {
     jobName: string;
-    status: "success" | "failed";
+    status: CronJobStatus;
     startedAt: Date;
     durationMs: number;
     result?: Record<string, unknown>;

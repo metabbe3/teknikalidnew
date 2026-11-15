@@ -10,12 +10,9 @@
  *
  * Dipakai bersama `export const maxDuration = 300` (pola sync-fundamental).
  */
-export class TimeoutError extends Error {
-  constructor(label: string, ms: number) {
-    super(`[timeout] ${label} exceeded ${ms}ms`);
-    this.name = "TimeoutError";
-  }
-}
+import { CronTimeoutError } from "./errors";
+
+export const TIMEOUT_ERROR_NAME = "CronTimeoutError";
 
 export function withTimeout<T>(
   fn: () => Promise<T>,
@@ -24,7 +21,7 @@ export function withTimeout<T>(
 ): Promise<T> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   const timeout = new Promise<never>((_, reject) => {
-    timer = setTimeout(() => reject(new TimeoutError(label, ms)), ms);
+    timer = setTimeout(() => reject(new CronTimeoutError(label, ms)), ms);
   });
   return Promise.race([fn(), timeout]).finally(() => clearTimeout(timer)) as Promise<T>;
 }
