@@ -1470,3 +1470,18 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - SEC GATE: N/A (CSS breakpoint-only; tidak menyentuh auth/input/db/money — UserMenu hanya digeser breakpoint visibilitas, logika session tak berubah)
 - Dampak North Star: TRUST/STICKY (h-scroll menyebalkan di tablet-landscape; pilar STICKY)
 - QA: verdict final milik QA Sentinel 22:00 (H3 — builder tidak self-verify); impact_check_due: 2026-11-18 (cek live post-deploy + GSC mobile usability tablet)
+
+## 2026-11-15 17:2x WIB — cto-weekend-sore — ops-2026-10-29-03 [BUGFIX→OPS][TRUST]
+- task-id: ops-2026-10-29-03 | type: ops | PRD: n/a (host-script, 0 deploy)
+- Fix: sre_brief.py error-cluster collapse — (1) AUTH_NOISE_RE + MissingCSRF|authjs (lanjutan sre-2026-10-14-1); (2) fungsi baru collapse_error_clusters(lines, window_s=60): N baris error ber-digest sama (angka/hex dibuang) dlm jendela 60s bergulir = 1 event + annotasi cluster xN; wired ke blok [APP ERRORS] sbg "error clusters (60s)".
+- Bukti fisik: selftest /tmp/test_sre_cluster.py 5/5 PASS (storm 10x dlm 1,2dtk → 1 event x10; 7x client-abort dlm 7dtk → x7; digest beda = 2 event; >60s = 2 event; no-ts konservatif per-baris); lint_all 0 temuan sre_brief; live run exit-0 render "error clusters (60s): 2 event" (InvalidCheck+Configuration auth pasca host-reboot 16:46).
+- Observasi follow-up (bukan scope): docker logs tanpa -t → baris tanpa ISO-ts → window deploy-noise classify_app_errors tak aktif utk auth-noise pasca-restart (2 "REAL ERROR" hari ini sbnrnya noise pasca-reboot); kandidat idea backlog.
+- Deploy: TIDAK (host-script) | Rollback: n/a host-script (revert = hapus blok cluster + pola regex lama; .bak via git N/A — file di ~/.hermes/scripts, snapshot di changelog ini)
+- SEC GATE: N/A (host monitoring script read-only; tidak menyentuh auth/input/db/money aplikasi)
+- Dampak North Star: TRUST (brief SRE tanpa false-positive storm; pilar TRUST/data reliable)
+- QA: verdict final milik QA Sentinel; impact_check_due: 2026-11-22 (cek brief SRE pagi bebas storm false-positive)
+
+## 2026-11-15 17:1x WIB — cto-weekend-sore — ops-2026-11-06-03 [SEC][KONVERSI] owner package
+- task-id: ops-2026-11-06-03 | type: sec/ops | status TETAP blocked_for_owner
+- Re-audit read-only 3 temuan SRE sec-2026-11-05-01/02/03 vs kode hari ini: TOCTOU -90% checkout SUDAH TERTUTUP GANDA (rebase b0d489f server-side pricing route.ts L52 + webhook agentd billing.go L396-403 amount==canonical+SHA512); membership unauth 500 SUDAH FIXED c9df04a (live anon 401 rapi); bind max-3 MASIH VALID (komentar L17 vs kode L18-30 tanpa count-check — hanya 1/3 temuan hidup, minor).
+- Owner package ditulis ke entry (owner_brief + blocked_checked_at 17:15 WIB, queue v632 via statejson --actor CTO-WEEKEND-SORE). [ESCALATE] ops-2026-11-06-03 utk owner: APPROVE fix bind max-3 (P3 1-liner) / TUTUP 2 temuan basi dgn bukti fisik.

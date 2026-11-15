@@ -2344,7 +2344,7 @@
     {
       "id": "sre-2026-11-03-1",
       "date": "2026-11-03",
-      "status": "deferred",
+      "status": "approved",
       "source": "sre",
       "title": "93 logo emiten 404 di halaman pasar (~230 hit/24h, termasuk BBCA.jpg) — sweep aset logo + fallback placeholder agar tidak ada kotak kosong di tabel saham",
       "data": {
@@ -2355,7 +2355,10 @@
       },
       "priority": "P3",
       "insight": "PROMOTE CEO 4 Nov → queue ops-2026-11-04-02 (T-1105-M, slot BE siang 5 Nov): 93 logo emiten 404 — TRUST pilar, ~230 hit/24h termasuk BBCA broken-image.",
-      "defer_note": "Verdict CEO malam 11 Nov: DEFER - ter-cap kereta T-1112-W; FE-UX sudah night_ready manifest build-time src/lib/logo-ext.json 962 emiten (7de1f02 rebase 590ea0e, tsc 0, bus 19:5x) = cakupan fix akar lebih besar dari sweep placeholder; review pasca-deploy Kamis 12 Nov, sisa baru sweep fallback. [anti-stagnation: dispatched 8d]"
+      "defer_note": "Verdict CEO malam 11 Nov: DEFER - ter-cap kereta T-1112-W; FE-UX sudah night_ready manifest build-time src/lib/logo-ext.json 962 emiten (7de1f02 rebase 590ea0e, tsc 0, bus 19:5x) = cakupan fix akar lebih besar dari sweep placeholder; review pasca-deploy Kamis 12 Nov, sisa baru sweep fallback. [anti-stagnation: dispatched 8d]",
+      "scheduled_slot": "2026-11-18 BE siang 09:30",
+      "council_verdict": "COUNCIL-1115 schedule: stagnan 12d; logo 404 ~230 hit/24h = TRUST data-reliable; sweep aset + placeholder fallback",
+      "status_at": "2026-11-15"
     },
     {
       "id": "sre-2026-11-03-2",
@@ -2576,7 +2579,10 @@
         "AC4 bucket ai-search growth kpis regex diperluas (grep ai_search_paths teknikalid_growth.py memuat utmSource match) — sebelum/after 1 run",
         "AC5 tsc --noEmit exit 0; route.ts tetap force-dynamic; 0 page lain berubah (git diff scoped 1 file)",
         "AC6 D+14: bucket ai-search referral != undercount (angka kpis == SQL replay utmSource OR referrer); ekspektasi flat-to-small (researcher: llms.txt BUKAN citation lever — hedge murah)"
-      ]
+      ],
+      "scheduled_slot": "2026-11-16 BE malam 18:30 kereta T-1115-N rider-3 (konten llms.txt, 0 kode app)",
+      "council_verdict": "COUNCIL-1115 schedule: dispatched 8d tanpa slot; pilar AI-SEARCH",
+      "status_at": "2026-11-15"
     },
     {
       "id": "idea-2026-11-07-2",
@@ -2609,7 +2615,10 @@
         "AC4 validasi URL publik 200 sebelum submit; staging diam (gate env)",
         "AC5 msvalidate meta ter-gate env BING_SITE_VALIDATION (klaim akun = owner-only, jangan hardcode)",
         "AC6 tsc+build EXIT-0; 0 perubahan publish-path behavior saat endpoint IndexNow error (assert catch-all)"
-      ]
+      ],
+      "scheduled_slot": "2026-11-17 BE siang 09:30 (publish-hook ping; verifikasi Bing Webmaster = owner credential)",
+      "council_verdict": "COUNCIL-1115 schedule: dispatched 8d tanpa slot; pilar GROWTH instant-index",
+      "status_at": "2026-11-15"
     },
     {
       "id": "idea-2026-11-08-1",
@@ -2884,7 +2893,9 @@
       "first_step": "CEO verdict freeze: ini blok konten-link (bukan fitur baru interaktif?) — kalau dianggap konversi/retensi surface, riset dulu: pola exit halaman /stocks visitor sosmed + kandidat modul 'Analisa terkait {ticker}' 3-link di bawah grafik. Baseline: 0% Threads-aktor menyentuh /berita dari /stocks.",
       "DONE-WHEN": "Riset tertulis: baseline 0/59 terkonfirmasi, mock posisi modul + metrik (share Threads-aktor dengan >=1 PV /berita dalam sesi sama 14d setelah live) didefinisikan, verdict PRD lanjut/stop.",
       "review_date": "2026-11-20",
-      "ceo_verdict": "HOLD 13 Nov — modul konten-link = mendekati fitur baru; tunggu baseline RelatedSignals prd-2026-11-12-01 (UX-1111-02) supaya tidak dobel modul link artikel vs /stocks; review 20 Nov"
+      "ceo_verdict": "HOLD 13 Nov — modul konten-link = mendekati fitur baru; tunggu baseline RelatedSignals prd-2026-11-12-01 (UX-1111-02) supaya tidak dobel modul link artikel vs /stocks; review 20 Nov",
+      "research_brief": "VERDICT: MODIFIKASI (riset first_step disetujui; build modul ditunda sampai baseline RelatedSignals terukur). ALASAN: pola recirculation/internal-linking adalah best practice publisher terdokumentasi kuat (GNI, Chartbeat, News Corp, Vox), dan arah ticker<->analisa memang pola standar situs finansial; TAPI dampak realistis modul semacam ini kecil (CTR modul artikel-terkait referensi 1,04% = 3x goal 0,3% News Corp Project Hamilton), jadi ekspektasi & DONE-WHEN harus pakai band CTR realistis dan diukur vs baseline RelatedSignals /berita yang baru live 13 Nov (ux-2026-11-11-02 qa_pass 15 Nov). BEST PRACTICE: (1) Modul HARUS curated-topical berbasis tag ticker/kondisi (Analisa terkait {ticker}), bukan widget 'related posts' acak — kesalahan publisher #1 menurut panduan recirculation. (2) Posisi menentukan: inline link di atas fold / titik 50% drop-off (Chartbeat); traffic 93% mobile -> ukur scroll-depth halaman /stocks dulu sebelum fix posisi. (3) Benchmark CTR: band sehat 0,5-1%+ per modul (News Corp 1,04%; goal internal 0,3%); metrik sukses tetap seperti dirumuskan entry (share Threads-aktor >=1 PV /berita dlm sesi sama 14d) + uplift multi-day, bukan PV semata. (4) Jadikan SATU komponen data dua arah (berita<->stocks) supaya tidak lahir dua modul link artikel yang kanibalisasi CTR (inti HOLD CEO 13 Nov); anchor deskriptif, batas 3 link, jangan dekat quota-wall/CTA lain. (5) Pada review 20 Nov: keputusan BUILD/STOP dari data internal = CTR RelatedSignals 4-6 hari live + scroll-depth /stocks, bukan dari asumsi. ANTI-PATTERN: widget related acak/by-latest di halaman instrumen (zero topical match); build tanpa baseline comparator; dua modul link artikel di halaman yang sama; sukses diukur dari PV naik tanpa metrik returning multi-day. SUMBER: newsinitiative.withgoogle.com/resources/trainings/recirculation/ ; chartbeat.com/resources/eliminate-dead-end-pages-optimize-for-recirculation/ ; Chartbeat Playbook 'Build a Loyal Audience' (placement at 50% drop-off, curate 4-5 stories) cdn2.hubspot.net/hubfs/3794894/download-Chartbeat_Playbook_Build-a-Loyal-Audience.pdf ; digiday.com/media/news-corp-testing-homegrown-content-recommendation-tool/ (CTR 1,04% vs goal 0,3%) ; niemanlab.org/2018/03/recirculate-vox-medias-new-structure-for-story-packages... ; library.linkbot.com/internal-linking-for-publishers-2/ ; financialmarkets.media/blog/interlinking-financial-websites/ (template artikel<->instrumen). BUKTI: SEDANG — pola recirculation KUAT terdokumentasi & terukur (GNI/Chartbeat/News Corp/Vox); klaim dampak ke RETURNING multi-day (bukan CTR/PV) tidak dibuktikan langsung sumber publik (pernyataan vendor Chartbeat) -> keputusan lanjut dari data internal baseline.",
+      "research_brief_at": "2026-11-15"
     },
     {
       "id": "sec-2026-11-12-01",
@@ -2988,7 +2999,24 @@
       "first_step": "Slot SRE/host-script (bundling kereta ops TRUST): (1) tambah checker sektor di replay_sql_gate.py yang men-replay angka '+X,X% sektor' vs SQL LATERAL satu-pintu (konvensi simple-avg semua EQUITY aktif); (2) tambahkan snapshot sektor di payload brief Mandor. Test DUA ARAH wajib: input valid PASS, ticker/angka fiktif FAIL.",
       "DONE-WHEN": "gate dijalankan pada rekap-pasar-mingguan-2026-11-14 pasca-patch = exit 0 DAN artikel sektor-fiktif fixture = exit 2; snapshot sektor muncul di payload Mandor (bukti jq path).",
       "result": "",
-      "owner_note": "Dibuat CTO pagi 15 Nov saat eksekusi qa-15-01; kelas bug termahal per charter §11 (koreksi konten pasca-publish)."
+      "owner_note": "Dibuat CTO pagi 15 Nov saat eksekusi qa-15-01; kelas bug termahal per charter §11 (koreksi konten pasca-publish).",
+      "scheduled_slot": "2026-11-16 CTO pagi 07:30 bundling ops-2026-10-29-03 host-script 0-deploy (WAJIB live sebelum rekap mingguan Sabtu 21 Nov; gate wajib test dua arah valid-PASS/fiktif-FAIL)",
+      "council_verdict": "COUNCIL-1115 schedule: root-fix transplantasi-blok 2 hari beruntun; TRUST",
+      "status_at": "2026-11-15"
+    },
+    {
+      "id": "idea-2026-11-15-3",
+      "date": "2026-11-15",
+      "type": "idea",
+      "priority": "P3",
+      "status": "candidate",
+      "source": "cto-slot (ops-2026-10-29-03 observasi)",
+      "north_star": "TRUST (brief SRE akurat)",
+      "title": "[BUGFIX][TRUST] sre_brief app-container docker logs pakai -t supaya baris ber-timestamp ISO → window deploy-noise classify_app_errors aktif utk auth-noise pasca-restart",
+      "problem": "Live run 15 Nov pasca host-reboot 16:46: 2 baris [auth][error] InvalidCheck+Configuration dilabel REAL ERROR padahal pola auth-noise pasca-restart. Root: sh('docker logs ...') tanpa flag -t → output baris TANPA timestamp ISO → TS_RE tak match → noise-in-window tak terhitung → DEPLOY-NOISE tak aktif. Storm-readout (cluster view baru) juga tak bisa menghitung gap tanpa ts.",
+      "data": "sre_brief.py L94/L123: pipeline docker logs tanpa -t; bukti live run 15 Nov 17:2x: raw_grep=2 deploy_noise=0 padahal container_age=0.37h + pattern auth. Fix: tambah -t di 2 pipeline app_error_context + adjust TS_RE utk prefix waktu docker (RFC3339 nano di depan baris).",
+      "DONE-WHEN": "Live run dgn -t: baris auth dlm ±60mnt StartedAt pasca-restart terklasifikasi DEPLOY-NOISE (bukan REAL ERROR); selftest window lama tetap hijau.",
+      "first_step": "CEO verdict: P3 kecil host-script, bundling slot berikutnya bersama sre_brief lain."
     }
   ],
   "items": []
