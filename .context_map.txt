@@ -372,8 +372,8 @@ src/app/(public)/swing/page.tsx:12:export const dynamic = "force-dynamic";
 src/app/(public)/swing/page.tsx:14:export const metadata → Metadata = {
 src/app/(public)/terms/page.tsx:10:export const revalidate = 86400;
 src/app/(public)/terms/page.tsx:4:export const metadata → Metadata = {
-src/app/(public)/track-record/page.tsx:10:export const dynamic = "force-dynamic";
-src/app/(public)/track-record/page.tsx:13:export const metadata → Metadata = {
+src/app/(public)/track-record/page.tsx:11:export const dynamic = "force-dynamic";
+src/app/(public)/track-record/page.tsx:14:export function generateMetadata() → Metadata {
 src/app/(public)/trading-plan/page.tsx:16:export const revalidate = 60;
 src/app/(public)/trading-plan/page.tsx:18:export const metadata → Metadata = {
 src/app/(public)/watchlist/page.tsx:10:export const metadata → Metadata = {

@@ -1770,7 +1770,6 @@
       "verdict_by": "CEO",
       "verdict_date": "2026-10-27",
       "review_date": "2026-11-24",
-      "ceo_decision_pending": true,
       "data": {
         "drop_reason": "PIVOT 6 Nov 2026: feature freeze — fokus acquisition (fact 252)"
       }
@@ -2868,7 +2867,8 @@
       "data": "SQL 12 Nov: anon kena cta_click guest_quota 21d=215; auth_nav_after=13 (6,0%); tg_pantau_klik=4; register 21d=18. Aktor Threads 21d: anon=59, multi-day=2 (3,4%), PV segmen: stocks 48/71, berita 0. DEDUPE: bukan idea-2026-11-10-1/prd-2026-11-11-01 (itu tracking register attribution, menunggu ACK owner area auth) — ini copy/CTA experience di wall, tanpa sentuh auth.",
       "first_step": "CEO verdict: freeze-safe (CTA/funnel = jalur konversi dibolehkan). Kalau lanjut: riset copy alternatif wall (value-first 'sisa 1 dari 3 — daftar gratis utk lanjut lihat skor X' vs status-quo) + proposal CTA ganda (daftar gratis / pantau via bot WA-TG) dengan baseline 6% -> target >=12% auth-nav pasca-wall.",
       "DONE-WHEN": "Riset tertulis: baseline 6,0% terkonfirmasi, 2 varian copy + metrik keberhasilan (auth_nav_after/anon kena wall) didefinisikan, verdict PRD lanjut/stop.",
-      "ceo_verdict": "APPROVE 13 Nov — freeze-safe (CTA/funnel = boleh, pivot 6 Nov); T3 7/172 T2 = bottleneck konversi nyata; mandat Product Agent: riset copy value-first + dual-CTA (daftar gratis / pantau bot), baseline auth-nav 6% -> target >=12%"
+      "ceo_verdict": "APPROVE 13 Nov — freeze-safe (CTA/funnel = boleh, pivot 6 Nov); T3 7/172 T2 = bottleneck konversi nyata; mandat Product Agent: riset copy value-first + dual-CTA (daftar gratis / pantau bot), baseline auth-nav 6% -> target >=12%",
+      "research_brief": "RESEARCHER 14 Nov 2026 (riset web eksternal, gate FDE — memenuhi DONE-WHEN mandat CEO 13 Nov): VERDICT: BUILD — arah copy value-first + dual-CTA tepat sesuai pola industri metered-wall/upgrade-prompt. BEST PRACTICE: (1) Wall di momen user diblokir = intent tertinggi (pola at-the-blocked-action); jangan tambah prompt proaktif lain; namakan konten spesifik yang tertahan (ticker/skor yang sedang dibuka), bukan generik 'daftar untuk lebih banyak'. (2) Reframe kuota sebagai nilai yang sudah dikonsumsi, bukan hukuman ('Kamu sudah lihat 3 analisa gratis hari ini') + value-preview pakai konteks user sendiri (teaser skor {ticker} yang sedang dibuka) — limit tanpa preview = pintu tertutup, dengan preview = pintu berjendela. (3) CTA primer satu langkah (daftar gratis), CTA sekunder jalur TANPA akun (pantau via bot WA/TG) — user yang merasa terjebak tanpa alternatif memilih pergi; sekalian feed funnel web→agent (pivot 6 Nov). (4) Pasca-daftar kembalikan persis ke ticker yang dibuka (jangan pricing) — kehilangan konteks = konversi hilang. (5) Ukur auth_nav_after per sumber (butuh first_touch idea-2026-11-10-1 live) + A/B copy di kohort baru; keputusan pre-registered gabung konversi+retensi returning+keluhan, bukan konversi saja; baseline 6,0% → ≥12% (2x) realistis hanya dengan value-preview — benchmark vendor umumnya +2-5pp untuk prompt biasa. ANTI-PATTERN: wall sebelum nilai dikonsumsi (NN/g: login wall melanggar prinsip reciprocity — 'tak pernah lihat user se-annoyed'); copy generik tanpa nama limit/konten; dead-end tanpa jalur tanpa-akun; optimasi konversi tanpa cek churn/returning. SUMBER: nngroup.com/articles/login-walls · productguys.arthakram.in/patterns/the-upgrade-prompt · saasdash.ai/blog/usage-limit-design-for-freemium-conversion · thegrowthfolks.com/tactics/upgrade-prompts-at-limits · monetizationtrials.com/posts/usage-limit-placement-in-pricing-tiers-and-conversion-lift · wyatt-fleming.com/prompts/290-freemium-conversion-upgrade-flow. BUKTI: SEDANG — pola timing/preview/named-limit konsisten lintas sumber practitioner dan NN/g otoritatif untuk risiko wall; angka lift = benchmark vendor bukan eksperimen terkontrol; transfer ke B2C fintech-konten ID belum teruji — validasi wajib via A/B internal dgn baseline 6,0%."
     },
     {
       "id": "idea-2026-11-12-2",
@@ -2948,7 +2948,32 @@
       },
       "priority": "P2",
       "lane": "ux-rabu-fe",
-      "verdict_note": "CEO 14 Nov: APPROVE — rotasi UI-craft lanjutan mandat owner 18 Okt (preseden ux-11-10-02 bell SVG, ux-11-13-01 wizard). 12 hit emoji dekoratif ~10 surface publik, bukan fitur baru; freeze-compliant polish UX. Executor FE builder Rabu 19:00 (ganti lucide, effort kecil), BUKAN kereta deploy."
+      "verdict_note": "CEO 14 Nov: APPROVE — rotasi UI-craft lanjutan mandat owner 18 Okt (preseden ux-11-10-02 bell SVG, ux-11-13-01 wizard). 12 hit emoji dekoratif ~10 surface publik, bukan fitur baru; freeze-compliant polish UX. Executor FE builder Rabu 19:00 (ganti lucide, effort kecil), BUKAN kereta deploy.",
+      "research_brief": "RESEARCHER 14 Nov 2026 (riset web eksternal, gate FDE — validasi arah lucide): VERDICT: BUILD (sejalan approve CEO 14 Nov; bukti aksesibilitas & konsistensi mendukung penuh). BEST PRACTICE: (1) Emoji dekoratif dibungkus span aria-hidden=true agar screen reader skip — SR membaca nama Unicode penuh ('sparkles sparkles' sebelum heading; CTA '💬 Tanya' terbaca 'speech balloon Tanya'). (2) Bintang rating = SVG semantik + accessible name berisi nilai ('rating 4,6 dari 5') — makna di teks, ikon dekorasi; label intent bukan bentuk. (3) Satu sumber ikon (lucide-react, currentColor, stroke konsisten, ukuran grid 16/20/24) — jangan campur ad-hoc SVG. (4) '💬 Tanya AI' lintas 6 surface = satu komponen bersama (rencana entry sudah benar — lanjutkan). (5) Guard anti-regresi: grep emoji-range non-lucide di surface publik src/app+components oleh QA Sentinel — kelas temuan ini berulang 3 hari (12-14 Nov) = butuh cek mekanis, bukan mata. ANTI-PATTERN: emoji sebagai satu-satunya pembawa makna (status warna-only — gagal buta-warna, SR, dan device lama tampil kotak kosong); icon-button tanpa accessible name (WCAG 1.1.1 non-text content); 3+ emoji beruntun; emoji di konteks uang/error ('Payment sent 🎉' mengambil posisi nada yang bukan keputusan produk — register keuangan). SUMBER: troiana.net/insights/should-you-use-emojis-in-a-ui · blog.pope.tech/2026/04/01/making-emojis-and-icons-screen-reader-accessible · uxhero.design/blog/fintech-ux-wcag-patterns · gel.westpacgroup.com.au/articles/iconography · inclusiveweb.co/accessibility-resources/common-accessibility-mistakes-in-mobile-banking-user-experience. BUKTI: SEDANG — mekanika aksesibilitas (perilaku screen reader + WCAG 1.1.1) normatif multi-sumber; klaim 'emoji menurunkan trust di finance' = konsensus practitioner tanpa studi terkontrol — cukup untuk polish konsistensi, jangan diklaim sebagai lift konversi."
+    },
+    {
+      "id": "sre-2026-11-14-1",
+      "title": "Host resource-blindspot: sre_brief baca disk dari volume-root (35%) padahal Data-volume 89% + load-avg host tak di-monitor — host = satu-satunya VM prod",
+      "status": "promoted_ops",
+      "source": "sre",
+      "date": "2026-11-14",
+      "priority": "P3",
+      "north_star": "TRUST tooling",
+      "insight": "Dua blindspot monitoring host dalam shift yang sama: (1) DISK: sre_brief.py mencetak df dari /dev/disk3s1s1 (root sealed-system 35%) — volume DATA aktual tempat semua data prod hidup = 89% used (22Gi sisa). Rabu brief tercetak 21%, Sabtu 27% — tren disk 3-run memboroskan kebenaran karena salah volume. (2) LOAD: load average 22.77/20.88/19.43 saat brief — penyebab dua binary Go test Cerberus (server.test 465% + policy.test 455% CPU, RSS 1.7-2.6GB each) — tanpa baris load di brief, tak ada yang melihat; latency teknikal.id tetap 0.17-0.24s (container bukan pihak kelaparan). Host tunggal: teknikal.id + Cerberus MVP-60 + Hermes ~20 cron + dashboard.",
+      "train": "T-1115-M",
+      "ceo_verdict": "PROMOTE P3 ops TRUST (CEO 15 Nov): sre_brief disk blindspot — BUNDLE ke ops-2026-10-29-03 (host-script file sama)."
+    },
+    {
+      "id": "sre-2026-11-14-2",
+      "title": "Docker 15.34GB images reclaimable + 4.63GB build-cache reclaimable di Data volume 89% — butuh keputusan prune owner/CTO",
+      "status": "promoted_ops",
+      "source": "sre",
+      "date": "2026-11-14",
+      "priority": "P3",
+      "north_star": "DATA RELIABLE — satu disk untuk semua data customer berbayar",
+      "insight": "Data volume 89% (22Gi sisa) dan docker menyimpan 21.4GB images (reclaimable 15.34GB, 71%) + build cache 6.48GB (reclaimable 4.63GB). Reclaim ~20GB = turun ke ~70% = margin 2 bulan. Ini visibilitas sre-2026-10-14-2 (deployed) yang kini jadi URGENT karena volume salah baca selama 3 run. Prune aman (unused images >7hari): docker image prune -a --filter until=168h + docker builder prune. Keputusan owner/CTO (SRE read-only, tidak eksekusi).",
+      "train": "T-1115-M",
+      "ceo_verdict": "PROMOTE P3 ops TRUST (CEO 15 Nov): reclaim docker 15,3GB images + 4,6GB cache — GUARDRAIL: prune HARAM sentuh tag rollback-*, df sebelum/sesudah."
     }
   ],
   "items": []

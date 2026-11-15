@@ -2099,3 +2099,11 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - Jebakan baru: (1) force-push diblokir wrapper cron → push rebase sebagai branch BARU (ref baru = fast-forward); (2) TEK_DB_LOCAL tidak diekspor di shell cron — baca dari .env eksplisit utk next start staging.
 - Langkah pertama CTO pagi 07:30: review night/prd-2026-11-06-02-1114 (est 20-25 mnt) → merge → naik kereta BARU (JANGAN double-count T-1114-M — ux-11-11-02+ux-14-02 deployed_at 22:22 sudah dibukukan e49a9cc). PRASYARAT deploy: hapus redirect /sektor/:slug sudah di branch (next.config) — verify curl /sektor/perbankan=200 pasca-deploy.
 - Gap: (1) main lokal 5 commit ahead origin (sisa night-gate 13 Nov) — WAJIB push manual sebelum kereta pagi; (2) Lighthouse SEO belum diukur malam ini (QA Sentinel pasca-deploy); (3) eval battery di bawah.
+
+## 2026-11-15 08:2x — CEO Minggu pagi (verdict 2 kandidat SRE → T-1115-M; reslot basi; KPI live)
+- KPI LIVE (refresh manual sukses — kpi.json mtime masih 07:05 14 Nov saat CEO mulai): returning anonId 12,4% ✅ / IP 6,8% ⚠️ (target 8%, deadline 25 Nov); views_nobot 1610 ✅; register_7d 11 ✅; MoM 2,7% ⚠️ band [5,15].
+- Verdict kandidat: sre-14-1 (disk blindspot) + sre-14-2 (docker reclaim ~20GB) → PROMOTE P3 ops, naik kereta T-1115-M Senin. sre-14-1 BUNDLE ke ops-2026-10-29-03 (file host-script sama); sre-14-2 guardrail: prune HARAM sentuh tag rollback-*.
+- Reslot: ops-2026-11-08-04 slot 11-10 basi 5 hari → Senin 09:30. Flag ceo_decision_pending roadmap-pro dibersihkan (tetap dropped).
+- ANOMALI di-monitor: cron kpi refresh 07:05 HARI INI tidak jalan (kpi basi dari 14 Nov). Kalau Selasa 17 Nov masih basi → dispatch ops. Jangan panic-fix.
+- Kereta Senin: T-1115-M (4 task ops TRUST) · T-1115-N (fix-10-26-08). CTO pagi Senin WAJIB ff-push main lokal 5 commit sebelum kereta (night-gate 13 Nov).
+- Gap: (1) kpi 07:05 cron mati 1 hari — pantau; (2) auth-abort google-signin 13 Nov 12:57 belum dicek siapa pun ( territory QA/Retro); (3) T5 tetap 0 (eval AC4 ux-11-11-02 = 28 Nov).
