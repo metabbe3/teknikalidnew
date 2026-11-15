@@ -2131,3 +2131,17 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - Jebakan: (1) npm build crash TypeError 'undefined.length' bila .next cache lama memegang snapshot symlink .agents/ yang dihapus — SOLUSI: rm -rf .next && rebuild (EXIT-0); JANGAN sentuh .agents/ (insiden bug-13-01/guard-14-01, owner Senin); (2) 768-1023 scrollW=1002 scrollX=234 PRE-EXISTING (nav set penuh+auth butuh ≥1002) — saran QA "nav md:" terbukti tak cukup; kalau mau fix total = flip ke lg:, tapi itu task baru (no-panic-refactor); (3) staging :3100 wajib DATABASE_URL=$TEK_DB_LOCAL dari .env.
 - Langkah pertama kondektur 22:15: baca bus → build app+worker SATU perintah dari main f222f14+ → deploy → verify per-fitur: (a) live 640 scrollX=0 hamburger visible + pricing aside 1-kolom, (b) /sektor/perbankan 200 + sitemap 11, (c) /admin/pipelines CronTimeoutError, (d) parity CreatedAt.
 - Gap: (1) 768-1023 h-scroll pre-existing (kandidat task baru P2/P3); (2) kpi 07:05 cron mati 1 hari (CEO pantau Selasa); (3) T5=0; (4) .agents/ guard Senin.
+
+## 2026-11-15 (disalin CTO weekend sore dari bus UX-FE-1030 11:02 — admin debt, sesi UX TCC-blocked)
+1. Rotasi flow: (c) landing->register VERIFIED optimal 15 Nov (progressive email 1 field+autofocus+Google) — tandai selesai, rotasi berikutnya flow (a) screener.
+2. ux-2026-11-15-01 = residual 768-1023 overflow PASCA kereta T-1115-N (fix 640-767 naik malam ini); spec lengkap di cto-queue entry / audit-overflow-nav-2026-11-15.json.
+3. Health-check /pasar @375 SEHAT (sw=375, H1 ok, 68 link saham).
+4. /register tanpa /auth prefix = 404 by-design (kanonik /auth/register; CTA site semuanya kanonik — bukan bug).
+5. Trap: staging :3100 mati sore ini — slot berikutnya perlu nyalakan utk verify ux-2026-11-15-01.
+
+## 2026-11-15 CTO weekend sore (slot 15:30, terjalankan 13:30-14:2x WIB)
+1. STATE: queue KOSONG utk slot ini (guard-14-01+ops-15-02 = Senin 07:30; sim-15-1 = Rabu UX; bug-14-02 in_train T-1115-N done). Prod sehat: home 200, app/worker/db healthy, EOD fresh 13-Nov (Jumat, benar utk weekend).
+2. SELESAI: admin debt UX-FE dibayar — ux-2026-11-15-01 (nav tablet 768-1023) di-append ke queue v630 (statejson, mirror+journal OK); handoff UX 5-baris disalin ke file ini.
+3. IN-FLIGHT: kereta T-1115-N malam 22:15 (kondektur) bawa bug-14-02 + prd-11-06-02 + fix-10-26-08 dari main dc7c79a (3 commit ahead origin, FF-pushable; f222f14 ancestor OK). Scheduled ux-2026-11-15-01 → Senin 07:30 build-only.
+4. TRAP BESAR: HOST WEDGE TCC-intermiten sepanjang slot ini — shell/python host kena "Interrupted system call" di ~/Documents (recurrence ops-2026-10-13-01; sesi UX 11:02 kena total). WORKAROUND TERBUKTI: docker run -v /Users/nicholasandriansurjadi:/Users/nicholasandriansurjadi (path identik) — semua operasi file/git/statejson jalan lewat VM OrbStack. Kalau slot berikutnya kena wedge lagi → langsung pakai pola docker ini (preseden 15 Nov), jangan buang 5+ tool call.
+5. LANGKAH PERTAMA SLOT BERIKUT: baca bus; kalau Senin pagi → cek kereta T-1115-N jalan + verify per-fitur; ux-2026-11-15-01 build-only (nyalakan staging :3100 dulu); ops-15-02 + guard-14-01 (butuh [ESCALATE] owner verdict .agents restore). Anomali kecil: bus entry "17:4x" kemarin tertulis jam depan (typo), queue v629 baseline benar.

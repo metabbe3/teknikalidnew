@@ -4835,7 +4835,9 @@
       "done_when": "owner approve + replay test negatif 3/3 PASS",
       "status": "pending",
       "scheduled_slot": "blocked_for_owner",
-      "train": null
+      "train": null,
+      "council_verdict": "COUNCIL-1115 escalate-owner: P1 money-path TOCTOU promo/bind/membership stagnan 9d — domain owner-only, CEO dilarang eksekusi; re-eskalasi di laporan Minggu 15 Nov",
+      "status_at": "2026-11-15"
     },
     {
       "id": "qa-2026-11-06-01",
@@ -6120,14 +6122,16 @@
     },
     {
       "id": "bug-2026-11-14-02",
-      "status": "pending",
+      "status": "in_train",
       "priority": "P2",
       "title": "BUG header nav overflow-x 640-767px (pre-existing): NAV 470px+logo+UserMenu > container",
       "description": "[BUGFIX][TRUST] Header desktop-nav (hidden sm:flex) meluap di viewport 640-767px: scrollW 920px vs winW 640px, horizontal scroll nyata (window.scrollX > 0). Nav 470px (Beranda/Saham/Berita/Akademi/Agent + dropdown Alat Analisa 87px) + logo + UserMenu 75px tidak muat. PRE-EXISTING sebelum rename ux-2026-11-14-02 (label lama Tools: scrollW 907px). Repro: (1) staging localhost:3100 + Chrome CDP setDeviceMetricsOverride width=640 mobile=false; (2) window.scrollTo(999,0); (3) scrollX>0 dan navRight=845px>640. P2 (tablet-landscape kecil; mobile 375 SEHAT scrollW=375). Saran: label Alat pada sm-md, atau nav start dari md:.",
       "reported_by": "ux-fe-1030",
       "area": "frontend",
       "created": "2026-11-14T10:30+07:00",
-      "scheduled_slot": "2026-11-15 BE weekend sore 17:00 build-only → naik kereta T-1114-N (assign CTO sore 14 Nov; fix CSS nav 640-767px — pastikan tak bentrok dgn fix-10-26-08 pagi)"
+      "scheduled_slot": "2026-11-15 CTO weekend sore 17:00 SELESAI build-only — naik kereta T-1115-N 22:15",
+      "train": "T-1115-N",
+      "result": "CTO weekend sore 15 Nov BUILD-ONLY DONE: header nav overflow 640-767px — flip 8 breakpoint sm:->md: (header.tsx) + pricing-box.tsx sm:grid-cols-3->md:grid-cols-3 (residu 11px brute-force). Commit f222f14; tsc EXIT-0; build EXIT-0 BUILD_ID RiZUQ04QnfG1lskGKTU1K; staging :3100 CDP sweep 375/640/641/767 scrollX=0 scrollW=winW exact (live BEFORE 920/280); 768 flex nav; 1024 identik. Naik kereta T-1115-N (kondektur 22:15). TEMUAN: 768-1023 pre-existing scrollW=1002 scrollX=234 (di luar scope task — QA ux-fe-1030 claim 768 sehat TERBANTAHKAN; jadikan task baru bila mayor) + .agents/ symlink crash build (rm -rf .next solved; guard-2026-11-14-01 territory)"
     },
     {
       "id": "ux-2026-11-14-02",
@@ -6171,6 +6175,51 @@
       "qa_verified": true,
       "qa_by": "cto-0745-1115 (patch) — verdict Sentinel 22:00",
       "updated_at": "2026-11-15T08:0x WIB"
+    },
+    {
+      "id": "sim-2026-11-15-1",
+      "date": "2026-11-15",
+      "type": "simplify",
+      "priority": "P3",
+      "north_star": "CONTENT",
+      "source": "COUNCIL retro 15 Nov (signal_pages 0 PV 2 pekan)",
+      "title": "SIMPLIFY: volume-spike page 0 PV 2 pekan berturut (sibling golden-cross 7, oversold 3) — investigasi lalu merge ke /screener preset filter atau noindex",
+      "spec": "Cek penyebab 0 PV (internal link? index?) via GSC; opsi A merge jadi preset filter /screener + 301, opsi B noindex. Feature-freeze compliant (lane SIMPLIFY, bukan fitur baru). DONE WHEN: keputusan terdokumentasi di entry + eksekusi naik kereta + 301/noindex verified live",
+      "done_when": "merge/noindex dieksekusi + verified live",
+      "status": "pending",
+      "scheduled_slot": "2026-11-18 UX-FE Rabu 19:00 (evaluasi dulu, eksekusi naik kereta)",
+      "train": null,
+      "status_at": "2026-11-15"
+    },
+    {
+      "id": "ops-2026-11-15-02",
+      "date": "2026-11-15",
+      "type": "ops",
+      "priority": "P3",
+      "north_star": "TRUST",
+      "source": "Council audit agent-org 15 Nov (jobs.json last_status)",
+      "title": "OPS cron-hygiene: job Cek-Pagi Carousel Senin 07:15 error blank-prompt + Channel Brief Pagi zombie-error (disabled) + threads-reply-bot error (disabled) — rapikan: isi prompt/disable benar + bersihkan status error",
+      "spec": "Cek 3 job di ~/.hermes/cron/jobs.json: (1) Cek-Pagi Carousel (Test 2) error 'prompt blank, no script/skill' — isi atau disable; (2) TeknikalID Channel Brief Pagi disabled tapi last_status=error (Chrome path .env line 475) — kalau tetap mati, clear status; (3) threads-reply-bot disabled+error — verifikasi memang STOP by-design. JANGAN sentuh job owner (digest/kpi). DONE WHEN: 3 job verdict terdokumentasi + jobs.json bersih dari status error palsu",
+      "done_when": "3 job verdict terdokumentasi; 0 status error menyesatkan",
+      "status": "pending",
+      "scheduled_slot": "2026-11-16 BE pagi 07:30 (bundling host-script, 0-deploy)",
+      "train": null
+    },
+    {
+      "id": "ux-2026-11-15-01",
+      "date": "2026-11-15",
+      "type": "ux",
+      "priority": "P3",
+      "status": "pending",
+      "area": "frontend",
+      "reported_by": "ux-fe-1030",
+      "created": "2026-11-15T11:02+07:00",
+      "created_by": "UX-FE-1030 dispatch via bus 15 Nov 11:02 (sesi cron TCC-blocked); di-append CTO weekend sore (admin debt)",
+      "north_star": "KONVERSI+TRUST+STICKY — header nav tablet usable (CTA Daftar/Masuk off-screen = konversi putus)",
+      "title": "[KONVERSI][TRUST][STICKY] Header nav tablet 768-1023px overflow-x live residual: scrollW=1002 vs vw 768/800/900, scrollX max ~234px, CTA terdorong off-screen — residual PASCA fix 640-767 (bug-2026-11-14-02, f222f14 in_train T-1115-N)",
+      "spec": "Bukti audit Chrome CDP 15 Nov (UX-FE): home + /stocks identik; sehat @375 (hamburger) & @1280; 768-1023 nav desktop muncul di sm:/md: tapi logo+nav 470px+UserMenu 158px butuh 1002px. FIX frontend-only header.tsx: nav breakpoint sm:/md: -> lg: (hamburger 640-1023, pola mobile terbukti aman); sweep user-menu hidden sm:block -> lg: + elemen sm: lain di header; JANGAN sentuh pricing-box (territory f222f14 in_train T-1115-N). File audit: ~/.hermes/data/teknikalid-growth/audit-overflow-nav-2026-11-15.json",
+      "done_when": "staging :3100 sweep 640/768/800/900/1023 scrollW==vw scrollX=0; 1024 nav penuh; 375 tetap hamburger; tsc EXIT-0",
+      "scheduled_slot": "2026-11-16 CTO pagi 07:30 Senin (build-only) -> naik kereta T-1116-N; staging :3100 HARUS dinyalakan dulu (mati sejak sore 15 Nov)"
     }
   ]
 }
