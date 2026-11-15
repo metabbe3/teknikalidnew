@@ -135,7 +135,7 @@ export function PricingBox() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-3">
           {/* Kolom 1: Coba Gratis */}
           <div className="flex flex-col justify-between space-y-3 rounded-xl border border-border bg-bg-card p-5">
             <div className="space-y-3">
