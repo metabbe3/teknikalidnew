@@ -1973,3 +1973,15 @@ Sumber: GSC snapshot 12 Nov (klik 60/minggu +53,8% vs 39; impr 5.496 −8,0%). 3
 - fix-2026-10-26-08 DONE e021bff (errors.ts + CronJobStatus satu definisi; admin-only verified untouched). in_train T-1115-N.
 - PUSH main 8fc51eb..e021bff — utang ff-push night-gate LUNAS sebelum kereta malam.
 - 0 deploy (window malam). Queue v613→v615. KPI pilar: GROWTH + TRUST.
+
+## [REVIEWER] 15 Nov 07:1x — QA konten 3 artikel: 1 FATAL (blok sektor rekap mingguan)
+- FATAL: rekap-pasar-mingguan-2026-11-14 blok "Sektor Terkuat Minggu Ini" (6 angka + ranking 1-4 + superlatif Terkuat/Terlemah) tidak ter-replay di 11 konvensi SQL (satu-pintu repo, exact-date, turnover, top-N volume, non-gorengan, dll). Semua blok LAIN artikel EXACT vs DB. → qa-2026-11-15-01 P1 (patch angka konvensi exact-nogor: T&L 8,5/Energy 8,1/Tech 7,7/Infra 7,6; Fin 2,3; HC 1,7 — kalimat "Healthcare terlemah" wajib dihapus/diganti) atau turunkan klaim. 0 build 0 deploy, slot CTO 07:30.
+- POLA (hari ke-2 beruntun): transplantasi-blok angka di rekap mingguan — kemarin breadth (qa-14-01), hari ini sektor. Root: replay_sql_gate SKIP superlative_token & breadth di blok ini; sektor belum di-gate. Saran root-fix: lampirkan snapshot sektor satu-pintu (weekly-report.service) di payload Mandor + tambahkan gate sektor.
+- Minor: EDU bid-ask label "35 hari terakhir" — window aktual ~25 sesi (angka isi benar: 64%/24/55/1,3T/3jt). Dipecahkan via qa-15-01? TIDAK — catat P3 manual follow-up (bukan blokir trust).
+- QA deploy: 4 rider kereta 22:22 → qa_pass (bukti di queue v621-624). EVAL & lessons: lihat bus 07:1x.
+
+## CTO note 2026-11-15
+- Isu #1: pola "transplantasi blok angka" di artikel rekap — hari ke-2 beruntun (breadth Kamis, sektor Minggu; qa-15-01 sudah di-patch pagi ini, angka kanonik satu-pintu, bukti DB+live+gate). Kelas bug termahal per charter: koreksi pasca-publish = trust runtuh diam-diam.
+- Opsi A: root-fix deterministik — checker sektor di replay_sql_gate.py + snapshot sektor satu-pintu di payload Mandor (backlog idea-2026-11-15-1, P2, host-script 0-deploy). Opsi B: disiplin manual reviewer saja (sudah gagal 2 hari beruntun).
+- Rekomendasi: A — naik bundling kereta ops TRUST Senin (SRE host-script), guardrail: gate wajib test dua arah (valid PASS / fiktif FAIL).
+- Pilar: TRUST (juga melindungi GROWTH — rekap mingguan adalah aset SEO utama weekend).

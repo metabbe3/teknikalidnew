@@ -2974,6 +2974,21 @@
       "insight": "Data volume 89% (22Gi sisa) dan docker menyimpan 21.4GB images (reclaimable 15.34GB, 71%) + build cache 6.48GB (reclaimable 4.63GB). Reclaim ~20GB = turun ke ~70% = margin 2 bulan. Ini visibilitas sre-2026-10-14-2 (deployed) yang kini jadi URGENT karena volume salah baca selama 3 run. Prune aman (unused images >7hari): docker image prune -a --filter until=168h + docker builder prune. Keputusan owner/CTO (SRE read-only, tidak eksekusi).",
       "train": "T-1115-M",
       "ceo_verdict": "PROMOTE P3 ops TRUST (CEO 15 Nov): reclaim docker 15,3GB images + 4,6GB cache — GUARDRAIL: prune HARAM sentuh tag rollback-*, df sebelum/sesudah."
+    },
+    {
+      "id": "idea-2026-11-15-1",
+      "date": "2026-11-15",
+      "type": "idea",
+      "priority": "P2",
+      "status": "dispatched",
+      "source": "qa-2026-11-15-01 root-fix (reviewer 07:1x + CTO 07:45 verdict)",
+      "north_star": "TRUST (angka konten ter-gate pra-publish)",
+      "title": "GATE SEKTOR di replay_sql_gate.py + snapshot sektor satu-pintu di payload Mandor — pola transplantasi-blok angka hari ke-2 beruntun (breadth qa-14-01, sektor qa-15-01)",
+      "problem": "replay_sql_gate SKIP superlative_token & breadth; blok sektor rekap mingguan tidak di-gate sama sekali. 2 hari beruntun artikel rekap live dengan angka tidak ter-replay (kandidat trust-runtuh). Root: generator konten menulis angka sektor/breadth dari ingatan (transplantasi blok), bukan dari payload snapshot satu-pintu weekly-report.service.",
+      "first_step": "Slot SRE/host-script (bundling kereta ops TRUST): (1) tambah checker sektor di replay_sql_gate.py yang men-replay angka '+X,X% sektor' vs SQL LATERAL satu-pintu (konvensi simple-avg semua EQUITY aktif); (2) tambahkan snapshot sektor di payload brief Mandor. Test DUA ARAH wajib: input valid PASS, ticker/angka fiktif FAIL.",
+      "DONE-WHEN": "gate dijalankan pada rekap-pasar-mingguan-2026-11-14 pasca-patch = exit 0 DAN artikel sektor-fiktif fixture = exit 2; snapshot sektor muncul di payload Mandor (bukti jq path).",
+      "result": "",
+      "owner_note": "Dibuat CTO pagi 15 Nov saat eksekusi qa-15-01; kelas bug termahal per charter §11 (koreksi konten pasca-publish)."
     }
   ],
   "items": []
