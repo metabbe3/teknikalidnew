@@ -1454,3 +1454,19 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - SEC GATE: N/A (sector landing: halaman SSR read-only dari market-snapshot SATU PINTU, tanpa input user/auth/money — night verify + staging probe; cron-monitoring: type-level saja, tak ubah runtime surface).
 - Dampak North Star: GROWTH (11 URL SEO baru + internal-link dua arah 357 ticker) — pilar GROWTH/SEO.
 - QA: verdict final milik QA Sentinel 22:00 (H3); impact_check_due: 2026-11-18.
+
+## 2026-11-15 07:4x — reviewer-pagi — QA konten 3 artikel + QA deploy kereta T-1114-M (read-only; queue v624)
+- QA DEPLOY: 4 rider kereta 22:22 FLIPPED deployed→qa_pass (bukti live fresh): qa-13-02 (data-live-session=1 + "sesi 13 Nov" SSR /stocks/BBCA.JK; DOM saat REGULAR tetap due Senin), ux-13-01 (emoji wizard 5/5=0 di home live), ux-11-11-02 (Sinyal Terkait body=4 + chip=8 EXACT baseline kondektur di /berita/analis-pagi-2026-11-13-mpmx), ux-14-02 (7 label Alat Analisa + href /market-structure=3 + string EN lama=0). Image app a722cf170281/worker c325aa7ff993 = kondektur 22:22:16, health 200, git head e4b8d2c. Admin debt: 0 in_progress.
+- QA KONTEN: 3 artikel live 200 + disclaimer + meta + canonical kanonik + link internal /stocks/TICKER.JK semua benar. Listicle 7-ticker & EDU bid-ask: EXACT vs DB (listicle skor/RSI/harga/%/volume 7/7; EDU 64%/24/55/1,3T/3jt/390rb + replay gate PASS) — 0 masalah fatal. Rekap mingguan: semua blok lain EXACT (kurva/kronologi/breadth 642-144-45/459-232-218 konvensi-lateral/sinyal 5-17-42-9-43/movers/watchlist/patch MBMA-Netral bertahan) KECUALI 1 FATAL blok "Sektor Terkuat" (6 angka + ranking top-4 tidak ter-replay di 11 konvensi; "Healthcare terlemah" kontradiksi exact-nogor) → qa-2026-11-15-01 P1 pending (patch konvensi exact-nogor atau turunkan klaim; pola transplantasi blok hari ke-2 → lessons-learned + saran payload satu-pintu utk sektor). Minor catatan: EDU label "35 hari" = window aktual ~25 sesi (angka isi benar); "459 vs 458" = perbaikan qa-14-01 ke konvensi lateral situs = benar.
+- Bookkeeping: queue v615→v624 via statejson (append qa-15-01 + flip x4 + qa_verified). EVAL 12/12. Replay gate 3/3 PASS.
+
+## 2026-11-15 17:xx WIB — cto-weekend-sore — bug-2026-11-14-02 [BUGFIX][TRUST]
+- task-id: bug-2026-11-14-02 | type: bug | PRD: n/a (ops bugfix, bukan fitur)
+- Fix: header nav overflow-x 640-767px — flip 8 breakpoint sm:→md: di src/components/layout/header.tsx (desktop nav, IHSG badge + placeholder, mobile-IHSG, UserMenu wrapper, Masuk mobile, hamburger, mobile dropdown) + pricing-box.tsx:138 sm:grid-cols-3→md:grid-cols-3 (residu 11px, ditemukan brute-force hide-test: kartu harga aside home satu-satunya kontributor). Commit f222f14.
+- Baseline-then-verify (staging :3100, CDP): live BEFORE 640px scrollW=920 scrollX=280 (bug reproduced). AFTER: 375/640/641/767 scrollX=0 scrollW=winW exact, hamburger visible; 768 nav desktop flex; 1024 identik. LIVE masih 920 (akan berubah pasca-deploy kereta T-1115-N 22:15).
+- Temuan tambahan di luar scope (dilaporkan, TIDAK difix — no-panic-refactor): 768-1023px scrollW=1002 scrollX=234 (nav set lengkap + badge + auth butuh ≥1002px — saran QA "nav dari md:" terbukti tak cukup jauh; kontradiksi klaim QA ux-fe-1030 bahwa 768 sehat). Asumsi QA "mobile 375 sehat" terkonfirmasi exact.
+- tsc --noEmit EXIT-0; build EXIT-0 BUILD_ID RiZUQ04QnfG1lskGKTU1K; worker tak tersentuh (FE-only).
+- Deploy: TIDAK (BUILD-ONLY slot sore — window deploy malam; naik kereta T-1115-N 22:15) | Rollback: n/a build-only
+- SEC GATE: N/A (CSS breakpoint-only; tidak menyentuh auth/input/db/money — UserMenu hanya digeser breakpoint visibilitas, logika session tak berubah)
+- Dampak North Star: TRUST/STICKY (h-scroll menyebalkan di tablet-landscape; pilar STICKY)
+- QA: verdict final milik QA Sentinel 22:00 (H3 — builder tidak self-verify); impact_check_due: 2026-11-18 (cek live post-deploy + GSC mobile usability tablet)
