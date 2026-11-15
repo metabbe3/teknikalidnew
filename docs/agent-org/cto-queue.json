@@ -6224,6 +6224,18 @@
       "spec": "Bukti audit Chrome CDP 15 Nov (UX-FE): home + /stocks identik; sehat @375 (hamburger) & @1280; 768-1023 nav desktop muncul di sm:/md: tapi logo+nav 470px+UserMenu 158px butuh 1002px. FIX frontend-only header.tsx: nav breakpoint sm:/md: -> lg: (hamburger 640-1023, pola mobile terbukti aman); sweep user-menu hidden sm:block -> lg: + elemen sm: lain di header; JANGAN sentuh pricing-box (territory f222f14 in_train T-1115-N). File audit: ~/.hermes/data/teknikalid-growth/audit-overflow-nav-2026-11-15.json",
       "done_when": "staging :3100 sweep 640/768/800/900/1023 scrollW==vw scrollX=0; 1024 nav penuh; 375 tetap hamburger; tsc EXIT-0",
       "scheduled_slot": "2026-11-16 CTO pagi 07:30 Senin (build-only) -> naik kereta T-1116-N; staging :3100 HARUS dinyalakan dulu (mati sejak sore 15 Nov)"
+    },
+    {
+      "id": "bo-2026-11-16-01",
+      "type": "audit",
+      "date": "2026-11-16",
+      "priority": "P2",
+      "status": "done",
+      "north_star": "STICKY+GROWTH",
+      "title": "REPLAY slot 16 Nov (ritual bo-* terminal) — funnel T1+16 tapi register 0/48j + kandidat blocklist baru 1d510b06 (HOLD CEO)",
+      "spec": "Ritual 03:00: queue bo-* terminal semua, rotasi audit 26 halaman ditutup 27 Okt -> replay read-only SQL identik funnel-v2 route image live (blocklist 4 UUID baked 22:22; 5 UUID e2e CTO-night dirty = 0 rows di prod DB, efektif no-op) + returning anonId rolling-7d 3 varian. 0 build 0 deploy (freeze, read-only).",
+      "result": "REPLAY 03:1x-03:2x WIB: T1 384 / T2 208 (54,2%) / T3 10 (4,8% dari T2) / T4 4 / T5 0 — vs kemarin 368/192/10/4/0: T1+16 T2+16 T3+0. RETURNING 7d: varian-klaim 12,7% (21/165) / bl4 11,1% (18/162) / bl9 11,1% (18/162, e2e 0 rows) — semua >8% hijau. T3 stabil 10: 0 saver baru sejak b1ddc6a9 14 Nov (weekend); T5=0 jujur (overlap web x agent_user tetap 0). ANOMALI-1 [GROWTH]: registrasi 0 baru dalam 48 jam (User createdAt) padahal T1 tumbuh — register_7d KPI (11 di kpi.json 15 Nov) akan turun minggu ini; dataport CEO. ANOMALI-2 [TRUST]: aktor 1d510b06 = 437 PV/21d, 15 hari aktif, UA 'Android 10; K' (keluarga CDP-emulation sama dgn smoke a035afcf), spike jam 22-23 WIB (jam kerja agent org), 758 event dwell/scroll, path /stocks/*.JK tour — TIDAK pernah saved (tak sentuh T3) tapi menggelembungkan T1/T2 (~0,5-1 T2% = minor) — kandidat blocklist HOLD utk CEO (preseden: JANGAN tambah tanpa CEO; 2 HOLD lama e4b417c3/5ae28974 status unchanged). Smoke a035afcf-blocklisted RECURRENCE: 28 PV / 3 hari window-7d, terakhir 15 Nov 22:50 — tour identik masih jalan tiap malam; dikecualikan metrik oleh image, evidence sumber org-runs. Prod sehat: app+worker parity 22:22:57/58, health 200 3ms. kpi.json fresh 15 Nov 07:05 (Senin 07:05 belum tampa; kalau basi Selasa 17 Nov -> dispatch CEO). 0 build 0 deploy. Lesson SOP: UUID blocklist WAJIB ekstrak programatik dari file (typo manual '7a4855' vs 'f7a4855' membuat run-1 T3 +1 false).",
+      "qa_verified": false
     }
   ]
 }
