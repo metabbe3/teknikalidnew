@@ -21,3 +21,17 @@
 {"ts": "2026-11-15T06:54:00", "actor": "CEO-1115", "file": "cto-queue.json", "op": "update", "v0": 612, "v1": 613, "ids": []}
 {"ts": "2026-11-15T07:39:41", "actor": "unknown", "file": "cto-queue.json", "op": "flip", "v0": 613, "v1": 614, "ids": ["prd-2026-11-06-02"]}
 {"ts": "2026-11-15T07:39:41", "actor": "unknown", "file": "cto-queue.json", "op": "flip", "v0": 614, "v1": 615, "ids": ["fix-2026-10-26-08"]}
+{"ts": "2026-11-15T07:44:43", "actor": "reviewer-0715-1515", "file": "cto-queue.json", "op": "append", "v0": 615, "v1": 616, "ids": []}
+{"ts": "2026-11-15T07:45:06", "actor": "reviewer-0715-1515", "file": "cto-queue.json", "op": "flip", "v0": 616, "v1": 617, "ids": ["qa-2026-11-13-02"]}
+{"ts": "2026-11-15T07:45:06", "actor": "reviewer-0715-1515", "file": "cto-queue.json", "op": "flip", "v0": 617, "v1": 618, "ids": ["ux-2026-11-13-01"]}
+{"ts": "2026-11-15T07:45:06", "actor": "reviewer-0715-1515", "file": "cto-queue.json", "op": "flip", "v0": 618, "v1": 619, "ids": ["ux-2026-11-11-02"]}
+{"ts": "2026-11-15T07:45:06", "actor": "reviewer-0715-1515", "file": "cto-queue.json", "op": "flip", "v0": 619, "v1": 620, "ids": ["ux-2026-11-14-02"]}
+{"ts": "2026-11-15T07:45:18", "actor": "reviewer-0715-1515", "file": "cto-queue.json", "op": "flip", "v0": 620, "v1": 621, "ids": ["qa-2026-11-13-02"]}
+{"ts": "2026-11-15T07:45:18", "actor": "reviewer-0715-1515", "file": "cto-queue.json", "op": "flip", "v0": 621, "v1": 622, "ids": ["ux-2026-11-13-01"]}
+{"ts": "2026-11-15T07:45:18", "actor": "reviewer-0715-1515", "file": "cto-queue.json", "op": "flip", "v0": 622, "v1": 623, "ids": ["ux-2026-11-11-02"]}
+{"ts": "2026-11-15T07:45:18", "actor": "reviewer-0715-1515", "file": "cto-queue.json", "op": "flip", "v0": 623, "v1": 624, "ids": ["ux-2026-11-14-02"]}
+{"ts": "2026-11-15T07:52:02", "actor": "CTO-0745-1115", "file": "cto-queue.json", "op": "update", "v0": 624, "v1": 625, "ids": ["qa-2026-11-15-01"]}
+{"ts": "2026-11-15T08:05:54", "actor": "COUNCIL-1115", "file": "cto-queue.json", "op": "update", "v0": 625, "v1": 626, "ids": []}
+{"ts": "2026-11-15T08:07:02", "actor": "COUNCIL-1115", "file": "cto-queue.json", "op": "update", "v0": 626, "v1": 627, "ids": []}
+{"ts": "2026-11-15T08:07:48", "actor": "COUNCIL-1115", "file": "cto-queue.json", "op": "append", "v0": 627, "v1": 628, "ids": []}
+{"ts": "2026-11-15T08:12:52", "actor": "cto-weekend-sore", "file": "cto-queue.json", "op": "flip", "v0": 628, "v1": 629, "ids": ["bug-2026-11-14-02"]}

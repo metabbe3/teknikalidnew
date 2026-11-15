@@ -2344,7 +2344,7 @@
     {
       "id": "sre-2026-11-03-1",
       "date": "2026-11-03",
-      "status": "deferred",
+      "status": "approved",
       "source": "sre",
       "title": "93 logo emiten 404 di halaman pasar (~230 hit/24h, termasuk BBCA.jpg) — sweep aset logo + fallback placeholder agar tidak ada kotak kosong di tabel saham",
       "data": {
@@ -2355,7 +2355,10 @@
       },
       "priority": "P3",
       "insight": "PROMOTE CEO 4 Nov → queue ops-2026-11-04-02 (T-1105-M, slot BE siang 5 Nov): 93 logo emiten 404 — TRUST pilar, ~230 hit/24h termasuk BBCA broken-image.",
-      "defer_note": "Verdict CEO malam 11 Nov: DEFER - ter-cap kereta T-1112-W; FE-UX sudah night_ready manifest build-time src/lib/logo-ext.json 962 emiten (7de1f02 rebase 590ea0e, tsc 0, bus 19:5x) = cakupan fix akar lebih besar dari sweep placeholder; review pasca-deploy Kamis 12 Nov, sisa baru sweep fallback. [anti-stagnation: dispatched 8d]"
+      "defer_note": "Verdict CEO malam 11 Nov: DEFER - ter-cap kereta T-1112-W; FE-UX sudah night_ready manifest build-time src/lib/logo-ext.json 962 emiten (7de1f02 rebase 590ea0e, tsc 0, bus 19:5x) = cakupan fix akar lebih besar dari sweep placeholder; review pasca-deploy Kamis 12 Nov, sisa baru sweep fallback. [anti-stagnation: dispatched 8d]",
+      "scheduled_slot": "2026-11-18 BE siang 09:30",
+      "council_verdict": "COUNCIL-1115 schedule: stagnan 12d; logo 404 ~230 hit/24h = TRUST data-reliable; sweep aset + placeholder fallback",
+      "status_at": "2026-11-15"
     },
     {
       "id": "sre-2026-11-03-2",
@@ -2576,7 +2579,10 @@
         "AC4 bucket ai-search growth kpis regex diperluas (grep ai_search_paths teknikalid_growth.py memuat utmSource match) — sebelum/after 1 run",
         "AC5 tsc --noEmit exit 0; route.ts tetap force-dynamic; 0 page lain berubah (git diff scoped 1 file)",
         "AC6 D+14: bucket ai-search referral != undercount (angka kpis == SQL replay utmSource OR referrer); ekspektasi flat-to-small (researcher: llms.txt BUKAN citation lever — hedge murah)"
-      ]
+      ],
+      "scheduled_slot": "2026-11-16 BE malam 18:30 kereta T-1115-N rider-3 (konten llms.txt, 0 kode app)",
+      "council_verdict": "COUNCIL-1115 schedule: dispatched 8d tanpa slot; pilar AI-SEARCH",
+      "status_at": "2026-11-15"
     },
     {
       "id": "idea-2026-11-07-2",
@@ -2609,7 +2615,10 @@
         "AC4 validasi URL publik 200 sebelum submit; staging diam (gate env)",
         "AC5 msvalidate meta ter-gate env BING_SITE_VALIDATION (klaim akun = owner-only, jangan hardcode)",
         "AC6 tsc+build EXIT-0; 0 perubahan publish-path behavior saat endpoint IndexNow error (assert catch-all)"
-      ]
+      ],
+      "scheduled_slot": "2026-11-17 BE siang 09:30 (publish-hook ping; verifikasi Bing Webmaster = owner credential)",
+      "council_verdict": "COUNCIL-1115 schedule: dispatched 8d tanpa slot; pilar GROWTH instant-index",
+      "status_at": "2026-11-15"
     },
     {
       "id": "idea-2026-11-08-1",
@@ -2974,6 +2983,24 @@
       "insight": "Data volume 89% (22Gi sisa) dan docker menyimpan 21.4GB images (reclaimable 15.34GB, 71%) + build cache 6.48GB (reclaimable 4.63GB). Reclaim ~20GB = turun ke ~70% = margin 2 bulan. Ini visibilitas sre-2026-10-14-2 (deployed) yang kini jadi URGENT karena volume salah baca selama 3 run. Prune aman (unused images >7hari): docker image prune -a --filter until=168h + docker builder prune. Keputusan owner/CTO (SRE read-only, tidak eksekusi).",
       "train": "T-1115-M",
       "ceo_verdict": "PROMOTE P3 ops TRUST (CEO 15 Nov): reclaim docker 15,3GB images + 4,6GB cache — GUARDRAIL: prune HARAM sentuh tag rollback-*, df sebelum/sesudah."
+    },
+    {
+      "id": "idea-2026-11-15-1",
+      "date": "2026-11-15",
+      "type": "idea",
+      "priority": "P2",
+      "status": "dispatched",
+      "source": "qa-2026-11-15-01 root-fix (reviewer 07:1x + CTO 07:45 verdict)",
+      "north_star": "TRUST (angka konten ter-gate pra-publish)",
+      "title": "GATE SEKTOR di replay_sql_gate.py + snapshot sektor satu-pintu di payload Mandor — pola transplantasi-blok angka hari ke-2 beruntun (breadth qa-14-01, sektor qa-15-01)",
+      "problem": "replay_sql_gate SKIP superlative_token & breadth; blok sektor rekap mingguan tidak di-gate sama sekali. 2 hari beruntun artikel rekap live dengan angka tidak ter-replay (kandidat trust-runtuh). Root: generator konten menulis angka sektor/breadth dari ingatan (transplantasi blok), bukan dari payload snapshot satu-pintu weekly-report.service.",
+      "first_step": "Slot SRE/host-script (bundling kereta ops TRUST): (1) tambah checker sektor di replay_sql_gate.py yang men-replay angka '+X,X% sektor' vs SQL LATERAL satu-pintu (konvensi simple-avg semua EQUITY aktif); (2) tambahkan snapshot sektor di payload brief Mandor. Test DUA ARAH wajib: input valid PASS, ticker/angka fiktif FAIL.",
+      "DONE-WHEN": "gate dijalankan pada rekap-pasar-mingguan-2026-11-14 pasca-patch = exit 0 DAN artikel sektor-fiktif fixture = exit 2; snapshot sektor muncul di payload Mandor (bukti jq path).",
+      "result": "",
+      "owner_note": "Dibuat CTO pagi 15 Nov saat eksekusi qa-15-01; kelas bug termahal per charter §11 (koreksi konten pasca-publish).",
+      "scheduled_slot": "2026-11-16 CTO pagi 07:30 bundling ops-2026-10-29-03 host-script 0-deploy (WAJIB live sebelum rekap mingguan Sabtu 21 Nov; gate wajib test dua arah valid-PASS/fiktif-FAIL)",
+      "council_verdict": "COUNCIL-1115 schedule: root-fix transplantasi-blok 2 hari beruntun; TRUST",
+      "status_at": "2026-11-15"
     }
   ],
   "items": []
