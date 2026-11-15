@@ -4835,7 +4835,7 @@
       "source": "sec-2026-11-05-01/02/03 (SRE audit 5 Nov)",
       "spec": "BLOCKED_FOR_OWNER (auth/payments domain — CEO dilarang eksekusi): (1) [RED][MONEY-PATH] TOCTOU promo -90% /api/agent/checkout — validasi harga server-side saat transaksi; (2) /api/agent/bind klaim max 3 token aktif tidak di-enforce; (3) /api/agent/membership unauth → 500 (harusnya 401). DONE WHEN (pasca owner approve): replay test negatif 3/3 PASS (promo palsu ditolak, bind ke-4 ditolak, unauth→401).",
       "done_when": "owner approve + replay test negatif 3/3 PASS",
-      "status": "pending",
+      "status": "blocked_for_owner",
       "scheduled_slot": "blocked_for_owner",
       "train": null,
       "council_verdict": "COUNCIL-1115 escalate-owner: P1 money-path TOCTOU promo/bind/membership stagnan 9d — domain owner-only, CEO dilarang eksekusi; re-eskalasi di laporan Minggu 15 Nov",

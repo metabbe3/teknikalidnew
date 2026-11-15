@@ -36,3 +36,7 @@
 {"ts": "2026-11-15T08:07:48", "actor": "COUNCIL-1115", "file": "cto-queue.json", "op": "append", "v0": 627, "v1": 628, "ids": []}
 {"ts": "2026-11-15T08:12:52", "actor": "cto-weekend-sore", "file": "cto-queue.json", "op": "flip", "v0": 628, "v1": 629, "ids": ["bug-2026-11-14-02"]}
 {"ts": "2026-11-15T07:10:59", "actor": "CTO-WEEKEND-SORE", "file": "cto-queue.json", "op": "append", "v0": 629, "v1": 630, "ids": []}
+{"ts": "2026-11-15T17:05:56", "actor": "CTO-WEEKEND-SORE", "file": "cto-queue.json", "op": "update", "v0": 630, "v1": 631, "ids": ["ops-2026-11-06-03"]}
+{"ts": "2026-11-15T17:06:18", "actor": "CTO-WEEKEND-SORE", "file": "cto-queue.json", "op": "update", "v0": 631, "v1": 632, "ids": []}
+{"ts": "2026-11-15T17:09:01", "actor": "CTO-WEEKEND-SORE", "file": "cto-queue.json", "op": "update", "v0": 632, "v1": 633, "ids": []}
+{"ts": "2026-11-15T17:10:02", "actor": "CTO-WEEKEND-SORE", "file": "cto-queue.json", "op": "update", "v0": 633, "v1": 634, "ids": []}
