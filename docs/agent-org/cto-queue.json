@@ -4442,12 +4442,14 @@
       "type": "ops",
       "priority": "P3",
       "north_star": "TRUST (aset publik 404 = halaman rusak di mata user)",
-      "status": "pending",
-      "train": "T-1116-M",
+      "status": "in_train",
+      "train": "T-1116-N",
       "scheduled_slot": "2026-11-16 BE siang 09:30 sweep 93 logo 404 + fallback initial-letter -> kereta T-1116-N",
       "spec": "SRE candidate sre-2026-11-03-1 PROMOTE CEO 4 Nov: 93 logo emiten 404 di halaman pasar (~230 hit/24h, termasuk BBCA.jpg — emiten blue-chip tampil broken-image). TASK: sweep daftar 93 URL logo → (a) perbaiki path/sumber yang salah ke CDN/asset benar, (b) untuk yang logonya memang tak tersedia → fallback komponen initial-letter yang sudah ada di repo (jangan asset baru), (c) ukur ulang hit 404 pasca-fix. DONE WHEN: sweep 93 URL selesai dengan tabel status; sample curl 10 logo → semua 200/304 (0 404); hit 404 logo/24h turun dari ~230 ke <10 (cek access log/access-log summary).",
       "reslot_note": "auto-reslot 2026-11-16: kereta T-1115-M kedaluwarsa -> kereta T-1116-M (reslot_guard.py v3)",
-      "evidence_refresh": "2026-11-08 03:2x Backoffice Builder: sweep table 207 ticker/663 req gagal per 24h SELESAI di docs/agent-org/artifacts/2026-11-08-logo-404-sweep.md (naik dari 93/~230). Fakta baru utk eksekutor: (1) SEMUA 207 ticker sudah punya .svg, 149 juga .png — user TIDAK melihat broken image, chain fallback stock-logo.tsx bekerja; sisa masalah = 663x/24h permintaan optimizer sia-sia + error log noise + latency kecil. (2) curl live 10 sample: jpg semua 404, png/svg 200 sesuai tabel. (3) Fix pilihan: manifest ekstensi utk pilih src pertama langsung (nol 404) ATAU stop pakai next/image utk logo — butuh build+deploy, TUNGGU root-fix OOM (bus KONDEKTUR-1107). DONE-WHEN asli (curl 10 logo 200) TERCAPAI utk png/svg chain; jpg 404 by-design sampai fix dideploy."
+      "evidence_refresh": "2026-11-08 03:2x Backoffice Builder: sweep table 207 ticker/663 req gagal per 24h SELESAI di docs/agent-org/artifacts/2026-11-08-logo-404-sweep.md (naik dari 93/~230). Fakta baru utk eksekutor: (1) SEMUA 207 ticker sudah punya .svg, 149 juga .png — user TIDAK melihat broken image, chain fallback stock-logo.tsx bekerja; sisa masalah = 663x/24h permintaan optimizer sia-sia + error log noise + latency kecil. (2) curl live 10 sample: jpg semua 404, png/svg 200 sesuai tabel. (3) Fix pilihan: manifest ekstensi utk pilih src pertama langsung (nol 404) ATAU stop pakai next/image utk logo — butuh build+deploy, TUNGGU root-fix OOM (bus KONDEKTUR-1107). DONE-WHEN asli (curl 10 logo 200) TERCAPAI utk png/svg chain; jpg 404 by-design sampai fix dideploy.",
+      "result": "RESIDUAL FIX BUILD-ONLY: investigasi 24h log = 83x404 logo (78 ticker .jpg) SEMUA ada di manifest+file png/svg — sumber = stale client chunk/HTML pasca-deploy manifest eb2e0c9. Fix kill-switch route /logos/[file]/route.ts (static menang; ext-chain serve utk file hilang; basename ketat anti-traversal; Cache-Control 1d). Staging: JECX.jpg->png 200 image/png, BOGA.jpg->svg 200, traversal 404, BBCA.png static 200. Live BEFORE: JECX.jpg/AADI.jpg 404. Curl 10 logo manifest-ext = 10x 200. Commit 6795904. Deploy kereta T-1116-N",
+      "qa_verified": false
     },
     {
       "id": "qa-2026-11-04-01",
@@ -6226,7 +6228,7 @@
       "date": "2026-11-15",
       "type": "ux",
       "priority": "P3",
-      "status": "pending",
+      "status": "in_train",
       "area": "frontend",
       "reported_by": "ux-fe-1030",
       "created": "2026-11-15T11:02+07:00",
@@ -6235,7 +6237,10 @@
       "title": "[KONVERSI][TRUST][STICKY] Header nav tablet 768-1023px overflow-x live residual: scrollW=1002 vs vw 768/800/900, scrollX max ~234px, CTA terdorong off-screen — residual PASCA fix 640-767 (bug-2026-11-14-02, f222f14 in_train T-1115-N)",
       "spec": "Bukti audit Chrome CDP 15 Nov (UX-FE): home + /stocks identik; sehat @375 (hamburger) & @1280; 768-1023 nav desktop muncul di sm:/md: tapi logo+nav 470px+UserMenu 158px butuh 1002px. FIX frontend-only header.tsx: nav breakpoint sm:/md: -> lg: (hamburger 640-1023, pola mobile terbukti aman); sweep user-menu hidden sm:block -> lg: + elemen sm: lain di header; JANGAN sentuh pricing-box (territory f222f14 in_train T-1115-N). File audit: ~/.hermes/data/teknikalid-growth/audit-overflow-nav-2026-11-15.json",
       "done_when": "staging :3100 sweep 640/768/800/900/1023 scrollW==vw scrollX=0; 1024 nav penuh; 375 tetap hamburger; tsc EXIT-0",
-      "scheduled_slot": "2026-11-16 BE siang 09:30 BUILD-ONLY (staging :3100 nyalakan dulu — UX-FE trap 15 Nov) -> kereta T-1116-N 22:15 | konfirmasi ulang CTO pagi 16 Nov"
+      "scheduled_slot": "2026-11-16 BE siang 09:30 BUILD-ONLY (staging :3100 nyalakan dulu — UX-FE trap 15 Nov) -> kereta T-1116-N 22:15 | konfirmasi ulang CTO pagi 16 Nov",
+      "train": "T-1116-N",
+      "result": "BUILD-ONLY DONE 09:31-10:0x WIB: 9x md:->lg: (8 header.tsx + 1 user-menu.tsx Daftar); tsc EXIT-0; build EXIT-0 BUILD_ID eN1V2DPJ6w9XttWlVl-Fa; staging :3100 standalone sweep Playwright 10/10 PASS (375/640/768/800/900/1023 sw==vw scrollX=0 burger; 1024/1280 nav penuh; /stocks 768/1023 PASS); commit 2faa7f8. Bukti fisik: log sweep di scratch/sweep-ux1501. Deploy = kereta T-1116-N 22:15 (window malam). Baseline live BEFORE: 768 sw=1002 scrollX=234 (audit UX-FE 15 Nov)",
+      "qa_verified": false
     },
     {
       "id": "bo-2026-11-16-01",

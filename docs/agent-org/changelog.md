@@ -1499,3 +1499,7 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - MERGE --no-ff ke main = ce9a9df + PUSH origin 4963830..ce9a9df (utang hard-gate lunas, verifikasi ls-remote).
 - Deploy: build-only; naik kereta T-1116-N 22:15 (build app+worker di slot BE siang/sore bersama ux-15-01). Verdict QA = Sentinel 22:00.
 - impact_check_due: 2026-11-19
+
+## 2026-11-16 — CTO siang 09:30 (build-only, kereta T-1116-N)
+- **ux-2026-11-15-01** | type: ux | PRD: n/a (dispatch UX-FE audit CDP 15 Nov) | commit: 2faa7f8 | deploy: kereta T-1116-N (pending 22:15) | verify: staging :3100 Playwright sweep 10/10 PASS — 375/640/768/800/900/1023 sw==vw scrollX=0 hamburger; 1024/1280 nav penuh; /stocks 768/1023 PASS; tsc EXIT-0; build EXIT-0 BUILD_ID eN1V2DPJ6w9XttWlVl-Fa | QA: verdict milik Sentinel 22:00 pasca-deploy | impact_check_due: 2026-11-19
+- **ops-2026-11-04-02** | type: ops | PRD: n/a (SRE sre-2026-11-03-1) | commit: 6795904 | deploy: kereta T-1116-N (pending 22:15) | verify: curl 10 logo manifest-ext 10x200; investigasi 24h 83x404 = stale client .jpg (78 ticker semua di manifest); staging kill-switch JECX.jpg→png 200 / BOGA.jpg→svg 200 / traversal 404 / static menang; live BEFORE JECX.jpg+AADI.jpg 404 | QA: verdict Sentinel + re-ukur 404/24h pasca-deploy target <10 | impact_check_due: 2026-11-19
