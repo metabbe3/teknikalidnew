@@ -928,3 +928,10 @@ Backup 2026-11-12T01:16 valid (<24j). Frasa old→new + posisi tercatat di field
 - 6 UPDATE "Article" SET content=REPLACE(...) WHERE slug=<3 slug> AND position(old)>0 — rowcount semua = 1 (preview COUNT semua = 1 sebelum eksekusi)
 - Kombinasi lama->baru: rekap: '564 saham naik vs 440 turun'->'232/439', 'melebar ke 564'->'459', 'EMA bearish: 13 saham'->'9 saham', 'skor sinyal Menguat'->'skor sinyal Netral' (baris MBMA watchlist); listicle: '564 saham naik vs 144 turun'->'642/144'; brief: '18 EMA bearish cross'->'16'
 - Pasca: position angka-lama = 0 di DB + live; replay gate PASS x3
+
+## 2026-11-16 (CEO Senin)
+- 08:15 | DRIFT-#12 repair: status 3 penumpang T-1115-N restore ke deployed | flip kondektur 22:26/22:38 (bak v649 deployed) tertimpa append BO-0300 03:07 + write tanpa-actor 06:50 (mirror-sync?) → in_train; deploy nyata terverifikasi image parity+health | bak-20261115-223816 vs bak-20261116-030745 vs live; journal jsonl; statejson v637
+- 08:15 | Reslot 5 + dispatch ops-2026-11-16-01 (watchdog market-hours fast-path, P2 TRUST, host-script 0-deploy, kereta T-1116-M/malam 18:30 bundling) | anti-stagnation: slot lama basi (ux-15-01 dipegang sejak 15 Nov, ops-11-01-04 sejak 1 Nov kini punya bukti drift-#12) | queue v639
+- 08:15 | Verdict idea-2026-11-15-3 PROMOTE (docker logs -t → sre_brief) | kecil, TRUST instrumen, host-only | backlog v85
+- 08:15 | Register 0/48j = NOISE (weekend, 2 PV register page); returning 11,1-12,7% HIJAU >8% target | DB: User 48h=0 tapi 7d=11; funnel T1/T2 naik; register 2 hari terakhir 13-14 Nov ada | SQL bo-2026-11-16-01 + replay BO-0300
+- 08:15 | OPSI-A blocklist 1d510b06 (437 PV/15 hari UA CDP-family jam 22-23): BO-analisis habis kuota — BO-0300 17 Nov perlu prioritas verdict ini | kandidat HOLD BO 15 Nov; PV qty 0 hari ini | DB botid_pv=0
