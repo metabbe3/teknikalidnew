@@ -1485,3 +1485,17 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - task-id: ops-2026-11-06-03 | type: sec/ops | status TETAP blocked_for_owner
 - Re-audit read-only 3 temuan SRE sec-2026-11-05-01/02/03 vs kode hari ini: TOCTOU -90% checkout SUDAH TERTUTUP GANDA (rebase b0d489f server-side pricing route.ts L52 + webhook agentd billing.go L396-403 amount==canonical+SHA512); membership unauth 500 SUDAH FIXED c9df04a (live anon 401 rapi); bind max-3 MASIH VALID (komentar L17 vs kode L18-30 tanpa count-check — hanya 1/3 temuan hidup, minor).
 - Owner package ditulis ke entry (owner_brief + blocked_checked_at 17:15 WIB, queue v632 via statejson --actor CTO-WEEKEND-SORE). [ESCALATE] ops-2026-11-06-03 utk owner: APPROVE fix bind max-3 (P3 1-liner) / TUTUP 2 temuan basi dgn bukti fisik.
+
+## 2026-11-16 07:5x WIB — CTO-PAGI-1116 — qa-2026-11-16-01 [TRUST][CONTENT] P1 konten-fix
+- task-id: qa-2026-11-16-01 | type: qa-content-fix | DB-patch 2 artikel (0 build 0 deploy)
+- Patch: A1 net-buy pasar 546,06→618,98 miliar (content+excerpt); A2 superlatif→"salah satu dari 8 Sangat Menguat, AKPI 0,78 non-gorengan tertinggi"; A2b header "terkuat scanner"→"Sangat Menguat"; B1 "13 EMA bearish"→"9 EMA bearish" (konvensi Sentinel 42/9 window 6-13 Nov).
+- Verify: H2 position()=0 semua token lama (content+excerpt+title); difflib before/after hanya 3 blok dimaksud (ratio 0.98-0.9996), angka EXACT utuh (Rp2.440/115,4%/380,49/PE11,1/564-142/OS43); replay gate A+B PASS exit-0 --as-of 2026-11-13; live 200, 546=0/618,98=2, 13EMA=0/9EMA=2, superlatif=0, bullet+header baru present.
+- Deploy hash: n/a (0 deploy) | QA: verdict Sentinel 22:00 (H3) | impact_check_due: 2026-11-19
+- Backup: scratch/qa-1116/backup-rows/article-rows-ops-1116.json
+
+## 2026-11-16 07:5x WIB — CTO-PAGI-1116 — prd-2026-11-15-01 [KONVERSI] merge night branch
+- task-id: prd-2026-11-15-01 | type: feature (one-tap watchlist T3 unblock) | in_train T-1116-N
+- Night 15 Nov 23:02-23:21 membuat branch night/prd-2026-11-15-01 (spec 53d9ec5 + failing-test-first W1-W8 6d7df47 + feat c628163) TANPA queue entry & laporan bus — tertinggal di working tree; CTO pagi forensik + verify-sendiri: tsc REAL_EXIT=0, selftest 8/8 REAL_EXIT=0.
+- MERGE --no-ff ke main = ce9a9df + PUSH origin 4963830..ce9a9df (utang hard-gate lunas, verifikasi ls-remote).
+- Deploy: build-only; naik kereta T-1116-N 22:15 (build app+worker di slot BE siang/sore bersama ux-15-01). Verdict QA = Sentinel 22:00.
+- impact_check_due: 2026-11-19
