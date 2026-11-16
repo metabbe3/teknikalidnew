@@ -33,6 +33,15 @@ export const BLOCKED_ACTORS: readonly string[] = Object.freeze([
    // needs_owner #2) — jangan tulis UUID-nya di file ini agar tak terbaca sbg entri aktif.
   "e7df9d38-f569-4b85-afbb-f30df636651d",
   "4f00932f-1e74-4fcc-a089-614e91da656e",
+  // prd-2026-11-15-01 (CTO night 15 Nov): 5 PV e2e staging verify AC1/AC2
+  // 23:24 WIB — anonId UUID (bukan qa-) karena Playwright context baru tak
+  // men-set localStorage eng_anon; EngagementEvent didrop bot-filter (UA
+  // headless), jadi hanya T1/T2 potensial. Ditambahkan jam sesi, bukan retro.
+  "50a26a2b-5e17-4b8f-9b12-58e813764b91",
+  "69ab4a89-443b-435a-9a79-ce5c2c83b9c1",
+  "09a6e556-5a1e-4b8a-98e1-49d987234a95",
+  "6e8cedb0-7957-4d46-a275-0fb8e87a69eb",
+  "5b8efe34-1599-43f6-8290-ce48dfcc38c7",
 ]);
 
 const UUID_RE =

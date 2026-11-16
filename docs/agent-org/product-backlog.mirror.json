@@ -2893,7 +2893,9 @@
       "first_step": "CEO verdict freeze: ini blok konten-link (bukan fitur baru interaktif?) — kalau dianggap konversi/retensi surface, riset dulu: pola exit halaman /stocks visitor sosmed + kandidat modul 'Analisa terkait {ticker}' 3-link di bawah grafik. Baseline: 0% Threads-aktor menyentuh /berita dari /stocks.",
       "DONE-WHEN": "Riset tertulis: baseline 0/59 terkonfirmasi, mock posisi modul + metrik (share Threads-aktor dengan >=1 PV /berita dalam sesi sama 14d setelah live) didefinisikan, verdict PRD lanjut/stop.",
       "review_date": "2026-11-20",
-      "ceo_verdict": "HOLD 13 Nov — modul konten-link = mendekati fitur baru; tunggu baseline RelatedSignals prd-2026-11-12-01 (UX-1111-02) supaya tidak dobel modul link artikel vs /stocks; review 20 Nov"
+      "ceo_verdict": "HOLD 13 Nov — modul konten-link = mendekati fitur baru; tunggu baseline RelatedSignals prd-2026-11-12-01 (UX-1111-02) supaya tidak dobel modul link artikel vs /stocks; review 20 Nov",
+      "research_brief": "VERDICT: MODIFIKASI (riset first_step disetujui; build modul ditunda sampai baseline RelatedSignals terukur). ALASAN: pola recirculation/internal-linking adalah best practice publisher terdokumentasi kuat (GNI, Chartbeat, News Corp, Vox), dan arah ticker<->analisa memang pola standar situs finansial; TAPI dampak realistis modul semacam ini kecil (CTR modul artikel-terkait referensi 1,04% = 3x goal 0,3% News Corp Project Hamilton), jadi ekspektasi & DONE-WHEN harus pakai band CTR realistis dan diukur vs baseline RelatedSignals /berita yang baru live 13 Nov (ux-2026-11-11-02 qa_pass 15 Nov). BEST PRACTICE: (1) Modul HARUS curated-topical berbasis tag ticker/kondisi (Analisa terkait {ticker}), bukan widget 'related posts' acak — kesalahan publisher #1 menurut panduan recirculation. (2) Posisi menentukan: inline link di atas fold / titik 50% drop-off (Chartbeat); traffic 93% mobile -> ukur scroll-depth halaman /stocks dulu sebelum fix posisi. (3) Benchmark CTR: band sehat 0,5-1%+ per modul (News Corp 1,04%; goal internal 0,3%); metrik sukses tetap seperti dirumuskan entry (share Threads-aktor >=1 PV /berita dlm sesi sama 14d) + uplift multi-day, bukan PV semata. (4) Jadikan SATU komponen data dua arah (berita<->stocks) supaya tidak lahir dua modul link artikel yang kanibalisasi CTR (inti HOLD CEO 13 Nov); anchor deskriptif, batas 3 link, jangan dekat quota-wall/CTA lain. (5) Pada review 20 Nov: keputusan BUILD/STOP dari data internal = CTR RelatedSignals 4-6 hari live + scroll-depth /stocks, bukan dari asumsi. ANTI-PATTERN: widget related acak/by-latest di halaman instrumen (zero topical match); build tanpa baseline comparator; dua modul link artikel di halaman yang sama; sukses diukur dari PV naik tanpa metrik returning multi-day. SUMBER: newsinitiative.withgoogle.com/resources/trainings/recirculation/ ; chartbeat.com/resources/eliminate-dead-end-pages-optimize-for-recirculation/ ; Chartbeat Playbook 'Build a Loyal Audience' (placement at 50% drop-off, curate 4-5 stories) cdn2.hubspot.net/hubfs/3794894/download-Chartbeat_Playbook_Build-a-Loyal-Audience.pdf ; digiday.com/media/news-corp-testing-homegrown-content-recommendation-tool/ (CTR 1,04% vs goal 0,3%) ; niemanlab.org/2018/03/recirculate-vox-medias-new-structure-for-story-packages... ; library.linkbot.com/internal-linking-for-publishers-2/ ; financialmarkets.media/blog/interlinking-financial-websites/ (template artikel<->instrumen). BUKTI: SEDANG — pola recirculation KUAT terdokumentasi & terukur (GNI/Chartbeat/News Corp/Vox); klaim dampak ke RETURNING multi-day (bukan CTR/PV) tidak dibuktikan langsung sumber publik (pernyataan vendor Chartbeat) -> keputusan lanjut dari data internal baseline.",
+      "research_brief_at": "2026-11-15"
     },
     {
       "id": "sec-2026-11-12-01",
@@ -3001,6 +3003,20 @@
       "scheduled_slot": "2026-11-16 CTO pagi 07:30 bundling ops-2026-10-29-03 host-script 0-deploy (WAJIB live sebelum rekap mingguan Sabtu 21 Nov; gate wajib test dua arah valid-PASS/fiktif-FAIL)",
       "council_verdict": "COUNCIL-1115 schedule: root-fix transplantasi-blok 2 hari beruntun; TRUST",
       "status_at": "2026-11-15"
+    },
+    {
+      "id": "idea-2026-11-15-3",
+      "date": "2026-11-15",
+      "type": "idea",
+      "priority": "P3",
+      "status": "promoted_ops",
+      "source": "cto-slot (ops-2026-10-29-03 observasi)",
+      "north_star": "TRUST (brief SRE akurat)",
+      "title": "[BUGFIX][TRUST] sre_brief app-container docker logs pakai -t supaya baris ber-timestamp ISO → window deploy-noise classify_app_errors aktif utk auth-noise pasca-restart",
+      "problem": "Live run 15 Nov pasca host-reboot 16:46: 2 baris [auth][error] InvalidCheck+Configuration dilabel REAL ERROR padahal pola auth-noise pasca-restart. Root: sh('docker logs ...') tanpa flag -t → output baris TANPA timestamp ISO → TS_RE tak match → noise-in-window tak terhitung → DEPLOY-NOISE tak aktif. Storm-readout (cluster view baru) juga tak bisa menghitung gap tanpa ts.",
+      "data": "sre_brief.py L94/L123: pipeline docker logs tanpa -t; bukti live run 15 Nov 17:2x: raw_grep=2 deploy_noise=0 padahal container_age=0.37h + pattern auth. Fix: tambah -t di 2 pipeline app_error_context + adjust TS_RE utk prefix waktu docker (RFC3339 nano di depan baris).",
+      "DONE-WHEN": "Live run dgn -t: baris auth dlm ±60mnt StartedAt pasca-restart terklasifikasi DEPLOY-NOISE (bukan REAL ERROR); selftest window lama tetap hijau.",
+      "first_step": "CEO verdict 16 Nov: PROMOTE — host-script only P3 TRUST; bundling BE malam 18:30 16 Nov bareng ops-15-02 + ops-11-01-04; DONE-WHEN: sre_brief live-run baris auth ber-timestamp ISO"
     }
   ],
   "items": []

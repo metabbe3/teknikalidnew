@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { StockLogo } from "@/components/stock/stock-logo";
+import { GuestStar } from "@/components/stock/guest-star";
 import { formatPercentPlain, formatPrice, stripJk, signalToHealthScore, healthScoreMeta } from "@/lib/utils";
 
 /**
@@ -20,6 +21,9 @@ export interface SnapshotCardData {
   signalLabel: string | null;
   rsi14: number | null;
   isGorengan?: boolean;
+  /** prd-2026-11-15-01 AC1: bintang one-tap overlay (guest watchlist) —
+   *  opt-in per kartu; default false = perilaku lama (kartu murni Link). */
+  star?: boolean;
 }
 
 function rsiTone(rsi: number | null): { color: string; label: string } | null {
@@ -38,9 +42,67 @@ export function SnapshotCard({
   changePercent,
   sparkline,
   signalScore,
+  signalLabel,
   rsi14,
   isGorengan,
+  star = false,
 }: SnapshotCardData) {
+  if (star) {
+    // Bintang = <button> — HARUS di luar <Link> (button dalam anchor = HTML
+    // invalid + klik bintang memicu navigasi kartu; pola wrapper di luar Link).
+    return (
+      <div className="relative">
+        <GuestStar
+          ticker={ticker}
+          compact
+          chipAlign="end"
+        />
+        <div className="mt-[-2.25rem] flex justify-end pr-1 pointer-events-none" aria-hidden="true" />
+        <SnapshotCardInner
+          ticker={ticker}
+          name={name}
+          sector={sector}
+          slug={slug}
+          close={close}
+          changePercent={changePercent}
+          sparkline={sparkline}
+          signalScore={signalScore}
+          rsi14={rsi14}
+          isGorengan={isGorengan}
+          starOffset
+        />
+      </div>
+    );
+  }
+  return (
+    <SnapshotCardInner
+      ticker={ticker}
+      name={name}
+      sector={sector}
+      slug={slug}
+      close={close}
+      changePercent={changePercent}
+      sparkline={sparkline}
+      signalScore={signalScore}
+      rsi14={rsi14}
+      isGorengan={isGorengan}
+    />
+  );
+}
+
+function SnapshotCardInner({
+  ticker,
+  name,
+  sector,
+  slug,
+  close,
+  changePercent,
+  sparkline,
+  signalScore,
+  rsi14,
+  isGorengan,
+  starOffset = false,
+}: Omit<SnapshotCardData, "signalLabel"> & { starOffset?: boolean }) {
   const up = (changePercent ?? 0) >= 0;
   const changeColor = up ? "text-bullish" : "text-bearish";
   const score = signalToHealthScore(signalScore);
@@ -55,7 +117,7 @@ export function SnapshotCard({
   return (
     <Link
       href={`/stocks/${ticker}`}
-      className="group relative flex flex-col bg-bg-card rounded-xl p-4 border border-border/60 hover:border-accent/30 hover:depth-shadow-hover transition-all duration-200 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
+      className={starOffset ? "group relative flex flex-col bg-bg-card rounded-xl p-4 border border-border/60 hover:border-accent/30 hover:depth-shadow-hover transition-all duration-200 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 pt-12" : "group relative flex flex-col bg-bg-card rounded-xl p-4 border border-border/60 hover:border-accent/30 hover:depth-shadow-hover transition-all duration-200 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"}
       aria-label={`${stripJk(ticker)} ${name}${close !== null ? `, harga ${formatPrice(close)}` : ""}${chgPct ? `, ${chgPct}` : ""}`}
     >
       {/* Top: logo + ticker + signal pill (owner 24 Okt: ganti sparkline dgn logo, persimple) */}

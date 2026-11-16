@@ -9,6 +9,8 @@ import { useEffect, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { useGuestWatchlist } from "@/hooks/use-guest-watchlist";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
+import { WatchlistPresets } from "@/components/watchlist/watchlist-presets";
+import type { WatchlistPreset } from "@/lib/watchlist-presets";
 
 type GuestQuote = {
   ticker: string;
@@ -16,7 +18,7 @@ type GuestQuote = {
   changePercent: number | null;
 };
 
-export function GuestWatchlistView() {
+export function GuestWatchlistView({ presets = [] }: { presets?: WatchlistPreset[] }) {
   const { tickers, toggle, mounted } = useGuestWatchlist();
   const [quotes, setQuotes] = useState<GuestQuote[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,6 +64,7 @@ export function GuestWatchlistView() {
         <p className="text-xs text-text-tertiary">
           Ketuk ikon bintang di halaman saham untuk memantau — tanpa perlu akun.
         </p>
+        {presets.length > 0 && <WatchlistPresets presets={presets} />}
       </div>
     );
   }

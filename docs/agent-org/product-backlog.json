@@ -3009,14 +3009,14 @@
       "date": "2026-11-15",
       "type": "idea",
       "priority": "P3",
-      "status": "candidate",
+      "status": "promoted_ops",
       "source": "cto-slot (ops-2026-10-29-03 observasi)",
       "north_star": "TRUST (brief SRE akurat)",
       "title": "[BUGFIX][TRUST] sre_brief app-container docker logs pakai -t supaya baris ber-timestamp ISO → window deploy-noise classify_app_errors aktif utk auth-noise pasca-restart",
       "problem": "Live run 15 Nov pasca host-reboot 16:46: 2 baris [auth][error] InvalidCheck+Configuration dilabel REAL ERROR padahal pola auth-noise pasca-restart. Root: sh('docker logs ...') tanpa flag -t → output baris TANPA timestamp ISO → TS_RE tak match → noise-in-window tak terhitung → DEPLOY-NOISE tak aktif. Storm-readout (cluster view baru) juga tak bisa menghitung gap tanpa ts.",
       "data": "sre_brief.py L94/L123: pipeline docker logs tanpa -t; bukti live run 15 Nov 17:2x: raw_grep=2 deploy_noise=0 padahal container_age=0.37h + pattern auth. Fix: tambah -t di 2 pipeline app_error_context + adjust TS_RE utk prefix waktu docker (RFC3339 nano di depan baris).",
       "DONE-WHEN": "Live run dgn -t: baris auth dlm ±60mnt StartedAt pasca-restart terklasifikasi DEPLOY-NOISE (bukan REAL ERROR); selftest window lama tetap hijau.",
-      "first_step": "CEO verdict: P3 kecil host-script, bundling slot berikutnya bersama sre_brief lain."
+      "first_step": "CEO verdict 16 Nov: PROMOTE — host-script only P3 TRUST; bundling BE malam 18:30 16 Nov bareng ops-15-02 + ops-11-01-04; DONE-WHEN: sre_brief live-run baris auth ber-timestamp ISO"
     }
   ],
   "items": []

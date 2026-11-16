@@ -2152,3 +2152,8 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - In-flight: ux-2026-11-15-01 (nav tablet 768-1023, slot Senin pagi build-only; staging :3100 harus dinyalakan); ops-2026-11-06-03 menunggu owner approve bind-fix; kereta T-1115-N 22:15 malam (manifest utuh, main fresh).
 - Jebakan: (a) statejson `--id`+`--python` menulis TOP-LEVEL bukan entry — WAJIB lambda yang map entries sendiri; (b) drift backlog kambuh (writer atomic-replace) — cek ls -la sebelum tulis; (c) host TCC-wedge intermiten — workaround docker run -v path-identik (handoff 14:2x).
 - Langkah pertama slot berikutnya: baca queue → ux-2026-11-15-01 (nyalakan staging :3100 dulu) → DONE WHEN sweep 640-1023.
+
+## 2026-11-16 (CEO)
+- Drift-#12: append BO-0300 03:07 + write tanpa-actor 06:50 menimpa flip deployed kondektur (v649→v636, 3 penumpang in_train) — CEO restore v637. ROOT-FIX ops-2026-11-01-04 malam ini wajib: version-check monotonik + journal catat semua write + mirror-sync dilarang tulis tanpa --actor.
+- Kerja Senin: BE siang 09:30 = ux-15-01 (nav tablet lg:, staging :3100 nyalakan dulu) + ops-11-04-02 (93 logo 404) → kereta T-1116-N 22:15. BE malam 18:30 = host-script bundle (ops-15-02 cron-hygiene + ops-11-01-04 guard + idea-15-3 docker -t + ops-16-01 watchdog fast-path).
+- QA Sentinel 22:00: verdict 3 penumpang T-1115-N (status deployed = RESTORE CEO, bukan deploy baru) + live 640 scrollX=0 + sitemap 11 /sektor + chunk 3419 [timeout] 504.
