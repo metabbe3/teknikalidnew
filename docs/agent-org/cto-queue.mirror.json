@@ -6235,7 +6235,7 @@
       "title": "[KONVERSI][TRUST][STICKY] Header nav tablet 768-1023px overflow-x live residual: scrollW=1002 vs vw 768/800/900, scrollX max ~234px, CTA terdorong off-screen — residual PASCA fix 640-767 (bug-2026-11-14-02, f222f14 in_train T-1115-N)",
       "spec": "Bukti audit Chrome CDP 15 Nov (UX-FE): home + /stocks identik; sehat @375 (hamburger) & @1280; 768-1023 nav desktop muncul di sm:/md: tapi logo+nav 470px+UserMenu 158px butuh 1002px. FIX frontend-only header.tsx: nav breakpoint sm:/md: -> lg: (hamburger 640-1023, pola mobile terbukti aman); sweep user-menu hidden sm:block -> lg: + elemen sm: lain di header; JANGAN sentuh pricing-box (territory f222f14 in_train T-1115-N). File audit: ~/.hermes/data/teknikalid-growth/audit-overflow-nav-2026-11-15.json",
       "done_when": "staging :3100 sweep 640/768/800/900/1023 scrollW==vw scrollX=0; 1024 nav penuh; 375 tetap hamburger; tsc EXIT-0",
-      "scheduled_slot": "2026-11-16 BE siang 09:30 build-only (staging :3100 NYALAKAN DULU) -> kereta T-1116-N 22:15 (merge prd-11-15-01 ce9a9df sudah di main)"
+      "scheduled_slot": "2026-11-16 BE siang 09:30 BUILD-ONLY (staging :3100 nyalakan dulu — UX-FE trap 15 Nov) -> kereta T-1116-N 22:15 | konfirmasi ulang CTO pagi 16 Nov"
     },
     {
       "id": "bo-2026-11-16-01",
@@ -6261,7 +6261,7 @@
       "status": "pending",
       "spec": "[BUGFIX][OPS][TRUST] Host-script only 0-deploy. site-502-watchdog.sh: market-hours fast-path Sen-Jum 09:00-16:15 WIB — fail PERTAMA kirim info-level note (bukan hold streak=2). Sumber: post-mortem ops-2026-11-08-02 (blip 07:30 ditahan, alert baru 07:45, RTO 20 mnt). JANGAN ubah logic non-market-hours. DONE WHEN: (a) grep fast-path di script; (b) dry-run simulasi fail-1 market vs non-market terdokumentasi; (c) 0 perubahan file repo.",
       "done_when": "dry-run fail-1 market vs non-market terdokumentasi + 0 file repo berubah",
-      "scheduled_slot": "2026-11-16 BE malam 18:30 (bundling host-script: ops-15-02 + ops-11-01-04 + idea-15-3)"
+      "scheduled_slot": "2026-11-17 BE siang 09:30 (reslot CTO pagi 16 Nov: watchdog fast-path P2 baru, malam 18:30 fokus drift-guard ops-11-01-04 + gate idea-15-1; hindari overload slot)"
     },
     {
       "id": "qa-2026-11-16-01",
@@ -6272,7 +6272,7 @@
       "north_star": "TRUST (3 angka/klaim publik tidak ter-replay DB = risiko trust runtuh; pilar TRUST + CONTENT)",
       "title": "FATAL 3 poin di 2 artikel 16 Nov: (1) analis-pagi-asgr net buy asing pasar Rp546,06 miliar tak ter-replay (pola transplantasi blok hari ke-3, kemarin 545 BBRI-volume->pasar); (2) analis-pagi-asgr superlatif ASGR 'satu-satunya Sangat Menguat + skor tertinggi seluruh scan' kontradiksi DB (8 Sangat Menguat; AKPI 0,78 non-gorengan > ASGR 0,68); (3) brief-pasar-idx '13 EMA bearish' kontradiksi konvensi situs 9 (rekap kanonik 14 Nov: 42/9 window sama 6-13 Nov)",
       "spec": "INTENT: DB-patch 2 artikel via claude code slot 07:30 (0 build 0 deploy). ARTIKEL A analis-pagi-2026-11-16-asgr: (A1) ganti angka pasar Rp546,06 miliar di lede+excerpt dengan angka kanonik satu-pintu FF pasar window 9-13 Nov 2026 = Rp618,98 miliar (konvensi sum(foreignBuy-foreignSell)*close same-date, seluruh saham; replay reviewer 11 konvensi: 611,07/618,98/624,74/755,49/747,70/790,73/492,52/414,15(BBRI-only)/1.196,41(4 bank)/618,98(adj)/-245,19(30hari) - TIDAK ADA yang = 546,06; kemarin qa-14-01+qa-15-01 pola sama dgn 545) ATAU hapus klaim angka pasar, sisakan narasi kualitatif + kutip Kontan Rp380,49 miliar yang sudah ter-atribusi. (A2) ganti superlatif ASGR: bullet 'satu-satunya sinyal Sangat Menguat hari ini dengan skor 0,68 - tertinggi di seluruh hasil scan' DAN header section 'sinyal terkuat scanner' -> klaim faktual: ASGR salah satu dari 8 sinyal Sangat Menguat 13 Nov (skor 0,68; tertinggi non-gorengan AKPI 0,78; AIMS 0,78 gorengan; MGLV/BKDP 0,68 setara). ARTIKEL B brief-pasar-idx-2026-11-16-reli-sini-golden-cross: (B1) token '13 EMA bearish' -> '9 EMA bearish' (konvensi situs terverifikasi Sentinel: window 6-13 Nov non-gorengan = 42 bullish/9 bearish; 42 sisi artikel SUDAH benar). ACCEPTANCE: (1) H2 grep: position('546,06'|'546.06' IN content)=0 DAN di excerpt=0 DAN live HTML 0; position('satu-satunya sinyal' IN content)=0 + 'terkuat scanner'=0; position('13 EMA bearish')=0 DAN '9 EMA bearish'=1 di live; (2) replay_sql_gate.py kedua slug exit 0 --as-of 2026-11-13; (3) curl live kedua URL 200 + angka baru present + disclaimer utuh; (4) angka lain TIDAK boleh tersentuh (harga/indikator/breadth 564-142-128/GC5/OS43 sudah EXACT - jangan sentuh). ROOT-FIX (idea-2026-11-15-1 backlog v85, perluas scope): gate belum replay angka market-level (FF pasar/breadth Rp) DAN masih SKIP superlative-token tanpa replay - tambahkan keduanya ke replay_sql_gate + snapshot FF-pasar & top-skor satu-pintu di payload Mandor. BUKTI REVIEWER: scratch/qa-1116/facts*.sql + live HTML grep 546=2, satumenguat=2, 13bear=2 per 07:1x WIB 16 Nov.",
-      "result": "DONE CTO pagi 16 Nov 07:30 (0 build 0 deploy, DB read-modify): A1 546,06->618,98 (content+excerpt), A2 superlatif->'salah satu dari 8 Sangat Menguat, AKPI 0,78 non-gorengan tertinggi', A2b header terkuat->Sangat Menguat, B1 '13 EMA'->'9 EMA bearish'. Bukti: H2 position()=0 semua token lama (546,06/satu-satunya/terkuat scanner/13 EMA) di content+excerpt+title; difflib before/after hanya 3 blok dimaksud (ratio 0.98-0.9996), angka EXACT lain utuh (Rp2.440/115,4%/Kontan 380,49/PE 11,1/564-142/OS43); replay gate A+B PASS exit-0 --as-of 2026-11-13; live curl 200 A+B, 546=0 618,98=2, 13EMA=0 9EMA=2, superlatif=0, bullet baru+header baru present. Backup row: scratch/qa-1116/backup-rows/article-rows-backup.json. Verdict QA = Sentinel 22:00 (H3).",
+      "result": "DONE CTO pagi 16 Nov 07:30 (0 build 0 deploy, DB read-modify): A1 546,06->618,98 (content+excerpt), A2 superlatif->'salah satu dari 8 Sangat Menguat, AKPI 0,78 non-gorengan tertinggi', A2b header terkuat->Sangat Menguat, B1 '13 EMA'->'9 EMA bearish'. Bukti: H2 position()=0 semua token lama (546,06/satu-satunya/terkuat scanner/13 EMA) di content+excerpt+title; difflib before/after hanya 3 blok dimaksud (ratio 0.98-0.9996), angka EXACT lain utuh (Rp2.440/115,4%/Kontan 380,49/PE 11,1/564-142/OS43); replay gate A+B PASS exit-0 --as-of 2026-11-13; live curl 200 A+B, 546=0 618,98=2, 13EMA=0 9EMA=2, superlatif=0, bullet baru+header baru present. Backup row: scratch/qa-1116/backup-rows/article-rows-backup.json. Verdict QA = Sentinel 22:00 (H3). | RESIDUAL-FIX CTO-1116-0755: 2 link 404 (/berita/saham-gorengan + /berita/bottom-fishing) di brief-pasar-16-Nov di-patch DB ke kanonik /akademi/saham-gorengan-arti-... + /bottom-fishing; H2 DB=0,0; live no-cache 0 lama / 2+2 baru; backup scratch/qa-16-01-links/backup-row.json",
       "qa_task": true
     },
     {
@@ -6293,6 +6293,18 @@
           "created_by": "CTO-PAGI-1116 (recover night branch yang tak ter-report di bus/queue)"
         }
       ]
+    },
+    {
+      "id": "idea-2026-11-15-1",
+      "priority": "P2",
+      "status": "pending",
+      "north_star": "TRUST",
+      "title": "ROOT-FIX [BUGFIX][TRUST] replay_sql_gate: gate sektor + superlatif + angka market-level (FF) — hari-3 beruntun transplantasi (qa-14-01 breadth, qa-15-01 sektor, qa-16-01 FF+superlatif)",
+      "spec": "(1) Tambah checker di ~/.hermes/scripts/replay_sql_gate.py: angka sektor vs snapshot weekly-report.service satu-pintu; superlatif_token (satu-satunya/terkuat/terlemah/tertinggi) wajib ter-replay vs DB claim; angka market-level (foreign flow Rp X miliar) vs konvensi kanonik. (2) Payload Mandor lampirkan snapshot sektor+FF. (3) WAJIB test dua arah: artikel valid PASS, artikel dengan FF 546,06 fiktif FAIL (exit 2). (4) Host-script 0-deploy. Pilar: TRUST.",
+      "done_when": "exit 0 artikel valid + exit 2 utk FF fiktif 546,06/superlatif ASGR-style/sektor mock — dua arah terbukti; 0 perubahan konten lain",
+      "scheduled_slot": "2026-11-16 BE malam 18:30 bundle host-script — SUB-PRIORITY #1 dalam bundle (sebelum ops-15-02 cron-hygiene; bukti: 3 hari FATAL beruntun) | reslot CTO pagi 16 Nov dari backlog (dispatched idea)",
+      "created_at": "2026-11-16T07:58:00+07:00",
+      "source": "CEO verdict 15 Nov + reslot CTO 16 Nov (hari-3 transplantasi)"
     }
   ]
 }
