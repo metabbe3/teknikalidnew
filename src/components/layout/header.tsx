@@ -60,7 +60,7 @@ export function Header() {
 
           {/* IHSG badge */}
           {ihsg && ihsg.close !== null && (
-            <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-border bg-bg-surface text-xs">
+            <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-border bg-bg-surface text-xs">
               <span className="text-text-secondary font-medium">IHSG</span>
               <span data-live-price="^JKSE" className="font-mono font-semibold text-text-primary tabular-nums">{ihsg.close.toLocaleString("id-ID", { minimumFractionDigits: 2 })}</span>
               {ihsg.changePercent !== null && (
@@ -78,12 +78,12 @@ export function Header() {
             </div>
           )}
           {ihsg && ihsg.close === null && (
-            <div className="hidden md:block w-28 h-6 animate-pulse bg-bg-hover rounded-md" />
+            <div className="hidden lg:block w-28 h-6 animate-pulse bg-bg-hover rounded-md" />
           )}
 
           {/* Mobile IHSG — compact */}
           {ihsg && ihsg.close !== null && (
-            <div className="md:hidden flex items-center gap-1 text-xs">
+            <div className="lg:hidden flex items-center gap-1 text-xs">
               <span className="text-text-secondary font-medium">IHSG</span>
               {ihsg.changePercent !== null && (
                 <span data-live-percent="^JKSE" className={`font-mono font-bold tabular-nums ${ihsg.changePercent >= 0 ? "text-bullish" : "text-bearish"}`}>
@@ -101,9 +101,9 @@ export function Header() {
           )}
         </div>
 
-        {/* Desktop nav — md: (bug-2026-11-14-02): pada 640-767px nav+badge+logo+UserMenu
-            (~920px) meluap container 640px; mulai 640-767 pakai hamburger mobile. */}
-        <nav className="hidden md:flex items-center gap-1 text-sm font-medium" aria-label="Main navigation">
+        {/* Desktop nav — lg: (ux-2026-11-15-01): nav set penuh + logo + UserMenu butuh
+            ~1002px; 640-1023 pakai hamburger mobile (pola mobile terbukti aman). */}
+        <nav className="hidden lg:flex items-center gap-1 text-sm font-medium" aria-label="Main navigation">
           {navLinks.map((link) => {
             const active = isActive(pathname, link.href);
             return (
@@ -187,7 +187,7 @@ export function Header() {
         <div className="flex items-center gap-2">
           {session?.user && <NotifBell />}
 
-          <div className="hidden md:block">
+          <div className="hidden lg:block">
             <UserMenu user={session?.user} />
           </div>
 
@@ -195,7 +195,7 @@ export function Header() {
           {!session?.user && (
             <Link
               href="/auth/signin"
-              className="md:hidden inline-flex min-h-11 items-center bg-text-primary text-white px-3.5 py-2 rounded-lg text-sm font-medium hover:bg-text-primary/90 transition-colors press-scale"
+              className="lg:hidden inline-flex min-h-11 items-center bg-text-primary text-white px-3.5 py-2 rounded-lg text-sm font-medium hover:bg-text-primary/90 transition-colors press-scale"
             >
               Masuk
             </Link>
@@ -203,7 +203,7 @@ export function Header() {
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden p-2 -mr-2 text-text-secondary hover:text-text-primary transition-colors"
+            className="lg:hidden p-2 -mr-2 text-text-secondary hover:text-text-primary transition-colors"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-expanded={menuOpen}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
@@ -223,7 +223,7 @@ export function Header() {
 
       {/* Mobile dropdown */}
       <nav
-        className={`md:hidden border-t border-border bg-bg-surface overflow-y-auto transition-all duration-200 ease-out ${
+        className={`lg:hidden border-t border-border bg-bg-surface overflow-y-auto transition-all duration-200 ease-out ${
           menuOpen ? "max-h-[calc(100dvh-3.5rem)] opacity-100 visible" : "max-h-0 opacity-0 border-t-0 invisible pointer-events-none"
         }`}
         aria-label="Main navigation"

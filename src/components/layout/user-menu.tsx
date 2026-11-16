@@ -32,7 +32,7 @@ export function UserMenu({ user }: { user: User | undefined | null }) {
         <Link
           href="/auth/register"
           data-engagement="nav_register_desktop"
-          className="hidden md:inline-flex items-center bg-accent text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors press-scale"
+          className="hidden lg:inline-flex items-center bg-accent text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors press-scale"
         >
           Daftar
         </Link>
