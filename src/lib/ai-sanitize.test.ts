@@ -102,3 +102,43 @@ test("allowlist kosong → teks utuh tanpa perubahan", () => {
   const t = "ini **teks** biasa tanpa ticker.";
   assert.equal(linkifyBoldTickers(t, { foo: "bar" }), t);
 });
+
+// ─── normalizeUnit (loop 16 Nov): konsistensi satuan "M" → "miliar" ───
+import { normalizeUnit } from "./ai-sanitize";
+
+test("Rp X M → Rp X miliar (kasus nyata eval #9)", () => {
+  const t = "list (Rp57,64 M dan Rp56,68 M) — ANTM keluar";
+  const r = normalizeUnit(t);
+  assert.equal(r.includes("Rp57,64 miliar"), true);
+  assert.equal(r.includes("Rp56,68 miliar"), true);
+  assert.equal(r.includes(" M"), false);
+});
+
+test("desimal tunggal Rp65,6 M → miliar (eval #4)", () => {
+  assert.equal(normalizeUnit("nilai Rp65,6 M saja"), "nilai Rp65,6 miliar saja");
+});
+
+test("campuran miliar + M dalam kalimat sama → jadi konsisten", () => {
+  const t = "BBRI Rp274,51 miliar, GOTO Rp57,64 M.";
+  const r = normalizeUnit(t);
+  assert.equal(r, "BBRI Rp274,51 miliar, GOTO Rp57,64 miliar.");
+});
+
+test("tanpa prefix Rp → tidak disentuh (volume lembar aman)", () => {
+  const t = "volume 57,64 M lembar tadi.";
+  assert.equal(normalizeUnit(t), t);
+});
+
+test("'M' menempel kata lain (Market) → tidak disentuh", () => {
+  const t = "Rp5 Miliar sudah oke, Market cap besar";
+  assert.equal(normalizeUnit(t), t);
+});
+
+test("sudah 'miliar' → utuh (idempotent)", () => {
+  const t = "net buy Rp274,51 miliar.";
+  assert.equal(normalizeUnit(t), t);
+});
+
+test("string kosong → tetap kosong", () => {
+  assert.equal(normalizeUnit(""), "");
+});

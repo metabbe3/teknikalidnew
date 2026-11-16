@@ -118,3 +118,23 @@ export function linkifyBoldTickers(text: string, source: unknown): string {
     allow.has(t) ? `[${t}](/stocks/${t}.JK)` : whole,
   );
 }
+
+/**
+ * Guard konsistensi satuan — lapis-4 deterministik (loop 16 Nov).
+ *
+ * Latar: glosarium prompt "asing = 'Rp X miliar' (bukan 'M')" SUDAH ada di
+ * kedua route sejak juri Claude 30 Okt, tapi eval 16 Nov masih menangkap
+ * "Rp57,64 M" / "Rp65,6 M" bersebelahan "Rp274,51 miliar" di kalimat yang
+ * SAMA (eval #4 & #9) — kepatuhan satuan tidak boleh bergantung kepatuhan
+ * model (preseden: disclaimer loop 9 Nov, linkify loop 11 Nov).
+ *
+ * Hanya pola uang `Rp<angka> M` yang disentuh → "miliar". Tanpa prefix "Rp"
+ * tidak disentuh (volume "57,64 M lembar" dll aman); "M" yang menempel kata
+ * lain (mis. "Market") tidak match karena word-boundary.
+ */
+const RUPIAH_M_RE = /(Rp\s?\d[\d.]*(?:,\d+)?)\s?M\b/g;
+
+export function normalizeUnit(text: string): string {
+  if (!text) return text;
+  return text.replace(RUPIAH_M_RE, (_whole, num: string) => `${num} miliar`);
+}
