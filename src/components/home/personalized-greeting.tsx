@@ -1,6 +1,7 @@
 import { formatPercentPlain } from "@/lib/utils";
 import dynamicImport from "next/dynamic";
 import { UhuAskCtaLink } from "@/components/uhu/uhu-provider";
+import { MessageCircle } from "lucide-react";
 
 const HeroSearch = dynamicImport(
   () => import("@/components/home/hero-search").then((m) => ({ default: m.HeroSearch })),
@@ -78,7 +79,7 @@ export function PersonalizedGreeting({
             pageContextOverride="/"
             className="inline-flex min-h-[34px] items-center gap-1.5 rounded-full bg-accent-bright px-4 text-xs font-semibold text-white transition-colors hover:brightness-110"
           >
-            💬 Tanya AI — gratis 3x
+            <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /> Tanya AI — gratis 3x
           </UhuAskCtaLink>
         </div>
 

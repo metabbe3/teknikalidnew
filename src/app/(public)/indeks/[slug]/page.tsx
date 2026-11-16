@@ -10,6 +10,7 @@ import { formatDecimalId } from "@/lib/format-number";
 import { signalBadge } from "@/lib/seo/signal-badge";
 import { SahamStrategyLinks } from "@/components/seo/saham-strategy-links";
 import { UhuAskCtaLink } from "@/components/uhu/uhu-provider";
+import { MessageCircle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 3600;
@@ -209,9 +210,10 @@ export default async function IndexDetailPage({
             <UhuAskCtaLink
               guestHref="/agent"
               data-engagement="funnel_indeksBotCta"
-              className="inline-flex items-center justify-center rounded-lg bg-accent px-3.5 py-2 text-xs font-semibold text-white hover:bg-accent/90 transition-colors shrink-0"
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-accent px-3.5 py-2 text-xs font-semibold text-white hover:bg-accent/90 transition-colors shrink-0"
             >
-              {`💬 Tanya AI: Saham ${idx.name} mana paling potensial hari ini? — Gratis 3x`}
+              <MessageCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+              {`Tanya AI: Saham ${idx.name} mana paling potensial hari ini? — Gratis 3x`}
             </UhuAskCtaLink>
           </div>
 

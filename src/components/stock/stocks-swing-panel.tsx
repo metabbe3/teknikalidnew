@@ -7,7 +7,7 @@ import { StockLogo } from "@/components/stock/stock-logo";
 import { signalBadge } from "@/lib/seo/signal-badge";
 import { formatPrice, stripJk } from "@/lib/utils";
 import { formatDecimalId } from "@/lib/format-number";
-import { ArrowUpRight, Target, TrendingUp } from "lucide-react";
+import { ArrowUpRight, MessageCircle, Target, TrendingUp } from "lucide-react";
 
 export function filterSwingCandidates(candidates: SwingCandidateItem[] | null | undefined, max = 12): SwingCandidateItem[] {
   if (!Array.isArray(candidates)) return [];
@@ -53,7 +53,7 @@ export function StocksSwingPanel({ linkBase = "/stocks" }: { linkBase?: string }
             data-engagement="funnel_swingPanelBotCta"
             className="inline-flex min-h-10 items-center gap-1.5 rounded-lg bg-accent px-3.5 py-2 text-xs font-bold text-white hover:bg-accent/90 transition-colors"
           >
-            💬 Minta AI pilihkan 1 setup swing terbaik sore ini — gratis 3x
+            <MessageCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" /> Minta AI pilihkan 1 setup swing terbaik sore ini — gratis 3x
           </a>
         </div>
         <Link

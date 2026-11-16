@@ -76,7 +76,7 @@ import { BouncerHook } from "@/components/stock/bouncer-hook";
 import { StrongerPeersStrip } from "@/components/stock/stronger-peers-strip";
 import { StockAiPromptChips } from "@/components/stock/stock-ai-prompt-chips";
 import { UhuStockTrigger } from "@/components/uhu/uhu-provider";
-import { AlertTriangle, Banknote, Newspaper, Star } from "lucide-react";
+import { AlertTriangle, Banknote, MessageCircle, Newspaper, Star } from "lucide-react";
 
 // ponytail: page is per-request SSR (auth-gated data varies by session — can't be SSG).
 export const dynamic = "force-dynamic";
@@ -1333,7 +1333,7 @@ export default async function StockDetailPage({
             data-engagement="tg_tanya_agent_card"
             className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90"
           >
-            💬 Tanya AI Gratis
+            <MessageCircle className="h-4 w-4" aria-hidden="true" /> Tanya AI Gratis
           </UhuStockTrigger>
         </section>
 

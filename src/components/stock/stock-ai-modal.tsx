@@ -6,7 +6,7 @@ import { createPortal } from "react-dom";
 import { parseAiText, shareAiStock } from "@/components/stock/stock-ai-shared";
 import { AiMarkdown } from "@/components/ai/ai-markdown";
 import { AiThinking } from "@/components/ui/ai-thinking";
-import { Sparkles } from "lucide-react";
+import { MessageCircle, Sparkles } from "lucide-react";
 import { getAnonIdSafe } from "@/lib/anon-id-safe";
 import { useUhu } from "@/components/uhu/uhu-provider";
 
@@ -281,9 +281,9 @@ export function StockAiModal({ ticker, name, changePercent, isGorengan, initialQ
             summary && (
               <button
                 onClick={() => setAskOpen(true)}
-                className="text-xs text-accent font-medium hover:underline"
+                className="inline-flex items-center gap-1 text-xs text-accent font-medium hover:underline"
               >
-                💬 Tanya saham ini…
+                <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /> Tanya saham ini…
               </button>
             )
           )}

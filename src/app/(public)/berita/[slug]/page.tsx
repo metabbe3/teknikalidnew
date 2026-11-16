@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArticleContent, extractHeadings, estimateReadingTime, splitMidArticle } from "@/components/article/article-renderer";
 import { extractArticleTickers } from "@/lib/rehype-stock-linker";
 import { formatDecimalId } from "@/lib/format-number";
-import { ArrowLeft, Clock, ChevronRight } from "lucide-react";
+import { ArrowLeft, Clock, ChevronRight, MessageCircle } from "lucide-react";
 import { ShareButtons } from "@/components/ui/share-buttons";
 import { ArticleType } from "@/generated/prisma/client";
 import { stockMarketService } from "@/domains/stock/stock-market.service";
@@ -439,9 +439,9 @@ export default async function BeritaArticlePage({
                 <UhuAskCtaLink
                   guestHref="/agent"
                   data-engagement="funnel_beritaTopBotCta"
-                  className="inline-flex min-h-11 items-center justify-center rounded-lg border border-accent/30 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent hover:bg-accent/20 transition-colors shrink-0"
+                  className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg border border-accent/30 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent hover:bg-accent/20 transition-colors shrink-0"
                 >
-                  💬 Tanya dampak berita ini ke AI — gratis 3x
+                  <MessageCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" /> Tanya dampak berita ini ke AI — gratis 3x
                 </UhuAskCtaLink>
               </div>
 
@@ -481,8 +481,9 @@ export default async function BeritaArticlePage({
                   data-engagement="funnel_newsBotCta_click"
                   className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg bg-accent px-4 py-2.5 text-xs font-bold text-white hover:bg-accent/90 transition-colors shrink-0"
                 >
-                  <span>
-                    {primaryClean ? `💬 Analisa ${primaryClean} di Bot` : "💬 Tanya AI di Bot Telegram"}
+                  <span className="inline-flex items-center gap-1.5">
+                    <MessageCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                    {primaryClean ? `Analisa ${primaryClean} di Bot` : "Tanya AI di Bot Telegram"}
                   </span>
                   <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
                 </UhuAskCtaLink>

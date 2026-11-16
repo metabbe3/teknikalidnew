@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
+import { MessageCircle, Sparkles } from "lucide-react";
 import { UhuAskCtaLink } from "@/components/uhu/uhu-provider";
 
 /**
@@ -22,9 +22,9 @@ export function AskAiCta({ question }: { question: string }) {
             <UhuAskCtaLink
               guestHref="/agent"
               data-engagement="funnel_askAiCtaBot"
-              className="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent/90"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent/90"
             >
-              💬 Tanya langsung di Telegram AI — gratis 3x
+              <MessageCircle className="h-4 w-4" aria-hidden="true" /> Tanya langsung di Telegram AI — gratis 3x
             </UhuAskCtaLink>
             <Link
               href={href}

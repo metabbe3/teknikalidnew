@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { X } from "lucide-react";
+import { MessageCircle, X } from "lucide-react";
 import { stripJk } from "@/lib/utils";
 import { tgDeepLink } from "@/lib/tg-deeplink";
 import { signalBadge } from "@/lib/seo/signal-badge";
@@ -136,7 +136,7 @@ export function BouncerHook({
             data-engagement="bouncer_hook_tanya_ai"
             className="inline-flex min-h-[34px] items-center justify-center gap-1 rounded-lg bg-accent px-2.5 text-xs font-semibold text-white hover:opacity-90 shadow-sm transition-opacity"
           >
-            💬 Tanya AI
+            <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /> Tanya AI
           </button>
           <button
             type="button"
