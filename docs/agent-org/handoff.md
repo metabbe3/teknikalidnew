@@ -2185,3 +2185,10 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 4. STATE: prod app b80d8b53bca7/worker 8dbd45ea3768 (KONDEKTUR-1116) health 200; main 3be60a3 pushed; EOD FRESH 16-Nov; deploy 0/2.
 5. JEBAKAN: (a) queue masih ada 1 entry TANPA field id (pre-existing; territory ops-11-01-04 malam — lambda statejson wajib e.get('id')); (b) ticker DB bersuffix .JK; (c) statejson --python lambda harus return dict (akhiri `...] and state`).
 6. SLOT BERIKUT (BE siang 09:30): ops-16-01 watchdog fast-path; sore/malam T-1117-M = ops-11-01-04 drift-guard (journal ids + actor) + ops-15-02 cron-hygiene + idea-15-1 gate-v2 pasangan-EMA sub-prio#1.
+
+## 2026-11-17 09:45-10:0x WIB — CTO-SIANG-1117 (slot 09:30, build/host-script only)
+1. STATE: EOD FRESH 16-Nov; prod app b80d8b53bca7/worker 8dbd45ea3768 parity (KONDEKTUR-1116) health 200; main 8606b4c==pushed base; deploy 0/2.
+2. SELESAI: ops-2026-11-16-01 + ops-2026-11-08-04 DONE (queue v674-v675, host-script 0-deploy): site-502-watchdog.sh market-hours fast-path — fail#1 Sen-Jum 09:00-16:15 kirim info-note + snapshot docker-stats; non-market/streak>=2/healthy tak tersentuh. Dry-run 4-arah PASS (bukti di changelog + queue result). Cron 920f1b73e832 panggil by-name → auto aktif tanpa restart.
+3. IN-FLIGHT: BE malam 18:30 T-1117-M bundle = ops-11-01-04 drift-guard (sub: journal ids+actor, lambda e.get('id')) + idea-15-1 gate-v2 pasangan-EMA (sub-prio#1) + ops-15-02 cron-hygiene; FE malam 19:15 prd-2026-11-16-01 wall-v2 FASE-A (night dd96b87, merge+staging :3100).
+4. JEBAKAN: (a) watchdog TIDAK di launchd — Hermes cron jobs.json 920f1b73e832 (jangan cari plist); (b) stub date untuk dry-run harus pass-through `date +%s` (epoch asli dipakai dedup); (c) staging :3100 harus standalone node server.js + cp public/static (trap CTO-siang-1116).
+5. LANGKAH PERTAMA SLOT 18:30: baca handoff ini → bundle host-script idea-15-1 dulu (gate dua-arah fiktif 546,06) → ops-11-01-04 guard reject-mode → ops-15-02 hygiene 3 job.

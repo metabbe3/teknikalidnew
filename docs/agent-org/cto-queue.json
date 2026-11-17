@@ -5388,12 +5388,13 @@
     {
       "id": "ops-2026-11-08-04",
       "priority": "P2",
-      "status": "pending",
+      "status": "done",
       "north_star": "TRUST (monitoring responsif jam market)",
       "scheduled_slot": "2026-11-17 BE Senin 09:30 bundling host-script (reslot CEO 15 Nov: slot lama 11-10 basi)",
       "spec": "[BUGFIX][OPS] sumber: post-mortem ops-2026-11-08-02. Watchdog 502 blip-hold 2-check (~10-15 mnt) terlalu lambat utk jam market: insiden 8 Nov blip 07:30 ditahan streak=1, alert baru 07:45, RTO 20 mnt — hari Minggu masih OK, tapi Sen-Jum 09:00-16:15 WIB user aktif tertinggi. INTENT: market-hours fast-path di site-502-watchdog.sh — fail PERTAMA pada jam market langsung kirim info-level note (bukan megaphone DOWN, bukan restart), streak>=2 tetap syarat alert DOWN penuh; tambah snapshot 'docker stats --no-stream' ke state dir saat fail (bukti pemakan memori utk probe OOM berikutnya). DONE WHEN: (1) dry-run simulasi fail saat jam market → info-note terkirim 1x streak=1 (log bukti); (2) di luar jam market perilaku lama utuh (streak=1 tetap ditahan); (3) changelog + bus. Host-script 0-deploy.",
       "train": "T-1117-M",
-      "reslot_note": "auto-reslot 2026-11-17: kereta T-1116-M kedaluwarsa -> kereta T-1117-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-17: kereta T-1116-M kedaluwarsa -> kereta T-1117-M (reslot_guard.py v3)",
+      "result": "CTO-SIANG-1117 DONE bersama ops-2026-11-16-01 (script sama): fast-path fail#1 market-hours + snapshot \"docker stats --no-stream\" ke $STATE_DIR/teknikal.id.stats saat fail (bukti memori utk probe OOM) — terverifikasi dry-run RUN-1 (file stats 905B berisi header+2 container). Non-market tak tersentuh. 0 deploy."
     },
     {
       "id": "fix-2026-11-08-01",
@@ -6276,10 +6277,11 @@
       "type": "ops",
       "priority": "P2",
       "north_star": "TRUST (uptime alert market-hours)",
-      "status": "pending",
+      "status": "done",
       "spec": "[BUGFIX][OPS][TRUST] Host-script only 0-deploy. site-502-watchdog.sh: market-hours fast-path Sen-Jum 09:00-16:15 WIB — fail PERTAMA kirim info-level note (bukan hold streak=2). Sumber: post-mortem ops-2026-11-08-02 (blip 07:30 ditahan, alert baru 07:45, RTO 20 mnt). JANGAN ubah logic non-market-hours. DONE WHEN: (a) grep fast-path di script; (b) dry-run simulasi fail-1 market vs non-market terdokumentasi; (c) 0 perubahan file repo.",
       "done_when": "dry-run fail-1 market vs non-market terdokumentasi + 0 file repo berubah",
-      "scheduled_slot": "2026-11-17 BE siang 09:30 (reslot CTO pagi 16 Nov: watchdog fast-path P2 baru, malam 18:30 fokus drift-guard ops-11-01-04 + gate idea-15-1; hindari overload slot)"
+      "scheduled_slot": "2026-11-17 BE siang 09:30 (reslot CTO pagi 16 Nov: watchdog fast-path P2 baru, malam 18:30 fokus drift-guard ops-11-01-04 + gate idea-15-1; hindari overload slot)",
+      "result": "CTO-SIANG-1117: market-hours fast-path live di ~/.hermes/scripts/site-502-watchdog.sh (is_market_hours Sen-Jum 09:00-16:15 base-10-safe). Dry-run 4-arah di scratch (HOME fake, notify fallback stdout): [1] market fail#1 Selasa 09:45 real-time -> info-note terkirim + log \"fail#1 JAM MARKET streak=1\" + docker-stats snapshot 905B (app 339.7MiB/16.6%, worker 154.6MiB); [2] non-market stub-0730 fail#1 -> \"blip alert ditahan\" TANPA note TANPA stats (perilaku lama utuh); [3] market fail#2 -> DOWN alert penuh tetap jalan; [4] URL hidup -> OK 200 streak reset. bash -n SYNTAX_OK. 0 file repo/app berubah (host-script only)."
     },
     {
       "id": "qa-2026-11-16-01",

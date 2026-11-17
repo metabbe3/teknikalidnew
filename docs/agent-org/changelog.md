@@ -1519,3 +1519,12 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - Verify two-way (charter): arah-valid `gate-valid-tek-1117.md` exit-0 [sector_pct ✓ Teknologi 0,8% | replay 0.83]; arah-fiktif `gate-fiktif2-test-1117.md` exit-2 [sector_pct ✗ 9,9% | replay=0.83; 4 FAIL lain tetap]; regression fixture `gate-test/pass.md` `--as-of 2026-11-13` exit-0 [2 klaim sektor dulunya selalu-SKIP kini ✓✓, ff_market ✓]. FAIL tanpa --as-of = data-drift sesi (benar fail-closed), bukan regresi.
 - QA: verdict final milik QA Sentinel 22:00 (H3); impact_check_due: 2026-11-20 (brief generator 08:10 pagi harus menjalankan sector checker live — cek note gate di brief esok).
 - Rollback: n/a — host-script; revert = restore 2 baris SQL-string (git-less script, backup semantics di lessons-learned).
+
+## 2026-11-17 CTO-SIANG-1117 — ops-2026-11-16-01 + ops-2026-11-08-04 (watchdog fast-path market-hours)
+- task-id: ops-2026-11-16-01, ops-2026-11-08-04 | type: ops/bugfix | PRD: n/a (ops bebas PRD-gate)
+- pos: [BUGFIX][TRUST] monitoring responsif jam market
+- change: ~/.hermes/scripts/site-502-watchdog.sh — is_market_hours() Sen-Jum 09:00-16:15 WIB (base-10-safe) + fail#1 fast-path (info-note non-megaphone) + snapshot docker stats --no-stream ke state dir; non-market & streak>=2 & healthy path tak tersentuh
+- deploy: n/a (host-script 0-deploy; cron Hermes 920f1b73e832 */5mnt panggil by-name, auto versi baru)
+- verify: bash -n SYNTAX_OK; dry-run 4-arah scratch: market fail#1 Selasa 09:45 real -> info-note + stats 905B (app 339.7MiB/16.6% worker 154.6MiB); non-market stub-0730 -> blip ditahan tanpa note/stats; fail#2 -> DOWN alert penuh; healthy 200 -> streak reset
+- QA: verdict milik QA Sentinel (H3 — bukti fisik di field result queue v674-v675)
+- impact_check_due: 2026-11-20 (watchdog log: fail#1 market memicu info-note, non-market tetap ditahan)
