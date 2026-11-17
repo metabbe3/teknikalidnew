@@ -18,6 +18,7 @@ import type { McResult } from "@/lib/monte-carlo";
 import { TradingPlanCard } from "@/components/stock/trading-plan-card";
 import { SignalBreakdownDetails } from "@/components/stock/signal-breakdown-details";
 import { GuestOverlimitBanner } from "@/components/ui/guest-overlimit-banner";
+import { MessageCircle } from "lucide-react";
 import { GuestInlineUpsell } from "@/components/stock/guest-inline-upsell";
 import {
   evaluateGuestQuotaVisit,
@@ -307,10 +308,9 @@ export function GuestSignalBreakdownGate({
     >
       <div className="flex items-center justify-between text-xs font-semibold text-text-tertiary">
         <span className="flex items-center gap-1.5">
-          <span aria-hidden="true">🔒</span>
-          <span>Rincian {breakdown.length} Indikator Terkunci</span>
+          <span>Rincian {breakdown.length} Indikator {cleanTicker || "Saham Ini"}</span>
           <span className="hidden sm:inline text-[10px] font-normal text-text-tertiary">
-            (kuota 3 saham gratis habis)
+            (3 dari 3 saham gratis hari ini sudah dibuka)
           </span>
         </span>
         <Link
@@ -322,7 +322,8 @@ export function GuestSignalBreakdownGate({
         </Link>
       </div>
       {/* Owner 8 Nov: soft-sell agent — saat friksi tertinggi (terkunci), tawarkan jalur
-          analisa gratis via Agent Telegram (deeplink src_gate_, funnel tunggal produk) */}
+          analisa gratis via Agent Telegram (deeplink src_gate_, funnel tunggal produk).
+          prd-2026-11-16-01: copy value-first + preview ticker, emoji → lucide (pola ux-16-02). */}
       <a
         href={`https://t.me/TeknikalidAgentBot?start=src_gate_${cleanTicker}`}
         target="_blank"
@@ -331,7 +332,7 @@ export function GuestSignalBreakdownGate({
         className="mt-2 flex min-h-[44px] items-center justify-between rounded-lg border border-accent/30 bg-accent/5 px-3 py-2 text-xs font-medium text-text-secondary hover:border-accent/60 hover:text-accent transition-colors"
       >
         <span className="flex items-center gap-1.5 truncate">
-          <span aria-hidden="true">🤖</span>
+          <MessageCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
           <span>
             Tetap mau analisa {cleanTicker || "saham ini"}? Tanya AI gratis 3x/hari →
           </span>
