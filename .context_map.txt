@@ -94,6 +94,7 @@ scripts/selftest/movement-replay-gate.selftest.ts
 scripts/selftest/one-tap-watchlist.selftest.ts
 scripts/selftest/pasar-live-doctrine.selftest.ts
 scripts/selftest/quote-null.selftest.ts
+scripts/selftest/related-articles-bridge.selftest.ts
 scripts/selftest/remove-dead-community-blocks.selftest.ts
 scripts/selftest/screener-index-leak.selftest.ts
 scripts/selftest/sector-landing.selftest.ts
@@ -221,6 +222,7 @@ src/lib/queue.ts
 src/lib/register-funnel.test.ts
 src/lib/register-funnel.ts
 src/lib/rehype-stock-linker.ts
+src/lib/related-articles.ts
 src/lib/remark-callouts.ts
 src/lib/retention-email.service.ts
 src/lib/retention.service.ts
@@ -376,8 +378,8 @@ src/app/(public)/sektor/[slug]/page.tsx:27:export function generateStaticParams(
 src/app/(public)/sektor/[slug]/page.tsx:31:export async function generateMetadata({
 src/app/(public)/stocks/[ticker]/indikator/page.tsx:14:export const revalidate = 3600; // ISR — past rows immutable, latest day refreshes hourly
 src/app/(public)/stocks/[ticker]/indikator/page.tsx:89:export async function generateMetadata({
-src/app/(public)/stocks/[ticker]/page.tsx:102:export async function generateMetadata({
-src/app/(public)/stocks/[ticker]/page.tsx:82:export const dynamic = "force-dynamic";
+src/app/(public)/stocks/[ticker]/page.tsx:103:export async function generateMetadata({
+src/app/(public)/stocks/[ticker]/page.tsx:83:export const dynamic = "force-dynamic";
 src/app/(public)/stocks/page.tsx:24:export const dynamic = "force-dynamic";
 src/app/(public)/stocks/page.tsx:52:export const metadata → Metadata = {
 src/app/(public)/swing/page.tsx:12:export const dynamic = "force-dynamic";
