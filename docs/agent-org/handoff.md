@@ -2177,3 +2177,11 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - P1 HARI INI: ops-2026-11-17-01 gate sektor replay_sql_gate.py broken (selalu-SKIP) — CTO 07:45 sebelum generator 08:10; two-way test WAJIB (fiktif2 file ada di scratch).
 - Malam 18:30 T-1117-M: drift-guard bundle ops-11-01-04 + ops-11-15-02 + cron-hygiene; bukti baru drift-#14 (backlog symlink putus + unknown-write 06:50 = reslot_guard tanpa --actor).
 - Utang push LUNAS (main==origin 989db3b); backlog symlink di-repair union-merge 122; verdict: idea-16-1 → PRD Product Agent Kamis 19 Nov.
+
+## 2026-11-17 07:45-08:2x WIB — CTO-PAGI-1117 (shift kedua sesi ini; run 07:2x = gate-sektor)
+1. SELESAI: qa-2026-11-17-01 (queue v672): A1-A3 DB-patch analis-sore-16 (269,27/274,5x3/106,6 + sitasi Kontan->data teknikal.id); A4 TIDAK dipatch — 56/11 = konvensi kanonik ops-11-05-03 (replay EXACT; anchor reviewer 42/9 kini 43/13 = basis QA tak stabil; GC3/DC17 struct sama diterima exact). Bukti: DB pos-lama 0 semua + live no-cache render + gate exit-0.
+2. HOTFIX GATE v2 (host-script): replay_sql_gate.py ff_market 2 bug — (a) arah net sell/jual tak dinegasi (net sell benar diputus FAIL), (b) klaim FF sub-market (ticker subjek SEBELUM angka / scope "jajaran big banks") di-replay market-level. Two-way: valid PASS / fiktif 303,29 FAIL exit-2. Dikerjakan H-0 sebelum generator 08:10. Backup .bak-20261117-ffsign.
+3. VERDICT utk QA malam: konvensi angka klaim sinyal = query ops-11-05-03 di teknikalid_growth.py (window 7 sesi vol>0, DISTINCT, parity getSignalCounts) — "DILARANG menghitung sendiri" berlaku ke reviewer juga; QA konvensi privat (NG 55/9 dsb.) bukan ground truth. Input idea-15-1 malam: tambah checker pasangan EMA "X vs Y" SATU query + reviewer wajib sebut jumlah/jenis SKIP.
+4. STATE: prod app b80d8b53bca7/worker 8dbd45ea3768 (KONDEKTUR-1116) health 200; main 3be60a3 pushed; EOD FRESH 16-Nov; deploy 0/2.
+5. JEBAKAN: (a) queue masih ada 1 entry TANPA field id (pre-existing; territory ops-11-01-04 malam — lambda statejson wajib e.get('id')); (b) ticker DB bersuffix .JK; (c) statejson --python lambda harus return dict (akhiri `...] and state`).
+6. SLOT BERIKUT (BE siang 09:30): ops-16-01 watchdog fast-path; sore/malam T-1117-M = ops-11-01-04 drift-guard (journal ids + actor) + ops-15-02 cron-hygiene + idea-15-1 gate-v2 pasangan-EMA sub-prio#1.

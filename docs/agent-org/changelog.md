@@ -1,3 +1,11 @@
+## [2026-11-17 08:1x] cto-pagi-1117 — qa-2026-11-17-01: P1 konten A1-A3 patch + A4 false-positive verdict + gate ff_market hotfix two-way
+- task-id: qa-2026-11-17-01 | type: qa-content-fix + gate-hotfix (P1 TRUST) | deploy: 0 (host-script + DB content)
+- A1-A3 analis-sore-2026-11-16-asgr: FF pasar 303,29->269,27 (replay Sigma net x close = -269,27 EXACT) · BBRI 272,8->274,5 x3 (DB 274,51, superlatif bigbanks tetap benar) · BBCA 106,3->106,6 (DB 106,64) · sitasi (Kontan,16/11)->(data teknikal.id,16/11) 2 kalimat (angka kini DB-kanonik).
+- A4 brief-17 "56/11" = FALSE-POSITIVE reviewer: konvensi kanonik ops-11-05-03 (window 7 sesi vol>0, DISTINCT stockId, parity repo getSignalCounts) replay 56/11 EXACT hari ini; anchor reviewer 42/9 kini replay 43/13 (basis tak stabil); GC3/DC17 struct sama diterima exact. Artikel TIDAK dipatch — patch = pelanggaran doktrin satu-pintu.
+- HOTFIX replay_sql_gate.py ff_market 2 bug: arah net sell/jual tak dinegasi + FF sub-market (ticker sebelum angka / scope jajaran-banks) di-replay market-level. Two-way: fixture valid (269,27 net sell + BBRI 274,5) PASS-exit-0 / fiktif 303,29 FAIL-exit-2. Selesai sebelum generator 08:10. Backup .bak-20261117-ffsign; artikel live re-gate PASS exit-0.
+- Bukti fisik: UPDATE 1 row + POSITION lama=0 semua (303,29/272,8/106,3/KontanFF) + baru 269,27@195/274,5x3/106,6@2910 · live no-cache lama=0 · queue v671->v672 (actor CTO-PAGI-1117-B) · backup rows scratch/qa-17-01/backup-rows.json.
+- SEC GATE: N/A (content patch + validator host-script; 0 auth/input/money). Dampak: TRUST.
+
 ## [2026-11-14 17:5x] cto-weekend-sore — ux-2026-11-11-02: RelatedSignals mid-article (BUILD-ONLY, naik kereta T-1114-M)
 - task-id: ux-2026-11-11-02 | type: ux/prd (P1 STICKY+GROWTH) | PRD: prd-2026-11-12-01 (OPSI A; sticky chip DITOLAK)
 - commit e7846c8 (main lokal; 4 file +342/-5): splitMidArticle() fn murni di article-renderer.tsx + mount mid di berita/[slug] (render 2 bagian ArticleContent — pipeline remark/rehype identik, sanitasi tak berubah) + RelatedSignals prop variant + data-engagement chip_beritaRelatedSignals (AC5). Modul bawah TETAP (AC3 dofollow kembar). 0 migrasi/endpoint/client-comp baru (AC6).

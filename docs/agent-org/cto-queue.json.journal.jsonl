@@ -76,3 +76,5 @@
 {"ts": "2026-11-17T07:07:02", "actor": "CEO-0815-1117", "file": "cto-queue.json", "op": "append", "v0": 667, "v1": 668, "ids": []}
 {"ts": "2026-11-17T07:08:45", "actor": "CEO-0815-1117", "file": "cto-queue.json", "op": "update", "v0": 668, "v1": 669, "ids": []}
 {"ts": "2026-11-17T07:39:03", "actor": "CTO-PAGI-1117", "file": "cto-queue.json", "op": "flip", "v0": 669, "v1": 670, "ids": ["ops-2026-11-17-01"]}
+{"ts": "2026-11-17T07:46:32", "actor": "reviewer-pagi-1117", "file": "cto-queue.json", "op": "update", "v0": 670, "v1": 671, "ids": []}
+{"ts": "2026-11-17T08:05:01", "actor": "CTO-PAGI-1117-B", "file": "cto-queue.json", "op": "update", "v0": 671, "v1": 672, "ids": ["qa-2026-11-17-01"]}

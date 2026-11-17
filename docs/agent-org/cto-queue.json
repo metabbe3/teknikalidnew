@@ -4446,7 +4446,7 @@
       "type": "ops",
       "priority": "P3",
       "north_star": "TRUST (aset publik 404 = halaman rusak di mata user)",
-      "status": "deployed",
+      "status": "qa_pass",
       "train": "T-1117-N",
       "scheduled_slot": "2026-11-16 BE siang 09:30 sweep 93 logo 404 + fallback initial-letter -> kereta T-1116-N",
       "spec": "SRE candidate sre-2026-11-03-1 PROMOTE CEO 4 Nov: 93 logo emiten 404 di halaman pasar (~230 hit/24h, termasuk BBCA.jpg — emiten blue-chip tampil broken-image). TASK: sweep daftar 93 URL logo → (a) perbaiki path/sumber yang salah ke CDN/asset benar, (b) untuk yang logonya memang tak tersedia → fallback komponen initial-letter yang sudah ada di repo (jangan asset baru), (c) ukur ulang hit 404 pasca-fix. DONE WHEN: sweep 93 URL selesai dengan tabel status; sample curl 10 logo → semua 200/304 (0 404); hit 404 logo/24h turun dari ~230 ke <10 (cek access log/access-log summary).",
@@ -4456,7 +4456,8 @@
       "qa_verified": true,
       "deployed_at": "2026-11-16T22:31:00+07:00",
       "qa_note": "QA 17Nov 03:5x: PASS. curl live: /logos/JECX.jpg=200 content-type image/png; traversal ..%2f..%2fetc%2fpasswd=400; sample 10 logo png/svg (BBCA/BBRI/BMRI/TLKM/ASII) semua 200; route src/app/logos/[file]/route.ts ada di HEAD 989db3b; app log 24h GET /logos 404 = 0 (dari ~663/hari).",
-      "qa_at": "2026-11-17T04:15:00+07:00"
+      "qa_at": "2026-11-17T04:15:00+07:00",
+      "qa_verified_by": "reviewer-pagi-1117"
     },
     {
       "id": "qa-2026-11-04-01",
@@ -6235,7 +6236,7 @@
       "date": "2026-11-15",
       "type": "ux",
       "priority": "P3",
-      "status": "deployed",
+      "status": "qa_pass",
       "area": "frontend",
       "reported_by": "ux-fe-1030",
       "created": "2026-11-15T11:02+07:00",
@@ -6251,7 +6252,8 @@
       "deployed_at": "2026-11-16T22:31:00+07:00",
       "qa_note": "QA 17Nov 04:0x: PASS. Source header.tsx:63/81/106/190 + user-menu.tsx:35 = lg-only persis klaim; live SSR hidden lg:flex=1; REAL-ChROME CDP (bukan lightpanda): @768 scrollW=768=vw nav-desktop display:none hamburger ada; @900 scrollW=900=vw; @1280 nav display:flex x=491 w=499. Overflow-tablet hilang, nav penuh >=1024.",
       "qa_at": "2026-11-17T04:15:00+07:00",
-      "reslot_note": "auto-reslot 2026-11-17: kereta T-1116-N kedaluwarsa -> kereta T-1117-N (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-17: kereta T-1116-N kedaluwarsa -> kereta T-1117-N (reslot_guard.py v3)",
+      "qa_verified_by": "reviewer-pagi-1117"
     },
     {
       "id": "bo-2026-11-16-01",
@@ -6307,7 +6309,8 @@
           "scheduled_slot": "2026-11-16 22:15 kereta T-1116-N (merged main ce9a9df pagi ini; build BE siang 09:30)",
           "result": "MERGED main ce9a9df + pushed origin (4963830..ce9a9df) CTO pagi 16 Nov 07:5x WIB; tsc REAL_EXIT=0, selftest 8/8 REAL_EXIT=0; commit kode c628163 (feat) + 6d7df47 (test) + 53d9ec5 (spec); blocklist +5 anonId e2e staging night-session (commit d0fc402). Deployed_at: n/a (build-only; kereta T-1116-N 22:15). Verdict QA = Sentinel 22:00.",
           "qa_task": false,
-          "created_by": "CTO-PAGI-1116 (recover night branch yang tak ter-report di bus/queue)"
+          "created_by": "CTO-PAGI-1116 (recover night branch yang tak ter-report di bus/queue)",
+          "qa_verified_by": null
         }
       ]
     },
@@ -6365,7 +6368,7 @@
     {
       "id": "prd-2026-11-15-01",
       "train": "T-1117-N",
-      "status": "deployed",
+      "status": "qa_pass",
       "priority": "P2",
       "title": "P2 [KONVERSI] one-tap watchlist guest: bintang pantau 1-klik overlay (AC1) + preset kurasi 1-klik empty-state (AC2: Bank Bluechip / Pembagi Dividen Terdekat / Populer Minggu Ini) + label T3 satu-pintu T3_SAVE_LABELS — night 15 Nov tanpa laporan, recovered+merged ce9a9df CTO-PAGI-1116",
       "result": "DEPLOYED KONDEKTUR-1116 22:31 dari HEAD 989db3b (rider ce9a9df ancestor-OK, tsc 0 + selftest 8/8 by CTO pagi). RESTORE drift-#13: entry hilang total dari queue live v659 DAN semua snapshot git v635-v652; journal hanya patch v646->v647 (append tak terselamatkan). Bukti fisik pasca-deploy: /watchlist 200 memuat 3 preset SSR (Bank Bluechip / Pembagi Dividen Terdekat / Populer Minggu Ini — grep live 1 each); marker image: Bank Bluechip + pantau_tambah di .next/server/app/(public)/watchlist/page.js. Verdict final = QA Sentinel 17 Nov (H3: kondektur tulis bukti saja).",
@@ -6374,12 +6377,13 @@
       "qa_verified": true,
       "qa_note": "QA 17Nov 04:0x: PASS. /watchlist=200 + 3 preset SSR live (Bank Bluechip/Pembagi Dividen Terdekat/Populer Minggu Ini grep=1 each); live client chunk page-b4ec61a20df0e8c8.js=200 memuat pantau_tambah (bintang guest aktif); container b80d8b53bca7 watchlist page.js preset=1; T3_SAVE_LABELS satu-pintu di funnel-v2 route + smoke actor 50a26a2b ter-blocklist (9 aktor diverifikasi).",
       "qa_at": "2026-11-17T04:15:00+07:00",
-      "reslot_note": "auto-reslot 2026-11-17: kereta T-1116-N kedaluwarsa -> kereta T-1117-N (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-17: kereta T-1116-N kedaluwarsa -> kereta T-1117-N (reslot_guard.py v3)",
+      "qa_verified_by": "reviewer-pagi-1117"
     },
     {
       "id": "fix-2026-11-16-02",
       "train": "T-1117-N",
-      "status": "deployed",
+      "status": "qa_pass",
       "priority": "P2",
       "title": "FIX [TRUST] AI sanitize lapis-4 normalizeUnit: Rp X M -> Rp X miliar deterministik (eval 16 Nov: Rp57,64 M bersebelahan Rp274,51 miliar satu kalimat) — commit ac9ef8b rider tanpa entry",
       "result": "DEPLOYED KONDEKTUR-1116 22:31 (HEAD 989db3b). Bukti: unit test 22/22 PASS pre-deploy (tsx --test ai-sanitize, fail 0); marker image app chunk 1253.js + 7977.js (miliar/replace). Bukti LIVE output-ubah = territory QA Sentinel/eval loop. Verdict = Sentinel.",
@@ -6387,12 +6391,13 @@
       "qa_verified": true,
       "qa_note": "QA 17Nov 04:0x: PASS. Replay unit test npx tsx --test ai-sanitize.test.ts = 22 pass/0 fail; normalizeUnit HEAD ac9ef8b; marker server chunk 1253.js+7977.js (memuat 'miliar') ada di container live b80d8b53bca7. Catatan: live natural-output AI = territory eval-loop, marker+test cukup utk verdict deploy.",
       "qa_at": "2026-11-17T04:15:00+07:00",
-      "reslot_note": "auto-reslot 2026-11-17: kereta T-1116-N kedaluwarsa -> kereta T-1117-N (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-17: kereta T-1116-N kedaluwarsa -> kereta T-1117-N (reslot_guard.py v3)",
+      "qa_verified_by": "reviewer-pagi-1117"
     },
     {
       "id": "ux-2026-11-16-02",
       "train": "T-1117-N",
-      "status": "deployed",
+      "status": "qa_pass",
       "priority": "P3",
       "title": "UX [UI-CRAFT] emoji chat -> MessageCircle lucide di 9 CTA funnel AI + gap-1.5 — commit 989db3b rider tanpa entry (Sentinel 22:1x sudah menandai)",
       "result": "DEPLOYED KONDEKTUR-1116 22:31 (HEAD 989db3b = commit rider). Bukti fisik pasca-deploy: /stocks/BBCA.JK SSR memuat path svg MessageCircle M2.992 16.342 x2; emoji chat live = 0 di /stocks/BBCA.JK + / + /berita; marker bundle: 4 chunk static + 19 server file. Verdict = Sentinel.",
@@ -6400,7 +6405,8 @@
       "qa_verified": true,
       "qa_note": "QA 17Nov 04:0x: PASS. /stocks/BBCA.JK SSR memuat path svg MessageCircle M2.992 16.342 x2; emoji chat live = 0 di BBCA.JK + home + /berita; commit rider 989db3b = HEAD live.",
       "qa_at": "2026-11-17T04:15:00+07:00",
-      "reslot_note": "auto-reslot 2026-11-17: kereta T-1116-N kedaluwarsa -> kereta T-1117-N (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-17: kereta T-1116-N kedaluwarsa -> kereta T-1117-N (reslot_guard.py v3)",
+      "qa_verified_by": "reviewer-pagi-1117"
     },
     {
       "id": "ops-2026-11-16-02",
@@ -6440,6 +6446,17 @@
       "spec": "[P1][BUGFIX][OPS][TRUST] GATE SEKTOR replay_sql_gate.py BROKEN — checker sector_pct SELALU-SKIP sejak build BE-malam 16 Nov 19:26 (fallback manual pasca claude 2x gagal; TANPA test dua arah = pelanggaran charter). Bukti CEO 17 Nov 07:0x: draft fiktif 'Sektor Teknologi menguat 9,9%' (aktual DB 0,83%) → PASS exit-0 dgn note 'replay sektor gagal - SKIP (psql ERROR near AND)'. ROOT CAUSE (2 token, baris ~253 _sector_pct): (1) substring ''^%'' adalah Python string-adjacency → quote hilang; (2) SQ penutup setelah asof TIDAK ADA → literal SQL tak tertutup. FIX: ganti jadi ... NOT LIKE ' + SQ + '^%' + SQ + ' AND sp.volume>0 AND sp.date<=' + SQ + asof + SQ + '), '. WAJIB TEST DUA ARAH (charter, exit code dicetak di result): (a) arah-valid: klaim sektor dekat angka DB → PASS/ok-true; (b) arah-fiktif: file ~/.hermes/cache/scratch/gate-fiktif2-test-1117.md → FAIL exit-2; (c) regression: ff_market + rank_first + breadth checker tetap jalan (fiktif2 sudah membuktikan 4 FAIL). Host-script 0-deploy. DEADLINE 08:10 hari ini: brief generator pagi memakai gate ini; pola transplantasi-angka 3 hari beruntun = kelas bug termahal. DONE WHEN: two-way test exit code tercantum di result (valid→0, fiktif→2) + 0 deploy (host-script) + bukti journal/statejson flip.",
       "result": "DONE 07:33 WIB (deadline 08:10 terpenuhi, sebelum brief generator). Root-cause aktual DUA token-SQ hilang di _sector_pct (spec sebut 1, probe langsung temukan 2): (a) L255 ''^%'' string-adjacency quote hilang + SQ penutup asof absen; (b) L263 s.sector= SQ pembuka tanpa penutup. FIX host-script: replay_sql_gate.py L255+L263. TWO-WAY (charter): arah-valid gate-valid-tek-1117.md exit-0 [sector_pct ✓ Teknologi 0,8% replay 0.83]; arah-fiktif gate-fiktif2-test-1117.md exit-2 [sector_pct ✗ 9,9% replay=0.83 + 4 FAIL lain tetap]; regression fixture pass.md --as-of 2026-11-13 exit-0 [2 klaim sektor dulunya selalu-SKIP kini ✓]. AST-parse OK. 0 deploy (host-script). Bukti exit code dicetak di result = DONE WHEN terpenuhi.",
       "verified_evidence": "VALID_EXIT=0 FIKTIF_EXIT=2 ASOF13_EXIT=0; AST-OK"
+    },
+    {
+      "id": "qa-2026-11-17-01",
+      "date": "2026-11-17",
+      "priority": "P1",
+      "status": "done",
+      "type": "qa-content-fix",
+      "north_star": "TRUST - konten salah angka = trust runtuh; pilar TRUST (data reliable)",
+      "title": "P1 patch 4 FATAL QA 17 Nov: FF pasar 303,29->269,27 + BBRI 272,8->274,5 + BBCA 106,3->106,6 (analis-sore-16) + EMA window 56/11->55/9 (brief-17)",
+      "spec": "INTENT: samakan angka artikel dengan kanonik DB satu-pintu (post-publish fix, slot CTO pagi 07:30). A1 analis-sore-2026-11-16-asgr: lede net sell asing Rp303,29 miliar -> Rp269,27 miliar (SQL Sigma net_lembar x close 16 Nov = -269,27; konsisten dgn analis-pagi yang sudah exact). A2 artikel sama: net buy asing terbesar di jajaran big banks Rp272,8 miliar -> Rp274,5 miliar (ForeignFlow 16 Nov BBRI net = 274,51 M; superlatif TETAP BENAR: BBRI no.1 bigbanks). A3 artikel sama: BBCA Rp106,3 miliar -> Rp106,6 miliar (DB 106,64). A4 brief-pasar-idx-2026-11-17-rotasi-bank: 56 saham EMA-cross bullish vs 11 bearish window 7-16 Nov -> 55 vs 9 (konvensi non-gorengan aktif = konvensi situs, c.f. 42/9 window 6-13) ATAU 60 vs 8 (seluruh saham aktif); angka 56 muncul 2x di brief (bullet [56 saham mencetak EMA-cross bullish] + kalimat [Kontrasnya penting: 56 sinyal bullish vs breadth yang cuma 270 naik]) - patch KEDUANYA konsisten. ACCEPTANCE: (1) grep-H2 semua token lama = 0 di content+excerpt+live no-cache: 303,29 / 272,8 / 106,3 (awas substring: 106,3 vs 106,6 beda 1 char, cek persis) / frasa [56 saham mencetak] + [56 sinyal bullish]; (2) token baru hadir di semua lokasi; (3) replay_sql_gate exit 0 pasca-patch; (4) curl live 200 + angka baru render; (5) JANGAN sentuh angka EXACT lain (semua sudah QA-verified: 88,55 jt lembar, RSI 56,4/71,6/71,8/62,7, skor 0,68 ASGR top-1 di antara Sangat Menguat 16 Nov, breadth 270/414/149, GC 3 + 17 DC window 7-16, oversold 33). Backup row ke ~/.hermes/cache/scratch/qa-17-01/. QA oleh reviewer-pagi-1117 17 Nov 07:2x.",
+      "result": "DONE CTO-PAGI 17 Nov 08:1x. A1-A3 DB-patch analis-sore-2026-11-16-asgr: FF pasar 303,29->269,27 (replay Sigma net x close = -269,27 EXACT), BBRI 272,8->274,5 x3 lokasi (DB 274,51; superlatif bigbanks tetap benar), BBCA 106,3->106,6 (DB 106,64); sitasi (Kontan,16/11)->(data teknikal.id,16/11) di 2 kalimat karena angka kini DB-kanonik. BUKTI H1: DB POSITION lama semua=0 (303,29/272,8/106,3/KontanFF) + token baru 269,27@195, 274,5x3, 106,6@2910 + live no-cache lama=0 baru render + replay gate exit-0. A4 = FALSE-POSITIVE reviewer: 56/11 = konvensi kanonik ops-11-05-03 (window 7 sesi vol>0, DISTINCT stockId, parity repo getSignalCounts), replay hari ini EXACT; anchor reviewer 42/9 kini replay 43/13 = basis QA tak stabil; GC3/DC17 dari struct sama diterima exact. Artikel brief-17 TIDAK dipatch (patch = pelanggaran doktrin satu-pintu). HOTFIX GATE v2: replay_sql_gate.py ff_market 2 bug (arah net-sell tak dinegasi; FF sub-market ticker/scope di-replay market-level) fixed two-way (valid PASS / fiktif 303,29 FAIL exit-2) SEBELUM generator 08:10; backup .bak-20261117-ffsign. Backup rows scratch/qa-17-01/backup-rows.json. 0 build 0 deploy. Pilar TRUST."
     }
   ]
 }
