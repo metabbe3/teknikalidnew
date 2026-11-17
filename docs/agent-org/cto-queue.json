@@ -6324,7 +6324,7 @@
       "title": "ROOT-FIX [BUGFIX][TRUST] replay_sql_gate: gate sektor + superlatif + angka market-level (FF) — hari-3 beruntun transplantasi (qa-14-01 breadth, qa-15-01 sektor, qa-16-01 FF+superlatif)",
       "spec": "(1) Tambah checker di ~/.hermes/scripts/replay_sql_gate.py: angka sektor vs snapshot weekly-report.service satu-pintu; superlatif_token (satu-satunya/terkuat/terlemah/tertinggi) wajib ter-replay vs DB claim; angka market-level (foreign flow Rp X miliar) vs konvensi kanonik. (2) Payload Mandor lampirkan snapshot sektor+FF. (3) WAJIB test dua arah: artikel valid PASS, artikel dengan FF 546,06 fiktif FAIL (exit 2). (4) Host-script 0-deploy. Pilar: TRUST.",
       "done_when": "exit 0 artikel valid + exit 2 utk FF fiktif 546,06/superlatif ASGR-style/sektor mock — dua arah terbukti; 0 perubahan konten lain",
-      "scheduled_slot": "2026-11-16 BE malam 18:30 bundle host-script — SUB-PRIORITY #1 dalam bundle (sebelum ops-15-02 cron-hygiene; bukti: 3 hari FATAL beruntun) | reslot CTO pagi 16 Nov dari backlog (dispatched idea)",
+      "scheduled_slot": "2026-11-17 BE malam 18:30 T-1117-M SUB-PRIORITY #1 (reslot CTO-SIANG-1117: teks lama 16-Nov basi; ff_market+gate-sektor SUDAH dihotfix CTO-PAGI-1117 pagi ini — sisa checker pasangan EMA X-vs-Y SATU query + reviewer wajib sebut jumlah/jenis SKIP)",
       "created_at": "2026-11-16T07:58:00+07:00",
       "source": "CEO verdict 15 Nov + reslot CTO 16 Nov (hari-3 transplantasi)"
     },
