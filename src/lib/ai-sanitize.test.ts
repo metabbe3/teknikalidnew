@@ -142,3 +142,41 @@ test("sudah 'miliar' → utuh (idempotent)", () => {
 test("string kosong → tetap kosong", () => {
   assert.equal(normalizeUnit(""), "");
 });
+
+// ─── neutralizeFollowupFraming (loop 17 Nov): chip [FOLLOWUPS] netral ───
+import { neutralizeFollowupFraming } from "./ai-sanitize";
+
+test("chip 'layak dibeli?' → diganti chip netral (kasus juri 16 Nov)", () => {
+  const t = "RSI BBCA 52,94 netral.\n\nData teknikal ya, bukan rekomendasi beli/jual.\n\n[FOLLOWUPS] Layak dibeli? | Kenapa RSI-nya netral? | Support di mana?";
+  const r = neutralizeFollowupFraming(t);
+  assert.equal(/layak dibeli/i.test(r), false);
+  assert.equal(r.includes("Apa risiko utama yang perlu dipantau?"), true);
+  assert.equal(r.includes("Kenapa RSI-nya netral?"), true); // chip netral utuh
+  assert.equal(r.includes("[FOLLOWUPS]"), true);
+});
+
+test("chip 'layak dikumpul' + 'waktunya jual' → dua-duanya diganti, chip faktual utuh", () => {
+  const t = "[FOLLOWUPS] Layak dikumpul perlahan? | Sudah waktunya jual? | Emisi obligasi kapan?";
+  const r = neutralizeFollowupFraming(t);
+  assert.equal(/dikumpul/i.test(r), false);
+  assert.equal(/waktunya jual/i.test(r), false);
+  assert.equal(r.includes("Bagaimana tren jangka pendeknya?"), true);
+  assert.equal(r.includes("Emisi obligasi kapan?"), true); // faktual → tidak disentuh
+});
+
+test("pertanyaan faktual 'Asing beli saham apa?' → TIDAK disentuh", () => {
+  const t = "[FOLLOWUPS] Asing beli saham apa kemarin? | Kenapa BBRI diborong? | IHSG naik berapa?";
+  assert.equal(neutralizeFollowupFraming(t), t);
+});
+
+test("tanpa [FOLLOWUPS] → teks utuh", () => {
+  const t = "Layak dibeli? tanpa marker apapun.";
+  assert.equal(neutralizeFollowupFraming(t), t);
+});
+
+test("badan jawaban yang menyebut 'layak beli' tetap utuh (hanya chip disentuh)", () => {
+  const t = "Kalau kriterianya terpenuhi baru dipertimbangkan layak beli.\n\n[FOLLOWUPS] Layak dibeli sekarang? | RSI artinya apa?";
+  const r = neutralizeFollowupFraming(t);
+  assert.equal(r.startsWith("Kalau kriterianya terpenuhi baru dipertimbangkan layak beli."), true);
+  assert.equal(/Layak dibeli sekarang/.test(r), false);
+});

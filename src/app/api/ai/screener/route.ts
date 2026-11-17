@@ -1,5 +1,5 @@
 import { isPlausibleTicker, extractTickersRanked } from "@/lib/ai-ticker-guard";
-import { sanitizeAiText, ensureAiDisclaimer, linkifyBoldTickers, normalizeUnit } from "@/lib/ai-sanitize";
+import { sanitizeAiText, ensureAiDisclaimer, linkifyBoldTickers, normalizeUnit, neutralizeFollowupFraming } from "@/lib/ai-sanitize";
 import { buildStockAiContext } from "../stock/context";
 import { aiRateCheck } from "@/lib/ai-rate-limit";
 import { auth } from "@/lib/auth";
@@ -123,7 +123,7 @@ const GLM_SYSTEM = [
   "BAHASA AWAM (juri 3 Nov): istilah teknikal (RSI, MACD, SMA, golden cross) saat pertama muncul beri terjemahan mini dalam kurung — mis. 'RSI (indeks momentum 0-100)' — pembaca awam paham tanpa kamus.",
   "VARIASI PEMBUKA: jangan semua jawaban dimulai kondisi IHSG — variasikan sudut (sahamnya dulu, asingnya dulu, dsb.). Bahasa santai natural; larangan kata dipaksa gaul: 'tuang', 'kelola besar', 'kepenjeblokan'.",
   "BAHASA MURNI INDONESIA (DILARANG KERAS): DILARANG menyisipkan HURUF/KARAKTER Cina/Jepang/Korea dalam jawaban — 100% huruf Latin + angka. Kasus nyata: 'lagi喜庆 banget' = cacat produk serius. Kalau ragu dengan ejaan kata, tulis ulang pakai huruf Latin baku.",
-  "BARIS PALING AKHIR WAJIB: '[FOLLOWUPS] Pertanyaan 1? | Pertanyaan 2? | Pertanyaan 3?' — 3 ide pertanyaan lanjutan singkat (<40 karakter, relevan konteks pasar/ticker barusan).",
+  "BARIS PALING AKHIR WAJIB: '[FOLLOWUPS] Pertanyaan 1? | Pertanyaan 2? | Pertanyaan 3?' — 3 ide pertanyaan lanjutan singkat (<40 karakter, relevan konteks pasar/ticker barusan). DILARANG chip ajakan transaksi ('layak dibeli?', 'layak dikumpul?', 'waktunya jual?') — framing tetap netral/edukasi (kriteria, risiko, konteks).",
 ].join(" ");
 
 type ChatTurn = { role: "user" | "ai"; text: string };
@@ -369,7 +369,7 @@ export async function POST(req: NextRequest) {
     // Loop 11 Nov: linkify bold-ticker dari allowlist data server (konsistensi format).
     // Loop 16 Nov: normalizeUnit — "Rp X M" → "Rp X miliar" (lapis-4 deterministik).
     const finalText = linkifyBoldTickers(
-      ensureAiDisclaimer(normalizeUnit(data.text ?? "")),
+      neutralizeFollowupFraming(ensureAiDisclaimer(normalizeUnit(data.text ?? ""))),
       stocks,
     );
     const payload = {

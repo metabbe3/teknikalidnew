@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { buildPasarContext } from "@/lib/ai-pasar-context";
 import { prisma } from "@/lib/prisma";
 import { isPlausibleTicker, extractTickersRanked, rescueTypoTicker } from "@/lib/ai-ticker-guard";
-import { sanitizeAiText, ensureAiDisclaimer, linkifyBoldTickers, normalizeUnit } from "@/lib/ai-sanitize";
+import { sanitizeAiText, ensureAiDisclaimer, linkifyBoldTickers, normalizeUnit, neutralizeFollowupFraming } from "@/lib/ai-sanitize";
 import { NextRequest, NextResponse } from "next/server";
 import { buildStockAiContext } from "./context";
 import { stockRepository } from "@/domains/stock/stock.repository";
@@ -57,7 +57,7 @@ const GLM_SYSTEM = [
   "BAHASA: santai tapi JANGAN paksa gaul — kalau ragu dengan sebuah kata gaul, pakai bahasa Indonesia baku sehari-hari (larangan: 'tuang', 'kelola besar', 'kepenjeblokan', 'serok'). Typos = bot murahan.",
   "BAHASA MURNI INDONESIA (DILARANG KERAS): DILARANG menyisipkan HURUF/KARAKTER Cina/Jepang/Korea dalam jawaban — 100% huruf Latin + angka. Kasus nyata: 'lagi喜庆 banget' = cacat produk serius. Kalau ragu dengan ejaan kata, tulis ulang pakai huruf Latin baku.",
   "EMPATI NYANGKUT: bila ada posisiUser minus atau kata nyangkut/boncos, buka dengan 1 kalimat validasi emosi manusiawi sebelum angka; jangan menggurui.",
-  "BARIS PALING AKHIR WAJIB: '[FOLLOWUPS] Pertanyaan 1? | Pertanyaan 2? | Pertanyaan 3?' — 3 ide lanjutan singkat (<40 karakter, relevan konteks barusan).",
+  "BARIS PALING AKHIR WAJIB: '[FOLLOWUPS] Pertanyaan 1? | Pertanyaan 2? | Pertanyaan 3?' — 3 ide lanjutan singkat (<40 karakter, relevan konteks barusan). DILARANG chip ajakan transaksi ('layak dibeli?', 'layak dikumpul?', 'waktunya jual?') — framing tetap netral/edukasi (kriteria, risiko, konteks).",
 ].join(" ");
 
 type ChatTurn = { role: "user" | "ai"; text: string };
@@ -384,7 +384,7 @@ export async function POST(req: NextRequest) {
     // Loop 9 Nov: guard disclaimer deterministik — compliance bukan-rekomendasi
     // tidak boleh bergantung kepatuhan model (kasus nyata: 1/10 jawaban tanpa disclaimer).
     // Loop 11 Nov: linkify bold-ticker dari allowlist context (utama + compare).
-    const finalText = linkifyBoldTickers(ensureAiDisclaimer(normalizeUnit(data.text)), context);
+    const finalText = linkifyBoldTickers(neutralizeFollowupFraming(ensureAiDisclaimer(normalizeUnit(data.text))), context);
 
     // flywheel (owner 30 Okt): log QA fire-and-forget
     prisma.aiChatLog

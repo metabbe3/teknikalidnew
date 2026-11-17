@@ -138,3 +138,52 @@ export function normalizeUnit(text: string): string {
   if (!text) return text;
   return text.replace(RUPIAH_M_RE, (_whole, num: string) => `${num} miliar`);
 }
+
+/**
+ * Guard framing chip follow-up — lapis-5 deterministik (loop 17 Nov).
+ *
+ * Latar (juri 16 Nov): chip [FOLLOWUPS] condong ajakan transaksi —
+ * "layak dibeli?" / "layak dikumpul?" dinilai judge melanggar framing netral
+ * (doktrin anti-mislead: TIDAK PERNAH mengajak beli/jual). Kepatuhan framing
+ * tidak boleh bergantung kepatuhan model (preseden: disclaimer lapis-2,
+ * linkify lapis-3, satuan lapis-4).
+ *
+ * Hanya bagian SETELAH marker [FOLLOWUPS] yang disentuh — badan jawaban utuh.
+ * Chip ber-framing transaksi diganti chip netral dari pool (berurutan, anti
+ * duplikat). Pertanyaan FAKTUAL yang kebetulan memuat kata beli/jual
+ * ("Asing beli saham apa?") TIDAK disentuh — pola hanya cocokkan chip yang
+ * MEMINTA keputusan transaksi (layak/ harus / saatnya + verb).
+ */
+
+const FOLLOWUPS_SPLIT_RE = /(\n?\*{0,2}\[FOLLOW\s?UPS?\]\*{0,2}[\s:]*)/i;
+
+/** Chip yang meminta keputusan beli/jual (bukan pertanyaan faktual). */
+const BUYISH_CHIP_RE =
+  /\b(?:layak|harus|saatnya?|waktunya|kapan|gimana|ganti|mulai|cocok)\b[^|]*\b(?:dibeli|dikumpul|diakumulasi|beli|kumpul|buy|jual|akumulasi|exit|cutloss|cut loss|sell)\b|\b(?:beli|buy|jual|sell)\b[^|]*\b(?:sekarang|nih|dong|ya\?|ga\?|gak\?)\b|\b(?:beli|jual|buy|sell)\s*\?/i;
+
+const NEUTRAL_CHIP_POOL = [
+  "Apa risiko utama yang perlu dipantau?",
+  "Bagaimana tren jangka pendeknya?",
+  "Apa pemicu utama pergerakan ini?",
+];
+
+export function neutralizeFollowupFraming(text: string): string {
+  if (!text) return text;
+  const m = text.match(FOLLOWUPS_SPLIT_RE);
+  if (!m) return text;
+  const idx = text.indexOf(m[0]);
+  const head = text.slice(0, idx);
+  let tail = text.slice(idx + m[0].length);
+  let poolIdx = 0;
+  tail = tail
+    .split(/\n|\||\/|;|\batau\b/i)
+    .map((chip) => {
+      const trimmed = chip.trim();
+      if (!trimmed || !BUYISH_CHIP_RE.test(trimmed)) return chip;
+      const replacement = NEUTRAL_CHIP_POOL[poolIdx % NEUTRAL_CHIP_POOL.length];
+      poolIdx++;
+      return chip.replace(trimmed, replacement);
+    })
+    .join("|");
+  return `${head}${m[0]}${tail}`;
+}
