@@ -6363,7 +6363,8 @@
       "spec": "Bangun sesuai PRD idea-2026-11-12-1 (research_brief Researcher 14 Nov verdict BUILD): (1) FASE-A freeze-safe: reframe copy value-first (progress + preview ticker tergate) + promosikan CTA bot jadi tombol setara — pola at-the-blocked-action + named-limit + value-preview; (2) jangan tambah prompt proaktif lain di halaman (anti-pattern researcher); (3) FASE-B return-to-context ?next HANYA setelah ACK owner area auth tercatat; (4) tidak mengubah guest quota 3/hari ataupun label instrumentasi (baseline comparability).",
       "qa_plan": "Pembangun != pemeriksa. Staging: DOM sweep guest fresh/over/logged-in + view-source SSR; SQL replay auth_nav_after baseline 8,9% tercatat pra-deploy. D+14: auth_nav_after >=12% kohort baru + laporan per-label; watch churn: returning anonId tidak turun (pre-registered per researcher: konversi+retensi, bukan konversi saja).",
       "done_when": "DONE WHEN: (a) staging wall baru menampilkan progress+preview+2 tombol setara, guest fresh tak melihat wall, logged-in tak tersentuh; (b) tsc+build EXIT-0; (c) baseline 8,9% tercatat + kueri replay di entry; (d) FASE-B deferred sampai ACK owner. Copy setengah jadi / CTA bot tetap baris kecil = iterate, bukan ship.",
-      "created_by": "Product Agent buffer-keeper 2026-11-16 22:2x WIB (run gate: buffer teknikal 2 < 3; riset = research_brief backlog 14 Nov + SQL baseline fresh 16 Nov)"
+      "created_by": "Product Agent buffer-keeper 2026-11-16 22:2x WIB (run gate: buffer teknikal 2 < 3; riset = research_brief backlog 14 Nov + SQL baseline fresh 16 Nov)",
+      "scheduled_slot": "2026-11-17 FE malam 19:15 build+staging-verify wall-v2 FASE-A (kode di night dd96b87 sudah union-prep 3be60a3; merge ke main di slot, verify :3100 progress+preview+dual-CTA, in_train T-1117-N; kereta kondektur 22:15)"
     },
     {
       "id": "prd-2026-11-15-01",
