@@ -309,7 +309,7 @@ export function GuestSignalBreakdownGate({
       <div className="flex items-center justify-between text-xs font-semibold text-text-tertiary">
         <span className="flex items-center gap-1.5">
           <span>Rincian {breakdown.length} Indikator {cleanTicker || "Saham Ini"}</span>
-          <span className="hidden sm:inline text-[10px] font-normal text-text-tertiary">
+          <span className="text-[10px] font-normal text-text-tertiary">
             (3 dari 3 saham gratis hari ini sudah dibuka)
           </span>
         </span>
