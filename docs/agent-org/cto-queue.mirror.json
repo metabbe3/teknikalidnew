@@ -6484,6 +6484,15 @@
         "scripts/selftest/web-retention-w1.selftest.ts"
       ],
       "baseline": "wall live = W1b bbc886c; CTA reg_free_banner 0 klik/14d, agent_deeplink 17 klik; auth_nav_after 8,9% <12% target"
+    },
+    {
+      "id": "adm-2026-11-10-01",
+      "date": "2026-11-17",
+      "spec": "Admin UX: verify live+close adm-2026-11-10-01 (auth-health KPI fake-0 -> PageView) — kode sudah merged+live, shift ini = verify prod + flip status (build-only, 0 deploy)",
+      "priority": "P1",
+      "north_star": "trust",
+      "status": "done",
+      "result": "LIVE-VERIFY PROD 17 Nov 20:2x: cookie-mint admin (cleanup total), CDP 1440+390 KPI 5/41/48/18/0 == SQL replay EXACT 5/5, provider 10/38, Session rows=0 (fake-0 lama konfirmasi), gate anon->login OK, screenshot verify/adm-11-10-01-{desktop,mobile}-live.png; backlog flip done v88; 0 build 0 deploy"
     }
   ]
 }
