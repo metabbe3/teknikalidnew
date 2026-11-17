@@ -1,4 +1,5 @@
 import { signalLabelId } from "@/lib/signal-label-id";
+import { mergeRelatedArticles, MAX_DAILY_SNAPSHOT_SLOTS } from "@/lib/related-articles";
 import { signalBadge } from "@/lib/seo/signal-badge";
 import { type Metadata } from "next";
 import { safeJsonLd } from "@/lib/safe-json-ld";
@@ -299,7 +300,8 @@ export default async function StockDetailPage({
     idxShareholders,
     idxSubsidiaries,
     idxDividends,
-    relatedArticles,
+    relatedArticlesPlain,
+    dailySnapshotArticles,
     sectorArticles,
     peerBatch,
   ] = await Promise.all([
@@ -315,10 +317,19 @@ export default async function StockDetailPage({
     stockRepository.findShareholders(detail.stock.id),
     stockRepository.findSubsidiaries(detail.stock.id),
     stockRepository.findDividends(detail.stock.id),
+    // prd-2026-11-17-01: DS tidak lagi di-exclude — bridge konten /stocks→/berita
+    // (jalur sosmed mati di halaman ticker; DS tersedia 40 ticker/7d). Merge di JS
+    // (maks 2 slot DS) karena cap-per-type tak terdefinisi rapi di satu query Prisma.
     prisma.article.findMany({
       where: { status: "PUBLISHED", tickerTag: ticker, articleType: { notIn: ["DAILY_SNAPSHOT", "STOCK_ANALYSIS"] } },
       orderBy: { publishedAt: "desc" },
-      take: 5,
+      take: 6,
+      select: { id: true, slug: true, title: true, publishedAt: true, articleType: true },
+    }),
+    prisma.article.findMany({
+      where: { status: "PUBLISHED", tickerTag: ticker, articleType: "DAILY_SNAPSHOT" },
+      orderBy: { publishedAt: "desc" },
+      take: MAX_DAILY_SNAPSHOT_SLOTS,
       select: { id: true, slug: true, title: true, publishedAt: true, articleType: true },
     }),
     sectorPeers.length > 0
@@ -340,6 +351,7 @@ export default async function StockDetailPage({
   ]);
 
   const peerMap = new Map(peerBatch.map((b) => [b.ticker, b]));
+  const relatedArticles = mergeRelatedArticles(relatedArticlesPlain, dailySnapshotArticles);
 
   // Aliran dana asing 5 sesi terakhir (usp-2026-10-24-04) — graceful: kosong → section hidden.
   // Aliran dana asing: SATU batch harga utk semua tanggal (code-audit-tk-2,
@@ -1687,9 +1699,19 @@ export default async function StockDetailPage({
             <p className="text-sm font-semibold text-text-primary">Artikel Terkait</p>
             <div className="space-y-2">
               {relatedArticles.map((ra) => (
-                <Link key={ra.id} href={`/berita/${ra.slug}`} className="group block bg-bg-card rounded-xl depth-shadow p-4 hover:depth-shadow-hover transition-all">
+                <Link
+                  key={ra.id}
+                  href={`/berita/${ra.slug}`}
+                  data-engagement={ra.articleType === "DAILY_SNAPSHOT" ? "ds_buka" : "news_buka"}
+                  className="group block bg-bg-card rounded-xl depth-shadow p-4 hover:depth-shadow-hover transition-all"
+                >
                   <div className="flex items-start gap-3">
                     <div className="flex-1 min-w-0">
+                      {ra.articleType === "DAILY_SNAPSHOT" && (
+                        <span className="inline-block text-[10px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-accent/10 text-accent mb-1">
+                          Pantauan Harian
+                        </span>
+                      )}
                       <p className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors line-clamp-2">
                         {ra.title}
                       </p>

@@ -5395,7 +5395,9 @@
       "spec": "[BUGFIX][OPS] sumber: post-mortem ops-2026-11-08-02. Watchdog 502 blip-hold 2-check (~10-15 mnt) terlalu lambat utk jam market: insiden 8 Nov blip 07:30 ditahan streak=1, alert baru 07:45, RTO 20 mnt — hari Minggu masih OK, tapi Sen-Jum 09:00-16:15 WIB user aktif tertinggi. INTENT: market-hours fast-path di site-502-watchdog.sh — fail PERTAMA pada jam market langsung kirim info-level note (bukan megaphone DOWN, bukan restart), streak>=2 tetap syarat alert DOWN penuh; tambah snapshot 'docker stats --no-stream' ke state dir saat fail (bukti pemakan memori utk probe OOM berikutnya). DONE WHEN: (1) dry-run simulasi fail saat jam market → info-note terkirim 1x streak=1 (log bukti); (2) di luar jam market perilaku lama utuh (streak=1 tetap ditahan); (3) changelog + bus. Host-script 0-deploy.",
       "train": "T-1117-M",
       "reslot_note": "auto-reslot 2026-11-17: kereta T-1116-M kedaluwarsa -> kereta T-1117-M (reslot_guard.py v3)",
-      "result": "CTO-SIANG-1117 DONE bersama ops-2026-11-16-01 (script sama): fast-path fail#1 market-hours + snapshot \"docker stats --no-stream\" ke $STATE_DIR/teknikal.id.stats saat fail (bukti memori utk probe OOM) — terverifikasi dry-run RUN-1 (file stats 905B berisi header+2 container). Non-market tak tersentuh. 0 deploy."
+      "result": "CTO-SIANG-1117 DONE bersama ops-2026-11-16-01 (script sama): fast-path fail#1 market-hours + snapshot \"docker stats --no-stream\" ke $STATE_DIR/teknikal.id.stats saat fail (bukti memori utk probe OOM) — terverifikasi dry-run RUN-1 (file stats 905B berisi header+2 container). Non-market tak tersentuh. 0 deploy.",
+      "qa_verified": true,
+      "qa_note": "QA 17Nov 22:2x: TRUE. docker-stats snapshot ter-reproduksi: file stub.stats 905B (header + app 329MiB/16% + worker 182MiB/18%) tepat saat fail#1 market-hours; non-market tak tersentuh."
     },
     {
       "id": "fix-2026-11-08-01",
@@ -6283,7 +6285,9 @@
       "spec": "[BUGFIX][OPS][TRUST] Host-script only 0-deploy. site-502-watchdog.sh: market-hours fast-path Sen-Jum 09:00-16:15 WIB — fail PERTAMA kirim info-level note (bukan hold streak=2). Sumber: post-mortem ops-2026-11-08-02 (blip 07:30 ditahan, alert baru 07:45, RTO 20 mnt). JANGAN ubah logic non-market-hours. DONE WHEN: (a) grep fast-path di script; (b) dry-run simulasi fail-1 market vs non-market terdokumentasi; (c) 0 perubahan file repo.",
       "done_when": "dry-run fail-1 market vs non-market terdokumentasi + 0 file repo berubah",
       "scheduled_slot": "2026-11-17 BE siang 09:30 (reslot CTO pagi 16 Nov: watchdog fast-path P2 baru, malam 18:30 fokus drift-guard ops-11-01-04 + gate idea-15-1; hindari overload slot)",
-      "result": "CTO-SIANG-1117: market-hours fast-path live di ~/.hermes/scripts/site-502-watchdog.sh (is_market_hours Sen-Jum 09:00-16:15 base-10-safe). Dry-run 4-arah di scratch (HOME fake, notify fallback stdout): [1] market fail#1 Selasa 09:45 real-time -> info-note terkirim + log \"fail#1 JAM MARKET streak=1\" + docker-stats snapshot 905B (app 339.7MiB/16.6%, worker 154.6MiB); [2] non-market stub-0730 fail#1 -> \"blip alert ditahan\" TANPA note TANPA stats (perilaku lama utuh); [3] market fail#2 -> DOWN alert penuh tetap jalan; [4] URL hidup -> OK 200 streak reset. bash -n SYNTAX_OK. 0 file repo/app berubah (host-script only)."
+      "result": "CTO-SIANG-1117: market-hours fast-path live di ~/.hermes/scripts/site-502-watchdog.sh (is_market_hours Sen-Jum 09:00-16:15 base-10-safe). Dry-run 4-arah di scratch (HOME fake, notify fallback stdout): [1] market fail#1 Selasa 09:45 real-time -> info-note terkirim + log \"fail#1 JAM MARKET streak=1\" + docker-stats snapshot 905B (app 339.7MiB/16.6%, worker 154.6MiB); [2] non-market stub-0730 fail#1 -> \"blip alert ditahan\" TANPA note TANPA stats (perilaku lama utuh); [3] market fail#2 -> DOWN alert penuh tetap jalan; [4] URL hidup -> OK 200 streak reset. bash -n SYNTAX_OK. 0 file repo/app berubah (host-script only).",
+      "qa_verified": true,
+      "qa_note": "QA 17Nov 22:2x: TRUE. Replikasi dry-run 4-arah (fake-HOME, stub 127.0.0.1:1): market fail#1 = info-note + log fast-path + stats; non-market fail#1 = blip ditahan TANPA note/stats; fail#2 = DOWN penuh; hidup = OK reset. bash -n OK. Perilaku non-market utuh."
     },
     {
       "id": "qa-2026-11-16-01",
@@ -6329,7 +6333,9 @@
       "scheduled_slot": "2026-11-17 BE malam 18:30 T-1117-M SUB-PRIORITY #1 (reslot CTO-SIANG-1117: teks lama 16-Nov basi; ff_market+gate-sektor SUDAH dihotfix CTO-PAGI-1117 pagi ini — sisa checker pasangan EMA X-vs-Y SATU query + reviewer wajib sebut jumlah/jenis SKIP)",
       "created_at": "2026-11-16T07:58:00+07:00",
       "source": "CEO verdict 15 Nov + reslot CTO 16 Nov (hari-3 transplantasi)",
-      "result": "DONE (host-script 0-deploy): checker ema_pair 'EMA X di atas/bawah EMA Y' SATU query (kanonik 12/26, lainnya SKIP-QA-manual) + ringkasan SKIP per-kind WAJIB tampil. Two-way: valid-ema.md exit-0 [ema_pair ✓ BBRI 12>26; EMA 20/50 SKIP benar] + fiktif BBCA '12 di atas 26' exit-2 [replay ema12=5353.61 ema26=5401.65 (26>12)]; regression gate-test/pass.md --as-of-13Nov exit-0 [SKIP: ff_market x1; superlative_token x1; top_score x1 — kini terlist per-kind]. Fix kecil post-patch: SQ penutup date literal hilang → psql unterminated string → ditambal (lesson SQ-adjacency). Backup .bak-20261117-184351"
+      "result": "DONE (host-script 0-deploy): checker ema_pair 'EMA X di atas/bawah EMA Y' SATU query (kanonik 12/26, lainnya SKIP-QA-manual) + ringkasan SKIP per-kind WAJIB tampil. Two-way: valid-ema.md exit-0 [ema_pair ✓ BBRI 12>26; EMA 20/50 SKIP benar] + fiktif BBCA '12 di atas 26' exit-2 [replay ema12=5353.61 ema26=5401.65 (26>12)]; regression gate-test/pass.md --as-of-13Nov exit-0 [SKIP: ff_market x1; superlative_token x1; top_score x1 — kini terlist per-kind]. Fix kecil post-patch: SQ penutup date literal hilang → psql unterminated string → ditambal (lesson SQ-adjacency). Backup .bak-20261117-184351",
+      "qa_verified": true,
+      "qa_note": "QA 17Nov 22:1x: TRUE. ema_pair two-way re-run: valid-ema --as-of-17 exit-0 [BBRI 12>26 ✓; 20/50 SKIP benar]; fiktif exit-2; SKIP per-kind tampil di header. Coverage sektor+superlatif+FF kini hidup (ops-17-01 fix + qa-17-01 hotfix v2) = spek terpenuhi lintas-task. Note: fixture valid-ema date-sensitive (as-of-16 kini FAIL krn EMA silang 16->17) — bukan bug gate."
     },
     {
       "id": "prd-2026-11-16-01",
@@ -6337,7 +6343,7 @@
       "type": "prd",
       "priority": "P1",
       "prd_id": "idea-2026-11-12-1",
-      "status": "in_train",
+      "status": "deployed",
       "title": "P1 KONVERSI (PRD idea-2026-11-12-1): Quota-wall value-first + dual-CTA setara + return-to-context — reg_free_banner 0 klik/14d & auth-nav pasca-wall 8,9% (< target >=12%); jalur bot lebih hidup (tg_pantau 17 klik)",
       "north_star": "GROWTH (funnel kuota 8,9% -> >=12% auth-nav pasca-wall) + STICKY (jalur tanpa-akun bot = feed funnel web->agent pivot 6 Nov)",
       "user_story": "Sebagai guest yang menabrak kuota 3 saham/hari tepat saat membuka ticker yang diminati, saya ingin wall menunjukkan apa yang saya dapat bila daftar (preview spesifik ticker itu) plus jalur tanpa-akun via Bot Agent yang setara (bukan baris kecil), supaya momen terblokir berubah jadi onramp, bukan dead-end.",
@@ -6370,7 +6376,9 @@
       "done_when": "DONE WHEN: (a) staging wall baru menampilkan progress+preview+2 tombol setara, guest fresh tak melihat wall, logged-in tak tersentuh; (b) tsc+build EXIT-0; (c) baseline 8,9% tercatat + kueri replay di entry; (d) FASE-B deferred sampai ACK owner. Copy setengah jadi / CTA bot tetap baris kecil = iterate, bukan ship.",
       "created_by": "Product Agent buffer-keeper 2026-11-16 22:2x WIB (run gate: buffer teknikal 2 < 3; riset = research_brief backlog 14 Nov + SQL baseline fresh 16 Nov)",
       "scheduled_slot": "2026-11-17 FE malam 19:15 build+staging-verify wall-v2 FASE-A (kode di night dd96b87 sudah union-prep 3be60a3; merge ke main di slot, verify :3100 progress+preview+dual-CTA, in_train T-1117-N; kereta kondektur 22:15)",
-      "train": "T-1117-N"
+      "train": "T-1117-N",
+      "deployed_at": "2026-11-17T22:24:35+07:00",
+      "result": "DEPLOYED KONDEKTUR-1117 22:24 (build atomik tanpa-reset dari HEAD 763d1f5; rider d6bc5a7+00e0dda+f57db23 ancestor-OK; image app 2ac3977d7b67/worker 629c65dd00b6 parity Created 22:23:41/35 drift 6s; health 200x3). BUKTI FISIK LIVE: chunk app/(public)/stocks/[ticker]/page memuat \"(3 dari 3 saham gratis hari ini sudah dibuka)\" + \"Analisa penuh {t} - rencana trading\" + dual-CTA \"Daftar gratis - buka {t} sekarang\"+\"Tanya Bot Agent tentang {t}\" + testid guest-overlimit-banner; e2e browser fresh anon: BBCA/BBRI/BMRI bebas wall, halaman ke-4 TLKM = wall copy baru + 2 CTA. Verdict = QA Sentinel."
     },
     {
       "id": "prd-2026-11-15-01",
@@ -6452,7 +6460,9 @@
       "north_star": "TRUST (proteksi GROWTH — brief/rekap = aset SEO utama)",
       "spec": "[P1][BUGFIX][OPS][TRUST] GATE SEKTOR replay_sql_gate.py BROKEN — checker sector_pct SELALU-SKIP sejak build BE-malam 16 Nov 19:26 (fallback manual pasca claude 2x gagal; TANPA test dua arah = pelanggaran charter). Bukti CEO 17 Nov 07:0x: draft fiktif 'Sektor Teknologi menguat 9,9%' (aktual DB 0,83%) → PASS exit-0 dgn note 'replay sektor gagal - SKIP (psql ERROR near AND)'. ROOT CAUSE (2 token, baris ~253 _sector_pct): (1) substring ''^%'' adalah Python string-adjacency → quote hilang; (2) SQ penutup setelah asof TIDAK ADA → literal SQL tak tertutup. FIX: ganti jadi ... NOT LIKE ' + SQ + '^%' + SQ + ' AND sp.volume>0 AND sp.date<=' + SQ + asof + SQ + '), '. WAJIB TEST DUA ARAH (charter, exit code dicetak di result): (a) arah-valid: klaim sektor dekat angka DB → PASS/ok-true; (b) arah-fiktif: file ~/.hermes/cache/scratch/gate-fiktif2-test-1117.md → FAIL exit-2; (c) regression: ff_market + rank_first + breadth checker tetap jalan (fiktif2 sudah membuktikan 4 FAIL). Host-script 0-deploy. DEADLINE 08:10 hari ini: brief generator pagi memakai gate ini; pola transplantasi-angka 3 hari beruntun = kelas bug termahal. DONE WHEN: two-way test exit code tercantum di result (valid→0, fiktif→2) + 0 deploy (host-script) + bukti journal/statejson flip.",
       "result": "DONE 07:33 WIB (deadline 08:10 terpenuhi, sebelum brief generator). Root-cause aktual DUA token-SQ hilang di _sector_pct (spec sebut 1, probe langsung temukan 2): (a) L255 ''^%'' string-adjacency quote hilang + SQ penutup asof absen; (b) L263 s.sector= SQ pembuka tanpa penutup. FIX host-script: replay_sql_gate.py L255+L263. TWO-WAY (charter): arah-valid gate-valid-tek-1117.md exit-0 [sector_pct ✓ Teknologi 0,8% replay 0.83]; arah-fiktif gate-fiktif2-test-1117.md exit-2 [sector_pct ✗ 9,9% replay=0.83 + 4 FAIL lain tetap]; regression fixture pass.md --as-of 2026-11-13 exit-0 [2 klaim sektor dulunya selalu-SKIP kini ✓]. AST-parse OK. 0 deploy (host-script). Bukti exit code dicetak di result = DONE WHEN terpenuhi.",
-      "verified_evidence": "VALID_EXIT=0 FIKTIF_EXIT=2 ASOF13_EXIT=0; AST-OK"
+      "verified_evidence": "VALID_EXIT=0 FIKTIF_EXIT=2 ASOF13_EXIT=0; AST-OK",
+      "qa_verified": true,
+      "qa_note": "QA 17Nov 22:1x: TRUE. Two-way re-run: valid sector exit-0 [Teknologi 0,8% replay 0.83]; fiktif2 exit-2 [sector 9,9% replay=0.83]; regression pass.md --as-of-13Nov exit-0. SQ tokens L255+L263 utuh di script."
     },
     {
       "id": "qa-2026-11-17-01",
@@ -6463,27 +6473,30 @@
       "north_star": "TRUST - konten salah angka = trust runtuh; pilar TRUST (data reliable)",
       "title": "P1 patch 4 FATAL QA 17 Nov: FF pasar 303,29->269,27 + BBRI 272,8->274,5 + BBCA 106,3->106,6 (analis-sore-16) + EMA window 56/11->55/9 (brief-17)",
       "spec": "INTENT: samakan angka artikel dengan kanonik DB satu-pintu (post-publish fix, slot CTO pagi 07:30). A1 analis-sore-2026-11-16-asgr: lede net sell asing Rp303,29 miliar -> Rp269,27 miliar (SQL Sigma net_lembar x close 16 Nov = -269,27; konsisten dgn analis-pagi yang sudah exact). A2 artikel sama: net buy asing terbesar di jajaran big banks Rp272,8 miliar -> Rp274,5 miliar (ForeignFlow 16 Nov BBRI net = 274,51 M; superlatif TETAP BENAR: BBRI no.1 bigbanks). A3 artikel sama: BBCA Rp106,3 miliar -> Rp106,6 miliar (DB 106,64). A4 brief-pasar-idx-2026-11-17-rotasi-bank: 56 saham EMA-cross bullish vs 11 bearish window 7-16 Nov -> 55 vs 9 (konvensi non-gorengan aktif = konvensi situs, c.f. 42/9 window 6-13) ATAU 60 vs 8 (seluruh saham aktif); angka 56 muncul 2x di brief (bullet [56 saham mencetak EMA-cross bullish] + kalimat [Kontrasnya penting: 56 sinyal bullish vs breadth yang cuma 270 naik]) - patch KEDUANYA konsisten. ACCEPTANCE: (1) grep-H2 semua token lama = 0 di content+excerpt+live no-cache: 303,29 / 272,8 / 106,3 (awas substring: 106,3 vs 106,6 beda 1 char, cek persis) / frasa [56 saham mencetak] + [56 sinyal bullish]; (2) token baru hadir di semua lokasi; (3) replay_sql_gate exit 0 pasca-patch; (4) curl live 200 + angka baru render; (5) JANGAN sentuh angka EXACT lain (semua sudah QA-verified: 88,55 jt lembar, RSI 56,4/71,6/71,8/62,7, skor 0,68 ASGR top-1 di antara Sangat Menguat 16 Nov, breadth 270/414/149, GC 3 + 17 DC window 7-16, oversold 33). Backup row ke ~/.hermes/cache/scratch/qa-17-01/. QA oleh reviewer-pagi-1117 17 Nov 07:2x.",
-      "result": "DONE CTO-PAGI 17 Nov 08:1x. A1-A3 DB-patch analis-sore-2026-11-16-asgr: FF pasar 303,29->269,27 (replay Sigma net x close = -269,27 EXACT), BBRI 272,8->274,5 x3 lokasi (DB 274,51; superlatif bigbanks tetap benar), BBCA 106,3->106,6 (DB 106,64); sitasi (Kontan,16/11)->(data teknikal.id,16/11) di 2 kalimat karena angka kini DB-kanonik. BUKTI H1: DB POSITION lama semua=0 (303,29/272,8/106,3/KontanFF) + token baru 269,27@195, 274,5x3, 106,6@2910 + live no-cache lama=0 baru render + replay gate exit-0. A4 = FALSE-POSITIVE reviewer: 56/11 = konvensi kanonik ops-11-05-03 (window 7 sesi vol>0, DISTINCT stockId, parity repo getSignalCounts), replay hari ini EXACT; anchor reviewer 42/9 kini replay 43/13 = basis QA tak stabil; GC3/DC17 dari struct sama diterima exact. Artikel brief-17 TIDAK dipatch (patch = pelanggaran doktrin satu-pintu). HOTFIX GATE v2: replay_sql_gate.py ff_market 2 bug (arah net-sell tak dinegasi; FF sub-market ticker/scope di-replay market-level) fixed two-way (valid PASS / fiktif 303,29 FAIL exit-2) SEBELUM generator 08:10; backup .bak-20261117-ffsign. Backup rows scratch/qa-17-01/backup-rows.json. 0 build 0 deploy. Pilar TRUST."
+      "result": "DONE CTO-PAGI 17 Nov 08:1x. A1-A3 DB-patch analis-sore-2026-11-16-asgr: FF pasar 303,29->269,27 (replay Sigma net x close = -269,27 EXACT), BBRI 272,8->274,5 x3 lokasi (DB 274,51; superlatif bigbanks tetap benar), BBCA 106,3->106,6 (DB 106,64); sitasi (Kontan,16/11)->(data teknikal.id,16/11) di 2 kalimat karena angka kini DB-kanonik. BUKTI H1: DB POSITION lama semua=0 (303,29/272,8/106,3/KontanFF) + token baru 269,27@195, 274,5x3, 106,6@2910 + live no-cache lama=0 baru render + replay gate exit-0. A4 = FALSE-POSITIVE reviewer: 56/11 = konvensi kanonik ops-11-05-03 (window 7 sesi vol>0, DISTINCT stockId, parity repo getSignalCounts), replay hari ini EXACT; anchor reviewer 42/9 kini replay 43/13 = basis QA tak stabil; GC3/DC17 dari struct sama diterima exact. Artikel brief-17 TIDAK dipatch (patch = pelanggaran doktrin satu-pintu). HOTFIX GATE v2: replay_sql_gate.py ff_market 2 bug (arah net-sell tak dinegasi; FF sub-market ticker/scope di-replay market-level) fixed two-way (valid PASS / fiktif 303,29 FAIL exit-2) SEBELUM generator 08:10; backup .bak-20261117-ffsign. Backup rows scratch/qa-17-01/backup-rows.json. 0 build 0 deploy. Pilar TRUST.",
+      "qa_verified": true,
+      "qa_note": "QA 17Nov 22:1x: TRUE. H2 DB: 303,29/272,8/106,3=0 semua; baru 269,27@195+274,5x3+106,6@2910; sitasi baru @210; Kontan@614 = sitasi lain (13/11 makro) BUKAN residual FF. Live no-cache: lama=0, 269,27=2/274,5=6/106,6=2/sitasi=4. A4 dipertahankan: brief-17 utuh 56/11, gate PASS exit-0. Residual: kelas EMA-cross-breadth belum punya checker (SKIP) — coverage gap, bukan bug."
     },
     {
       "id": "ux-2026-11-17-01",
       "date": "2026-11-17",
       "type": "ux",
       "priority": "P2",
-      "status": "in_train",
+      "status": "deployed",
       "train": "T-1117-N",
       "actor": "UX-FE-1915-1117",
       "north_star": "GROWTH (funnel kuota: auth-nav pasca-wall 8,9% -> >=12%) + STICKY (jalur bot setara di wall)",
       "title": "UX [KONVERSI] wall-v2 FASE-A verified + fix mobile: merge night dd96b87 (cherry-pick f57db23+d6bc5a7) + sub-copy progres tampil di mobile (<sm) commit 00e0dda",
       "summary": "Slot FE 19:15 17 Nov: (1) cherry-pick 2 commit kode night/prd-2026-11-16-01 ke main (merge-base dcbc9b7, kode bersih konflik; org-files night STALE v671 sengaja TIDAK dibawa — queue live v679+ utamakan); (2) staging :3100 BUILD cxSfGsgPfmFrRvxf6sn8z verify AC5: fresh guest NO wall, over-limit (3 ticker lain) wall-v2 tampil 8/8 PASS di 375px; (3) TEMUAN+FIX: sub-copy '(3 dari 3 sudah dibuka)' hidden sm:inline = tak tampil di mobile 375-390px (mayoritas traffic) — hapus hidden, commit 00e0dda; rebuild BUILD_EXIT=0.",
-      "result": "BUkTI staging :3100 (Chrome CDP asli :9222, emul 375x844 pre-navigate): banner [data-testid=guest-overlimit-banner] innerText='3 dari 3 saham gratis hari ini sudah dibuka / Analisa penuh BBCA — rencana trading... / Daftar gratis — buka BBCA sekarang / Tanya Bot Agent tentang BBCA / Akun gratis membuka semua saham... Tanpa kartu kredit'; reg_free_banner className bg-accent solid; agent_deeplink_banner href t.me/TeknikalidAgentBot?start=src_gate_BBCA; tap target kedua CTA 58px>=44px @375; lucide svg bot CTA present; tanpa emoji lock/robot; gated header 'Rincian 9 Indikator BBCA (3 dari 3 saham gratis hari ini sudah dibuka)' PASCA-fix 00e0dda (BEFORE: sub-copy hidden <640px). Selftest 22 PASS (9 baru wall-v2). tsc-0 x2, build EXIT-0 x2.",
+      "result": "DEPLOYED KONDEKTUR-1117 22:24 (satu rangkaian dengan prd-2026-11-16-01; HEAD 763d1f5; image parity 22:23:41/35). BUKTI FISIK LIVE: mobile 375px sub-copy \"(3 dari 3 saham gratis hari ini sudah dibuka)\" PRESENT+VISIBLE (display:block, rect_w=111px, computed className text-[10px] font-normal text-text-tertiary, overflowX=0) — hidden sm:inline HILANG dari chunk live = fix 00e0dda live; e2e 4 halaman segar: wall hanya muncul pas batas kuota. Verdict = QA Sentinel.",
       "done_when": "tsc 0 + build 0 + staging sweep AC5 (fresh no-wall, over-limit wall+2 CTA, logged-in untouched, SSR aman) + rebuild pasca-fix 00e0dda",
       "target_files": [
         "src/components/ui/guest-overlimit-banner.tsx",
         "src/components/stock/guest-quota.tsx",
         "scripts/selftest/web-retention-w1.selftest.ts"
       ],
-      "baseline": "wall live = W1b bbc886c; CTA reg_free_banner 0 klik/14d, agent_deeplink 17 klik; auth_nav_after 8,9% <12% target"
+      "baseline": "wall live = W1b bbc886c; CTA reg_free_banner 0 klik/14d, agent_deeplink 17 klik; auth_nav_after 8,9% <12% target",
+      "deployed_at": "2026-11-17T22:24:35+07:00"
     },
     {
       "id": "adm-2026-11-10-01",
@@ -6492,7 +6505,9 @@
       "priority": "P1",
       "north_star": "trust",
       "status": "done",
-      "result": "LIVE-VERIFY PROD 17 Nov 20:2x: cookie-mint admin (cleanup total), CDP 1440+390 KPI 5/41/48/18/0 == SQL replay EXACT 5/5, provider 10/38, Session rows=0 (fake-0 lama konfirmasi), gate anon->login OK, screenshot verify/adm-11-10-01-{desktop,mobile}-live.png; backlog flip done v88; 0 build 0 deploy"
+      "result": "LIVE-VERIFY PROD 17 Nov 20:2x: cookie-mint admin (cleanup total), CDP 1440+390 KPI 5/41/48/18/0 == SQL replay EXACT 5/5, provider 10/38, Session rows=0 (fake-0 lama konfirmasi), gate anon->login OK, screenshot verify/adm-11-10-01-{desktop,mobile}-live.png; backlog flip done v88; 0 build 0 deploy",
+      "qa_verified": true,
+      "qa_note": "QA 17Nov 22:2x: TRUE. SQL replay definisi-exact (PageView isBot=false): 5/39/48/18/0 == klaim 5/41/48/18/0 (anon 41->39 drift jendela rolling, wajar); provider 10/38 EXACT; Session=0; screenshots live 20:27 ada."
     }
   ]
 }
