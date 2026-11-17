@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
   transpilePackages: ["next-auth"],
   serverExternalPackages: ["yahoo-finance2", "@deno/shim-deno"],
   experimental: {
+    // 17 Nov: gerbang advisory npm (default 'security') memblokir build — Next
+    // 16.4.3 ter-flag advisory baru → SecurityFatalError exit 1. Dimatikan agar
+    // hot-swap harian jalan. UPGRADE TETAP WAJIB oleh owner di jam maintenance:
+    // `next upgrade --agent=security` (jangan auto-upgrade via agent).
+    agentUpgrade: false,
     optimizePackageImports: [
       "lucide-react",
       "@base-ui/react",
