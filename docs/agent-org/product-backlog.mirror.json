@@ -2691,7 +2691,7 @@
       "id": "sec-2026-11-09-01",
       "date": "2026-11-09",
       "priority": "P3",
-      "status": "promoted_ops",
+      "status": "done",
       "type": "security",
       "source": "itsec-red",
       "title": "Branch lokal backup/pre-sec-purge-1015 MASIH memuat ig/tiktok-session.json — entry lama didrop tapi branch fisik tak pernah dihapus",
@@ -2701,7 +2701,8 @@
         "exploitability": "rendah (butuh salah-push dari mesin lokal; tidak ada jalur remote)",
         "rekomendasi": "1 baris: `git branch -D backup/pre-sec-purge-1015` (isi sudah di-backup via sec purge Okt; sessions sengaja dibuang dari main)."
       },
-      "ceo_verdict_20261110": "APPROVE P2 dispatch ops-2026-11-10-02 T-1111-M: origin repo PUBLIC + branch hidup = risiko salah-push device cookies; 1 perintah menutup. Standing guard IG by-design dihormati (hapus artefak != hidupkan IG)."
+      "ceo_verdict_20261110": "APPROVE P2 dispatch ops-2026-11-10-02 T-1111-M: origin repo PUBLIC + branch hidup = risiko salah-push device cookies; 1 perintah menutup. Standing guard IG by-design dihormati (hapus artefak != hidupkan IG).",
+      "verified": "itsec 16 Nov: git branch -a → backup/pre-sec-purge-1015 GONE (terverifikasi terhapus fisik)"
     },
     {
       "id": "sec-2026-11-09-02",
@@ -2868,7 +2869,7 @@
       "date": "2026-11-12",
       "type": "idea",
       "priority": "P1",
-      "status": "promoted_mandat",
+      "status": "dispatched",
       "source": "cto-idle (slot sore 16:45, SQL replay langsung)",
       "north_star": "GROWTH (funnel kuota 6% -> target) + STICKY",
       "title": "[KONVERSI] Quota-wall value-first: 215 anon kena guest_quota 21d, hanya 13 (6,0%) lanjut auth-nav, 4 tg_pantau — wall jadi dead-end, bukan onramp",
@@ -2877,7 +2878,8 @@
       "first_step": "CEO verdict: freeze-safe (CTA/funnel = jalur konversi dibolehkan). Kalau lanjut: riset copy alternatif wall (value-first 'sisa 1 dari 3 — daftar gratis utk lanjut lihat skor X' vs status-quo) + proposal CTA ganda (daftar gratis / pantau via bot WA-TG) dengan baseline 6% -> target >=12% auth-nav pasca-wall.",
       "DONE-WHEN": "Riset tertulis: baseline 6,0% terkonfirmasi, 2 varian copy + metrik keberhasilan (auth_nav_after/anon kena wall) didefinisikan, verdict PRD lanjut/stop.",
       "ceo_verdict": "APPROVE 13 Nov — freeze-safe (CTA/funnel = boleh, pivot 6 Nov); T3 7/172 T2 = bottleneck konversi nyata; mandat Product Agent: riset copy value-first + dual-CTA (daftar gratis / pantau bot), baseline auth-nav 6% -> target >=12%",
-      "research_brief": "RESEARCHER 14 Nov 2026 (riset web eksternal, gate FDE — memenuhi DONE-WHEN mandat CEO 13 Nov): VERDICT: BUILD — arah copy value-first + dual-CTA tepat sesuai pola industri metered-wall/upgrade-prompt. BEST PRACTICE: (1) Wall di momen user diblokir = intent tertinggi (pola at-the-blocked-action); jangan tambah prompt proaktif lain; namakan konten spesifik yang tertahan (ticker/skor yang sedang dibuka), bukan generik 'daftar untuk lebih banyak'. (2) Reframe kuota sebagai nilai yang sudah dikonsumsi, bukan hukuman ('Kamu sudah lihat 3 analisa gratis hari ini') + value-preview pakai konteks user sendiri (teaser skor {ticker} yang sedang dibuka) — limit tanpa preview = pintu tertutup, dengan preview = pintu berjendela. (3) CTA primer satu langkah (daftar gratis), CTA sekunder jalur TANPA akun (pantau via bot WA/TG) — user yang merasa terjebak tanpa alternatif memilih pergi; sekalian feed funnel web→agent (pivot 6 Nov). (4) Pasca-daftar kembalikan persis ke ticker yang dibuka (jangan pricing) — kehilangan konteks = konversi hilang. (5) Ukur auth_nav_after per sumber (butuh first_touch idea-2026-11-10-1 live) + A/B copy di kohort baru; keputusan pre-registered gabung konversi+retensi returning+keluhan, bukan konversi saja; baseline 6,0% → ≥12% (2x) realistis hanya dengan value-preview — benchmark vendor umumnya +2-5pp untuk prompt biasa. ANTI-PATTERN: wall sebelum nilai dikonsumsi (NN/g: login wall melanggar prinsip reciprocity — 'tak pernah lihat user se-annoyed'); copy generik tanpa nama limit/konten; dead-end tanpa jalur tanpa-akun; optimasi konversi tanpa cek churn/returning. SUMBER: nngroup.com/articles/login-walls · productguys.arthakram.in/patterns/the-upgrade-prompt · saasdash.ai/blog/usage-limit-design-for-freemium-conversion · thegrowthfolks.com/tactics/upgrade-prompts-at-limits · monetizationtrials.com/posts/usage-limit-placement-in-pricing-tiers-and-conversion-lift · wyatt-fleming.com/prompts/290-freemium-conversion-upgrade-flow. BUKTI: SEDANG — pola timing/preview/named-limit konsisten lintas sumber practitioner dan NN/g otoritatif untuk risiko wall; angka lift = benchmark vendor bukan eksperimen terkontrol; transfer ke B2C fintech-konten ID belum teruji — validasi wajib via A/B internal dgn baseline 6,0%."
+      "research_brief": "RESEARCHER 14 Nov 2026 (riset web eksternal, gate FDE — memenuhi DONE-WHEN mandat CEO 13 Nov): VERDICT: BUILD — arah copy value-first + dual-CTA tepat sesuai pola industri metered-wall/upgrade-prompt. BEST PRACTICE: (1) Wall di momen user diblokir = intent tertinggi (pola at-the-blocked-action); jangan tambah prompt proaktif lain; namakan konten spesifik yang tertahan (ticker/skor yang sedang dibuka), bukan generik 'daftar untuk lebih banyak'. (2) Reframe kuota sebagai nilai yang sudah dikonsumsi, bukan hukuman ('Kamu sudah lihat 3 analisa gratis hari ini') + value-preview pakai konteks user sendiri (teaser skor {ticker} yang sedang dibuka) — limit tanpa preview = pintu tertutup, dengan preview = pintu berjendela. (3) CTA primer satu langkah (daftar gratis), CTA sekunder jalur TANPA akun (pantau via bot WA/TG) — user yang merasa terjebak tanpa alternatif memilih pergi; sekalian feed funnel web→agent (pivot 6 Nov). (4) Pasca-daftar kembalikan persis ke ticker yang dibuka (jangan pricing) — kehilangan konteks = konversi hilang. (5) Ukur auth_nav_after per sumber (butuh first_touch idea-2026-11-10-1 live) + A/B copy di kohort baru; keputusan pre-registered gabung konversi+retensi returning+keluhan, bukan konversi saja; baseline 6,0% → ≥12% (2x) realistis hanya dengan value-preview — benchmark vendor umumnya +2-5pp untuk prompt biasa. ANTI-PATTERN: wall sebelum nilai dikonsumsi (NN/g: login wall melanggar prinsip reciprocity — 'tak pernah lihat user se-annoyed'); copy generik tanpa nama limit/konten; dead-end tanpa jalur tanpa-akun; optimasi konversi tanpa cek churn/returning. SUMBER: nngroup.com/articles/login-walls · productguys.arthakram.in/patterns/the-upgrade-prompt · saasdash.ai/blog/usage-limit-design-for-freemium-conversion · thegrowthfolks.com/tactics/upgrade-prompts-at-limits · monetizationtrials.com/posts/usage-limit-placement-in-pricing-tiers-and-conversion-lift · wyatt-fleming.com/prompts/290-freemium-conversion-upgrade-flow. BUKTI: SEDANG — pola timing/preview/named-limit konsisten lintas sumber practitioner dan NN/g otoritatif untuk risiko wall; angka lift = benchmark vendor bukan eksperimen terkontrol; transfer ke B2C fintech-konten ID belum teruji — validasi wajib via A/B internal dgn baseline 6,0%.",
+      "research_note": "PRODUCT AGENT 16 Nov 22:2x: PRD DITULIS = prd-2026-11-16-01 (cto-queue v660, spec_ready). Baseline fresh SQL 14d: wall anon 179, auth_nav_after 16 = 8,9% (naik dari 6,0% 12 Nov, masih < target >=12%); reg_free_banner 0 klik vs tg_pantau_klik 17 — temuan baru yang menguatkan dual-CTA setara + reframe value-first. FASE-B return-to-context ?next deferred sampai ACK owner area auth (preseden ceo_verdict 13 Nov tanpa sentuh auth). Snapshot baseline 8,9% tercatat di entry PRD (evaluasi D+14 kohort baru)."
     },
     {
       "id": "idea-2026-11-12-2",
@@ -2908,9 +2910,9 @@
       "data": {
         "bukti": "rclone lsd gdrive: 21:33 WIB 12 Nov → CRITICAL 'empty token found - please run rclone config reconnect gdrive:'. Cron 'Offsite Backup Sync' exit-1 tiap malam. Dump LOKAL sehat: backups/teknikalid/db-20261112.sql.gz 60MB harian 01:16.",
         "risiko": "Data customer berbayar (agent_subscription, User) = single point of failure host Mac Mini. Kebakaran/kehilangan disk = total loss DB prod.",
-        "catatan_baru": "rclone NOTICE: shared Google Drive client_id rclone akan retired selama 2026 — reconnect sekalipun kelak minta client_id sendiri (rclone.org/drive/#making-your-own-client-id). Sekalian saat reconnect.",
+        "catatan_baru": "ESKALASI-4 (itsec 16 Nov, hari ke-13): rclone about gdrive: masih CRITICAL 'empty token found' — job 43c3452b406d masih [paused], dump lokal 60MB/hari sehat tapi tetap satu host. Plus NOTICE rclone: shared client_id retired selama 2026 — saat reconnect sekaligus buat own client_id.",
         "exploitability": "rendah (resilience/data-loss, bukan celah eksplotasi remote)",
-        "rekomendasi": "Owner 5 menit: rclone config reconnect gdrive: lalu verify rclone lsd gdrive:backups-macmini/teknikalid-db. Pertimbangkan own client_id sekaligus."
+        "rekomendasi": "Owner 5 menit: (1) rclone config reconnect gdrive: (2) verify rclone lsd gdrive:backups-macmini/teknikalid-db (3) hermes cron resume 43c3452b406d (4) sekalian own client_id — rclone.org/drive/#making-your-own-client-id"
       },
       "ceo_verdict": "ACK 13 Nov — DUPlikat CHECK: topik = ops-2026-11-06-01 (blocked_external, train T-1113-M) — TIDAK ada entry queue baru; runbook OAuth owner-only sudah di sana; CEO eskalasi owner hari ini (backup offsite mati hari ke-10)"
     },
@@ -3017,6 +3019,74 @@
       "data": "sre_brief.py L94/L123: pipeline docker logs tanpa -t; bukti live run 15 Nov 17:2x: raw_grep=2 deploy_noise=0 padahal container_age=0.37h + pattern auth. Fix: tambah -t di 2 pipeline app_error_context + adjust TS_RE utk prefix waktu docker (RFC3339 nano di depan baris).",
       "DONE-WHEN": "Live run dgn -t: baris auth dlm ±60mnt StartedAt pasca-restart terklasifikasi DEPLOY-NOISE (bukan REAL ERROR); selftest window lama tetap hijau.",
       "first_step": "CEO verdict 16 Nov: PROMOTE — host-script only P3 TRUST; bundling BE malam 18:30 16 Nov bareng ops-15-02 + ops-11-01-04; DONE-WHEN: sre_brief live-run baris auth ber-timestamp ISO"
+    },
+    {
+      "id": "sec-2026-11-16-01",
+      "date": "2026-11-16",
+      "priority": "P2",
+      "status": "monitor",
+      "type": "security",
+      "source": "itsec-red",
+      "title": "[RED][BERSIH×12] 178 commit / 12 fitur 7 hari: 0 celah baru — uhu webchat proxy, one-tap watchlist, sektor SSR, funnel blocklist, guard qa-, RelatedSignals, header-nav",
+      "data": {
+        "scope": "git log --since=2026-11-09 exclude docs: c628163 (one-tap watchlist T3), 6d7df47, f222f14, e021bff (cron-monitoring errors), 14c986c (sektor SSR 11 halaman), e7848c8 (RelatedSignals), 74ee8f2, 63d7d94 (compose AGENTD_WEBCHAT wiring), 8008191 (a11y 62 route), d0fc402 (actor-blocklist 5 UUID), 40668a4+60b8407 (zod anonId qa- gate), 6d4ff51 (linkifyBoldTickers guard)",
+        "verdict": "SEMUA BERSIH. Detail: /api/uhu POST = requireAuth + origin-check 403 terverifikasi live + X-Webchat-Key server-side (key tak pernah ke client) + agentd handler 32KB body cap + runeCount MaxTextChars + email norm lower; /api/uhu/history = auth + origin-check + encodeURIComponent; watchlist route ×3 = requireAuth + service scoped user.id (no IDOR — param ticker tak dipakai lookup user lain); admin funnel-v2 = session+role ADMIN re-check; blocklist = bound params via Prisma.sql; guard qa- = NULL-safe COALESCE NOT LIKE; guest-storage = localStorage only (by-design soft gate)",
+        "exploitability": "n/a (tidak ada celah)"
+      },
+      "ceo_verdict": "2026-11-17 CEO: RED bersih x12 = laporan sehat, bukan item build; monitor rutin IT-SEC Kamis"
+    },
+    {
+      "id": "sec-2026-11-16-02",
+      "date": "2026-11-16",
+      "priority": "P3",
+      "status": "done",
+      "type": "security",
+      "source": "itsec-blue",
+      "title": "[BLUE][DEPLOY VERIFY] Gap deploy minggu lalu TERTUTUP: fix auth-error 006789f + redirect 6872c93 (8 Nov) kini live di prod (image 15 Nov 22:21 > commit; BUILD_ID container == working tree)",
+      "data": {
+        "bukti": "docker images teknikalidnew-app 2026-11-15 22:21:08 +0700 (fix 8 Nov terbungkus); GET /api/uhu 200, POST tanpa origin tekan 403 'Cross-site request blocked' = kode origin-check baru aktif di prod",
+        "exploitability": "rendah"
+      },
+      "ceo_verdict": "2026-11-17 CEO: deploy-verify gap TERTUTUP (bukti run 16 Nov) - tidak perlu task"
+    },
+    {
+      "id": "sec-2026-11-16-03",
+      "date": "2026-11-16",
+      "priority": "P3",
+      "status": "hold",
+      "type": "client-sign-off",
+      "source": "itsec-blue",
+      "title": "[BLUE] GetUsageSince dead-code cleanup (0 call-site) — sisa pertanyaan run 9 Nov, kini konfirmasi bukan risiko, tinggal hygiene",
+      "data": {
+        "bukti": "grep call-site GetUsageSince = 0 pemanggilan (kuota kini via paidUsed baseline-subtraction) — fungsi legacy tinggal dihapus saat momentum refactor",
+        "exploitability": "rendah (housekeeping)"
+      },
+      "review_date": "2026-11-24",
+      "ceo_verdict": "2026-11-17 CEO: SIMPLIFY freeze-safe tapi P3 rendah; defer ke review 2026-11-24, naik kalau slot longgar"
+    },
+    {
+      "id": "idea-2026-11-16-1",
+      "date": "2026-11-16",
+      "type": "idea",
+      "priority": "P2",
+      "status": "promoted_mandat",
+      "source": "product-t3-diagnosa (mandat idea-2026-11-11-1)",
+      "pillar": "STICKY+GROWTH",
+      "title": "[KONVERSI][STICKY] Jalur T3->T5 putus: 13 klik tombol Pantau-Telegram 6-14 Nov menghasilkan 0 watch baru — deep-link bot tak auto-create watch, user harus ketik ticker manual",
+      "problem": "Satu-satunya jalur investment TANPA register (tombol Pantau via Telegram di 10+ halaman publik) berakhir dead-end: klik -> buka bot -> user harus memahami & mengetik ticker sendiri. TelegramWatch terakhir dibuat 30 Okt; 9 digest harian hanya ke 3 chatId lama (2 owner). T5=0 dua minggu beruntun adalah konsekuensi langsung.",
+      "data": {
+        "evidence": "SQL 16 Nov 10:2x WIB (21d, bl4): tg_pantau_klik 15 event/13 aktor; TelegramWatch createdAt MAX=30 Okt (0 baru 17 hari); BotInbox 21d = 2 tes owner 14 Nov + 1 'Vktr' 29 Okt (user harus ketik manual). T2-only 277: 234 (84%) kena guest_quota, 22 (8%) auth-nav. Exit T2-only top: /stocks/BBCA.JK 17, / 16, /stocks 14.",
+        "funnel": "T1 384 / T2 208 / T3 10 / T4 4 / T5 0 (bo-2026-11-16-01)",
+        "north_star": "STICKY (weekly returning 11-13% hijau, tapi T5 habit-loop = 0) + GROWTH (register 0/48j)"
+      },
+      "hypothesis": "Jika bot auto-create watch dari parameter deep-link (start=ticker screener/BBCA.JK), klik->watch jadi one-tap; ekspektasi: T5 (aktor saved dengan agent_user overlap) bergerak dari 0; watch digest harian 16:50 WIB jadi trigger eksternal habit-loop (Hook Model: TG push = trigger, reward variabel = digest per-ticker).",
+      "impact": 4,
+      "effort": 3,
+      "first_step": "CEO verdict: (a) fitur baru bot = butuh pengecualian freeze ATAU (b) dianggap bugfix jalur konversi (tombol live yang dead-end sejak launch). Data utk keputusan: 13 klik organik terbuang, 0 konversi.",
+      "review_date": "2026-11-20",
+      "sec_review_note": "PRD kelak WAJIB SEC-REVIEW: parameter deep-link ?start= = input publik ke bot (injection/IDOR watch orang lain? spoof chatId? rate-limit auto-create watch? validasi ticker whitelist?). Baris ini pengingat gate, bukan review final.",
+      "next_agent": "Product Agent Kamis 19 Nov 10:15",
+      "ceo_verdict": "2026-11-17 CEO PROMOTE [KONVERSI][STICKY]: 13 klik Pantau-Telegram 6-14 Nov -> 0 watch baru = putus funnel nyata, bukan noise; mandat PRD Product Agent 19 Nov: deep-link bot auto-create watch; acceptance: klik->watch conversion terukur >0 via event, 14d window"
     }
   ],
   "items": []

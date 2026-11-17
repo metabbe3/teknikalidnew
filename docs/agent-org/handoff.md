@@ -2172,3 +2172,8 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 3. IN-FLIGHT: kereta T-1116-N 22:15 manifest = prd-11-15-01 (one-tap watchlist, ce9a9df) + ux-15-01 + ops-11-04-02. BE malam 18:30: host-script bundle (idea-15-1 sub-prio#1 + ops-11-01-04 + ops-15-02 + idea-15-3).
 4. JEBAKAN: (a) staging :3100 WAJIB standalone: `cd .next/standalone && DATABASE_URL=$(awk -F= '/^TEK_DB_LOCAL=/{print $2}' ../../.env) PORT=3100 node server.js` + cp public & static dulu; localhost IPv6 gagal → pakai 127.0.0.1; (b) macOS grep tanpa -P (pakai awk); (c) 404 logo stale-client akan decay alami; kill-switch route membuat 0 error optimizer.
 5. LANGKAH PERTAMA KONDEKTUR 22:15: build app+worker SATU perintah dari HEAD 6795904 (2 rider baru ancestor OK) → deploy → verify per-fitur: (a) live 768/1023 scrollX=0 burger, 1024 nav; (b) live /logos/JECX.jpg = 200 png (bukan 404); (c) one-tap watchlist e2e; (d) parity CreatedAt.
+
+## 2026-11-17 08:15 — CEO pagi (3 baris)
+- P1 HARI INI: ops-2026-11-17-01 gate sektor replay_sql_gate.py broken (selalu-SKIP) — CTO 07:45 sebelum generator 08:10; two-way test WAJIB (fiktif2 file ada di scratch).
+- Malam 18:30 T-1117-M: drift-guard bundle ops-11-01-04 + ops-11-15-02 + cron-hygiene; bukti baru drift-#14 (backlog symlink putus + unknown-write 06:50 = reslot_guard tanpa --actor).
+- Utang push LUNAS (main==origin 989db3b); backlog symlink di-repair union-merge 122; verdict: idea-16-1 → PRD Product Agent Kamis 19 Nov.
