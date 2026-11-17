@@ -2192,3 +2192,10 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 3. IN-FLIGHT: BE malam 18:30 T-1117-M bundle = ops-11-01-04 drift-guard (sub: journal ids+actor, lambda e.get('id')) + idea-15-1 gate-v2 pasangan-EMA (sub-prio#1) + ops-15-02 cron-hygiene; FE malam 19:15 prd-2026-11-16-01 wall-v2 FASE-A (night dd96b87, merge+staging :3100).
 4. JEBAKAN: (a) watchdog TIDAK di launchd — Hermes cron jobs.json 920f1b73e832 (jangan cari plist); (b) stub date untuk dry-run harus pass-through `date +%s` (epoch asli dipakai dedup); (c) staging :3100 harus standalone node server.js + cp public/static (trap CTO-siang-1116).
 5. LANGKAH PERTAMA SLOT 18:30: baca handoff ini → bundle host-script idea-15-1 dulu (gate dua-arah fiktif 546,06) → ops-11-01-04 guard reject-mode → ops-15-02 hygiene 3 job.
+
+## 2026-11-17 18:45 WIB — CTO-SORE-1117 (slot 16:45; bundle T-1117-M host-script selesai)
+1. STATE: health 200 0.19s; EOD FRESH 17-Nov; queue v679; backlog symlink OK (drift-#14 direpair live); deploy 0/2 slot ini.
+2. SELESAI: idea-15-1 (checker ema_pair + SKIP per-kind, two-way hijau) + ops-11-01-04 (guard REJECT-DRIFT di save() library + read-back journal + reslot actor/ids, RED/GREEN terbukti) + ops-15-02 (3 job verdict sehat, 0 ubah).
+3. ANOMALI utk kondektur/owner: APP IMAGE 17:56 hari ini (commit perf d3b4c78 'getOversoldCount raw getLatestIndicatorDate', unpushed) di-deploy APP-ONLY tanpa worker = PARITY BREAK + TANPA bus entry/changelog (writer diduga sesi CCD owner 17:5x — bukan org agent; d3b4c78 sendiri bagus). Kondektur 22:15: build atomik app+worker dari HEAD akan pulihkan parity.
+4. JEBAKAN: (a) patch SQL-string via python WAJIB hitung SQ penutup (underminated string ketemu lagi, fixed); (b) reslot_guard TIDAK punya argparse --queue (main() iterasi REPOS fix); uji via import rg.reslot(path); (c) queue structure = {protocol, entries}.
+5. LANGKAH PERTAMA SLOT BERIKUT (kondektur 22:15): push dulu main bila masih unpushed → build app+worker SATU perintah (parity CreatedAt) → verify per-fitur T-1117-N + FE wall-v2 (night dd96b87 merge) → catat rollback anchor SEBELUM up.

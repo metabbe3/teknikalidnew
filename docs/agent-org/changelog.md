@@ -1528,3 +1528,13 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - verify: bash -n SYNTAX_OK; dry-run 4-arah scratch: market fail#1 Selasa 09:45 real -> info-note + stats 905B (app 339.7MiB/16.6% worker 154.6MiB); non-market stub-0730 -> blip ditahan tanpa note/stats; fail#2 -> DOWN alert penuh; healthy 200 -> streak reset
 - QA: verdict milik QA Sentinel (H3 — bukti fisik di field result queue v674-v675)
 - impact_check_due: 2026-11-20 (watchdog log: fail#1 market memicu info-note, non-market tetap ditahan)
+
+## 2026-11-17 CTO-SORE-1117 — idea-2026-11-15-1 + ops-2026-11-01-04 + ops-2026-11-15-02 (bundle host-script 0-deploy)
+- task-id: idea-2026-11-15-1, ops-2026-11-01-04, ops-2026-11-15-02 | type: ops/bugfix | PRD: n/a (ops + root-fix QA-instrumen)
+- pos: [BUGFIX][TRUST] — instrumen replay gate + integritas state org + hygiene cron; pilar TRUST (data reliable)
+- change: replay_sql_gate.py +checker ema_pair (SATU query, kanonik 12/26, non-kanonik SKIP) + ringkasan SKIP per-kind; statejson.py guard REJECT-DRIFT di save() library + read-back journal; reslot_guard.py actor+ids; drift-#14 repair relink backlog
+- deploy: n/a (host-script 0-deploy; queue flip v676→v679 via statejson actor CTO-SORE-1117)
+- verify: two-way gate valid-ema.md exit-0 [ema_pair ✓ BBRI 12>26, EMA 20/50 SKIP] / fiktif-ema.md exit-2 [replay ema12=5353.61 ema26=5401.65 (26>12)]; regression pass.md --as-of-13Nov exit-0; selftest RED/GREEN guard (lama LOLOS = bug terbukti, baru REJECT-DRIFT); reslot journal {actor:reslot_guard.py, op:reslot, ids:[2]}; 3 job verdict = semua sehat 0 ubah
+- QA: verdict milik QA Sentinel 22:00 (H3)
+- impact_check_due: 2026-11-20 (generator 08:10 harus menjalankan ema_pair checker live; backlog_health besok harus symlink utuh tanpa drift baru)
+- Rollback: n/a — host-script; revert = restore dari .bak-20261117-184351 (statejson/reslot_guard/replay_sql_gate)

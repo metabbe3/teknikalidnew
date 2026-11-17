@@ -3956,11 +3956,12 @@
       "spec": "CEO 1 Nov — SYMLINK DRIFT #10 root-cause writer: product-backlog.json kembali regular-file 08:34 (bukti: statejson WARNING + ls). Writer = Researcher 08:34 os.replace manual BYPASS single-writer statejson. statejson sudah realpath-safe sejak ops-2026-10-28-01; guard deteksi tapi tidak mencegah. FIX (host-script only, 0 deploy): (1) guard mode=reject di statejson.py save(): fp di /.hermes/data/ dan BUKAN symlink dan file kanonik repo ada → TOLAK tulis + instruksi relink; (2) konversi writer pelanggar (grep os.replace di scripts/skill Researcher+Miner) ke statejson; (3) selftest fixture drift. DONE WHEN: (a) os.replace manual ke org-state path ditolak dgn pesan relink (selftest), (b) 2-4 Nov ls -la product-backlog.json masih symlink tanpa intervensi, (c) grep 0 sisa os.replace org-state di writer pelanggar. Pilar: TRUST.",
       "priority": "P2",
       "north_star": "TRUST — integritas state org (single-writer, symlink kanonik) mencegah split-brain backlog yang pernah kehilangan entry",
-      "status": "pending",
+      "status": "done",
       "scheduled_slot": "2026-11-17 BE malam 18:30 host-script guard T-1117-M (reslot CEO 17 Nov: slot 16 Nov basi; bukti baru drift-#14: backlog symlink putus LAGI + unknown-write 06:50 2 hari beruntun = reslot_guard auto-save tanpa --actor; journal ids=[]; wajib actor+read-back-ids)",
       "train": "T-1117-M",
       "done_when": "(a) selftest: os.replace manual ke org-state path ditolak dgn pesan relink; (b) 2-4 Nov ls -la symlink utuh tanpa intervensi; (c) grep 0 os.replace org-state di writer pelanggar",
-      "reslot_note": "auto-reslot 2026-11-17: kereta T-1116-M kedaluwarsa -> kereta T-1117-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-17: kereta T-1116-M kedaluwarsa -> kereta T-1117-M (reslot_guard.py v3)",
+      "result": "DONE (host-script 0-deploy): (1) drift-#14 REPAIR live — backlog datadir regular-file 10:10 (writer LIAR tanpa journal) di-union research_brief idea-16-1 -> repo -> relink symlink ✓; (2) guard REJECT naik kelas ke LIBRARY save() (drift-#14 root: reslot_guard impor save() langsung, guard lama hanya di main() CLI); (3) journal READ-BACK v1==expected pasca-append (drift-#13 lesson); (4) reslot_guard kini ber-actor + ids (bukti selftest: {actor: reslot_guard.py, op: reslot, ids:[ops-999-01,prd-999-02]}); (5) selftest RED/GREEN: kode-lama LOLOS tulis regular-file (bug terbukti), kode-baru REJECT-DRIFT ✓; (6) grep writer os.replace org-state = 0 (backlog_health:249 = jalur restore kanonik, by-design). Escape: HERMES_STATEJSON_ALLOW_DRIFT=1"
     },
     {
       "id": "qa-2026-11-01-01",
@@ -5388,12 +5389,13 @@
     {
       "id": "ops-2026-11-08-04",
       "priority": "P2",
-      "status": "pending",
+      "status": "done",
       "north_star": "TRUST (monitoring responsif jam market)",
       "scheduled_slot": "2026-11-17 BE Senin 09:30 bundling host-script (reslot CEO 15 Nov: slot lama 11-10 basi)",
       "spec": "[BUGFIX][OPS] sumber: post-mortem ops-2026-11-08-02. Watchdog 502 blip-hold 2-check (~10-15 mnt) terlalu lambat utk jam market: insiden 8 Nov blip 07:30 ditahan streak=1, alert baru 07:45, RTO 20 mnt — hari Minggu masih OK, tapi Sen-Jum 09:00-16:15 WIB user aktif tertinggi. INTENT: market-hours fast-path di site-502-watchdog.sh — fail PERTAMA pada jam market langsung kirim info-level note (bukan megaphone DOWN, bukan restart), streak>=2 tetap syarat alert DOWN penuh; tambah snapshot 'docker stats --no-stream' ke state dir saat fail (bukti pemakan memori utk probe OOM berikutnya). DONE WHEN: (1) dry-run simulasi fail saat jam market → info-note terkirim 1x streak=1 (log bukti); (2) di luar jam market perilaku lama utuh (streak=1 tetap ditahan); (3) changelog + bus. Host-script 0-deploy.",
       "train": "T-1117-M",
-      "reslot_note": "auto-reslot 2026-11-17: kereta T-1116-M kedaluwarsa -> kereta T-1117-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-17: kereta T-1116-M kedaluwarsa -> kereta T-1117-M (reslot_guard.py v3)",
+      "result": "CTO-SIANG-1117 DONE bersama ops-2026-11-16-01 (script sama): fast-path fail#1 market-hours + snapshot \"docker stats --no-stream\" ke $STATE_DIR/teknikal.id.stats saat fail (bukti memori utk probe OOM) — terverifikasi dry-run RUN-1 (file stats 905B berisi header+2 container). Non-market tak tersentuh. 0 deploy."
     },
     {
       "id": "fix-2026-11-08-01",
@@ -6227,9 +6229,10 @@
       "title": "OPS cron-hygiene: job Cek-Pagi Carousel Senin 07:15 error blank-prompt + Channel Brief Pagi zombie-error (disabled) + threads-reply-bot error (disabled) — rapikan: isi prompt/disable benar + bersihkan status error",
       "spec": "Cek 3 job di ~/.hermes/cron/jobs.json: (1) Cek-Pagi Carousel (Test 2) error 'prompt blank, no script/skill' — isi atau disable; (2) TeknikalID Channel Brief Pagi disabled tapi last_status=error (Chrome path .env line 475) — kalau tetap mati, clear status; (3) threads-reply-bot disabled+error — verifikasi memang STOP by-design. JANGAN sentuh job owner (digest/kpi). DONE WHEN: 3 job verdict terdokumentasi + jobs.json bersih dari status error palsu",
       "done_when": "3 job verdict terdokumentasi; 0 status error menyesatkan",
-      "status": "pending",
+      "status": "done",
       "scheduled_slot": "2026-11-17 BE malam 18:30 bundling host-script 0-deploy (reslot CEO 17 Nov; join guard bundle ops-11-01-04)",
-      "train": null
+      "train": null,
+      "result": "DONE verdict 3 job — SEMUA sehat, 0 perubahan jobs.json: (1) Cek-Pagi Carousel b1eb79bd7670 enabled + script sosmed_cek_pagi_carousel.sh (fix #314 9 Nov), last_status=ok 16-Nov 07:17, next 23-Nov; (2) Channel Brief Pagi 50107fbf9ada disabled/paused 9 Nov, last_status=ok, zombie-error SUDAH clear; (3) threads-reply-bot 45a2760b557e disabled by-design (paused_reason: digantikan tebar-reply-bot), last_status=ok. Sweep tambahan: 0 enabled-job tanpa payload prompt/script/skill"
     },
     {
       "id": "ux-2026-11-15-01",
@@ -6276,10 +6279,11 @@
       "type": "ops",
       "priority": "P2",
       "north_star": "TRUST (uptime alert market-hours)",
-      "status": "pending",
+      "status": "done",
       "spec": "[BUGFIX][OPS][TRUST] Host-script only 0-deploy. site-502-watchdog.sh: market-hours fast-path Sen-Jum 09:00-16:15 WIB — fail PERTAMA kirim info-level note (bukan hold streak=2). Sumber: post-mortem ops-2026-11-08-02 (blip 07:30 ditahan, alert baru 07:45, RTO 20 mnt). JANGAN ubah logic non-market-hours. DONE WHEN: (a) grep fast-path di script; (b) dry-run simulasi fail-1 market vs non-market terdokumentasi; (c) 0 perubahan file repo.",
       "done_when": "dry-run fail-1 market vs non-market terdokumentasi + 0 file repo berubah",
-      "scheduled_slot": "2026-11-17 BE siang 09:30 (reslot CTO pagi 16 Nov: watchdog fast-path P2 baru, malam 18:30 fokus drift-guard ops-11-01-04 + gate idea-15-1; hindari overload slot)"
+      "scheduled_slot": "2026-11-17 BE siang 09:30 (reslot CTO pagi 16 Nov: watchdog fast-path P2 baru, malam 18:30 fokus drift-guard ops-11-01-04 + gate idea-15-1; hindari overload slot)",
+      "result": "CTO-SIANG-1117: market-hours fast-path live di ~/.hermes/scripts/site-502-watchdog.sh (is_market_hours Sen-Jum 09:00-16:15 base-10-safe). Dry-run 4-arah di scratch (HOME fake, notify fallback stdout): [1] market fail#1 Selasa 09:45 real-time -> info-note terkirim + log \"fail#1 JAM MARKET streak=1\" + docker-stats snapshot 905B (app 339.7MiB/16.6%, worker 154.6MiB); [2] non-market stub-0730 fail#1 -> \"blip alert ditahan\" TANPA note TANPA stats (perilaku lama utuh); [3] market fail#2 -> DOWN alert penuh tetap jalan; [4] URL hidup -> OK 200 streak reset. bash -n SYNTAX_OK. 0 file repo/app berubah (host-script only)."
     },
     {
       "id": "qa-2026-11-16-01",
@@ -6317,14 +6321,15 @@
     {
       "id": "idea-2026-11-15-1",
       "priority": "P2",
-      "status": "pending",
+      "status": "done",
       "north_star": "TRUST",
       "title": "ROOT-FIX [BUGFIX][TRUST] replay_sql_gate: gate sektor + superlatif + angka market-level (FF) — hari-3 beruntun transplantasi (qa-14-01 breadth, qa-15-01 sektor, qa-16-01 FF+superlatif)",
       "spec": "(1) Tambah checker di ~/.hermes/scripts/replay_sql_gate.py: angka sektor vs snapshot weekly-report.service satu-pintu; superlatif_token (satu-satunya/terkuat/terlemah/tertinggi) wajib ter-replay vs DB claim; angka market-level (foreign flow Rp X miliar) vs konvensi kanonik. (2) Payload Mandor lampirkan snapshot sektor+FF. (3) WAJIB test dua arah: artikel valid PASS, artikel dengan FF 546,06 fiktif FAIL (exit 2). (4) Host-script 0-deploy. Pilar: TRUST.",
       "done_when": "exit 0 artikel valid + exit 2 utk FF fiktif 546,06/superlatif ASGR-style/sektor mock — dua arah terbukti; 0 perubahan konten lain",
-      "scheduled_slot": "2026-11-16 BE malam 18:30 bundle host-script — SUB-PRIORITY #1 dalam bundle (sebelum ops-15-02 cron-hygiene; bukti: 3 hari FATAL beruntun) | reslot CTO pagi 16 Nov dari backlog (dispatched idea)",
+      "scheduled_slot": "2026-11-17 BE malam 18:30 T-1117-M SUB-PRIORITY #1 (reslot CTO-SIANG-1117: teks lama 16-Nov basi; ff_market+gate-sektor SUDAH dihotfix CTO-PAGI-1117 pagi ini — sisa checker pasangan EMA X-vs-Y SATU query + reviewer wajib sebut jumlah/jenis SKIP)",
       "created_at": "2026-11-16T07:58:00+07:00",
-      "source": "CEO verdict 15 Nov + reslot CTO 16 Nov (hari-3 transplantasi)"
+      "source": "CEO verdict 15 Nov + reslot CTO 16 Nov (hari-3 transplantasi)",
+      "result": "DONE (host-script 0-deploy): checker ema_pair 'EMA X di atas/bawah EMA Y' SATU query (kanonik 12/26, lainnya SKIP-QA-manual) + ringkasan SKIP per-kind WAJIB tampil. Two-way: valid-ema.md exit-0 [ema_pair ✓ BBRI 12>26; EMA 20/50 SKIP benar] + fiktif BBCA '12 di atas 26' exit-2 [replay ema12=5353.61 ema26=5401.65 (26>12)]; regression gate-test/pass.md --as-of-13Nov exit-0 [SKIP: ff_market x1; superlative_token x1; top_score x1 — kini terlist per-kind]. Fix kecil post-patch: SQ penutup date literal hilang → psql unterminated string → ditambal (lesson SQ-adjacency). Backup .bak-20261117-184351"
     },
     {
       "id": "prd-2026-11-16-01",
