@@ -6329,7 +6329,7 @@
       "type": "prd",
       "priority": "P1",
       "prd_id": "idea-2026-11-12-1",
-      "status": "spec_ready",
+      "status": "night_ready",
       "title": "P1 KONVERSI (PRD idea-2026-11-12-1): Quota-wall value-first + dual-CTA setara + return-to-context — reg_free_banner 0 klik/14d & auth-nav pasca-wall 8,9% (< target >=12%); jalur bot lebih hidup (tg_pantau 17 klik)",
       "north_star": "GROWTH (funnel kuota 8,9% -> >=12% auth-nav pasca-wall) + STICKY (jalur tanpa-akun bot = feed funnel web->agent pivot 6 Nov)",
       "user_story": "Sebagai guest yang menabrak kuota 3 saham/hari tepat saat membuka ticker yang diminati, saya ingin wall menunjukkan apa yang saya dapat bila daftar (preview spesifik ticker itu) plus jalur tanpa-akun via Bot Agent yang setara (bukan baris kecil), supaya momen terblokir berubah jadi onramp, bukan dead-end.",
@@ -6360,7 +6360,22 @@
       "spec": "Bangun sesuai PRD idea-2026-11-12-1 (research_brief Researcher 14 Nov verdict BUILD): (1) FASE-A freeze-safe: reframe copy value-first (progress + preview ticker tergate) + promosikan CTA bot jadi tombol setara — pola at-the-blocked-action + named-limit + value-preview; (2) jangan tambah prompt proaktif lain di halaman (anti-pattern researcher); (3) FASE-B return-to-context ?next HANYA setelah ACK owner area auth tercatat; (4) tidak mengubah guest quota 3/hari ataupun label instrumentasi (baseline comparability).",
       "qa_plan": "Pembangun != pemeriksa. Staging: DOM sweep guest fresh/over/logged-in + view-source SSR; SQL replay auth_nav_after baseline 8,9% tercatat pra-deploy. D+14: auth_nav_after >=12% kohort baru + laporan per-label; watch churn: returning anonId tidak turun (pre-registered per researcher: konversi+retensi, bukan konversi saja).",
       "done_when": "DONE WHEN: (a) staging wall baru menampilkan progress+preview+2 tombol setara, guest fresh tak melihat wall, logged-in tak tersentuh; (b) tsc+build EXIT-0; (c) baseline 8,9% tercatat + kueri replay di entry; (d) FASE-B deferred sampai ACK owner. Copy setengah jadi / CTA bot tetap baris kecil = iterate, bukan ship.",
-      "created_by": "Product Agent buffer-keeper 2026-11-16 22:2x WIB (run gate: buffer teknikal 2 < 3; riset = research_brief backlog 14 Nov + SQL baseline fresh 16 Nov)"
+      "created_by": "Product Agent buffer-keeper 2026-11-16 22:2x WIB (run gate: buffer teknikal 2 < 3; riset = research_brief backlog 14 Nov + SQL baseline fresh 16 Nov)",
+      "branch": "night/prd-2026-11-16-01",
+      "scheduled_slot": "CTO pagi 18 Nov 07:30 review+merge (FASE-A only; FASE-B ?next defer sampai ACK owner area auth)",
+      "verify": "FASE-A: selftest W1 ALL PASS (7 test baru value-first+dual-CTA+src_gate_+no-emoji hijau; failing-first 7 FAIL dikonfirmasi pra-fix); tsc EXIT-0; build EXIT-0 (BUILD_ID 1mk8uXX2qULYa1MN5d53c; attempt-1 npm security-interstitial retry-ok); staging :3100 e2e 2/2 (fresh no-wall, over-limit wall baru 2 tombol setara) + SSR data-premium tetap serve; baseline replay SQL 16 Nov = 8,9% fresh-replay 17 Nov = 178/16 = 9,0%",
+      "review_est": "20 mnt (CTO pagi: merge night/prd-2026-11-16-01, staging ulang cepat 2 skenario, kereta deploy berikutnya)",
+      "night_result": {
+        "date": "2026-11-17",
+        "phase": "FASE-A build-only (0 deploy per hard-gate)",
+        "commits": [
+          "test failing-first 7 FAIL",
+          "impl wall-v2 2 file"
+        ],
+        "baseline_replay": "wall_anons=178 auth_nav=16 pct=9.0 (16 Nov spec: 179/16=8.9)",
+        "staging": "e2e 2/2 PASS + SSR data-premium intact",
+        "fase_b": "DEFERRED — butuh ACK owner area auth (preseden ceo_verdict 13 Nov tanpa sentuh auth)"
+      }
     },
     {
       "id": "prd-2026-11-15-01",

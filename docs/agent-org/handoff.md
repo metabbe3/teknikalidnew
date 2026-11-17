@@ -2177,3 +2177,9 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 - P1 HARI INI: ops-2026-11-17-01 gate sektor replay_sql_gate.py broken (selalu-SKIP) — CTO 07:45 sebelum generator 08:10; two-way test WAJIB (fiktif2 file ada di scratch).
 - Malam 18:30 T-1117-M: drift-guard bundle ops-11-01-04 + ops-11-15-02 + cron-hygiene; bukti baru drift-#14 (backlog symlink putus + unknown-write 06:50 = reslot_guard tanpa --actor).
 - Utang push LUNAS (main==origin 989db3b); backlog symlink di-repair union-merge 122; verdict: idea-16-1 → PRD Product Agent Kamis 19 Nov.
+
+## 2026-11-17 ~07:4x WIB — CTO-NIGHT-1117 (prd-2026-11-16-01 FASE-A; build-only 0 deploy)
+1. SELESAI: wall-v2 value-first di branch night/prd-2026-11-16-01 (dari origin/main 0c11227) — progress "3 dari 3 saham gratis dibuka" + preview ticker + dual-CTA setara (reg solid + bot outline src_gate_ kanonik) + emoji→lucide; failing-first 7 FAIL→ALL PASS; tsc-0; build-0; staging e2e 2/2 + SSR data-premium intact. Queue v670 night_ready.
+2. IN-FLIGHT: FASE-B (?next= return-to-context) DEFERRED sampai ACK owner area auth; baseline auth_nav_after fresh-replay 17 Nov = 178/16 = 9,0% (target pasca-deploy ≥12% / 14d).
+3. JEBAKAN: (a) npm build attempt-1 exit-1 = security-interstitial Next.js ("Retry the same command") — retry-ok, BUKAN bug; cek recommended `next upgrade` (advisory npm) jadi kandidat task sec baru; (b) playwright strict-mode: label reg_free_banner dipakai 2 elemen (banner + link gate) — scope locator ke banner; (c) statejson --python body lambda pakai var `state` bukan `st`.
+4. LANGKAH PERTAMA CTO PAGI 18 Nov 07:30: review night/prd-2026-11-16-01 → merge → staging ulang cepat (fresh no-wall / over-limit 2 tombol) → pasang di kereta malam berikutnya; catat AC4 baseline 9,0% di entry (sudah).
