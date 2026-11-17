@@ -16,6 +16,7 @@ import {
 import {
   GuestTradingPlanGate,
   GuestQuota,
+  GuestSignalBreakdownGate,
 } from "../../src/components/stock/guest-quota";
 import { GuestOverlimitBanner } from "../../src/components/ui/guest-overlimit-banner";
 import {
@@ -258,7 +259,7 @@ async function main() {
 
     const tgLink = ctas.find((el) => el.getAttribute("data-engagement") === "agent_deeplink_banner");
     const href = tgLink?.getAttribute("href") ?? "";
-    check("3d. Deeplink membawa tag src_stock_BBCA", href.includes("t.me/TeknikalidAgentBot?start=src_stock_BBCA"));
+    check("3d. Deeplink membawa tag src_gate_BBCA (kanonik wall-v2, prd-2026-11-16-01)", href.includes("t.me/TeknikalidAgentBot?start=src_gate_BBCA"));
   }
 
   // 4. Inline strip: muncul 1x per sesi saja
@@ -291,6 +292,85 @@ async function main() {
     check(
       "4f. Deeplink inline strip = src_ask_BBCA",
       (cta?.getAttribute("href") ?? "").includes("t.me/TeknikalidAgentBot?start=src_ask_BBCA")
+    );
+  }
+
+  // 6. Wall v2 (prd-2026-11-16-01 FASE-A): value-first + dual-CTA setara + preview ticker
+  {
+    const bannerHtml = renderToStaticMarkup(
+      React.createElement(
+        SessionProvider,
+        { session: null },
+        React.createElement(GuestOverlimitBanner, { ticker: "BBCA", forceShow: true })
+      )
+    );
+    const dom = parseHtml(bannerHtml);
+
+    // 6a. Tidak ada framing hukuman
+    check(
+      "6a. Banner BEBAS framing hukuman (tidak ada 'telah digunakan')",
+      !bannerHtml.includes("telah digunakan")
+    );
+    // 6b. Framing progres nilai-terkonsumsi
+    check(
+      "6b. Banner memuat progres 'dari 3 saham gratis'",
+      bannerHtml.includes("dari 3 saham gratis")
+    );
+    // 6c. Preview spesifik ticker yang digate
+    check(
+      "6c. Banner menampilkan nama ticker yang digate (BBCA)",
+      bannerHtml.includes("BBCA")
+    );
+    // 6d. Dual-CTA setara: CTA bot berkelas tombol (py-2 + font-semibold), bukan link text-xs
+    const botCta = dom
+      .querySelectorAll("[data-engagement]")
+      .find((el) => el.getAttribute("data-engagement") === "agent_deeplink_banner");
+    const botClass = botCta?.getAttribute("class") ?? "";
+    check(
+      "6d. CTA bot = tombol setara (py-2 + font-semibold)",
+      botClass.includes("py-2") && botClass.includes("font-semibold")
+    );
+    // 6e. Deeplink wall memakai src_gate_ (satu kanonik gate)
+    check(
+      "6e. Deeplink CTA bot wall = src_gate_BBCA",
+      (botCta?.getAttribute("href") ?? "").includes("start=src_gate_BBCA")
+    );
+    // 6f. Anti-slop: tanpa emoji di wall (ikon = lucide svg)
+    check(
+      "6f. Wall tanpa emoji (ikon lucide svg)",
+      !/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(bannerHtml) && bannerHtml.includes("<svg")
+    );
+    // 6g. Register CTA tetap instrumentasi reg_free_banner + tetap solid bg-accent
+    const regCta = dom
+      .querySelectorAll("[data-engagement]")
+      .find((el) => el.getAttribute("data-engagement") === "reg_free_banner");
+    check(
+      "6g. CTA Daftar tetap reg_free_banner + solid bg-accent",
+      (regCta?.getAttribute("class") ?? "").includes("bg-accent")
+    );
+
+    // 6h. Blok gated (SignalBreakdownGate): label value-first + preview ticker ASII
+    const gateHtml = renderToStaticMarkup(
+      React.createElement(
+        SessionProvider,
+        { session: null },
+        React.createElement(GuestSignalBreakdownGate, {
+          ticker: "ASII",
+          breakdown: [
+            { name: "EMA 20/50", sentiment: "positif", weight: 20 },
+            { name: "RSI", sentiment: "netral", weight: 10 },
+          ],
+          forceOverLimit: true,
+        })
+      )
+    );
+    check(
+      "6h. Blok gated: framing progres 'dari 3' TANPA 'habis'",
+      gateHtml.includes("dari 3") && !gateHtml.includes("habis")
+    );
+    check(
+      "6i. Blok gated: preview ticker ASII tampil",
+      gateHtml.includes("ASII")
     );
   }
 
