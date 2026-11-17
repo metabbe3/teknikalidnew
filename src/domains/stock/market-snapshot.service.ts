@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { stockRepository } from "./stock.repository";
 import { stockCache } from "@/lib/cache";
 import { bigIntToNumber } from "@/lib/serialize";
 
@@ -213,15 +214,15 @@ export const marketSnapshotService = {
     const cached = stockCache.get(OVERSOLD_CACHE_KEY);
     if (typeof cached === "number") return cached;
     try {
-      const agg = await prisma.stockIndicator.aggregate({
-        _max: { date: true },
-        where: { interval: "1d" },
-      });
-      const count = agg._max.date
+      // perf-2026-11-17: aggregate _max date via Prisma = 379ms plan (subquery OFFSET scan
+      // 535k rows). Ganti raw getLatestIndicatorDate() — index-only backward scan 0.3ms.
+      const latestDateRow = await stockRepository.getLatestIndicatorDate("EQUITY");
+      const latestDate = latestDateRow?.date;
+      const count = latestDate
         ? await prisma.stockIndicator.count({
             where: {
               interval: "1d",
-              date: agg._max.date,
+              date: latestDate,
               rsi14: { lt: 30 },
               isGorengan: false,
               stock: { isActive: true, assetClass: "EQUITY" },
