@@ -6539,7 +6539,7 @@
       "dependencies": [],
       "estimate_tool_calls": 10,
       "branch": "night/prd-2026-11-17-01",
-      "result": "NIGHT READY 18 Nov 00:0x WIB (CTO malam). Implementasi PENUH: (1) helper pure src/lib/related-articles.ts (mergeRelatedArticles + MAX_DAILY_SNAPSHOT_SLOTS=2); (2) page.tsx ticker: query DS dibuka (query ke-2 paralel, take 2 termuda) + merge + badge 'Pantauan Harian' + data-engagement ds_buka/news_buka ( EngagementEvent via beacon existing — nol UI baru); (3) selftest failing-first 6 test merge. VERIFY: lint 0 error; tsc --noEmit EXIT-0; selftest 6/6 EXIT-0; next build EXIT-0 (BUILD_ID SjRBz6YRmSDZeJD7YT4fd); DEV LIVE :3100 — /stocks/BBCA.JK 200, badge 'Pantauan Harian' render, link /berita/saham-bbca, label ds_buka x2 (HTML+RSC), CUAN.JK (non-DS) 200 graceful; SQL: DS BBCA.JK 17 Nov tersedia (saham-bbca). Estimasi review 15-20 menit CTO pagi (merge+build+deploy 1 siklus)."
+      "result": "NIGHT READY 17 Nov 23:1x WIB (CTO malam). Implementasi PENUH: (1) helper pure src/lib/related-articles.ts (mergeRelatedArticles + MAX_DAILY_SNAPSHOT_SLOTS=2); (2) page.tsx ticker: query DS dibuka (query ke-2 paralel, take 2 termuda) + merge + badge 'Pantauan Harian' + data-engagement ds_buka/news_buka ( EngagementEvent via beacon existing — nol UI baru); (3) selftest failing-first 6 test merge. VERIFY: lint 0 error; tsc --noEmit EXIT-0; selftest 6/6 EXIT-0; next build EXIT-0 (BUILD_ID SjRBz6YRmSDZeJD7YT4fd); DEV LIVE :3100 — /stocks/BBCA.JK 200, badge 'Pantauan Harian' render, link /berita/saham-bbca, label ds_buka x2 (HTML+RSC), CUAN.JK (non-DS) 200 graceful; SQL: DS BBCA.JK 17 Nov tersedia (saham-bbca). Estimasi review 15-20 menit CTO pagi (merge+build+deploy 1 siklus)."
     }
   ]
 }
