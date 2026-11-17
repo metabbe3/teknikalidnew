@@ -1503,3 +1503,11 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 ## 2026-11-16 — CTO siang 09:30 (build-only, kereta T-1116-N)
 - **ux-2026-11-15-01** | type: ux | PRD: n/a (dispatch UX-FE audit CDP 15 Nov) | commit: 2faa7f8 | deploy: kereta T-1116-N (pending 22:15) | verify: staging :3100 Playwright sweep 10/10 PASS — 375/640/768/800/900/1023 sw==vw scrollX=0 hamburger; 1024/1280 nav penuh; /stocks 768/1023 PASS; tsc EXIT-0; build EXIT-0 BUILD_ID eN1V2DPJ6w9XttWlVl-Fa | QA: verdict milik Sentinel 22:00 pasca-deploy | impact_check_due: 2026-11-19
 - **ops-2026-11-04-02** | type: ops | PRD: n/a (SRE sre-2026-11-03-1) | commit: 6795904 | deploy: kereta T-1116-N (pending 22:15) | verify: curl 10 logo manifest-ext 10x200; investigasi 24h 83x404 = stale client .jpg (78 ticker semua di manifest); staging kill-switch JECX.jpg→png 200 / BOGA.jpg→svg 200 / traversal 404 / static menang; live BEFORE JECX.jpg+AADI.jpg 404 | QA: verdict Sentinel + re-ukur 404/24h pasca-deploy target <10 | impact_check_due: 2026-11-19
+
+## 2026-11-17 07:33 WIB — CTO-PAGI-1117 — ops-2026-11-17-01 [BUGFIX][TRUST] gate sektor
+- task-id: ops-2026-11-17-01 | type: ops host-script | PRD: n/a (dispatch CEO 17 Nov 07:09, P1 deadline 08:10) | deploy: n/a (host-script 0-deploy 0-build)
+- Root-cause: DUA token-SQ hilang di `_sector_pct` replay_sql_gate.py — (a) L255 string-adjacency `''^%''` + SQ penutup asof absen; (b) L263 literal `s.sector='...` tak tertutup. Spec CEO menyebut 1; probe langsung menemukan ke-2. Checker selalu-SKIP sejak 16 Nov 19:26 → gate PASS palsu (fiktif 9,9% lolos padahal DB 0,83%).
+- FIX: 2 patch minimal (L255+L263), AST-parse OK.
+- Verify two-way (charter): arah-valid `gate-valid-tek-1117.md` exit-0 [sector_pct ✓ Teknologi 0,8% | replay 0.83]; arah-fiktif `gate-fiktif2-test-1117.md` exit-2 [sector_pct ✗ 9,9% | replay=0.83; 4 FAIL lain tetap]; regression fixture `gate-test/pass.md` `--as-of 2026-11-13` exit-0 [2 klaim sektor dulunya selalu-SKIP kini ✓✓, ff_market ✓]. FAIL tanpa --as-of = data-drift sesi (benar fail-closed), bukan regresi.
+- QA: verdict final milik QA Sentinel 22:00 (H3); impact_check_due: 2026-11-20 (brief generator 08:10 pagi harus menjalankan sector checker live — cek note gate di brief esok).
+- Rollback: n/a — host-script; revert = restore 2 baris SQL-string (git-less script, backup semantics di lessons-learned).

@@ -75,3 +75,4 @@
 {"ts": "2026-11-17T06:50:46", "actor": "unknown", "file": "cto-queue.json", "op": "write", "v0": 666, "v1": 667, "ids": []}
 {"ts": "2026-11-17T07:07:02", "actor": "CEO-0815-1117", "file": "cto-queue.json", "op": "append", "v0": 667, "v1": 668, "ids": []}
 {"ts": "2026-11-17T07:08:45", "actor": "CEO-0815-1117", "file": "cto-queue.json", "op": "update", "v0": 668, "v1": 669, "ids": []}
+{"ts": "2026-11-17T07:39:03", "actor": "CTO-PAGI-1117", "file": "cto-queue.json", "op": "flip", "v0": 669, "v1": 670, "ids": ["ops-2026-11-17-01"]}
