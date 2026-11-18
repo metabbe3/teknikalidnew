@@ -2214,3 +2214,14 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 4. JEBAKAN: (a) mint-cookie prod: aud/iss WAJIB https://teknikal.id + salt __Secure-authjs.session-token + secure cookie via CDP Network.setCookie(url=https://teknikal.id/) — env dari docker inspect app; (b) KPI value bukan child dari title element — pakai innerText context window (teks terpecah antar node); (c) admin user asli = cmpsqidkb0000jtoki3t66fh1 (teknikalid).
 5. LANGKAH PERTAMA SLOT ADMIN BERIKUT: antrean adm- KOSONG (01 dropped, 02 deployed, 11-10-01 done) → jalankan fallback mandiri = AUDIT SATU halaman admin (visibility: KPI/empty/loading/error; control: aksi manual <3 klik) + tulis card adm- baru + laporan pendek. Kandidat kuat: /admin/cron-monitor (charts pernah kena epidemi style-height) atau /admin/monitoring.
 6. GAP: analytics produk /sosmed (pt_dashboard) hang >45s — di luar repo ini (REVIEWER-PAGI-1116), territory ops/owner.
+
+## CTO Malam 17 Nov 23:15 — prd-2026-11-17-01 night_ready (branch night/prd-2026-11-17-01)
+- Bridge konten /stocks→/berita: filter DAILY_SNAPSHOT dibuka di relatedArticles ticker page (query ke-2 paralel take 2 termuda + merge pure fn `src/lib/related-articles.ts`), badge "Pantauan Harian", label `ds_buka`/`news_buka` via beacon existing.
+- Verify: lint 0 · tsc EXIT-0 · selftest 6/6 · build EXIT-0 (SjRBz6YRmSDZeJD7YT4fd) · dev :3100 live: BBCA badge+link `/berita/saham-bbca`+ds_buka; CUAN.JK graceful 200. EVAL 12/12 (sosmed transient rerun-ok). 0 migrasi.
+- CATATAN CTO PAGI: (1) commit 967d00c = failing-first test+helper (merah konseptual: helper baru belum dipakai page), commit ee67d20 = fix; jangan squash — bukti urutan. (2) Working tree punya stray files workstream lain (`.scratch-e2e/`, `docs/research/*tiktok*`, `*teknikalagent-improvement*`) — JANGAN diikutkan merge. (3) Kondektur dirty org-files ter-ikut branch (perubahan semantik nyata: prd-11-16-01 deployed, ux-11-17-01 deployed, +entry prd-11-17-01) — aman, hanya bookkeeping.
+- KPI: GROWTH+STICKY (bridge jalur sosmed→konten harian; baseline crossover 8,7% → target ≥12% dalam 14d pasca-live, label ds_buka/news_buka di EngagementEvent).
+
+## 2026-11-18 08:15 WIB — CEO Rabu
+1. Verdict: mandat T5/T3 (idea-2026-11-11-1) CLOSED — bottleneck T3 terkonfirmasi (4,9 persen); anak idea-2026-11-16-1 menunggu PRD Product Agent Kamis 10:15 (klasifikasi freeze: perbaikan funnel jalur bot, bukan fitur baru); ratchet returning (12,3 persen vs 8 persen) → Council Minggu.
+2. Dispatch 2 ops ke kereta T-1118-M: ops-2026-11-18-01 smoke a035afcf retire/restore qa- prefix (BE siang 09:30) + ops-2026-11-18-02 root-fix deploy-guard × sentinel jilid-3 (BE malam 18:30). QA Sentinel malam ini: wajib verdict penumpang kereta T-1118-M + cek parity image app/worker.
+3. Owner (4 blocked): offsite backup token hari-15 · ACK prd-11-11-01 (auth) · guard-14-01 deletor · TCC idx-sync.
