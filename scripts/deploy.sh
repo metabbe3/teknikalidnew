@@ -40,7 +40,25 @@ if [ "$UNPUSHED" -gt 0 ]; then
   log "FORCE_UNPUSHED=1 — melanjutkan dengan sadar (commit lokal akan tertimpa)."
 fi
 
-UNCOMMITTED=$(git status --porcelain -uno | wc -l | tr -d ' ')  # -uno: untracked tidak dimakan reset --hard, jangan blokir
+# ── 0b. ORG-STATE-LIVE: docs/agent-org non-blocker (ops-2026-11-18-02) ──
+# docs/agent-org/ = mirror org-state live (queue/backlog/bus, ditulis statejson
+# oleh agent lain kapan pun — termasuk menit-menit window deploy: tabrakan
+# jilid-3 KONDEKTUR-1115/1116/1117, guard abort 22:20:36 17 Nov). Dirty di
+# area itu BUKAN hazard deploy (tidak ikut build) → TIDAK membatalkan deploy;
+# TAPI tidak boleh tertimpa reset --hard (akar drift-#12/#13/#14) → backup
+# sekarang, restore pasca reset (live menang — pola org-union CTO-PAGI-1118).
+ORG_DIRTY=$(git status --porcelain -uno -- docs/agent-org | cut -c4-)
+ORG_BACKUP=""
+if [ -n "$ORG_DIRTY" ]; then
+  ORG_BACKUP=$(mktemp -d "${TMPDIR:-/tmp}/org-state-backup.XXXXXX")
+  while IFS= read -r f; do
+    mkdir -p "$ORG_BACKUP/$(dirname "$f")"
+    cp "$f" "$ORG_BACKUP/$f"
+  done <<< "$ORG_DIRTY"
+  log "ORG-STATE-LIVE: $(echo "$ORG_DIRTY" | grep -c .) file docs/agent-org dirty → backup non-blocker."
+fi
+
+UNCOMMITTED=$(git status --porcelain -uno | grep -vE '^.. docs/agent-org/' | wc -l | tr -d ' ')  # -uno: untracked tidak dimakan reset --hard; docs/agent-org = org-state-live non-blocker (ops-2026-11-18-02)
 if [ "$UNCOMMITTED" -gt 0 ]; then
   log "WARNING: $UNCOMMITTED file uncommitted di working tree — reset --hard akan menghapus perubahan itu."
   if [ "${FORCE_DIRTY:-0}" != "1" ]; then
@@ -50,10 +68,33 @@ if [ "$UNCOMMITTED" -gt 0 ]; then
   log "FORCE_DIRTY=1 — melanjutkan (perubahan working tree akan hilang)."
 fi
 
+# ops-2026-11-18-02: DRY_RUN_GUARD=1 = uji guard dua-arah dengan script ASLI
+# tanpa menjalankan deploy (exit 0 di sini = guard PASS, deploy akan lanjut;
+# guard ABORT tetap exit 1 dari blok UNCOMMITTED di atas). Default 0 = tidak
+# mengubah perilaku deploy sama sekali.
+if [ "${DRY_RUN_GUARD:-0}" = "1" ]; then
+  log "DRY_RUN_GUARD=1: guard PASS — deploy akan lanjut (dry-run, berhenti di sini)."
+  [ -n "$ORG_BACKUP" ] && rm -rf "$ORG_BACKUP"
+  exit 0
+fi
+
 # ── 1. Sync ke origin/main ──────────────────────────────────────────
 BEFORE=$(git rev-parse HEAD)
 git reset --hard "origin/$BRANCH"
 AFTER=$(git rev-parse HEAD)
+
+# ops-2026-11-18-02: restore org-state live yang tertimpa reset — live menang
+# (pola org-union CTO-PAGI-1118). Mencegah drift-#12/#13/#14 jilid-4: state
+# queue/backlog hasil tulisan agent jangan pernah mundur oleh deploy.
+if [ -n "$ORG_BACKUP" ]; then
+  while IFS= read -r f; do
+    if ! cmp -s "$ORG_BACKUP/$f" "$f"; then
+      cp "$ORG_BACKUP/$f" "$f"
+      log "ORG-STATE-RESTORE: $f dipulihkan (live menang atas reset)."
+    fi
+  done <<< "$ORG_DIRTY"
+  rm -rf "$ORG_BACKUP"
+fi
 
 CHANGED=$(git diff --name-only "$BEFORE" "$AFTER")
 NEEDS_REBUILD=false
