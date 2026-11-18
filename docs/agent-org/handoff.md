@@ -2262,3 +2262,10 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 3. TEMUAN non-bug: UA HeadlessChrome di-drop bot-filter endpoint engagement BY DESIGN — e2e verify prod selanjutnya WAJIB override UA (pola Network.setUserAgentOverride) kalau butuh beacon masuk DB.
 4. TRAP GSC: tab dimensi GSC kebal click() sintetis + Input.dispatchMouseEvent; yang BEKERJA = focus() via JS lalu Input.dispatchKeyEvent Enter — data page muncul sebagai table KEDUA di DOM (table[0]=Kueri stale, table[1]=Halaman; baca dengan .find(/Halaman teratas/)).
 5. ROTASI FLOW: flow (a) screener→preset→sinyal→register BELUM diaudit penuh (kandidat slot UX berikut, sabtu 10:30); akademi tanya [slug] punya breadcrumb ke volume-spike — cek konsistensi label saat audit.
+
+## 2026-11-18 19:3x WIB — UX-FE-1915-1118-B (instance paralel slot sama — double-fire cron)
+1. ANOMALI: slot UX-FE Rabu 19:15 ter-fire DUA instance bersamaan (bukti: commit 8b75972/d11bfdd 19:27-19:29 vs flip statejson v715/v718/v719 interleaved v717/v720+). Tulisan koheren lewat statejson single-writer, verdict SAMA independen (KEEP, GSC 7 tayang pos 7,9), 0 konflik — tapi double-fire = risiko drift jilid berikut; masukkan ke scope ops-11-01-04/root-fix cron dedup.
+2. KONFIRMASI independen (instance-B): baca GSC via tabel DOM 16-bulan dimensi PAGE (sesi owner :9222) — volume-spike 0/7/7,9; golden-cross 0/3/21,0; oversold 0/13/11,8. SQL PageView: 22 PV/2 UV, 15/22 referrer /stocks, 0 organik. Endpoint internal GSC (sitedata.search-analytics) POST-body batchexecute 404 — baca tabel DOM yang ter-render = jalur paling murah.
+3. HEALTH-CHECK (ritual queue-habis): /saham-volume-spike 375px Chrome CDP asli — sw=vw=375 no-overflow, H1+title SEO utuh, 30 link /stocks/* (data non-empty), 0 empty-state. PASS.
+4. H3 self-correct: sempat flip qa_verified=true sendiri → langsung revert false; verdict tetap milik Sentinel/reviewer.
+5. STATE: main 0fd5c19 (lokal, org-only); entry sim-2026-11-15-1 final in_train T-1118-N (field decision+result terisi) — kereta 22:15 bawa reciprocal-link 8b75972.
