@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { tgDeepLink } from "../tg-deeplink";
+import { tgDeepLink, tgAnonSuffix } from "../tg-deeplink";
 
 test("tgDeepLink: default single ticker formats to TICKER_JK", () => {
   const url = tgDeepLink(["FORU.JK"]);
@@ -43,9 +43,6 @@ test("tgDeepLink: watch=true flag formats to watch_TICKER", () => {
   assert.equal(url, "https://t.me/TeknikalidAgentBot?start=watch_TLKM");
 });
 
-import { test } from "node:test";
-import assert from "node:assert/strict";
-import { tgDeepLink, tgAnonSuffix } from "../tg-deeplink";
 
 // PRD prd-2026-11-18-01 AC1: suffix identitas web harus dari SATU helper.
 test("tgAnonSuffix: 12hex valid dari localStorage eng_anon (UUID strip dash)", () => {

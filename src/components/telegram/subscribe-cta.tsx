@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, useSyncExternalStore } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { tgAnonSuffix } from "@/lib/tg-deeplink";
 
 const emptySubscribe = () => () => {};
 
@@ -58,11 +59,19 @@ export function TelegramSubscribeCta({
   };
 
   const base = botUrl ?? "https://t.me/TeknikalidAgentBot";
+  // PRD prd-2026-11-18-01 AC1: suffix identitas web dari helper SATU PINTU
+  // (tgAnonSuffix) — sebelumnya variant berita mengirim payload polos.
+  // Hydration-safe: SSR render tanpa suffix; efek menempel suffix identitas
+  // (PRD prd-2026-11-18-01 AC1) setelah mount — localStorage hanya ada di client.
+  const [anon, setAnon] = useState("");
+  useEffect(() => {
+    setAnon(tgAnonSuffix());
+  }, []);
   const start = startParam
-    ? `?start=${encodeURIComponent(startParam)}`
+    ? `?start=${encodeURIComponent(startParam + anon)}`
     : ticker
-    ? `?start=web_${encodeURIComponent(ticker.replace(/\.JK$/, ""))}`
-    : `?start=web_berita`;
+    ? `?start=web_${encodeURIComponent(ticker.replace(/\.JK$/, "") + anon)}`
+    : `?start=${encodeURIComponent("web_berita" + anon)}`;
   const href = `${base}${start}`;
 
   if (variant === "footer") {
