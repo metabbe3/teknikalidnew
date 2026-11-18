@@ -4078,10 +4078,11 @@
       "spec": "Bangun sesuai PRD idea-2026-10-26-1 (product-backlog.json, research_brief Researcher 28 Okt = MODIFIKASI): (1) IDX scraper = SOURCE-OF-TRUTH ex-date, Yahoo hanya cross-check — JANGAN migrasi ke Yahoo; (2) render user-facing fail-closed; (3) buka constraint unique utk multi-dividen/tahun; (4) coverage audit script. Urutan: migrasi schema dulu, lalu provenance backfill, lalu guard render.",
       "qa_plan": "Pembangun != pemeriksa. Staging: SQL row tanpa provenance vs DOM kalender = 0 render; migrasi up/down; coverage audit angka % eksplisit. D+14: 0 laporan tanggal salah; horizon kalender > 10 row.",
       "done_when": "DONE WHEN: (a) migrasi up+down hijau staging + row semi-annual ganda tersimpan; (b) staging kalender 0 render row unverified; (c) laporan coverage % angka; (d) tsc+build EXIT-0. Gagal render-guard = iterate, bukan ship setengah.",
-      "scheduled_slot": "2026-11-17 BE malam 18:30 BUILD migrasi ex-date -> kereta T-1117-N",
+      "scheduled_slot": "2026-11-20 BE malam 18:30 BUILD migrasi ex-date (reslot CTO 18 Nov: slot 17-Nov basi terlewat; 19 Nov Kamis penuh SRE prd-11-11-02)",
       "created_by": "Product Agent buffer-keeper 2026-11-02 22:4x WIB (run gate: buffer teknikal 0 < 3)",
       "train": "T-1118-M",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)",
+      "research_brief": "RESEARCH BRIEF (Researcher 18 Nov 2026) — VERDICT: MODIFIKASI. Konteks: brief induk idea-2026-10-26-1 (28 Okt, MODIFIKASI — IDX source-of-truth, Yahoo secondary/cross-check; bukti kuat: corporate-actions = reference data yang gold standard-nya sumber resmi bursa/issuer ala DTCC/ICE/SIX; Yahoo dividendDate salah label — quantmod #287, yfinance #568, mismatch live BBCA.JK forward-vs-TTM) SUDAH diadopsi hampir seluruhnya ke PRD ini: AC1 fail-closed provenance IDX + cross-check Yahoo <=7 hari, AC4 freshness guard, AC2 semantik ex/record/payment. Gap riset yang tersisa: (1) horizon kalender 30-hari dengan data hanya 3 row ke depan = AC3 coverage audit WAJIB dijalankan DULU (script no-deploy, murah) sebagai gate go/no-go migrasi schema — jika coverage IDX scraper <85% emiten likuid, kalender tetap kosong walau schema benar dan migrasi jadi risiko tanpa nilai; eskalasi resmi bila coverage rendah = IDX Data Services (berbayar), BUKAN agregator gratis (anti-pattern dari brief 28 Okt). (2) AC2 ganti @@unique([stockId, year, type]) -> compound dengan exDate: pastikan backward-compat row lama saat migrasi + down-migration teruji (sudah di AC2 — pertahankan). BEST PRACTICE: (a) corporate-actions disinkron dari sumber resmi bursa, vendor sekunder hanya cross-check; (b) fail-closed render untuk data finansial user-facing; (c) urutan eksekusi: coverage audit dulu (measurement), migrasi schema kemudian — jangan dibalik; (d) backup <24h + up/down migrasi di staging (sudah di AC2/AC5); (e) freshness SLO ex-date <=7 hari belum reconcile = prioritas sync (sudah di AC4). ANTI-PATTERN: (a) migrasi source-of-truth ke agregator tanpa SLA; (b) render tanggal tak terverifikasi; (c) migrasi schema sebelum coverage terbukti; (d) menyamakan dividendDate Yahoo = ex-date. SUMBER: brief induk idea-2026-10-26-1 (riset 28 Okt 2026, link quantmod #287 & yfinance #568 di dalamnya) + idx.co.id corporate-action disclosures. BUKTI: KUAT (warisan riset 28 Okt domain corporate-actions; sisa riset baru = urutan eksekusi audit-first, keputusan internal). PILAR: TRUST."
     },
     {
       "id": "prd-2026-11-02-03",
@@ -5843,7 +5844,8 @@
       "qa_plan": "Pembangun != pemeriksa. QA Sentinel: replay AC1 curl 2x (cookie stabil), AC2 smoke OAuth prefix qa- + SQL verifikasi initialAnonId/event, regresi jalur credentials, funnel-v2 tidak tercemar (qa-% excluded). D+14: % register ber-first-touch vs baseline 23%.",
       "done_when": "DONE WHEN: (a) Set-Cookie first_touch live di prod; (b) smoke register OAuth tercatat initialAnonId + event register_step; (c) laporan baseline per-source 14d dari SQL asli tercatat di entry; (d) tsc+build EXIT-0; (e) ACK owner area auth tercatat di queue sebelum eksekusi.",
       "scheduled_slot": "BE malam setelah ACK owner (area auth); tidak naik kereta sebelum ACK",
-      "created_by": "Product Agent buffer-keeper 2026-11-11 23:1x WIB (run gate: buffer teknikal 2 < 3)"
+      "created_by": "Product Agent buffer-keeper 2026-11-11 23:1x WIB (run gate: buffer teknikal 2 < 3)",
+      "research_brief": "RESEARCH BRIEF (Researcher 18 Nov 2026) — VERDICT: BUILD. Brief induk idea-2026-11-10-1 (10 Nov, BUILD — attribution-loss pasca-OAuth terdokumentasi luas: redirect OAuth membuang referrer/query; fix kanonik = cookie first-touch first-touch-wins ditulis sebelum redirect apa pun, dibaca server-side saat account creation; dev.to/johnbuilds + indiehackers/coderlegion Mei 2026) SUDAH diadopsi 1:1 ke PRD ini: AC1 Set-Cookie first_touch di proxy.ts tanpa overwrite, AC2 event OAuth dengan path callback, AC3 baseline 23% -> naik per-source, AC4 non-regresi jalur credentials + rate-limit utuh. Nilai tambah dari brief induk yang layak diikuti CTO: (1) event funnel granular register_banner_click -> register_start -> register_success dengan source di tiap event (bukan cuma register_step akhir) supaya drop-off T3 terlihat per-source — bottleneck funnel T3 12/244 sedang jadi fokus org; (2) evaluasi per-source pakai benchmark band per-denominator (visitor->signup freemium median ~5%, p25 2.5%, p75 9% — convradar/openview; Oribi: rata-rata 4.7% visitors, 66% convert di visit pertama), jangan banding antar-denominator; (3) smoke wajib prefix qa- (sudah di AC4, konsisten charter §7 dan lesson ops-2026-11-18-01). SUMBER: brief induk idea-2026-11-10-1 (riset 10 Nov 2026, link utuh di dalamnya). BUKTI: KUAT (warisan riset 10 Nov; pola first-touch cookie terdokumentasi lintas SaaS). PILAR: GROWTH (funnel register attribution)."
     },
     {
       "id": "prd-2026-11-11-02",
@@ -5881,7 +5883,7 @@
       "spec_summary": "(1) northstar_kpi.py: STICKY.returning_anonid_pct — basis PageView.anonId 7d, exclude anonId milik User role=ADMIN via initialAnonId + prefix qa-% + isBot (catat baseline IP di note, JANGAN hapus field IP); (2) AI_SEARCH.ai_search_views_utm_7d — utmSource ~* 'chatgpt|openai|perplexity|claude|gemini|copilot|grok' OR fallback referrer ILIKE existing; (3) teknikalid_page.py kartu North Star tampilkan angka baru + label basis; (4) target ratchet 8% dinilai ulang apples-to-apples pasca instrumen live (link idea-2026-11-11-1). OUT OF SCOPE: ubah definisi funnel/retention service di repo.",
       "qa_plan": "Pembangun != pemeriksa. Verifikasi: replay SQL manual == angka script (2 angka baseline); kpi.json valid JSON field baru+lama; :8790 render kartu baru (curl/grep). Bukan tugas QA Sentinel app (host-only).",
       "done_when": "DONE WHEN: (a) kpi.json berisi returning_anonid_pct + ai_search_views_utm_7d (field lama tetap); (b) replay SQL identik baseline 17,1/21; (c) :8790 menampilkan kartu baru; (d) baseline lama tercatat di backlog; (e) 0 commit repo / 0 rebuild.",
-      "scheduled_slot": "2026-11-19 SRE Rabu 09:30 (reslot CEO 17 Nov: 18 Nov=Selasa, slot Rabu salah hari - ghost)",
+      "scheduled_slot": "2026-11-19 SRE Kamis 09:30 (koreksi CTO 18 Nov: catatan CEO 17 Nov salah hari — 18 Nov=Rabu, 19 Nov=Kamis; SRE expr 30 9 * * 3,6)",
       "created_by": "Product Agent buffer-keeper 2026-11-11 23:1x WIB (run gate: buffer teknikal 2 < 3)",
       "branch": "host-only/no-branch",
       "verify": "tsc n/a (host-script python); lint 0 error; ast.parse OK x2; collector run RC=0; replay SQL == script (anonid 12.3/155, utm 14; baseline 11 Nov 17,1/21); dashboard :8790/site render kartu baru (12.3/8 hijau, 14/10 hijau, IP 6.5 baseline); launchd restart PID 87313",
@@ -6144,7 +6146,8 @@
       "title": "GUARD follow-up bug-13-01: isolasi build dari sweep untracked (watchOptions.ignored .agents di next.config) + keputusan owner restore .agents",
       "spec": "Konteks bug-13-01 DONE (forensik CTO pagi 14 Nov): deletor .agents/ tak teridentifikasi dari log mesin, pola sweep untracked (.archify-org ikut hilang), window 21:14:28-21:15:14 WIB. Konten aman di ~/backups/teknikalid/agents-skills-216e090-1114.tar.gz (97 file, git 216e090). TASK guard mekanis: (1) build kereta malam dari /tmp worktree prunable (preseden KONDEKTUR-1113-M) — jadikan KONVENSI TETAP, catat di handoff charter; (2) KALAU owner memutuskan .agents tetap di repo utama: tambah watchOptions.ignored next.config.ts supaya watchpack tak scan .agents (race-proof, 1 baris) + restore dari backup; (3) KALAU owner tidak butuh: biarkan hilang, tutup entry. DONE WHEN: (a) keputusan owner tertulis di entry ini (restore ya/tidak); (b) kalau restore: build staging hijau dengan .agents ada di working tree (bukti watchpack tak crash); (c) bus entry.",
       "created_by": "CTO-pagi 14 Nov (follow-up forensik bug-13-01)",
-      "scheduled_slot": "2026-11-16 BE pagi 07:30 Senin (menunggu [ESCALATE] owner konfirmasi intentional/restore)"
+      "scheduled_slot": "2026-11-16 BE pagi 07:30 Senin (menunggu [ESCALATE] owner konfirmasi intentional/restore)",
+      "researcher_note_2026_11_18": "CATATAN RESEARCHER 18 Nov 2026 (bukan riset pasar — infra/ops di luar wewenang riset; keputusan owner menunggu): guard-2026-11-14-01 = keputusan restore .agents (owner) + 1-baris watchOptions.ignored next.config. Praktik umum yang selaras: isolate build dari sweep untracked (build dari /tmp worktree prunable, konvensi KONDEKTUR-1113-M) dan scope watcher ke src (watchpack jangan scan .agents) = race-proof murah; jika .agents tak diperlukan runtime, keluarkan dari working tree deployment sama sekali lebih bersih daripada sekadar di-ignore. Tidak ada literatur internet spesifik untuk konteks ini — putuskan dari konteks internal. PILAR: TRUST (workspace stabil untuk semua agent)."
     },
     {
       "id": "bug-2026-11-14-02",
@@ -6219,7 +6222,8 @@
       "status": "pending",
       "scheduled_slot": "2026-11-18 UX-FE Rabu 19:00 (evaluasi dulu, eksekusi naik kereta)",
       "train": null,
-      "status_at": "2026-11-15"
+      "status_at": "2026-11-15",
+      "research_brief": "RESEARCH BRIEF (Researcher 18 Nov 2026) — VERDICT: MODIFIKASI (cek data GSC dulu, baru pilih opsi A/B; jangan eksekusi merge/noindex dari PV 2 pekan saja). Status live terverifikasi 18 Nov: /volume-spike sudah 301 -> /saham-volume-spike (HTTP 200, robots index,follow) — opsi 'merge + 301' sudah terealisasi sebagian sebagai redirect; sibling /saham-golden-cross sehat (7 PV) dengan pola halaman sama -> 0 PV volume-spike BUKAN technical block (bukan noindex/404) melainkan gagal ranking/discovery untuk query-nya. Best practice content-pruning: keputusan keep/refresh/consolidate/remove WAJIB dari data GSC 12 bulan (clicks, impressions, queries, coverage) + link equity + intent — bukan dari trafik 2 pekan; halaman 0-click tapi ada impressions = kandidat REFRESH + internal-linking, bukan pruned; sebelum remove, cek apakah halaman disitasi AI assistant (AEO referral, halaman 0-traffic bisa tetap disitasi). Standar industri: 301 ke halaman paling relevan > delete ke 404; noindex hanya untuk konten genuinely disposable; indexation ratio + 'crawled-not-indexed' = diagnostik standar. Karena hanya 1 halaman (bukan programmatic set ber-volume), dampak pruning ke sitewide kecil — nilai terbesar ada di keputusan yang benar per-halaman. BEST PRACTICE: (1) tarik GSC untuk /saham-volume-spike + predecessor /volume-spike: impressions/clicks/queries/coverage 12 bulan; (2) impressions >0 -> jangan pruned: refresh konten + internal link dari sibling signal pages (pola cross-link sinyal sudah ada); (3) zero impressions + crawled-not-indexed -> noindex (301 sudah terpasang; jangan tambah redirect chain baru); (4) ukur ulang 4 pekan pasca aksi, dokumentasi keputusan di entry (sudah di done_when). ANTI-PATTERN: pruned berdasar sampel 2 pekan untuk halaman long-tail; menambah redirect chain baru; menghapus halaman yang disitasi AI. SUMBER: stackmatix.com/blog/content-pruning-seo (framework verdict 12-bulan GSC + cek sitasi AI); seography.io/learn/programmatic-seo/programmatic-seo-quality-control (aturan noindex, indexation ratio, crawled-not-indexed); verifikasi live curl teknikal.id 18 Nov 2026. BUKTI: SEDANG — best practice pruning solid multi-sumber, tapi data GSC halaman ini belum dilihat; keputusan final merge-vs-noindex vs refresh tergantung data itu (putuskan dari data internal setelah cek GSC). PILAR: CONTENT + GROWTH."
     },
     {
       "id": "ops-2026-11-15-02",
@@ -6303,24 +6307,20 @@
       "qa_verified": true
     },
     {
-      "entries": [
-        {
-          "id": "prd-2026-11-15-01",
-          "date": "2026-11-15",
-          "type": "feature",
-          "priority": "P2",
-          "status": "in_train",
-          "north_star": "STICKY+GROWTH (T3 watchlist-save unblock, funnel T3 10/T4 4 stagnan)",
-          "pos": "[KONVERSI] PRD fitur",
-          "title": "P2 STICKY+GROWTH (PRD product-backlog): One-tap watchlist T3 unblock — bintang top-30 /stocks + hero movers /, preset kurasi empty-state /watchlist, T3_SAVE_LABELS satu pintu",
-          "spec": "Branch night/prd-2026-11-15-01 dibangun CTO-NIGHT 15 Nov 23:02-23:21 (spec 53d9ec5, failing-test-first W1-W8 6d7df47, feat c628163). Verify CTO pagi 16 Nov: tsc 0 error + selftest 8/8 (via npx tsx). MERGED main ce9a9df (merge --no-ff, schema-shield clean, no migration/prisma/.sql). Kode: snapshot-card.tsx bintang top-30, watchlist-presets.tsx baru, funnel-labels.ts T3_SAVE_LABELS, guest-storage.ts, use-guest-watchlist.ts. Naik kereta T-1116-N 22:15 (build 09:30 slot sore siang merge ux-15-01).",
-          "scheduled_slot": "2026-11-16 22:15 kereta T-1116-N (merged main ce9a9df pagi ini; build BE siang 09:30)",
-          "result": "MERGED main ce9a9df + pushed origin (4963830..ce9a9df) CTO pagi 16 Nov 07:5x WIB; tsc REAL_EXIT=0, selftest 8/8 REAL_EXIT=0; commit kode c628163 (feat) + 6d7df47 (test) + 53d9ec5 (spec); blocklist +5 anonId e2e staging night-session (commit d0fc402). Deployed_at: n/a (build-only; kereta T-1116-N 22:15). Verdict QA = Sentinel 22:00.",
-          "qa_task": false,
-          "created_by": "CTO-PAGI-1116 (recover night branch yang tak ter-report di bus/queue)",
-          "qa_verified_by": null
-        }
-      ]
+      "id": "prd-2026-11-15-01",
+      "date": "2026-11-15",
+      "type": "feature",
+      "priority": "P2",
+      "status": "in_train",
+      "north_star": "STICKY+GROWTH (T3 watchlist-save unblock, funnel T3 10/T4 4 stagnan)",
+      "pos": "[KONVERSI] PRD fitur",
+      "title": "P2 STICKY+GROWTH (PRD product-backlog): One-tap watchlist T3 unblock — bintang top-30 /stocks + hero movers /, preset kurasi empty-state /watchlist, T3_SAVE_LABELS satu pintu",
+      "spec": "Branch night/prd-2026-11-15-01 dibangun CTO-NIGHT 15 Nov 23:02-23:21 (spec 53d9ec5, failing-test-first W1-W8 6d7df47, feat c628163). Verify CTO pagi 16 Nov: tsc 0 error + selftest 8/8 (via npx tsx). MERGED main ce9a9df (merge --no-ff, schema-shield clean, no migration/prisma/.sql). Kode: snapshot-card.tsx bintang top-30, watchlist-presets.tsx baru, funnel-labels.ts T3_SAVE_LABELS, guest-storage.ts, use-guest-watchlist.ts. Naik kereta T-1116-N 22:15 (build 09:30 slot sore siang merge ux-15-01).",
+      "scheduled_slot": "2026-11-16 22:15 kereta T-1116-N (merged main ce9a9df pagi ini; build BE siang 09:30)",
+      "result": "MERGED main ce9a9df + pushed origin (4963830..ce9a9df) CTO pagi 16 Nov 07:5x WIB; tsc REAL_EXIT=0, selftest 8/8 REAL_EXIT=0; commit kode c628163 (feat) + 6d7df47 (test) + 53d9ec5 (spec); blocklist +5 anonId e2e staging night-session (commit d0fc402). Deployed_at: n/a (build-only; kereta T-1116-N 22:15). Verdict QA = Sentinel 22:00.",
+      "qa_task": false,
+      "created_by": "CTO-PAGI-1116 (recover night branch yang tak ter-report di bus/queue)",
+      "qa_verified_by": null
     },
     {
       "id": "idea-2026-11-15-1",
@@ -6343,7 +6343,7 @@
       "type": "prd",
       "priority": "P1",
       "prd_id": "idea-2026-11-12-1",
-      "status": "deployed",
+      "status": "qa_pass",
       "title": "P1 KONVERSI (PRD idea-2026-11-12-1): Quota-wall value-first + dual-CTA setara + return-to-context — reg_free_banner 0 klik/14d & auth-nav pasca-wall 8,9% (< target >=12%); jalur bot lebih hidup (tg_pantau 17 klik)",
       "north_star": "GROWTH (funnel kuota 8,9% -> >=12% auth-nav pasca-wall) + STICKY (jalur tanpa-akun bot = feed funnel web->agent pivot 6 Nov)",
       "user_story": "Sebagai guest yang menabrak kuota 3 saham/hari tepat saat membuka ticker yang diminati, saya ingin wall menunjukkan apa yang saya dapat bila daftar (preview spesifik ticker itu) plus jalur tanpa-akun via Bot Agent yang setara (bukan baris kecil), supaya momen terblokir berubah jadi onramp, bukan dead-end.",
@@ -6485,7 +6485,7 @@
       "date": "2026-11-17",
       "type": "ux",
       "priority": "P2",
-      "status": "deployed",
+      "status": "qa_pass",
       "train": "T-1118-N",
       "actor": "UX-FE-1915-1117",
       "north_star": "GROWTH (funnel kuota: auth-nav pasca-wall 8,9% -> >=12%) + STICKY (jalur bot setara di wall)",
@@ -6501,7 +6501,7 @@
       "baseline": "wall live = W1b bbc886c; CTA reg_free_banner 0 klik/14d, agent_deeplink 17 klik; auth_nav_after 8,9% <12% target",
       "deployed_at": "2026-11-17T22:24:35+07:00",
       "qa_verified": true,
-      "qa_note": "PASS 2026-11-18 QA Sentinel (verifier cron): bukti fisik live — commit 00e0dda persis menghapus \"hidden sm:inline\" pada span sub-copy guest-quota.tsx L312 (diff dilihat langsung: -\"hidden sm:inline text-[10px]…\" → +\"text-[10px]…\"), ancestor 763d1f5 = HEAD deploy KONDEKTUR-1117; chunk live page-b17242ae memuat literal \"(3 dari 3 saham gratis hari ini sudah dibuka)\" dengan wrapper className \"text-[10px] font-normal text-text-tertiary\" TANPA hidden → tampil di <sm 375px (deterministik dari class); sisa \"hidden sm:inline\" di chunk lain = layout tak terkait. Bukti computed-style builder (display:block, rect 111px) konsisten dengan class live.",
+      "qa_note": "QA-DEPLOY REVIEWER 18 Nov 07:5x (KOREKSI note awal — grep prefix false-positive): fix mobile 00e0dda BERSIH & LIVE — guest-quota.tsx adalah client-component (chunk klien, bukan server page.js), repo kini 0 hit hidden-sm:inline di situ; hit di server page.js = page.tsx:1069 hidden sm:inline-BLOCK (beda class, separator) + stocks-swing-panel.tsx:94 (unrelated, pre-existing). Sub-copy wall tampil di mobile terverifikasi KONDEKTUR CDP 375px + konsisten repo; wall-v2 copy verbatim live di server page.js. Riders d6bc5a7+00e0dda+f57db23 ancestor-OK, image 2ac3977d7b67 22:24:35 (KONDEKTUR-1117). Verdict: PASS. Posisi: [KONVERSI] pilar KONVERSI+STICKY.",
       "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)"
     },
     {
@@ -6564,10 +6564,11 @@
       "type": "ops",
       "priority": "P2",
       "north_star": "TRUST (higienitas instrumen KPI — smoke non-qa kontaminasi T1/T2)",
-      "status": "pending",
+      "status": "done",
       "scheduled_slot": "2026-11-18 BE siang 09:30 (builder aktif hari ini); naik kereta kondektur T-1118-M",
       "train": "T-1118-M",
-      "spec": "INTENT [OPS][TRUST] (dispatch CEO 18 Nov, anomaly BO-0300-1118 queue v698): smoke actor a035afcf STOP 3 malam beruntun (sebelumnya aktif tiap malam). Identifikasi SUMUERnya (cron/host-script/aplite mana yang menulis aktor a035afcf), lalu putuskan retire vs restore. Jika smoke masih dibutuhkan instrumen: jadwalkan ulang dengan anonId prefix qa- (wajib per ops-2026-11-10-03, charter §7). Jika tidak dibutuhkan: pastikan 0 instrument/alert bergantung padanya lalu nonaktifkan sumber. 1d510b06 (0 PV/3d) = HOLD no-action, JANGAN disentuh.\nACCEPTANCE: (1) sumber a035afcf teridentifikasi dengan bukti (cron line / log path / nama script); (2) keputusan retire/restore tertulis di result entry; (3) jika restore: event smoke baru prefix qa- muncul di tabel EngagementEvent/PageView; (4) jika retire: 0 event a035afcf dalam 48 jam; (5) 0 perubahan kode app — host-script/scheduler saja.\nDONE WHEN: queue entry memuat identifikasi sumber + bukti log/cron + (smoke qa- baru terlihat ATAU sumber lama terbukti nonaktif)."
+      "spec": "INTENT [OPS][TRUST] (dispatch CEO 18 Nov, anomaly BO-0300-1118 queue v698): smoke actor a035afcf STOP 3 malam beruntun (sebelumnya aktif tiap malam). Identifikasi SUMUERnya (cron/host-script/aplite mana yang menulis aktor a035afcf), lalu putuskan retire vs restore. Jika smoke masih dibutuhkan instrumen: jadwalkan ulang dengan anonId prefix qa- (wajib per ops-2026-11-10-03, charter §7). Jika tidak dibutuhkan: pastikan 0 instrument/alert bergantung padanya lalu nonaktifkan sumber. 1d510b06 (0 PV/3d) = HOLD no-action, JANGAN disentuh.\nACCEPTANCE: (1) sumber a035afcf teridentifikasi dengan bukti (cron line / log path / nama script); (2) keputusan retire/restore tertulis di result entry; (3) jika restore: event smoke baru prefix qa- muncul di tabel EngagementEvent/PageView; (4) jika retire: 0 event a035afcf dalam 48 jam; (5) 0 perubahan kode app — host-script/scheduler saja.\nDONE WHEN: queue entry memuat identifikasi sumber + bukti log/cron + (smoke qa- baru terlihat ATAU sumber lama terbukti nonaktif).",
+      "result": "IDENTIFIKASI SELESAI — keputusan RETIRE NO-ACTION. Sumber: e2e verify ad-hoc oleh agent org via browser CDP (bukan cron/scheduler tetap). Bukti forensik: (1) UUID a035afcf-c4f4-4646-9e78-187798a4fdbe TIDAK ada di ~/.hermes/scripts, ~/.hermes/cron, LaunchAgents, selftest, atau profil browser statis (grep 0 hit) — bukan smoke terjadwal; (2) pola waktu event = jendela kerja agent bervariasi (10 Nov 12:27, 11 Nov 03:3x, 14 Nov 06:57, 15 Nov 08:50 WIB; bd8a46cb saudara: 10-11 Nov jam 02-12) = ad-hoc, bukan jadwal; (3) UA Android-10-K Chrome/156-157 + IP residensial mobile (Telkomsel/Biznet, 4 IP) = emulasi CDP konsisten insiden 11 Nov; (4) tour path /→pasar→agent→bottom-fishing + tg_pantau_klik = verifikasi funnel agent T3. KEPUTUSAN: retire — actor SUDAH diblocklist ops-11-11-01 (UUID di src/lib/actor-blocklist.ts, ter-bake live di 4 chunk server per KONDEKTUR-1116) sehingga funnel/retention kanonik bersih; smoke tidak dibutuhkan sebagai instrumen terjadwal (ad-hoc, tidak tergantungkan alert); acceptance-4 terpenuhi: 0 event sejak 15 Nov 08:51 WIB (73+ jam, > 48 jam). Sumber tidak ada yang perlu dinonaktifkan (ad-hoc, tidak ada cron line). Guard aktif: qa-% prefix + blocklist UUID 2-aktor. Jika e2e verify agent dibutuhkan lagi: WAJIB anonId prefix qa- (charter §7, ops-11-10-03)."
     },
     {
       "id": "ops-2026-11-18-02",
@@ -6575,10 +6576,24 @@
       "type": "ops",
       "priority": "P2",
       "north_star": "TRUST (reliabilitas pipeline deploy — 3 malam beruntun deploy.sh batal jalan manual)",
-      "status": "pending",
+      "status": "done",
       "scheduled_slot": "2026-11-18 BE malam 18:30; naik kereta kondektur T-1118-M",
       "train": "T-1118-M",
-      "spec": "INTENT [OPS][TRUST] ROOT-FIX tabrakan koordinasi jilid-3 (KONDEKTUR-1115/1116/1117, permintaan eksplisit KONDEKTUR-1117 di agent-bus 22:2x 17 Nov): QA Sentinel patch queue/backlog pukul 22:20 menit-menit window deploy kondektur 22:15 sehingga deploy.sh guard melihat docs/agent-org dirty dan MEMBATALKAN jalur deploy.sh (17 Nov: guard abort 22:20:36, fallback build manual). Pilih SATU solusi terkecil blast-nya (CTO yang menilai): (a) deploy.sh guard: file dirty di bawah docs/agent-org/ diperlakukan org-state-live NON-blocker (src tetap blocker), ATAU (b) QA Sentinel menunda patch state ke 22:30+ saat window deploy aktif.\nACCEPTANCE: (1) dry-run dua arah tercatat: file dummy dirty di docs/agent-org/ + src bersih -> guard LANJUT; file dummy dirty di src/ -> guard ABORT; (2) patch ter-commit + push; (3) 0 perubahan perilaku deploy lainnya (rollback anchor tetap wajib utk deploy nyata).\nDONE WHEN: hasil dry-run dua arah (dirty-org pass + dirty-src abort) dikutip di queue result + commit SHA tercatat."
+      "spec": "INTENT [OPS][TRUST] ROOT-FIX tabrakan koordinasi jilid-3 (KONDEKTUR-1115/1116/1117, permintaan eksplisit KONDEKTUR-1117 di agent-bus 22:2x 17 Nov): QA Sentinel patch queue/backlog pukul 22:20 menit-menit window deploy kondektur 22:15 sehingga deploy.sh guard melihat docs/agent-org dirty dan MEMBATALKAN jalur deploy.sh (17 Nov: guard abort 22:20:36, fallback build manual). Pilih SATU solusi terkecil blast-nya (CTO yang menilai): (a) deploy.sh guard: file dirty di bawah docs/agent-org/ diperlakukan org-state-live NON-blocker (src tetap blocker), ATAU (b) QA Sentinel menunda patch state ke 22:30+ saat window deploy aktif.\nACCEPTANCE: (1) dry-run dua arah tercatat: file dummy dirty di docs/agent-org/ + src bersih -> guard LANJUT; file dummy dirty di src/ -> guard ABORT; (2) patch ter-commit + push; (3) 0 perubahan perilaku deploy lainnya (rollback anchor tetap wajib utk deploy nyata).\nDONE WHEN: hasil dry-run dua arah (dirty-org pass + dirty-src abort) dikutip di queue result + commit SHA tercatat.",
+      "researcher_note_2026_11_18": "CATATAN RESEARCHER 18 Nov 2026 (bukan riset pasar — bugfix deploy-infra): ops-2026-11-18-02 root-fix tabrakan QA-Sentinel x Kondektur jilid-3. Praktik standar industri untuk deploy yang rawan dirty working tree: build dari checkout bersih terpisah (CI fresh checkout / worktree terpisah), bukan memperlunak guard. Opsi (a) guard non-blocker untuk docs/agent-org (scope-based: docs=non-blocker, src=blocker) pragmatis dan cukup untuk sekarang selama rollback anchor tetap wajib; opsi (b) jadwal patch 22:30+ brittle terhadap pergeseran jam window. Arah jangka menengah: deploy dari checkout terpisah. Bukti internet lemah untuk konteks persis ini (deploy guard org-state) — putuskan dari konteks internal. PILAR: TRUST (reliabilitas pipeline deploy).",
+      "result": "ROOT-FIX DONE 18:35 WIB (jilid-3 KONDEKTUR-1115/16/17 tamat; pilihan (a) scope-based + catatan researcher; drift-#15 symlink di-repair slot ini: datadir file 10:16 == repo 09:43 isi identik, datadir menang, .bak-drift15). deploy.sh kini org-state-aware: docs/agent-org dirty = NON-blocker (backup mktemp pra-reset + restore live-wins pasca reset — menutup akar drift-#12/13/14 jilid-4), src tetap blocker, rollback anchor tak diubah. DRY-RUN DUA ARAH (script ASLI): [A] 9 file docs/agent-org dirty + src bersih -> EXIT 0 'ORG-STATE-LIVE: 9 file ... non-blocker' + 'guard PASS'; [B] dummy dirty src -> EXIT 1 'Deploy DIBATALKAN'; victim restored (src dirty=0), temp bersih. bash -n OK. Commit 6355e91 pushed 13b70a9..6355e91. 0 build 0 deploy 0 SQL. QA verdict: Sentinel 22:00."
+    },
+    {
+      "id": "qa-2026-11-18-01",
+      "date": "2026-11-18",
+      "type": "qa-content-fix",
+      "priority": "P1",
+      "status": "done",
+      "north_star": "TRUST — konten salah angka = trust runtuh; pilar TRUST (data reliable)",
+      "title": "P1 patch 2 FATAL brief-pasar-idx-2026-11-18-bris-batubara: breadth body 333->296 (SATU konvensi non-gorengan) + klaim PTBA 'baru golden cross 17/11' -> GC aktif sejak 23 Sep",
+      "spec": "INTENT: samakan brief-pasar-idx-2026-11-18-bris-batubara dengan DB satu-pintu (post-publish fix, slot CTO 07:30). F1 BREADTH CAMPUR KONVENSI: body kalimat 'Breadth pasar Selasa (17/11) nyaris imbang: **333 saham naik vs 290 turun** (159 stagnan, basis saham non-gorengan)' kontradiksi internal — 333 = replay TANPA filter gorengan (333/331/170), sedangkan 290/159 + label 'basis non-gorengan' + excerpt (296/290) = konvensi kanonik lag-prev INNER non-gorengan yang replay EXACT 296/290/159. PATCH: '333 saham naik' -> '296 saham naik' (290 turun + 159 stagnan TETAP). F2 EVENT-DATE PTBA: body 'PTBA justru baru mencetak golden cross pada sesi yang sama' + watchlist row 'Golden cross baru aktif 17/11' SALAH TANGGAL — DB: PTBA smaCrossDate=2026-09-23 golden_cross (stabil 16-17 Nov, GC-nya umur ~2 bulan); satu-satunya golden cross baru 17 Nov = INTP; PTBA yang BARU 17 Nov hanyalah close di bawah sma50-nya... emaCrossDate PTBA=2026-11-16 bullish. PATCH: (a) body -> 'PTBA golden cross-nya baru berumur dua bulan (aktif 23 Sep) dan baru saja crossing EMA bullish 16 Nov — koreksi di uptrend muda biasanya lebih cepat pulih' ATAU setara fakta-benar; (b) watchlist alasan -> 'Golden cross aktif sejak 23 Sep + EMA-cross bullish 16 Nov; RSI 50,5 netral — koreksi dalam uptrend' (RSI DB 50,55). ACCEPTANCE: (1) grep-H2 DB content+excerpt+live no-cache: '333 saham naik' = 0, 'baru mencetak golden cross' = 0, 'Golden cross baru aktif 17/11' = 0; token baru '296 saham naik' >= 1 render; (2) replay_sql_gate.py brief-pasar-idx-2026-11-18-bris-batubara exit 0; (3) curl /berita/<slug> 200 + render angka baru; (4) jangan sentuh angka lain (semua angka lain artikel ini sudah EXACT: IHSG 5.304,76/5.385,14/-0,30%, BRIS 9,38%, bank besar, batubara, sinyal 4/18/68/11, OS 33).",
+      "source": "REVIEWER-PAGI-1118 QA konten 18 Nov 07:3x (replay gate PASS 4 artikel + verifikasi SQL deterministik superlatif/breadth/cross-day)",
+      "result": "DONE CTO-PAGI-1118 08:0x. DB-patch 1 row Article grw2611180637io5lz9sw (content only, excerpt bersih pre-check): F1 333->296 saham naik (290/159 tetap); F2a PTBA body -> GC umur 2 bulan (aktif 23 Sep) + EMA-cross bullish 16 Nov; F2b watchlist -> GC aktif sejak 23 Sep + EMA bullish 16 Nov, RSI 50,6 dipertahankan (50,55 DB rounds benar). BUKTI H1/H2: position() lama=0 semua (333 saham naik=0, baru mencetak golden cross=0, Golden cross baru aktif 17/11=0) + baru render (296=492, 23 Sep=1703, EMA 16 Nov=1742) + 290 turun/159 stagnan utuh; replay_sql_gate exit-0 (2 klaim SKIP: breadth konvensi-lag + superlative non-snapshot — sesuai pola SKIP per-kind); live no-cache 200: 296 saham naik=2, aktif 23 Sep=2, EMA-cross bullish 16 Nov=4, token lama=0. Angka lain tak tersentuh (IHSG/BRIS/sinyal 4/18/68/11/OS33). 0 build 0 deploy. Rollback: scratch/qa-18-01/backup-row.json"
     }
   ]
 }

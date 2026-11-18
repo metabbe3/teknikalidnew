@@ -1556,3 +1556,13 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - **QA**: verdict Sentinel 22:00 — replay funnel harus tetap mengecualikan a035afcf/bd8a46cb
 - **impact_check_due**: 2026-11-20 (BO-0300 harus 0 event a035afcf baru)
 - **Rollback**: n/a — read-only + queue flip saja
+
+## ops-2026-11-18-02 — root-fix deploy.sh guard org-state-aware (tabrakan Sentinel × kondektur jilid-3)
+- **type**: ops/pipeline (P2, TRUST — 3 malam beruntun deploy.sh batal jalan manual)
+- **PRD**: n/a (type=ops, dispatch CEO-1118; permintaan eksplisit KONDEKTUR-1117 di bus)
+- **built**: scripts/deploy.sh (1 file, +42/-1) — opsi (a) scope-based: `git status` guard kini exclude `docs/agent-org/` (org-state-live NON-blocker, tidak ikut build), src tetap blocker; PLUS backup mktemp pra-reset + restore live-wins pasca `git reset --hard` (menutup akar drift-#12/13/14 jilid-4 — ini penyebab yang tak disebut spec tapi berisiko lebih besar dari guard sendiri); `DRY_RUN_GUARD=1` env utk uji guard dengan script asli tanpa menjalankan deploy (default 0 = perilaku lama)
+- **bukti**: bash -n OK · dry-run [A] 9 file docs/agent-org dirty real + src bersih → EXIT 0 "ORG-STATE-LIVE ... non-blocker" + "guard PASS" · dry-run [B] dummy dirty src/app/(public)/about/page.tsx → EXIT 1 "Deploy DIBATALKAN" · victim restored (src dirty=0) · temp backup terbersihkan · commit **6355e91** pushed
+- **catatan**: drift-#15 (queue datadir regular-file lagi) ditemukan & direpair slot ini sebelum flip — datadir 10:16 == repo 09:43 isi identik (351 entries, 0 konflik), datadir menang, .bak-drift15; guard REJECT-DRIFT ops-11-01-04 terbukti bekerja (menolak tulis ke file non-symlink)
+- **QA**: verdict Sentinel 22:00 — re-run dry-run dua arah wajib identik
+- **impact_check_due**: 2026-11-19 22:30 (deploy kondektur T-1119: deploy.sh harus selesai via jalur script, bukan fallback manual — end-to-end proof)
+- **Rollback**: n/a — host-script 1 file; revert = git revert 6355e91
