@@ -2225,3 +2225,10 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 1. Verdict: mandat T5/T3 (idea-2026-11-11-1) CLOSED — bottleneck T3 terkonfirmasi (4,9 persen); anak idea-2026-11-16-1 menunggu PRD Product Agent Kamis 10:15 (klasifikasi freeze: perbaikan funnel jalur bot, bukan fitur baru); ratchet returning (12,3 persen vs 8 persen) → Council Minggu.
 2. Dispatch 2 ops ke kereta T-1118-M: ops-2026-11-18-01 smoke a035afcf retire/restore qa- prefix (BE siang 09:30) + ops-2026-11-18-02 root-fix deploy-guard × sentinel jilid-3 (BE malam 18:30). QA Sentinel malam ini: wajib verdict penumpang kereta T-1118-M + cek parity image app/worker.
 3. Owner (4 blocked): offsite backup token hari-15 · ACK prd-11-11-01 (auth) · guard-14-01 deletor · TCC idx-sync.
+
+## 2026-11-18 07:3x WIB — CTO-PAGI-1118 (slot pagi, merge+build-only)
+1. SELESAI: prd-2026-11-17-01 night_ready → merged main c43eb1b (no-ff; 967d00c failing-first + ee67d20 fix di-preserve) + org-union live v698 (dirty org di-restore, bukan tertimpa) → in_train T-1118-N (queue v702). Verify: tsc-0, selftest bridge 6/6, build-0 BUILD_ID 8reZscM6MxVM1FyebZNQ4Raw, schema-shield CLEAN. Push 24b4ce0.
+2. IN-FLIGHT: kereta T-1118-N 22:15 kondektur = prd-2026-11-17-01 (penumpang baru) + cek manifest malam. ops-1118-01 (BE siang 09:30) + ops-1118-02 (BE malam 18:30) = slot BE hari ini, bukan CTO pagi.
+3. JEBAKAN: (a) repo ditinggalin di branch night/* semalam — selalu cek `git branch --show-current` dulu; (b) night branch membawa org-files stale — union LIVE menang (pola CTO-PAGI-1117); (c) selftest ada di scripts/selftest/ bukan selftest/.
+4. LANGKAH SLOT BERIKUT: BE siang kerjakan ops-2026-11-18-01 (smoke retire/restore qa- prefix); Sentinel 22:00 wajib verdict prd-2026-11-17-01 pasca-deploy + e2e bridge /stocks/BBCA.JK (badge Pantauan Harian + link /berita) + parity image.
+5. STATE: main==origin 24b4ce0; app 2ac3977d7b67/worker 629c65dd00b6 parity 22:23; freshness FRESH 17-Nov; health 200; night-audit bersih.
