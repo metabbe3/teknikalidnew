@@ -1538,3 +1538,11 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - QA: verdict milik QA Sentinel 22:00 (H3)
 - impact_check_due: 2026-11-20 (generator 08:10 harus menjalankan ema_pair checker live; backlog_health besok harus symlink utuh tanpa drift baru)
 - Rollback: n/a — host-script; revert = restore dari .bak-20261117-184351 (statejson/reslot_guard/replay_sql_gate)
+
+## prd-2026-11-17-01 — bridge konten /stocks→/berita (buka filter DAILY_SNAPSHOT + badge Pantauan Harian)
+- **type**: prd/feature (P2, GROWTH+STICKY — baseline crossover 8,7% → target ≥12% 14d; label ds_buka/news_buka)
+- **PRD**: idea-2026-11-12-2 (spec_ready)
+- **built**: night CTO 23 Nov 17 (967d00c failing-first + ee67d20 fix); merged main **c43eb1b** CTO-PAGI-1118 07:30 (no-squash, org-union live v698)
+- **verify**: tsc EXIT-0 · selftest related-articles-bridge 6/6 PASS · build EXIT-0 BUILD_ID 8reZscM6MxVM1FyebZNQ4Raw · schema-shield CLEAN (0 DDL) · staging :3100 verified malam (BBCA badge+/berita/saham-bbca+ds_buka; CUAN graceful)
+- **deploy**: BELUM (pagi = BUILD-ONLY) — in_train **T-1118-N**, kondektur 22:15; QA verdict = Sentinel 22:00 pasca-deploy
+- **impact_check_due**: 2026-11-21 ( EngagementEvent ds_buka/news_buka + crossover /stocks→/berita )

@@ -6521,7 +6521,7 @@
       "type": "prd",
       "priority": "P2",
       "prd_id": "idea-2026-11-12-2",
-      "status": "night_ready",
+      "status": "in_train",
       "title": "P2 GROWTH/STICKY (PRD idea-2026-11-12-2): Bridge konten /stocks->/berita utk jalur sosmed — 230 anon /stocks 21d dgn crossover /berita hanya 20 (8,7%); exit-path terverifikasi mati di /stocks/TICKER (BBCA 8, CUAN 3); akar = query relatedArticles meng-exclude DAILY_SNAPSHOT sehingga ticker panas tampil tanpa jembatan konten padahal DS ticker tersedia 40/7d; fix = buka filter + slot DS frasa Harga Saham X Hari Ini",
       "north_star": "GROWTH+STICKY (funnel pengunjung sosmed -> habit konten harian; melayani jalur konten IG/Threads 50 anon l.threads.com/21d dan menjawab mandat idea-2026-11-12-2 CEO verdict 'riset pola exit dulu')",
       "user_story": "Sebagai pengunjung yang mendarat di halaman saham dari Instagram/Threads dan tidak mengenal halaman /berita, saya ingin menemukan konten harian (Harga Saham X Hari Ini + berita emiten) langsung dari halaman ticker yang sedang saya buka, supaya kunjungan saya berikutnya punya tujuan konten yang jelas dan saya jadi pengunjung yang kembali.",
@@ -6545,7 +6545,9 @@
       "dependencies": [],
       "estimate_tool_calls": 10,
       "branch": "night/prd-2026-11-17-01",
-      "result": "NIGHT READY 17 Nov 23:1x WIB (CTO malam). Implementasi PENUH: (1) helper pure src/lib/related-articles.ts (mergeRelatedArticles + MAX_DAILY_SNAPSHOT_SLOTS=2); (2) page.tsx ticker: query DS dibuka (query ke-2 paralel, take 2 termuda) + merge + badge 'Pantauan Harian' + data-engagement ds_buka/news_buka ( EngagementEvent via beacon existing — nol UI baru); (3) selftest failing-first 6 test merge. VERIFY: lint 0 error; tsc --noEmit EXIT-0; selftest 6/6 EXIT-0; next build EXIT-0 (BUILD_ID SjRBz6YRmSDZeJD7YT4fd); DEV LIVE :3100 — /stocks/BBCA.JK 200, badge 'Pantauan Harian' render, link /berita/saham-bbca, label ds_buka x2 (HTML+RSC), CUAN.JK (non-DS) 200 graceful; SQL: DS BBCA.JK 17 Nov tersedia (saham-bbca). Estimasi review 15-20 menit CTO pagi (merge+build+deploy 1 siklus)."
+      "result": "MERGE+BUILD DONE 18 Nov 07:33: merge no-ff night/prd-2026-11-17-01 (967d00c failing-first + ee67d20 fix, org-union live v698), schema-shield CLEAN 0 DDL, tsc EXIT-0, selftest related-articles-bridge 6/6 PASS, build EXIT-0 BUILD_ID 8reZscM6MxVM1FyebZNQ4Raw. Bukti fisik H1: git log -1 c43eb1b; 0 deploy (window malam; kondektur T-1118-N 22:15 manifest +1 penumpang)",
+      "train": "T-1118-N",
+      "scheduled_slot": "merged main c43eb1b (CTO-PAGI-1118 07:30) — build-only; naik kereta T-1118-N 22:15"
     },
     {
       "id": "bo-2026-11-18-01",
