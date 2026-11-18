@@ -316,6 +316,9 @@ export default async function SahamOversoldPage() {
           <Link href="/saham-overbought" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
             <AlertTriangle className="inline h-4 w-4" /> Saham Overbought
           </Link>
+          <Link href="/saham-volume-spike" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
+            <TrendingUp className="inline h-4 w-4" /> Saham Volume Spike
+          </Link>
         </div>
       </div>
     </>

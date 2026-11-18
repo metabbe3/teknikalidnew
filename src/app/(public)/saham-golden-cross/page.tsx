@@ -10,7 +10,7 @@ import { getConditionBacktest } from "@/lib/condition-backtest.service";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
 import { formatDecimalId } from "@/lib/format-number";
 import { SITE_URL } from "@/lib/constants";
-import { AlertTriangle, Gem, Search } from "lucide-react";
+import { AlertTriangle, Gem, Search, TrendingUp } from "lucide-react";
 import { GuestStar } from "@/components/stock/guest-star";
 
  // 12 Okt: failed-bake 5mnt bikin 'tidak ada data' pasca-deploy; 30s self-heal
@@ -200,6 +200,9 @@ export default async function SahamGoldenCrossPage() {
           </Link>
           <Link href="/saham-overbought" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
             <AlertTriangle className="inline h-4 w-4" /> Saham Overbought
+          </Link>
+          <Link href="/saham-volume-spike" className="rounded-lg border px-4 py-3 text-sm font-semibold hover:bg-bg-hover">
+            <TrendingUp className="inline h-4 w-4" /> Saham Volume Spike
           </Link>
         </div>
       </div>
