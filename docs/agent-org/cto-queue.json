@@ -4078,7 +4078,7 @@
       "spec": "Bangun sesuai PRD idea-2026-10-26-1 (product-backlog.json, research_brief Researcher 28 Okt = MODIFIKASI): (1) IDX scraper = SOURCE-OF-TRUTH ex-date, Yahoo hanya cross-check — JANGAN migrasi ke Yahoo; (2) render user-facing fail-closed; (3) buka constraint unique utk multi-dividen/tahun; (4) coverage audit script. Urutan: migrasi schema dulu, lalu provenance backfill, lalu guard render.",
       "qa_plan": "Pembangun != pemeriksa. Staging: SQL row tanpa provenance vs DOM kalender = 0 render; migrasi up/down; coverage audit angka % eksplisit. D+14: 0 laporan tanggal salah; horizon kalender > 10 row.",
       "done_when": "DONE WHEN: (a) migrasi up+down hijau staging + row semi-annual ganda tersimpan; (b) staging kalender 0 render row unverified; (c) laporan coverage % angka; (d) tsc+build EXIT-0. Gagal render-guard = iterate, bukan ship setengah.",
-      "scheduled_slot": "2026-11-17 BE malam 18:30 BUILD migrasi ex-date -> kereta T-1117-N",
+      "scheduled_slot": "2026-11-20 BE malam 18:30 BUILD migrasi ex-date (reslot CTO 18 Nov: slot 17-Nov basi terlewat; 19 Nov Kamis penuh SRE prd-11-11-02)",
       "created_by": "Product Agent buffer-keeper 2026-11-02 22:4x WIB (run gate: buffer teknikal 0 < 3)",
       "train": "T-1118-M",
       "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)"
@@ -5881,7 +5881,7 @@
       "spec_summary": "(1) northstar_kpi.py: STICKY.returning_anonid_pct — basis PageView.anonId 7d, exclude anonId milik User role=ADMIN via initialAnonId + prefix qa-% + isBot (catat baseline IP di note, JANGAN hapus field IP); (2) AI_SEARCH.ai_search_views_utm_7d — utmSource ~* 'chatgpt|openai|perplexity|claude|gemini|copilot|grok' OR fallback referrer ILIKE existing; (3) teknikalid_page.py kartu North Star tampilkan angka baru + label basis; (4) target ratchet 8% dinilai ulang apples-to-apples pasca instrumen live (link idea-2026-11-11-1). OUT OF SCOPE: ubah definisi funnel/retention service di repo.",
       "qa_plan": "Pembangun != pemeriksa. Verifikasi: replay SQL manual == angka script (2 angka baseline); kpi.json valid JSON field baru+lama; :8790 render kartu baru (curl/grep). Bukan tugas QA Sentinel app (host-only).",
       "done_when": "DONE WHEN: (a) kpi.json berisi returning_anonid_pct + ai_search_views_utm_7d (field lama tetap); (b) replay SQL identik baseline 17,1/21; (c) :8790 menampilkan kartu baru; (d) baseline lama tercatat di backlog; (e) 0 commit repo / 0 rebuild.",
-      "scheduled_slot": "2026-11-19 SRE Rabu 09:30 (reslot CEO 17 Nov: 18 Nov=Selasa, slot Rabu salah hari - ghost)",
+      "scheduled_slot": "2026-11-19 SRE Kamis 09:30 (koreksi CTO 18 Nov: catatan CEO 17 Nov salah hari — 18 Nov=Rabu, 19 Nov=Kamis; SRE expr 30 9 * * 3,6)",
       "created_by": "Product Agent buffer-keeper 2026-11-11 23:1x WIB (run gate: buffer teknikal 2 < 3)",
       "branch": "host-only/no-branch",
       "verify": "tsc n/a (host-script python); lint 0 error; ast.parse OK x2; collector run RC=0; replay SQL == script (anonid 12.3/155, utm 14; baseline 11 Nov 17,1/21); dashboard :8790/site render kartu baru (12.3/8 hijau, 14/10 hijau, IP 6.5 baseline); launchd restart PID 87313",
@@ -6303,24 +6303,20 @@
       "qa_verified": true
     },
     {
-      "entries": [
-        {
-          "id": "prd-2026-11-15-01",
-          "date": "2026-11-15",
-          "type": "feature",
-          "priority": "P2",
-          "status": "in_train",
-          "north_star": "STICKY+GROWTH (T3 watchlist-save unblock, funnel T3 10/T4 4 stagnan)",
-          "pos": "[KONVERSI] PRD fitur",
-          "title": "P2 STICKY+GROWTH (PRD product-backlog): One-tap watchlist T3 unblock — bintang top-30 /stocks + hero movers /, preset kurasi empty-state /watchlist, T3_SAVE_LABELS satu pintu",
-          "spec": "Branch night/prd-2026-11-15-01 dibangun CTO-NIGHT 15 Nov 23:02-23:21 (spec 53d9ec5, failing-test-first W1-W8 6d7df47, feat c628163). Verify CTO pagi 16 Nov: tsc 0 error + selftest 8/8 (via npx tsx). MERGED main ce9a9df (merge --no-ff, schema-shield clean, no migration/prisma/.sql). Kode: snapshot-card.tsx bintang top-30, watchlist-presets.tsx baru, funnel-labels.ts T3_SAVE_LABELS, guest-storage.ts, use-guest-watchlist.ts. Naik kereta T-1116-N 22:15 (build 09:30 slot sore siang merge ux-15-01).",
-          "scheduled_slot": "2026-11-16 22:15 kereta T-1116-N (merged main ce9a9df pagi ini; build BE siang 09:30)",
-          "result": "MERGED main ce9a9df + pushed origin (4963830..ce9a9df) CTO pagi 16 Nov 07:5x WIB; tsc REAL_EXIT=0, selftest 8/8 REAL_EXIT=0; commit kode c628163 (feat) + 6d7df47 (test) + 53d9ec5 (spec); blocklist +5 anonId e2e staging night-session (commit d0fc402). Deployed_at: n/a (build-only; kereta T-1116-N 22:15). Verdict QA = Sentinel 22:00.",
-          "qa_task": false,
-          "created_by": "CTO-PAGI-1116 (recover night branch yang tak ter-report di bus/queue)",
-          "qa_verified_by": null
-        }
-      ]
+      "id": "prd-2026-11-15-01",
+      "date": "2026-11-15",
+      "type": "feature",
+      "priority": "P2",
+      "status": "in_train",
+      "north_star": "STICKY+GROWTH (T3 watchlist-save unblock, funnel T3 10/T4 4 stagnan)",
+      "pos": "[KONVERSI] PRD fitur",
+      "title": "P2 STICKY+GROWTH (PRD product-backlog): One-tap watchlist T3 unblock — bintang top-30 /stocks + hero movers /, preset kurasi empty-state /watchlist, T3_SAVE_LABELS satu pintu",
+      "spec": "Branch night/prd-2026-11-15-01 dibangun CTO-NIGHT 15 Nov 23:02-23:21 (spec 53d9ec5, failing-test-first W1-W8 6d7df47, feat c628163). Verify CTO pagi 16 Nov: tsc 0 error + selftest 8/8 (via npx tsx). MERGED main ce9a9df (merge --no-ff, schema-shield clean, no migration/prisma/.sql). Kode: snapshot-card.tsx bintang top-30, watchlist-presets.tsx baru, funnel-labels.ts T3_SAVE_LABELS, guest-storage.ts, use-guest-watchlist.ts. Naik kereta T-1116-N 22:15 (build 09:30 slot sore siang merge ux-15-01).",
+      "scheduled_slot": "2026-11-16 22:15 kereta T-1116-N (merged main ce9a9df pagi ini; build BE siang 09:30)",
+      "result": "MERGED main ce9a9df + pushed origin (4963830..ce9a9df) CTO pagi 16 Nov 07:5x WIB; tsc REAL_EXIT=0, selftest 8/8 REAL_EXIT=0; commit kode c628163 (feat) + 6d7df47 (test) + 53d9ec5 (spec); blocklist +5 anonId e2e staging night-session (commit d0fc402). Deployed_at: n/a (build-only; kereta T-1116-N 22:15). Verdict QA = Sentinel 22:00.",
+      "qa_task": false,
+      "created_by": "CTO-PAGI-1116 (recover night branch yang tak ter-report di bus/queue)",
+      "qa_verified_by": null
     },
     {
       "id": "idea-2026-11-15-1",
@@ -6343,7 +6339,7 @@
       "type": "prd",
       "priority": "P1",
       "prd_id": "idea-2026-11-12-1",
-      "status": "deployed",
+      "status": "qa_pass",
       "title": "P1 KONVERSI (PRD idea-2026-11-12-1): Quota-wall value-first + dual-CTA setara + return-to-context — reg_free_banner 0 klik/14d & auth-nav pasca-wall 8,9% (< target >=12%); jalur bot lebih hidup (tg_pantau 17 klik)",
       "north_star": "GROWTH (funnel kuota 8,9% -> >=12% auth-nav pasca-wall) + STICKY (jalur tanpa-akun bot = feed funnel web->agent pivot 6 Nov)",
       "user_story": "Sebagai guest yang menabrak kuota 3 saham/hari tepat saat membuka ticker yang diminati, saya ingin wall menunjukkan apa yang saya dapat bila daftar (preview spesifik ticker itu) plus jalur tanpa-akun via Bot Agent yang setara (bukan baris kecil), supaya momen terblokir berubah jadi onramp, bukan dead-end.",
@@ -6485,7 +6481,7 @@
       "date": "2026-11-17",
       "type": "ux",
       "priority": "P2",
-      "status": "deployed",
+      "status": "qa_pass",
       "train": "T-1118-N",
       "actor": "UX-FE-1915-1117",
       "north_star": "GROWTH (funnel kuota: auth-nav pasca-wall 8,9% -> >=12%) + STICKY (jalur bot setara di wall)",
@@ -6501,7 +6497,7 @@
       "baseline": "wall live = W1b bbc886c; CTA reg_free_banner 0 klik/14d, agent_deeplink 17 klik; auth_nav_after 8,9% <12% target",
       "deployed_at": "2026-11-17T22:24:35+07:00",
       "qa_verified": true,
-      "qa_note": "PASS 2026-11-18 QA Sentinel (verifier cron): bukti fisik live — commit 00e0dda persis menghapus \"hidden sm:inline\" pada span sub-copy guest-quota.tsx L312 (diff dilihat langsung: -\"hidden sm:inline text-[10px]…\" → +\"text-[10px]…\"), ancestor 763d1f5 = HEAD deploy KONDEKTUR-1117; chunk live page-b17242ae memuat literal \"(3 dari 3 saham gratis hari ini sudah dibuka)\" dengan wrapper className \"text-[10px] font-normal text-text-tertiary\" TANPA hidden → tampil di <sm 375px (deterministik dari class); sisa \"hidden sm:inline\" di chunk lain = layout tak terkait. Bukti computed-style builder (display:block, rect 111px) konsisten dengan class live.",
+      "qa_note": "QA-DEPLOY REVIEWER 18 Nov 07:5x (KOREKSI note awal — grep prefix false-positive): fix mobile 00e0dda BERSIH & LIVE — guest-quota.tsx adalah client-component (chunk klien, bukan server page.js), repo kini 0 hit hidden-sm:inline di situ; hit di server page.js = page.tsx:1069 hidden sm:inline-BLOCK (beda class, separator) + stocks-swing-panel.tsx:94 (unrelated, pre-existing). Sub-copy wall tampil di mobile terverifikasi KONDEKTUR CDP 375px + konsisten repo; wall-v2 copy verbatim live di server page.js. Riders d6bc5a7+00e0dda+f57db23 ancestor-OK, image 2ac3977d7b67 22:24:35 (KONDEKTUR-1117). Verdict: PASS. Posisi: [KONVERSI] pilar KONVERSI+STICKY.",
       "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)"
     },
     {
@@ -6579,6 +6575,18 @@
       "scheduled_slot": "2026-11-18 BE malam 18:30; naik kereta kondektur T-1118-M",
       "train": "T-1118-M",
       "spec": "INTENT [OPS][TRUST] ROOT-FIX tabrakan koordinasi jilid-3 (KONDEKTUR-1115/1116/1117, permintaan eksplisit KONDEKTUR-1117 di agent-bus 22:2x 17 Nov): QA Sentinel patch queue/backlog pukul 22:20 menit-menit window deploy kondektur 22:15 sehingga deploy.sh guard melihat docs/agent-org dirty dan MEMBATALKAN jalur deploy.sh (17 Nov: guard abort 22:20:36, fallback build manual). Pilih SATU solusi terkecil blast-nya (CTO yang menilai): (a) deploy.sh guard: file dirty di bawah docs/agent-org/ diperlakukan org-state-live NON-blocker (src tetap blocker), ATAU (b) QA Sentinel menunda patch state ke 22:30+ saat window deploy aktif.\nACCEPTANCE: (1) dry-run dua arah tercatat: file dummy dirty di docs/agent-org/ + src bersih -> guard LANJUT; file dummy dirty di src/ -> guard ABORT; (2) patch ter-commit + push; (3) 0 perubahan perilaku deploy lainnya (rollback anchor tetap wajib utk deploy nyata).\nDONE WHEN: hasil dry-run dua arah (dirty-org pass + dirty-src abort) dikutip di queue result + commit SHA tercatat."
+    },
+    {
+      "id": "qa-2026-11-18-01",
+      "date": "2026-11-18",
+      "type": "qa-content-fix",
+      "priority": "P1",
+      "status": "done",
+      "north_star": "TRUST — konten salah angka = trust runtuh; pilar TRUST (data reliable)",
+      "title": "P1 patch 2 FATAL brief-pasar-idx-2026-11-18-bris-batubara: breadth body 333->296 (SATU konvensi non-gorengan) + klaim PTBA 'baru golden cross 17/11' -> GC aktif sejak 23 Sep",
+      "spec": "INTENT: samakan brief-pasar-idx-2026-11-18-bris-batubara dengan DB satu-pintu (post-publish fix, slot CTO 07:30). F1 BREADTH CAMPUR KONVENSI: body kalimat 'Breadth pasar Selasa (17/11) nyaris imbang: **333 saham naik vs 290 turun** (159 stagnan, basis saham non-gorengan)' kontradiksi internal — 333 = replay TANPA filter gorengan (333/331/170), sedangkan 290/159 + label 'basis non-gorengan' + excerpt (296/290) = konvensi kanonik lag-prev INNER non-gorengan yang replay EXACT 296/290/159. PATCH: '333 saham naik' -> '296 saham naik' (290 turun + 159 stagnan TETAP). F2 EVENT-DATE PTBA: body 'PTBA justru baru mencetak golden cross pada sesi yang sama' + watchlist row 'Golden cross baru aktif 17/11' SALAH TANGGAL — DB: PTBA smaCrossDate=2026-09-23 golden_cross (stabil 16-17 Nov, GC-nya umur ~2 bulan); satu-satunya golden cross baru 17 Nov = INTP; PTBA yang BARU 17 Nov hanyalah close di bawah sma50-nya... emaCrossDate PTBA=2026-11-16 bullish. PATCH: (a) body -> 'PTBA golden cross-nya baru berumur dua bulan (aktif 23 Sep) dan baru saja crossing EMA bullish 16 Nov — koreksi di uptrend muda biasanya lebih cepat pulih' ATAU setara fakta-benar; (b) watchlist alasan -> 'Golden cross aktif sejak 23 Sep + EMA-cross bullish 16 Nov; RSI 50,5 netral — koreksi dalam uptrend' (RSI DB 50,55). ACCEPTANCE: (1) grep-H2 DB content+excerpt+live no-cache: '333 saham naik' = 0, 'baru mencetak golden cross' = 0, 'Golden cross baru aktif 17/11' = 0; token baru '296 saham naik' >= 1 render; (2) replay_sql_gate.py brief-pasar-idx-2026-11-18-bris-batubara exit 0; (3) curl /berita/<slug> 200 + render angka baru; (4) jangan sentuh angka lain (semua angka lain artikel ini sudah EXACT: IHSG 5.304,76/5.385,14/-0,30%, BRIS 9,38%, bank besar, batubara, sinyal 4/18/68/11, OS 33).",
+      "source": "REVIEWER-PAGI-1118 QA konten 18 Nov 07:3x (replay gate PASS 4 artikel + verifikasi SQL deterministik superlatif/breadth/cross-day)",
+      "result": "DONE CTO-PAGI-1118 08:0x. DB-patch 1 row Article grw2611180637io5lz9sw (content only, excerpt bersih pre-check): F1 333->296 saham naik (290/159 tetap); F2a PTBA body -> GC umur 2 bulan (aktif 23 Sep) + EMA-cross bullish 16 Nov; F2b watchlist -> GC aktif sejak 23 Sep + EMA bullish 16 Nov, RSI 50,6 dipertahankan (50,55 DB rounds benar). BUKTI H1/H2: position() lama=0 semua (333 saham naik=0, baru mencetak golden cross=0, Golden cross baru aktif 17/11=0) + baru render (296=492, 23 Sep=1703, EMA 16 Nov=1742) + 290 turun/159 stagnan utuh; replay_sql_gate exit-0 (2 klaim SKIP: breadth konvensi-lag + superlative non-snapshot — sesuai pola SKIP per-kind); live no-cache 200: 296 saham naik=2, aktif 23 Sep=2, EMA-cross bullish 16 Nov=4, token lama=0. Angka lain tak tersentuh (IHSG/BRIS/sinyal 4/18/68/11/OS33). 0 build 0 deploy. Rollback: scratch/qa-18-01/backup-row.json"
     }
   ]
 }
