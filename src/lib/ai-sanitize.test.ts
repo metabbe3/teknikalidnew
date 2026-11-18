@@ -180,3 +180,49 @@ test("badan jawaban yang menyebut 'layak beli' tetap utuh (hanya chip disentuh)"
   assert.equal(r.startsWith("Kalau kriterianya terpenuhi baru dipertimbangkan layak beli."), true);
   assert.equal(/Layak dibeli sekarang/.test(r), false);
 });
+
+// ── Loop 18 Nov: enforceKeyLevels (lapis-7) ──
+import { enforceKeyLevels } from "./ai-sanitize";
+
+const CTX_INCO = {
+  ticker: "INCO.JK", name: "Vale Indonesia", close: 3390,
+  sma20: 3505, sma50: 4011.4, support1: 3350, resistance1: 3410,
+};
+
+test("digit-drop support dibangun ulang dari context", () => {
+  const t = "Level kunci: support terdekat Rp3.350 (jarak cuma 1,2%), resistance Rp3.410 (jarak 0,6%) — harga emang lagi di banjir palang; validnya bias turun kalau support 1.350 kebocor, support berikut Rp2.960.";
+  const r = enforceKeyLevels(t, CTX_INCO);
+  assert.equal(r.includes("support 1.350"), false);
+  assert.equal(r.includes("Rp3.350 kebocor"), true);
+});
+
+test("Rp-prefixed sehat tidak diubah", () => {
+  const t = "Support Rp3.350 penting; resistance Rp3.410 juga.";
+  assert.equal(enforceKeyLevels(t, CTX_INCO), t);
+});
+
+test("relasi SMA terbalik dibetulkan (close di atas tapi bilang di bawah)", () => {
+  const t = "Tren justru membaik: harga +9% dalam 20 hari, sudah di atas SMA20 (Rp5.204), cuma masih di bawah SMA50 (Rp5.708).";
+  const ctx = { ticker: "BBCA.JK", close: 5750, sma20: 5204, sma50: 5708 };
+  const r = enforceKeyLevels(t, ctx);
+  assert.equal(r.includes("di bawah SMA50"), false);
+  assert.equal(r.includes("di atas SMA50"), true);
+});
+
+test("relasi SMA sudah benar tidak disentuh", () => {
+  const t = "harga masih di bawah SMA50 (Rp4.011).";
+  const r = enforceKeyLevels(t, CTX_INCO);
+  assert.equal(r.includes("di bawah SMA50"), true);
+});
+
+test("multi-saham: kalimat tanpa ticker tidak dipatch salah emiten", () => {
+  const t = "support 1.350 bocor = bias turun.";
+  const r = enforceKeyLevels(t, [CTX_INCO, { ticker: "TINS.JK", close: 1020, support1: 990, resistance1: 1080 }]);
+  // dua kandidat & tak ada ticker disebut → ambiguous → dibiarkan (anti false-positive)
+  assert.equal(r, t);
+});
+
+test("angka skor bertanda & persen tidak disentuh", () => {
+  const t = "skor sinyal -0,44 dan jarak support 1,2% dari harga.";
+  assert.equal(enforceKeyLevels(t, CTX_INCO), t);
+});

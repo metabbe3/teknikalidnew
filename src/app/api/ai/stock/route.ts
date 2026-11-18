@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { buildPasarContext } from "@/lib/ai-pasar-context";
 import { prisma } from "@/lib/prisma";
 import { isPlausibleTicker, extractTickersRanked, rescueTypoTicker } from "@/lib/ai-ticker-guard";
-import { sanitizeAiText, ensureAiDisclaimer, linkifyBoldTickers, normalizeUnit, neutralizeFollowupFraming } from "@/lib/ai-sanitize";
+import { sanitizeAiText, ensureAiDisclaimer, linkifyBoldTickers, normalizeUnit, neutralizeFollowupFraming, enforceKeyLevels } from "@/lib/ai-sanitize";
 import { NextRequest, NextResponse } from "next/server";
 import { buildStockAiContext } from "./context";
 import { stockRepository } from "@/domains/stock/stock.repository";
@@ -50,6 +50,7 @@ const GLM_SYSTEM = [
   "FORMAT BILA MODE ASK / OBROLAN (CONVERSATIONAL PYRAMID — jangan pakai heading '##'/'###'): (1) buka 1-2 kalimat santai yang LANGSUNG menjawab inti pertanyaan; (2) maksimal 3-4 bullet pendek dengan **bold** angka kunci (tabel hanya bila duel 2 saham); (3) tutup 1 kalimat poin pantauan paling krusial + pengingat ringan 'kerangka data edukasi, bukan saran beli/jual' — jangan ulang disclaimer panjang tiap turn.",
   "KUALIFIKASI + ANGKA: jangan sebut istilah kabur tanpa angka (salah: 'RSI udah rendah'; benar: 'RSI di **31,4**, mepet jenuh jual 30').",
   "LABEL WAKTU JUJUR (juri Claude 30 Okt): data harga/indikator = EOD. WAJIB tulis 'close <tanggal dari data>' sekali di awal; DILARANG bilang 'hari ini' untuk angka EOD. Gunakan tanggal aktual hari ini (dari DATA asOf/tanggal) sebagai acuan.",
+  "ANGKA KRITIS WAJIB PERSIS (loop 18 Nov): level support/resistance WAJIB ditulis LENGKAP dgn 'Rp' ribuan (Rp3.350) PERSIS dari DATA — DILARANG memotong digit ('1.350' dari 3.350 = jawaban merusak). Relasi arah harga-vs-SMA WAJIB konsisten dgn angkanya: close di atas nilai SMA = 'di atas', di bawah = 'di bawah' — baca dulu angkanya sebelum memilih kata (kasus nyata: close 5.750 ditulis 'di bawah SMA50 5.708').",
   "METRIK TURUNAN WAJIB (juri Claude): tanya dividen/aman-nggak dividen → pakai LANGSUNG fundamental.dpsEstimasiRp & fundamental.payoutRatioPct yang SUDAH dihitung server (contoh narasi: 'payout ±127% — dividen lebih besar dari labanya, waspadai keberlanjutan'); DILARANG bilang 'payout ratio tidak tersedia' kalau kedua field itu ada di data. User nyangkut → pakai posisiUser (bepGapPct & avgDown). Bandingkan → selisih % antar saham. Angka estimasi tandai '±'.",
   "KRITERIA DULU (juri Claude): kata sifat subjektif (sehat, kuat, murah, risiko tinggi) WAJIB diikuti kriterianya di kalimat yang sama atau berikutnya (mis. 'profil risiko tinggi: volatilitas ekstrem + volume lonjak tanpa berita'). DILARANG melabel emiten spesifik dengan kata 'gorengan' — pakai 'profil risiko tinggi (kriteria: ...)'.",
   "GLOSARIUM SATUAN (juri Claude): aliran asing = 'Rp X miliar' (bukan 'M'), volume = 'juta lembar', desimal pakai koma maksimal 2 angka (3,49 bukan 3,4912), harga pakai titik ribuan (Rp4.940). Konsisten satu format di seluruh jawaban.",
@@ -384,7 +385,12 @@ export async function POST(req: NextRequest) {
     // Loop 9 Nov: guard disclaimer deterministik — compliance bukan-rekomendasi
     // tidak boleh bergantung kepatuhan model (kasus nyata: 1/10 jawaban tanpa disclaimer).
     // Loop 11 Nov: linkify bold-ticker dari allowlist context (utama + compare).
-    const finalText = linkifyBoldTickers(neutralizeFollowupFraming(ensureAiDisclaimer(normalizeUnit(data.text))), context);
+    // Loop 18 Nov: enforceKeyLevels — support/resistance salah-digit + relasi SMA
+    // terbalik diperbaiki deterministik dari data server (bug eval #1/#4).
+    const finalText = linkifyBoldTickers(
+      neutralizeFollowupFraming(ensureAiDisclaimer(enforceKeyLevels(normalizeUnit(data.text), context))),
+      context,
+    );
 
     // flywheel (owner 30 Okt): log QA fire-and-forget
     prisma.aiChatLog

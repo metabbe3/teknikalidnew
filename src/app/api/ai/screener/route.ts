@@ -1,5 +1,5 @@
 import { isPlausibleTicker, extractTickersRanked } from "@/lib/ai-ticker-guard";
-import { sanitizeAiText, ensureAiDisclaimer, linkifyBoldTickers, normalizeUnit, neutralizeFollowupFraming } from "@/lib/ai-sanitize";
+import { sanitizeAiText, ensureAiDisclaimer, linkifyBoldTickers, normalizeUnit, neutralizeFollowupFraming, enforceKeyLevels } from "@/lib/ai-sanitize";
 import { buildStockAiContext } from "../stock/context";
 import { aiRateCheck } from "@/lib/ai-rate-limit";
 import { auth } from "@/lib/auth";
@@ -116,6 +116,7 @@ const GLM_SYSTEM = [
   "FORMAT: teks naratif pendek 2-4 kalimat dengan **bold** pada nama/ticker penting; ticker WAJIB format Markdown link [TICKER](/stocks/TICKER.JK); boleh bullet '-' bila menonjolkan 2-3 poin; JANGAN tabel (tabel sudah dirender aplikasi).",
   "Jika daftar kosong, jawab jujur: tidak ada saham yang lolos kriteria itu hari ini.",
   "LABEL WAKTU JUJUR (juri Claude 30 Okt): data = EOD (close). Sebut tanggal close sekali di awal ('close 29 Okt'), DILARANG 'hari ini' utk angka EOD. Jangan klaim 'pemicu utamanya' utk hal yang tidak ada datanya (berita/makro) — bilang 'mekanisme yang terlihat dari data: ...' dan 'pemicu makro tidak ada di data kami'.",
+  "ANGKA KRITIS WAJIB PERSIS (loop 18 Nov): level support/resistance ditulis LENGKAP dgn 'Rp' ribuan (Rp3.350) PERSIS dari DATA — DILARANG memotong digit; relasi arah harga-vs-SMA wajib konsisten dgn angkanya (close > nilai SMA = 'di atas').",
   "KONSEP vs CONTOH (juri Claude): bila user tanya KONSEP (golden cross, RSI, dsb.), jelaskan konsepnya saja + caveat (indikator lagging, false signal saat sideways). DILARANG menempelkan nama saham sebagai 'contoh golden cross' dsb. TANPA memverifikasi saham itu benar-benar memenuhi kondisinya — kalau tidak bisa diverifikasi dari data, jangan sebut contohnya.",
   "KRITERIA DULU + ANTI-GORENGAN (juri Claude): kata sifat (oke, sehat, kuat) WAJIB disertai kriteria di kalimat yang sama ('oke = masih hijau saat IHSG merah + volume di atas rata-rata'). DILARANG melabel emiten 'gorengan' — ganti 'profil risiko tinggi (volatilitas ekstrem, turun dalam, waspada UMA)'. Jangan asosiasikan top-loser dengan gorengan.",
   "KONSISTENSI KLAIM (juri Claude): sebelum menyebut 'rotasi', cek proporsinya — kalau inflow jauh lebih kecil dari outflow (mis. masuk 65 M vs keluar 800 M), itu EXIT bukan rotasi; sebut apa adanya.",
@@ -368,8 +369,9 @@ export async function POST(req: NextRequest) {
     // compliance bukan-rekomendasi tidak boleh bergantung kepatuhan model.
     // Loop 11 Nov: linkify bold-ticker dari allowlist data server (konsistensi format).
     // Loop 16 Nov: normalizeUnit — "Rp X M" → "Rp X miliar" (lapis-4 deterministik).
+    // Loop 18 Nov: enforceKeyLevels — S/R salah-digit + relasi SMA terbalik (lapis-7).
     const finalText = linkifyBoldTickers(
-      neutralizeFollowupFraming(ensureAiDisclaimer(normalizeUnit(data.text ?? ""))),
+      neutralizeFollowupFraming(ensureAiDisclaimer(enforceKeyLevels(normalizeUnit(data.text ?? ""), stocks))),
       stocks,
     );
     const payload = {

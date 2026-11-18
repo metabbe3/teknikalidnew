@@ -187,3 +187,152 @@ export function neutralizeFollowupFraming(text: string): string {
     .join("|");
   return `${head}${m[0]}${tail}`;
 }
+
+// ── Loop 18 Nov (lapis-7): enforceKeyLevels ──────────────────────────────────
+// Dua bug eval 18 Nov yang lolos semua guard lama (model tetap bisa salah-tulis
+// angka kritis walau context benar):
+//   (a) digit-drop level kunci: "support 1.350" padahal context Rp3.350;
+//   (b) relasi arah SMA terbalik: "di bawah SMA50 (Rp5.708)" padahal close 5.750.
+// Kelas sama dgn bug sign-flip IHSG 12 Nov: angka berarah harus diverifikasi
+// deterministik dari data server, bukan dipercaya ke model.
+
+export interface KeyLevelDatum {
+  ticker?: string;
+  name?: string;
+  close?: number | null;
+  sma20?: number | null;
+  sma50?: number | null;
+  sma200?: number | null;
+  support1?: number | null;
+  resistance1?: number | null;
+  support?: number | null;
+  resistance?: number | null;
+  [key: string]: unknown;
+}
+
+function parseIdn(raw: string): number | null {
+  const v = parseFloat(String(raw).replace(/\./g, "").replace(/,/g, "."));
+  return Number.isFinite(v) ? v : null;
+}
+
+function fmtRp(v: number): string {
+  return "Rp" + Math.round(v).toLocaleString("id-ID");
+}
+
+const SR_WORD_RE = /\b(support|resistance)\b/gi;
+const IDN_NUM_RE = /(?:Rp\s?)?(\d{1,3}(?:\.\d{3})+|\d{3,7})(?:,\d{1,3})?/g;
+const SMA_REL_RE =
+  /\b(di\s+(?:atas|bawah))\s+(SMA(?:20|50|200))\s*(?:\((?:Rp\s?)?([\d.,]+)\)|(?:Rp\s?)?([\d.,]+))/gi;
+
+/** Batas kalimat: titik di antara dua digit = pemisah ribuan/desimal, BUKAN akhir kalimat. */
+function sentenceSpan(text: string, idx: number): [number, number] {
+  let s = 0;
+  for (let i = idx - 1; i >= 0; i--) {
+    const ch = text[i];
+    if (ch === "\n" || ch === "!" || ch === "?") { s = i + 1; break; }
+    if (ch === "." && !/\d/.test(text[i - 1] ?? "") && !/\d/.test(text[i + 1] ?? "")) { s = i + 1; break; }
+  }
+  let e = text.length;
+  for (let i = idx; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === "\n" || ch === "!" || ch === "?") { e = i; break; }
+    if (ch === "." && !/\d/.test(text[i - 1] ?? "") && !/\d/.test(text[i + 1] ?? "")) { e = i; break; }
+  }
+  return [s, e];
+}
+
+function smaField(smaName: string): "sma20" | "sma50" | "sma200" {
+  return smaName === "SMA20" ? "sma20" : smaName === "SMA50" ? "sma50" : "sma200";
+}
+
+/** (a) Bangun ulang angka support/resistance yang digit-nya korup dari data server. */
+function repairSrDigits(text: string, stocks: KeyLevelDatum[]): string {
+  const hits: Array<{ s: number; e: number; rep: string }> = [];
+  SR_WORD_RE.lastIndex = 0;
+  let m: RegExpExecArray | null;
+  while ((m = SR_WORD_RE.exec(text))) {
+    // jendela kalimat sekitar kata support/resistance (titik-dalam-angka bukan batas)
+    const [sStart, sEnd] = sentenceSpan(text, m.index);
+    const sent = text.slice(sStart, sEnd);
+    // pilih saham utk kalimat ini: ticker disebut eksplisit, atau cuma ada 1 kandidat
+    const mentioned = stocks.filter(
+      (d) =>
+        (d.ticker && sent.toUpperCase().includes(String(d.ticker).replace(/\.JK/i, "").toUpperCase())) ||
+        (d.name && sent.toLowerCase().includes(String(d.name).toLowerCase())),
+    );
+    const d = mentioned.length === 1 ? mentioned[0] : mentioned.length === 0 && stocks.length === 1 ? stocks[0] : null;
+    if (!d) continue;
+    const sup = parseIdn(String(d.support1 ?? d.support ?? ""));
+    const res = parseIdn(String(d.resistance1 ?? d.resistance ?? ""));
+    if (!sup && !res) continue;
+    // angka Rp-prefixed di kalimat = sehat; jadi acuan "dekat"
+    const legit: number[] = (sent.match(/Rp\s?\d[\d.,]*/g) ?? [])
+      .map((w) => parseIdn(w.replace(/^Rp\s?/, "")))
+      .filter((v): v is number => v !== null && v > 0);
+    IDN_NUM_RE.lastIndex = 0;
+    let n: RegExpExecArray | null;
+    while ((n = IDN_NUM_RE.exec(sent))) {
+      const tok = n[0];
+      if (/Rp/.test(tok)) continue; // Rp-prefixed = ditulis sehat
+      const val = parseIdn(n[1]);
+      if (val === null) continue;
+      const after = sent.slice(n.index + tok.length, n.index + tok.length + 2);
+      const before = sent.slice(Math.max(0, n.index - 1), n.index);
+      if (after.startsWith("%") || /^[+\-/]/.test(before)) continue; // persen/skor bertanda
+      if (val >= 1900 && val <= 2099) continue; // tahun
+      if (legit.some((v) => Math.abs(v - val) <= val * 0.12)) continue; // sudah dekat nilai sah
+      // rekonstruksi: SATU nilai S/R konteks di rentang wajar [0.45×, 2.6×]
+      const band = (v: number) => v >= val * 0.45 && v <= val * 2.6;
+      const inSup = sup ? band(sup) : false;
+      const inRes = res ? band(res) : false;
+      const pick = inSup && inRes ? (/resist/i.test(sent.slice(Math.max(0, n.index - 40), n.index)) ? res : sup) : inSup ? sup : inRes ? res : null;
+      if (pick === null) continue;
+      hits.push({ s: sStart + n.index, e: sStart + n.index + tok.length, rep: fmtRp(pick) });
+    }
+  }
+  // dedupe: SR_WORD_RE bisa match beberapa kata di kalimat sama → token sama ter-scan berulang
+  const seen = new Set<number>();
+  for (const h of hits.sort((a, b) => b.s - a.s)) {
+    if (seen.has(h.s)) continue;
+    seen.add(h.s);
+    text = text.slice(0, h.s) + h.rep + text.slice(h.e);
+  }
+  return text;
+}
+
+/** (b) Relasi close-vs-SMA ditegakkan dari angka: "di bawah SMA (RpX)" padahal close > X → dibalik. */
+function fixSmaRelations(text: string, stocks: KeyLevelDatum[]): string {
+  const fixes: Array<{ s: number; e: number; rep: string }> = [];
+  SMA_REL_RE.lastIndex = 0;
+  let m: RegExpExecArray | null;
+  while ((m = SMA_REL_RE.exec(text))) {
+    const rel = m[1].toLowerCase();
+    const smaName = m[2];
+    const val = parseIdn(m[3] ?? m[4] ?? "");
+    if (val === null || val <= 0) continue;
+    // ground ke saham yang SMA-nya cocok dgn angka disebut (aman utk jawaban compare 2 saham)
+    const d = stocks.find((s) => {
+      const sv = Number((s as Record<string, unknown>)[smaField(smaName)]);
+      return Number.isFinite(sv) && sv > 0 && Math.abs(sv - val) <= val * 0.005;
+    });
+    if (!d) continue;
+    const close = Number(d.close);
+    if (!Number.isFinite(close) || close <= 0) continue;
+    if (Math.abs(close - val) <= val * 0.005) continue; // sekitar sama → biarkan
+    const closeAbove = close > val;
+    if (rel.includes("bawah") && closeAbove) fixes.push({ s: m.index, e: m.index + m[1].length, rep: "di atas" });
+    else if (rel.includes("atas") && !closeAbove) fixes.push({ s: m.index, e: m.index + m[1].length, rep: "di bawah" });
+  }
+  for (const f of fixes.sort((a, b) => b.s - a.s)) {
+    text = text.slice(0, f.s) + f.rep + text.slice(f.e);
+  }
+  return text;
+}
+
+export function enforceKeyLevels(text: string, data: unknown): string {
+  if (!text) return text;
+  const stocks: KeyLevelDatum[] = Array.isArray(data) ? (data as KeyLevelDatum[]) : data ? [data as KeyLevelDatum] : [];
+  let out = repairSrDigits(text, stocks);
+  out = fixSmaRelations(out, stocks);
+  return out;
+}
