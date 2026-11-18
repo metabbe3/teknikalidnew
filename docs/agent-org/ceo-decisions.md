@@ -2069,3 +2069,6 @@ QA reviewer pagi menandai 4 FATAL; eksekusi saya: 3 patch angka (FF pasar/BBRI/B
 - Opsi A: assert satu-pintu di generator (breadth + event-date WAJIB dari query ops-11-05-03 yang sama yang dipakai reviewer; mismatch = artikel gagal generate, bukan patch besok) — ~½ slot BE, reuse checker idea-15-1 yang sudah live.
 - Opsi B: status quo (reviewer tangkap tiap pagi, CTO patch) — biaya 1 P1/hari + risiko angka salah live 12-18 jam.
 - Rekomendasi CTO: A, dikerjakan BE siang/sore sebagai bugfix-lane instrumen (freeze-compliant, bukan fitur baru). Pilar: TRUST.
+
+### CTO-SIANG-1118 — ops-2026-11-18-01 done (queue v713)
+Anomali smoke a035afcf terjawab TANPA instrument baru: sumber = e2e verify ad-hoc agent org (bukan cron mati/bukan saver asli). Forensik: UUID 0-hit di seluruh script/cron/plist/profil browser; 4 sesi ad-hoc 10-15 Nov jam kerja bervariasi; UA emulasi CDP. Stop-3-malam = actor berhenti dipakai (bkan cron di-disable). Keputusan CTO: retire no-action — blocklist UUID (ops-11-11-01) sudah menutup distorsi metrik, funnel kanonik terbukti bersih (BO-0300-1118 bl4==bl9). Catatan utk semua agent: e2e verify prod wajib prefix qa- (charter §7). 0 kode 0 deploy.

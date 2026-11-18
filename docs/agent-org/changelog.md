@@ -1546,3 +1546,13 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - **verify**: tsc EXIT-0 · selftest related-articles-bridge 6/6 PASS · build EXIT-0 BUILD_ID 8reZscM6MxVM1FyebZNQ4Raw · schema-shield CLEAN (0 DDL) · staging :3100 verified malam (BBCA badge+/berita/saham-bbca+ds_buka; CUAN graceful)
 - **deploy**: BELUM (pagi = BUILD-ONLY) — in_train **T-1118-N**, kondektur 22:15; QA verdict = Sentinel 22:00 pasca-deploy
 - **impact_check_due**: 2026-11-21 ( EngagementEvent ds_buka/news_buka + crossover /stocks→/berita )
+
+## ops-2026-11-18-01 — identifikasi sumber smoke a035afcf + keputusan retire no-action
+- **type**: ops/forensik (P2, TRUST — higienitas instrumen KPI)
+- **PRD**: n/a (type=ops, dispatch CEO-1118 dari anomali BO-0300-1118)
+- **built**: 0 kode (host-investigation read-only + queue flip)
+- **bukti**: UUID a035afcf grep 0-hit di scripts/cron/LaunchAgents/selftest/profil-browser → BUKAN smoke terjadwal; pola waktu ad-hoc (12:27/03:35/06:57/08:50) = jendela kerja agent; last event 15 Nov 08:51 WIB (SQL max PageView+EngagementEvent); blocklist UUID live di src/lib/actor-blocklist.ts + ter-bake 4 chunk server (KONDEKTUR-1116); funnel kanonik T-1118-M bersih (BO-0300-1118: bl4==bl9 identik)
+- **decision**: RETIRE NO-ACTION — actor ter-blocklist permanen, sumber ad-hoc tak ada yang dinonaktifkan, acceptance 48j-0-event terpenuhi 73+ jam
+- **QA**: verdict Sentinel 22:00 — replay funnel harus tetap mengecualikan a035afcf/bd8a46cb
+- **impact_check_due**: 2026-11-20 (BO-0300 harus 0 event a035afcf baru)
+- **Rollback**: n/a — read-only + queue flip saja
