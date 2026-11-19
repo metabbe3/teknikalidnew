@@ -77,6 +77,7 @@ import { BouncerHook } from "@/components/stock/bouncer-hook";
 import { StrongerPeersStrip } from "@/components/stock/stronger-peers-strip";
 import { StockAiPromptChips } from "@/components/stock/stock-ai-prompt-chips";
 import { UhuStockTrigger } from "@/components/uhu/uhu-provider";
+import { WatchTelegramButton } from "@/components/telegram/watch-button";
 import { AlertTriangle, Banknote, MessageCircle, Newspaper, Star } from "lucide-react";
 
 // ponytail: page is per-request SSR (auth-gated data varies by session — can't be SSG).
@@ -1353,15 +1354,13 @@ export default async function StockDetailPage({
         <section className="bg-bg-card rounded-xl border border-border p-5 space-y-2" aria-label="Pantau via Telegram">
           <h2 className="font-serif text-base font-semibold text-text-primary">Pantau {ticker.replace(/\.JK$/, "")} tiap hari</h2>
           <p className="text-sm text-text-secondary">Dapatkan ringkasan harga &amp; sinyal langsung di Telegram setelah pasar tutup — tanpa perlu login.</p>
-          <a
-            href={`https://t.me/TeknikalidAgentBot?start=${encodeURIComponent(ticker.replace(/\.JK$/, "") + "_JK")}`}
-            data-engagement="tg_pantau_kartu"
-            target="_blank"
-            rel="noopener noreferrer"
+          <WatchTelegramButton
+            ticker={ticker}
+            engagement="tg_pantau_kartu"
             className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="h-4 w-4 shrink-0"><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/><path d="M10.268 21a2 2 0 0 0 3.464 0"/></svg>Pantau via Telegram
-          </a>
+          </WatchTelegramButton>
         </section>
 
         {/* Chart — free for everyone (hybrid freemium). Anon fetches via API, range-clamped to ~90d; the OHLC series is still never SSR-embedded. */}
@@ -1664,17 +1663,17 @@ export default async function StockDetailPage({
             <p className="text-xs text-text-secondary">
               Pantau sinyal teknikal dan pergerakan {stripJk(ticker)} secara instan.
             </p>
-            <a
-              href={`https://t.me/TeknikalidAgentBot?start=web_${stripJk(ticker)}`}
-              target="_blank"
-              rel="noopener noreferrer"
+            <WatchTelegramButton
+              ticker={ticker}
+              engagement="tg_tanya_faq"
+              startParam={`web_${stripJk(ticker)}`}
               className="inline-flex min-h-11 sm:min-h-0 items-center justify-center gap-2 rounded-lg border border-border bg-bg-secondary px-4 py-2 text-xs font-semibold text-text-secondary hover:border-accent/40 hover:text-accent hover:bg-bg-hover transition-colors shrink-0"
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" className="text-accent shrink-0" aria-hidden="true">
                 <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.121l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.196 1.006.128.832.922z" />
               </svg>
               <span>Tanya posisi {stripJk(ticker)} ke TeknikalAgent</span>
-            </a>
+            </WatchTelegramButton>
           </div>
         </section>
 

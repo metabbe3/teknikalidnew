@@ -521,10 +521,10 @@ src/app/api/agent/membership/route.ts:8:export async function GET() {
 src/app/api/agent/trial-start/route.ts:10:export async function POST() {
 src/app/api/ai/eval/route.ts:83:export async function POST(req → Request) {
 src/app/api/ai/eval/route.ts:9:export const dynamic = "force-dynamic";
-src/app/api/ai/screener/route.ts:187:export async function POST(req → NextRequest) {
+src/app/api/ai/screener/route.ts:188:export async function POST(req → NextRequest) {
 src/app/api/ai/stock/context.ts:16:export async function buildStockAiContext(ticker → string): Promise<Record<string, unknown>> {
-src/app/api/ai/stock/route.ts:122:export interface StockAiContext {
-src/app/api/ai/stock/route.ts:149:export async function POST(req → NextRequest) {
+src/app/api/ai/stock/route.ts:123:export interface StockAiContext {
+src/app/api/ai/stock/route.ts:150:export async function POST(req → NextRequest) {
 src/app/api/articles/route.ts:6:export const dynamic = "force-dynamic";
 src/app/api/articles/route.ts:8:export async function GET(request → NextRequest) {
 src/app/api/auth/register/route.ts:14:export async function POST(request → NextRequest) {

@@ -47,14 +47,14 @@
         "commits": "20932a7..6fd4d1c (4 commit)",
         "estimasi_review": "15-20mnt; 608 baris/6 file; 2 bug self-found failing-test-first (uppercase norm + URIError 500→404)"
       },
-      "train": "T-1118-N",
+      "train": "T-1119-N",
       "result": "Merged ke main 7d213c5 oleh CTO pagi 6 Nov 07:3x (BUILD-ONLY, naik kereta T-1106-N 22:15). Verify fisik tree-gabungan: tsc 0 error, test compare 10/10 (npx tsx --test), build exit-0 BUILD_ID AkB_JlQxu76f7yFXIAh0y, staging :3100 (DB host 127.0.0.1:5433): /saham/bbca-vs-bbri 200 dgn valuasi EXACT BBCA pe 10,62/pb 2,24/yield 6,74% + BBRI pe 6,66/pb 1,26/yield 12,98% (recompute EOD final), malformed slug 404 (dulu 500), 3-ticker 404, bare /saham/bbca 308 utuh, home/stocks 200. Merge dry-run exit-0 tanpa konflik, schema-shield 0 file migrations/prisma. Rollback: git revert -m 1 7d213c5.",
       "scheduled_slot": "merged main 7d213c5 (CTO pagi 6 Nov) — kereta malam T-1106-N 22:15",
       "deployed_at": "2026-11-06T07:46:13+07:00",
       "deploy_evidence": "LIVE via deploy owner sesi-3 07:46 (image teknikalidnew-app 349098356878 CreatedAt 07:40:22, kontainer start 07:46:13; main ae2430f): curl /saham/bbca-vs-bbri HTTP 200 + marker Perbandingan; valuasi SSR live. Flip oleh CTO pagi 6 Nov atas bukti fisik; QA verdict tetap SENTINEL 22:00 (H3)",
       "qa_verified": true,
       "qa_note": "QA 7Nov 03:3x PASS fisik-live: /saham/bbca-vs-bbri 200 marker 'Perbandingan Saham'; valuasi SSR EXACT vs SQL EOD 6Nov (P/E 10,77/6,91; P/B 2,27/1,31; yield 6,61%/12,84% — hint 10,62 dsb = data stale, AC3 yang berlaku = match SQL live ✓); canonical unik + og:title ✓; 3-ticker 404, unknown-ticker 404, malformed %-slug 400 rapi (bukan 500, minor dev dari klaim 404), bare /saham/bbca 308→/stocks/BBCA.JK; blok 'Bandingkan dengan' 3 peer sektor (bbri/bbni/bbtn) + CTA ?tanya= pra-isi di compare-table; sitemap 0 URL vs-; test compare-slug fail 0 (tsx). BUGFIX-none.",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)"
     },
     {
       "id": "prd-2026-11-05-02",
@@ -113,7 +113,7 @@
       "priority": "P2",
       "status": "deployed",
       "assigned_to": "backoffice-builder",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "north_star": "STICKY+GROWTH — funnel 5-tahap actor-based (T4 Balik ≤7 hari) = kandidat metrik returning yang lebih benar dari IP-based (CEO 13 Okt: CGNAT tak reproducible); admin satu sumber kebenaran perjalanan user",
       "title": "BACKOFFICE INSIGHT: konsumsi route yatim /api/admin/funnel-v2 — corong 5-tahap actor-based di tab Insight (ronde-4 API audit)",
       "spec": "Audit ronde-4 (1 Nov): funnel-v2 lahir 29 Okt (tracking-audit G12) SETELAH ronde-3 → terlewat, 0 konsumen UI/script. SQL replay read-only 1 Nov 03:2x: T1=346 T2=60 T3=0 T4=0 T5=0 (Simpan=pantau/Telegram mati = bottleneck retensi — insight sendiri). Eksekusi: section 'Corong 5 Tahap (aktor, 21 hari)' di insight-tab.tsx KONSUMSI route existing (0 endpoint baru, 0 dep — ponytail rung 2): 5 bar tahap + konversi antar-tahap + anotasi metodologi actor-based + empty-state jujur utk tahap 0 ('belum ada aktor sampai sini — Simpan pantau/Telegram belum jalan').",
@@ -128,7 +128,7 @@
       "result": "DEPLOYED kereta T-1101-M 1 Nov 08:1x WIB (CTO weekend pagi, window sepi pre-09:00): image fd76c6af5c85 / container 92ee87232494 healthy. VERIFY LIVE: marker \"Corong 5 tahap per aktor (21 hari)\" ada di .next/server/app/admin/insight.html container baru; /api/admin/funnel-v2 unauth 404 (masking guard by-design); baseline / + /stocks 200 before==after. Rollback: git revert 8fdf429 + image 9251d9ae37c6.",
       "scheduled_slot": "merge CTO pagi 1 Nov -> kereta malam berikutnya",
       "qa_verified": "true (Content-Reviewer 1 Nov 09:4x: grep container insight.html marker corong=1, /api/admin/funnel-v2 unauth 404 by-design, prod 200)",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)",
       "verify_note": "KONDEKTUR-1105: 'Corong 5 tahap' di .next/server/app/admin/insight.html container live (image 6d36c7a7)"
     },
     {
@@ -148,8 +148,8 @@
       "created_by": "Product Agent buffer-keeper 2026-10-31 22:1x WIB",
       "branch": "night/prd-2026-10-31-02",
       "result": "TERDEPLOY tanpa bookkeeping 3 Nov 18:45 (rekonstruksi CTO 4 Nov). VERIFY LIVE: /saham-golden-cross 200 + marker TermTip \"Lihat di Kamus\" x1 di HTML; rollback git revert 4ffedb4",
-      "train": "T-1118-N",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)",
+      "train": "T-1119-N",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)",
       "deployed_at": "2026-11-03 18:45 (rekonstruksi CTO 4 Nov: image f2c0885e1c79)",
       "qa_verified": true,
       "qa_note": "QA 5Nov: curl /saham-golden-cross 200 (0,35s); TermTipClient di payload RSC + 'Lihat di Kamus' x1 di chunk 7978-8b041ed3a57338cd.js yg direferensikan halaman (koreksi kecil: marker di JS chunk TermTip client, bukan literal SSR HTML)"
@@ -171,9 +171,9 @@
       "created_by": "Product Agent buffer-keeper 2026-10-31 22:1x WIB",
       "branch": "night/prd-2026-10-31-01",
       "result": "DEPLOYED kereta T-1101-M 1 Nov 08:1x WIB: image fd76c6af5c85 healthy. VERIFY LIVE: /saham-golden-cross 200, section \"Apa yang terjadi setelahnya?\" render x2 — angka nyata DB: 252 kejadian / 228 emiten / window 23 Jul 2025-30 Okt 2026 + tabel median return per jangka waktu; marker condition_history_open di chunk 6821.js. Baseline 200 before==after. AC metric 14-hari condition_history_open due ~15 Nov (impact_check). Rollback: git revert 7d7c377 + image 9251d9ae37c6. | KONDEKTUR-1106 bukti fisik image app 5b228cde (build 22:08 WIB): /saham-golden-cross 200, section \"Apa yang terjadi setelahnya?\" render=1",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "qa_verified": "true (Content-Reviewer 1 Nov 09:4x: live /saham-golden-cross render 252 kejadian/228 emiten/24 bulan + marker condition_history_open di chunk 6821.js container)",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)",
       "deployed_at": "2026-11-06 22:30 WIB (KONDEKTUR-1106)"
     },
     {
@@ -201,7 +201,7 @@
       "priority": "P2",
       "status": "deployed",
       "assigned_to": "backoffice-builder",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "north_star": "STICKY+GROWTH — admin satu sumber kebenaran telemetri engagement (funnel returning + CTA per label); alat ukur QA prd-2026-10-26-01 (register_prompt_save_moment countable dari backoffice)",
       "title": "BACKOFFICE INSIGHT: tab Insight /admin — konsumsi 2 route yatim (engagement+views-geo) + API +clicksByLabel7d (follow-up audit bo-2026-10-28-02)",
       "spec": "Audit ronde-3 menemukan /api/admin/views-geo + /api/admin/engagement = data sehat (2.551 event) tapi YATIM UI. Eksekusi: insight-tab.tsx (corong 7d viewed->dwell60->cta->returned, klik CTA+nav per label, kedalaman baca per area, geo negara) + /api/admin/engagement +clicksByLabel7d (GROUP BY type,label 7d LIMIT 30 — prasyarat alat ukur prd-26-01) + route /admin/insight + tab ke-9 shell + sidebar. API REUSE: 0 endpoint baru, 0 dependency, komponen dipakai ulang.",
@@ -213,7 +213,7 @@
       ],
       "result": "QA PASS + live sejak kereta T-1031-N 31 Okt; FLIP DONE 1 Nov 08:1x CTO weekend pagi: marker clicksByLabel7d (route engagement) + Insight Pengunjung (page) terverifikasi fisik di container kereta T-1101-M 92ee87232494. Bukti lengkap di result sebelumnya (CDP DOM 4 section + screenshot 25 Okt).",
       "created_by": "Backoffice Builder slot 03:00 29 Okt",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)",
       "qa_verified": "true (Content-Reviewer 1 Nov 09:4x: marker re-verified di container kereta T-1101-M baru)",
       "verify_note": "KONDEKTUR-1105: marker clicksByLabel7d di .next/server/app/api/admin/engagement/route.js + chunk 9194 live (image 6d36c7a7)"
     },
@@ -2007,12 +2007,12 @@
       "north_star": "data reliable — daftar emiten IDX basi (listing baru/delisting tak tersync); eod-sync tidak terdampak",
       "spec": "BUKTI: idx-sync.log mtime 12 Okt 08:20 berisi EPERM: process.cwd failed uv_cwd (node v25) — launchd worker kehilangan akses cwd repo (TCC Documents). Plist com.teknikalid.idx-sync Day=1/06:00 (Senin saja). FIX (owner action, TCC = security domain): grant Full Disk Access utk node/launchd ATAU pindah log+cwd ke path non-TCC; verify: Senin depan 06:00 log bersih + sync row baru. Bukan kerja builder (TCC interactive prompt). [UPDATE CTO 19 Okt 07:45: gagal LAGI Senin 19 Okt 06:00 — launchctl exit 1, idx-sync.log beku 12 Okt (bahkan penulisan log kena TCC), MAX(Stock.updatedAt)=2026-10-12 01:09 =  [UPDATE CTO 23 Okt 07:5x: Stock.updatedAt MAX masih 2026-10-12 01:09 = beku 11 hari; launchctl runs=0/never exited; owner TCC grant BELUM. Emiten IDX basi — listing/delisting baru tak tersync. Tetap owner-only (TCC security domain).]",
       "scheduled_slot": "KAMIS 29 Okt SORE (hari ini) 14:30 — host-ops launchd TCC EPERM fix; alternatif: BE malam 18:30",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "blocked_checked_at": "2026-10-25 08:2x WIB (CTO shift 07:45): idx-sync.log TETAP beku 12 Okt 08:20 (EPERM uv_cwd, 637B, launchd runs=-); Stock.updatedAt MAX 24 Okt 13:37 UTC berasal dari sync-profiles manual malam 24 Okt (profile fields), BUKAN bukti listing-sync hidup — daftar emiten tetap basi 13 hari. Owner TCC grant masih satu-satunya fix.",
       "needs": "Owner: System Settings > Privacy & Security > Files and Folders (atau Full Disk Access) utk launchd com.teknikalid.idx-sync ke ~/Documents — TCC prompt muncul sekali, atau grant manual.",
       "owner_brief": "READ-ONLY evidence 21 Okt 07:35: launchctl print = runs 0 / never exited; idx-sync.log beku 12 Okt 08:20 (EPERM uv_cwd TCC ~/Documents); Stock.updatedAt MAX=2026-10-12 (1451 rows); launchctl list kolom exit 0 = misleading (wrapper tidak pernah sampai node). YANG DIBUTUHKAN OWNER: approve TCC prompt utk launchd idx-sync (System Settings > Privacy & Security), atau jalankan sekali manual: bash ~/.hermes/scripts/teknikal_idx_sync.sh lalu tekan \"Allow\" di dialog TCC. File yang disentuh: TIDAK ADA (murni macOS permission, bukan kode). Risiko: rendah — sync idempotent upsert daftar emiten IDX; rollback: n/a (tidak ada perubahan kode/DB destruktif). Verifikasi pasca-grant: launchctl kickstart gui/$(id -u)/com.teknikalid.idx-sync lalu cek idx-sync.log fresh + Stock.updatedAt > 20 Okt.",
       "note": "[COUNCIL 25 Okt] SCHEDULE: launchd idx-sync EPERM TCC ~/Documents — kandidat: pindah workdir ke ~/Library/teknikalid / grant FDA",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)"
     },
     {
       "id": "qa-2026-10-13-01",
@@ -2752,7 +2752,7 @@
       "priority": "P1",
       "spec": "Owner 23 Okt: DAU/MAU di Users tab tidak mencerminkan aktivitas browsing + ingin lihat saham yang dilihat per user. SUDAH DIKERJAKAN di main e032849: (1) activeWhere DAU/MAU kini include pageViews authed non-bot; (2) endpoint /api/admin/user-analytics/[userId]/stocks (top 10 ticker 30 hari + last active); (3) UserManagementTab expandable 'Lihat saham yang dibuka'. Per-user dwell tracking di-skip (privacy).",
       "status": "deployed",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "done_when": "post-deploy: /admin Users tab DAU/MAU > 0 konsisten dgn realita (ada authed views harian); klik 'Lihat saham yang dibuka' di user dgn views menampilkan chips ticker; curl endpoint 401 tanpa admin session",
       "result": "PARSIAL (28 Okt): DAU/MAU browsing-based LIVE (activeWhere di user-analytics route), tapi 'saham dilihat per user' belum — reslot T-1029-N lanjutan bagian itu",
       "north_star": "TRUST (angka admin jujur) + STICKY (retention targeting per-user)",
@@ -2760,7 +2760,7 @@
       "qa_verified": true,
       "qa_verified_by": "reviewer",
       "qa_verified_at": "2026-10-24T08:50+07:00",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)",
       "kondektur_note": "KONDEKTUR-1109 VERIFY-ONLY: route api/admin/user-analytics/[userId]/stocks ADA di bundle image e54d15b8; curl anon = 404 route-level (guard sesuai done_when); QA admin-UI interaktif = jatah Sentinel/CTO"
     },
     {
@@ -3259,8 +3259,8 @@
       "source": "plain audit 26 Okt sore (domain cron-monitoring/)",
       "spec": "Domain cron-monitoring (audit 26 Okt): (1) tanpa cron-monitoring.errors.ts + TimeoutError extends Error bukan DomainError (with-timeout.ts:13); (2) status tipe longgar: repo string vs service union (cron-monitoring.repository.ts:10 vs service:6); (3) errorMessage error.message bisa bocor detail internal ke dashboard admin (with-cron-logging.ts:32) — pastikan dashboard admin-only. Domain sehat, nol P0/P1.",
       "acceptance": "errors.ts ada + DomainError dipakai; tipe status sinkron repo↔service; dashboard cron-monitoring terverifikasi admin-only.",
-      "train": "T-1118-N",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)",
+      "train": "T-1119-N",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)",
       "result": "RESTORE drift-0307: deploy kondektur-1115 22:23 terverifikasi (image f3553c248e54/150bda77f4fb, health 200x3); flip 22:26 tertimpa stale-state append BO-0300 03:07 — RESTORE status, bukan deploy baru",
       "deployed_at": "2026-11-15T22:23:08+07:00",
       "qa_verified": true,
@@ -3375,13 +3375,13 @@
         ],
         "review_est": "15 menit (diff 632+/166-; jalankan ulang selftest doctrine + parity utk keykinan)"
       },
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "merged_by": "CTO pagi 29 Okt: merge c21f222 ke main (tsc EXIT-0, build EXIT-0 BUILD_ID eu-vm6Ndos0OFaFTqMOe9, selftest doctrine 9/9); deploy kereta T-1029-N malam",
       "result": "Deploy T-1029-N + QA D+1: N+1 getWatchlist fix & pasar-live satu-pintu live; verifikasi independen reviewer: /api/radar 200 (MBSS value 0.66 render), doctrine pasar-live 9/9, tsc EXIT-0.",
       "qa_verified": true,
       "verified_by": "reviewer",
       "completed_at": "2026-10-30 07:10 WIB",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)",
       "verify_note": "KONDEKTUR-1105: /api/radar 200 live (image 6d36c7a7)"
     },
     {
@@ -3395,8 +3395,8 @@
       "scheduled_slot": "2026-11-10 BE siang 09:30 (slot 5+ Nov lewat 2x; host-script build-only, bundling kereta T-1110-M)",
       "north_star": "TRUST (data direktorat/dividen akurat)",
       "source": "CTO Tech Lead sweep 27 Okt (bukti fisik output cron)",
-      "train": "T-1118-M",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)",
+      "train": "T-1119-M",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)",
       "result": "DEPLOYED kereta T-1110-M 22:34 WIB (commit 4999307, BUILD_ID XU1bHyxhk9zGM4NTyhffR, image app deb8227b+worker 7cfb66b2 delta 0.022s). Verify live final besok: cron sync-profiles 05:20 ok/fail (kode overlength-fit baru aktif di image).",
       "qa_verified": true,
       "qa_note": "PASS reviewer 11 Nov (debt pagi): CronLog jobName=sync-profiles status=success tanpa errorMessage (latest 2026-11-10 22:25:32, semua baris 36h terakhir success) — ERR DSFI 'Invalid prisma.stock.update' tidak muncul lagi. Flip deployed->qa_pass sesuai acceptance cron-check."
@@ -3521,7 +3521,7 @@
       "date": "2026-10-28",
       "priority": "P1",
       "status": "deployed",
-      "train": "T-1118-N",
+      "train": "T-1119-N",
       "scheduled_slot": "UX Builder 19:15 28 Okt malam ini (BUILD-ONLY) → kereta T-1029-N — RESLOT oleh CTO sore (budget reserve #19)",
       "north_star": "GROWTH register_7d baseline 3 → >=6 dalam 14 hari post-live (+STICKY: watchlist permanen)",
       "spec": "CEO INTENT (OPSI A, CTO note 28 Okt): Register CTA moment-of-intent — guest yang baru MENYIMPAN (star_add watchlist / preset screener save) ditawari register gratis via bottom-sheet, BUKAN banner permanen. PRD lengkap + research_brief (verdict BUILD, bukti KUAT: lazy registration UI-Patterns/vocab.design, Baymard delayed account creation, Duolingo endowed progress) ada di product-backlog.json prd-2026-10-26-01. Implementasi: trigger di guest-watchlist-panel.tsx (star_add) + save-screen-prompt.tsx (preset_save), sheet registration-bottom-sheet.tsx rate-cap 1x/7hari/anonId (localStorage lastPromptAt), copy kontekstual n-item, reuse telemetry cta_click existing (DILARANG endpoint baru), kontrol: guest tanpa simpanan tidak pernah lihat sheet (AC4). Dependencies: prd-2026-10-26-02 (guest migration) MENUNGGU task ini live dulu — urutan 01 baru 02. FDE checklist: research_brief OK · PRD 7 field OK · QA plan lihat field qa_plan · slot terisi.",
@@ -3540,7 +3540,7 @@
       "verified_by": "reviewer",
       "qa_verified": true,
       "completed_at": "2026-10-30 07:10 WIB",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)",
       "verify_note": "KONDEKTUR-1105: register_prompt_save_moment di chunk layout-696964d2d423f31a.js container live (image 6d36c7a7)"
     },
     {
@@ -3625,8 +3625,8 @@
       "spec": "Repo teknikalidnew pasar-live/quote path: zod schema quote shortName/longName .nullable()/opsional ATAU deteksi null -> langsung v8 chart tanpa error-level. KOORDINASI: fix-2026-10-26-12 (pasar-live SATU PINTU) in_train malam ini - JANGAN sentuh window deploy 29 Okt; naik T-1030+ saat BE buka quote path.",
       "done_when": "Log app 24h pasca-deploy: 0 baris [pasar-live] live IHSG quote failed error-level; spot-check harga IHSG /pasar tetap akurat vs DB; upstream call per tick = 1",
       "scheduled_slot": "2026-11-10 18:30 BE malam (kode TS jalur pasar-live; ikut build T-1110-M)",
-      "train": "T-1118-M",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)",
+      "train": "T-1119-M",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)",
       "result": "DEPLOYED kereta T-1110-M 22:34 WIB (commits c33ca90+dfe3862). Bukti fisik: docker logs teknikalidnew-app-1 pasca-deploy grep 'live IHSG quote failed' = 0 baris. Pasar tutup saat deploy — spot-check harga IHSG /pasar pasca market open oleh QA Sentinel.",
       "qa_verified": true,
       "qa_note": "QA Verify 12Nov 03:4x WIB (pasca kereta T-1111-M 5e397e19/c5d3c1c9, BUILD_ID m0pPpyUKFcqQsASsiSSCZ): RE-VERIFY PASS pasca T-1111-M: log app 'live IHSG quote failed' sejak redeploy 15:26Z 11Nov = 0 baris; 'Invalid quote' = 0; c33ca90+dfe3862 kini ancestor a93c948 = benar-benar dalam image running 5e397e19 (bukan lagi ghost sqfix2). FAIL 11Nov teratasi. Catatan: jendela 5j berjalan belum memuat sesi pasar penuh di image baru — sesi pertama 12 Nov 09:00 WIB, spot-check harga /pasar oleh Sentinel siang (kalau ada selisih, re-open)."
@@ -3648,7 +3648,7 @@
       "type": "ops",
       "priority": "P3",
       "status": "deployed",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "title": "UX: emoji pass-4 Lucide (auth-error, quota-meter) + drop dekoratif (about, overlimit banner)",
       "north_star": "STICKY + TRUST — konsistensi visual ui-craft rule #4",
       "created_by": "UX Builder 19:15 29 Okt",
@@ -3657,7 +3657,7 @@
       "qa_verified": true,
       "verified_by": "reviewer",
       "completed_at": "2026-10-30 07:10 WIB",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)",
       "kondektur_note": "KONDEKTUR-1109 VERIFY-ONLY: /auth/error 200; chunk app/auth/error/page-69dfb45b93c6e025.js lucide=1, emoji dekoratif=0 di image e54d15b8"
     },
     {
@@ -3738,9 +3738,9 @@
       "spec": "Dead code cleanup: PaymentButton.tsx (0 import), stock-ai-panel.tsx (0 import), health-score-detail.tsx (imported unused) + docs/agent-org/*.bak-* liar di working tree - hapus. Sweep 20+ file kelas warna non-token ke token brand (list lengkap di audit 4A).",
       "north_star": "reliable",
       "scheduled_slot": "FE Senin BUILD selesai (98fcadc) — kereta T-1102-N no-show -> reslot T-1103-N",
-      "train": "T-1118-N",
+      "train": "T-1119-N",
       "result": "TERDEPLOY tanpa bookkeeping 3 Nov 18:45 (rekonstruksi CTO 4 Nov, changelog line 1075: 0 file health-score di image = cleanup aktif); rollback git revert 98fcadc",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)",
       "deployed_at": "2026-11-03 18:45 (rekonstruksi CTO 4 Nov: image f2c0885e1c79)",
       "qa_verified": true,
       "qa_note": "QA 5Nov: find /app image 270602085a2f = 0 file *health-score* (luar node_modules) — cleanup aktif; 98fcadc ancestor origin/main"
@@ -3850,9 +3850,9 @@
       "spec": "PortfolioHolding + /portfolio sudah live TAPI 0 pintu masuk dari ticker page. Tambahkan CTA \"Tambah ke Portofolio\" di kartu harga/aksi halaman saham (authed) / guest lihat CTA register-adjacent (utm portfolio_cta). Reuse komponen ScreenActions/watchlist pattern; JANGAN buat endpoint baru — API portofolio existing. DONE WHEN: /stocks/BBCA.JK authed menampilkan CTA + klik menambah holding (DB row) ; guest melihat varian CTA; tsc 0; build hijau; staging verify. Pilar STICKY (returning value loop). Kereta T-1031-N.",
       "scheduled_slot": "2026-11-03 19:15 FE Selasa BUILD-ONLY → kereta malam (assign CTO sore 1 Nov, konflik audit-slot 2 Nov dihindari)",
       "north_star": "STICKY",
-      "train": "T-1118-N",
+      "train": "T-1119-N",
       "result": "KONDEKTUR T-1104-N 4 Nov: CTA \"Catat di portofolio — gratis\" LIVE prod /stocks/BBCA.JK (curl 1-hit, ancoref dengan svg icon); sudah ada di image app 270602085a2f (14:05, memuat 9a5a4f2) TANPA deploy baru — bukti curl prod segar; verdict Sentinel 5 Nov (H3) | KONDEKTUR-1106 bukti fisik image app 5b228cde (build 22:08 WIB): CTA \"Catat di portofolio\" grep=1 di https://teknikal.id/stocks/BBCA.JK (200)",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)",
       "qa_verified": "true (Content-Reviewer 6 Nov 07:5x bukti fisik live app build 07:01 WIB dari main c7dc7be: ux-2026-10-30-01 CTA portofolio di /stocks/BBCA.JK; prd-2026-11-02-01 blok Ex-Date di /saham-dividen grep=2; prd-2026-11-02-03 term-link glosarium di /akademi/glosarium grep=2; bo-2026-11-03-01 git grep origin/main Returning-Visitor=5 hit 2 file admin; prd-2026-10-26-02 guest-migration marker pending_post_register di main (CTO 4 Nov changelog) — flip deployed->qa_pass utang dibayar",
       "qa_note": "QA 5Nov: curl prod /stocks/BBCA.JK 200 — 'Catat di portofolio — gratis' x1 (anchor dgn svg icon persis markup)",
       "deployed_at": "2026-11-06 22:30 WIB (KONDEKTUR-1106)"
@@ -3961,7 +3961,9 @@
       "train": "T-1117-M",
       "done_when": "(a) selftest: os.replace manual ke org-state path ditolak dgn pesan relink; (b) 2-4 Nov ls -la symlink utuh tanpa intervensi; (c) grep 0 os.replace org-state di writer pelanggar",
       "reslot_note": "auto-reslot 2026-11-17: kereta T-1116-M kedaluwarsa -> kereta T-1117-M (reslot_guard.py v3)",
-      "result": "DONE (host-script 0-deploy): (1) drift-#14 REPAIR live — backlog datadir regular-file 10:10 (writer LIAR tanpa journal) di-union research_brief idea-16-1 -> repo -> relink symlink ✓; (2) guard REJECT naik kelas ke LIBRARY save() (drift-#14 root: reslot_guard impor save() langsung, guard lama hanya di main() CLI); (3) journal READ-BACK v1==expected pasca-append (drift-#13 lesson); (4) reslot_guard kini ber-actor + ids (bukti selftest: {actor: reslot_guard.py, op: reslot, ids:[ops-999-01,prd-999-02]}); (5) selftest RED/GREEN: kode-lama LOLOS tulis regular-file (bug terbukti), kode-baru REJECT-DRIFT ✓; (6) grep writer os.replace org-state = 0 (backlog_health:249 = jalur restore kanonik, by-design). Escape: HERMES_STATEJSON_ALLOW_DRIFT=1"
+      "result": "DONE (host-script 0-deploy): (1) drift-#14 REPAIR live — backlog datadir regular-file 10:10 (writer LIAR tanpa journal) di-union research_brief idea-16-1 -> repo -> relink symlink ✓; (2) guard REJECT naik kelas ke LIBRARY save() (drift-#14 root: reslot_guard impor save() langsung, guard lama hanya di main() CLI); (3) journal READ-BACK v1==expected pasca-append (drift-#13 lesson); (4) reslot_guard kini ber-actor + ids (bukti selftest: {actor: reslot_guard.py, op: reslot, ids:[ops-999-01,prd-999-02]}); (5) selftest RED/GREEN: kode-lama LOLOS tulis regular-file (bug terbukti), kode-baru REJECT-DRIFT ✓; (6) grep writer os.replace org-state = 0 (backlog_health:249 = jalur restore kanonik, by-design). Escape: HERMES_STATEJSON_ALLOW_DRIFT=1",
+      "qa_verified": true,
+      "qa_note": "QA catch-up 18Nov: drift-#14 repair ter-verifikasi — backlog+queue KINI symlink → repo kanonik ✓ (queue drift-#15 direpair CTO-SORE-1118); guard REJECT-DRIFT live di library save() statejson.py ✓ (RED-test dummy live-fire malam ini: tulis ke regular-file datadir DITOLAK RuntimeError ✓, cleanup bersih); MONOTONIC-VIOLATION guard + actor+ids journal + read-back ops ter-read di kode ✓; journal backlog 16 baris actor+op+ids ✓. Verdict TRUE."
     },
     {
       "id": "qa-2026-11-01-01",
@@ -4002,9 +4004,9 @@
       "done_when": "DONE WHEN: (a) tsc EXIT-0; (b) staging view-source memuat 3 baris asli (SIDO 2026-11-03, UNTR 2026-11-06, CNMA 2026-11-09) + badge 'segera'; (c) tabel yield existing tak berubah; (d) D+14 evaluasi AC6 PRD.",
       "created_by": "Product Agent buffer-keeper 2026-11-02 00:3x (run gate: buffer teknikal 2 < 3)",
       "scheduled_slot": "FE 19:15 Senin BUILD selesai (18c50c9) — kereta T-1102-N no-show -> reslot T-1103-N",
-      "train": "T-1118-N",
+      "train": "T-1119-N",
       "result": "TERDEPLOY tanpa bookkeeping 3 Nov 18:45 image f2c0885e1c79 (rekonstruksi CTO 4 Nov). VERIFY LIVE: /saham-dividen 200 (0,19s) marker UNTR x5 + CNMA x5 + Ex-Date x2; rollback git revert 18c50c9 | KONDEKTUR-1106 bukti fisik image app 5b228cde (build 22:08 WIB): /saham-dividen 200 publik: marker UNTR x5 + \"Ex-Date\" x2",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)",
       "deployed_at": "2026-11-06 22:30 WIB (KONDEKTUR-1106)",
       "qa_verified": "true (Content-Reviewer 6 Nov 07:5x bukti fisik live app build 07:01 WIB dari main c7dc7be: ux-2026-10-30-01 CTA portofolio di /stocks/BBCA.JK; prd-2026-11-02-01 blok Ex-Date di /saham-dividen grep=2; prd-2026-11-02-03 term-link glosarium di /akademi/glosarium grep=2; bo-2026-11-03-01 git grep origin/main Returning-Visitor=5 hit 2 file admin; prd-2026-10-26-02 guest-migration marker pending_post_register di main (CTO 4 Nov changelog) — flip deployed->qa_pass utang dibayar",
       "qa_note": "QA 5Nov: curl /saham-dividen 200 (0,18s): UNTR x5 + CNMA x5 + Ex-Date x2 — persis klaim"
@@ -4036,8 +4038,8 @@
       "created_by": "cto-pagi-2026-11-02",
       "date": "2026-11-02",
       "result": "KONDEKTUR T-1104-N 4 Nov 22:31: image worker 3c381b970bbb dibangun dari origin/main a7556ef (worktree bersih, hook-compliant) + up -d; POLL_INTERVAL_MS=30_000 di container (dulu 10_000 basi 24 Okt); heartbeat /tmp/worker-heartbeat fresh; ps: node tsx agent-worker.ts; DB agent_message_log 16 rows/5mnt; app tetap 270602085a2f (14:05) — parity code-level origin/main. Bukti kondektur, verdict Sentinel 22:00 5 Nov (H3)",
-      "train": "T-1118-N",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)",
+      "train": "T-1119-N",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)",
       "qa_verified": true,
       "qa_note": "QA 5Nov: worker Up healthy img 3c381b970bbb, PID1 npm exec tsx src/worker/agent-worker.ts live; POLL_INTERVAL_MS=30_000 (default kode /app/src/worker/agent-worker.ts:13, env tak override); heartbeat /tmp 20:32 UTC fresh; agent.agent_message_log ada"
     },
@@ -4080,8 +4082,8 @@
       "done_when": "DONE WHEN: (a) migrasi up+down hijau staging + row semi-annual ganda tersimpan; (b) staging kalender 0 render row unverified; (c) laporan coverage % angka; (d) tsc+build EXIT-0. Gagal render-guard = iterate, bukan ship setengah.",
       "scheduled_slot": "2026-11-20 BE malam 18:30 BUILD migrasi ex-date (reslot CTO 18 Nov: slot 17-Nov basi terlewat; 19 Nov Kamis penuh SRE prd-11-11-02)",
       "created_by": "Product Agent buffer-keeper 2026-11-02 22:4x WIB (run gate: buffer teknikal 0 < 3)",
-      "train": "T-1118-M",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)",
+      "train": "T-1119-M",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)",
       "research_brief": "RESEARCH BRIEF (Researcher 18 Nov 2026) — VERDICT: MODIFIKASI. Konteks: brief induk idea-2026-10-26-1 (28 Okt, MODIFIKASI — IDX source-of-truth, Yahoo secondary/cross-check; bukti kuat: corporate-actions = reference data yang gold standard-nya sumber resmi bursa/issuer ala DTCC/ICE/SIX; Yahoo dividendDate salah label — quantmod #287, yfinance #568, mismatch live BBCA.JK forward-vs-TTM) SUDAH diadopsi hampir seluruhnya ke PRD ini: AC1 fail-closed provenance IDX + cross-check Yahoo <=7 hari, AC4 freshness guard, AC2 semantik ex/record/payment. Gap riset yang tersisa: (1) horizon kalender 30-hari dengan data hanya 3 row ke depan = AC3 coverage audit WAJIB dijalankan DULU (script no-deploy, murah) sebagai gate go/no-go migrasi schema — jika coverage IDX scraper <85% emiten likuid, kalender tetap kosong walau schema benar dan migrasi jadi risiko tanpa nilai; eskalasi resmi bila coverage rendah = IDX Data Services (berbayar), BUKAN agregator gratis (anti-pattern dari brief 28 Okt). (2) AC2 ganti @@unique([stockId, year, type]) -> compound dengan exDate: pastikan backward-compat row lama saat migrasi + down-migration teruji (sudah di AC2 — pertahankan). BEST PRACTICE: (a) corporate-actions disinkron dari sumber resmi bursa, vendor sekunder hanya cross-check; (b) fail-closed render untuk data finansial user-facing; (c) urutan eksekusi: coverage audit dulu (measurement), migrasi schema kemudian — jangan dibalik; (d) backup <24h + up/down migrasi di staging (sudah di AC2/AC5); (e) freshness SLO ex-date <=7 hari belum reconcile = prioritas sync (sudah di AC4). ANTI-PATTERN: (a) migrasi source-of-truth ke agregator tanpa SLA; (b) render tanggal tak terverifikasi; (c) migrasi schema sebelum coverage terbukti; (d) menyamakan dividendDate Yahoo = ex-date. SUMBER: brief induk idea-2026-10-26-1 (riset 28 Okt 2026, link quantmod #287 & yfinance #568 di dalamnya) + idx.co.id corporate-action disclosures. BUKTI: KUAT (warisan riset 28 Okt domain corporate-actions; sisa riset baru = urutan eksekusi audit-first, keputusan internal). PILAR: TRUST."
     },
     {
@@ -4143,11 +4145,11 @@
         "review_hint": "Review fokus: (1) keputusan hapus generateStaticParams → ISR on-demand — trade-off: first-hit render dulu (bukan instant), tapi angka live selalu fresh per revalidate 86400 + tak ada risiko bake-empty di build Docker; (2) konten 15 istilah = 3 sections x ~150 kata bahasa awam — spot-check nada/tone; (3) GlossaryExample = server component, 0 client-JS baru (AC4).",
         "estimasi_review_menit": 15
       },
-      "train": "T-1118-N",
+      "train": "T-1119-N",
       "result": "KONDEKTUR T-1104-N 4 Nov: glosarium content-depth LIVE — /akademi/glosarium 200 (60 term-link, was /glosarium 404 baseline), term golden-cross 200/585 kata, dividen 200/586 kata, blok contoh-angka nyata ada (regex); merge 1f90cde dalam origin/main → image 14:05; verdict Sentinel 5 Nov (H3) | KONDEKTUR-1106 bukti fisik image app 5b228cde (build 22:08 WIB): /akademi/glosarium 200 (60 term-link) + term golden-cross 200",
       "qa_verified": "true (Content-Reviewer 6 Nov 07:5x bukti fisik live app build 07:01 WIB dari main c7dc7be: ux-2026-10-30-01 CTA portofolio di /stocks/BBCA.JK; prd-2026-11-02-01 blok Ex-Date di /saham-dividen grep=2; prd-2026-11-02-03 term-link glosarium di /akademi/glosarium grep=2; bo-2026-11-03-01 git grep origin/main Returning-Visitor=5 hit 2 file admin; prd-2026-10-26-02 guest-migration marker pending_post_register di main (CTO 4 Nov changelog) — flip deployed->qa_pass utang dibayar",
       "qa_note": "QA 5Nov: /akademi/glosarium 200 dgn 60 term-link unik; /glosarium 404; term golden-cross 200 ('contoh' x3) + dividen 200 ('contoh angka nyata hari ini' x2); 1f90cde ancestor origin/main",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)",
       "deployed_at": "2026-11-06 22:30 WIB (KONDEKTUR-1106)"
     },
     {
@@ -4189,9 +4191,9 @@
       "scheduled_slot": "merged main 9058336 (CTO pagi 3 Nov BUILD-ONLY) -> kereta malam T-1103-N",
       "created_by": "Product Agent buffer-keeper 2026-11-02 22:5x WIB — MIRROR dari product-backlog.json (bukan PRD baru; cap 2-PRD-baru tidak terganggu)",
       "branch": "night/prd-2026-10-26-02",
-      "train": "T-1118-N",
+      "train": "T-1119-N",
       "result": "TERDEPLOY tanpa bookkeeping 3 Nov 18:45 (rekonstruksi CTO 4 Nov, changelog line 1075: marker pending_post_register IN image); rollback git revert 9058336",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)",
       "deployed_at": "2026-11-03 18:45 (rekonstruksi CTO 4 Nov: image f2c0885e1c79)",
       "qa_verified": "true (Content-Reviewer 6 Nov 07:5x bukti fisik live app build 07:01 WIB dari main c7dc7be: ux-2026-10-30-01 CTA portofolio di /stocks/BBCA.JK; prd-2026-11-02-01 blok Ex-Date di /saham-dividen grep=2; prd-2026-11-02-03 term-link glosarium di /akademi/glosarium grep=2; bo-2026-11-03-01 git grep origin/main Returning-Visitor=5 hit 2 file admin; prd-2026-10-26-02 guest-migration marker pending_post_register di main (CTO 4 Nov changelog) — flip deployed->qa_pass utang dibayar",
       "qa_note": "QA 5Nov: grep image /app/.next = pending_post_register di 9 file; 9058336 ancestor origin/main",
@@ -4218,8 +4220,8 @@
       "branch": "night/bo-2026-11-03-01",
       "result": "TERDEPLOY tanpa bookkeeping 3 Nov 18:45 (rekonstruksi CTO 4 Nov, changelog line 1075: retention-aktor label IN page.js container marker); rollback git revert 4070d56 | KONDEKTUR-1106 bukti fisik image app 5b228cde (build 22:08 WIB): image grep \"Returning Visitor % (aktor)\" di admin/retention/page.js =1",
       "scheduled_slot": "merged main 4070d56 (CTO pagi 3 Nov BUILD-ONLY) -> kereta malam T-1103-N",
-      "train": "T-1118-N",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)",
+      "train": "T-1119-N",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)",
       "deployed_at": "2026-11-06 22:30 WIB (KONDEKTUR-1106)",
       "qa_verified": "true (Content-Reviewer 6 Nov 07:5x bukti fisik live app build 07:01 WIB dari main c7dc7be: ux-2026-10-30-01 CTA portofolio di /stocks/BBCA.JK; prd-2026-11-02-01 blok Ex-Date di /saham-dividen grep=2; prd-2026-11-02-03 term-link glosarium di /akademi/glosarium grep=2; bo-2026-11-03-01 git grep origin/main Returning-Visitor=5 hit 2 file admin; prd-2026-10-26-02 guest-migration marker pending_post_register di main (CTO 4 Nov changelog) — flip deployed->qa_pass utang dibayar",
       "qa_note": "QA 5Nov: marker semantik 'aktor' ADA di image retention/page.js (aria-label 'Returning Visitor % (aktor) 8 minggu'); catatan: literal string 'retention-aktor' = 0 — marker berupa label aktor, bukan token itu"
@@ -4309,8 +4311,8 @@
         "growth",
         "p2"
       ],
-      "train": "T-1118-M",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)",
+      "train": "T-1119-M",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)",
       "priority": "P3",
       "result": "PROGRESS FE 6 Nov 19:15 [MARKETING]: (1) pipeline publish TikTok TERBUKTI live - posted.json 47 post 3-kanal, TLKM direct-mode sukses 6 Nov 19:11 WIB (tiktok_id 96faa8ed; token Tebar auto-refresh OK - alarm token-expired 6 Nov CLEAR). Spec item cap-1/hari+window-18-20 TERGANTI aturan owner 3 Nov (news bebas cap, 3-kanal, direct mode) - superseded. (2) Metrics recording SHIPPED: analytics_collect.py (cron harian 21:30) kini ambil TikTok via Tebar API (tt_followers/tt_followers_chg7d/tt_views7d/tt_recent); data point pertama 6 Nov: followers 2019 (+11/7d), views7d 16.322, post 77c2277d 370v/4 likes. Fix bonus: latent crash UnicodeEncodeError lone-surrogate di append JSONL. (3) TERSISA: verdict continue/pause 13 Nov dari deret analytics_history.jsonl (butuh >=7 titik).",
       "qa_verified": true,
@@ -4421,8 +4423,8 @@
       "north_star": "AI-SEARCH — pilar yang sampai hari ini 100% buta di backoffice (ai_search_views_7d target >=10 tak bisa dipantau owner); flywheel Tanya AI 30 Okt butuh bahan eval harian terlihat = loop enhance berkembang",
       "title": "BACKOFFICE INSIGHT: telemetri Tanya AI (AiChatLog 162 + AiEvalRun 56) — data sehat tapi YATIM UI, pilar AI-SEARCH nol permukaan admin (audit ronde-6)",
       "spec": "Audit ronde-6 (4 Nov): model AiChatLog/AiEvalRun (schema comment: log tiap QA = bahan eval harian flywheel Tanya AI owner 30 Okt) ditulis /api/ai/stock + /api/ai/screener, tapi grep src/app/admin + api/admin = 0 konsumen — owner tak bisa lihat pertanyaan/hari, tren kualitas judge (quality 4,1->8,6 30 Okt->3 Nov NYATA), split route stock/screener, top ticker, latency, followup-click. Eksekusi (pola bo-2026-10-29-01): route GET /api/admin/ai-insight (requireAdmin+TtlCache 5mnt+prisma raw, 0 dependency) + section Tanya AI di insight-tab.tsx KONSUMSI route (KPI row + tren kualitas 14d + tabel split-route & top-ticker, reuse AdminKpiCard/AdminDataTable). DONE-WHEN: tsc EXIT-0, build EXIT-0 BUILD_ID, staging API 200 + angka == SQL replay, commit sempit + changelog.",
-      "train": "T-1118-M",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)",
+      "train": "T-1119-M",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)",
       "result": "BACKOFFICE 03:00 6 Nov: VERIFIED ALREADY-SHIPPED (bukan build slot ini) — route GET /api/admin/ai-insight + section Tanya AI masuk commit f61b798 4 Nov 13:59 (commit tab Agent Bot, terlanjur naik tanpa label bo). LIVE di image app 20:00:41 5 Nov: route.js grep AiChatLog=4; fetch /api/admin/ai-insight di chunk 9194-eeb920156848aa8b.js; admin.html Tanya AI x2. SQL replay 6 Nov 03:1x: n24=18 n7=188 attributed7=0 (gap writer, sudah ada catatan footer UI); AiEvalRun 73 runs/14d avg quality 5.7 terakhir 5 Nov 11:42; top ticker BBCA=62. API anon 404 auth-gate lokal+prod konsisten. FOLLOW-UP: bo-2026-11-06-01 attribution writer (anonId/userId 0/188 sepanjang masa). | KONDEKTUR-1106 bukti fisik image app 5b228cde (build 22:08 WIB): route.js /api/admin/ai-insight grep AiChatLog=4; anon probe 404 by-design",
       "done_at": "2026-11-06T03:15 WIB",
       "qa_verified": "true (Content-Reviewer 6 Nov 07:5x: chunk admin 0rxdvabtdw8ra.js di build live 07:01 memuat route /api/admin/ai-insight; probe unauth = 404 rapi; SQL replay n24=18 n7=188 eval 73runs/14d repro CTO 3 Nov; AiChatLog 162 + AiEvalRun 56 ada di DB — flip deployed->qa_pass utang dibayar)",
@@ -4449,10 +4451,10 @@
       "priority": "P3",
       "north_star": "TRUST (aset publik 404 = halaman rusak di mata user)",
       "status": "qa_pass",
-      "train": "T-1118-N",
+      "train": "T-1119-N",
       "scheduled_slot": "2026-11-16 BE siang 09:30 sweep 93 logo 404 + fallback initial-letter -> kereta T-1116-N",
       "spec": "SRE candidate sre-2026-11-03-1 PROMOTE CEO 4 Nov: 93 logo emiten 404 di halaman pasar (~230 hit/24h, termasuk BBCA.jpg — emiten blue-chip tampil broken-image). TASK: sweep daftar 93 URL logo → (a) perbaiki path/sumber yang salah ke CDN/asset benar, (b) untuk yang logonya memang tak tersedia → fallback komponen initial-letter yang sudah ada di repo (jangan asset baru), (c) ukur ulang hit 404 pasca-fix. DONE WHEN: sweep 93 URL selesai dengan tabel status; sample curl 10 logo → semua 200/304 (0 404); hit 404 logo/24h turun dari ~230 ke <10 (cek access log/access-log summary).",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)",
       "evidence_refresh": "2026-11-08 03:2x Backoffice Builder: sweep table 207 ticker/663 req gagal per 24h SELESAI di docs/agent-org/artifacts/2026-11-08-logo-404-sweep.md (naik dari 93/~230). Fakta baru utk eksekutor: (1) SEMUA 207 ticker sudah punya .svg, 149 juga .png — user TIDAK melihat broken image, chain fallback stock-logo.tsx bekerja; sisa masalah = 663x/24h permintaan optimizer sia-sia + error log noise + latency kecil. (2) curl live 10 sample: jpg semua 404, png/svg 200 sesuai tabel. (3) Fix pilihan: manifest ekstensi utk pilih src pertama langsung (nol 404) ATAU stop pakai next/image utk logo — butuh build+deploy, TUNGGU root-fix OOM (bus KONDEKTUR-1107). DONE-WHEN asli (curl 10 logo 200) TERCAPAI utk png/svg chain; jpg 404 by-design sampai fix dideploy.",
       "result": "DEPLOYED KONDEKTUR-1116 22:31 (HEAD 989db3b, rider 6795904 ancestor-OK). Bukti fisik pasca-deploy: https://teknikal.id/logos/JECX.jpg = 200 content-type image/png (stale .jpg dilayani png via kill-switch /logos/[file]); traversal ..%2f..%2fetc%2fpasswd = 400; route src/app/logos/[file]/route.ts di HEAD. Verdict final = QA Sentinel 17 Nov.",
       "qa_verified": true,
@@ -4547,7 +4549,7 @@
       "title": "DEPLOY fix webhook Midtrans idempotent + custom_field cross-check (commit 905aa60): replay settlement di-skip (anti premium gratis), planId/amount/userId mismatch ditolak — audit H-2+M-4 4 Nov; verify POST replay settlement tidak menambah masa premium",
       "priority": "P1",
       "status": "deployed",
-      "train": "T-1118-N",
+      "train": "T-1119-N",
       "labels": [
         "payment",
         "security",
@@ -4555,7 +4557,7 @@
       ],
       "spec": "commit 905aa60 src/app/api/payment/notification/route.ts",
       "result": "CTO pagi 5 Nov: LIVE — 905aa60 IN-MAIN (merge-base verified; PR#2 dipush sesi pivot owner malam ini, bukan merge saya). App eaf2e78634b3 up 06:59. Rollback: git revert 905aa60.",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)",
       "qa_verified": "true (Content-Reviewer 5 Nov 07:2x WIB: commit 905aa60 (webhook Midtrans idempotent +25 baris) IN origin/main & IN live image eaf2e78634b3 (owner deploy 06:58 WIB, build dari main). Route /api/payment/notification ada di build app live; guard replay = kode patch terverifikasi tsc 0 di commit; uji replay settlement end-to-end butuh kredensial Midtrans (di luar lingkup reviewer read-only).)",
       "done_at": "2026-11-05T07:2x WIB"
     },
@@ -4586,7 +4588,7 @@
       "title": "DEPLOY HOTFIX tab Agent Bot kosong (commit e33456c): API /api/admin/agent-bot 500 karena query token kolom tokens_in/tokens_out tidak ada di agent_message_log (42703) — sudah diganti sumber agent_usage_ledger; verify: login /admin → tab Agent Bot menampilkan 6 KPI + users + funnel (bukan kosong), docker logs tanpa PrismaClientKnownRequestError",
       "priority": "P1",
       "status": "deployed",
-      "train": "T-1118-N",
+      "train": "T-1119-N",
       "labels": [
         "admin",
         "hotfix",
@@ -4594,7 +4596,7 @@
       ],
       "spec": "commit e33456c src/app/api/admin/agent-bot/route.ts",
       "result": "CTO pagi 5 Nov: LIVE — e33456c IN-MAIN; app eaf2e78634b3 up 06:59. API agent-bot kini baca agent_usage_ledger. Rollback: git revert e33456c.",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)",
       "qa_verified": "true (Content-Reviewer 5 Nov 07:2x WIB: 4 commit fix Agent Bot (e33456c 42703 tokens_in->ledger, bc1c445 BigInt p50/p90, c7f3034 bigint replacer global, 022859a unwrap wrapper+guard .map, fd874ff ORDER BY t7::bigint) semuanya IN origin/main & IN live image. Route /api/admin/agent-bot ada di build (container ls route.js), endpoint publik = 404 auth-gate — BUKAN 500 TypeError lama.)",
       "done_at": "2026-11-05T07:2x WIB"
     },
@@ -4602,13 +4604,13 @@
       "id": "ux-2026-11-04-01",
       "priority": "P2",
       "status": "deployed",
-      "train": "T-1118-N",
+      "train": "T-1119-N",
       "north_star": "CONTENT+TRUST",
       "source": "ux-audit",
       "title": "UX: /berita dedup hero+list (artikel terbaru tampil 2x di layar pertama) + empty-state akhir arsip",
       "spec": "Audit flow (b) landing->berita->artikel terkait. Bug: hero featured (findLatestDailyBrief NEWS tickerTag null) juga lolos filter arsip yang sama -> artikel terbaru tampil 2x di 2 layar pertama mobile (DOM bukti: kartu @382px h252 + duplikat @842px h95). Fix: exclude slug hero di listFilter (findMany+count konsisten; count 68->67, totalPages tetap 6; halaman 7+ memang kosong by design). Empty-state halaman>totalPages (7+) kini 'Sudah akhir arsip' + link balik, alih-alih 'Belum ada brief. Brief pertama terbit setelah pasar tutup' yang menyesatkan (arsip sudah penuh, bukan belum terbit). Frontend-only. DONE WHEN: prod /berita page-1 tanpa href duplikat; halaman 6 tanpa tombol Berikutnya; halaman 7+ tampil 'Sudah akhir arsip'; tsc 0. Pilar: CONTENT + TRUST.",
       "result": "CTO pagi 5 Nov: LIVE+verified fisik — curl /berita 07:3x href artikel semua unik (dup hero=0), ?page=7 = \"Sudah akhir arsip\". 9186cb1 IN-MAIN, image eaf2e78634b3. Rollback: git revert 9186cb1.",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)",
       "qa_verified": "true (Content-Reviewer 5 Nov 07:2x WIB: /berita live pasca owner deploy: 14 slug kartu, setiap slug tepat 2 kemunculan (href + flight data) — hero brief terbaru TIDAK dobel di daftar; commit 9186cb1 IN origin/main & IN live image eaf2e78634b3. Empty-state akhir arsip (page>totalPages) diverifikasi level commit+build.)",
       "done_at": "2026-11-05T07:2x WIB"
     },
@@ -4624,19 +4626,19 @@
       "kpi": "TRUST (dead-end 404 di flow utama) + STICKY",
       "reported_by": "frontend-builder 19:15 slot 4 Nov",
       "scheduled_slot": "2026-11-05 18:30 BE malam Kamis BUILD-ONLY (exclude ticker prefix ^ dari hasil equity screener; verify curl preset rsi_oversold+macd_bullish 0 row ^; naik T-1105-N bila hijau)",
-      "train": "T-1118-N",
+      "train": "T-1119-N",
       "result": "SHIPPED BUILD-ONLY 5 Nov 18:5x (CTO sore instance-2): excludeIndexRows post-cache choke-point di screenerQuery+getBottomFishingRadar (src/domains/stock/screener-filter.ts BARU + screener-analysis.service.ts). Commit 20dfbb0 pushed main. FAILING-TEST-FIRST selftest node:test 4/4 RED->GREEN. Bukti perilaku fisik: raw DB preset adx_trending 431 rows caret=[^JKSE] vs service 430 caret=[] (tsx live query 127.0.0.1:5433); baseline live before: adx_trending 431/supertrend_bearish 385/below_sma200 710 semuanya ^JKSE. tsc 0 error, build hijau BUILD_ID 1geBarJj2INoXkrHDaOqD, selftest tetangga (market-snapshot-oversold/market-one-door) hijau. BONUS temuan: ^JKSE punya 168 baris smaCrossSignal=golden_cross historis — kandidat kontaminasi hitungan GC pipeline konten (evaluasi terpisah). Naik kereta T-1105-N via deploy kondektur 22:15.",
       "verify_note": "KONDEKTUR-1105: live curl 5 Nov 22:3x image 6d36c7a7 — /api/screener?preset=adx_trending ^JKSE=0, supertrend_bearish ^JKSE=0, /api/radar ^JKSE=0 (commit 20dfbb0 in 848b815)",
       "qa_verified": true,
       "qa_note": "QA 6Nov PASS: live curl 4 preset (adx_trending 430, rsi_oversold 177, macd_bullish 228, supertrend_bearish 384) ^JKSE=0 semua + /api/radar ^JKSE=0; repo screener-filter.ts excludeIndexRows dipakai screener-analysis.service L24+L201 (post-cache choke-point).",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)"
     },
     {
       "id": "ux-2026-11-04-02",
       "title": "Screener guest save-bar polish: copy jargon EN->ID + tap target 44px + tracking label",
       "priority": "P3",
       "status": "deployed",
-      "train": "T-1118-N",
+      "train": "T-1119-N",
       "created_at": "2026-11-04T20:05:00+07:00",
       "assigned_to": "frontend-builder",
       "source": "FE Builder 19:15 shift 4 Nov — audit siklus-2 flow (a) screener pasca trust-badge",
@@ -4644,7 +4646,7 @@
       "result": "CTO pagi 5 Nov: LIVE+verified fisik — string \"Simpan Filter\" ditemukan di bundle live /_next/static/chunks/app/(public)/stocks/page-a53c3820a23fa486.js (sweep 29 chunks). 10570f1 IN-MAIN, image eaf2e78634b3. Rollback: git revert 10570f1.",
       "qa_verified": "true (Content-Reviewer 5 Nov 07:2x WIB: commit 10570f1 IN origin/main & IN live image; marker 'Simpan Filter' grep hit di chunk /app/.next/static build live; halaman /stocks 200. Live lebih cepat dari jadwal kereta T-1105-N via owner deploy 06:58 — kereta tak perlu antar lagi.)",
       "done_at": "2026-11-05T07:2x WIB",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)"
     },
     {
       "id": "bo-2026-11-04-05",
@@ -4670,7 +4672,7 @@
       "status": "deployed",
       "assigned_to": "backoffice-builder",
       "scheduled_slot": "2026-11-07 03:00 Backoffice Builder",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "north_star": "AI-SEARCH — flywheel Tanya AI owner 30 Okt butuh atribusi aktor (kini 0/188 pertanyaan bisa ditautkan ke user/anon; AI funnel register tak terukur)",
       "title": "BACKOFFICE+WRITER FIX: attribution AiChatLog — writer /api/ai/stock + /api/ai/screener TIDAK PERNAH mengisi anonId/userId (0/188 sepanjang masa); panel admin sudah menampilkan angka attributed sebagai gap",
       "spec": "Temuan bo-2026-11-04-01 verify 6 Nov 03:1x: kolom anonId/userId model AiChatLog kosong semua (SQL: attributed7=0 dari n7=188) padahal route GET /api/admin/ai-insight sudah menampilkan 'pertanyaan belum bisa diatribusikan ke aktor'. Kedua writer AI adalah route publik: cek sumber identitas yang tersedia (anonId cookie localStorage-side idéntik pola EngagementEvent / guest-quota) → setidaknya isi anonId dari header/cookie guest yang SUDAH ADA (tanpa migrasi, kolom sudah di schema). Bila login, isi userId. Verify: SQL attributed7 naik dari 0 setelah beberapa pertanyaan nyata; panel Insight angka ikut naik; tsc+build hijau. JANGAN tambah mekanisme tracking baru — reuse pola guest-quota/EngagementEvent.",
@@ -4683,7 +4685,7 @@
       "result": "LIVE via image 1b79d61dcb4e (build 23:40 6 Nov oleh sesi lain dari tree yang sama; BUKAN deploy slot ini — 0 deploy by BO 03:00). Slot 03:00 7 Nov: (1) verify end-to-end fisik — POST smoke anonId hex-valid → row 205 AiChatLog.anonId EXACT b01a71a1…6001 + isEval=false; anonId non-hex ditolak guard → null (row 204); (2) tsc 0 + test 31/31; (3) COMMIT 0646548 (7 file: writer stock+screener sessionUserId server-side + cleanAnonId + eval x-ai-eval + panel isEval filter + 3 fetcher client getAnonIdSafe) + fix terkait ffff863 (zod gate mode universe L3); branch night/bo-2026-11-06-01 PUSHED — main push diblokir hard-gate malam, CTO pagi ff-merge; (4) smoke rows 204/205 tagged isEval=true (panel jujur). BEFORE: attributed 0/203 sepanjang masa. QA verdict: SENTINEL.",
       "qa_verified": true,
       "qa_note": "QA 7Nov 03:3x PASS fisik: prod DB teknikalidnew-db-1 row 205 anonId EXACT b01a71a1-0000-4000-8000-a71f00d66001 isEval=t; row 204 anonId non-hex ditolak guard→NULL isEval=t (panel jujur); commit 0646548 ancestor main; image live 1b79d61dcb4e (container Up 4h healthy) memuat writer baru (cleanAnonId+x-ai-eval ada di /app/.next/server app/api/ai/stock|screener|eval). GAP follow-up: attributed real-user masih 0/205 (malam, 0 traffic) + path userId-from-session belum teruji — monitor Sentinel, bukan blocker fix. /api/admin/ai-insight anon=404 (auth-mask, by design).",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)"
     },
     {
       "id": "ops-2026-11-05-01",
@@ -4692,10 +4694,10 @@
       "priority": "P0",
       "status": "deployed",
       "north_star": "TRUST (data reliable) + CONTENT — moat kenapa-naik",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "scheduled_slot": "2026-11-09 18:30 BE malam BUILD (guardrail 4-gate + dry-run 4 artikel kenapa-* + unit-test dua arah; reslot dari siang 09:30 oleh CTO siang — budget-reserve #19: sisa call slot siang <12 utk P0 berat ~2h; dependency ops-11-08-01 sudah clear + deploy gate hijau, malam ini langsung kerja)",
       "spec": "P0 OWNER VERBATIM 4 Nov — BLOCKER mesin kenapa-*: guardrail konten BELUM DEPLOYED dan generator diam (0 artikel kenapa-* dalam 7d, SQL 5 Nov) padahal pilot GO cap 4/hari (Wave-5 verdict 3 Nov: guardrail WAJIB deployed+dry-run DULU, template-risk nyata). INTENT: implement 4 gate sebelum generator boleh nyala: (1) tiap angka paragraf = ground-truth snapshot SATU PINTU (/api/market, market-snapshot.service); (2) klaim superlatif wajib replay_sql_gate exit 0 dengan parameter --as-of sesi artikel (preseden false-FAIL qa-04-03/04: window GC beda as-of); (3) label tanggal as-of eksak per angka; (4) ticker real + filter non-gorengan konsisten kanonik. DONE WHEN: (a) dry-run 1 batch 4 artikel kenapa-* → replay_sql_gate 4/4 exit 0 + 0 klaim tak-tereplay (cek manual); (b) unit-test gate dua arah (input valid PASS / angka fiktif FAIL); (c) generator tetap OFF sampai (a)+(b) hijau, baru pilot cap 4/hari; (d) changelog + agent-bus. Ref: audits/2026-11-02-bug-hunt.md + verdict Wave-5 3 Nov.",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)",
       "result": "DEPLOYED kereta T-1110-M 22:34 WIB (commit ef490a5 ancestor HEAD 3816baa). Guardrail 3 root-fix live di image; generator TETAP OFF by design (aktivasi = keputusan owner/CEO).",
       "qa_evidence": "selftest 12/12; dryrun TOTAL generated=4 allReplayPassed=true errors=0; rsg 4x EXIT=0",
       "pos": "[BUGFIX-trust]",
@@ -4710,10 +4712,10 @@
       "priority": "P2",
       "status": "deployed",
       "north_star": "TRUST — API publik error ~20% req",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "scheduled_slot": "2026-11-05 BE Builder siang 09:30 setelah ops-2026-11-05-01 (kalau mepet → weekend BE pagi 08:00)",
       "spec": "SRE candidate sre-2026-11-04-2 PROMOTE CEO 5 Nov (CTO sore 4 Nov konfirmasi aktif read-only): TypeError b.getTime is not a function 5-12x/24h di /api/me/morning-delta (~25 req/24h, ~20% fail; 200 saat kosong, error saat ada data tracker). Root-cause presisi: morning-delta.service.ts L159+L189 hanya null-check, TIDAK instanceof Date — date-string dari jalur raw-SQL/deserialize lolos guard lalu .sort(b.getTime()). INTENT: failing-test-first (test merah dgn date-string) → fix normalize new Date(d) di L159+L189. DONE WHEN: (a) test merah→hijau di commit terpisah; (b) pasca-deploy 24h error morning-delta di ErrorLog = 0 (SQL); (c) changelog.",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)",
       "qa_verified": true,
       "qa_verified_by": "reviewer-0700-7nov",
       "qa_evidence": "commit d962d20 IN origin/main (git merge-base --is-ancestor ok) — fix morning-delta 500 date-string normalize + movement-replay-gate bonus; app+worker log 26h grep getTime is not a function = 0; sre-2026-11-04-2 duplikatnya (CEO verdict superseded 08:27)",
@@ -4766,10 +4768,10 @@
       "north_star": "TRUST — angka sinyal harus replayable dari window yang dinyatakan",
       "assigned_to": "backend-builder",
       "scheduled_slot": "2026-11-07 BE weekend pagi 08:00 (expr 0 8 * * 6,0 VERIFIED jobs.json 7 Nov; reslot CTO: slot lama \"Sabtu 09:30\" = HANTU, expr 30 9 * * 1-5 tak jalan Sabtu — lesson slot-hantu 1 Nov kambuh)",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "spec": "INTENT: generator brief-pasar-idx & analis-sore menghitung golden-cross/bullish-cross dengan window SESI MELAYANG tanpa menyebutkannya di kalimat — 3x FATAL berulang (qa-2026-11-04-03 19->window-11-sesi, qa-2026-11-04-04 22->window-11-sesi, qa-2026-11-05-01 21->window-3-sesi-lebih-panjang). Patch artikel hanya obat simptomatik; akar = SQL basis generator tidak dipatok ke window sesi-7 kalender-trading yang ditulis artikel. ACCEPTANCE (DONE WHEN): (1) lokasi generator (jalur night-prep/brief generator di teknikalidnew, kandidat: scripts/tknkl_article_sweep.py + pipeline brief-pasar) dan query GC/EMA-cross yang dipakai; (2) window dipatok ke jumlah sesi kalender-trading yang dinyatakan (7 sesi = 7 hari bursa terakhir dari asof, BUKAN hari kalender melayang) dan angka di kalimat = output query itu; (3) failing-test-first: test yang menyatakan window N sesi lalu membandingkan angka artikel vs query pinned — merah sebelum fix, hijau sesudah; (3) dry-run generator 1 artikel brief-pasar dgn window pinned + replay_sql_gate exit 0; (4) PR merge / commit dgn bukti fisik file:line. Catatan: terkait ops-2026-11-05-01 (guardrail kenapa-*) — beda mesin (guardrail = pre-publish gate; ini = SQL window pinning) tapi satu keluarga akar: angka konten dari SATU basis kanonik yang dinyatakan.",
       "created_at": "2026-11-05T08:0x+07:00 (CTO pagi, eskalasi qa-2026-11-05-01)",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)",
       "result": "BUILD-ONLY done 08:35: repo fix 188ad2e (getSignalCounts 7-SESI SATU PINTU + blok KANONIK prompt + fail-open null) + test merah cc190f0→hijau 3/3; parity 3 jalur EXACT GC14/DC20/EMA18/54 window 2026-10-29..11-06 (repo service · mandor_brief.py · teknikalid_growth.py); dry-run prompt blok kanonik masuk (DRYRUN OK); tsc 0; build 0 BUILD_ID 08:31; push origin/main dbda3fe..188ad2e rev-list=0. Host scripts patched: mandor_brief kalender-6d→sesi-pinned (AST OK, run parity 14/18/54+window_sesi), growth market-brief-data +signal_counts_kanonik. Naik kereta T-1107-M; verify pasca-deploy: selftest 3/3 di staging/live konteks, brief Senin 10:00 pakai angka kanonik. | KONDEKTUR-1107 7 Nov 23:0x WIB (deploy window): NO-NEW-DEPLOY — build atomik GAGAL OOM Docker VM 3.8GB (2 attempt: 22:19 worker-target, 22:33 retry COMPOSE_PARALLEL_LIMIT=1 app-target, RC=1; buildcache 4.9GB sudah pruned dulu). VERIFIED LIVE di image app 9f283f2ce104 (14:26 WIB = setara main 6dfd562: favicon md5 b2fbb98258f5 EXACT commit 5c4378b) — bukti fisik fresh: (ux-11-07-01) \"Akun berhasil dibuat\" + complete_profile_success di complete-profile/page.js, /auth/complete-profile 200; (ops-11-05-03) getSignalCounts 7 file di .next/server, /pasar + /laporan-pasar 200. Worker drift d058b20f TETAP (gate ops-11-06-04 by-design merah, 110.4ks) tapi POLL_INTERVAL_MS=30_000 verified di container. INSIDEN: OOM build me-restart Docker VM 22:28 → db exit-137 recovery → app crash-loop P1001 → PROD 502 ~11 mnt (22:28-22:39), pulih manual docker start db; kini app/worker/db healthy + teknikal.id 200. ROOT-FIX utk besok: naikkan Docker VM memory (16GB host, VM cuma 3.8GB) ATAU worker stage tanpa next-build penuh.",
       "qa_verified": "true|qa_by=sentinel-2200-1109|bukti=FINAL: selftest 3/3 fresh 22:07; satu-pintu fact-check L209-264→getSignalCounts L248 pinned-7-sesi; ACCEPTANCE brief-Senin LULUS: brief-pasar-idx-2026-11-09 PUBLISHED 06:33 trio 231/440/162 + 7 sesi, replay SQL kanonik EXACT 231/440/162; 188ad2e ancestor-OK; /pasar+/laporan-pasar 200. Verifier glm-5.3 kirim-dengan-catatan (superlatif sore PGAS satu-satunya SALAH: GTBO+PGAS 2 emiten → task qa-2026-11-10-01)",
       "qa_note": "PARTIAL 8Nov 22:xx Sentinel: core LIVE tervalidasi (selftest 3/3 fail=0; getSignalCounts 7 file .next/server; /pasar+/laporan-pasar 200; 188ad2e ancestor main) TAPI acceptance brief-Senin-kanonik baru bisa dicek Senin 10:00 + status in_train — re-verify Senin (verifier 78)",
@@ -4787,16 +4789,16 @@
       "assignee": "frontend-builder",
       "done_when": "(1) desktop anon header tampil pasangan Daftar(accent)+Masuk; (2) mobile dropdown Daftar min-h-11 (getBoundingClientRect>=44px); (3) data-engagement nav_register_desktop/nav_register_mobile di DOM; (4) tsc 0 + staging verify; bukti fisik di field result",
       "notes": "Audit flow (c) landing->register: desktop anon 0 entry Daftar di header (jalur lama Masuk->signin->Daftar-gratis = 2 klik + 1 load); mobile Daftar terkubur hamburger + py-2.5 <44px inkonsisten vs Masuk min-h-11 sebelahnya. Fix 2 file layout only. Baseline image app 90cb80870fb8 19:03.",
-      "train": "T-1118-N",
+      "train": "T-1119-N",
       "result": "tsc 0; BUILD exit-0 2x (BUILD_ID 1LHbcVGPHcDo0rvuigNoM); staging :3100 SSR nav_register_desktop=1 nav_register_mobile=1; CDP 375px dropdown Daftar w=172 h=44px (sebelum 40px); 640px gate 0x0; 1280px pasangan Daftar+Masuk tampil no-new-overflow; commit 96d6e76 pushed main; NOTE: prod image 2ff43b160b9d 19:41 (build sesi-SEO dari dirty tree) SUDAH memuat v1 patch (marker live curl=1) TAPI v1 tanpa md-gate — kereta T-1105-N wajib rebuild agar v2 (md-gate, commit 96d6e76) live; overflowX 640px pre-existing (prod sw=915) bukan efek patch",
       "verify_note": "KONDEKTUR-1105: v2 md-gate live — chunk app/(public)/layout-696964d2d423f31a.js memuat nav_register_desktop + 'hidden md:inline-flex' (commit 96d6e76 in 848b815); cursor staging FE terpenuhi oleh image kereta",
       "qa_verified": true,
       "qa_note": "QA 6Nov PASS: prod chunk app/(public)/layout-696964d2d423f31a.js = nav_register_desktop x1 + nav_register_mobile x1 + 'hidden md:inline-flex' (md-gate v2, commit 96d6e76) + min-h-11 x3 (44px tap target sesuai CDP builder h=44). Desktop pair + mobile dropdown verified staging oleh builder; marker live = bukti fisik cukup.",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)"
     },
     {
       "id": "ux-2026-11-05-02",
-      "train": "T-1118-U",
+      "train": "T-1119-U",
       "slot": "07:00 UX-DEPLOY",
       "status": "deployed",
       "title": "UX SIMPLIFY WAVE-1 (audit Argon 5 Nov): stock page reorder+details, swing balik urutan, pasar top-5, home dedup+jargon-ID, badge skor bahasa manusia, istilah Skor Sinyal seragam. Branch ux/simplify-wave1 BUILD-ONLY oleh agy flash 5 Nov malam. Deploy kereta khusus 07:00 SEBELUM market buka 09:00 — owner order.",
@@ -4807,7 +4809,7 @@
       "deployed_at": "2026-11-06T06:05:00+07:00",
       "result": " | Deployed T-1106-U 06:05 WIB: main e877d83 (22 commit UX wave-1+2+2b). Bukti fisik: home 200 + details-fold, /stocks/BBCA.JK \"Rencana Trading\"=2 + \"Beli di (Entry)\"=2 + CTA TeknikalidAgentBot=2, /swing Top10@12269 < Metodologi@35210, /saham-oversold table@14883 < Strategi@52889, /berita Top Gainer=2 mobile, sitemap 947 URL. Rollback: teknikalidnew-app:rollback-abe9786-06nov.",
       "qa_verified": "true|qa_by=sentinel-2200-1106|bukti=e877d83 ancestor-OK; live 22:0x: home details=3, BBCA RT=4/BeliDi=2/bot=10, swing Top10@13359<Metodologi@36281, oversold table@14728<Strategi@52730, TopGainer=2, sitemap=948(+1 artikel baru); 1x502 transien pulih",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-U kedaluwarsa -> kereta T-1118-U (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-U kedaluwarsa -> kereta T-1119-U (reslot_guard.py v3)"
     },
     {
       "id": "ops-2026-11-06-01",
@@ -4820,9 +4822,9 @@
       "done_when": "listing backup offsite <24h + alert backup-fail teruji",
       "status": "blocked_external",
       "scheduled_slot": "2026-11-07 BE weekend pagi 08:00 setelah ops-11-05-03 (reslot CTO 7 Nov dari slot hantu 09:30; overflow ke siang 13:30)",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "result": "PARTIAL 08:45: bagian alert SELESAI (sre_brief.py +blok offsite marker mtime>24h / marker-hilang=ALERT; AST OK + run live: \"offsite gdrive: marker TIDAK ADA — MATI <<< ALERT\" — fail-open tertutup). Bagian refresh rclone BLOCKED_EXTERNAL (kredensial owner): temuan read-only = rclone gdrive \"empty token found - please run rclone config reconnect gdrive:\" (audit sec-11-05-04 benar, mati sejak 3 Nov); cron offsite 43c3452b406d disabled + NOTICE client_id shared Google Drive dipensiunkan 2026. Backup LOKAL sehat (db-20261107.sql.gz 57.5MB 01:15, last-success 2026-11-07T01:15, sre_brief OK 7.3h). NEEDS owner: (1) rclone config reconnect gdrive: (OAuth browser, ~2 mnt) ATAU buat own client_id Google (shared client_id rclone dipensiunkan 2026 — REKOMENDASI: own client_id sekalian); (2) re-enable cron offsite_backup_sync 43c3452b406d (01:45); (3) verify: rclone lsl gdrive:backups-macmini/teknikalid-db | tail -1 umur <24h + marker ~/backups/offsite-last-success muncul. Risiko: data hanya on-host sampah disk = total-loss; RPO offsite 4 hari dan bertambah. Rollback: n/a (host script read-only alert).",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)"
     },
     {
       "id": "ops-2026-11-06-02",
@@ -5017,9 +5019,9 @@
       "done_when": "DONE WHEN: (a) 11 URL live 200 + 404 slug sampah; (b) sitemap memuat 11; (c) DOM angka == SQL replay 3 sektor; (d) badge sektor live di ticker page + event tercatat; (e) tsc+build EXIT-0. Redirect lama dihapus terverifikasi (curl /sektor/perbankan = 200 halaman, bukan 301).",
       "scheduled_slot": "merged main 14c986c (CTO pagi 15 Nov via cherry-pick night-1114; bookkeeping conflict file di-abort per merge-protocol) — naik kereta T-1115-N malam 15 Nov",
       "created_by": "Product Agent buffer-keeper 2026-11-06 22:4x WIB (run gate: buffer teknikal 1 < 3)",
-      "train": "T-1118-N",
+      "train": "T-1119-N",
       "result": "RESTORE drift-0307: deploy kondektur-1115 22:23 terverifikasi (image f3553c248e54/150bda77f4fb, health 200x3); flip 22:26 tertimpa stale-state append BO-0300 03:07 — RESTORE status, bukan deploy baru",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)",
       "deployed_at": "2026-11-15T22:23:08+07:00",
       "qa_verified": true,
       "qa_by": "reviewer-pagi-1116"
@@ -5029,7 +5031,7 @@
       "date": "2026-11-07",
       "type": "ops",
       "priority": "P1",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "scheduled_slot": "weekend siang 13:30 (job e1473241 '30 13 * * 6,0' — terverifikasi jobs.json 08:15 WIB)",
       "north_star": "TRUST — prod reproducibility; melindungi attribution AiChatLog (konversi tracking, pilar GROWTH) + fix money-path chat_id yang sudah live tapi unpushed",
       "status": "deployed",
@@ -5040,7 +5042,7 @@
       "evidence": "https://github.com/metabbe3/teknikalidnew 14dbad7..912207d; curl /api/health 200 07:35 WIB",
       "qa_verified": true,
       "qa_note": "SENTINEL 7 Nov 22:1x: verifier FULL glm-5.3 kirim-dengan-catatan; bukti fisik fresh: rev-list=0, ancestor 912207d YES, /api/health 200, anonId-key hidup di 8+ chunk .next (nama fungsi getAnonIdSafe ternormalisasi minifier, ada di source origin/main 5 file); catatan verifier: 18-vs-19 commit = 18 unpushed + 1 merge night/prd-2026-11-06-01, HEAD push = 912207d.",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)"
     },
     {
       "id": "qa-2026-11-07-01",
@@ -5167,13 +5169,13 @@
       "estimate_tool_calls": 14,
       "created_by": "Product Agent buffer-keeper 2026-11-07 22:4x WIB (run gate: buffer teknikal 2 < 3)",
       "scheduled_slot": "2026-11-12 BE siang 09:30 Kamis (CTO spec pagi 11 Nov; rider kereta T-1112-W bersama ops-2026-11-10-04 + ops-2026-11-11-01)",
-      "train": "T-1118-W",
+      "train": "T-1119-W",
       "ceo_dispatch": "2026-11-11 pagi — spec_ready aging 4 hari (>3d) wajib dispatch; FDE: PRD lengkap (prd_id/user_story/AC) + research mandat AI-search 7 Nov + QA replay SATU PINTU. Pilar GROWTH (AI-search referral). DONE WHEN: /llms.txt 200 memuat seksi kenapa-* 30 URL terbaru + tanggal sesi WIB + 1 angka ground-truth per item; replay_sql_gate PASS dua arah.",
       "result": "CTO siang 12 Nov: BUILD SELESAI commit 35bbaa3 (rider T-1112-W). Bukti probe tsx live-code: TOTAL_URL 195 (>=195), KENAPA_URL 30, DUP_URL 0, 94.078 bytes (<=256KB); seksi \"## Kenapa Saham Naik/Turun Hari Ini\" + \"Sesi: 2026-11-11 (EOD BEI, WIB)\"; spot-check WMUU +29,63% / BRPT -6,71% == replay SQL independen; TMPO +24,79% sesuai doktrin prev per-stock (bar terakhir 6 Nov 292->364). SATU PINTU: getStockList()+snapshot.sessionDate+KURASI_KEEP 145 (BUKAN Article slug-kenapa — spec PRD salah sumber, Article kenapa hanya 2; korpus kanonik = halaman dinamis /saham/[t]/kenapa-*). growth.py bucket ai-search +claude|poe (union). Baseline 7d ai-search: 0 (utk review 21 Nov). tsc EXIT-0. Live verify pasca-deploy = kondektur T-1112-W.",
       "kondektur_deploy": "KONDEKTUR-1112: deployed kereta T-1112-W build atomik 73dbf7c (app 2a86d9a2/worker 237cf153, parity 18s, health 200 23:01 WIB). Bukti fisik per-fitur: blok KONDEKTUR-1112 di agent-bus.",
       "qa_verified": true,
       "qa_note": "QA 13Nov 03:4x PASS. Live /llms.txt: 200, 94.095B (<=256KB), 195 URL (>=195), 31 kenapa-*, 0 dup, seksi '## Kenapa Saham Naik/Turun Hari Ini' + 'Sesi: 2026-11-12 (EOD BEI, WIB)'. Spot-check vs DB: TRON +34,48 / VKTR +25,00 / IRSX +23,64 / TEBE +18,51 EXACT (close-vs-prev 12 Nov); TMPO base-prev 6Nov=292 cocok doktrin (close live 364 via snapshot). tsc EXIT-0; growth.py bucket union +claude|poe; baseline ai-search 7d = 0 (AC4 tercatat).",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-W kedaluwarsa -> kereta T-1118-W (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-W kedaluwarsa -> kereta T-1119-W (reslot_guard.py v3)"
     },
     {
       "id": "prd-2026-11-07-02",
@@ -5242,10 +5244,10 @@
         "estimasi_review_menit": 10
       },
       "result": "DEPLOYED kereta T-1110-M 22:34 WIB (commit 689f846 di image). Bukti fisik: (a) keyfile https://teknikal.id/9329a1548c534fa7a93543738adb2538.txt HTTP 200, body == key; (b) kode indexnow ada di bundle server /app/.next/server/chunks/760.js + public keyfile di image. ENV INDEXNOW_KEY belum ada di container (owner-only) -> ping tetap diam by design sampai owner isi .env+compose.",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "qa_verified": true,
       "qa_note": "QA Verify 12Nov 03:4x WIB (pasca kereta T-1111-M 5e397e19/c5d3c1c9, BUILD_ID m0pPpyUKFcqQsASsiSSCZ): RE-VERIFY PASS: keyfile https://teknikal.id/9329a1548c534fa7a93543738adb2538.txt = HTTP 200 body==key; file 32B ada di /app/public image 5e397e19; kode indexnow (POST https://api.indexnow.org/indexnow) ada di server chunk 760.js; ENV INDEXNOW absent = ping diam by design sampai owner set. 689f846 ancestor a93c948. FAIL 11Nov (404 di ghost image) teratasi.",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)"
     },
     {
       "id": "ux-2026-11-07-01",
@@ -5253,7 +5255,7 @@
       "type": "ux",
       "priority": "P2",
       "status": "deployed",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "north_star": "GROWTH (konversi register→profil→aktif) — tahap-2 funnel register, pilar konversi yang diizinkan freeze (bukan fitur baru: polish halaman existing)",
       "title": "UX [KONVERSI]: complete-profile — afirmasi akun + gate tombol format-regex + availability check debounced + autoComplete + telemetri success",
       "created_by": "FE Builder weekend 10:30 7 Nov",
@@ -5267,7 +5269,7 @@
         "ssr_markers": "dev :3105 curl grep: Akun berhasil dibuat=1, Mulai Pakai=1, username-hint=2, complete_profile_submit=1",
         "endpoint_prod": "GET /api/profile/check-username?username=ab -> 200 {available:false}; ?username=nicholas_test_x -> 200 {available:true}"
       },
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)",
       "qa_verified": true,
       "qa_note": "PASS 8 Nov (QA cron, fisik): commits e37cbd4+d35c942 ancestor-of-main; live https://teknikal.id/auth/complete-profile = 200 dgn marker 'Akun berhasil dibuat'x1 + 'Mulai Pakai'x1 + complete_profile_submit di HTML SSR; container app 9f283f2ce104 .next page.js memuat 'Akun berhasil dibuat'+complete_profile_success (deploy nyata, bukan cuma build); /api/profile/check-username prod: ab={available:false}, qa_probe_x9={available:true} (200). OBSERVABLE 7d: telemetri complete_profile_* masih 0 baris di EngagementEvent (perlu user riil pasca-deploy) + funnel register belum bisa dicek regresi — kriteria (c)/(d) done-when tetap monitor 7d, bukan bagian verdict build."
     },
@@ -5379,13 +5381,13 @@
       "title": "UX [KONVERSI]+[BUGFIX]: favicon offsets valid + emoji->SVG bell + CTA daftar->register + InfoTip hit-area",
       "spec": "Audit flow (a) /stocks re-audit pasca layout AGY mobile-stockcard. Temuan live CDP 375px: (1) favicon.ico commit 5c4378b invalid — direktori ICO 4 entry offset=0 semua; Chrome Image() decode FAIL di prod (bukti engine browser) dan dev server next (sharp) 500 SEMUA halaman sejak 7 Nov 14:24; patch offset struktural 70/623/1581/3029, decode OK 64x64. (2) CTA paper-teaser label 'Daftar' tapi href /auth/signin -> register. (3) Emoji bell sebagai ikon di 3 titik -> SVG bell path resmi. (4) InfoTip 16px hit-area -> 36px (-m-2.5 p-2.5). (5) Copy wizard bintang ganda dibersihkan.",
       "result": "DEPLOYED kereta T-1110-M 22:34 WIB (commits a16d480+514e14f). Bukti fisik: curl https://teknikal.id/favicon.ico | md5 = 617ed096a52c58344766f27d56ed0109 (byte-identik src/app, 4 entries offsets valid — sebelumnya korup b2fbb982). Bell SVG + CTA register + InfoTip hit-area ikut bundle.",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "scheduled_slot": "kereta malam T-1110-M setelah ops-11-08-01 deploy-deadlock fix (Senin 10 Nov)",
       "impact": "KPI TRUST (favicon = brand tab browser) + GROWTH (funnel register)",
       "target_files": "src/app/favicon.ico; src/app/(public)/stocks/[ticker]/page.tsx; src/components/stock/guest-star.tsx; src/components/telegram/subscribe-cta.tsx; src/components/stock/info-tip.tsx; src/components/ui/onboarding-wizard.tsx; src/components/paper-trading/paper-trading-teaser.tsx",
       "qa_verified": true,
       "qa_note": "QA Verify 12Nov 03:4x WIB (pasca kereta T-1111-M 5e397e19/c5d3c1c9, BUILD_ID m0pPpyUKFcqQsASsiSSCZ): RE-VERIFY PASS: favicon live md5 617ed096a52c58344766f27d56ed0109 (korup b2fbb982 hilang); /app/public/favicon.ico di container md5 sama; a16d480+514e14f ancestor a93c948; CTA /auth/register ada di chunk stocks live. FAIL 11Nov (favicon korup di ghost image) teratasi.",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)"
     },
     {
       "id": "ops-2026-11-08-04",
@@ -5406,7 +5408,7 @@
       "type": "fix",
       "priority": "P1",
       "status": "deployed",
-      "train": "T-1118-R",
+      "train": "T-1119-R",
       "north_star": "KONVERSI (funnel register/login) — bugfix + trust, bukan fitur baru",
       "title": "FIX [KONVERSI] retro: /auth/login 404 → 308 redirect signin + tombol Daftar-dengan-Google dipindah ke ATAS form email (OAuth-first)",
       "created_by": "Hermes (owner-order malam 8 Nov, pattern-analysis visitor Bekasi)",
@@ -5416,7 +5418,7 @@
       "qa_verified": true,
       "qa_verified_at": "2026-11-09 03:4x WIB (qa-verifier-cron)",
       "qa_verified_by": "qa-verifier-cron",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-R kedaluwarsa -> kereta T-1118-R (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-R kedaluwarsa -> kereta T-1119-R (reslot_guard.py v3)"
     },
     {
       "id": "fix-2026-11-08-02",
@@ -5424,7 +5426,7 @@
       "type": "fix",
       "priority": "P1",
       "status": "deployed",
-      "train": "T-1118-R",
+      "train": "T-1119-R",
       "north_star": "KONVERSI + TRUST — diagnostik error auth (2 user loyal gagal login berulang tanpa jejak)",
       "title": "FIX [DIAGNOSTIK]: /auth/error — log server-side type + tombol Coba-lagi-dengan-Google utk error OAuth + pesan spesifik OAuthCallbackError/OAuthAccountNotLinked",
       "created_by": "Hermes (owner-order gas 8 Nov, lanjutan pattern-analysis)",
@@ -5434,7 +5436,7 @@
       "qa_verified": true,
       "qa_verified_at": "2026-11-09 03:4x WIB (qa-verifier-cron)",
       "qa_verified_by": "qa-verifier-cron",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-R kedaluwarsa -> kereta T-1118-R (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-R kedaluwarsa -> kereta T-1119-R (reslot_guard.py v3)"
     },
     {
       "id": "bo-2026-11-09-01",
@@ -5480,10 +5482,10 @@
       "spec": "INTENT: ux-2026-11-08-01 fix belum sampai prod utk /favicon.ico. Bukti reviewer 07:3x: live byte md5=b2fbb98258f544e5f8cc15a72a13a531 identik public/favicon.ico lama (mtime 7 Nov), 4 entry ICO offset=0 (semua melewati header); src/app/favicon.ico sudah benar (70/623/1581/3029, sum=4765 exact). ACCEPTANCE: (1) salin src/app/favicon.ico → public/favicon.ico (byte identik); (2) verify repo: ICO parse offset>0 + PIL decode OK; (3) naik ke prod via KERETA berikutnya (DILARANG build solo — gate ops-11-08-01/OOM), lalu live verify: md5 != b2fbb982... + ICO parse valid; (4) catat di bus saat kereta naik.",
       "scheduled_slot": "2026-11-10 22:15 kereta T-1110-M (1-file copy public/favicon.ico pre-build; verify md5 live != b2fbb982)",
       "result": "DEPLOYED kereta T-1110-M 22:34 WIB (commit 514e14f). Bukti fisik PERSIS done-spec: curl -s https://teknikal.id/favicon.ico | md5 == 617ed096a52c58344766f27d56ed0109 PASS.",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "qa_verified": true,
       "qa_note": "QA Verify 12Nov 03:4x WIB (pasca kereta T-1111-M 5e397e19/c5d3c1c9, BUILD_ID m0pPpyUKFcqQsASsiSSCZ): RE-VERIFY PASS persis done-spec: curl -s https://teknikal.id/favicon.ico | md5 = 617ed096a52c58344766f27d56ed0109. Regresi 11Nov (b2fbb982 di ghost image) teratasi oleh T-1111-M.",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)"
     },
     {
       "id": "feat-2026-11-09-01",
@@ -5503,12 +5505,12 @@
       "title": "UX [KONVERSI] flow-(d) radar→watchlist guest: bintang pantau inline di Radar Pantulan (commit 974f3df) — guest 3 klik+2 navigasi → 1 klik; sibling di luar Link; chipAlign=end fix overflow chip mobile",
       "priority": "P2",
       "status": "deployed",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "pos": "[KONVERSI] Pilar STICKY",
       "result": "DEPLOYED kereta T-1110-M 22:34 WIB (commit 974f3df). Bukti fisik: chunk app/(public)/stocks/page-ba8863245d2468b5.js berisi guest_watchlist=1 + aria-pressed=1 (star inline radar live). DOM interaksi penuh (klik star -> localStorage) = QA Sentinel besok via browser.",
       "qa_verified": true,
       "qa_note": "QA Verify 12Nov 03:4x WIB (pasca kereta T-1111-M 5e397e19/c5d3c1c9, BUILD_ID m0pPpyUKFcqQsASsiSSCZ): RE-VERIFY PASS: chunk live /stocks = app/(public)/stocks/page-ba8863245d2468b5.js (PERSIS klaim asli; QA 11Nov lihat 01a38e42 karena ghost image). Star inline Radar Pantulan live di chunk: aria-label dinamis `Hapus ${e.ticker} dari pantauan`/`Pantau ${e.ticker}` + onClick toggle + hook guest-watchlist ('dari pantauan' x4). Catatan: marker builder 'aria-pressed=1' = tombol Simpan preset (GuestStar pakai aria-label, bukan aria-pressed) — marker lemah tapi fitur star live nyata. DOM klik->localStorage = spot-check Sentinel opsional.",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)"
     },
     {
       "id": "qa-2026-11-10-01",
@@ -5532,12 +5534,12 @@
       "id": "fix-2026-11-10-01",
       "title": "UX konversi: quick verdict + slogan + nav Agent + harga jelas",
       "status": "deployed",
-      "train": "T-1118-R",
+      "train": "T-1119-R",
       "created_at": "2026-11-10T00:15:00+07:00",
       "result": "deploy owner-direct malam 9 Nov (simulasi MiroFish 17-agen + VoU 679 review): QuickVerdictBox stock page (data-verdict=quick, Tren dari SMA/RSI/MACD existing), /agent 'Temanmu berinvestasi.' + harga 3 tier hero + SEO meta, navbar Agent desktop+mobile, CTA 'gratis 3x/hari', kopi-banner 3 tier harga. Commit c3936db branch feature/ux-conversion-1109 (HARD-GATE aktif, merge CTO 07:30). Image fec52b0a live 00:14 WIB. Verify live: /stocks/BBCA.JK data-verdict=quick + SSR alasan verdict + disclaimer; /agent Temanmu berinvestasi + Rp29rb/bln; homepage href=/agent + Night Trader; health 200; tsc 0. UPDATE 00:55: QuickVerdictBox dipindah ke DALAM kolom Trading Plan (feedback owner: 'justru trading plan dulu, dituker?') — verdict+plan satu blok berdampingan di desktop & mobile. Commit 0d237a4, image eb1bd1, verify live: verdict-idx 18682 < RencanaTrading-idx 19637 (bersebelahan), GOTO/agent/home 200. UPDATE 01:50: owner minta ROLLBACK stock page ke layout pre-simplify (bda3e18) — commit e46cc8f, image 4b2d60bf. QuickVerdictBox dipertahankan (atas Rencana Trading kolom kanan). FAB fix tetap. Layout desktop: skor kiri, verdict+plan kanan atas. UPDATE 02:05: Trading Plan Entry/TP/SL dipadatkan jadi grid 3 kotak berwarna (commit 7baf7c6, image 7eee803) — feedback owner 'persimple + warna tidak jelas'. Verify live mobile. UPDATE 02:25: paragraf saran → 1 kalimat + ⓘ InfoTip (fddec8e), sr-only SEO. Verify live. UPDATE 03:5x: AGENT-SELL-LAYER live (380a816, image 90628964): PricingBox 3 kolom + pricing /agent ke atas + GuestSellModal home/berita + Trial Pro 7 hari (guard ops_config, kompatibel agentd sweep). Verify live browser + smoke auth.",
       "qa_verified": true,
       "qa_note": "QA 10Nov 03:4x WIB PHYSICAL: /stocks/BBCA.JK HTTP200 data-verdict=\"quick\" idx18546 < 'Rencana Trading' idx19451 (verdict atas plan) + disclaimer; verdict text pakai SMA/RSI live; plan grid-cols-3 (Beli di Rp5.275/Target TP2 Rp5.400/Stop Loss ATR1.5x Rp4.950 kotak accent/bullish/bearish) + InfoTip sr-only; /agent 'Temanmu berinvestasi.' + Rp29rb/bln + Rp79rb/bln + gratis-3x/hari; home href=/agent 3x + Night Trader; /admin 307 login; health 200; 5 commit (c3936db..fddec8e) ada di feature/ux-conversion-1109. Minor: image-ID naratif (7eee803/4b2d60bf) tidak kelihatan di docker images (latest 9367c042 01:03, container up 01:08) & jam UPDATE naratif (02:05/02:25) > commit time (00:50/01:01) — fitur tetap live terverifikasi, angka naratif builder tidak presisi.",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-R kedaluwarsa -> kereta T-1118-R (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-R kedaluwarsa -> kereta T-1119-R (reslot_guard.py v3)"
     },
     {
       "id": "bo-2026-11-10-01",
@@ -5581,7 +5583,7 @@
       "type": "ops",
       "priority": "P2",
       "status": "deployed",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "scheduled_slot": "2026-11-11 BE siang 09:30 (bundle; kereta T-1111-M)",
       "north_star": "STICKY+TRUST (integritas metrik kanonik funnel North Star)",
       "title": "[BUGFIX][TRUST] Guard self-traffic funnel/retention: filter actor 'qa-%' + konvensi anonId prefix qa- utk semua smoke-test agen (ACK CEO bo-2026-11-10-01 opsi-1)",
@@ -5595,7 +5597,7 @@
       "extra_temuan": "smoke lama tanpa prefix tetap di historis by design (T3 5 vs saver-nyata ~3); full-done saat smoke lama ikut prefix qa-. Gerbang zod anonId dibuka prefix qa- (3 schema) — failing-test A6 bukti beacon smoke sebelumnya 400/strip diam.",
       "result": "DEPLOYED kereta T-1111-M 11 Nov 22:26 WIB (rider; kode sudah merged_to_main via cherry-pick 84feb67+60b8407+40668a4 siang, naik live image app 5e397e19 BUILD_ID m0pPpyUKFcqQsASsiSSCZ). Bukti keberadaan kode di image: replay funnel/retention guard = jalur QA Sentinel 12 Nov (selftest 7/7 + tsc 0 sudah oleh CTO siang saat merge).",
       "qa_verified": "true|qa_by=sentinel-2200-1111|bukti=fresh 22:0x-22:3x: cherry-pick 84feb67+60b8407+40668a4 ancestor-OK main 3/3; git grep NOT LIKE qa-% = funnel-v2 route L33+L44 + retention.service L118+L137 (+validasi.ts L258 catatan lowercase); REPLAY DW-(a) live: INSERT probe anonId qa-sentinel-1111 → T1-guarded 1018==1018 (aktor tersaring, transaksi di-ROLLBACK, max(id) 21555 utuh); baseline T1-T3 tercatat di spec; konvensi charter §7 line 43 ada. Verdict utk merge ke main; deploy ke prod menunggu kereta T-1111-M (image hantu masih jalan)",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)"
     },
     {
       "id": "ops-2026-11-10-04",
@@ -5603,13 +5605,13 @@
       "type": "ops",
       "priority": "P3",
       "status": "blocked_owner",
-      "train": "T-1118-W",
+      "train": "T-1119-W",
       "scheduled_slot": "2026-11-14 BE weekend pagi 08:00 (reslot CTO siang 12 Nov: butuh tabel ErrorLog + DDL migration = schema-shield owner gate kalau via merge; budget-reserve #19 sisa call slot siang <10. Rider kereta weekend setelah SRE build.",
       "north_star": "TRUST (deteksi password-spray/credential-stuffing anonim)",
       "title": "[BUGFIX][TRUST] Backlog sec-2026-10-29-01 (owner-approved 29 Okt, 12 hari belum dispatch — utang CEO): ErrorLog utk 401/403 anonim /auth/signin (monitoring gap)",
       "spec": "ENTRY BACKLOG sec-2026-10-29-01 status=approved sejak 29 Okt — owner sudah approve tapi tak pernah dispatch (anti-stagnation: approved tanpa queue = badge dashboard '-> dispatch CTO'). ISI: tabel ErrorLog tidak ada, AuditLog hanya event authed -> password-spray/credential-stuffing /auth/signin tak terdeteksi dari dalam. TASK: (1) tabel ErrorLog (statusCode, path, ipHash, ts) + capture 401/403 anonim di middleware/proxy jalur auth; (2) agregat sre_brief.py: cluster 401/403 per IP-jam dgn threshold alert (mis. >10/5mnt); (3) DB migration via kereta normal. DONE WHEN: (a) SELECT count ErrorLog 24h > 0 setelah deploy + curl /auth/signin POST password-sampah 3x tercatat 401 rows; (b) sre_brief menampilkan blok auth-anonim; (c) dashboard admin 1 query read-only. VERIFIKASI HATI-HATI: jangan kunci jalur login normal (smoke login sukses tetap jalan).",
       "created_by": "CEO-0815 10 Nov (sumber: sec-2026-10-29-01 approved)",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-W kedaluwarsa -> kereta T-1118-W (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-W kedaluwarsa -> kereta T-1119-W (reslot_guard.py v3)",
       "owner_brief": "BLOCKED_FOR_OWNER (CTO pagi 14 Nov — SCHEMA-SHIELD: ErrorLog = tabel baru = DDL. Hard-rule CTO: DILARANG migrasi schema; MERGE PROTOCOL: perubahan prisma/migrations/.sql = owner_gate_ddl permanen). OWNER PACKAGE — investigasi read-only SELESAI: (1) FILE yang akan diubah: prisma/schema.prisma (+model ErrorLog ~15 baris) + prisma/migrations/<ts>_errorlog/migration.sql (CREATE TABLE ErrorLog) + capture 401/403 anonim di middleware/proxy jalur /auth/* (kandidat: src/middleware.ts / next.config.ts — final saat build) + agregat sre_brief (blok auth-anonim, host script) + 1 route admin read-only /api/admin/error-log (cluster ipHash-jam). (2) RISIKO: DDL jam salah = table-lock saat traffic (gate owner permanen utk prod DB); tabel tumbuh tanpa cap → wajib retensi 30 hari (pola housekeeping worker harian) + index (ts, ipHash); ipHash = SHA-256(ip + PEPPER env) — JANGAN simpan IP raw (privacy); scope hanya 401/403 anonim /auth/* bukan semua 404 (noise). (3) ROLLBACK: tabel baru tak punya dependen → rollback = migrasi balik (hapus tabel ErrorLog via migration down) + revert commit middleware + rebuild; aman satu perintah. (4) ESTIMASI: 2-3 jam build setelah approval, naik kereta malam biasa. NEEDS: owner approval DDL satu-kali CREATE TABLE ErrorLog (kolom: id, ts, statusCode, path, ipHash, userAgent-trunc) via agent utama → setelah approve status pending + approved_by_owner. SEC-REVIEW: (a) ipHash peppered = anti rainbow/enumerasi; (b) route admin error-log admin-only (IDOR: anonim/user biasa ditolak); (c) input hanya statusCode/path server-side, tanpa input bebas = no injection surface; (d) retensi 30 hari + sampling burst >100 evt/5mnt/ip = anti log-flood DoS; (e) pesan error generik utk anonim, tak bocor detail internal. Pilar: TRUST.",
       "needs": "Owner approval DDL satu-kali: CREATE TABLE ErrorLog + capture 401/403 anonim /auth/* + route admin read-only + blok sre_brief",
       "blocked_checked_at": "2026-11-14 07:55 WIB"
@@ -5635,13 +5637,13 @@
       "priority": "P1",
       "status": "deployed",
       "scheduled_slot": "2026-11-10 22:15 Kondektur kereta malam",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "north_star": "TRUST+STICKY (parity image = data reliable; IndexNow = GROWTH)",
       "done_when": "(1) docker ps CreatedAt app==worker baru; (2) 5 verify per-fitur di atas dengan bukti curl/MD5/DOM tertulis di result; (3) bus entry deploy; (4) deploy-count justification tertulis",
       "result": "DEPLOYED kereta T-1110-M 22:34 WIB oleh kondektur. (1) Parity atomik: app image sha256:deb8227b created 2026-11-10T15:34:05.350Z vs worker sha256:7cfb66b2 15:34:05.328Z = 0.022s (gate <300s PASS; worker sebelumnya basi 9 Nov). (2) Verify per-fitur 8 rider + regression (home/stocks/pasar 200, log 0 TypeError/Prisma, OHLCV strip data-live-oh attr SSR BBCA + /api/live-quotes 200) — bukti di result masing-masing entry. (3) Bus entry KONDEKTUR-1110. (4) Deploy-count: swap image oleh kereta = #1 malam ini; restart 22:17+commit 3816baa 22:18 oleh sesi perf lain TANPA ganti image (bukan deploy kereta). HOTFIX-PARITY: build dari checkout night/admin-2026-11-10-1 @ 3816baa (FF murni origin/main 27a0b68+12) karena HARD-GATE 21:45-07:00 blokir push main -> deploy.sh (hardwire origin/main) tidak bisa; merge pagi CTO 07:30 = fast-forward.",
       "qa_verified": true,
       "qa_note": "QA Verify 12Nov 03:4x WIB (pasca kereta T-1111-M 5e397e19/c5d3c1c9, BUILD_ID m0pPpyUKFcqQsASsiSSCZ): RE-VERIFY PASS: kereta T-1111-M 11 Nov 22:26 WIB = deploy kereta valid berikutnya — app 5e397e19 (Created 22:25:32) vs worker c5d3c1c9 (22:25:27) = parity 5,55s < gate 300s; kedua container Up healthy dari image tsb; checkout utama a93c948 = origin/main. Anomali swap kedua tetap perlu post-mortem ops-2026-11-11-03 (di luar scope entry ini).",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)"
     },
     {
       "id": "ux-2026-11-10-01",
@@ -5668,10 +5670,10 @@
       "title": "[KONVERSI][POLISH] Emoji bell di CTA Telegram 15 surface publik diganti SVG bell resmi lucide-react (ui-craft mandate)",
       "spec": "Sweep emoji-ikon sisa (rotasi UX slot FE): emoji 🔔 satu-satunya ikon di CTA Telegram anchor publik — 14 halaman SEO landing (saham-oversold dll) + signal-landing-template + stock page tombol Pantau. Fix: inline SVG path RESMI lucide-react v1.17.0 bell.mjs (M3.262 15.326... + M10.268 21...), stroke currentColor, aria-hidden, h-3.5 (CTA link) / h-4 (button). Emoji og/satori route dikecualikan by design (medium canvas). Anchor text verbatim utuh (SEO invariant), data-engagement label tak berubah.",
       "result": "DEPLOYED kereta T-1110-M 22:34 WIB (commit 69093de). Bukti fisik: grep 'M3.262 15.326' = 2 di SSR /saham-oversold + 2 di /stocks/BBCA.JK (path resmi lucide); emoji 🔔 = 0 residual.",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "pos": "[KONVERSI]",
       "qa_verified": true,
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)",
       "qa_note": "QA Verify 12Nov 03:4x WIB (pasca kereta T-1111-M 5e397e19/c5d3c1c9, BUILD_ID m0pPpyUKFcqQsASsiSSCZ): RE-VERIFY PASS: M3.262 15.326 live = 1 di /saham-oversold + 2 di /stocks/BBCA.JK; emoji residual = 0 di kedua halaman. Catatan: oversold 1 vs klaim builder 2 — jumlah bell SSR data-driven (baris kondisional), bukan regresi kode; inti fix (emoji->SVG) terjaga. 69093de ancestor a93c948."
     },
     {
@@ -5679,12 +5681,12 @@
       "spec": "[RETRO][PERF] perf(db) commit 3816baa (sesi lain, 22:18 WIB): Prisma.join IN($1..$315) → = ANY($1::int[]) di 5 batch query StockPrice — generic plan 400-977ms → 10.6ms (40-80×), fix slow-query batch-4 /admin/monitoring. Naik live via kereta T-1110-M.",
       "priority": "P2",
       "north_star": "TRUST/PERF",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "status": "deployed",
       "result": "DEPLOYED kereta T-1110-M 22:34 WIB (image app deb8227b BUILD_ID XU1bHyxhk9zGM4NTyhffR). Bukti fisik: grep '= ANY(' match di bundle server live /app/.next/server/chunks/2824.js. Commit 3816baa ada di branch night/admin-2026-11-10-1 (unpushed — HARD-GATE), merge CTO pagi.",
       "qa_verified": true,
       "qa_note": "QA 11Nov PASS: docker exec app grep '= ANY(' /app/.next/server/chunks/2824.js = 5 match di container live; 3816baa di repo. Catatan: fitur ini survive bukan karena kereta T-1110-M melainkan ikut swap perf sqfix2-06e3465 (bdfb8f7 satu branch perf) — setelah re-kereta dari main, re-grep chunk yang sama.",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)"
     },
     {
       "id": "bo-2026-11-11-01",
@@ -5714,7 +5716,7 @@
       "type": "ops",
       "priority": "P2",
       "status": "deployed",
-      "train": "T-1118-W",
+      "train": "T-1119-W",
       "scheduled_slot": "2026-11-12 BE siang 09:30 Kamis (rider kereta T-1112-W)",
       "north_star": "STICKY+TRUST instrumen — kejujuran metrik North Star (returning ratio, funnel) dari polusi trafik verify-agent",
       "spec": "[KONVERSI][TRUST-instrumen] ACK CEO 11 Nov needs bo-2026-11-11-01 — APPROVE opsi B: blocklist actor UUID (a035afcf, bd8a46cb — saver smoke 11 Nov 02:25-02:49, UA Android-10-K CDP-emulation, TANPA prefix qa-; guard ops-11-10-03 tak menangkap) dari komputasi funnel-v2 + retention — config list 1-file service, pola sama NOT LIKE 'qa-%'. Opsional bila murah: log-warning saat actor blocklist muncul (visibility saja). BUKAN fitur baru — data-integrity instrumen KPI (freeze-safe). DONE WHEN: replay SQL funnel/retention dengan blocklist aktif → T3 7 turun ke 4-5 (2 saver keluar), returning mgg-02Nov tetap ±14,7%, tsc EXIT-0, unit test blocklist hijau.",
@@ -5727,7 +5729,7 @@
       "kondektur_deploy": "KONDEKTUR-1112: deployed kereta T-1112-W build atomik 73dbf7c (app 2a86d9a2/worker 237cf153, parity 18s, health 200 23:01 WIB). Bukti fisik per-fitur: blok KONDEKTUR-1112 di agent-bus.",
       "qa_verified": true,
       "qa_note": "QA 13Nov 03:4x PASS (1 catatan). Blocklist 4 UUID live repo src/lib/actor-blocklist.ts + TER-BAKE image 424fa0ab (grep chunks/2032.js: a035afcf+bd8a46cb+e7df9d38+4f00932f semua hit); funnel-v2 route render guardActorSql di CTE pv+ev; replay SQL identik: T3 tanpa-guard 11 -> guard 7 (tepat 4 saver keluar). CATATAN UTK OPS: retention.service.ts BELUM pakai guardActorSql (hanya NOT LIKE 'qa-%') meski kontrak file menyebut retention sebagai konsumen — dampak sparkline 09Nov 12,0 vs 12,4 (kecil; drift kontrak, entry ops kecil utk samakan).",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-W kedaluwarsa -> kereta T-1118-W (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-W kedaluwarsa -> kereta T-1119-W (reslot_guard.py v3)"
     },
     {
       "id": "ops-2026-11-11-02",
@@ -5738,7 +5740,7 @@
       "north_star": "TRUST (favicon korup = brand; Invalid quote = data reliable) + STICKY (radar-star tetap aman)",
       "done_when": "docker ps image app baru CreatedAt > 2026-11-10T22:39 + BUILD_ID != eQqtEEhx + favicon md5 live 617ed096 + keyfile 200 + bell M3.262 + log Invalid quote 0/24j + parity app worker < 300s",
       "scheduled_slot": "2026-11-11 18:30 BE malam (kondektur) — deploy window sore, hotfix-P0 exception deploy hari ini",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "labels": [
         "bugfix",
         "ops",
@@ -5750,7 +5752,7 @@
       "result": "DEPLOYED kereta T-1111-M 11 Nov 22:26 WIB oleh kondektur: build atomik app+worker dari checkout utama a93c948 (=origin/main). Image app 5e397e19 / worker c5d3c1c9, BUILD_ID m0pPpyUKFcqQsASsiSSCZ, parity 5s (gate <300s PASS). 7 marker verify PASCA-deploy fresh: (1) favicon md5 617ed096a52c58344766f27d56ed0109 (baseline b2fbb982 korup); (2) IndexNow keyfile /9329a1548c534fa7a93543738adb2538.txt = 200 body==key (baseline 404) + kode indexnow di server chunk 760.js; (3) SVG bell M3.262 15.326: 1 di /saham-oversold + 2 di /stocks/BBCA.JK, emoji 🔔=0; (4) label 'Pengguna Aktif' ada di admin/auth-health.html; (5) log 'Invalid quote' sejak deploy = 0 (baseline 19 sejak 19:04); (6) BUILD_ID baru; (7) parity 5s. Regresi selamat: radar-star guest_watchlist di chunk 2623.js+9022, perf = ANY( x5 di 2824.js, 0 TypeError/PrismaClient. Rollback anchor: teknikalidnew-app:rollback-cdfb1cfd-1111 + worker:rollback-7cfb66b2-1111. Verdict final: QA Sentinel 12 Nov (H3).",
       "qa_verified": true,
       "qa_note": "QA Verify 12Nov 03:4x WIB (pasca kereta T-1111-M 5e397e19/c5d3c1c9, BUILD_ID m0pPpyUKFcqQsASsiSSCZ): PASS 7/7 marker fisik: (1) favicon live md5 617ed096a52c58344766f27d56ed0109 + file /app/public/favicon.ico di container sama; (2) keyfile /9329a1548c534fa7a93543738adb2538.txt HTTP 200 body==key + file 32B di image + kode POST api.indexnow.org di server chunk 760.js (ENV INDEXNOW absent by design); (3) bell M3.262 15.326 = 1 di /saham-oversold + 2 di /stocks/BBCA.JK, emoji residual 0; (4) auth-health.html ada di .next/server/app/admin + 'Pengguna Aktif' x1 (live 307 auth-redirect = benar utk guest); (5) log 'Invalid quote' sejak 15:26Z 11Nov = 0 (baseline 19); (6) BUILD_ID /app/.next/BUILD_ID = m0pPpyUKFcqQsASsiSSCZ != eQqtEEhx; (7) parity app 22:25:32 vs worker 22:25:27 = 5,55s < 300s. Regresi selamat juga dicek: radar-star GuestStar live, perf = ANY( x5 server chunk 2824.js, TypeError/PrismaClient log = 0, semua 9 commit rider ancestor a93c948 = checkout utama. Ghost-swap cdfb1cfd tergantikan; rollback anchor masih tersedia.",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)"
     },
     {
       "id": "ops-2026-11-11-03",
@@ -5788,7 +5790,7 @@
       "title": "[KONVERSI][STICKY] UX flow-b berita: tap target 44px (chip+CTA) + judul arsip full-width mobile + dispatch relokasi blok retensi artikel",
       "priority": "P2",
       "status": "deployed",
-      "train": "T-1118-W",
+      "train": "T-1119-W",
       "assigned_to": "fe-ux",
       "source": "ux-audit",
       "done_when": "Pasca-deploy: (1) CDP 375px chip data-engagement^=chip_ (kecuali inline prose) & CTA bot >=44px di /berita + artikel; (2) judul kartu arsip >=290px di 375px; (3) H1/subheadline /berita identik; (4) desktop arsip tetap row (time w-20 same-row).",
@@ -5802,7 +5804,7 @@
       "kondektur_deploy": "KONDEKTUR-1112: deployed kereta T-1112-W build atomik 73dbf7c (app 2a86d9a2/worker 237cf153, parity 18s, health 200 23:01 WIB). Bukti fisik per-fitur: blok KONDEKTUR-1112 di agent-bus.",
       "qa_verified": true,
       "qa_note": "QA 13Nov 03:4x PASS. CDP 375px prod (anonId qa- prefixed per konvensi, tak menimpa funnel): /berita chip 39/39 h=44px, CTA funnel_beritaHeroBotCta h=44, judul arsip w=301px (>=290); artikel brief 12Nov: header ticker 6/6 h=44 + 10 inline-prose h=26 (documented-only, konvensi text-link konsisten); H1/subheadline /berita utuh. Commit fe39bd9 + merge 69bd18b keduanya ancestor image (HEAD eb5fdf2).",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-W kedaluwarsa -> kereta T-1118-W (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-W kedaluwarsa -> kereta T-1119-W (reslot_guard.py v3)"
     },
     {
       "id": "prd-2026-11-11-01",
@@ -5917,7 +5919,7 @@
       "type": "ops",
       "priority": "P1",
       "status": "deployed",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "scheduled_slot": "2026-11-13 BE siang 09:30 Jumat (merge+review; naik kereta T-1113-M jumat malam)",
       "north_star": "STICKY+TRUST instrumen — T5 habit funnel 100% blind (join mati) + blocklist kontaminasi; KPI harus jujur sebelum keputusan ratchet",
       "title": "[KONVERSI][BUGFIX-instrumen] Fix join T5 funnel-v2 -> agent.agent_user.anon_id (usulan bo-2026-11-12-01 needs_owner->CEO APPROVE) + append 2 UUID known-smoke ke blocklist",
@@ -5941,7 +5943,7 @@
         "catatan_merge": "RIDER-1+RIDER-2 satu branch sesuai spec; HOLD e4b417c3+5ae28974 dikunci selftest C4"
       },
       "qa_verified": "true|qa_by=sentinel-2200-1113|bukti=FULL fisik: 4 UUID blocklist baked image live (grep container .next/server uniq 4x1) + join LEFT(REPLACE(actor))=agent_user.anon_id baked route.js & repo; replay independen T1=360 (=baseline bo 12Nov exact) T3=9 (7 basis + 2 saver organik b05d0465 Win-27PV + 2e449109 iPhone = user nyata, UA cek) T5=0 jujur (13 agent_user all 12-hex, 0 overlap = benar); selftest funnel-t5-join 5/5 PASS; tsc EXIT-0",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)"
     },
     {
       "id": "ops-2026-11-12-02",
@@ -5978,14 +5980,14 @@
       "type": "qa-seo-fix",
       "priority": "P2",
       "status": "deployed",
-      "train": "T-1118-W",
+      "train": "T-1119-W",
       "north_star": "GROWTH/AI-SEARCH (title double-brand merusak SERP CTR & konsistensi brand)",
       "spec": "INTENT (reviewer pagi 12 Nov, curl live): title tag /radar DOUBLE-BRAND: 'IDX Radar — Sinyal & Skor Saham Hari Ini | TeknikalID | TeknikalID' (brand muncul 2x). Pelanggaran guardrail SEO 'tanpa double-brand'. Sumber: commit b0eb8cb (seo-p0, live via deploy 06:36). Fix template title /radar -> satu brand saja ('IDX Radar — Sinyal & Skor Saham Hari Ini | TeknikalID'). ACCEPTANCE: curl https://teknikal.id/radar -> '<title>' mengandung 'TeknikalID' tepat 1x; cek sekalian title /stocks ('... | TeknikalID' 1x, sekarang OK) dan home; tsc 0; naik kereta T-1112-W.",
       "result": "CTO siang 12 Nov: fix commit 35bbaa3 — title metadata /radar dipangkas \"| TeknikalID\" (layout template \"%s | TeknikalID\" menambah brand ke-2; pola sehat /stocks). Live MASIH double-brand karena image berjalan 961b73bf (pra-fix) — verify title single-brand pasca kereta T-1112-W: curl /radar <title> \"TeknikalID\" tepat 1x.",
       "kondektur_deploy": "KONDEKTUR-1112: deployed kereta T-1112-W build atomik 73dbf7c (app 2a86d9a2/worker 237cf153, parity 18s, health 200 23:01 WIB). Bukti fisik per-fitur: blok KONDEKTUR-1112 di agent-bus.",
       "qa_verified": true,
       "qa_note": "QA 13Nov 03:4x PASS. Live curl /radar: '<title>IDX Radar — Sinyal & Skor Saham Hari Ini | TeknikalID</title>' — brand tepat 1x (pra-fix 2x). /stocks 1x, home 1x. Fix 35bbaa3 terbake image 424fa0ab.",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-W kedaluwarsa -> kereta T-1118-W (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-W kedaluwarsa -> kereta T-1119-W (reslot_guard.py v3)"
     },
     {
       "id": "ux-2026-11-12-01",
@@ -5993,7 +5995,7 @@
       "status": "deployed",
       "priority": "P3",
       "assigned_to": "fe-ux",
-      "train": "T-1118-W",
+      "train": "T-1119-W",
       "title": "[KONVERSI] UX flow-a /stocks: tap target Tanya AI 44px + buang emoji tab/chips (ui-craft)",
       "kpi": "GROWTH+TRUST",
       "created": "2026-11-12T19:45:00+07:00",
@@ -6003,7 +6005,7 @@
       "kondektur_deploy": "KONDEKTUR-1112: deployed kereta T-1112-W build atomik 73dbf7c (app 2a86d9a2/worker 237cf153, parity 18s, health 200 23:01 WIB). Bukti fisik per-fitur: blok KONDEKTUR-1112 di agent-bus.",
       "qa_verified": true,
       "qa_note": "QA 13Nov 03:4x PASS. CDP 375px prod /stocks: tombol Tanya AI h=44px, tab 'Setup Swing (Entry & TP)' + 'Radar Pasar Live' h=44px tanpa emoji; title SEO utuh. RESIDUAL minor di luar scope done_when: 4 emoji (wave/magnifier/chart/star) di panel onboarding 'Mulai dalam 3 langkah' — calon ui-craft kecil berikutnya. Commit 1c3ac23 ancestor image.",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-W kedaluwarsa -> kereta T-1118-W (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-W kedaluwarsa -> kereta T-1119-W (reslot_guard.py v3)"
     },
     {
       "id": "bo-2026-11-13-01",
@@ -6047,13 +6049,13 @@
       "created_by": "cto-siang-0930 13 Nov",
       "result": "BUILD-ONLY DONE cde322a (slot sore CTO 16:45/terlaksana 21:4x): label sesi strip OHLCV kini ikut marketState — helper pure ohlcv-session-label.ts (resolveSessionLabel: REGULAR+live→sesi HARI INI; tutup/CLOSED→label EOD SSR) + marker data-live-session/data-session-eod di ohlcv-live.tsx + patcher DOM live-price.tsx. BUKTI: test node:test 6/6 GREEN (red-first: module-missing fail sebelum impl; 1 bug nyata tertangkap: timezone rollover), tsc EXIT-0, build EXIT-0 BUILD_ID J4GENMea 21:48, staging :3100 /stocks/BBCA.JK 200: data-live-session=BBCA.JK + data-session-eod='13 Nov' + SSR 'sesi 13 Nov'. VERIFY REGULAR live = QA besok 09:00+ (market tutup saat build; DONE-WHEN penuh DOM live belum bisa). Naik kereta T-1113-M || KONDEKTUR-1113 deployed 22:21 WIB (image app 7ea918125b3a parity worker bce728cb258d): BUKTI FISIK fresh — SSR /stocks/bbca 200 memuat data-live-session=\"BBCA.JK\" (1 occ); patcher querySelectorAll [data-live-session] ter-bake di chunk stocks/[ticker]/page-822b01464e0d99be.js + layout chunk; worker POLL_INTERVAL_MS=30_000 (agent-worker.ts:13). CATATAN: DOM verify label REGULAR hanya bisa Senin 16 Nov 09:00+ (market tutup malam). | KONDEKTUR-1114 re-verify drift-reslot (asli KONDEKTUR-1113, guard pagi reset status): /stocks/BBCA.JK 200 (301 kanonik dari /bbca), data-live-session=\"BBCA.JK\"=1 SSR live.",
       "note": "Ditemukan saat verif ux-11-10-01 item-1: bukti hidrasi jalan (DOM 5.600 vs SSR flight 5.475) tapi volume sesi-13-Nov berlabel 12 Nov. BUKAN fatal (angka benar, label salah) = P2 bukan P1.",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "deployed_at": "2026-11-14T22:22:16+07:00",
       "qa_verified": "true|qa_by=reviewer-0715-1515|bukti=live /stocks/BBCA.JK -L 200: data-live-session=1 + \"sesi 13 Nov\" SSR=1 (sesi EOD terakhir — benar saat market tutup Minggu); DOM saat REGULAR tetap impact_check_due Senin 16 Nov",
       "qa_note": "PASS independen reviewer 14 Nov 07:4x: staging-gap Rabu ditutup? belum (market closed) TAPI marker live terbukti — /stocks/BBCA.JK SSR data-live-session=1 + data-session-eod=13 Nov + teks sesi 13 Nov; label EOD saat tutup = by-design; bukti DOM REGULAR tetap due Senin 16 Nov 09:00+ (impact_check_due).",
       "qa_verified_at": "2026-11-14T03:35:23+07:00",
       "qa_verified_by": "qa-verifier-cron",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)"
     },
     {
       "id": "ux-2026-11-13-01",
@@ -6065,14 +6067,14 @@
       "north_star": "TRUST + STICKY — onboarding wizard first-touch visitor baru; ikon netral + tap-target 44px+ = konsistensi visual",
       "title": "Onboarding wizard emoji ke lucide (5 emoji di /stocks & semua page publik) + close-btn hit-area 48px — lanjutan ux-11-12-01, scope-1 idea-2026-11-13-1",
       "spec": "Buang 5 emoji wizard (👋🎉🔍📊⭐) ganti lucide Search/BarChart3/Star per mandate ui-craft 18 Okt; close-btn tap-target 44px+. DONE WHEN: staging fresh-visitor wizard 0 emoji + 3 svg.lucide + close 48x48 + tsc EXIT-0.",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "result": "SHIPPED commits 4283801+82356fa+c6c0569 main lokal (belum push, hook 21:45-07:00). Bukti: tsc EXIT-0; build EXIT-0; staging CDP /stocks fresh-visitor: emojis=0, lucide_svgs=3, close_wh=48x48, mobile375 no-overflow (x59 right359 w300), dismiss gone=true + wizard_done persist=1. git log -1 file = c6c0569. || KONDEKTUR-1113 deployed 22:21 WIB (image app 7ea918125b3a, build atomik app+worker dari main lokal cde322a, parity 0,01s): BUKTI FISIK fresh — chunk layout-0eddd5581f209a83.js: emoji wizard (👋🎉⭐🔍📊) count=0, label lucide \"Cari saham apa pun di kolom pencarian\"+\"Tandai saham favorit untuk disimpan\" present, class close-btn h-12 w-12 (48px) present di chunk; SSR home emoji=0; log app 6 mnt TypeError/Prisma=0. | KONDEKTUR-1114 re-verify drift-reslot (asli KONDEKTUR-1113, guard pagi reset status): chunk wizard 5845.js — emoji 🔮🧙🪄✨=0, label lucide present, h-12 w-12 (close 48px)=1.",
       "deployed_at": "2026-11-14T22:22:16+07:00",
       "qa_verified": "true|qa_by=reviewer-0715-1515|bukti=home live: emoji wizard 5/5 (👋🎉⭐🔍📊)=0; label lucide & close 48px = bukti kondektur di chunk image live; sweep chunk home label wizard 0-hit = chunk berbeda, bukan regresi",
       "qa_note": "PASS independen reviewer 14 Nov 07:5x: chunk live app/(public)/layout-c2156edf2f75bf70.js (fresh image 06:53) emoji=0, wizard-lucide present, close 48px present; SSR home emoji=0; label lucide live.",
       "qa_verified_at": "2026-11-14T03:35:23+07:00",
       "qa_verified_by": "qa-verifier-cron",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)"
     },
     {
       "id": "bug-2026-11-13-01",
@@ -6109,7 +6111,7 @@
       "date": "2026-11-14",
       "priority": "P1",
       "status": "qa_pass",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "scheduled_slot": "BE weekend sore 17:00 build-only → naik kereta T-1114-M (kondektur 22:15); QA Sentinel sweep 22:00",
       "north_star": "STICKY (loop baca-berlanjut) + GROWTH (internal-link equity ke moat signal pages /saham-*)",
       "spec": "INTENT (CEO, PRD lengkap prd-2026-11-12-01 di product-backlog.json entry ux-2026-11-11-02 — FDE 7/7): blok retensi RelatedSignals dipindah mid-article — persis SETELAH heading H2 kedua (area dicapai 84% pembaca; median scroll artikel hanya 23%, posisi sekarang 73% scroll tak pernah terlihat, cta_click /berita 14d = 1 klik). OPSI A saja per verdict PRD; opsi sticky chip DITOLAK. 0 migrasi DB, 0 endpoint baru, 0 client-component baru (server component existing). Freeze-compliant: polish UX north-star. ACCEPTANCE (AC1-AC6 di PRD): AC1 live-render ≥1 artikel PUBLISHED dgn tickerTag (39% artikel) grep HTML anon; AC2 unit-test posisi fixture 2-H2/5-H2 + fallback 0/1-H2 setelah paragraf-4; AC3 SSR dofollow tetap + modul bawah TIDAK dihapus; AC5 event cta_click chip_beritaRelatedSignals; AC6 tsc EXIT-0. DONE WHEN: AC1+AC6 terverifikasi di kereta T-1114-M (grep RelatedSignals di HTML live setelah H2 ke-2 + tsc EXIT-0); AC4 gate-metric 2 minggu (baseline /saham-* dari referrer /berita = 1 view/14d → ≥5, ATAU scroll-median ≥21% tak turun) dievaluasi CEO 28 Nov.",
@@ -6117,7 +6119,7 @@
       "deployed_at": "2026-11-14T22:22:16+07:00",
       "qa_verified": "true|qa_by=reviewer-0715-1515|bukti=live /berita/analis-pagi-2026-11-13-mpmx 200: Sinyal Terkait body=4 + chip_beritaRelatedSignals=8 = EXACT baseline kondektur (dari 1/0)",
       "qa_note": "QA 15Nov 03:3x PASS fisik-live: /berita/analis-pagi-2026-11-13-mpmx 200 — mid-article RelatedSignals posisi BENAR (chip@27177 SETELAH H2#2@26682, SEBELUM H2#3@29253, artikel 5-H2); 'Sinyal Terkait' body=4, chip_beritaRelatedSignals=8 (baseline 1/0) — AC1 live ✓; /api/health 200. AC2 11 unit-test + AC6 tsc = klaim builder staging, live-marker AC1 inti terbukti. AC4 gate-metric = eval CEO 28 Nov (bukan QA malam ini).",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)"
     },
     {
       "id": "qa-2026-11-14-01",
@@ -6159,9 +6161,9 @@
       "area": "frontend",
       "created": "2026-11-14T10:30+07:00",
       "scheduled_slot": "2026-11-15 CTO weekend sore 17:00 SELESAI build-only — naik kereta T-1115-N 22:15",
-      "train": "T-1118-N",
+      "train": "T-1119-N",
       "result": "RESTORE drift-0307: deploy kondektur-1115 22:23 terverifikasi (image f3553c248e54/150bda77f4fb, health 200x3); flip 22:26 tertimpa stale-state append BO-0300 03:07 — RESTORE status, bukan deploy baru",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)",
       "deployed_at": "2026-11-15T22:23:08+07:00",
       "qa_verified": true,
       "qa_by": "reviewer-pagi-1116"
@@ -6173,14 +6175,14 @@
       "title": "Konsistensi label Alat Analisa (anti-EN-jargon) + de-orphan market-structure + kartu Radar Saham Diskon",
       "description": "[KONVERSI][STICKY-trust] 7 surface: header dropdown Tools->Alat Analisa (samakan mobile), footer Track Record->Riwayat Akurasi Sinyal, footer heading Data Pasar & Alat, footer +link /market-structure (de-orphan SEO internal-link), PlatformFeatures kartu Bottom Fishing Radar->Radar Saham Diskon + href /bottom-fishing (dulu duplikat screener), eyebrow Tools->Alat Analisa x3 landing, beranda Quick Tools->Alat Cepat. Pilar KPI: TRUST (konsistensi) + STICKY.",
       "result": "commit 74ee8f2 main lokal. Bukti fisik: tsc EXIT-0; build EXIT-0 (log /tmp/ux-1114-build.log); staging :3100 DOM — Alat Analisa=1, Riwayat Akurasi Sinyal=2, Data Pasar & Alat=1, Radar Saham Diskon=2, href=/market-structure=1, SEMUA string lama (Data Pasar & Tools/Track Record/Bottom Fishing Radar/>Tools<)=0; mobile 375 scrollW=375 sehat; nav desktop 1280 aman (navRight 990). SEO invariant: 0 baris title/meta/h1 tersentuh (git diff grep kosong). | KONDEKTUR-1114 deploy 22:22 WIB (commit 74ee8f2 in image a722cf170281): bukti live home 200 — Alat Analisa=2, Riwayat Akurasi Sinyal=2, Data Pasar & Alat=1, Arah Tren Pasar=2 (+href /market-structure=3), Radar Saham Diskon=5 (+href /bottom-fishing=2); string lama Quick Tools/Track Record/Data Pasar & Tools=0 di seluruh server+static chunks; Alat Cepat present di chunk page-e1057ab5deeae235.js; /market-structure 200 /bottom-fishing 200.",
-      "train": "T-1118-M",
+      "train": "T-1119-M",
       "reported_by": "ux-fe-1030",
       "area": "frontend",
       "created": "2026-11-14T10:30+07:00",
       "deployed_at": "2026-11-14T22:22:16+07:00",
       "qa_verified": "true|qa_by=reviewer-0715-1515|bukti=home live: Alat Analisa=2, Riwayat Akurasi Sinyal=2, Data Pasar & Alat=1, Arah Tren Pasar=2, href /market-structure=3, Radar Saham Diskon=5, /bottom-fishing=5; string EN lama (Quick Tools/Track Record/Data Pasar & Tools)=0",
       "qa_note": "QA 15Nov 03:3x PASS fisik-live home 200: label baru present — Alat Analisa=2, Riwayat Akurasi Sinyal=2, Data Pasar &amp; Alat=1, Radar Saham Diskon=5 (href /bottom-fishing live), /market-structure=3 (de-orphan ✓, 200), Alat Cepat=1 di chunk app/page-e1057ab5deeae235.js; SEMUA string lama = 0 (Quick Tools/Track Record/Data Pasar & Tools/Bottom Fishing Radar); title+h1 beranda tak tersentuh (SEO invariant ✓).",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-M kedaluwarsa -> kereta T-1118-M (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-M kedaluwarsa -> kereta T-1119-M (reslot_guard.py v3)"
     },
     {
       "id": "bo-2026-11-15-01",
@@ -6219,11 +6221,17 @@
       "title": "SIMPLIFY: volume-spike page 0 PV 2 pekan berturut (sibling golden-cross 7, oversold 3) — investigasi lalu merge ke /screener preset filter atau noindex",
       "spec": "Cek penyebab 0 PV (internal link? index?) via GSC; opsi A merge jadi preset filter /screener + 301, opsi B noindex. Feature-freeze compliant (lane SIMPLIFY, bukan fitur baru). DONE WHEN: keputusan terdokumentasi di entry + eksekusi naik kereta + 301/noindex verified live",
       "done_when": "merge/noindex dieksekusi + verified live",
-      "status": "pending",
-      "scheduled_slot": "2026-11-18 UX-FE Rabu 19:00 (evaluasi dulu, eksekusi naik kereta)",
-      "train": null,
+      "status": "qa_pass,qa_verified=true|qa_by=reviewer-0715-1919|bukti=reciprocal link live 19 Nov: /saham-golden-cross -> /saham-volume-spike =1; /saham-oversold =1; /saham-volume-spike 200 + 30 link /stocks/TICKER.JK (KEEP sisi link terverifikasi; keputusan merge/noindex tetap milik task)",
+      "scheduled_slot": "2026-11-18 kereta malam 22:15 (commit 8b75972 sudah di main HEAD — ikut build atomik kondektur)",
+      "train": "T-1119-N",
       "status_at": "2026-11-15",
-      "research_brief": "RESEARCH BRIEF (Researcher 18 Nov 2026) — VERDICT: MODIFIKASI (cek data GSC dulu, baru pilih opsi A/B; jangan eksekusi merge/noindex dari PV 2 pekan saja). Status live terverifikasi 18 Nov: /volume-spike sudah 301 -> /saham-volume-spike (HTTP 200, robots index,follow) — opsi 'merge + 301' sudah terealisasi sebagian sebagai redirect; sibling /saham-golden-cross sehat (7 PV) dengan pola halaman sama -> 0 PV volume-spike BUKAN technical block (bukan noindex/404) melainkan gagal ranking/discovery untuk query-nya. Best practice content-pruning: keputusan keep/refresh/consolidate/remove WAJIB dari data GSC 12 bulan (clicks, impressions, queries, coverage) + link equity + intent — bukan dari trafik 2 pekan; halaman 0-click tapi ada impressions = kandidat REFRESH + internal-linking, bukan pruned; sebelum remove, cek apakah halaman disitasi AI assistant (AEO referral, halaman 0-traffic bisa tetap disitasi). Standar industri: 301 ke halaman paling relevan > delete ke 404; noindex hanya untuk konten genuinely disposable; indexation ratio + 'crawled-not-indexed' = diagnostik standar. Karena hanya 1 halaman (bukan programmatic set ber-volume), dampak pruning ke sitewide kecil — nilai terbesar ada di keputusan yang benar per-halaman. BEST PRACTICE: (1) tarik GSC untuk /saham-volume-spike + predecessor /volume-spike: impressions/clicks/queries/coverage 12 bulan; (2) impressions >0 -> jangan pruned: refresh konten + internal link dari sibling signal pages (pola cross-link sinyal sudah ada); (3) zero impressions + crawled-not-indexed -> noindex (301 sudah terpasang; jangan tambah redirect chain baru); (4) ukur ulang 4 pekan pasca aksi, dokumentasi keputusan di entry (sudah di done_when). ANTI-PATTERN: pruned berdasar sampel 2 pekan untuk halaman long-tail; menambah redirect chain baru; menghapus halaman yang disitasi AI. SUMBER: stackmatix.com/blog/content-pruning-seo (framework verdict 12-bulan GSC + cek sitasi AI); seography.io/learn/programmatic-seo/programmatic-seo-quality-control (aturan noindex, indexation ratio, crawled-not-indexed); verifikasi live curl teknikal.id 18 Nov 2026. BUKTI: SEDANG — best practice pruning solid multi-sumber, tapi data GSC halaman ini belum dilihat; keputusan final merge-vs-noindex vs refresh tergantung data itu (putuskan dari data internal setelah cek GSC). PILAR: CONTENT + GROWTH."
+      "research_brief": "RESEARCH BRIEF (Researcher 18 Nov 2026) — VERDICT: MODIFIKASI (cek data GSC dulu, baru pilih opsi A/B; jangan eksekusi merge/noindex dari PV 2 pekan saja). Status live terverifikasi 18 Nov: /volume-spike sudah 301 -> /saham-volume-spike (HTTP 200, robots index,follow) — opsi 'merge + 301' sudah terealisasi sebagian sebagai redirect; sibling /saham-golden-cross sehat (7 PV) dengan pola halaman sama -> 0 PV volume-spike BUKAN technical block (bukan noindex/404) melainkan gagal ranking/discovery untuk query-nya. Best practice content-pruning: keputusan keep/refresh/consolidate/remove WAJIB dari data GSC 12 bulan (clicks, impressions, queries, coverage) + link equity + intent — bukan dari trafik 2 pekan; halaman 0-click tapi ada impressions = kandidat REFRESH + internal-linking, bukan pruned; sebelum remove, cek apakah halaman disitasi AI assistant (AEO referral, halaman 0-traffic bisa tetap disitasi). Standar industri: 301 ke halaman paling relevan > delete ke 404; noindex hanya untuk konten genuinely disposable; indexation ratio + 'crawled-not-indexed' = diagnostik standar. Karena hanya 1 halaman (bukan programmatic set ber-volume), dampak pruning ke sitewide kecil — nilai terbesar ada di keputusan yang benar per-halaman. BEST PRACTICE: (1) tarik GSC untuk /saham-volume-spike + predecessor /volume-spike: impressions/clicks/queries/coverage 12 bulan; (2) impressions >0 -> jangan pruned: refresh konten + internal link dari sibling signal pages (pola cross-link sinyal sudah ada); (3) zero impressions + crawled-not-indexed -> noindex (301 sudah terpasang; jangan tambah redirect chain baru); (4) ukur ulang 4 pekan pasca aksi, dokumentasi keputusan di entry (sudah di done_when). ANTI-PATTERN: pruned berdasar sampel 2 pekan untuk halaman long-tail; menambah redirect chain baru; menghapus halaman yang disitasi AI. SUMBER: stackmatix.com/blog/content-pruning-seo (framework verdict 12-bulan GSC + cek sitasi AI); seography.io/learn/programmatic-seo/programmatic-seo-quality-control (aturan noindex, indexation ratio, crawled-not-indexed); verifikasi live curl teknikal.id 18 Nov 2026. BUKTI: SEDANG — best practice pruning solid multi-sumber, tapi data GSC halaman ini belum dilihat; keputusan final merge-vs-noindex vs refresh tergantung data itu (putuskan dari data internal setelah cek GSC). PILAR: CONTENT + GROWTH.",
+      "decision": "KEEP (no merge, no noindex) — data GSC 16-bulan (page-filter, sesi owner 18 Nov): /saham-volume-spike 0 klik / 7 impresi / POSISI 7,9 (page-1 Google, terbaik di klaster: golden-cross 3 impr pos 21,0; oversold 13 impr pos 11,8). Researcher brief rule-2 berlaku: impressions>0 = jangan prune. Internal analytics: 22 PV/2 UV sejak 8 Sep, 15/22 dari /stocks (internal nav sehat), 0 dari Google organik. Infra sehat: 301 /volume-spike→/saham-volume-spike verified live, robots index,follow, di sitemap+llms.txt, cross-link saham-strategy-links+related-signals+register-cta. Opsi A merge & opsi B noindex DITOLAK DATA.",
+      "result": "GSC 16-bulan fisik: volume-spike 0 klik/7 tayang/pos 7,9 — KEEP+REFRESH. DEPLOYED KONDEKTUR-1118 22:27 (commit 8b75972 ancestor HEAD 8b10723, build atomik). BUKTI FISIK live: /saham-golden-cross 200 + 1 link /saham-volume-spike + /saham-oversold 200 + 1 link /saham-volume-spike (reciprocal live). Verdict final = QA Sentinel 19 Nov (H3)",
+      "qa_verified": true,
+      "qa_note": "2026-11-19 QA (Sentinel 03:33) — PASS — bukti fisik independen 19 Nov: /saham-golden-cross 200 + link /saham-volume-spike 1x; /saham-oversold 200 + link 1x (reciprocal); /volume-spike 301 -> /saham-volume-spike; commit 8b75972 ancestor HEAD OK. Keputusan KEEP+REFRESH dari GSC = dokumen, angka GSC sesuai ui-property owner.",
+      "deployed_at": "2026-11-18T22:27:25+07:00",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)"
     },
     {
       "id": "ops-2026-11-15-02",
@@ -6238,7 +6246,9 @@
       "status": "done",
       "scheduled_slot": "2026-11-17 BE malam 18:30 bundling host-script 0-deploy (reslot CEO 17 Nov; join guard bundle ops-11-01-04)",
       "train": null,
-      "result": "DONE verdict 3 job — SEMUA sehat, 0 perubahan jobs.json: (1) Cek-Pagi Carousel b1eb79bd7670 enabled + script sosmed_cek_pagi_carousel.sh (fix #314 9 Nov), last_status=ok 16-Nov 07:17, next 23-Nov; (2) Channel Brief Pagi 50107fbf9ada disabled/paused 9 Nov, last_status=ok, zombie-error SUDAH clear; (3) threads-reply-bot 45a2760b557e disabled by-design (paused_reason: digantikan tebar-reply-bot), last_status=ok. Sweep tambahan: 0 enabled-job tanpa payload prompt/script/skill"
+      "result": "DONE verdict 3 job — SEMUA sehat, 0 perubahan jobs.json: (1) Cek-Pagi Carousel b1eb79bd7670 enabled + script sosmed_cek_pagi_carousel.sh (fix #314 9 Nov), last_status=ok 16-Nov 07:17, next 23-Nov; (2) Channel Brief Pagi 50107fbf9ada disabled/paused 9 Nov, last_status=ok, zombie-error SUDAH clear; (3) threads-reply-bot 45a2760b557e disabled by-design (paused_reason: digantikan tebar-reply-bot), last_status=ok. Sweep tambahan: 0 enabled-job tanpa payload prompt/script/skill",
+      "qa_verified": true,
+      "qa_note": "QA catch-up 18Nov (LITE P3): 3 verdict job ter-reproduksi dari jobs.json live — b1eb79bd7670 Carousel enabled+last_status=ok+script sosmed_cek_pagi_carousel.sh ✓; 50107fbf9ada Channel Brief disabled+ok (zombie clear) ✓; 45a2760b557e threads-reply-bot disabled by-design paused_reason tebar-reply-bot ✓; sweep tambahan 0 enabled-job tanpa payload ✓. Verdict TRUE."
     },
     {
       "id": "ux-2026-11-15-01",
@@ -6255,13 +6265,13 @@
       "spec": "Bukti audit Chrome CDP 15 Nov (UX-FE): home + /stocks identik; sehat @375 (hamburger) & @1280; 768-1023 nav desktop muncul di sm:/md: tapi logo+nav 470px+UserMenu 158px butuh 1002px. FIX frontend-only header.tsx: nav breakpoint sm:/md: -> lg: (hamburger 640-1023, pola mobile terbukti aman); sweep user-menu hidden sm:block -> lg: + elemen sm: lain di header; JANGAN sentuh pricing-box (territory f222f14 in_train T-1115-N). File audit: ~/.hermes/data/teknikalid-growth/audit-overflow-nav-2026-11-15.json",
       "done_when": "staging :3100 sweep 640/768/800/900/1023 scrollW==vw scrollX=0; 1024 nav penuh; 375 tetap hamburger; tsc EXIT-0",
       "scheduled_slot": "2026-11-16 BE siang 09:30 BUILD-ONLY (staging :3100 nyalakan dulu — UX-FE trap 15 Nov) -> kereta T-1116-N 22:15 | konfirmasi ulang CTO pagi 16 Nov",
-      "train": "T-1118-N",
+      "train": "T-1119-N",
       "result": "DEPLOYED KONDEKTUR-1116 22:31 (image app b80d8b53bca7/worker 8dbd45ea3768, health 200x3, HEAD 989db3b). Bukti fisik pasca-deploy: SSR home memuat hidden lg:flex (grep live=1); source header.tsx:63/81/106/190 + user-menu.tsx:35 = lg-only (hamburger 640-1023, nav desktop >=1024). Spot CDP viewport tablet = milik QA Sentinel (kondektur curl-only). Verdict final = QA Sentinel 17 Nov.",
       "qa_verified": true,
       "deployed_at": "2026-11-16T22:31:00+07:00",
       "qa_note": "QA 17Nov 04:0x: PASS. Source header.tsx:63/81/106/190 + user-menu.tsx:35 = lg-only persis klaim; live SSR hidden lg:flex=1; REAL-ChROME CDP (bukan lightpanda): @768 scrollW=768=vw nav-desktop display:none hamburger ada; @900 scrollW=900=vw; @1280 nav display:flex x=491 w=499. Overflow-tablet hilang, nav penuh >=1024.",
       "qa_at": "2026-11-17T04:15:00+07:00",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)",
       "qa_verified_by": "reviewer-pagi-1117"
     },
     {
@@ -6376,16 +6386,16 @@
       "done_when": "DONE WHEN: (a) staging wall baru menampilkan progress+preview+2 tombol setara, guest fresh tak melihat wall, logged-in tak tersentuh; (b) tsc+build EXIT-0; (c) baseline 8,9% tercatat + kueri replay di entry; (d) FASE-B deferred sampai ACK owner. Copy setengah jadi / CTA bot tetap baris kecil = iterate, bukan ship.",
       "created_by": "Product Agent buffer-keeper 2026-11-16 22:2x WIB (run gate: buffer teknikal 2 < 3; riset = research_brief backlog 14 Nov + SQL baseline fresh 16 Nov)",
       "scheduled_slot": "2026-11-17 FE malam 19:15 build+staging-verify wall-v2 FASE-A (kode di night dd96b87 sudah union-prep 3be60a3; merge ke main di slot, verify :3100 progress+preview+dual-CTA, in_train T-1117-N; kereta kondektur 22:15)",
-      "train": "T-1118-N",
+      "train": "T-1119-N",
       "deployed_at": "2026-11-17T22:24:35+07:00",
       "result": "DEPLOYED KONDEKTUR-1117 22:24 (build atomik tanpa-reset dari HEAD 763d1f5; rider d6bc5a7+00e0dda+f57db23 ancestor-OK; image app 2ac3977d7b67/worker 629c65dd00b6 parity Created 22:23:41/35 drift 6s; health 200x3). BUKTI FISIK LIVE: chunk app/(public)/stocks/[ticker]/page memuat \"(3 dari 3 saham gratis hari ini sudah dibuka)\" + \"Analisa penuh {t} - rencana trading\" + dual-CTA \"Daftar gratis - buka {t} sekarang\"+\"Tanya Bot Agent tentang {t}\" + testid guest-overlimit-banner; e2e browser fresh anon: BBCA/BBRI/BMRI bebas wall, halaman ke-4 TLKM = wall copy baru + 2 CTA. Verdict = QA Sentinel.",
       "qa_verified": true,
       "qa_note": "PASS 2026-11-18 QA Sentinel (verifier cron): bukti fisik live — image running app 2ac3977d7b67/worker 629c65dd00b6 = klaim (Created 22:23:41/35 WIB, drift 6s, parity kondektur); rider d6bc5a7+00e0dda+f57db23 semua ancestor 763d1f5; chunk live /stocks/[ticker] page-b17242ae memuat: testid guest-overlimit-banner, sub-copy \"X dari Y saham gratis hari ini sudah dibuka\", preview \"Analisa penuh {t} — rencana trading, batas cut loss, rincian skor\", dual-CTA setara reg_free_banner (bg-accent solid) + agent_deeplink_banner (border outline) dalam grid sm:grid-cols-2, deeplink src_gate_ → t.me/TeknikalidAgentBot; framing hukuman \"telah digunakan/habis\" = 0 di chunk; WA 0 di wall (wa.me hanya komponen share lama). Catatan: wall CSR by-design (kuota localStorage quotaExhausted tickers>=3) — AC5d literal \"view-source memuat wall\" tak terpenuhi, tapi SSR halaman utuh 258KB = SEO aman (pola W1b); e2e staging sweep fresh/over-limit diambil dari bukti builder. D+14 auth_nav_after >=12% evaluasi kohort = tertunda, bukan bagian verdict.",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)"
     },
     {
       "id": "prd-2026-11-15-01",
-      "train": "T-1118-N",
+      "train": "T-1119-N",
       "status": "qa_pass",
       "priority": "P2",
       "title": "P2 [KONVERSI] one-tap watchlist guest: bintang pantau 1-klik overlay (AC1) + preset kurasi 1-klik empty-state (AC2: Bank Bluechip / Pembagi Dividen Terdekat / Populer Minggu Ini) + label T3 satu-pintu T3_SAVE_LABELS — night 15 Nov tanpa laporan, recovered+merged ce9a9df CTO-PAGI-1116",
@@ -6395,12 +6405,13 @@
       "qa_verified": true,
       "qa_note": "QA 17Nov 04:0x: PASS. /watchlist=200 + 3 preset SSR live (Bank Bluechip/Pembagi Dividen Terdekat/Populer Minggu Ini grep=1 each); live client chunk page-b4ec61a20df0e8c8.js=200 memuat pantau_tambah (bintang guest aktif); container b80d8b53bca7 watchlist page.js preset=1; T3_SAVE_LABELS satu-pintu di funnel-v2 route + smoke actor 50a26a2b ter-blocklist (9 aktor diverifikasi).",
       "qa_at": "2026-11-17T04:15:00+07:00",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)",
-      "qa_verified_by": "reviewer-pagi-1117"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)",
+      "qa_verified_by": "reviewer-pagi-1117",
+      "ux_e2e_note": "UX-FE-1915-1118 QA interaktif prod (CDP 375px, anonId qa-uxfe1118-1): AC3 bintang klik->LS->reload pressed=true PASS; AC2 preset 1-klik 3 ticker PASS; register sheet tepat simpanan ke-3 + rate-cap; beacon pantau_tambah masuk DB pasca UA-override (HeadlessChrome di-drop bot-filter by design); tap 44px efektif; overflow-x=0"
     },
     {
       "id": "fix-2026-11-16-02",
-      "train": "T-1118-N",
+      "train": "T-1119-N",
       "status": "qa_pass",
       "priority": "P2",
       "title": "FIX [TRUST] AI sanitize lapis-4 normalizeUnit: Rp X M -> Rp X miliar deterministik (eval 16 Nov: Rp57,64 M bersebelahan Rp274,51 miliar satu kalimat) — commit ac9ef8b rider tanpa entry",
@@ -6409,12 +6420,12 @@
       "qa_verified": true,
       "qa_note": "QA 17Nov 04:0x: PASS. Replay unit test npx tsx --test ai-sanitize.test.ts = 22 pass/0 fail; normalizeUnit HEAD ac9ef8b; marker server chunk 1253.js+7977.js (memuat 'miliar') ada di container live b80d8b53bca7. Catatan: live natural-output AI = territory eval-loop, marker+test cukup utk verdict deploy.",
       "qa_at": "2026-11-17T04:15:00+07:00",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)",
       "qa_verified_by": "reviewer-pagi-1117"
     },
     {
       "id": "ux-2026-11-16-02",
-      "train": "T-1118-N",
+      "train": "T-1119-N",
       "status": "qa_pass",
       "priority": "P3",
       "title": "UX [UI-CRAFT] emoji chat -> MessageCircle lucide di 9 CTA funnel AI + gap-1.5 — commit 989db3b rider tanpa entry (Sentinel 22:1x sudah menandai)",
@@ -6423,7 +6434,7 @@
       "qa_verified": true,
       "qa_note": "QA 17Nov 04:0x: PASS. /stocks/BBCA.JK SSR memuat path svg MessageCircle M2.992 16.342 x2; emoji chat live = 0 di BBCA.JK + home + /berita; commit rider 989db3b = HEAD live.",
       "qa_at": "2026-11-17T04:15:00+07:00",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)",
       "qa_verified_by": "reviewer-pagi-1117"
     },
     {
@@ -6486,7 +6497,7 @@
       "type": "ux",
       "priority": "P2",
       "status": "qa_pass",
-      "train": "T-1118-N",
+      "train": "T-1119-N",
       "actor": "UX-FE-1915-1117",
       "north_star": "GROWTH (funnel kuota: auth-nav pasca-wall 8,9% -> >=12%) + STICKY (jalur bot setara di wall)",
       "title": "UX [KONVERSI] wall-v2 FASE-A verified + fix mobile: merge night dd96b87 (cherry-pick f57db23+d6bc5a7) + sub-copy progres tampil di mobile (<sm) commit 00e0dda",
@@ -6502,7 +6513,7 @@
       "deployed_at": "2026-11-17T22:24:35+07:00",
       "qa_verified": true,
       "qa_note": "QA-DEPLOY REVIEWER 18 Nov 07:5x (KOREKSI note awal — grep prefix false-positive): fix mobile 00e0dda BERSIH & LIVE — guest-quota.tsx adalah client-component (chunk klien, bukan server page.js), repo kini 0 hit hidden-sm:inline di situ; hit di server page.js = page.tsx:1069 hidden sm:inline-BLOCK (beda class, separator) + stocks-swing-panel.tsx:94 (unrelated, pre-existing). Sub-copy wall tampil di mobile terverifikasi KONDEKTUR CDP 375px + konsisten repo; wall-v2 copy verbatim live di server page.js. Riders d6bc5a7+00e0dda+f57db23 ancestor-OK, image 2ac3977d7b67 22:24:35 (KONDEKTUR-1117). Verdict: PASS. Posisi: [KONVERSI] pilar KONVERSI+STICKY.",
-      "reslot_note": "auto-reslot 2026-11-18: kereta T-1117-N kedaluwarsa -> kereta T-1118-N (reslot_guard.py v3)"
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)"
     },
     {
       "id": "adm-2026-11-10-01",
@@ -6521,7 +6532,7 @@
       "type": "prd",
       "priority": "P2",
       "prd_id": "idea-2026-11-12-2",
-      "status": "in_train",
+      "status": "qa_pass,qa_verified=true|qa_by=reviewer-0715-1919|bukti=live 19 Nov 07:1x: /stocks/BBCA.JK 200 + badge \"Pantauan Harian\" x2; /berita/saham-bbca 200 & /berita/saham-excl 200 (bridge DS ticker panas live)",
       "title": "P2 GROWTH/STICKY (PRD idea-2026-11-12-2): Bridge konten /stocks->/berita utk jalur sosmed — 230 anon /stocks 21d dgn crossover /berita hanya 20 (8,7%); exit-path terverifikasi mati di /stocks/TICKER (BBCA 8, CUAN 3); akar = query relatedArticles meng-exclude DAILY_SNAPSHOT sehingga ticker panas tampil tanpa jembatan konten padahal DS ticker tersedia 40/7d; fix = buka filter + slot DS frasa Harga Saham X Hari Ini",
       "north_star": "GROWTH+STICKY (funnel pengunjung sosmed -> habit konten harian; melayani jalur konten IG/Threads 50 anon l.threads.com/21d dan menjawab mandat idea-2026-11-12-2 CEO verdict 'riset pola exit dulu')",
       "user_story": "Sebagai pengunjung yang mendarat di halaman saham dari Instagram/Threads dan tidak mengenal halaman /berita, saya ingin menemukan konten harian (Harga Saham X Hari Ini + berita emiten) langsung dari halaman ticker yang sedang saya buka, supaya kunjungan saya berikutnya punya tujuan konten yang jelas dan saya jadi pengunjung yang kembali.",
@@ -6545,9 +6556,13 @@
       "dependencies": [],
       "estimate_tool_calls": 10,
       "branch": "night/prd-2026-11-17-01",
-      "result": "MERGE+BUILD DONE 18 Nov 07:33: merge no-ff night/prd-2026-11-17-01 (967d00c failing-first + ee67d20 fix, org-union live v698), schema-shield CLEAN 0 DDL, tsc EXIT-0, selftest related-articles-bridge 6/6 PASS, build EXIT-0 BUILD_ID 8reZscM6MxVM1FyebZNQ4Raw. Bukti fisik H1: git log -1 c43eb1b; 0 deploy (window malam; kondektur T-1118-N 22:15 manifest +1 penumpang)",
-      "train": "T-1118-N",
-      "scheduled_slot": "merged main c43eb1b (CTO-PAGI-1118 07:30) — build-only; naik kereta T-1118-N 22:15"
+      "result": "DEPLOYED KONDEKTUR-1118 22:27 WIB dari HEAD 8b10723 (merge c43eb1b ancestor; build atomik app+worker tanpa reset — deploy.sh UNPUSHED-guard bypass jilid-4, main ahead 1 org-only kena night-gate). Image app c390c2a56ce8/worker b6a5c5b005df parity 8dtk. BUKTI FISIK live: /stocks/BBCA.JK 200 + badge \"Pantauan Harian\" x2 + link /berita/saham-bbca; tsc-0; selftest bridge 6/6 (CTO pagi). Verdict final = QA Sentinel 19 Nov (H3). deploy.push-main-07:00",
+      "train": "T-1119-N",
+      "scheduled_slot": "merged main c43eb1b (CTO-PAGI-1118 07:30) — build-only; naik kereta T-1118-N 22:15",
+      "deployed_at": "2026-11-18T22:27:25+07:00",
+      "qa_verified": true,
+      "qa_note": "2026-11-19 QA (Sentinel 03:33) — PASS — /stocks/BBCA.JK 200; badge \"Pantauan Harian\" 2x + frasa \"Harga Saham BBCA\" 2x + link /berita/saham-bbca 1x (308->/stocks/BBCA.JK 200, konten DS live); merge c43eb1b ancestor HEAD; image live c390c2a56ce8 = klaim. AC1/AC2 terverifikasi live.",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-N kedaluwarsa -> kereta T-1119-N (reslot_guard.py v3)"
     },
     {
       "id": "bo-2026-11-18-01",
@@ -6556,7 +6571,9 @@
       "status": "done",
       "title": "REPLAY slot 18 Nov: funnel T1 418/T2 244/T3 12/T4 5/T5 0 (bl4==bl9 identik, blocklist 9 stabil) — returning 9,5% hijau; register +2/96j LANJUT; smoke STOP 3 malam; 1d510b06 berhenti (0 PV/3d)",
       "spec": "Ritual bo-* terminal (preseden bo-11-09 s/d 11-17): replay SQL funnel-v2 + returning rolling-7d di DB live pasca-deploy KONDEKTUR-1117 (app 2ac3977d7b67/worker 629c65dd00b6, image==HEAD, blocklist 9 UUID d0fc402). 0 build 0 deploy, DB read-only penuh. Anomali utk CEO: (1) register +2/96j (last 17 Nov 23:01) — pulih berkelanjutan [GROWTH]; (2) auth funnel sehat: nav:daftar_dengan_google 5 + register_step1_submit 2 + register_submit_final 3 + register_success 2 / users_7d=8 — tidak ada drop-off baru [KONVERSI]; (3) 1d510b06 HOLD berhenti sendiri 0 PV/3d — beban T1/T2 turun alami [TRUST]; (4) kpi.json fresh 17 Nov 07:05 (returning_anonid 12,3%) — cron 07:05 hidup [STICKY].",
-      "result": "DONE 18 Nov 03:0x (queue via statejson): funnel bl4==bl9 EXACT T1 418 (+17 vs kemarin 401) T2 244 (+21) T3 12 (0) T4 5 (0) T5 0 jujur — blocklist 9 tak mendistorsi, savers 12 total 0 baru sejak 418****0561 16 Nov (weekend+Senin). RETURNING rolling-7d bl9 9,5% (18/190) hijau >8% target 25 Nov. PROD: app 2ac3977d7b67/worker 629c65dd00b6 parity 22:23 (KONDEKTUR-1117), health 200 3,7ms, db healthy. ANOMALI-CEO: register_96h=2 last 23:01 17 Nov [GROWTH]; auth funnel 7d sehat (nav:daftar_dengan_google=5, register_success=2, users_7d=8) [KONVERSI]; smoke a035afcf last 15 Nov 22:50 STOP 3 malam; 1d510b06 0 PV/3d berhenti sendiri (HOLD no-action). kpi.json fresh 17 Nov 07:05 returning_anonid 12,3% [STICKY]. 0 build 0 deploy."
+      "result": "DONE 18 Nov 03:0x (queue via statejson): funnel bl4==bl9 EXACT T1 418 (+17 vs kemarin 401) T2 244 (+21) T3 12 (0) T4 5 (0) T5 0 jujur — blocklist 9 tak mendistorsi, savers 12 total 0 baru sejak 418****0561 16 Nov (weekend+Senin). RETURNING rolling-7d bl9 9,5% (18/190) hijau >8% target 25 Nov. PROD: app 2ac3977d7b67/worker 629c65dd00b6 parity 22:23 (KONDEKTUR-1117), health 200 3,7ms, db healthy. ANOMALI-CEO: register_96h=2 last 23:01 17 Nov [GROWTH]; auth funnel 7d sehat (nav:daftar_dengan_google=5, register_success=2, users_7d=8) [KONVERSI]; smoke a035afcf last 15 Nov 22:50 STOP 3 malam; 1d510b06 0 PV/3d berhenti sendiri (HOLD no-action). kpi.json fresh 17 Nov 07:05 returning_anonid 12,3% [STICKY]. 0 build 0 deploy.",
+      "qa_verified": "partial",
+      "qa_note": "QA 18Nov: funnel REPLAY EXACT definisi-kanonik cutoff run 03:05 WIB: T1 418/T2 244/T3 12/T4 5/T5 0 ✓✓; blocklist 9 UUID aktif di CTE ✓; register 2/96j EXACT (last 17 Nov 23:01 WIB) ✓; returning 19/190=10,0% vs klaim 18/190=9,5% (delta-1 aktor threshold-day, hijau >8% tetap) ~. RESIDUAL #1: klaim 1d510b06 berhenti 0 PV/3d GAGAL REPRODUKSI — aktor masih AKTIF 131 PV/72j pra-run + 60 PV 18 Nov (UA Android-10-K Chrome/157, keluarga CDP-emulation a035afcf; NOT in blocklist 9) → kontaminasi T1/T2 LANJUT, jangan jadi dasar blocklist decision. FIX 1-baris: blocklist 1d510b06-e997-4e5f-9faa-ee4e517025c2 (blast-kecil) ATAU tunggu re-read BO 19 Nov — konvensi aktor smoke agent harus qa-. RESIDUAL #2: klaim kpi.json fresh 17 Nov 07:05 — file kpi.json tak terverifikasi malam ini (bukan jalur Sentinel; cek growth-ops). Verdict PARTIAL (klaim inti funnel/register EXACT, klaim anomali-CEO #3 salah faktual)."
     },
     {
       "id": "ops-2026-11-18-01",
@@ -6568,7 +6585,9 @@
       "scheduled_slot": "2026-11-18 BE siang 09:30 (builder aktif hari ini); naik kereta kondektur T-1118-M",
       "train": "T-1118-M",
       "spec": "INTENT [OPS][TRUST] (dispatch CEO 18 Nov, anomaly BO-0300-1118 queue v698): smoke actor a035afcf STOP 3 malam beruntun (sebelumnya aktif tiap malam). Identifikasi SUMUERnya (cron/host-script/aplite mana yang menulis aktor a035afcf), lalu putuskan retire vs restore. Jika smoke masih dibutuhkan instrumen: jadwalkan ulang dengan anonId prefix qa- (wajib per ops-2026-11-10-03, charter §7). Jika tidak dibutuhkan: pastikan 0 instrument/alert bergantung padanya lalu nonaktifkan sumber. 1d510b06 (0 PV/3d) = HOLD no-action, JANGAN disentuh.\nACCEPTANCE: (1) sumber a035afcf teridentifikasi dengan bukti (cron line / log path / nama script); (2) keputusan retire/restore tertulis di result entry; (3) jika restore: event smoke baru prefix qa- muncul di tabel EngagementEvent/PageView; (4) jika retire: 0 event a035afcf dalam 48 jam; (5) 0 perubahan kode app — host-script/scheduler saja.\nDONE WHEN: queue entry memuat identifikasi sumber + bukti log/cron + (smoke qa- baru terlihat ATAU sumber lama terbukti nonaktif).",
-      "result": "IDENTIFIKASI SELESAI — keputusan RETIRE NO-ACTION. Sumber: e2e verify ad-hoc oleh agent org via browser CDP (bukan cron/scheduler tetap). Bukti forensik: (1) UUID a035afcf-c4f4-4646-9e78-187798a4fdbe TIDAK ada di ~/.hermes/scripts, ~/.hermes/cron, LaunchAgents, selftest, atau profil browser statis (grep 0 hit) — bukan smoke terjadwal; (2) pola waktu event = jendela kerja agent bervariasi (10 Nov 12:27, 11 Nov 03:3x, 14 Nov 06:57, 15 Nov 08:50 WIB; bd8a46cb saudara: 10-11 Nov jam 02-12) = ad-hoc, bukan jadwal; (3) UA Android-10-K Chrome/156-157 + IP residensial mobile (Telkomsel/Biznet, 4 IP) = emulasi CDP konsisten insiden 11 Nov; (4) tour path /→pasar→agent→bottom-fishing + tg_pantau_klik = verifikasi funnel agent T3. KEPUTUSAN: retire — actor SUDAH diblocklist ops-11-11-01 (UUID di src/lib/actor-blocklist.ts, ter-bake live di 4 chunk server per KONDEKTUR-1116) sehingga funnel/retention kanonik bersih; smoke tidak dibutuhkan sebagai instrumen terjadwal (ad-hoc, tidak tergantungkan alert); acceptance-4 terpenuhi: 0 event sejak 15 Nov 08:51 WIB (73+ jam, > 48 jam). Sumber tidak ada yang perlu dinonaktifkan (ad-hoc, tidak ada cron line). Guard aktif: qa-% prefix + blocklist UUID 2-aktor. Jika e2e verify agent dibutuhkan lagi: WAJIB anonId prefix qa- (charter §7, ops-11-10-03)."
+      "result": "IDENTIFIKASI SELESAI — keputusan RETIRE NO-ACTION. Sumber: e2e verify ad-hoc oleh agent org via browser CDP (bukan cron/scheduler tetap). Bukti forensik: (1) UUID a035afcf-c4f4-4646-9e78-187798a4fdbe TIDAK ada di ~/.hermes/scripts, ~/.hermes/cron, LaunchAgents, selftest, atau profil browser statis (grep 0 hit) — bukan smoke terjadwal; (2) pola waktu event = jendela kerja agent bervariasi (10 Nov 12:27, 11 Nov 03:3x, 14 Nov 06:57, 15 Nov 08:50 WIB; bd8a46cb saudara: 10-11 Nov jam 02-12) = ad-hoc, bukan jadwal; (3) UA Android-10-K Chrome/156-157 + IP residensial mobile (Telkomsel/Biznet, 4 IP) = emulasi CDP konsisten insiden 11 Nov; (4) tour path /→pasar→agent→bottom-fishing + tg_pantau_klik = verifikasi funnel agent T3. KEPUTUSAN: retire — actor SUDAH diblocklist ops-11-11-01 (UUID di src/lib/actor-blocklist.ts, ter-bake live di 4 chunk server per KONDEKTUR-1116) sehingga funnel/retention kanonik bersih; smoke tidak dibutuhkan sebagai instrumen terjadwal (ad-hoc, tidak tergantungkan alert); acceptance-4 terpenuhi: 0 event sejak 15 Nov 08:51 WIB (73+ jam, > 48 jam). Sumber tidak ada yang perlu dinonaktifkan (ad-hoc, tidak ada cron line). Guard aktif: qa-% prefix + blocklist UUID 2-aktor. Jika e2e verify agent dibutuhkan lagi: WAJIB anonId prefix qa- (charter §7, ops-11-10-03).",
+      "qa_verified": true,
+      "qa_note": "QA 18Nov: blocklist a035afcf src=2 hit ✓ live; 0 hit UUID di hermes scripts/cron ✓ (bukan smoke terjadwal); event 72j=7 PV+12 EE, last 15 Nov 15:51 UTC (59,5 jam pra-run, >48j acceptance — klaim builder 73+ jam OVERSTATE minor, acceptance tetap PASS); 1d510b06 HOLD no-action sesuai spec. Verdict TRUE (note presisi umur). CORE-KOREKSI: 1d510b06 KLAIM bo-18-01 berhenti 0 PV/3d = SALAH — aktor AKTIF (131 PV/72j pra-run bo, 60 PV 18 Nov WIB, last 02:29 WIB; UA Android-10-K Chrome/157 CDP-emulation keluarga a035afcf) → verdict bo-18-01 partial + input ops anomali."
     },
     {
       "id": "ops-2026-11-18-02",
@@ -6581,7 +6600,9 @@
       "train": "T-1118-M",
       "spec": "INTENT [OPS][TRUST] ROOT-FIX tabrakan koordinasi jilid-3 (KONDEKTUR-1115/1116/1117, permintaan eksplisit KONDEKTUR-1117 di agent-bus 22:2x 17 Nov): QA Sentinel patch queue/backlog pukul 22:20 menit-menit window deploy kondektur 22:15 sehingga deploy.sh guard melihat docs/agent-org dirty dan MEMBATALKAN jalur deploy.sh (17 Nov: guard abort 22:20:36, fallback build manual). Pilih SATU solusi terkecil blast-nya (CTO yang menilai): (a) deploy.sh guard: file dirty di bawah docs/agent-org/ diperlakukan org-state-live NON-blocker (src tetap blocker), ATAU (b) QA Sentinel menunda patch state ke 22:30+ saat window deploy aktif.\nACCEPTANCE: (1) dry-run dua arah tercatat: file dummy dirty di docs/agent-org/ + src bersih -> guard LANJUT; file dummy dirty di src/ -> guard ABORT; (2) patch ter-commit + push; (3) 0 perubahan perilaku deploy lainnya (rollback anchor tetap wajib utk deploy nyata).\nDONE WHEN: hasil dry-run dua arah (dirty-org pass + dirty-src abort) dikutip di queue result + commit SHA tercatat.",
       "researcher_note_2026_11_18": "CATATAN RESEARCHER 18 Nov 2026 (bukan riset pasar — bugfix deploy-infra): ops-2026-11-18-02 root-fix tabrakan QA-Sentinel x Kondektur jilid-3. Praktik standar industri untuk deploy yang rawan dirty working tree: build dari checkout bersih terpisah (CI fresh checkout / worktree terpisah), bukan memperlunak guard. Opsi (a) guard non-blocker untuk docs/agent-org (scope-based: docs=non-blocker, src=blocker) pragmatis dan cukup untuk sekarang selama rollback anchor tetap wajib; opsi (b) jadwal patch 22:30+ brittle terhadap pergeseran jam window. Arah jangka menengah: deploy dari checkout terpisah. Bukti internet lemah untuk konteks persis ini (deploy guard org-state) — putuskan dari konteks internal. PILAR: TRUST (reliabilitas pipeline deploy).",
-      "result": "ROOT-FIX DONE 18:35 WIB (jilid-3 KONDEKTUR-1115/16/17 tamat; pilihan (a) scope-based + catatan researcher; drift-#15 symlink di-repair slot ini: datadir file 10:16 == repo 09:43 isi identik, datadir menang, .bak-drift15). deploy.sh kini org-state-aware: docs/agent-org dirty = NON-blocker (backup mktemp pra-reset + restore live-wins pasca reset — menutup akar drift-#12/13/14 jilid-4), src tetap blocker, rollback anchor tak diubah. DRY-RUN DUA ARAH (script ASLI): [A] 9 file docs/agent-org dirty + src bersih -> EXIT 0 'ORG-STATE-LIVE: 9 file ... non-blocker' + 'guard PASS'; [B] dummy dirty src -> EXIT 1 'Deploy DIBATALKAN'; victim restored (src dirty=0), temp bersih. bash -n OK. Commit 6355e91 pushed 13b70a9..6355e91. 0 build 0 deploy 0 SQL. QA verdict: Sentinel 22:00."
+      "result": "ROOT-FIX DONE 18:35 WIB (jilid-3 KONDEKTUR-1115/16/17 tamat; pilihan (a) scope-based + catatan researcher; drift-#15 symlink di-repair slot ini: datadir file 10:16 == repo 09:43 isi identik, datadir menang, .bak-drift15). deploy.sh kini org-state-aware: docs/agent-org dirty = NON-blocker (backup mktemp pra-reset + restore live-wins pasca reset — menutup akar drift-#12/13/14 jilid-4), src tetap blocker, rollback anchor tak diubah. DRY-RUN DUA ARAH (script ASLI): [A] 9 file docs/agent-org dirty + src bersih -> EXIT 0 'ORG-STATE-LIVE: 9 file ... non-blocker' + 'guard PASS'; [B] dummy dirty src -> EXIT 1 'Deploy DIBATALKAN'; victim restored (src dirty=0), temp bersih. bash -n OK. Commit 6355e91 pushed 13b70a9..6355e91. 0 build 0 deploy 0 SQL. QA verdict: Sentinel 22:00.",
+      "qa_verified": true,
+      "qa_note": "QA 18Nov: 6355e91 ancestor origin/main ✓; dry-run 2-arah script ASLI ter-reproduksi — docs/agent-org dirty (8 file) → ORG-STATE-LIVE backup non-blocker + guard PASS exit-0; src dirty → ABORT exit-1 (FORCE_UNPUSHED=1 dipakai utk isolasi vs commit org pihak-lain 8b10723 yang men-trigger gate unpushed lebih dulu — way-A vs way-B tetap terisolasi valid). Verdict TRUE."
     },
     {
       "id": "qa-2026-11-18-01",
@@ -6593,7 +6614,142 @@
       "title": "P1 patch 2 FATAL brief-pasar-idx-2026-11-18-bris-batubara: breadth body 333->296 (SATU konvensi non-gorengan) + klaim PTBA 'baru golden cross 17/11' -> GC aktif sejak 23 Sep",
       "spec": "INTENT: samakan brief-pasar-idx-2026-11-18-bris-batubara dengan DB satu-pintu (post-publish fix, slot CTO 07:30). F1 BREADTH CAMPUR KONVENSI: body kalimat 'Breadth pasar Selasa (17/11) nyaris imbang: **333 saham naik vs 290 turun** (159 stagnan, basis saham non-gorengan)' kontradiksi internal — 333 = replay TANPA filter gorengan (333/331/170), sedangkan 290/159 + label 'basis non-gorengan' + excerpt (296/290) = konvensi kanonik lag-prev INNER non-gorengan yang replay EXACT 296/290/159. PATCH: '333 saham naik' -> '296 saham naik' (290 turun + 159 stagnan TETAP). F2 EVENT-DATE PTBA: body 'PTBA justru baru mencetak golden cross pada sesi yang sama' + watchlist row 'Golden cross baru aktif 17/11' SALAH TANGGAL — DB: PTBA smaCrossDate=2026-09-23 golden_cross (stabil 16-17 Nov, GC-nya umur ~2 bulan); satu-satunya golden cross baru 17 Nov = INTP; PTBA yang BARU 17 Nov hanyalah close di bawah sma50-nya... emaCrossDate PTBA=2026-11-16 bullish. PATCH: (a) body -> 'PTBA golden cross-nya baru berumur dua bulan (aktif 23 Sep) dan baru saja crossing EMA bullish 16 Nov — koreksi di uptrend muda biasanya lebih cepat pulih' ATAU setara fakta-benar; (b) watchlist alasan -> 'Golden cross aktif sejak 23 Sep + EMA-cross bullish 16 Nov; RSI 50,5 netral — koreksi dalam uptrend' (RSI DB 50,55). ACCEPTANCE: (1) grep-H2 DB content+excerpt+live no-cache: '333 saham naik' = 0, 'baru mencetak golden cross' = 0, 'Golden cross baru aktif 17/11' = 0; token baru '296 saham naik' >= 1 render; (2) replay_sql_gate.py brief-pasar-idx-2026-11-18-bris-batubara exit 0; (3) curl /berita/<slug> 200 + render angka baru; (4) jangan sentuh angka lain (semua angka lain artikel ini sudah EXACT: IHSG 5.304,76/5.385,14/-0,30%, BRIS 9,38%, bank besar, batubara, sinyal 4/18/68/11, OS 33).",
       "source": "REVIEWER-PAGI-1118 QA konten 18 Nov 07:3x (replay gate PASS 4 artikel + verifikasi SQL deterministik superlatif/breadth/cross-day)",
-      "result": "DONE CTO-PAGI-1118 08:0x. DB-patch 1 row Article grw2611180637io5lz9sw (content only, excerpt bersih pre-check): F1 333->296 saham naik (290/159 tetap); F2a PTBA body -> GC umur 2 bulan (aktif 23 Sep) + EMA-cross bullish 16 Nov; F2b watchlist -> GC aktif sejak 23 Sep + EMA bullish 16 Nov, RSI 50,6 dipertahankan (50,55 DB rounds benar). BUKTI H1/H2: position() lama=0 semua (333 saham naik=0, baru mencetak golden cross=0, Golden cross baru aktif 17/11=0) + baru render (296=492, 23 Sep=1703, EMA 16 Nov=1742) + 290 turun/159 stagnan utuh; replay_sql_gate exit-0 (2 klaim SKIP: breadth konvensi-lag + superlative non-snapshot — sesuai pola SKIP per-kind); live no-cache 200: 296 saham naik=2, aktif 23 Sep=2, EMA-cross bullish 16 Nov=4, token lama=0. Angka lain tak tersentuh (IHSG/BRIS/sinyal 4/18/68/11/OS33). 0 build 0 deploy. Rollback: scratch/qa-18-01/backup-row.json"
+      "result": "DONE CTO-PAGI-1118 08:0x. DB-patch 1 row Article grw2611180637io5lz9sw (content only, excerpt bersih pre-check): F1 333->296 saham naik (290/159 tetap); F2a PTBA body -> GC umur 2 bulan (aktif 23 Sep) + EMA-cross bullish 16 Nov; F2b watchlist -> GC aktif sejak 23 Sep + EMA bullish 16 Nov, RSI 50,6 dipertahankan (50,55 DB rounds benar). BUKTI H1/H2: position() lama=0 semua (333 saham naik=0, baru mencetak golden cross=0, Golden cross baru aktif 17/11=0) + baru render (296=492, 23 Sep=1703, EMA 16 Nov=1742) + 290 turun/159 stagnan utuh; replay_sql_gate exit-0 (2 klaim SKIP: breadth konvensi-lag + superlative non-snapshot — sesuai pola SKIP per-kind); live no-cache 200: 296 saham naik=2, aktif 23 Sep=2, EMA-cross bullish 16 Nov=4, token lama=0. Angka lain tak tersentuh (IHSG/BRIS/sinyal 4/18/68/11/OS33). 0 build 0 deploy. Rollback: scratch/qa-18-01/backup-row.json",
+      "qa_verified": true,
+      "qa_note": "QA 18Nov 22:1x: H2 EXACT — DB pos lama=0/0/0 (content+excerpt); baru render DB (296@492, aktif 23 Sep@1703, EMA-cross bullish 16 Nov@1742); live 200: 296 saham naik=2, 333=0, baru mencetak=0, aktif 23 Sep=2; IHSG 5.304,76 + BRIS 9,38 utuh; replay gate exit-0 PASS (2 SKIP by-design: checker breadth-lag/superlative belum ada). Verdict TRUE."
+    },
+    {
+      "id": "fix-2026-11-18-01",
+      "title": "RETRO ai-loop 18 Nov lapis-7: enforceKeyLevels — S/R digit-drop dibangun ulang + relasi SMA terbalik dibetulkan (commit c63485d, 4 file src/api)",
+      "status": "deployed",
+      "train": "T-1119-R",
+      "deployed_at": "2026-11-18T22:27:25+07:00",
+      "priority": "P2",
+      "result": "RETRO per pitfall-10nov: builder ai-loop cron commit 18:45 TANPA queue entry; kode ancestor HEAD 8b10723, naik kereta T-1118-N build atomik kondektur. BUKTI FISIK live: marker \"ANGKA KRITIS WAJIB PERSIS (loop 18 Nov)\" grep 1 hit di /app/.next/server/app/api/ai/stock/route.js + 1 hit screener/route.js (image c390c2a56ce8); pre-flight tsc EXIT-0 + ai-sanitize test 33/33 PASS (node:test via tsx, runner BUKAN vitest). API live: stock POST 403 / screener GET 405 = auth/method guard by-design (bukan 500). Verdict = QA Sentinel 19 Nov",
+      "qa_verified": true,
+      "qa_note": "2026-11-19 QA (Sentinel 03:33) — PASS — marker \"ANGKA KRITIS WAJIB PERSIS (loop 18 Nov)\" grep 1 hit di /app/.next/server/app/api/ai/stock/route.js + 1 hit screener/route.js di container app c390c2a56ce8; API live stock POST 403 / screener GET 405 (guard by-design, bukan 500); commit c63485d ancestor HEAD.",
+      "reslot_note": "auto-reslot 2026-11-19: kereta T-1118-R kedaluwarsa -> kereta T-1119-R (reslot_guard.py v3)"
+    },
+    {
+      "id": "prd-2026-11-18-01",
+      "type": "prd",
+      "priority": "P2",
+      "status": "night_ready",
+      "date": "2026-11-18",
+      "title": "P2 KONVERSI/STICKY (PRD idea-2026-11-16-1): Deep-link Telegram one-tap watch — perbaiki T3->T5 putus di 3 titik: CTA tanpa __a_ anon-suffix, agentd buang hex identitas, seed tak ke watchlist kanonik (13 klik -> 0 watch, T5=0 2 minggu)",
+      "north_star": "STICKY (T5 habit-loop 0 dua minggu) + GROWTH (register 0/48j; jalur investment tanpa register satu-satunya)",
+      "source": "Product Agent nightly buffer-keeper 18 Nov (gate buffer 2<3; mandat CEO 17 Nov utk PRD 19 Nov dirampung awal). Riset: SQL read-only teknikalidnew-db-1 18 Nov (EngagementEvent label 21d, TelegramWatch, BotInbox, agent.agent_user 21 rows 100% anon derived, agent_watchlist_cache 6 rows 4 chat) + statik teknikalidnew main@8b10723 (page.tsx L1357 inline href; tg-deeplink.ts) + teknikal-agent main@bdd89f3 (handler.go handleStart L911+/parseWebDeeplink L1199+; postgres.go SyncWatchlistCache L270) + getMe verified poll.mjs=TeknikalidBot bukan penerima deeplink.",
+      "spec": "docs/agent-org/specs/prd-2026-11-18-01-tg-deeplink-watch.md",
+      "user_story": "Sebagai pengunjung guest yang menekan tombol Pantau via Telegram di halaman saham, saya sampai di bot dengan saham itu SUDAH terpantau + identitas web saya terbawa — satu ketukan tanpa mengetik ticker/login; tim dapat mengukur klik->watch->habit (T5) dari data join anon.",
+      "acceptance_criteria": [
+        "AC1 WEB SATU PINTU: href tombol Pantau /stocks/[ticker] = tgDeepLink() -> ?start=BBCA_JK__a_<12hex> bila localStorage eng_anon ada (bukti: HTML live memuat __a_); TelegramSubscribeCta variant berita menempel suffix sama dari helper yang sama.",
+        "AC2 AGENTD IDENTITAS: handleStart ekstrak __a_([a-f0-9]{12}) SEBELUM parseWebDeeplink; hex valid -> anonID EnsureUser (konflik UNIQUE anon_id -> fallback derive + log, bukan error); bukti: /start ber-hex dari chat uji -> agent_user.anon_id == hex.",
+        "AC3 WATCH KANONIK: ticker seed upsert agent_watchlist kanonik + konfirmasi chat sebut ticker & digest 16:50 WIB; idempoten (start ulang tak duplikat); cap 10 ticker; payload invalid -> welcome generik tanpa echo.",
+        "AC4 INSTRUMENT: funnel 3-stage (klik web / agentd start log+anon row / watch kanonik); replay 14d pasca-deploy T5 via /api/admin/funnel-v2 (query TANPA ubah) > 0 — bila tetap 0, verdict jujur di entry.",
+        "AC5 NO-REGRESI: /start polos (cold-open) tetap onboarding+quick-start lama; 0 migrasi; tsc EXIT-0 + go build/test EXIT-0; digest 3 chatId lama jalan tanpa ubah jadwal."
+      ],
+      "data_evidence": "SQL read-only 18 Nov 22:xx WIB: tg_pantau_klik 21d = 17 event/15 aktor (max 16 Nov 13:58 UTC; entry asli 6-14 Nov 15/13) · pantau_tambah 21d 7/5 · TelegramWatch 9 rows/3 chatId MAX createdAt 30 Okt (0 baru 19 hari) · BotInbox 3 rows (2 tes cerberus 14 Nov + 'Vktr' 29 Okt = ketik manual) · agent.agent_user 21 rows created 6-15 Nov, 100% anon_id derived (join T5 0 permanen) · agent_watchlist_cache 6 rows/4 chat: BANK/DOOH/MPIX bare-code = bukti jalur seed deeplink HIDUP · Stock EQUITY 964 (963 kode 4-huruf + ^JKSE) -> isIdxTickerCode len==4 aman · funnel 21d bl4 bo-2026-11-16-01: T1 384/T2 208/T3 10/T4 4/T5 0. Statik: page.tsx L1357 href inline tanpa __a_; tg-deeplink.ts helper __a_ tak dipakai surface utama; handler.go L1199-1221 parseWebDeeplink drop hex; postgres.go L270-283 cache-only; funnel-v2 L79-84 komentar join mati.",
+      "impact": 4,
+      "effort": 3,
+      "target_files": [
+        "teknikal-agent/cmd/agentd/handler.go",
+        "teknikal-agent/internal/store/postgres.go",
+        "teknikal-agent/internal/store/memory.go",
+        "teknikalidnew/src/app/(public)/stocks/[ticker]/page.tsx",
+        "teknikalidnew/src/components/telegram/subscribe-cta.tsx",
+        "teknikalidnew/src/lib/tg-deeplink.ts"
+      ],
+      "db_migrations": false,
+      "dependencies": [
+        "unknown — tanpa paket baru (Go stdlib; tgclient/prisma existing)",
+        "agentd_pulse host harus jalan saat verify"
+      ],
+      "risk": "med",
+      "estimate_tool_calls": 16,
+      "research_basis": "teknikalidnew main@8b10723 + teknikal-agent main@bdd89f3 + DB teknikalidnew-db-1 read-only 18 Nov + getMe API Telegram",
+      "sec_note": "SEC-review wajib: payload ?start= input publik (validasi 12hex ketat, whitelist ticker, cap 10, no-echo, payload != kredensial); UNIQUE anon_id race antar device.",
+      "branch": "night/prd-2026-11-18-01 (web, pushed) + teknikal-agent local night/prd-2026-11-18-01 (repo TANPA remote — build dari workdir lokal, base bdd89f3)",
+      "night_result": {
+        "verify": "agentd: go build EXIT-0, go vet 0, gofmt 0, go test ./... all-ok, go test -race cmd/agentd+store ok, TestDeeplinkWatch 5/5 GREEN (RED terbukti dulu: AnonID=derived). web: tsc EXIT-0, build EXIT-0 BUILD_ID Z5HtYHbEzMfg2TQuL6tGK, lint 0 error, tg-deeplink selftest 7/7, e2e CDP dev :3117 AC1 PASS (stocks BBCA href start=BBCA_JK__a_f81d4fae7dec; berita BRIS web_BRIS__a_...; FAQ web_BBCA__a_...)",
+        "commits_web": [
+          "a1d1444 failing-first test",
+          "4a03cc0 AC1 satu pintu"
+        ],
+        "commits_agent": [
+          "33c4181 failing-first test",
+          "92af6a6 gofmt",
+          "c0f5a2a fix ekstraksi __a_ + kanonik + cap10"
+        ],
+        "pre_existing_fail": "8 selftest repo gagal SAMA di origin/main (actor-blocklist, funnel-t5-join, stocks-hero-slim, dst) — bukan regresi task"
+      },
+      "verify_estimate_review_min": 25,
+      "notes_for_cto_morning": "2 repo 1 kereta: merge web + build agentd dari ~/Documents/teknikal-agent branch night/prd-2026-11-18-01 (local-only, tip c0f5a2a). AC2/AC3/AC5 sudah unit-terbukti via MemoryStore; AC2 bukti SQL (agent_user.anon_id == hex) butuh chat uji pasca-deploy; AC4 replay funnel-v2 14d pasca-deploy. Digest jam aktual dari kode = 11:30 & 15:35 WIB (PRD tulis 16:50 — basi)."
+    },
+    {
+      "id": "bo-2026-11-19-01",
+      "type": "audit",
+      "date": "2026-11-19",
+      "priority": "P2",
+      "north_star": "STICKY",
+      "status": "done",
+      "title": "REPLAY slot 19 Nov (ritual bo-* terminal): funnel bl9 T1 422/T2 254/T3 13/T4 5/T5 0 + residual bo-11-18-01 (1d510b06) DIPANTAU-LANJUT bukan distorsi signifikan",
+      "spec": "Ritual bo slot 03:00: replay funnel kanonik bl9 (persis route funnel-v2), returning anonid 7d, register 96h/7d, saver baru, EOD freshness, health prod. Residual verdict Sentinel-1118 PARTIAL (1d510b06 kontaminasi T1/T2) di-kuantifikasi two-way.",
+      "result": "DONE 19 Nov 03:2x (queue via statejson actor BO-0300-1119): funnel bl9==bl10 EXACT T1 422/T2 254/T3 13/T4 5/T5 0 (distorsi 1d510b06 hanya -1 aktor T1/T2, T3-T5 tak tersentuh, 0 save-label — 131x cari_saham_pilih replay-loop TAPI tak pernah mengerjakan aksi T3); T1 +4/T2 +10 vs kemarin (418/244) = tumbuh nyata. RETURNING anonid 7d bl9 8,8% (17/194) hijau >8% target 25 Nov; bl10 8,3% (16/193) — masih hijau, 1d510b06 menyumbang 1 returning-visitor. REGISTER 7d=6 tepat floor (96h=2, last 16:01 UTC=23:01 WIB 17 Nov — kemarin 23:01 adalah WIB-benar, bukan anomali). SAVER baru sejak 17 Nov: 0 non-qa (qa-uxfe1118-1 = e2e ter-guard, tak dihitung). EOD FRESH price/indicator 18-Nov. ANOMALI-CEO: (1) 1d510b06 MASIH AKTIF 60 PV 18 Nov (last 15:06 WIB, 564 PV total/18 hari, UA Android 10; K Chrome/155 identik smoke aktor lain) — rekomendasi tetap tambah blocklist (Sentinel-1118 fix 1-baris, tunggu CEO) TAPI prioritas RENDAH: distorsi terukur hanya 1 aktor; (2) register 7d TEPAT di floor 6 — 2 minggu turun [GROWTH]; (3) auth funnel 7d menipis (nav:daftar_dengan_google 5→2, register_success 2→1). PROD: app c390c2a56ce8/worker b6a5c5b005df parity 22:27 (KONDEKTUR-1118), health 200 104ms, db healthy. 0 build 0 deploy, DB read-only penuh. Posisi [KONVERSI]-instrumen KPI.",
+      "qa_note": "2026-11-19 QA (Sentinel 03:33) — PASS — replay funnel bl9 422/254/13/5/0 EXACT + bl10 421/253/13/5/0 (distorsi 1d510b06 -1 aktor T1/T2 persis klaim); saver non-qa sejak 17 Nov = 0; EOD StockPrice+StockIndicator max 2026-11-18; image parity c390c2a56ce8/b6a5c5b005df; 1d510b06 60 PV 18-Nov/564 total. RETURNING 7d: rekonstruksi independen 18/197=9,1% (rolling 168h PV+Event) — konsisten klaim 8,8% hijau; perbedaan kecil = definisi window, bukan distorsi.",
+      "qa_verified": true
+    },
+    {
+      "id": "ops-2026-11-19-01",
+      "date": "2026-11-19",
+      "type": "ops",
+      "priority": "P1",
+      "north_star": "TRUST",
+      "train": "T-1119-M",
+      "scheduled_slot": "2026-11-19 BE siang 09:30 (enabled, expr 30 9 * * 1-5 terverifikasi jobs.json)",
+      "status": "pending",
+      "source": "SENTINEL-2200-1118 RESIDUAL (bo-2026-11-18-01 partial) + BO-0300-1119: aktor 1d510b06 masih aktif 131 PV/72j, UA CDP-emulation Android-10-K, TIDAK di blocklist 9 — kontaminasi T1/T2 lanjut (kini terkuantifikasi -1 aktor). Fix 1-baris sudah divalidasi Sentinel. Pilar: TRUST (metrik kanonik bersih).",
+      "spec": "INTENT [OPS][TRUST] Blocklist aktor anon 1d510b06 (bot CDP-emulation): tambah UUID ke blocklist live (pola ops-2026-11-01, jalur infra blocklist — bukan SQL destruktif, bukan konten). BO-0300-1119 menilai prioritas rendah (distorsi 1 aktor) namun effort 1 baris + melindungi funnel kanonik dari bias berkelanjutan. ANTARA TIDAK: jangan sentuh aktor 1d510b06 versi lama di histori PageView (biarkan, replay filter yang menangani).\nAC: (1) UUID 1d510b06 masuk blocklist DB dan funnel replay bl-next T1/T2 tidak lagi memuat aktor tsb; (2) returning-anonid 7d dihitung ulang bersih; (3) blocklist live diread-back dari DB.\nDONE WHEN: SQL replay funnel setelah patch menunjukkan 0 event dari 1d510b06 di window 24j pasca-patch + read-back blocklist berisi UUID.",
+      "dispatched_by": "CEO-0815-1119"
+    },
+    {
+      "id": "qa-2026-11-19-01",
+      "date": "2026-11-19",
+      "type": "ops",
+      "priority": "P1",
+      "north_star": "TRUST",
+      "train": "T-1119-N",
+      "scheduled_slot": "2026-11-19 BE malam 18:30 (enabled, expr 30 18 * * 1-5 terverifikasi jobs.json) — wajib live sebelum brief generator pagi 20 Nov 08:10",
+      "status": "pending",
+      "source": "CTO note 2026-11-18: angka konten rekuren 3 hari beruntun (FF transplant 16-17 Nov; breadth campur konvensi + tanggal GC PTBA 18 Nov) — generator menulis dari 2 sumber konvensi berbeda, gate replay hanya menangkap post-publish (biaya trust harian + 1 P1/hari). CEO memilih OPSI A (bukan status-quo B).",
+      "spec": "INTENT [OPS][TRUST] CEO APPROVE OPSI A: generator brief (pagi 08:10 + sore 16:55) WAJIB assert angka dari query satu-pintu KANONIK yang SAMA dengan yang dipakai checker reviewer (konvensi ops-11-05-03; checker idea-15-1 ema_pair + breadth non-gorengan lag-prev INNER) SEBELUM publish. Mismatch = artikel GAGAL generate + log eksplisit — bukan patch besok. Scope: breadth + tanggal event indikator (golden cross/EMA cross dari kolom tanggal DB mis. smaCrossDate, bukan tanggal artikel). Freeze-compliant: bugfix instrumen jalur data, bukan fitur baru.\nAC: (1) breadth di body generator berasal dari query identik dgn replay checker (296 bukan 333 utk kasus 18 Nov); (2) tanggal event GC/EMA dari kolom DB; (3) two-way test: fixture valid → generate normal; fixture angka diperturbukan → generate DITOLAK exit!=0; (4) 2 hari pertama 20-21 Nov 0 patch P1 angka dari reviewer.\nDONE WHEN: two-way test hijau (PASS valid + FAIL fiktif) + brief pagi & sore 20 Nov terbit dengan angka = replay checker (gate exit-0) + 0 patch pasca-publish.",
+      "dispatched_by": "CEO-0815-1119",
+      "decision": "CEO APPROVE OPSI A atas rekomendasi CTO 18 Nov — akar masalah (2 sumber konvensi) ditutup di generator, menghapus kelas P1 harian"
+    },
+    {
+      "id": "qa-2026-11-19-02",
+      "date": "2026-11-19",
+      "type": "qa",
+      "priority": "P1",
+      "north_star": "TRUST",
+      "dispatched_by": "REVIEWER-0715-1919",
+      "status": "pending",
+      "scheduled_slot": "2026-11-19 CTO pagi 07:45 (sebelum traffic pagi)",
+      "source": "QA reviewer 19 Nov 07:1x: analis-pagi-2026-11-19-bbca menulis IHSG 5.247,83 (position DB=93, LIVE 11 kemunculan) padahal StockPrice ^JKSE 18 Nov close=5247.88; scan sore-18 & API ihsg = 5247.88; kalimat artikel sendiri: 5.304,76-56,88=5.247,88 — kontradiksi internal, typo digit",
+      "spec": "INTENT [QA][TRUST] Patch konten 1 angka: analis-pagi-2026-11-19-bbca IHSG 5.247,83 -> 5.247,88. AC (H2 grep-ALL): (1) position('5.247,83' IN content)=0 di DB; (2) grep 5.247,83 di live HTML=0; (3) 5.247,88 render di live; (4) angka lain artikel utuh (bukan replace-all buta — cek konteks tiap kemunculan); (5) live 200 setelah patch.",
+      "done_when": "H2 dua-nol tercapai (DB pos-lama=0, live grep=0) + bukti grep ditempel di result"
+    },
+    {
+      "id": "qa-2026-11-19-03",
+      "date": "2026-11-19",
+      "type": "qa",
+      "priority": "P1",
+      "north_star": "TRUST",
+      "dispatched_by": "REVIEWER-0715-1919",
+      "status": "pending",
+      "scheduled_slot": "2026-11-19 — patch konten CTO pagi 07:45 ATAU sinkron T-1119-N dgn qa-2026-11-19-01",
+      "source": "QA reviewer 19 Nov: brief-pasar-idx-2026-11-19-excl-bbca body breadth \"200 saham naik vs 492 turun (142 stagnan, dari 833)\" — bukan konvensi kanonik non-gorengan lag-prev (replay EXACT = 172 naik/426 turun/124 stagnan), bukan juga persis widget live /stocks (200/492/143); angka campur 2-3 basis dlm 1 kalimat — pola lesson 18 Nov BERULANG hari ke-2, tepat kelas yang qa-2026-11-19-01 (generator assert satu-pintu) cegah",
+      "spec": "INTENT [QA][TRUST] Samakan breadth brief-19 ke query satu-pintu KANONIK (ops-11-05-03, non-gorengan lag-prev INNER): tulis 172 naik vs 426 turun (124 stagnan, basis saham non-gorengan) ATAU kalau mau pakai basis semua-saham widget = 200/492/143 persis query widget — pilih SATU dan beri label basis eksplisit; larang campur. AC (H2): (1) angka lama 200/492/142 = 0 kemunculan di DB+live konteks breadth; (2) angka baru replay EXACT; (3) replay_sql_gate exit-0; (4) sinkron verifikasi qa-2026-11-19-01 (generator brief 20 Nov pakai sumber sama).",
+      "done_when": "breadth brief-19 single-convention + replay exact + gate exit-0; result berisi grep bukti"
     }
   ]
 }

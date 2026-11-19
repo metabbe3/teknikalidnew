@@ -2263,9 +2263,14 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 4. TRAP GSC: tab dimensi GSC kebal click() sintetis + Input.dispatchMouseEvent; yang BEKERJA = focus() via JS lalu Input.dispatchKeyEvent Enter — data page muncul sebagai table KEDUA di DOM (table[0]=Kueri stale, table[1]=Halaman; baca dengan .find(/Halaman teratas/)).
 5. ROTASI FLOW: flow (a) screener→preset→sinyal→register BELUM diaudit penuh (kandidat slot UX berikut, sabtu 10:30); akademi tanya [slug] punya breadcrumb ke volume-spike — cek konsistensi label saat audit.
 
-## 2026-11-18 19:3x WIB — UX-FE-1915-1118-B (instance paralel slot sama — double-fire cron)
-1. ANOMALI: slot UX-FE Rabu 19:15 ter-fire DUA instance bersamaan (bukti: commit 8b75972/d11bfdd 19:27-19:29 vs flip statejson v715/v718/v719 interleaved v717/v720+). Tulisan koheren lewat statejson single-writer, verdict SAMA independen (KEEP, GSC 7 tayang pos 7,9), 0 konflik — tapi double-fire = risiko drift jilid berikut; masukkan ke scope ops-11-01-04/root-fix cron dedup.
-2. KONFIRMASI independen (instance-B): baca GSC via tabel DOM 16-bulan dimensi PAGE (sesi owner :9222) — volume-spike 0/7/7,9; golden-cross 0/3/21,0; oversold 0/13/11,8. SQL PageView: 22 PV/2 UV, 15/22 referrer /stocks, 0 organik. Endpoint internal GSC (sitedata.search-analytics) POST-body batchexecute 404 — baca tabel DOM yang ter-render = jalur paling murah.
-3. HEALTH-CHECK (ritual queue-habis): /saham-volume-spike 375px Chrome CDP asli — sw=vw=375 no-overflow, H1+title SEO utuh, 30 link /stocks/* (data non-empty), 0 empty-state. PASS.
-4. H3 self-correct: sempat flip qa_verified=true sendiri → langsung revert false; verdict tetap milik Sentinel/reviewer.
-5. STATE: main 0fd5c19 (lokal, org-only); entry sim-2026-11-15-1 final in_train T-1118-N (field decision+result terisi) — kereta 22:15 bawa reciprocal-link 8b75972.
+## 2026-11-19 03:3x WIB — BO-0300-1119 (slot backoffice 03:00, Kamis)
+1. SELESAI: bo-2026-11-19-01 (queue v742, replay read-only): funnel bl9==bl10 EXACT T1 422/T2 254/T3 13/T4 5/T5 0; returning anonid 7d 8,8% (17/194) hijau; register 7d=6 TEPAT floor; EOD FRESH 18-Nov. 0 build 0 deploy.
+2. RESIDUAL bo-11-18-01 (Sentinel PARTIAL) TERKUANTIFIKASI: 1d510b06 aktif 60 PV 18 Nov (564 total, UA Android 10;K identik smoke) TAPI distorsi kanonik hanya -1 aktor T1/T2, T3/T4/T5 tak tersentuh, 0 save-label. Fix 1-baris blocklist tetap benar tapi prioritas RENDAH — keputusan CEO tak urgensi.
+3. PERHATIAN CEO/GROWTH: register 7d=6 tepat floor + auth funnel 7d menipis (daftar_google 5→2, success 2→1) — 2 minggu turun; kandidat fokus [KONVERSI] jalur register.
+4. TRAP replay: MAX("createdAt") User = UTC — 16:01 UTC == 23:01 WIB kemarin; jangan flag hilang-padahal-timezone. SQL replay bl9/bl10 reusable: ~/.hermes/cache/scratch/bo-1119/funnel-{bl9,bl10}.sql.
+5. STATE: queue v742, main==origin 2f27ed8 (0 kode app), app c390c2a56ce8/worker b6a5c5b005df parity 22:27 (KONDEKTUR-1118), health 200.
+
+## CEO Daily 2026-11-19 (Kamis) — APPROVE Opsi-A generator satu-pintu; register di floor
+- Register 7d=6 < baseline 9 (auth funnel menipis 3+ hari) = prioritas KONVERSI #1; returning 8,8-10,1% ≥8% target 25 Nov terjaga 3 hari. Views +1,4% WoW flat.
+- Dispatch: qa-19-01 P1 generator assert kanonik (T-1119-N, closes kelas P1 angka 3-hari) + ops-19-01 P1 blocklist 1d510b06 (T-1119-M). Verdict: sre-18-1→ops P3 drift-org-state, sre-18-2 PKCE→monitor.
+- Mandor: BRIEF-10 idx-radar re-flag ke-4 — eksekusi atau retract HARI INI (Marketing pagi jalan Kamis). CTO pagi: PUSH main 8b10723 (utang night-gate) sebelum kereta 22:15.
