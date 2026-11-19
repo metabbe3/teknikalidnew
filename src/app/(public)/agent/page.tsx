@@ -229,6 +229,16 @@ export default function AgentPage() {
           <AgentComplainBox />
         </section>
 
+        {/* prd-2026-11-19-01 AC4: cross-cluster wiring — pengguna agent yang menunggu
+            jawaban bisa cek sendiri arus dana asing harian di web (gratis, no-login). */}
+        <section className="rounded-xl border border-border bg-bg-card p-5">
+          <h2 className="text-sm font-semibold mb-1">Cek sendiri tanpa nunggu balasan</h2>
+          <p className="text-sm text-text-secondary leading-relaxed">
+            Data <a href="/aliran-dana-asing" className="text-accent hover:underline">aliran dana asing BEI hari ini</a>{" "}
+            — saham yang diborong dan dijual bersih investor asing — gratis dibuka di web ini, update tiap hari bursa.
+          </p>
+        </section>
+
         {/* ============ SECTION 6: CTA PENUTUP ============ */}
         <section className="space-y-4 rounded-xl border border-border bg-bg-card p-6 text-center">
           <h2 className="font-serif text-xl font-semibold text-text-primary">

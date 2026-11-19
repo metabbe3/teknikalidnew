@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireCronSecret } from "@/lib/cron-guard";
 import { handleApiError } from "@/lib/api-error";
 import { agentHubService } from "@/domains/agent-hub/agent-hub.service";
+import { articleService } from "@/domains/article/article.service";
 import { agentHubRepository } from "@/domains/agent-hub/agent-hub.repository";
 import { withCronLogging } from "@/domains/cron-monitoring/with-cron-logging";
 import { withTimeout } from "@/domains/cron-monitoring/with-timeout";
@@ -76,6 +77,21 @@ export async function POST(request: NextRequest) {
           priority: 4,
         });
         dispatched.push(`gen_daily_brief: ${briefJob.id}`);
+      }
+
+      // 5. prd-2026-11-19-01: artikel harian "Aliran Dana Asing Hari Ini" — fallback
+      //    pagi utk kasus sync-foreign 17:2x gagal. Idempoten: dedupe per sesi data
+      //    di dalam service (slug aliran-dana-asing-<sesi>). Fire-soft.
+      const foreignArticle = await articleService
+        .generateForeignFlowDaily()
+        .catch((err: unknown) => {
+          console.error("[generate-articles] foreign-flow article:", err);
+          return { id: "", title: "", slug: "", skipped: true };
+        });
+      if (foreignArticle.skipped) {
+        skipped.push(`foreign_flow_article: ${foreignArticle.slug ? `already exists (${foreignArticle.slug})` : "no data"}`);
+      } else {
+        dispatched.push(`foreign_flow_article: ${foreignArticle.slug}`);
       }
 
       // 5. FASE T5: Kirim digest harian Telegram secara otomatis & idempoten (digest:YYYY-MM-DD).

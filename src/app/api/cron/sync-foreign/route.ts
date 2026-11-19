@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireCronSecret } from "@/lib/cron-guard";
+import { articleService } from "@/domains/article/article.service";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -55,11 +56,28 @@ export async function POST(request: NextRequest) {
     upserted += batch.length;
   }
 
+  // prd-2026-11-19-01: generate artikel harian "Aliran Dana Asing Hari Ini"
+  // tepat setelah upsert — data asing paling segar (17:2x WIB). Fire-soft:
+  // kegagalan artikel tidak boleh menggagalkan cron sync utama (preseden
+  // telegram-digest di generate-articles). Dedupe per sesi di dalam service.
+  const art = await articleService
+    .generateForeignFlowDaily()
+    .catch((err: unknown) => {
+      console.error("[sync-foreign] article gen failed:", err);
+      return { id: "", title: "", slug: "", skipped: true };
+    });
+  const articleNote = !art.slug
+    ? "failed"
+    : art.skipped
+      ? `skipped (sudah ada: ${art.slug})`
+      : `published: ${art.slug}`;
+
   return NextResponse.json({
     success: true,
     session: payload.sessionDate,
     received: rows.length,
     matched: upserted,
     skipped: skipped.length,
+    article: articleNote,
   });
 }

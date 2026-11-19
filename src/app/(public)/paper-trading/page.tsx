@@ -51,6 +51,13 @@ export default function PaperTradingPage() {
       <Suspense fallback={<DashboardSkeleton />}>
         <PaperTradingRouter />
       </Suspense>
+      {/* prd-2026-11-19-01 AC4: cross-cluster wiring — riset arus dana asing utk
+          pengguna simulasi (guest & login sama-sama lihat blok ini). */}
+      <p className="max-w-2xl mx-auto px-4 pb-8 text-sm text-text-secondary leading-relaxed">
+        Butuh ide posisi? Cek{" "}
+        <a href="/aliran-dana-asing" className="text-accent hover:underline">aliran dana asing BEI hari ini</a>{" "}
+        — saham yang sedang diborong investor asing, gratis tanpa login.
+      </p>
     </ToastProvider>
   );
 }

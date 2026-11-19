@@ -139,6 +139,19 @@ export default async function BottomFishingPage() {
           </ul>
         </div>
 
+        {/* prd-2026-11-19-01 AC4: cross-cluster wiring — pengunjung bottom-fishing
+            adalah pemburu saham murah; arus dana asing = sinyal konfirmasi belanja
+            institusi pada kandidat yang sama (preseden ux-2026-10-17-01). */}
+        <div className="rounded-lg border border-border bg-bg-card p-5">
+          <h2 className="text-sm font-semibold mb-2">Saat asing ikut berburu</h2>
+          <p className="text-sm text-text-secondary leading-relaxed">
+            Saham oversold yang mulai diborong investor asing sering jadi kandidat bottom-fishing terkuat —
+            masuknya institusi menandakan tekanan jual mulai menemukan dasar. Cek siapa yang sedang{" "}
+            <Link href="/aliran-dana-asing" className="text-accent hover:underline">diborong asing hari ini</Link>{" "}
+            sebelum menentkan entry.
+          </p>
+        </div>
+
         <RegisterCta slug="saham-oversold" />
         <AskAiCta question="Saham oversold murah ada?" />
       </div>

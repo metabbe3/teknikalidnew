@@ -15,6 +15,14 @@ export function PaperTradingPreview({ context }: PaperTradingPreviewProps = {}) 
         blurPx={6}
         context={context}
       >
+        {/* prd-2026-11-19-01 AC4: cross-cluster wiring — calon user paper-trading
+            diarahkan ke data asing live utk riset sebelum simulasi. */}
+        <p className="mt-4 text-sm text-text-secondary leading-relaxed">
+          Sebelum simulasi, cek{" "}
+          <a href="/aliran-dana-asing" className="text-accent hover:underline">aliran dana asing BEI hari ini</a>{" "}
+          — saham yang sedang diborong investor asing, gratis tanpa login.
+        </p>
+
         {/* Mock account summary card */}
         <div className="mt-4 rounded-xl bg-bg-card depth-shadow p-5 border border-border">
           <div className="flex items-center justify-between mb-4">
