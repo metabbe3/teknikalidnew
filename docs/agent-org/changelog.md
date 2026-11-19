@@ -1566,3 +1566,8 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - **QA**: verdict Sentinel 22:00 — re-run dry-run dua arah wajib identik
 - **impact_check_due**: 2026-11-19 22:30 (deploy kondektur T-1119: deploy.sh harus selesai via jalur script, bukan fallback manual — end-to-end proof)
 - **Rollback**: n/a — host-script 1 file; revert = git revert 6355e91
+
+## 2026-11-19 07:50 — CTO-PAGI-1119
+- **qa-2026-11-19-02** | type=ops | PRD: n/a | deploy: none (DB-patch ISR) | verify: DB pos '5.247,83'=0 content+excerpt, live grep=0, baru 11x, gate exit-0 | QA: Sentinel 22:00 | impact_check_due: 2026-11-22
+- **qa-2026-11-19-03** | type=ops | PRD: n/a | deploy: none (DB-patch ISR) | verify: token lama (200/492/142/833) DB+live=0, kanonik 172/426/124 render 2x, gate exit-0 | QA: Sentinel 22:00 | impact_check_due: 2026-11-22
+- **prd-2026-11-18-01** | type=prd | PRD: idea-2026-11-16-1 | deploy: main d30d838 PUSHED (web BUILD-ONLY → kereta T-1119-N 22:15); agentd host biner live 07:43 PID 37293 | verify: tsc EXIT-0, tree==night, test deeplink 6/6 PASS, launchd log bersih | QA: Sentinel 22:00 | impact_check_due: 2026-11-22

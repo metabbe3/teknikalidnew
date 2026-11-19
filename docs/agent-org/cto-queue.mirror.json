@@ -6634,7 +6634,7 @@
       "id": "prd-2026-11-18-01",
       "type": "prd",
       "priority": "P2",
-      "status": "night_ready",
+      "status": "in_train",
       "date": "2026-11-18",
       "title": "P2 KONVERSI/STICKY (PRD idea-2026-11-16-1): Deep-link Telegram one-tap watch — perbaiki T3->T5 putus di 3 titik: CTA tanpa __a_ anon-suffix, agentd buang hex identitas, seed tak ke watchlist kanonik (13 klik -> 0 watch, T5=0 2 minggu)",
       "north_star": "STICKY (T5 habit-loop 0 dua minggu) + GROWTH (register 0/48j; jalur investment tanpa register satu-satunya)",
@@ -6683,7 +6683,10 @@
         "pre_existing_fail": "8 selftest repo gagal SAMA di origin/main (actor-blocklist, funnel-t5-join, stocks-hero-slim, dst) — bukan regresi task"
       },
       "verify_estimate_review_min": 25,
-      "notes_for_cto_morning": "2 repo 1 kereta: merge web + build agentd dari ~/Documents/teknikal-agent branch night/prd-2026-11-18-01 (local-only, tip c0f5a2a). AC2/AC3/AC5 sudah unit-terbukti via MemoryStore; AC2 bukti SQL (agent_user.anon_id == hex) butuh chat uji pasca-deploy; AC4 replay funnel-v2 14d pasca-deploy. Digest jam aktual dari kode = 11:30 & 15:35 WIB (PRD tulis 16:50 — basi)."
+      "notes_for_cto_morning": "2 repo 1 kereta: merge web + build agentd dari ~/Documents/teknikal-agent branch night/prd-2026-11-18-01 (local-only, tip c0f5a2a). AC2/AC3/AC5 sudah unit-terbukti via MemoryStore; AC2 bukti SQL (agent_user.anon_id == hex) butuh chat uji pasca-deploy; AC4 replay funnel-v2 14d pasca-deploy. Digest jam aktual dari kode = 11:30 & 15:35 WIB (PRD tulis 16:50 — basi).",
+      "scheduled_slot": "2026-11-19 CTO pagi 07:30 (merge+build; kereta T-1119-N malam 22:15)",
+      "train": "T-1119-N",
+      "result": "MERGED main d30d838 (no-ff night/prd-2026-11-18-01, tree==night-src, schema-shield 0 DDL, org live-wins) + PUSHED (utang 8b10723+merge selesai, origin/main=d30d838). tsc EXIT-0. AGENTD DEPLOYED host 07:43: go build/vet EXIT-0, biner swap+launchd restart PID 37293, log start bersih. Test deeplink 6/6 PASS pada biner live. WEB AC1 live menunggu kereta malam (pagi BUILD-ONLY); AC2 bukti SQL pasca chat uji = QA Sentinel 22:00"
     },
     {
       "id": "bo-2026-11-19-01",
@@ -6732,11 +6735,12 @@
       "priority": "P1",
       "north_star": "TRUST",
       "dispatched_by": "REVIEWER-0715-1919",
-      "status": "pending",
+      "status": "done",
       "scheduled_slot": "2026-11-19 CTO pagi 07:45 (sebelum traffic pagi)",
       "source": "QA reviewer 19 Nov 07:1x: analis-pagi-2026-11-19-bbca menulis IHSG 5.247,83 (position DB=93, LIVE 11 kemunculan) padahal StockPrice ^JKSE 18 Nov close=5247.88; scan sore-18 & API ihsg = 5247.88; kalimat artikel sendiri: 5.304,76-56,88=5.247,88 — kontradiksi internal, typo digit",
       "spec": "INTENT [QA][TRUST] Patch konten 1 angka: analis-pagi-2026-11-19-bbca IHSG 5.247,83 -> 5.247,88. AC (H2 grep-ALL): (1) position('5.247,83' IN content)=0 di DB; (2) grep 5.247,83 di live HTML=0; (3) 5.247,88 render di live; (4) angka lain artikel utuh (bukan replace-all buta — cek konteks tiap kemunculan); (5) live 200 setelah patch.",
-      "done_when": "H2 dua-nol tercapai (DB pos-lama=0, live grep=0) + bukti grep ditempel di result"
+      "done_when": "H2 dua-nol tercapai (DB pos-lama=0, live grep=0) + bukti grep ditempel di result",
+      "result": "PATCH content+excerpt analis-pagi-2026-11-19-bbca: 5.247,83->5.247,88 (grw2611182347mtlkis1v, UPDATE 1+1). H2: DB pos lama=0 (content+excerpt), live grep 5.247,83=0, baru render 11x, live 200. Replay gate exit-0. Rollback: scratch/qa-19-cto/backup-rows.json"
     },
     {
       "id": "qa-2026-11-19-03",
@@ -6745,11 +6749,12 @@
       "priority": "P1",
       "north_star": "TRUST",
       "dispatched_by": "REVIEWER-0715-1919",
-      "status": "pending",
+      "status": "done",
       "scheduled_slot": "2026-11-19 — patch konten CTO pagi 07:45 ATAU sinkron T-1119-N dgn qa-2026-11-19-01",
       "source": "QA reviewer 19 Nov: brief-pasar-idx-2026-11-19-excl-bbca body breadth \"200 saham naik vs 492 turun (142 stagnan, dari 833)\" — bukan konvensi kanonik non-gorengan lag-prev (replay EXACT = 172 naik/426 turun/124 stagnan), bukan juga persis widget live /stocks (200/492/143); angka campur 2-3 basis dlm 1 kalimat — pola lesson 18 Nov BERULANG hari ke-2, tepat kelas yang qa-2026-11-19-01 (generator assert satu-pintu) cegah",
       "spec": "INTENT [QA][TRUST] Samakan breadth brief-19 ke query satu-pintu KANONIK (ops-11-05-03, non-gorengan lag-prev INNER): tulis 172 naik vs 426 turun (124 stagnan, basis saham non-gorengan) ATAU kalau mau pakai basis semua-saham widget = 200/492/143 persis query widget — pilih SATU dan beri label basis eksplisit; larang campur. AC (H2): (1) angka lama 200/492/142 = 0 kemunculan di DB+live konteks breadth; (2) angka baru replay EXACT; (3) replay_sql_gate exit-0; (4) sinkron verifikasi qa-2026-11-19-01 (generator brief 20 Nov pakai sumber sama).",
-      "done_when": "breadth brief-19 single-convention + replay exact + gate exit-0; result berisi grep bukti"
+      "done_when": "breadth brief-19 single-convention + replay exact + gate exit-0; result berisi grep bukti",
+      "result": "PATCH breadth brief-pasar-idx-2026-11-19-excl-bbca -> kanonik non-gorengan lag-prev 172 naik vs 426 turun (124 stagnan, basis saham non-gorengan) — hapus 200/492/142/dari-833. H2: DB pos lama=0 semua token, live 200/492/142/dari-833=0, kanonik render 2x, live 200, replay gate exit-0. NOTE: reproduksi sore ini 172-173/425-426/124-125 basis 721-724 (drift recompute pasca-EOD ±1); angka = kanonik lessons L497+spec reviewer, konsisten dgn assert generator qa-19-01. Rollback: scratch/qa-19-cto/backup-rows.json"
     }
   ]
 }
