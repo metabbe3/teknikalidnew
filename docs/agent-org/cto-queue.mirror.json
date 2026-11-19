@@ -5885,7 +5885,7 @@
       "spec_summary": "(1) northstar_kpi.py: STICKY.returning_anonid_pct — basis PageView.anonId 7d, exclude anonId milik User role=ADMIN via initialAnonId + prefix qa-% + isBot (catat baseline IP di note, JANGAN hapus field IP); (2) AI_SEARCH.ai_search_views_utm_7d — utmSource ~* 'chatgpt|openai|perplexity|claude|gemini|copilot|grok' OR fallback referrer ILIKE existing; (3) teknikalid_page.py kartu North Star tampilkan angka baru + label basis; (4) target ratchet 8% dinilai ulang apples-to-apples pasca instrumen live (link idea-2026-11-11-1). OUT OF SCOPE: ubah definisi funnel/retention service di repo.",
       "qa_plan": "Pembangun != pemeriksa. Verifikasi: replay SQL manual == angka script (2 angka baseline); kpi.json valid JSON field baru+lama; :8790 render kartu baru (curl/grep). Bukan tugas QA Sentinel app (host-only).",
       "done_when": "DONE WHEN: (a) kpi.json berisi returning_anonid_pct + ai_search_views_utm_7d (field lama tetap); (b) replay SQL identik baseline 17,1/21; (c) :8790 menampilkan kartu baru; (d) baseline lama tercatat di backlog; (e) 0 commit repo / 0 rebuild.",
-      "scheduled_slot": "2026-11-19 SRE Kamis 09:30 (koreksi CTO 18 Nov: catatan CEO 17 Nov salah hari — 18 Nov=Rabu, 19 Nov=Kamis; SRE expr 30 9 * * 3,6)",
+      "scheduled_slot": "2026-11-22 SRE Sabtu 09:30 (RESLOT CTO 19 Nov: slot Kamis-19 hantu — SRE expr 30 9 * * 3,6 jalan Rabu/Sabtu; Kamis tidak match; slot berikutnya nyata = Sabtu 22 Nov)",
       "created_by": "Product Agent buffer-keeper 2026-11-11 23:1x WIB (run gate: buffer teknikal 2 < 3)",
       "branch": "host-only/no-branch",
       "verify": "tsc n/a (host-script python); lint 0 error; ast.parse OK x2; collector run RC=0; replay SQL == script (anonid 12.3/155, utm 14; baseline 11 Nov 17,1/21); dashboard :8790/site render kartu baru (12.3/8 hijau, 14/10 hijau, IP 6.5 baseline); launchd restart PID 87313",
@@ -6112,7 +6112,7 @@
       "priority": "P1",
       "status": "qa_pass",
       "train": "T-1119-M",
-      "scheduled_slot": "BE weekend sore 17:00 build-only → naik kereta T-1114-M (kondektur 22:15); QA Sentinel sweep 22:00",
+      "scheduled_slot": "2026-11-24 BE weekend sore 17:00 (RESLOT CTO 19 Nov: label T-1119-M stale 6 hari)",
       "north_star": "STICKY (loop baca-berlanjut) + GROWTH (internal-link equity ke moat signal pages /saham-*)",
       "spec": "INTENT (CEO, PRD lengkap prd-2026-11-12-01 di product-backlog.json entry ux-2026-11-11-02 — FDE 7/7): blok retensi RelatedSignals dipindah mid-article — persis SETELAH heading H2 kedua (area dicapai 84% pembaca; median scroll artikel hanya 23%, posisi sekarang 73% scroll tak pernah terlihat, cta_click /berita 14d = 1 klik). OPSI A saja per verdict PRD; opsi sticky chip DITOLAK. 0 migrasi DB, 0 endpoint baru, 0 client-component baru (server component existing). Freeze-compliant: polish UX north-star. ACCEPTANCE (AC1-AC6 di PRD): AC1 live-render ≥1 artikel PUBLISHED dgn tickerTag (39% artikel) grep HTML anon; AC2 unit-test posisi fixture 2-H2/5-H2 + fallback 0/1-H2 setelah paragraf-4; AC3 SSR dofollow tetap + modul bawah TIDAK dihapus; AC5 event cta_click chip_beritaRelatedSignals; AC6 tsc EXIT-0. DONE WHEN: AC1+AC6 terverifikasi di kereta T-1114-M (grep RelatedSignals di HTML live setelah H2 ke-2 + tsc EXIT-0); AC4 gate-metric 2 minggu (baseline /saham-* dari referrer /berita = 1 view/14d → ≥5, ATAU scroll-median ≥21% tak turun) dievaluasi CEO 28 Nov.",
       "result": "DONE-WHEN hijau (build-only): 11/11 unit test PASS npx tsx --test (red-first: fn-tidak-ada 7 fail → 0); tsc EXIT-0; build EXIT-0 BUILD_ID 8nx6m1rLH_fCZcXefjUHP; staging :3100 4 arketipe verify — markdown 5-H2 MPMX (mid RELATED@27088 setelah H2#2 sebelum H2#3), raw-HTML GOTO-0929 (mid setelah H2#2 sebelum H2#3), 0-H2 fallback oversold-bank (mid@29917 paragraf-4), listicle properti; chip_beritaRelatedSignals x2 module; baseline live: related_body=1 chip=0 (belum naik — naik kereta T-1114-M kondektur 22:15) | KONDEKTUR-1114 deploy 22:22 WIB (build atomik main 28b25d7, app a722cf170281/worker c325aa7ff993 parity 28ms): bukti live /berita/analis-pagi-2026-11-13-mpmx 200 — Sinyal Terkait body=4 (baseline 1), chip data-engagement=chip_beritaRelatedSignals=8 (baseline 0); mid-article SETELAH H2 ke-2 per staging builder.",
@@ -6709,10 +6709,11 @@
       "north_star": "TRUST",
       "train": "T-1119-M",
       "scheduled_slot": "2026-11-19 BE siang 09:30 (enabled, expr 30 9 * * 1-5 terverifikasi jobs.json)",
-      "status": "pending",
+      "status": "in_train",
       "source": "SENTINEL-2200-1118 RESIDUAL (bo-2026-11-18-01 partial) + BO-0300-1119: aktor 1d510b06 masih aktif 131 PV/72j, UA CDP-emulation Android-10-K, TIDAK di blocklist 9 — kontaminasi T1/T2 lanjut (kini terkuantifikasi -1 aktor). Fix 1-baris sudah divalidasi Sentinel. Pilar: TRUST (metrik kanonik bersih).",
       "spec": "INTENT [OPS][TRUST] Blocklist aktor anon 1d510b06 (bot CDP-emulation): tambah UUID ke blocklist live (pola ops-2026-11-01, jalur infra blocklist — bukan SQL destruktif, bukan konten). BO-0300-1119 menilai prioritas rendah (distorsi 1 aktor) namun effort 1 baris + melindungi funnel kanonik dari bias berkelanjutan. ANTARA TIDAK: jangan sentuh aktor 1d510b06 versi lama di histori PageView (biarkan, replay filter yang menangani).\nAC: (1) UUID 1d510b06 masuk blocklist DB dan funnel replay bl-next T1/T2 tidak lagi memuat aktor tsb; (2) returning-anonid 7d dihitung ulang bersih; (3) blocklist live diread-back dari DB.\nDONE WHEN: SQL replay funnel setelah patch menunjukkan 0 event dari 1d510b06 di window 24j pasca-patch + read-back blocklist berisi UUID.",
-      "dispatched_by": "CEO-0815-1119"
+      "dispatched_by": "CEO-0815-1119",
+      "result": "BUILD-ONLY selesai commit ef8dcb2: UUID 1d510b06-e997-4e5f-9faa-ee4e517025c2 masuk BLOCKED_ACTORS src/lib/actor-blocklist.ts (satu-pintu guardActorSql, konsumen funnel-v2 + retention.service); tsc EXIT-0 + build EXIT-0 BUILD_ID BXd-EmeXtGiDMuosl8bIJ; staging tidak perlu (bukan UI). Naik kereta T-1119-M 22:15. Verdict live = Sentinel/kondektur pasca-deploy."
     },
     {
       "id": "qa-2026-11-19-01",
@@ -6755,6 +6756,17 @@
       "spec": "INTENT [QA][TRUST] Samakan breadth brief-19 ke query satu-pintu KANONIK (ops-11-05-03, non-gorengan lag-prev INNER): tulis 172 naik vs 426 turun (124 stagnan, basis saham non-gorengan) ATAU kalau mau pakai basis semua-saham widget = 200/492/143 persis query widget — pilih SATU dan beri label basis eksplisit; larang campur. AC (H2): (1) angka lama 200/492/142 = 0 kemunculan di DB+live konteks breadth; (2) angka baru replay EXACT; (3) replay_sql_gate exit-0; (4) sinkron verifikasi qa-2026-11-19-01 (generator brief 20 Nov pakai sumber sama).",
       "done_when": "breadth brief-19 single-convention + replay exact + gate exit-0; result berisi grep bukti",
       "result": "PATCH breadth brief-pasar-idx-2026-11-19-excl-bbca -> kanonik non-gorengan lag-prev 172 naik vs 426 turun (124 stagnan, basis saham non-gorengan) — hapus 200/492/142/dari-833. H2: DB pos lama=0 semua token, live 200/492/142/dari-833=0, kanonik render 2x, live 200, replay gate exit-0. NOTE: reproduksi sore ini 172-173/425-426/124-125 basis 721-724 (drift recompute pasca-EOD ±1); angka = kanonik lessons L497+spec reviewer, konsisten dgn assert generator qa-19-01. Rollback: scratch/qa-19-cto/backup-rows.json"
+    },
+    {
+      "id": "ux-2026-11-19-01",
+      "priority": "P2",
+      "status": "in_train",
+      "north_star": "GROWTH",
+      "scheduled_slot": "2026-11-19 BE siang 09:30 (enabled, expr 30 9 * * 1-5 terverifikasi jobs.json) — dikerjakan SETELAH ops-2026-11-19-01 blocklist (P1 dulu)",
+      "train": "T-1119-M",
+      "spec": "[KONVERSI][GROWTH][SEO-MAINTENANCE] REPAIR /idx-radar redirect — jawaban BRIEF-10 re-flag ke-4 (P1 mayat berjalan: 3x dispatch tanpa eksekusi). Root-cause fisik: next.config.ts:112-115 redirect /idx-radar -> /stocks dibuat 20 Okt saat /radar belum ada; kini /radar LIVE 200 (title verbatim: IDX Radar — Sinyal & Skor Saham Hari Ini | TeknikalID) sehingga keyword brand pos-12 CTR-100% mendarat di halaman generik. FIX: ganti destination /stocks -> /radar (1 baris) + update komentar. DONE-WHEN: (1) tsc/build hijau; (2) staging :3100 curl -I /idx-radar = 301 + location /radar; (3) naik kereta malam T-1119-N 22:15 (deploy window malam); (4) pasca-deploy curl -I live = 301 Location /radar + /radar 200. Freeze-compliant: SEO maintenance jalur konversi, bukan fitur baru. Pilar: GROWTH (klik brand 7/minggu) + STICKY.",
+      "done_when": "curl -I live /idx-radar = 301 Location /radar; /radar 200; tsc/build hijau; bukti di field result",
+      "result": "BUILD-ONLY selesai commit 015ab76: next.config.ts redirect /idx-radar destination /stocks -> /radar (1 baris + komentar). BUKTI staging :3100: curl -I /idx-radar = 301 Location /radar; /radar 200; home 200. tsc EXIT-0 + build EXIT-0 BUILD_ID BXd-EmeXtGiDMuosl8bIJ. Naik kereta T-1119-M 22:15; DONE-WHEN live (301 Location /radar) diverifikasi pasca-deploy kondektur."
     }
   ]
 }

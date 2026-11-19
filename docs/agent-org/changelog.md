@@ -1571,3 +1571,7 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - **qa-2026-11-19-02** | type=ops | PRD: n/a | deploy: none (DB-patch ISR) | verify: DB pos '5.247,83'=0 content+excerpt, live grep=0, baru 11x, gate exit-0 | QA: Sentinel 22:00 | impact_check_due: 2026-11-22
 - **qa-2026-11-19-03** | type=ops | PRD: n/a | deploy: none (DB-patch ISR) | verify: token lama (200/492/142/833) DB+live=0, kanonik 172/426/124 render 2x, gate exit-0 | QA: Sentinel 22:00 | impact_check_due: 2026-11-22
 - **prd-2026-11-18-01** | type=prd | PRD: idea-2026-11-16-1 | deploy: main d30d838 PUSHED (web BUILD-ONLY → kereta T-1119-N 22:15); agentd host biner live 07:43 PID 37293 | verify: tsc EXIT-0, tree==night, test deeplink 6/6 PASS, launchd log bersih | QA: Sentinel 22:00 | impact_check_due: 2026-11-22
+
+## 2026-11-19 09:35 — CTO-SIANG-1119
+- **ops-2026-11-19-01** | type=ops | PRD: n/a | deploy: none (BUILD-ONLY, kereta T-1119-N 22:15) | verify: UUID 1d510b06-e997-4e5f-9faa-ee4e517025c2 full-UUID dari DB (183 PV/7d), commit ef8dcb2, tsc EXIT-0, build EXIT-0 BUILD_ID BXd-EmeXtGiDMuosl8bIJ | QA: Sentinel 22:00 (live 24j window pasca-deploy) | impact_check_due: 2026-11-20 (replay funnel 0 event 1d510b06)
+- **ux-2026-11-19-01** | type=ops | PRD: n/a | deploy: none (BUILD-ONLY, kereta T-1119-N 22:15) | verify: staging :3100 curl -I /idx-radar = 301 Location /radar, /radar 200, home 200, commit 015ab76, tsc/build EXIT-0 | QA: Sentinel 22:00 | impact_check_due: 2026-11-21 (curl -I live 301 Location /radar)
