@@ -12,7 +12,7 @@ import type { MarketStatusResult } from "@/lib/market-hours";
 import { SITE_URL } from "@/lib/constants";
 import { MarketBreathStrip } from "@/components/ui/market-breath-strip";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Search } from "lucide-react";
 import { SahamStrategyLinks } from "@/components/seo/saham-strategy-links";
 import { LoginGate } from "@/components/auth/login-gate";
 import { auth } from "@/lib/auth";
@@ -246,7 +246,7 @@ export default async function StocksPage() {
           <SectionHeading
             eyebrow="Database Lengkap"
             title="Semua Saham IDX"
-            description="Cari & saring 900+ saham BEI"
+            description="Cari & saring 956+ saham BEI"
           />
 
           {/* Quick jumps: Big-cap paling dicari + Screener tematik (Batch A) */}
@@ -278,6 +278,16 @@ export default async function StocksPage() {
                   <ArrowUpRight className="h-3 w-3 shrink-0 text-text-tertiary" aria-hidden />
                 </Link>
               ))}
+              {/* plain anchor: hash jump native — Next Link client-nav mencuri focus input */}
+              <a
+                href="#cari-saham"
+                data-engagement="chip_stocksQuickSearch"
+                className="inline-flex min-h-11 sm:min-h-0 items-center gap-1.5 rounded-full border border-border bg-bg-card px-3.5 py-1.5 text-xs font-semibold text-text-secondary hover:border-accent/40 hover:text-accent transition-colors active:scale-[0.98]"
+                aria-label="Cari saham tertentu di kolom pencarian"
+              >
+                <Search className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                <span>Cari saham tertentu</span>
+              </a>
               <Link
                 href="/stocks?view=swing"
                 data-engagement="chip_stocksQuickSwing"
@@ -385,7 +395,7 @@ export default async function StocksPage() {
         {!session?.user && (
           <LoginGate
             feature="Watchlist & Alert Sinyal"
-            message="Daftar gratis untuk menyimpan watchlist, alert golden cross/oversold, dan trading plan otomatis untuk 950+ saham IDX."
+            message="Daftar gratis untuk menyimpan watchlist, alert golden cross/oversold, dan trading plan otomatis untuk 956+ saham IDX."
           />
         )}
 

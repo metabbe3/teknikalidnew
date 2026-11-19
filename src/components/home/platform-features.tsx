@@ -3,7 +3,7 @@ import Link from "next/link";
 const features = [
   {
     title: "Screener Teknikal",
-    description: "30+ strategi dari RSI Oversold hingga Golden Cross. Filter 950+ saham dalam hitungan detik.",
+    description: "30+ strategi dari RSI Oversold hingga Golden Cross. Filter 956+ saham dalam hitungan detik.",
     href: "/stocks?view=screener",
     stat: "30+",
     statLabel: "strategi",

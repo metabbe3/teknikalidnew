@@ -4,13 +4,13 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Screener Saham IDX — Filter 950+ Saham by Sinyal Teknikal",
   description:
-    "Filter 950+ saham IDX dengan sinyal teknikal seperti golden cross, RSI oversold, dan volume spike — cara cepat trader Indonesia menemukan ide beli setiap hari.",
+    "Filter 956+ saham IDX dengan sinyal teknikal seperti golden cross, RSI oversold, dan volume spike — cara cepat trader Indonesia menemukan ide beli setiap hari.",
   // seo-adv3: canonical self (dulu warisi "/" dari layout — salah)
   alternates: { canonical: "/screener" },
   openGraph: {
     title: "Screener Saham IDX — Filter 950+ Saham by Sinyal Teknikal",
     description:
-      "Filter 950+ saham IDX dengan sinyal teknikal seperti golden cross, RSI oversold, dan volume spike — cara cepat trader Indonesia menemukan ide beli setiap hari.",
+      "Filter 956+ saham IDX dengan sinyal teknikal seperti golden cross, RSI oversold, dan volume spike — cara cepat trader Indonesia menemukan ide beli setiap hari.",
   },
 };
 

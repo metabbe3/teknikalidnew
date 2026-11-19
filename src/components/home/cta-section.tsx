@@ -13,7 +13,7 @@ export function CtaSection() {
     : "Simpan analisa Anda, jangan mulai dari nol besok";
   const sub = isAuthed
     ? "Watchlist, paper trading, dan portfolio tracker sudah aktif di akun Anda."
-    : "Watchlist pribadi, alert sinyal golden cross & oversold, dan trading plan otomatis untuk 950+ saham IDX. Daftar gratis, 30 detik selesai.";
+    : "Watchlist pribadi, alert sinyal golden cross & oversold, dan trading plan otomatis untuk 956+ saham IDX. Daftar gratis, 30 detik selesai.";
   const primaryHref = isAuthed ? "/watchlist" : "/auth/register";
   const primaryLabel = isAuthed ? "Buka Watchlist" : "Daftar Gratis";
   const secondaryHref = isAuthed ? "/paper-trading" : "/stocks";

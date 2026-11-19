@@ -228,7 +228,7 @@ export default async function RadarPage() {
             <p>
               <strong className="text-foreground">IDX Radar TeknikalID</strong> adalah instrumen riset pasar yang 
               dirancang khusus bagi para pelaku pasar modal Indonesia untuk mendeteksi anomali harga dan sinyal teknikal 
-              secara cepat. Di tengah lebih dari 900 emiten yang tercatat di Bursa Efek Indonesia, memeriksa grafik satu per 
+              secara cepat. Di tengah lebih dari 950 emiten yang tercatat di Bursa Efek Indonesia, memeriksa grafik satu per 
               satu setiap hari membutuhkan waktu yang sangat intensif. IDX Radar memecahkan tantangan tersebut dengan 
               menjalankan filter multi-faktor otomatis yang mengevaluasi struktur harga, indikator momentum, rata-rata bergerak 
               eksponensial, serta neraca transaksi pemodal asing. Seluruh emiten diuji melalui penyaring likuiditas ketat 
@@ -412,7 +412,7 @@ export default async function RadarPage() {
             <div className="space-y-3 text-xs sm:text-sm text-muted-foreground leading-relaxed">
               <p>
                 Hasil pemindaian radar sebaiknya tidak diperlakukan sebagai sinyal instan untuk langsung melakukan pembelian tanpa kalkulasi matang. 
-                Gunakan daftar saham hasil radar sebagai langkah awal (<em className="italic">top-down screening</em>) untuk mempersempit semesta pencarian dari 900+ saham menjadi segelintir saham potensial.
+                Gunakan daftar saham hasil radar sebagai langkah awal (<em className="italic">top-down screening</em>) untuk mempersempit semesta pencarian dari 956+ saham menjadi segelintir saham potensial.
               </p>
               <ul className="list-disc pl-5 space-y-2">
                 <li>

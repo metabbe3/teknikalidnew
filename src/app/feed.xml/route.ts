@@ -64,7 +64,7 @@ export async function GET() {
     <title>TeknikalID — Berita Saham &amp; Analisa Teknikal IDX</title>
     <link>${SITE_URL}/berita</link>
     <atom:link href="${SITE_URL}/feed.xml" rel="self" type="application/rss+xml" />
-    <description>Analisa teknikal saham IDX terkini, sinyal trading, dan insight pasar untuk investor Indonesia. Update harian untuk 950+ saham.</description>
+    <description>Analisa teknikal saham IDX terkini, sinyal trading, dan insight pasar untuk investor Indonesia. Update harian untuk 956+ saham.</description>
     <language>id-ID</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <ttl>30</ttl>

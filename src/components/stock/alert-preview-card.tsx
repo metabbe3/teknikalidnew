@@ -38,7 +38,7 @@ export function AlertPreviewCard({ ticker, signalLabel, hasSignal }: AlertPrevie
             </span>
           </div>
           <p className="text-xs text-text-secondary leading-relaxed">
-            Member dapat <strong className="font-semibold text-text-primary">alert otomatis</strong> untuk sinyal seperti ini — golden cross, oversold, death cross — langsung ke watchlist, untuk 950+ saham IDX. Tanpa perlu cek manual tiap hari.
+            Member dapat <strong className="font-semibold text-text-primary">alert otomatis</strong> untuk sinyal seperti ini — golden cross, oversold, death cross — langsung ke watchlist, untuk 956+ saham IDX. Tanpa perlu cek manual tiap hari.
           </p>
           <div className="pt-1">
             <ChannelCta compact />

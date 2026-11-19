@@ -56,6 +56,23 @@ export function StockTable({ stocks, sectors, linkBase = "/stocks" }: StockTable
   const scrollRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
+  // UX: chip "Cari saham" (atas halaman) lompat ke sini + autofocus (flow a: 9 swipe -> 1 tap)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const focusIfTarget = () => {
+      if (window.location.hash !== "#cari-saham") return;
+      const el = document.getElementById("input-cari-saham") as HTMLInputElement | null;
+      if (!el || document.activeElement === el) return; // jangan curi fokus yang sudah dipakai user
+      el.focus();
+      if (!el.value) el.select();
+    };
+    focusIfTarget();
+    // hash-anchor dari chip: scroll/JS focus steal bervariasi — retry berjenjang, idempotent
+    const ts = [150, 400, 800].map((ms) => setTimeout(focusIfTarget, ms));
+    window.addEventListener("hashchange", focusIfTarget);
+    return () => { ts.forEach(clearTimeout); window.removeEventListener("hashchange", focusIfTarget); };
+  }, []);
+
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedQuery(searchQuery), 150);
     return () => clearTimeout(timer);
@@ -130,7 +147,7 @@ export function StockTable({ stocks, sectors, linkBase = "/stocks" }: StockTable
   }
 
   return (
-    <div className="space-y-4">
+    <div id="cari-saham" className="space-y-4 scroll-mt-24">
       {/* Search + filter bar */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-3">
@@ -143,6 +160,7 @@ export function StockTable({ stocks, sectors, linkBase = "/stocks" }: StockTable
               <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
             <input
+              id="input-cari-saham"
               type="search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}

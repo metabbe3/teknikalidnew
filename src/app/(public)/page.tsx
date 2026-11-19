@@ -478,7 +478,7 @@ export default async function HomePage() {
           </summary>
           <div className="mt-4 pt-4 border-t border-border space-y-4">
             <p className="text-sm text-text-secondary leading-relaxed">
-              Hitung area beli (entry limit), target profit (TP1 &amp; TP2), dan batas rugi (Stop Loss) otomatis berdasarkan Pivot Points dan volatilitas ATR untuk 950+ saham IDX.
+              Hitung area beli (entry limit), target profit (TP1 &amp; TP2), dan batas rugi (Stop Loss) otomatis berdasarkan Pivot Points dan volatilitas ATR untuk 956+ saham IDX.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
