@@ -98,6 +98,39 @@ test("string kosong → tetap kosong", () => {
   assert.equal(linkifyBoldTickers("", [{ ticker: "BBCA" }]), "");
 });
 
+// ─── repair format ticker (loop 19 Nov): bold rusak + bold-dobel ───
+test("bold rusak **TICKER](link) → link utuh (kasus battery 19 Nov gibberish)", () => {
+  const t = "IHSG turun, dengan **BBCA](/stocks/BBCA.JK) jadi incaran jual asing terbesar (net sell Rp320,30 miliar), sementara **AMMN](/stocks/AMMN.JK) dan **ASII](/stocks/ASII.JK) malah masih dibeli neto.";
+  const stocks = [{ ticker: "BBCA" }, { ticker: "AMMN" }, { ticker: "ASII" }];
+  const r = linkifyBoldTickers(t, stocks);
+  assert.equal(r.includes("**BBCA]"), false);
+  assert.equal(r.includes("**AMMN]"), false);
+  assert.equal(r.includes("**ASII]"), false);
+  assert.equal((r.match(/\[BBCA\]\(\/stocks\/BBCA\.JK\)/g) ?? []).length, 1);
+  assert.equal(r.includes("[AMMN](/stocks/AMMN.JK)"), true);
+});
+
+test("bold-dobel **T** [T](link) → link saja (kasus battery 19 Nov IHSG)", () => {
+  const t = "asing net sell di **BBCA** [BBCA](/stocks/BBCA.JK) sampai Rp320,30 miliar, ditambah **BMRI** [BMRI](/stocks/BMRI.JK).";
+  const stocks = [{ ticker: "BBCA" }, { ticker: "BMRI" }];
+  const r = linkifyBoldTickers(t, stocks);
+  assert.equal(r.includes("**BBCA**"), false);
+  assert.equal((r.match(/\[BBCA\]\(\/stocks\/BBCA\.JK\)/g) ?? []).length, 1);
+  assert.equal((r.match(/\[BMRI\]\(\/stocks\/BMRI\.JK\)/g) ?? []).length, 1);
+});
+
+test("repair hanya allowlist: bold rusak ticker tak dikenal dibiarkan (anti mengarang)", () => {
+  const t = "**ZZZZ](/stocks/ZZZZ.JK) bukan saham di data.";
+  const r = linkifyBoldTickers(t, [{ ticker: "BBCA" }]);
+  assert.equal(r, t);
+});
+
+test("bold-dobel ticker tak dikenal dibiarkan utuh", () => {
+  const t = "**ZZZZ** [ZZZZ](/stocks/ZZZZ.JK) tidak ada di data.";
+  const r = linkifyBoldTickers(t, [{ ticker: "BBCA" }]);
+  assert.equal(r, t);
+});
+
 test("allowlist kosong → teks utuh tanpa perubahan", () => {
   const t = "ini **teks** biasa tanpa ticker.";
   assert.equal(linkifyBoldTickers(t, { foo: "bar" }), t);

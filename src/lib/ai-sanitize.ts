@@ -106,6 +106,20 @@ function collectTickers(o: unknown, out: Set<string>): void {
 const BOLD_TICKER_RE = /\*\*([A-Z]{4})\*\*/g;
 
 /**
+ * Lapisan repair format ticker (loop 19 Nov) — dua kegagalan emit model yang
+ * lolos dari regex pasangan-penuh di atas:
+ * (1) bold rusak: `**TICKER](/stocks/TICKER.JK)` (bracket pembuka hilang) —
+ *     tampil sebagai asterisk mentah + link mati di jawaban (battery 19 Nov
+ *     gibberish: 3× dalam 1 jawaban);
+ * (2) dobel: `**TICKER** [TICKER](/stocks/TICKER.JK)` — bold + link bersebelahan
+ *     utk ticker sama (battery 19 Nov "IHSG kenapa turun").
+ * Keduanya hanya diperbaiki bila ticker ada di allowlist data server —
+ * ticker/kata tak dikenal dibiarkan apa adanya (anti mengarang).
+ */
+const BROKEN_BOLD_LINK_RE = /\*\*([A-Z]{4})\]\(\/stocks\/\1\.JK\)/g;
+const BOLD_PLUS_LINK_RE = /\*\*([A-Z]{4})\*\*\s*(?=\[\1\]\(\/stocks\/\1\.JK\))/g;
+
+/**
  * Ubah **TICKER** (hanya yang ada di allowlist data server) menjadi
  * [TICKER](/stocks/TICKER.JK). Text kosong → tetap kosong.
  */
@@ -114,7 +128,15 @@ export function linkifyBoldTickers(text: string, source: unknown): string {
   const allow = new Set<string>();
   collectTickers(source, allow);
   if (allow.size === 0) return text;
-  return text.replace(BOLD_TICKER_RE, (whole, t: string) =>
+  // Repair dulu (lapis 19 Nov), baru linkify pasangan-penuh — urutan penting:
+  // repair bold-rusak mencegah asterisk mentah lolos ke FE, strip bold-dobel
+  // harus SEBELUM pasangan-penuh mengganti `**TICKER**` jadi link kedua.
+  const repaired = text
+    .replace(BROKEN_BOLD_LINK_RE, (_w, t: string) =>
+      allow.has(t) ? `[${t}](/stocks/${t}.JK)` : _w,
+    )
+    .replace(BOLD_PLUS_LINK_RE, (_w, t: string) => (allow.has(t) ? "" : _w));
+  return repaired.replace(BOLD_TICKER_RE, (whole, t: string) =>
     allow.has(t) ? `[${t}](/stocks/${t}.JK)` : whole,
   );
 }
