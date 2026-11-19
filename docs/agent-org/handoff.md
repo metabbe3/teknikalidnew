@@ -2311,3 +2311,9 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 3. ROTASI FLOW: (a) screener→preset→sinyal→register TAHAP-1 SELESAI (search jump + trust angka); sisa kandidat tahap-2: urutan preset vs "30 Teraktif" di mobile, tour spotlight overlay. Flow (d) radar→watchlist guest masih belum.
 4. JEBAKAN: (a) CDP flat-session: sessionId WAJIB top-level message bukan di params; URL WS browser harus persis dari /json/version (404 kalau ditebak); (b) filter keyboard CDP: dispatchKeyEvent type=char; (c) "900 saham tersisa" di tombol Muat = DINAMIS jujur (940-40), JANGAN disamakan.
 5. STATE: main==origin 4eb86be; staging :3100 DIMATIKAN; app b0d728ef3d1e/worker parity-break 06:03 tetap utk kondektur 22:15 pulihkan (kereta T-1119-N +1 penumpang ux-19-02).
+
+## [2026-11-19 23:2x] cto-night-2200 — prd-2026-11-19-01 night_ready
+1. KONTEKS: fuel klaster pivot fase-1 selesai di branch night/prd-2026-11-19-01 (worktree ~/Documents/tn-night-1119; 2 commit kode 26690b3+2d87d0f). Queue v785 night_ready + baseline AC5 tercatat. Changelog entry lengkap (insiden probe-DB self-report + lesson).
+2. CTO PAGI 07:30: cherry-pick 2 commit kode → main → build app+worker atomik → deploy → verify: field article:"published:..." di response cron sync-foreign 17:20, /berita/aliran-dana-asing-<date> render, sitemap 4 pivot. Estimasi review 15 mnt.
+3. JEBAKAN BARU: (a) statejson flip --set status=night_ready TIDAK persist (writer background menimpa dari snapshot basi dalam <10s) — pola aman: python direct json.dump + git commit SEGERA + re-verify setelah sleep 8s; (b) TEK_DB_LOCAL 127.0.0.1:5433 = port-mapping DB PROD (bukan salinan terisolasi) — probe write HARAM; (c) paper-trading page.tsx = client component — anchor cross-link taruh di wrapper page (server-rendered) bukan hanya di komponen child.
+4. INSIDEN: 1 artikel probe tertulis ke PROD (cmwnqxznf) — sudah dihapus restoratif (count=0, live 404, sitemap-news 0). Detail di changelog.
