@@ -103,14 +103,17 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       // "idx radar" brand query (GSC: pos ~12, CTR 100% — 7 klik/7d) lands on /idx-radar
-      // which has never existed (404). The ranked intent = our radar surface: /stocks
-      // (H1 "Radar Saham IDX"). DEVIATION from house permanent:true (308) pattern:
+      // which has never existed (404). ux-2026-11-19-01: destination updated
+      // /stocks -> /radar — /radar is LIVE 200 with brand-exact title
+      // ("IDX Radar — Sinyal & Skor Saham Hari Ini"), so the brand-intent click
+      // now lands on the radar surface itself instead of generic /stocks.
+      // DEVIATION from house permanent:true (308) pattern:
       // spec done-when requires a literal 301 (curl -I check) — statusCode explicit.
       // SEO-equivalent to 308 for Google equity; seo-2026-10-20-01, decision logged
       // in docs/agent-org/decisions.md.
       {
         source: "/idx-radar",
-        destination: "/stocks",
+        destination: "/radar",
         statusCode: 301,
       },
 
