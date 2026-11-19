@@ -6723,11 +6723,13 @@
       "north_star": "TRUST",
       "train": "T-1119-N",
       "scheduled_slot": "2026-11-19 BE malam 18:30 (enabled, expr 30 18 * * 1-5 terverifikasi jobs.json) — wajib live sebelum brief generator pagi 20 Nov 08:10",
-      "status": "pending",
+      "status": "in_train",
       "source": "CTO note 2026-11-18: angka konten rekuren 3 hari beruntun (FF transplant 16-17 Nov; breadth campur konvensi + tanggal GC PTBA 18 Nov) — generator menulis dari 2 sumber konvensi berbeda, gate replay hanya menangkap post-publish (biaya trust harian + 1 P1/hari). CEO memilih OPSI A (bukan status-quo B).",
       "spec": "INTENT [OPS][TRUST] CEO APPROVE OPSI A: generator brief (pagi 08:10 + sore 16:55) WAJIB assert angka dari query satu-pintu KANONIK yang SAMA dengan yang dipakai checker reviewer (konvensi ops-11-05-03; checker idea-15-1 ema_pair + breadth non-gorengan lag-prev INNER) SEBELUM publish. Mismatch = artikel GAGAL generate + log eksplisit — bukan patch besok. Scope: breadth + tanggal event indikator (golden cross/EMA cross dari kolom tanggal DB mis. smaCrossDate, bukan tanggal artikel). Freeze-compliant: bugfix instrumen jalur data, bukan fitur baru.\nAC: (1) breadth di body generator berasal dari query identik dgn replay checker (296 bukan 333 utk kasus 18 Nov); (2) tanggal event GC/EMA dari kolom DB; (3) two-way test: fixture valid → generate normal; fixture angka diperturbukan → generate DITOLAK exit!=0; (4) 2 hari pertama 20-21 Nov 0 patch P1 angka dari reviewer.\nDONE WHEN: two-way test hijau (PASS valid + FAIL fiktif) + brief pagi & sore 20 Nov terbit dengan angka = replay checker (gate exit-0) + 0 patch pasca-publish.",
       "dispatched_by": "CEO-0815-1119",
-      "decision": "CEO APPROVE OPSI A atas rekomendasi CTO 18 Nov — akar masalah (2 sumber konvensi) ditutup di generator, menghapus kelas P1 harian"
+      "decision": "CEO APPROVE OPSI A atas rekomendasi CTO 18 Nov — akar masalah (2 sumber konvensi) ditutup di generator, menghapus kelas P1 harian",
+      "result": "CODE DONE 19 Nov 18:5x: failing-first 8b4e5aa (8/8 RED) + fix 7fbb14e pushed origin. assertCanonicalNumbers pre-publish (generateNewsArticle + movement guards) — breadth non-gorengan lag-prev INNER + tanggal event cross wajib kolom DB (smaCrossDate/emaCrossDate), mismatch=THROW generate gagal. getBreadthCounts+getCrossEventDates satu-pintu market-snapshot.service (cache 5mnt). Selftest two-way 8/8 GREEN (B2 333→THROW, B3 perturb→THROW, C1 GC 17 Nov→THROW vs C2 23 Sep OK) + parity DB live sesi 19 Nov 154/423/143 tot 720 EXACT. tsc EXIT-0, build EXIT-0 BUILD_ID baru. Prompt kini memuat blok BREADTH KANONIK + TANGGAL EVENT VALID. NAIK KERETA T-1119-N kondektur 22:15 (parity app+worker SATU build + penumpang lain); deadline generator 08:10 20 Nov terpenuhi via kereta. AC4 (0 patch 20-21 Nov) = evaluasi pasca-live.",
+      "qa_note": "builder bukti fisik: selftest 8/8 + parity SQL 154/423/143; verdict final = Sentinel 22:00 20 Nov"
     },
     {
       "id": "qa-2026-11-19-02",
@@ -6767,6 +6769,20 @@
       "spec": "[KONVERSI][GROWTH][SEO-MAINTENANCE] REPAIR /idx-radar redirect — jawaban BRIEF-10 re-flag ke-4 (P1 mayat berjalan: 3x dispatch tanpa eksekusi). Root-cause fisik: next.config.ts:112-115 redirect /idx-radar -> /stocks dibuat 20 Okt saat /radar belum ada; kini /radar LIVE 200 (title verbatim: IDX Radar — Sinyal & Skor Saham Hari Ini | TeknikalID) sehingga keyword brand pos-12 CTR-100% mendarat di halaman generik. FIX: ganti destination /stocks -> /radar (1 baris) + update komentar. DONE-WHEN: (1) tsc/build hijau; (2) staging :3100 curl -I /idx-radar = 301 + location /radar; (3) naik kereta malam T-1119-N 22:15 (deploy window malam); (4) pasca-deploy curl -I live = 301 Location /radar + /radar 200. Freeze-compliant: SEO maintenance jalur konversi, bukan fitur baru. Pilar: GROWTH (klik brand 7/minggu) + STICKY.",
       "done_when": "curl -I live /idx-radar = 301 Location /radar; /radar 200; tsc/build hijau; bukti di field result",
       "result": "BUILD-ONLY selesai commit 015ab76: next.config.ts redirect /idx-radar destination /stocks -> /radar (1 baris + komentar). BUKTI staging :3100: curl -I /idx-radar = 301 Location /radar; /radar 200; home 200. tsc EXIT-0 + build EXIT-0 BUILD_ID BXd-EmeXtGiDMuosl8bIJ. Naik kereta T-1119-M 22:15; DONE-WHEN live (301 Location /radar) diverifikasi pasca-deploy kondektur."
+    },
+    {
+      "id": "ux-2026-11-19-02",
+      "status": "in_train",
+      "priority": "P2",
+      "title": "ux P2 [KONVERSI]+[TRUST] flow-a: chip Cari saham tertentu lompat-ke-search (9 swipe->1 tap) + sweep trust-copy 956 satu-sumber 9 file",
+      "actor": "UX-FE-1915-1119",
+      "assignee": "UX-FE",
+      "created": "2026-11-19T19:40:00+07:00",
+      "train": "T-1119-N",
+      "source": "UX-FE audit flow (a) 19 Nov",
+      "done_when": "(1) chip render atas-fold mobile+desktop; (2) tap chip -> search viewport + focused; (3) grep 900+/950+ saham src = 0 excl comment; (4) tsc+build hijau; (5) SEO H1/title verbatim",
+      "result": "COMMIT 4eb86be PUSHED main==origin. BUKTI: tsc RC-0; build RC-0; staging :3100 SSR grep chip x4/anchor x2/956+ x3; CDP 375px e2e: tap chip(241,658) -> focused=true inputTop=96 -> keyboard BBRI -> filter responsif 38 rows; desktop 1440 chip 163x30 render, residual grep=0; SEO H1 verbatim utuh. KPI: STICKY+TRUST.",
+      "kpi": "STICKY+TRUST"
     }
   ]
 }
