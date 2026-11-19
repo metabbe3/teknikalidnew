@@ -42,6 +42,12 @@ export const BLOCKED_ACTORS: readonly string[] = Object.freeze([
   "09a6e556-5a1e-4b8a-98e1-49d987234a95",
   "6e8cedb0-7957-4d46-a275-0fb8e87a69eb",
   "5b8efe34-1599-43f6-8290-ce48dfcc38c7",
+  // ops-2026-11-19-01 (CEO-0815-1119 dispatch; Sentinel-2200-1118 residual):
+  // 1d510b06 131 PV/72j + 60 PV 18 Nov (183 PV/7d), UA CDP-emulation
+  // 'Android 10; K' Chrome/157, kontaminasi T1/T2 funnel replay (quantified
+  // -1 actor, bo-2026-11-18-01 partial). Fix 1-UUID divalidasi Sentinel.
+  // Histori PageView TIDAK dihapus — replay filter yang menangani.
+  "1d510b06-e997-4e5f-9faa-ee4e517025c2",
 ]);
 
 const UUID_RE =
