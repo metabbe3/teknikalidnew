@@ -38,7 +38,61 @@ export const articleRepository = {
     });
   },
 
-  /** Latest brief (≤3 days old) whose body mentions the ticker — powers the stock-page brief card. */
+  /**
+ * prd-2026-11-19-01: seri artikel harian "Aliran Dana Asing Hari Ini"
+ * (DAILY_SNAPSHOT market-wide, slug aliran-dana-asing-YYYY-MM-DD).
+ * Dedupe per sesi data — bukan hari kalender — pasca preseden brief WIB-day
+ * (qa-2026-10-14-01): generator 17:2x pasca-sync dan fallback pagi hari
+ * berikutnya TIDAK boleh double-publish utk data sesi yang sama.
+ */
+findLatestForeignFlowArticle() {
+  return prisma.article.findFirst({
+    where: {
+      status: ArticleStatus.PUBLISHED,
+      isListed: true,
+      articleType: ArticleType.DAILY_SNAPSHOT,
+      tickerTag: null,
+      slug: { startsWith: "aliran-dana-asing-" },
+    },
+    orderBy: { publishedAt: "desc" },
+    select: { id: true, slug: true, title: true, excerpt: true, publishedAt: true, generationMeta: true },
+  });
+},
+
+/**
+ * prd-2026-11-19-01 AC2: artikel terkait utk section pivot /aliran-dana-asing.
+ * DAILY_SNAPSHOT seri asing + NEWS analis yang menyentuh tema asing.
+ * Fallback pernah-dirender: slug startsWith utk snapshot (slug konten stabil),
+ * title/content ILIKE utk NEWS (jembatan kontekstual, bukan ticker match).
+ */
+findRelatedForeignArticles(limit = 3) {
+  return prisma.article.findMany({
+    where: {
+      status: ArticleStatus.PUBLISHED,
+      isListed: true,
+      OR: [
+        {
+          articleType: ArticleType.DAILY_SNAPSHOT,
+          tickerTag: null,
+          slug: { startsWith: "aliran-dana-asing-" },
+        },
+        {
+          articleType: ArticleType.NEWS,
+          tickerTag: null,
+          OR: [
+            { title: { contains: "asing" } },
+            { content: { contains: "/aliran-dana-asing" } },
+          ],
+        },
+      ],
+    },
+    orderBy: { publishedAt: "desc" },
+    take: limit,
+    select: { id: true, slug: true, title: true, excerpt: true, publishedAt: true, articleType: true },
+  });
+},
+
+/** Latest brief (≤3 days old) whose body mentions the ticker — powers the stock-page brief card. */
   findLatestBriefMentioning(ticker: string) {
     const stripped = ticker.replace(/\.JK$/i, "");
     return prisma.article.findFirst({

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { safeJsonLd } from "@/lib/safe-json-ld";
 import { SITE_URL } from "@/lib/constants";
 import { pasarLiveService } from "@/domains/stock/pasar-live.service";
+import { articleRepository } from "@/domains/article/article.repository";
 import { PageHero } from "@/components/layout/page-hero";
 import { GuestStar } from "@/components/stock/guest-star";
 
@@ -52,6 +53,12 @@ export default async function AliranDanaAsingPage() {
     !!snap?.sessionDate &&
     new Date(snap.foreign.flowDate).toISOString().slice(0, 10) !== snap.sessionDate.slice(0, 10);
   const session = flowSession;
+
+  // prd-2026-11-19-01 AC2: artikel terkait aliran dana asing (max 3) — query
+  // terpisah dari pasarLiveService (0 perubahan query data pasar, snapshot utuh).
+  const relatedArticles = await articleRepository
+    .findRelatedForeignArticles(3)
+    .catch(() => [] as { id: string; slug: string; title: string; excerpt: string | null; publishedAt: Date; articleType: string }[]);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -189,6 +196,24 @@ export default async function AliranDanaAsingPage() {
               </div>
             </div>
           </div>
+        )}
+
+        {relatedArticles.length > 0 && (
+          <section className="mt-8 space-y-3" aria-label="Artikel Terkait Aliran Dana Asing">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-text-tertiary">Artikel Terkait Aliran Dana Asing</h2>
+            <div className="space-y-2">
+              {relatedArticles.map((ra) => (
+                <Link key={ra.id} href={`/berita/${ra.slug}`} className="group block bg-bg-card rounded-xl depth-shadow p-4 hover:depth-shadow-hover transition-all">
+                  <p className="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors line-clamp-2">
+                    {ra.title}
+                  </p>
+                  <p className="text-xs text-text-tertiary mt-1 font-mono">
+                    {new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" }).format(new Date(ra.publishedAt))} · {ra.articleType === "DAILY_SNAPSHOT" ? "Data harian" : "Analisa"}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </section>
         )}
 
         <details className="mt-8 group rounded-lg border border-border bg-bg-card p-5 text-sm leading-relaxed text-text-secondary">

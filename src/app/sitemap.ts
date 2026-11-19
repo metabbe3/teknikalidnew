@@ -353,6 +353,11 @@ const getCachedSitemap = unstable_cache(
     // seo-dr-4/5 (deep-research 641c019): landing evergreen baru — data eksklusif BEI bebas login.
     { url: `${baseUrl}/kalender-dividen`, lastModified: today, changeFrequency: "daily", priority: 0.9 },
     { url: `${baseUrl}/aliran-dana-asing`, lastModified: today, changeFrequency: "daily", priority: 0.9 },
+    // prd-2026-11-19-01 AC3: 3 halaman pivot yatim masuk sitemap (klaster 6,6%
+    // views / 29% register situs — funnel konversi tertinggi, sebelumnya 0 entry).
+    { url: `${baseUrl}/agent`, lastModified: today, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${baseUrl}/paper-trading`, lastModified: today, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${baseUrl}/bottom-fishing`, lastModified: today, changeFrequency: "weekly", priority: 0.6 },
     { url: `${baseUrl}/saham-modal-100-ribu`, lastModified: today, changeFrequency: "daily", priority: 0.8 },
     // seo-dr-2: /compare (shell 52 kata) + halaman legal keluar dari sitemap — buang beban crawl.
     { url: `${baseUrl}/about`, lastModified: today, changeFrequency: "monthly", priority: 0.6 },

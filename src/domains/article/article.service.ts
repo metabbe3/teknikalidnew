@@ -17,6 +17,7 @@ import { validateArticle } from "./quality-validator";
 import { resolveTitle } from "./title-guard";
 import { sanitizeGeneratedContent } from "./content-sanitizer";
 import { marketEngine } from "@/lib/market-engine";
+import { pasarLiveService } from "@/domains/stock/pasar-live.service";
 
 export const articleService = {
   async generateStockAnalysis(ticker: string): Promise<{ id: string; title: string; slug: string }> {
@@ -757,6 +758,110 @@ export const articleService = {
     );
 
     return result;
+  },
+
+  /**
+   * prd-2026-11-19-01 fase-1: artikel harian "Aliran Dana Asing Hari Ini"
+   * (DAILY_SNAPSHOT market-wide, tickerTag null, slug aliran-dana-asing-<sesi>).
+   *
+   * Template deterministik — NO AI call (preseden gen-snapshots fix-2026-10-26-11:
+   * template 32 views vs AI-news 1 view). Semua angka dari SATU PINTU
+   * pasarLiveService._getSnapshotUncached (bypass micro-cache 60s — dipanggil
+   * tepat setelah sync-foreign upsert, cache bisa masih pegang sesi kemarin).
+   *
+   * Dedupe per SESI DATA (bukan hari kalender — qa-2026-10-14-01 lesson):
+   * slug mengandung tanggal sesi foreign flow; artikel utk sesi yang sudah
+   * ada di-skip. Dispatch 17:2x (sync-foreign) + fallback pagi keduanya aman.
+   */
+  async generateForeignFlowDaily(): Promise<{ id: string; title: string; slug: string; skipped?: boolean }> {
+    const snap = await pasarLiveService._getSnapshotUncached(false);
+    const netBuy = snap.foreign.netBuy;
+    const netSell = snap.foreign.netSell;
+    const flowDate = snap.foreign.flowDate;
+
+    // Data belum tersedia (weekend/holiday/pra-sync pertama) — skip senyap
+    if (!flowDate || netBuy.length === 0) {
+      return { id: "", title: "", slug: "", skipped: true };
+    }
+
+    const sessionIso = new Date(flowDate).toISOString().slice(0, 10);
+    const slug = `aliran-dana-asing-${sessionIso}`;
+
+    // Dedupe per sesi: artikel utk sesi ini sudah ada → jangan regenerate
+    const existing = await articleRepository.findBySlug(slug).catch(() => null);
+    if (existing) {
+      return { id: existing.id, title: existing.title, slug, skipped: true };
+    }
+
+    const dateLabel = new Intl.DateTimeFormat("id-ID", {
+      weekday: "long", day: "numeric", month: "long", year: "numeric",
+      timeZone: "UTC",
+    }).format(new Date(`${sessionIso}T00:00:00Z`));
+
+    const fmtRp = (n: number) => {
+      const abs = Math.abs(n);
+      if (abs >= 1e12) return `Rp${(n / 1e12).toFixed(2).replace(".", ",")} triliun`;
+      if (abs >= 1e9) return `Rp${(n / 1e9).toFixed(1).replace(".", ",")} miliar`;
+      if (abs >= 1e6) return `Rp${(n / 1e6).toFixed(1).replace(".", ",")} juta`;
+      return `Rp${new Intl.NumberFormat("id-ID").format(n)}`;
+    };
+    const t = (tk: string) => tk.replace(".JK", "");
+
+    const top5Buy = netBuy.slice(0, 5);
+    const top5Sell = netSell.slice(0, 5);
+    const totalNetBuy = netBuy.reduce((a, r) => a + r.netValue, 0);
+    const totalNetSell = netSell.reduce((a, r) => a + r.netValue, 0);
+
+    // Internal links (AC1): 1x pivot + >=3x ticker top-mover
+    const tickerLinks = top5Buy.slice(0, 5).map(
+      (r) => `- [${t(r.ticker)}](/stocks/${r.ticker}) — net beli asing ${fmtRp(r.netValue)}`,
+    ).join("\n");
+
+    const content = [
+      `## Ringkasan Aliran Dana Asing ${dateLabel}`,
+      "",
+      `Data resmi IDX TradingSummary sesi ${dateLabel}: **${netBuy.length} emiten** mencatat net foreign buy (beli bersih investor asing) dan **${netSell.length} emiten** dijual bersih. Total nilai beli bersih ${fmtRp(totalNetBuy)}, sementara tekanan jual bersih terkonsentrasi ${fmtRp(Math.abs(totalNetSell))}.`,
+      "",
+      `Lihat data live lengkap di halaman [Aliran Dana Asing Hari Ini](/aliran-dana-asing) — gratis tanpa login, update tiap hari bursa.`,
+      "",
+      "## Top 5 Net Foreign Buy",
+      "",
+      tickerLinks,
+      "",
+      "## Top 5 Net Foreign Sell",
+      "",
+      top5Sell.map(
+        (r) => `- [${t(r.ticker)}](/stocks/${r.ticker}) — net jual asing ${fmtRp(Math.abs(r.netValue))}`,
+      ).join("\n"),
+      "",
+      "## Cara Membacanya",
+      "",
+      "Net foreign buy = investor asing membeli lebih banyak lembar saham daripada yang mereka jual pada satu sesi. Arus masuk konsisten sering dibaca sebagai akumulasi institusional — tapi bukan jaminan harga naik. Selalu konfirmasi dengan tren harga dan indikator teknikal di halaman sahamnya sebelum mengambil keputusan.",
+      "",
+      `_Data: IDX TradingSummary diproses teknikal.id; nilai bersih = (beli − jual asing) × harga penutupan sesi ${dateLabel}._`,
+    ].join("\n");
+
+    const title = `Aliran Dana Asing Hari Ini ${dateLabel}: ${t(top5Buy[0].ticker)} Diborong Asing ${fmtRp(top5Buy[0].netValue)}`;
+    const excerpt = `Aliran dana asing BEI ${dateLabel}: ${netBuy.length} emiten net foreign buy, terbesar ${t(top5Buy[0].ticker)} ${fmtRp(top5Buy[0].netValue)}. Data resmi IDX, gratis tanpa login.`.slice(0, 500);
+
+    const adminUser = await articleRepository.findAdminUserId();
+    if (!adminUser) return { id: "", title: "", slug: "", skipped: true };
+
+    const article = await articleRepository.create({
+      slug,
+      title,
+      excerpt,
+      content,
+      authorId: adminUser.id,
+      tags: ["aliran dana asing", "net foreign buy", "asing", "IHSG", "saham hari ini"],
+      status: ArticleStatus.PUBLISHED,
+      articleType: "DAILY_SNAPSHOT" as ArticleType,
+      aiProvider: "template",
+      generationMeta: { provider: "template", series: "aliran-dana-asing", session: sessionIso },
+      isListed: true,
+    });
+
+    return { id: article.id, title: article.title, slug: article.slug };
   },
 
   async generateTrendingNews(count: number = 10): Promise<{ generated: string[]; articleIds: string[]; errors: string[] }> {

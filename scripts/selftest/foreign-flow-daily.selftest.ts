@@ -95,9 +95,9 @@ test("[C7] cross-link: 3 halaman pivot (agent/paper-trading/bottom-fishing) memu
 
 test("[C8] sitemap: 3 path pivot yatim masuk (/agent /paper-trading /bottom-fishing)", () => {
   const src = read("src/app/sitemap.ts");
-  for (const p of ["/agent", "/paper-trading", "/bottom-fishing"]) {
+  for (const p of ["/agent`", "/paper-trading`", "/bottom-fishing`"]) {
     assert.ok(
-      src.includes("`${baseUrl}${p}`"),
+      src.includes("`${baseUrl}" + p),
       `sitemap belum memuat entry ${p} (AC3)`,
     );
   }
