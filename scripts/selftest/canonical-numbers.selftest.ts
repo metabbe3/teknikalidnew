@@ -27,16 +27,25 @@ import { join } from "node:path";
 
 const ROOT = join(__dirname, "../..");
 
-// Env rewrite sebelum import service (pola signal-window-pinning.selftest.ts)
+// Env rewrite SEBELUM import service apa pun — prisma singleton menangkap URL
+// saat modul pertama kali di-import (pola signal-window-pinning.selftest.ts).
+// Trap 19 Nov: env shell bisa berisi DATABASE_URL double-prefixed
+// ("DATABASE_URL=postgresql://...") → ter-set tapi host-nya sampah — validasi
+// bentuk URL, jangan hanya cek keberadaan var.
 function dbUrlHost(): string | undefined {
   try {
     const env = readFileSync(join(ROOT, ".env"), "utf8");
-    const m = env.match(/^DATABASE_URL=(.+)$/m);
+    const m = env.match(/^DATABASE_URL=(postgresql:\/\/[^\s]+)$/m);
     if (!m) return undefined;
     return m[1].trim().replace(/@db:5432\//, "@127.0.0.1:5433/");
   } catch {
     return undefined;
   }
+}
+const envUrlValid = typeof process.env.DATABASE_URL === "string" && /^postgresql:\/\//.test(process.env.DATABASE_URL.trim());
+if (!envUrlValid) {
+  const u = dbUrlHost();
+  if (u) process.env.DATABASE_URL = u;
 }
 
 type Ctx = {

@@ -70,6 +70,8 @@ const OVERSOLD_TTL_MS = 300_000;
 // karena context tak memuat angka sinyal; angka kanonik sekarang SATU PINTU di sini.
 const SIGNAL_COUNTS_CACHE_KEY = "signal-counts-v1";
 const SIGNAL_COUNTS_TTL_MS = 300_000;
+const BREADTH_COUNTS_CACHE_KEY = "breadth-counts-v1"; // qa-2026-11-19-01
+const CROSS_DATES_CACHE_KEY = "cross-event-dates-v1"; // qa-2026-11-19-01
 
 type SessionRow = { ticker: string; name: string; sector: string; close: number; prev: number; volume: bigint };
 
@@ -299,6 +301,77 @@ export const marketSnapshotService = {
       emaBearish7s: bigIntToNumber(row.es) ?? 0,
     };
     stockCache.set(SIGNAL_COUNTS_CACHE_KEY, out, SIGNAL_COUNTS_TTL_MS);
+    return out;
+  },
+
+  /**
+   * qa-2026-11-19-01: breadth kanonik non-gorengan lag-prev INNER — SATU PINTU,
+   * konvensi yang sama dengan replay checker reviewer (ops-11-05-03). Insiden
+   * 3-hari: generator menulis 333 (tanpa filter) padahal kanonik 296 — akar:
+   * market context tidak memuat breadth sama sekali. Sesuai taksoni snapshot:
+   * breadth TIDAK pakai liquidity floor; INDICES tidak join breadth.
+   * Throw saat DB gagal — pemanggil konten catch-null sendiri (fail-open ctx).
+   */
+  async getBreadthCounts(): Promise<{ sessionDate: string; advancers: number; decliners: number; unchanged: number; total: number }> {
+    const cached = stockCache.get(BREADTH_COUNTS_CACHE_KEY);
+    if (cached) return cached as { sessionDate: string; advancers: number; decliners: number; unchanged: number; total: number };
+
+    const rows = await prisma.$queryRaw<Array<{ naik: bigint; turun: bigint; stag: bigint; tot: bigint; sd: Date }>>`
+      SELECT COUNT(*) FILTER (WHERE t.close > y.close)::bigint AS naik,
+             COUNT(*) FILTER (WHERE t.close < y.close)::bigint AS turun,
+             COUNT(*) FILTER (WHERE t.close = y.close)::bigint AS stag,
+             COUNT(*)::bigint AS tot,
+             MAX(t.date)::date AS sd
+      FROM "StockPrice" t
+      JOIN "Stock" s ON s.id = t."stockId"
+      JOIN LATERAL (SELECT close FROM "StockPrice" WHERE "stockId" = t."stockId" AND date < t.date ORDER BY date DESC LIMIT 1) y ON true
+      JOIN "StockIndicator" si ON si."stockId" = t."stockId" AND si.date = t.date AND si.interval = '1d'
+      WHERE t.date = (SELECT MAX(date) FROM "StockPrice" WHERE volume > 0)
+        AND s."isActive" = true AND s."assetClass" = 'EQUITY' AND s.ticker NOT LIKE '^%'
+        AND COALESCE(si."isGorengan", false) = false`;
+    const row = rows[0];
+    if (!row || Number(row.tot) === 0) {
+      throw new Error("getBreadthCounts: 0 baris breadth — data sesi belum tersedia");
+    }
+    const out = {
+      sessionDate: row.sd.toISOString().slice(0, 10),
+      advancers: Number(row.naik),
+      decliners: Number(row.turun),
+      unchanged: Number(row.stag),
+      total: Number(row.tot),
+    };
+    stockCache.set(BREADTH_COUNTS_CACHE_KEY, out, SIGNAL_COUNTS_TTL_MS);
+    return out;
+  },
+
+  /**
+   * qa-2026-11-19-01: daftar tanggal event cross VALID — distinct smaCrossDate
+   * ∪ emaCrossDate non-gorengan snapshot sesi terakhir (interval 1d). Klaim
+   * tanggal golden/death/EMA cross di artikel WAJIB salah satu dari sini
+   * (insiden PTBA "GC 17/11" padahal smaCrossDate 23 Sep).
+   */
+  async getCrossEventDates(): Promise<string[]> {
+    const cached = stockCache.get(CROSS_DATES_CACHE_KEY);
+    if (cached) return cached as string[];
+
+    const rows = await prisma.$queryRaw<Array<{ d: Date }>>`
+      SELECT DISTINCT d FROM (
+        SELECT DISTINCT ON (si."stockId") si."smaCrossDate" AS d
+        FROM "StockIndicator" si JOIN "Stock" s ON s.id = si."stockId"
+        WHERE si.interval = '1d' AND s."isActive" = true AND s."assetClass" = 'EQUITY'
+          AND s.ticker NOT LIKE '^%' AND COALESCE(si."isGorengan", false) = false
+        ORDER BY si."stockId", si.date DESC
+      ) x WHERE d IS NOT NULL
+      UNION
+      SELECT DISTINCT d FROM (
+        SELECT DISTINCT ON (si."stockId") si."emaCrossDate" AS d
+        FROM "StockIndicator" si JOIN "Stock" s ON s.id = si."stockId"
+        WHERE si.interval = '1d' AND s."isActive" = true AND s."assetClass" = 'EQUITY'
+          AND s.ticker NOT LIKE '^%' AND COALESCE(si."isGorengan", false) = false
+        ORDER BY si."stockId", si.date DESC
+      ) z WHERE d IS NOT NULL`;
+    const out = rows.map((r) => r.d.toISOString().slice(0, 10)).sort();
+    stockCache.set(CROSS_DATES_CACHE_KEY, out, SIGNAL_COUNTS_TTL_MS);
     return out;
   },
 

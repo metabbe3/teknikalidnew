@@ -38,6 +38,18 @@ export interface MarketContext {
    * angka sinyal ketika null.
    */
   signals: SignalCounts | null;
+  /**
+   * qa-2026-11-19-01: breadth kanonik non-gorengan lag-prev (INNER) — konvensi
+   * yang sama dengan replay checker reviewer (ops-11-05-03). Null = query gagal;
+   * assert jadi no-op dan prompt TIDAK memuat blok breadth.
+   */
+  breadth: { sessionDate: string; advancers: number; decliners: number; unchanged: number; total: number } | null;
+  /**
+   * qa-2026-11-19-01: tanggal event indikator VALID (smaCrossDate/emaCrossDate
+   * non-gorengan ≤ sesi terakhir). Klaim tanggal golden/EMA/death cross di body
+   * WAJIB salah satu dari daftar ini (assert pre-publish).
+   */
+  eventDates: string[];
 }
 
 export interface ExtractedClaim {
@@ -214,7 +226,22 @@ export async function gatherMarketContext(tickers?: string[]): Promise<MarketCon
     return null;
   });
 
-  return { date, latestSessionDate, ihsg, usdIdr, topStocks, relatedStocks, signals };
+  // qa-2026-11-19-01: breadth kanonik + tanggal event — SATU PINTU service,
+  // konvensi non-gorengan lag-prev INNER (identik replay checker reviewer).
+  // Fail-open context (null) — assert pre-publish jadi no-op, prompt tanpa blok.
+  const breadth = await marketSnapshotService.getBreadthCounts().catch((err) => {
+    console.warn("[FactCheck] getBreadthCounts failed (breadth=null):", err instanceof Error ? err.message : err);
+    return null;
+  });
+  let eventDates: string[] = [];
+  if (breadth) {
+    eventDates = await marketSnapshotService.getCrossEventDates().catch((err) => {
+      console.warn("[FactCheck] getCrossEventDates failed (eventDates=[]):", err instanceof Error ? err.message : err);
+      return [] as string[];
+    });
+  }
+
+  return { date, latestSessionDate, ihsg, usdIdr, topStocks, relatedStocks, signals, breadth, eventDates };
 }
 
 // ── Format market context for prompt injection ──
@@ -267,6 +294,28 @@ export function formatMarketContextForPrompt(ctx: MarketContext): string {
     lines.push(`- EMA cross bullish: ${sig.emaBullish7s} saham`);
     lines.push(`- EMA cross bearish: ${sig.emaBearish7s} saham`);
     lines.push("DILARANG menghitung ulang, mengubah, atau menyebut jumlah sinyal lain di luar empat angka ini.");
+  }
+
+  // qa-2026-11-19-01: blok breadth kanonik — menutup akar "333 vs 296" (LLM
+  // mengarang karena context tidak memuat breadth sama sekali). Sama satu-pintu
+  // dengan replay checker (non-gorengan lag-prev INNER).
+  if (ctx.breadth) {
+    const b = ctx.breadth;
+    lines.push("");
+    lines.push(`**BREADTH PASAR SESI ${b.sessionDate} (KANONIK non-gorengan — ANGKA INI SATU-SATUNYA YANG BOLEH DIPAKAI)**:`);
+    lines.push(`- Saham naik: ${b.advancers}`);
+    lines.push(`- Saham turun: ${b.decliners}`);
+    lines.push(`- Saham stagnan: ${b.unchanged} (total ${b.total})`);
+    lines.push("DILARANG menyebut jumlah saham naik/turun/stagnan selain tiga angka ini.");
+  }
+
+  // qa-2026-11-19-01: tanggal event indikator valid — menutup akar "GC 17/11"
+  // (PTBA smaCrossDate 23 Sep). Generator menyebut tanggal cross WAJIB dari list.
+  if (ctx.eventDates.length > 0) {
+    lines.push("");
+    lines.push(`**TANGGAL EVENT INDIKATOR VALID (kolom DB smaCrossDate/emaCrossDate non-gorengan)**:`);
+    lines.push(`- ${ctx.eventDates.join(", ")}`);
+    lines.push("Menyebut tanggal golden cross / death cross / EMA cross? WAJIB pakai salah satu tanggal di atas (atau JANGAN sebut tanggal sama sekali).");
   }
 
   lines.push("");
@@ -816,3 +865,74 @@ Kembalikan hanya judul yang sudah diperbaiki. Jangan ubah gaya bahasa atau struk
 // ── Utility: extract tickers for the pipeline ──
 
 export { extractTickersFromText };
+
+// ── qa-2026-11-19-01: assert angka kanonik PRE-PUBLISH (Opsi-A, CEO approve) ──
+// Generator brief/analis wajib lolos assert ini SEBELUM artikel ditulis/publish:
+// mismatch breadth / tanggal event bukan-DB = THROW (generate gagal, log
+// eksplisit) — bukan patch besok. Fail-soft saat ctx null/kosong (context
+// gather gagal → tidak ada angka kanonik untuk dilanggar).
+
+const _MONTHS_ID: Record<string, number> = {
+  januari: 1, februari: 2, maret: 3, april: 4, mei: 5, juni: 6, juli: 7,
+  agustus: 8, september: 9, Oktober: 10, november: 11, desember: 12,
+};
+
+/** "17 November" | "17/11" | "2026-11-17" → "2026-11-17" (pakai tahun ctx). */
+function _normDateId(s: string, fallbackYear: number): string | null {
+  s = s.trim();
+  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (m) return `${m[1]}-${m[2].padStart(2, "0")}-${m[3].padStart(2, "0")}`;
+  m = s.match(/^(\d{1,2})\s+([A-Za-z]+)$/);
+  if (m) {
+    const mo = _MONTHS_ID[m[2].toLowerCase()];
+    if (mo) return `${fallbackYear}-${String(mo).padStart(2, "0")}-${m[1].padStart(2, "0")}`;
+    return null;
+  }
+  m = s.match(/^(\d{1,2})[\/\-](\d{1,2})$/);
+  if (m) return `${fallbackYear}-${m[2].padStart(2, "0")}-${m[1].padStart(2, "0")}`;
+  return null;
+}
+
+const _BREADTH_NUM = /\b(\d{2,4})\s+(?:saham\s+)?(?:naik|turun|stagnan)\b/gi;
+const _CROSS_DATE = /\b(?:golden\s+cross|death\s+cross|ema\s+cross|sma\s+cross)\b[^.!?\n]{0,60}?(\d{1,2}\s+[A-Za-z]+|\d{1,2}[\/\-]\d{1,2}|\d{4}-\d{2}-\d{2})/gi;
+const _TOL = 2; // ±2 persen — menampung rounding frasa LLM, menolak konvensi lain
+
+export function assertCanonicalNumbers(
+  content: string,
+  ctx: Pick<MarketContext, "breadth" | "eventDates"> | null | undefined,
+): void {
+  if (!ctx) return;
+  const year = ctx.breadth ? Number(ctx.breadth.sessionDate.slice(0, 4)) : new Date().getFullYear();
+
+  // 1) Breadth: setiap "N saham naik/turun/stagnan" harus = angka kanonik (±2%).
+  if (ctx.breadth) {
+    const b = ctx.breadth;
+    const want: Record<string, number> = { naik: b.advancers, turun: b.decliners, stagnan: b.unchanged };
+    for (const m of content.matchAll(_BREADTH_NUM)) {
+      const got = Number(m[1]);
+      const dir = m[0].toLowerCase().match(/naik|turun|stagnan/)![0];
+      const w = want[dir];
+      if (w === undefined) continue;
+      const tol = Math.max(1, Math.round(w * _TOL / 100));
+      if (Math.abs(got - w) > tol) {
+        throw new Error(
+          `breadth ${dir} klaim ${got} ≠ kanonik ${w} (sesi ${b.sessionDate}, non-gorengan) — artikel DITOLAK sebelum publish (qa-2026-11-19-01)`,
+        );
+      }
+    }
+  }
+
+  // 2) Tanggal event cross: klaim tanggal WAJIB kolom DB (smaCrossDate/emaCrossDate).
+  if (ctx.eventDates.length > 0) {
+    const valid = new Set(ctx.eventDates);
+    for (const m of content.matchAll(_CROSS_DATE)) {
+      const norm = _normDateId(m[1], year);
+      if (!norm) continue;
+      if (!valid.has(norm)) {
+        throw new Error(
+          `tanggal event "${m[1].trim()}" (${norm}) bukan kolom DB smaCrossDate/emaCrossDate valid — artikel DITOLAK sebelum publish (qa-2026-11-19-01)`,
+        );
+      }
+    }
+  }
+}

@@ -11,7 +11,7 @@ import { buildStockAnalysisPrompt, buildEducationalPrompt, buildNewsPrompt, buil
 import { buildTemplateArticle, buildDailySnapshot, buildDailySlug } from "./article-template";
 import pLimit from "p-limit";
 import { ArticleNotFoundError, ArticleGenerationError, DuplicateSlugError, PublishedArticleDeleteError } from "./article.errors";
-import { gatherMarketContext, formatMarketContextForPrompt, factCheckArticle, factCheckVerdict, extractTickersFromText } from "./article-fact-check";
+import { gatherMarketContext, formatMarketContextForPrompt, factCheckArticle, factCheckVerdict, extractTickersFromText, assertCanonicalNumbers } from "./article-fact-check";
 import type { MarketContext } from "./article-fact-check";
 import { validateArticle } from "./quality-validator";
 import { resolveTitle } from "./title-guard";
@@ -314,6 +314,14 @@ export const articleService = {
       throw new ArticleGenerationError(err instanceof Error ? err.message : "AI generation failed");
     });
     const cleanContent = sanitizeGeneratedContent(result.content);
+
+    // qa-2026-11-19-01: assert angka kanonik PRE-PUBLISH (Opsi-A) — breadth +
+    // tanggal event cross WAJIB satu-pintu dgn replay checker. Mismatch = throw
+    // (generate gagal + log), bukan patch besok. ctx null → no-op fail-soft.
+    if (marketCtx) {
+      assertCanonicalNumbers(cleanContent, marketCtx);
+      if (result.title) assertCanonicalNumbers(result.title, marketCtx);
+    }
 
     // ── Gate 1: Quality validation (instant, deterministic, zero tokens) ──
     const quality = validateArticle(cleanContent, result.title || topic, keywords, opts);

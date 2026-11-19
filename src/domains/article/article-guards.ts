@@ -18,6 +18,7 @@ import {
   factCheckVerdict,
   gatherMarketContext,
   extractTickersFromText,
+  assertCanonicalNumbers,
   type MarketContext,
   type FactCheckResult,
 } from "./article-fact-check";
@@ -65,6 +66,14 @@ export async function runGenerationGuards(input: GenerationGuardsInput): Promise
   const logPath = input.logPath ?? "guards";
   const cleanContent = sanitizeGeneratedContent(input.content);
   let finalTitle = resolveTitle(sanitizeGeneratedContent(input.title), cleanContent, input.fallbackTitle);
+
+  // qa-2026-11-19-01: assert angka kanonik PRE-PUBLISH (Opsi-A) — jalur
+  // movement-analysis ikut tunduk breadth + tanggal event satu-pintu.
+  // Mismatch = throw; ctx null → no-op fail-soft (fail-open context).
+  if (input.marketCtx) {
+    assertCanonicalNumbers(cleanContent, input.marketCtx);
+    assertCanonicalNumbers(finalTitle, input.marketCtx);
+  }
 
   // ── Gate 1: Quality validation (instant, deterministic, zero tokens) ──
   const quality = validateArticle(cleanContent, finalTitle, input.keywords, input.opts);
