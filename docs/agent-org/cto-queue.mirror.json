@@ -1219,7 +1219,8 @@
       "scheduled_slot": "2026-09-22 16:45 CTO sore (slot ini; deploy pasca-market)",
       "completed_at": "2026-09-22 19:1x WIB",
       "result": "DONE 22 Sep 19:1x CTO sore, deploy 1 (sore) / org 2/2 hari ini. SDLC gate lolos (PRD spec_ready + CEO approve 20 Sep). Commit 55c42d6 (4 file: save-screen-prompt.tsx guest bar SSR + screener-client branch guest/authed + stock-action-badge guest watchlist prompt + complete-profile auto-save). tsc --noEmit exit 0 FULL REPO. DONE WHEN 4/4: guest 'Simpan Screen' SSR live di /stocks preset (curl x1) + hasil screener tetap render (NO gating); BBRI.JK 200 'Pantau' x2; /auth/register 200; marker pending_post_register 4 titik. Baseline 7 URL 200 = after 7 URL 200; SavedScreener/Watchlist/User 2/12/20 unchanged. Rollback anchor: image lama 17c0d2e3361f. AC5 baseline tercatat: register-page IP dari area /stocks 30d = 3 IP (nobot); gate 4 minggu: >=10 IP ATAU >=8 register selesai — impact check 2026-10-20. Eksekusi PARALEL dgn ops-01 (worker A FE vs B infra, non-overlap file). QA full-flow (register+auto-save di browser) diserahkan slot berikutnya.",
-      "qa_note": "QA reviewer 23 Sep 07:2x — curl-level PASS: AC1 'Simpan Screen' SSR guest-visible di /stocks?view=screener (grep live); AC3 tombol 'Pantau' render di /stocks/BBRI.JK; AC4 hasil screener tetap render utk guest (NO gating); /auth/register 200. AC2/AC3-flow (register→auto-save row SavedScreener/Watchlist) butuh sesi browser interaktif — diserahkan QA slot berikutnya. qa_verified ditunda sampai flow interaktif dites."
+      "qa_note": "2026-11-19 QA (Sentinel-2200) catch-up — TRUE — live 19 Nov: /stocks 200 guest SSR copy \"Simpan saham favorit Anda\" (copy berevolusi, fungsi guest-prompt utuh), BBRI.JK 200 Pantau x18, /auth/register 200; commit 55c42d6 ancestor main.",
+      "qa_verified": true
     },
     {
       "id": "qa-2026-09-23-01",
@@ -2391,7 +2392,9 @@
       "north_star_pillar": "TRUST (repo=prod single source)",
       "scheduled_slot": "OWNER GATE (CEO 08:15 present) -> kalau approve: Backend malam 18:30 merge+build -> kereta T-1020-N 22:00-01:30 deploy + verify per-fitur (ticker/emoji/funnel)",
       "train": "T-1020-N",
-      "result": "[RESTORED 21 Okt 07:4x CTO lead: entry hilang saat conflict-resolve merge c82cc70 06:52 ambil sisi night (112->103); union-merge ke-3 — lihat CTO note 2026-10-21] [FLIP done oleh CTO lead 21 Okt: merge TERJADI via c82cc70 06:52 (owner session) — migration 20261019220000 (no-op SELECT 1, DDL sudah manual 19 Okt) + schema.prisma masuk main; main==origin 354b911; app image 4b93d1164337 07:40 dari main; verify 07:5x CTO pagi: IHSG EOD header + funnel data-step=1 OK]"
+      "result": "[RESTORED 21 Okt 07:4x CTO lead: entry hilang saat conflict-resolve merge c82cc70 06:52 ambil sisi night (112->103); union-merge ke-3 — lihat CTO note 2026-10-21] [FLIP done oleh CTO lead 21 Okt: merge TERJADI via c82cc70 06:52 (owner session) — migration 20261019220000 (no-op SELECT 1, DDL sudah manual 19 Okt) + schema.prisma masuk main; main==origin 354b911; app image 4b93d1164337 07:40 dari main; verify 07:5x CTO pagi: IHSG EOD header + funnel data-step=1 OK]",
+      "qa_verified": true,
+      "qa_note": "2026-11-19 QA (Sentinel-2200) catch-up — TRUE — merge c82cc70 ancestor origin/main; migration 20261019220000_site_announcement ada di prisma/migrations; main==origin 81ab1e0."
     },
     {
       "id": "qa-2026-10-20-01",
@@ -2488,7 +2491,9 @@
       "unblocked": "2026-10-24 owner digest Approved-all; PRD 7-field + QA plan + baseline kode terisi (prd-2026-10-24-01); naik kereta T-1025-N",
       "boarding_note": "queued T-1025-N",
       "plan": "PLAN: files=[src/domains/reputation/reputation.service.ts, src/app/(public)/page.tsx, src/components/home/claim-streak-button.tsx] order=[1 maybeAwardDaily service, 2 hook SSR home, 3 card display-only+badge chip] risk=[SSR home error kalau award throw -> fire-safe catch; regresi POST claim lama -> endpoint dibiarkan backward-compat] proof=[tsc 0 error + grep maybeAwardDaily dipanggil page.tsx + card tanpa POST + staging verify]",
-      "train": "T-1025-N"
+      "train": "T-1025-N",
+      "qa_verified": true,
+      "qa_note": "2026-11-19 QA (Sentinel-2200) catch-up — TRUE — marker maybeAwardDailyPoints di (public)/page.js + api/reputation + api/achievements route live di image app; home 200; api/reputation anon 401 (guard). RESIDUAL-MINOR: login-path e2e badge-chip +5 idempotency (ditunda ke reviewer D+1) tidak pernah tercatat — utang QA org."
     },
     {
       "id": "teknikal-2026-10-20-02",
@@ -2511,7 +2516,9 @@
         "DONE-WHEN + bukti fisik sebelum naik kereta (BOARDING GATE)"
       ],
       "deploy_note": "SATU kereta dengan teknikal-2026-10-20-01 (point+badge) — deploy batching doctrine, cap 2/hari teknikal.",
-      "result": "DONE 19 Okt 22:15 oleh main session (bukan night org — owner minta 'fix skrg saja'): f105175 ticker minus+refresh60s + 1dc78a3 bell announcement system. Insiden P3009 (migration syntax) → downtime 15 mnt → fix 0272822 no-op migration + no-cache rebuild. Verified: home 200, api/market 200, losers render −, broadcast 26 user, banner component live. [RESTORED 21 Okt 07:4x CTO lead: entry hilang saat conflict-resolve merge c82cc70 06:52 ambil sisi night (112->103); union-merge ke-3 — lihat CTO note 2026-10-21]"
+      "result": "DONE 19 Okt 22:15 oleh main session (bukan night org — owner minta 'fix skrg saja'): f105175 ticker minus+refresh60s + 1dc78a3 bell announcement system. Insiden P3009 (migration syntax) → downtime 15 mnt → fix 0272822 no-op migration + no-cache rebuild. Verified: home 200, api/market 200, losers render −, broadcast 26 user, banner component live. [RESTORED 21 Okt 07:4x CTO lead: entry hilang saat conflict-resolve merge c82cc70 06:52 ambil sisi night (112->103); union-merge ke-3 — lihat CTO note 2026-10-21]",
+      "qa_verified": true,
+      "qa_note": "2026-11-19 QA (Sentinel-2200) catch-up — TRUE — /api/market 200 losers=5 changePercent negatif live (-9,85/-9,09/-8,33/-7,0); home 200 tanda minus render; api/admin/announcements live (sistem bel); commit f105175 ancestor main."
     },
     {
       "id": "cto-2026-10-21-01",
@@ -6634,7 +6641,7 @@
       "id": "prd-2026-11-18-01",
       "type": "prd",
       "priority": "P2",
-      "status": "in_train",
+      "status": "deployed",
       "date": "2026-11-18",
       "title": "P2 KONVERSI/STICKY (PRD idea-2026-11-16-1): Deep-link Telegram one-tap watch — perbaiki T3->T5 putus di 3 titik: CTA tanpa __a_ anon-suffix, agentd buang hex identitas, seed tak ke watchlist kanonik (13 klik -> 0 watch, T5=0 2 minggu)",
       "north_star": "STICKY (T5 habit-loop 0 dua minggu) + GROWTH (register 0/48j; jalur investment tanpa register satu-satunya)",
@@ -6686,7 +6693,8 @@
       "notes_for_cto_morning": "2 repo 1 kereta: merge web + build agentd dari ~/Documents/teknikal-agent branch night/prd-2026-11-18-01 (local-only, tip c0f5a2a). AC2/AC3/AC5 sudah unit-terbukti via MemoryStore; AC2 bukti SQL (agent_user.anon_id == hex) butuh chat uji pasca-deploy; AC4 replay funnel-v2 14d pasca-deploy. Digest jam aktual dari kode = 11:30 & 15:35 WIB (PRD tulis 16:50 — basi).",
       "scheduled_slot": "2026-11-19 CTO pagi 07:30 (merge+build; kereta T-1119-N malam 22:15)",
       "train": "T-1119-N",
-      "result": "MERGED main d30d838 (no-ff night/prd-2026-11-18-01, tree==night-src, schema-shield 0 DDL, org live-wins) + PUSHED (utang 8b10723+merge selesai, origin/main=d30d838). tsc EXIT-0. AGENTD DEPLOYED host 07:43: go build/vet EXIT-0, biner swap+launchd restart PID 37293, log start bersih. Test deeplink 6/6 PASS pada biner live. WEB AC1 live menunggu kereta malam (pagi BUILD-ONLY); AC2 bukti SQL pasca chat uji = QA Sentinel 22:00"
+      "result": "DEPLOYED KONDEKTUR-1119 22:19 (HEAD 81ab1e0). BUKTI FISIK: /stocks/BBCA.JK live memuat t.me/TeknikalidAgentBot?start=BBCA_JK + varian _entry/_level/_risiko/kopi_footer/web_BBCA; suffix __a_ anon dirakit client-side localStorage (by design, SSR anon fresh tanpa suffix — e2e suffix = utang Sentinel 20 Nov); agentd host PID 37293 alive. Verdict final = QA Sentinel 20 Nov.",
+      "deployed_at": "2026-11-19T22:19"
     },
     {
       "id": "bo-2026-11-19-01",
@@ -6709,11 +6717,12 @@
       "north_star": "TRUST",
       "train": "T-1119-M",
       "scheduled_slot": "2026-11-19 BE siang 09:30 (enabled, expr 30 9 * * 1-5 terverifikasi jobs.json)",
-      "status": "in_train",
+      "status": "deployed",
       "source": "SENTINEL-2200-1118 RESIDUAL (bo-2026-11-18-01 partial) + BO-0300-1119: aktor 1d510b06 masih aktif 131 PV/72j, UA CDP-emulation Android-10-K, TIDAK di blocklist 9 — kontaminasi T1/T2 lanjut (kini terkuantifikasi -1 aktor). Fix 1-baris sudah divalidasi Sentinel. Pilar: TRUST (metrik kanonik bersih).",
       "spec": "INTENT [OPS][TRUST] Blocklist aktor anon 1d510b06 (bot CDP-emulation): tambah UUID ke blocklist live (pola ops-2026-11-01, jalur infra blocklist — bukan SQL destruktif, bukan konten). BO-0300-1119 menilai prioritas rendah (distorsi 1 aktor) namun effort 1 baris + melindungi funnel kanonik dari bias berkelanjutan. ANTARA TIDAK: jangan sentuh aktor 1d510b06 versi lama di histori PageView (biarkan, replay filter yang menangani).\nAC: (1) UUID 1d510b06 masuk blocklist DB dan funnel replay bl-next T1/T2 tidak lagi memuat aktor tsb; (2) returning-anonid 7d dihitung ulang bersih; (3) blocklist live diread-back dari DB.\nDONE WHEN: SQL replay funnel setelah patch menunjukkan 0 event dari 1d510b06 di window 24j pasca-patch + read-back blocklist berisi UUID.",
       "dispatched_by": "CEO-0815-1119",
-      "result": "BUILD-ONLY selesai commit ef8dcb2: UUID 1d510b06-e997-4e5f-9faa-ee4e517025c2 masuk BLOCKED_ACTORS src/lib/actor-blocklist.ts (satu-pintu guardActorSql, konsumen funnel-v2 + retention.service); tsc EXIT-0 + build EXIT-0 BUILD_ID BXd-EmeXtGiDMuosl8bIJ; staging tidak perlu (bukan UI). Naik kereta T-1119-M 22:15. Verdict live = Sentinel/kondektur pasca-deploy."
+      "result": "DEPLOYED KONDEKTUR-1119 22:19 (HEAD 81ab1e0). BUKTI FISIK: UUID 1d510b06-e997-4e5f-9faa-ee4e517025c2 di src/lib/actor-blocklist.ts:50 container worker + chunk app .next/server/chunks/2032.js. Verdict final = QA Sentinel 20 Nov.",
+      "deployed_at": "2026-11-19T22:19"
     },
     {
       "id": "qa-2026-11-19-01",
@@ -6723,13 +6732,14 @@
       "north_star": "TRUST",
       "train": "T-1119-N",
       "scheduled_slot": "2026-11-19 BE malam 18:30 (enabled, expr 30 18 * * 1-5 terverifikasi jobs.json) — wajib live sebelum brief generator pagi 20 Nov 08:10",
-      "status": "in_train",
+      "status": "deployed",
       "source": "CTO note 2026-11-18: angka konten rekuren 3 hari beruntun (FF transplant 16-17 Nov; breadth campur konvensi + tanggal GC PTBA 18 Nov) — generator menulis dari 2 sumber konvensi berbeda, gate replay hanya menangkap post-publish (biaya trust harian + 1 P1/hari). CEO memilih OPSI A (bukan status-quo B).",
       "spec": "INTENT [OPS][TRUST] CEO APPROVE OPSI A: generator brief (pagi 08:10 + sore 16:55) WAJIB assert angka dari query satu-pintu KANONIK yang SAMA dengan yang dipakai checker reviewer (konvensi ops-11-05-03; checker idea-15-1 ema_pair + breadth non-gorengan lag-prev INNER) SEBELUM publish. Mismatch = artikel GAGAL generate + log eksplisit — bukan patch besok. Scope: breadth + tanggal event indikator (golden cross/EMA cross dari kolom tanggal DB mis. smaCrossDate, bukan tanggal artikel). Freeze-compliant: bugfix instrumen jalur data, bukan fitur baru.\nAC: (1) breadth di body generator berasal dari query identik dgn replay checker (296 bukan 333 utk kasus 18 Nov); (2) tanggal event GC/EMA dari kolom DB; (3) two-way test: fixture valid → generate normal; fixture angka diperturbukan → generate DITOLAK exit!=0; (4) 2 hari pertama 20-21 Nov 0 patch P1 angka dari reviewer.\nDONE WHEN: two-way test hijau (PASS valid + FAIL fiktif) + brief pagi & sore 20 Nov terbit dengan angka = replay checker (gate exit-0) + 0 patch pasca-publish.",
       "dispatched_by": "CEO-0815-1119",
       "decision": "CEO APPROVE OPSI A atas rekomendasi CTO 18 Nov — akar masalah (2 sumber konvensi) ditutup di generator, menghapus kelas P1 harian",
-      "result": "CODE DONE 19 Nov 18:5x: failing-first 8b4e5aa (8/8 RED) + fix 7fbb14e pushed origin. assertCanonicalNumbers pre-publish (generateNewsArticle + movement guards) — breadth non-gorengan lag-prev INNER + tanggal event cross wajib kolom DB (smaCrossDate/emaCrossDate), mismatch=THROW generate gagal. getBreadthCounts+getCrossEventDates satu-pintu market-snapshot.service (cache 5mnt). Selftest two-way 8/8 GREEN (B2 333→THROW, B3 perturb→THROW, C1 GC 17 Nov→THROW vs C2 23 Sep OK) + parity DB live sesi 19 Nov 154/423/143 tot 720 EXACT. tsc EXIT-0, build EXIT-0 BUILD_ID baru. Prompt kini memuat blok BREADTH KANONIK + TANGGAL EVENT VALID. NAIK KERETA T-1119-N kondektur 22:15 (parity app+worker SATU build + penumpang lain); deadline generator 08:10 20 Nov terpenuhi via kereta. AC4 (0 patch 20-21 Nov) = evaluasi pasca-live.",
-      "qa_note": "builder bukti fisik: selftest 8/8 + parity SQL 154/423/143; verdict final = Sentinel 22:00 20 Nov"
+      "result": "DEPLOYED KONDEKTUR-1119 22:19 (HEAD 81ab1e0). BUKTI FISIK: assertCanonicalNumbers live worker — getBreadthCounts market-snapshot.service.ts:315 + getCrossEventDates :353 satu-pintu; call article.service.ts:322-323 (content+title). Verdict final = QA Sentinel 20 Nov (H3 kondektur tulis bukti saja).",
+      "qa_note": "builder bukti fisik: selftest 8/8 + parity SQL 154/423/143; verdict final = Sentinel 22:00 20 Nov",
+      "deployed_at": "2026-11-19T22:19"
     },
     {
       "id": "qa-2026-11-19-02",
@@ -6743,7 +6753,9 @@
       "source": "QA reviewer 19 Nov 07:1x: analis-pagi-2026-11-19-bbca menulis IHSG 5.247,83 (position DB=93, LIVE 11 kemunculan) padahal StockPrice ^JKSE 18 Nov close=5247.88; scan sore-18 & API ihsg = 5247.88; kalimat artikel sendiri: 5.304,76-56,88=5.247,88 — kontradiksi internal, typo digit",
       "spec": "INTENT [QA][TRUST] Patch konten 1 angka: analis-pagi-2026-11-19-bbca IHSG 5.247,83 -> 5.247,88. AC (H2 grep-ALL): (1) position('5.247,83' IN content)=0 di DB; (2) grep 5.247,83 di live HTML=0; (3) 5.247,88 render di live; (4) angka lain artikel utuh (bukan replace-all buta — cek konteks tiap kemunculan); (5) live 200 setelah patch.",
       "done_when": "H2 dua-nol tercapai (DB pos-lama=0, live grep=0) + bukti grep ditempel di result",
-      "result": "PATCH content+excerpt analis-pagi-2026-11-19-bbca: 5.247,83->5.247,88 (grw2611182347mtlkis1v, UPDATE 1+1). H2: DB pos lama=0 (content+excerpt), live grep 5.247,83=0, baru render 11x, live 200. Replay gate exit-0. Rollback: scratch/qa-19-cto/backup-rows.json"
+      "result": "PATCH content+excerpt analis-pagi-2026-11-19-bbca: 5.247,83->5.247,88 (grw2611182347mtlkis1v, UPDATE 1+1). H2: DB pos lama=0 (content+excerpt), live grep 5.247,83=0, baru render 11x, live 200. Replay gate exit-0. Rollback: scratch/qa-19-cto/backup-rows.json",
+      "qa_verified": true,
+      "qa_note": "2026-11-19 QA (Sentinel-2200) — TRUE — replay fresh 19 Nov 22:1x: DB pos lama 5.247,83 content=0/excerpt=0, baru 5.247,88 pos-93; LIVE /berita/analis-pagi-2026-11-19-bbca 200: lama=0 baru=11x; gate replay 12/12 PASS exit-0; backup rows utuh."
     },
     {
       "id": "qa-2026-11-19-03",
@@ -6757,22 +6769,25 @@
       "source": "QA reviewer 19 Nov: brief-pasar-idx-2026-11-19-excl-bbca body breadth \"200 saham naik vs 492 turun (142 stagnan, dari 833)\" — bukan konvensi kanonik non-gorengan lag-prev (replay EXACT = 172 naik/426 turun/124 stagnan), bukan juga persis widget live /stocks (200/492/143); angka campur 2-3 basis dlm 1 kalimat — pola lesson 18 Nov BERULANG hari ke-2, tepat kelas yang qa-2026-11-19-01 (generator assert satu-pintu) cegah",
       "spec": "INTENT [QA][TRUST] Samakan breadth brief-19 ke query satu-pintu KANONIK (ops-11-05-03, non-gorengan lag-prev INNER): tulis 172 naik vs 426 turun (124 stagnan, basis saham non-gorengan) ATAU kalau mau pakai basis semua-saham widget = 200/492/143 persis query widget — pilih SATU dan beri label basis eksplisit; larang campur. AC (H2): (1) angka lama 200/492/142 = 0 kemunculan di DB+live konteks breadth; (2) angka baru replay EXACT; (3) replay_sql_gate exit-0; (4) sinkron verifikasi qa-2026-11-19-01 (generator brief 20 Nov pakai sumber sama).",
       "done_when": "breadth brief-19 single-convention + replay exact + gate exit-0; result berisi grep bukti",
-      "result": "PATCH breadth brief-pasar-idx-2026-11-19-excl-bbca -> kanonik non-gorengan lag-prev 172 naik vs 426 turun (124 stagnan, basis saham non-gorengan) — hapus 200/492/142/dari-833. H2: DB pos lama=0 semua token, live 200/492/142/dari-833=0, kanonik render 2x, live 200, replay gate exit-0. NOTE: reproduksi sore ini 172-173/425-426/124-125 basis 721-724 (drift recompute pasca-EOD ±1); angka = kanonik lessons L497+spec reviewer, konsisten dgn assert generator qa-19-01. Rollback: scratch/qa-19-cto/backup-rows.json"
+      "result": "PATCH breadth brief-pasar-idx-2026-11-19-excl-bbca -> kanonik non-gorengan lag-prev 172 naik vs 426 turun (124 stagnan, basis saham non-gorengan) — hapus 200/492/142/dari-833. H2: DB pos lama=0 semua token, live 200/492/142/dari-833=0, kanonik render 2x, live 200, replay gate exit-0. NOTE: reproduksi sore ini 172-173/425-426/124-125 basis 721-724 (drift recompute pasca-EOD ±1); angka = kanonik lessons L497+spec reviewer, konsisten dgn assert generator qa-19-01. Rollback: scratch/qa-19-cto/backup-rows.json",
+      "qa_verified": true,
+      "qa_note": "2026-11-19 QA (Sentinel-2200) — TRUE — DB token lama 0/0/0 content+excerpt; LIVE brief-excl 200: \"200 saham naik\"=0, \"142 stagnan\"=0, \"dari 833\"=0, kanonik 172x3/426x2/\"124 stagnan\"x2; gate exit-0. CATATAN: klaim \"live 492=0\" literal tidak tepat — grep bare 492=22 hit SEMUA artefak chunk Next (4921-*.js), frasa breadth 492=0 & DB=0; klaim konten tetap valid."
     },
     {
       "id": "ux-2026-11-19-01",
       "priority": "P2",
-      "status": "in_train",
+      "status": "deployed",
       "north_star": "GROWTH",
       "scheduled_slot": "2026-11-19 BE siang 09:30 (enabled, expr 30 9 * * 1-5 terverifikasi jobs.json) — dikerjakan SETELAH ops-2026-11-19-01 blocklist (P1 dulu)",
       "train": "T-1119-M",
       "spec": "[KONVERSI][GROWTH][SEO-MAINTENANCE] REPAIR /idx-radar redirect — jawaban BRIEF-10 re-flag ke-4 (P1 mayat berjalan: 3x dispatch tanpa eksekusi). Root-cause fisik: next.config.ts:112-115 redirect /idx-radar -> /stocks dibuat 20 Okt saat /radar belum ada; kini /radar LIVE 200 (title verbatim: IDX Radar — Sinyal & Skor Saham Hari Ini | TeknikalID) sehingga keyword brand pos-12 CTR-100% mendarat di halaman generik. FIX: ganti destination /stocks -> /radar (1 baris) + update komentar. DONE-WHEN: (1) tsc/build hijau; (2) staging :3100 curl -I /idx-radar = 301 + location /radar; (3) naik kereta malam T-1119-N 22:15 (deploy window malam); (4) pasca-deploy curl -I live = 301 Location /radar + /radar 200. Freeze-compliant: SEO maintenance jalur konversi, bukan fitur baru. Pilar: GROWTH (klik brand 7/minggu) + STICKY.",
       "done_when": "curl -I live /idx-radar = 301 Location /radar; /radar 200; tsc/build hijau; bukti di field result",
-      "result": "BUILD-ONLY selesai commit 015ab76: next.config.ts redirect /idx-radar destination /stocks -> /radar (1 baris + komentar). BUKTI staging :3100: curl -I /idx-radar = 301 Location /radar; /radar 200; home 200. tsc EXIT-0 + build EXIT-0 BUILD_ID BXd-EmeXtGiDMuosl8bIJ. Naik kereta T-1119-M 22:15; DONE-WHEN live (301 Location /radar) diverifikasi pasca-deploy kondektur."
+      "result": "DEPLOYED KONDEKTUR-1119 22:19 (HEAD 81ab1e0). BUKTI FISIK: curl /idx-radar = 301 Location https://teknikal.id/radar; /radar 200. Verdict final = QA Sentinel 20 Nov.",
+      "deployed_at": "2026-11-19T22:19"
     },
     {
       "id": "ux-2026-11-19-02",
-      "status": "in_train",
+      "status": "deployed",
       "priority": "P2",
       "title": "ux P2 [KONVERSI]+[TRUST] flow-a: chip Cari saham tertentu lompat-ke-search (9 swipe->1 tap) + sweep trust-copy 956 satu-sumber 9 file",
       "actor": "UX-FE-1915-1119",
@@ -6781,8 +6796,75 @@
       "train": "T-1119-N",
       "source": "UX-FE audit flow (a) 19 Nov",
       "done_when": "(1) chip render atas-fold mobile+desktop; (2) tap chip -> search viewport + focused; (3) grep 900+/950+ saham src = 0 excl comment; (4) tsc+build hijau; (5) SEO H1/title verbatim",
-      "result": "COMMIT 4eb86be PUSHED main==origin. BUKTI: tsc RC-0; build RC-0; staging :3100 SSR grep chip x4/anchor x2/956+ x3; CDP 375px e2e: tap chip(241,658) -> focused=true inputTop=96 -> keyboard BBRI -> filter responsif 38 rows; desktop 1440 chip 163x30 render, residual grep=0; SEO H1 verbatim utuh. KPI: STICKY+TRUST.",
-      "kpi": "STICKY+TRUST"
+      "result": "DEPLOYED KONDEKTUR-1119 22:19 (HEAD 81ab1e0). BUKTI FISIK: /stocks live memuat chip \"Cari saham tertentu\" x4 + \"956+\" x2 (trust sweep); e2e interaktif tap->focus diverifikasi builder di staging :3100 (CDP), tidak diulang kondektur prod. Verdict final = QA Sentinel 20 Nov.",
+      "kpi": "STICKY+TRUST",
+      "deployed_at": "2026-11-19T22:19"
+    },
+    {
+      "id": "prd-2026-11-19-01",
+      "date": "2026-11-19",
+      "type": "prd",
+      "priority": "P2",
+      "prd_id": "idea-2026-11-19-1",
+      "status": "spec_ready",
+      "title": "P2 GROWTH/KONVERSI (PRD idea-2026-11-19-1): Fuel klaster halaman pivot — 4 halaman (aliran-dana-asing/agent/paper-trading/bottom-fishing) 6,6% views tapi terlibat 29% register situs (5/17, dedup anonId, register ≤7d pasca-kunjungan), 0 dukungan konten/SEO/sosmed; fase-1 = konten harian aliran-dana-asing via template DAILY_SNAPSHOT + internal-link dua arah + sitemap entry 3 halaman yatim",
+      "north_star": "GROWTH register (NS#1) + traffic — funnel konversi tertinggi situs (3-5x baseline pasca-quota-wall) yang belum pernah difuel",
+      "user_story": "Sebagai calon investor yang mencari data aliran dana asing BEI, saya ingin konten harian 'aliran dana asing hari ini' yang bisa saya temukan via Google/AI-chat dan menghubungkan saya ke halaman data live, supaya saya bisa memantau saham yang diborong asing tanpa harus login sekuritas.",
+      "acceptance_criteria": [
+        "AC1: Worker/artikel-pipeline menghasilkan artikel DAILY_SNAPSHOT bertopik aliran-dana-asing (slug aliran-dana-asing-YYYY-MM-DD) max 1/hari; angka net-buy top-5 dari ForeignFlow SATU PINTU (query asli di changelog, dilarang hitung sendiri — breadth-rule qa-30-01); artikel body memuat link '/aliran-dana-asing' min 1 dan link '/stocks/[TICKER].JK' min 3 utk top-mover",
+        "AC2: Halaman /aliran-dana-asing menambah section 'Artikel Terkait Aliran Dana Asing' (max 3 artikel terbaru DAILY_SNAPSHOT/analis bertopik asing) di bawah data tabel — reuse komponen related-articles pattern; 0 perubahan query data pasar (pasarLiveService utuh)",
+        "AC3: sitemap.ts menambah entry /agent, /paper-trading, /bottom-fishing (3 halaman yatim 0 sitemap-entry; /aliran-dana-asing sudah ada) — changeFrequency weekly, priority 0.6; sitemap.xml live memuat 4 path pivot",
+        "AC4: Internal-link dua arah: (a) artikel DAILY_SNAPSHOT asing baru mengandung anchor ke halaman pivot; (b) HALAMAN pivot /agent + /paper-trading + /bottom-fishing masing-masing memuat min 1 link ke '/aliran-dana-asing' ATAU artikel asing terbaru (cross-cluster wiring ala ux-2026-10-17-01); grep 'aliran-dana-asing' pada 3 file page.tsx pivot = min 1 hit masing-masing",
+        "AC5: Baseline terukur di changelog pra-deploy: pivot views/anon 14d terakhir, register-after-pivot 14d, posisi 'aliran dana asing' di GSC (impressions/click 28d bila tersedia); laporan pasca-live 14d membandingkan (query ranking asli, breadth-rule)",
+        "AC6: tsc EXIT-0 + next build EXIT-0; 0 migrasi DB; 0 perubahan money-path/auth; rollback = revert commit tunggal + revalidate path terdampak"
+      ],
+      "data_evidence": "SQL read-only 19 Nov 22:3x WIB (docker exec teknikalidnew-db-1 psql -U teknikalid): (1) pivot 14d isBot=false: /aliran-dana-asing 55v/20 anon; /paper-trading 36v/27; /agent 33v/16; /bottom-fishing 24v/10; total 56 anon unik (backlog catat 49 @10:2x, +7 anon baru hari ini) — views 148/14d; (2) keterlibatan register: backlog entry idea-2026-11-19-1 (query 10:2x): 5/17 register situs 14d melibatkan kunjungan pivot ≤7d pra-register (29%, dedup 5 anon unik; 9/49 anon=18% sentuh /auth/*), konversi 3-5x baseline 6,0% pasca-quota-wall (BO-0300 13/215); (3) dukungan konten: HANYA 3 artikel PUBLISHED yang memuat link internal '/aliran-dana-asing' (content ILIKE, 226 artikel) — klaim backlog '0 artikel bertopik' terkoreksi: ada 9 artikel bertopik asing di judul (analis pagi/sore + brief) tapi nyaris tanpa jembatan ke halaman pivot; 0 artikel meng-link /agent; (4) sitemap gap: grep sitemap.ts = hanya /aliran-dana-asing (line 355), /agent + /paper-trading + /bottom-fishing TIDAK ADA; (5) ground-truth data siap: ForeignFlow max(date)=2026-11-19 (FRESH hari ini), top net-buy = DEWA.JK 48.340.400 / ELTY.JK 21.248.000 / BULL.JK 18.384.800 / MPIX.JK 18.039.000 / PWON.JK 15.017.100 (net=foreignBuy-foreignSell) — pipeline hidup via /api/cron/sync-foreign; (6) tren mingguan pivot views: 41 (02 Nov) → 76 (09 Nov) → 37 (16 Nov, partial 3 hari). Filesystem main@81ab1e0 (19 Nov): halaman pivot = src/app/(public)/{aliran-dana-asing,agent,paper-trading,bottom-fishing}/page.tsx; data SATU PINTU = pasarLiveService.getSnapshot (src/domains/stock/pasar-live.service.ts); template artikel kanonik = Article.articleType DAILY_SNAPSHOT (40 PUBLISHED); generator analisa = src/domains/agent-hub/agents/ (gen-daily-brief, analis-pagi/sore pattern); sitemap = src/app/sitemap.ts 377 baris. Tree riset: teknikalidnew main@81ab1e0, deployed live 19 Nov (queue v781).",
+      "impact": 4,
+      "effort": 3,
+      "risk": "low",
+      "db_migrations": false,
+      "target_files": [
+        "src/worker/agent-worker.ts ATAU src/domains/agent-hub/agents/analis-pagi.agent.ts (estimasi: tambah template aliran-dana-asing daily — pilih call-site existing generator analisa, jangan generator baru)",
+        "src/app/(public)/aliran-dana-asing/page.tsx (section artikel terkait, estimasi)",
+        "src/app/(public)/agent/page.tsx + src/app/(public)/paper-trading/page.tsx + src/app/(public)/bottom-fishing/page.tsx (link 1 arah ke cluster, estimasi)",
+        "src/app/sitemap.ts (3 entry pivot yatim)"
+      ],
+      "dependencies": [
+        "pasarLiveService.getSnapshot + ForeignFlow table (existing, SATU PINTU — DILARANG query pergerakan independen)",
+        "Article DAILY_SNAPSHOT template + article.service (existing)",
+        "llms.txt/route.ts prd-2026-11-07-01 seksi kenapa-* (pattern query Article terbaru, estimasi reuse)"
+      ],
+      "estimate_tool_calls": 35,
+      "spec_summary": "(1) Template artikel harian 'Aliran Dana Asing Hari Ini' via jalur DAILY_SNAPSHOT existing: top-5 net foreign buy + net sell terbesar + total nilai, angka WAJIB query ForeignFlow asli (SATU PINTU), body link 1x /aliran-dana-asing + ≥3x /stocks/TICKER.JK; (2) section 'Artikel Terkait' di halaman pivot (query Article PUBLISHED slug/content match 'asing|aliran-dana', max 3); (3) sitemap +3 path; (4) cross-link 3 halaman pivot → cluster; (5) baseline changelog. OUT OF SCOPE: fitur simpan/pantau baru (idea-2026-11-19-2 menunggu unfreeze), ubah UI data tabel asing, kampanye sosmed (jalur sosmed agent lain). Freeze-compliant: 0 fitur produk baru, hanya konten+wiring.",
+      "qa_plan": "Pembangun != pemeriksa. QA Sentinel: (1) replay AC1 SQL top-5 ForeignFlow vs angka di artikel = EXACT; (2) curl sitemap.xml = 4 path pivot; (3) grep 3 page.tsx pivot = anchor aliran-dana-asing; (4) artikel baru lewat fact-check gate prd-2026-10-05-01; (5) verify live /aliran-dana-asing section render + artikel pertama ter-index (spot check).",
+      "evidence_url": "",
+      "owner_ack": "",
+      "night_ready": "",
+      "branch": "night/prd-2026-11-19-01",
+      "night_result": {
+        "verify": {
+          "selftest": "8/8 GREEN (red-first commit 26690b3)",
+          "tsc": "EXIT-0",
+          "build": "next build --webpack EXIT-0 BUILD_ID fu5NhDgI2BCXIwxU4ZESZ",
+          "lint": "sdlc_lint 0 error",
+          "staging": "bottom-fishing 200 + link 2x; aliran-dana-asing 200 + Artikel Terkait render; sitemap.xml 4/4 path pivot"
+        },
+        "probe_db": {
+          "evidence": "create+dedupe RUN1 create / RUN2 skipped (DB lokal)",
+          "note": "INSIDEN: TEK_DB_LOCAL 5433 = port-map DB PROD — 1 artikel probe (cmwnqxznf) ter-tulis, DIHAPUS restoratif, count=0 verified, live 404"
+        },
+        "baseline_ac5": {
+          "pivot_views_14d": 148,
+          "pivot_anon_14d": 56,
+          "per_path": {
+            "aliran-dana-asing": "55v/20anon",
+            "agent": "33v/16",
+            "paper-trading": "36v/27",
+            "bottom-fishing": "24v/10"
+          }
+        },
+        "estimate_review": "15mnt"
+      }
     }
   ]
 }
