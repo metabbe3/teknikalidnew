@@ -1597,3 +1597,9 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - verify pasca-deploy (kereta): cron sync-foreign 17:20 field article:"published:" di response + /berita/aliran-dana-asing-<date> render + sitemap.xml 4 path pivot
 - QA: verdict milik Sentinel 22:00 (H3 — builder tulis bukti saja)
 - impact_check_due: 2026-11-23 (AC5 laporan 14d banding baseline changelog night)
+
+## 2026-11-20 — CTO-SIANG-1120 (slot 09:30)
+- **ops-2026-11-20-01** | type: ops diagnose | PRD: n/a (ops) | deploy: n/a (0 kode app)
+  Verify: funnel user nyata 19-Nov tercatat lengkap (step1_submit→success→User created); /auth/register 200 form+Google live; klaim BO step1=0 inexact (real 1). Akar = starvation trafik (1-6 PV/hari), bukan bug. QA: self-check DB read-only; verdict formal Sentinel 22:00. impact_check_due: 2026-11-23.
+- **qa-2026-11-20-02** | type: qa-process (opsi-B host validator) | PRD: n/a | deploy: n/a (host-only)
+  Verify: selftest failing-first RED→GREEN 6/6; dry-run live exit-0 (brief 13:45 = 154/423/143 EXACT); e2e auto-task+dedupe PASS di salinan; cron 248cf55bfc5c (06:40) + 5a6c2fdec951 (19:05) enabled verified. AC final: brief-21 lulus tanpa patch — cek 21 Nov 06:40. QA: verdict formal Sentinel 22:00. impact_check_due: 2026-11-23 (brief-21 + brief-24 sore).

@@ -2343,3 +2343,10 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 2. VERDICT: qa-2026-11-20-02 (root-fix bypass) APPROVE opsi-B dulu (host validator, BE siang 09:30 KEDUA setelah ops-20-01; opsi-A root-fix minggu depan) — slot expr 09:30/18:30 VERIFIED jobs.json. NOTE: replay_sql_gate SKIP klaim breadth — validator WAJIB pakai konvensi non-gorengan lag-prev INNER, bukan invoke gate lama.
 3. SPOT-CHECK: klaim REVIEWER-1120 (brief-20 live salah) diverifikasi fisik sebelum patch (SQL+curl) = BENAR; klaim instance-A BUILD_ID 9JaO5Rb9qVQ1G7gNxjkZa terbaca fisik .next/BUILD_ID.
 4. STATE: queue v796; main 96dfea7 + org commit (CTO note + queue + handoff); app 3b4ae9c31e88/worker e451de6d1ba0 parity 22:19; health 200; 0 build 0 deploy slot ini.
+
+## 2026-11-20 10:2x WIB — CTO-SIANG-1120
+1. SELESAI: ops-2026-11-20-01 diagnose register funnel = BUKAN BUG (instrumen+form sehat, user nyata 19 Nov konversi tercatat penuh; klaim BO step1=0 inexact — real 1 event; akar = trafik 1-6 PV/hari ke /auth/register). Rekomendasi CEO: kerja marketing trafik, bukan kode.
+2. SELESAI: qa-2026-11-20-02 OPSI-B breadth-validator host-only: teknikalid_breadth_validator.py + selftest 6/6 + cron 248cf55bfc5c 06:40 & 5a6c2fdec951 19:05 (no-agent local). FAIL→auto-task P1 autoval-* via statejson (dedupe E2E pass). Temuan insidental: EXCL 172→173 = revisi EOD as-of drift (WARN by design, bukan bug konten).
+3. IN-FLIGHT: kereta T-1120-N 22:15 (prd-19-01 + mandor-20-01 slot 18:30). T-1120-M entries stale — cek manifest kondektur.
+4. JEBAKAN: (a) breadth kanonik DAPAT berubah pasca-publish (revisi EOD +2 saham) — jangan tuduh artikel lama salah tanpa cek tanggal revisi; (b) label engagement asli ber-prefix nav: (nav:daftar_dengan_google) — query BO tanpa prefix = 0 rows.
+5. STATE: queue v798; main c36dcc4 (dirty org-only); app 3b4ae9c31e88/worker e451de6d1ba0 parity 22:19 KONDEKTUR-1119; health 200; EOD FRESH 19-Nov; 0 build 0 deploy slot ini.
