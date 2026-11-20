@@ -2148,3 +2148,38 @@ Anomali smoke a035afcf terjawab TANPA instrument baru: sumber = e2e verify ad-ho
 - Opsi B: post-publish validator host-cron (replay kanonik non-gorengan lag-prev per slug baru, auto-P1 saat FAIL) — jaring pengaman utk SEMUA jalur, host-only bebas kereta, <24j.
 - Rekomendasi CTO: B HARI INI (BE siang, qa-20-02 sudah dislot), A sebagai root-fix minggu depan setelah B terbukti menangkap. Ukuran: 0 patch P1 angka selama 7 hari berturut.
 - Risiko bila ditunda: brief Senin pagi (traffic tertinggi) kembali salah = trust erosion tepat saat register funnel lagi di-diagnose (North Star: kembali & percaya).
+
+## [RESEARCHER] 2026-11-20 (cron gate riset pra-eksekusi, read-only)
+- VERDICT idea-2026-11-20-1 [P1 mandat STICKY]: MODIFIKASI — mandat diagnose per-anon Senin sudah tepat arah, tapi wajib ditambah: (1) hipotesis ARTEFAK pengukuran diuji PERTAMA: Safari ITP hapus cookie JS first-party setelah 7 hari non-kunjungan (Matomo/Lytics/Bloomreach/Jitsu) → anon balik setelah gap >7d dapat anonId baru = numerator hilang mekanis tanpa churn nyata; cek browser-mix 4 anon hilang + TTL cookie anonId; (2) frame noise-floor: 17→13/194 = p 0,45-0,58 (z & Poisson exact), MDE 1-minggu n=194 ≈ 7,5pp → drop tidak terverifikasi sbg kejadian nyata; metric 8,2→8,8→6,7% dalam 3 hari = volatil normal; nilai deadline 25-Nov dari rolling-4-pekan, bukan snapshot hari-H; (3) pre-register definisi sukses sebelum intervensi. Intervensi freeze-safe berbukti: recently-viewed + internal-link klaster pivot (NRC JAMES CTR 17,7% vs 11,6%), kanal identitas durable — web push kebal ITP (OPB 2,7x open email; DMN push = 11% return visits; KSTA -5% cancellation dgn control) dan Telegram watch (sinkron idea-11-16-1). ANTI-PATTERN: reaksi fitur krn 1 minggu; goodhart numerator menjelang 25-Nov; blast generik. BUKTI: KUAT (noise small-n + ITP + push publisher), SEDANG (on-site personalization), tidak ada bukti khusus pasar IDN → target angka dari data internal. research_brief sudah ditulis ke entry backlog.
+- AUDIT FDE: idea-2026-11-20-1 PRD-INCOMPLETE (missing user_story, acceptance_criteria, target_files, effort, risk, dependencies) → minimal acceptance_criteria + risk wajib diisi sebelum eksekusi Senin (BUILD-AFTER-PRD pattern). idea-2026-11-16-1 masih PRD-INCOMPLETE (6 field) — verdict lama BUILD-AFTER-PRD (brief 17 Nov) tetap berlaku, tidak ada perubahan konteks material, tidak diriset ulang.
+- CATATAN UKUR: kpi.json tidak ditemukan di ~/.hermes/data/teknikalid-growth/ saat shift ini → nilai live North Star tidak bisa diverifikasi researcher; verifikasi manual via dashboard :8790.
+
+## [KEYWORD-RESEARCH] 2026-11-20 (agent SEO Keyword Researcher, minggu 14-20 Nov vs 7-13 Nov)
+Pilar dilayani ditandai per brief. Sumber: gsc-keyword-history.jsonl (angka persis, lihat laporan cron).
+
+### Brief 1 — P1: Internal-link /radar (keyword "idx radar")
+- Keyword target: idx radar — pos 12,0 · impr 7/mgg · klik 7 (CTR 100%, satu-satunya klik GSC konsisten)
+- Intent pencari: cari skanner/sinyal saham IDX hari ini
+- Masalah terverifikasi (bukan artikel baru): /idx-radar 301→/radar (200, SSR sehat, title "IDX Radar — Sinyal & Skor Saham Hari Ini") TAPI orphan — grep SSR homepage, /stocks, /berita = 0 link ke /radar; halaman TIDAK ada di PageView top-10 7 hari. Pattern orphan halaman-uang dari audit 1 Nov.
+- Angle: tambahkan link /radar di nav SSR (label "Alat Analisa" sudah ada tapi tidak render href /radar) + link kontekstual.
+- 3 internal link kandidat: (1) nav/footer homepage, (2) /stocks hub, (3) artikel /berita pasar harian
+- Prioritas: P1 · Pilar: STICKY + GROWTH · Cocok masuk listicle Sabtu sbg bagian "alat analisa"
+
+### Brief 2 — P1: Artikel listicle "aplikasi analisis teknikal saham"
+- Keyword target: aplikasi analisis teknikal saham — BARU minggu ini · impr 28 · pos 92,3 · 0 klik
+- Intent pencari: cari tool/aplikasi analisa teknikal saham
+- SERP (dicek 20 Nov): didominasi listicle kompetitor — heygotrade "7 Aplikasi Analisa Saham Terbaik" (17 Okt 2026), aitrade.id (16 Agu 2026), IDN Times (1 Mei 2026), PrismaAI (AI-app homepage). SERP indie/blog statis + satu homepage vendor = winnable.
+- Angle/judul usulan yang BELUM dipunya kompetitor: bukan daftar app unduhan — "Aplikasi Analisis Teknikal Saham: Web Gratis Tanpa Install (2026)". Answer block 40-60 kata di atas fold + tabel perbandingan jujur (web real-time, skor sinyal −1..+1, RSI/MACD, radar harian vs app populer Stockbit/RTI) + FAQ schema. Human-first, bukan AI-bait.
+- 3 internal link kandidat: (1) /radar, (2) /stocks, (3) /paper-trading
+- Prioritas: P1 · Pilar: GROWTH + AI-SEARCH
+
+### Brief 3 — P2: Perkuat cluster KLBF di /stocks/KLBF.JK
+- Keyword target: klbf (impr 85, pos 91,7) + saham klbf (impr 67, pos 87,1) = 152 impr/mgg gabungan, 0 klik
+- Intent pencari: harga & info saham Kalbe Farma
+- Halaman live 200, title bagus dengan harga live ("Harga Saham KLBF Hari Ini Rp770"). Gap: pos buruk karena konten analitik tipis di bawah chart + minim link internal dari artikel.
+- Angle: tambah answer block definisi 40-60 kata (Kalbe Farma, sektor healthcare, kode KLBF) + FAQ blok (dividen, fundamental) + tautkan dari artikel /berita yang menyebut Kalbe.
+- 3 internal link kandidat: (1) /stocks hub, (2) /radar (sinyal KLBF), (3) artikel /berita terkait Kalbe
+- Prioritas: P2 · Pilar: CONTENT + STICKY
+
+Catatan: saham apic (impr 44, pos 76,0 — memburuk dari 73,6) watch-only, halaman /stocks/APIC.JK 200; eastspring idx esg leaders plus kelas a (impr 175 terbesar, pos 85,7, 0 klik) = INTENSI GAGAL (query NAV reksadana, bukan saham — tidak ada konten cocok, jangan dibuat); daftar harga saham hari ini (46 impr) SERP didominasi IDX/Bareksa/Investing = jangan kejar head-on.
+- 2026-11-20 19:1x | CTO-SORE-1120 | mandor-2026-11-20-01 DONE (host-only): asosiasi span + aktivasi .JK — per-ticker factcheck hidup kembali setelah 6 minggu dorman, cross-bleed ticker tertutup (26/26 test, 0 salah-ticker live). prd-2026-11-02-02 RESLOT Senin 23 Nov BE malam (budget + owner schema gate). [TRUST]

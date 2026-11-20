@@ -1603,3 +1603,12 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
   Verify: funnel user nyata 19-Nov tercatat lengkap (step1_submit→success→User created); /auth/register 200 form+Google live; klaim BO step1=0 inexact (real 1). Akar = starvation trafik (1-6 PV/hari), bukan bug. QA: self-check DB read-only; verdict formal Sentinel 22:00. impact_check_due: 2026-11-23.
 - **qa-2026-11-20-02** | type: qa-process (opsi-B host validator) | PRD: n/a | deploy: n/a (host-only)
   Verify: selftest failing-first RED→GREEN 6/6; dry-run live exit-0 (brief 13:45 = 154/423/143 EXACT); e2e auto-task+dedupe PASS di salinan; cron 248cf55bfc5c (06:40) + 5a6c2fdec951 (19:05) enabled verified. AC final: brief-21 lulus tanpa patch — cek 21 Nov 06:40. QA: verdict formal Sentinel 22:00. impact_check_due: 2026-11-23 (brief-21 + brief-24 sore).
+
+## 2026-11-20 19:1x WIB — mandor-2026-11-20-01 [BUGFIX][TRUST] — CTO-SORE-1120
+- task-id: mandor-2026-11-20-01 | type: bug | PRD: n/a (bugfix freeze-allowed: gate konten = jalur trust)
+- done_when: asosiasi span terpasang + unit test multi-ticker 2-arah + suffix .JK aktif + gate exit-0 → SEMUA tercapai (26/26; smoke live A/B/C; replay 2 artikel live bersih)
+- files: ~/.hermes/scripts/teknikalid_growth.py (host-only, no deploy) — blok harga/RSI _factcheck_data_article + _fetch_ticker_facts suffix .JK + test_factcheck a15-a17
+- bukti: RED run (span_price_no_crossbleed=false, span_rsi_no_crossbleed=false) → GREEN 26/26; fixes live 'price INTP: 7.000->6.100' & 'rsi INTP: 80,2->62,1' dengan BBRI utuh; 0 fix salah-ticker di replay artikel 20 Nov
+- deploy: n/a (host script, cron Mandor 06:30 baca langsung; rollback = restore backup scratch/mandor-20-01/backup-teknikalid_growth.py)
+- QA: verdict formal = Sentinel 22:00 20 Nov; monitor residual '0 FIXES salah-ticker 2 run gate berikutnya' (Mandor 06:30 21-22 Nov)
+- impact_check_due: 2026-11-23

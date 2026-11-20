@@ -2350,3 +2350,10 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 3. IN-FLIGHT: kereta T-1120-N 22:15 (prd-19-01 + mandor-20-01 slot 18:30). T-1120-M entries stale — cek manifest kondektur.
 4. JEBAKAN: (a) breadth kanonik DAPAT berubah pasca-publish (revisi EOD +2 saham) — jangan tuduh artikel lama salah tanpa cek tanggal revisi; (b) label engagement asli ber-prefix nav: (nav:daftar_dengan_google) — query BO tanpa prefix = 0 rows.
 5. STATE: queue v798; main c36dcc4 (dirty org-only); app 3b4ae9c31e88/worker e451de6d1ba0 parity 22:19 KONDEKTUR-1119; health 200; EOD FRESH 19-Nov; 0 build 0 deploy slot ini.
+
+## 2026-11-20 19:1x WIB — CTO-SORE-1120
+1. SELESAI: mandor-2026-11-20-01 span-fix + .JK aktif (26/26, 0 salah-ticker live replay); host-only, 0 deploy — cron Mandor 06:30 besok otomatis pakai versi baru.
+2. IN-FLIGHT: kereta T-1120-N 22:15 malam ini (prd-19-01 + mandor-20-01 host rider bukan penumpang container) — kondektur deploy; Sentinel 22:00 verdict span-fix + 5 penumpang kemarin.
+3. JEBAKAN: (a) sql_rows = akumulator BERSAMA — snapshot list sebelum panggil gate (baris aneh len≠3 = hasil query internal gate); (b) breadth klaim pagi vs replay sore beda as-of (154→220) — jangan tuduh artikel salah; (c) test-insert MENULIS DB — jangan jalankan iseng.
+4. BESOK: prd-2026-11-02-02 (migrasi ex-date, Senin BE malam — schema-shield owner gate via merge, backup DB <24h WAJIB); monitor 2 run gate Mandor (0 fix salah-ticker).
+5. STATE: main==origin (commit org ini); app 3b4ae9c31e88/worker e451de6d1ba0 parity 22:19; health 200; EOD FRESH 20-Nov; queue: mandor-20-01 done.
