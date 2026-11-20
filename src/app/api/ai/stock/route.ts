@@ -41,6 +41,7 @@ const GLM_SYSTEM = [
   "SO WHAT (wajib): setiap rangkuman angka HARUS diikuti implikasinya — 'harga -9,6% di bawah SMA20' lanjut 'artinya tren jangka pendek masih turun, entry konfirmasi tunggu di atas SMA'. Angka tanpa implikasi = jawaban setengah jadi.",
   "SEBUT TICKER (wajib): DATA yang kamu terima selalu milik SATU saham spesifik (field ticker/name di DATA) — sebut kode sahamnya (mis. 'BBCA') di kalimat pembuka atau bullet pertama, APALGI bila pertanyaan user tidak menyebut ticker; DILARANG membahas angka saham tanpa menyebut kodenya — user bisa mengira angka itu milik saham lain.",
   "premiseCheck di data = premis user SALAH vs data: luruskan di KALIMAT PERTAMA ('Lurusin dulu: hari ini justru naik +X%'), baru lanjut analisis penyebab yang benar (mis. tren 20 hari).",
+  "asumsiEmiten di data (loop 20 Nov): bila field ini ADA di DATA, pertanyaan user TIDAK menyebut emiten — buka jawaban dengan SATU kalimat konfirmasi asumsi santai sesuai instruksi field (mis. \"Gue asumsi ini soal BBCA ya — kamu nggak sebut kodenya\"), lalu lanjut analisis normal. DILARANG menyembunyikan asumsi ini atau membahas emiten lain.",
   "posisiUser.bepGapPct = persen kenaikan yang dibutuhkan buat balik modal; posisiUser.avgDown1to1 = rata-rata baru kalau averaging lot sama di harga sekarang. distToSupportPct/distToResistPct = jarak % ke level kunci. Semua sudah dihitung server — pakai langsung, jangan hitung ulang.",
   "Arus asing: bandingkan antar-emiten dalam RUPIAH (estimasiNet5Rp / sesi × harga), BUKAN lembar — harga per lembar beda jauh.",
   "Kalau ditanya status halal/syariah dan data tidak memuat status DES/ISSI, JANGAN menebak — jelaskan bahwa cek daftar resmi DES OJK / ISSI BEI diperlukan.",
@@ -269,6 +270,18 @@ export async function POST(req: NextRequest) {
           catatan: "angka final dihitung server — jangan dihitung ulang",
         };
       }
+    }
+  }
+
+  // Loop 20 Nov (juri 3-shift beruntun, eval #1 7.67 CUKUP): pertanyaan posisi TANPA emiten
+  // disebut → akui asumsi ticker halaman di kalimat PERTAMA, jangan diam-diam mengasumsikan.
+  // Ticker eksplisit di pertanyaan atau hasil rescue typo → note tidak dibuat (sudah terkonfirmasi).
+  let asumsiEmiten: string | null = null;
+  if (question && (context as Record<string, unknown>).posisiUser && !tickerRescue && extractTickersRanked(question).length === 0) {
+    const assumed = String(clientContext.ticker ?? "").replace(/\.JK$/i, "");
+    if (assumed) {
+      asumsiEmiten = `User tidak menyebut emiten di pertanyaannya — emiten ${assumed} adalah ASUMSI dari halaman tempat pertanyaan ditulis. Buka jawaban dengan 1 kalimat konfirmasi asumsi yang santai (mis. "Gue asumsi ini soal ${assumed} ya — kamu nggak sebut kodenya"), baru lanjut analisis ${assumed} dengan angka di data.`;
+      (context as Record<string, unknown>).asumsiEmiten = asumsiEmiten;
     }
   }
 
