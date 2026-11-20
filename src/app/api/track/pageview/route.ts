@@ -40,8 +40,11 @@ async function distinctStockPaths(
 // Scraping thresholds for the logged-in auto-suspend only.
 // >6 distinct stocks in 5min OR (datacenter-flagged AND >15 distinct in 24h).
 // Anonymous browsing is no longer auto-blocklisted — see POST() below.
-const SCRAPE_BURST_LIMIT = 6;
-const SCRAPE_DAILY_LIMIT = 15;
+// 20 Nov: raised 6→12 burst / 15→25 daily after false-positive ban (real user multi-tab
+// comparing stocks hit 7/5min). Traffic distribution 7d: humans max 3/5min, only the banned
+// case hit 7. 12 still catches sweeps; daily stays datacenter-gated.
+const SCRAPE_BURST_LIMIT = 12;
+const SCRAPE_DAILY_LIMIT = 25;
 
 /**
  * On a logged-in user's pageview: backfill signupIp/Asn (flag if datacenter),
