@@ -3133,6 +3133,113 @@
       "title": "Login Auth.js PKCE InvalidCheck 2x/24h pasca app-recreate: cookie lama vs AUTH_SECRET container baru — cek env konsistensi + graceful invalid handling",
       "priority": "P3",
       "insight": "CEO verdict 19 Nov: MONITOR — auth = domain owner (guardrail hard), volume 2x/24j pasca app-recreate kemungkinan cookie-stale self-heal; tidak dibuatkan task. Eskalasi owner bila >10/24j atau komplain login."
+    },
+    {
+      "id": "idea-2026-11-19-1",
+      "date": "2026-11-19",
+      "priority": "P2",
+      "status": "dispatched",
+      "source": "product-idle",
+      "type": "feature-marketing",
+      "title": "[GROWTH/KONVERSI] Klaster halaman pivot (aliran-dana-asing/agent/paper-trading/bottom-fishing) = mesin register tak terkelola: 6,6% views → 29% register situs (5/17, dedup anonId, register ≤7d pasca-kunjungan), 0 dukungan konten/sosmed/SEO",
+      "north_star": "growth register (NS#1) + traffic — funnel terkuat yang belum pernah di-review produk",
+      "problem": "4 halaman pivot melayani 144 views/14d (6,6% dari 2.185 situs) tapi terlibat dalam 5 dari 17 register situs (29%, dedup 5 anon unik register ≤7d setelah kunjungan pivot; 9/49 anon=18% sentuh /auth/*). Konversi 3-5x baseline situs pasca-quota-wall (BO-0300: 13/215=6,0%). Halaman ini bekerja TANPA dukungan: 0 artikel PUBLISHED bertopik aliran-dana-asing (223 artikel dicek, 0 title/slug match), 0 referral sosmed 14d, 0 organic (1 view google), 100% ditemukan via nav internal (aliran-dana-asing→24 self-return, stocks→17) atau direct (33).",
+      "data": {
+        "query_date": "2026-11-19 ~10:2x WIB, teknikalidnew-db-1 read-only, isBot=false, window 14d",
+        "pivot_breakdown": "/aliran-dana-asing 56v/21 anon; /agent 33v/16; /paper-trading 28v/19; /bottom-fishing 23v/10",
+        "conversion_dedup": "49 anon unik → 9 (18%) sentuh /auth/*, 5 (10,2%) buka /auth/register ≤7d pasca-pivot-first-visit; konteks: register situs 14d = 17 (User table) → 29% register melibatkan pivot",
+        "per_halaman": "aliran-dana-asing 4/18 auth-after; agent 3/12; paper-trading 2/15 (2 register); bottom-fishing 0/4",
+        "returning": "5/49 pivot-anon (10,2%) multi-hari — par dengan site 8,8-12,7%",
+        "kontaminasi": "12/49 first-pivot-visit sudah punya userId (bottom-fishing 3/4) — angka guest-only tetap kuat: register_after terjadi pada sesi anon",
+        "tren": "pivot views per minggu: 41 (02 Nov) → 76 (09 Nov) → 37 (16 Nov, partial 3 hari)",
+        "aliran_dana_asing": "halaman #3 situs 7d (30v, #/30 di kpis); 7d vs prev-7d: 30 vs 26 (tumbuh); 0 konten pendukung",
+        "already_covered_check": "idea-2026-11-12-2 (bridge /stocks→/berita utk visitor Threads) & idea-2026-11-16-1 (T3→T5 watch) = masalah funnel LAIN; klaster ini belum pernah jadi entry"
+      },
+      "hipotesis": "Permintaan 'aliran dana asing / foreign flow' & fitur agent ada dan KONVERSI tinggi via internal-nav; menambah pintu masuk (artikel SEO topik asing per-emiten, konten sosmed CTA ke /aliran-dana-asing, crawl support) harus melipatgandakan register tanpa membangun fitur baru (aman freeze). Lensa: consistency/easy/data-reliable — funnel yang sudah menang diberi bahan bakar, CUSTOMER FIRST.",
+      "research_note": "PRD prd-2026-11-19-01 spec_ready 19 Nov 22:4x (queue v782). Koreksi data backlog saat verifikasi: (1) klaim \"0 artikel bertopik aliran-dana-asing\" TERKOREKSI — ada 9 artikel judul mengandung asing (analis pagi/sore + brief, e.g. analis-pagi-2026-11-19-bbca) tapi hanya 3 artikel PUBLISHED memuat link internal /aliran-dana-asing dan 0 meng-link /agent → gap sebenarnya = JEMBATAN, bukan ketiadaan konten; (2) sitemap gap terverifikasi: hanya /aliran-dana-asing ada (sitemap.ts:355), 3 pivot lain yatim; (3) pivot 14d 22:3x = 148v/56 anon (backlog 49 @10:2x, +7 hari ini); (4) ForeignFlow FRESH max-date 2026-11-19, top net-buy DEWA 48,3jt/ELTY 21,2jt/BULL 18,4jt/MPIX 18,0jt/PWON 15,0jt — data siap utk template artikel. Tree riset: teknikalidnew main@81ab1e0."
+    },
+    {
+      "id": "idea-2026-11-19-2",
+      "date": "2026-11-19",
+      "priority": "P2",
+      "status": "deferred_freeze",
+      "source": "product-idle",
+      "type": "feature-marketing",
+      "title": "[STICKY] Halaman pivot self-return tinggi tanpa alasan-balik eksplisit: aliran-dana-asing 24/56 views = reload internal, bottom-fishing 4/23, agent 4/33 — user balik manual ke data yang sama",
+      "north_star": "returning users (NS#3, target ≥8% tercapai 8,8-12,7% tapi rapuh) — pilar STICKY",
+      "problem": "Referrer terbesar halaman pivot = halaman itu sendiri (aliran-dana-asing 24/56 views referrer-nya sendiri = pola reload/return manual tanpa bookmark-fitur; bottom-finding 4, agent 4). 5/49 pivot-anon kembali multi-hari. User menunjukkan perilaku 'cek data yang sama berulang' TANPA fitur simpan/pantau/push — sama persis pola bookmark-manual screener yang dulu jadi dasar register-hook (bukti 17 Sep: deep-link preset 388v/12IP).",
+      "data": {
+        "query_date": "2026-11-19 ~10:2x WIB, window 14d isBot=false",
+        "self_return": "aliran-dana-asing 24/56 (43%); bottom-fishing 4/23; agent 4/33; paper-trading 0/28",
+        "multi_day_anons": "5/49 (10,2%)",
+        "preseden": "prod-2026-09-17-01: bukti bookmark manual → register-hook shipped; idea-2026-11-16-1 (T3→T5 putus) = jalur PANTAU-telegram yang bocir; jalur SIMPAN/SAVED di halaman pivot belum pernah diuji"
+      },
+      "hipotesis": "Fitur simpan/pantau ringan guest-first (localStorage + upgrade-path, pola retention-loop-v1 shipped 10 Okt) di halaman foreign-flow/agent = alasan-balik eksplisit utk perilaku yang sudah ada. TUNGGU: feature freeze — kandidat ini menunggu unfreeze ATAU dipecah jadi varian konten (reminder via konten sosmed 'update aliran dana hari ini') yang freeze-compliant.",
+      "research_note": "DIRINGKAS 19 Nov (checkpoint prdagent): idea tetap HOLD utk fitur (freeze); varian konten-sosmed \"update aliran dana hari ini\" OTOMATIS tercakup fase-1 PRD prd-2026-11-19-01 (artikel harian aliran-dana-asing jadi bahan bakar sosmed jalur existing). Tidak ditulis PRD terpisah malam ini — hindari duplikat.",
+      "review_date": "2026-12-01",
+      "ceo_verdict_1120": "VERDICT CEO 20 Nov: DEFER (bukan reject). Data valid (aliran-dana-asing 43% self-return = sinyal alasan-balik kuat) tapi fitur simpan/pantau = FITUR BARU -> feature freeze 6 Nov berlaku. Jalur freeze-safe klaster pivot sudah berjalan via konten (idea-2026-11-19-1 = prd-2026-11-19-01 night_ready). Fitur ini jadi kandidat PRD PERTAMA pasca-unfreeze (20 paid). Review 1 Des 2026 cek kondisi unfreeze + hasil fuel konten."
+    },
+    {
+      "id": "sec-2026-11-19-01",
+      "date": "2026-11-19",
+      "priority": "P2",
+      "status": "blocked_owner_action",
+      "type": "security",
+      "source": "itsec-blue",
+      "exploitability": "sedang",
+      "title": "[BLUE][DEPS-GATE] experimental.agentUpgrade:false (17 Nov) mematikan gerbang advisory build Next 16.4.3 + npm audit prod 12 vuln (1 HIGH follow-redirects 1.16.0-1.16.1, fix tersedia)",
+      "data": {
+        "bukti": "next.config.ts komentar 17 Nov: 'gerbang advisory npm (default security) memblokir build — Next 16.4.3 ter-flag advisory baru → SecurityFatalError exit 1. Dimatikan agar hot-swap harian jalan'; npm audit --omit=dev 19 Nov 21:35: 12 vulnerabilities (11 moderate, 1 high) — follow-redirects HIGH via transitive, fixAvailable true",
+        "risiko": "Build gate security OFF = dep vuln baru masuk prod tanpa suara; follow-redirects HIGH (cross-realm sensitiveHeaders) transitive via next",
+        "rekomendasi": "Owner jam maintenance: `next upgrade --agent=security` (komentar repo sendiri bilang UPGRADE TETAP WAJIB oleh owner) lalu re-enable gate; `npm audit fix` utk follow-redirects"
+      },
+      "ceo_verdict_1120": "VERDICT CEO 20 Nov: BLOCKED_FOR_OWNER (security/env domain — guardrail). Upgrade Next major + re-enable advisory gate = jam maintenance owner (komentar repo sendiri: UPGRADE TETAP WAJIB oleh owner). npm audit fix follow-redirects HIGH ikut satu paket keputusan owner (deps security, gate sedang OFF — risiko build break kalau dipatch sendiri). Eskalasi owner #3 laporan 20 Nov. Tetap P2: exploitability sedang, no active exploit."
+    },
+    {
+      "id": "sec-2026-11-19-02",
+      "date": "2026-11-19",
+      "priority": "P1",
+      "status": "blocked_owner_action",
+      "type": "security",
+      "source": "itsec-blue",
+      "exploitability": "tinggi",
+      "title": "[BLUE][ESKALASI-5] Offsite backup MATI hari-17: rclone gdrive masih 'empty token found' DAN job cron 43c3452b406d TIDAK ADA LAGI di jobs.json — backup teknikalid single-copy di host yang sama",
+      "data": {
+        "bukti": "rclone about gdrive: 19 Nov 21:33 → CRITICAL 'empty token found - please run rclone config reconnect gdrive:' + NOTICE shared client_id retired during 2026; grep 43c3452b406d jobs.json = 0 match (job DELETED, bukan paused — beda dari run lalu); dump lokal SEHAT: ~/backups/teknikalid/db-20261119.sql.gz 60MB gunzip -t OK (cron bc592e49f339 01:15 harian, last ok)",
+        "catatan_legacy": "~/backups/db/teknikalid_*.sql.gz BERHENTI 21 Juni (lokasi legacy db-backup.sh) — restore darurat jangan salah ambil dari sini; sumber kanonik = ~/backups/teknikalid/",
+        "chain": "sec-11-05-04 → 11-09-02 → 11-12-01 → 11-16 (ESKALASI-4) → ini ESKALASI-5",
+        "owner_5_menit": "rclone config reconnect gdrive: (sekaligus buat own client_id per NOTICE retirement) → verify `rclone lsd gdrive:backups-macmini/teknikalid-db` → RECREATE job offsite (job lama sudah terhapus — hermes cron create ulang offsite_backup_sync.sh) → verify run"
+      }
+    },
+    {
+      "id": "sec-2026-11-19-03",
+      "date": "2026-11-19",
+      "priority": "P3",
+      "status": "monitor",
+      "type": "security",
+      "source": "itsec-red",
+      "exploitability": "rendah",
+      "title": "[RED][BERSIH×5] Fitur kode baru 16-19 Nov: 0 celah authz/injection/money — jump chip #cari-saham, tgAnonSuffix deeplink (__a_), linkify lapis-3b, redirect /idx-radar, assert canonical-numbers",
+      "data": {
+        "jump_chip_4eb86be": "Plain <a href=#cari-saham> + useEffect focus retry-ladder — client-only, tanpa auth/input/db; guard 'jangan curi fokus yang sudah dipakai user' benar",
+        "tgAnonSuffix_4a03cc0": "Suffix __a_<12hex> dari localStorage eng_anon dikirim via t.me /start payload = pseudo-identitas 48-bit CLIENT-FORGABLE tanpa signature — agentd (handler.go:920-951) regex `__a_([a-f0-9]{12})$` + ValidateAnonID, hex menang atas derived (AC2 by-design). Dampak forgery = polusi metrik funnel/atribusi watchlist-seed SAJA (bukan privilege, bind token 32-hex terpisah) → diterima sebagai trade-off funnel, catat by-design",
+        "linkify_3b98070": "Repair format ticker — allowlist data server, regex ^[A-Z]{4}$, unit 37/37; penerusan pola lapis-3",
+        "redirect_015ab76": "/idx-radar → /radar; SEMUA 25+ destination di next.config.ts = string statis (grep :slug/:path* di destination = 0) → no open-redirect",
+        "assert_7fbb14e": "Guard konten angka kanonik — deterministik server-side",
+        "verdict": "Streak RED bersih minggu ke-3 (12 Nov ×13, 16 Nov ×12, 19 Nov ×5)"
+      }
+    },
+    {
+      "id": "idea-2026-11-20-1",
+      "date": "2026-11-20",
+      "type": "product-mandate",
+      "priority": "P1",
+      "status": "idea",
+      "source": "CEO-0815-1120 (mandat Product Agent Senin 23 Nov 10:15)",
+      "north_star": "STICKY — Weekly Returning Visitor Ratio (metric inti, target >=8% per 25 Nov)",
+      "title": "[STICKY] MANDAT CEO: returning anonId rolling-7d JATUH 8,8% -> 6,7% (numerator 17->13, denominator stabil 194) 5 hari sebelum deadline 25-Nov >=8% — diagnose penyebab drop + usulan intervensi FREEZE-SAFE",
+      "spec": "MANDAT utk Product Agent Senin 23 Nov 10:15 (riset SQL read-only): (1) identifikasi 13 returning-anon minggu ini vs 17 minggu lalu — 4 anon mana yang hilang, halaman apa yang dulu mereka kunjungi (klaster pivot? screener? berita?); (2) korelasikan dgn perubahan 14-19 Nov (quota-wall v2, t5-habit, fuel-pivot belum deploy); (3) usulan intervensi FREEZE-SAFE saja (konten/alasan-balik/internal-link/tracking — bukan fitur baru) dgn estimasi delta numerator; (4) output: entry insight di file ini + verdict (dispatch konten / HOLD dgn data) — bukan dispatch engineering. Baseline: BO replay 20 Nov 03:00 (13/194=6,7%).",
+      "done_when": "entry insight tertulis di product-backlog.json dgn breakdown anon hilang + 1 usulan intervensi freeze-safe terkuantifikasi (estimasi numerator delta) atau verdict HOLD dgn bukti."
     }
   ],
   "items": []

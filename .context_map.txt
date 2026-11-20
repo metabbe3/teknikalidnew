@@ -75,6 +75,7 @@ scripts/selftest/actor-blocklist.selftest.ts
 scripts/selftest/ai-gate-leak.selftest.ts
 scripts/selftest/article-guard-doctrine.selftest.ts
 scripts/selftest/article-sanitize.selftest.tsx
+scripts/selftest/canonical-numbers.selftest.ts
 scripts/selftest/condition-backtest.selftest.ts
 scripts/selftest/desktop-grid-balance.selftest.ts
 scripts/selftest/edu-canonical.selftest.ts
@@ -378,8 +379,8 @@ src/app/(public)/sektor/[slug]/page.tsx:27:export function generateStaticParams(
 src/app/(public)/sektor/[slug]/page.tsx:31:export async function generateMetadata({
 src/app/(public)/stocks/[ticker]/indikator/page.tsx:14:export const revalidate = 3600; // ISR — past rows immutable, latest day refreshes hourly
 src/app/(public)/stocks/[ticker]/indikator/page.tsx:89:export async function generateMetadata({
-src/app/(public)/stocks/[ticker]/page.tsx:103:export async function generateMetadata({
-src/app/(public)/stocks/[ticker]/page.tsx:83:export const dynamic = "force-dynamic";
+src/app/(public)/stocks/[ticker]/page.tsx:104:export async function generateMetadata({
+src/app/(public)/stocks/[ticker]/page.tsx:84:export const dynamic = "force-dynamic";
 src/app/(public)/stocks/page.tsx:24:export const dynamic = "force-dynamic";
 src/app/(public)/stocks/page.tsx:52:export const metadata → Metadata = {
 src/app/(public)/swing/page.tsx:12:export const dynamic = "force-dynamic";

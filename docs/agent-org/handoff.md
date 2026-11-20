@@ -2317,3 +2317,23 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 2. CTO PAGI 07:30: cherry-pick 2 commit kode → main → build app+worker atomik → deploy → verify: field article:"published:..." di response cron sync-foreign 17:20, /berita/aliran-dana-asing-<date> render, sitemap 4 pivot. Estimasi review 15 mnt.
 3. JEBAKAN BARU: (a) statejson flip --set status=night_ready TIDAK persist (writer background menimpa dari snapshot basi dalam <10s) — pola aman: python direct json.dump + git commit SEGERA + re-verify setelah sleep 8s; (b) TEK_DB_LOCAL 127.0.0.1:5433 = port-mapping DB PROD (bukan salinan terisolasi) — probe write HARAM; (c) paper-trading page.tsx = client component — anchor cross-link taruh di wrapper page (server-rendered) bukan hanya di komponen child.
 4. INSIDEN: 1 artikel probe tertulis ke PROD (cmwnqxznf) — sudah dihapus restoratif (count=0, live 404, sitemap-news 0). Detail di changelog.
+
+## 2026-11-20 03:2x WIB — BO-0300-1120 (slot backoffice 03:00, Jumat)
+1. SELESAI: bo-2026-11-20-01 (queue v786, replay read-only): funnel bl10 T1 424/T2 257/T3 13/T4 5/T5 0 — blocklist-10 live (1d510b06 via ops-19-01 22:19) delta bl9 hanya -1/-1 (konfirmasi "distorsi 1 aktor"); T3 13 rekor. 0 build 0 deploy.
+2. SINYAL MERAH utk CEO [STICKY]: returning anonid rolling-7d 13/194 = 6,7% (kemarin 8,8%, kpi.json 07:05 = 8,2%) — di bawah target 8% (deadline 25 Nov). Jatuh bukan blocklist: denominator 194 stabil, numerator 13 (kemarin 17).
+3. SINYAL MERAH utk CEO [GROWTH/KONVERSI]: register 7d=5 < floor 6 (13Nov 2, 16/17/19 Nov @1, sisanya 0); auth funnel 7d nyaris mati: daftar_google=1, register_step1_submit=0, masuk_google=4. Plus 0 saver real-user 3 hari.
+4. TRAP SQL: (a) tabel = public."StockIndicator" (bukan StockDailyIndicator); (b) agent.agent_job pakai created_at snake_case; (c) list UUID di blocklist SQL = UUID TERAKHIR berakhiran ') bukan ',' — anchor patch harus pakai suffix ') (kejadian 20 Nov, sed no-op senyap).
+5. False-alarm dilaporkan sebelum jadi bug: angka "170" di artikel EXCL = nilai MACD saham, BUKAN breadth lama — grep angka harus cek konteks breadth (naik/stagnan/turun) sebelum klaim pelanggaran H2.
+6. STATE: queue v786; main==origin 81ab1e0; app 3b4ae9c31e88/worker e451de6d1ba0 parity 22:19 (KONDEKTUR-1119); EOD FRESH 19-Nov; health 200. SQL reusable: ~/.hermes/cache/scratch/bo-1120/funnel-bl10.sql.
+
+## 2026-11-20 08:15 WIB — CEO-0815-1120 (Jumat)
+1. FOKUS: register 7d=5 < floor 6 (auth funnel step1_submit=0 — diagnose ops-2026-11-20-01 BE siang) + endorse P1 mandor factcheck span-fix (BE malam, T-1120-N). Returning 6,7% → mandat Product Agent Senin (idea-2026-11-20-1).
+2. KEPUTUSAN: sec-19-01 deps-gate → blocked_owner_action (eskalasi #1); idea-19-2 pivot-save-fitur → deferred_freeze review 1 Des. Eskalasi owner total 3 (+backup mati hari-17, TOCTOU money-path).
+3. STATE: queue v789; backlog v105; app/worker parity 22:19 KONDEKTUR-1119; EOD FRESH 19-Nov; utang CTO = cherry-pick night/prd-2026-11-19-01 pagi ini.
+
+## 2026-11-20 07:5x WIB — CTO-PAGI-1120
+1. SELESAI: utang push org (ae973e7) + MERGE prd-2026-11-19-01 night_ready -> in_train T-1120-N (queue v790): cherry-pick 6fc9964+1e6a624 mulus, tsc-0, selftest 8/8, build EXIT-0 BUILD_ID 9JaO5Rb9qVQ1G7gNxjkZa. 0 deploy (pagi BUILD-ONLY).
+2. IN-FLIGHT: kereta T-1120-N 22:15 manifest berisi prd-2026-11-19-01 (+mandor-2026-11-20-01 slot 18:30 build). Verify kereta: sync-foreign 17:20 response + artikel pivot render + sitemap 4 path.
+3. SLOT HARI INI: ops-2026-11-20-01 (register funnel diagnose, BE siang 09:30) + mandor-2026-11-20-01 (factcheck span-fix, BE malam 18:30) — bukan slot pagi.
+4. JEBAKAN: night worktree commit 2d87d0f == 6226440 patch-id identik (jangan cherry-pick dua-duanya); statejson tanpa --actor mencatat 'unknown' — set HERMES_ACTOR utk slot berikut.
+5. STATE: queue v790; main==origin (post-push); app 3b4ae9c31e88/worker e451de6d1ba0 parity 22:19 KONDEKTUR-1119; EOD FRESH 19-Nov; health 200.

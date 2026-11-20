@@ -1587,3 +1587,13 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 
 ## 2026-11-19 18:5x — CTO-SORE-1119
 - **qa-2026-11-19-01** | type=ops (P1 TRUST) | PRD: CEO-APPROVE Opsi-A (dispatch CEO-0815-1119) | deploy: none BUILD-ONLY — commit 7fbb14e PUSHED origin, naik kereta T-1119-N kondektur 22:15 | verify: selftest canonical-numbers two-way 8/8 GREEN (RED-first 8b4e5aa), parity DB live sesi 19 Nov 154/423/143 tot 720 EXACT vs SQL independen, tsc EXIT-0, build EXIT-0 BUILD_ID baru, regression signal-window-pinning 3/3 + market-one-door 6/6 PASS (env bersih) | QA: Sentinel 22:00 20 Nov (verdict + brief pagi 20 Nov angka=kanonik, gate exit-0) | impact_check_due: 2026-11-21 (AC4: 0 patch P1 angka reviewer 20-21 Nov)
+
+## prd-2026-11-19-01 — fuel klaster pivot aliran-dana-asing fase-1 (MERGE+BUILD slot pagi 20 Nov)
+- task-id: prd-2026-11-19-01 | type: prd | PRD: idea-2026-11-19-1 (spec_ready)
+- posisi: [MARKETING] GROWTH register (NS#1) — funnel konversi tertinggi situs difuel konten harian
+- eksekusi: cherry-pick night/prd-2026-11-19-01 -> main: 6fc9964 (test failing-first 8 RED) + 1e6a624 (feat 11 file: generator DAILY_SNAPSHOT asing, section related /aliran-dana-asing, cross-link 3 pivot, sitemap 3 yatim); 0 konflik, schema-shield CLEAN
+- verify: tsc EXIT-0 · selftest foreign-flow-daily 8/8 PASS (C2 SATU PINTU snapshot bypass cache) · next build EXIT-0 BUILD_ID 9JaO5Rb9qVQ1G7gNxjkZa
+- deploy: BELUM (slot pagi BUILD-ONLY per deploy-window owner 15 Okt) — in_train T-1120-N, kereta kondektur 22:15
+- verify pasca-deploy (kereta): cron sync-foreign 17:20 field article:"published:" di response + /berita/aliran-dana-asing-<date> render + sitemap.xml 4 path pivot
+- QA: verdict milik Sentinel 22:00 (H3 — builder tulis bukti saja)
+- impact_check_due: 2026-11-23 (AC5 laporan 14d banding baseline changelog night)
