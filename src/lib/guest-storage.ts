@@ -76,10 +76,16 @@ export function toggleGuestWatchlistTicker(
   ticker: string,
   storage: GuestStorage | null = defaultStorage(),
 ): { list: string[]; added: boolean } | null {
-  if (!TICKER_RE.test(ticker)) return null;
+  // Kanonisasi SATU PINTU: sumber ticker lintas halaman campur bare/.JK
+  // (/radar bare — radar-scanner strip suffix; page lain .JK penuh).
+  // Tanpa ini ASGR + ASGR.JK hidup berdampingan = bintang tak sinkron antar halaman.
+  const canonical = toCanonicalJkTicker(ticker);
+  if (!canonical) return null;
   const list = readGuestWatchlist(storage);
-  const added = !list.includes(ticker);
-  const next = added ? [...list, ticker] : list.filter((t) => t !== ticker);
+  const added = !list.includes(canonical);
+  const next = added
+    ? [...list, canonical]
+    : list.filter((t) => t !== canonical && t !== ticker);
   return writeGuestWatchlist(next, storage) ? { list: next, added } : null;
 }
 
@@ -95,9 +101,10 @@ export function addManyGuestWatchlistTickers(
   const next = [...list];
   let addedCount = 0;
   for (const t of tickers) {
-    if (!TICKER_RE.test(t) || seen.has(t)) continue;
-    seen.add(t);
-    next.push(t);
+    const canonical = toCanonicalJkTicker(t);
+    if (!canonical || seen.has(canonical)) continue;
+    seen.add(canonical);
+    next.push(canonical);
     addedCount++;
   }
   if (addedCount === 0) return { list, addedCount: 0 };

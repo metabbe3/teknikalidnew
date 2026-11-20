@@ -6,6 +6,7 @@ import { getRadarScanData, type RadarItem } from "@/domains/stock/radar-scanner.
 import { SITE_URL } from "@/lib/constants";
 import { Radar, ArrowUpRight, TrendingUp, ShieldCheck, Activity, HelpCircle } from "lucide-react";
 import { TelegramSubscribeCta } from "@/components/telegram/subscribe-cta";
+import { GuestStar } from "@/components/stock/guest-star";
 
 export const dynamic = "force-dynamic";
 
@@ -228,7 +229,7 @@ export default async function RadarPage() {
             <p>
               <strong className="text-foreground">IDX Radar TeknikalID</strong> adalah instrumen riset pasar yang 
               dirancang khusus bagi para pelaku pasar modal Indonesia untuk mendeteksi anomali harga dan sinyal teknikal 
-              secara cepat. Di tengah lebih dari 950 emiten yang tercatat di Bursa Efek Indonesia, memeriksa grafik satu per 
+              secara cepat. Di tengah lebih dari 956 emiten yang tercatat di Bursa Efek Indonesia, memeriksa grafik satu per 
               satu setiap hari membutuhkan waktu yang sangat intensif. IDX Radar memecahkan tantangan tersebut dengan 
               menjalankan filter multi-faktor otomatis yang mengevaluasi struktur harga, indikator momentum, rata-rata bergerak 
               eksponensial, serta neraca transaksi pemodal asing. Seluruh emiten diuji melalui penyaring likuiditas ketat 
@@ -271,12 +272,13 @@ export default async function RadarPage() {
                     <th scope="col" className="py-3 px-4">Keterangan / Sinyal</th>
                     <th scope="col" className="py-3 px-4 text-right">Skor Sinyal</th>
                     <th scope="col" className="py-3 px-4 text-center">Analisis Detail</th>
+                    <th scope="col" className="py-3 px-4 text-center" aria-label="Pantau">Pantau</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
                   {top20.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="py-12 text-center text-muted-foreground">
+                      <td colSpan={7} className="py-12 text-center text-muted-foreground">
                         Belum ada data scan radar untuk sesi saat ini atau proses pembaruan sedang berlangsung. Silakan cek kembali saat sesi bursa berikutnya.
                       </td>
                     </tr>
@@ -342,6 +344,7 @@ export default async function RadarPage() {
                               Buka Chart
                             </Link>
                           </td>
+                          <td className="py-3.5 px-4 text-center"><GuestStar ticker={row.ticker} compact chipAlign="end" /></td>
                         </tr>
                       );
                     })

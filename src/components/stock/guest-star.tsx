@@ -8,6 +8,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useGuestWatchlist } from "@/hooks/use-guest-watchlist";
+import { toCanonicalJkTicker } from "@/lib/guest-storage";
 import { getAnonIdSafe } from "@/lib/anon-id-safe";
 
 export function GuestStar({ ticker, compact = false, chipAlign = "center" }: { ticker: string; compact?: boolean; chipAlign?: "center" | "end" }) {
@@ -27,7 +28,9 @@ export function GuestStar({ ticker, compact = false, chipAlign = "center" }: { t
     ) : null;
   }
 
-  const active = tickers.includes(ticker);
+  // Gate baca kanonik: list menyimpan XXXX.JK (satu pintu toggle), caller bisa
+  // passing bare (/radar) ataupun .JK (page lain) — dua-duanya harus match.
+  const active = tickers.includes(toCanonicalJkTicker(ticker) ?? ticker);
 
   const handleClick = () => {
     const result = toggle(ticker);
