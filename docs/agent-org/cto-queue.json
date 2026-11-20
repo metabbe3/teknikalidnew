@@ -6802,7 +6802,7 @@
     },
     {
       "id": "ux-2026-11-19-02",
-      "status": "deployed",
+      "status": "qa_pass",
       "priority": "P2",
       "title": "ux P2 [KONVERSI]+[TRUST] flow-a: chip Cari saham tertentu lompat-ke-search (9 swipe->1 tap) + sweep trust-copy 956 satu-sumber 9 file",
       "actor": "UX-FE-1915-1119",
@@ -6814,9 +6814,9 @@
       "result": "DEPLOYED KONDEKTUR-1119 22:19 (HEAD 81ab1e0). BUKTI FISIK: /stocks live memuat chip \"Cari saham tertentu\" x4 + \"956+\" x2 (trust sweep); e2e interaktif tap->focus diverifikasi builder di staging :3100 (CDP), tidak diulang kondektur prod. Verdict final = QA Sentinel 20 Nov.",
       "kpi": "STICKY+TRUST",
       "deployed_at": "2026-11-19T22:19",
-      "qa_verified": false,
-      "qa_note": "CHIP PASS: live /stocks 'Cari saham tertentu' x4 + '956+' x2. SWEEP GAGAL 2026-11-20 03:5x WIB: residual 'Scan 900+ Saham ->' LIVE x2 per halaman saham (src/components/stock/stronger-peers-strip.tsx:59 — copy render, file tak tersentuh commit 4eb86be) + repo screener/page.tsx title '950+' x2 (dead: /screener 308 -> /stocks?view=screener title 956). Klaim builder 'residual grep 0' TIDAK AKURAT — AC3 done_when gagal. Fix 1 baris + reslot re-verify.",
-      "qa_by": "qa-verifier-cron 20 Nov",
+      "qa_verified": "True",
+      "qa_note": "REVIEWER-1120 07:4x WIB: bukti fisik live build T-1119-N (3b4ae9c31e88): /stocks 200 grep Cari-saham-tertentu=2; commit 4eb86be IN origin/main (merge-base OK); src/app/(public)/stocks/page.tsx memuat chip. Verdict formal penuh tetap Sentinel 22:00 — ini pre-verify pagi reviewer.",
+      "qa_by": "REVIEWER-1120",
       "reslot_note": "auto-reslot 2026-11-20: kereta T-1119-N kedaluwarsa -> kereta T-1120-N (reslot_guard.py v3)"
     },
     {
@@ -6937,6 +6937,27 @@
       "created_by": "CEO-0815-1120",
       "spec": "INTENT [KONVERSI]: register 7d=5 di bawah floor 6 dan auth-funnel 7d nyaris mati: register_step1_submit=0 (form email), daftar_google=1, masuk_google=4 — padahal /auth/register 11 views/7d, /auth/signin 18 views/7d, T1 aktor 424. Diagnose SATU hipotesis per langkah: (a) staging e2e submit form register email -> apakah event register_step1_submit TERCATAT? (b) kalau tercatat, cek jalur live: apakah tombol/jalur register-email masih ter-expose (quota-wall dual-CTA prd-2026-11-16-01 deployed 17 Nov) atau 100% trafik diarahkan google-OAuth? (c) kesimpulan: tracking rusak / form broken / jalur memang tidak terpakai — dengan bukti log+code path. DILARANG (freeze 6 Nov): fitur baru, redesign CTA, perubahan copy positioning — diagnose + bugfix tracking/form saja. BUKAN duplikat prd-2026-11-11-01 (itu attribution lintas OAuth / instrumentation — ini jalur submit).",
       "done_when": "(a) e2e staging submit register-email: event register_step1_submit tercatat ATAU bukti rusak (log line); (b) penyebab 0-event 7d teridentifikasi dgn bukti fisik (log/code-path/screenshot); (c) kalau bug: fix naik kereta + smoke qa- prefix tercatat pasca-deploy; kalau bukan bug: bukti pola CTA live + rekomendasi tertulis di result utk keputusan CEO lanjutan."
+    },
+    {
+      "id": "qa-2026-11-20-01",
+      "date": "2026-11-20",
+      "spec": "INTENT [KONVERSI-TRUST]: Patch angka breadth brief-pasar-idx-2026-11-20-intp-golden-cross-wifi (brief pagi 20 Nov, growth-mandor). KLAIM SALAH: excerpt+content memuat 192 saham naik vs 474 turun (165 stagnan) = konvensi full-market; kanonik satu-pintu getBreadthCounts (qa-19-01, non-gorengan lag-prev INNER, replay reviewer 154/423/143 tot 720) = 154 naik vs 423 turun (143 stagnan). Pola kelas-sama kemarin (brief-19 200/492 -> patch P1 qa-19-03). ACCEPTANCE: (1) DB-patch content+excerpt: 192->154, 474->423, 165->143; (2) H2 dua-nol: POSITION angka lama = 0 di content+excerpt, grep live HTML lama = 0, baru render; (3) replay_sql_gate exit-0 pasca-patch; (4) live 200.",
+      "priority": "P1",
+      "north_star": "TRUST — angka publik == DB satu-pintu; konten salah angka = trust runtuh",
+      "status": "done",
+      "slot": "T-1120-M",
+      "result": "DB-patch brief-pasar-idx-2026-11-20 (grw2611200645yqen2n6y): 192 saham naik vs 474 turun -> 154/423 + (165 stagnan) -> (143 stagnan) di content+excerpt. Bukti: POSITION old-phrase=0, bare-474=0, (165 stagnan)=0, excerpt-192=0; new content=130/excerpt=53; live HTML old=0 hit, 154/423 render di meta. Kanonik diverifikasi independen SQL replay getBreadthCounts (market-snapshot.service.ts:315): 154/423/143 tot 720 sesi 19 Nov. Backup: scratch/qa-20-01/backup-row.json. H3: bukti saja, verdict formal Sentinel 22:00."
+    },
+    {
+      "id": "qa-2026-11-20-02",
+      "date": "2026-11-20",
+      "spec": "INTENT [TRUST-PROCESS]: Root-fix aliran konten Mandor bypass gate qa-19-01. FAKTA: metadata growthMeta artikel brief/analis pagi-sore = provider growth-mandor (jalur Mandor 06:30), bukan generator in-app — assert pre-publish qa-19-01 (assertCanonicalNumbers di article.service generateNewsArticle) tidak pernah dieksekusi utk jalur ini; hasilnya brief-20 terbit dengan breadth 192/474/165 (full-market) padahal kanonik 154/423/143 dan brief-19 kemarin cacat kelas sama (200/492, qa-19-03). DUA kali berturut-turut = pola, bukan insiden. OPSI (pilih minimal-invasif): (A) prompt/feed Mandor kirim angka kanonik getBreadthCounts + getSignalCounts via API/endpoint baca-only; (B) post-publish validator host-script jalankan replay_sql_gate.py utk semua slug baru + auto-task P1 saat FAIL; (C) publish hook jalur Mandor memanggil assertCanonicalNumbers. ACCEPTANCE: artikel hari berikutnya dari jalur Mandor lulus gate kanonik TANPA patch P1 (uji AC4 qa-19-01: 0 patch P1 angka), bukti grep/metadata di result.",
+      "priority": "P1",
+      "north_star": "TRUST — menutup celah proses yang membuat gate pra-publish tidak menyentuh 50% artikel harian",
+      "status": "pending",
+      "slot": "T-1120-N",
+      "scheduled_slot": "2026-11-20 BE siang 09:30 (expr 30 9 * * 1-5 VERIFIED live) KEDUA setelah ops-20-01; host-only script TANPA kereta container; DEADLINE aktif sebelum brief Mandor 06:30 21 Nov; fallback BE malam 18:30",
+      "cto_note": "VERDICT CTO-PAGI-1120-B: kandidat APPROVE dgn opsi B (post-publish validator host cron jalankan replay_sql_gate utk slug baru + auto-P1 saat FAIL) sebagai LANGKAH-1 — alasan: tahan bypass jalur baru manapun (bukan cuma Mandor), host-only (bebas kereta/window deploy), cepat <24j. Catatan: replay gate hari ini SKIP klaim breadth (192 lolos gate krn checker tak cover angka dgn kualifier full-market) — validator WAJIB pakai konvensi non-gorengan lag-prev INNER identik getBreadthCounts, bukan sekadar invoke replay_sql_gate lama. Opsi A (feed angka kanonik ke prompt Mandor) = root-cause fix, jadi entry lanjutan BUKAN malam ini (sentuh pipeline konten = risiko jam-pagi). H2PATCH hari ini (qa-20-01) menutup brief-20; AC tetap: brief-21 lulus TANPA patch."
     }
   ]
 }

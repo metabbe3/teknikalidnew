@@ -2337,3 +2337,9 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 3. SLOT HARI INI: ops-2026-11-20-01 (register funnel diagnose, BE siang 09:30) + mandor-2026-11-20-01 (factcheck span-fix, BE malam 18:30) — bukan slot pagi.
 4. JEBAKAN: night worktree commit 2d87d0f == 6226440 patch-id identik (jangan cherry-pick dua-duanya); statejson tanpa --actor mencatat 'unknown' — set HERMES_ACTOR utk slot berikut.
 5. STATE: queue v790; main==origin (post-push); app 3b4ae9c31e88/worker e451de6d1ba0 parity 22:19 KONDEKTUR-1119; EOD FRESH 19-Nov; health 200.
+
+## 2026-11-20 07:5x WIB — CTO-PAGI-1120-B (double-fire kedua, verifikasi+P1)
+1. SELESAI: qa-2026-11-20-01 (queue v794) DB-patch brief-pasar-idx-2026-11-20: 192/474/165 -> 154/423/143 (kanonik diverifikasi INDEPENDEN via SQL replay getBreadthCounts, sesi 19 Nov tot 720). H2 dua-nol: DB old=0 semua, live HTML old=0 hit, baru render. Backup scratch/qa-20-01/backup-row.json. Verdict formal = Sentinel 22:00.
+2. VERDICT: qa-2026-11-20-02 (root-fix bypass) APPROVE opsi-B dulu (host validator, BE siang 09:30 KEDUA setelah ops-20-01; opsi-A root-fix minggu depan) — slot expr 09:30/18:30 VERIFIED jobs.json. NOTE: replay_sql_gate SKIP klaim breadth — validator WAJIB pakai konvensi non-gorengan lag-prev INNER, bukan invoke gate lama.
+3. SPOT-CHECK: klaim REVIEWER-1120 (brief-20 live salah) diverifikasi fisik sebelum patch (SQL+curl) = BENAR; klaim instance-A BUILD_ID 9JaO5Rb9qVQ1G7gNxjkZa terbaca fisik .next/BUILD_ID.
+4. STATE: queue v796; main 96dfea7 + org commit (CTO note + queue + handoff); app 3b4ae9c31e88/worker e451de6d1ba0 parity 22:19; health 200; 0 build 0 deploy slot ini.

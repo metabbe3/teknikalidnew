@@ -2137,3 +2137,14 @@ Anomali smoke a035afcf terjawab TANPA instrument baru: sumber = e2e verify ad-ho
 - 08:1x | MANDAT Product Agent Senin 23 Nov 10:15: idea-2026-11-20-1 P1 — diagnose drop returning 8,8→6,7% (13 vs 17 anon; 4 hilang siapa, halaman apa) + usulan intervensi FREEZE-SAFE terkuantifikasi. Output = insight backlog, bukan dispatch engineering. | statejson v102→v103
 - 08:1x | ESKALASI OWNER (3): (1) sec-2026-11-19-01 upgrade Next + npm audit fix (security gate OFF 3 hari); (2) sec-2026-11-19-02 offsite backup MATI hari-17 (rclone gdrive, eskalasi-5); (3) info: ops-2026-11-06-03 money-path TOCTOU masih blocked_for_owner sejak 6 Nov. | ceo-decisions
 - 08:1x | HIGIENIS ANTRIAN: status in_train/night_ready/qa_pass ber-deployed_at lama = label stale milik kondektur (preseden 1117/1118/1119), bukan queue aktif CEO. Queue aktif hari ini = 2 dispatch di atas. Slot BE siang 09:30 + malam 18:30 expr VERIFIED live. | cron jobs.json
+## [REVIEWER-1120] 2026-11-20 07:4x WIB — FATAL konten #2 kelas-sama: brief jalur Mandor bypass gate kanonik
+- qa-2026-11-20-01 (P1, T-1120-M): brief-pasar-idx-2026-11-20 breadth 192/474/165 (full-market) vs kanonik getBreadthCounts 154/423/143 (replay identik parity CTO-SORE-1119). Patch angka via DB sesuai acceptance.
+- qa-2026-11-20-02 (P1, T-1120-N): AKAR = aliran konten pagi provider=growth-mandor TIDAK lewat generateNewsArticle in-app → assertCanonicalNumbers qa-19-01 tidak pernah mengeksekusi untuk ~50% artikel harian (ticker pages + brief + analis). Brief-19 kemarin (200/492) dan brief-20 hari ini (192/474) = pola berulang, bukan insiden. Butuh keputusan arsitektur aliran: suplai angka kanonik ke prompt Mandor (A), validator post-publish (B), atau publish hook (C). Rekomendasi reviewer: B paling cepat + tahan bypass jalur baru manapun.
+- Catatan kecil: superlatif lintas-basis ("tertinggi pekan ini") harus selalu membawa kualifier likuiditas eksplisit (preseden GTBO/PGAS & MLBI/YULE).
+
+## CTO note 2026-11-20
+- Isu: ~50% konten harian (jalur Mandor: brief pagi/sore, ticker pages) TIDAK lewat assert kanonik in-app — brief salah angka 2 hari berturut (brief-19 200/492, brief-20 192/474; patch P1 pagi ini, live kini benar 154/423). Replay gate juga SKIP klaim breadth = 2 lubang, bukan 1.
+- Opsi A: feed angka kanonik (getBreadthCounts/getSignalCounts endpoint baca-only) ke prompt Mandor — root-fix, sentuh pipeline konten, risiko jadwal pagi.
+- Opsi B: post-publish validator host-cron (replay kanonik non-gorengan lag-prev per slug baru, auto-P1 saat FAIL) — jaring pengaman utk SEMUA jalur, host-only bebas kereta, <24j.
+- Rekomendasi CTO: B HARI INI (BE siang, qa-20-02 sudah dislot), A sebagai root-fix minggu depan setelah B terbukti menangkap. Ukuran: 0 patch P1 angka selama 7 hari berturut.
+- Risiko bila ditunda: brief Senin pagi (traffic tertinggi) kembali salah = trust erosion tepat saat register funnel lagi di-diagnose (North Star: kembali & percaya).
