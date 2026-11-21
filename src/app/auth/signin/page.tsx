@@ -1,17 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AuthBrandPanel } from "@/components/auth/auth-brand-panel";
+import {
+  sanitizeNextUrl,
+  storeAuthNext,
+  getStoredAuthNext,
+  clearStoredAuthNext,
+} from "@/lib/safe-redirect";
 
-export default function SignInPage() {
+function SignInContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const rawNext = searchParams.get("next");
+  const targetNext = sanitizeNextUrl(rawNext) || getStoredAuthNext() || "/";
+
+  useEffect(() => {
+    if (rawNext && sanitizeNextUrl(rawNext)) {
+      storeAuthNext(rawNext);
+    }
+  }, [rawNext]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -29,10 +45,16 @@ export default function SignInPage() {
     if (result?.error) {
       setError("Email atau password salah. Periksa kembali atau daftar akun baru.");
     } else {
-      router.push("/");
+      clearStoredAuthNext();
+      router.push(targetNext);
       router.refresh();
     }
   }
+
+  const registerHref =
+    targetNext !== "/"
+      ? `/auth/register?next=${encodeURIComponent(targetNext)}`
+      : "/auth/register";
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 lg:py-12">
@@ -54,12 +76,15 @@ export default function SignInPage() {
               <h1 className="font-serif text-2xl font-semibold tracking-tight text-text-primary">Masuk ke akun Anda</h1>
               <p className="text-text-secondary text-sm mt-1.5">
                 Belum punya akun?{" "}
-                <Link href="/auth/register" className="text-accent font-medium hover:underline">Daftar gratis</Link>
+                <Link href={registerHref} className="text-accent font-medium hover:underline">Daftar gratis</Link>
               </p>
             </div>
 
             <button
-              onClick={() => signIn("google", { callbackUrl: "/" })}
+              onClick={() => {
+                if (targetNext !== "/") storeAuthNext(targetNext);
+                signIn("google", { callbackUrl: targetNext });
+              }}
               className="w-full flex items-center justify-center gap-3 bg-bg-card border border-border rounded-xl px-4 py-3 text-sm font-medium hover:bg-bg-hover hover:border-accent/30 transition-colors"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
@@ -129,5 +154,34 @@ export default function SignInPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="max-w-6xl mx-auto px-4 py-8 lg:py-12">
+          <div className="grid lg:grid-cols-2 gap-8 items-stretch">
+            <div className="hidden lg:block">
+              <AuthBrandPanel />
+            </div>
+            <div className="flex items-center justify-center">
+              <div className="w-full max-w-sm space-y-6">
+                <div className="lg:hidden">
+                  <Link href="/" className="font-serif text-xl font-semibold text-text-primary">TeknikalID</Link>
+                  <p className="text-sm text-text-secondary">Analisa teknikal untuk trader Indonesia</p>
+                </div>
+                <div>
+                  <h1 className="font-serif text-2xl font-semibold tracking-tight text-text-primary">Masuk ke akun Anda</h1>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <SignInContent />
+    </Suspense>
   );
 }

@@ -186,7 +186,7 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
           type="button"
           onClick={() => openUhu(ticker)}
           data-engagement="fab_ask_agent_click"
-          title="Tanya Uhu soal saham ini"
+          title="Tanya AI soal saham ini"
           className="flex items-center justify-center gap-1 h-11 px-3.5 rounded-full text-[13px] font-medium text-text-primary whitespace-nowrap hover:bg-bg-hover transition-all press-scale"
         >
           <Bot className="h-4 w-4 text-accent" />
@@ -216,7 +216,7 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
           type="button"
           onClick={() => openUhu(ticker)}
           data-engagement="fab_ask_agent_desktop_click"
-          title="Tanya Uhu soal saham ini"
+          title="Tanya AI soal saham ini"
           className="flex items-center gap-1.5 h-10 px-4 rounded-full text-sm font-medium text-text-primary hover:bg-bg-hover transition-all press-scale"
         >
           <Bot className="h-4 w-4 text-accent" />

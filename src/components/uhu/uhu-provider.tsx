@@ -354,7 +354,10 @@ export function UhuProvider({ children }: { children: ReactNode }) {
                   const re = /\[\[BTN:\s*([^:\]]+?)\s*::\s*([^\]]+?)\s*\]\]/g;
                   let mm: RegExpExecArray | null;
                   while ((mm = re.exec(rawLastAssistant.text ?? "")) !== null && btnChips.length < 3) {
-                    btnChips.push({ label: mm[1], prompt: mm[2] });
+                    // Wave-2 Item 2: Abaikan persona probe di web
+                    if (!/[💰🚀⚡🎓]/.test(mm[1])) {
+                      btnChips.push({ label: mm[1], prompt: mm[2] });
+                    }
                   }
                 }
                 const restored = data.messages!.slice(-10).map((m, i) => ({
@@ -603,18 +606,45 @@ export function UhuProvider({ children }: { children: ReactNode }) {
           }
 
           const split = splitFollowUps(data.text);
+          // Wave-2 Item 2: Bersihkan jika ada teks persona probe
+          const cleanedText = split.text
+            .replace(/(?:Pilih profil kamu|Gaya trading kamu|Pilih gaya kamu)[\s\S]*?(?:💰|🚀|⚡|🎓)[\s\S]*$/i, "")
+            .trim();
+
           setMessages((prev) =>
             prev.map((m) =>
               m.id === assistantId
-                ? { ...m, text: split.text, streaming: false }
+                ? { ...m, text: cleanedText || split.text, streaming: false }
                 : m
             )
           );
 
-          if (split.followUps.length > 0) {
+          // Wave-2 Item 2: Stop persona probe, langsung tampilkan 2-3 follow-up chip kontekstual
+          const cleanFollowups = split.followUps.filter(
+            (f) =>
+              !/[💰🚀⚡🎓]/.test(f) &&
+              !/dividen hunter|growth investor|scalper|pemula/i.test(f)
+          );
+
+          if (cleanFollowups.length > 0) {
             setAgentChips(
-              split.followUps.map((f) => ({ label: f, prompt: f }))
+              cleanFollowups.map((f) => ({ label: f, prompt: f }))
             );
+          } else {
+            // Fallback 2-3 follow-up kontekstual jika LLM tidak menyertakan [FOLLOWUPS]
+            const tickerClean = effTicker ? effTicker.replace(/\.JK$/i, "") : null;
+            if (tickerClean) {
+              setAgentChips([
+                { label: `Berapa support & resist ${tickerClean}?`, prompt: `Berapa level support dan resistance kunci ${tickerClean}?` },
+                { label: `Gimana arus asing ${tickerClean}?`, prompt: `Bagaimana tren akumulasi atau arus asing ${tickerClean}?` },
+                { label: `Bandingkan ${tickerClean} vs kompetitor`, prompt: `Bandingkan ${tickerClean} dengan saham kompetitor terdekatnya` },
+              ]);
+            } else {
+              setAgentChips([
+                { label: "Saham apa yang lagi menarik?", prompt: "Saham apa yang momentumnya menarik hari ini?" },
+                { label: "Sektor apa yang sedang memimpin?", prompt: "Sektor apa yang sedang memimpin pasar hari ini?" },
+              ]);
+            }
           }
         } catch (err: unknown) {
           if (err instanceof Error && err.name === "AbortError") {
@@ -665,7 +695,7 @@ export function UhuProvider({ children }: { children: ReactNode }) {
           if (res.status === 429) {
             setErrorBanner(
               errPayload.message ||
-                "Kuota tanya Uhu kamu sudah penuh untuk periode ini. Cek status paket di halaman Agent ya."
+                "Kuota Tanya AI kamu sudah penuh untuk periode ini. Cek status paket di halaman Agent ya."
             );
             return;
           }
@@ -676,13 +706,13 @@ export function UhuProvider({ children }: { children: ReactNode }) {
           ) {
             setIsLive(false);
             setErrorBanner(
-              "Uhu sedang istirahat sebentar (layanan AI belum aktif). Coba beberapa saat lagi ya."
+              "Tanya AI sedang istirahat sebentar (layanan AI belum aktif). Coba beberapa saat lagi ya."
             );
             return;
           }
 
           setErrorBanner(
-            errPayload.message || "Maaf, koneksi ke Uhu sempat terputus. Coba kirim ulang ya."
+            errPayload.message || "Maaf, koneksi ke Tanya AI sempat terputus. Coba kirim ulang ya."
           );
           return;
         }
@@ -735,8 +765,8 @@ export function UhuProvider({ children }: { children: ReactNode }) {
           if (eventName === "error" || parsed.error) {
             const rawMsg = parsed.message || parsed.error || "";
             const friendly = /quota|limit|habis|429/i.test(rawMsg)
-              ? "Kuota chat Uhu kamu sudah habis. Yuk cek atau upgrade paket di /agent."
-              : rawMsg || "Maaf, Uhu mengalami kendala saat memproses pertanyaanmu.";
+              ? "Kuota chat Tanya AI kamu sudah habis. Yuk cek atau upgrade paket di /agent."
+              : rawMsg || "Maaf, Tanya AI mengalami kendala saat memproses pertanyaanmu.";
             setErrorBanner(friendly);
             return;
           }
@@ -754,7 +784,13 @@ export function UhuProvider({ children }: { children: ReactNode }) {
 
           if (eventName === "suggestions" && Array.isArray(parsed)) {
             const sugg = (parsed as Array<{ label?: string; query?: string }>)
-              .filter((s) => s && typeof s.label === "string" && typeof s.query === "string")
+              .filter(
+                (s) =>
+                  s &&
+                  typeof s.label === "string" &&
+                  typeof s.query === "string" &&
+                  !/[💰🚀⚡🎓]/.test(s.label)
+              )
               .slice(0, 3)
               .map((s) => ({ label: s.label as string, prompt: s.query as string }));
             if (sugg.length > 0) setAgentChips(sugg);
@@ -795,7 +831,7 @@ export function UhuProvider({ children }: { children: ReactNode }) {
           return;
         }
         removeEmptyAssistant();
-        setErrorBanner("Sambungan ke Uhu terganggu. Coba lagi sebentar ya.");
+        setErrorBanner("Sambungan ke Tanya AI terganggu. Coba lagi sebentar ya.");
       } finally {
         streamingRef.current = false;
         setStreaming(false);

@@ -8,6 +8,12 @@ import { ArrowLeft, ArrowRight, Check, Users } from "lucide-react";
 import { AuthBrandPanel } from "@/components/auth/auth-brand-panel";
 import { isEmailLoose, passwordChecks, step2Ready, executeRegister } from "@/lib/register-funnel";
 import { trackCtaEvent } from "@/components/engagement-instrument";
+import {
+  sanitizeNextUrl,
+  storeAuthNext,
+  getStoredAuthNext,
+  clearStoredAuthNext,
+} from "@/lib/safe-redirect";
 
 /**
  * Register funnel 2-step progressive disclosure (prd-2026-10-18-01).
@@ -22,12 +28,16 @@ import { trackCtaEvent } from "@/components/engagement-instrument";
 function RegisterContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [ctx, setCtx] = useState<string | null>(null);
+  const [ctx] = useState<string | null>(() => searchParams.get("ctx"));
+
+  const rawNext = searchParams.get("next");
+  const targetNext = sanitizeNextUrl(rawNext) || getStoredAuthNext();
 
   useEffect(() => {
-    const c = searchParams.get("ctx");
-    if (c) setCtx(c);
-  }, [searchParams]);
+    if (rawNext && sanitizeNextUrl(rawNext)) {
+      storeAuthNext(rawNext);
+    }
+  }, [rawNext]);
 
   const [step, setStep] = useState<1 | 2>(1);
   const [email, setEmail] = useState("");
@@ -86,12 +96,14 @@ function RegisterContent() {
       });
 
       if (result?.error) {
-        router.push("/auth/signin");
+        router.push(targetNext ? `/auth/signin?next=${encodeURIComponent(targetNext)}` : "/auth/signin");
       } else {
-        // owner 6 Nov: kalau datang dari CTA agent (next param), lewati profil
-        // lengkap — balik langsung ke /agent biar 1-klik bind Telegram
-        const next = searchParams.get("next");
-        router.push(next && next.startsWith("/agent") ? next : "/auth/complete-profile");
+        clearStoredAuthNext();
+        if (targetNext) {
+          router.push(targetNext);
+        } else {
+          router.push("/auth/complete-profile");
+        }
         router.refresh();
       }
     } catch {
@@ -120,10 +132,20 @@ function RegisterContent() {
               <h1 className="font-serif text-2xl font-semibold tracking-tight text-text-primary">Buat akun gratis</h1>
               <p className="text-text-secondary text-sm mt-1.5">
                 Sudah punya akun?{" "}
-                <Link href="/auth/signin" className="text-accent font-medium hover:underline">Masuk</Link>
+                <Link
+                  href={targetNext ? `/auth/signin?next=${encodeURIComponent(targetNext)}` : "/auth/signin"}
+                  className="text-accent font-medium hover:underline"
+                >
+                  Masuk
+                </Link>
               </p>
             <button
-              onClick={() => signIn("google", { callbackUrl: "/auth/complete-profile" })}
+              onClick={() => {
+                if (targetNext) storeAuthNext(targetNext);
+                signIn("google", {
+                  callbackUrl: targetNext || "/auth/complete-profile",
+                });
+              }}
               className="w-full flex items-center justify-center gap-3 bg-bg-card border border-border rounded-xl px-4 py-3 text-sm font-medium hover:bg-bg-hover hover:border-accent/30 transition-colors"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">

@@ -24,6 +24,7 @@ import { useSyncExternalStore } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
+import { storeAuthNext } from "@/lib/safe-redirect";
 import {
   normalizeTicker,
   isGuestStockGated,
@@ -88,10 +89,13 @@ export function GuestOverlimitBanner({
           </p>
         </div>
 
-        {/* Dual-CTA setara: daftar (solid) + bot agent (outline) berdampingan */}
+        {/* Dual-CTA setara: daftar (solid) + Tanya AI (outline) berdampingan */}
         <div className="grid gap-2 sm:grid-cols-2 sm:gap-3">
           <Link
-            href="/auth/register"
+            href={`/auth/register?next=${encodeURIComponent(cleanTicker ? `/stocks/${cleanTicker}.JK` : "/stocks")}`}
+            onClick={() => {
+              storeAuthNext(cleanTicker ? `/stocks/${cleanTicker}.JK` : "/stocks");
+            }}
             data-engagement="reg_free_banner"
             className="inline-flex min-h-[44px] w-full items-center justify-center gap-1.5 rounded-lg bg-accent px-5 py-2 text-sm font-bold text-white hover:bg-accent/90 transition-colors press-scale text-center"
           >
@@ -105,7 +109,7 @@ export function GuestOverlimitBanner({
             className="inline-flex min-h-[44px] w-full items-center justify-center gap-1.5 rounded-lg border border-accent/40 bg-accent/5 px-5 py-2 text-sm font-semibold text-accent hover:bg-accent/15 hover:border-accent/70 transition-colors press-scale"
           >
             <MessageCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
-            Tanya Bot Agent tentang {cleanTicker || "saham ini"}
+            Tanya AI tentang {cleanTicker || "saham ini"}
           </a>
         </div>
 

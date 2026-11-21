@@ -83,7 +83,7 @@ export function GuestInlineUpsell({
         className="flex items-center gap-1.5 text-text-secondary hover:text-accent font-medium transition-colors w-full"
       >
         <span>
-          🤖 Mau tanya &apos;{cleanTicker} layak beli ga?&apos; — Bot Agent jawab instan →
+          🤖 Mau tanya &apos;{cleanTicker} layak beli ga?&apos; — Tanya AI jawab instan →
         </span>
       </a>
     </div>

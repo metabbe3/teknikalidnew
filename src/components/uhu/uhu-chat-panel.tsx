@@ -2,10 +2,12 @@
 
 import { useCallback, useEffect, useRef, type ReactNode } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { openNotifBell, useNotifUnread } from "@/components/layout/notif-bell";
 import { UhuMascot } from "./uhu-mascot";
 import { useUhu, type UhuMessage } from "./uhu-provider";
 import { AiMarkdown } from "@/components/ai/ai-markdown";
+import { storeAuthNext } from "@/lib/safe-redirect";
 
 export type { UhuMessage };
 
@@ -123,6 +125,13 @@ export function UhuChatPanel() {
     send,
   } = useUhu();
 
+  const pathname = usePathname();
+  const currentPath =
+    typeof window !== "undefined"
+      ? `${pathname || ""}${window.location.search || ""}` || "/stocks"
+      : pathname || "/stocks";
+  const nextQuery = `?next=${encodeURIComponent(currentPath)}`;
+
   const notifUnread = useNotifUnread();
   const listRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -194,7 +203,7 @@ export function UhuChatPanel() {
     <div
       role="dialog"
       aria-modal="false"
-      aria-label="Uhu — Analis AI TeknikalID"
+      aria-label="Tanya AI — Analis AI TeknikalID"
       className="fixed inset-x-0 bottom-0 z-40 flex max-h-[75dvh] flex-col overflow-hidden rounded-t-2xl border border-border bg-bg-card shadow-xl md:inset-x-auto md:right-6 md:bottom-24 md:max-h-[540px] md:w-[380px] md:rounded-xl"
     >
       {/* Header */}
@@ -208,7 +217,7 @@ export function UhuChatPanel() {
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <span className="truncate text-sm font-semibold text-text-primary">
-                Uhu — Analis AI TeknikalID
+                Tanya AI — Analis AI TeknikalID
               </span>
               <span
                 className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${
@@ -244,7 +253,7 @@ export function UhuChatPanel() {
         <button
           type="button"
           onClick={closeUhu}
-          aria-label="Tutup panel Uhu"
+          aria-label="Tutup panel Tanya AI"
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-colors"
         >
           <svg
@@ -276,7 +285,7 @@ export function UhuChatPanel() {
             </p>
             <p className="text-xs text-text-secondary leading-relaxed">
               Akun web kamu belum terhubung ke Telegram Agent. Hubungkan sekali di
-              halaman Agent supaya Uhu bisa langsung menjawab di web maupun Telegram.
+              halaman Agent supaya Tanya AI bisa langsung menjawab di web maupun Telegram.
             </p>
             <div className="pt-1">
               <Link
@@ -290,14 +299,17 @@ export function UhuChatPanel() {
           </div>
         ) : (
           <>
-            {/* Banner tamu (Item 2: mode guest 50/hari per IP) */}
+            {/* Banner tamu (Wave-1/2: mode guest 50/hari per IP + ?next= return-to-context) */}
             {effectiveGate === "AUTH" && (
               <div className="rounded-lg border border-accent/20 bg-accent/5 px-3 py-2 text-xs text-text-secondary flex items-center justify-between gap-2">
                 <span>
                   Mode tamu — 50 pertanyaan/hari.{" "}
                   <Link
-                    href="/auth/register"
-                    onClick={closeUhu}
+                    href={`/auth/register${nextQuery}`}
+                    onClick={() => {
+                      storeAuthNext(currentPath);
+                      closeUhu();
+                    }}
                     className="font-semibold text-accent underline underline-offset-2 hover:opacity-80"
                   >
                     Login untuk 150/hari + simpan riwayat.
@@ -308,7 +320,7 @@ export function UhuChatPanel() {
 
             {messages.length === 0 && (
               <div className="rounded-xl border border-border bg-bg-primary p-3.5 text-xs text-text-secondary leading-relaxed">
-                Halo! Aku <strong className="font-semibold text-text-primary">Uhu</strong>, analis AI TeknikalID. Tanya soal sinyal teknikal, support/resistance, atau pergerakan saham IDX hari ini.
+                Halo! Aku <strong className="font-semibold text-text-primary">Tanya AI</strong>, analis AI TeknikalID. Tanya soal sinyal teknikal, support/resistance, atau pergerakan saham IDX hari ini.
               </div>
             )}
 
@@ -334,7 +346,7 @@ export function UhuChatPanel() {
                     </div>
                   ) : (
                     <span className="inline-flex items-center gap-1.5 text-xs text-text-tertiary">
-                      <span>Uhu sedang menganalisa...</span>
+                      <span>Tanya AI sedang menganalisa...</span>
                     </span>
                   )}
                 </div>
@@ -352,8 +364,11 @@ export function UhuChatPanel() {
               <p className="leading-relaxed">{errorBanner}</p>
               {isGuest ? (
                 <Link
-                  href="/auth/register"
-                  onClick={closeUhu}
+                  href={`/auth/register${nextQuery}`}
+                  onClick={() => {
+                    storeAuthNext(currentPath);
+                    closeUhu();
+                  }}
                   className="inline-flex items-center justify-center rounded-lg bg-accent px-3 py-1.5 text-xs font-semibold text-white hover:opacity-95 transition-opacity mt-1"
                 >
                   Daftar Akun Gratis
@@ -418,8 +433,8 @@ export function UhuChatPanel() {
                 handleSend();
               }
             }}
-            placeholder="Tanya Uhu apa aja..."
-            aria-label="Pesan untuk Uhu"
+            placeholder="Tanya AI apa aja..."
+            aria-label="Pesan untuk Tanya AI"
             className="max-h-24 min-h-[38px] flex-1 resize-none rounded-xl border border-border bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-tertiary focus:border-accent focus:outline-none disabled:opacity-60"
           />
           <button

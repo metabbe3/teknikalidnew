@@ -113,7 +113,7 @@ function renderKindSymbol(kind: NotifKind) {
           aria-hidden="true"
           data-kind="uhu"
           className="inline-flex h-4 w-4 shrink-0 items-center justify-center text-[11px] leading-none"
-          title="Uhu menjawab"
+          title="Tanya AI menjawab"
         >
           🦉
         </span>

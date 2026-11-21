@@ -7,6 +7,7 @@ import { Check, CircleCheck } from "lucide-react";
 import { PromoBanner } from "@/components/auth/promo-banner";
 import { USERNAME_REGEX } from "@/lib/constants";
 import { trackCtaEvent } from "@/components/engagement-instrument";
+import { getStoredAuthNext, clearStoredAuthNext } from "@/lib/safe-redirect";
 
 export default function CompleteProfilePage() {
   const { data: session, update } = useSession();
@@ -128,6 +129,13 @@ export default function CompleteProfilePage() {
         } catch { /* silent */ }
       } catch {
         sessionStorage.removeItem("pending_post_register");
+      }
+
+      // Wave-2 Item 1: fallback return-to-context dari sessionStorage jika OAuth
+      const storedNext = getStoredAuthNext();
+      if (storedNext) {
+        next = storedNext;
+        clearStoredAuthNext();
       }
 
       router.push(next);

@@ -29,6 +29,7 @@ import { GuestSellModal } from "@/components/telegram/guest-sell-modal";
 import { MarketBreathStrip } from "@/components/ui/market-breath-strip";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Zap } from "lucide-react";
+import { HeroAiCta } from "@/components/home/hero-ai-cta";
 
 const HeroSearch = dynamicImport(
   () => import("@/components/home/hero-search").then((m) => ({ default: m.HeroSearch })),
@@ -338,9 +339,9 @@ export default async function HomePage() {
             {/* Owner 24 Okt: cari saham langsung dari homepage — hemat 1 step ke /stocks */}
             <div className="mt-7">
               <HeroSearch />
-              {/* Owner 24 Okt: tombol AI — cari saham sesuai kriteria bahasa manusia */}
+              {/* Wave-2 Item 4: AI discovery text dengan tone 'kamu' */}
               <p className="mt-2.5 text-xs text-text-tertiary">
-                Belum tahu cari apa?{" "}
+                Belum tahu mau cari saham apa? Kamu bisa tanya langsung ke AI kami di bawah.
               </p>
             </div>
 
@@ -352,6 +353,8 @@ export default async function HomePage() {
               >
                 Analisa Sekarang
               </Link>
+              {/* Wave-2 Item 4: Tombol sekunder Tanya AI */}
+              <HeroAiCta />
               <Link
                 href="/stocks?view=screener"
                 className="inline-flex items-center gap-2 bg-bg-primary text-text-primary border border-border px-6 py-3 rounded-xl font-semibold hover:border-accent/40 transition-colors press-scale"

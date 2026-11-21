@@ -98,7 +98,7 @@ export function UhuFab() {
             }}
             className="text-left leading-snug"
           >
-            Halo! Aku Uhu 🦉 — tanya apa aja soal saham
+            Tanya AI 🦉 — tanya apa aja soal saham
           </button>
           <button
             type="button"
@@ -115,13 +115,13 @@ export function UhuFab() {
       <button
         type="button"
         onClick={handleToggle}
-        aria-label={open ? "Tutup Uhu" : "Buka Uhu — Analis AI TeknikalID"}
+        aria-label={open ? "Tutup Tanya AI" : "Buka Tanya AI — Analis AI TeknikalID"}
         aria-expanded={open}
         className="fixed right-4 bottom-20 md:bottom-6 z-40 flex h-[52px] w-[52px] items-center justify-center rounded-full border border-border bg-bg-card text-text-primary shadow transition-transform hover:scale-105 active:scale-95"
       >
         {unreadWhileClosed && !open && (
           <span
-            aria-label="Uhu menjawab"
+            aria-label="Tanya AI menjawab"
             className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500 ring-2 ring-bg-card"
           />
         )}

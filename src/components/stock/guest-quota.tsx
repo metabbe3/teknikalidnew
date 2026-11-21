@@ -20,6 +20,7 @@ import { SignalBreakdownDetails } from "@/components/stock/signal-breakdown-deta
 import { GuestOverlimitBanner } from "@/components/ui/guest-overlimit-banner";
 import { MessageCircle } from "lucide-react";
 import { GuestInlineUpsell } from "@/components/stock/guest-inline-upsell";
+import { storeAuthNext } from "@/lib/safe-redirect";
 import {
   evaluateGuestQuotaVisit,
   normalizeTicker,
@@ -314,7 +315,10 @@ export function GuestSignalBreakdownGate({
           </span>
         </span>
         <Link
-          href="/auth/register"
+          href={`/auth/register?next=${encodeURIComponent(cleanTicker ? `/stocks/${cleanTicker}.JK` : "/stocks")}`}
+          onClick={() => {
+            storeAuthNext(cleanTicker ? `/stocks/${cleanTicker}.JK` : "/stocks");
+          }}
           data-engagement="reg_free_banner"
           className="text-accent text-[11px] font-medium hover:underline"
         >
