@@ -68,6 +68,7 @@ import { prisma } from "@/lib/prisma";
 import { buildForeignRows } from "@/domains/stock/foreign-flow.util";
 import { portfolioService } from "@/domains/portfolio/portfolio.service";
 import DailyAnalysisSection from "@/components/stock/daily-analysis-section";
+import { DailyAnalysisBlock } from "@/components/stock/daily-analysis-block";
 import { LoginGate } from "@/components/auth/login-gate";
 import { GuestStockTracker } from "@/components/ui/guest-stock-tracker";
 import { GuestOverlimitBanner } from "@/components/ui/guest-overlimit-banner";
@@ -931,6 +932,7 @@ export default async function StockDetailPage({
                           </div>
                         </div>
                       </div>
+                      <DailyAnalysisBlock ticker={ticker} />
                       <GuestSignalBreakdownGate breakdown={signalBreakdown} ticker={stripJk(ticker)} isAuthed={isAuthed} />
                       {/* ret-qw7: arah skor 5 sesi — reason-to-check-back-later */}
                       {(() => {
