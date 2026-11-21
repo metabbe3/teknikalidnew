@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Bell } from "lucide-react";
@@ -446,8 +447,22 @@ export function NotifBell() {
             {/* List notifikasi */}
             <div className="flex-1 overflow-y-auto divide-y divide-border/60">
               {items.length === 0 ? (
-                <div className="px-4 py-8 text-center text-sm text-text-secondary">
-                  Belum ada notifikasi
+                <div className="px-4 py-8 text-center space-y-2">
+                  <p className="text-sm font-medium text-text-secondary">
+                    Belum ada notifikasi
+                  </p>
+                  <p className="text-xs text-text-tertiary leading-relaxed">
+                    Notifikasi harga &amp; berita pantauanmu muncul di sini. Tambah saham ke watchlist biar aktif.
+                  </p>
+                  <div className="pt-1">
+                    <Link
+                      href="/stocks"
+                      onClick={() => setOpen(false)}
+                      className="inline-flex items-center text-xs font-semibold text-accent hover:underline"
+                    >
+                      Buka daftar saham →
+                    </Link>
+                  </div>
                 </div>
               ) : (
                 items.map((item) => (

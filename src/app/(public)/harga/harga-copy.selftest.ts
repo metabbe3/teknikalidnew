@@ -20,8 +20,11 @@ import {
   getPricingDisclaimer,
   PRICING_DISCLAIMER,
   PAYMENT_NOTE,
+  getHargaFaqs,
+  HARGA_FAQS,
   type PricingCard,
 } from "./pricing-data";
+import { metadata } from "./page";
 
 describe("Halaman Harga: buildPricingCards & Copy Verification", () => {
   it("mengembalikan array tepat 3 kartu dengan properti wajib {tier, price, features, ctaHref}", () => {
@@ -163,6 +166,86 @@ describe("Halaman Harga: buildPricingCards & Copy Verification", () => {
       pageSource.includes("card.paymentNote") ||
         pageSource.includes("Bayar via bot Telegram · Midtrans · batal kapan saja"),
       "Source page.tsx harus me-render paymentNote untuk kartu berbayar",
+    );
+  });
+
+  it("blok FAQ memuat 3 Q&A statis dengan copy pertanyaan wajib via getHargaFaqs()", () => {
+    const faqs = getHargaFaqs();
+    assert.equal(faqs.length, 3, "Harus tepat 3 Q&A FAQ");
+
+    const questions = faqs.map((f) => f.question);
+    assert.ok(
+      questions.includes("Bagaimana cara berlangganan?"),
+      "Harus memuat Q: Bagaimana cara berlangganan?",
+    );
+    assert.ok(
+      questions.includes("Bisa berhenti langganan kapan saja?"),
+      "Harus memuat Q: Bisa berhenti langganan kapan saja?",
+    );
+    assert.ok(
+      questions.includes("Apa bedanya Night Trader dan Pro?"),
+      "Harus memuat Q: Apa bedanya Night Trader dan Pro?",
+    );
+
+    for (const item of faqs) {
+      assert.ok(item.question.trim().length > 0, "Pertanyaan FAQ tidak boleh kosong");
+      assert.ok(item.answer.trim().length > 0, "Jawaban FAQ tidak boleh kosong");
+    }
+  });
+
+  it("label kartu mid tier (Night Trader) tidak memakai klaim 'laris' tanpa data riil dan memuat 'Rekomendasi awal'", () => {
+    const cards = buildPricingCards();
+    const mid = cards.find((c) => c.tier === "Night Trader");
+    assert.ok(mid, "Kartu Night Trader harus ada");
+    assert.ok(mid.badge, "Badge Night Trader harus ada");
+
+    // Anti fake scarcity: tidak boleh mengandung klaim "laris"
+    assert.equal(
+      /laris/i.test(mid.badge),
+      false,
+      `Badge mid-tier (${mid.badge}) tidak boleh mengandung kata 'laris' tanpa bukti riil`,
+    );
+
+    // Label jujur "Rekomendasi awal"
+    assert.match(
+      mid.badge,
+      /rekomendasi awal/i,
+      `Badge mid-tier (${mid.badge}) harus memuat 'Rekomendasi awal'`,
+    );
+  });
+
+  it("metadata canonical /harga terpasang dan sesuai spesifikasi", () => {
+    assert.ok(metadata.alternates, "Metadata alternates harus terdefinisi");
+    assert.equal(
+      metadata.alternates.canonical,
+      "/harga",
+      "Canonical URL harus '/harga'",
+    );
+
+    const pagePath = join(process.cwd(), "src/app/(public)/harga/page.tsx");
+    const pageSource = readFileSync(pagePath, "utf-8");
+    assert.match(
+      pageSource,
+      /canonical:\s*["']\/harga["']/,
+      "Source page.tsx harus memuat alternates: { canonical: '/harga' }",
+    );
+  });
+
+  it("source page.tsx me-render blok FAQ dan JSON-LD FAQPage", () => {
+    const pagePath = join(process.cwd(), "src/app/(public)/harga/page.tsx");
+    const pageSource = readFileSync(pagePath, "utf-8");
+
+    assert.ok(
+      pageSource.includes("faqJsonLd") || pageSource.includes("buildCustomFaqJsonLd"),
+      "page.tsx harus mengintegrasikan JSON-LD FAQPage",
+    );
+    assert.ok(
+      pageSource.includes("application/ld+json"),
+      "page.tsx harus memuat tag script application/ld+json",
+    );
+    assert.ok(
+      pageSource.includes("faqs.map") || pageSource.includes("getHargaFaqs"),
+      "page.tsx harus me-render daftar pertanyaan FAQ",
     );
   });
 });

@@ -18,6 +18,33 @@ export const PAYMENT_NOTE =
 export const PRICING_DISCLAIMER =
   "* Bukan nasihat keuangan. Seluruh analisa teknikal, data pasar, dan sinyal otomatis disajikan hanya untuk tujuan edukasi dan informasi. Keputusan investasi dan trading sepenuhnya menjadi tanggung jawab masing-masing trader.";
 
+export interface HargaFaqItem {
+  question: string;
+  answer: string;
+}
+
+export const HARGA_FAQS: HargaFaqItem[] = [
+  {
+    question: "Bagaimana cara berlangganan?",
+    answer:
+      "Klik tombol pilih paket (Night Trader atau Pro) di atas untuk langsung membuka bot Telegram @TeknikalidAgentBot. Ikuti petunjuk di bot dan selesaikan pembayaran via Midtrans (QRIS atau e-wallet). Akses asisten dan kuota kamu langsung aktif otomatis.",
+  },
+  {
+    question: "Bisa berhenti langganan kapan saja?",
+    answer:
+      "Bisa, kamu bisa berhenti langganan kapan saja tanpa penalti atau komitmen jangka panjang. Tidak ada pemotongan saldo otomatis tanpa persetujuanmu. Jika periode langganan habis dan tidak diperpanjang, akun otomatis kembali ke paket gratis di web.",
+  },
+  {
+    question: "Apa bedanya Night Trader dan Pro?",
+    answer:
+      "Night Trader (Rp14.900/bulan pertama, lalu Rp29.000/bln) dirancang untuk trader swing dengan 150 kuota tanya bot, 10 saham watchlist, 10 alert harga 24/7, dan brief sore 15:35 WIB. Paket Pro (Rp29.000/bulan pertama, lalu Rp79.000/bln) ditujukan untuk trader aktif dengan 400 kuota tanya, 25 saham watchlist, 25 alert harga, serta prioritas respons saat jam bursa aktif.",
+  },
+];
+
+export function getHargaFaqs(): HargaFaqItem[] {
+  return HARGA_FAQS;
+}
+
 export function getPricingDisclaimer(): string {
   return PRICING_DISCLAIMER;
 }
@@ -49,7 +76,7 @@ export function buildPricingCards(): PricingCard[] {
       price: "Rp14.900",
       period: "/bulan pertama",
       originalPrice: "Rp29.000",
-      badge: "PILIHAN UTAMA",
+      badge: "Rekomendasi awal",
       description: "Untuk trader swing dan pekerja kantoran yang menyusun rencana trading tiap malam.",
       features: [
         "150 kuota tanya bot Telegram per bulan (unlimited analisa sesi)",

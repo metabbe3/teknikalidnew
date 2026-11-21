@@ -2,15 +2,66 @@ import { stripJk } from "@/lib/utils";
 import { tgDeepLink } from "@/lib/tg-deeplink";
 import { StockAiChip } from "@/components/stock/stock-ai-chip";
 
-interface StockAiPromptChipsProps {
+export interface StockAiPromptChipsProps {
   ticker: string;
   rsi14: number | null;
   signalScore: number | null;
 }
 
+export interface AdaptiveChipItem {
+  key: string;
+  intent: string;
+  engagement: string;
+  text: string;
+}
+
+/**
+ * Pure function: memilih 1 chip adaptif berdasarkan nilai RSI dan skor sinyal.
+ * Aturan (maksimal 1 chip adaptif tambahan):
+ *  - rsi14 < 35  → "Kenapa RSI rendah?"
+ *  - rsi14 > 65  → "RSI tinggi, waktunya take profit?"
+ *  - signalScore > 0.6 → "Sinyal beli kuat?"
+ * Jika tidak ada kondisi terpenuhi → return null.
+ */
+export function pickAdaptiveChip(
+  rsi: number | null | undefined,
+  score: number | null | undefined
+): AdaptiveChipItem | null {
+  if (typeof rsi === "number" && Number.isFinite(rsi)) {
+    if (rsi < 35) {
+      return {
+        key: "rsi_low",
+        intent: "rsi_low",
+        engagement: "chip_aiPromptRsiLow",
+        text: "Kenapa RSI rendah?",
+      };
+    }
+    if (rsi > 65) {
+      return {
+        key: "rsi_high",
+        intent: "rsi_high",
+        engagement: "chip_aiPromptRsiHigh",
+        text: "RSI tinggi, waktunya take profit?",
+      };
+    }
+  }
+
+  if (typeof score === "number" && Number.isFinite(score) && score > 0.6) {
+    return {
+      key: "signal_strong",
+      intent: "sinyal",
+      engagement: "chip_aiPromptSignalStrong",
+      text: "Sinyal beli kuat?",
+    };
+  }
+
+  return null;
+}
+
 export function StockAiPromptChips({
   ticker,
   rsi14,
+  signalScore,
 }: StockAiPromptChipsProps) {
   const clean = stripJk(ticker);
 
@@ -20,7 +71,7 @@ export function StockAiPromptChips({
     return `🛡️ Cek risiko & aliran asing ${clean}`;
   })();
 
-  const chips = [
+  const baseChips = [
     {
       key: "entry",
       intent: "entry",
@@ -40,6 +91,9 @@ export function StockAiPromptChips({
       text: riskText,
     },
   ];
+
+  const adaptive = pickAdaptiveChip(rsi14, signalScore);
+  const chips = adaptive ? [...baseChips, adaptive] : baseChips;
 
   return (
     <div

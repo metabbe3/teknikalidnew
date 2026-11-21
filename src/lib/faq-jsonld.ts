@@ -15,6 +15,50 @@ export interface FaqPageJsonLd {
   mainEntity: FaqQuestionItem[];
 }
 
+export interface SimpleFaqItem {
+  question: string;
+  answer: string;
+}
+
+/**
+ * Pure function to build JSON-LD FAQPage for generic / static FAQ lists (e.g. /harga).
+ * Produces schema.org FAQPage structured data.
+ */
+export function buildCustomFaqJsonLd(
+  items: SimpleFaqItem[] | null | undefined,
+): FaqPageJsonLd | null {
+  if (!items || !Array.isArray(items) || items.length === 0) {
+    return null;
+  }
+
+  const mainEntity: FaqQuestionItem[] = [];
+  for (const item of items) {
+    if (!item) continue;
+    const q = typeof item.question === "string" ? item.question.trim() : "";
+    const a = typeof item.answer === "string" ? item.answer.trim() : "";
+    if (q && a) {
+      mainEntity.push({
+        "@type": "Question",
+        name: q,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: a,
+        },
+      });
+    }
+  }
+
+  if (mainEntity.length === 0) {
+    return null;
+  }
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity,
+  };
+}
+
 export interface BuildFaqJsonLdParams {
   ticker: string;
   verdictLine: string | null | undefined;
