@@ -7,6 +7,7 @@ import {
   AgentClosingCta,
 } from "@/components/telegram/subscribe-cta";
 import { PricingBox } from "@/components/telegram/pricing-box";
+import { getTierPrice } from "@/app/(public)/harga/pricing-data";
 
 export const metadata: Metadata = {
   title: "Agent Teknikal.id — Temanmu berinvestasi",
@@ -60,6 +61,10 @@ harga menyentuh Rp4.620.`}
 }
 
 export default function AgentPage() {
+  const nightTrader = getTierPrice("Night Trader");
+  const pro = getTierPrice("Pro");
+  const tierSummaryText = `Gratis di web · ${nightTrader?.tier ?? "Night Trader"} ${nightTrader?.price ?? "Rp14.900"}${nightTrader?.period ? " " + nightTrader.period : ""} · ${pro?.tier ?? "Pro"} ${pro?.price ?? "Rp29.000"}${pro?.period ? " " + pro.period : ""}`;
+
   return (
     <AgentMembershipProvider>
       <div className="mx-auto max-w-4xl px-4 py-8 space-y-10">
@@ -81,7 +86,7 @@ export default function AgentPage() {
           </p>
           <AgentHeroCta />
           <p className="text-xs font-medium text-text-secondary">
-            Gratis 3 tanya/hari · Night Trader Rp29rb/bln · Pro Rp79rb/bln
+            {tierSummaryText}
           </p>
           <p className="text-xs text-text-tertiary">
             Gratis 3 perintah pertama setelah akun terhubung. Tanpa kartu kredit.
@@ -245,8 +250,8 @@ export default function AgentPage() {
             Coba Tanyakan Saham Incaran Anda Sekarang
           </h2>
           <p className="text-sm text-text-secondary">
-            Mulai dengan 3 chat pertama gratis di Telegram, atau langsung aktifkan paket
-            Night Trader Rp14.900 untuk bulan pertama.
+            Mulai dengan 3 chat pertama gratis di Telegram, atau langsung aktifkan paket{" "}
+            {nightTrader?.tier ?? "Night Trader"} {nightTrader?.price ?? "Rp14.900"} untuk bulan pertama.
           </p>
           <AgentClosingCta />
         </section>

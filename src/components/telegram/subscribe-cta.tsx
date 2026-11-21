@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useState, useSyncExt
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { tgAnonSuffix } from "@/lib/tg-deeplink";
+import { StockAiChip } from "@/components/stock/stock-ai-chip";
 
 const emptySubscribe = () => () => {};
 
@@ -441,7 +442,7 @@ export function AgentComplainBox() {
 }
 
 export function AgentClosingCta() {
-  const { connected, bindUrl, mem, paying, startBind, checkout } = useAgentCtx();
+  const { connected, bindUrl, mem, startBind } = useAgentCtx();
   return (
     <div className="flex flex-wrap justify-center gap-3">
       {connected || bindUrl ? (
@@ -454,9 +455,14 @@ export function AgentClosingCta() {
         </Button>
       )}
       {mem?.status !== "paid" && (
-        <Button onClick={() => checkout("basic")} variant="outline" size="lg" disabled={paying || !mem?.chatBound}>
+        <StockAiChip
+          baseHref={`${AGENT_BOT_URL}?start=upgrade`}
+          chipKey="closing_night_trader"
+          engagement="cta_closing_night_trader"
+          className="inline-flex min-h-11 items-center justify-center rounded-lg border border-border bg-bg-card px-4 py-2 text-sm font-semibold text-text-primary hover:bg-bg-hover transition-colors"
+        >
           Ambil Night Trader Rp14.900
-        </Button>
+        </StockAiChip>
       )}
     </div>
   );

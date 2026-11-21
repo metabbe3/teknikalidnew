@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PricingBox } from "@/components/telegram/pricing-box";
+import { getTierPrice } from "@/app/(public)/harga/pricing-data";
 
 /**
  * AgentKopiBanner (owner 6 Nov: "cross selling ... AI AGENT SAHARGA NGOPI",
@@ -16,7 +17,7 @@ export function AgentKopiBanner({ source = "web" }: { source?: string }) {
             Malas cek grafik satu-satu? Tanya level support &amp; pasang alert harga langsung di Telegram.
           </p>
           <p className="text-xs font-semibold text-text-primary">
-            3 pertanyaan pertama gratis · Night Trader Rp29rb/bln · Pro Rp79rb/bln
+            3 pertanyaan pertama gratis · {getTierPrice("Night Trader")?.tier ?? "Night Trader"} {getTierPrice("Night Trader")?.price ?? "Rp14.900"}/bln pertama · {getTierPrice("Pro")?.tier ?? "Pro"} {getTierPrice("Pro")?.price ?? "Rp29.000"}/bln pertama
           </p>
           <div className="space-y-0.5 text-xs text-text-secondary">
             <p>

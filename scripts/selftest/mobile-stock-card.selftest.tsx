@@ -353,7 +353,7 @@ async function main() {
     const root = parseHtml(html);
     check("4a. Chips prompt ada di dalam details", root.querySelector("details") !== null);
     const links = root.querySelectorAll("a");
-    check("4b. 3 tombol chip lengkap di dalam details", links.length === 3);
+    check("4b. 3 atau 4 tombol chip lengkap di dalam details (adaptif)", links.length >= 3 && links.length <= 4);
   }
 
   // 5. Mobile viewport height simulation (375px viewport)

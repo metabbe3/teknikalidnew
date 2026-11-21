@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { StockLogo } from "@/components/stock/stock-logo";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { computeChange } from "@/lib/serialize";
 import { formatPrice, formatPercent, stripJk, changeColor } from "@/lib/utils";
-import { GuestWatchlistView } from "@/components/watchlist/guest-watchlist-view";
+import { GuestWatchlistView, WATCHLIST_EMPTY_STATE_TEXT } from "@/components/watchlist/guest-watchlist-view";
 import { RemoveWatchlistButton } from "@/components/watchlist/remove-watchlist-button";
 import { getWatchlistPresets } from "@/lib/watchlist-presets";
 
@@ -84,15 +85,26 @@ export default async function WatchlistPage() {
       </div>
 
       {items.length === 0 ? (
-        <div className="text-center py-16 space-y-3">
+        <div className="text-center py-12 sm:py-16 space-y-3">
           <div className="w-12 h-12 mx-auto rounded-full bg-bg-hover flex items-center justify-center">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-text-secondary" aria-hidden="true">
               <path d="M12 5v14M5 12h14" />
             </svg>
           </div>
-          <p className="text-text-secondary text-sm">
-            Watchlist masih kosong. Buka halaman saham lalu klik pantau untuk menambahkan.
+          <p className="text-sm font-medium text-text-secondary">
+            {WATCHLIST_EMPTY_STATE_TEXT}
           </p>
+          <p className="text-xs text-text-tertiary leading-relaxed">
+            Buka halaman saham pilihanmu lalu klik tombol pantau untuk menambahkan ke watchlist.
+          </p>
+          <div className="pt-1">
+            <Link
+              href="/stocks?view=screener"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-bg-card px-3.5 py-1.5 text-xs font-semibold text-accent hover:border-accent hover:bg-bg-hover transition-colors press-scale"
+            >
+              <span>Buka screener saham →</span>
+            </Link>
+          </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 stagger-grid">

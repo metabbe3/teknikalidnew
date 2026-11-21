@@ -49,6 +49,35 @@ export function getPricingDisclaimer(): string {
   return PRICING_DISCLAIMER;
 }
 
+export interface TierPriceSummary {
+  tier: string;
+  price: string;
+  period: string;
+  originalPrice?: string;
+  badge?: string;
+}
+
+/**
+ * Pure function: mengembalikan ringkasan harga tier tertentu (SATU PINTU).
+ * Dipakai oleh halaman /harga dan /agent agar angka konsisten.
+ */
+export function getTierPrice(tier: string): TierPriceSummary | undefined {
+  const cards = buildPricingCards();
+  const normalized = tier.trim().toLowerCase().replace(/[-_]/g, " ");
+  const card = cards.find((c) => {
+    const t = c.tier.toLowerCase();
+    return t === normalized || (normalized === "basic" && t === "night trader");
+  });
+  if (!card) return undefined;
+  return {
+    tier: card.tier,
+    price: card.price,
+    period: card.period,
+    originalPrice: card.originalPrice,
+    badge: card.badge,
+  };
+}
+
 /**
  * Pure function: menghasilkan daftar 3 kartu harga paket Teknikal.id
  * Snapshot benefit & nominal terverifikasi dari kode & dokumentasi repo.

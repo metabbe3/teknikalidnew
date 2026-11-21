@@ -18,6 +18,7 @@ import { join } from "node:path";
 import {
   buildPricingCards,
   getPricingDisclaimer,
+  getTierPrice,
   PRICING_DISCLAIMER,
   PAYMENT_NOTE,
   getHargaFaqs,
@@ -25,6 +26,7 @@ import {
   type PricingCard,
 } from "./pricing-data";
 import { metadata } from "./page";
+import { WATCHLIST_EMPTY_STATE_TEXT } from "@/components/watchlist/guest-watchlist-view";
 
 describe("Halaman Harga: buildPricingCards & Copy Verification", () => {
   it("mengembalikan array tepat 3 kartu dengan properti wajib {tier, price, features, ctaHref}", () => {
@@ -246,6 +248,110 @@ describe("Halaman Harga: buildPricingCards & Copy Verification", () => {
     assert.ok(
       pageSource.includes("faqs.map") || pageSource.includes("getHargaFaqs"),
       "page.tsx harus me-render daftar pertanyaan FAQ",
+    );
+  });
+
+  it("export function getTierPrice(tier) mengembalikan tier price canonical untuk Free, Night Trader, dan Pro", () => {
+    const free = getTierPrice("Free");
+    const nightTrader = getTierPrice("Night Trader");
+    const pro = getTierPrice("Pro");
+    const basic = getTierPrice("basic");
+
+    assert.ok(free, "Tier Free harus terdefinisi");
+    assert.equal(free.price, "Rp0");
+    assert.equal(free.period, "/hari");
+
+    assert.ok(nightTrader, "Tier Night Trader harus terdefinisi");
+    assert.equal(nightTrader.price, "Rp14.900");
+    assert.equal(nightTrader.originalPrice, "Rp29.000");
+    assert.equal(nightTrader.period, "/bulan pertama");
+
+    assert.ok(pro, "Tier Pro harus terdefinisi");
+    assert.equal(pro.price, "Rp29.000");
+    assert.equal(pro.originalPrice, "Rp79.000");
+    assert.equal(pro.period, "/bulan pertama");
+
+    assert.ok(basic, "Tier basic (alias Night Trader) harus terdefinisi");
+    assert.equal(basic.price, "Rp14.900");
+  });
+
+  it("halaman /agent dan /harga memakai SATU sumber angka (import getTierPrice / buildPricingCards)", () => {
+    const agentPagePath = join(process.cwd(), "src/app/(public)/agent/page.tsx");
+    assert.ok(existsSync(agentPagePath), "File agent/page.tsx harus ada");
+
+    const agentSource = readFileSync(agentPagePath, "utf-8");
+    assert.ok(
+      agentSource.includes('from "@/app/(public)/harga/pricing-data"') ||
+        agentSource.includes("pricing-data"),
+      "agent/page.tsx harus mengimpor dari pricing-data (SATU SUMBER)",
+    );
+    assert.ok(
+      agentSource.includes("getTierPrice"),
+      "agent/page.tsx harus memanggil getTierPrice untuk konsistensi angka",
+    );
+
+    const pricingBoxPath = join(process.cwd(), "src/components/telegram/pricing-box.tsx");
+    assert.ok(existsSync(pricingBoxPath), "File pricing-box.tsx harus ada");
+    const pricingBoxSource = readFileSync(pricingBoxPath, "utf-8");
+    assert.ok(
+      pricingBoxSource.includes("buildPricingCards"),
+      "pricing-box.tsx harus menggunakan buildPricingCards dari satu sumber",
+    );
+  });
+
+  it("CTA berbayar pada halaman agent menggunakan href resmi Telegram dan StockAiChip", () => {
+    const pricingBoxPath = join(process.cwd(), "src/components/telegram/pricing-box.tsx");
+    const pricingBoxSource = readFileSync(pricingBoxPath, "utf-8");
+
+    assert.ok(
+      pricingBoxSource.includes("StockAiChip"),
+      "pricing-box.tsx harus memakai StockAiChip agar suffix identitas anon terlampir",
+    );
+    assert.ok(
+      pricingBoxSource.includes("ctaHref") ||
+        pricingBoxSource.includes("t.me/TeknikalidAgentBot?start=upgrade"),
+      "pricing-box.tsx harus mengarahkan CTA ke t.me/TeknikalidAgentBot?start=upgrade",
+    );
+
+    const subscribeCtaPath = join(process.cwd(), "src/components/telegram/subscribe-cta.tsx");
+    const subscribeCtaSource = readFileSync(subscribeCtaPath, "utf-8");
+    assert.ok(
+      subscribeCtaSource.includes("StockAiChip"),
+      "subscribe-cta.tsx harus memakai StockAiChip pada AgentClosingCta",
+    );
+    assert.ok(
+      subscribeCtaSource.includes("Ambil Night Trader Rp14.900"),
+      "AgentClosingCta harus memiliki tombol berlabel konsisten 'Ambil Night Trader Rp14.900'",
+    );
+  });
+
+  it("watchlist web empty-state memiliki teks arahan terpadu dan chip link ke /stocks?view=screener", () => {
+    assert.equal(
+      WATCHLIST_EMPTY_STATE_TEXT,
+      "Belum ada pantauan. Buka halaman saham → tombol pantau.",
+      "WATCHLIST_EMPTY_STATE_TEXT harus sesuai arahan doktrin",
+    );
+
+    const guestViewPath = join(process.cwd(), "src/components/watchlist/guest-watchlist-view.tsx");
+    const guestViewSource = readFileSync(guestViewPath, "utf-8");
+    assert.ok(
+      guestViewSource.includes("/stocks?view=screener"),
+      "guest-watchlist-view.tsx harus memiliki tautan ke /stocks?view=screener",
+    );
+    assert.ok(
+      guestViewSource.includes("WATCHLIST_EMPTY_STATE_TEXT"),
+      "guest-watchlist-view.tsx harus memakai WATCHLIST_EMPTY_STATE_TEXT",
+    );
+
+    const watchlistPagePath = join(process.cwd(), "src/app/(public)/watchlist/page.tsx");
+    const watchlistPageSource = readFileSync(watchlistPagePath, "utf-8");
+    assert.ok(
+      watchlistPageSource.includes("/stocks?view=screener"),
+      "watchlist/page.tsx harus memiliki tautan ke /stocks?view=screener",
+    );
+    assert.ok(
+      watchlistPageSource.includes("WATCHLIST_EMPTY_STATE_TEXT"),
+      "watchlist/page.tsx harus memakai WATCHLIST_EMPTY_STATE_TEXT",
     );
   });
 });
