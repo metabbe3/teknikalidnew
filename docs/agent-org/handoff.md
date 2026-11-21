@@ -2401,3 +2401,10 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 4. ROTASI FLOW: (a) tahap-2 SELESAI (deep-link + chips). Kandidat tahap-3 flow (a): sticky tab bar (bar ikut scroll hilang — ukur dulu pakai), tour spotlight = VIOLASI-FREEZE jangan. ATAU rotasi ke flow (b) landing→berita→terkait tahap-2.
 5. JEBAKAN: (a) staging npm start subshell dari build command pakai env kosong → BlockedIp ECONNREFUSED + port bentrok dgn instance kedua — selalu start staging SATU perintah terpisah dengan DATABASE_URL eksplisit; (b) THEMATIC_SCREENERS di page.tsx perlu field engagement — jangan hardcode label di JSX map.
 6. STATE: main==origin 5f0fa8d; app 3ba9f0293e05/worker 9c2b47f2e3b9 parity 22:24 (KONDEKTUR-1120); staging :3100 DIMATIKAN; queue v840; 0 deploy slot ini (BUILD-ONLY weekend, kereta malam T-1121-N kondektur).
+
+## 2026-11-21 13:5x WIB — CTO-WEEKEND-SORE-1121-B
+1. SELESAI: prd-2026-11-20-02 MERGED main feb09e8 PUSHED (movers module KenapaMoversModule SSR /stocks; queue v842). BUILD-ONLY sore — deploy = kereta T-1121-N 22:15 (manifest: ux-21-01 + prd-20-02; prd-11-15-01 qa_pass jangan lupa cek deployed_at stale).
+2. VERIFY: tsc-0 build-0 BUILD_ID 9n0XSSrpbE7_A4nvzCqQH; staging :3100 /stocks 200 + link /saham/[ticker]/kenapa-naik|turun x5+x5 sesi 20-Nov; overlap ux-21-01 beda region aman.
+3. JEBAKAN BARU: staging DATABASE_URL rewrite `s#@db:#@127.0.0.1:5433#` = PORT DOBEL (54335432) → Prisma ERR_INVALID_URL; pakai `s#@db:5432#@127.0.0.1:5433#` + assert python pra-start.
+4. IN-FLIGHT: ops-21-02 blocked_for_owner; prd-11-02-02 reslot Sabtu 22; Sentinel 22:00 malam ini verdict 2 penumpang T-1120-N + qa-21-01/02.
+5. STATE: main==origin feb09e8; app 3ba9f0293e05/worker 9c2b47f2e3b9 parity 22:24 (KONDEKTUR-1120); staging DIMATIKAN; queue v842; EOD 20-Nov (Sabtu benar); 0 deploy slot ini.

@@ -1627,3 +1627,11 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - deploy hash: n/a (patch DB konten, bukan deploy) · Rollback: restore kolom dari backup TSV
 - verify bukti: pos(old)=0 DB + grep live=0 (semua frasa lama) · replay_sql_gate exit-0 KEDUA artikel (rekap perlu micro-reorder "terbesar), [ICBP" → "terbesar), justru [ICBP" utk false-association gate; ASGR 6/6) · UPDATE 8×1 row · koreksi reviewer K1 (basis lembar vs rupiah) tercatat di decisions.md
 - QA: verdict formal = Sentinel-2200-1121 · impact_check_due: 2026-11-24
+
+## 2026-11-21 13:4x WIB — prd-2026-11-20-02 [GROWTH][SEO] merge — CTO-WEEKEND-SORE-1121-B (slot Sabtu sore, BUILD-ONLY)
+- task-id: prd-2026-11-20-02 · type: prd (merge) · PRD: SEO-06/07 fase-1 (klaster kenapa-*)
+- files: merge night/prd-2026-11-20-02 → main feb09e8 (KenapaMoversModule SSR murni di /stocks bawah 30 Teraktif; page.tsx +8 baris; 0 query baru — reuse snap SATU PINTU)
+- deploy hash: BUILD-ONLY — naik kereta T-1121-N 22:15 (kondektur); rollback = git revert feb09e8
+- verify bukti: tsc EXIT-0 · build EXIT-0 BUILD_ID 9n0XSSrpbE7_A4nvzCqQH · staging :3100 (DATABASE_URL host 127.0.0.1:5433): /stocks 200 marker "Kenapa Bergerak Hari Ini" x2 + link /saham/tguk/kenapa-naik-hari-ini 5 naik + 5 turun + sesi 20 Nov · home 200 · main==origin feb09e8 0 unpushed
+- konflik merge: cto-queue.json saja (org-state live-wins --ours); stocks/page.tsx auto-merge bersih (region beda: import/render L395 vs THEMATIC_SCREENERS L38)
+- QA: verdict formal = Sentinel-2200-1121 · impact_check_due: 2026-11-24 (GSC/link-equity + LCP mobile)

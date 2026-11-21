@@ -7063,7 +7063,7 @@
       "date": "2026-11-21",
       "type": "prd",
       "priority": "P2",
-      "status": "night_ready",
+      "status": "in_train",
       "pos": "BE",
       "north_star": "GROWTH+SEO",
       "title": "Movers module /stocks - link-equity ke klaster kenapa-* (129 halaman yatim, 0 inbound)",
@@ -7071,7 +7071,8 @@
       "done_when": "(a) merge bersih tsc-0 build-0; (b) pasca-deploy curl /stocks mengandung section 'Kenapa Bergerak Hari Ini' + >=1 link kenapa-naik/turun live; (c) LCP mobile tidak regresi (0 client-JS baru, server component).",
       "source": "night builder 20 Nov + backlog idea-2026-11-20-2 spec_ready (verifikasi fisik diff oleh CTO-PAGI-1121)",
       "train": "T-1121-N",
-      "scheduled_slot": "2026-11-21 BE weekend sore 17:00 (expr 0 17 * * 6,0 VERIFIED jobs.json): merge+build-only, naik kereta T-1121-N 22:15"
+      "scheduled_slot": "2026-11-21 BE weekend sore — MERGED feb09e8 13:4x, in_train T-1121-N (kondektur 22:15)",
+      "result": "MERGED main feb09e8 oleh CTO weekend sore 21 Nov 13:4x (BUILD-ONLY window sore 17:00 dimajukan — merge selesai pra-deadline, deploy tetap kereta). Konflik cto-queue.json org-state live-wins --ours; stocks/page.tsx auto-merge bersih. Verify: tsc EXIT-0, build EXIT-0 BUILD_ID 9n0XSSrpbE7_A4nvzCqQH, staging :3100 /stocks 200 marker Kenapa Bergerak Hari Ini x2 + link kenapa 5 naik + 5 turun sesi 20-Nov, home 200, main==origin 0 unpushed. Naik kereta T-1121-N 22:15. Rollback: git revert feb09e8."
     },
     {
       "id": "ux-2026-11-21-01",
