@@ -80,6 +80,7 @@ const sidebarNav: NavGroup[] = [
       { label: "Data Pipelines", href: "/admin/pipelines", icon: Database },
       { label: "Share Tracking", href: "/admin/shares", icon: Share2 },
       { label: "Retention", href: "/admin/retention", icon: Users },
+      { label: "Funnel Aktivasi", href: "/admin/activation", icon: Target },
     ],
   },
   {
@@ -121,6 +122,7 @@ const PAGE_NAMES: Record<string, string> = {
   "/admin/pipelines": "Data Pipelines",
   "/admin/shares": "Share Tracking",
   "/admin/retention": "Retention",
+  "/admin/activation": "Funnel Aktivasi",
   "/admin/ticker-manager": "Ticker Manager",
   "/admin/articles": "Articles",
   "/admin/articles/generate": "Generate Article",
