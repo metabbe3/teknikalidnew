@@ -131,256 +131,327 @@ export interface DailyAnalysisBlockProps {
   className?: string;
 }
 
+/**
+ * Error logging throttle guard to prevent log spamming during heavy crawler / SSR load.
+ * Logs console.error at most once per cooldown window (default 60s).
+ */
+let lastLoggedErrorTime = 0;
+const LOG_ERROR_COOLDOWN_MS = 60_000;
+
+export function resetDailyAnalysisErrorThrottle(): void {
+  lastLoggedErrorTime = 0;
+}
+
+export function logDailyAnalysisError(error: unknown, ticker?: string): void {
+  const now = Date.now();
+  if (now - lastLoggedErrorTime >= LOG_ERROR_COOLDOWN_MS) {
+    lastLoggedErrorTime = now;
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error(
+      `[DailyAnalysisBlock] DB error or timeout${ticker ? ` (${ticker})` : ""}: ${msg}`,
+    );
+  }
+}
+
+/**
+ * Native Promise.race timeout guard (AbortSignal-style).
+ * Melempar timeout Error jika promise melebihi timeoutMs.
+ */
+export async function withTimeout<T>(
+  promise: Promise<T>,
+  timeoutMs = 3000,
+): Promise<T> {
+  let timer: NodeJS.Timeout | undefined;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => {
+      reject(new Error(`Query timeout (> ${timeoutMs}ms)`));
+    }, timeoutMs);
+  });
+
+  try {
+    return await Promise.race([promise, timeoutPromise]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
+/**
+ * Resilient timeout & error guard untuk query database.
+ * Jika query melebihi timeoutMs atau melempar DB error:
+ * Ditangkap, dicatat ke console.error sekali (anti-spam), dan mengembalikan null ("anggap gagal → null").
+ */
+export async function withTimeoutGuard<T>(
+  promise: Promise<T>,
+  timeoutMs = 3000,
+  ticker?: string,
+): Promise<T | null> {
+  try {
+    return await withTimeout(promise, timeoutMs);
+  } catch (err) {
+    logDailyAnalysisError(err, ticker);
+    return null;
+  }
+}
+
 export async function DailyAnalysisBlock({
   ticker,
   className,
 }: DailyAnalysisBlockProps) {
-  const clean = stripJk(ticker).toUpperCase();
-  const canonicalTicker = `${clean}.JK`;
-  const rawTicker = ticker.toUpperCase();
+  try {
+    const clean = stripJk(ticker).toUpperCase();
+    const canonicalTicker = `${clean}.JK`;
+    const rawTicker = ticker.toUpperCase();
 
-  // 1. StockIndicator terbaru untuk ticker
-  const indicators = await prisma.$queryRaw<
-    {
-      date: Date;
-      signalScore: number | null;
-      signalLabel: string | null;
-      rsi14: number | null;
-      smaCrossSignal: string | null;
-      emaCrossSignal: string | null;
-      isGorengan: boolean | null;
-    }[]
-  >(Prisma.sql`
-    SELECT
-      si.date,
-      si."signalScore"::float8 AS "signalScore",
-      si."signalLabel",
-      si.rsi14::float8 AS rsi14,
-      si."smaCrossSignal",
-      si."emaCrossSignal",
-      si."isGorengan"
-    FROM "StockIndicator" si
-    JOIN "Stock" s ON s.id = si."stockId"
-    WHERE (s.ticker = ${canonicalTicker} OR s.ticker = ${rawTicker} OR s.ticker = ${clean})
-      AND si.interval = '1d'
-    ORDER BY si.date DESC
-    LIMIT 2
-  `).catch(() => []);
-
-  const indicator = indicators[0] ?? null;
-  const prevIndicator = indicators[1] ?? null;
-  if (!indicator) return null;
-
-  // Stale check > 5 hari (silent null, bukan skeleton)
-  const now = new Date();
-  const indDate = new Date(indicator.date);
-  if (isNaN(indDate.getTime())) return null;
-  const ageDays = (now.getTime() - indDate.getTime()) / (1000 * 60 * 60 * 24);
-  if (ageDays > 5) return null;
-
-  // 2. Perubahan harga terakhir (LAG window StockPrice) + volume vs avgVol20
-  const priceRows = await prisma.$queryRaw<
-    {
-      date: Date;
-      close: number | null;
-      prevClose: number | null;
-      volume: number | null;
-    }[]
-  >(Prisma.sql`
-    WITH recent AS (
+    // 1. StockIndicator terbaru untuk ticker (latest + prev = take 2)
+    const indicatorsPromise = prisma.$queryRaw<
+      {
+        date: Date;
+        signalScore: number | null;
+        signalLabel: string | null;
+        rsi14: number | null;
+        smaCrossSignal: string | null;
+        emaCrossSignal: string | null;
+        isGorengan: boolean | null;
+      }[]
+    >(Prisma.sql`
       SELECT
-        p.date,
-        p.close::float8 AS close,
-        p.volume::float8 AS volume,
-        LAG(p.close::float8) OVER (ORDER BY p.date ASC) AS "prevClose"
-      FROM (
-        SELECT p.date, p.close, p.volume
-        FROM "StockPrice" p
-        JOIN "Stock" s ON s.id = p."stockId"
-        WHERE (s.ticker = ${canonicalTicker} OR s.ticker = ${rawTicker} OR s.ticker = ${clean})
-          AND (p.volume > 0 OR s.ticker LIKE '^%')
-        ORDER BY p.date DESC
-        LIMIT 22
-      ) p
-    )
-    SELECT * FROM recent ORDER BY date DESC
-  `).catch(() => []);
+        si.date,
+        si."signalScore"::float8 AS "signalScore",
+        si."signalLabel",
+        si.rsi14::float8 AS rsi14,
+        si."smaCrossSignal",
+        si."emaCrossSignal",
+        si."isGorengan"
+      FROM "StockIndicator" si
+      JOIN "Stock" s ON s.id = si."stockId"
+      WHERE (s.ticker = ${canonicalTicker} OR s.ticker = ${rawTicker} OR s.ticker = ${clean})
+        AND si.interval = '1d'
+      ORDER BY si.date DESC
+      LIMIT 2
+    `);
 
-  const latestPrice = priceRows[0] ?? null;
-  let avgVol20: number | null = null;
-  if (priceRows.length > 1) {
-    const prevSessions = priceRows.slice(1, 21);
-    const sum = prevSessions.reduce((acc, row) => acc + (row.volume ?? 0), 0);
-    avgVol20 = sum / prevSessions.length;
-  }
+    const indicators = await withTimeoutGuard(indicatorsPromise, 3000, clean);
+    const indicator = indicators?.[0] ?? null;
+    const prevIndicator = indicators?.[1] ?? null;
+    if (!indicator) return null;
 
-  // Hitung volumeRatio & priceChangePct untuk deteksi anomali
-  let priceChangePct: number | null = null;
-  if (
-    latestPrice?.close != null &&
-    latestPrice?.prevClose != null &&
-    latestPrice.prevClose > 0
-  ) {
-    priceChangePct =
-      ((latestPrice.close - latestPrice.prevClose) / latestPrice.prevClose) * 100;
-  }
+    // Stale check > 5 hari (silent null, bukan skeleton)
+    const now = new Date();
+    const indDate = new Date(indicator.date);
+    if (isNaN(indDate.getTime())) return null;
+    const ageDays = (now.getTime() - indDate.getTime()) / (1000 * 60 * 60 * 24);
+    if (ageDays > 5) return null;
 
-  let volumeRatio: number | null = null;
-  if (latestPrice?.volume != null && avgVol20 != null && avgVol20 > 0) {
-    volumeRatio = latestPrice.volume / avgVol20;
-  }
+    // 2. Perubahan harga terakhir (LAG window StockPrice) + volume vs avgVol20 (N minimal = 21 baris)
+    const priceRowsPromise = prisma.$queryRaw<
+      {
+        date: Date;
+        close: number | null;
+        prevClose: number | null;
+        volume: number | null;
+      }[]
+    >(Prisma.sql`
+      WITH recent AS (
+        SELECT
+          p.date,
+          p.close::float8 AS close,
+          p.volume::float8 AS volume,
+          LAG(p.close::float8) OVER (ORDER BY p.date ASC) AS "prevClose"
+        FROM (
+          SELECT p.date, p.close, p.volume
+          FROM "StockPrice" p
+          JOIN "Stock" s ON s.id = p."stockId"
+          WHERE (s.ticker = ${canonicalTicker} OR s.ticker = ${rawTicker} OR s.ticker = ${clean})
+            AND (p.volume > 0 OR s.ticker LIKE '^%')
+          ORDER BY p.date DESC
+          LIMIT 21
+        ) p
+      )
+      SELECT * FROM recent ORDER BY date DESC
+    `);
 
-  const anomalies = detectAnomalies({
-    ticker: clean,
-    indicator,
-    priceChangePct,
-    volumeRatio,
-    prevIndicator,
-  });
-  const topAnomalies = anomalies.slice(0, 2);
+    const priceRows = await withTimeoutGuard(priceRowsPromise, 3000, clean);
+    if (!priceRows) return null;
 
-  const verdictLine = buildVerdictLine(indicator);
-  if (!verdictLine) return null;
-
-  // Fakta 1: Skor sinyal
-  const scoreNum =
-    indicator.signalScore != null ? Number(indicator.signalScore) : null;
-  const scoreFormatted =
-    scoreNum != null
-      ? `${scoreNum >= 0 ? "+" : ""}${scoreNum.toFixed(2).replace(".", ",")}`
-      : "—";
-  const labelText = signalLabelId(indicator.signalLabel);
-  const scoreColor =
-    scoreNum != null
-      ? scoreNum > 0.15
-        ? "text-bullish font-semibold"
-        : scoreNum < -0.15
-          ? "text-bearish font-semibold"
-          : "text-text-secondary font-semibold"
-      : "text-text-secondary font-semibold";
-
-  // Fakta 2: Cross terbaru
-  let crossFact = "Posisi moving average netral tanpa sinyal cross baru";
-  if (indicator.smaCrossSignal === "golden_cross") {
-    crossFact = "Terbentuk Golden Cross (SMA 50 memotong ke atas SMA 200) — indikasi tren jangka menengah menguat";
-  } else if (indicator.smaCrossSignal === "death_cross") {
-    crossFact = "Terbentuk Death Cross (SMA 50 memotong ke bawah SMA 200) — indikasi tren jangka menengah melemah";
-  } else if (indicator.emaCrossSignal === "bullish") {
-    crossFact = "EMA 12 melintas ke atas EMA 26 — momentum jangka pendek menguat";
-  } else if (indicator.emaCrossSignal === "bearish") {
-    crossFact = "EMA 12 melintas ke bawah EMA 26 — momentum jangka pendek melemah";
-  }
-
-  // Fakta 3: Volume vs rata-rata
-  let volumeFact = "Data volume perdagangan belum tersedia";
-  if (latestPrice?.volume != null) {
-    const volStr = formatVolume(latestPrice.volume);
-    if (avgVol20 != null && avgVol20 > 0) {
-      const ratio = latestPrice.volume / avgVol20;
-      const ratioStr = ratio.toFixed(1).replace(".", ",");
-      if (ratio >= 1.2) {
-        volumeFact = `${volStr} (${ratioStr}x di atas rata-rata 20 sesi — minat transaksi tinggi)`;
-      } else if (ratio <= 0.8) {
-        volumeFact = `${volStr} (${ratioStr}x di bawah rata-rata 20 sesi — perdagangan relatif sepi)`;
-      } else {
-        volumeFact = `${volStr} (${ratioStr}x rata-rata 20 sesi — volume normal)`;
-      }
-    } else {
-      volumeFact = `${volStr} lembar`;
+    const latestPrice = priceRows[0] ?? null;
+    let avgVol20: number | null = null;
+    if (priceRows.length > 1) {
+      const prevSessions = priceRows.slice(1, 21);
+      const sum = prevSessions.reduce((acc, row) => acc + (row.volume ?? 0), 0);
+      avgVol20 = sum / prevSessions.length;
     }
-  }
 
-  const asOf = formatAsOfDate(indicator.date);
+    // Hitung volumeRatio & priceChangePct untuk deteksi anomali
+    let priceChangePct: number | null = null;
+    if (
+      latestPrice?.close != null &&
+      latestPrice?.prevClose != null &&
+      latestPrice.prevClose > 0
+    ) {
+      priceChangePct =
+        ((latestPrice.close - latestPrice.prevClose) / latestPrice.prevClose) * 100;
+    }
 
-  const faqJsonLd = buildFaqJsonLd({
-    ticker: clean,
-    verdictLine,
-    facts: [
-      `Skor sinyal: ${scoreFormatted} (${labelText}) pada skala −1 s.d. +1`,
-      `Moving Average: ${crossFact}`,
-      `Volume: ${volumeFact}`,
-    ],
-    asOf,
-  });
+    let volumeRatio: number | null = null;
+    if (latestPrice?.volume != null && avgVol20 != null && avgVol20 > 0) {
+      volumeRatio = latestPrice.volume / avgVol20;
+    }
 
-  return (
-    <section
-      id="analis-hari-ini"
-      className={className ?? "mt-3 pt-3 border-t border-border/60 space-y-2.5"}
-      aria-label={`Analis hari ini ${clean}`}
-    >
-      {faqJsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
-        />
-      )}
-      <div className="flex items-center justify-between gap-2 flex-wrap">
-        <h3 className="font-serif text-sm font-semibold text-text-primary">
-          Analis Hari Ini · {clean}
-        </h3>
-        {asOf && (
-          <span className="text-[11px] font-medium text-text-tertiary">
-            Data per {asOf}
-          </span>
+    const anomalies = detectAnomalies({
+      ticker: clean,
+      indicator,
+      priceChangePct,
+      volumeRatio,
+      prevIndicator,
+    });
+    const topAnomalies = anomalies.slice(0, 2);
+
+    const verdictLine = buildVerdictLine(indicator);
+    if (!verdictLine) return null;
+
+    // Fakta 1: Skor sinyal
+    const scoreNum =
+      indicator.signalScore != null ? Number(indicator.signalScore) : null;
+    const scoreFormatted =
+      scoreNum != null
+        ? `${scoreNum >= 0 ? "+" : ""}${scoreNum.toFixed(2).replace(".", ",")}`
+        : "—";
+    const labelText = signalLabelId(indicator.signalLabel);
+    const scoreColor =
+      scoreNum != null
+        ? scoreNum > 0.15
+          ? "text-bullish font-semibold"
+          : scoreNum < -0.15
+            ? "text-bearish font-semibold"
+            : "text-text-secondary font-semibold"
+        : "text-text-secondary font-semibold";
+
+    // Fakta 2: Cross terbaru
+    let crossFact = "Posisi moving average netral tanpa sinyal cross baru";
+    if (indicator.smaCrossSignal === "golden_cross") {
+      crossFact = "Terbentuk Golden Cross (SMA 50 memotong ke atas SMA 200) — indikasi tren jangka menengah menguat";
+    } else if (indicator.smaCrossSignal === "death_cross") {
+      crossFact = "Terbentuk Death Cross (SMA 50 memotong ke bawah SMA 200) — indikasi tren jangka menengah melemah";
+    } else if (indicator.emaCrossSignal === "bullish") {
+      crossFact = "EMA 12 melintas ke atas EMA 26 — momentum jangka pendek menguat";
+    } else if (indicator.emaCrossSignal === "bearish") {
+      crossFact = "EMA 12 melintas ke bawah EMA 26 — momentum jangka pendek melemah";
+    }
+
+    // Fakta 3: Volume vs rata-rata
+    let volumeFact = "Data volume perdagangan belum tersedia";
+    if (latestPrice?.volume != null) {
+      const volStr = formatVolume(latestPrice.volume);
+      if (avgVol20 != null && avgVol20 > 0) {
+        const ratio = latestPrice.volume / avgVol20;
+        const ratioStr = ratio.toFixed(1).replace(".", ",");
+        if (ratio >= 1.2) {
+          volumeFact = `${volStr} (${ratioStr}x di atas rata-rata 20 sesi — minat transaksi tinggi)`;
+        } else if (ratio <= 0.8) {
+          volumeFact = `${volStr} (${ratioStr}x di bawah rata-rata 20 sesi — perdagangan relatif sepi)`;
+        } else {
+          volumeFact = `${volStr} (${ratioStr}x rata-rata 20 sesi — volume normal)`;
+        }
+      } else {
+        volumeFact = `${volStr} lembar`;
+      }
+    }
+
+    const asOf = formatAsOfDate(indicator.date);
+
+    const faqJsonLd = buildFaqJsonLd({
+      ticker: clean,
+      verdictLine,
+      facts: [
+        `Skor sinyal: ${scoreFormatted} (${labelText}) pada skala −1 s.d. +1`,
+        `Moving Average: ${crossFact}`,
+        `Volume: ${volumeFact}`,
+      ],
+      asOf,
+    });
+
+    return (
+      <section
+        id="analis-hari-ini"
+        className={className ?? "mt-3 pt-3 border-t border-border/60 space-y-2.5"}
+        aria-label={`Analis hari ini ${clean}`}
+      >
+        {faqJsonLd && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
+          />
         )}
-      </div>
-
-      {/* (a) Verdict 1 baris */}
-      <p className="text-xs sm:text-sm text-text-secondary leading-relaxed">
-        <strong className="font-semibold text-text-primary">Verdict:</strong>{" "}
-        {verdictLine}
-      </p>
-
-      {/* Top-2 anomali hari ini (bullet badge, tidak render jika kosong) */}
-      {topAnomalies.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 pt-0.5" aria-label="Anomali teknikal hari ini">
-          {topAnomalies.map((anomali, idx) => (
-            <div
-              key={idx}
-              className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/5 px-2.5 py-0.5 text-xs text-text-secondary"
-            >
-              <span className="h-1.5 w-1.5 rounded-full bg-accent shrink-0" aria-hidden="true" />
-              <strong className="font-semibold text-text-primary">{anomali.label}:</strong>
-              <span>{anomali.detail}</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* (b) 3 bullet fakta angka */}
-      <ul className="space-y-1 text-xs text-text-secondary">
-        <li className="flex items-start gap-1.5">
-          <span className="text-accent shrink-0 font-bold">•</span>
-          <span>
-            <strong className="font-semibold text-text-primary">Skor sinyal:</strong>{" "}
-            <span className={scoreColor}>
-              {scoreFormatted} ({labelText})
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <h3 className="font-serif text-sm font-semibold text-text-primary">
+            Analis Hari Ini · {clean}
+          </h3>
+          {asOf && (
+            <span className="text-[11px] font-medium text-text-tertiary">
+              Data per {asOf}
             </span>
-            <span className="text-text-tertiary"> pada skala −1 s.d. +1</span>
-          </span>
-        </li>
-        <li className="flex items-start gap-1.5">
-          <span className="text-accent shrink-0 font-bold">•</span>
-          <span>
-            <strong className="font-semibold text-text-primary">Moving Average:</strong>{" "}
-            {crossFact}
-          </span>
-        </li>
-        <li className="flex items-start gap-1.5">
-          <span className="text-accent shrink-0 font-bold">•</span>
-          <span>
-            <strong className="font-semibold text-text-primary">Volume:</strong>{" "}
-            {volumeFact}
-          </span>
-        </li>
-      </ul>
+          )}
+        </div>
 
-      {/* (c) Link Tanya AI (Wave-7: instrumented via DailyAnalysisCta) */}
-      <div className="pt-0.5">
-        <DailyAnalysisCta ticker={ticker} cleanTicker={clean} />
-      </div>
-    </section>
-  );
+        {/* (a) Verdict 1 baris */}
+        <p className="text-xs sm:text-sm text-text-secondary leading-relaxed">
+          <strong className="font-semibold text-text-primary">Verdict:</strong>{" "}
+          {verdictLine}
+        </p>
+
+        {/* Top-2 anomali hari ini (bullet badge, tidak render jika kosong) */}
+        {topAnomalies.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 pt-0.5" aria-label="Anomali teknikal hari ini">
+            {topAnomalies.map((anomali, idx) => (
+              <div
+                key={idx}
+                className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/5 px-2.5 py-0.5 text-xs text-text-secondary"
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-accent shrink-0" aria-hidden="true" />
+                <strong className="font-semibold text-text-primary">{anomali.label}:</strong>
+                <span>{anomali.detail}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* (b) 3 bullet fakta angka */}
+        <ul className="space-y-1 text-xs text-text-secondary">
+          <li className="flex items-start gap-1.5">
+            <span className="text-accent shrink-0 font-bold">•</span>
+            <span>
+              <strong className="font-semibold text-text-primary">Skor sinyal:</strong>{" "}
+              <span className={scoreColor}>
+                {scoreFormatted} ({labelText})
+              </span>
+              <span className="text-text-tertiary"> pada skala −1 s.d. +1</span>
+            </span>
+          </li>
+          <li className="flex items-start gap-1.5">
+            <span className="text-accent shrink-0 font-bold">•</span>
+            <span>
+              <strong className="font-semibold text-text-primary">Moving Average:</strong>{" "}
+              {crossFact}
+            </span>
+          </li>
+          <li className="flex items-start gap-1.5">
+            <span className="text-accent shrink-0 font-bold">•</span>
+            <span>
+              <strong className="font-semibold text-text-primary">Volume:</strong>{" "}
+              {volumeFact}
+            </span>
+          </li>
+        </ul>
+
+        {/* (c) Link Tanya AI (Wave-7: instrumented via DailyAnalysisCta) */}
+        <div className="pt-0.5">
+          <DailyAnalysisCta ticker={ticker} cleanTicker={clean} />
+        </div>
+      </section>
+    );
+  } catch (err) {
+    logDailyAnalysisError(err, ticker);
+    return null;
+  }
 }
 export default DailyAnalysisBlock;
