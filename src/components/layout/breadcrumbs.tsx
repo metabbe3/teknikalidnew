@@ -8,6 +8,39 @@ export interface Crumb {
 }
 
 /**
+ * Pure function pembuat crumb trail untuk navigasi & SEO:
+ * 1. Home ("/" atau "") -> [{ label: "Beranda" }]
+ * 2. Stocks list ("/stocks") -> [{ label: "Beranda", href: "/" }, { label: "Saham" }]
+ * 3. Stock detail ("/stocks/:ticker") -> [{ label: "Beranda", href: "/" }, { label: "Saham", href: "/stocks" }, { label: ticker }]
+ */
+export function buildCrumbs(path: string, ticker?: string): Crumb[] {
+  const cleanPath = path.split("?")[0].replace(/\/+$/, "") || "/";
+
+  if (cleanPath === "/" || cleanPath === "") {
+    return [{ label: "Beranda" }];
+  }
+
+  if (cleanPath === "/stocks") {
+    return [
+      { label: "Beranda", href: "/" },
+      { label: "Saham" },
+    ];
+  }
+
+  if (cleanPath.startsWith("/stocks/")) {
+    const rawTicker = ticker || cleanPath.replace("/stocks/", "");
+    const cleanTicker = rawTicker.replace(/\.JK$/i, "").toUpperCase();
+    return [
+      { label: "Beranda", href: "/" },
+      { label: "Saham", href: "/stocks" },
+      { label: cleanTicker },
+    ];
+  }
+
+  return [{ label: "Beranda", href: "/" }];
+}
+
+/**
  * Visual breadcrumbs + BreadcrumbList JSON-LD. Renders a compact mono nav and a
  * JSON-LD script for SERP rich results. The last item is the current page (no link).
  * JSON-LD is a static schema object (no user input), stringified into a raw script tag.
@@ -40,7 +73,7 @@ export function Breadcrumbs({ items, currentUrl }: { items: Crumb[]; currentUrl?
                   {it.label}
                 </Link>
               ) : (
-                <span className="text-text-secondary truncate max-w-[220px]">{it.label}</span>
+                <span className="text-text-secondary truncate max-w-[220px]" aria-current={last ? "page" : undefined}>{it.label}</span>
               )}
             </span>
           );

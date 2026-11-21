@@ -48,7 +48,7 @@ import {
 } from "@/components/stock/guest-quota";
 import { StockLogo } from "@/components/stock/stock-logo";
 import { StockPortfolioCta } from "@/components/stock/stock-portfolio-cta";
-import { Breadcrumbs } from "@/components/layout/breadcrumbs";
+import { Breadcrumbs, buildCrumbs } from "@/components/layout/breadcrumbs";
 import { IndicatorTooltip } from "@/components/ui/indicator-tooltip";
 import { technicalAnalysisService, computeSignalScore } from "@/domains/stock/technical-analysis.service";
 import { stockRepository } from "@/domains/stock/stock.repository";
@@ -1208,16 +1208,7 @@ export default async function StockDetailPage({
       <div className="max-w-7xl mx-auto px-4 py-4 space-y-5">
         <Breadcrumbs
           currentUrl={`/stocks/${ticker}`}
-          items={[
-            { label: "Beranda", href: "/" },
-            { label: "Saham", href: "/stocks" },
-            ...(stock.sector && getSectorSlug(stock.sector)
-              ? [{ label: sectorToBahasa(stock.sector), href: `/sektor/${getSectorSlug(stock.sector)}` }]
-              : stock.sector
-                ? [{ label: sectorToBahasa(stock.sector), href: "/stocks" }]
-                : []),
-            { label: stripJk(ticker) },
-          ]}
+          items={buildCrumbs(`/stocks/${ticker}`, stripJk(ticker))}
         />
         {/* Tracker harus jalan utk SEMUA anon (guest pass v2.1): beacon-nya yang
             men-claim quota server-side. Banner overlimit hanya saat gate aktif. */}

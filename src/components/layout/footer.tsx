@@ -3,15 +3,13 @@ import { StockAiChip as BotTelegramChip } from "@/components/stock/stock-ai-chip
 
 const navLinks = [
   { href: "/", label: "Beranda" },
-  { href: "/stocks", label: "Saham IDX" },
-  { href: "/stocks?view=screener", label: "Screener Saham" },
-  { href: "/berita", label: "Berita & Analisis" },
-  { href: "/akademi", label: "Akademi" },
-  { href: "/compare", label: "Bandingkan Saham" },
-  { href: "/paper-trading", label: "Latihan Trading" },
-  { href: "/track-record", label: "Riwayat Akurasi Sinyal" },
-  { href: "/harga", label: "Harga Langganan" },
+  { href: "/stocks", label: "Saham" },
+  { href: "/stocks?view=screener", label: "Screener" },
+  { href: "/agent", label: "Analisa AI" },
+  { href: "/harga", label: "Harga" },
 ];
+
+export { navLinks as footerNavLinks };
 
 const marketToolLinks = [
   { href: "/kalender-dividen", label: "Kalender Dividen" },

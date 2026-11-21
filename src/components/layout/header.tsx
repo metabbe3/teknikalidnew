@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { formatPercentPlain } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -15,12 +15,17 @@ import { useIhsg } from "@/hooks/use-ihsg";
 const navLinks = [
   { href: "/", label: "Beranda" },
   { href: "/stocks", label: "Saham" },
-  { href: "/berita", label: "Berita" },
-  { href: "/akademi", label: "Akademi" },
+  { href: "/stocks?view=screener", label: "Screener" },
+  { href: "/agent", label: "Analisa AI" },
+  { href: "/harga", label: "Harga" },
 ];
+
+export { navLinks as headerNavLinks };
 
 // Tools demoted from main nav (low use: compare 2 views, paper-trading 13). Kept reachable.
 const toolLinks = [
+  { href: "/berita", label: "Berita & Analisis" },
+  { href: "/akademi", label: "Akademi" },
   { href: "/pasar", label: "Koran Pasar Live" },
   // ret-qw6 (riset retensi): 3 landing evergreen baru masuk nav utama
   { href: "/kalender-dividen", label: "Kalender Dividen" },
@@ -34,8 +39,14 @@ const toolLinks = [
   { href: "/paper-trading", label: "Latihan Trading" },
 ];
 
-function isActive(pathname: string, href: string) {
+function isActive(pathname: string, href: string, isScreener = false) {
   if (href === "/") return pathname === "/";
+  if (href === "/stocks?view=screener") {
+    return pathname === "/stocks" && isScreener;
+  }
+  if (href === "/stocks") {
+    return pathname.startsWith("/stocks") && !isScreener;
+  }
   return pathname.startsWith(href);
 }
 
@@ -43,9 +54,14 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
+  const [isScreener, setIsScreener] = useState(false);
   const pathname = usePathname();
   const { data: session } = useSession();
   const { data: ihsg } = useIhsg();
+
+  useEffect(() => {
+    setIsScreener(typeof window !== "undefined" && window.location.search.includes("view=screener"));
+  }, [pathname]);
 
   return (
     <header className="glass-header sticky top-0 z-50">
@@ -105,7 +121,7 @@ export function Header() {
             ~1002px; 640-1023 pakai hamburger mobile (pola mobile terbukti aman). */}
         <nav className="hidden lg:flex items-center gap-1 text-sm font-medium" aria-label="Main navigation">
           {navLinks.map((link) => {
-            const active = isActive(pathname, link.href);
+            const active = isActive(pathname, link.href, isScreener);
             return (
               <Link
                 key={link.href}
@@ -127,40 +143,6 @@ export function Header() {
               </Link>
             );
           })}
-          <Link
-            href="/agent"
-            aria-current={isActive(pathname, "/agent") ? "page" : undefined}
-            className={`relative px-3 py-1.5 rounded-md transition-colors duration-150 ${
-              isActive(pathname, "/agent")
-                ? "text-accent font-semibold"
-                : "text-text-secondary hover:text-text-primary hover:bg-bg-hover/50"
-            }`}
-          >
-            Agent
-            {isActive(pathname, "/agent") && (
-              <span
-                aria-hidden
-                className="absolute left-2 right-2 -bottom-[7px] h-[2.5px] rounded-full bg-accent"
-              />
-            )}
-          </Link>
-          <Link
-            href="/harga"
-            aria-current={isActive(pathname, "/harga") ? "page" : undefined}
-            className={`relative px-3 py-1.5 rounded-md transition-colors duration-150 ${
-              isActive(pathname, "/harga")
-                ? "text-accent font-semibold"
-                : "text-text-secondary hover:text-text-primary hover:bg-bg-hover/50"
-            }`}
-          >
-            Harga
-            {isActive(pathname, "/harga") && (
-              <span
-                aria-hidden
-                className="absolute left-2 right-2 -bottom-[7px] h-[2.5px] rounded-full bg-accent"
-              />
-            )}
-          </Link>
 
           {/* Tools dropdown (demoted: compare, paper-trading) */}
           <div className="relative">
@@ -248,7 +230,7 @@ export function Header() {
       >
         <div className="px-3 pb-3 pt-1 space-y-0.5">
           {navLinks.map((link) => {
-            const active = isActive(pathname, link.href);
+            const active = isActive(pathname, link.href, isScreener);
             return (
               <Link
                 key={link.href}
@@ -265,30 +247,6 @@ export function Header() {
               </Link>
             );
           })}
-          <Link
-            href="/agent"
-            onClick={() => setMenuOpen(false)}
-            className={`block py-2.5 px-3 rounded-lg text-sm font-medium transition-colors border-l-[3px] ${
-              isActive(pathname, "/agent")
-                ? "text-accent font-semibold bg-accent/10 border-accent"
-                : "text-text-secondary hover:text-text-primary hover:bg-bg-hover border-transparent"
-            }`}
-            aria-current={isActive(pathname, "/agent") ? "page" : undefined}
-          >
-            Agent
-          </Link>
-          <Link
-            href="/harga"
-            onClick={() => setMenuOpen(false)}
-            className={`block py-2.5 px-3 rounded-lg text-sm font-medium transition-colors border-l-[3px] ${
-              isActive(pathname, "/harga")
-                ? "text-accent font-semibold bg-accent/10 border-accent"
-                : "text-text-secondary hover:text-text-primary hover:bg-bg-hover border-transparent"
-            }`}
-            aria-current={isActive(pathname, "/harga") ? "page" : undefined}
-          >
-            Harga
-          </Link>
           {/* product-audit-2026-10-29 QW1: Tools buat SEMUA pengunjung (dulu cuma login;
               62,3% trafik mobile eksternal tak bisa akses /pasar dkk). Label = bahasa awam. */}
           <button

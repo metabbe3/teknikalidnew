@@ -18,6 +18,9 @@ type GuestQuote = {
   changePercent: number | null;
 };
 
+export const WATCHLIST_EMPTY_STATE_TEXT =
+  "Belum ada pantauan. Buka halaman saham → tombol pantau.";
+
 export function GuestWatchlistView({ presets = [] }: { presets?: WatchlistPreset[] }) {
   const { tickers, toggle, mounted } = useGuestWatchlist();
   const [quotes, setQuotes] = useState<GuestQuote[]>([]);
@@ -46,24 +49,26 @@ export function GuestWatchlistView({ presets = [] }: { presets?: WatchlistPreset
 
   if (tickers.length === 0) {
     return (
-      <div className="text-center py-16 space-y-3">
+      <div className="text-center py-12 sm:py-16 space-y-3">
         <div className="w-12 h-12 mx-auto rounded-full bg-bg-hover flex items-center justify-center">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-text-secondary" aria-hidden="true">
             <path d="M12 5v14M5 12h14" />
           </svg>
         </div>
-        <p className="text-text-secondary text-sm">
-          Belum ada saham yang dipantau di perangkat ini.
+        <p className="text-sm font-medium text-text-secondary">
+          {WATCHLIST_EMPTY_STATE_TEXT}
         </p>
-        <Link
-          href="/stocks"
-          className="inline-block bg-text-primary text-white rounded-lg px-4 py-2 text-xs font-semibold"
-        >
-          Cari saham
-        </Link>
-        <p className="text-xs text-text-tertiary">
+        <p className="text-xs text-text-tertiary leading-relaxed">
           Ketuk ikon bintang di halaman saham untuk memantau — tanpa perlu akun.
         </p>
+        <div className="pt-1">
+          <Link
+            href="/stocks?view=screener"
+            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-bg-card px-3.5 py-1.5 text-xs font-semibold text-accent hover:border-accent hover:bg-bg-hover transition-colors press-scale"
+          >
+            <span>Buka screener saham →</span>
+          </Link>
+        </div>
         {presets.length > 0 && <WatchlistPresets presets={presets} />}
       </div>
     );

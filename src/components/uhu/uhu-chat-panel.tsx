@@ -15,6 +15,7 @@ import {
 import {
   buildGuestSuggestions,
   extractTickerFromContext,
+  getGuestChatCount,
   getGuestRemainingQuota,
 } from "@/lib/guest-suggestions";
 
@@ -159,10 +160,14 @@ export function UhuChatPanel({ ticker: tickerProp }: UhuChatPanelProps = {}) {
   const [remainingQuota, setRemainingQuota] = useState<number>(() =>
     typeof window !== "undefined" ? getGuestRemainingQuota() : 50
   );
+  const [guestChatCount, setGuestChatCount] = useState<number>(() =>
+    typeof window !== "undefined" ? getGuestChatCount() : 0
+  );
 
   useEffect(() => {
     const syncQuota = () => {
       setRemainingQuota(getGuestRemainingQuota());
+      setGuestChatCount(getGuestChatCount());
     };
     syncQuota();
     window.addEventListener("guest-chat-quota-updated", syncQuota);
@@ -173,6 +178,7 @@ export function UhuChatPanel({ ticker: tickerProp }: UhuChatPanelProps = {}) {
   useEffect(() => {
     if (prevStreamingRef.current && !streaming) {
       setRemainingQuota(getGuestRemainingQuota());
+      setGuestChatCount(getGuestChatCount());
     }
     prevStreamingRef.current = streaming;
   }, [streaming]);
@@ -384,6 +390,11 @@ export function UhuChatPanel({ ticker: tickerProp }: UhuChatPanelProps = {}) {
                     aria-label="Saran pertanyaan cepat"
                     className="space-y-2 pt-0.5"
                   >
+                    {guestChatCount === 0 && (
+                      <p className="text-[11px] text-text-secondary leading-relaxed">
+                        Gratis 50 pertanyaan/hari, tanpa login. Jawaban pakai data live IDX.
+                      </p>
+                    )}
                     <p className="text-[11px] font-medium text-text-tertiary">
                       Pertanyaan saran {effectiveTicker ? `soal ${effectiveTicker}` : ""}:
                     </p>
