@@ -2,6 +2,8 @@
 
 import { GatedContent } from "@/components/ui/gated-content";
 
+import { ReturnHint } from "@/components/return-hint";
+
 interface PaperTradingPreviewProps {
   context?: string;
 }
@@ -72,6 +74,10 @@ export function PaperTradingPreview({ context }: PaperTradingPreviewProps = {}) 
           <p className="text-xs text-text-tertiary">Mulai trading untuk melihat posisi Anda di sini</p>
         </div>
       </GatedContent>
+
+      {/* prd-2026-11-21-01 AC2: alasan balik besok — guest preview = mayoritas
+          landing panas one-visit dari trafik banjir sosmed/search */}
+      <ReturnHint variant="paper" />
     </div>
   );
 }
