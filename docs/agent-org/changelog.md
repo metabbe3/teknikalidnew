@@ -1612,3 +1612,13 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - deploy: n/a (host script, cron Mandor 06:30 baca langsung; rollback = restore backup scratch/mandor-20-01/backup-teknikalid_growth.py)
 - QA: verdict formal = Sentinel 22:00 20 Nov; monitor residual '0 FIXES salah-ticker 2 run gate berikutnya' (Mandor 06:30 21-22 Nov)
 - impact_check_due: 2026-11-23
+
+## 2026-11-21 — qa-2026-11-21-01 + ops-2026-11-21-01 (slot pagi 07:30, CTO)
+- task-id: qa-2026-11-21-01 · type: qa-content-fix/bugfix-host · PRD: n/a (ops gate konten, freeze-compliant TRUST)
+- files: ~/.hermes/scripts/teknikalid_growth.py (_HIST_BREADTH_CTX + _sub_breadth guard + _factcheck_title direction-guard) · ~/.hermes/scripts/teknikalid_breadth_validator.py (parser hex + horizon 6 sesi + extract_trios)
+- deploy hash: n/a (host rider — 0 deploy container; cron Mandor 06:30 + validator 06:40/19:05 otomatis pakai versi fix)
+- verify bukti: harness RED→GREEN 9/9 (scratch/qa-21-01/test_red.py; 6 check RED di kode lama) · replay live: gate fixes breadth NIHIL pada rekap DB (296/173/154 utuh), validator PASS kanonik + FAIL mangled (220/289, 220/423) · dry-run cron exit-0 · live /berita/rekap-pasar-mingguan-2026-11-21 200 ("296 saham naik" x2, "220 saham naik" x0) · lint 0 hard
+- QA: verdict formal Sentinel-2200-1121
+- impact_check_due: 2026-11-24 (rekap Sabtu berikutnya 28 Nov = uji date-aware sesungguhnya)
+- task-id: ops-2026-11-21-01 · type: ops housekeeping · verify: git status src/schema BERSIH (stash@{0} + scratch/ops-21-01/) · queue prd-15-01 = 1 entry · version v832
+| qa-2026-11-21-02 | bugfix/ops (konten-DB) | — (ops type, tanpa PRD) | no-deploy (patch DB konten) | replay_sql_gate exit-0 kedua artikel; pos(old)=0 DB+live; UPDATE 8×1 row; koreksi basis reviewer K1 tercatat | Sentinel 22:00 21 Nov | 2026-11-24 |
