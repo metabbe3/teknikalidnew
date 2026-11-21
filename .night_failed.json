@@ -1,0 +1,9 @@
+{
+  "task_id": "prd-2026-11-21-01",
+  "branch": "night/prd-2026-11-21-01b",
+  "last_step": "SELESAI — semua step selesai; file ini = resume-packet standar (bukan failure)",
+  "failing_check": "none",
+  "error_tail": "",
+  "next_hint": "CTO pagi: review diff (7 file, ~230 baris), jalankan smoke AC1 bila ingin ulang (anonId qa-new-**, cek EngagementEvent type=landing_source via SQL), lalu merge+deploy per jadwal kereta. Test web-retention kasus-3 FIXED oleh commit task ini (ekspektasi deeplink src_stock_ -> src_gate_ mengikuti rename 21 Nov).",
+  "attempts": 1
+}
