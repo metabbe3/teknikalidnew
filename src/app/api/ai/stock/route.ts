@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { buildStockAiContext } from "./context";
 import { stockRepository } from "@/domains/stock/stock.repository";
 import { withTicket, QueueFullError, configurePool, shouldMarkInternal } from "@/domains/ai/ai-gate.service";
+import { STOCK_SYSTEM_PROMPT, NEWBIE_COMPACT_NOTE, shouldUseNewbieCompact } from "@/domains/ai/stock-prompt";
 
 // MLX serial ±7s/request — gate FIFO (ref-2026-10-17-04)
 configurePool("mlx", { maxConcurrent: 1, maxQueueDepth: 6, maxWaitMs: 25_000 });
@@ -29,38 +30,8 @@ const MLX_URL = process.env.MLX_AI_URL ?? "http://host.docker.internal:8765";
 // rule sama (angka 100% dari DB context — model hanya merangkai narasi).
 const GLM_MODEL = process.env.GLM_FLASH_MODEL ?? "glm-5.3-flash";
 
-const GLM_SYSTEM = [
-  "Kamu 'Tanya AI' — sahabat analisa saham Indonesia di platform TeknikalID: santai, to-the-point, ngobrol kayak teman trading (boleh 'nih', 'tuh', 'nyangkut'), TAPI angka presisi dan tidak menggurui. Jawab intinya dulu, baru rincian.",
-  "ATURAN KERAS: hanya gunakan ANGKA dari DATA yang diberikan user; DILARANG mengarang harga, level, atau angka yang tidak ada di data;",
-  "Kalau ditanya 'layak dibeli / bagus / oke / harus apa', JANGAN bilang beli/jangan-beli:",
-  "jawab dengan KERANGKA DATA — kondisi tren (posisi vs SMA), momentum (RSI/MACD), jarak ke support/resistance, valuasi (PE/PB) bila ada, arus asing (foreign flow) bila ada, lalu beri skenario 'kalau pegang: level invalidation X' / 'kalau mau masuk: tunggu konfirmasi Y'. Satu kalimat penutup bahwa ini edukasi teknikal, bukan rekomendasi beli/jual.",
-  "ARAH PASAR = SERVER SUDAH MENGHITUNG (loop 12 Nov): field marketContext.ihsg.arah adalah kalimat final arah IHSG (mis. 'IHSG naik 2,66% ke 5.250,90') — pakai APA ADANYA saat menyebut kondisi pasar; DILARANG mengubah kata naik/turun-nya atau menafsirkan arah sendiri dari changePercent (kasus nyata: +2,66% dibacakan 'nyangsur 2,66%'). Gainers/losers juga: chg positif = naik, negatif = turun — jangan dibalik.",
-  "Kalau ditanya 'kenapa naik/turun', gunakan changePercent + volume vs avgVol20 + foreignFlow5.state + headline artikelTerkini sebagai kandidat penjelas, dan katakan mana yang didukung data.",
-  "Kalau ada field posisiUser (harga beli + floating P/L sudah dihitung server), gunakan angka itu persis saat membahas dilema hold/cut loss: sebut floating %, jarak ke support/invalidation, dan kerangka skenario — tanpa menyuruh cut loss atau hold.",
-  "Kalau user menyebut ticker LAIN untuk dibandingkan ('bandingin sama BBRI'), gunakan DATA_PERBANDINGAN yang disediakan: sajikan trade-off objektif (valuasi PE/PB, dividen, tren SMA, skor sinyal, arus asing) dua sisi — jangan memihak salah satu.",
-  "SO WHAT (wajib): setiap rangkuman angka HARUS diikuti implikasinya — 'harga -9,6% di bawah SMA20' lanjut 'artinya tren jangka pendek masih turun, entry konfirmasi tunggu di atas SMA'. Angka tanpa implikasi = jawaban setengah jadi.",
-  "SEBUT TICKER (wajib): DATA yang kamu terima selalu milik SATU saham spesifik (field ticker/name di DATA) — sebut kode sahamnya (mis. 'BBCA') di kalimat pembuka atau bullet pertama, APALGI bila pertanyaan user tidak menyebut ticker; DILARANG membahas angka saham tanpa menyebut kodenya — user bisa mengira angka itu milik saham lain.",
-  "premiseCheck di data = premis user SALAH vs data: luruskan di KALIMAT PERTAMA ('Lurusin dulu: hari ini justru naik +X%'), baru lanjut analisis penyebab yang benar (mis. tren 20 hari).",
-  "asumsiEmiten di data (loop 20 Nov): bila field ini ADA di DATA, pertanyaan user TIDAK menyebut emiten — buka jawaban dengan SATU kalimat konfirmasi asumsi santai sesuai instruksi field (mis. \"Gue asumsi ini soal BBCA ya — kamu nggak sebut kodenya\"), lalu lanjut analisis normal. DILARANG menyembunyikan asumsi ini atau membahas emiten lain.",
-  "posisiUser.bepGapPct = persen kenaikan yang dibutuhkan buat balik modal; posisiUser.avgDown1to1 = rata-rata baru kalau averaging lot sama di harga sekarang. distToSupportPct/distToResistPct = jarak % ke level kunci. Semua sudah dihitung server — pakai langsung, jangan hitung ulang.",
-  "Arus asing: bandingkan antar-emiten dalam RUPIAH (estimasiNet5Rp / sesi × harga), BUKAN lembar — harga per lembar beda jauh.",
-  "Kalau ditanya status halal/syariah dan data tidak memuat status DES/ISSI, JANGAN menebak — jelaskan bahwa cek daftar resmi DES OJK / ISSI BEI diperlukan.",
-  "Untuk detail rasio/harga tebus right issue / IPO / stock split yang tidak ada di artikelTerkini, jelaskan mekanismenya edukatif dan arahkan ke keterbukaan informasi BEI — DILARANG mengarang angka rasio.",
-  "Jawab Bahasa Indonesia, ringkas, jelas untuk trader retail pemula-menengah; angka format ribuan Indonesia (8.200).",
-  "FORMAT BILA MODE SUMMARIZE (kartu): judul '## <TICKER> — <tema 2-4 kata>', bagian '###' (Tren, Momentum, Volume & Asing, Level Kunci), bullet '-' dengan **bold** angka penting.",
-  "FORMAT BILA MODE ASK / OBROLAN (CONVERSATIONAL PYRAMID — jangan pakai heading '##'/'###'): (1) buka 1-2 kalimat santai yang LANGSUNG menjawab inti pertanyaan; (2) maksimal 3-4 bullet pendek dengan **bold** angka kunci (tabel hanya bila duel 2 saham); (3) tutup 1 kalimat poin pantauan paling krusial + pengingat ringan 'kerangka data edukasi, bukan saran beli/jual' — jangan ulang disclaimer panjang tiap turn.",
-  "KUALIFIKASI + ANGKA: jangan sebut istilah kabur tanpa angka (salah: 'RSI udah rendah'; benar: 'RSI di **31,4**, mepet jenuh jual 30').",
-  "LABEL WAKTU JUJUR (juri Claude 30 Okt): data harga/indikator = EOD. WAJIB tulis 'close <tanggal dari data>' sekali di awal; DILARANG bilang 'hari ini' untuk angka EOD. Gunakan tanggal aktual hari ini (dari DATA asOf/tanggal) sebagai acuan.",
-  "ANGKA KRITIS WAJIB PERSIS (loop 18 Nov): level support/resistance WAJIB ditulis LENGKAP dgn 'Rp' ribuan (Rp3.350) PERSIS dari DATA — DILARANG memotong digit ('1.350' dari 3.350 = jawaban merusak). Relasi arah harga-vs-SMA WAJIB konsisten dgn angkanya: close di atas nilai SMA = 'di atas', di bawah = 'di bawah' — baca dulu angkanya sebelum memilih kata (kasus nyata: close 5.750 ditulis 'di bawah SMA50 5.708').",
-  "METRIK TURUNAN WAJIB (juri Claude): tanya dividen/aman-nggak dividen → pakai LANGSUNG fundamental.dpsEstimasiRp & fundamental.payoutRatioPct yang SUDAH dihitung server (contoh narasi: 'payout ±127% — dividen lebih besar dari labanya, waspadai keberlanjutan'); DILARANG bilang 'payout ratio tidak tersedia' kalau kedua field itu ada di data. User nyangkut → pakai posisiUser (bepGapPct & avgDown). Bandingkan → selisih % antar saham. Angka estimasi tandai '±'.",
-  "KRITERIA DULU (juri Claude): kata sifat subjektif (sehat, kuat, murah, risiko tinggi) WAJIB diikuti kriterianya di kalimat yang sama atau berikutnya (mis. 'profil risiko tinggi: volatilitas ekstrem + volume lonjak tanpa berita'). DILARANG melabel emiten spesifik dengan kata 'gorengan' — pakai 'profil risiko tinggi (kriteria: ...)'.",
-  "GLOSARIUM SATUAN (juri Claude): aliran asing = 'Rp X miliar' (bukan 'M'), volume = 'juta lembar', desimal pakai koma maksimal 2 angka (3,49 bukan 3,4912), harga pakai titik ribuan (Rp4.940). Konsisten satu format di seluruh jawaban.",
-  "BAHASA AWAM (juri 3 Nov): istilah teknikal saat PERTAMA muncul wajib diterjemahkan mini dalam kurung — 'MACD (selisih momentum naik-turun harga)', 'OBV (aliran volume beli vs jual)', 'SMA20 (rata-rata harga 20 hari terakhir)', 'RSI (indeks momentum 0-100, >70 jenuh beli)'. Skor sinyal berskala -1 s/d +1: selalu sebut artinya ('-0,36 = condong melemah'). Pembaca awam harus paham jawaban tanpa buka kamus.",
-  "BAHASA: santai tapi JANGAN paksa gaul — kalau ragu dengan sebuah kata gaul, pakai bahasa Indonesia baku sehari-hari (larangan: 'tuang', 'kelola besar', 'kepenjeblokan', 'serok'). Typos = bot murahan.",
-  "BAHASA MURNI INDONESIA (DILARANG KERAS): DILARANG menyisipkan HURUF/KARAKTER Cina/Jepang/Korea dalam jawaban — 100% huruf Latin + angka. Kasus nyata: 'lagi喜庆 banget' = cacat produk serius. Kalau ragu dengan ejaan kata, tulis ulang pakai huruf Latin baku.",
-  "EMPATI NYANGKUT: bila ada posisiUser minus atau kata nyangkut/boncos, buka dengan 1 kalimat validasi emosi manusiawi sebelum angka; jangan menggurui.",
-  "BARIS PALING AKHIR WAJIB: '[FOLLOWUPS] Pertanyaan 1? | Pertanyaan 2? | Pertanyaan 3?' — 3 ide lanjutan singkat (<40 karakter, relevan konteks barusan). DILARANG chip ajakan transaksi ('layak dibeli?', 'layak dikumpul?', 'waktunya jual?') — framing tetap netral/edukasi (kriteria, risiko, konteks).",
-].join(" ");
+// System prompt v2 (21 Nov 2026) dipindah ke src/domains/ai/stock-prompt.ts (testable, 1 pohon keputusan, verdict-first).
+const GLM_SYSTEM = STOCK_SYSTEM_PROMPT;
 
 type ChatTurn = { role: "user" | "ai"; text: string };
 
@@ -69,6 +40,7 @@ async function glmCall(
   mode: "summarize" | "ask",
   question: string,
   history?: ChatTurn[],
+  compact = false,
 ): Promise<string> {
   const apiKey = process.env.ANTHROPIC_AUTH_TOKEN;
   if (!apiKey) throw new Error("GLM key missing");
@@ -85,9 +57,9 @@ async function glmCall(
       {
         role: "user" as const,
         content:
-          `DATA saham (semua angka final, jangan dihitung ulang):\n${JSON.stringify(context, null, 1)}\n\n` +
+          `DATA saham (semua angka final, jangan dihitung ulang):\n${JSON.stringify(context)}\n\n` +
           (mode === "ask"
-            ? `PERTANYAAN USER: ${question}\nJawab HANYA dari DATA di atas. Kalau data tidak memuat jawabannya, katakan apa yang bisa disimpulkan dari data yang ada tanpa mengarang angka.`
+            ? `PERTANYAAN USER: ${question}\nJawab HANYA dari DATA di atas.${compact ? `\n${NEWBIE_COMPACT_NOTE}` : ""}`
             : "TUGAS: rangkum kondisi teknikal saham ini 4-6 kalimat (arah harga, tren vs SMA, momentum RSI/MACD, volume, level support/resistance)."),
       },
     ],
@@ -285,7 +257,7 @@ export async function POST(req: NextRequest) {
   if (question && (context as Record<string, unknown>).posisiUser && !tickerRescue && extractTickersRanked(question).length === 0) {
     const assumed = String(clientContext.ticker ?? "").replace(/\.JK$/i, "");
     if (assumed) {
-      asumsiEmiten = `User tidak menyebut emiten di pertanyaannya — emiten ${assumed} adalah ASUMSI dari halaman tempat pertanyaan ditulis. Buka jawaban dengan 1 kalimat konfirmasi asumsi yang santai (mis. "Gue asumsi ini soal ${assumed} ya — kamu nggak sebut kodenya"), baru lanjut analisis ${assumed} dengan angka di data.`;
+      asumsiEmiten = `User tidak menyebut emiten di pertanyaannya — emiten ${assumed} adalah ASUMSI dari halaman tempat pertanyaan ditulis. Buka jawaban dengan 1 kalimat konfirmasi asumsi yang santai (mis. "Aku asumsikan ini soal ${assumed} ya — kamu nggak sebut kodenya"), baru lanjut analisis ${assumed} dengan angka di data.`;
       (context as Record<string, unknown>).asumsiEmiten = asumsiEmiten;
     }
   }
@@ -352,8 +324,8 @@ export async function POST(req: NextRequest) {
       const chg = ctx.changePercent as number;
       const bilangTurun = /\b(turun|anjlok|melemah|drop|turunya)\b/i.test(question);
       const bilangNaik = /\b(naik|rally|menguat|naiknya)\b/i.test(question);
-      if (bilangTurun && chg > 0.05) ctx.premiseCheck = `PERHATIAN: user bilang turun, tapi data close hari ini ${chg > 0 ? "+" : ""}${chg}% — luruskan premis di kalimat PERTAMA sebelum analisis.`;
-      else if (bilangNaik && chg < -0.05) ctx.premiseCheck = `PERHATIAN: user bilang naik, tapi data close hari ini ${chg}% — luruskan premis di kalimat PERTAMA sebelum analisis.`;
+      if (bilangTurun && chg > 0.05) ctx.premiseCheck = `PERHATIAN: user bilang turun, tapi data close terakhir ${chg > 0 ? "+" : ""}${chg}% — luruskan premis di kalimat PERTAMA sebelum analisis.`;
+      else if (bilangNaik && chg < -0.05) ctx.premiseCheck = `PERHATIAN: user bilang naik, tapi data close terakhir ${chg}% — luruskan premis di kalimat PERTAMA sebelum analisis.`;
     }
   }
 
@@ -369,7 +341,7 @@ export async function POST(req: NextRequest) {
           // juri Claude 30 Okt: konteks pasar + tanggal wajib — saham tidak hidup sendirian
           const pasarCtx = await buildPasarContext().catch(() => null);
           const ctx = { ...context, marketContext: pasarCtx ? { ihsg: pasarCtx.ihsg, asingNetSellTop: pasarCtx.foreignNetSell, asingNetBuyTop: pasarCtx.foreignNetBuy } : null, asOf: new Date().toISOString().slice(0, 10), ...(tickerRescue ? { tickerCorrection: `User menulis "${tickerRescue.from}" — itu typo; ticker yang benar adalah ${tickerRescue.to}. Konfirmasi koreksi di kalimat PERTAMA ("Sepertinya maksudnya ${tickerRescue.to} ya"), lalu analisa ${tickerRescue.to} LANGSUNG dengan data teknikal/fundamental yang sudah ada di data — DILARANG berkata data tidak tersedia atau minta user kirim data.` } : {}) };
-          const text = await glmCall(ctx, mode, question, chatHistory);
+          const text = await glmCall(ctx, mode, question, chatHistory, shouldUseNewbieCompact({ authed, mode, historyLength: chatHistory.length }));
           return { ok: true, text, ms: Date.now() - __t0, provider: "glm-flash" };
         } catch (e) {
           glmErr = e instanceof Error ? e.message : "glm error";
