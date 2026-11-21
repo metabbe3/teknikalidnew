@@ -1210,3 +1210,15 @@ enum QuestionFormat {
   FAQ
   MINI_ARTICLE
 }
+
+model ActivationEvent {
+  id        String   @id @default(cuid())
+  event     String
+  props     Json?
+  anonId    String?
+  userId    String?
+  createdAt DateTime @default(now())
+
+  @@index([event, createdAt])
+  @@index([anonId])
+}

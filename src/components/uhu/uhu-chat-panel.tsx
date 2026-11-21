@@ -8,6 +8,10 @@ import { UhuMascot } from "./uhu-mascot";
 import { useUhu, type UhuMessage } from "./uhu-provider";
 import { AiMarkdown } from "@/components/ai/ai-markdown";
 import { storeAuthNext } from "@/lib/safe-redirect";
+import {
+  ACTIVATION_EVENTS,
+  trackActivationEvent,
+} from "@/lib/activation-events";
 
 export type { UhuMessage };
 
@@ -307,6 +311,10 @@ export function UhuChatPanel() {
                   <Link
                     href={`/auth/register${nextQuery}`}
                     onClick={() => {
+                      trackActivationEvent(
+                        ACTIVATION_EVENTS.REGISTER_CLICK_FROM_CHAT,
+                        { source: "guest_banner" },
+                      );
                       storeAuthNext(currentPath);
                       closeUhu();
                     }}
@@ -366,6 +374,10 @@ export function UhuChatPanel() {
                 <Link
                   href={`/auth/register${nextQuery}`}
                   onClick={() => {
+                    trackActivationEvent(
+                      ACTIVATION_EVENTS.REGISTER_CLICK_FROM_CHAT,
+                      { source: "quota_banner" },
+                    );
                     storeAuthNext(currentPath);
                     closeUhu();
                   }}

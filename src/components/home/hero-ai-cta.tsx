@@ -3,11 +3,16 @@
 import { MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { useUhu } from "@/components/uhu/uhu-provider";
+import {
+  ACTIVATION_EVENTS,
+  trackActivationEvent,
+} from "@/lib/activation-events";
 
 /**
- * HeroAiCta (Wave-2 Item 4):
+ * HeroAiCta (Wave-2 Item 4 + Wave-7 Item 3):
  * CTA sekunder Tanya AI di hero beranda publik.
  * - Klik membuka panel Tanya AI langsung via state context.
+ * - Instrumentasi event HERO_AI_CTA.
  * - Fallback / SSR link mengarah ke /stocks.
  * - Style serasi dengan tombol hero di sekitarnya (tanpa warna purple/indigo).
  */
@@ -18,6 +23,7 @@ export function HeroAiCta() {
     <Link
       href="/stocks"
       onClick={(e) => {
+        trackActivationEvent(ACTIVATION_EVENTS.HERO_AI_CTA, { path: "/" });
         if (typeof window !== "undefined") {
           e.preventDefault();
           openUhu("/");

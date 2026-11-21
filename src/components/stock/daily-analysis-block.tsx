@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { Prisma } from "@/generated/prisma/client";
 import { stripJk, formatVolume } from "@/lib/utils";
 import { signalLabelId } from "@/lib/signal-label-id";
-import { UhuStockTrigger } from "@/components/uhu/uhu-provider";
+import { DailyAnalysisCta } from "./daily-analysis-cta";
 import { detectAnomalies } from "./daily-anomaly";
 import { safeJsonLd } from "@/lib/safe-json-ld";
 import {
@@ -376,15 +376,9 @@ export async function DailyAnalysisBlock({
         </li>
       </ul>
 
-      {/* (c) Link Tanya AI */}
+      {/* (c) Link Tanya AI (Wave-7: instrumented via DailyAnalysisCta) */}
       <div className="pt-0.5">
-        <UhuStockTrigger
-          ticker={ticker}
-          data-engagement="analis_hari_ini_tanya_ai"
-          className="inline-flex min-h-8 items-center gap-1.5 rounded-full border border-accent/40 bg-accent/5 px-2.5 py-1 text-xs font-semibold text-accent hover:bg-accent/15 hover:border-accent transition-colors"
-        >
-          <span>🤖 Tanya AI soal {clean} →</span>
-        </UhuStockTrigger>
+        <DailyAnalysisCta ticker={ticker} cleanTicker={clean} />
       </div>
     </section>
   );

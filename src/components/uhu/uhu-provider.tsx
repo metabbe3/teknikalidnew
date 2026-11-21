@@ -17,6 +17,10 @@ import { useSession } from "next-auth/react";
 import { getAnonIdSafe } from "@/lib/anon-id-safe";
 import { detectTickerInText } from "@/lib/ai-ticker-guard";
 import { splitFollowUps } from "@/lib/ai-followups";
+import {
+  ACTIVATION_EVENTS,
+  trackActivationEvent,
+} from "@/lib/activation-events";
 
 export interface UhuMessage {
   id: string;
@@ -286,6 +290,24 @@ export function UhuProvider({ children }: { children: ReactNode }) {
     }
   }, [pathname]);
 
+  // Wave-7 (Argon & Opus directive 21 Nov 2026): Activation funnel tracking
+  // GUEST_CHAT_OPEN: saat guest pertama kali buka panel (sekali per sesi, sessionStorage guard)
+  useEffect(() => {
+    if (open && isGuest && typeof window !== "undefined") {
+      try {
+        const GUARD_KEY = "act_guest_chat_open";
+        if (!sessionStorage.getItem(GUARD_KEY)) {
+          sessionStorage.setItem(GUARD_KEY, "1");
+          trackActivationEvent(ACTIVATION_EVENTS.GUEST_CHAT_OPEN, {
+            path: pathname || "/",
+          });
+        }
+      } catch {
+        // ignore storage error
+      }
+    }
+  }, [open, isGuest, pathname]);
+
   // Global opener: notif bell / link lain bisa buka panel Uhu via window event
   // (owner 10 Nov: klik notif "Uhu menjawab" harus membuka panel Uhu + restore history).
   const setOpenRef = useRef<(nextOpen: boolean, pageContextOverride?: string) => void>(() => {});
@@ -549,6 +571,22 @@ export function UhuProvider({ children }: { children: ReactNode }) {
               : null);
           const effTicker = tickerHit ? formatTickerJk(tickerHit) : contextTicker;
 
+          // Wave-7: saat guest kirim pertanyaan pertama -> GUEST_FIRST_QUESTION
+          try {
+            const FIRST_Q_GUARD = "act_guest_first_question";
+            if (
+              typeof window !== "undefined" &&
+              !sessionStorage.getItem(FIRST_Q_GUARD)
+            ) {
+              sessionStorage.setItem(FIRST_Q_GUARD, "1");
+              trackActivationEvent(ACTIVATION_EVENTS.GUEST_FIRST_QUESTION, {
+                ticker: effTicker ?? "NONE",
+              });
+            }
+          } catch {
+            // ignore storage error
+          }
+
           const history = messagesRef.current
             .filter((m) => !m.streaming && m.text.trim().length > 0)
             .slice(-6)
@@ -580,6 +618,10 @@ export function UhuProvider({ children }: { children: ReactNode }) {
             }
 
             if (res.status === 429) {
+              // Wave-7: saat 429 terlihat -> GUEST_QUOTA_WALL
+              trackActivationEvent(ACTIVATION_EVENTS.GUEST_QUOTA_WALL, {
+                source: "guest_chat",
+              });
               setErrorBanner(
                 errPayload.error ||
                   "Kuota gratis harian kamu (50 pertanyaan) sudah habis. Daftar akun gratis untuk 150 pertanyaan/hari + simpan riwayat."
