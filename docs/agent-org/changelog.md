@@ -1621,4 +1621,9 @@ EVAL: 12/12 ✅ (rerun pasca-bookkeeping)
 - QA: verdict formal Sentinel-2200-1121
 - impact_check_due: 2026-11-24 (rekap Sabtu berikutnya 28 Nov = uji date-aware sesungguhnya)
 - task-id: ops-2026-11-21-01 · type: ops housekeeping · verify: git status src/schema BERSIH (stash@{0} + scratch/ops-21-01/) · queue prd-15-01 = 1 entry · version v832
-| qa-2026-11-21-02 | bugfix/ops (konten-DB) | — (ops type, tanpa PRD) | no-deploy (patch DB konten) | replay_sql_gate exit-0 kedua artikel; pos(old)=0 DB+live; UPDATE 8×1 row; koreksi basis reviewer K1 tercatat | Sentinel 22:00 21 Nov | 2026-11-24 |
+## 2026-11-21 08:4x WIB — qa-2026-11-21-02 [BUGFIX][TRUST] — CTO-WEEKEND-SORE-1121 (slot Sabtu)
+- task-id: qa-2026-11-21-02 · type: qa-content-fix (patch DB konten) · PRD: n/a (ops, freeze-compliant TRUST)
+- files: 0 file repo — 8 UPDATE "Article" content/excerpt 2 artikel (analis-sore-2026-11-20-asgr, rekap-pasar-mingguan-2026-11-21); backup TSV scratch/qa-21-02/
+- deploy hash: n/a (patch DB konten, bukan deploy) · Rollback: restore kolom dari backup TSV
+- verify bukti: pos(old)=0 DB + grep live=0 (semua frasa lama) · replay_sql_gate exit-0 KEDUA artikel (rekap perlu micro-reorder "terbesar), [ICBP" → "terbesar), justru [ICBP" utk false-association gate; ASGR 6/6) · UPDATE 8×1 row · koreksi reviewer K1 (basis lembar vs rupiah) tercatat di decisions.md
+- QA: verdict formal = Sentinel-2200-1121 · impact_check_due: 2026-11-24
