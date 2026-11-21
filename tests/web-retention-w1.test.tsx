@@ -289,8 +289,8 @@ describe("W1 Retention — Web Freemium & Upsell", () => {
       (el) => el.getAttribute("data-engagement") === "agent_deeplink_banner"
     );
     assert.ok(
-      tgLink?.getAttribute("href")?.includes("t.me/TeknikalidAgentBot?start=src_stock_BBCA"),
-      "Deeplink lapis 2 harus membawa format src_stock_{ticker}"
+      tgLink?.getAttribute("href")?.includes("t.me/TeknikalidAgentBot?start=src_gate_BBCA"),
+      "Deeplink lapis 2 harus membawa format src_gate_{ticker} (kanonik deeplink, rename src_stock 21 Nov)"
     );
   });
 
