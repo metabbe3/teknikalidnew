@@ -80,10 +80,13 @@ async function enrichSignupOrigin(userId: string, ip: string, path: string) {
       distinctStockPaths({ userId }, 24 * 60 * 60_000),
     ]);
     if (burst > SCRAPE_BURST_LIMIT || (flagged && daily > SCRAPE_DAILY_LIMIT)) {
+      // 20 Nov: temporary 15-minute cooldown, bukan ban permanen — false-positive
+      // (multi-tab user) sembuh sendiri; scraper sungguhan tetap kena berulang + ter-audit.
       await moderationService.banUser(
         userId,
         `auto: scraping (${burst} distinct stocks/5min, ${daily}/24h)`,
         ip,
+        15 * 60_000,
       );
     }
   }

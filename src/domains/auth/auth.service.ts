@@ -20,6 +20,8 @@ export const authService = {
     const user = await this.getCurrentUser();
     if (!user) throw new NotAuthenticatedError();
     if (user.bannedAt) throw new AccountSuspendedError();
+    // 20 Nov: auto-ban scraping TEMPORER — sembuh sendiri setelah bannedUntil lewat.
+    if (user.bannedUntil && user.bannedUntil.getTime() > Date.now()) throw new AccountSuspendedError();
     return user;
   },
 

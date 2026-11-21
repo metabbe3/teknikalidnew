@@ -108,7 +108,7 @@ export const moderationService = {
   },
 
   /** Auto-suspend a user for abuse (sets bannedAt → wired into auth = next request logs them out). */
-  async banUser(userId: string, reason: string, ipAddress?: string | null) {
-    return moderationRepository.banUser(userId, reason, ipAddress);
+  async banUser(userId: string, reason: string, ipAddress?: string | null, durationMs?: number) {
+    return moderationRepository.banUser(userId, reason, ipAddress, durationMs);
   },
 };

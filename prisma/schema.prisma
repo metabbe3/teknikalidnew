@@ -241,6 +241,9 @@ model User {
   bio                 String?              @db.VarChar(200)
   role                Role                 @default(USER)
   bannedAt            DateTime?
+  /// 20 Nov: auto-ban scraping kini TEMPORER (15 menit, self-heal). bannedAt tetap
+  /// utk ban manual/admin (permanen). requireAuth lolos jika bannedUntil sudah lewat.
+  bannedUntil         DateTime?
   createdAt           DateTime             @default(now())
   reputation          Int                  @default(0)
   socialLinks         Json?

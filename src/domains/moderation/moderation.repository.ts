@@ -40,11 +40,13 @@ export const moderationRepository = {
   },
 
   /** Ban a user (set bannedAt) + audit trail + blocklist the IP. Used by auto-abuse suspension. */
-  async banUser(userId: string, reason: string, ipAddress?: string | null) {
+  async banUser(userId: string, reason: string, ipAddress?: string | null, durationMs?: number) {
     await prisma.$transaction(async (tx) => {
       await tx.user.update({
         where: { id: userId },
-        data: { bannedAt: new Date() },
+        data: durationMs
+          ? { bannedUntil: new Date(Date.now() + durationMs) } // temp auto-ban, self-heal
+          : { bannedAt: new Date() }, // permanen (admin/manual)
       });
       await tx.auditLog.create({
         data: {
