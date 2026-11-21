@@ -992,11 +992,13 @@ model AiChatLog {
   followupClick String?  @db.VarChar(200)
   createdAt     DateTime @default(now())
   isEval        Boolean  @default(false)
+  isInternal    Boolean  @default(false)
 
   @@index([createdAt])
   @@index([route, createdAt(sort: Desc)])
   @@index([ticker])
   @@index([isEval, createdAt])
+  @@index([isInternal, createdAt])
 }
 
 model AiEvalRun {

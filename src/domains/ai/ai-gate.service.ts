@@ -197,3 +197,38 @@ export function gateStats(name?: string) {
   }
   return out;
 }
+
+export interface ShouldMarkInternalParams {
+  anonId?: string | null;
+  userId?: string | null;
+  qaHeader?: string | null;
+  expectedToken?: string | null;
+}
+
+/**
+ * Helper untuk menandai request AiChatLog internal vs pengguna riil (Wave-5 Data Integrity).
+ *
+ * Aturan:
+ * 1. Jika request membawa marker QA (header "x-qa-marker" cocok dengan QA_MARKER_TOKEN / expectedToken) -> true.
+ * 2. Jika anonId dan userId keduanya kosong / null -> true (battery internal historis/otomatis tanpa sesi/anonId).
+ * 3. Jika ada anonId atau userId dan marker tidak cocok -> false (pengguna riil).
+ */
+export function shouldMarkInternal(params?: ShouldMarkInternalParams): boolean {
+  if (!params) return true;
+  const { anonId, userId, qaHeader, expectedToken } = params;
+  const token = expectedToken !== undefined ? expectedToken : process.env.QA_MARKER_TOKEN;
+
+  if (token && qaHeader && qaHeader === token) {
+    return true;
+  }
+
+  const hasAnon = typeof anonId === "string" && anonId.trim().length > 0;
+  const hasUser = typeof userId === "string" && userId.trim().length > 0;
+
+  if (!hasAnon && !hasUser) {
+    return true;
+  }
+
+  return false;
+}
+

@@ -7,7 +7,7 @@ import { sanitizeAiText, ensureAiDisclaimer, linkifyBoldTickers, normalizeUnit, 
 import { NextRequest, NextResponse } from "next/server";
 import { buildStockAiContext } from "./context";
 import { stockRepository } from "@/domains/stock/stock.repository";
-import { withTicket, QueueFullError, configurePool } from "@/domains/ai/ai-gate.service";
+import { withTicket, QueueFullError, configurePool, shouldMarkInternal } from "@/domains/ai/ai-gate.service";
 
 // MLX serial ±7s/request — gate FIFO (ref-2026-10-17-04)
 configurePool("mlx", { maxConcurrent: 1, maxQueueDepth: 6, maxWaitMs: 25_000 });
@@ -190,6 +190,11 @@ export async function POST(req: NextRequest) {
   const isEval = Boolean(
     process.env.CRON_SECRET && req.headers.get("x-ai-eval") === process.env.CRON_SECRET
   );
+  const isInternal = shouldMarkInternal({
+    anonId: cleanAnonId,
+    userId: sessionUserId,
+    qaHeader: req.headers.get("x-qa-marker"),
+  });
 
   // G1 (juri Claude 30 Okt): question tanpa mode → ask (bukan summarize dgn context kosong)
   const hasQuestion = typeof body.question === "string" && body.question.trim().length > 0;
@@ -419,6 +424,7 @@ export async function POST(req: NextRequest) {
           anonId: cleanAnonId,
           userId: sessionUserId,
           isEval,
+          isInternal,
         },
       })
       .catch(() => {});

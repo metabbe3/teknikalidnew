@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { technicalAnalysisService } from "@/domains/stock/technical-analysis.service";
 import { pasarLiveService } from "@/domains/stock/pasar-live.service";
-import { withTicket, singleFlight, QueueFullError, configurePool } from "@/domains/ai/ai-gate.service";
+import { withTicket, singleFlight, QueueFullError, configurePool, shouldMarkInternal } from "@/domains/ai/ai-gate.service";
 
 // MLX serial ±7s/request — gate FIFO + single-flight (ref-2026-10-17-04)
 configurePool("mlx", { maxConcurrent: 1, maxQueueDepth: 6, maxWaitMs: 25_000 });
@@ -227,6 +227,11 @@ export async function POST(req: NextRequest) {
   const isEval = Boolean(
     process.env.CRON_SECRET && req.headers.get("x-ai-eval") === process.env.CRON_SECRET
   );
+  const isInternal = shouldMarkInternal({
+    anonId: cleanAnonId,
+    userId: sessionUserId,
+    qaHeader: req.headers.get("x-qa-marker"),
+  });
 
   const question = (body.question ?? "").slice(0, 500).trim();
   // multi-turn chat (owner 30 Okt: FAB harus kayak chatbot): history dari client, sanitasi ketat
@@ -398,6 +403,7 @@ export async function POST(req: NextRequest) {
           anonId: cleanAnonId,
           userId: sessionUserId,
           isEval,
+          isInternal,
         },
       })
       .catch(() => {});
