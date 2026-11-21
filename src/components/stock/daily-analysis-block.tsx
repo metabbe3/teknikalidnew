@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@/generated/prisma/client";
 import { stripJk, formatVolume } from "@/lib/utils";
@@ -442,6 +443,16 @@ export async function DailyAnalysisBlock({
             </span>
           </li>
         </ul>
+
+        {/* Link internal sinyal screener */}
+        <div className="pt-0.5">
+          <Link
+            href="/stocks?view=screener"
+            className="inline-flex items-center text-xs font-medium text-accent hover:underline"
+          >
+            Lihat semua sinyal hari ini →
+          </Link>
+        </div>
 
         {/* (c) Link Tanya AI (Wave-7: instrumented via DailyAnalysisCta) */}
         <div className="pt-0.5">

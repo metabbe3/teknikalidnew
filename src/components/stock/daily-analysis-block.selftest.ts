@@ -4,6 +4,8 @@
  */
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import {
   buildVerdictLine,
   withTimeout,
@@ -222,6 +224,21 @@ test("kasus error throttle: console.error dipanggil sekali dan tidak spam tiap r
     console.error = originalConsoleError;
     resetDailyAnalysisErrorThrottle();
   }
+});
+
+test("link screener: komponen memuat tautan internal 'Lihat semua sinyal hari ini →'", () => {
+  const source = readFileSync(
+    join(process.cwd(), "src/components/stock/daily-analysis-block.tsx"),
+    "utf-8",
+  );
+  assert.ok(
+    source.includes("Lihat semua sinyal hari ini →"),
+    "daily-analysis-block.tsx harus memuat teks 'Lihat semua sinyal hari ini →'",
+  );
+  assert.ok(
+    source.includes("/stocks?view=screener"),
+    "daily-analysis-block.tsx harus mengarah ke /stocks?view=screener",
+  );
 });
 
 // Print baris "RESULT:" akhir sesuai instruksi gate

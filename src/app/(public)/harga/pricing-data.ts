@@ -9,7 +9,11 @@ export interface PricingCard {
   ctaHref: string;
   ctaLabel: string;
   isPopular: boolean;
+  paymentNote?: string;
 }
+
+export const PAYMENT_NOTE =
+  "Bayar via bot Telegram · Midtrans · batal kapan saja";
 
 export const PRICING_DISCLAIMER =
   "* Bukan nasihat keuangan. Seluruh analisa teknikal, data pasar, dan sinyal otomatis disajikan hanya untuk tujuan edukasi dan informasi. Keputusan investasi dan trading sepenuhnya menjadi tanggung jawab masing-masing trader.";
@@ -57,6 +61,7 @@ export function buildPricingCards(): PricingCard[] {
       ctaHref: "https://t.me/TeknikalidAgentBot?start=upgrade",
       ctaLabel: "Ambil Night Trader Rp14.900",
       isPopular: true,
+      paymentNote: PAYMENT_NOTE,
     },
     {
       tier: "Pro",
@@ -75,6 +80,7 @@ export function buildPricingCards(): PricingCard[] {
       ctaHref: "https://t.me/TeknikalidAgentBot?start=upgrade",
       ctaLabel: "Ambil Pro Rp29.000",
       isPopular: false,
+      paymentNote: PAYMENT_NOTE,
     },
   ];
 }
