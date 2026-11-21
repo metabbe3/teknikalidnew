@@ -21,6 +21,10 @@ import {
   ACTIVATION_EVENTS,
   trackActivationEvent,
 } from "@/lib/activation-events";
+import {
+  incrementGuestChatCount,
+  setGuestChatCountMax,
+} from "@/lib/guest-suggestions";
 
 export interface UhuMessage {
   id: string;
@@ -618,6 +622,10 @@ export function UhuProvider({ children }: { children: ReactNode }) {
             }
 
             if (res.status === 429) {
+              setGuestChatCountMax();
+              if (typeof window !== "undefined") {
+                window.dispatchEvent(new Event("guest-chat-quota-updated"));
+              }
               // Wave-7: saat 429 terlihat -> GUEST_QUOTA_WALL
               trackActivationEvent(ACTIVATION_EVENTS.GUEST_QUOTA_WALL, {
                 source: "guest_chat",
@@ -660,6 +668,12 @@ export function UhuProvider({ children }: { children: ReactNode }) {
                 : m
             )
           );
+
+          // Wave-11b: Update sisa kuota lokal guest tiap jawaban selesai
+          incrementGuestChatCount();
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(new Event("guest-chat-quota-updated"));
+          }
 
           // Wave-2 Item 2: Stop persona probe, langsung tampilkan 2-3 follow-up chip kontekstual
           const cleanFollowups = split.followUps.filter(

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { openNotifBell, useNotifUnread } from "@/components/layout/notif-bell";
@@ -12,6 +12,11 @@ import {
   ACTIVATION_EVENTS,
   trackActivationEvent,
 } from "@/lib/activation-events";
+import {
+  buildGuestSuggestions,
+  extractTickerFromContext,
+  getGuestRemainingQuota,
+} from "@/lib/guest-suggestions";
 
 export type { UhuMessage };
 
@@ -112,7 +117,11 @@ export function renderLiteMarkdown(text: string): ReactNode {
   });
 }
 
-export function UhuChatPanel() {
+export interface UhuChatPanelProps {
+  ticker?: string;
+}
+
+export function UhuChatPanel({ ticker: tickerProp }: UhuChatPanelProps = {}) {
   const {
     open,
     closeUhu,
@@ -126,6 +135,7 @@ export function UhuChatPanel() {
     errorBanner,
     setErrorBanner,
     chips,
+    pageContext,
     send,
   } = useUhu();
 
@@ -135,6 +145,37 @@ export function UhuChatPanel() {
       ? `${pathname || ""}${window.location.search || ""}` || "/stocks"
       : pathname || "/stocks";
   const nextQuery = `?next=${encodeURIComponent(currentPath)}`;
+
+  const effectiveTicker = useMemo(
+    () => extractTickerFromContext(tickerProp, pageContext, pathname),
+    [tickerProp, pageContext, pathname]
+  );
+
+  const guestSuggestions = useMemo(
+    () => buildGuestSuggestions(effectiveTicker),
+    [effectiveTicker]
+  );
+
+  const [remainingQuota, setRemainingQuota] = useState<number>(() =>
+    typeof window !== "undefined" ? getGuestRemainingQuota() : 50
+  );
+
+  useEffect(() => {
+    const syncQuota = () => {
+      setRemainingQuota(getGuestRemainingQuota());
+    };
+    syncQuota();
+    window.addEventListener("guest-chat-quota-updated", syncQuota);
+    return () => window.removeEventListener("guest-chat-quota-updated", syncQuota);
+  }, []);
+
+  const prevStreamingRef = useRef(streaming);
+  useEffect(() => {
+    if (prevStreamingRef.current && !streaming) {
+      setRemainingQuota(getGuestRemainingQuota());
+    }
+    prevStreamingRef.current = streaming;
+  }, [streaming]);
 
   const notifUnread = useNotifUnread();
   const listRef = useRef<HTMLDivElement>(null);
@@ -201,7 +242,8 @@ export function UhuChatPanel() {
   // FIX 10 Nov (owner: chips gak muncul setelah pindah page): chips tampil selama
   // tidak streaming — follow-up agent (jika ada) + chips kontekstual halaman aktif
   // selalu tersedia sebagai quick-start, tidak hanya saat obrolan kosong.
-  const showChips = !streaming && chips.length > 0;
+  // Wave-11b: Jika guest dan belum ada pesan, 3 chip saran pertama sudah tampil di welcome state
+  const showChips = !streaming && chips.length > 0 && !(isGuest && messages.length === 0);
 
   return (
     <div
@@ -307,7 +349,11 @@ export function UhuChatPanel() {
             {effectiveGate === "AUTH" && (
               <div className="rounded-lg border border-accent/20 bg-accent/5 px-3 py-2 text-xs text-text-secondary flex items-center justify-between gap-2">
                 <span>
-                  Mode tamu — 50 pertanyaan/hari.{" "}
+                  Mode tamu —{" "}
+                  <span className="inline-flex items-center rounded bg-bg-tertiary px-1.5 py-0.5 text-[11px] font-medium text-text-tertiary">
+                    Sisa {remainingQuota} pertanyaan hari ini
+                  </span>
+                  .{" "}
                   <Link
                     href={`/auth/register${nextQuery}`}
                     onClick={() => {
@@ -327,8 +373,35 @@ export function UhuChatPanel() {
             )}
 
             {messages.length === 0 && (
-              <div className="rounded-xl border border-border bg-bg-primary p-3.5 text-xs text-text-secondary leading-relaxed">
-                Halo! Aku <strong className="font-semibold text-text-primary">Tanya AI</strong>, analis AI TeknikalID. Tanya soal sinyal teknikal, support/resistance, atau pergerakan saham IDX hari ini.
+              <div className="space-y-3">
+                <div className="rounded-xl border border-border bg-bg-primary p-3.5 text-xs text-text-secondary leading-relaxed">
+                  Halo! Aku <strong className="font-semibold text-text-primary">Tanya AI</strong>, analis AI TeknikalID. Tanya soal sinyal teknikal, support/resistance, atau pergerakan saham IDX hari ini.
+                </div>
+
+                {/* Wave-11b (Argon detik-60): 3 chip pertanyaan saran pertama untuk guest */}
+                {isGuest && (
+                  <div
+                    aria-label="Saran pertanyaan cepat"
+                    className="space-y-2 pt-0.5"
+                  >
+                    <p className="text-[11px] font-medium text-text-tertiary">
+                      Pertanyaan saran {effectiveTicker ? `soal ${effectiveTicker}` : ""}:
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {guestSuggestions.map((suggestion) => (
+                        <button
+                          key={suggestion}
+                          type="button"
+                          disabled={streaming}
+                          onClick={() => handleChipClick(suggestion)}
+                          className="shrink-0 rounded-full border border-border bg-bg-primary px-2.5 py-1 text-xs font-medium text-text-secondary hover:border-accent/40 hover:bg-bg-hover hover:text-text-primary transition-colors disabled:opacity-50 text-left"
+                        >
+                          {suggestion}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -472,6 +545,13 @@ export function UhuChatPanel() {
             </svg>
           </button>
         </div>
+        {isGuest && (
+          <div className="mt-1.5 flex items-center justify-between text-[11px] text-text-tertiary">
+            <span className="inline-flex items-center rounded bg-bg-tertiary px-1.5 py-0.5 font-medium text-text-tertiary">
+              Sisa {remainingQuota} pertanyaan hari ini
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
