@@ -12,6 +12,7 @@ import { authService } from "@/domains/auth/auth.service";
 import { FeaturedStockCard } from "@/components/home/featured-stock-card";
 import { PlatformFeatures } from "@/components/home/platform-features";
 import { CtaSection } from "@/components/home/cta-section";
+import { ReturnHint } from "@/components/return-hint";
 import { TickerTape } from "@/components/home/ticker-tape";
 import { SahamStrategyLinks } from "@/components/seo/saham-strategy-links";
 import { PersonalizedBeranda } from "@/components/home/personalized-beranda";
@@ -502,6 +503,9 @@ export default async function HomePage() {
 
         {/* Screener strategi — de-orphan commercial landing pages */}
         <SahamStrategyLinks />
+
+        {/* prd-2026-11-21-01 AC2: alasan balik besok — brief pagi segar tiap hari */}
+        <ReturnHint variant="home" />
 
         {/* CTA Banner */}
         <CtaSection />

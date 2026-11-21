@@ -12,6 +12,7 @@ import { CreateAccount } from "@/components/paper-trading/create-account";
 import { ToastProvider } from "@/components/paper-trading/toast";
 import { PaperTradingPreview } from "@/components/paper-trading/paper-trading-preview";
 import { useSession } from "next-auth/react";
+import { ReturnHint } from "@/components/return-hint";
 
 const TABS = [
   { key: "positions", label: "Posisi" },
@@ -165,6 +166,9 @@ function PaperTradingDashboard({
         {activeTab === "orders" && orders && <PendingOrders orders={orders} />}
         {activeTab === "history" && <TradeHistory />}
       </div>
+
+      {/* prd-2026-11-21-01 AC2: alasan balik besok utk landing panas one-visit */}
+      <ReturnHint variant="paper" />
 
       {/* Floating trade button */}
       <button

@@ -21,6 +21,7 @@ import { GuestStar } from "@/components/stock/guest-star";
 import { WeeklySignalWidget } from "@/components/signal/weekly-signal-widget";
 import { KenapaMoversModule } from "@/components/stock/kenapa-movers-module";
 import { ChannelCta } from "@/components/stock/channel-cta";
+import { ReturnHint } from "@/components/return-hint";
 
 export const dynamic = "force-dynamic";
 
@@ -415,6 +416,9 @@ export default async function StocksPage() {
         <div className="mt-4 flex justify-center">
           <ChannelCta />
         </div>
+
+        {/* prd-2026-11-21-01 AC2: alasan balik besok — sinyal dihitung ulang tiap penutapan */}
+        <ReturnHint variant="stocks" />
 
         {/* ── SEO Content Block: Educational + FAQ (folded into details — Batch A) ── */}
         <section className="mt-16">
