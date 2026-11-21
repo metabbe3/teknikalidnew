@@ -16,7 +16,7 @@ export function AgentKopiBanner({ source = "web" }: { source?: string }) {
             Malas cek grafik satu-satu? Tanya level support &amp; pasang alert harga langsung di Telegram.
           </p>
           <p className="text-xs font-semibold text-text-primary">
-            Gratis 3x/hari · Night Trader Rp29rb/bln · Pro Rp79rb/bln
+            3 pertanyaan pertama gratis · Night Trader Rp29rb/bln · Pro Rp79rb/bln
           </p>
           <div className="space-y-0.5 text-xs text-text-secondary">
             <p>

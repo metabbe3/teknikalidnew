@@ -473,7 +473,7 @@ export default async function BeritaArticlePage({
                       : "Ingin tahu saham apa yang diuntungkan dari berita pasar hari ini?"}
                   </p>
                   <p className="text-xs text-text-secondary mt-1">
-                    Tanya langsung ke Agent AI TeknikalID di Telegram — respons instan berbasis data teknikal &amp; fundamental (gratis 3x/hari).
+                    Tanya langsung ke Agent AI TeknikalID di Telegram — respons instan berbasis data teknikal &amp; fundamental (3 pertanyaan pertama gratis).
                   </p>
                 </div>
                 <UhuAskCtaLink

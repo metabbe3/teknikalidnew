@@ -864,7 +864,7 @@ export default async function StockDetailPage({
                       className="w-full flex items-center justify-between rounded-lg border border-border/80 bg-bg-card/70 px-3 py-2 text-xs font-medium text-text-secondary hover:text-accent hover:border-accent/40 transition-colors"
                     >
                       <span className="flex items-center gap-1.5 truncate">
-                        <span>🤖 Tanya AI soal {stripJk(ticker)} · gratis 3x →</span>
+                        <span>🤖 Tanya AI soal {stripJk(ticker)} · gratis tanpa login →</span>
                       </span>
                     </UhuStockTrigger>
                     {/* Panduan cepat: 3 tombol prompt chips di dalam collapse <details> default tertutup */}
@@ -1340,7 +1340,7 @@ export default async function StockDetailPage({
         {/* Tanya analisa via Agent (funnel agent-first) — guest-visible, no-login */}
         <section className="bg-bg-card rounded-xl border border-border p-5 space-y-2" aria-label={`Tanya analisa apa pun soal ${stripJk(ticker)}`}>
           <h2 className="font-serif text-base font-semibold text-text-primary">Tanya analisa apa pun soal {stripJk(ticker)}</h2>
-          <p className="text-sm text-text-secondary">Skor sinyal, level support/resistance, dan jawaban instan lainnya — 3x gratis.</p>
+          <p className="text-sm text-text-secondary">Skor sinyal, level support/resistance, dan jawaban instan lainnya — gratis tanpa login.</p>
           <UhuStockTrigger
             ticker={ticker}
             data-engagement="tg_tanya_agent_card"

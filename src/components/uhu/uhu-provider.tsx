@@ -14,6 +14,9 @@ import {
 } from "react";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { getAnonIdSafe } from "@/lib/anon-id-safe";
+import { detectTickerInText } from "@/lib/ai-ticker-guard";
+import { splitFollowUps } from "@/lib/ai-followups";
 
 export interface UhuMessage {
   id: string;
@@ -234,6 +237,10 @@ export function UhuProvider({ children }: { children: ReactNode }) {
   const abortRef = useRef<AbortController | null>(null);
   const prevOpenRef = useRef(false);
   const streamingRef = useRef(false);
+  const messagesRef = useRef(messages);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
 
   const effectiveGate: GateState =
     sessionStatus === "unauthenticated"
@@ -495,11 +502,6 @@ export function UhuProvider({ children }: { children: ReactNode }) {
       const trimmed = rawText.trim();
       if (!trimmed || streaming) return;
 
-      if (sessionStatus === "unauthenticated") {
-        setGate("AUTH");
-        return;
-      }
-
       const activeContext = pageContextOverride ?? pageContext;
 
       setErrorBanner(null);
@@ -532,6 +534,106 @@ export function UhuProvider({ children }: { children: ReactNode }) {
 
       let aborted = false;
 
+      // JALUR 1: GUEST / TAMU (belum login)
+      // Chat gratis via endpoint yang sudah ada: POST /api/ai/stock (50 pertanyaan/hari, tanpa login/Telegram binding)
+      if (sessionStatus === "unauthenticated") {
+        try {
+          const tickerHit = detectTickerInText(trimmed);
+          const contextTicker =
+            extractStockTickerFromPath(pathname, activeContext) ??
+            (activeContext && /^[A-Za-z]{4}(\.JK)?$/i.test(activeContext.trim())
+              ? formatTickerJk(activeContext)
+              : null);
+          const effTicker = tickerHit ? formatTickerJk(tickerHit) : contextTicker;
+
+          const history = messagesRef.current
+            .filter((m) => !m.streaming && m.text.trim().length > 0)
+            .slice(-6)
+            .map((m) => ({
+              role: m.role === "user" ? ("user" as const) : ("ai" as const),
+              text: m.text.slice(0, 400),
+            }));
+
+          const res = await fetch("/api/ai/stock", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              mode: "ask",
+              ...(effTicker ? { ticker: effTicker } : {}),
+              question: trimmed,
+              history,
+              anonId: getAnonIdSafe(),
+            }),
+            signal: controller.signal,
+          });
+
+          if (!res.ok) {
+            removeEmptyAssistant();
+            let errPayload: { error?: string } = {};
+            try {
+              errPayload = (await res.json()) as { error?: string };
+            } catch {
+              // ignore non-json
+            }
+
+            if (res.status === 429) {
+              setErrorBanner(
+                errPayload.error ||
+                  "Kuota gratis harian kamu (50 pertanyaan) sudah habis. Daftar akun gratis untuk 150 pertanyaan/hari + simpan riwayat."
+              );
+              return;
+            }
+
+            setErrorBanner(
+              errPayload.error || "Sambungan ke AI terganggu — coba lagi sebentar ya."
+            );
+            return;
+          }
+
+          const data = (await res.json()) as {
+            ok?: boolean;
+            text?: string;
+            error?: string;
+          };
+
+          if (!data?.ok || !data.text) {
+            removeEmptyAssistant();
+            setErrorBanner(data?.error || "Gagal mendapatkan jawaban dari AI.");
+            return;
+          }
+
+          const split = splitFollowUps(data.text);
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantId
+                ? { ...m, text: split.text, streaming: false }
+                : m
+            )
+          );
+
+          if (split.followUps.length > 0) {
+            setAgentChips(
+              split.followUps.map((f) => ({ label: f, prompt: f }))
+            );
+          }
+        } catch (err: unknown) {
+          if (err instanceof Error && err.name === "AbortError") {
+            aborted = true;
+            return;
+          }
+          removeEmptyAssistant();
+          setErrorBanner("Sambungan ke AI terganggu. Coba lagi sebentar ya.");
+        } finally {
+          streamingRef.current = false;
+          setStreaming(false);
+          if (!aborted && !openRef.current) {
+            setUnreadWhileClosed(true);
+          }
+        }
+        return;
+      }
+
+      // JALUR 2: USER TERAUTENTIKASI (upstream ke /api/uhu via SSE daemon agentd)
       try {
         const res = await fetch("/api/uhu", {
           method: "POST",
@@ -702,7 +804,7 @@ export function UhuProvider({ children }: { children: ReactNode }) {
         }
       }
     },
-    [input, streaming, sessionStatus, pageContext]
+    [input, streaming, sessionStatus, pageContext, pathname]
   );
 
   const value = useMemo<UhuContextValue>(

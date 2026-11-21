@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       email
     );
 
-    const botName = process.env.NEXT_PUBLIC_AGENT_BOT_NAME ?? "TeknikalAgentBot";
+    const botName = process.env.NEXT_PUBLIC_AGENT_BOT_NAME ?? "TeknikalidAgentBot";
     return NextResponse.json({
       bindUrl: `https://t.me/${botName}?start=${token}`,
       expiresInMin: 15,

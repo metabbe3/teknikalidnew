@@ -334,7 +334,7 @@ export function GuestSignalBreakdownGate({
         <span className="flex items-center gap-1.5 truncate">
           <MessageCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
           <span>
-            Tetap mau analisa {cleanTicker || "saham ini"}? Tanya AI gratis 3x/hari →
+            Tetap mau analisa {cleanTicker || "saham ini"}? Tanya AI (3 pertanyaan pertama gratis) →
           </span>
         </span>
       </a>

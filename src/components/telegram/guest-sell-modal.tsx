@@ -181,7 +181,7 @@ export function GuestSellModal({ isAuthed = false }: { isAuthed?: boolean }) {
             onClick={closeModal}
             className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent/90"
           >
-            Tanya Agent — Gratis 3x/hari
+            Tanya Agent — 3 Pertanyaan Pertama Gratis
           </Link>
           <p className="text-center text-xs text-text-secondary">
             Night Trader Rp29rb/bln · Pro Rp79rb/bln

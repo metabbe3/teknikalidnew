@@ -271,7 +271,7 @@ export function TickerFab({ ticker, base, price, changePercent, signalLabel, sig
               ))}
             </div>
             <p className="mt-3 text-[10px] text-text-secondary">
-              Tanya AI di Telegram: gratis 3x/hari · sejak Rp29rb/bln untuk alert &amp; sinyal
+              Tanya AI di Telegram: 3 pertanyaan pertama gratis · sejak Rp29rb/bln untuk alert &amp; sinyal
             </p>
             <p className="mt-1 text-[10px] text-text-tertiary">
               Snapshot teknikal.id — data tertunda ~5 mnt, bukan rekomendasi.

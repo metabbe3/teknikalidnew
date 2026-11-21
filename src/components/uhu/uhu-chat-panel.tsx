@@ -116,6 +116,7 @@ export function UhuChatPanel() {
     streaming,
     isLive,
     effectiveGate,
+    isGuest,
     errorBanner,
     setErrorBanner,
     chips,
@@ -268,33 +269,7 @@ export function UhuChatPanel() {
         ref={listRef}
         className="flex-1 overflow-y-auto px-4 py-3.5 space-y-3 text-sm"
       >
-        {effectiveGate === "AUTH" ? (
-          <div className="rounded-xl border border-border bg-bg-primary p-4 space-y-3">
-            <p className="text-sm font-semibold text-text-primary">
-              Login dulu + hubungkan Telegram
-            </p>
-            <p className="text-xs text-text-secondary leading-relaxed">
-              Uhu terhubung langsung dengan akun TeknikalID dan bot Telegram kamu
-              supaya histori analisa &amp; kuota tersinkronisasi satu pintu.
-            </p>
-            <div className="flex flex-wrap items-center gap-2 pt-1">
-              <Link
-                href="/agent"
-                onClick={closeUhu}
-                className="inline-flex items-center justify-center rounded-lg bg-accent px-3.5 py-2 text-xs font-semibold text-white hover:opacity-95 transition-opacity"
-              >
-                Buka Halaman Agent
-              </Link>
-              <Link
-                href="/auth/signin"
-                onClick={closeUhu}
-                className="inline-flex items-center justify-center rounded-lg border border-border bg-bg-card px-3.5 py-2 text-xs font-medium text-text-primary hover:bg-bg-hover transition-colors"
-              >
-                Masuk Akun
-              </Link>
-            </div>
-          </div>
-        ) : effectiveGate === "NO_BINDING" ? (
+        {effectiveGate === "NO_BINDING" ? (
           <div className="rounded-xl border border-border bg-bg-primary p-4 space-y-3">
             <p className="text-sm font-semibold text-text-primary">
               Hubungkan Telegram dulu yuk
@@ -315,6 +290,22 @@ export function UhuChatPanel() {
           </div>
         ) : (
           <>
+            {/* Banner tamu (Item 2: mode guest 50/hari per IP) */}
+            {effectiveGate === "AUTH" && (
+              <div className="rounded-lg border border-accent/20 bg-accent/5 px-3 py-2 text-xs text-text-secondary flex items-center justify-between gap-2">
+                <span>
+                  Mode tamu — 50 pertanyaan/hari.{" "}
+                  <Link
+                    href="/auth/register"
+                    onClick={closeUhu}
+                    className="font-semibold text-accent underline underline-offset-2 hover:opacity-80"
+                  >
+                    Login untuk 150/hari + simpan riwayat.
+                  </Link>
+                </span>
+              </div>
+            )}
+
             {messages.length === 0 && (
               <div className="rounded-xl border border-border bg-bg-primary p-3.5 text-xs text-text-secondary leading-relaxed">
                 Halo! Aku <strong className="font-semibold text-text-primary">Uhu</strong>, analis AI TeknikalID. Tanya soal sinyal teknikal, support/resistance, atau pergerakan saham IDX hari ini.
@@ -359,13 +350,23 @@ export function UhuChatPanel() {
           >
             <div className="space-y-1">
               <p className="leading-relaxed">{errorBanner}</p>
-              <Link
-                href="/agent"
-                onClick={closeUhu}
-                className="inline-block font-semibold text-accent underline underline-offset-2"
-              >
-                Cek status di /agent
-              </Link>
+              {isGuest ? (
+                <Link
+                  href="/auth/register"
+                  onClick={closeUhu}
+                  className="inline-flex items-center justify-center rounded-lg bg-accent px-3 py-1.5 text-xs font-semibold text-white hover:opacity-95 transition-opacity mt-1"
+                >
+                  Daftar Akun Gratis
+                </Link>
+              ) : (
+                <Link
+                  href="/agent"
+                  onClick={closeUhu}
+                  className="inline-block font-semibold text-accent underline underline-offset-2"
+                >
+                  Cek status di /agent
+                </Link>
+              )}
             </div>
             <button
               type="button"
@@ -389,7 +390,7 @@ export function UhuChatPanel() {
             <button
               key={chip.label}
               type="button"
-              disabled={effectiveGate === "AUTH"}
+              disabled={effectiveGate === "NO_BINDING"}
               onClick={() => handleChipClick(chip.prompt)}
               className="shrink-0 whitespace-nowrap rounded-full border border-border bg-bg-primary px-2.5 py-1 text-xs font-medium text-text-secondary hover:border-accent/40 hover:bg-bg-hover hover:text-text-primary transition-colors disabled:opacity-50"
             >
@@ -406,7 +407,7 @@ export function UhuChatPanel() {
             ref={textareaRef}
             rows={1}
             value={input}
-            disabled={streaming || effectiveGate === "AUTH"}
+            disabled={streaming || effectiveGate === "NO_BINDING"}
             onChange={(e) => {
               setInput(e.target.value);
               adjustTextareaHeight();
@@ -424,7 +425,7 @@ export function UhuChatPanel() {
           <button
             type="button"
             onClick={handleSend}
-            disabled={streaming || !input.trim() || effectiveGate === "AUTH"}
+            disabled={streaming || !input.trim() || effectiveGate === "NO_BINDING"}
             aria-label="Kirim pesan"
             className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-xl bg-accent text-white transition-opacity hover:opacity-95 disabled:opacity-40"
           >
