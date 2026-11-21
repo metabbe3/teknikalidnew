@@ -38,14 +38,17 @@ const THEMATIC_SCREENERS = [
   {
     label: "Saham Mulai Mantul · RSI Oversold",
     href: "/stocks?view=screener&tab=bottom-fishing&preset=rsi_oversold",
+    engagement: "chip_stocksThemeOversold",
   },
   {
     label: "Tren Naik Baru · Golden Cross",
     href: "/stocks?view=screener&tab=swing-trade&preset=golden_cross",
+    engagement: "chip_stocksThemeGoldenCross",
   },
   {
     label: "Volume Meledak",
     href: "/stocks?view=screener&preset=volume_spike",
+    engagement: "chip_stocksThemeVolumeSpike",
   },
 ] as const;
 
@@ -272,6 +275,7 @@ export default async function StocksPage() {
                 <Link
                   key={s.label}
                   href={s.href}
+                  data-engagement={s.engagement}
                   className="inline-flex min-h-11 sm:min-h-0 items-center gap-1 rounded-full border border-border bg-bg-secondary/70 px-3 py-1.5 text-xs font-medium text-text-secondary hover:border-accent/40 hover:text-accent transition-colors active:scale-[0.98]"
                 >
                   <span>{s.label}</span>

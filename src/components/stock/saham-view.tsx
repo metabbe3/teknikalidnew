@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
 import { StockTable, type StockRow } from "@/components/stock/stock-table";
@@ -137,6 +137,35 @@ export function SahamView({
     }
   };
 
+  // ux-2026-11-21-01: deep-link ?view=screener|swing|pasar merender panel ~2000px
+  // di bawah fold (di bawah 30 Teraktif, owner 18 Okt) tapi viewport diam di atas —
+  // user klik chip tematik/preset dan melihat... halaman yang sama. Scroll ke panel
+  // HANYA saat URL membawa ?view= (initial load atau inbound link), bukan saat
+  // switchTab lokal (tab bar sudah terlihat saat diklik).
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (urlMode === "semua" || !searchParams.get("view")) return;
+    if (!panelRef.current) return;
+    // retry ladder: panel swing/pasar dynamic-import — tunggu mount sesungguhnya
+    let cancelled = false;
+    const attempt = (delay: number) =>
+      window.setTimeout(() => {
+        if (cancelled) return;
+        const target = panelRef.current;
+        if (!target) return;
+        const top = target.getBoundingClientRect().top + window.scrollY - 84;
+        if (Math.abs(window.scrollY - top) > 24) {
+          window.scrollTo({ top, behavior: "smooth" });
+        }
+      }, delay);
+    attempt(150);
+    attempt(450);
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlMode, searchParams.toString()]);
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
@@ -199,13 +228,19 @@ export function SahamView({
       </div>
 
       {mode === "screener" ? (
-        <Suspense fallback={<div className="p-8 text-center text-text-secondary">Memuat screener…</div>}>
-          <ScreenerClient assetClass={assetClass} linkBase={linkBase} />
-        </Suspense>
+        <div ref={panelRef} className="scroll-mt-20">
+          <Suspense fallback={<div className="p-8 text-center text-text-secondary">Memuat screener…</div>}>
+            <ScreenerClient assetClass={assetClass} linkBase={linkBase} />
+          </Suspense>
+        </div>
       ) : mode === "swing" && isEquity ? (
-        <StocksSwingPanel linkBase={linkBase} />
+        <div ref={panelRef} className="scroll-mt-20">
+          <StocksSwingPanel linkBase={linkBase} />
+        </div>
       ) : mode === "pasar" && isEquity ? (
-        <StocksPasarPanel linkBase={linkBase} />
+        <div ref={panelRef} className="scroll-mt-20">
+          <StocksPasarPanel linkBase={linkBase} />
+        </div>
       ) : stocks === null ? (
         <div className="p-8 text-center text-text-secondary" role="status">
           {loadError ? (
