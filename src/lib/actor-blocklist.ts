@@ -53,9 +53,23 @@ export const BLOCKED_ACTORS: readonly string[] = Object.freeze([
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
+/**
+ * prd-2026-11-21-01: smoke beacon qa- → auto-register runtime.
+ * BLOCKED_ACTORS (module const) tidak bisa dimutasi aman (frozen + shared antar
+ * worker), jadi daftar runtime terpisah — isBlockedActor menggabung keduanya.
+ * Kanonik tetap file ini (satu pintu); entri runtime TIDAK persist antar deploy
+ * (by design: smoke = sesi, bukan konfigurasi).
+ */
+const runtimeSmokeActors = new Set<string>();
+
+export function registerSmokeActor(id: string): void {
+  if (id?.startsWith("qa-")) runtimeSmokeActors.add(id);
+}
+
 /** True bila id cocok actor blocklist (exact UUID, case-insensitive utk aman). */
 export function isBlockedActor(id: string | null | undefined): boolean {
   if (!id) return false;
+  if (runtimeSmokeActors.has(id)) return true;
   return BLOCKED_ACTORS.some((a) => a.toLowerCase() === id.toLowerCase());
 }
 

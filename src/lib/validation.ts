@@ -275,7 +275,10 @@ export const schemas = {
   // public/engagement - POST body (dwell/scroll/cta telemetry beacon)
   engagement: z.object({
     events: z.array(z.object({
-      type: z.enum(["dwell_tick", "scroll_max", "cta_click", "nav_click"]),
+      // prd-2026-11-21-01: landing_source dicatat SERVER-side di /api/track/pageview
+      // (butuh akses referrer/utm/IP — beacon client tidak punya itu); enum di sini
+      // tetap whitelist ketat agar beacon publik tak bisa memalsukan first-touch.
+      type: z.enum(["dwell_tick", "scroll_max", "cta_click", "nav_click", "landing_source"]),
       // nav_click (28 Okt): label = "nav:<dest>" generatif dari href — free-form
       // string cap-32, bukan enum (setiap page baru otomatis ter-track tanpa
       // update schema). Enum lama utk cta_click tetap ketat.

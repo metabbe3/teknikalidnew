@@ -7,6 +7,9 @@ import { isBlocked } from "@/lib/ip-blocklist";
 import { isBlockedActor } from "@/lib/actor-blocklist";
 import { moderationService } from "@/domains/moderation/moderation.service";
 import { parseBody, schemas, extractPageviewAttribution, parseUtmParam } from "@/lib/validation";
+// prd-2026-11-21-01 (P1 STICKY): instrumen first-landing source per anonId baru
+import { classifyReferrerGroup, buildLandingSourceLabel } from "@/lib/landing-source";
+import { registerSmokeActor } from "@/lib/actor-blocklist";
 
 export const dynamic = "force-dynamic";
 
@@ -187,6 +190,47 @@ export async function POST(request: NextRequest) {
         isBot: isBot || blocked,
       },
     });
+
+    // prd-2026-11-21-01 AC1: landing_source — first-touch per anonId BARU.
+    // Fire-and-forget fail-soft; kunjungan PERTAMA anonId (belum pernah PV) dari
+    // luar situs (referrer != teknikal.id) → EngagementEvent type=landing_source
+    // label=landing:<grup>:<path>. Eval D+7 (AC3 pre-registered ≥2,7%) membaca
+    // ini utk pilah day-2 return per kanal banjir (threads/google/bing).
+    if (!isBot && !blocked && anonId && !userId) {
+      try {
+        const group = classifyReferrerGroup(cleanReferrer, utmSource);
+        if (group !== "internal") {
+          const seen = await prisma.pageView.findFirst({
+            where: { anonId, createdAt: { lt: new Date(Date.now() - 1500) } },
+            select: { id: true },
+          });
+          if (!seen) {
+            await prisma.engagementEvent.create({
+              data: {
+                anonId,
+                path,
+                type: "landing_source",
+                label: buildLandingSourceLabel(group, path),
+                valueNum: 1,
+              },
+            });
+          }
+        }
+      } catch {
+        // fail-soft: instrumen tidak boleh menggagalkan pencatatan view
+      }
+    }
+
+    // prd-2026-11-21-01: actor smoke qa- yang menyentuh beacon → auto-register ke
+    // blocklist runtime (funnel kanonik NOT LIKE 'qa-%' sudah mengecualikan; ini
+    // sabuk kedua utk viewer yang merender engagement/raw queries non-guard).
+    if (anonId?.startsWith("qa-")) {
+      try {
+        registerSmokeActor(anonId);
+      } catch {
+        // best-effort
+      }
+    }
 
     // FASE T5: catat funnel_digestClick saat sesi ber-UTM telegram masuk (non-bot)
     if (
