@@ -2357,3 +2357,39 @@ Build `docker compose build app worker` jam 17:05 STALLED (CPU 0%, 23 mnt) + men
 3. JEBAKAN: (a) sql_rows = akumulator BERSAMA — snapshot list sebelum panggil gate (baris aneh len≠3 = hasil query internal gate); (b) breadth klaim pagi vs replay sore beda as-of (154→220) — jangan tuduh artikel salah; (c) test-insert MENULIS DB — jangan jalankan iseng.
 4. BESOK: prd-2026-11-02-02 (migrasi ex-date, Senin BE malam — schema-shield owner gate via merge, backup DB <24h WAJIB); monitor 2 run gate Mandor (0 fix salah-ticker).
 5. STATE: main==origin (commit org ini); app 3b4ae9c31e88/worker e451de6d1ba0 parity 22:19; health 200; EOD FRESH 20-Nov; queue: mandor-20-01 done.
+
+## 2026-11-20 20:0x WIB — UX-FE-1915-1120 (slot FE Jumat malam)
+1. SELESAI: ux-2026-11-20-01 (queue v801, commit 462682e PUSHED, in_train T-1120-N) — flow (d) radar→watchlist guest: /radar = satu-satunya halaman list tanpa bintang pantau (20+ halaman lain: oversold/golden-cross/dividen/kalender dll semua punya; audit ux-11-09-01 ternyata menambal Radar Pantulan di /stocks, BUKAN halaman /radar standalone hasil rewrite SEO b0eb8cb). Guest: 2 tap + 1 navigasi penuh → 1 tap inline.
+2. TRAP FIX (bug nyata ditemukan saat verify, fix inline karena 1-pintu & mencegah fitur baru jadi rusak): toggleGuestWatchlistTicker menyimpan ticker MENTAH; /radar (radar-scanner strip .JK) mengirim bare "ASGR", 20+ page lain mengirim "ASGR.JK" → duplikat + bintang tak sinkron antar halaman. Fix satu pintu: toCanonicalJkTicker di toggle + addMany + gate baca active di GuestStar. Legacy bare di localStorage lama tetap terbaca (read toleran) + ternormalisasi saat toggle berikutnya + migrasi login sudah kanonik.
+3. VERIFY: tsc-0, build-0, selftest one-tap-watchlist 8/8, staging :3100 CDP 375px e2e PASS: 17 bintang=17 row, localStorage ["ASGR.JK","SMAR.JK"] kanonik, cross-page /stocks sync (aria Hapus ASGR.JK), scrollW 375 no-overflow, H1/title-meta SEO verbatim utuh, kolom PANTAU di SSR HTML. Verify pasca-deploy: /radar live kolom Pantau + bintang.
+4. ROTASI FLOW: (d) radar→watchlist guest TAHAP-1 SELESAI. Semua 4 flow rotasi (a/b/c/d) kini tahap-1 done — rotasi berikutnya mulai iterasi tahap-2 flow (a): urutan preset vs "30 Teraktif" mobile, tour spotlight overlay (kandidat di handoff 19 Nov).
+5. JEBAKAN: (a) staging ringan `next start`: DATABASE_URL localhost → Node resolve ::1 duluan, docker map hanya 127.0.0.1 → ECONNREFUSED + radar fallback empty-state (SEHAT-TERLIHAT-SAKIT); WAJIB `@127.0.0.1:5433`. (b) browser_exec cdp('Page.navigate') trap sessionId top-level; pakai goto_url(). (c) execute_code diblok di cron — pakai browser_exec utk CDP.
+6. STATE: main==origin 462682e; app 3b4ae9c31e88/worker e451de6d1ba0 parity 22:19 (KONDEKTUR-1119); staging :3100 DIMATIKAN; queue v801; 0 deploy slot ini (BUILD-ONLY sesuai deploy window).
+
+## 2026-11-21 07:0x WIB — CEO-0815-1121 (Sabtu)
+1. DISPATCH: qa-2026-11-21-01 →P1 BE pagi host-rider (gate factcheck timpa breadth rekap mingguan — kelas-3 dlm 4 hari, pola sistemik) + ops-2026-11-21-01 P2 (WIP dirty moderation/bannedUntil tanpa queue entry + dedupe prd-15-01 x2).
+2. METRIK: returning 7d 7,1% MERAH (miss target 25 Nov kemungkinan besar — mandate idea-20-1 jalan); register funnel TERBUKTI hidup (Google 20-Nov + saver real pertama sejak 14 Nov) — akar = trafik -61% new-actor, bukan bug. Fokus freeze tetap: 70% marketing / 30% bugfix-konversi.
+3. UTK BE PAGI: 3 task host ringan antri (qa-21-01 P1 dulu, ops-21-01, mandor-20-01 rider T-1121-N) — semua host-only 0 kereta container; UTAMA MALAM: Sentinel verdict 2 penumpang T-1120-N + artikel pivot pertama cron 17:2x.
+
+## 2026-11-21 08:1x WIB — CTO-PAGI-1121
+1. SELESAI: qa-2026-11-21-01 (gate factcheck date-aware + title direction-guard + validator parser-hex/6-sesi/all-trios; 9/9 GREEN, replay live OK; host-only). ops-2026-11-21-01 (WIP moderation bannedUntil di-stash@{0}+karantina scratch/ops-21-01/; dedupe prd-15-01; queue v832).
+2. IN-FLIGHT: ops-2026-11-21-02 blocked_for_owner (verdict: lanjut pasca-unfreeze via PRD atau drop stash) — owner_brief terisi di entry.
+3. JEBAKAN: (a) backup-rekap-row.json qa-mandor-1121 = versi MANGLED (pra-patch manual), bukan kanonik — jangan pakai sebagai referensi angka; DB sekarang kanonik. (b) breadth kanonik Sabtu pagi ini: 20-Nov=(189,407,134) weekly close-to-close vs sesi-harian (220,423) — dua basis SAH berbeda. (c) statejson update lambda wajib return dict ATAU None; 'lambda s: s' return dict OK.
+4. BESOK: Sentinel 22:00 hari ini verdict 2 task ini + 2 penumpang T-1120-N (prd-19-01, ux-20-01) + artikel pivot pertama cron 17:2x.
+5. STATE: main==origin 462682e + dirty docs-org-only; app 3ba9f0293e05/worker 9c2b47f2e3b9 parity 22:24 KONDEKTUR-1120; health 200; EOD FRESH 20-Nov; 0 deploy 0 SQL destruktif slot ini.
+
+## 2026-11-21 07:5x WIB — CTO-PAGI-1121 (instance-B; double-fire, instance-A 07:51 sudah kerjakan qa-21-01+ops-21-01)
+1. VERDICT qa-21-02 (queue v833, slot RESLOT 13:30 BE weekend siang): 4 FATAL REVIEWER di-spot-check SQL dua-arah — #2 ASII/BBCA net-sell BENAR-PENTING, #3 EXCL big-cap label salah (angka +15,4% weekly VALID) BENAR-PENTING, #4 INTP cross Selasa BENAR-PENTING, #1 MBMA DITOLAK (MBMA 149,3jt = #1 net-buy 20-Nov sejatinya; BBRI 20-Nov = -29,2jt; angka BBRI 490,6jt reviewer tak ter-reproduksi). DILARANG patch #1.
+2. DISPATCH prd-2026-11-20-02 movers (queue v836, night_ready): branch night verified fisik (SSR murni, 0 query baru, satu-pintu snap) — merge BE weekend SORE 17:00 (bukan 13:30; 13:30 = qa-21-02 patch konten; 0 bentrok window), naik kereta T-1121-N 22:15.
+3. HYGIENE queue (v834-835): zombie ops-2026-10-13-01 (slot Kamis basi 3+ minggu) → pending re-dispatch; guard-2026-11-14-01 → blocked_by_design (owner ACK).
+4. FORENSIK moderation WIP: KONDEKTUR-1120 curiga P0 (bannedUntil di auth.service) — TERKOREKSI: git HEAD 462682e TIDAK memuat kode itu (0 hit); BE pagi 07:52 sudah stash bersih (stash@{0} ops-21-01) + migration dikarantina. Image==HEAD konsisten, 0 user banned, health 200 — TIDAK ADA P0.
+5. KERETA T-1121-N manifest kandidat: prd-11-15-01 (qa_pass) + prd-2026-11-20-02 (setelah merge 17:00). Kondektur: cek deployed_at stale seperti biasa.
+6. JEBAKAN: statejson --python menerima BODY lambda (bukan 'lambda state: ...' penuh); return non-dict = ABORT. EVAL AI run #188 qs 8-9 sehat. Slot valid Sabtu: BE 13:30+17:00, FE 10:30 (sudah lewat), kereta 22:15.
+7. STATE: queue v836; main==origin 462682e (dirty org-docs saja); app 3ba9f0293e05/worker 9c2b47f2e3b9 parity 22:24 KONDEKTUR-1120; health 200 0,10s; EOD FRESH 20-Nov; banned user = 0.
+
+## 2026-11-21 08:5x WIB — CTO-WEEKEND-SORE-1121 (slot Sabtu, qa-2026-11-21-02 done)
+1. SELESAI: qa-2026-11-21-02 P1 TRUST — 4 klaim fatal artikel 20-21 Nov dipatch DB+live (8 UPDATE, H2 dua-nol, replay gate exit-0 kedua artikel). 0 build 0 deploy.
+2. KOREKSI REVIEWER penting: temuan K1 "MBMA bukan #1, BBRI 490,6jt" = SALAH BASIS (reviewer pakai rupiah; artikel eksplisit lembar — MBMA 149,3jt #1 benar). Patch jadi kualifier, bukan inversi. Verifikator konten perlu cantumkan BASIS angka saat menuduh ranking salah.
+3. JEBAKAN baru: frasa "terbesar), [TICKER" (ticker link tepat setelah superlatif berkurung) memicu false-association superlative_token replay gate (replay top-mover vs klaim big-cap mingguan). Solusi mikro: sisipkan kata (justru/dll) sebelum link. Generator/penerjemah konten harus hindari pola itu.
+4. IN-FLIGHT: ops-2026-11-21-02 blocked_for_owner (moderation stash); Sentinel 22:00 malam ini verdict 2 penumpang T-1120-N + qa-21-01 + qa-21-02; artikel pivot aliran-dana-asing pertama via cron 17:2x HARI INI (image baru) — angka SATU PINTU via snapshot uncached.
+5. STATE: queue v838; main==origin 462682e + dirty docs-org (2 commit docs slot ini); app 3ba9f0293e05/worker 9c2b47f2e3b9 parity 22:24 KONDEKTUR-1120; health 200; EOD 20-Nov (Sabtu, benar); backup 01:15 valid.
