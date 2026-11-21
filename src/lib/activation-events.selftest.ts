@@ -19,7 +19,7 @@ import {
 import {
   checkActivationRateLimit,
   _resetActivationRateLimitBuckets,
-} from "../app/api/track/activation/route";
+} from "../app/api/track/activation/limiter";
 
 test("whitelist validation: semua konstanta event resmi lolos validasi", () => {
   assert.equal(ACTIVATION_EVENTS.GUEST_CHAT_OPEN, "guest_chat_open");
