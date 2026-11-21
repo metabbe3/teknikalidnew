@@ -79,6 +79,7 @@ scripts/selftest/canonical-numbers.selftest.ts
 scripts/selftest/condition-backtest.selftest.ts
 scripts/selftest/desktop-grid-balance.selftest.ts
 scripts/selftest/edu-canonical.selftest.ts
+scripts/selftest/foreign-flow-daily.selftest.ts
 scripts/selftest/foreign-flow-parity.selftest.ts
 scripts/selftest/funnel-qa-guard.selftest.ts
 scripts/selftest/funnel-t5-join.selftest.ts
@@ -277,9 +278,9 @@ src/app/(public)/akademi/page.tsx:17:export const metadata → Metadata = {
 src/app/(public)/akademi/page.tsx:48:export const revalidate = 3600;
 src/app/(public)/akademi/tanya/[slug]/page.tsx:120:export async function generateMetadata({
 src/app/(public)/akses-dibatasi/page.tsx:8:export const metadata → Metadata = {
-src/app/(public)/aliran-dana-asing/page.tsx:10:export const revalidate = 0;
-src/app/(public)/aliran-dana-asing/page.tsx:12:export const metadata → Metadata = {
-src/app/(public)/aliran-dana-asing/page.tsx:9:export const dynamic = "force-dynamic";
+src/app/(public)/aliran-dana-asing/page.tsx:10:export const dynamic = "force-dynamic";
+src/app/(public)/aliran-dana-asing/page.tsx:11:export const revalidate = 0;
+src/app/(public)/aliran-dana-asing/page.tsx:13:export const metadata → Metadata = {
 src/app/(public)/berita/[slug]/page.tsx:33:export async function generateMetadata({
 src/app/(public)/berita/page.tsx:19:export const dynamic = "force-dynamic";
 src/app/(public)/berita/page.tsx:21:export async function generateMetadata({
@@ -322,8 +323,8 @@ src/app/(public)/privacy/page.tsx:10:export const revalidate = 86400;
 src/app/(public)/privacy/page.tsx:4:export const metadata → Metadata = {
 src/app/(public)/profile/[username]/page.tsx:16:export const revalidate = 60;
 src/app/(public)/profile/[username]/page.tsx:18:export async function generateMetadata({
-src/app/(public)/radar/page.tsx:10:export const dynamic = "force-dynamic";
-src/app/(public)/radar/page.tsx:12:export const metadata → Metadata = {
+src/app/(public)/radar/page.tsx:11:export const dynamic = "force-dynamic";
+src/app/(public)/radar/page.tsx:13:export const metadata → Metadata = {
 src/app/(public)/s/[code]/route.ts:10:export const dynamic = "force-dynamic";
 src/app/(public)/s/[code]/route.ts:12:export async function GET(
 src/app/(public)/saham-akumulasi/page.tsx:5:export const dynamic = "force-dynamic";
@@ -524,8 +525,8 @@ src/app/api/ai/eval/route.ts:83:export async function POST(req → Request) {
 src/app/api/ai/eval/route.ts:9:export const dynamic = "force-dynamic";
 src/app/api/ai/screener/route.ts:188:export async function POST(req → NextRequest) {
 src/app/api/ai/stock/context.ts:16:export async function buildStockAiContext(ticker → string): Promise<Record<string, unknown>> {
-src/app/api/ai/stock/route.ts:123:export interface StockAiContext {
-src/app/api/ai/stock/route.ts:150:export async function POST(req → NextRequest) {
+src/app/api/ai/stock/route.ts:124:export interface StockAiContext {
+src/app/api/ai/stock/route.ts:151:export async function POST(req → NextRequest) {
 src/app/api/articles/route.ts:6:export const dynamic = "force-dynamic";
 src/app/api/articles/route.ts:8:export async function GET(request → NextRequest) {
 src/app/api/auth/register/route.ts:14:export async function POST(request → NextRequest) {
@@ -537,15 +538,15 @@ src/app/api/brief/daily/route.ts:13:export async function GET() {
 src/app/api/comments/[id]/route.ts:6:export async function DELETE(
 src/app/api/comments/route.ts:7:export async function POST(request → NextRequest) {
 src/app/api/cron/agent-hub-scheduler/route.ts:70:export async function POST(request → NextRequest) {
-src/app/api/cron/generate-articles/route.ts:18:export const maxDuration = 300;
-src/app/api/cron/generate-articles/route.ts:20:export async function POST(request → NextRequest) {
+src/app/api/cron/generate-articles/route.ts:19:export const maxDuration = 300;
+src/app/api/cron/generate-articles/route.ts:21:export async function POST(request → NextRequest) {
 src/app/api/cron/resolve-predictions/route.ts:10:export const maxDuration = 300;
 src/app/api/cron/resolve-predictions/route.ts:12:export async function GET(request → NextRequest) {
 src/app/api/cron/retention-email/route.ts:17:export async function GET(request → NextRequest) {
 src/app/api/cron/sync-eod/route.ts:13:export const maxDuration = 300;
 src/app/api/cron/sync-eod/route.ts:15:export async function GET(request → NextRequest) {
-src/app/api/cron/sync-foreign/route.ts:12:export async function POST(request → NextRequest) {
-src/app/api/cron/sync-foreign/route.ts:5:export const dynamic = "force-dynamic";
+src/app/api/cron/sync-foreign/route.ts:13:export async function POST(request → NextRequest) {
+src/app/api/cron/sync-foreign/route.ts:6:export const dynamic = "force-dynamic";
 src/app/api/cron/sync-fundamental/route.ts:17:export async function POST(request → NextRequest) {
 src/app/api/cron/sync-fundamental/route.ts:6:export const dynamic = "force-dynamic";
 src/app/api/cron/sync-fundamental/route.ts:7:export const maxDuration = 300;

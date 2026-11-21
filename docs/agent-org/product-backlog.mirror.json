@@ -3240,6 +3240,67 @@
       "title": "[STICKY] MANDAT CEO: returning anonId rolling-7d JATUH 8,8% -> 6,7% (numerator 17->13, denominator stabil 194) 5 hari sebelum deadline 25-Nov >=8% — diagnose penyebab drop + usulan intervensi FREEZE-SAFE",
       "spec": "MANDAT utk Product Agent Senin 23 Nov 10:15 (riset SQL read-only): (1) identifikasi 13 returning-anon minggu ini vs 17 minggu lalu — 4 anon mana yang hilang, halaman apa yang dulu mereka kunjungi (klaster pivot? screener? berita?); (2) korelasikan dgn perubahan 14-19 Nov (quota-wall v2, t5-habit, fuel-pivot belum deploy); (3) usulan intervensi FREEZE-SAFE saja (konten/alasan-balik/internal-link/tracking — bukan fitur baru) dgn estimasi delta numerator; (4) output: entry insight di file ini + verdict (dispatch konten / HOLD dgn data) — bukan dispatch engineering. Baseline: BO replay 20 Nov 03:00 (13/194=6,7%).",
       "done_when": "entry insight tertulis di product-backlog.json dgn breakdown anon hilang + 1 usulan intervensi freeze-safe terkuantifikasi (estimasi numerator delta) atau verdict HOLD dgn bukti."
+    },
+    {
+      "id": "idea-2026-11-20-2",
+      "date": "2026-11-20",
+      "type": "feature",
+      "priority": "P2",
+      "status": "spec_ready",
+      "source": "Product Agent nightly buffer-keeper 20 Nov 22:4x WIB (run gate: buffer teknikal 2 < 3; tide-first SQL read-only + statik tree teknikalidnew main@462682e HEAD 20 Nov + sitemap/curl live probe)",
+      "title": "P2 GROWTH (SEO-06/07 fase-1): Movers module /stocks — 129 halaman kenapa-naik/turun (sitemap 200 live) PUNYA 0 INBOUND LINK dari /stocks (magnet #2, 105 PV/7d); engine harian sudah regeneratif (28 lastmod 2026-11-20), distribusi tinggal wiring ekuitas internal-link",
+      "north_star": "growth (traffic & register) — SEO-RECOVERY-PLAN GELOMBANG-2 item 'movers module + anchor deskriptif' belum tersentuh; AIO-era north star = posisi & impresi (ADV-1)",
+      "user_story": "Sebagai pengunjung /stocks (magnet halaman terbesar, 93% mobile) yang baru melihat tabel screener, saya ingin section 'Kenapa Bergerak Hari Ini' berisi top gainers/losers ber-deskripsi + link ke halaman kenapa-naik/turun emiten itu — sehingga Google menemukan klaster 129 URL via link ekuitas internal (bukan yatim sitemap-only) dan saya dapat jawaban 'kenapa' tanpa cari ulang.",
+      "acceptance_criteria": [
+        "AC1 SSR: /stocks live memuat section 'Kenapa Bergerak Hari Ini' (server component, noscript-friendly) di bawah Top 30 Teraktif — isi top gainers/losers 2x5 (atau jumlah jujur bila pool < 5, DILARANG fabricate) dari StockIndicator/StockPrice EOD SATU PINTU (reuse pola query market-snapshot/deriveTopMovers, DILARANG SQL baru terpisah); tiap item render link /saham/[ticker]/kenapa-naik-hari-ini ATAU kenapa-turun-hari-ini sesuai arah + anchor deskriptif (mis. 'Kenapa saham BRIS naik hari ini')",
+        "AC2 SELECTIVITAS: hanya ticker dgn halaman kenapa PUBLISHED ter-emit (JOIN/cek ArticleBySlug server-side) — 0 link 404; pool kosong hari non-trading -> render pesan jujur + tanggal as-of EOD (pattern DailyRadar fallback)",
+        "AC3 JANGAN SENTUH TABEL: implementasi 0 perubahan pada StockTable virtualized + urutan section utama (owner 18 Okt: tabel langsung kelihatan) + LCP mobile tidak regresi >10% (section below-the-fold, 0 client-JS baru)",
+        "AC4 SEO: anchor = frasa deskriptif bukan bare ticker (SEO-06); section ikut SSR HTML (curl tanpa JS memuat >= 10 link /saham/*/kenapa-*); crawl-path /stocks -> kenapa-* terverifikasi via view-source",
+        "AC5 NO-REGRESI: tsc EXIT-0 + build EXIT-0; 0 migrasi DB; 0 endpoint baru; smoke anonId prefix qa- (charter §7); EVAL D+14: GSC impresi/query ticker+kenapa (baseline 20 Nov: idx radar pos 12 klik 1, klik 7d total 1, impr 796, CTR 2%, pos 57,5) tidak menurun + >= 1 URL kenapa-* dapat impresi baru"
+      ],
+      "data_evidence": "SQL read-only teknikalidnew-db-1 20 Nov 22:3x WIB: /stocks 7d = 105 PV (top_paths #2); PageView 14d /paper-trading 29v/25anon; register 30d = 24. SITEMAP LIVE: 129 kenapa-URL (29 naik + 98 turun + 2 evergreen), sample 8/8 HTTP 200, lastmod 28 URL = 2026-11-20 (engine regeneratif aktif). LIVE GAP: curl https://teknikal.id/stocks HTML = 0 kemunculan 'kenapa-naik|kenapa-turun' (verified 20 Nov). STATIK tree main@462682e: /stocks page.tsx punya section Discovery (SahamStrategyLinks + WeeklySignalWidget, L386-391) + SSR Top-30 Teraktif L312; halaman kenapa hidup via movement-page-helper.tsx loadMovementData (Article PUBLISHED); preseden pattern: DailyRadar server-component fallback jujur + bottom-fishing-radar; grep 'movers module /stocks' di cto-queue/backlog = 0 dispatch (item GELOMBANG-2 belum tersentuh).",
+      "impact": 3,
+      "effort": 2,
+      "target_files": [
+        "src/app/(public)/stocks/page.tsx (section baru di blok Discovery L386+)",
+        "src/components/stock/kenapa-movers-module.tsx (BARU — server component ringan)",
+        "src/domains/market/market-snapshot.service.ts (deriveTopMovers reuse — estimasi path, verifikasi saat build)",
+        "unknown (file query Article kenapa published — estimasi article.repository)"
+      ],
+      "db_migrations": false,
+      "dependencies": [
+        "StockIndicator/StockPrice EOD pipeline existing (fresh 20-Nov)",
+        "Article PUBLISHED slug kenapa-naik/turun-hari-ini existing (129 URL live)",
+        "market-snapshot SATU PINTU existing (ref-2026-10-17-01)"
+      ],
+      "risk": "low",
+      "estimate_tool_calls": 16,
+      "research_note": "Angka superlatif (105 PV / 129 URL / 28 lastmod) = query asli + curl live 20 Nov, bukan hitung sendiri (rule qa-30-01). Risiko utama: pool kenapa published fluktuatif harian → AC2 selectivitas wajib. Terhubung SEO-RECOVERY-PLAN Gelombang-2 + ADV-1 (kenapa-* = ASET). PRD fase-1 = link wiring saja; kurasi noindex 481->survivor (SEO-07) tetap PRD terpisah.",
+      "research_basis": "tree teknikalidnew main@462682e (HEAD 20 Nov, git log verified) + live probes teknikal.id 20 Nov 22:3x + SQL read-only teknikalidnew-db-1",
+      "prd_for": "prd-2026-11-20-02"
+    },
+    {
+      "id": "sre-2026-11-21-1",
+      "status": "candidate",
+      "source": "sre",
+      "title": "sre_brief.py auth-noise window bug: AUTH_NOISE_RE hanya dipakai untuk counting noise dalam ±60mnt sekitar container-restart — UnknownAction bot-probe di luar window tetap dilabel REAL ERROR (recurrence #2 kelas sre-2026-10-14-1 yang berstatus done)",
+      "data": {
+        "bukti": "brief 21 Nov 09:30: verdict REAL ERROR real_errors=3, padahal ketiganya [auth][error] UnknownAction di /api/auth/login + /api/auth/me — burst bot-probe 07:49:38-07:49:55 WIB (3 baris); grep error non-auth 24h = 0 baris",
+        "akar": "errors_i = hitungan mentah grep 'error|fatal|panic' TANPA filter (sre_brief.py:145-189); AUTH_NOISE_RE hanya diterapkan pada counting noise dlm window started_at±60mnt — error auth di luar window tidak pernah terdiskipun",
+        "dampak": "false-positive REAL ERROR di 2 shift/minggu -> alarm fatigue; kelas bug sama sudah 2x (fix 14 Okt done, bocor lagi via jalur window)",
+        "fix": "terapkan AUTH_NOISE_RE langsung saat hitung errors_i (skip baris auth-noise dari raw count); window ±60mnt tetap hanya untuk flag deploy-noise; output eksplisit triple (raw / noise-window / filtered)"
+      }
+    },
+    {
+      "id": "sre-2026-11-21-2",
+      "status": "candidate",
+      "source": "sre",
+      "title": "sre_brief.py error-clustering double-count: baris log TANPA timestamp (kelanjutan multi-line stack / format authjs) dihitung sebagai cluster terpisah dari pasangannya yang ber-timestamp",
+      "data": {
+        "bukti": "brief 21 Nov: 3 baris UnknownAction tampil sebagai 2 cluster terpisah ('...login... cluster x2' + '...me...') padahal 1 burst 17-detik yang sama; baris tanpa ts pecah dari pasangannya",
+        "dampak": "jumlah cluster (proxy jumlah insiden) terinflasi; minor tapi biasa salah baca prioritas",
+        "fix": "baris tanpa timestamp di-merge ke baris ber-timestamp sebelumnya sebelum clustering (sambungan multi-line), bukan jadi cluster baru"
+      }
     }
   ],
   "items": []
