@@ -1,5 +1,6 @@
 import { stripJk } from "@/lib/utils";
 import { tgDeepLink } from "@/lib/tg-deeplink";
+import { StockAiChip } from "@/components/stock/stock-ai-chip";
 
 interface StockAiPromptChipsProps {
   ticker: string;
@@ -46,16 +47,15 @@ export function StockAiPromptChips({
       aria-label={`Pilihan tanya AI untuk saham ${clean}`}
     >
       {chips.map((chip) => (
-        <a
+        <StockAiChip
           key={chip.key}
-          href={tgDeepLink([clean], chip.intent)}
-          data-engagement={chip.engagement}
-          target="_blank"
-          rel="noopener noreferrer"
+          baseHref={tgDeepLink([clean], chip.intent)}
+          chipKey={chip.key}
+          engagement={chip.engagement}
           className="inline-flex min-h-9 items-center rounded-lg border border-border/80 bg-bg/80 px-2.5 py-1 text-xs font-medium text-text-secondary hover:border-accent/40 hover:bg-bg-hover hover:text-text-primary transition-colors"
         >
           {chip.text}
-        </a>
+        </StockAiChip>
       ))}
     </div>
   );
