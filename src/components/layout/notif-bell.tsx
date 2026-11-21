@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Bell } from "lucide-react";
@@ -144,6 +145,33 @@ export function NotifBell() {
 
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
+
+  // Safari fix: .glass-header pakai backdrop-filter yang bikin header jadi containing
+  // block untuk fixed/absolute (panel lama "tumbuh ke atas" & kepotong). Solusi: render
+  // panel via portal ke document.body (lolos dari containing block) + hitung posisi
+  // desktop dari koordinat tombol lonceng saat ini.
+  const [mounted, setMounted] = useState(false);
+  const [panelPos, setPanelPos] = useState<{ top: number; right: number } | null>(null);
+
+  useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    if (!open) return;
+    const updatePos = () => {
+      const btn = triggerRef.current;
+      if (!btn) return;
+      const r = btn.getBoundingClientRect();
+      // Hanya desktop (>=sm 640px): posisi dropdown di bawah tombol.
+      setPanelPos({ top: r.bottom + 8, right: window.innerWidth - r.right });
+    };
+    updatePos();
+    window.addEventListener("resize", updatePos);
+    window.addEventListener("scroll", updatePos, true);
+    return () => {
+      window.removeEventListener("resize", updatePos);
+      window.removeEventListener("scroll", updatePos, true);
+    };
+  }, [open]);
 
   const updateUnread = useCallback((next: number) => {
     const val = Math.max(0, next);
@@ -369,7 +397,7 @@ export function NotifBell() {
         )}
       </button>
 
-      {open && (
+      {open && mounted && createPortal(
         <>
           {/* Backdrop: gelap lembut di mobile bottom-sheet, transparan klik-luar di desktop */}
           <div
@@ -378,13 +406,20 @@ export function NotifBell() {
             aria-hidden="true"
           />
 
-          {/* Panel: bottom-sheet max-w-md di mobile (<sm), dropdown di desktop (>=sm) */}
+          {/* Panel via portal ke body — Safari: header .glass-header (backdrop-filter)
+              membuat containing block utk fixed/absolute, panel lama tumbuh ke atas &
+              kepotong. Mobile tetap bottom-sheet fixed; desktop pakai koordinat tombol. */}
           <div
             ref={panelRef}
             role="dialog"
             aria-modal="true"
             aria-label="Panel notifikasi"
-            className="fixed inset-x-0 bottom-0 z-50 mx-auto flex max-h-[75dvh] w-full max-w-md flex-col overflow-hidden rounded-t-2xl border border-border bg-bg-card shadow-xl sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:mt-2 sm:max-h-[26rem] sm:w-96 sm:max-w-md sm:rounded-2xl"
+            style={
+              panelPos
+                ? { top: `${panelPos.top}px`, right: `${panelPos.right}px` }
+                : undefined
+            }
+            className="fixed inset-x-0 bottom-0 z-50 mx-auto flex max-h-[75dvh] w-full max-w-md flex-col overflow-hidden rounded-t-2xl border border-border bg-bg-card shadow-xl sm:inset-x-auto sm:bottom-auto sm:max-h-[26rem] sm:w-96 sm:rounded-2xl"
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border px-4 py-3">
@@ -465,7 +500,8 @@ export function NotifBell() {
               </button>
             </div>
           </div>
-        </>
+        </>,
+        document.body
       )}
     </div>
   );
