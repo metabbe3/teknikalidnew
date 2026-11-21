@@ -3,6 +3,7 @@ import { Prisma } from "@/generated/prisma/client";
 import { stripJk, formatVolume } from "@/lib/utils";
 import { signalLabelId } from "@/lib/signal-label-id";
 import { UhuStockTrigger } from "@/components/uhu/uhu-provider";
+import { detectAnomalies } from "./daily-anomaly";
 
 export interface VerdictIndicatorInput {
   signalScore?: number | null;
@@ -154,10 +155,11 @@ export async function DailyAnalysisBlock({
     WHERE (s.ticker = ${canonicalTicker} OR s.ticker = ${rawTicker} OR s.ticker = ${clean})
       AND si.interval = '1d'
     ORDER BY si.date DESC
-    LIMIT 1
+    LIMIT 2
   `).catch(() => []);
 
   const indicator = indicators[0] ?? null;
+  const prevIndicator = indicators[1] ?? null;
   if (!indicator) return null;
 
   // Stale check > 5 hari (silent null, bukan skeleton)
@@ -202,6 +204,31 @@ export async function DailyAnalysisBlock({
     const sum = prevSessions.reduce((acc, row) => acc + (row.volume ?? 0), 0);
     avgVol20 = sum / prevSessions.length;
   }
+
+  // Hitung volumeRatio & priceChangePct untuk deteksi anomali
+  let priceChangePct: number | null = null;
+  if (
+    latestPrice?.close != null &&
+    latestPrice?.prevClose != null &&
+    latestPrice.prevClose > 0
+  ) {
+    priceChangePct =
+      ((latestPrice.close - latestPrice.prevClose) / latestPrice.prevClose) * 100;
+  }
+
+  let volumeRatio: number | null = null;
+  if (latestPrice?.volume != null && avgVol20 != null && avgVol20 > 0) {
+    volumeRatio = latestPrice.volume / avgVol20;
+  }
+
+  const anomalies = detectAnomalies({
+    ticker: clean,
+    indicator,
+    priceChangePct,
+    volumeRatio,
+    prevIndicator,
+  });
+  const topAnomalies = anomalies.slice(0, 2);
 
   const verdictLine = buildVerdictLine(indicator);
   if (!verdictLine) return null;
@@ -278,6 +305,22 @@ export async function DailyAnalysisBlock({
         <strong className="font-semibold text-text-primary">Verdict:</strong>{" "}
         {verdictLine}
       </p>
+
+      {/* Top-2 anomali hari ini (bullet badge, tidak render jika kosong) */}
+      {topAnomalies.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 pt-0.5" aria-label="Anomali teknikal hari ini">
+          {topAnomalies.map((anomali, idx) => (
+            <div
+              key={idx}
+              className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/5 px-2.5 py-0.5 text-xs text-text-secondary"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-accent shrink-0" aria-hidden="true" />
+              <strong className="font-semibold text-text-primary">{anomali.label}:</strong>
+              <span>{anomali.detail}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* (b) 3 bullet fakta angka */}
       <ul className="space-y-1 text-xs text-text-secondary">
