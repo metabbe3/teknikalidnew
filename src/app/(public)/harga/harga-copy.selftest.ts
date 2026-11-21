@@ -171,14 +171,18 @@ describe("Halaman Harga: buildPricingCards & Copy Verification", () => {
     );
   });
 
-  it("blok FAQ memuat 3 Q&A statis dengan copy pertanyaan wajib via getHargaFaqs()", () => {
+  it("blok FAQ memuat 4 Q&A statis dengan copy pertanyaan wajib via getHargaFaqs()", () => {
     const faqs = getHargaFaqs();
-    assert.equal(faqs.length, 3, "Harus tepat 3 Q&A FAQ");
+    assert.equal(faqs.length, 4, "Harus tepat 4 Q&A FAQ");
 
     const questions = faqs.map((f) => f.question);
     assert.ok(
       questions.includes("Bagaimana cara berlangganan?"),
       "Harus memuat Q: Bagaimana cara berlangganan?",
+    );
+    assert.ok(
+      questions.includes("Bagaimana cara bayarnya?"),
+      "Harus memuat Q: Bagaimana cara bayarnya?",
     );
     assert.ok(
       questions.includes("Bisa berhenti langganan kapan saja?"),
@@ -187,6 +191,14 @@ describe("Halaman Harga: buildPricingCards & Copy Verification", () => {
     assert.ok(
       questions.includes("Apa bedanya Night Trader dan Pro?"),
       "Harus memuat Q: Apa bedanya Night Trader dan Pro?",
+    );
+
+    const caraBayar = faqs.find((f) => f.question === "Bagaimana cara bayarnya?");
+    assert.ok(caraBayar, "FAQ cara bayar harus ada");
+    assert.equal(
+      caraBayar.answer,
+      "Klik tombol langganan di atas → chat terbuka di bot Telegram → selesaikan pembayaran via Midtrans (QRIS/e-wallet/kartu).",
+      "Jawaban FAQ cara bayar harus sinkron",
     );
 
     for (const item of faqs) {

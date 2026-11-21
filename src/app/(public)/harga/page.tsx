@@ -186,7 +186,7 @@ export default function HargaPage() {
           </div>
         </section>
 
-        {/* FAQ Section: 3 Q&A statis server-rendered */}
+        {/* FAQ Section: 4 Q&A statis server-rendered */}
         <section className="space-y-4">
           <div className="space-y-1">
             <h2 className="text-lg font-semibold text-text-primary sm:text-xl">

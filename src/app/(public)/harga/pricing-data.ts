@@ -30,6 +30,11 @@ export const HARGA_FAQS: HargaFaqItem[] = [
       "Klik tombol pilih paket (Night Trader atau Pro) di atas untuk langsung membuka bot Telegram @TeknikalidAgentBot. Ikuti petunjuk di bot dan selesaikan pembayaran via Midtrans (QRIS atau e-wallet). Akses asisten dan kuota kamu langsung aktif otomatis.",
   },
   {
+    question: "Bagaimana cara bayarnya?",
+    answer:
+      "Klik tombol langganan di atas → chat terbuka di bot Telegram → selesaikan pembayaran via Midtrans (QRIS/e-wallet/kartu).",
+  },
+  {
     question: "Bisa berhenti langganan kapan saja?",
     answer:
       "Bisa, kamu bisa berhenti langganan kapan saja tanpa penalti atau komitmen jangka panjang. Tidak ada pemotongan saldo otomatis tanpa persetujuanmu. Jika periode langganan habis dan tidak diperpanjang, akun otomatis kembali ke paket gratis di web.",
