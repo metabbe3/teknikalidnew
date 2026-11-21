@@ -19,6 +19,7 @@ import { auth } from "@/lib/auth";
 import { GuestWatchlistPanel } from "@/components/stock/guest-watchlist-panel";
 import { GuestStar } from "@/components/stock/guest-star";
 import { WeeklySignalWidget } from "@/components/signal/weekly-signal-widget";
+import { KenapaMoversModule } from "@/components/stock/kenapa-movers-module";
 import { ChannelCta } from "@/components/stock/channel-cta";
 
 export const dynamic = "force-dynamic";
@@ -389,6 +390,13 @@ export default async function StocksPage() {
 
           {/* Discovery section — DIPINDAH ke bawah tabel (owner 18 Okt: tabel harus langsung kelihatan) */}
           <div className="mt-10 space-y-8">
+            {/* prd-2026-11-20-02: link-equity ke klaster kenapa-* (SEO-06 gel-2) —
+                reuse snap SATU PINTU yang sudah dimuat di atas, 0 query baru */}
+            <KenapaMoversModule
+              gainers={snap.gainers}
+              losers={snap.losers}
+              sessionDate={snap.sessionDate}
+            />
             <SahamStrategyLinks />
             <WeeklySignalWidget />
           </div>
