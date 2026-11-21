@@ -32,9 +32,8 @@ function lastNWeeks(n: number): Date[] {
   });
 }
 
-const getCachedSitemap = unstable_cache(
-  async (): Promise<MetadataRoute.Sitemap> => {
-    const baseUrl = SITE_URL;
+export async function buildSitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = SITE_URL;
     const idx40Set = new Set(IDX40_TICKERS);
     const today = new Date();
 
@@ -56,11 +55,24 @@ const getCachedSitemap = unstable_cache(
       ORDER BY "stockId", date DESC
     `;
 
+    // Latest indicator date per stock (Wave-6 SEO: lastModified = max(indicator.date))
+    // 1 aggregate query using groupBy
+    const latestIndicatorDates = await prisma.stockIndicator.groupBy({
+      by: ["stockId"],
+      where: { interval: "1d" },
+      _max: { date: true },
+    });
+    const stockIdToIndicatorDate = new Map<number, Date>();
+    for (const row of latestIndicatorDates) {
+      if (row._max.date) {
+        stockIdToIndicatorDate.set(row.stockId, row._max.date);
+      }
+    }
+
     // Build ticker→date map via Stock table
-    // seo-2026-10-29 (delisting BEI 10 Nov): exclude non-active (suspended/delisted) dari sitemap
     const stockRecords = await prisma.stock.findMany({
-      where: { ticker: { in: IDX_STOCKS.map((s) => s.ticker) }, isActive: true },
-      select: { ticker: true, id: true },
+      where: { ticker: { in: IDX_STOCKS.map((s) => s.ticker) } },
+      select: { ticker: true, id: true, isActive: true },
     });
     const tickerToStockId = new Map(stockRecords.map((s) => [s.ticker, s.id]));
     const stockIdToDate = new Map(latestPriceDates.map((p) => [p.stockId, p.date]));
@@ -132,11 +144,13 @@ const getCachedSitemap = unstable_cache(
       .filter((id): id is string => id != null),
   );
 
-  // Enrich the shortlisted stocks with real dates
-  // seo-2026-10-29: guard final — ticker non-aktif (delisted/suspended) tak boleh masuk sitemap dari jalur manapun
-  const stockPages = IDX_STOCKS.filter((stock) => sitemapTickers.has(stock.ticker) && tickerToStockId.has(stock.ticker)).map((stock) => {
+  // Stock pages: all 956 stocks from IDX_STOCKS with real indicator lastModified dates
+  // Wave-6 SEO: freshness driven by max(indicator.date)
+  const stockPages = IDX_STOCKS.map((stock) => {
     const sid = tickerToStockId.get(stock.ticker);
-    const realDate = sid ? stockIdToDate.get(sid) : undefined;
+    const realDate = sid
+      ? (stockIdToIndicatorDate.get(sid) ?? stockIdToDate.get(sid))
+      : undefined;
     return {
       url: `${baseUrl}/stocks/${stock.ticker}`,
       // seo-adv3 (purist audit 3 Nov): mass-stamp regeneratif merusak kepercayaan
@@ -372,9 +386,12 @@ const getCachedSitemap = unstable_cache(
     // hanya 15 istilah depth-gated yang masuk sitemap (+15 URL, 0 perubahan lain).
     ...glossaryPages,
   ];
-},
-["sitemap-cache-v1"],
-{ revalidate: 3600, tags: ["sitemap"] },
+}
+
+const getCachedSitemap = unstable_cache(
+  buildSitemap,
+  ["sitemap-cache-v1"],
+  { revalidate: 3600, tags: ["sitemap"] },
 );
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

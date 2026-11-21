@@ -4,6 +4,15 @@ import { stripJk, formatVolume } from "@/lib/utils";
 import { signalLabelId } from "@/lib/signal-label-id";
 import { UhuStockTrigger } from "@/components/uhu/uhu-provider";
 import { detectAnomalies } from "./daily-anomaly";
+import { safeJsonLd } from "@/lib/safe-json-ld";
+import {
+  buildFaqJsonLd,
+  type BuildFaqJsonLdParams,
+  type FaqPageJsonLd,
+  type FaqQuestionItem,
+} from "@/lib/faq-jsonld";
+
+export { buildFaqJsonLd, type BuildFaqJsonLdParams, type FaqPageJsonLd, type FaqQuestionItem };
 
 export interface VerdictIndicatorInput {
   signalScore?: number | null;
@@ -283,12 +292,29 @@ export async function DailyAnalysisBlock({
 
   const asOf = formatAsOfDate(indicator.date);
 
+  const faqJsonLd = buildFaqJsonLd({
+    ticker: clean,
+    verdictLine,
+    facts: [
+      `Skor sinyal: ${scoreFormatted} (${labelText}) pada skala −1 s.d. +1`,
+      `Moving Average: ${crossFact}`,
+      `Volume: ${volumeFact}`,
+    ],
+    asOf,
+  });
+
   return (
     <section
       id="analis-hari-ini"
       className={className ?? "mt-3 pt-3 border-t border-border/60 space-y-2.5"}
       aria-label={`Analis hari ini ${clean}`}
     >
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
+        />
+      )}
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <h3 className="font-serif text-sm font-semibold text-text-primary">
           Analis Hari Ini · {clean}
